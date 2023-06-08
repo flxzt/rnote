@@ -159,12 +159,10 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         selected_file.replace(None);
     }));
 
-    dialog.connect_response(
-        clone!(@weak with_background_switch, @strong selected_file, @weak canvas, @weak appwindow => move |dialog, responsetype| {
-            match responsetype {
-                ResponseType::Apply => {
-                    if let Some(file) = selected_file.take() {
-                        glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+    match dialog.run_future().await {
+        ResponseType::Apply => {
+            if let Some(file) = selected_file.take() {
+                glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
                             appwindow.overlays().start_pulsing_progressbar();
 
                             let file_title = crate::utils::default_file_title_for_export(
@@ -181,17 +179,15 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
 
                             appwindow.overlays().finish_progressbar();
                         }));
-                    } else {
-                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed, no file selected"));
-                    }
-                }
-                _ => {}
+            } else {
+                appwindow
+                    .overlays()
+                    .dispatch_toast_error(&gettext("Exporting document failed, no file selected"));
             }
-
-            dialog.close();
-        }));
-
-    dialog.present();
+        }
+        _ => {}
+    }
+    dialog.close();
 }
 
 fn create_filedialog_export_doc(
@@ -416,16 +412,13 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         }),
     );
 
-    dialog.connect_response(
-        clone!(@strong selected_file, @weak with_background_switch, @weak export_files_stemname_entryrow, @weak canvas, @weak appwindow => move |dialog, responsetype| {
-            match responsetype {
-                ResponseType::Apply => {
-                    if let Some(dir) = selected_file.take() {
-                        glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+    match dialog.run_future().await {
+        ResponseType::Apply => {
+            if let Some(dir) = selected_file.take() {
+                glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
                             appwindow.overlays().start_pulsing_progressbar();
 
                             let file_stem_name = export_files_stemname_entryrow.text().to_string();
-
                             if let Err(e) = canvas.export_doc_pages(&dir, file_stem_name, None).await {
                                 log::error!("exporting document pages failed, Error: `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed"));
@@ -435,17 +428,15 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
 
                             appwindow.overlays().finish_progressbar();
                         }));
-                    } else {
-                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed, no directory selected"));
-                    }
-                }
-                _ => {}
+            } else {
+                appwindow.overlays().dispatch_toast_error(&gettext(
+                    "Exporting document pages failed, no directory selected",
+                ));
             }
-
-            dialog.close();
-        }));
-
-    dialog.present();
+        }
+        _ => {}
+    }
+    dialog.close();
 }
 
 fn create_filedialog_export_doc_pages(
@@ -651,34 +642,32 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         canvas.engine().borrow_mut().export_prefs.selection_export_prefs.margin = margin_spinbutton.value();
     }));
 
-    dialog.connect_response(
-        clone!(@strong selected_file, @weak with_background_switch, @weak canvas, @weak appwindow => move |dialog, responsetype| {
-            match responsetype {
-                ResponseType::Apply => {
-                    if let Some(file) = selected_file.take() {
-                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                            appwindow.overlays().start_pulsing_progressbar();
+    match dialog.run_future().await {
+        ResponseType::Apply => {
+            if let Some(file) = selected_file.take() {
+                appwindow.overlays().start_pulsing_progressbar();
 
-                            if let Err(e) = canvas.export_selection(&file, None).await {
-                                log::error!("exporting selection failed, Error: `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed"));
-                            } else {
-                                appwindow.overlays().dispatch_toast_text(&gettext("Exported selection successfully"));
-                            }
-
-                            appwindow.overlays().finish_progressbar();
-                        }));
-                    } else {
-                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed, no file selected"));
-                    }
+                if let Err(e) = canvas.export_selection(&file, None).await {
+                    log::error!("exporting selection failed, Error: `{e:?}`");
+                    appwindow
+                        .overlays()
+                        .dispatch_toast_error(&gettext("Exporting selection failed"));
+                } else {
+                    appwindow
+                        .overlays()
+                        .dispatch_toast_text(&gettext("Exported selection successfully"));
                 }
-                _ => {}
+
+                appwindow.overlays().finish_progressbar();
+            } else {
+                appwindow
+                    .overlays()
+                    .dispatch_toast_error(&gettext("Exporting selection failed, no file selected"));
             }
-
-            dialog.close();
-        }));
-
-    dialog.present();
+        }
+        _ => {}
+    }
+    dialog.close();
 }
 
 fn create_filedialog_export_selection(

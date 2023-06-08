@@ -354,7 +354,7 @@ impl RnAppWindow {
                 // If there is only one tab left, request to close the entire window.
                 appwindow.close();
             } else {
-                appwindow.overlays().tabview().close_page(&active_tab_page);
+                appwindow.close_tab_request(&active_tab_page);
             }
         }));
 
@@ -467,7 +467,9 @@ impl RnAppWindow {
 
         // Clear doc
         action_clear_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::dialog_clear_doc(&appwindow, &appwindow.active_tab().canvas());
+            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                dialogs::dialog_clear_doc(&appwindow, &appwindow.active_tab().canvas()).await;
+            }));
         }));
 
         // Undo stroke
@@ -583,7 +585,9 @@ impl RnAppWindow {
 
         // New doc
         action_new_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::dialog_new_doc(&appwindow, &appwindow.active_tab().canvas());
+            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                dialogs::dialog_new_doc(&appwindow, &appwindow.active_tab().canvas()).await;
+            }));
         }));
 
         // Open doc

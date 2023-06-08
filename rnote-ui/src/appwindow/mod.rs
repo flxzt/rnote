@@ -191,6 +191,7 @@ impl RnAppWindow {
             .into_iter()
             .map(|p| p.child().downcast::<RnCanvasWrapper>().unwrap())
         {
+            let _ = tab.canvas().engine().borrow_mut().set_active(false);
             if let Err(e) = tab
                 .canvas()
                 .engine()
@@ -378,7 +379,7 @@ impl RnAppWindow {
             .map(|(found, _)| found)
     }
 
-    /// sets all unselected tabs inactive.
+    /// Set all unselected tabs inactive.
     ///
     /// Currently this clears the rendering and deinits the current pen of the engine in the tabs.
     ///
@@ -398,10 +399,36 @@ impl RnAppWindow {
                 .downcast::<RnCanvasWrapper>()
                 .unwrap()
                 .canvas();
-
             // no need to handle the widget flags, since the tabs become inactive
             let _ = canvas.engine().borrow_mut().set_active(false);
         }
+    }
+
+    /// Request to close the given tab.
+    ///
+    /// This must then be followed up by close_tab_finish() with confirm = true to close the tab,
+    /// or confirm = false to revert.
+    pub(crate) fn close_tab_request(&self, tab_page: &adw::TabPage) {
+        self.overlays().tabview().close_page(tab_page);
+    }
+
+    /// Complete a close_tab_request.
+    ///
+    /// Closes the given tab when confirm is true, else reverts so that close_tab_request() can be can again.
+    pub(crate) fn close_tab_finish(&self, tab_page: &adw::TabPage, confirm: bool) {
+        if confirm {
+            let _ = tab_page
+                .child()
+                .downcast::<RnCanvasWrapper>()
+                .unwrap()
+                .canvas()
+                .engine()
+                .borrow_mut()
+                .set_active(false);
+        }
+        self.overlays()
+            .tabview()
+            .close_page_finish(tab_page, confirm);
     }
 
     pub(crate) fn refresh_titles(&self, active_tab: &RnCanvasWrapper) {
@@ -432,7 +459,7 @@ impl RnAppWindow {
         self.mainheader().main_title().set_subtitle(&subtitle);
     }
 
-    /// Opens the file, with import dialogs when appropriate.
+    /// Open the file, with import dialogs when appropriate.
     ///
     /// When the file is a rnote save file, `rnote_file_new_tab` determines if a new tab is opened, or if it overwrites the current active one.
     pub(crate) fn open_file_w_dialogs(
@@ -510,7 +537,7 @@ impl RnAppWindow {
         }
     }
 
-    /// Loads in a file of any supported type into the engine of the given canvas.
+    /// Load in a file of any supported type into the engine of the given canvas.
     ///
     /// ! if the file is a rnote save file, it will overwrite the state in the active tab so there should be a user prompt to confirm before this is called
     pub(crate) fn load_in_file(
@@ -596,7 +623,7 @@ impl RnAppWindow {
         Ok(())
     }
 
-    /// Refreshes the UI from the engine state from the given tab page.
+    /// Refresh the UI from the engine state from the given tab page.
     pub(crate) fn refresh_ui_from_engine(&self, active_tab: &RnCanvasWrapper) {
         let canvas = active_tab.canvas();
 
@@ -841,7 +868,7 @@ impl RnAppWindow {
         self.refresh_titles(active_tab);
     }
 
-    /// Syncs the state from the previous active tab and the current one. Used when the selected tab changes.
+    /// Sync the state from the previous active tab and the current one. Used when the selected tab changes.
     pub(crate) fn sync_state_between_tabs(
         &self,
         prev_tab: &adw::TabPage,

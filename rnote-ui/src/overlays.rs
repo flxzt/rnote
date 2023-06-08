@@ -383,7 +383,7 @@ impl RnOverlays {
         );
 
         imp.tabview.connect_close_page(
-            clone!(@weak appwindow => @default-return true, move |tabview, page| {
+            clone!(@weak appwindow => @default-return true, move |_, page| {
                 if page
                     .child()
                     .downcast::<RnCanvasWrapper>()
@@ -391,10 +391,12 @@ impl RnOverlays {
                     .canvas()
                     .unsaved_changes()
                 {
-                    // close_tab_finish() is called in the dialog
-                    dialogs::dialog_close_tab(&appwindow, page);
+                    glib::MainContext::default().spawn_local(clone!(@weak appwindow, @weak page => async move {
+                        let close_finish_confirm = dialogs::dialog_close_tab(&appwindow, &page).await;
+                        appwindow.close_tab_finish(&page, close_finish_confirm);
+                    }));
                 } else {
-                    tabview.close_page_finish(page, true);
+                    appwindow.close_tab_finish(page, true);
                 }
 
                 true

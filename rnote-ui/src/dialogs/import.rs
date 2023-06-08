@@ -15,7 +15,7 @@ use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
 
 /// Asks to open the given file as rnote file and overwrites the current document.
 #[allow(unused)]
-pub(crate) fn dialog_open_overwrite(
+pub(crate) async fn dialog_open_overwrite(
     appwindow: &RnAppWindow,
     canvas: &RnCanvas,
     input_file: gio::File,
@@ -24,57 +24,50 @@ pub(crate) fn dialog_open_overwrite(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );
     let dialog: adw::MessageDialog = builder.object("dialog_open_overwrite").unwrap();
-
     dialog.set_transient_for(Some(appwindow));
 
-    dialog.connect_response(
-        None,
-        clone!(@weak canvas, @weak appwindow => move |_dialog_open_input_file, response| {
-            let input_file = input_file.clone();
-            let open_overwrite = |appwindow: &RnAppWindow, canvas: &RnCanvas| {
-                if let Err(e) = appwindow.load_in_file(input_file, None, canvas) {
-                    log::error!("failed to load in input file, {e:?}");
-                    appwindow.overlays().dispatch_toast_error(&gettext("Opening file failed"));
+    let open_overwrite = |appwindow: &RnAppWindow, canvas: &RnCanvas| {
+        if let Err(e) = appwindow.load_in_file(input_file, None, canvas) {
+            log::error!("failed to load in input file, {e:?}");
+            appwindow
+                .overlays()
+                .dispatch_toast_error(&gettext("Opening file failed"));
+        }
+    };
+
+    match dialog.choose_future().await.as_str() {
+        "discard" => {
+            open_overwrite(appwindow, canvas);
+        }
+        "save" => {
+            if let Some(output_file) = canvas.output_file() {
+                appwindow.overlays().start_pulsing_progressbar();
+
+                if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                    canvas.set_output_file(None);
+
+                    log::error!("saving document failed, Error: `{e:?}`");
+                    appwindow
+                        .overlays()
+                        .dispatch_toast_error(&gettext("Saving document failed"));
                 }
-            };
 
-            match response {
-                "discard" => {
-                    open_overwrite(&appwindow, &canvas);
-                }
-                "save" => {
-                    glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
-                        if let Some(output_file) = canvas.output_file() {
-                            appwindow.overlays().start_pulsing_progressbar();
-
-                            if let Err(e) = canvas.save_document_to_file(&output_file).await {
-                                canvas.set_output_file(None);
-
-                                log::error!("saving document failed, Error: `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
-                            }
-
-                            appwindow.overlays().finish_progressbar();
-                            // No success toast on saving without dialog, success is already indicated in the header title
-                        } else {
-                            // Open a dialog to choose a save location
-                            super::export::dialog_save_doc_as(&appwindow, &canvas).await;
-                        }
-
-                        // only open and overwrite document if saving was successful
-                        if !canvas.unsaved_changes() {
-                            open_overwrite(&appwindow, &canvas);
-                        }
-                    }));
-                },
-                _ => {
-                // Cancel
-                }
+                appwindow.overlays().finish_progressbar();
+                // No success toast on saving without dialog, success is already indicated in the header title
+            } else {
+                // Open a dialog to choose a save location
+                super::export::dialog_save_doc_as(appwindow, canvas).await;
             }
-        }),
-    );
 
-    dialog.present();
+            // only open and overwrite document if saving was successful
+            if !canvas.unsaved_changes() {
+                open_overwrite(appwindow, canvas);
+            }
+        }
+        _ => {
+            // Cancel
+        }
+    }
 }
 
 /// Opens a new rnote save file in a new tab

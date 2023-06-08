@@ -75,9 +75,9 @@ pub(crate) async fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas)
         "clear" => {
             let prev_empty = canvas.empty();
 
-            let mut widget_flags = canvas.engine().borrow_mut().clear();
+            let mut widget_flags = canvas.engine_mut().clear();
             canvas.return_to_origin_page();
-            widget_flags.merge(canvas.engine().borrow_mut().doc_resize_autoexpand());
+            widget_flags.merge(canvas.engine_mut().doc_resize_autoexpand());
             if !prev_empty {
                 canvas.set_unsaved_changes(true);
             }
@@ -99,9 +99,9 @@ pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     dialog.set_transient_for(Some(appwindow));
 
     let new_doc = |appwindow: &RnAppWindow, canvas: &RnCanvas| {
-        let mut widget_flags = canvas.engine().borrow_mut().clear();
+        let mut widget_flags = canvas.engine_mut().clear();
         canvas.return_to_origin_page();
-        widget_flags.merge(canvas.engine().borrow_mut().doc_resize_autoexpand());
+        widget_flags.merge(canvas.engine_mut().doc_resize_autoexpand());
         canvas.update_rendering_current_viewport();
         canvas.set_unsaved_changes(false);
         canvas.set_empty(true);

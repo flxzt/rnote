@@ -20,7 +20,7 @@ impl RnCanvas {
     {
         let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(bytes).await?;
 
-        let mut widget_flags = self.engine().borrow_mut().load_snapshot(engine_snapshot);
+        let mut widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
 
         if let Some(file_path) = file_path {
             let file = gio::File::for_path(file_path);
@@ -32,7 +32,7 @@ impl RnCanvas {
         self.set_empty(false);
         self.return_to_origin_page();
         self.background_regenerate_pattern();
-        widget_flags.merge(self.engine().borrow_mut().doc_resize_autoexpand());
+        widget_flags.merge(self.engine_mut().doc_resize_autoexpand());
         self.update_rendering_current_viewport();
 
         widget_flags.refresh_ui = true;
@@ -59,30 +59,27 @@ impl RnCanvas {
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let pos = target_pos.unwrap_or_else(|| {
-            self.engine()
-                .borrow()
+            self.engine_ref()
                 .camera
                 .transform()
                 .inverse()
                 .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
                 .coords
                 .maxs(&na::vector![
-                    self.engine().borrow().document.x,
-                    self.engine().borrow().document.y
+                    self.engine_ref().document.x,
+                    self.engine_ref().document.y
                 ])
         });
 
         // we need the split the import operation between generate_vectorimage_from_bytes() which returns a receiver and import_generated_strokes(),
         // to avoid borrowing the entire engine refcell while awaiting the stroke
         let vectorimage_receiver = self
-            .engine()
-            .borrow_mut()
+            .engine_mut()
             .generate_vectorimage_from_bytes(pos, bytes);
         let vectorimage = vectorimage_receiver.await??;
 
         let widget_flags = self
-            .engine()
-            .borrow_mut()
+            .engine_mut()
             .import_generated_strokes(vec![(Stroke::VectorImage(vectorimage), None)]);
 
         self.emit_handle_widget_flags(widget_flags);
@@ -97,28 +94,25 @@ impl RnCanvas {
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let pos = target_pos.unwrap_or_else(|| {
-            self.engine()
-                .borrow()
+            self.engine_ref()
                 .camera
                 .transform()
                 .inverse()
                 .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
                 .coords
                 .maxs(&na::vector![
-                    self.engine().borrow().document.x,
-                    self.engine().borrow().document.y
+                    self.engine_ref().document.x,
+                    self.engine_ref().document.y
                 ])
         });
 
         let bitmapimage_receiver = self
-            .engine()
-            .borrow_mut()
+            .engine_mut()
             .generate_bitmapimage_from_bytes(pos, bytes);
         let bitmapimage = bitmapimage_receiver.await??;
 
         let widget_flags = self
-            .engine()
-            .borrow_mut()
+            .engine_mut()
             .import_generated_strokes(vec![(Stroke::BitmapImage(bitmapimage), None)]);
 
         self.emit_handle_widget_flags(widget_flags);
@@ -126,19 +120,19 @@ impl RnCanvas {
     }
 
     pub(crate) async fn load_in_xopp_bytes(&self, bytes: Vec<u8>) -> anyhow::Result<()> {
-        let xopp_import_prefs = self.engine().borrow_mut().import_prefs.xopp_import_prefs;
+        let xopp_import_prefs = self.engine_mut().import_prefs.xopp_import_prefs;
 
         let engine_snapshot =
             EngineSnapshot::load_from_xopp_bytes(bytes, xopp_import_prefs).await?;
 
-        let mut widget_flags = self.engine().borrow_mut().load_snapshot(engine_snapshot);
+        let mut widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
 
         self.set_output_file(None);
         self.set_unsaved_changes(true);
         self.set_empty(false);
         self.return_to_origin_page();
         self.background_regenerate_pattern();
-        widget_flags.merge(self.engine().borrow_mut().doc_resize_autoexpand());
+        widget_flags.merge(self.engine_mut().doc_resize_autoexpand());
         self.update_rendering_current_viewport();
 
         widget_flags.refresh_ui = true;
@@ -155,26 +149,24 @@ impl RnCanvas {
         page_range: Option<Range<u32>>,
     ) -> anyhow::Result<()> {
         let pos = target_pos.unwrap_or_else(|| {
-            self.engine()
-                .borrow()
+            self.engine_ref()
                 .camera
                 .transform()
                 .inverse()
                 .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
                 .coords
                 .maxs(&na::vector![
-                    self.engine().borrow().document.x,
-                    self.engine().borrow().document.y
+                    self.engine_ref().document.x,
+                    self.engine_ref().document.y
                 ])
         });
 
         let strokes_receiver = self
-            .engine()
-            .borrow_mut()
+            .engine_mut()
             .generate_pdf_pages_from_bytes(bytes, pos, page_range);
         let strokes = strokes_receiver.await??;
 
-        let widget_flags = self.engine().borrow_mut().import_generated_strokes(strokes);
+        let widget_flags = self.engine_mut().import_generated_strokes(strokes);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
@@ -187,20 +179,19 @@ impl RnCanvas {
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let pos = target_pos.unwrap_or_else(|| {
-            self.engine()
-                .borrow()
+            self.engine_ref()
                 .camera
                 .transform()
                 .inverse()
                 .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
                 .coords
                 .maxs(&na::vector![
-                    self.engine().borrow().document.x,
-                    self.engine().borrow().document.y
+                    self.engine_ref().document.x,
+                    self.engine_ref().document.y
                 ])
         });
 
-        let widget_flags = self.engine().borrow_mut().insert_text(text, pos)?;
+        let widget_flags = self.engine_mut().insert_text(text, pos)?;
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
@@ -221,22 +212,18 @@ impl RnCanvas {
         });
         let content = oneshot_receiver.await??;
         let pos = self
-            .engine()
-            .borrow()
+            .engine_ref()
             .camera
             .transform()
             .inverse()
             .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
             .coords
             .maxs(&na::vector![
-                self.engine().borrow().document.x,
-                self.engine().borrow().document.y
+                self.engine_ref().document.x,
+                self.engine_ref().document.y
             ]);
 
-        let widget_flags = self
-            .engine()
-            .borrow_mut()
-            .insert_stroke_content(content, pos);
+        let widget_flags = self.engine_mut().insert_stroke_content(content, pos);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
@@ -268,8 +255,7 @@ impl RnCanvas {
         self.set_save_in_progress(true);
 
         let rnote_bytes_receiver = match self
-            .engine()
-            .borrow()
+            .engine_ref()
             .save_as_rnote_bytes(basename.to_string_lossy().to_string())
         {
             Ok(r) => r,
@@ -321,10 +307,7 @@ impl RnCanvas {
         title: String,
         export_prefs_override: Option<DocExportPrefs>,
     ) -> anyhow::Result<()> {
-        let export_bytes = self
-            .engine()
-            .borrow()
-            .export_doc(title, export_prefs_override);
+        let export_bytes = self.engine_ref().export_doc(title, export_prefs_override);
 
         crate::utils::create_replace_file_future(export_bytes.await??, file).await?;
 
@@ -340,15 +323,12 @@ impl RnCanvas {
         file_stem_name: String,
         export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> anyhow::Result<()> {
-        let export_prefs = export_prefs_override
-            .unwrap_or(self.engine().borrow().export_prefs.doc_pages_export_prefs);
+        let export_prefs =
+            export_prefs_override.unwrap_or(self.engine_ref().export_prefs.doc_pages_export_prefs);
 
         let file_ext = export_prefs.export_format.file_ext();
 
-        let export_bytes = self
-            .engine()
-            .borrow()
-            .export_doc_pages(export_prefs_override);
+        let export_bytes = self.engine_ref().export_doc_pages(export_prefs_override);
 
         if dir.query_file_type(gio::FileQueryInfoFlags::NONE, gio::Cancellable::NONE)
             != gio::FileType::Directory
@@ -380,10 +360,7 @@ impl RnCanvas {
         file: &gio::File,
         export_prefs_override: Option<SelectionExportPrefs>,
     ) -> anyhow::Result<()> {
-        let export_bytes = self
-            .engine()
-            .borrow()
-            .export_selection(export_prefs_override);
+        let export_bytes = self.engine_ref().export_selection(export_prefs_override);
 
         if let Some(export_bytes) = export_bytes.await?? {
             crate::utils::create_replace_file_future(export_bytes, file).await?;
@@ -395,7 +372,7 @@ impl RnCanvas {
     /// exports and writes the engine state as json into the file.
     /// Only for debugging!
     pub(crate) async fn export_engine_state(&self, file: &gio::File) -> anyhow::Result<()> {
-        let exported_engine_state = self.engine().borrow().export_state_as_json()?;
+        let exported_engine_state = self.engine_ref().export_state_as_json()?;
 
         crate::utils::create_replace_file_future(exported_engine_state.into_bytes(), file).await?;
 
@@ -405,7 +382,7 @@ impl RnCanvas {
     /// exports and writes the engine config as json into the file.
     /// Only for debugging!
     pub(crate) async fn export_engine_config(&self, file: &gio::File) -> anyhow::Result<()> {
-        let exported_engine_config = self.engine().borrow().export_engine_config_as_json()?;
+        let exported_engine_config = self.engine_ref().export_engine_config_as_json()?;
 
         crate::utils::create_replace_file_future(exported_engine_config.into_bytes(), file).await?;
 

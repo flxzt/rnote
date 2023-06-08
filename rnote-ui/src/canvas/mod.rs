@@ -22,8 +22,7 @@ use rnote_compose::penevents::PenState;
 use rnote_engine::utils::GrapheneRectHelpers;
 use rnote_engine::Document;
 use rnote_engine::{RnoteEngine, WidgetFlags};
-use std::cell::{Cell, RefCell};
-use std::rc::Rc;
+use std::cell::{Cell, Ref, RefCell, RefMut};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, glib::Boxed)]
 #[boxed_type(name = "WidgetFlagsBoxed")]
@@ -68,7 +67,7 @@ mod imp {
         pub(crate) drop_target: DropTarget,
         pub(crate) drawing_cursor_enabled: Cell<bool>,
 
-        pub(crate) engine: Rc<RefCell<RnoteEngine>>,
+        pub(crate) engine: RefCell<RnoteEngine>,
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
@@ -159,7 +158,7 @@ mod imp {
                 drop_target,
                 drawing_cursor_enabled: Cell::new(false),
 
-                engine: Rc::new(RefCell::new(engine)),
+                engine: RefCell::new(engine),
 
                 output_file: RefCell::new(None),
                 output_file_monitor: RefCell::new(None),
@@ -212,14 +211,14 @@ mod imp {
             // receive and handle engine tasks
             glib::MainContext::default().spawn_local(
                 clone!(@weak obj as canvas => async move {
-                    let Some(mut task_rx) = canvas.engine().borrow_mut().tasks_rx.take() else {
+                    let Some(mut task_rx) = canvas.engine_mut().tasks_rx.take() else {
                         log::error!("installing the engine task handler failed, taken tasks_rx is None");
                         return;
                     };
 
                     loop {
                         if let Some(task) = task_rx.next().await {
-                            let (widget_flags, quit) = canvas.engine().borrow_mut().handle_engine_task(task);
+                            let (widget_flags, quit) = canvas.engine_mut().handle_engine_task(task);
                             canvas.emit_handle_widget_flags(widget_flags);
 
                             if quit {
@@ -651,8 +650,14 @@ impl RnCanvas {
             .unwrap()
     }
 
-    pub(crate) fn engine(&self) -> Rc<RefCell<RnoteEngine>> {
-        self.imp().engine.clone()
+    /// Immutable borrow of the engine.
+    pub(crate) fn engine_ref(&self) -> Ref<RnoteEngine> {
+        self.imp().engine.borrow()
+    }
+
+    /// Mutable borrow of the engine.
+    pub(crate) fn engine_mut(&self) -> RefMut<RnoteEngine> {
+        self.imp().engine.borrow_mut()
     }
 
     pub(crate) fn set_text_preprocessing(&self, enable: bool) {
@@ -668,7 +673,7 @@ impl RnCanvas {
     }
 
     pub(crate) fn save_engine_config(&self, settings: &gio::Settings) -> anyhow::Result<()> {
-        let engine_config = self.engine().borrow().export_engine_config_as_json()?;
+        let engine_config = self.engine_ref().export_engine_config_as_json()?;
         Ok(settings.set_string("engine-config", engine_config.as_str())?)
     }
 
@@ -676,8 +681,7 @@ impl RnCanvas {
         // load engine config
         let engine_config = settings.string("engine-config");
         let widget_flags = match self
-            .engine()
-            .borrow_mut()
+            .engine_mut()
             .import_engine_config_from_json(&engine_config, crate::env::pkg_data_dir().ok())
         {
             Err(e) => {
@@ -909,17 +913,16 @@ impl RnCanvas {
         );
 
         // set scalefactor initially
-        self.engine().borrow_mut().camera.scale_factor = f64::from(self.scale_factor());
+        self.engine_mut().camera.scale_factor = f64::from(self.scale_factor());
         // and connect
         let appwindow_scalefactor =
             self.connect_notify_local(Some("scale-factor"), move |canvas, _pspec| {
                 let scale_factor = f64::from(canvas.scale_factor());
-                canvas.engine().borrow_mut().camera.scale_factor = scale_factor;
+                canvas.engine_mut().camera.scale_factor = scale_factor;
 
-                let all_strokes = canvas.engine().borrow_mut().store.stroke_keys_unordered();
+                let all_strokes = canvas.engine_mut().store.stroke_keys_unordered();
                 canvas
-                    .engine()
-                    .borrow_mut()
+                    .engine_mut()
                     .store
                     .set_rendering_dirty_for_strokes(&all_strokes);
 
@@ -969,7 +972,7 @@ impl RnCanvas {
         // Drop Target
         let appwindow_drop_target = self.imp().drop_target.connect_drop(
             clone!(@weak self as canvas, @weak appwindow => @default-return false, move |_drop_target, value, x, y| {
-                let pos = (canvas.engine().borrow().camera.transform().inverse() *
+                let pos = (canvas.engine_ref().camera.transform().inverse() *
                     na::point![x,y]).coords;
 
                 if value.is::<gio::File>() {
@@ -1071,8 +1074,9 @@ impl RnCanvas {
         }
     }
 
-    /// This disconnects all handlers with references to external objects, to prepare moving the widget to another appwindow.
-    pub(crate) fn disconnect_handlers(&self, _appwindow: &RnAppWindow) {
+    /// Disconnect all handlers with references to external objects
+    /// to prepare moving the widget to another appwindow or closing it when inside a tab page.
+    pub(crate) fn disconnect_handlers(&self) {
         self.clear_output_file_monitor();
 
         let mut handlers = self.imp().handlers.borrow_mut();
@@ -1164,16 +1168,16 @@ impl RnCanvas {
     ///
     /// engine rendering then needs to be updated.
     pub(crate) fn return_to_origin_page(&self) {
-        let zoom = self.engine().borrow().camera.zoom();
+        let zoom = self.engine_ref().camera.zoom();
         let Some(parent) = self.parent() else {
             log::debug!("self.parent() is None in `return_to_origin_page()");
             return
         };
 
         let new_offset =
-            if self.engine().borrow().document.format.width * zoom <= f64::from(parent.width()) {
+            if self.engine_ref().document.format.width * zoom <= f64::from(parent.width()) {
                 na::vector![
-                    (self.engine().borrow().document.format.width * 0.5 * zoom)
+                    (self.engine_ref().document.format.width * 0.5 * zoom)
                         - f64::from(parent.width()) * 0.5,
                     -Document::SHADOW_WIDTH * zoom
                 ]
@@ -1185,8 +1189,8 @@ impl RnCanvas {
                 ]
             };
 
-        let mut widget_flags = self.engine().borrow_mut().camera_set_offset(new_offset);
-        widget_flags.merge(self.engine().borrow_mut().doc_expand_autoexpand());
+        let mut widget_flags = self.engine_mut().camera_set_offset(new_offset);
+        widget_flags.merge(self.engine_mut().doc_expand_autoexpand());
         self.emit_handle_widget_flags(widget_flags);
     }
 
@@ -1197,8 +1201,7 @@ impl RnCanvas {
         // background rendering is updated in the layout manager
         self.queue_resize();
         // update content rendering
-        self.engine()
-            .borrow_mut()
+        self.engine_mut()
             .update_content_rendering_current_viewport();
         self.queue_draw();
     }
@@ -1206,7 +1209,7 @@ impl RnCanvas {
     /// updates the background pattern and rendering for the current viewport.
     /// to be called for example when changing the background pattern or zoom.
     pub(crate) fn background_regenerate_pattern(&self) {
-        self.engine().borrow_mut().background_regenerate_pattern();
+        self.engine_mut().background_regenerate_pattern();
         self.queue_draw();
     }
 }

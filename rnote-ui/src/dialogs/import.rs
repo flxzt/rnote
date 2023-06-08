@@ -164,7 +164,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
 
     dialog.set_transient_for(Some(appwindow));
 
-    let pdf_import_prefs = canvas.engine().borrow().import_prefs.pdf_import_prefs;
+    let pdf_import_prefs = canvas.engine_ref().import_prefs.pdf_import_prefs;
 
     // Set the widget state from the pdf import prefs
     pdf_page_start_spinbutton.set_increments(1.0, 2.0);
@@ -196,7 +196,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     pdf_import_as_vector_toggle.connect_toggled(
         clone!(@weak pdf_import_bitmap_scalefactor_row, @weak canvas, @weak appwindow => move |toggle| {
             if toggle.is_active() {
-                canvas.engine().borrow_mut().import_prefs.pdf_import_prefs.pages_type = PdfImportPagesType::Vector;
+                canvas.engine_mut().import_prefs.pdf_import_prefs.pages_type = PdfImportPagesType::Vector;
                 pdf_import_bitmap_scalefactor_row.set_sensitive(false);
             }
         }),
@@ -205,27 +205,29 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     pdf_import_as_bitmap_toggle.connect_toggled(
         clone!(@weak pdf_import_bitmap_scalefactor_row, @weak canvas, @weak appwindow => move |toggle| {
             if toggle.is_active() {
-                canvas.engine().borrow_mut().import_prefs.pdf_import_prefs.pages_type = PdfImportPagesType::Bitmap;
+                canvas.engine_mut().import_prefs.pdf_import_prefs.pages_type = PdfImportPagesType::Bitmap;
                 pdf_import_bitmap_scalefactor_row.set_sensitive(true);
             }
         }),
     );
 
     pdf_import_bitmap_scalefactor_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |spinbutton| {
-        canvas.engine().borrow_mut().import_prefs.pdf_import_prefs.bitmap_scalefactor = spinbutton.value();
+        canvas.engine_mut().import_prefs.pdf_import_prefs.bitmap_scalefactor = spinbutton.value();
     }));
 
     pdf_import_page_spacing_row.connect_selected_notify(
         clone!(@weak canvas, @weak appwindow => move |row| {
             let page_spacing = PdfImportPageSpacing::try_from(row.selected()).unwrap();
 
-            canvas.engine().borrow_mut().import_prefs.pdf_import_prefs.page_spacing = page_spacing;
+            canvas.engine_mut().import_prefs.pdf_import_prefs.page_spacing = page_spacing;
         }),
     );
 
-    pdf_import_width_perc_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |spinbutton| {
-        canvas.engine().borrow_mut().import_prefs.pdf_import_prefs.page_width_perc = spinbutton.value();
-    }));
+    pdf_import_width_perc_spinbutton.connect_value_changed(
+        clone!(@weak canvas, @weak appwindow => move |spinbutton| {
+            canvas.engine_mut().import_prefs.pdf_import_prefs.page_width_perc = spinbutton.value();
+        }),
+    );
 
     if let Ok(poppler_doc) =
         poppler::Document::from_gfile(&input_file, None, None::<&gio::Cancellable>)
@@ -323,14 +325,14 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
 
     dialog.set_transient_for(Some(appwindow));
 
-    let xopp_import_prefs = canvas.engine().borrow().import_prefs.xopp_import_prefs;
+    let xopp_import_prefs = canvas.engine_ref().import_prefs.xopp_import_prefs;
 
     // Set initial widget state for preference
     dpi_spinbutton.set_value(xopp_import_prefs.dpi);
 
     // Update preferences
     dpi_spinbutton.connect_changed(clone!(@weak canvas, @weak appwindow => move |spinbutton| {
-        canvas.engine().borrow_mut().import_prefs.xopp_import_prefs.dpi = spinbutton.value();
+        canvas.engine_mut().import_prefs.xopp_import_prefs.dpi = spinbutton.value();
     }));
 
     match dialog.run_future().await {

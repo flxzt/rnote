@@ -126,13 +126,6 @@ impl Color {
         hwba_color.into_color()
     }
 
-    /// Invert the lightness of the color while keeping perceived hue and saturation constant.
-    pub fn to_inverted_lightness_color(self) -> Self {
-        let mut hsla_color: palette::Okhsla<f64> = self.into_color();
-        hsla_color.lightness = 1.0 - hsla_color.lightness;
-        hsla_color.into_color()
-    }
-
     /// Get the original or the inverted color, depending on which one is darker.
     pub fn to_darkest_color(self) -> Self {
         let inverted_color = self.to_inverted_brightness_color();

@@ -119,6 +119,20 @@
                     </property>
                   </object>
                 </child>
+                <child>
+                  <object class="AdwComboRow" id="export_doc_direction_row">
+                    <property name="title" translatable="yes">Direction</property>
+                    <property name="subtitle" translatable="yes">The read direction when exporting an infinite layout to a finite layout</property>
+                    <property name="model">
+                      <object class="GtkStringList">
+                        <items>
+                          <item translatable="yes">Horizontal First</item>
+                          <item translatable="yes">Vertical First</item>
+                        </items>
+                      </object>
+                    </property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

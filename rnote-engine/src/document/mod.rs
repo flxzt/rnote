@@ -9,7 +9,7 @@ pub use format::Format;
 // Imports
 use crate::{Camera, StrokeStore, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use rnote_compose::helpers::AabbHelpers;
+use rnote_compose::helpers::{AabbHelpers, SplitDirection};
 use rnote_compose::Color;
 use serde::{Deserialize, Serialize};
 
@@ -137,8 +137,10 @@ impl Document {
         let doc_bounds = self.bounds();
 
         if self.format.height > 0.0 && self.format.width > 0.0 {
-            doc_bounds
-                .split_extended_origin_aligned(na::vector![self.format.width, self.format.height])
+            doc_bounds.split_extended_origin_aligned(
+                na::vector![self.format.width, self.format.height],
+                SplitDirection::default(),
+            )
         } else {
             vec![]
         }

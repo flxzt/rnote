@@ -7,7 +7,7 @@ use anyhow::Context;
 use futures::channel::oneshot;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
-use rnote_compose::helpers::Vector2Helpers;
+use rnote_compose::helpers::{SplitDirection, Vector2Helpers};
 use rnote_compose::transform::TransformBehaviour;
 use rnote_fileformats::rnoteformat::RnoteFile;
 use rnote_fileformats::{xoppformat, FileFormatSaver};
@@ -80,6 +80,8 @@ pub struct DocExportPrefs {
     /// The export format.
     #[serde(rename = "export_format")]
     pub export_format: DocExportFormat,
+    /// The read direction when exporting an infinite layout to a finite one.
+    pub direction: SplitDirection,
 }
 
 impl Default for DocExportPrefs {
@@ -88,6 +90,7 @@ impl Default for DocExportPrefs {
             with_background: true,
             with_pattern: true,
             export_format: DocExportFormat::default(),
+            direction: SplitDirection::default(),
         }
     }
 }
@@ -366,7 +369,7 @@ impl RnoteEngine {
         let stroke_keys = self.store.stroke_keys_as_rendered();
         let snapshot = self.take_snapshot();
         let content_bounds = self
-            .bounds_w_content_extended()
+            .bounds_w_content_extended(SplitDirection::default())
             .unwrap_or_else(|| snapshot.document.bounds());
 
         rayon::spawn(move || {
@@ -406,7 +409,7 @@ impl RnoteEngine {
         let snapshot = self.take_snapshot();
 
         let pages_strokes = self
-            .pages_bounds_w_content()
+            .pages_bounds_w_content(doc_export_prefs.direction)
             .into_iter()
             .map(|page_bounds| {
                 let strokes_in_viewport = self
@@ -525,7 +528,7 @@ impl RnoteEngine {
         let snapshot = self.take_snapshot();
 
         let pages_strokes: Vec<(Aabb, Vec<Stroke>)> = self
-            .pages_bounds_w_content()
+            .pages_bounds_w_content(SplitDirection::default())
             .into_iter()
             .map(|page_bounds| {
                 let page_keys = self
@@ -685,7 +688,7 @@ impl RnoteEngine {
         let snapshot = self.take_snapshot();
 
         let pages_strokes: Vec<(Aabb, Vec<StrokeKey>)> = self
-            .pages_bounds_w_content()
+            .pages_bounds_w_content(SplitDirection::default())
             .into_iter()
             .map(|page_bounds| {
                 let page_strokes = self
@@ -741,7 +744,7 @@ impl RnoteEngine {
         let snapshot = self.take_snapshot();
 
         let pages_strokes: Vec<(Aabb, Vec<StrokeKey>)> = self
-            .pages_bounds_w_content()
+            .pages_bounds_w_content(SplitDirection::default())
             .into_iter()
             .map(|page_bounds| {
                 let page_strokes = self

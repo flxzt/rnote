@@ -11,6 +11,7 @@ use gtk4::{
     SpinButton, Switch,
 };
 use num_traits::ToPrimitive;
+use rnote_compose::helpers::SplitDirection;
 use rnote_engine::engine::export::{
     DocExportFormat, DocExportPrefs, DocPagesExportFormat, DocPagesExportPrefs,
     SelectionExportFormat, SelectionExportPrefs,
@@ -87,6 +88,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     let with_pattern_row: adw::ActionRow = builder.object("export_doc_with_pattern_row").unwrap();
     let with_pattern_switch: Switch = builder.object("export_doc_with_pattern_switch").unwrap();
     let export_format_row: adw::ComboRow = builder.object("export_doc_export_format_row").unwrap();
+    let direction_row: adw::ComboRow = builder.object("export_doc_direction_row").unwrap();
     let export_file_label: Label = builder.object("export_doc_export_file_label").unwrap();
     let export_file_button: Button = builder.object("export_doc_export_file_button").unwrap();
 
@@ -99,6 +101,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     with_background_switch.set_active(initial_doc_export_prefs.with_background);
     with_pattern_switch.set_active(initial_doc_export_prefs.with_pattern);
     export_format_row.set_selected(initial_doc_export_prefs.export_format.to_u32().unwrap());
+    direction_row.set_selected(initial_doc_export_prefs.direction.to_u32().unwrap());
     export_file_label.set_label(&gettext("- no file selected -"));
     button_confirm.set_sensitive(false);
 
@@ -157,6 +160,11 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         export_file_label.set_label(&gettext("- no file selected -"));
         button_confirm.set_sensitive(false);
         selected_file.replace(None);
+    }));
+
+    direction_row.connect_selected_notify(clone!(@weak canvas, @weak appwindow => move |row| {
+        let direction = SplitDirection::try_from(row.selected()).unwrap();
+        canvas.engine_mut().export_prefs.doc_export_prefs.direction = direction;
     }));
 
     let response = dialog.run_future().await;

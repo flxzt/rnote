@@ -25,6 +25,7 @@ mod imp {
         pub(crate) appwindow_block_pinch_zoom_bind: RefCell<Option<glib::Binding>>,
         pub(crate) appwindow_show_scrollbars_bind: RefCell<Option<glib::Binding>>,
         pub(crate) appwindow_righthanded_bind: RefCell<Option<glib::Binding>>,
+        pub(crate) canvas_touch_drawing_handler: RefCell<Option<glib::SignalHandlerId>>,
 
         pub(crate) pointer_motion_controller: EventControllerMotion,
         pub(crate) canvas_drag_gesture: GestureDrag,
@@ -108,6 +109,7 @@ mod imp {
                 appwindow_block_pinch_zoom_bind: RefCell::new(None),
                 appwindow_show_scrollbars_bind: RefCell::new(None),
                 appwindow_righthanded_bind: RefCell::new(None),
+                canvas_touch_drawing_handler: RefCell::new(None),
 
                 pointer_motion_controller,
                 canvas_drag_gesture,
@@ -168,20 +170,26 @@ mod imp {
 
             self.setup_input();
 
-            self.canvas.connect_notify_local(
+            let canvas_touch_drawing_handler = self.canvas.connect_notify_local(
                 Some("touch-drawing"),
                 clone!(@weak obj as canvaswrapper => move |_canvas, _pspec| {
                     // Disable the zoom gesture when touch drawing is enabled
                     canvaswrapper.imp().canvas_zoom_gesture_update();
                 }),
             );
+
+            self.canvas_touch_drawing_handler
+                .replace(Some(canvas_touch_drawing_handler));
         }
 
         fn dispose(&self) {
-            self.dispose_template();
             while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
+            if let Some(handler) = self.canvas_touch_drawing_handler.take() {
+                self.canvas.disconnect(handler);
+            }
+            self.dispose_template();
         }
 
         fn properties() -> &'static [glib::ParamSpec] {

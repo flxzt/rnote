@@ -319,12 +319,6 @@ impl RnAppWindow {
         let page = self.overlays().tabview().append(&new_wrapper);
         self.overlays().tabview().set_selected_page(&page);
 
-        log::debug!(
-            "new tab - page refcount {}, canvaswrapper refcount: {}",
-            page.ref_count(),
-            new_wrapper.ref_count()
-        );
-
         page
     }
 

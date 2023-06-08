@@ -233,6 +233,7 @@ mod imp {
         }
 
         fn dispose(&self) {
+            self.obj().disconnect_handlers();
             while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }

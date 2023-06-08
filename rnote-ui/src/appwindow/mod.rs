@@ -319,6 +319,12 @@ impl RnAppWindow {
         let page = self.overlays().tabview().append(&new_wrapper);
         self.overlays().tabview().set_selected_page(&page);
 
+        log::debug!(
+            "new tab - page refcount {}, canvaswrapper refcount: {}",
+            page.ref_count(),
+            new_wrapper.ref_count()
+        );
+
         page
     }
 
@@ -412,14 +418,8 @@ impl RnAppWindow {
 
     /// Complete a close_tab_request.
     ///
-    /// Closes the given tab when confirm is true, else reverts so that close_tab_request() can be can again.
+    /// Closes the given tab when confirm is true, else reverts so that close_tab_request() can be called again.
     pub(crate) fn close_tab_finish(&self, tab_page: &adw::TabPage, confirm: bool) {
-        if confirm {
-            let wrapper = tab_page.child().downcast::<RnCanvasWrapper>().unwrap();
-            let _ = wrapper.canvas().engine_mut().set_active(false);
-            //let _ = wrapper.canvas().engine_mut().clear();
-            wrapper.disconnect_handlers();
-        }
         self.overlays()
             .tabview()
             .close_page_finish(tab_page, confirm);

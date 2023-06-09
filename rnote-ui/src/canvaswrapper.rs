@@ -189,6 +189,11 @@ mod imp {
             if let Some(handler) = self.canvas_touch_drawing_handler.take() {
                 self.canvas.disconnect(handler);
             }
+            // Unfortunately canvas is still strong referenced somewhere so it is not getting cleaned up.
+            // To avoid large memory leaks after opening and closing a lot of tabs, the engine is manually cleared here.
+            // TODO: this needs to be fixed.
+            let _ = self.canvas.engine_mut().clear();
+
             self.dispose_template();
         }
 

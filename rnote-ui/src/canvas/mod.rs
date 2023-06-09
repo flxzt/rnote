@@ -68,6 +68,7 @@ mod imp {
         pub(crate) drawing_cursor_enabled: Cell<bool>,
 
         pub(crate) engine: RefCell<RnoteEngine>,
+        pub(crate) engine_task_handler_handle: RefCell<Option<glib::JoinHandle<()>>>,
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
@@ -101,7 +102,7 @@ mod imp {
                 .actions(gdk::DragAction::COPY)
                 .build();
 
-            // The order here is important: first files, then text
+            // the order here is important: first files, then text
             drop_target.set_types(&[gio::File::static_type(), glib::types::Type::STRING]);
 
             let regular_cursor_icon_name = String::from("cursor-dot-medium");
@@ -159,6 +160,7 @@ mod imp {
                 drawing_cursor_enabled: Cell::new(false),
 
                 engine: RefCell::new(engine),
+                engine_task_handler_handle: RefCell::new(None),
 
                 output_file: RefCell::new(None),
                 output_file_monitor: RefCell::new(None),
@@ -209,7 +211,7 @@ mod imp {
             obj.add_controller(self.drop_target.clone());
 
             // receive and handle engine tasks
-            glib::MainContext::default().spawn_local(
+            let engine_task_handler_handle = glib::MainContext::default().spawn_local(
                 clone!(@weak obj as canvas => async move {
                     let Some(mut task_rx) = canvas.engine_mut().tasks_rx.take() else {
                         log::error!("installing the engine task handler failed, taken tasks_rx is None");
@@ -229,11 +231,15 @@ mod imp {
                 }),
             );
 
+            *self.engine_task_handler_handle.borrow_mut() = Some(engine_task_handler_handle);
+
             self.setup_input();
         }
 
         fn dispose(&self) {
             self.obj().disconnect_handlers();
+            self.obj().abort_engine_task_handler();
+
             while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
@@ -659,6 +665,17 @@ impl RnCanvas {
     /// Mutable borrow of the engine.
     pub(crate) fn engine_mut(&self) -> RefMut<RnoteEngine> {
         self.imp().engine.borrow_mut()
+    }
+
+    /// Abort the engine task handler.
+    ///
+    /// Because the installed engine task handler holds a reference to the canvas,
+    /// this MUST be called when the widget is removed from the widget tree,
+    /// it's instance should be detroyed and it's memory should be freed.
+    pub(crate) fn abort_engine_task_handler(&self) {
+        if let Some(h) = self.imp().engine_task_handler_handle.take() {
+            h.abort();
+        }
     }
 
     pub(crate) fn set_text_preprocessing(&self, enable: bool) {

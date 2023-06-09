@@ -183,18 +183,19 @@ mod imp {
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.obj().first_child() {
-                child.unparent();
-            }
+            self.obj().disconnect_handlers();
             if let Some(handler) = self.canvas_touch_drawing_handler.take() {
                 self.canvas.disconnect(handler);
             }
-            // Unfortunately canvas is still strong referenced somewhere so it is not getting cleaned up.
-            // To avoid large memory leaks after opening and closing a lot of tabs, the engine is manually cleared here.
-            // TODO: this needs to be fixed.
-            let _ = self.canvas.engine_mut().clear();
+
+            // the engine task handler needs to be be aborted here,
+            // else a reference of the canvas is held forever in the handler causing a memory leak.
+            self.canvas.abort_engine_task_handler();
 
             self.dispose_template();
+            while let Some(child) = self.obj().first_child() {
+                child.unparent();
+            }
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
@@ -614,8 +615,11 @@ impl RnCanvasWrapper {
         self.imp().canvas.get()
     }
 
-    /// Initializes for the given appwindow. Usually `init()` is only called once, but since this widget can be moved across appwindows through tabs,
+    /// Initializes for the given appwindow. Usually `init()` is only called once,
+    /// but because this widget can be moved across appwindows through tabs,
     /// this function also disconnects and replaces all existing old connections
+    ///
+    /// The same method of the canvas child is chained up in here.
     pub(crate) fn init_reconnect(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
         self.imp().canvas.init_reconnect(appwindow);
@@ -669,7 +673,10 @@ impl RnCanvasWrapper {
         }
     }
 
-    /// This disconnects all handlers with references to external objects, to prepare moving the widget to another appwindow.
+    /// This disconnects all handlers with references to external objects,
+    /// to prepare moving the widget to another appwindow.
+    ///
+    /// The same method of the canvas child is chained up in here.
     pub(crate) fn disconnect_handlers(&self) {
         let imp = self.imp();
 
@@ -688,9 +695,11 @@ impl RnCanvasWrapper {
         }
     }
 
-    /// When the widget is the child of a tab page, we want to connect their titles, icons, ..
+    /// When the widget is the child of a tab page, we want to connect the title, icons, ..
     ///
     /// disconnects existing bindings / handlers to old tab pages.
+    ///
+    /// The same method of the canvas child is chained up in here.
     pub(crate) fn connect_to_tab_page(&self, page: &adw::TabPage) {
         self.canvas().connect_to_tab_page(page);
     }

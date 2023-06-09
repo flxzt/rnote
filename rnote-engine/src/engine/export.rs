@@ -65,15 +65,6 @@ impl DocExportFormat {
             DocExportFormat::Xopp => String::from("xopp"),
         }
     }
-
-    /// Whether or not the format is finite, i.e. infinite layouts will be split into pages.
-    pub fn is_finite(self) -> bool {
-        match self {
-            DocExportFormat::Svg => false,
-            DocExportFormat::Pdf => true,
-            DocExportFormat::Xopp => true,
-        }
-    }
 }
 
 /// Document export preferences.

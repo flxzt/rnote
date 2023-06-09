@@ -104,6 +104,10 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     export_format_row.set_selected(initial_doc_export_prefs.export_format.to_u32().unwrap());
     page_direction_row.set_selected(initial_doc_export_prefs.page_direction.to_u32().unwrap());
     export_file_label.set_label(&gettext("- no file selected -"));
+    page_direction_row.set_sensitive(
+        initial_doc_export_prefs.export_format == DocExportFormat::Pdf
+            || initial_doc_export_prefs.export_format == DocExportFormat::Xopp,
+    );
     button_confirm.set_sensitive(false);
 
     // Update prefs
@@ -157,8 +161,8 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         let export_format = DocExportFormat::try_from(row.selected()).unwrap();
         canvas.engine_mut().export_prefs.doc_export_prefs.export_format = export_format;
 
-        // enable page direction row when export format is finite
-        page_direction_row.set_sensitive(export_format.is_finite());
+        // enable page direction row when export format is finite, i.e. infinite layouts will be split into pages
+        page_direction_row.set_sensitive(export_format == DocExportFormat::Pdf || export_format == DocExportFormat::Xopp);
 
         // force the user to pick another file
         export_file_label.set_label(&gettext("- no file selected -"));

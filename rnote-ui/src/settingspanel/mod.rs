@@ -8,7 +8,7 @@ pub(crate) use penshortcutrow::RnPenShortcutRow;
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
 use adw::prelude::*;
-use gettextrs::gettext;
+use gettextrs::pgettext;
 use gtk4::{
     gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorDialogButton,
     CompositeTemplate, MenuButton, ScrolledWindow, SpinButton, StringList, Switch, ToggleButton,
@@ -785,24 +785,24 @@ const CURSORS_LIST: &[&str] = &[
 
 fn cursors_list_to_display_name(icon_name: &str) -> String {
     match icon_name {
-        "cursor-crosshair-small" => gettext("Crosshair (Small)"),
-        "cursor-crosshair-medium" => gettext("Crosshair (Medium)"),
-        "cursor-crosshair-large" => gettext("Crosshair (Large)"),
-        "cursor-dot-small" => gettext("Dot (Small)"),
-        "cursor-dot-medium" => gettext("Dot (Medium)"),
-        "cursor-dot-large" => gettext("Dot (Large)"),
-        "cursor-teardrop-nw-small" => gettext("Teardrop North-West (Small)"),
-        "cursor-teardrop-nw-medium" => gettext("Teardrop North-West (Medium)"),
-        "cursor-teardrop-nw-large" => gettext("Teardrop North-West (Large)"),
-        "cursor-teardrop-ne-small" => gettext("Teardrop North-East (Small)"),
-        "cursor-teardrop-ne-medium" => gettext("Teardrop North-East (Medium)"),
-        "cursor-teardrop-ne-large" => gettext("Teardrop North-East (Large)"),
-        "cursor-teardrop-n-small" => gettext("Teardrop North (Small)"),
-        "cursor-teardrop-n-medium" => gettext("Teardrop North (Medium)"),
-        "cursor-teardrop-n-large" => gettext("Teardrop North (Large)"),
-        "cursor-beam-small" => gettext("Beam (Small)"),
-        "cursor-beam-medium" => gettext("Beam (Medium)"),
-        "cursor-beam-large" => gettext("Beam (Large)"),
+        "cursor-crosshair-small" => pgettext("a cursor type", "Crosshair (Small)"),
+        "cursor-crosshair-medium" => pgettext("a cursor type", "Crosshair (Medium)"),
+        "cursor-crosshair-large" => pgettext("a cursor type", "Crosshair (Large)"),
+        "cursor-dot-small" => pgettext("a cursor type", "Dot (Small)"),
+        "cursor-dot-medium" => pgettext("a cursor type", "Dot (Medium)"),
+        "cursor-dot-large" => pgettext("a cursor type", "Dot (Large)"),
+        "cursor-teardrop-nw-small" => pgettext("a cursor type", "Teardrop North-West (Small)"),
+        "cursor-teardrop-nw-medium" => pgettext("a cursor type", "Teardrop North-West (Medium)"),
+        "cursor-teardrop-nw-large" => pgettext("a cursor type", "Teardrop North-West (Large)"),
+        "cursor-teardrop-ne-small" => pgettext("a cursor type", "Teardrop North-East (Small)"),
+        "cursor-teardrop-ne-medium" => pgettext("a cursor type", "Teardrop North-East (Medium)"),
+        "cursor-teardrop-ne-large" => pgettext("a cursor type", "Teardrop North-East (Large)"),
+        "cursor-teardrop-n-small" => pgettext("a cursor type", "Teardrop North (Small)"),
+        "cursor-teardrop-n-medium" => pgettext("a cursor type", "Teardrop North (Medium)"),
+        "cursor-teardrop-n-large" => pgettext("a cursor type", "Teardrop North (Large)"),
+        "cursor-beam-small" => pgettext("a cursor type", "Beam (Small)"),
+        "cursor-beam-medium" => pgettext("a cursor type", "Beam (Medium)"),
+        "cursor-beam-large" => pgettext("a cursor type", "Beam (Large)"),
         _ => unimplemented!(),
     }
 }

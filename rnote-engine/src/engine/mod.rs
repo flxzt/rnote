@@ -24,7 +24,7 @@ use anyhow::Context;
 use futures::channel::{mpsc, oneshot};
 use gtk4::gsk;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use rnote_compose::helpers::{AabbHelpers, SplitDirection};
+use rnote_compose::helpers::{AabbHelpers, SplitOrder};
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_fileformats::{rnoteformat, xoppformat, FileFormatLoader};
@@ -776,7 +776,7 @@ impl RnoteEngine {
     }
 
     /// Generate bounds for each page on the document which contains content.
-    pub fn pages_bounds_w_content(&self, split_direction: SplitDirection) -> Vec<Aabb> {
+    pub fn pages_bounds_w_content(&self, split_order: SplitOrder) -> Vec<Aabb> {
         let doc_bounds = self.document.bounds();
         let keys = self.store.stroke_keys_as_rendered();
 
@@ -785,7 +785,7 @@ impl RnoteEngine {
         let pages_bounds = doc_bounds
             .split_extended_origin_aligned(
                 na::vector![self.document.format.width, self.document.format.height],
-                split_direction,
+                split_order,
             )
             .into_iter()
             .filter(|page_bounds| {
@@ -809,7 +809,7 @@ impl RnoteEngine {
 
     /// Generates bounds which contain all pages on the doc with content, extended to fit the current format.
     pub fn bounds_w_content_extended(&self) -> Option<Aabb> {
-        let pages_bounds = self.pages_bounds_w_content(SplitDirection::default());
+        let pages_bounds = self.pages_bounds_w_content(SplitOrder::default());
 
         if pages_bounds.is_empty() {
             return None;

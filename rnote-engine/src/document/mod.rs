@@ -9,7 +9,7 @@ pub use format::Format;
 // Imports
 use crate::{Camera, StrokeStore, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use rnote_compose::helpers::{AabbHelpers, SplitDirection};
+use rnote_compose::helpers::{AabbHelpers, SplitOrder};
 use rnote_compose::Color;
 use serde::{Deserialize, Serialize};
 
@@ -133,13 +133,13 @@ impl Document {
     /// Generate bounds for each page for the doc bounds, extended to fit the format.
     ///
     /// May contain many empty pages (in infinite mode)
-    pub fn pages_bounds(&self, split_direction: SplitDirection) -> Vec<Aabb> {
+    pub fn pages_bounds(&self, split_order: SplitOrder) -> Vec<Aabb> {
         let doc_bounds = self.bounds();
 
         if self.format.height > 0.0 && self.format.width > 0.0 {
             doc_bounds.split_extended_origin_aligned(
                 na::vector![self.format.width, self.format.height],
-                split_direction,
+                split_order,
             )
         } else {
             vec![]

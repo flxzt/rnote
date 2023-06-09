@@ -14,8 +14,8 @@ use serde::{Deserialize, Serialize};
     num_derive::FromPrimitive,
     num_derive::ToPrimitive,
 )]
-#[serde(rename = "split_direction")]
-pub enum SplitDirection {
+#[serde(rename = "split_order")]
+pub enum SplitOrder {
     /// Split in row-major order.
     #[serde(rename = "row_major")]
     RowMajor,
@@ -24,21 +24,18 @@ pub enum SplitDirection {
     ColumnMajor,
 }
 
-impl Default for SplitDirection {
+impl Default for SplitOrder {
     fn default() -> Self {
         Self::RowMajor
     }
 }
 
-impl TryFrom<u32> for SplitDirection {
+impl TryFrom<u32> for SplitOrder {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!(
-                "SplitDirection try_from::<u32>() for value {} failed",
-                value
-            )
+            anyhow::anyhow!("SplitOrder try_from::<u32>() for value {} failed", value)
         })
     }
 }
@@ -199,7 +196,7 @@ where
     fn split_extended_origin_aligned(
         self,
         split_size: na::Vector2<f64>,
-        split_direction: SplitDirection,
+        split_order: SplitOrder,
     ) -> Vec<Self>;
     /// Converts a Aabb to a kurbo Rectangle
     fn to_kurbo_rect(&self) -> kurbo::Rect;
@@ -422,7 +419,7 @@ impl AabbHelpers for Aabb {
     fn split_extended_origin_aligned(
         self,
         split_size: na::Vector2<f64>,
-        split_direction: SplitDirection,
+        split_order: SplitOrder,
     ) -> Vec<Self> {
         let mut split_aabbs = Vec::new();
 
@@ -430,9 +427,9 @@ impl AabbHelpers for Aabb {
             return vec![];
         }
 
-        let (outer_idx, inner_idx) = match split_direction {
-            SplitDirection::RowMajor => (1, 0),
-            SplitDirection::ColumnMajor => (0, 1),
+        let (outer_idx, inner_idx) = match split_order {
+            SplitOrder::RowMajor => (1, 0),
+            SplitOrder::ColumnMajor => (0, 1),
         };
 
         let mut offset_outer =
@@ -443,9 +440,9 @@ impl AabbHelpers for Aabb {
                 (self.mins[inner_idx] / split_size[inner_idx]).floor() * split_size[inner_idx];
 
             while offset_inner < self.maxs[inner_idx] {
-                let mins = match split_direction {
-                    SplitDirection::RowMajor => na::point![offset_inner, offset_outer],
-                    SplitDirection::ColumnMajor => na::point![offset_outer, offset_inner],
+                let mins = match split_order {
+                    SplitOrder::RowMajor => na::point![offset_inner, offset_outer],
+                    SplitOrder::ColumnMajor => na::point![offset_outer, offset_inner],
                 };
 
                 split_aabbs.push(Aabb::new(mins, mins + split_size));

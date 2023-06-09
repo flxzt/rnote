@@ -11,7 +11,7 @@ use gtk4::{
     SpinButton, Switch,
 };
 use num_traits::ToPrimitive;
-use rnote_compose::helpers::SplitDirection;
+use rnote_compose::helpers::SplitOrder;
 use rnote_engine::engine::export::{
     DocExportFormat, DocExportPrefs, DocPagesExportFormat, DocPagesExportPrefs,
     SelectionExportFormat, SelectionExportPrefs,
@@ -88,8 +88,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     let with_pattern_row: adw::ActionRow = builder.object("export_doc_with_pattern_row").unwrap();
     let with_pattern_switch: Switch = builder.object("export_doc_with_pattern_switch").unwrap();
     let export_format_row: adw::ComboRow = builder.object("export_doc_export_format_row").unwrap();
-    let page_direction_row: adw::ComboRow =
-        builder.object("export_doc_page_direction_row").unwrap();
+    let page_order_row: adw::ComboRow = builder.object("export_doc_page_order_row").unwrap();
     let export_file_label: Label = builder.object("export_doc_export_file_label").unwrap();
     let export_file_button: Button = builder.object("export_doc_export_file_button").unwrap();
 
@@ -102,9 +101,9 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     with_background_switch.set_active(initial_doc_export_prefs.with_background);
     with_pattern_switch.set_active(initial_doc_export_prefs.with_pattern);
     export_format_row.set_selected(initial_doc_export_prefs.export_format.to_u32().unwrap());
-    page_direction_row.set_selected(initial_doc_export_prefs.page_direction.to_u32().unwrap());
+    page_order_row.set_selected(initial_doc_export_prefs.page_order.to_u32().unwrap());
     export_file_label.set_label(&gettext("- no file selected -"));
-    page_direction_row.set_sensitive(
+    page_order_row.set_sensitive(
         initial_doc_export_prefs.export_format == DocExportFormat::Pdf
             || initial_doc_export_prefs.export_format == DocExportFormat::Xopp,
     );
@@ -157,12 +156,12 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         canvas.engine_mut().export_prefs.doc_export_prefs.with_pattern = with_pattern_switch.is_active();
     }));
 
-    export_format_row.connect_selected_notify(clone!(@strong selected_file, @weak export_file_label, @weak page_direction_row, @weak button_confirm, @weak canvas, @weak appwindow => move |row| {
+    export_format_row.connect_selected_notify(clone!(@strong selected_file, @weak export_file_label, @weak page_order_row, @weak button_confirm, @weak canvas, @weak appwindow => move |row| {
         let export_format = DocExportFormat::try_from(row.selected()).unwrap();
         canvas.engine_mut().export_prefs.doc_export_prefs.export_format = export_format;
 
         // enable page direction row when export format is finite, i.e. infinite layouts will be split into pages
-        page_direction_row.set_sensitive(export_format == DocExportFormat::Pdf || export_format == DocExportFormat::Xopp);
+        page_order_row.set_sensitive(export_format == DocExportFormat::Pdf || export_format == DocExportFormat::Xopp);
 
         // force the user to pick another file
         export_file_label.set_label(&gettext("- no file selected -"));
@@ -170,12 +169,10 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         selected_file.replace(None);
     }));
 
-    page_direction_row.connect_selected_notify(
-        clone!(@weak canvas, @weak appwindow => move |row| {
-            let page_direction = SplitDirection::try_from(row.selected()).unwrap();
-            canvas.engine_mut().export_prefs.doc_export_prefs.page_direction = page_direction;
-        }),
-    );
+    page_order_row.connect_selected_notify(clone!(@weak canvas, @weak appwindow => move |row| {
+        let page_order = SplitOrder::try_from(row.selected()).unwrap();
+        canvas.engine_mut().export_prefs.doc_export_prefs.page_order = page_order;
+    }));
 
     let response = dialog.run_future().await;
     dialog.close();
@@ -271,9 +268,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
     let export_format_row: adw::ComboRow = builder
         .object("export_doc_pages_export_format_row")
         .unwrap();
-    let page_direction_row: adw::ComboRow = builder
-        .object("export_doc_pages_page_direction_row")
-        .unwrap();
+    let page_order_row: adw::ComboRow = builder.object("export_doc_pages_page_order_row").unwrap();
     let bitmap_scalefactor_row: adw::ActionRow = builder
         .object("export_doc_pages_bitmap_scalefactor_row")
         .unwrap();
@@ -310,12 +305,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
             .to_u32()
             .unwrap(),
     );
-    page_direction_row.set_selected(
-        initial_doc_pages_export_prefs
-            .page_direction
-            .to_u32()
-            .unwrap(),
-    );
+    page_order_row.set_selected(initial_doc_pages_export_prefs.page_order.to_u32().unwrap());
     bitmap_scalefactor_row.set_sensitive(
         initial_doc_pages_export_prefs.export_format == DocPagesExportFormat::Png
             || initial_doc_pages_export_prefs.export_format == DocPagesExportFormat::Jpeg,
@@ -415,12 +405,10 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
             ));
     }));
 
-    page_direction_row.connect_selected_notify(
-        clone!(@weak canvas, @weak appwindow => move |row| {
-            let page_direction = SplitDirection::try_from(row.selected()).unwrap();
-            canvas.engine_mut().export_prefs.doc_pages_export_prefs.page_direction = page_direction;
-        }),
-    );
+    page_order_row.connect_selected_notify(clone!(@weak canvas, @weak appwindow => move |row| {
+        let page_order = SplitOrder::try_from(row.selected()).unwrap();
+        canvas.engine_mut().export_prefs.doc_pages_export_prefs.page_order = page_order;
+    }));
 
     bitmap_scalefactor_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |bitmap_scalefactor_spinbutton| {
         canvas.engine_mut().export_prefs.doc_pages_export_prefs.bitmap_scalefactor = bitmap_scalefactor_spinbutton.value();

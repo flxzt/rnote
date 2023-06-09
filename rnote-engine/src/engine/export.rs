@@ -7,7 +7,7 @@ use anyhow::Context;
 use futures::channel::oneshot;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
-use rnote_compose::helpers::{SplitDirection, Vector2Helpers};
+use rnote_compose::helpers::{SplitOrder, Vector2Helpers};
 use rnote_compose::transform::TransformBehaviour;
 use rnote_fileformats::rnoteformat::RnoteFile;
 use rnote_fileformats::{xoppformat, FileFormatSaver};
@@ -80,9 +80,9 @@ pub struct DocExportPrefs {
     /// The export format.
     #[serde(rename = "export_format")]
     pub export_format: DocExportFormat,
-    /// The read direction when exporting an infinite layout to a finite layout.
-    #[serde(rename = "page_direction")]
-    pub page_direction: SplitDirection,
+    /// The page order when exporting an infinite layout to a finite layout.
+    #[serde(rename = "page_order")]
+    pub page_order: SplitOrder,
 }
 
 impl Default for DocExportPrefs {
@@ -91,7 +91,7 @@ impl Default for DocExportPrefs {
             with_background: true,
             with_pattern: true,
             export_format: DocExportFormat::default(),
-            page_direction: SplitDirection::default(),
+            page_order: SplitOrder::default(),
         }
     }
 }
@@ -139,9 +139,9 @@ pub struct DocPagesExportPrefs {
     /// Export format
     #[serde(rename = "export_format")]
     pub export_format: DocPagesExportFormat,
-    /// The read direction when exporting an infinite layout to a finite layout.
-    #[serde(rename = "page_direction")]
-    pub page_direction: SplitDirection,
+    /// The page order when exporting an infinite layout to a finite layout.
+    #[serde(rename = "page_order")]
+    pub page_order: SplitOrder,
     /// The bitmap scale-factor in relation to the actual size.
     #[serde(rename = "bitmap_scalefactor")]
     pub bitmap_scalefactor: f64,
@@ -156,7 +156,7 @@ impl Default for DocPagesExportPrefs {
             with_background: true,
             with_pattern: true,
             export_format: DocPagesExportFormat::default(),
-            page_direction: SplitDirection::default(),
+            page_order: SplitOrder::default(),
             bitmap_scalefactor: 1.8,
             jpeg_quality: 85,
         }
@@ -414,7 +414,7 @@ impl RnoteEngine {
         let snapshot = self.take_snapshot();
 
         let pages_strokes = self
-            .pages_bounds_w_content(doc_export_prefs.page_direction)
+            .pages_bounds_w_content(doc_export_prefs.page_order)
             .into_iter()
             .map(|page_bounds| {
                 let strokes_in_viewport = self
@@ -535,7 +535,7 @@ impl RnoteEngine {
         let snapshot = self.take_snapshot();
 
         let pages_strokes: Vec<(Aabb, Vec<Stroke>)> = self
-            .pages_bounds_w_content(doc_export_prefs.page_direction)
+            .pages_bounds_w_content(doc_export_prefs.page_order)
             .into_iter()
             .map(|page_bounds| {
                 let page_keys = self
@@ -695,7 +695,7 @@ impl RnoteEngine {
         let snapshot = self.take_snapshot();
 
         let pages_strokes: Vec<(Aabb, Vec<StrokeKey>)> = self
-            .pages_bounds_w_content(doc_pages_export_prefs.page_direction)
+            .pages_bounds_w_content(doc_pages_export_prefs.page_order)
             .into_iter()
             .map(|page_bounds| {
                 let page_strokes = self
@@ -751,7 +751,7 @@ impl RnoteEngine {
         let snapshot = self.take_snapshot();
 
         let pages_strokes: Vec<(Aabb, Vec<StrokeKey>)> = self
-            .pages_bounds_w_content(doc_pages_export_prefs.page_direction)
+            .pages_bounds_w_content(doc_pages_export_prefs.page_order)
             .into_iter()
             .map(|page_bounds| {
                 let page_strokes = self

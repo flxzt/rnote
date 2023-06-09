@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-09 15:20+0200\n"
-"PO-Revision-Date: 2023-06-09 12:54+0000\n"
+"PO-Revision-Date: 2023-06-09 23:51+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -778,8 +778,6 @@ msgid "Move View"
 msgstr "Ansicht Bewegen"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:40
-#, fuzzy
-#| msgid "Zoom in/out"
 msgid "Zoom In/Out"
 msgstr "Zoome herein/heraus"
 
@@ -1633,16 +1631,12 @@ msgid "Opened file was moved or deleted on disk"
 msgstr "Geöffnete Datei wurde auf dem Datenträger verschoben oder gelöscht"
 
 #: rnote-ui/src/canvas/mod.rs:988
-#, fuzzy
-#| msgid "Importing file failed."
 msgid "Inserting file failed"
-msgstr "Datei importieren gescheitert."
+msgstr "Datei einfügen gescheitert"
 
 #: rnote-ui/src/canvas/mod.rs:998
-#, fuzzy
-#| msgid "Importing file failed."
 msgid "Inserting text failed"
-msgstr "Datei importieren gescheitert."
+msgstr "Text einfügen gescheitert"
 
 #: rnote-ui/src/dialogs/export.rs:25 rnote-ui/src/dialogs/import.rs:78
 msgid ".rnote"
@@ -2038,127 +2032,91 @@ msgid "Cubic bezier curve"
 msgstr "Kubische Bezierkurve"
 
 #: rnote-ui/src/settingspanel/mod.rs:788
-#, fuzzy
-#| msgid "Crosshair (Small)"
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "Fadenkreuz (Klein)"
 
 #: rnote-ui/src/settingspanel/mod.rs:789
-#, fuzzy
-#| msgid "Crosshair (Medium)"
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "Fadenkreuz (Mittel)"
 
 #: rnote-ui/src/settingspanel/mod.rs:790
-#, fuzzy
-#| msgid "Crosshair (Large)"
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "Fadenkreuz (Groß)"
 
 #: rnote-ui/src/settingspanel/mod.rs:791
-#, fuzzy
-#| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "Punkt (Klein)"
 
 #: rnote-ui/src/settingspanel/mod.rs:792
-#, fuzzy
-#| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "Punkt (Mittel)"
 
 #: rnote-ui/src/settingspanel/mod.rs:793
-#, fuzzy
-#| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "Punkt (Groß)"
 
 #: rnote-ui/src/settingspanel/mod.rs:794
-#, fuzzy
-#| msgid "Teardrop North-West (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "Tropfen Nord-West (Klein)"
 
 #: rnote-ui/src/settingspanel/mod.rs:795
-#, fuzzy
-#| msgid "Teardrop North-West (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "Tropfen Nord-West (Mittel)"
 
 #: rnote-ui/src/settingspanel/mod.rs:796
-#, fuzzy
-#| msgid "Teardrop North-West (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "Tropfen Nord-West (Groß)"
 
 #: rnote-ui/src/settingspanel/mod.rs:797
-#, fuzzy
-#| msgid "Teardrop North-East (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "Tropfen Nord-Ost (Klein)"
 
 #: rnote-ui/src/settingspanel/mod.rs:798
-#, fuzzy
-#| msgid "Teardrop North-East (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "Tropfen Nord-Ost (Mittel)"
 
 #: rnote-ui/src/settingspanel/mod.rs:799
-#, fuzzy
-#| msgid "Teardrop North-East (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "Tropfen Nord-Ost (Groß)"
 
 #: rnote-ui/src/settingspanel/mod.rs:800
-#, fuzzy
-#| msgid "Teardrop North (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "Tropfen Nord (Klein)"
 
 #: rnote-ui/src/settingspanel/mod.rs:801
-#, fuzzy
-#| msgid "Teardrop North (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "Tropfen Nord (Mittel)"
 
 #: rnote-ui/src/settingspanel/mod.rs:802
-#, fuzzy
-#| msgid "Teardrop North (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "Tropfen Nord (Groß)"
 
 #: rnote-ui/src/settingspanel/mod.rs:803
-#, fuzzy
-#| msgid "Beam (Small)"
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "Strahl (Klein)"
 
 #: rnote-ui/src/settingspanel/mod.rs:804
-#, fuzzy
-#| msgid "Beam (Medium)"
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "Strahl (Mittel)"
 
 #: rnote-ui/src/settingspanel/mod.rs:805
-#, fuzzy
-#| msgid "Beam (Large)"
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "Strahl (Groß)"

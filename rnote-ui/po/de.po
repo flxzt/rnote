@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-16 10:57+0200\n"
-"PO-Revision-Date: 2023-05-20 12:33+0000\n"
+"PO-Revision-Date: 2023-06-09 12:54+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1146,7 +1146,7 @@ msgstr "Ändere den regulären Cursor"
 
 #: rnote-ui/data/ui/settingspanel.ui:131
 msgid "Show Drawing Cursor"
-msgstr "Zeige Zeichnen Cursor"
+msgstr "Zeige Stift-Cursor"
 
 #: rnote-ui/data/ui/settingspanel.ui:132
 msgid "Set whether the drawing cursor is visible"
@@ -1154,11 +1154,11 @@ msgstr "Ändere ob der Zeichnen Cursor sichtbar ist"
 
 #: rnote-ui/data/ui/settingspanel.ui:146
 msgid "Drawing Cursor"
-msgstr "Zeichnen Cursor"
+msgstr "Stift-Cursor"
 
 #: rnote-ui/data/ui/settingspanel.ui:147
 msgid "Set the drawing cursor"
-msgstr "Ändere den Zeichnen Cursor"
+msgstr "Ändere den Stift-Cursor"
 
 #: rnote-ui/data/ui/settingspanel.ui:172
 msgid "Page Format"
@@ -1370,8 +1370,8 @@ msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
-"Ändere die Aktion für Taste 1\n"
-"auf einem Zeichentablet"
+"Lege die Aktion für Taste 1\n"
+"auf einem Zeichentablet fest"
 
 #: rnote-ui/data/ui/settingspanel.ui:460
 msgid "Drawing Pad Button 2 Action"
@@ -1382,8 +1382,8 @@ msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
-"Ändere die Aktion für Taste 2\n"
-"auf einem Zeichentablet"
+"Lege die Aktion für Taste 2\n"
+"auf einem Zeichentablet fest"
 
 #: rnote-ui/data/ui/settingspanel.ui:473
 msgid "Drawing Pad Button 3 Action"
@@ -1394,8 +1394,8 @@ msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
-"Ändere die Aktion für Taste 3\n"
-"auf einem Zeichentablet"
+"Lege die Aktion für Taste 3\n"
+"auf einem Zeichentablet fest"
 
 #: rnote-ui/data/ui/settingspanel.ui:486
 msgid "Drawing Pad Button 4 Action"
@@ -1406,8 +1406,8 @@ msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
 msgstr ""
-"Ändere die Aktion für Taste 4\n"
-"auf einem Zeichentablet"
+"Lege die Aktion für Taste 4\n"
+"auf einem Zeichentablet fest"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"

@@ -12,6 +12,7 @@ use gtk4::{
 };
 use num_traits::ToPrimitive;
 use rnote_compose::helpers::SplitOrder;
+use rnote_engine::document::Layout;
 use rnote_engine::engine::export::{
     DocExportFormat, DocExportPrefs, DocPagesExportFormat, DocPagesExportPrefs,
     SelectionExportFormat, SelectionExportPrefs,
@@ -92,7 +93,8 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     let export_file_label: Label = builder.object("export_doc_export_file_label").unwrap();
     let export_file_button: Button = builder.object("export_doc_export_file_button").unwrap();
 
-    let initial_doc_export_prefs = canvas.engine_mut().export_prefs.doc_export_prefs;
+    let initial_doc_export_prefs = canvas.engine_ref().export_prefs.doc_export_prefs;
+    let doc_layout = canvas.engine_ref().document.layout;
 
     dialog.set_transient_for(Some(appwindow));
 
@@ -104,8 +106,9 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     page_order_row.set_selected(initial_doc_export_prefs.page_order.to_u32().unwrap());
     export_file_label.set_label(&gettext("- no file selected -"));
     page_order_row.set_sensitive(
-        initial_doc_export_prefs.export_format == DocExportFormat::Pdf
-            || initial_doc_export_prefs.export_format == DocExportFormat::Xopp,
+        (initial_doc_export_prefs.export_format == DocExportFormat::Pdf
+            || initial_doc_export_prefs.export_format == DocExportFormat::Xopp)
+            && (doc_layout == Layout::SemiInfinite || doc_layout == Layout::Infinite),
     );
     button_confirm.set_sensitive(false);
 
@@ -160,8 +163,9 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         let export_format = DocExportFormat::try_from(row.selected()).unwrap();
         canvas.engine_mut().export_prefs.doc_export_prefs.export_format = export_format;
 
-        // enable page direction row when export format is finite, i.e. infinite layouts will be split into pages
-        page_order_row.set_sensitive(export_format == DocExportFormat::Pdf || export_format == DocExportFormat::Xopp);
+        // enable page direction row when export format is finite and document layout is infinite (i.e. layout will be split into pages)
+        let doc_layout = canvas.engine_ref().document.layout;
+        page_order_row.set_sensitive((export_format == DocExportFormat::Pdf || export_format == DocExportFormat::Xopp) && (doc_layout == Layout::SemiInfinite || doc_layout == Layout::Infinite));
 
         // force the user to pick another file
         export_file_label.set_label(&gettext("- no file selected -"));
@@ -292,6 +296,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         .unwrap();
 
     let initial_doc_pages_export_prefs = canvas.engine_ref().export_prefs.doc_pages_export_prefs;
+    let doc_layout = canvas.engine_ref().document.layout;
 
     dialog.set_transient_for(Some(appwindow));
 
@@ -315,6 +320,8 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         .set_sensitive(initial_doc_pages_export_prefs.export_format == DocPagesExportFormat::Jpeg);
     jpeg_quality_spinbutton.set_value(initial_doc_pages_export_prefs.jpeg_quality as f64);
     export_dir_label.set_label(&gettext("- no directory selected -"));
+    page_order_row
+        .set_sensitive(doc_layout == Layout::SemiInfinite || doc_layout == Layout::Infinite);
     button_confirm.set_sensitive(false);
 
     let default_stem_name = crate::utils::default_file_title_for_export(

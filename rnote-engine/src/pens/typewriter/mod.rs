@@ -379,11 +379,12 @@ impl PenBehaviour for Typewriter {
     fn fetch_clipboard_content(
         &self,
         engine_view: &EngineView,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         let widget_flags = WidgetFlags::default();
+        let mut clipboard_content = Vec::with_capacity(1);
 
         match &self.state {
-            TypewriterState::Idle | TypewriterState::Start(_) => Ok((None, widget_flags)),
+            TypewriterState::Idle | TypewriterState::Start(_) => {}
             TypewriterState::Modifying {
                 modify_state,
                 stroke_key,
@@ -401,35 +402,30 @@ impl PenBehaviour for Typewriter {
                                 cursor.cur_cursor(),
                                 selection_cursor.cur_cursor(),
                             );
-
                             // Current selection as clipboard text
                             let selection_text = textstroke
                                 .get_text_slice_for_range(selection_range)
                                 .to_string();
-
-                            Ok((
-                                Some((
-                                    selection_text.into_bytes(),
-                                    String::from("text/plain;charset=utf-8"),
-                                )),
-                                widget_flags,
-                            ))
-                        } else {
-                            Ok((None, widget_flags))
+                            clipboard_content.push((
+                                selection_text.into_bytes(),
+                                String::from("text/plain;charset=utf-8"),
+                            ));
                         }
                     }
-                    _ => Ok((None, widget_flags)),
+                    _ => {}
                 }
             }
         }
+
+        Ok((clipboard_content, widget_flags))
     }
 
     fn cut_clipboard_content(
         &mut self,
         engine_view: &mut EngineViewMut,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         let mut widget_flags = WidgetFlags::default();
-        let mut content = None;
+        let mut clipboard_content = Vec::with_capacity(1);
 
         match &mut self.state {
             TypewriterState::Idle | TypewriterState::Start(_) => {}
@@ -487,7 +483,7 @@ impl PenBehaviour for Typewriter {
                             widget_flags.store_modified = true;
                             widget_flags.redraw = true;
 
-                            content = Some((
+                            clipboard_content.push((
                                 selection_text.into_bytes(),
                                 String::from("text/plain;charset=utf-8"),
                             ));
@@ -500,7 +496,7 @@ impl PenBehaviour for Typewriter {
 
         self.reset_blink();
 
-        Ok((content, widget_flags))
+        Ok((clipboard_content, widget_flags))
     }
 }
 

@@ -5,7 +5,8 @@ mod penevents;
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::selectorconfig::SelectorStyle;
 use super::PenStyle;
-use crate::engine::{EngineView, EngineViewMut, RNOTE_STROKE_CONTENT_MIME_TYPE};
+use crate::engine::{EngineView, EngineViewMut, StrokeContent};
+use crate::render::Svg;
 use crate::store::StrokeKey;
 use crate::strokes::StrokeBehaviour;
 use crate::{Camera, DrawOnDocBehaviour, WidgetFlags};
@@ -152,8 +153,9 @@ impl PenBehaviour for Selector {
     fn fetch_clipboard_content(
         &self,
         engine_view: &EngineView,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         let widget_flags = WidgetFlags::default();
+        let mut clipboard_content = Vec::with_capacity(1);
 
         let selected_keys = if let SelectorState::ModifySelection { selection, .. } = &self.state {
             Some(selection.clone())
@@ -162,25 +164,27 @@ impl PenBehaviour for Selector {
         };
 
         if let Some(selected_keys) = selected_keys {
-            let clipboard_content = engine_view.store.fetch_stroke_content(&selected_keys);
+            let stroke_content = engine_view.store.fetch_stroke_content(&selected_keys);
+            let stroke_content_svg = stroke_content.generate_svg()?;
 
-            return Ok((
-                Some((
-                    serde_json::to_string(&clipboard_content)?.into_bytes(),
-                    RNOTE_STROKE_CONTENT_MIME_TYPE.to_string(),
-                )),
-                widget_flags,
+            clipboard_content.push((
+                serde_json::to_string(&stroke_content)?.into_bytes(),
+                StrokeContent::MIME_TYPE.to_string(),
             ));
+            if let Some(s) = stroke_content_svg {
+                clipboard_content.push((s.svg_data.into_bytes(), Svg::MIME_TYPE.to_string()));
+            }
         }
 
-        Ok((None, widget_flags))
+        Ok((clipboard_content, widget_flags))
     }
 
     fn cut_clipboard_content(
         &mut self,
         engine_view: &mut EngineViewMut,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         let mut widget_flags = WidgetFlags::default();
+        let mut clipboard_content = Vec::with_capacity(1);
 
         let selected_keys = if let SelectorState::ModifySelection { selection, .. } = &self.state {
             Some(selection.clone())
@@ -189,24 +193,25 @@ impl PenBehaviour for Selector {
         };
 
         if let Some(selected_keys) = selected_keys {
-            let clipboard_content = engine_view.store.cut_stroke_content(&selected_keys);
+            let stroke_content = engine_view.store.cut_stroke_content(&selected_keys);
+            let stroke_content_svg = stroke_content.generate_svg()?;
+
+            clipboard_content.push((
+                serde_json::to_string(&stroke_content)?.into_bytes(),
+                StrokeContent::MIME_TYPE.to_string(),
+            ));
+            if let Some(s) = stroke_content_svg {
+                clipboard_content.push((s.svg_data.into_bytes(), Svg::MIME_TYPE.to_string()));
+            }
 
             self.state = SelectorState::Idle;
 
             widget_flags.merge(engine_view.store.record(Instant::now()));
             widget_flags.store_modified = true;
             widget_flags.redraw = true;
-
-            return Ok((
-                Some((
-                    serde_json::to_string(&clipboard_content)?.into_bytes(),
-                    RNOTE_STROKE_CONTENT_MIME_TYPE.to_string(),
-                )),
-                widget_flags,
-            ));
         }
 
-        Ok((None, widget_flags))
+        Ok((clipboard_content, widget_flags))
     }
 }
 

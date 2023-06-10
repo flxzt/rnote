@@ -13,11 +13,12 @@ use self::import::XoppImportPrefs;
 use crate::document::{background, Layout};
 use crate::pens::{Pen, PenStyle};
 use crate::pens::{PenMode, PensConfig};
+use crate::render::Svg;
 use crate::store::render_comp::{self, RenderCompState};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::Stroke;
-use crate::{render, AudioPlayer, WidgetFlags};
+use crate::{render, AudioPlayer, DrawBehaviour, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use anyhow::Context;
 use futures::channel::{mpsc, oneshot};
@@ -299,14 +300,56 @@ impl EngineSnapshot {
     }
 }
 
-pub const RNOTE_STROKE_CONTENT_MIME_TYPE: &str = "application/rnote-stroke-content";
-
 /// Stroke content. Used when copying/cutting/pasting a selection into/from the clipboard
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default, rename = "stroke_content")]
 pub struct StrokeContent {
     #[serde(rename = "strokes")]
     pub strokes: Vec<Arc<Stroke>>,
+}
+
+impl StrokeContent {
+    pub const MIME_TYPE: &str = "application/rnote-stroke-content";
+
+    pub fn bounds(&self) -> Option<Aabb> {
+        if self.strokes.is_empty() {
+            return None;
+        }
+        Some(
+            self.strokes
+                .iter()
+                .map(|s| s.bounds())
+                .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x)),
+        )
+    }
+
+    /// Generate a Svg from the content.
+    pub fn generate_svg(&self) -> anyhow::Result<Option<Svg>> {
+        if self.strokes.is_empty() {
+            return Ok(None);
+        }
+        let Some(content_bounds) = self.bounds() else {
+            return Ok(None)
+        };
+        let mut content_svg = render::Svg {
+            svg_data: String::new(),
+            bounds: content_bounds,
+        };
+        content_svg.merge([render::Svg::gen_with_piet_cairo_backend(
+            |piet_cx| {
+                for stroke in self.strokes.iter() {
+                    stroke.draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
+                }
+                Ok(())
+            },
+            content_bounds,
+        )?]);
+        // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
+        if let Err(e) = content_svg.simplify() {
+            log::warn!("simplifying svg in StrokeContent::export_to_svg() failed, Err: {e:?}");
+        };
+        Ok(Some(content_svg))
+    }
 }
 
 pub type EngineTaskSender = mpsc::UnboundedSender<EngineTask>;
@@ -887,12 +930,8 @@ impl RnoteEngine {
     }
 
     /// Fetch clipboard content from the current pen.
-    ///
-    /// Returns (the clipboard content, MIME-type).
     #[allow(clippy::type_complexity)]
-    pub fn fetch_clipboard_content(
-        &self,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    pub fn fetch_clipboard_content(&self) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         self.penholder.fetch_clipboard_content(&EngineView {
             tasks_tx: self.tasks_tx(),
             pens_config: &self.pens_config,
@@ -904,12 +943,10 @@ impl RnoteEngine {
     }
 
     /// Cut clipboard content from the current pen.
-    ///
-    /// Returns (the clipboard content, MIME-type).
     #[allow(clippy::type_complexity)]
     pub fn cut_clipboard_content(
         &mut self,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         self.penholder.cut_clipboard_content(&mut EngineViewMut {
             tasks_tx: self.tasks_tx(),
             pens_config: &mut self.pens_config,

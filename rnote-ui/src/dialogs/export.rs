@@ -159,7 +159,9 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         selected_file.replace(None);
     }));
 
-    match dialog.run_future().await {
+    let response = dialog.run_future().await;
+    dialog.close();
+    match response {
         ResponseType::Apply => {
             if let Some(file) = selected_file.take() {
                 glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
@@ -187,7 +189,6 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         }
         _ => {}
     }
-    dialog.close();
 }
 
 fn create_filedialog_export_doc(
@@ -408,7 +409,9 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         }),
     );
 
-    match dialog.run_future().await {
+    let response = dialog.run_future().await;
+    dialog.close();
+    match response {
         ResponseType::Apply => {
             if let Some(dir) = selected_file.take() {
                 glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
@@ -432,7 +435,6 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         }
         _ => {}
     }
-    dialog.close();
 }
 
 fn create_filedialog_export_doc_pages(
@@ -633,7 +635,9 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         canvas.engine_mut().export_prefs.selection_export_prefs.margin = margin_spinbutton.value();
     }));
 
-    match dialog.run_future().await {
+    let response = dialog.run_future().await;
+    dialog.close();
+    match response {
         ResponseType::Apply => {
             if let Some(file) = selected_file.take() {
                 appwindow.overlays().start_pulsing_progressbar();
@@ -658,7 +662,6 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         }
         _ => {}
     }
-    dialog.close();
 }
 
 fn create_filedialog_export_selection(

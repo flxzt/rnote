@@ -477,7 +477,9 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
         }),
     );
 
-    match dialog.run_future().await {
+    let response = dialog.run_future().await;
+    dialog.close();
+    match response {
         ResponseType::Apply => {
             // update the actual selected entry
             appwindow
@@ -498,7 +500,6 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
             // Cancel
         }
     }
-    dialog.close();
 }
 
 const WORKSPACELISTENTRY_ICONS_LIST: &[&str] = &[

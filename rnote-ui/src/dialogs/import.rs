@@ -282,7 +282,9 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         pdf_page_end_spinbutton.set_value(n_pages.into());
     }
 
-    match dialog.run_future().await {
+    let response = dialog.run_future().await;
+    dialog.close();
+    match response {
         ResponseType::Apply => {
             appwindow.overlays().start_pulsing_progressbar();
 
@@ -309,7 +311,6 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
             // Cancel
         }
     }
-    dialog.close();
 }
 
 pub(crate) async fn dialog_import_xopp_w_prefs(
@@ -335,7 +336,9 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
         canvas.engine_mut().import_prefs.xopp_import_prefs.dpi = spinbutton.value();
     }));
 
-    match dialog.run_future().await {
+    let response = dialog.run_future().await;
+    dialog.close();
+    match response {
         ResponseType::Apply => {
             appwindow.overlays().start_pulsing_progressbar();
 
@@ -357,5 +360,4 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
             // Cancel
         }
     }
-    dialog.close();
 }

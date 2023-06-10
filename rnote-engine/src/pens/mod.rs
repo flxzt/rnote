@@ -113,7 +113,7 @@ impl PenBehaviour for Pen {
     fn fetch_clipboard_content(
         &self,
         engine_view: &EngineView,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         match self {
             Pen::Brush(brush) => brush.fetch_clipboard_content(engine_view),
             Pen::Shaper(shaper) => shaper.fetch_clipboard_content(engine_view),
@@ -127,7 +127,7 @@ impl PenBehaviour for Pen {
     fn cut_clipboard_content(
         &mut self,
         engine_view: &mut EngineViewMut,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         match self {
             Pen::Brush(brush) => brush.cut_clipboard_content(engine_view),
             Pen::Shaper(shaper) => shaper.cut_clipboard_content(engine_view),

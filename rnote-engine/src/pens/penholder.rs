@@ -344,7 +344,7 @@ impl PenHolder {
     pub fn fetch_clipboard_content(
         &self,
         engine_view: &EngineView,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         self.current_pen.fetch_clipboard_content(engine_view)
     }
 
@@ -353,7 +353,7 @@ impl PenHolder {
     pub fn cut_clipboard_content(
         &mut self,
         engine_view: &mut EngineViewMut,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         self.current_pen.cut_clipboard_content(engine_view)
     }
 }

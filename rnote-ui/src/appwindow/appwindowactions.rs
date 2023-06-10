@@ -9,7 +9,7 @@ use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::penevents::ShortcutKey;
 use rnote_engine::document::Layout;
-use rnote_engine::engine::RNOTE_STROKE_CONTENT_MIME_TYPE;
+use rnote_engine::engine::StrokeContent;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine, WidgetFlags};
 use std::path::PathBuf;
@@ -784,17 +784,12 @@ impl RnAppWindow {
                 }
             };
 
-            match content {
-                Some((data, mime_type)) => {
-                    let content = gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data));
+            let gdk_content_provider = gdk::ContentProvider::new_union(content.into_iter().map(|(data, mime_type)| {
+                gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data))
+            }).collect::<Vec<gdk::ContentProvider>>().as_slice());
 
-                    if let Err(e) = appwindow.clipboard().set_content(Some(&content)) {
-                        log::error!("clipboard set_content() failed in clipboard-copy action, Err: {e:?}");
-                    }
-                }
-                None => {
-                    log::debug!("no data available to copy into clipboard");
-                }
+            if let Err(e) = appwindow.clipboard().set_content(Some(&gdk_content_provider)) {
+                log::error!("clipboard set_content() failed in clipboard-copy action, Err: {e:?}");
             }
 
             appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -812,17 +807,12 @@ impl RnAppWindow {
                 }
             };
 
-            match content {
-                Some((data, mime_type)) => {
-                    let content = gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data));
+            let gdk_content_provider = gdk::ContentProvider::new_union(content.into_iter().map(|(data, mime_type)| {
+                gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data))
+            }).collect::<Vec<gdk::ContentProvider>>().as_slice());
 
-                    if let Err(e) = appwindow.clipboard().set_content(Some(&content)) {
-                        log::error!("clipboard set_content() failed in clipboard-cut action, Err: {e:?}");
-                    }
-                }
-                None => {
-                    log::debug!("no data available to cut into clipboard");
-                }
+            if let Err(e) = appwindow.clipboard().set_content(Some(&gdk_content_provider)) {
+                log::error!("clipboard set_content() failed in clipboard-cut action, Err: {e:?}");
             }
 
             appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -866,10 +856,11 @@ impl RnAppWindow {
                         }
                     }
                 }));
-            } else if content_formats.contain_mime_type(RNOTE_STROKE_CONTENT_MIME_TYPE) {
+            } else if content_formats.contain_mime_type(StrokeContent::MIME_TYPE) {
                 glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
-                    log::debug!("recognized clipboard content format: {RNOTE_STROKE_CONTENT_MIME_TYPE}");
-                    match appwindow.clipboard().read_future(&[RNOTE_STROKE_CONTENT_MIME_TYPE], glib::PRIORITY_DEFAULT).await {
+                    log::debug!("recognized clipboard content format: {}", StrokeContent::MIME_TYPE);
+
+                    match appwindow.clipboard().read_future(&[StrokeContent::MIME_TYPE], glib::PRIORITY_DEFAULT).await {
                         Ok((input_stream, _)) => {
                             let mut acc = Vec::new();
                             loop {
@@ -900,7 +891,7 @@ impl RnAppWindow {
                             }
                         }
                         Err(e) => {
-                            log::error!("failed to paste clipboard as {RNOTE_STROKE_CONTENT_MIME_TYPE}, read_future() failed with Err: {e:?}");
+                            log::error!("failed to paste clipboard as {}, read_future() failed with Err: {e:?}", StrokeContent::MIME_TYPE);
                         }
                     };
                 }));

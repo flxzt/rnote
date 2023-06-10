@@ -9,7 +9,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-09 15:20+0200\n"
 "PO-Revision-Date: 2023-06-10 18:43+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"Last-Translator: Óscar Fernández Díaz <oscfdezdz@users.noreply.hosted.weblate"
+".org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -2067,85 +2068,61 @@ msgid "Dot (Large)"
 msgstr "Punto (grande)"
 
 #: rnote-ui/src/settingspanel/mod.rs:794
-#, fuzzy
-#| msgid "Teardrop North-West (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "Lágrima noroeste (pequeña)"
 
 #: rnote-ui/src/settingspanel/mod.rs:795
-#, fuzzy
-#| msgid "Teardrop North-West (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "Lágrima noroeste (media)"
 
 #: rnote-ui/src/settingspanel/mod.rs:796
-#, fuzzy
-#| msgid "Teardrop North-West (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "Lágrima noroeste (grande)"
 
 #: rnote-ui/src/settingspanel/mod.rs:797
-#, fuzzy
-#| msgid "Teardrop North-East (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "Lágrima noreste (pequeña)"
 
 #: rnote-ui/src/settingspanel/mod.rs:798
-#, fuzzy
-#| msgid "Teardrop North-East (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "Lágrima noreste (media)"
 
 #: rnote-ui/src/settingspanel/mod.rs:799
-#, fuzzy
-#| msgid "Teardrop North-East (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "Lágrima noreste (grande)"
 
 #: rnote-ui/src/settingspanel/mod.rs:800
-#, fuzzy
-#| msgid "Teardrop North (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "Lágrima norte (pequeña)"
 
 #: rnote-ui/src/settingspanel/mod.rs:801
-#, fuzzy
-#| msgid "Teardrop North (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "Lágrima norte (media)"
 
 #: rnote-ui/src/settingspanel/mod.rs:802
-#, fuzzy
-#| msgid "Teardrop North (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "Lágrima norte (grande)"
 
 #: rnote-ui/src/settingspanel/mod.rs:803
-#, fuzzy
-#| msgid "Beam (Small)"
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "Haz (pequeño)"
 
 #: rnote-ui/src/settingspanel/mod.rs:804
-#, fuzzy
-#| msgid "Beam (Medium)"
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "Haz (medio)"
 
 #: rnote-ui/src/settingspanel/mod.rs:805
-#, fuzzy
-#| msgid "Beam (Large)"
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "Haz (grande)"

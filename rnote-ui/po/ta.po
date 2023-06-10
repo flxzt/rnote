@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-09 15:20+0200\n"
-"PO-Revision-Date: 2023-05-20 12:33+0000\n"
+"PO-Revision-Date: 2023-06-10 18:43+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -774,10 +774,8 @@ msgid "Move View"
 msgstr "நகர்த்து இடதுபுறம்"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:40
-#, fuzzy
-#| msgid "Zoom in/out"
 msgid "Zoom In/Out"
-msgstr "பெரிதாக்கவும் / வெளியேறவும்"
+msgstr "பெரிதாக்கு/வெளியேறு"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:43
 msgid "Pick And Insert Emoji"
@@ -1629,16 +1627,12 @@ msgid "Opened file was moved or deleted on disk"
 msgstr "திறக்கப்பட்ட கோப்பு வட்டில் நகர்த்தப்பட்டது அல்லது நீக்கப்பட்டது"
 
 #: rnote-ui/src/canvas/mod.rs:988
-#, fuzzy
-#| msgid "Opening file failed"
 msgid "Inserting file failed"
-msgstr "கோப்பைத் திறப்பதில் தோல்வி"
+msgstr "கோப்பைச் செருகுவதில் தோல்வி"
 
 #: rnote-ui/src/canvas/mod.rs:998
-#, fuzzy
-#| msgid "Printing document failed"
 msgid "Inserting text failed"
-msgstr "ஆவணத்தை அச்சிட முடியவில்லை"
+msgstr "உரையைச் செருகுவதில் தோல்வி"
 
 #: rnote-ui/src/dialogs/export.rs:25 rnote-ui/src/dialogs/import.rs:78
 msgid ".rnote"
@@ -2034,127 +2028,91 @@ msgid "Cubic bezier curve"
 msgstr "க்யூபிக் பெஜியர் வளைவு"
 
 #: rnote-ui/src/settingspanel/mod.rs:788
-#, fuzzy
-#| msgid "Crosshair (Small)"
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "குறுக்கு முடி (சிறியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:789
-#, fuzzy
-#| msgid "Crosshair (Medium)"
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "குறுக்கு முடி (நடுத்தர)"
 
 #: rnote-ui/src/settingspanel/mod.rs:790
-#, fuzzy
-#| msgid "Crosshair (Large)"
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "குறுக்கு முடி (பெரியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:791
-#, fuzzy
-#| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "புள்ளி (சிறியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:792
-#, fuzzy
-#| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "புள்ளி (நடுத்தர)"
 
 #: rnote-ui/src/settingspanel/mod.rs:793
-#, fuzzy
-#| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "புள்ளி (பெரியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:794
-#, fuzzy
-#| msgid "Teardrop North-West (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "கண்ணீர் வடமேற்கு (சிறியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:795
-#, fuzzy
-#| msgid "Teardrop North-West (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "கண்ணீர் வடமேற்கு (நடுத்தர)"
 
 #: rnote-ui/src/settingspanel/mod.rs:796
-#, fuzzy
-#| msgid "Teardrop North-West (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "கண்ணீர் வடமேற்கு (பெரியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:797
-#, fuzzy
-#| msgid "Teardrop North-East (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "கண்ணீர் வடகிழக்கு (சிறியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:798
-#, fuzzy
-#| msgid "Teardrop North-East (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "கண்ணீர் வடகிழக்கு (நடுத்தர)"
 
 #: rnote-ui/src/settingspanel/mod.rs:799
-#, fuzzy
-#| msgid "Teardrop North-East (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "கண்ணீர் வடகிழக்கு (பெரியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:800
-#, fuzzy
-#| msgid "Teardrop North (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
-msgstr "கண்ணீர் வடக்கில் (சிறியது)"
+msgstr "கண்ணீர் வடக்கு (சிறியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:801
-#, fuzzy
-#| msgid "Teardrop North (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
-msgstr "கண்ணீர் வடக்கில் (நடுத்தர)"
+msgstr "கண்ணீர் வடக்கு (நடுத்தர)"
 
 #: rnote-ui/src/settingspanel/mod.rs:802
-#, fuzzy
-#| msgid "Teardrop North (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
-msgstr "கண்ணீர் வடக்கில் (பெரியது)"
+msgstr "கண்ணீர் வடக்கு (பெரியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:803
-#, fuzzy
-#| msgid "Beam (Small)"
 msgctxt "a cursor type"
 msgid "Beam (Small)"
-msgstr "கற்றை (சிறிய)"
+msgstr "கற்றை (சிறியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:804
-#, fuzzy
-#| msgid "Beam (Medium)"
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "கற்றை (நடுத்தரம்)"
 
 #: rnote-ui/src/settingspanel/mod.rs:805
-#, fuzzy
-#| msgid "Beam (Large)"
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "கற்றை (பெரியது)"

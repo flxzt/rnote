@@ -38,6 +38,7 @@ mod imp {
         }
 
         fn dispose(&self) {
+            self.dispose_template();
             while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
@@ -94,19 +95,19 @@ impl RnToolsPage {
 
         imp.toolstyle_verticalspace_toggle.connect_toggled(clone!(@weak appwindow => move |toggle| {
             if toggle.is_active() {
-                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.tools_config.style = ToolStyle::VerticalSpace;
+                appwindow.active_tab().canvas().engine_mut().pens_config.tools_config.style = ToolStyle::VerticalSpace;
             }
         }));
 
         imp.toolstyle_offsetcamera_toggle.connect_toggled(clone!(@weak appwindow => move |toggle| {
             if toggle.is_active() {
-                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.tools_config.style = ToolStyle::OffsetCamera;
+                appwindow.active_tab().canvas().engine_mut().pens_config.tools_config.style = ToolStyle::OffsetCamera;
             }
         }));
 
         imp.toolstyle_zoom_toggle.connect_toggled(clone!(@weak appwindow => move |toggle| {
             if toggle.is_active() {
-                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.tools_config.style = ToolStyle::Zoom;
+                appwindow.active_tab().canvas().engine_mut().pens_config.tools_config.style = ToolStyle::Zoom;
             }
         }));
     }
@@ -114,8 +115,7 @@ impl RnToolsPage {
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
         let tools_config = active_tab
             .canvas()
-            .engine()
-            .borrow()
+            .engine_ref()
             .pens_config
             .tools_config
             .clone();

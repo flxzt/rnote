@@ -528,11 +528,11 @@ impl RnoteEngine {
     /// ```rust, ignore
     ///
     /// glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
-    ///    let mut task_rx = canvas.engine().borrow_mut().regenerate_channel();
+    ///    let mut task_rx = canvas.engine_mut().regenerate_channel();
     ///
     ///    loop {
     ///        if let Some(task) = task_rx.next().await {
-    ///            let (widget_flags, quit) = canvas.engine().borrow_mut().handle_engine_task(task);
+    ///            let (widget_flags, quit) = canvas.engine_mut().handle_engine_task(task);
     ///            canvas.emit_handle_widget_flags(widget_flags);
 
     ///            if quit {
@@ -718,10 +718,11 @@ impl RnoteEngine {
             })
     }
 
-    /// Sets the engine active or inactive.
+    /// Set the engine active or inactive.
     pub fn set_active(&mut self, active: bool) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         if active {
+            widget_flags.merge(self.reinstall_pen_current_style());
             self.background_regenerate_pattern();
             self.update_content_rendering_current_viewport();
         } else {
@@ -731,7 +732,7 @@ impl RnoteEngine {
         widget_flags
     }
 
-    /// Generates bounds for each page on the document which contains content.
+    /// Generate bounds for each page on the document which contains content.
     pub fn pages_bounds_w_content(&self) -> Vec<Aabb> {
         let doc_bounds = self.document.bounds();
         let keys = self.store.stroke_keys_as_rendered();

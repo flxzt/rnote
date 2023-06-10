@@ -191,10 +191,10 @@ impl RnAppWindow {
             .into_iter()
             .map(|p| p.child().downcast::<RnCanvasWrapper>().unwrap())
         {
+            let _ = tab.canvas().engine_mut().set_active(false);
             if let Err(e) = tab
                 .canvas()
-                .engine()
-                .borrow()
+                .engine_ref()
                 .tasks_tx()
                 .unbounded_send(EngineTask::Quit)
             {
@@ -224,13 +224,13 @@ impl RnAppWindow {
             canvas.set_empty(false);
         }
         if widget_flags.update_view {
-            let camera_offset = canvas.engine().borrow().camera.offset();
+            let camera_offset = canvas.engine_ref().camera.offset();
             // Keep the adjustment values in sync
             canvas.hadjustment().unwrap().set_value(camera_offset[0]);
             canvas.vadjustment().unwrap().set_value(camera_offset[1]);
         }
         if widget_flags.zoomed_temporarily {
-            let total_zoom = canvas.engine().borrow().camera.total_zoom();
+            let total_zoom = canvas.engine_ref().camera.total_zoom();
 
             canvas.queue_resize();
             self.mainheader()
@@ -238,8 +238,8 @@ impl RnAppWindow {
                 .update_zoom_reset_label(total_zoom);
         }
         if widget_flags.zoomed {
-            let total_zoom = canvas.engine().borrow().camera.total_zoom();
-            let viewport = canvas.engine().borrow().camera.viewport();
+            let total_zoom = canvas.engine_ref().camera.total_zoom();
+            let viewport = canvas.engine_ref().camera.viewport();
 
             canvas.canvas_layout_manager().update_old_viewport(viewport);
             self.mainheader()
@@ -262,7 +262,9 @@ impl RnAppWindow {
     }
 
     /// Get the active (selected) tab page.
-    /// Panics if there is none (but should never be the case, since we add one initially and the UI hides closing the last tab)
+    ///
+    /// Panics if there is none, but this should never be the case,
+    /// since a first one is added initially and the UI hides closing the last tab.
     pub(crate) fn active_tab_page(&self) -> adw::TabPage {
         self.imp()
             .overlays
@@ -296,21 +298,18 @@ impl RnAppWindow {
         let current_engine_config = self
             .active_tab()
             .canvas()
-            .engine()
-            .borrow()
+            .engine_ref()
             .extract_engine_config();
         let new_wrapper = RnCanvasWrapper::new();
 
         let mut widget_flags = new_wrapper
             .canvas()
-            .engine()
-            .borrow_mut()
+            .engine_mut()
             .load_engine_config(current_engine_config, crate::env::pkg_data_dir().ok());
         widget_flags.merge(
             new_wrapper
                 .canvas()
-                .engine()
-                .borrow_mut()
+                .engine_mut()
                 .doc_resize_to_fit_strokes(),
         );
         new_wrapper.canvas().update_rendering_current_viewport();
@@ -378,11 +377,11 @@ impl RnAppWindow {
             .map(|(found, _)| found)
     }
 
-    /// sets all unselected tabs inactive.
+    /// Set all unselected tabs inactive.
     ///
     /// Currently this clears the rendering and deinits the current pen of the engine in the tabs.
     ///
-    /// To set a tab active again and reinit all necessary state, use `engine().borrow_mut().set_active(true)`.
+    /// To set a tab active again and reinit all necessary state, use `engine_mut().set_active(true)`.
     pub(crate) fn set_unselected_tabs_inactive(&self) {
         for inactive_page in self
             .overlays()
@@ -398,10 +397,26 @@ impl RnAppWindow {
                 .downcast::<RnCanvasWrapper>()
                 .unwrap()
                 .canvas();
-
             // no need to handle the widget flags, since the tabs become inactive
-            let _ = canvas.engine().borrow_mut().set_active(false);
+            let _ = canvas.engine_mut().set_active(false);
         }
+    }
+
+    /// Request to close the given tab.
+    ///
+    /// This must then be followed up by close_tab_finish() with confirm = true to close the tab,
+    /// or confirm = false to revert.
+    pub(crate) fn close_tab_request(&self, tab_page: &adw::TabPage) {
+        self.overlays().tabview().close_page(tab_page);
+    }
+
+    /// Complete a close_tab_request.
+    ///
+    /// Closes the given tab when confirm is true, else reverts so that close_tab_request() can be called again.
+    pub(crate) fn close_tab_finish(&self, tab_page: &adw::TabPage, confirm: bool) {
+        self.overlays()
+            .tabview()
+            .close_page_finish(tab_page, confirm);
     }
 
     pub(crate) fn refresh_titles(&self, active_tab: &RnCanvasWrapper) {
@@ -432,7 +447,7 @@ impl RnAppWindow {
         self.mainheader().main_title().set_subtitle(&subtitle);
     }
 
-    /// Opens the file, with import dialogs when appropriate.
+    /// Open the file, with import dialogs when appropriate.
     ///
     /// When the file is a rnote save file, `rnote_file_new_tab` determines if a new tab is opened, or if it overwrites the current active one.
     pub(crate) fn open_file_w_dialogs(
@@ -479,22 +494,31 @@ impl RnAppWindow {
                 }
             }
             crate::utils::FileType::XoppFile => {
-                // open a new tab for xopp file import
-                let new_tab = self.new_tab();
-                let canvas = new_tab
-                    .child()
-                    .downcast::<RnCanvasWrapper>()
-                    .unwrap()
-                    .canvas();
+                glib::MainContext::default().spawn_local(clone!(@weak input_file, @weak self as appwindow => async move {
+                    // open a new tab for xopp file import
+                    let new_tab = appwindow.new_tab();
+                    let canvas = new_tab
+                        .child()
+                        .downcast::<RnCanvasWrapper>()
+                        .unwrap()
+                        .canvas();
 
-                dialogs::import::dialog_import_xopp_w_prefs(self, &canvas, input_file);
+                    dialogs::import::dialog_import_xopp_w_prefs(&appwindow, &canvas, input_file).await;
+                }));
             }
             crate::utils::FileType::PdfFile => {
-                dialogs::import::dialog_import_pdf_w_prefs(
-                    self,
-                    &self.active_tab().canvas(),
-                    input_file,
-                    target_pos,
+                glib::MainContext::default().spawn_local(
+                    clone!(@weak input_file, @weak self as appwindow => async move {
+                        let canvas =
+                            appwindow.active_tab().canvas();
+
+                        dialogs::import::dialog_import_pdf_w_prefs(
+                            &appwindow,
+                            &canvas,
+                            input_file,
+                            target_pos,
+                        ).await;
+                    }),
                 );
             }
             crate::utils::FileType::Folder => {
@@ -510,7 +534,7 @@ impl RnAppWindow {
         }
     }
 
-    /// Loads in a file of any supported type into the engine of the given canvas.
+    /// Load in a file of any supported type into the engine of the given canvas.
     ///
     /// ! if the file is a rnote save file, it will overwrite the state in the active tab so there should be a user prompt to confirm before this is called
     pub(crate) fn load_in_file(
@@ -596,23 +620,19 @@ impl RnAppWindow {
         Ok(())
     }
 
-    /// Refreshes the UI from the engine state from the given tab page.
+    /// Refresh the UI from the engine state from the given tab page.
     pub(crate) fn refresh_ui_from_engine(&self, active_tab: &RnCanvasWrapper) {
         let canvas = active_tab.canvas();
 
         // Avoids already borrowed
-        let format = canvas.engine().borrow().document.format;
-        let doc_layout = canvas.engine().borrow().document.layout;
-        let pen_sounds = canvas.engine().borrow().pen_sounds();
-        let pen_style = canvas
-            .engine()
-            .borrow()
-            .penholder
-            .current_pen_style_w_override();
+        let format = canvas.engine_ref().document.format;
+        let doc_layout = canvas.engine_ref().document.layout;
+        let pen_sounds = canvas.engine_ref().pen_sounds();
+        let pen_style = canvas.engine_ref().penholder.current_pen_style_w_override();
 
         // Undo / redo
-        let can_undo = canvas.engine().borrow().can_undo();
-        let can_redo = canvas.engine().borrow().can_redo();
+        let can_undo = canvas.engine_ref().can_undo();
+        let can_redo = canvas.engine_ref().can_redo();
 
         self.overlays().undo_button().set_sensitive(can_undo);
         self.overlays().redo_button().set_sensitive(can_redo);
@@ -648,20 +668,18 @@ impl RnAppWindow {
                     .sidebar_stack()
                     .set_visible_child_name("brush_page");
 
-                let style = canvas.engine().borrow().pens_config.brush_config.style;
+                let style = canvas.engine_ref().pens_config.brush_config.style;
                 match style {
                     BrushStyle::Marker => {
                         let stroke_color = canvas
-                            .engine()
-                            .borrow()
+                            .engine_ref()
                             .pens_config
                             .brush_config
                             .marker_options
                             .stroke_color
                             .unwrap_or(Color::TRANSPARENT);
                         let fill_color = canvas
-                            .engine()
-                            .borrow()
+                            .engine_ref()
                             .pens_config
                             .brush_config
                             .marker_options
@@ -676,16 +694,14 @@ impl RnAppWindow {
                     }
                     BrushStyle::Solid => {
                         let stroke_color = canvas
-                            .engine()
-                            .borrow()
+                            .engine_ref()
                             .pens_config
                             .brush_config
                             .solid_options
                             .stroke_color
                             .unwrap_or(Color::TRANSPARENT);
                         let fill_color = canvas
-                            .engine()
-                            .borrow()
+                            .engine_ref()
                             .pens_config
                             .brush_config
                             .solid_options
@@ -700,8 +716,7 @@ impl RnAppWindow {
                     }
                     BrushStyle::Textured => {
                         let stroke_color = canvas
-                            .engine()
-                            .borrow()
+                            .engine_ref()
                             .pens_config
                             .brush_config
                             .textured_options
@@ -720,20 +735,18 @@ impl RnAppWindow {
                     .sidebar_stack()
                     .set_visible_child_name("shaper_page");
 
-                let style = canvas.engine().borrow().pens_config.shaper_config.style;
+                let style = canvas.engine_ref().pens_config.shaper_config.style;
                 match style {
                     ShaperStyle::Smooth => {
                         let stroke_color = canvas
-                            .engine()
-                            .borrow()
+                            .engine_ref()
                             .pens_config
                             .shaper_config
                             .smooth_options
                             .stroke_color
                             .unwrap_or(Color::TRANSPARENT);
                         let fill_color = canvas
-                            .engine()
-                            .borrow()
+                            .engine_ref()
                             .pens_config
                             .shaper_config
                             .smooth_options
@@ -748,16 +761,14 @@ impl RnAppWindow {
                     }
                     ShaperStyle::Rough => {
                         let stroke_color = canvas
-                            .engine()
-                            .borrow()
+                            .engine_ref()
                             .pens_config
                             .shaper_config
                             .rough_options
                             .stroke_color
                             .unwrap_or(Color::TRANSPARENT);
                         let fill_color = canvas
-                            .engine()
-                            .borrow()
+                            .engine_ref()
                             .pens_config
                             .shaper_config
                             .rough_options
@@ -780,8 +791,7 @@ impl RnAppWindow {
                     .set_visible_child_name("typewriter_page");
 
                 let text_color = canvas
-                    .engine()
-                    .borrow()
+                    .engine_ref()
                     .pens_config
                     .typewriter_config
                     .text_style
@@ -841,13 +851,13 @@ impl RnAppWindow {
         self.refresh_titles(active_tab);
     }
 
-    /// Syncs the state from the previous active tab and the current one. Used when the selected tab changes.
+    /// Sync the state from the previous active tab and the current one. Used when the selected tab changes.
     pub(crate) fn sync_state_between_tabs(
         &self,
         prev_tab: &adw::TabPage,
         active_tab: &adw::TabPage,
     ) {
-        if prev_tab == active_tab {
+        if *prev_tab == *active_tab {
             return;
         }
         let prev_canvas_wrapper = prev_tab.child().downcast::<RnCanvasWrapper>().unwrap();
@@ -858,10 +868,8 @@ impl RnAppWindow {
 
         // extra scope for engine borrow
         {
-            let prev_engine = prev_canvas.engine();
-            let prev_engine = prev_engine.borrow();
-            let active_engine = active_canvas.engine();
-            let mut active_engine = active_engine.borrow_mut();
+            let prev_engine = prev_canvas.engine_ref();
+            let mut active_engine = active_canvas.engine_mut();
 
             active_engine.pens_config = prev_engine.pens_config.clone();
             active_engine.penholder.shortcuts = prev_engine.penholder.shortcuts.clone();

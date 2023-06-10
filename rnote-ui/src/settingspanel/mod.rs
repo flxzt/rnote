@@ -8,7 +8,7 @@ pub(crate) use penshortcutrow::RnPenShortcutRow;
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
 use adw::prelude::*;
-use gettextrs::gettext;
+use gettextrs::pgettext;
 use gtk4::{
     gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorDialogButton,
     CompositeTemplate, MenuButton, ScrolledWindow, SpinButton, StringList, Switch, ToggleButton,
@@ -20,7 +20,6 @@ use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
 use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
-use std::rc::Rc;
 
 mod imp {
     use super::*;
@@ -28,7 +27,7 @@ mod imp {
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/settingspanel.ui")]
     pub(crate) struct RnSettingsPanel {
-        pub(crate) temporary_format: Rc<RefCell<Format>>,
+        pub(crate) temporary_format: RefCell<Format>,
 
         #[template_child]
         pub(crate) settings_scroller: TemplateChild<ScrolledWindow>,
@@ -172,6 +171,7 @@ mod imp {
         }
 
         fn dispose(&self) {
+            self.dispose_template();
             while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
@@ -374,7 +374,7 @@ impl RnSettingsPanel {
         let imp = self.imp();
         let canvas = active_tab.canvas();
 
-        let format_border_color = canvas.engine().borrow().document.format.border_color;
+        let format_border_color = canvas.engine_ref().document.format.border_color;
 
         imp.doc_format_border_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
@@ -383,7 +383,7 @@ impl RnSettingsPanel {
     fn refresh_format_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
-        let format = canvas.engine().borrow().document.format;
+        let format = canvas.engine_ref().document.format;
         *self.imp().temporary_format.borrow_mut() = format;
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
@@ -398,8 +398,8 @@ impl RnSettingsPanel {
     fn refresh_doc_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
-        let background = canvas.engine().borrow().document.background;
-        let format = canvas.engine().borrow().document.format;
+        let background = canvas.engine_ref().document.background;
+        let format = canvas.engine_ref().document.format;
 
         imp.doc_background_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
@@ -419,7 +419,7 @@ impl RnSettingsPanel {
     fn refresh_shortcuts_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
-        let current_shortcuts = canvas.engine().borrow().penholder.list_current_shortcuts();
+        let current_shortcuts = canvas.engine_ref().penholder.list_current_shortcuts();
 
         current_shortcuts
             .into_iter()
@@ -557,7 +557,6 @@ impl RnSettingsPanel {
 
     fn setup_format(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        let temporary_format = imp.temporary_format.clone();
 
         // revert format
         imp.format_revert_button.get().connect_clicked(
@@ -568,13 +567,13 @@ impl RnSettingsPanel {
 
         // Apply format
         imp.format_apply_button.get().connect_clicked(
-            clone!(@weak temporary_format, @weak self as settingspanel, @weak appwindow => move |_| {
+            clone!(@weak self as settingspanel, @weak appwindow => move |_| {
                 let imp = settingspanel.imp();
-                let temporary_format = *temporary_format.borrow();
                 let canvas = appwindow.active_tab().canvas();
+                let temporary_format = *imp.temporary_format.borrow();
 
-                canvas.engine().borrow_mut().document.format = temporary_format;
-                let widget_flags = canvas.engine().borrow_mut().doc_resize_to_fit_strokes();
+                canvas.engine_mut().document.format = temporary_format;
+                let widget_flags = canvas.engine_mut().doc_resize_to_fit_strokes();
                 canvas.update_rendering_current_viewport();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
 
@@ -591,26 +590,28 @@ impl RnSettingsPanel {
             let format_border_color = button.rgba().into_compose_color();
             let canvas = appwindow.active_tab().canvas();
 
-            canvas.engine().borrow_mut().document.format.border_color = format_border_color;
+            canvas.engine_mut().document.format.border_color = format_border_color;
             // Because the format border color is applied immediately to the engine,
             // we need to update the temporary format too.
             settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
             canvas.update_rendering_current_viewport();
         }));
 
-        imp.doc_background_color_button.connect_rgba_notify(clone!(@weak appwindow => move |button| {
-            let canvas = appwindow.active_tab().canvas();
+        imp.doc_background_color_button.connect_rgba_notify(
+            clone!(@weak appwindow => move |button| {
+                let canvas = appwindow.active_tab().canvas();
 
-            canvas.engine().borrow_mut().document.background.color = button.rgba().into_compose_color();
-            canvas.background_regenerate_pattern();
-            canvas.update_rendering_current_viewport();
-        }));
+                canvas.engine_mut().document.background.color = button.rgba().into_compose_color();
+                canvas.background_regenerate_pattern();
+                canvas.update_rendering_current_viewport();
+            }),
+        );
 
         imp.doc_background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_| {
             let pattern = settings_panel.background_pattern();
             let canvas = appwindow.active_tab().canvas();
 
-            canvas.engine().borrow_mut().document.background.pattern = pattern;
+            canvas.engine_mut().document.background.pattern = pattern;
 
             match pattern {
                 PatternStyle::None => {
@@ -646,35 +647,39 @@ impl RnSettingsPanel {
         imp.doc_background_pattern_color_button.connect_rgba_notify(clone!(@weak appwindow => move |button| {
             let canvas = appwindow.active_tab().canvas();
 
-            canvas.engine().borrow_mut().document.background.pattern_color = button.rgba().into_compose_color();
+            canvas.engine_mut().document.background.pattern_color = button.rgba().into_compose_color();
             canvas.background_regenerate_pattern();
             canvas.update_rendering_current_viewport();
         }));
 
-        imp.doc_background_pattern_width_unitentry.get().connect_notify_local(
-            Some("value"),
-            clone!(@weak self as settings_panel, @weak appwindow => move |unit_entry, _| {
-                    let canvas = appwindow.active_tab().canvas();
+        imp.doc_background_pattern_width_unitentry
+            .get()
+            .connect_notify_local(
+                Some("value"),
+                clone!(@weak self as settings_panel, @weak appwindow => move |unit_entry, _| {
+                        let canvas = appwindow.active_tab().canvas();
 
-                    let mut pattern_size = canvas.engine().borrow().document.background.pattern_size;
-                    pattern_size[0] = unit_entry.value_in_px();
-                    canvas.engine().borrow_mut().document.background.pattern_size = pattern_size;
-                    canvas.background_regenerate_pattern();
-                    canvas.update_rendering_current_viewport();
-            }),
-        );
+                        let mut pattern_size = canvas.engine_ref().document.background.pattern_size;
+                        pattern_size[0] = unit_entry.value_in_px();
+                        canvas.engine_mut().document.background.pattern_size = pattern_size;
+                        canvas.background_regenerate_pattern();
+                        canvas.update_rendering_current_viewport();
+                }),
+            );
 
-        imp.doc_background_pattern_height_unitentry.get().connect_notify_local(
-            Some("value"),
-            clone!(@weak self as settings_panel, @weak appwindow => move |unit_entry, _| {
-                    let canvas = appwindow.active_tab().canvas();
-                    let mut pattern_size = canvas.engine().borrow().document.background.pattern_size;
-                    pattern_size[1] = unit_entry.value_in_px();
-                    canvas.engine().borrow_mut().document.background.pattern_size = pattern_size;
-                    canvas.background_regenerate_pattern();
-                    canvas.update_rendering_current_viewport();
-            }),
-        );
+        imp.doc_background_pattern_height_unitentry
+            .get()
+            .connect_notify_local(
+                Some("value"),
+                clone!(@weak self as settings_panel, @weak appwindow => move |unit_entry, _| {
+                        let canvas = appwindow.active_tab().canvas();
+                        let mut pattern_size = canvas.engine_ref().document.background.pattern_size;
+                        pattern_size[1] = unit_entry.value_in_px();
+                        canvas.engine_mut().document.background.pattern_size = pattern_size;
+                        canvas.background_regenerate_pattern();
+                        canvas.update_rendering_current_viewport();
+                }),
+            );
     }
 
     fn setup_shortcuts(&self, appwindow: &RnAppWindow) {
@@ -693,49 +698,49 @@ impl RnSettingsPanel {
 
         imp.penshortcut_stylus_button_primary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_primary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_primary_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::StylusPrimaryButton, action);
+            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::StylusPrimaryButton, action);
             None
         }));
 
         imp.penshortcut_stylus_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_secondary_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::StylusSecondaryButton, action);
+            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::StylusSecondaryButton, action);
             None
         }));
 
         imp.penshortcut_mouse_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_mouse_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_mouse_button_secondary_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::MouseSecondaryButton, action);
+            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::MouseSecondaryButton, action);
             None
         }));
 
         imp.penshortcut_touch_two_finger_long_press_row.connect_local("action-changed", false, clone!(@weak penshortcut_touch_two_finger_long_press_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_touch_two_finger_long_press_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::TouchTwoFingerLongPress, action);
+            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::TouchTwoFingerLongPress, action);
             None
         }));
 
         imp.penshortcut_drawing_pad_button_0.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_0, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_drawing_pad_button_0.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton0, action);
+            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton0, action);
             None
         }));
 
         imp.penshortcut_drawing_pad_button_1.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_1, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_drawing_pad_button_1.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton1, action);
+            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton1, action);
             None
         }));
 
         imp.penshortcut_drawing_pad_button_2.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_2, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_drawing_pad_button_2.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton2, action);
+            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton2, action);
             None
         }));
 
         imp.penshortcut_drawing_pad_button_3.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_3, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_drawing_pad_button_3.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton3, action);
+            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton3, action);
             None
         }));
     }
@@ -743,8 +748,8 @@ impl RnSettingsPanel {
     fn revert_format(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
         let canvas = appwindow.active_tab().canvas();
-        *imp.temporary_format.borrow_mut() = canvas.engine().borrow().document.format;
-        let revert_format = canvas.engine().borrow().document.format;
+        *imp.temporary_format.borrow_mut() = canvas.engine_ref().document.format;
+        let revert_format = canvas.engine_ref().document.format;
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
         imp.format_dpi_adj.set_value(revert_format.dpi);
@@ -780,24 +785,24 @@ const CURSORS_LIST: &[&str] = &[
 
 fn cursors_list_to_display_name(icon_name: &str) -> String {
     match icon_name {
-        "cursor-crosshair-small" => gettext("Crosshair (Small)"),
-        "cursor-crosshair-medium" => gettext("Crosshair (Medium)"),
-        "cursor-crosshair-large" => gettext("Crosshair (Large)"),
-        "cursor-dot-small" => gettext("Dot (Small)"),
-        "cursor-dot-medium" => gettext("Dot (Medium)"),
-        "cursor-dot-large" => gettext("Dot (Large)"),
-        "cursor-teardrop-nw-small" => gettext("Teardrop North-West (Small)"),
-        "cursor-teardrop-nw-medium" => gettext("Teardrop North-West (Medium)"),
-        "cursor-teardrop-nw-large" => gettext("Teardrop North-West (Large)"),
-        "cursor-teardrop-ne-small" => gettext("Teardrop North-East (Small)"),
-        "cursor-teardrop-ne-medium" => gettext("Teardrop North-East (Medium)"),
-        "cursor-teardrop-ne-large" => gettext("Teardrop North-East (Large)"),
-        "cursor-teardrop-n-small" => gettext("Teardrop North (Small)"),
-        "cursor-teardrop-n-medium" => gettext("Teardrop North (Medium)"),
-        "cursor-teardrop-n-large" => gettext("Teardrop North (Large)"),
-        "cursor-beam-small" => gettext("Beam (Small)"),
-        "cursor-beam-medium" => gettext("Beam (Medium)"),
-        "cursor-beam-large" => gettext("Beam (Large)"),
+        "cursor-crosshair-small" => pgettext("a cursor type", "Crosshair (Small)"),
+        "cursor-crosshair-medium" => pgettext("a cursor type", "Crosshair (Medium)"),
+        "cursor-crosshair-large" => pgettext("a cursor type", "Crosshair (Large)"),
+        "cursor-dot-small" => pgettext("a cursor type", "Dot (Small)"),
+        "cursor-dot-medium" => pgettext("a cursor type", "Dot (Medium)"),
+        "cursor-dot-large" => pgettext("a cursor type", "Dot (Large)"),
+        "cursor-teardrop-nw-small" => pgettext("a cursor type", "Teardrop North-West (Small)"),
+        "cursor-teardrop-nw-medium" => pgettext("a cursor type", "Teardrop North-West (Medium)"),
+        "cursor-teardrop-nw-large" => pgettext("a cursor type", "Teardrop North-West (Large)"),
+        "cursor-teardrop-ne-small" => pgettext("a cursor type", "Teardrop North-East (Small)"),
+        "cursor-teardrop-ne-medium" => pgettext("a cursor type", "Teardrop North-East (Medium)"),
+        "cursor-teardrop-ne-large" => pgettext("a cursor type", "Teardrop North-East (Large)"),
+        "cursor-teardrop-n-small" => pgettext("a cursor type", "Teardrop North (Small)"),
+        "cursor-teardrop-n-medium" => pgettext("a cursor type", "Teardrop North (Medium)"),
+        "cursor-teardrop-n-large" => pgettext("a cursor type", "Teardrop North (Large)"),
+        "cursor-beam-small" => pgettext("a cursor type", "Beam (Small)"),
+        "cursor-beam-medium" => pgettext("a cursor type", "Beam (Medium)"),
+        "cursor-beam-large" => pgettext("a cursor type", "Beam (Large)"),
         _ => unimplemented!(),
     }
 }

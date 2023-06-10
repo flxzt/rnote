@@ -467,10 +467,16 @@ impl StrokeStore {
                 self.stroke_components.get(key),
                 self.render_components.get(key),
             ) {
-                // if stroke currently does not have a rendering, draw a placeholder for the given stroke bounds
-                if render_comp.rendernodes.is_empty() {
+                // if the stroke currently does not have a rendering and is will create one,
+                // draw a placeholder filled rect
+                if render_comp.rendernodes.is_empty()
+                    && matches!(
+                        render_comp.state,
+                        RenderCompState::Dirty | RenderCompState::BusyRenderingInTask
+                    )
+                {
                     snapshot.append_color(
-                        &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_alpha(0.564)),
+                        &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_alpha(0.13)),
                         &graphene::Rect::from_p2d_aabb(stroke.bounds()),
                     );
                 }

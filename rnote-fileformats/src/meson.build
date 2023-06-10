@@ -4,5 +4,6 @@ rnote_fileformats_sources = files(
     'rnoteformat/mod.rs',
     'rnoteformat/maj0min5patch8.rs',
     'rnoteformat/maj0min5patch9.rs',
+    'rnoteformat/maj0min6.rs',
     'xoppformat.rs',
 )

@@ -28,7 +28,6 @@ pub use typewriter::Typewriter;
 use self::penbehaviour::PenProgress;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawOnDocBehaviour, WidgetFlags};
-use gtk4::glib;
 use piet_cairo::CairoRenderContext;
 use rnote_compose::penevents::PenEvent;
 use serde::{Deserialize, Serialize};
@@ -51,6 +50,28 @@ impl Default for Pen {
 }
 
 impl PenBehaviour for Pen {
+    fn init(&mut self, engine_view: &EngineView) -> WidgetFlags {
+        match self {
+            Pen::Brush(brush) => brush.init(engine_view),
+            Pen::Shaper(shaper) => shaper.init(engine_view),
+            Pen::Typewriter(typewriter) => typewriter.init(engine_view),
+            Pen::Eraser(eraser) => eraser.init(engine_view),
+            Pen::Selector(selector) => selector.init(engine_view),
+            Pen::Tools(tools) => tools.init(engine_view),
+        }
+    }
+
+    fn deinit(&mut self) -> WidgetFlags {
+        match self {
+            Pen::Brush(brush) => brush.deinit(),
+            Pen::Shaper(shaper) => shaper.deinit(),
+            Pen::Typewriter(typewriter) => typewriter.deinit(),
+            Pen::Eraser(eraser) => eraser.deinit(),
+            Pen::Selector(selector) => selector.deinit(),
+            Pen::Tools(tools) => tools.deinit(),
+        }
+    }
+
     fn style(&self) -> PenStyle {
         match self {
             Pen::Brush(brush) => brush.style(),
@@ -92,7 +113,7 @@ impl PenBehaviour for Pen {
     fn fetch_clipboard_content(
         &self,
         engine_view: &EngineView,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         match self {
             Pen::Brush(brush) => brush.fetch_clipboard_content(engine_view),
             Pen::Shaper(shaper) => shaper.fetch_clipboard_content(engine_view),
@@ -106,7 +127,7 @@ impl PenBehaviour for Pen {
     fn cut_clipboard_content(
         &mut self,
         engine_view: &mut EngineViewMut,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         match self {
             Pen::Brush(brush) => brush.cut_clipboard_content(engine_view),
             Pen::Shaper(shaper) => shaper.cut_clipboard_content(engine_view),
@@ -152,8 +173,6 @@ impl DrawOnDocBehaviour for Pen {
     Clone,
     Copy,
     Debug,
-    glib::Enum,
-    glib::Variant,
     Serialize,
     Deserialize,
     PartialOrd,
@@ -162,27 +181,18 @@ impl DrawOnDocBehaviour for Pen {
     num_derive::FromPrimitive,
     num_derive::ToPrimitive,
 )]
-#[repr(u32)]
-#[enum_type(name = "PenStyle")]
-#[variant_enum(enum)]
 #[serde(rename = "pen_style")]
 pub enum PenStyle {
-    #[enum_value(name = "Brush", nick = "brush")]
     #[serde(rename = "brush")]
     Brush,
-    #[enum_value(name = "Shaper", nick = "shaper")]
     #[serde(rename = "shaper")]
     Shaper,
-    #[enum_value(name = "Typewriter", nick = "typewriter")]
     #[serde(rename = "typewriter")]
     Typewriter,
-    #[enum_value(name = "Eraser", nick = "eraser")]
     #[serde(rename = "eraser")]
     Eraser,
-    #[enum_value(name = "Selector", nick = "selector")]
     #[serde(rename = "selector")]
     Selector,
-    #[enum_value(name = "Tools", nick = "tools")]
     #[serde(rename = "tools")]
     Tools,
 }
@@ -199,6 +209,37 @@ impl TryFrom<u32> for PenStyle {
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         num_traits::FromPrimitive::from_u32(value)
             .ok_or_else(|| anyhow::anyhow!("PenStyle try_from::<u32>() for value {} failed", value))
+    }
+}
+
+impl std::str::FromStr for PenStyle {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "brush" => Ok(Self::Brush),
+            "shaper" => Ok(Self::Shaper),
+            "typewriter" => Ok(Self::Typewriter),
+            "eraser" => Ok(Self::Eraser),
+            "selector" => Ok(Self::Selector),
+            "tools" => Ok(Self::Tools),
+            s => Err(anyhow::anyhow!(
+                "PenStyle::from_str() failed, invalid name {s}"
+            )),
+        }
+    }
+}
+
+impl std::string::ToString for PenStyle {
+    fn to_string(&self) -> String {
+        match self {
+            PenStyle::Brush => String::from("brush"),
+            PenStyle::Shaper => String::from("shaper"),
+            PenStyle::Typewriter => String::from("typewriter"),
+            PenStyle::Eraser => String::from("eraser"),
+            PenStyle::Selector => String::from("selector"),
+            PenStyle::Tools => String::from("tools"),
+        }
     }
 }
 

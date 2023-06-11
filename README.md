@@ -56,7 +56,7 @@ Rnote has a project website: [rnote.flxzt.net](https://rnote.flxzt.net/)
 Download the official flatpak on Flathub [here](https://flathub.org/apps/details/com.github.flxzt.rnote).
 
 <div align="start">
-<a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width="250" alt='Download on Flathub' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/flathub-badge.png'/></a>
+<a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width="250" alt='Download on Flathub' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/flathub-badge.svg'/></a>
 </div><br>
 
 ### MacOS

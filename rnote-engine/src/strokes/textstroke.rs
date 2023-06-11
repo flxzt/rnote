@@ -2,7 +2,6 @@
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::{render, strokes::strokebehaviour, Camera, DrawBehaviour};
-use gtk4::pango;
 use kurbo::Shape;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -48,26 +47,6 @@ impl From<FontStyle> for piet::FontStyle {
     }
 }
 
-impl From<pango::Style> for FontStyle {
-    fn from(pango_style: pango::Style) -> Self {
-        match pango_style {
-            pango::Style::Normal => Self::Regular,
-            pango::Style::Oblique => Self::Italic,
-            pango::Style::Italic => Self::Italic,
-            _ => Self::Regular,
-        }
-    }
-}
-
-impl From<FontStyle> for pango::Style {
-    fn from(font_style: FontStyle) -> Self {
-        match font_style {
-            FontStyle::Regular => pango::Style::Normal,
-            FontStyle::Italic => pango::Style::Italic,
-        }
-    }
-}
-
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename = "text_style")]
 pub enum TextAlignment {
@@ -99,22 +78,6 @@ impl From<TextAlignment> for piet::TextAlignment {
             TextAlignment::Center => piet::TextAlignment::Center,
             TextAlignment::End => piet::TextAlignment::End,
             TextAlignment::Fill => piet::TextAlignment::Justified,
-        }
-    }
-}
-
-impl TextAlignment {
-    #[allow(unused)]
-    pub fn from_pango_layout(pango_layout: pango::Layout) -> Self {
-        if pango_layout.is_justify() {
-            Self::Fill
-        } else {
-            match pango_layout.alignment() {
-                pango::Alignment::Left => Self::Start,
-                pango::Alignment::Center => Self::Center,
-                pango::Alignment::Right => Self::End,
-                _ => Self::Start,
-            }
         }
     }
 }
@@ -370,7 +333,7 @@ impl TextStyle {
     ) -> anyhow::Result<()> {
         const CURSOR_COLOR: piet::Color = color::GNOME_DARKS[2];
         const CURSOR_OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[0];
-        let text_cursor_width = 3.0 / camera.total_zoom();
+        let text_cursor_width = 2.0 / camera.total_zoom();
 
         if let Ok(cursor_line_metric) =
             self.cursor_line_metric(cx.text(), text.clone(), cursor.cur_cursor())
@@ -389,8 +352,18 @@ impl TextStyle {
                     ),
                 );
 
-            cx.stroke(text_cursor, &CURSOR_OUTLINE_COLOR, text_cursor_width);
-            cx.stroke(text_cursor, &CURSOR_COLOR, text_cursor_width * 0.7);
+            cx.stroke_styled(
+                text_cursor,
+                &CURSOR_OUTLINE_COLOR,
+                text_cursor_width,
+                &piet::StrokeStyle::default().line_cap(piet::LineCap::Butt),
+            );
+            cx.stroke_styled(
+                text_cursor,
+                &CURSOR_COLOR,
+                text_cursor_width * 0.8,
+                &piet::StrokeStyle::default().line_cap(piet::LineCap::Butt),
+            );
         }
 
         Ok(())
@@ -405,20 +378,18 @@ impl TextStyle {
         transform: &Transform,
         camera: &Camera,
     ) {
-        static OUTLINE_COLOR: Lazy<piet::Color> =
-            Lazy::new(|| color::GNOME_BLUES[2].with_alpha(0.941));
-        static FILL_COLOR: Lazy<piet::Color> =
-            Lazy::new(|| color::GNOME_BLUES[0].with_alpha(0.090));
+        static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[2]);
+        static FILL_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[1].with_alpha(0.1));
         let outline_width = 1.5 / camera.total_zoom();
 
         if let Ok(selection_rects) =
             self.get_selection_rects_for_cursors(text, cursor, selection_cursor)
         {
             for selection_rect in selection_rects {
-                let selection_rectpath = transform.to_kurbo() * selection_rect.to_path(0.1);
+                let outline = transform.to_kurbo() * selection_rect.to_path(0.5);
 
-                cx.fill(selection_rectpath.clone(), &*FILL_COLOR);
-                cx.stroke(selection_rectpath, &*OUTLINE_COLOR, outline_width);
+                cx.fill(&outline, &*FILL_COLOR);
+                cx.stroke(&outline, &*OUTLINE_COLOR, outline_width);
             }
         }
     }
@@ -470,10 +441,8 @@ impl ShapeBehaviour for TextStroke {
             .unwrap_or_else(|| na::Vector2::repeat(self.text_style.font_size))
             .maxs(&na::vector![1.0, 1.0]);
 
-        self.transform.transform_aabb(Aabb::new(
-            na::point![0.0, 0.0],
-            na::Point2::from(untransformed_size),
-        ))
+        self.transform
+            .transform_aabb(Aabb::new(na::point![0.0, 0.0], untransformed_size.into()))
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {
@@ -500,12 +469,14 @@ impl ShapeBehaviour for TextStroke {
         let text_size = text_layout.size();
 
         if hitboxes.is_empty() {
-            hitboxes.push(self.transform.transform_aabb(Aabb::new_positive(
-                na::point![0.0, 0.0],
-                na::Point2::from(
-                    na::vector![text_size.width, text_size.height].maxs(&na::vector![1.0, 1.0]),
-                ),
-            )))
+            hitboxes.push(
+                self.transform.transform_aabb(Aabb::new_positive(
+                    na::point![0.0, 0.0],
+                    na::vector![text_size.width, text_size.height]
+                        .maxs(&na::vector![1.0, 1.0])
+                        .into(),
+                )),
+            )
         }
 
         hitboxes
@@ -617,7 +588,10 @@ impl TextStroke {
             .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone())
             .map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let hit_test_point = text_layout.hit_test_point(
-            (self.transform.affine.inverse() * na::Point2::from(coord))
+            self.transform
+                .affine
+                .inverse()
+                .transform_point(&coord.into())
                 .coords
                 .to_kurbo_point(),
         );

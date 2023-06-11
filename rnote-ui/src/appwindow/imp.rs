@@ -134,6 +134,13 @@ impl ObjectImpl for RnAppWindow {
         self.setup_input();
     }
 
+    fn dispose(&self) {
+        self.dispose_template();
+        while let Some(child) = self.obj().first_child() {
+            child.unparent();
+        }
+    }
+
     fn properties() -> &'static [glib::ParamSpec] {
         static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
             vec![

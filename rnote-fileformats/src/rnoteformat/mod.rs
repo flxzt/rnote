@@ -6,12 +6,14 @@
 // Modules
 pub(crate) mod maj0min5patch8;
 pub(crate) mod maj0min5patch9;
+pub(crate) mod maj0min6;
 
 // Imports
+use self::maj0min5patch8::RnoteFileMaj0Min5Patch8;
+use self::maj0min5patch9::RnoteFileMaj0Min5Patch9;
+use self::maj0min6::RnoteFileMaj0Min6;
 use crate::{FileFormatLoader, FileFormatSaver};
 use anyhow::Context;
-use maj0min5patch8::RnoteFileMaj0Min5Patch8;
-use maj0min5patch9::RnoteFileMaj0Min5Patch9;
 use serde::{Deserialize, Serialize};
 use std::io::{Read, Write};
 
@@ -52,46 +54,41 @@ struct RnotefileWrapper {
 /// The Rnote file in the newest format version. The actual (de-) serialization into strong types is happening in `rnote-engine`.
 ///
 /// This struct exists to allow for upgrading older versions before loading the file in.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "rnotefile")]
-pub struct RnoteFile {
-    /// A snapshot of the engine.
-    #[serde(rename = "engine_snapshot")]
-    pub engine_snapshot: serde_json::Value,
+pub type RnoteFile = RnoteFileMaj0Min6;
+
+impl RnoteFile {
+    pub const SEMVER: &str = "0.6.0";
 }
 
 impl FileFormatLoader for RnoteFile {
-    fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<RnoteFile> {
-        let decompressed = String::from_utf8(
-            decompress_from_gzip(bytes).context("decompress_from_gzip() failed")?,
+    fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self> {
+        let wrapper = serde_json::from_slice::<RnotefileWrapper>(
+            &decompress_from_gzip(bytes).context("decompress_from_gzip() failed")?,
         )
-        .context("String::from_utf8() with unzipped data failed")?;
+        .context("from_slice() for RnoteFileWrapper failed")?;
 
-        let wrapped_rnote_file = serde_json::from_str::<RnotefileWrapper>(decompressed.as_str())
-            .context("from_str() for RnoteFileWrapper failed")?;
-
-        // Conversions for older file format versions happens here
+        // Conversions for older file format versions happen here
         if semver::VersionReq::parse(">=0.5.10")
             .unwrap()
-            .matches(&wrapped_rnote_file.version)
+            .matches(&wrapper.version)
         {
-            Ok(serde_json::from_value::<RnoteFile>(wrapped_rnote_file.data)
+            Ok(serde_json::from_value::<Self>(wrapper.data)
                 .context("from_value() for RnoteFile failed")?)
         } else if semver::VersionReq::parse(">=0.5.9")
             .unwrap()
-            .matches(&wrapped_rnote_file.version)
+            .matches(&wrapper.version)
         {
             Ok(Self::try_from(
-                serde_json::from_value::<RnoteFileMaj0Min5Patch9>(wrapped_rnote_file.data)
+                serde_json::from_value::<RnoteFileMaj0Min5Patch9>(wrapper.data)
                     .context("from_value() for RnoteFileMaj0Min5Patch9 failed")?,
             )
             .context("converting from RnoteFileMaj0Min5Patch9 to newest file version failed")?)
         } else if semver::VersionReq::parse(">=0.5.0")
             .unwrap()
-            .matches(&wrapped_rnote_file.version)
+            .matches(&wrapper.version)
         {
             RnoteFileMaj0Min5Patch9::try_from(
-                serde_json::from_value::<RnoteFileMaj0Min5Patch8>(wrapped_rnote_file.data)
+                serde_json::from_value::<RnoteFileMaj0Min5Patch8>(wrapper.data)
                     .context("from_value() for RnoteFileMaj0Min5Patch8 failed")?,
             )
             .and_then(Self::try_from)
@@ -99,7 +96,7 @@ impl FileFormatLoader for RnoteFile {
         } else {
             Err(anyhow::anyhow!(
                 "failed to load rnote file from bytes, unsupported version: {}",
-                wrapped_rnote_file.version
+                wrapper.version
             ))
         }
     }
@@ -108,7 +105,7 @@ impl FileFormatLoader for RnoteFile {
 impl FileFormatSaver for RnoteFile {
     fn save_as_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
         let output = RnotefileWrapper {
-            version: semver::Version::parse("0.6.0").unwrap(),
+            version: semver::Version::parse(Self::SEMVER).unwrap(),
             data: serde_json::to_value(self).context("to_value() for RnoteFile failed")?,
         };
 

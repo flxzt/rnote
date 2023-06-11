@@ -3,8 +3,8 @@ use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DropDown, SpinButton,
     Widget,
 };
+use num_traits::ToPrimitive;
 use once_cell::sync::Lazy;
-use rnote_engine::document::format;
 use rnote_engine::document::format::MeasureUnit;
 use std::cell::Cell;
 
@@ -15,7 +15,7 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/unitentry.ui")]
     pub(crate) struct RnUnitEntry {
         pub(crate) value: Cell<f64>,
-        pub(crate) unit: Cell<format::MeasureUnit>,
+        pub(crate) unit: Cell<MeasureUnit>,
         pub(crate) dpi: Cell<f64>,
 
         #[template_child]
@@ -28,7 +28,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 value: Cell::new(1.0),
-                unit: Cell::new(format::MeasureUnit::Px),
+                unit: Cell::new(MeasureUnit::Px),
                 dpi: Cell::new(96.0),
                 value_spinner: TemplateChild::<SpinButton>::default(),
                 unit_dropdown: TemplateChild::<DropDown>::default(),
@@ -67,52 +67,21 @@ mod imp {
                 .build();
 
             obj.connect_notify_local(Some("unit"), |unit_entry, _pspec| {
-                let unit = unit_entry.unit();
-
-                let unit_dropdown_listmodel = unit_entry
-                    .imp()
-                    .unit_dropdown
-                    .model()
-                    .unwrap()
-                    .downcast::<adw::EnumListModel>()
-                    .unwrap();
-
                 unit_entry
                     .imp()
                     .unit_dropdown
-                    .set_selected(unit_dropdown_listmodel.find_position(unit as i32));
+                    .set_selected(unit_entry.unit().to_u32().unwrap());
             });
 
             self.unit_dropdown.get().connect_selected_notify(
                 clone!(@weak obj as unit_entry => move |unit_dropdown| {
-                    let unit_dropdown_listmodel = unit_entry.imp()
-                        .unit_dropdown
-                        .model()
-                        .unwrap()
-                        .downcast::<adw::EnumListModel>()
-                        .unwrap();
-
-                    let item = unit_dropdown_listmodel.item(unit_dropdown.selected());
-                    if let Some(item) = item {
-                        let unit = match item
-                            .downcast::<adw::EnumListItem>()
-                            .unwrap()
-                            .nick()
-                            .as_str()
-                        {
-                            "px" => format::MeasureUnit::Px,
-                            "mm" => format::MeasureUnit::Mm,
-                            "cm" => format::MeasureUnit::Cm,
-                            _ => unreachable!(),
-                        };
-
-                        unit_entry.set_unit(unit);
-                    };
+                    unit_entry.set_unit(MeasureUnit::try_from(unit_dropdown.selected()).unwrap());
                 }),
             );
         }
 
         fn dispose(&self) {
+            self.dispose_template();
             while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
@@ -126,8 +95,8 @@ mod imp {
                         .maximum(f64::MAX)
                         .default_value(1.0)
                         .build(),
-                    glib::ParamSpecEnum::builder::<format::MeasureUnit>("unit")
-                        .default_value(format::MeasureUnit::Px)
+                    glib::ParamSpecUInt::builder("unit")
+                        .default_value(MeasureUnit::Px.to_u32().unwrap())
                         .build(),
                     glib::ParamSpecDouble::builder("dpi")
                         .minimum(f64::MIN)
@@ -142,7 +111,7 @@ mod imp {
         fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "value" => self.value.get().to_value(),
-                "unit" => self.unit.get().to_value(),
+                "unit" => self.unit.get().to_u32().unwrap().to_value(),
                 "dpi" => self.dpi.get().to_value(),
                 _ => unimplemented!(),
             }
@@ -159,12 +128,13 @@ mod imp {
                     }
                 }
                 "unit" => {
-                    let unit = value
-                        .get::<format::MeasureUnit>()
-                        .expect("The value must be of type 'MeasureUnit'");
+                    let unit = MeasureUnit::try_from(
+                        value.get::<u32>().expect("The value must be of type 'u32'"),
+                    )
+                    .expect("Could not convert u32 to MeasureUnit.");
                     if unit != self.unit.get() {
                         self.configure_spinner(unit, self.dpi.get());
-                        obj.set_value(format::MeasureUnit::convert_measurement(
+                        obj.set_value(MeasureUnit::convert_measurement(
                             self.value.get(),
                             self.unit.get(),
                             self.dpi.get(),
@@ -178,7 +148,7 @@ mod imp {
                     let dpi = value.get::<f64>().expect("The value must be of type 'f64'");
                     if dpi != self.dpi.get() {
                         self.configure_spinner(self.unit.get(), dpi);
-                        obj.set_value(format::MeasureUnit::convert_measurement(
+                        obj.set_value(MeasureUnit::convert_measurement(
                             self.value.get(),
                             self.unit.get(),
                             self.dpi.get(),
@@ -212,14 +182,14 @@ mod imp {
         const DIGITS_CM: u32 = 2;
 
         fn configure_spinner(&self, unit: MeasureUnit, dpi: f64) {
-            let min_val = format::MeasureUnit::convert_measurement(
+            let min_val = MeasureUnit::convert_measurement(
                 Self::MIN_VAL_IN_PX,
                 MeasureUnit::Px,
                 dpi,
                 unit,
                 dpi,
             );
-            let max_val = format::MeasureUnit::convert_measurement(
+            let max_val = MeasureUnit::convert_measurement(
                 Self::MAX_VAL_IN_PX,
                 MeasureUnit::Px,
                 dpi,
@@ -228,17 +198,17 @@ mod imp {
             );
 
             let (step_increment, climb_rate, digits) = match unit {
-                format::MeasureUnit::Px => (
+                MeasureUnit::Px => (
                     Self::STEP_INCREMENT_PX,
                     Self::CLIMB_RATE_PX,
                     Self::DIGITS_PX,
                 ),
-                format::MeasureUnit::Mm => (
+                MeasureUnit::Mm => (
                     Self::STEP_INCREMENT_MM,
                     Self::CLIMB_RATE_MM,
                     Self::DIGITS_MM,
                 ),
-                format::MeasureUnit::Cm => (
+                MeasureUnit::Cm => (
                     Self::STEP_INCREMENT_CM,
                     Self::CLIMB_RATE_CM,
                     Self::DIGITS_CM,
@@ -282,13 +252,14 @@ impl RnUnitEntry {
     }
 
     #[allow(unused)]
-    pub(crate) fn unit(&self) -> format::MeasureUnit {
-        self.property::<format::MeasureUnit>("unit")
+    pub(crate) fn unit(&self) -> MeasureUnit {
+        MeasureUnit::try_from(self.property::<u32>("unit"))
+            .expect("Could not convert u32 to `MeasureUnit`")
     }
 
     #[allow(unused)]
-    pub(crate) fn set_unit(&self, unit: format::MeasureUnit) {
-        self.set_property("unit", unit.to_value());
+    pub(crate) fn set_unit(&self, unit: MeasureUnit) {
+        self.set_property("unit", unit.to_u32().unwrap().to_value());
     }
 
     #[allow(unused)]
@@ -302,19 +273,19 @@ impl RnUnitEntry {
     }
 
     pub(crate) fn value_in_px(&self) -> f64 {
-        format::MeasureUnit::convert_measurement(
+        MeasureUnit::convert_measurement(
             self.value(),
             self.unit(),
             self.dpi(),
-            format::MeasureUnit::Px,
+            MeasureUnit::Px,
             self.dpi(),
         )
     }
 
     pub(crate) fn set_value_in_px(&self, val_px: f64) {
-        self.set_value(format::MeasureUnit::convert_measurement(
+        self.set_value(MeasureUnit::convert_measurement(
             val_px,
-            format::MeasureUnit::Px,
+            MeasureUnit::Px,
             self.dpi(),
             self.unit(),
             self.dpi(),

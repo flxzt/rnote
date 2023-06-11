@@ -36,11 +36,8 @@ pub struct HistoryEntry {
     pub stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
     #[serde(rename = "trash_components")]
     pub trash_components: Arc<SecondaryMap<StrokeKey, Arc<TrashComponent>>>,
-    #[serde(rename = "selection_components")]
-    pub selection_components: Arc<SecondaryMap<StrokeKey, Arc<SelectionComponent>>>,
     #[serde(rename = "chrono_components")]
     pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
-
     #[serde(rename = "chrono_counter")]
     pub chrono_counter: u32,
 }
@@ -50,7 +47,6 @@ impl Default for HistoryEntry {
         Self {
             stroke_components: Arc::new(HopSlotMap::with_key()),
             trash_components: Arc::new(SecondaryMap::new()),
-            selection_components: Arc::new(SecondaryMap::new()),
             chrono_components: Arc::new(SecondaryMap::new()),
 
             chrono_counter: 0,
@@ -85,24 +81,23 @@ pub struct StrokeStore {
     selection_components: Arc<SecondaryMap<StrokeKey, Arc<SelectionComponent>>>,
     #[serde(rename = "chrono_components")]
     chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
-    #[serde(skip)]
-    render_components: SecondaryMap<StrokeKey, RenderComponent>,
-
-    #[serde(skip)]
-    history: VecDeque<Arc<HistoryEntry>>,
-    #[serde(skip)]
-    history_pos: Option<usize>,
-
-    /// An rtree backed by the slotmap store, for faster spatial queries.
-    /// Needs to be updated with update_with_key() when strokes changed their geometry or position!
-    #[serde(skip)]
-    key_tree: KeyTree,
-
     /// Incrementing counter for chrono_components.
     ///
-    /// Value must be equal to the [ChronoComponent] of the newest inserted or modified stroke.
+    /// Value must be kept equal to the [ChronoComponent] of the newest inserted or modified stroke.
     #[serde(rename = "chrono_counter")]
     chrono_counter: u32,
+    #[serde(skip)]
+    render_components: SecondaryMap<StrokeKey, RenderComponent>,
+    #[serde(skip)]
+    history: VecDeque<HistoryEntry>,
+    /// The index of the current live document in the history stack.
+    #[serde(skip)]
+    live_index: usize,
+    /// An rtree backed by the slotmap store, for faster spatial queries.
+    ///
+    /// Needs to be updated with `update_with_key()` when strokes changed their geometry or position!
+    #[serde(skip)]
+    key_tree: KeyTree,
 }
 
 impl Default for StrokeStore {
@@ -114,8 +109,9 @@ impl Default for StrokeStore {
             chrono_components: Arc::new(SecondaryMap::new()),
             render_components: SecondaryMap::new(),
 
-            history: VecDeque::new(),
-            history_pos: None,
+            // Start off with state in the history
+            history: VecDeque::from(vec![HistoryEntry::default()]),
+            live_index: 0,
 
             key_tree: KeyTree::default(),
 
@@ -131,23 +127,26 @@ impl StrokeStore {
     /// Import from a engine snapshot. A loaded strokes store should always be imported with this method.
     ///
     /// The store then needs to update its rendering.
-    pub fn import_from_snapshot(&mut self, snapshot: &EngineSnapshot) {
-        self.clear();
+    pub(crate) fn import_from_snapshot(&mut self, snapshot: &EngineSnapshot) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        widget_flags.merge(self.clear());
         self.stroke_components = Arc::clone(&snapshot.stroke_components);
         self.chrono_components = Arc::clone(&snapshot.chrono_components);
-
         self.chrono_counter = snapshot.chrono_counter;
 
         self.update_geometry_for_strokes(&self.keys_unordered());
-
         self.rebuild_selection_components_slotmap();
         self.rebuild_trash_components_slotmap();
         self.rebuild_render_components_slotmap();
         self.rebuild_rtree();
+        widget_flags.merge(self.clear_history(self.create_history_entry()));
+
+        widget_flags
     }
 
     /// Rebuild the rtree with the current stored strokes keys and bounds.
-    pub fn rebuild_rtree(&mut self) {
+    fn rebuild_rtree(&mut self) {
         let tree_objects = self
             .stroke_components
             .iter()
@@ -156,38 +155,35 @@ impl StrokeStore {
         self.key_tree.rebuild_from_vec(tree_objects);
     }
 
-    /// Checks the pointer equality of current state to the given history entry.
-    fn ptr_eq_w_history_entry(&self, history_entry: &Arc<HistoryEntry>) -> bool {
+    /// Checks the equality of current state to all fields of the given history entry,
+    /// doing pointer compares when they are wrapped inside Arc's.
+    fn eq_w_history_entry(&self, history_entry: &HistoryEntry) -> bool {
         Arc::ptr_eq(&self.stroke_components, &history_entry.stroke_components)
             && Arc::ptr_eq(&self.trash_components, &history_entry.trash_components)
-            && Arc::ptr_eq(
-                &self.selection_components,
-                &history_entry.selection_components,
-            )
             && Arc::ptr_eq(&self.chrono_components, &history_entry.chrono_components)
+            && self.chrono_counter == history_entry.chrono_counter
     }
 
     /// Create a history entry from the current state.
-    pub fn create_history_entry(&self) -> Arc<HistoryEntry> {
-        Arc::new(HistoryEntry {
+    pub(crate) fn create_history_entry(&self) -> HistoryEntry {
+        HistoryEntry {
             stroke_components: Arc::clone(&self.stroke_components),
             trash_components: Arc::clone(&self.trash_components),
-            selection_components: Arc::clone(&self.selection_components),
             chrono_components: Arc::clone(&self.chrono_components),
             chrono_counter: self.chrono_counter,
-        })
+        }
     }
 
     /// Import the given history entry and replaces the current state with it.
-    fn import_history_entry(&mut self, history_entry: &Arc<HistoryEntry>) {
+    fn import_history_entry(&mut self, history_entry: HistoryEntry) {
         self.stroke_components = Arc::clone(&history_entry.stroke_components);
         self.trash_components = Arc::clone(&history_entry.trash_components);
-        self.selection_components = Arc::clone(&history_entry.selection_components);
         self.chrono_components = Arc::clone(&history_entry.chrono_components);
         self.chrono_counter = history_entry.chrono_counter;
 
         // Since we don't store the rtree in the history, we need to rebuild it.
         self.rebuild_rtree();
+        self.rebuild_selection_components_slotmap();
         // Rebuild but retain the render components for the strokes that are found in the history entry.
         // This ensures that we are able to continue displaying the strokes after undo/redo while they are rerendered.
         self.rebuild_retain_valid_keys_render_components();
@@ -196,177 +192,122 @@ impl StrokeStore {
         self.set_rendering_dirty_for_strokes(&all_strokes);
     }
 
-    /// Record the current state and saves it in the history.
-    pub fn record(&mut self, _now: Instant) -> WidgetFlags {
-        self.simple_style_record()
-    }
-
-    /// Undo the latest changes.
-    ///
-    /// Should only be called inside the engine undo wrapper function.
-    pub(super) fn undo(&mut self, _now: Instant) -> WidgetFlags {
-        self.simple_style_undo()
-    }
-
-    /// Redo the latest changes.
-    ///
-    /// Should only be called inside the engine redo wrapper function.
-    pub(super) fn redo(&mut self, _now: Instant) -> WidgetFlags {
-        self.simple_style_redo()
-    }
-
-    pub(super) fn can_undo(&self) -> bool {
-        let index = self.history_pos.unwrap_or(self.history.len());
-
-        index > 0
-    }
-
-    pub(super) fn can_redo(&self) -> bool {
-        let history_len = self.history.len();
-        let index = self.history_pos.unwrap_or(history_len);
-
-        index + 1 < history_len
-    }
-
-    fn simple_style_record(&mut self) -> WidgetFlags {
+    /// Record the current state and save it in the history.
+    pub(crate) fn record(&mut self, _now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-
-        // as soon as the current state is recorded, remove the future
-        self.history.truncate(
-            self.history_pos
-                .map(|pos| pos + 1)
-                .unwrap_or(self.history.len()),
-        );
-        self.history_pos = None;
 
         if self
             .history
             .back()
-            .map(|last| !self.ptr_eq_w_history_entry(last))
+            .map(|last| !self.eq_w_history_entry(last))
             .unwrap_or(true)
         {
-            self.history.push_back(self.create_history_entry());
+            // as soon as the current state is recorded, remove the future
+            self.history.truncate(self.live_index + 1);
 
-            if self.history.len() > Self::HISTORY_MAX_LEN {
+            let current = self.create_history_entry();
+            self.history.push_back(current);
+            self.live_index += 1;
+
+            // truncate history if necessary
+            while self.history.len() > Self::HISTORY_MAX_LEN {
                 self.history.pop_front();
+                self.live_index -= 1;
             }
         } else {
-            log::trace!("state has not changed, no need to record");
-        }
-
-        widget_flags.hide_redo = Some(true);
-        widget_flags.hide_undo = Some(false);
-
-        widget_flags
-    }
-
-    fn simple_style_undo(&mut self) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
-        let index = match self.history_pos {
-            Some(index) => index,
-            None => {
-                // If we are in the present, we push the current state to the history
-                let current = self.create_history_entry();
-                self.history.push_back(current);
-
-                self.history.len() - 1
-            }
-        };
-
-        if index > 0 {
-            let prev = Arc::clone(&self.history[index - 1]);
-            self.import_history_entry(&prev);
-
-            self.history_pos = Some(index - 1);
-            widget_flags.hide_redo = Some(false);
-        } else {
-            log::debug!("no history, can't undo");
+            log::debug!("state has not changed, no need to record");
         }
 
         widget_flags.hide_undo = Some(!self.can_undo());
-
-        widget_flags
-    }
-
-    fn simple_style_redo(&mut self) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
-        let index = self.history_pos.unwrap_or(self.history.len() - 1);
-
-        if index < self.history.len() - 1 {
-            let next = Arc::clone(&self.history[index + 1]);
-            self.import_history_entry(&next);
-
-            self.history_pos = Some(index + 1);
-            widget_flags.hide_undo = Some(false);
-        } else {
-            log::debug!("no future history entries, can't redo");
-        }
-
         widget_flags.hide_redo = Some(!self.can_redo());
 
         widget_flags
     }
 
-    /// Save the current state in the history.
-    ///
-    /// Only to be used in combination with emacs_style_break_undo_chain() and emacs_style_undo()
-    #[allow(unused)]
-    fn emacs_style_record(&mut self) {
-        self.history_pos = None;
+    /// Update the state of the latest history entry with the current document state.
+    pub(crate) fn update_latest_history_entry(&mut self, _now: Instant) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         if self
             .history
             .back()
-            .map(|last| !self.ptr_eq_w_history_entry(last))
+            .map(|last| !self.eq_w_history_entry(last))
             .unwrap_or(true)
         {
-            self.history.push_back(self.create_history_entry());
+            // as soon as the current state is recorded, remove the future
+            self.history.truncate(self.live_index + 1);
 
-            if self.history.len() > Self::HISTORY_MAX_LEN {
-                self.history.pop_front();
-            }
-        } else {
-            log::debug!("state has not changed, skipped record");
-        }
-    }
-
-    /// Emacs style undo, where the undo operation is pushed to the history as well.
-    ///
-    /// Only to be used in combination with emacs_style_break_undo_chain() and emacs_style_record()
-    ///
-    /// The store then needs to update its rendering.
-    #[allow(unused)]
-    fn emacs_style_undo(&mut self) {
-        let index = self.history_pos.unwrap_or(self.history.len());
-
-        if index > 0 {
             let current = self.create_history_entry();
-            let prev = Arc::clone(&self.history[index - 1]);
-
-            self.history.push_back(current);
-
-            self.import_history_entry(&prev);
-            self.history_pos = Some(index - 1);
+            self.history[self.live_index] = current;
         } else {
-            log::debug!("no history, can't undo");
+            log::debug!("state has not changed, no need to update current state to history");
         }
+
+        widget_flags.hide_undo = Some(!self.can_undo());
+        widget_flags.hide_redo = Some(!self.can_redo());
+
+        widget_flags
     }
 
-    /// Breaks the undo chain, to enable redo by undoing the undos, emacs-style.
+    /// Undo the latest changes.
     ///
-    /// Only to be used in combination with emacs_style_undo() and emacs_style_record()
-    #[allow(unused)]
-    fn emacs_style_break_undo_chain(&mut self) {
-        // move the position to the end, so we can do "undo the undos", emacs-style
-        self.history_pos = None;
+    /// Should only be called from inside the engine undo wrapper function.
+    pub(crate) fn undo(&mut self, _now: Instant) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if !self.can_undo() {
+            return widget_flags;
+        }
+
+        let prev = self.history[self.live_index - 1].clone();
+        self.import_history_entry(prev);
+        self.live_index -= 1;
+
+        widget_flags.hide_undo = Some(!self.can_undo());
+        widget_flags.hide_redo = Some(!self.can_redo());
+
+        widget_flags
     }
 
-    /// Clear the entire history.
-    pub fn clear_history(&mut self) {
-        self.history.clear();
-        self.history_pos = None;
+    /// Redo the latest changes.
+    ///
+    /// Should only be called from inside the engine redo wrapper function.
+    pub(crate) fn redo(&mut self, _now: Instant) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if !self.can_redo() {
+            return widget_flags;
+        }
+
+        let next = self.history[self.live_index + 1].clone();
+        self.import_history_entry(next);
+        self.live_index += 1;
+
+        widget_flags.hide_undo = Some(!self.can_undo());
+        widget_flags.hide_redo = Some(!self.can_redo());
+
+        widget_flags
+    }
+
+    pub(crate) fn can_undo(&self) -> bool {
+        self.live_index > 0
+    }
+
+    pub(crate) fn can_redo(&self) -> bool {
+        self.live_index < self.history.len() - 1
+    }
+
+    /// Clear the history.
+    pub(crate) fn clear_history(&mut self, initial_state: HistoryEntry) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        self.history = VecDeque::from(vec![initial_state]);
+        self.live_index = 0;
+
+        widget_flags.hide_undo = Some(true);
+        widget_flags.hide_redo = Some(true);
+
+        widget_flags
     }
 
     /// Insert a new stroke into the store.
@@ -409,16 +350,18 @@ impl StrokeStore {
     }
 
     /// Clears the entire store.
-    pub(super) fn clear(&mut self) {
+    pub(super) fn clear(&mut self) -> WidgetFlags {
         Arc::make_mut(&mut self.stroke_components).clear();
         Arc::make_mut(&mut self.trash_components).clear();
         Arc::make_mut(&mut self.selection_components).clear();
         Arc::make_mut(&mut self.chrono_components).clear();
 
         self.chrono_counter = 0;
-        self.clear_history();
+        let widget_flags = self.clear_history(HistoryEntry::default());
 
         self.render_components.clear();
         self.key_tree.clear();
+
+        widget_flags
     }
 }

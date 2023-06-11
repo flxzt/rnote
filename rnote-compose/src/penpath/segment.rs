@@ -63,16 +63,16 @@ impl TransformBehaviour for Segment {
 
         match self {
             Self::LineTo { end } => {
-                end.pos = (isometry * na::Point2::from(end.pos)).coords;
+                end.pos = isometry.transform_point(&end.pos.into()).coords;
             }
             Self::QuadBezTo { cp, end } => {
-                *cp = (isometry * na::Point2::from(*cp)).coords;
-                end.pos = (isometry * na::Point2::from(end.pos)).coords;
+                *cp = isometry.transform_point(&(*cp).into()).coords;
+                end.pos = isometry.transform_point(&end.pos.into()).coords;
             }
             Self::CubBezTo { cp1, cp2, end } => {
-                *cp1 = (isometry * na::Point2::from(*cp1)).coords;
-                *cp2 = (isometry * na::Point2::from(*cp2)).coords;
-                end.pos = (isometry * na::Point2::from(end.pos)).coords;
+                *cp1 = isometry.transform_point(&(*cp1).into()).coords;
+                *cp2 = isometry.transform_point(&(*cp2).into()).coords;
+                end.pos = isometry.transform_point(&end.pos.into()).coords;
             }
         }
     }

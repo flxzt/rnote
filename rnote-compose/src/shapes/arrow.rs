@@ -48,8 +48,8 @@ impl TransformBehaviour for Arrow {
             isometry
         };
 
-        self.start = (isometry * na::Point2::from(self.start)).coords;
-        self.tip = (isometry * na::Point2::from(self.tip)).coords;
+        self.start = isometry.transform_point(&self.start.into()).coords;
+        self.tip = isometry.transform_point(&self.tip.into()).coords;
     }
 
     fn scale(&mut self, scale: na::Vector2<f64>) {

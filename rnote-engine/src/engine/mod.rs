@@ -11,13 +11,14 @@ pub use self::import::ImportPrefs;
 // Imports
 use self::import::XoppImportPrefs;
 use crate::document::{background, Layout};
-use crate::pens::PenStyle;
+use crate::pens::{Pen, PenStyle};
 use crate::pens::{PenMode, PensConfig};
+use crate::render::Svg;
 use crate::store::render_comp::{self, RenderCompState};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::Stroke;
-use crate::{render, AudioPlayer, WidgetFlags};
+use crate::{render, AudioPlayer, DrawBehaviour, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use anyhow::Context;
 use futures::channel::{mpsc, oneshot};
@@ -96,6 +97,10 @@ pub enum EngineTask {
         /// The generated images
         images: GeneratedStrokeImages,
     },
+    /// Requests that the typewriter cursor should be blinked/toggled
+    BlinkTypewriterCursor,
+    /// Change the permanent zoom to the given value
+    Zoom(f64),
     /// Indicates that the application is quitting. Sent to quit the handler which receives the tasks.
     Quit,
 }
@@ -295,14 +300,56 @@ impl EngineSnapshot {
     }
 }
 
-pub const RNOTE_STROKE_CONTENT_MIME_TYPE: &str = "application/rnote-stroke-content";
-
 /// Stroke content. Used when copying/cutting/pasting a selection into/from the clipboard
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default, rename = "stroke_content")]
 pub struct StrokeContent {
     #[serde(rename = "strokes")]
     pub strokes: Vec<Arc<Stroke>>,
+}
+
+impl StrokeContent {
+    pub const MIME_TYPE: &str = "application/rnote-stroke-content";
+
+    pub fn bounds(&self) -> Option<Aabb> {
+        if self.strokes.is_empty() {
+            return None;
+        }
+        Some(
+            self.strokes
+                .iter()
+                .map(|s| s.bounds())
+                .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x)),
+        )
+    }
+
+    /// Generate a Svg from the content.
+    pub fn generate_svg(&self) -> anyhow::Result<Option<Svg>> {
+        if self.strokes.is_empty() {
+            return Ok(None);
+        }
+        let Some(content_bounds) = self.bounds() else {
+            return Ok(None)
+        };
+        let mut content_svg = render::Svg {
+            svg_data: String::new(),
+            bounds: content_bounds,
+        };
+        content_svg.merge([render::Svg::gen_with_piet_cairo_backend(
+            |piet_cx| {
+                for stroke in self.strokes.iter() {
+                    stroke.draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
+                }
+                Ok(())
+            },
+            content_bounds,
+        )?]);
+        // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
+        if let Err(e) = content_svg.simplify() {
+            log::warn!("simplifying svg in StrokeContent::export_to_svg() failed, Err: {e:?}");
+        };
+        Ok(Some(content_svg))
+    }
 }
 
 pub type EngineTaskSender = mpsc::UnboundedSender<EngineTask>;
@@ -335,9 +382,10 @@ pub struct RnoteEngine {
     #[serde(skip)]
     pub visual_debug: bool,
     // the task sender. Must not be modified, only cloned.
-    // To install a new engine task handler, regenerate the channel through `regenerate_channel()`
     #[serde(skip)]
     pub tasks_tx: EngineTaskSender,
+    #[serde(skip)]
+    pub tasks_rx: Option<EngineTaskReceiver>,
     // Background rendering
     #[serde(skip)]
     pub background_tile_image: Option<render::Image>,
@@ -347,7 +395,7 @@ pub struct RnoteEngine {
 
 impl Default for RnoteEngine {
     fn default() -> Self {
-        let (tasks_tx, _tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
+        let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
 
         Self {
             document: Document::default(),
@@ -363,6 +411,7 @@ impl Default for RnoteEngine {
             audioplayer: None,
             visual_debug: false,
             tasks_tx,
+            tasks_rx: Some(tasks_rx),
             background_tile_image: None,
             background_rendernodes: Vec::default(),
         }
@@ -374,17 +423,6 @@ impl RnoteEngine {
         self.tasks_tx.clone()
     }
 
-    /// Regenerates the tasks channel, saves the sender in the struct and returns the receiver
-    /// which can be awaited in a engine tasks handler through `handle_engine_tasks()`
-    pub fn regenerate_channel(&mut self) -> EngineTaskReceiver {
-        let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
-
-        self.tasks_tx = tasks_tx;
-
-        tasks_rx
-    }
-
-    /// Gets the EngineView
     pub fn view(&self) -> EngineView {
         EngineView {
             tasks_tx: self.tasks_tx.clone(),
@@ -396,7 +434,6 @@ impl RnoteEngine {
         }
     }
 
-    /// Gets the EngineViewMut
     pub fn view_mut(&mut self) -> EngineViewMut {
         EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
@@ -408,12 +445,13 @@ impl RnoteEngine {
         }
     }
 
-    /// whether pen sounds are enabled
+    /// Whether pen sounds are enabled.
     pub fn pen_sounds(&self) -> bool {
         self.pen_sounds
     }
 
     /// Enables/disables the pen sounds.
+    ///
     /// If pen sound should be enabled, the pkg data dir must be provided.
     pub fn set_pen_sounds(&mut self, pen_sounds: bool, pkg_data_dir: Option<PathBuf>) {
         self.pen_sounds = pen_sounds;
@@ -448,8 +486,7 @@ impl RnoteEngine {
             .collect::<Vec<StrokeKey>>();
 
         for key in trashed_keys {
-            Arc::make_mut(&mut Arc::make_mut(&mut store_history_entry).stroke_components)
-                .remove(key);
+            Arc::make_mut(&mut store_history_entry.stroke_components).remove(key);
         }
 
         EngineSnapshot {
@@ -464,10 +501,13 @@ impl RnoteEngine {
     ///
     /// The store then needs to update its rendering.
     pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) -> WidgetFlags {
-        self.document = snapshot.document;
-        self.store.import_from_snapshot(&snapshot);
+        let mut widget_flags = WidgetFlags::default();
 
-        self.update_state_current_pen()
+        self.document = snapshot.document;
+        widget_flags.merge(self.store.import_from_snapshot(&snapshot));
+        widget_flags.merge(self.current_pen_update_state());
+
+        widget_flags
     }
 
     /// Records the current store state and saves it as a history entry.
@@ -475,31 +515,19 @@ impl RnoteEngine {
         self.store.record(now)
     }
 
+    /// Update the state of the latest history entry with the current document state.
+    pub fn update_latest_history_entry(&mut self, now: Instant) -> WidgetFlags {
+        self.store.update_latest_history_entry(now)
+    }
+
     /// Undo the latest changes.
     pub fn undo(&mut self, now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        widget_flags.merge(
-            self.penholder
-                .reinstall_pen_current_style(&mut EngineViewMut {
-                    tasks_tx: self.tasks_tx(),
-                    pens_config: &mut self.pens_config,
-                    doc: &mut self.document,
-                    store: &mut self.store,
-                    camera: &mut self.camera,
-                    audioplayer: &mut self.audioplayer,
-                }),
-        );
-
         widget_flags.merge(self.store.undo(now));
-
-        widget_flags.merge(self.update_state_current_pen());
-
-        self.resize_autoexpand();
-        if let Err(e) = self.update_rendering_current_viewport() {
-            log::error!("failed to update rendering for current viewport while undo, Err: {e:?}");
-        }
-
+        widget_flags.merge(self.doc_resize_autoexpand());
+        widget_flags.merge(self.current_pen_update_state());
+        self.update_rendering_current_viewport();
         widget_flags.redraw = true;
 
         widget_flags
@@ -509,27 +537,10 @@ impl RnoteEngine {
     pub fn redo(&mut self, now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        widget_flags.merge(
-            self.penholder
-                .reinstall_pen_current_style(&mut EngineViewMut {
-                    tasks_tx: self.tasks_tx(),
-                    pens_config: &mut self.pens_config,
-                    doc: &mut self.document,
-                    store: &mut self.store,
-                    camera: &mut self.camera,
-                    audioplayer: &mut self.audioplayer,
-                }),
-        );
-
         widget_flags.merge(self.store.redo(now));
-
-        widget_flags.merge(self.update_state_current_pen());
-
-        self.resize_autoexpand();
-        if let Err(e) = self.update_rendering_current_viewport() {
-            log::error!("failed to update rendering for current viewport while redo, Err: {e:?}");
-        }
-
+        widget_flags.merge(self.doc_resize_autoexpand());
+        widget_flags.merge(self.current_pen_update_state());
+        self.update_rendering_current_viewport();
         widget_flags.redraw = true;
 
         widget_flags
@@ -545,9 +556,12 @@ impl RnoteEngine {
 
     // Clears the entire store.
     pub fn clear(&mut self) -> WidgetFlags {
-        self.store.clear();
+        let mut widget_flags = WidgetFlags::default();
 
-        self.update_state_current_pen()
+        widget_flags.merge(self.store.clear());
+        widget_flags.merge(self.current_pen_update_state());
+
+        widget_flags
     }
 
     /// Handle a received task from tasks_rx.
@@ -557,11 +571,11 @@ impl RnoteEngine {
     /// ```rust, ignore
     ///
     /// glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
-    ///    let mut task_rx = canvas.engine().borrow_mut().regenerate_channel();
+    ///    let mut task_rx = canvas.engine_mut().regenerate_channel();
     ///
     ///    loop {
     ///        if let Some(task) = task_rx.next().await {
-    ///            let (widget_flags, quit) = canvas.engine().borrow_mut().handle_engine_task(task);
+    ///            let (widget_flags, quit) = canvas.engine_mut().handle_engine_task(task);
     ///            canvas.emit_handle_widget_flags(widget_flags);
 
     ///            if quit {
@@ -616,10 +630,27 @@ impl RnoteEngine {
             }
             EngineTask::AppendImagesToStroke { key, images } => {
                 self.store.append_rendering_images(key, images);
-
                 widget_flags.redraw = true;
             }
+            EngineTask::BlinkTypewriterCursor => {
+                if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+                    typewriter.toggle_cursor_visibility();
+                    widget_flags.redraw = true;
+                }
+            }
+            EngineTask::Zoom(zoom) => {
+                widget_flags.merge(self.camera.zoom_temporarily_to(1.0));
+                widget_flags.merge(self.camera.zoom_to(zoom));
+
+                let all_strokes = self.store.stroke_keys_unordered();
+                self.store.set_rendering_dirty_for_strokes(&all_strokes);
+                widget_flags.merge(self.doc_resize_autoexpand());
+
+                self.background_regenerate_pattern();
+                self.update_rendering_current_viewport();
+            }
             EngineTask::Quit => {
+                widget_flags.merge(self.set_active(false));
                 quit = true;
             }
         }
@@ -730,7 +761,21 @@ impl RnoteEngine {
             })
     }
 
-    /// Generates bounds for each page on the document which contains content.
+    /// Set the engine active or inactive.
+    pub fn set_active(&mut self, active: bool) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if active {
+            widget_flags.merge(self.reinstall_pen_current_style());
+            self.background_regenerate_pattern();
+            self.update_content_rendering_current_viewport();
+        } else {
+            self.clear_rendering();
+            widget_flags.merge(self.penholder.deinit_current_pen());
+        }
+        widget_flags
+    }
+
+    /// Generate bounds for each page on the document which contains content.
     pub fn pages_bounds_w_content(&self) -> Vec<Aabb> {
         let doc_bounds = self.document.bounds();
         let keys = self.store.stroke_keys_as_rendered();
@@ -777,38 +822,33 @@ impl RnoteEngine {
         )
     }
 
+    /// First zoom temporarily and then permanently after a timeout.
+    ///
+    /// Repeated calls to this function reset the timeout.
+    pub fn zoom_w_timeout(&mut self, zoom: f64) -> WidgetFlags {
+        self.camera.zoom_w_timeout(zoom, self.tasks_tx.clone())
+    }
+
     /// Resizes the doc to the format and to fit all strokes.
     ///
     /// Background rendering then needs to be updated.
-    pub fn resize_to_fit_strokes(&mut self) {
+    pub fn doc_resize_to_fit_strokes(&mut self) -> WidgetFlags {
         self.document
-            .resize_to_fit_strokes(&self.store, &self.camera);
+            .resize_to_fit_strokes(&self.store, &self.camera)
     }
 
     /// Resize the doc when in autoexpanding layouts. called e.g. when finishing a new stroke.
     ///
     /// Background rendering then needs to be updated.
-    pub fn resize_autoexpand(&mut self) {
-        self.document.resize_autoexpand(&self.store, &self.camera);
+    pub fn doc_resize_autoexpand(&mut self) -> WidgetFlags {
+        self.document.resize_autoexpand(&self.store, &self.camera)
     }
 
-    /// Expand the doc when in autoexpanding layouts. e.g. when dragging with touch.
-    pub fn expand_doc_autoexpand(&mut self) {
-        match self.document.layout {
-            Layout::FixedSize | Layout::ContinuousVertical => {
-                // not resizing in these modes, the size is not dependent on the camera
-            }
-            Layout::SemiInfinite => {
-                // only expand, don't resize to fit strokes
-                self.document
-                    .expand_doc_semi_infinite_layout(self.camera.viewport());
-            }
-            Layout::Infinite => {
-                // only expand, don't resize to fit strokes
-                self.document
-                    .expand_doc_infinite_layout(self.camera.viewport());
-            }
-        }
+    /// Expand the doc to the camera when in autoexpanding layouts. called e.g. when dragging with touch.
+    ///
+    /// Background rendering then needs to be updated.
+    pub fn doc_expand_autoexpand(&mut self) -> WidgetFlags {
+        self.document.expand_autoexpand(&self.camera)
     }
 
     /// Add a page to the document when in fixed size layout.
@@ -817,7 +857,7 @@ impl RnoteEngine {
     /// else false.
     ///
     /// Background and strokes rendering then need to be updated.
-    pub fn add_page_doc_fixed_size(&mut self) -> bool {
+    pub fn doc_add_page_fixed_size(&mut self) -> bool {
         if self.document.layout != Layout::FixedSize {
             return false;
         }
@@ -831,11 +871,11 @@ impl RnoteEngine {
 
     /// Remove a page from the document when in fixed size layout.
     ///
-    /// Returns true when document is in fixed size layout and a pages was removed,
+    /// Returns true when document is in fixed size layout and a page was removed,
     /// else false.
     ///
     /// Background and strokes rendering then need to be updated.
-    pub fn remove_page_doc_fixed_size(&mut self) -> bool {
+    pub fn doc_remove_page_fixed_size(&mut self) -> bool {
         if self.document.layout != Layout::FixedSize {
             return false;
         }
@@ -853,23 +893,33 @@ impl RnoteEngine {
         true
     }
 
-    /// Update the camera and updates doc dimensions with the new offset and size.
+    /// Update the viewport offset of the camera, clamped to mins and maxs values depending on the document layout.
     ///
     /// Background and strokes rendering then need to be updated.
-    pub fn update_camera_offset_size(
-        &mut self,
-        new_offset: na::Vector2<f64>,
-        new_size: na::Vector2<f64>,
-    ) {
-        self.camera.offset = new_offset;
-        self.camera.size = new_size;
+    pub fn camera_set_offset(&mut self, offset: na::Vector2<f64>) -> WidgetFlags {
+        self.camera.set_offset(offset, &self.document)
+    }
+
+    /// Update the viewport size of the camera.
+    ///
+    /// Background and strokes rendering then need to be updated.
+    pub fn camera_set_size(&mut self, size: na::Vector2<f64>) -> WidgetFlags {
+        self.camera.set_size(size)
+    }
+
+    /// Update the viewport size of the camera.
+    ///
+    /// Background and strokes rendering then need to be updated.
+    pub fn camera_offset_mins_maxs(&mut self) -> (na::Vector2<f64>, na::Vector2<f64>) {
+        self.camera.offset_lower_upper(&self.document)
     }
 
     /// Update the current pen with the current engine state.
     ///
-    /// Needs to be called when the engine state was changed outside of pen events. ( e.g. trash all strokes, set strokes selected, etc. )
-    pub fn update_state_current_pen(&mut self) -> WidgetFlags {
-        self.penholder.update_state_current_pen(&mut EngineViewMut {
+    /// Needs to be called when the engine state was changed outside of pen events.
+    /// ( e.g. trash all strokes, set strokes selected, etc. )
+    pub fn current_pen_update_state(&mut self) -> WidgetFlags {
+        self.penholder.current_pen_update_state(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &mut self.pens_config,
             doc: &mut self.document,
@@ -880,12 +930,8 @@ impl RnoteEngine {
     }
 
     /// Fetch clipboard content from the current pen.
-    ///
-    /// Returns (the clipboard content, MIME-type).
     #[allow(clippy::type_complexity)]
-    pub fn fetch_clipboard_content(
-        &self,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    pub fn fetch_clipboard_content(&self) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         self.penholder.fetch_clipboard_content(&EngineView {
             tasks_tx: self.tasks_tx(),
             pens_config: &self.pens_config,
@@ -897,12 +943,10 @@ impl RnoteEngine {
     }
 
     /// Cut clipboard content from the current pen.
-    ///
-    /// Returns (the clipboard content, MIME-type).
     #[allow(clippy::type_complexity)]
     pub fn cut_clipboard_content(
         &mut self,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         self.penholder.cut_clipboard_content(&mut EngineViewMut {
             tasks_tx: self.tasks_tx(),
             pens_config: &mut self.pens_config,

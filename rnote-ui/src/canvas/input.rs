@@ -22,7 +22,7 @@ pub(crate) fn handle_pointer_controller_event(
     let gdk_event_type = event.event_type();
     let gdk_modifiers = event.modifier_state();
     let _gdk_device = event.device().unwrap();
-    let backlog_policy = canvas.engine().borrow().penholder.backlog_policy;
+    let backlog_policy = canvas.engine_ref().penholder.backlog_policy;
     let input_source = input_source_from_event(event);
     let is_stylus = input_source == Some(gdk::InputSource::Pen);
 
@@ -93,8 +93,7 @@ pub(crate) fn handle_pointer_controller_event(
             if let Some(shortcut_key) = shortcut_key {
                 widget_flags.merge(
                     canvas
-                        .engine()
-                        .borrow_mut()
+                        .engine_mut()
                         .handle_pressed_shortcut_key(shortcut_key, now),
                 );
             }
@@ -183,7 +182,7 @@ pub(crate) fn handle_pointer_controller_event(
                 PenState::Up => {
                     canvas.enable_drawing_cursor(false);
 
-                    widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
+                    widget_flags.merge(canvas.engine_mut().handle_pen_event(
                         PenEvent::Up {
                             element,
                             modifier_keys: modifier_keys.clone(),
@@ -195,7 +194,7 @@ pub(crate) fn handle_pointer_controller_event(
                 PenState::Proximity => {
                     canvas.enable_drawing_cursor(false);
 
-                    widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
+                    widget_flags.merge(canvas.engine_mut().handle_pen_event(
                         PenEvent::Proximity {
                             element,
                             modifier_keys: modifier_keys.clone(),
@@ -208,7 +207,7 @@ pub(crate) fn handle_pointer_controller_event(
                     canvas.grab_focus();
                     canvas.enable_drawing_cursor(true);
 
-                    widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
+                    widget_flags.merge(canvas.engine_mut().handle_pen_event(
                         PenEvent::Down {
                             element,
                             modifier_keys: modifier_keys.clone(),
@@ -238,7 +237,7 @@ pub(crate) fn handle_key_controller_key_pressed(
     let keyboard_key = retrieve_keyboard_key(key);
     let modifier_keys = retrieve_modifier_keys(modifier);
 
-    let widget_flags = canvas.engine().borrow_mut().handle_pen_event(
+    let widget_flags = canvas.engine_mut().handle_pen_event(
         PenEvent::KeyPressed {
             keyboard_key,
             modifier_keys,
@@ -253,7 +252,7 @@ pub(crate) fn handle_key_controller_key_pressed(
 
 pub(crate) fn handle_imcontext_text_commit(canvas: &RnCanvas, text: &str) {
     let now = Instant::now();
-    let widget_flags = canvas.engine().borrow_mut().handle_pen_event(
+    let widget_flags = canvas.engine_mut().handle_pen_event(
         PenEvent::Text {
             text: text.to_string(),
         },
@@ -351,7 +350,7 @@ fn retrieve_pointer_elements(
         event_native
             .translate_coordinates(canvas, pos[0] - surface_trans_x, pos[1] - surface_trans_y)
             .map(|(x, y)| {
-                (canvas.engine().borrow().camera.transform().inverse() * na::point![x, y]).coords
+                (canvas.engine_ref().camera.transform().inverse() * na::point![x, y]).coords
             })
             .unwrap()
     };

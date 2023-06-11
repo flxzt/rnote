@@ -7,8 +7,7 @@ pub use background::Background;
 pub use format::Format;
 
 // Imports
-use crate::{Camera, StrokeStore};
-use gtk4::{glib, prelude::*};
+use crate::{Camera, StrokeStore, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::Color;
@@ -22,26 +21,19 @@ use serde::{Deserialize, Serialize};
     Eq,
     PartialOrd,
     Ord,
-    glib::Enum,
-    glib::Variant,
     Serialize,
     Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
 )]
 #[serde(rename = "layout")]
-#[repr(u32)]
-#[enum_type(name = "Layout")]
-#[variant_enum(enum)]
 pub enum Layout {
-    #[enum_value(name = "FixedSize", nick = "fixed-size")]
     #[serde(rename = "fixed_size")]
     FixedSize,
-    #[enum_value(name = "ContinuousVertical", nick = "continuous-vertical")]
     #[serde(rename = "continuous_vertical", alias = "endless_vertical")]
     ContinuousVertical,
-    #[enum_value(name = "SemiInfinite", nick = "semi-infinite")]
     #[serde(rename = "semi_infinite")]
     SemiInfinite,
-    #[enum_value(name = "Infinite", nick = "infinite")]
     #[serde(rename = "infinite")]
     Infinite,
 }
@@ -52,21 +44,39 @@ impl Default for Layout {
     }
 }
 
-impl Layout {
-    pub fn name(self) -> String {
-        glib::EnumValue::from_value(&self.to_value())
-            .unwrap()
-            .1
-            .name()
-            .to_string()
-    }
+impl TryFrom<u32> for Layout {
+    type Error = anyhow::Error;
 
-    pub fn nick(self) -> String {
-        glib::EnumValue::from_value(&self.to_value())
-            .unwrap()
-            .1
-            .nick()
-            .to_string()
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value)
+            .ok_or_else(|| anyhow::anyhow!("Layout try_from::<u32>() for value {} failed", value))
+    }
+}
+
+impl std::str::FromStr for Layout {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "fixed-size" => Ok(Self::FixedSize),
+            "continuous-vertical" => Ok(Self::ContinuousVertical),
+            "semi-infinite" => Ok(Self::SemiInfinite),
+            "infinite" => Ok(Self::Infinite),
+            s => Err(anyhow::anyhow!(
+                "Layout from_string failed, invalid name: {s}"
+            )),
+        }
+    }
+}
+
+impl std::string::ToString for Layout {
+    fn to_string(&self) -> String {
+        match self {
+            Layout::FixedSize => String::from("fixed-size"),
+            Layout::ContinuousVertical => String::from("continuous-vertical"),
+            Layout::SemiInfinite => String::from("semi-infinite"),
+            Layout::Infinite => String::from("infinite"),
+        }
     }
 }
 
@@ -137,14 +147,19 @@ impl Document {
     pub fn calc_n_pages(&self) -> u32 {
         // Avoid div by 0
         if self.format.height > 0.0 && self.format.width > 0.0 {
-            (self.width / self.format.width).round() as u32
-                * (self.height / self.format.height).round() as u32
+            (self.width / self.format.width).ceil() as u32
+                * (self.height / self.format.height).ceil() as u32
         } else {
             0
         }
     }
 
-    pub(crate) fn resize_to_fit_strokes(&mut self, store: &StrokeStore, camera: &Camera) {
+    pub(crate) fn resize_to_fit_strokes(
+        &mut self,
+        store: &StrokeStore,
+        camera: &Camera,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
         match self.layout {
             Layout::FixedSize => {
                 self.resize_doc_fixed_size_layout(store);
@@ -161,28 +176,59 @@ impl Document {
                 self.expand_doc_infinite_layout(camera.viewport());
             }
         }
+        widget_flags.resize = true;
+        widget_flags
     }
 
-    pub(crate) fn resize_autoexpand(&mut self, store: &StrokeStore, camera: &Camera) {
+    pub(crate) fn resize_autoexpand(
+        &mut self,
+        store: &StrokeStore,
+        camera: &Camera,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
         match self.layout {
             Layout::FixedSize => {
-                // Does not resize in fixed size mode, if wanted use resize_doc_to_fit_strokes() for it.
+                // do not resize in fixed size mode, if wanted use resize_doc_to_fit_strokes() for it.
             }
             Layout::ContinuousVertical => {
                 self.resize_doc_continuous_vertical_layout(store);
+                widget_flags.resize = true;
             }
             Layout::SemiInfinite => {
                 self.resize_doc_semi_infinite_layout_to_fit_strokes(store);
                 self.expand_doc_semi_infinite_layout(camera.viewport());
+                widget_flags.resize = true;
             }
             Layout::Infinite => {
                 self.resize_doc_infinite_layout_to_fit_strokes(store);
                 self.expand_doc_infinite_layout(camera.viewport());
+                widget_flags.resize = true;
             }
         }
+        widget_flags
     }
 
-    pub(crate) fn resize_doc_fixed_size_layout(&mut self, store: &StrokeStore) {
+    pub(crate) fn expand_autoexpand(&mut self, camera: &Camera) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        match self.layout {
+            Layout::FixedSize | Layout::ContinuousVertical => {
+                // not resizing in these modes, the size is not dependent on the camera
+            }
+            Layout::SemiInfinite => {
+                // only expand, don't resize to fit strokes
+                self.expand_doc_semi_infinite_layout(camera.viewport());
+                widget_flags.resize = true;
+            }
+            Layout::Infinite => {
+                // only expand, don't resize to fit strokes
+                self.expand_doc_infinite_layout(camera.viewport());
+                widget_flags.resize = true;
+            }
+        }
+        widget_flags
+    }
+
+    fn resize_doc_fixed_size_layout(&mut self, store: &StrokeStore) {
         let format_height = self.format.height;
 
         let new_width = self.format.width;
@@ -195,7 +241,7 @@ impl Document {
         self.height = new_height;
     }
 
-    pub(crate) fn resize_doc_continuous_vertical_layout(&mut self, store: &StrokeStore) {
+    fn resize_doc_continuous_vertical_layout(&mut self, store: &StrokeStore) {
         let padding_bottom = self.format.height;
         let new_height = store.calc_height() + padding_bottom;
         let new_width = self.format.width;
@@ -206,7 +252,7 @@ impl Document {
         self.height = new_height;
     }
 
-    pub(crate) fn expand_doc_semi_infinite_layout(&mut self, viewport: Aabb) {
+    fn expand_doc_semi_infinite_layout(&mut self, viewport: Aabb) {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
 
@@ -220,7 +266,7 @@ impl Document {
         self.height = new_bounds.maxs[1];
     }
 
-    pub(crate) fn expand_doc_infinite_layout(&mut self, viewport: Aabb) {
+    fn expand_doc_infinite_layout(&mut self, viewport: Aabb) {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
 
@@ -234,7 +280,7 @@ impl Document {
         self.height = new_bounds.extents()[1];
     }
 
-    pub(crate) fn resize_doc_semi_infinite_layout_to_fit_strokes(&mut self, store: &StrokeStore) {
+    fn resize_doc_semi_infinite_layout_to_fit_strokes(&mut self, store: &StrokeStore) {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
 
@@ -256,7 +302,7 @@ impl Document {
         self.height = new_bounds.extents()[1];
     }
 
-    pub(crate) fn resize_doc_infinite_layout_to_fit_strokes(&mut self, store: &StrokeStore) {
+    fn resize_doc_infinite_layout_to_fit_strokes(&mut self, store: &StrokeStore) {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
 

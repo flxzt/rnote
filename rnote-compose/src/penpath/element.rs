@@ -29,8 +29,7 @@ impl TransformBehaviour for Element {
     fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         let mut isometry = na::Isometry2::identity();
         isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
-
-        self.pos = (isometry * na::Point2::from(self.pos)).coords;
+        self.pos = isometry.transform_point(&self.pos.into()).coords;
     }
 
     fn scale(&mut self, scale: na::Vector2<f64>) {
@@ -59,11 +58,11 @@ impl Element {
     ///
     /// Returns true if element pos is not inside the bounds.
     pub fn filter_by_bounds(&self, filter_bounds: Aabb) -> bool {
-        !filter_bounds.contains_local_point(&na::Point2::from(self.pos))
+        !filter_bounds.contains_local_point(&self.pos.into())
     }
 
     /// Transforms the element position by the given transform.
     pub fn transform_by(&mut self, transform: na::Affine2<f64>) {
-        self.pos = (transform * na::Point2::from(self.pos)).coords;
+        self.pos = transform.transform_point(&self.pos.into()).coords;
     }
 }

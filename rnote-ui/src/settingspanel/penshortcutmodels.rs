@@ -1,23 +1,32 @@
 // Imports
 use gettextrs::gettext;
-use gtk4::Align;
 use gtk4::{
     glib::prelude::*, prelude::*, Image, Label, ListItem, Orientation, SignalListItemFactory,
+    StringList,
 };
+use gtk4::{Align, StringObject};
 use rnote_engine::pens::PenStyle;
 use std::ops::{Deref, DerefMut};
+use std::str::FromStr;
 
 #[derive(Debug, Clone)]
-pub(crate) struct ChangePenStyleListModel(adw::EnumListModel);
+pub(crate) struct ChangePenStyleListModel(StringList);
 
 impl Default for ChangePenStyleListModel {
     fn default() -> Self {
-        Self(adw::EnumListModel::new(PenStyle::static_type()))
+        Self(StringList::new(&[
+            &PenStyle::Brush.to_string(),
+            &PenStyle::Shaper.to_string(),
+            &PenStyle::Typewriter.to_string(),
+            &PenStyle::Eraser.to_string(),
+            &PenStyle::Selector.to_string(),
+            &PenStyle::Tools.to_string(),
+        ]))
     }
 }
 
 impl Deref for ChangePenStyleListModel {
-    type Target = adw::EnumListModel;
+    type Target = StringList;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -38,7 +47,6 @@ impl Default for ChangePenStyleListFactory {
         let factory = SignalListItemFactory::new();
         factory.connect_setup(move |_factory, list_item| {
             let list_item = list_item.downcast_ref::<ListItem>().unwrap();
-
             let item_box = gtk4::Box::builder()
                 .orientation(Orientation::Horizontal)
                 .build();
@@ -55,22 +63,16 @@ impl Default for ChangePenStyleListFactory {
         });
         factory.connect_bind(move |_factory, list_item| {
             let list_item = list_item.downcast_ref::<ListItem>().unwrap();
-
-            let pen_style = list_item
-                .item()
-                .expect("ChangePenStyleListFactory bind() failed, item is None")
-                .downcast::<adw::EnumListItem>()
-                .expect("ChangePenStyleListFactory bind() failed, item has to be of type `PenStyle`");
-            let pen_style =
-                PenStyle::try_from(pen_style.value() as u32).expect("PenStyle try_from() failed");
-
-            let item_box = list_item
-                .child()
-                .expect("ChangePenStyleListFactory bind() failed, item child is None")
-                .downcast::<gtk4::Box>()
-                .expect(
-                    "ChangePenStyleListFactory bind() failed, item child is not of type `gtk4::Box`",
-                );
+            let pen_style = PenStyle::from_str(
+                &list_item
+                    .item()
+                    .unwrap()
+                    .downcast::<StringObject>()
+                    .unwrap()
+                    .string(),
+            )
+            .unwrap();
+            let item_box = list_item.child().unwrap().downcast::<gtk4::Box>().unwrap();
 
             let mut child = item_box.first_child();
             while let Some(ref next_child) = child {
@@ -129,25 +131,16 @@ impl Default for ChangePenStyleIconFactory {
         });
         factory.connect_bind(move |_factory, list_item| {
             let list_item = list_item.downcast_ref::<ListItem>().unwrap();
-
-            let pen_style = list_item
-                .item()
-                .expect("ChangePenStyleIconFactory bind() failed, item is None")
-                .downcast::<adw::EnumListItem>()
-                .expect(
-                    "ChangePenStyleIconFactory bind() failed, item has to be of type `PenStyle`",
-                );
-            let pen_style =
-                PenStyle::try_from(pen_style.value() as u32).expect("PenStyle try_from() failed");
-
-            let image = list_item
-                .child()
-                .expect("ChangePenStyleIconFactory bind() failed, item child is None")
-                .downcast::<Image>()
-                .expect(
-                    "ChangePenStyleIconFactory bind() failed, item child is not of type `Image`",
-                );
-
+            let pen_style = PenStyle::from_str(
+                &list_item
+                    .item()
+                    .unwrap()
+                    .downcast::<StringObject>()
+                    .unwrap()
+                    .string(),
+            )
+            .unwrap();
+            let image = list_item.child().unwrap().downcast::<Image>().unwrap();
             image
                 .downcast_ref::<Image>()
                 .unwrap()

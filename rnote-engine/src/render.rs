@@ -2,7 +2,7 @@
 use crate::utils::GrapheneRectHelpers;
 use crate::DrawBehaviour;
 use anyhow::Context;
-use gtk4::{gdk, gio, glib, graphene, gsk, prelude::*, Snapshot};
+use gtk4::{gdk, gio, graphene, gsk, prelude::*};
 use image::io::Reader;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -12,7 +12,6 @@ use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
 use rnote_compose::transform::TransformBehaviour;
 use serde::{Deserialize, Serialize};
 use std::io::{self, Cursor};
-use std::ops::Deref;
 use svg::Node;
 use usvg::{TreeParsing, TreeTextToPath, TreeWriting};
 
@@ -82,8 +81,8 @@ pub struct Image {
     /// The image data.
     ///
     /// Is (de)serialized with base64 encoding.
-    #[serde(rename = "data", with = "rnote_compose::serialize::vecu8_base64")]
-    pub data: Vec<u8>,
+    #[serde(rename = "data", with = "crate::utils::glib_bytes_base64")]
+    pub data: glib::Bytes,
     /// The target rect in the coordinate space of the document.
     #[serde(rename = "rectangle")]
     pub rect: Rectangle,
@@ -101,7 +100,7 @@ pub struct Image {
 impl Default for Image {
     fn default() -> Self {
         Self {
-            data: vec![],
+            data: glib::Bytes::from_owned(Vec::new()),
             rect: Rectangle::default(),
             pixel_width: 0,
             pixel_height: 0,
@@ -115,7 +114,7 @@ impl From<image::DynamicImage> for Image {
         let pixel_width = dynamic_image.width();
         let pixel_height = dynamic_image.height();
         let memory_format = ImageMemoryFormat::R8g8b8a8Premultiplied;
-        let data = dynamic_image.into_rgba8().to_vec();
+        let data = glib::Bytes::from_owned(dynamic_image.into_rgba8().to_vec());
 
         let bounds = Aabb::new(
             na::point![0.0, 0.0],
@@ -203,7 +202,7 @@ impl Image {
 
         match self.memory_format {
             ImageMemoryFormat::R8g8b8a8Premultiplied => {
-                image::RgbaImage::from_vec(self.pixel_width, self.pixel_height, self.data)
+                image::RgbaImage::from_vec(self.pixel_width, self.pixel_height, self.data.to_vec())
                     .ok_or_else(|| {
                         anyhow::anyhow!(
                     "RgbaImage::from_vec() failed in Image to_imgbuf() for image with Format {:?}",
@@ -235,72 +234,43 @@ impl Image {
     pub fn to_memtexture(&self) -> Result<gdk::MemoryTexture, anyhow::Error> {
         self.assert_valid()?;
 
-        let bytes = self.data.deref();
-
         Ok(gdk::MemoryTexture::new(
             self.pixel_width as i32,
             self.pixel_height as i32,
             self.memory_format.into(),
-            &glib::Bytes::from(bytes),
+            &self.data,
             (self.pixel_width * 4) as usize,
         ))
     }
 
-    pub fn to_rendernode(
-        &self,
-        rect_override: Option<Rectangle>,
-    ) -> Result<gsk::RenderNode, anyhow::Error> {
+    pub fn to_rendernode(&self) -> Result<gsk::RenderNode, anyhow::Error> {
         self.assert_valid()?;
 
         let memtexture = self.to_memtexture()?;
-
-        let rect = rect_override.unwrap_or(self.rect);
-
         let texture_node = gsk::TextureNode::new(
             &memtexture,
-            &graphene::Rect::from_p2d_aabb(rect.cuboid.local_aabb()),
+            &graphene::Rect::from_p2d_aabb(self.rect.cuboid.local_aabb()),
+        )
+        .upcast();
+        let transform_node = gsk::TransformNode::new(
+            &texture_node,
+            &crate::utils::transform_to_gsk(&self.rect.transform),
         )
         .upcast();
 
-        let transform_node = gsk::TransformNode::new(
-            &texture_node,
-            &crate::utils::transform_to_gsk(&rect.transform),
-        )
-        .upcast();
         Ok(transform_node)
     }
 
     pub fn images_to_rendernodes<'a>(
         images: impl IntoIterator<Item = &'a Self>,
     ) -> Result<Vec<gsk::RenderNode>, anyhow::Error> {
-        let mut rendernodes = vec![];
+        let mut rendernodes = Vec::new();
 
         for image in images {
-            rendernodes.push(image.to_rendernode(None)?)
+            rendernodes.push(image.to_rendernode()?)
         }
 
         Ok(rendernodes)
-    }
-
-    pub fn append_images_to_rendernode(
-        images: &[Self],
-        rendernode: Option<&gsk::RenderNode>,
-    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
-        let snapshot = Snapshot::new();
-
-        if let Some(rendernode) = rendernode {
-            snapshot.append_node(rendernode);
-        }
-
-        for image in images {
-            snapshot.append_node(
-                &image
-                    .to_rendernode(None)
-                    .context("image_to_rendernode() failed in append_images_to_rendernode()")?,
-            );
-        }
-
-        Ok(snapshot.to_node())
     }
 
     /// Generate an image from an Svg.
@@ -382,7 +352,11 @@ impl Image {
             .to_vec();
 
         Ok(Self {
-            data: convert_image_bgra_to_rgba(width_scaled, height_scaled, data),
+            data: glib::Bytes::from_owned(convert_image_bgra_to_rgba(
+                width_scaled,
+                height_scaled,
+                data,
+            )),
             rect: Rectangle::from_p2d_aabb(bounds),
             pixel_width: width_scaled,
             pixel_height: height_scaled,
@@ -448,7 +422,11 @@ impl Image {
                 .to_vec();
 
         Ok(Image {
-            data: convert_image_bgra_to_rgba(width_scaled, height_scaled, data),
+            data: glib::Bytes::from_owned(convert_image_bgra_to_rgba(
+                width_scaled,
+                height_scaled,
+                data,
+            )),
             rect: Rectangle::from_p2d_aabb(bounds),
             pixel_width: width_scaled,
             pixel_height: height_scaled,
@@ -468,6 +446,8 @@ pub struct Svg {
 }
 
 impl Svg {
+    pub const MIME_TYPE: &str = "image/svg+xml";
+
     pub fn merge<T>(&mut self, other: T)
     where
         T: IntoIterator<Item = Self>,
@@ -612,10 +592,7 @@ impl Svg {
                 attributes_indent: xmlwriter::Indent::None,
             },
         };
-        let simplified_bounds = Aabb::new(
-            na::point![0.0, 0.0],
-            na::Point2::from(self.bounds.extents()),
-        );
+        let simplified_bounds = Aabb::new(na::point![0.0, 0.0], self.bounds.extents().into());
         let wrapped_svg_data = rnote_compose::utils::wrap_svg_root(
             &rnote_compose::utils::remove_xml_header(&self.svg_data),
             Some(simplified_bounds),

@@ -64,54 +64,49 @@ pub(crate) fn dialog_keyboard_shortcuts(appwindow: &RnAppWindow) {
     dialog.present();
 }
 
-pub(crate) fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
+pub(crate) async fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
     let dialog: adw::MessageDialog = builder.object("dialog_clear_doc").unwrap();
     dialog.set_transient_for(Some(appwindow));
 
-    dialog.connect_response(
-        None,
-        clone!(@weak canvas, @weak appwindow => move |_dialog_clear_doc, response| {
-            match response {
-                "clear" => {
-                    let prev_empty = canvas.empty();
+    match dialog.choose_future().await.as_str() {
+        "clear" => {
+            let prev_empty = canvas.empty();
 
-                    let widget_flags = canvas.engine().borrow_mut().clear();
-                    appwindow.handle_widget_flags(widget_flags, &canvas);
-
-                    canvas.return_to_origin_page();
-                    canvas.engine().borrow_mut().resize_autoexpand();
-
-                    if !prev_empty {
-                        canvas.set_unsaved_changes(true);
-                    }
-                    canvas.set_empty(true);
-                    canvas.update_engine_rendering();
-                },
-                _ => {
-                // Cancel
-                }
+            let mut widget_flags = canvas.engine_mut().clear();
+            canvas.return_to_origin_page();
+            widget_flags.merge(canvas.engine_mut().doc_resize_autoexpand());
+            if !prev_empty {
+                canvas.set_unsaved_changes(true);
             }
-        }),
-    );
-
-    dialog.present();
+            canvas.set_empty(true);
+            canvas.update_rendering_current_viewport();
+            appwindow.handle_widget_flags(widget_flags, canvas);
+        }
+        _ => {
+            // Cancel
+        }
+    }
 }
 
-pub(crate) fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
+pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
+    );
+    let dialog: adw::MessageDialog = builder.object("dialog_new_doc").unwrap();
+    dialog.set_transient_for(Some(appwindow));
+
     let new_doc = |appwindow: &RnAppWindow, canvas: &RnCanvas| {
-        let widget_flags = canvas.engine().borrow_mut().clear();
-        appwindow.handle_widget_flags(widget_flags, canvas);
-
+        let mut widget_flags = canvas.engine_mut().clear();
         canvas.return_to_origin_page();
-        canvas.engine().borrow_mut().resize_autoexpand();
-        canvas.update_engine_rendering();
-
+        widget_flags.merge(canvas.engine_mut().doc_resize_autoexpand());
+        canvas.update_rendering_current_viewport();
         canvas.set_unsaved_changes(false);
         canvas.set_empty(true);
         canvas.set_output_file(None);
+        appwindow.handle_widget_flags(widget_flags, canvas);
     };
 
     if !canvas.unsaved_changes() {
@@ -119,21 +114,12 @@ pub(crate) fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
         return;
     }
 
-    let builder = Builder::from_resource(
-        (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
-    );
-    let dialog_new_doc: adw::MessageDialog = builder.object("dialog_new_doc").unwrap();
-
-    dialog_new_doc.set_transient_for(Some(appwindow));
-    dialog_new_doc.connect_response(
-        None,
-        clone!(@weak canvas, @weak appwindow => move |_dialog_new_doc, response| {
-        match response {
-            "discard" => {
-                new_doc(&appwindow, &canvas);
-            },
-            "save" => {
-                glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+    match dialog.choose_future().await.as_str() {
+        "discard" => {
+            new_doc(appwindow, canvas);
+        }
+        "save" => {
+            glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
                     if let Some(output_file) = canvas.output_file() {
                         appwindow.overlays().start_pulsing_progressbar();
 
@@ -156,19 +142,19 @@ pub(crate) fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
                         export::dialog_save_doc_as(&appwindow, &canvas).await;
                     }
                 }));
-            },
-            _ => {
-                // Cancel
-            }
         }
-        }),
-    );
-
-    dialog_new_doc.present();
+        _ => {
+            // Cancel
+        }
+    }
 }
 
 /// Only to be called from the tabview close-page handler
-pub(crate) fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::TabPage) {
+///
+/// Returns `close_finish_confirm` that should be passed into close_page_finish() and indicates if the tab should be
+/// actually closed or closing should be aborted.
+#[must_use]
+pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::TabPage) -> bool {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
@@ -180,98 +166,109 @@ pub(crate) fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::TabPage)
         .downcast::<RnCanvasWrapper>()
         .unwrap()
         .canvas();
+    let canvas_output_file = canvas.output_file();
 
-    let mut doc_title = canvas.doc_title_display();
-    let save_folder_path = if let Some(p) = canvas.output_file().and_then(|f| f.parent()?.path()) {
+    let mut save_file = canvas_output_file.clone();
+    let save_folder_path = if let Some(p) = canvas
+        .output_file()
+        .as_ref()
+        .and_then(|f| f.parent()?.path())
+    {
         Some(p)
     } else {
         appwindow.workspacebrowser().dirlist_dir()
     };
 
-    let check = CheckButton::builder().active(true).build();
-    // Lock checkbox to active state as user can discard document if they choose
-    check.set_sensitive(false);
+    // Handle possible file collisions for new files
+    if save_file.is_none() {
+        if let Some(save_folder_path) = save_folder_path.as_ref() {
+            let base_title = canvas.doc_title_display();
+            let mut test_save_file =
+                gio::File::for_path(save_folder_path.join(base_title.clone() + ".rnote"));
+            let mut doc_postfix = 0;
 
-    // Handle possible file collisions
-    if let Some(save_folder_path) = save_folder_path.clone() {
-        let mut doc_file = gio::File::for_path(save_folder_path.join(doc_title.clone() + ".rnote"));
-
-        if gio::File::query_exists(&doc_file, None::<&gio::Cancellable>) {
-            let mut postfix = 0;
-            while gio::File::query_exists(&doc_file, None::<&gio::Cancellable>) {
-                postfix += 1;
-                doc_file = gio::File::for_path(
+            // increment as long as as files with same name exist
+            while gio::File::query_exists(&test_save_file, gio::Cancellable::NONE) {
+                doc_postfix += 1;
+                test_save_file = gio::File::for_path(
                     save_folder_path
-                        .join(doc_title.clone() + " - " + &postfix.to_string() + ".rnote"),
+                        .join(base_title.clone() + " - " + &doc_postfix.to_string() + ".rnote"),
                 );
             }
-            doc_title = doc_title + " - " + &postfix.to_string();
+            save_file = Some(test_save_file);
         }
     }
 
+    let save_file_display_name = save_file
+        .as_ref()
+        .and_then(|f| Some(f.path()?.file_stem()?.to_string_lossy().to_string()))
+        .unwrap_or_else(|| gettext("- invalid file name -"));
+    let save_folder_display_name = save_file
+        .as_ref()
+        .and_then(|f| {
+            f.parent()
+                .and_then(|p| Some(p.path()?.display().to_string()))
+        })
+        .unwrap_or_else(|| gettext("- invalid save folder name -"));
+
     let row = adw::ActionRow::builder()
-        .title(doc_title.clone() + ".rnote")
-        .subtitle(
-            save_folder_path
-                .as_ref()
-                .map(|p| p.to_string_lossy().to_string())
-                .unwrap_or_else(|| gettext("- unable to find a valid save folder -")),
-        )
+        .title(save_file_display_name)
+        .subtitle(save_folder_display_name)
         .build();
-    row.add_prefix(&check);
 
-    if save_folder_path.is_none() {
-        // Indicate that the file cannot be saved
-        row.set_sensitive(false);
-        check.set_active(false);
+    let check = CheckButton::builder().active(true).build();
+    // Lock checkbox to active state as user can click "discard" if they choose
+    check.set_sensitive(false);
+    let prefix_box = gtk4::Box::new(gtk4::Orientation::Horizontal, 6);
+    prefix_box.append(&check);
+    if canvas_output_file.is_some() {
+        // Indicate that a new existing file will be saved
+        let icon_image = gtk4::Image::from_icon_name("doc-save-symbolic");
+        icon_image.set_tooltip_text(Some(&gettext("The changes will be saved")));
+        prefix_box.append(&icon_image);
+    } else {
+        // Indicate that a new file will be created
+        let icon_image = gtk4::Image::from_icon_name("doc-create-symbolic");
+        icon_image.set_tooltip_text(Some(&gettext("A new file will be created")));
+        prefix_box.append(&icon_image);
     }
-
+    row.add_prefix(&prefix_box);
+    if save_file.is_none() {
+        // Indicate that the file cannot be saved
+        check.set_active(false);
+        row.set_sensitive(false);
+    }
     file_group.add(&row);
-    dialog.connect_response(
-        None,
-        clone!(@weak tab_page, @weak canvas, @weak appwindow => move |_, response| {
-            let output_folder_path = save_folder_path.clone();
-            let doc_title = doc_title.clone();
-            match response {
-                "discard" => {
-                    appwindow.overlays().tabview().close_page_finish(&tab_page, true);
-                },
-                "save" => {
-                    glib::MainContext::default().spawn_local(clone!(@weak tab_page, @weak canvas, @weak appwindow => async move {
-                        if let Some(output_folder_path) = output_folder_path {
-                            let save_file =
-                                    gio::File::for_path(output_folder_path.join(doc_title + ".rnote"));
-                            appwindow.overlays().start_pulsing_progressbar();
 
-                            if let Err(e) = canvas.save_document_to_file(&save_file).await {
-                                canvas.set_output_file(None);
+    // Returns close_finish_confirm, a boolean that indicates if the tab should actually be closed or closing
+    // should be aborted.
+    match dialog.choose_future().await.as_str() {
+        "discard" => true,
+        "save" => {
+            if let Some(save_file) = save_file {
+                appwindow.overlays().start_pulsing_progressbar();
 
-                                log::error!("saving document failed, Error: `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
-                            }
+                if let Err(e) = canvas.save_document_to_file(&save_file).await {
+                    canvas.set_output_file(None);
 
-                            appwindow.overlays().finish_progressbar();
-                            // No success toast on saving without dialog, success is already indicated in the header title
-                        }
-                        // only close if saving was successful
-                        appwindow
-                            .overlays()
-                            .tabview()
-                            .close_page_finish(
-                                &tab_page,
-                                !canvas.unsaved_changes()
-                            );
-                    }));
-                },
-                _ => {
-                // Cancel
-                    appwindow.overlays().tabview().close_page_finish(&tab_page, false);
+                    log::error!("saving document failed, Error: `{e:?}`");
+                    appwindow
+                        .overlays()
+                        .dispatch_toast_error(&gettext("Saving document failed"));
                 }
-            }
-        }),
-    );
 
-    dialog.present();
+                appwindow.overlays().finish_progressbar();
+                // No success toast on saving without dialog, success is already indicated in the header title
+            }
+
+            // only close if saving was successful
+            !canvas.unsaved_changes()
+        }
+        _ => {
+            // Cancel
+            false
+        }
+    }
 }
 
 pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
@@ -284,133 +281,141 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
 
     let tabs = appwindow.tab_pages_snapshot();
     let mut rows = Vec::new();
-    let mut postfix = 0;
+    let mut doc_postfix = 0;
     for (i, tab) in tabs.iter().enumerate() {
         let canvas = tab.child().downcast::<RnCanvasWrapper>().unwrap().canvas();
+        let canvas_output_file = canvas.output_file();
 
         if !canvas.unsaved_changes() {
             continue;
         }
 
-        let save_folder_path =
-            if let Some(p) = canvas.output_file().and_then(|f| f.parent()?.path()) {
-                Some(p)
-            } else {
-                appwindow.workspacebrowser().dirlist_dir()
-            };
+        let mut save_file = canvas_output_file.clone();
+        let save_folder_path = if let Some(p) = canvas
+            .output_file()
+            .as_ref()
+            .and_then(|f| f.parent()?.path())
+        {
+            Some(p)
+        } else {
+            appwindow.workspacebrowser().dirlist_dir()
+        };
 
-        let mut doc_title = canvas.doc_title_display();
+        // Handle possible file collisions for new files
+        if canvas_output_file.is_none() {
+            if let Some(save_folder_path) = save_folder_path.as_ref() {
+                let base_title = canvas.doc_title_display();
+                let mut test_save_file = if doc_postfix == 0 {
+                    gio::File::for_path(save_folder_path.join(base_title.clone() + ".rnote"))
+                } else {
+                    gio::File::for_path(
+                        save_folder_path
+                            .join(base_title.clone() + " - " + &doc_postfix.to_string() + ".rnote"),
+                    )
+                };
 
-        // Handle possible file collisions
-        if let Some(save_folder_path) = save_folder_path.clone() {
-            let mut doc_file = if postfix == 0 {
-                gio::File::for_path(save_folder_path.join(doc_title.clone() + ".rnote"))
-            } else {
-                gio::File::for_path(
-                    save_folder_path
-                        .join(doc_title.clone() + " - " + &postfix.to_string() + ".rnote"),
-                )
-            };
-            while gio::File::query_exists(&doc_file, None::<&gio::Cancellable>) {
-                postfix += 1;
-                doc_file = gio::File::for_path(
-                    save_folder_path
-                        .join(doc_title.clone() + " - " + &postfix.to_string() + ".rnote"),
-                );
+                // increment as long as as files with same name exist
+                while gio::File::query_exists(&test_save_file, gio::Cancellable::NONE) {
+                    doc_postfix += 1;
+                    test_save_file = gio::File::for_path(
+                        save_folder_path
+                            .join(base_title.clone() + " - " + &doc_postfix.to_string() + ".rnote"),
+                    );
+                }
+                save_file = Some(test_save_file);
+                // increment for next iteration
+                doc_postfix += 1;
             }
-            if postfix != 0 {
-                doc_title = doc_title + " - " + &postfix.to_string();
-            }
-            postfix += 1;
         }
 
-        // Active by default
-        let check = CheckButton::builder().active(true).build();
+        let save_file_display_name = save_file
+            .as_ref()
+            .and_then(|f| Some(f.path()?.file_stem()?.to_string_lossy().to_string()))
+            .unwrap_or_else(|| gettext("- invalid file name -"));
+        let save_folder_display_name = save_file
+            .as_ref()
+            .and_then(|f| {
+                f.parent()
+                    .and_then(|p| Some(p.path()?.display().to_string()))
+            })
+            .unwrap_or_else(|| gettext("- invalid save folder name -"));
 
         let row = adw::ActionRow::builder()
-            .title(&(doc_title.clone() + ".rnote"))
-            .subtitle(
-                &save_folder_path
-                    .as_ref()
-                    .map(|p| p.to_string_lossy().to_string())
-                    .unwrap_or_else(|| gettext("- unable to find a valid save folder -")),
-            )
+            .title(save_file_display_name)
+            .subtitle(save_folder_display_name)
             .build();
 
-        row.add_prefix(&check);
-
-        if save_folder_path.is_none() {
+        // Checkbox active by default
+        let check = CheckButton::builder().active(true).build();
+        let prefix_box = gtk4::Box::new(gtk4::Orientation::Horizontal, 6);
+        prefix_box.append(&check);
+        if canvas_output_file.is_some() {
+            // Indicate that a new existing file will be saved
+            let icon_image = gtk4::Image::from_icon_name("doc-save-symbolic");
+            icon_image.set_tooltip_text(Some(&gettext("The changes will be saved.")));
+            prefix_box.append(&icon_image);
+        } else {
+            // Indicate that a new file will be created
+            let icon_image = gtk4::Image::from_icon_name("doc-create-symbolic");
+            icon_image.set_tooltip_text(Some(&gettext("A new file will be created.")));
+            prefix_box.append(&icon_image);
+        }
+        row.add_prefix(&prefix_box);
+        if save_file.is_none() {
             // Indicate that the file cannot be saved
             check.set_active(false);
             row.set_sensitive(false);
         }
-
         files_group.add(&row);
 
-        rows.push((i, check, save_folder_path, doc_title));
+        rows.push((i, check, save_file));
     }
 
-    // TODO: as soon as libadwaita v1.3 is out, this can be replaced by choose_future()
-    dialog.connect_response(
-        None,
-        clone!(@strong appwindow => move |_, response| {
-         let response = response.to_string();
-         let rows = rows.clone();
-         let tabs = tabs.clone();
-         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-            let mut close = false;
+    let close = match dialog.choose_future().await.as_str() {
+        "discard" => {
+            // do nothing and close
+            true
+        }
+        "save" => {
+            let mut close = true;
+            appwindow.overlays().start_pulsing_progressbar();
 
-            match response.as_str() {
-                "discard"
-                    => {
-                    // do nothing and close
-                    close = true;
+            for (i, check, save_file) in rows {
+                if !check.is_active() {
+                    continue;
                 }
-                "save" => {
-                    appwindow.overlays().start_pulsing_progressbar();
+                let Some(save_file) = save_file else {
+                    continue;
+                };
+                let canvas = tabs[i]
+                    .child()
+                    .downcast::<RnCanvasWrapper>()
+                    .unwrap()
+                    .canvas();
 
-                    for (i, check, save_folder_path, doc_title) in rows {
-                        if check.is_active() {
-                            let canvas = tabs[i]
-                                .child()
-                                .downcast::<RnCanvasWrapper>()
-                                .unwrap()
-                                .canvas();
+                if let Err(e) = canvas.save_document_to_file(&save_file).await {
+                    canvas.set_output_file(None);
+                    close = false;
 
-                            if let Some(export_folder_path) = save_folder_path {
-                                let save_file =
-                                    gio::File::for_path(export_folder_path.join(doc_title + ".rnote"));
-
-                                if let Err(e) = canvas.save_document_to_file(&save_file).await {
-                                    canvas.set_output_file(None);
-
-                                    log::error!("saving document failed, Error: `{e:?}`");
-                                    appwindow
-                                        .overlays()
-                                        .dispatch_toast_error(&gettext("Saving document failed"));
-                                }
-
-                                // No success toast on saving without dialog, success is already indicated in the header title
-                            }
-                        }
-                    }
-
-                    appwindow.overlays().finish_progressbar();
-                    close = true;
-                }
-                _ => {
-                    // Cancel
+                    log::error!("saving document failed, Error: `{e:?}`");
+                    appwindow
+                        .overlays()
+                        .dispatch_toast_error(&gettext("Saving document failed"));
                 }
             }
 
-            if close {
-                appwindow.close_force();
-            }
-         }));
-        }),
-    );
+            appwindow.overlays().finish_progressbar();
+            close
+        }
+        _ => {
+            // Cancel
+            false
+        }
+    };
 
-    dialog.present();
+    if close {
+        appwindow.close_force();
+    }
 }
 
 pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
@@ -484,8 +489,8 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     }));
 
     dir_button.connect_clicked(
-        clone!(@strong preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => move |_| {
-            glib::MainContext::default().spawn_local(clone!(@strong preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => async move {
+        clone!(@weak preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => move |_| {
+            glib::MainContext::default().spawn_local(clone!(@weak preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => async move {
                 dialog.hide();
 
                 let filedialog = FileDialog::builder()
@@ -521,24 +526,29 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
         }),
     );
 
-    dialog.connect_response(
-        clone!(@weak preview_row, @weak appwindow => move |dialog, responsetype| {
-            match responsetype {
-                ResponseType::Apply => {
-                    // update the actual selected entry
-                    appwindow.workspacebrowser().workspacesbar().replace_selected_workspacelistentry(preview_row.entry());
-                    // refreshing the files list
-                    appwindow.workspacebrowser().refresh_dirlist_selected_workspace();
-                    // And save the state
-                    appwindow.workspacebrowser().workspacesbar().save_to_settings(&appwindow.app_settings());
-                }
-                _ => {}
-            }
-
-            dialog.close();
-        }));
-
-    dialog.present();
+    let response = dialog.run_future().await;
+    dialog.close();
+    match response {
+        ResponseType::Apply => {
+            // update the actual selected entry
+            appwindow
+                .workspacebrowser()
+                .workspacesbar()
+                .replace_selected_workspacelistentry(preview_row.entry());
+            // refreshing the files list
+            appwindow
+                .workspacebrowser()
+                .refresh_dirlist_selected_workspace();
+            // And save the state
+            appwindow
+                .workspacebrowser()
+                .workspacesbar()
+                .save_to_settings(&appwindow.app_settings());
+        }
+        _ => {
+            // Cancel
+        }
+    }
 }
 
 const WORKSPACELISTENTRY_ICONS_LIST: &[&str] = &[

@@ -42,6 +42,14 @@ impl Default for Brush {
 }
 
 impl PenBehaviour for Brush {
+    fn init(&mut self, _engine_view: &EngineView) -> WidgetFlags {
+        WidgetFlags::default()
+    }
+
+    fn deinit(&mut self) -> WidgetFlags {
+        WidgetFlags::default()
+    }
+
     fn style(&self) -> PenStyle {
         PenStyle::Brush
     }
@@ -63,8 +71,12 @@ impl PenBehaviour for Brush {
                 if !element
                     .filter_by_bounds(engine_view.doc.bounds().loosened(Self::INPUT_OVERSHOOT))
                 {
-                    widget_flags.merge(engine_view.store.record(Instant::now()));
-                    self.start_audio(engine_view);
+                    if engine_view.pens_config.brush_config.style == BrushStyle::Marker {
+                        play_marker_sound(engine_view);
+                    } else {
+                        trigger_brush_sound(engine_view);
+                    }
+
                     engine_view.pens_config.brush_config.new_style_seeds();
 
                     let brushstroke = Stroke::BrushStroke(BrushStroke::new(
@@ -99,8 +111,6 @@ impl PenBehaviour for Brush {
                         current_stroke_key,
                     };
 
-                    widget_flags.redraw = true;
-
                     PenProgress::InProgress
                 } else {
                     PenProgress::Idle
@@ -123,18 +133,16 @@ impl PenBehaviour for Brush {
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 );
+                widget_flags.merge(
+                    engine_view
+                        .doc
+                        .resize_autoexpand(engine_view.store, engine_view.camera),
+                );
 
                 self.state = BrushState::Idle;
 
-                engine_view
-                    .doc
-                    .resize_autoexpand(engine_view.store, engine_view.camera);
-
-                widget_flags.redraw = true;
-                widget_flags.resize = true;
+                widget_flags.merge(engine_view.store.record(Instant::now()));
                 widget_flags.store_modified = true;
-
-                self.stop_audio(engine_view);
 
                 PenProgress::Finished
             }
@@ -147,11 +155,17 @@ impl PenBehaviour for Brush {
             ) => {
                 match path_builder.handle_event(pen_event, now, Constraints::default()) {
                     PenPathBuilderProgress::InProgress => {
-                        widget_flags.redraw = true;
+                        if engine_view.pens_config.brush_config.style != BrushStyle::Marker {
+                            trigger_brush_sound(engine_view);
+                        }
 
                         PenProgress::InProgress
                     }
                     PenPathBuilderProgress::EmitContinue(segments) => {
+                        if engine_view.pens_config.brush_config.style != BrushStyle::Marker {
+                            trigger_brush_sound(engine_view);
+                        }
+
                         let n_segments = segments.len();
 
                         if n_segments != 0 {
@@ -170,8 +184,6 @@ impl PenBehaviour for Brush {
                                 engine_view.camera.image_scale(),
                             );
                         }
-
-                        widget_flags.redraw = true;
 
                         PenProgress::InProgress
                     }
@@ -186,7 +198,6 @@ impl PenBehaviour for Brush {
                                 widget_flags.store_modified = true;
                             }
 
-                            // First we draw the last segments immediately,
                             engine_view.store.append_rendering_last_segments(
                                 engine_view.tasks_tx.clone(),
                                 *current_stroke_key,
@@ -196,7 +207,6 @@ impl PenBehaviour for Brush {
                             );
                         }
 
-                        // but then regenerate the entire stroke rendering because it gets rid of some artifacts
                         // Finish up the last stroke
                         engine_view
                             .store
@@ -207,17 +217,15 @@ impl PenBehaviour for Brush {
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         );
-
-                        self.stop_audio(engine_view);
+                        widget_flags.merge(
+                            engine_view
+                                .doc
+                                .resize_autoexpand(engine_view.store, engine_view.camera),
+                        );
 
                         self.state = BrushState::Idle;
 
-                        engine_view
-                            .doc
-                            .resize_autoexpand(engine_view.store, engine_view.camera);
-
-                        widget_flags.redraw = true;
-                        widget_flags.resize = true;
+                        widget_flags.merge(engine_view.store.record(Instant::now()));
                         widget_flags.store_modified = true;
 
                         PenProgress::Finished
@@ -277,24 +285,17 @@ impl DrawOnDocBehaviour for Brush {
 
 impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
+}
 
-    fn start_audio(&self, engine_view: &mut EngineViewMut) {
-        if let Some(audioplayer) = engine_view.audioplayer {
-            match engine_view.pens_config.brush_config.style {
-                BrushStyle::Marker => {
-                    audioplayer.play_random_marker_sound();
-                }
-                BrushStyle::Solid | BrushStyle::Textured => {
-                    audioplayer.start_random_brush_sound();
-                }
-            }
-        }
+fn play_marker_sound(engine_view: &mut EngineViewMut) {
+    if let Some(audioplayer) = engine_view.audioplayer {
+        audioplayer.play_random_marker_sound();
     }
+}
 
-    fn stop_audio(&self, engine_view: &mut EngineViewMut) {
-        if let Some(audioplayer) = engine_view.audioplayer {
-            audioplayer.stop_random_brush_sond();
-        }
+fn trigger_brush_sound(engine_view: &mut EngineViewMut) {
+    if let Some(audioplayer) = engine_view.audioplayer.as_mut() {
+        audioplayer.trigger_random_brush_sound();
     }
 }
 

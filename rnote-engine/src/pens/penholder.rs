@@ -193,7 +193,7 @@ impl PenHolder {
         widget_flags
     }
 
-    pub fn update_state_current_pen(&mut self, engine_view: &mut EngineViewMut) -> WidgetFlags {
+    pub fn current_pen_update_state(&mut self, engine_view: &mut EngineViewMut) -> WidgetFlags {
         self.current_pen.update_state(engine_view)
     }
 
@@ -204,14 +204,19 @@ impl PenHolder {
             self.current_pen
                 .handle_event(PenEvent::Cancel, Instant::now(), engine_view);
 
-        // then reinstall a new instance
-        let new_pen = new_pen(self.current_pen_style_w_override());
+        // then reinstall a new pen instance
+        let mut new_pen = new_pen(self.current_pen_style_w_override());
+        widget_flags.merge(new_pen.init(&engine_view.as_im()));
+        widget_flags.merge(new_pen.update_state(engine_view));
         self.current_pen = new_pen;
-        widget_flags.merge(self.current_pen.update_state(engine_view));
         widget_flags.merge(self.handle_changed_pen_style());
         self.pen_progress = PenProgress::Idle;
 
         widget_flags
+    }
+
+    pub fn deinit_current_pen(&mut self) -> WidgetFlags {
+        self.current_pen_mut().deinit()
     }
 
     /// Handle a pen event.
@@ -235,6 +240,7 @@ impl PenHolder {
 
         widget_flags.merge(self.handle_pen_progress(pen_progress, engine_view));
 
+        // Always redraw after handling a pen event
         widget_flags.redraw = true;
 
         widget_flags
@@ -338,7 +344,7 @@ impl PenHolder {
     pub fn fetch_clipboard_content(
         &self,
         engine_view: &EngineView,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         self.current_pen.fetch_clipboard_content(engine_view)
     }
 
@@ -347,7 +353,7 @@ impl PenHolder {
     pub fn cut_clipboard_content(
         &mut self,
         engine_view: &mut EngineViewMut,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
         self.current_pen.cut_clipboard_content(engine_view)
     }
 }

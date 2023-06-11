@@ -10,6 +10,7 @@ use rnote_engine::engine::EngineViewMut;
 use rnote_engine::pens::{Pen, PenStyle};
 use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
+use std::time::Instant;
 
 mod imp {
     use super::*;
@@ -18,7 +19,7 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/overlays.ui")]
     pub(crate) struct RnOverlays {
         pub(crate) progresspulse_source_id: RefCell<Option<glib::SourceId>>,
-        pub(super) prev_active_tab_page: RefCell<Option<adw::TabPage>>,
+        pub(super) prev_active_tab_page: glib::WeakRef<adw::TabPage>,
 
         #[template_child]
         pub(crate) toolbar_overlay: TemplateChild<Overlay>,
@@ -79,6 +80,7 @@ mod imp {
         }
 
         fn dispose(&self) {
+            self.dispose_template();
             while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
@@ -196,39 +198,54 @@ impl RnOverlays {
     fn setup_pens_toggles(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
-        imp.brush_toggle.connect_toggled(clone!(@weak appwindow => move |brush_toggle| {
+        imp.brush_toggle
+            .connect_toggled(clone!(@weak appwindow => move |brush_toggle| {
                 if brush_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
+                        Some(&PenStyle::Brush.to_string().to_variant()));
                 }
             }));
 
-        imp.shaper_toggle.connect_toggled(clone!(@weak appwindow => move |shaper_toggle| {
+        imp.shaper_toggle
+            .connect_toggled(clone!(@weak appwindow => move |shaper_toggle| {
                 if shaper_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
+                        Some(&PenStyle::Shaper.to_string().to_variant()));
                 }
             }));
 
-        imp.typewriter_toggle.connect_toggled(clone!(@weak appwindow => move |typewriter_toggle| {
+        imp.typewriter_toggle
+            .connect_toggled(clone!(@weak appwindow => move |typewriter_toggle| {
                 if typewriter_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
+                        Some(&PenStyle::Typewriter.to_string().to_variant()));
                 }
             }));
 
-        imp.eraser_toggle.get().connect_toggled(clone!(@weak appwindow => move |eraser_toggle| {
+        imp.eraser_toggle
+            .get()
+            .connect_toggled(clone!(@weak appwindow => move |eraser_toggle| {
                 if eraser_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
+                        Some(&PenStyle::Eraser.to_string().to_variant()));
                 }
             }));
 
-        imp.selector_toggle.get().connect_toggled(clone!(@weak appwindow => move |selector_toggle| {
+        imp.selector_toggle.get().connect_toggled(
+            clone!(@weak appwindow => move |selector_toggle| {
                 if selector_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
+                        Some(&PenStyle::Selector.to_string().to_variant()));
                 }
-            }));
+            }),
+        );
 
-        imp.tools_toggle.get().connect_toggled(clone!(@weak appwindow => move |tools_toggle| {
+        imp.tools_toggle
+            .get()
+            .connect_toggled(clone!(@weak appwindow => move |tools_toggle| {
                 if tools_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
+                        Some(&PenStyle::Tools.to_string().to_variant()));
                 }
             }));
     }
@@ -241,9 +258,39 @@ impl RnOverlays {
                 clone!(@weak appwindow => move |colorpicker, _paramspec| {
                     let stroke_color = colorpicker.stroke_color().into_compose_color();
                     let canvas = appwindow.active_tab().canvas();
-                    let stroke_style = canvas.engine().borrow().penholder.current_pen_style_w_override();
-                    let engine = canvas.engine();
-                    let engine = &mut *engine.borrow_mut();
+                    let engine = &mut *canvas.engine_mut();
+
+                    match engine.penholder.current_pen_style_w_override() {
+                        PenStyle::Typewriter => {
+                            if engine.pens_config.typewriter_config.text_style.color != stroke_color {
+                                if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
+                                    let widget_flags = typewriter.change_text_style_in_modifying_stroke(
+                                        |text_style| {
+                                            text_style.color = stroke_color;
+                                        },
+                                        &mut EngineViewMut {
+                                            tasks_tx: engine.tasks_tx.clone(),
+                                            pens_config: &mut engine.pens_config,
+                                            doc: &mut engine.document,
+                                            store: &mut engine.store,
+                                            camera: &mut engine.camera,
+                                            audioplayer: &mut engine.audioplayer
+                                    });
+                                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                                }
+                            }
+                        }
+                        PenStyle::Selector => {
+                            let selection_keys = engine.store.selection_keys_unordered();
+                            if !selection_keys.is_empty() {
+                                let mut widget_flags = engine.store.change_stroke_colors(&selection_keys, stroke_color);
+                                widget_flags.merge(engine.record(Instant::now()));
+                                engine.update_content_rendering_current_viewport();
+                                appwindow.handle_widget_flags(widget_flags, &canvas);
+                            }
+                        }
+                        PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
+                    }
 
                     // We have a global colorpicker, so we apply it to all styles
                     engine.pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
@@ -252,33 +299,6 @@ impl RnOverlays {
                     engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
                     engine.pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
                     engine.pens_config.typewriter_config.text_style.color = stroke_color;
-
-                    match stroke_style {
-                        PenStyle::Typewriter => {
-                            if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
-                                let widget_flags = typewriter.change_text_style_in_modifying_stroke(
-                                    |text_style| {
-                                        text_style.color = stroke_color;
-                                    },
-                                    &mut EngineViewMut {
-                                        tasks_tx: engine.tasks_tx.clone(),
-                                        pens_config: &mut engine.pens_config,
-                                        doc: &mut engine.document,
-                                        store: &mut engine.store,
-                                        camera: &mut engine.camera,
-                                        audioplayer: &mut engine.audioplayer
-                                });
-                                appwindow.handle_widget_flags(widget_flags, &canvas);
-                            }
-                        }
-                        PenStyle::Selector => {
-                            let selection_keys = engine.store.selection_keys_unordered();
-                            let widget_flags = engine.store.change_stroke_colors(&selection_keys, stroke_color);
-                            engine.update_content_rendering_current_viewport();
-                            appwindow.handle_widget_flags(widget_flags, &canvas);
-                        }
-                        PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
-                    }
                 }),
             );
 
@@ -287,25 +307,27 @@ impl RnOverlays {
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let fill_color = colorpicker.fill_color().into_compose_color();
                 let canvas = appwindow.active_tab().canvas();
-                let stroke_style = canvas.engine().borrow().penholder.current_pen_style_w_override();
-                let engine = canvas.engine();
-                let engine = &mut *engine.borrow_mut();
+                let stroke_style = canvas.engine_ref().penholder.current_pen_style_w_override();
+                let engine = &mut *canvas.engine_mut();
+
+                match stroke_style {
+                    PenStyle::Selector => {
+                        let selection_keys = engine.store.selection_keys_unordered();
+                        if !selection_keys.is_empty() {
+                            let mut widget_flags = engine.store.change_fill_colors(&selection_keys, fill_color);
+                            widget_flags.merge(engine.record(Instant::now()));
+                            engine.update_content_rendering_current_viewport();
+                            appwindow.handle_widget_flags(widget_flags, &canvas);
+                        }
+                    }
+                    PenStyle::Typewriter | PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
+                }
 
                 // We have a global colorpicker, so we apply it to all styles
                 engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
                 engine.pens_config.brush_config.solid_options.fill_color = Some(fill_color);
                 engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
                 engine.pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
-
-                match stroke_style {
-                    PenStyle::Selector => {
-                        let selection_keys = engine.store.selection_keys_unordered();
-                        let widget_flags = engine.store.change_fill_colors(&selection_keys, fill_color);
-                        engine.update_content_rendering_current_viewport();
-                        appwindow.handle_widget_flags(widget_flags, &canvas);
-                    }
-                    PenStyle::Typewriter | PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
-                }
             }),
         );
     }
@@ -314,19 +336,20 @@ impl RnOverlays {
         let imp = self.imp();
 
         imp.tabview
-            .connect_selected_page_notify(clone!(@weak self as overlays, @weak appwindow => move |_tabview| {
+            .connect_selected_page_notify(clone!(@weak self as overlays, @weak appwindow => move |_| {
                 let active_tab_page = appwindow.active_tab_page();
                 let active_canvaswrapper = active_tab_page.child().downcast::<RnCanvasWrapper>().unwrap();
-                appwindow.clear_rendering_inactive_tabs();
+                appwindow.set_unselected_tabs_inactive();
 
-                if let Some(prev_active_tab_page) = overlays.imp().prev_active_tab_page.borrow_mut().replace(active_tab_page.clone()){
-                    if prev_active_tab_page != active_tab_page {
-                        appwindow.sync_state_between_tabs(&prev_active_tab_page, &active_tab_page);
-                    }
+                if let Some(prev_active_tab_page) = overlays.imp().prev_active_tab_page.upgrade() {
+                        if prev_active_tab_page != active_tab_page {
+                            appwindow.sync_state_between_tabs(&prev_active_tab_page, &active_tab_page);
+                        }
                 }
+                overlays.imp().prev_active_tab_page.set(Some(&active_tab_page));
 
-                active_canvaswrapper.canvas().regenerate_background_pattern();
-                active_canvaswrapper.canvas().update_engine_rendering();
+                let widget_flags = active_canvaswrapper.canvas().engine_mut().set_active(true);
+                appwindow.handle_widget_flags(widget_flags, &active_canvaswrapper.canvas());
                 appwindow.refresh_ui_from_engine(&active_canvaswrapper);
             }));
 
@@ -335,43 +358,49 @@ impl RnOverlays {
                 let canvaswrapper = page.child().downcast::<RnCanvasWrapper>().unwrap();
                 canvaswrapper.init_reconnect(&appwindow);
                 canvaswrapper.connect_to_tab_page(page);
+                let widget_flags = canvaswrapper.canvas().engine_mut().set_active(true);
+                appwindow.handle_widget_flags(widget_flags, &canvaswrapper.canvas());
             }),
         );
 
         imp.tabview.connect_page_detached(
-            clone!(@weak self as overlays, @weak appwindow => move |_tabview, page, _| {
+            clone!(@weak self as overlays, @weak appwindow => move |_, page, _| {
                 let canvaswrapper = page.child().downcast::<RnCanvasWrapper>().unwrap();
 
-                let mut remove_saved_prev_page = false;
-                // If the detached page is the selected one, we must remove it here.
-                if let Some(prev_active_tab_page) = &*overlays.imp().prev_active_tab_page.borrow() {
-                    if prev_active_tab_page == page {
-                        remove_saved_prev_page = true;
-                    }
-                }
-                if remove_saved_prev_page {
-                    overlays.imp().prev_active_tab_page.take();
+                // if the to be detached page is saved as prev selected, remove it.
+                if overlays.imp().prev_active_tab_page.upgrade().map_or(true, |prev| prev == *page) {
+                    overlays.imp().prev_active_tab_page.set(None);
                 }
 
-                canvaswrapper.disconnect_handlers(&appwindow);
-                canvaswrapper.canvas().engine().borrow_mut().clear_rendering();
+                let _ = canvaswrapper.canvas().engine_mut().set_active(false);
+                canvaswrapper.disconnect_handlers();
             }),
         );
 
         imp.tabview.connect_close_page(
-            clone!(@weak appwindow => @default-return true, move |tabview, page| {
-                if page
-                    .child()
-                    .downcast::<RnCanvasWrapper>()
-                    .unwrap()
-                    .canvas()
-                    .unsaved_changes()
-                {
-                    // close_tab_finish() is called in the dialog
-                    dialogs::dialog_close_tab(&appwindow, page);
-                } else {
-                    tabview.close_page_finish(page, true);
-                }
+            clone!(@weak self as overlays, @weak appwindow => @default-return true, move |_, page| {
+                    glib::MainContext::default().spawn_local(clone!(@weak overlays, @weak appwindow, @weak page => async move {
+                    let close_finish_confirm = if page
+                        .child()
+                        .downcast::<RnCanvasWrapper>()
+                        .unwrap()
+                        .canvas()
+                        .unsaved_changes()
+                    {
+                        dialogs::dialog_close_tab(&appwindow, &page).await
+                    } else {
+                        true
+                    };
+
+                    #[allow(clippy::collapsible_if)]
+                    if close_finish_confirm {
+                        // if the to be closed page is saved as prev selected, remove it.
+                        if overlays.imp().prev_active_tab_page.upgrade().map_or(true, |prev| prev == page) {
+                            overlays.imp().prev_active_tab_page.set(None);
+                        }
+                    }
+                    appwindow.close_tab_finish(&page, close_finish_confirm);
+                }));
 
                 true
             }),

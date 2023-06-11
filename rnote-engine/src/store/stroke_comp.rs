@@ -12,7 +12,6 @@ use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::{helpers, Color};
 use std::sync::Arc;
-use std::time::Instant;
 
 /// Systems that are related to the stroke components.
 impl StrokeStore {
@@ -242,10 +241,11 @@ impl StrokeStore {
     ///
     /// The strokes then need to update their rendering.
     pub fn change_stroke_colors(&mut self, keys: &[StrokeKey], color: Color) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
         if keys.is_empty() {
-            return WidgetFlags::default();
+            return widget_flags;
         }
-        let mut widget_flags = self.record(Instant::now());
 
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
@@ -282,10 +282,11 @@ impl StrokeStore {
     ///
     /// The strokes then need to update their rendering.
     pub fn change_fill_colors(&mut self, keys: &[StrokeKey], color: Color) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
         if keys.is_empty() {
-            return WidgetFlags::default();
+            return widget_flags;
         }
-        let mut widget_flags = self.record(Instant::now());
 
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
@@ -638,7 +639,7 @@ impl StrokeStore {
                     stroke
                         .hitboxes()
                         .into_iter()
-                        .any(|hitbox| hitbox.contains_local_point(&na::Point2::from(coord)))
+                        .any(|hitbox| hitbox.contains_local_point(&coord.into()))
                 } else {
                     false
                 }

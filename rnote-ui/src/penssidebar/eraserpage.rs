@@ -41,6 +41,7 @@ mod imp {
         }
 
         fn dispose(&self) {
+            self.dispose_template();
             while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
@@ -108,13 +109,13 @@ impl RnEraserPage {
 
         imp.eraserstyle_trash_colliding_strokes_toggle.connect_toggled(clone!(@weak appwindow => move |eraserstyle_trash_colliding_strokes_toggle| {
             if eraserstyle_trash_colliding_strokes_toggle.is_active() {
-                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.eraser_config.style = EraserStyle::TrashCollidingStrokes;
+                appwindow.active_tab().canvas().engine_mut().pens_config.eraser_config.style = EraserStyle::TrashCollidingStrokes;
             }
         }));
 
         imp.eraserstyle_split_colliding_strokes_toggle.connect_toggled(clone!(@weak appwindow => move |eraserstyle_split_colliding_strokes_toggle| {
             if eraserstyle_split_colliding_strokes_toggle.is_active() {
-                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.eraser_config.style = EraserStyle::SplitCollidingStrokes;
+                appwindow.active_tab().canvas().engine_mut().pens_config.eraser_config.style = EraserStyle::SplitCollidingStrokes;
             }
         }));
 
@@ -134,7 +135,7 @@ impl RnEraserPage {
             Some("stroke-width"),
             clone!(@weak appwindow => move |picker, _| {
                 let stroke_width = picker.stroke_width();
-                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.eraser_config.width = stroke_width;
+                appwindow.active_tab().canvas().engine_mut().pens_config.eraser_config.width = stroke_width;
             }),
         );
     }
@@ -144,8 +145,7 @@ impl RnEraserPage {
 
         let eraser_config = active_tab
             .canvas()
-            .engine()
-            .borrow()
+            .engine_ref()
             .pens_config
             .eraser_config
             .clone();

@@ -14,6 +14,7 @@ librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", tag = "2.56.0" }
 
 log = "0.4"
 anyhow = "1"
+thiserror = "1"
 serde = {version = "1", features = ["derive", "rc"]}
 serde_json = { version="1" }
 rand = "0.8"
@@ -29,10 +30,14 @@ futures = "0.3"
 base64 = "0.21"
 flate2 = "1"
 slotmap = { version = "1", features = ["serde"] }
-rstar = "0.10"
+rstar = "0.11"
 nalgebra = { version = "0.32", features = ["serde-serialize"] }
 parry2d-f64 = { version = "0.13", features = ["serde-serialize"] }
+
+# the long-term plan is to remove the gtk4 dependency entirely, after switching to another renderer.
 gtk4 = {version = "0.6", features = ["v4_10"]}
+
+glib = {version = "0.17"}
 cairo-rs = {version = "0.17", features = ["png", "svg", "pdf"]}
 # newest poppler feature ("v21_12") is causing linking errors in mingw for some reason
 poppler-rs = {version = "0.21", features = ["v20_9"] }
@@ -42,10 +47,11 @@ kurbo = "0.9"
 image = "0.24"
 svg = "0.13"
 geo = "0.25"
+chrono = "0.4.26"
 rodio = {version = "0.17", default-features=false, features = ["symphonia-wav"] }
 semver = { version = "1"}
 unicode-segmentation = "1"
-usvg = "0.33"
+usvg = "0.34"
 xmlwriter = "0.1"
 
 [dev-dependencies]

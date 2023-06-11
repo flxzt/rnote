@@ -141,13 +141,13 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
         match &self.state {
             CubBezBuilderState::Cp1 { start, cp1 }
             | CubBezBuilderState::Cp1Finished { start, cp1 } => Some(
-                Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*cp1))
+                Aabb::new_positive((*start).into(), (*cp1).into())
                     .loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
             ),
             CubBezBuilderState::Cp2 { start, cp1, cp2 }
             | CubBezBuilderState::Cp2Finished { start, cp1, cp2 } => {
-                let mut aabb = Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*cp2));
-                aabb.take_point(na::Point2::from(*cp1));
+                let mut aabb = Aabb::new_positive((*start).into(), (*cp2).into());
+                aabb.take_point((*cp1).into());
 
                 Some(aabb.loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom))
             }
@@ -157,9 +157,9 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 cp2,
                 end,
             } => {
-                let mut aabb = Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*end));
-                aabb.take_point(na::Point2::from(*cp1));
-                aabb.take_point(na::Point2::from(*cp2));
+                let mut aabb = Aabb::new_positive((*start).into(), (*end).into());
+                aabb.take_point((*cp1).into());
+                aabb.take_point((*cp2).into());
 
                 Some(aabb.loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom))
             }

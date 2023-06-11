@@ -4,7 +4,6 @@ use super::{Stroke, StrokeBehaviour};
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::{document::Format, strokes::strokebehaviour};
 use crate::{render, DrawBehaviour};
-use gtk4::glib;
 use p2d::bounding_volume::Aabb;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
@@ -169,7 +168,8 @@ impl VectorImage {
         let mut svg_tree = usvg::Tree::from_str(svg_data, &usvg::Options::default())?;
         svg_tree.convert_text(&render::USVG_FONTDB);
         let svg_data = svg_tree.to_string(&xml_options);
-        let intrinsic_size = na::vector![svg_tree.size.width(), svg_tree.size.height()];
+        let intrinsic_size =
+            na::vector![svg_tree.size.width() as f64, svg_tree.size.height() as f64];
 
         let rectangle = if let Some(size) = size {
             Rectangle {

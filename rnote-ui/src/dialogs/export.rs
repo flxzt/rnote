@@ -90,7 +90,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     let export_file_label: Label = builder.object("export_doc_export_file_label").unwrap();
     let export_file_button: Button = builder.object("export_doc_export_file_button").unwrap();
 
-    let initial_doc_export_prefs = canvas.engine().borrow_mut().export_prefs.doc_export_prefs;
+    let initial_doc_export_prefs = canvas.engine_mut().export_prefs.doc_export_prefs;
 
     dialog.set_transient_for(Some(appwindow));
 
@@ -113,7 +113,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
             glib::MainContext::default().spawn_local(clone!(@strong selected_file, @weak export_file_label, @weak button_confirm, @weak dialog, @weak canvas, @weak appwindow => async move {
                 dialog.hide();
 
-                let doc_export_prefs = canvas.engine().borrow_mut().export_prefs.doc_export_prefs;
+                let doc_export_prefs = canvas.engine_mut().export_prefs.doc_export_prefs;
                 let filedialog =
                     create_filedialog_export_doc(&appwindow, canvas.output_file(), &doc_export_prefs);
                 match filedialog.save_future(Some(&appwindow)).await {
@@ -142,16 +142,16 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     );
 
     with_background_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |with_background_switch| {
-        canvas.engine().borrow_mut().export_prefs.doc_export_prefs.with_background = with_background_switch.is_active();
+        canvas.engine_mut().export_prefs.doc_export_prefs.with_background = with_background_switch.is_active();
     }));
 
     with_pattern_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |with_pattern_switch| {
-        canvas.engine().borrow_mut().export_prefs.doc_export_prefs.with_pattern = with_pattern_switch.is_active();
+        canvas.engine_mut().export_prefs.doc_export_prefs.with_pattern = with_pattern_switch.is_active();
     }));
 
     export_format_row.connect_selected_notify(clone!(@strong selected_file, @weak export_file_label, @weak button_confirm, @weak canvas, @weak appwindow => move |row| {
         let export_format = DocExportFormat::try_from(row.selected()).unwrap();
-        canvas.engine().borrow_mut().export_prefs.doc_export_prefs.export_format = export_format;
+        canvas.engine_mut().export_prefs.doc_export_prefs.export_format = export_format;
 
         // force the user to pick another file
         export_file_label.set_label(&gettext("- no file selected -"));
@@ -159,15 +159,15 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         selected_file.replace(None);
     }));
 
-    dialog.connect_response(
-        clone!(@weak with_background_switch, @strong selected_file, @weak canvas, @weak appwindow => move |dialog, responsetype| {
-            match responsetype {
-                ResponseType::Apply => {
-                    if let Some(file) = selected_file.take() {
-                        glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+    let response = dialog.run_future().await;
+    dialog.close();
+    match response {
+        ResponseType::Apply => {
+            if let Some(file) = selected_file.take() {
+                glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
                             appwindow.overlays().start_pulsing_progressbar();
 
-                            let file_title = rnote_engine::utils::default_file_title_for_export(
+                            let file_title = crate::utils::default_file_title_for_export(
                                 Some(file.clone()),
                                 Some(&canvas::OUTPUT_FILE_NEW_TITLE),
                                 None,
@@ -181,17 +181,14 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
 
                             appwindow.overlays().finish_progressbar();
                         }));
-                    } else {
-                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed, no file selected"));
-                    }
-                }
-                _ => {}
+            } else {
+                appwindow
+                    .overlays()
+                    .dispatch_toast_error(&gettext("Exporting document failed, no file selected"));
             }
-
-            dialog.close();
-        }));
-
-    dialog.present();
+        }
+        _ => {}
+    }
 }
 
 fn create_filedialog_export_doc(
@@ -224,7 +221,7 @@ fn create_filedialog_export_doc(
         }
     }
     let file_ext = doc_export_prefs.export_format.file_ext();
-    let file_name = rnote_engine::utils::default_file_title_for_export(
+    let file_name = crate::utils::default_file_title_for_export(
         output_file,
         Some(&canvas::OUTPUT_FILE_NEW_TITLE),
         Some(&(String::from(".") + &file_ext)),
@@ -278,11 +275,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         .object("export_doc_pages_page_files_naming_info_label")
         .unwrap();
 
-    let initial_doc_pages_export_prefs = canvas
-        .engine()
-        .borrow_mut()
-        .export_prefs
-        .doc_pages_export_prefs;
+    let initial_doc_pages_export_prefs = canvas.engine_ref().export_prefs.doc_pages_export_prefs;
 
     dialog.set_transient_for(Some(appwindow));
 
@@ -307,7 +300,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
     export_dir_label.set_label(&gettext("- no directory selected -"));
     button_confirm.set_sensitive(false);
 
-    let default_stem_name = rnote_engine::utils::default_file_title_for_export(
+    let default_stem_name = crate::utils::default_file_title_for_export(
         canvas.output_file(),
         Some(&canvas::OUTPUT_FILE_NEW_TITLE),
         None,
@@ -330,7 +323,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
             glib::MainContext::default().spawn_local(clone!(@strong selected_file, @weak export_dir_label, @weak button_confirm, @weak dialog, @weak canvas, @weak appwindow => async move {
                 dialog.hide();
 
-                let doc_pages_export_prefs = canvas.engine().borrow_mut().export_prefs.doc_pages_export_prefs;
+                let doc_pages_export_prefs = canvas.engine_mut().export_prefs.doc_pages_export_prefs;
                 let filedialog = create_filedialog_export_doc_pages(
                     &appwindow,
                     canvas.output_file(),
@@ -363,11 +356,11 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
     );
 
     with_background_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |with_background_switch| {
-        canvas.engine().borrow_mut().export_prefs.doc_pages_export_prefs.with_background = with_background_switch.is_active();
+        canvas.engine_mut().export_prefs.doc_pages_export_prefs.with_background = with_background_switch.is_active();
     }));
 
     with_pattern_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |with_pattern_switch| {
-        canvas.engine().borrow_mut().export_prefs.doc_pages_export_prefs.with_pattern = with_pattern_switch.is_active();
+        canvas.engine_mut().export_prefs.doc_pages_export_prefs.with_pattern = with_pattern_switch.is_active();
     }));
 
     export_format_row.connect_selected_notify(clone!(
@@ -381,7 +374,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         @weak canvas,
         @weak appwindow => move |row| {
             let export_format = DocPagesExportFormat::try_from(row.selected()).unwrap();
-            canvas.engine().borrow_mut().export_prefs.doc_pages_export_prefs.export_format = export_format;
+            canvas.engine_mut().export_prefs.doc_pages_export_prefs.export_format = export_format;
 
             // Set the bitmap scalefactor sensitive only when exporting to a bitmap image
             bitmap_scalefactor_row.set_sensitive(export_format == DocPagesExportFormat::Png || export_format == DocPagesExportFormat::Jpeg);
@@ -391,16 +384,16 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
             page_files_naming_info_label.set_text(&(
                 rnote_engine::utils::doc_pages_files_names(export_files_stemname_entryrow.text().to_string(), 1)
                     + "."
-                    + &canvas.engine().borrow_mut().export_prefs.doc_pages_export_prefs.export_format.file_ext()
+                    + &canvas.engine_mut().export_prefs.doc_pages_export_prefs.export_format.file_ext()
             ));
     }));
 
     bitmap_scalefactor_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |bitmap_scalefactor_spinbutton| {
-        canvas.engine().borrow_mut().export_prefs.doc_pages_export_prefs.bitmap_scalefactor = bitmap_scalefactor_spinbutton.value();
+        canvas.engine_mut().export_prefs.doc_pages_export_prefs.bitmap_scalefactor = bitmap_scalefactor_spinbutton.value();
     }));
 
     jpeg_quality_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |jpeg_quality_spinbutton| {
-        canvas.engine().borrow_mut().export_prefs.doc_pages_export_prefs.jpeg_quality = jpeg_quality_spinbutton.value().clamp(1.0, 100.0) as u8;
+        canvas.engine_mut().export_prefs.doc_pages_export_prefs.jpeg_quality = jpeg_quality_spinbutton.value().clamp(1.0, 100.0) as u8;
     }));
 
     export_files_stemname_entryrow.connect_changed(
@@ -411,21 +404,20 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
             page_files_naming_info_label.set_text(&(
                 rnote_engine::utils::doc_pages_files_names(entryrow.text().to_string(), 1)
                     + "."
-                    + &canvas.engine().borrow_mut().export_prefs.doc_pages_export_prefs.export_format.file_ext()
+                    + &canvas.engine_mut().export_prefs.doc_pages_export_prefs.export_format.file_ext()
             ));
         }),
     );
 
-    dialog.connect_response(
-        clone!(@strong selected_file, @weak with_background_switch, @weak export_files_stemname_entryrow, @weak canvas, @weak appwindow => move |dialog, responsetype| {
-            match responsetype {
-                ResponseType::Apply => {
-                    if let Some(dir) = selected_file.take() {
-                        glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+    let response = dialog.run_future().await;
+    dialog.close();
+    match response {
+        ResponseType::Apply => {
+            if let Some(dir) = selected_file.take() {
+                glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
                             appwindow.overlays().start_pulsing_progressbar();
 
                             let file_stem_name = export_files_stemname_entryrow.text().to_string();
-
                             if let Err(e) = canvas.export_doc_pages(&dir, file_stem_name, None).await {
                                 log::error!("exporting document pages failed, Error: `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed"));
@@ -435,17 +427,14 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
 
                             appwindow.overlays().finish_progressbar();
                         }));
-                    } else {
-                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed, no directory selected"));
-                    }
-                }
-                _ => {}
+            } else {
+                appwindow.overlays().dispatch_toast_error(&gettext(
+                    "Exporting document pages failed, no directory selected",
+                ));
             }
-
-            dialog.close();
-        }));
-
-    dialog.present();
+        }
+        _ => {}
+    }
 }
 
 fn create_filedialog_export_doc_pages(
@@ -534,11 +523,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         .object("export_selection_margin_spinbutton")
         .unwrap();
 
-    let initial_selection_export_prefs = canvas
-        .engine()
-        .borrow_mut()
-        .export_prefs
-        .selection_export_prefs;
+    let initial_selection_export_prefs = canvas.engine_ref().export_prefs.selection_export_prefs;
 
     dialog.set_transient_for(Some(appwindow));
 
@@ -576,8 +561,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
                 dialog.hide();
 
                 let selection_export_prefs = canvas
-                    .engine()
-                    .borrow_mut()
+                    .engine_ref()
                     .export_prefs
                     .selection_export_prefs;
                 let filedialog = create_filedialog_export_selection(
@@ -611,11 +595,11 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
     );
 
     with_background_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |with_background_switch| {
-        canvas.engine().borrow_mut().export_prefs.selection_export_prefs.with_background = with_background_switch.is_active();
+        canvas.engine_mut().export_prefs.selection_export_prefs.with_background = with_background_switch.is_active();
     }));
 
     with_pattern_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |with_pattern_switch| {
-        canvas.engine().borrow_mut().export_prefs.selection_export_prefs.with_pattern = with_pattern_switch.is_active();
+        canvas.engine_mut().export_prefs.selection_export_prefs.with_pattern = with_pattern_switch.is_active();
     }));
 
     export_format_row.connect_selected_notify(clone!(
@@ -626,7 +610,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         @weak canvas,
         @weak appwindow => move |row| {
             let export_format = SelectionExportFormat::try_from(row.selected()).unwrap();
-            canvas.engine().borrow_mut().export_prefs.selection_export_prefs.export_format = export_format;
+            canvas.engine_mut().export_prefs.selection_export_prefs.export_format = export_format;
 
             // force the user to pick another file
             export_file_label.set_label(&gettext("- no file selected -"));
@@ -640,45 +624,44 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
     }));
 
     bitmap_scalefactor_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |bitmap_scalefactor_spinbutton| {
-        canvas.engine().borrow_mut().export_prefs.selection_export_prefs.bitmap_scalefactor = bitmap_scalefactor_spinbutton.value();
+        canvas.engine_mut().export_prefs.selection_export_prefs.bitmap_scalefactor = bitmap_scalefactor_spinbutton.value();
     }));
 
     jpeg_quality_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |jpeg_quality_spinbutton| {
-        canvas.engine().borrow_mut().export_prefs.selection_export_prefs.jpeg_quality = jpeg_quality_spinbutton.value().clamp(1.0, 100.0) as u8;
+        canvas.engine_mut().export_prefs.selection_export_prefs.jpeg_quality = jpeg_quality_spinbutton.value().clamp(1.0, 100.0) as u8;
     }));
 
     margin_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |margin_spinbutton| {
-        canvas.engine().borrow_mut().export_prefs.selection_export_prefs.margin = margin_spinbutton.value();
+        canvas.engine_mut().export_prefs.selection_export_prefs.margin = margin_spinbutton.value();
     }));
 
-    dialog.connect_response(
-        clone!(@strong selected_file, @weak with_background_switch, @weak canvas, @weak appwindow => move |dialog, responsetype| {
-            match responsetype {
-                ResponseType::Apply => {
-                    if let Some(file) = selected_file.take() {
-                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                            appwindow.overlays().start_pulsing_progressbar();
+    let response = dialog.run_future().await;
+    dialog.close();
+    match response {
+        ResponseType::Apply => {
+            if let Some(file) = selected_file.take() {
+                appwindow.overlays().start_pulsing_progressbar();
 
-                            if let Err(e) = canvas.export_selection(&file, None).await {
-                                log::error!("exporting selection failed, Error: `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed"));
-                            } else {
-                                appwindow.overlays().dispatch_toast_text(&gettext("Exported selection successfully"));
-                            }
-
-                            appwindow.overlays().finish_progressbar();
-                        }));
-                    } else {
-                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed, no file selected"));
-                    }
+                if let Err(e) = canvas.export_selection(&file, None).await {
+                    log::error!("exporting selection failed, Error: `{e:?}`");
+                    appwindow
+                        .overlays()
+                        .dispatch_toast_error(&gettext("Exporting selection failed"));
+                } else {
+                    appwindow
+                        .overlays()
+                        .dispatch_toast_text(&gettext("Exported selection successfully"));
                 }
-                _ => {}
+
+                appwindow.overlays().finish_progressbar();
+            } else {
+                appwindow
+                    .overlays()
+                    .dispatch_toast_error(&gettext("Exporting selection failed, no file selected"));
             }
-
-            dialog.close();
-        }));
-
-    dialog.present();
+        }
+        _ => {}
+    }
 }
 
 fn create_filedialog_export_selection(
@@ -716,7 +699,7 @@ fn create_filedialog_export_selection(
         }
     }
     let file_ext = selection_export_prefs.export_format.file_ext();
-    let file_name = rnote_engine::utils::default_file_title_for_export(
+    let file_name = crate::utils::default_file_title_for_export(
         output_file,
         Some(&canvas::OUTPUT_FILE_NEW_TITLE),
         Some(&(String::from(" - Selection") + "." + &file_ext)),
@@ -733,7 +716,7 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
     filter.add_mime_type("application/json");
     filter.add_suffix("json");
     filter.set_name(Some(&gettext("Json")));
-    let initial_name = rnote_engine::utils::default_file_title_for_export(
+    let initial_name = crate::utils::default_file_title_for_export(
         canvas.output_file(),
         Some(&canvas::OUTPUT_FILE_NEW_TITLE),
         Some(" - engine state.json"),
@@ -779,7 +762,7 @@ pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, ca
     filter.add_mime_type("application/json");
     filter.add_suffix("json");
     filter.set_name(Some(&gettext("Json")));
-    let initial_name = rnote_engine::utils::default_file_title_for_export(
+    let initial_name = crate::utils::default_file_title_for_export(
         canvas.output_file(),
         Some(&canvas::OUTPUT_FILE_NEW_TITLE),
         Some(" - engine config.json"),

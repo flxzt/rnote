@@ -90,6 +90,7 @@
         <file compressed="true">icons/scalable/actions/stroke-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/fill-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/doc-save-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/doc-create-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-trash-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-duplicate-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-select-all-symbolic.svg</file>
@@ -116,6 +117,7 @@
         <file compressed="true">icons/scalable/actions/pen-tools-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-verticalspacetool-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-offsetcameratool-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-tools-zoomtool-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/text-bold-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/text-indent-less-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/text-indent-more-symbolic.svg</file>

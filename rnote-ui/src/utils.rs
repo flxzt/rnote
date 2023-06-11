@@ -88,7 +88,7 @@ impl FileType {
     }
 }
 
-/// Checks if the file is a temporary goutputstream file.
+/// Check if the file is a temporary goutputstream file.
 pub(crate) fn is_goutputstream_file(file: &gio::File) -> bool {
     if let Some(path) = file.path() {
         if let Some(file_name) = path.file_name() {
@@ -101,7 +101,7 @@ pub(crate) fn is_goutputstream_file(file: &gio::File) -> bool {
     false
 }
 
-/// Translates a Aabb from the the coordinate space of `widget` to `dest_widget`. None if the widgets don't have a common ancestor.
+/// Translate a Aabb from the the coordinate space of `widget` to `dest_widget`. None if the widgets don't have a common ancestor.
 #[allow(unused)]
 pub(crate) fn translate_aabb_to_widget(
     aabb: Aabb,
@@ -166,7 +166,7 @@ pub(crate) fn str_from_u8_nul_utf8(utf8_src: &[u8]) -> Result<&str, std::str::Ut
     std::str::from_utf8(&utf8_src[0..nul_range_end])
 }
 
-/// Gets the index of the AxisUse enum
+/// Get the index of the AxisUse enum
 ///
 /// TODO: Report to gtk-rs that [gdk::AxisUse] needs a [`Into<std::ops::Index>`] implementation for usage to retrieve pointer axes in [gdk::TimeCoord]
 pub(crate) fn axis_use_idx(a: gdk::AxisUse) -> usize {
@@ -185,6 +185,26 @@ pub(crate) fn axis_use_idx(a: gdk::AxisUse) -> usize {
         gdk::AxisUse::Slider => 11,
         _ => unreachable!(),
     }
+}
+
+pub fn default_file_title_for_export(
+    output_file: Option<gio::File>,
+    fallback: Option<&str>,
+    suffix: Option<&str>,
+) -> String {
+    let mut title = output_file
+        .and_then(|f| Some(f.basename()?.file_stem()?.to_string_lossy().to_string()))
+        .unwrap_or_else(|| {
+            fallback
+                .map(|f| f.to_owned())
+                .unwrap_or_else(rnote_engine::utils::now_formatted_string)
+        });
+
+    if let Some(suffix) = suffix {
+        title += suffix;
+    }
+
+    title
 }
 
 /// Wrapper type that enables iterating over [`std::cell::RefCell<Vec<T>>`]

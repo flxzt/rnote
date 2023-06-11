@@ -100,14 +100,14 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
         match &self.state {
             QuadBezBuilderState::Cp { start, cp }
             | QuadBezBuilderState::CpFinished { start, cp } => Some(
-                Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*cp))
+                Aabb::new_positive((*start).into(), (*cp).into())
                     .loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
             ),
             QuadBezBuilderState::End { start, cp, end } => {
                 let stroke_width = style.stroke_width();
 
-                let mut aabb = Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*end));
-                aabb.take_point(na::Point2::from(*cp));
+                let mut aabb = Aabb::new_positive((*start).into(), (*end).into());
+                aabb.take_point((*cp).into());
 
                 Some(aabb.loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom))
             }

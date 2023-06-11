@@ -25,12 +25,13 @@
       <object class="GtkDropDown" id="unit_dropdown">
         <property name="width-request">70</property>
         <property name="model">
-          <object class="AdwEnumListModel">
-            <property name="enum-type">MeasureUnit</property>
+          <object class="GtkStringList">
+            <items>
+              <item translatable="false">Px</item>
+              <item translatable="false">Mm</item>
+              <item translatable="false">Cm</item>
+            </items>
           </object>
-        </property>
-        <property name="expression">
-          <lookup type="AdwEnumListItem" name="nick" />
         </property>
       </object>
     </child>

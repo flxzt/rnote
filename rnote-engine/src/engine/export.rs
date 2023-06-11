@@ -355,7 +355,7 @@ impl RnoteEngine {
     }
 
     /// Export the doc with the strokes as Svg.
-    pub fn export_doc_as_svg_bytes(
+    fn export_doc_as_svg_bytes(
         &self,
         doc_export_prefs_override: Option<DocExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<u8>, anyhow::Error>> {
@@ -394,7 +394,7 @@ impl RnoteEngine {
     }
 
     /// Export the doc with the strokes as Pdf.
-    pub fn export_doc_as_pdf_bytes(
+    fn export_doc_as_pdf_bytes(
         &self,
         title: String,
         doc_export_prefs_override: Option<DocExportPrefs>,
@@ -515,7 +515,7 @@ impl RnoteEngine {
     }
 
     /// Export the document as a Xournal++ .xopp file.
-    pub fn export_doc_as_xopp_bytes(
+    fn export_doc_as_xopp_bytes(
         &self,
         title: String,
         _doc_export_prefs_override: Option<DocExportPrefs>,
@@ -673,7 +673,7 @@ impl RnoteEngine {
     }
 
     /// Export the document as Svg.
-    pub fn export_doc_pages_as_svgs_bytes(
+    fn export_doc_pages_as_svgs_bytes(
         &self,
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
@@ -729,7 +729,7 @@ impl RnoteEngine {
     /// Export the document pages as bitmap.
     ///
     /// Returns an error if the format pref is not set to a bitmap variant.
-    pub fn export_doc_pages_as_bitmap_bytes(
+    fn export_doc_pages_as_bitmap_bytes(
         &self,
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
@@ -803,7 +803,7 @@ impl RnoteEngine {
     }
 
     /// Exports the selection as Svg.
-    pub fn export_selection_as_svg_bytes(
+    fn export_selection_as_svg_bytes(
         &self,
         selection_export_prefs_override: Option<SelectionExportPrefs>,
     ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
@@ -853,7 +853,7 @@ impl RnoteEngine {
     /// Export the selection a bitmap bytes.
     ///
     /// Returns an error if the format pref is not set to a bitmap format
-    pub fn export_selection_as_bitmap_bytes(
+    fn export_selection_as_bitmap_bytes(
         &self,
         selection_export_prefs_override: Option<SelectionExportPrefs>,
     ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {

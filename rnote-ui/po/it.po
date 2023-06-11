@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-09 15:20+0200\n"
-"PO-Revision-Date: 2023-05-18 09:17+0000\n"
+"PO-Revision-Date: 2023-06-11 19:39+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -778,10 +778,8 @@ msgid "Move View"
 msgstr "Sposta"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:40
-#, fuzzy
-#| msgid "Zoom in/out"
 msgid "Zoom In/Out"
-msgstr "Aumenta/Diminuisci Zoom"
+msgstr "Zoom avanti/indietro"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:43
 msgid "Pick And Insert Emoji"
@@ -1634,16 +1632,12 @@ msgid "Opened file was moved or deleted on disk"
 msgstr "Il file aperto è stato spostato o cancellato"
 
 #: rnote-ui/src/canvas/mod.rs:988
-#, fuzzy
-#| msgid "Opening file failed"
 msgid "Inserting file failed"
-msgstr "Apertura file fallita"
+msgstr "Inserimento file non riuscito"
 
 #: rnote-ui/src/canvas/mod.rs:998
-#, fuzzy
-#| msgid "Printing document failed"
 msgid "Inserting text failed"
-msgstr "Stampa del documento fallita"
+msgstr "Inserimento del testo non riuscito"
 
 #: rnote-ui/src/dialogs/export.rs:25 rnote-ui/src/dialogs/import.rs:78
 msgid ".rnote"
@@ -2041,130 +2035,94 @@ msgid "Cubic bezier curve"
 msgstr "Curva di Bézier cubica"
 
 #: rnote-ui/src/settingspanel/mod.rs:788
-#, fuzzy
-#| msgid "Crosshair (Small)"
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "Mirino (piccolo)"
 
 #: rnote-ui/src/settingspanel/mod.rs:789
-#, fuzzy
-#| msgid "Crosshair (Medium)"
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
-msgstr "Mirino (Medio)"
+msgstr "Mirino (medio)"
 
 #: rnote-ui/src/settingspanel/mod.rs:790
-#, fuzzy
-#| msgid "Crosshair (Large)"
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
-msgstr "Mirino (Grande)"
+msgstr "Mirino (grande)"
 
 #: rnote-ui/src/settingspanel/mod.rs:791
-#, fuzzy
-#| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "Punto (piccolo)"
 
 #: rnote-ui/src/settingspanel/mod.rs:792
-#, fuzzy
-#| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "Punto (medio)"
 
 #: rnote-ui/src/settingspanel/mod.rs:793
-#, fuzzy
-#| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "Punto (grande)"
 
 #: rnote-ui/src/settingspanel/mod.rs:794
-#, fuzzy
-#| msgid "Teardrop North-West (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
-msgstr "A Goccia Nord-Ovest (Piccolo)"
+msgstr "A Goccia Nord-Ovest (piccolo)"
 
 #: rnote-ui/src/settingspanel/mod.rs:795
-#, fuzzy
-#| msgid "Teardrop North-West (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
-msgstr "A Goccia Nord-Ovest (Medio)"
+msgstr "A Goccia Nord-Ovest (medio)"
 
 #: rnote-ui/src/settingspanel/mod.rs:796
-#, fuzzy
-#| msgid "Teardrop North-West (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
-msgstr "A Goccia Nord-Ovest (Grande)"
+msgstr "A Goccia Nord-Ovest (grande)"
 
 #: rnote-ui/src/settingspanel/mod.rs:797
-#, fuzzy
-#| msgid "Teardrop North-East (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
-msgstr "A Goccia Nord-Est (Piccolo)"
+msgstr "A Goccia Nord-Est (piccolo)"
 
 #: rnote-ui/src/settingspanel/mod.rs:798
-#, fuzzy
-#| msgid "Teardrop North-East (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
-msgstr "A Goccia Nord-Est (Medio)"
+msgstr "A Goccia Nord-Est (medio)"
 
 #: rnote-ui/src/settingspanel/mod.rs:799
-#, fuzzy
-#| msgid "Teardrop North-East (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
-msgstr "A Goccia Nord-Est (Grande)"
+msgstr "A Goccia Nord-Est (grande)"
 
 #: rnote-ui/src/settingspanel/mod.rs:800
-#, fuzzy
-#| msgid "Teardrop North (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "A Goccia Nord (piccolo)"
 
 #: rnote-ui/src/settingspanel/mod.rs:801
-#, fuzzy
-#| msgid "Teardrop North (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
-msgstr "A Goccia Nord (Medio)"
+msgstr "A Goccia Nord (medio)"
 
 #: rnote-ui/src/settingspanel/mod.rs:802
-#, fuzzy
-#| msgid "Teardrop North (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
-msgstr "A Goccia Nord (Grande)"
+msgstr "A Goccia Nord (grande)"
 
 #: rnote-ui/src/settingspanel/mod.rs:803
-#, fuzzy
-#| msgid "Beam (Small)"
 msgctxt "a cursor type"
 msgid "Beam (Small)"
-msgstr "Raggio (piccolo)"
+msgstr "Fascia (piccolo)"
 
 #: rnote-ui/src/settingspanel/mod.rs:804
-#, fuzzy
-#| msgid "Beam (Medium)"
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
-msgstr "Raggio (Medio)"
+msgstr "Fascia (medio)"
 
 #: rnote-ui/src/settingspanel/mod.rs:805
-#, fuzzy
-#| msgid "Beam (Large)"
 msgctxt "a cursor type"
 msgid "Beam (Large)"
-msgstr "Raggio (Grande)"
+msgstr "Fascia (grande)"
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:56
 msgid "Folder Name"

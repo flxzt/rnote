@@ -62,13 +62,10 @@ impl RnoteFile {
 
 impl FileFormatLoader for RnoteFile {
     fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self> {
-        let decompressed = String::from_utf8(
-            decompress_from_gzip(bytes).context("decompress_from_gzip() failed")?,
+        let wrapper = serde_json::from_slice::<RnotefileWrapper>(
+            &decompress_from_gzip(bytes).context("decompress_from_gzip() failed")?,
         )
-        .context("String::from_utf8() with unzipped data failed")?;
-
-        let wrapper = serde_json::from_str::<RnotefileWrapper>(decompressed.as_str())
-            .context("from_str() for RnoteFileWrapper failed")?;
+        .context("from_slice() for RnoteFileWrapper failed")?;
 
         // Conversions for older file format versions happen here
         if semver::VersionReq::parse(">=0.5.10")

@@ -6,10 +6,10 @@ use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::selectorconfig::SelectorStyle;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut, StrokeContent};
-use crate::render::Svg;
+use crate::render::{self, Svg};
 use crate::store::StrokeKey;
 use crate::strokes::StrokeBehaviour;
-use crate::{Camera, DrawOnDocBehaviour, WidgetFlags};
+use crate::{Camera, DrawOnDocBehaviour, RnoteEngine, WidgetFlags};
 use kurbo::Shape;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
@@ -167,12 +167,28 @@ impl PenBehaviour for Selector {
             let stroke_content = engine_view.store.fetch_stroke_content(&selected_keys);
             let stroke_content_svg = stroke_content.generate_svg()?;
 
+            // Add StrokeContent
             clipboard_content.push((
                 serde_json::to_string(&stroke_content)?.into_bytes(),
                 StrokeContent::MIME_TYPE.to_string(),
             ));
-            if let Some(s) = stroke_content_svg {
-                clipboard_content.push((s.svg_data.into_bytes(), Svg::MIME_TYPE.to_string()));
+            if let Some(stroke_content_svg) = stroke_content_svg {
+                let stroke_content_svg_bounds = stroke_content_svg.bounds;
+
+                // Add generated Svg
+                clipboard_content.push((
+                    stroke_content_svg.svg_data.clone().into_bytes(),
+                    Svg::MIME_TYPE.to_string(),
+                ));
+
+                // Add rendered Png
+                let image = render::Image::gen_image_from_svg(
+                    stroke_content_svg,
+                    stroke_content_svg_bounds,
+                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                )?
+                .into_encoded_bytes(image::ImageOutputFormat::Png)?;
+                clipboard_content.push((image, String::from("image/png")));
             }
         }
 
@@ -196,12 +212,28 @@ impl PenBehaviour for Selector {
             let stroke_content = engine_view.store.cut_stroke_content(&selected_keys);
             let stroke_content_svg = stroke_content.generate_svg()?;
 
+            // Add StrokeContent
             clipboard_content.push((
                 serde_json::to_string(&stroke_content)?.into_bytes(),
                 StrokeContent::MIME_TYPE.to_string(),
             ));
-            if let Some(s) = stroke_content_svg {
-                clipboard_content.push((s.svg_data.into_bytes(), Svg::MIME_TYPE.to_string()));
+            if let Some(stroke_content_svg) = stroke_content_svg {
+                let stroke_content_svg_bounds = stroke_content_svg.bounds;
+
+                // Add generated Svg
+                clipboard_content.push((
+                    stroke_content_svg.svg_data.clone().into_bytes(),
+                    Svg::MIME_TYPE.to_string(),
+                ));
+
+                // Add rendered Png
+                let image = render::Image::gen_image_from_svg(
+                    stroke_content_svg,
+                    stroke_content_svg_bounds,
+                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                )?
+                .into_encoded_bytes(image::ImageOutputFormat::Png)?;
+                clipboard_content.push((image, String::from("image/png")));
             }
 
             self.state = SelectorState::Idle;

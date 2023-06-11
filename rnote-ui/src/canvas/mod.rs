@@ -757,7 +757,7 @@ impl RnCanvas {
         }
     }
 
-    /// The document title for display. Can be used to get a string for the existing / a new save file.
+    /// The document title for display. Can be used to get a string as the basename of the existing / a new save file.
     ///
     /// When there is no output-file, falls back to the "New document" string
     pub(crate) fn doc_title_display(&self) -> String {

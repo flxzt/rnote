@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-11 21:39+0200\n"
-"PO-Revision-Date: 2023-06-10 18:43+0000\n"
+"PO-Revision-Date: 2023-06-12 05:25+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -1768,28 +1768,24 @@ msgstr ""
 "Oğuz Ersen <oguz@ersen.moe>"
 
 #: rnote-ui/src/dialogs/mod.rs:212 rnote-ui/src/dialogs/mod.rs:341
-#, fuzzy
-#| msgid "- invalid file name -"
 msgid "- invalid save folder name -"
-msgstr "- geçersiz dosya adı -"
+msgstr "- geçersiz kayıt klasörü adı -"
 
 #: rnote-ui/src/dialogs/mod.rs:227
 msgid "The changes will be saved"
-msgstr ""
+msgstr "Değişiklikler kaydedilecek"
 
 #: rnote-ui/src/dialogs/mod.rs:232
-#, fuzzy
-#| msgid "- no file selected -"
 msgid "A new file will be created"
-msgstr "- dosya seçilmedi -"
+msgstr "Yeni bir dosya oluşturulacak"
 
 #: rnote-ui/src/dialogs/mod.rs:355
 msgid "The changes will be saved."
-msgstr ""
+msgstr "Değişiklikler kaydedilecek."
 
 #: rnote-ui/src/dialogs/mod.rs:360
 msgid "A new file will be created."
-msgstr ""
+msgstr "Yeni bir dosya oluşturulacak."
 
 #: rnote-ui/src/dialogs/mod.rs:497
 msgid "Change Workspace Directory"

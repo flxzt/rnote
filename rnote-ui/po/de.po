@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-11 21:39+0200\n"
-"PO-Revision-Date: 2023-06-09 23:51+0000\n"
+"PO-Revision-Date: 2023-06-12 05:25+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1766,20 +1766,16 @@ msgid "translator-credits"
 msgstr "Felix Zwettler"
 
 #: rnote-ui/src/dialogs/mod.rs:212 rnote-ui/src/dialogs/mod.rs:341
-#, fuzzy
-#| msgid "- invalid file name -"
 msgid "- invalid save folder name -"
-msgstr "- ungültiger Dateiname -"
+msgstr "- ungültiger Speicher-Ordnername -"
 
 #: rnote-ui/src/dialogs/mod.rs:227
 msgid "The changes will be saved"
-msgstr ""
+msgstr "Die Änderungen werden gespeichert"
 
 #: rnote-ui/src/dialogs/mod.rs:232
-#, fuzzy
-#| msgid "- no file selected -"
 msgid "A new file will be created"
-msgstr "- keine Datei ausgewählt -"
+msgstr "Eine neue Datei wird erstellt"
 
 #: rnote-ui/src/dialogs/mod.rs:355
 msgid "The changes will be saved."

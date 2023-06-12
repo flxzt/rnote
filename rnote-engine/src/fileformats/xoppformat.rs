@@ -1,7 +1,3 @@
-//! Loading and saving Xournal++'s `.xopp` file format
-//!
-//!
-
 // Imports
 use super::FromXmlAttributeValue;
 use super::{AsXmlAttributeValue, FileFormatLoader, FileFormatSaver, XmlLoadable, XmlWritable};

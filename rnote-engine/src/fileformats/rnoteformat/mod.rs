@@ -1,6 +1,8 @@
 //! Loading and saving Rnote's `.rnote` file format
 //!
-//! Older formats can be added, with the naming scheme `RnoteFileMaj<X>Min<Y>`, where X: semver major, Y: semver minor version.
+//! Older formats can be added, with the naming scheme `RnoteFileMaj<X>Min<Y>`,
+//! where X: semver major, Y: semver minor version.
+//!
 //! Then [TryFrom] can be implemented to allow conversions and chaining from older to newer versions.
 
 // Modules
@@ -48,7 +50,7 @@ struct RnotefileWrapper {
     data: serde_json::Value,
 }
 
-/// The Rnote file in the newest format version. The actual (de-) serialization into strong types is happening in `rnote-engine`.
+/// The Rnote file in the newest format version.
 ///
 /// This struct exists to allow for upgrading older versions before loading the file in.
 pub type RnoteFile = RnoteFileMaj0Min7;

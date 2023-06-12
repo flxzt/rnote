@@ -1,16 +1,6 @@
-//! The following formats are currently included:
-//!
-//! - Rnote - `.rnote`
-//! - Xournal++ - `.xopp`
-
 // Modules
-/// The Rnote `.rnote` file format.
 pub mod rnoteformat;
-/// The Xournal++ `.xopp` file format.
 pub mod xoppformat;
-
-// Renames
-extern crate nalgebra as na;
 
 // Imports
 use roxmltree::Node;

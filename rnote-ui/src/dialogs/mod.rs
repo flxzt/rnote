@@ -352,12 +352,12 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         if canvas_output_file.is_some() {
             // Indicate that a new existing file will be saved
             let icon_image = gtk4::Image::from_icon_name("doc-save-symbolic");
-            icon_image.set_tooltip_text(Some(&gettext("The changes will be saved.")));
+            icon_image.set_tooltip_text(Some(&gettext("The changes will be saved")));
             prefix_box.append(&icon_image);
         } else {
             // Indicate that a new file will be created
             let icon_image = gtk4::Image::from_icon_name("doc-create-symbolic");
-            icon_image.set_tooltip_text(Some(&gettext("A new file will be created.")));
+            icon_image.set_tooltip_text(Some(&gettext("A new file will be created")));
             prefix_box.append(&icon_image);
         }
         row.add_prefix(&prefix_box);

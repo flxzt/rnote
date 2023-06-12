@@ -80,7 +80,7 @@ pub struct DocExportPrefs {
     /// The export format.
     #[serde(rename = "export_format")]
     pub export_format: DocExportFormat,
-    /// The page order when exporting an infinite layout to a finite layout.
+    /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into pages.
     #[serde(rename = "page_order")]
     pub page_order: SplitOrder,
 }
@@ -139,7 +139,7 @@ pub struct DocPagesExportPrefs {
     /// Export format
     #[serde(rename = "export_format")]
     pub export_format: DocPagesExportFormat,
-    /// The page order when exporting an infinite layout to a finite layout.
+    /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into pages.
     #[serde(rename = "page_order")]
     pub page_order: SplitOrder,
     /// The bitmap scale-factor in relation to the actual size.

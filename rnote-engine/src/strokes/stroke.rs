@@ -5,6 +5,7 @@ use super::shapestroke::ShapeStroke;
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::vectorimage::VectorImage;
 use super::{StrokeBehaviour, TextStroke};
+use crate::fileformats::xoppformat::{self, XoppColor};
 use crate::store::chrono_comp::StrokeLayer;
 use crate::{render, RnoteEngine};
 use crate::{utils, DrawBehaviour};
@@ -17,7 +18,6 @@ use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::transform::Transform;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::{Color, PenPath, Style};
-use rnote_fileformats::xoppformat::{self, XoppColor};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

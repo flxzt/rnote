@@ -11,6 +11,7 @@ pub use self::import::ImportPrefs;
 // Imports
 use self::import::XoppImportPrefs;
 use crate::document::{background, Layout};
+use crate::fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use crate::pens::{Pen, PenStyle};
 use crate::pens::{PenMode, PensConfig};
 use crate::render::Svg;
@@ -27,7 +28,6 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 use rnote_compose::shapes::ShapeBehaviour;
-use rnote_fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 use std::path::PathBuf;
@@ -124,7 +124,7 @@ pub struct EngineConfig {
 }
 
 // An engine snapshot, used when loading/saving the current document from/into a file.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "engine_snapshot")]
 pub struct EngineSnapshot {
     #[serde(rename = "document")]
@@ -160,8 +160,7 @@ impl EngineSnapshot {
                 let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
                     .context("RnoteFile load_from_bytes() failed")?;
 
-                serde_json::from_value(rnote_file.engine_snapshot)
-                    .context("serde_json::from_value() for rnote_file.engine_snapshot failed")
+                Ok(rnote_file.engine_snapshot)
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {

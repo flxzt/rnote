@@ -3480,7 +3480,6 @@ dependencies = [
  "regex",
  "rnote-compose",
  "rnote-engine",
- "rnote-fileformats",
  "same-file",
  "serde",
  "serde_json",
@@ -3500,7 +3499,6 @@ dependencies = [
  "log",
  "rnote-compose",
  "rnote-engine",
- "rnote-fileformats",
  "smol",
 ]
 
@@ -3563,8 +3561,8 @@ dependencies = [
  "rayon",
  "regex",
  "rnote-compose",
- "rnote-fileformats",
  "rodio",
+ "roxmltree",
  "rstar 0.11.0",
  "semver",
  "serde",
@@ -3574,22 +3572,6 @@ dependencies = [
  "thiserror",
  "unicode-segmentation",
  "usvg",
- "xmlwriter",
-]
-
-[[package]]
-name = "rnote-fileformats"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "flate2",
- "log",
- "nalgebra",
- "pretty_env_logger",
- "roxmltree",
- "semver",
- "serde",
- "serde_json",
  "xmlwriter",
 ]
 

@@ -8,7 +8,6 @@ rust-version = "1.65"
 
 [dependencies]
 rnote-compose = {path = "../rnote-compose", version="0.1"}
-rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
 
 librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", tag = "2.56.0" }
 
@@ -17,6 +16,9 @@ anyhow = "1"
 thiserror = "1"
 serde = {version = "1", features = ["derive", "rc"]}
 serde_json = { version="1" }
+roxmltree = "0.18"
+xmlwriter = "0.1"
+semver = { version = "1", features = ["serde"]}
 rand = "0.8"
 rand_pcg = "0.3"
 rand_distr = "0.4"
@@ -49,10 +51,8 @@ svg = "0.13"
 geo = "0.25"
 chrono = "0.4.26"
 rodio = {version = "0.17", default-features=false, features = ["symphonia-wav"] }
-semver = { version = "1"}
 unicode-segmentation = "1"
 usvg = "0.34"
-xmlwriter = "0.1"
 
 [dev-dependencies]
 approx = "0.5.1"

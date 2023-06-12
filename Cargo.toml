@@ -1,7 +1,6 @@
 [workspace]
 members = [
     "rnote-compose",
-    "rnote-fileformats",
     "rnote-engine",
     "rnote-cli",
     "rnote-ui",

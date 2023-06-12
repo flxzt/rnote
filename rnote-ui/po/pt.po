@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-11 21:39+0200\n"
+"POT-Creation-Date: 2023-06-12 07:25+0200\n"
 "PO-Revision-Date: 2023-04-16 08:50+0000\n"
 "Last-Translator: Felipe Nogueira <contato.fnog@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/rnote/repo/pt/"
@@ -1771,23 +1771,15 @@ msgstr ""
 msgid "- invalid save folder name -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:227
+#: rnote-ui/src/dialogs/mod.rs:227 rnote-ui/src/dialogs/mod.rs:355
 msgid "The changes will be saved"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:232
+#: rnote-ui/src/dialogs/mod.rs:232 rnote-ui/src/dialogs/mod.rs:360
 #, fuzzy
 #| msgid "- no file selected -"
 msgid "A new file will be created"
 msgstr "- nenhum ficheiro selecionado -"
-
-#: rnote-ui/src/dialogs/mod.rs:355
-msgid "The changes will be saved."
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:360
-msgid "A new file will be created."
-msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:497
 msgid "Change Workspace Directory"

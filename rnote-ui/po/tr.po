@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-11 21:39+0200\n"
+"POT-Creation-Date: 2023-06-12 07:25+0200\n"
 "PO-Revision-Date: 2023-06-12 05:25+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
@@ -1771,21 +1771,13 @@ msgstr ""
 msgid "- invalid save folder name -"
 msgstr "- geçersiz kayıt klasörü adı -"
 
-#: rnote-ui/src/dialogs/mod.rs:227
+#: rnote-ui/src/dialogs/mod.rs:227 rnote-ui/src/dialogs/mod.rs:355
 msgid "The changes will be saved"
 msgstr "Değişiklikler kaydedilecek"
 
-#: rnote-ui/src/dialogs/mod.rs:232
+#: rnote-ui/src/dialogs/mod.rs:232 rnote-ui/src/dialogs/mod.rs:360
 msgid "A new file will be created"
 msgstr "Yeni bir dosya oluşturulacak"
-
-#: rnote-ui/src/dialogs/mod.rs:355
-msgid "The changes will be saved."
-msgstr "Değişiklikler kaydedilecek."
-
-#: rnote-ui/src/dialogs/mod.rs:360
-msgid "A new file will be created."
-msgstr "Yeni bir dosya oluşturulacak."
 
 #: rnote-ui/src/dialogs/mod.rs:497
 msgid "Change Workspace Directory"
@@ -2147,6 +2139,12 @@ msgstr "Klasör Adı"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "Yeni Klasör"
+
+#~ msgid "The changes will be saved."
+#~ msgstr "Değişiklikler kaydedilecek."
+
+#~ msgid "A new file will be created."
+#~ msgstr "Yeni bir dosya oluşturulacak."
 
 #~ msgid "- unable to find a valid save folder -"
 #~ msgstr "- geçerli bir kayıt klasörü bulunamadı -"

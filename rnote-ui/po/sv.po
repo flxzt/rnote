@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-11 21:39+0200\n"
+"POT-Creation-Date: 2023-06-12 07:25+0200\n"
 "PO-Revision-Date: 2022-12-08 18:13+0000\n"
 "Last-Translator: D0V4HKIIN <jonas.bonnaudet@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/rnote/repo/sv/>\n"
@@ -2019,23 +2019,15 @@ msgstr "Simon Svensson Thunman https://sastofficial.github.io"
 msgid "- invalid save folder name -"
 msgstr "- inget filnamn -"
 
-#: rnote-ui/src/dialogs/mod.rs:227
+#: rnote-ui/src/dialogs/mod.rs:227 rnote-ui/src/dialogs/mod.rs:355
 msgid "The changes will be saved"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:232
+#: rnote-ui/src/dialogs/mod.rs:232 rnote-ui/src/dialogs/mod.rs:360
 #, fuzzy
 #| msgid "- no directory selected -"
 msgid "A new file will be created"
 msgstr "- ingen mapp vald -"
-
-#: rnote-ui/src/dialogs/mod.rs:355
-msgid "The changes will be saved."
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:360
-msgid "A new file will be created."
-msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:497
 #, fuzzy

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-11 21:39+0200\n"
+"POT-Creation-Date: 2023-06-12 07:25+0200\n"
 "PO-Revision-Date: 2023-02-14 09:21+0000\n"
 "Last-Translator: Yosef Or Boczko <yoseforb@gnome.org>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
@@ -2002,20 +2002,12 @@ msgstr "ירון שהרבני <sh.yaron@gmail.com>"
 msgid "- invalid save folder name -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:227
+#: rnote-ui/src/dialogs/mod.rs:227 rnote-ui/src/dialogs/mod.rs:355
 msgid "The changes will be saved"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:232
+#: rnote-ui/src/dialogs/mod.rs:232 rnote-ui/src/dialogs/mod.rs:360
 msgid "A new file will be created"
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:355
-msgid "The changes will be saved."
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:360
-msgid "A new file will be created."
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:497

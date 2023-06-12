@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-11 21:39+0200\n"
+"POT-Creation-Date: 2023-06-12 07:25+0200\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -2126,23 +2126,15 @@ msgstr "ผู้แปล: 'Archer Allstars https://dev.to/archerallstars'"
 msgid "- invalid save folder name -"
 msgstr "- ไม่มีชื่อไฟล์ -"
 
-#: rnote-ui/src/dialogs/mod.rs:227
+#: rnote-ui/src/dialogs/mod.rs:227 rnote-ui/src/dialogs/mod.rs:355
 msgid "The changes will be saved"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:232
+#: rnote-ui/src/dialogs/mod.rs:232 rnote-ui/src/dialogs/mod.rs:360
 #, fuzzy
 #| msgid "- no directory selected -"
 msgid "A new file will be created"
 msgstr "- ไม่มีไดเรกทอรีที่เลือกไว้ -"
-
-#: rnote-ui/src/dialogs/mod.rs:355
-msgid "The changes will be saved."
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:360
-msgid "A new file will be created."
-msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:497
 #, fuzzy

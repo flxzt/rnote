@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-11 21:39+0200\n"
+"POT-Creation-Date: 2023-06-12 07:25+0200\n"
 "PO-Revision-Date: 2023-06-12 05:25+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -244,9 +244,7 @@ msgstr "পৃষ্ঠার প্রস্থ (%)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
 msgid "Set the width of imported Pdf's in percentage to the format width"
-msgstr ""
-"আমদানি করা পিডিএফগুলির প্রস্থ বিন্যাস এর প্রস্থের শতকরা অনুপাত হিসাবে সেট "
-"করুন"
+msgstr "আমদানি করা পিডিএফগুলির প্রস্থ বিন্যাস এর প্রস্থের শতকরা অনুপাত হিসাবে সেট করুন"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
 msgid "Page Spacing"
@@ -270,8 +268,7 @@ msgstr "পৃষ্ঠার ধরন"
 
 #: rnote-ui/data/ui/dialogs/import.ui:161
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
-msgstr ""
-"পিডিএফ গুলি কি ভেক্টর বা বিটম্যাপ ছবি হিসাবে আমদানি করা উচিত তা ঠিক করুন"
+msgstr "পিডিএফ গুলি কি ভেক্টর বা বিটম্যাপ ছবি হিসাবে আমদানি করা উচিত তা ঠিক করুন"
 
 #: rnote-ui/data/ui/dialogs/import.ui:173
 msgid "Vector"
@@ -1779,26 +1776,16 @@ msgstr "অনুবাদক-কৃতিত্ব"
 msgid "- invalid save folder name -"
 msgstr "- অবৈধ সংরক্ষণ ফোল্ডার নাম -"
 
-#: rnote-ui/src/dialogs/mod.rs:227
+#: rnote-ui/src/dialogs/mod.rs:227 rnote-ui/src/dialogs/mod.rs:355
 #, fuzzy
 msgid "The changes will be saved"
 msgstr "পরিবর্তনগুলি সংরক্ষণ করা হবে"
 
-#: rnote-ui/src/dialogs/mod.rs:232
+#: rnote-ui/src/dialogs/mod.rs:232 rnote-ui/src/dialogs/mod.rs:360
 #, fuzzy
 #| msgid "- no file selected -"
 msgid "A new file will be created"
 msgstr "একটি নতুন ফাইল তৈরি করা হবে"
-
-#: rnote-ui/src/dialogs/mod.rs:355
-#, fuzzy
-msgid "The changes will be saved."
-msgstr "পরিবর্তনগুলি সংরক্ষণ করা হবে।"
-
-#: rnote-ui/src/dialogs/mod.rs:360
-#, fuzzy
-msgid "A new file will be created."
-msgstr "একটি নতুন ফাইল তৈরি করা হবে।"
 
 #: rnote-ui/src/dialogs/mod.rs:497
 msgid "Change Workspace Directory"
@@ -2185,6 +2172,14 @@ msgstr "ফোল্ডারের নাম"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "নতুন ফোল্ডার"
+
+#, fuzzy
+#~ msgid "The changes will be saved."
+#~ msgstr "পরিবর্তনগুলি সংরক্ষণ করা হবে।"
+
+#, fuzzy
+#~ msgid "A new file will be created."
+#~ msgstr "একটি নতুন ফাইল তৈরি করা হবে।"
 
 #~ msgid "- unable to find a valid save folder -"
 #~ msgstr "- একটি বৈধ সংরক্ষণ ফোল্ডার খুঁজে পেতে অক্ষম -"

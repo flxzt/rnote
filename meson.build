@@ -105,7 +105,6 @@ endif
 
 # workspace crates
 subdir('rnote-compose')
-subdir('rnote-fileformats')
 subdir('rnote-engine')
 subdir('rnote-ui')
 
@@ -146,14 +145,12 @@ run_target(
 # build / install the app
 app_sources = [
     rnote_compose_sources,
-    rnote_fileformats_sources,
     rnote_engine_sources,
     rnote_ui_sources,
     files(
         meson.project_source_root() + '/Cargo.toml',
         meson.project_source_root() + '/Cargo.lock',
         meson.project_source_root() + '/rnote-compose/Cargo.toml',
-        meson.project_source_root() + '/rnote-fileformats/Cargo.toml',
         meson.project_source_root() + '/rnote-engine/Cargo.toml',
         meson.project_source_root() + '/rnote-ui/Cargo.toml',
         meson.project_source_root() + '/rnote-ui/build.rs',
@@ -250,14 +247,12 @@ if build_cli == true
 
     cli_sources = [
         rnote_compose_sources,
-        rnote_fileformats_sources,
         rnote_engine_sources,
         rnote_cli_sources,
         files(
             meson.project_source_root() + '/Cargo.toml',
             meson.project_source_root() + '/Cargo.lock',
             meson.project_source_root() + '/rnote-compose/Cargo.toml',
-            meson.project_source_root() + '/rnote-fileformats/Cargo.toml',
             meson.project_source_root() + '/rnote-engine/Cargo.toml',
             meson.project_source_root() + '/rnote-cli/Cargo.toml',
         ),

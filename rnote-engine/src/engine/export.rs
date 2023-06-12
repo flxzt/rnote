@@ -1,5 +1,7 @@
 // Imports
 use super::{EngineConfig, EngineSnapshot, RnoteEngine};
+use crate::fileformats::rnoteformat::RnoteFile;
+use crate::fileformats::{xoppformat, FileFormatSaver};
 use crate::store::StrokeKey;
 use crate::strokes::Stroke;
 use crate::{render, DrawBehaviour};
@@ -9,8 +11,6 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::transform::TransformBehaviour;
-use rnote_fileformats::rnoteformat::RnoteFile;
-use rnote_fileformats::{xoppformat, FileFormatSaver};
 use serde::{Deserialize, Serialize};
 
 /// Document export format.
@@ -297,10 +297,7 @@ impl RnoteEngine {
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
-                let rnote_file = RnoteFile {
-                    engine_snapshot: serde_json::to_value(engine_snapshot)?,
-                };
-
+                let rnote_file = RnoteFile { engine_snapshot };
                 rnote_file.save_as_bytes(&file_name)
             };
 

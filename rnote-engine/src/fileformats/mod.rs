@@ -1,14 +1,3 @@
-#![warn(missing_debug_implementations)]
-#![warn(missing_docs)]
-#![allow(clippy::single_match)]
-
-//! The rnote-fileformats crate is a helper crate for loading/saving from and to various file formats
-//! used by note taking and drawing applications.
-//!
-//! Crates used for loading and writing:  
-//! Xml: loading: [roxmltree], writing: [xmlwriter]  
-//! Json: loading and writing [serde], [serde_json]  
-//!
 //! The following formats are currently included:
 //!
 //! - Rnote - `.rnote`

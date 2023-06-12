@@ -14,6 +14,7 @@ pub mod camera;
 pub mod document;
 mod drawbehaviour;
 pub mod engine;
+pub mod fileformats;
 pub mod pens;
 pub mod render;
 pub mod store;

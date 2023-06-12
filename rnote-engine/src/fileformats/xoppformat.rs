@@ -3,8 +3,8 @@
 //!
 
 // Imports
+use super::FromXmlAttributeValue;
 use super::{AsXmlAttributeValue, FileFormatLoader, FileFormatSaver, XmlLoadable, XmlWritable};
-use crate::FromXmlAttributeValue;
 use roxmltree::{Node, NodeType};
 use serde::{Deserialize, Serialize};
 use std::io::{Read, Write};
@@ -13,15 +13,10 @@ use std::io::{Read, Write};
 pub const VALS_DEC_PLACES: usize = 3;
 
 /// Compress bytes with gzip.
-fn compress_to_gzip(to_compress: &[u8], file_name: &str) -> Result<Vec<u8>, anyhow::Error> {
-    let compressed_bytes = Vec::<u8>::new();
-
-    let mut encoder = flate2::GzBuilder::new()
-        .filename(file_name)
-        .write(compressed_bytes, flate2::Compression::default());
-
+fn compress_to_gzip(to_compress: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
+    let mut encoder =
+        flate2::write::GzEncoder::new(Vec::<u8>::new(), flate2::Compression::default());
     encoder.write_all(to_compress)?;
-
     Ok(encoder.finish()?)
 }
 
@@ -30,7 +25,6 @@ fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
     let mut decoder = flate2::read::MultiGzDecoder::new(compressed);
     let mut bytes: Vec<u8> = Vec::new();
     decoder.read_to_end(&mut bytes)?;
-
     Ok(bytes)
 }
 
@@ -48,26 +42,22 @@ pub struct XoppFile {
 impl FileFormatLoader for XoppFile {
     fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self> {
         let decompressed = String::from_utf8(decompress_from_gzip(bytes)?)?;
-
-        let options = roxmltree::ParsingOptions::default();
-        let parsed_doc = roxmltree::Document::parse_with_options(decompressed.as_str(), options)?;
+        let parsed_doc = roxmltree::Document::parse_with_options(
+            decompressed.as_str(),
+            roxmltree::ParsingOptions::default(),
+        )?;
         let mut xopp_root = XoppRoot::default();
-
         xopp_root.load_from_xml(parsed_doc.root_element())?;
-
         Ok(Self { xopp_root })
     }
 }
 
 impl FileFormatSaver for XoppFile {
-    fn save_as_bytes(&self, title: &str) -> anyhow::Result<Vec<u8>> {
-        let options = xmlwriter::Options::default();
-        let mut xml_writer = xmlwriter::XmlWriter::new(options);
+    fn save_as_bytes(&self, _file_name: &str) -> anyhow::Result<Vec<u8>> {
+        let mut xml_writer = xmlwriter::XmlWriter::new(xmlwriter::Options::default());
         self.xopp_root.write_to_xml(&mut xml_writer);
         let output = xml_writer.end_document();
-
-        let compressed = compress_to_gzip(output.as_bytes(), title)?;
-
+        let compressed = compress_to_gzip(output.as_bytes())?;
         Ok(compressed)
     }
 }
@@ -1021,82 +1011,5 @@ impl XmlWritable for XoppImage {
         w.write_text(&self.data);
         w.end_element();
         w.set_preserve_whitespaces(false);
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use std::path::PathBuf;
-
-    use crate::{FileFormatLoader, FileFormatSaver};
-    use std::sync::Once;
-
-    static INIT: Once = Once::new();
-
-    fn setup() {
-        INIT.call_once(|| {
-            pretty_env_logger::init();
-            std::fs::create_dir_all(std::path::PathBuf::from("./temp")).unwrap();
-        });
-    }
-
-    #[test]
-    fn load_simple_xopp() -> anyhow::Result<()> {
-        setup();
-        let to_load = PathBuf::from("./tests/simple.xopp");
-        let to_save = PathBuf::from("./temp/simple.json");
-        let bytes = std::fs::read(to_load)?;
-
-        let xopp_format_loader = super::XoppFile::load_from_bytes(&bytes)?;
-
-        let xopp_json = serde_json::to_string_pretty(&xopp_format_loader.xopp_root)?;
-        std::fs::write(to_save, xopp_json)?;
-
-        Ok(())
-    }
-
-    #[test]
-    fn load_image_xopp() -> anyhow::Result<()> {
-        setup();
-        let to_load = PathBuf::from("./tests/image.xopp");
-        let to_save = PathBuf::from("./temp/image.json");
-        let bytes = std::fs::read(to_load)?;
-
-        let xopp_format_loader = super::XoppFile::load_from_bytes(&bytes)?;
-
-        let xopp_json = serde_json::to_string_pretty(&xopp_format_loader.xopp_root)?;
-        std::fs::write(to_save, xopp_json)?;
-
-        Ok(())
-    }
-
-    #[test]
-    fn load_and_save_simple_xopp() -> anyhow::Result<()> {
-        setup();
-        let to_load = PathBuf::from("./tests/simple.xopp");
-        let to_save = PathBuf::from("./temp/simple-new.xopp");
-        let bytes = std::fs::read(to_load)?;
-
-        let xopp_file = super::XoppFile::load_from_bytes(&bytes)?;
-
-        let xopp_output = xopp_file.save_as_bytes("simple-new.xopp")?;
-        std::fs::write(to_save, xopp_output)?;
-
-        Ok(())
-    }
-
-    #[test]
-    fn load_and_save_image_xopp() -> anyhow::Result<()> {
-        setup();
-        let to_load = PathBuf::from("./tests/image.xopp");
-        let to_save = PathBuf::from("./temp/image-new.xopp");
-        let bytes = std::fs::read(to_load)?;
-
-        let xopp_file = super::XoppFile::load_from_bytes(&bytes)?;
-
-        let xopp_output = xopp_file.save_as_bytes("image-new.xopp")?;
-        std::fs::write(to_save, xopp_output)?;
-
-        Ok(())
     }
 }

@@ -1,10 +1,10 @@
 // Imports
+use crate::fileformats::xoppformat;
 use geo::line_string;
 use gtk4::{gdk, graphene, gsk};
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
 use rnote_compose::Transform;
-use rnote_fileformats::xoppformat;
 use std::ops::Range;
 
 pub trait GdkRGBAHelpers

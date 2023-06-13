@@ -8,9 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-12 07:25+0200\n"
-"PO-Revision-Date: 2023-06-10 18:43+0000\n"
-"Last-Translator: Óscar Fernández Díaz <oscfdezdz@users.noreply.hosted."
-"weblate.org>\n"
+"PO-Revision-Date: 2023-06-14 12:50+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -181,7 +180,7 @@ msgstr "Directorio"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:157
 msgid "Change the workspace directory"
-msgstr "Cambiar el directorio del área de trabajo"
+msgstr "Cambiar el directorio del espacio de trabajo"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:166
 #: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:300
@@ -1772,20 +1771,16 @@ msgid "translator-credits"
 msgstr "Óscar Fernández Díaz <oscfdezdz@tuta.io>"
 
 #: rnote-ui/src/dialogs/mod.rs:212 rnote-ui/src/dialogs/mod.rs:341
-#, fuzzy
-#| msgid "- invalid file name -"
 msgid "- invalid save folder name -"
-msgstr "- Nombre de archivo inválido -"
+msgstr "- nombre de la carpeta del almacenamiento no válido -"
 
 #: rnote-ui/src/dialogs/mod.rs:227 rnote-ui/src/dialogs/mod.rs:355
 msgid "The changes will be saved"
-msgstr ""
+msgstr "Se guardarán los cambios"
 
 #: rnote-ui/src/dialogs/mod.rs:232 rnote-ui/src/dialogs/mod.rs:360
-#, fuzzy
-#| msgid "- no file selected -"
 msgid "A new file will be created"
-msgstr "- ningún archivo seleccionado -"
+msgstr "Se creará un nuevo archivo"
 
 #: rnote-ui/src/dialogs/mod.rs:497
 msgid "Change Workspace Directory"

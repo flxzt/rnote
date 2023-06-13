@@ -930,7 +930,9 @@ impl RnoteEngine {
 
     /// Fetch clipboard content from the current pen.
     #[allow(clippy::type_complexity)]
-    pub fn fetch_clipboard_content(&self) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
+    pub fn fetch_clipboard_content(
+        &self,
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
         self.penholder.fetch_clipboard_content(&EngineView {
             tasks_tx: self.tasks_tx(),
             pens_config: &self.pens_config,
@@ -945,7 +947,7 @@ impl RnoteEngine {
     #[allow(clippy::type_complexity)]
     pub fn cut_clipboard_content(
         &mut self,
-    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
         self.penholder.cut_clipboard_content(&mut EngineViewMut {
             tasks_tx: self.tasks_tx(),
             pens_config: &mut self.pens_config,

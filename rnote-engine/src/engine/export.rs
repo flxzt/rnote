@@ -298,23 +298,19 @@ impl RnoteEngine {
     pub fn save_as_rnote_bytes(
         &self,
         file_name: String,
-    ) -> anyhow::Result<oneshot::Receiver<anyhow::Result<Vec<u8>>>> {
+    ) -> oneshot::Receiver<anyhow::Result<Vec<u8>>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
-
         let engine_snapshot = self.take_snapshot();
-
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
                 let rnote_file = RnoteFile { engine_snapshot };
                 rnote_file.save_as_bytes(&file_name)
             };
-
             if let Err(_data) = oneshot_sender.send(result()) {
                 log::error!("sending result to receiver in save_as_rnote_bytes() failed. Receiver already dropped");
             }
         });
-
-        Ok(oneshot_receiver)
+        oneshot_receiver
     }
 
     /// Extract the current engine configuration.

@@ -2,6 +2,7 @@
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawOnDocBehaviour, WidgetFlags};
+use futures::channel::oneshot;
 use rnote_compose::penevents::PenEvent;
 use std::time::Instant;
 
@@ -37,8 +38,15 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
     fn fetch_clipboard_content(
         &self,
         _engine_view: &EngineView,
-    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
-        Ok((vec![], WidgetFlags::default()))
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
+        let (sender, receiver) =
+            oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
+        rayon::spawn(move || {
+            if let Err(e) = sender.send(Ok((vec![], WidgetFlags::default()))) {
+                log::error!("sending (empty) clipboard content in `fetch_clipboard_content()` default impl failed, Err: {e:?}")
+            }
+        });
+        receiver
     }
 
     /// Cut clipboard content from the pen.
@@ -49,8 +57,15 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
     fn cut_clipboard_content(
         &mut self,
         _engine_view: &mut EngineViewMut,
-    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
-        Ok((vec![], WidgetFlags::default()))
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
+        let (sender, receiver) =
+            oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
+        rayon::spawn(move || {
+            if let Err(e) = sender.send(Ok((vec![], WidgetFlags::default()))) {
+                log::error!("sending (empty) clipboard content in `cut_clipboard_content()` default impl failed, Err: {e:?}")
+            }
+        });
+        receiver
     }
 }
 

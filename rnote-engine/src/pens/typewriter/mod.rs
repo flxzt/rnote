@@ -10,6 +10,7 @@ use crate::store::StrokeKey;
 use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
 use crate::strokes::{Stroke, TextStroke};
 use crate::{AudioPlayer, Camera, DrawOnDocBehaviour, WidgetFlags};
+use futures::channel::oneshot;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
@@ -379,8 +380,10 @@ impl PenBehaviour for Typewriter {
     fn fetch_clipboard_content(
         &self,
         engine_view: &EngineView,
-    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
         let widget_flags = WidgetFlags::default();
+        let (sender, receiver) =
+            oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
         let mut clipboard_content = Vec::with_capacity(1);
 
         match &self.state {
@@ -417,13 +420,18 @@ impl PenBehaviour for Typewriter {
             }
         }
 
-        Ok((clipboard_content, widget_flags))
+        if let Err(e) = sender.send(Ok((clipboard_content, widget_flags))) {
+            log::error!("sending fetched typewriter clipboard content failed, Err: {e:?}");
+        }
+        receiver
     }
 
     fn cut_clipboard_content(
         &mut self,
         engine_view: &mut EngineViewMut,
-    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
+        let (sender, receiver) =
+            oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
         let mut widget_flags = WidgetFlags::default();
         let mut clipboard_content = Vec::with_capacity(1);
 
@@ -496,7 +504,10 @@ impl PenBehaviour for Typewriter {
 
         self.reset_blink();
 
-        Ok((clipboard_content, widget_flags))
+        if let Err(e) = sender.send(Ok((clipboard_content, widget_flags))) {
+            log::error!("sending cut typewriter clipboard content failed, Err: {e:?}");
+        }
+        receiver
     }
 }
 

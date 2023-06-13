@@ -10,6 +10,7 @@ use crate::render::{self, Svg};
 use crate::store::StrokeKey;
 use crate::strokes::StrokeBehaviour;
 use crate::{Camera, DrawOnDocBehaviour, RnoteEngine, WidgetFlags};
+use futures::channel::oneshot;
 use kurbo::Shape;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
@@ -153,97 +154,114 @@ impl PenBehaviour for Selector {
     fn fetch_clipboard_content(
         &self,
         engine_view: &EngineView,
-    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
         let widget_flags = WidgetFlags::default();
+        let (sender, receiver) =
+            oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
         let mut clipboard_content = Vec::with_capacity(1);
 
-        let selected_keys = if let SelectorState::ModifySelection { selection, .. } = &self.state {
-            Some(selection.clone())
+        let stroke_content = if let SelectorState::ModifySelection { selection, .. } = &self.state {
+            Some(engine_view.store.fetch_stroke_content(selection))
         } else {
             None
         };
 
-        if let Some(selected_keys) = selected_keys {
-            let stroke_content = engine_view.store.fetch_stroke_content(&selected_keys);
-            let stroke_content_svg = stroke_content.generate_svg()?;
+        rayon::spawn(move || {
+            let result = move || {
+                if let Some(stroke_content) = stroke_content {
+                    let stroke_content_svg = stroke_content.generate_svg()?;
 
-            // Add StrokeContent
-            clipboard_content.push((
-                serde_json::to_string(&stroke_content)?.into_bytes(),
-                StrokeContent::MIME_TYPE.to_string(),
-            ));
-            if let Some(stroke_content_svg) = stroke_content_svg {
-                let stroke_content_svg_bounds = stroke_content_svg.bounds;
+                    // Add StrokeContent
+                    clipboard_content.push((
+                        serde_json::to_string(&stroke_content)?.into_bytes(),
+                        StrokeContent::MIME_TYPE.to_string(),
+                    ));
+                    if let Some(stroke_content_svg) = stroke_content_svg {
+                        let stroke_content_svg_bounds = stroke_content_svg.bounds;
 
-                // Add generated Svg
-                clipboard_content.push((
-                    stroke_content_svg.svg_data.clone().into_bytes(),
-                    Svg::MIME_TYPE.to_string(),
-                ));
+                        // Add generated Svg
+                        clipboard_content.push((
+                            stroke_content_svg.svg_data.clone().into_bytes(),
+                            Svg::MIME_TYPE.to_string(),
+                        ));
 
-                // Add rendered Png
-                let image = render::Image::gen_image_from_svg(
-                    stroke_content_svg,
-                    stroke_content_svg_bounds,
-                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
-                )?
-                .into_encoded_bytes(image::ImageOutputFormat::Png)?;
-                clipboard_content.push((image, String::from("image/png")));
+                        // Add rendered Png
+                        let image = render::Image::gen_image_from_svg(
+                            stroke_content_svg,
+                            stroke_content_svg_bounds,
+                            RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                        )?
+                        .into_encoded_bytes(image::ImageOutputFormat::Png)?;
+                        clipboard_content.push((image, String::from("image/png")));
+                    }
+                }
+                Ok((clipboard_content, widget_flags))
+            };
+            if let Err(e) = sender.send(result()) {
+                log::error!("sending fetched selector clipboard content failed, Err: {e:?}");
             }
-        }
+        });
 
-        Ok((clipboard_content, widget_flags))
+        receiver
     }
 
     fn cut_clipboard_content(
         &mut self,
         engine_view: &mut EngineViewMut,
-    ) -> anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
+        let (sender, receiver) =
+            oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
         let mut widget_flags = WidgetFlags::default();
         let mut clipboard_content = Vec::with_capacity(1);
 
-        let selected_keys = if let SelectorState::ModifySelection { selection, .. } = &self.state {
-            Some(selection.clone())
+        let stroke_content = if let SelectorState::ModifySelection { selection, .. } = &self.state {
+            let c = Some(engine_view.store.cut_stroke_content(selection));
+            self.state = SelectorState::Idle;
+            widget_flags.merge(engine_view.store.record(Instant::now()));
+            widget_flags.store_modified = true;
+            widget_flags.redraw = true;
+            c
         } else {
             None
         };
 
-        if let Some(selected_keys) = selected_keys {
-            let stroke_content = engine_view.store.cut_stroke_content(&selected_keys);
-            let stroke_content_svg = stroke_content.generate_svg()?;
+        rayon::spawn(move || {
+            let result = move || {
+                if let Some(stroke_content) = stroke_content {
+                    let stroke_content_svg = stroke_content.generate_svg()?;
 
-            // Add StrokeContent
-            clipboard_content.push((
-                serde_json::to_string(&stroke_content)?.into_bytes(),
-                StrokeContent::MIME_TYPE.to_string(),
-            ));
-            if let Some(stroke_content_svg) = stroke_content_svg {
-                let stroke_content_svg_bounds = stroke_content_svg.bounds;
+                    // Add StrokeContent
+                    clipboard_content.push((
+                        serde_json::to_string(&stroke_content)?.into_bytes(),
+                        StrokeContent::MIME_TYPE.to_string(),
+                    ));
+                    if let Some(stroke_content_svg) = stroke_content_svg {
+                        let stroke_content_svg_bounds = stroke_content_svg.bounds;
 
-                // Add generated Svg
-                clipboard_content.push((
-                    stroke_content_svg.svg_data.clone().into_bytes(),
-                    Svg::MIME_TYPE.to_string(),
-                ));
+                        // Add generated Svg
+                        clipboard_content.push((
+                            stroke_content_svg.svg_data.clone().into_bytes(),
+                            Svg::MIME_TYPE.to_string(),
+                        ));
 
-                // Add rendered Png
-                let image = render::Image::gen_image_from_svg(
-                    stroke_content_svg,
-                    stroke_content_svg_bounds,
-                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
-                )?
-                .into_encoded_bytes(image::ImageOutputFormat::Png)?;
-                clipboard_content.push((image, String::from("image/png")));
+                        // Add rendered Png
+                        let image = render::Image::gen_image_from_svg(
+                            stroke_content_svg,
+                            stroke_content_svg_bounds,
+                            RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                        )?
+                        .into_encoded_bytes(image::ImageOutputFormat::Png)?;
+                        clipboard_content.push((image, String::from("image/png")));
+                    }
+                }
+                Ok((clipboard_content, widget_flags))
+            };
+            if let Err(e) = sender.send(result()) {
+                log::error!("sending cut selector clipboard content failed, Err: {e:?}");
             }
+        });
 
-            self.state = SelectorState::Idle;
-
-            widget_flags.merge(engine_view.store.record(Instant::now()));
-            widget_flags.store_modified = true;
-            widget_flags.redraw = true;
-        }
-
-        Ok((clipboard_content, widget_flags))
+        receiver
     }
 }
 

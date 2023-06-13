@@ -254,16 +254,9 @@ impl RnCanvas {
 
         self.set_save_in_progress(true);
 
-        let rnote_bytes_receiver = match self
+        let rnote_bytes_receiver = self
             .engine_ref()
-            .save_as_rnote_bytes(basename.to_string_lossy().to_string())
-        {
-            Ok(r) => r,
-            Err(e) => {
-                self.set_save_in_progress(false);
-                return Err(e);
-            }
-        };
+            .save_as_rnote_bytes(basename.to_string_lossy().to_string());
 
         let mut skip_set_output_file = false;
         if let Some(current_file_path) = self.output_file().and_then(|f| f.path()) {

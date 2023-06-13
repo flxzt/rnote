@@ -280,7 +280,7 @@ pub(crate) async fn import_file(
 
     let _ = engine.load_snapshot(snapshot);
 
-    let rnote_bytes = engine.save_as_rnote_bytes(rnote_file_name)?.await??;
+    let rnote_bytes = engine.save_as_rnote_bytes(rnote_file_name).await??;
 
     let mut ofh = File::create(rnote_file).await?;
     ofh.write_all(&rnote_bytes).await?;

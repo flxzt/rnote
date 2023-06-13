@@ -775,48 +775,58 @@ impl RnAppWindow {
 
         // Clipboard copy
         action_clipboard_copy.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            let canvas = appwindow.active_tab().canvas();
+            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                let canvas = appwindow.active_tab().canvas();
+                let receiver = canvas.engine_ref().fetch_clipboard_content();
+                let (content, widget_flags) = match receiver.await {
+                    Ok(Ok((content, widget_flags))) => (content,widget_flags),
+                    Ok(Err(e)) => {
+                        log::error!("fetching clipboard content failed in clipboard-copy action, Err: {e:?}");
+                        return;
+                    }
+                    Err(e) => {
+                        log::error!("awaiting fetched clipboard content failed in clipboard-copy action, Err: {e:?}");
+                        return;
+                    }
+                };
+                let gdk_content_provider = gdk::ContentProvider::new_union(content.into_iter().map(|(data, mime_type)| {
+                    gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data))
+                }).collect::<Vec<gdk::ContentProvider>>().as_slice());
 
-            let (content, widget_flags) = match canvas.engine_ref().fetch_clipboard_content() {
-                Ok((content, widget_flags)) => (content,widget_flags),
-                Err(e) => {
-                    log::error!("fetch_clipboard_content() failed in clipboard-copy action, Err: {e:?}");
-                    return;
+                if let Err(e) = appwindow.clipboard().set_content(Some(&gdk_content_provider)) {
+                    log::error!("set appwindow clipboard content failed in clipboard-copy action, Err: {e:?}");
                 }
-            };
 
-            let gdk_content_provider = gdk::ContentProvider::new_union(content.into_iter().map(|(data, mime_type)| {
-                gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data))
-            }).collect::<Vec<gdk::ContentProvider>>().as_slice());
-
-            if let Err(e) = appwindow.clipboard().set_content(Some(&gdk_content_provider)) {
-                log::error!("clipboard set_content() failed in clipboard-copy action, Err: {e:?}");
-            }
-
-            appwindow.handle_widget_flags(widget_flags, &canvas);
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }));
         }));
 
         // Clipboard cut
         action_clipboard_cut.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            let canvas = appwindow.active_tab().canvas();
+            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                let canvas = appwindow.active_tab().canvas();
+                let receiver = canvas.engine_mut().cut_clipboard_content();
+                let (content, widget_flags) = match receiver.await {
+                    Ok(Ok((content, widget_flags))) => (content,widget_flags),
+                    Ok(Err(e)) => {
+                        log::error!("cutting clipboard content failed in clipboard-cut action, Err: {e:?}");
+                        return;
+                    }
+                    Err(e) => {
+                        log::error!("awaiting cut clipboard content failed in clipboard-cut action, Err: {e:?}");
+                        return;
+                    }
+                };
+                let gdk_content_provider = gdk::ContentProvider::new_union(content.into_iter().map(|(data, mime_type)| {
+                    gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data))
+                }).collect::<Vec<gdk::ContentProvider>>().as_slice());
 
-            let (content, widget_flags) = match canvas.engine_mut().cut_clipboard_content() {
-                Ok((content, widget_flags)) => (content,widget_flags),
-                Err(e) => {
-                    log::error!("cut_clipboard_content() failed in clipboard-cut action, Err: {e:?}");
-                    return;
+                if let Err(e) = appwindow.clipboard().set_content(Some(&gdk_content_provider)) {
+                    log::error!("set appwindow clipboard content failed in clipboard-cut action, Err: {e:?}");
                 }
-            };
 
-            let gdk_content_provider = gdk::ContentProvider::new_union(content.into_iter().map(|(data, mime_type)| {
-                gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data))
-            }).collect::<Vec<gdk::ContentProvider>>().as_slice());
-
-            if let Err(e) = appwindow.clipboard().set_content(Some(&gdk_content_provider)) {
-                log::error!("clipboard set_content() failed in clipboard-cut action, Err: {e:?}");
-            }
-
-            appwindow.handle_widget_flags(widget_flags, &canvas);
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }));
         }));
 
         // Clipboard paste

@@ -6,7 +6,7 @@ use gtk4::{
     UriLauncher, Window,
 };
 use piet::RenderContext;
-use rnote_compose::helpers::Vector2Helpers;
+use rnote_compose::helpers::{SplitOrder, Vector2Helpers};
 use rnote_compose::penevents::ShortcutKey;
 use rnote_engine::document::Layout;
 use rnote_engine::engine::StrokeContent;
@@ -632,14 +632,15 @@ impl RnAppWindow {
         action_print_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             let canvas = appwindow.active_tab().canvas();
 
-            let pages_bounds = canvas.engine_ref().pages_bounds_w_content();
+            // TODO: Exposing this as a setting in the print dialog
+            let with_background = true;
+            let page_order = SplitOrder::default();
+
+            let pages_bounds = canvas.engine_ref().pages_bounds_w_content(page_order);
             let n_pages = pages_bounds.len();
             let engine_snapshot = canvas.engine_ref().take_snapshot();
             let doc_bounds = engine_snapshot.document.bounds();
             let format_size = na::vector![engine_snapshot.document.format.width, engine_snapshot.document.format.height];
-
-            // TODO: Exposing this as a setting in the print dialog
-            let with_background = true;
 
             appwindow.overlays().start_pulsing_progressbar();
 

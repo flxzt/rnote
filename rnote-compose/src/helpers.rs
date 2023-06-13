@@ -1,5 +1,44 @@
 // Imports
 use p2d::bounding_volume::Aabb;
+use serde::{Deserialize, Serialize};
+
+/// Page split direction.
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
+)]
+#[serde(rename = "split_order")]
+pub enum SplitOrder {
+    /// Split in row-major order.
+    #[serde(rename = "row_major")]
+    RowMajor,
+    /// Split in column-major order.
+    #[serde(rename = "column_major")]
+    ColumnMajor,
+}
+
+impl Default for SplitOrder {
+    fn default() -> Self {
+        Self::RowMajor
+    }
+}
+
+impl TryFrom<u32> for SplitOrder {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!("SplitOrder try_from::<u32>() for value {} failed", value)
+        })
+    }
+}
 
 /// Helpers that extend the Vector2 type
 pub trait Vector2Helpers
@@ -154,7 +193,11 @@ where
     /// splits a aabb into multiple of the given size. Their union contains the given aabb.
     /// It is also guaranteed that bounding boxes are aligned to the origin, meaning (0.0,0.0) is the corner of four boxes.
     /// The boxes on the edges most likely extend beyond the given aabb.
-    fn split_extended_origin_aligned(self, split_size: na::Vector2<f64>) -> Vec<Self>;
+    fn split_extended_origin_aligned(
+        self,
+        split_size: na::Vector2<f64>,
+        split_order: SplitOrder,
+    ) -> Vec<Self>;
     /// Converts a Aabb to a kurbo Rectangle
     fn to_kurbo_rect(&self) -> kurbo::Rect;
     /// Converts a kurbo Rectangle to Aabb
@@ -373,26 +416,41 @@ impl AabbHelpers for Aabb {
         split_aabbs
     }
 
-    fn split_extended_origin_aligned(self, split_size: na::Vector2<f64>) -> Vec<Self> {
+    fn split_extended_origin_aligned(
+        self,
+        split_size: na::Vector2<f64>,
+        split_order: SplitOrder,
+    ) -> Vec<Self> {
         let mut split_aabbs = Vec::new();
 
         if split_size[0] <= 0.0 || split_size[1] <= 0.0 {
             return vec![];
         }
 
-        let mut offset_y = (self.mins[1] / split_size[1]).floor() * split_size[1];
+        let (outer_idx, inner_idx) = match split_order {
+            SplitOrder::RowMajor => (1, 0),
+            SplitOrder::ColumnMajor => (0, 1),
+        };
 
-        while offset_y < self.maxs[1] {
-            let mut offset_x = (self.mins[0] / split_size[0]).floor() * split_size[0];
+        let mut offset_outer =
+            (self.mins[outer_idx] / split_size[outer_idx]).floor() * split_size[outer_idx];
 
-            while offset_x < self.maxs[0] {
-                let mins = na::point![offset_x, offset_y];
+        while offset_outer < self.maxs[outer_idx] {
+            let mut offset_inner =
+                (self.mins[inner_idx] / split_size[inner_idx]).floor() * split_size[inner_idx];
+
+            while offset_inner < self.maxs[inner_idx] {
+                let mins = match split_order {
+                    SplitOrder::RowMajor => na::point![offset_inner, offset_outer],
+                    SplitOrder::ColumnMajor => na::point![offset_outer, offset_inner],
+                };
+
                 split_aabbs.push(Aabb::new(mins, mins + split_size));
 
-                offset_x += split_size[0];
+                offset_inner += split_size[inner_idx];
             }
 
-            offset_y += split_size[1];
+            offset_outer += split_size[outer_idx];
         }
 
         split_aabbs

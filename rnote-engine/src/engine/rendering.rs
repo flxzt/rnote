@@ -6,7 +6,7 @@ use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::color;
-use rnote_compose::helpers::{AabbHelpers, Affine2Helpers};
+use rnote_compose::helpers::{AabbHelpers, Affine2Helpers, SplitOrder};
 
 impl RnoteEngine {
     /// Update the background rendering for the current viewport.
@@ -28,9 +28,10 @@ impl RnoteEngine {
                 }
             };
 
-            for split_bounds in
-                viewport.split_extended_origin_aligned(self.document.background.tile_size())
-            {
+            for split_bounds in viewport.split_extended_origin_aligned(
+                self.document.background.tile_size(),
+                SplitOrder::default(),
+            ) {
                 rendernodes.push(
                     gsk::TextureNode::new(
                         &new_texture,
@@ -199,10 +200,10 @@ impl RnoteEngine {
 
             snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds.loosened(2.0)));
 
-            for page_bounds in doc_bounds.split_extended_origin_aligned(na::vector![
-                self.document.format.width,
-                self.document.format.height
-            ]) {
+            for page_bounds in doc_bounds.split_extended_origin_aligned(
+                na::vector![self.document.format.width, self.document.format.height],
+                SplitOrder::default(),
+            ) {
                 if !page_bounds.intersects(&viewport) {
                     continue;
                 }

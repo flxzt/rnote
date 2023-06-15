@@ -7,10 +7,10 @@ use std::ops::{Deref, DerefMut};
 pub(crate) struct RnoteFileMaj0Min5Patch8 {
     /// The document.
     #[serde(rename = "document", alias = "sheet")]
-    pub(crate) document: serde_json::Value,
+    pub(crate) document: ijson::IValue,
     /// The snapshot of the store.
     #[serde(rename = "store_snapshot")]
-    pub(crate) store_snapshot: serde_json::Value,
+    pub(crate) store_snapshot: ijson::IValue,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

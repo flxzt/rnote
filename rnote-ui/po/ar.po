@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-12 07:25+0200\n"
-"PO-Revision-Date: 2023-05-20 12:33+0000\n"
+"PO-Revision-Date: 2023-06-15 14:51+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 4.18.1-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:35
@@ -67,7 +67,7 @@ msgstr "ملاحظات المحاضرة 2"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5 rnote-ui/data/ui/shortcuts.ui:173
 msgid "Clear Document"
-msgstr "امسح المستند"
+msgstr "امحُ المستند"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
@@ -306,7 +306,7 @@ msgstr "حدِّد العدد المفضَّل للنقاط في كلِّ بوص
 
 #: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:200
 msgid "Export Document"
-msgstr "تصدير ملف"
+msgstr "صدِّر المستند"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
 #: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:728
@@ -360,7 +360,7 @@ msgstr "حدِّد ما إذا كان يجب تصدير نمط الخلفيَّ�
 #: rnote-ui/data/ui/dialogs/export.ui:278
 #: rnote-ui/data/ui/dialogs/export.ui:447
 msgid "Export Format"
-msgstr "تنسيق التصدير"
+msgstr "صدِّر التنسيق"
 
 #: rnote-ui/data/ui/dialogs/export.ui:110
 #: rnote-ui/data/ui/dialogs/export.ui:279
@@ -775,8 +775,6 @@ msgid "Move View"
 msgstr "حرِّك المنظور"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:40
-#, fuzzy
-#| msgid "Zoom in/out"
 msgid "Zoom In/Out"
 msgstr "كبِّر \\ صغِّر"
 
@@ -1631,16 +1629,12 @@ msgid "Opened file was moved or deleted on disk"
 msgstr "نُقل الملفُّ المفتوح أو حُذف من القرص"
 
 #: rnote-ui/src/canvas/mod.rs:1005
-#, fuzzy
-#| msgid "Opening file failed"
 msgid "Inserting file failed"
-msgstr "فشل فتح الملف"
+msgstr "فشل إدراج الملف"
 
 #: rnote-ui/src/canvas/mod.rs:1015
-#, fuzzy
-#| msgid "Printing document failed"
 msgid "Inserting text failed"
-msgstr "فشلت طباعة المستند"
+msgstr "فشل إدراج النص"
 
 #: rnote-ui/src/dialogs/export.rs:25 rnote-ui/src/dialogs/import.rs:78
 msgid ".rnote"
@@ -1771,20 +1765,16 @@ msgstr ""
 "mahmoud ibrahim atiyah <mahmoudaboattia1999@gmail.com>"
 
 #: rnote-ui/src/dialogs/mod.rs:212 rnote-ui/src/dialogs/mod.rs:341
-#, fuzzy
-#| msgid "- invalid file name -"
 msgid "- invalid save folder name -"
-msgstr "- اسم الملفِّ غير صالح -"
+msgstr "- اسم مجلد الحفظ غير صالح -"
 
 #: rnote-ui/src/dialogs/mod.rs:227 rnote-ui/src/dialogs/mod.rs:355
 msgid "The changes will be saved"
-msgstr ""
+msgstr "سوف تُحفظ التغييرات"
 
 #: rnote-ui/src/dialogs/mod.rs:232 rnote-ui/src/dialogs/mod.rs:360
-#, fuzzy
-#| msgid "- no file selected -"
 msgid "A new file will be created"
-msgstr "- لم يحدَّد أيُّ ملفٍّ -"
+msgstr "سوف يُنشأ ملف جديد"
 
 #: rnote-ui/src/dialogs/mod.rs:497
 msgid "Change Workspace Directory"
@@ -2050,127 +2040,91 @@ msgid "Cubic bezier curve"
 msgstr "منحنى بيزير مكعَّب"
 
 #: rnote-ui/src/settingspanel/mod.rs:788
-#, fuzzy
-#| msgid "Crosshair (Small)"
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "خطَّان متقاطعان (صغيران)"
 
 #: rnote-ui/src/settingspanel/mod.rs:789
-#, fuzzy
-#| msgid "Crosshair (Medium)"
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "خطَّان متقاطعان (متوسِّطا الحجم)"
 
 #: rnote-ui/src/settingspanel/mod.rs:790
-#, fuzzy
-#| msgid "Crosshair (Large)"
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "خطَّان متقاطعان (كبيران)"
 
 #: rnote-ui/src/settingspanel/mod.rs:791
-#, fuzzy
-#| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "نقطة (صغيرة)"
 
 #: rnote-ui/src/settingspanel/mod.rs:792
-#, fuzzy
-#| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "نقطة (متوسِّطة)"
 
 #: rnote-ui/src/settingspanel/mod.rs:793
-#, fuzzy
-#| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "نقطة (كبيرة)"
 
 #: rnote-ui/src/settingspanel/mod.rs:794
-#, fuzzy
-#| msgid "Teardrop North-West (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "دمعة شمال-غرب (صغيرة)"
 
 #: rnote-ui/src/settingspanel/mod.rs:795
-#, fuzzy
-#| msgid "Teardrop North-West (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "دمعة شمال-غرب (متوسِّطة)"
 
 #: rnote-ui/src/settingspanel/mod.rs:796
-#, fuzzy
-#| msgid "Teardrop North-West (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "دمعة شمال-غرب (كبيرة)"
 
 #: rnote-ui/src/settingspanel/mod.rs:797
-#, fuzzy
-#| msgid "Teardrop North-East (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "دمعة شمال-شرق (صغيرة)"
 
 #: rnote-ui/src/settingspanel/mod.rs:798
-#, fuzzy
-#| msgid "Teardrop North-East (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "دمعة شمال-شرق (متوسِّطة)"
 
 #: rnote-ui/src/settingspanel/mod.rs:799
-#, fuzzy
-#| msgid "Teardrop North-East (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "دمعة شمال-شرق (كبيرة)"
 
 #: rnote-ui/src/settingspanel/mod.rs:800
-#, fuzzy
-#| msgid "Teardrop North (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "دمعة شمال (صغيرة)"
 
 #: rnote-ui/src/settingspanel/mod.rs:801
-#, fuzzy
-#| msgid "Teardrop North (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "دمعة شمال (متوسِّطة)"
 
 #: rnote-ui/src/settingspanel/mod.rs:802
-#, fuzzy
-#| msgid "Teardrop North (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "دمعة شمال (كبيرة)"
 
 #: rnote-ui/src/settingspanel/mod.rs:803
-#, fuzzy
-#| msgid "Beam (Small)"
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "شعاع (صغير)"
 
 #: rnote-ui/src/settingspanel/mod.rs:804
-#, fuzzy
-#| msgid "Beam (Medium)"
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "شعاع (متوسِّط)"
 
 #: rnote-ui/src/settingspanel/mod.rs:805
-#, fuzzy
-#| msgid "Beam (Large)"
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "شعاع (كبير)"

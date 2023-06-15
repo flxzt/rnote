@@ -32,8 +32,9 @@
         <file preprocess="xml-stripblanks">ui/dialogs/import.ui</file>
         <file preprocess="xml-stripblanks">ui/dialogs/export.ui</file>
         <file compressed="true">icons/scalable/apps/@APP_NAME@.svg</file>
-        <file compressed="true">icons/symbolic/apps/@APP_NAME@-symbolic.svg</file>
         <file compressed="true">icons/scalable/apps/@APP_NAME@-devel.svg</file>
+        <file compressed="true">icons/symbolic/apps/@APP_NAME@-symbolic.svg</file>
+        <file compressed="true">icons/scalable/mimetypes/application-@APP_NAME@.svg</file>
         <file compressed="true">icons/scalable/actions/settings-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dir-actions-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/misc-menu-symbolic.svg</file>

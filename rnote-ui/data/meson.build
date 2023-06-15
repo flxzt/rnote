@@ -146,6 +146,15 @@ install_data(
     rename: app_id + '-symbolic.svg',
 )
 
+# MIME-Type icon
+# Unfortunately this is currently not displayed by nautilus (and possibly other file managers?) when the
+# Adwaita theme is used. Instead the "application-x-generic" icon gets picked.
+# See: https://gitlab.gnome.org/GNOME/nautilus/-/issues/2190
+install_data(
+    'icons/scalable/mimetypes/' + 'application-' + app_name + '.svg',
+    install_dir: iconsdir / 'hicolor' / 'scalable' / 'mimetypes',
+)
+
 # MIME-Type
 message('Configuring MIME-type file')
 

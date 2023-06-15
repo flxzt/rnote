@@ -103,7 +103,7 @@ impl FileFormatSaver for RnoteFile {
     fn save_as_bytes(&self, _file_name: &str) -> anyhow::Result<Vec<u8>> {
         let wrapper = RnotefileWrapper {
             version: semver::Version::parse(Self::SEMVER).unwrap(),
-            data: ijson::to_value(self).context("converting RnoteFile to ijson::IValue failed.")?,
+            data: ijson::to_value(self).context("converting RnoteFile to JSON value failed.")?,
         };
         let compressed = compress_to_gzip(
             serde_json::to_string(&wrapper)

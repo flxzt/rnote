@@ -59,7 +59,5 @@ jobs:
       - name: Run file compatibility tests
         run: |
           rnote_cli test\
-            misc/file-tests/v0-5-13-overview.rnote\
-            misc/file-tests/v0-5-13-lecture_note_1.rnote\
-            misc/file-tests/v0-6-0-overview.rnote\
-            misc/file-tests/v0-6-0-lecture_note_1.rnote
+            misc/file-tests/v0-5-13-test.rnote\
+            misc/file-tests/v0-6-0-test.rnote\

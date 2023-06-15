@@ -158,13 +158,12 @@ impl EngineSnapshot {
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Self> {
                 let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
-                    .context("RnoteFile load_from_bytes() failed")?;
-
-                Ok(rnote_file.engine_snapshot)
+                    .context("loading RnoteFile from bytes failed.")?;
+                Ok(ijson::from_value(&rnote_file.engine_snapshot)?)
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {
-                log::error!("sending result to receiver in open_from_rnote_bytes() failed. Receiver already dropped");
+                log::error!("Sending result to receiver in open_from_rnote_bytes() failed. Receiver was already dropped.");
             }
         });
 

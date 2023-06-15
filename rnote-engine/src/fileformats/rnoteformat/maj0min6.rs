@@ -6,19 +6,19 @@ use serde::{Deserialize, Serialize};
 pub struct RnoteFileMaj0Min6 {
     /// A snapshot of the engine.
     #[serde(rename = "engine_snapshot")]
-    pub engine_snapshot: serde_json::Value,
+    pub engine_snapshot: ijson::IValue,
 }
 
 impl TryFrom<RnoteFileMaj0Min5Patch9> for RnoteFileMaj0Min6 {
     type Error = anyhow::Error;
 
     fn try_from(mut value: RnoteFileMaj0Min5Patch9) -> Result<Self, Self::Error> {
-        let mut engine_snapshot = serde_json::Map::new();
+        let mut engine_snapshot = ijson::IObject::new();
 
         let store_snapshot = value
             .store_snapshot
             .as_object_mut()
-            .ok_or_else(|| anyhow::anyhow!("store snapshot is not a json map"))?;
+            .ok_or_else(|| anyhow::anyhow!("store snapshot is not a JSON object"))?;
 
         engine_snapshot.insert(String::from("document"), value.document);
         engine_snapshot.insert(

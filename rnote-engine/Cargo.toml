@@ -15,7 +15,8 @@ log = "0.4"
 anyhow = "1"
 thiserror = "1"
 serde = {version = "1", features = ["derive", "rc"]}
-serde_json = { version="1" }
+serde_json = "1"
+ijson = "0.1"
 roxmltree = "0.18"
 xmlwriter = "0.1"
 semver = { version = "1", features = ["serde"]}

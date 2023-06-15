@@ -9,10 +9,10 @@ use serde::{Deserialize, Serialize};
 pub(crate) struct RnoteFileMaj0Min5Patch9 {
     /// The document.
     #[serde(rename = "document", alias = "sheet")]
-    pub(crate) document: serde_json::Value,
+    pub(crate) document: ijson::IValue,
     /// The snapshot of the store.
     #[serde(rename = "store_snapshot")]
-    pub(crate) store_snapshot: serde_json::Value,
+    pub(crate) store_snapshot: ijson::IValue,
 }
 
 impl TryFrom<RnoteFileMaj0Min5Patch8> for RnoteFileMaj0Min5Patch9 {
@@ -21,7 +21,7 @@ impl TryFrom<RnoteFileMaj0Min5Patch8> for RnoteFileMaj0Min5Patch9 {
     fn try_from(mut file: RnoteFileMaj0Min5Patch8) -> Result<RnoteFileMaj0Min5Patch9, Self::Error> {
         for value in file.store_snapshot["stroke_components"]
             .as_array_mut()
-            .ok_or_else(|| anyhow::anyhow!("failure"))?
+            .ok_or_else(|| anyhow::anyhow!("stroke_components is not a JSON array."))?
         {
             let stroke = value
                 .get_mut("value")
@@ -30,17 +30,15 @@ impl TryFrom<RnoteFileMaj0Min5Patch8> for RnoteFileMaj0Min5Patch9 {
             if let Some(brushstroke) = stroke.get_mut("brushstroke") {
                 let brushstroke = brushstroke
                     .as_object_mut()
-                    .ok_or_else(|| anyhow::anyhow!("failure"))?;
-
-                let path = serde_json::from_value::<PenPathMaj0Min5Patch8>(
-                    brushstroke
+                    .ok_or_else(|| anyhow::anyhow!("brushstroke is not a JSON object."))?;
+                let path = ijson::from_value::<PenPathMaj0Min5Patch8>(
+                    &brushstroke
                         .remove("path")
-                        .ok_or_else(|| anyhow::anyhow!("failure"))?,
+                        .ok_or_else(|| anyhow::anyhow!("brushstroke has no value `path`."))?,
                 )?;
-
-                let mut path_upgraded = serde_json::Map::new();
-
+                let mut path_upgraded = ijson::IObject::new();
                 let mut seg_iter = path.inner().into_iter().peekable();
+
                 if let Some(start) = seg_iter.peek() {
                     let start = match start {
                         SegmentMaj0Min5Patch8::Dot { element } => element,
@@ -48,36 +46,30 @@ impl TryFrom<RnoteFileMaj0Min5Patch8> for RnoteFileMaj0Min5Patch9 {
                         SegmentMaj0Min5Patch8::QuadBez { start, .. } => start,
                         SegmentMaj0Min5Patch8::CubBez { start, .. } => start,
                     };
+                    path_upgraded.insert(String::from("start"), ijson::to_value(start)?);
+                    let mut segments_upgraded = ijson::IArray::new();
 
-                    path_upgraded.insert(String::from("start"), serde_json::to_value(start)?);
-
-                    let mut segments_upgraded = Vec::new();
                     for seg in seg_iter {
-                        let mut segment_upgraded = serde_json::Map::new();
+                        let mut segment_upgraded = ijson::IObject::new();
 
                         match seg {
                             SegmentMaj0Min5Patch8::Dot { element } => {
-                                let mut lineto = serde_json::Map::new();
-                                lineto.insert(String::from("end"), serde_json::to_value(element)?);
-
-                                segment_upgraded.insert(String::from("lineto"), lineto.into());
+                                let mut lineto = ijson::IObject::new();
+                                lineto.insert(String::from("end"), ijson::to_value(element)?);
+                                segment_upgraded.insert(String::from("lineto"), lineto);
                             }
                             SegmentMaj0Min5Patch8::Line { start, end } => {
-                                let mut lineto = serde_json::Map::new();
-                                lineto.insert(String::from("start"), serde_json::to_value(start)?);
-                                lineto.insert(String::from("end"), serde_json::to_value(end)?);
-
-                                segment_upgraded.insert(String::from("lineto"), lineto.into());
+                                let mut lineto = ijson::IObject::new();
+                                lineto.insert(String::from("start"), ijson::to_value(start)?);
+                                lineto.insert(String::from("end"), ijson::to_value(end)?);
+                                segment_upgraded.insert(String::from("lineto"), lineto);
                             }
                             SegmentMaj0Min5Patch8::QuadBez { start, cp, end } => {
-                                let mut quadbezto = serde_json::Map::new();
-                                quadbezto
-                                    .insert(String::from("start"), serde_json::to_value(start)?);
-                                quadbezto.insert(String::from("cp"), serde_json::to_value(cp)?);
-                                quadbezto.insert(String::from("end"), serde_json::to_value(end)?);
-
-                                segment_upgraded
-                                    .insert(String::from("quadbezto"), quadbezto.into());
+                                let mut quadbezto = ijson::IObject::new();
+                                quadbezto.insert(String::from("start"), ijson::to_value(start)?);
+                                quadbezto.insert(String::from("cp"), ijson::to_value(cp)?);
+                                quadbezto.insert(String::from("end"), ijson::to_value(end)?);
+                                segment_upgraded.insert(String::from("quadbezto"), quadbezto);
                             }
                             SegmentMaj0Min5Patch8::CubBez {
                                 start,
@@ -85,27 +77,19 @@ impl TryFrom<RnoteFileMaj0Min5Patch8> for RnoteFileMaj0Min5Patch9 {
                                 cp2,
                                 end,
                             } => {
-                                let mut cubbezto = serde_json::Map::new();
-                                cubbezto
-                                    .insert(String::from("start"), serde_json::to_value(start)?);
-                                cubbezto.insert(String::from("cp1"), serde_json::to_value(cp1)?);
-                                cubbezto.insert(String::from("cp2"), serde_json::to_value(cp2)?);
-                                cubbezto.insert(String::from("end"), serde_json::to_value(end)?);
-
-                                segment_upgraded.insert(String::from("cubbezto"), cubbezto.into());
+                                let mut cubbezto = ijson::IObject::new();
+                                cubbezto.insert(String::from("start"), ijson::to_value(start)?);
+                                cubbezto.insert(String::from("cp1"), ijson::to_value(cp1)?);
+                                cubbezto.insert(String::from("cp2"), ijson::to_value(cp2)?);
+                                cubbezto.insert(String::from("end"), ijson::to_value(end)?);
+                                segment_upgraded.insert(String::from("cubbezto"), cubbezto);
                             }
                         };
-
-                        segments_upgraded.push(segment_upgraded.into());
+                        segments_upgraded.push(segment_upgraded);
                     }
-
-                    path_upgraded.insert(
-                        String::from("segments"),
-                        serde_json::Value::Array(segments_upgraded),
-                    );
+                    path_upgraded.insert(String::from("segments"), segments_upgraded);
                 }
-
-                brushstroke.insert(String::from("path"), path_upgraded.into());
+                brushstroke.insert(String::from("path"), path_upgraded);
             }
         }
         Ok(Self {

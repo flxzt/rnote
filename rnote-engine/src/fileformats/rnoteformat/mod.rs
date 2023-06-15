@@ -86,7 +86,7 @@ impl FileFormatLoader for RnoteFile {
         {
             RnoteFileMaj0Min5Patch9::try_from(
                 ijson::from_value::<RnoteFileMaj0Min5Patch8>(&wrapper.data)
-                    .context("from_value() for RnoteFileMaj0Min5Patch8 failed")?,
+                    .context("deserializing RnoteFileMaj0Min5Patch8 failed")?,
             )
             .and_then(RnoteFileMaj0Min6::try_from)
             .context("converting RnoteFileMaj0Min5Patch8 to newest file version failed.")

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-16 15:33+0200\n"
+"POT-Creation-Date: 2023-06-16 17:49+0200\n"
 "PO-Revision-Date: 2023-03-19 17:59+0000\n"
 "Last-Translator: kek <farline99@yandex.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -160,7 +160,7 @@ msgstr "Не сохранять"
 msgid "Edit Workspace"
 msgstr "Редактировать коллекцию"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:75 rnote-ui/data/ui/settingspanel.ui:264
+#: rnote-ui/data/ui/dialogs/dialogs.ui:75 rnote-ui/data/ui/settingspanel.ui:276
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:39
 msgid "Apply"
 msgstr "Применить"
@@ -178,7 +178,7 @@ msgid "Change the workspace icon"
 msgstr "Выбрать иконку коллекции"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:143
-#: rnote-ui/data/ui/settingspanel.ui:301
+#: rnote-ui/data/ui/settingspanel.ui:313
 msgid "Color"
 msgstr "Цвет"
 
@@ -195,8 +195,8 @@ msgid "Change the workspace directory"
 msgstr "Выбрать каталог коллекции"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:168
-#: rnote-ui/data/ui/dialogs/export.ui:238 rnote-ui/src/dialogs/export.rs:322
-#: rnote-ui/src/dialogs/export.rs:363 rnote-ui/src/dialogs/export.rs:371
+#: rnote-ui/data/ui/dialogs/export.ui:238 rnote-ui/src/dialogs/export.rs:323
+#: rnote-ui/src/dialogs/export.rs:364 rnote-ui/src/dialogs/export.rs:372
 #: rnote-ui/src/dialogs/mod.rs:519
 msgid "- no directory selected -"
 msgstr "- каталог не выбран -"
@@ -326,13 +326,13 @@ msgstr "DPI"
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Предпочтительный DPI для файла Xournal++"
 
-#: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:219
+#: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:220
 msgid "Export Document"
 msgstr "Экспортировать документ"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:156
-#: rnote-ui/data/ui/dialogs/export.ui:383 rnote-ui/src/dialogs/export.rs:757
-#: rnote-ui/src/dialogs/export.rs:803
+#: rnote-ui/data/ui/dialogs/export.ui:383 rnote-ui/src/dialogs/export.rs:759
+#: rnote-ui/src/dialogs/export.rs:806
 msgid "Export"
 msgstr "Экспорт"
 
@@ -346,10 +346,10 @@ msgstr "Выберите файл экспорта"
 
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:427
-#: rnote-ui/src/dialogs/export.rs:107 rnote-ui/src/dialogs/export.rs:136
-#: rnote-ui/src/dialogs/export.rs:143 rnote-ui/src/dialogs/export.rs:171
-#: rnote-ui/src/dialogs/export.rs:578 rnote-ui/src/dialogs/export.rs:608
-#: rnote-ui/src/dialogs/export.rs:615 rnote-ui/src/dialogs/export.rs:645
+#: rnote-ui/src/dialogs/export.rs:108 rnote-ui/src/dialogs/export.rs:137
+#: rnote-ui/src/dialogs/export.rs:144 rnote-ui/src/dialogs/export.rs:172
+#: rnote-ui/src/dialogs/export.rs:579 rnote-ui/src/dialogs/export.rs:609
+#: rnote-ui/src/dialogs/export.rs:616 rnote-ui/src/dialogs/export.rs:646
 msgid "- no file selected -"
 msgstr "- файл не выбран -"
 
@@ -391,16 +391,16 @@ msgstr "Формат для экспорта"
 
 #: rnote-ui/data/ui/dialogs/export.ui:114
 #: rnote-ui/data/ui/dialogs/export.ui:298
-#: rnote-ui/data/ui/dialogs/export.ui:482 rnote-ui/src/dialogs/export.rs:229
-#: rnote-ui/src/dialogs/export.rs:497 rnote-ui/src/dialogs/export.rs:716
+#: rnote-ui/data/ui/dialogs/export.ui:482 rnote-ui/src/dialogs/export.rs:230
+#: rnote-ui/src/dialogs/export.rs:498 rnote-ui/src/dialogs/export.rs:718
 msgid "Svg"
 msgstr "Svg"
 
-#: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:234
+#: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:235
 msgid "Pdf"
 msgstr "Pdf"
 
-#: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:239
+#: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:240
 msgid "Xopp"
 msgstr "Xopp"
 
@@ -428,7 +428,7 @@ msgstr ""
 msgid "Vertical First"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:148 rnote-ui/src/dialogs/export.rs:475
+#: rnote-ui/data/ui/dialogs/export.ui:148 rnote-ui/src/dialogs/export.rs:476
 msgid "Export Document Pages"
 msgstr "Экспортировать документ как SVG"
 
@@ -449,14 +449,14 @@ msgid "Export Files Stem Name"
 msgstr "Экспортировать состояние движка"
 
 #: rnote-ui/data/ui/dialogs/export.ui:299
-#: rnote-ui/data/ui/dialogs/export.ui:483 rnote-ui/src/dialogs/export.rs:502
-#: rnote-ui/src/dialogs/export.rs:721
+#: rnote-ui/data/ui/dialogs/export.ui:483 rnote-ui/src/dialogs/export.rs:503
+#: rnote-ui/src/dialogs/export.rs:723
 msgid "Png"
 msgstr "Png"
 
 #: rnote-ui/data/ui/dialogs/export.ui:300
-#: rnote-ui/data/ui/dialogs/export.ui:484 rnote-ui/src/dialogs/export.rs:508
-#: rnote-ui/src/dialogs/export.rs:727
+#: rnote-ui/data/ui/dialogs/export.ui:484 rnote-ui/src/dialogs/export.rs:509
+#: rnote-ui/src/dialogs/export.rs:729
 msgid "Jpeg"
 msgstr "Jpeg"
 
@@ -470,7 +470,7 @@ msgstr "Качество Jpeg"
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "Укажите качество Jpeg изображения (1 - 100)"
 
-#: rnote-ui/data/ui/dialogs/export.ui:375 rnote-ui/src/dialogs/export.rs:702
+#: rnote-ui/data/ui/dialogs/export.ui:375 rnote-ui/src/dialogs/export.rs:704
 msgid "Export Selection"
 msgstr "Экспортировать выделение"
 
@@ -769,7 +769,7 @@ msgid "Crosshatch"
 msgstr "Штриховка"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
-#: rnote-ui/data/ui/settingspanel.ui:330
+#: rnote-ui/data/ui/settingspanel.ui:342
 msgid "Dots"
 msgstr "Точки"
 
@@ -1178,240 +1178,250 @@ msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "Указать, должны ли отображаться полосы прокрутки на холсте"
 
 #: rnote-ui/data/ui/settingspanel.ui:87
+msgid "Inertial Touch Scrolling"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:88
+msgid ""
+"Set whether touch scrolling on the canvas is inertial.\n"
+"An application restart is required when this option gets disabled."
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:99
 msgid "Regular Cursor"
 msgstr "Обычный курсор"
 
-#: rnote-ui/data/ui/settingspanel.ui:88
+#: rnote-ui/data/ui/settingspanel.ui:100
 msgid "Set the regular cursor"
 msgstr "Настроить обычный курсор"
 
-#: rnote-ui/data/ui/settingspanel.ui:110
+#: rnote-ui/data/ui/settingspanel.ui:122
 #, fuzzy
 #| msgid "Drawing Cursor"
 msgid "Show Drawing Cursor"
 msgstr "Курсор для рисования"
 
-#: rnote-ui/data/ui/settingspanel.ui:111
+#: rnote-ui/data/ui/settingspanel.ui:123
 #, fuzzy
 #| msgid "Set the drawing cursor"
 msgid "Set whether the drawing cursor is visible"
 msgstr "Настроить курсор для рисования"
 
-#: rnote-ui/data/ui/settingspanel.ui:125
+#: rnote-ui/data/ui/settingspanel.ui:137
 msgid "Drawing Cursor"
 msgstr "Курсор для рисования"
 
-#: rnote-ui/data/ui/settingspanel.ui:126
+#: rnote-ui/data/ui/settingspanel.ui:138
 msgid "Set the drawing cursor"
 msgstr "Настроить курсор для рисования"
 
-#: rnote-ui/data/ui/settingspanel.ui:151
+#: rnote-ui/data/ui/settingspanel.ui:163
 msgid "Page Format"
 msgstr "Формат страниц"
 
-#: rnote-ui/data/ui/settingspanel.ui:154
+#: rnote-ui/data/ui/settingspanel.ui:166
 msgid "Format"
 msgstr "Формат"
 
-#: rnote-ui/data/ui/settingspanel.ui:155
+#: rnote-ui/data/ui/settingspanel.ui:167
 msgid "Choose a format"
 msgstr "Выбрать формат"
 
-#: rnote-ui/data/ui/settingspanel.ui:159
+#: rnote-ui/data/ui/settingspanel.ui:171
 msgid "A6"
 msgstr "A6"
 
-#: rnote-ui/data/ui/settingspanel.ui:160
+#: rnote-ui/data/ui/settingspanel.ui:172
 msgid "A5"
 msgstr "A5"
 
-#: rnote-ui/data/ui/settingspanel.ui:161
+#: rnote-ui/data/ui/settingspanel.ui:173
 msgid "A4"
 msgstr "A4"
 
-#: rnote-ui/data/ui/settingspanel.ui:162
+#: rnote-ui/data/ui/settingspanel.ui:174
 msgid "A3"
 msgstr "A3"
 
-#: rnote-ui/data/ui/settingspanel.ui:163
+#: rnote-ui/data/ui/settingspanel.ui:175
 msgid "A2"
 msgstr "A2"
 
-#: rnote-ui/data/ui/settingspanel.ui:164
+#: rnote-ui/data/ui/settingspanel.ui:176
 msgid "US letter"
 msgstr "Письмо США"
 
-#: rnote-ui/data/ui/settingspanel.ui:165
+#: rnote-ui/data/ui/settingspanel.ui:177
 msgid "US legal"
 msgstr "Судебный США"
 
-#: rnote-ui/data/ui/settingspanel.ui:166
+#: rnote-ui/data/ui/settingspanel.ui:178
 msgid "Custom"
 msgstr "Пользовательский"
 
-#: rnote-ui/data/ui/settingspanel.ui:174
+#: rnote-ui/data/ui/settingspanel.ui:186
 msgid "Orientation"
 msgstr "Ориентация"
 
-#: rnote-ui/data/ui/settingspanel.ui:175
+#: rnote-ui/data/ui/settingspanel.ui:187
 msgid "Set the format orientation"
 msgstr "Выбрать ориентацию страниц"
 
-#: rnote-ui/data/ui/settingspanel.ui:187
+#: rnote-ui/data/ui/settingspanel.ui:199
 msgid "Portrait"
 msgstr "Портретная"
 
-#: rnote-ui/data/ui/settingspanel.ui:193
+#: rnote-ui/data/ui/settingspanel.ui:205
 msgid "Landscape"
 msgstr "Альбомная"
 
-#: rnote-ui/data/ui/settingspanel.ui:203
+#: rnote-ui/data/ui/settingspanel.ui:215
 msgid "Width"
 msgstr "Ширина"
 
-#: rnote-ui/data/ui/settingspanel.ui:204
+#: rnote-ui/data/ui/settingspanel.ui:216
 msgid "Set the format width"
 msgstr "Установить ширину страницы"
 
-#: rnote-ui/data/ui/settingspanel.ui:217
+#: rnote-ui/data/ui/settingspanel.ui:229
 msgid "Height"
 msgstr "Высота"
 
-#: rnote-ui/data/ui/settingspanel.ui:218
+#: rnote-ui/data/ui/settingspanel.ui:230
 msgid "Set the format height"
 msgstr "Установить высоту формата"
 
-#: rnote-ui/data/ui/settingspanel.ui:231
+#: rnote-ui/data/ui/settingspanel.ui:243
 msgid "Dpi"
 msgstr "DPI"
 
-#: rnote-ui/data/ui/settingspanel.ui:232
+#: rnote-ui/data/ui/settingspanel.ui:244
 msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr "Установить DPI (точек на дюйм). По умолчанию: 96"
 
-#: rnote-ui/data/ui/settingspanel.ui:255
+#: rnote-ui/data/ui/settingspanel.ui:267
 msgid "Revert"
 msgstr "По умолчанию"
 
-#: rnote-ui/data/ui/settingspanel.ui:277 rnote-ui/data/ui/shortcuts.ui:146
+#: rnote-ui/data/ui/settingspanel.ui:289 rnote-ui/data/ui/shortcuts.ui:146
 #: rnote-ui/src/dialogs/mod.rs:625
 msgid "Document"
 msgstr "Документ"
 
-#: rnote-ui/data/ui/settingspanel.ui:280
+#: rnote-ui/data/ui/settingspanel.ui:292
 msgid "Format Border Color"
 msgstr "Цвет границ страницы"
 
-#: rnote-ui/data/ui/settingspanel.ui:281
+#: rnote-ui/data/ui/settingspanel.ui:293
 msgid "Set the format border color"
 msgstr "Выбрать цвет границ страницы"
 
-#: rnote-ui/data/ui/settingspanel.ui:302
+#: rnote-ui/data/ui/settingspanel.ui:314
 msgid "Set the background color"
 msgstr "Выбрать цвет"
 
-#: rnote-ui/data/ui/settingspanel.ui:322
+#: rnote-ui/data/ui/settingspanel.ui:334
 msgid "Pattern"
 msgstr "Линовка"
 
-#: rnote-ui/data/ui/settingspanel.ui:323
+#: rnote-ui/data/ui/settingspanel.ui:335
 msgid "Choose a background pattern"
 msgstr "Выбрать линовку"
 
-#: rnote-ui/data/ui/settingspanel.ui:327
+#: rnote-ui/data/ui/settingspanel.ui:339
 msgid "None"
 msgstr "Нет"
 
-#: rnote-ui/data/ui/settingspanel.ui:328
+#: rnote-ui/data/ui/settingspanel.ui:340
 msgid "Lines"
 msgstr "В линейку"
 
-#: rnote-ui/data/ui/settingspanel.ui:329
+#: rnote-ui/data/ui/settingspanel.ui:341
 #: rnote-ui/src/penssidebar/shaperpage.rs:388
 msgid "Grid"
 msgstr "В клетку"
 
-#: rnote-ui/data/ui/settingspanel.ui:331
+#: rnote-ui/data/ui/settingspanel.ui:343
 msgid "Isometric Grid"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:332
+#: rnote-ui/data/ui/settingspanel.ui:344
 msgid "Isometric Dots"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:340
+#: rnote-ui/data/ui/settingspanel.ui:352
 msgid "Pattern Color"
 msgstr "Цвет линовки"
 
-#: rnote-ui/data/ui/settingspanel.ui:341
+#: rnote-ui/data/ui/settingspanel.ui:353
 msgid "Set the background pattern color"
 msgstr "Выбрать цвет линовки"
 
-#: rnote-ui/data/ui/settingspanel.ui:361
+#: rnote-ui/data/ui/settingspanel.ui:373
 msgid "Pattern Width"
 msgstr "Ширина линовки"
 
-#: rnote-ui/data/ui/settingspanel.ui:362
+#: rnote-ui/data/ui/settingspanel.ui:374
 msgid "Set the background pattern width"
 msgstr "Установить ширину линовки"
 
-#: rnote-ui/data/ui/settingspanel.ui:375
+#: rnote-ui/data/ui/settingspanel.ui:387
 msgid "Pattern Height"
 msgstr "Высота линовки"
 
-#: rnote-ui/data/ui/settingspanel.ui:376
+#: rnote-ui/data/ui/settingspanel.ui:388
 msgid "Set the background pattern height"
 msgstr "Установить высоту линовки"
 
-#: rnote-ui/data/ui/settingspanel.ui:392
+#: rnote-ui/data/ui/settingspanel.ui:404
 msgid "Button Shortcuts"
 msgstr "Комбинации клавиш"
 
-#: rnote-ui/data/ui/settingspanel.ui:395
+#: rnote-ui/data/ui/settingspanel.ui:407
 msgid "Stylus Primary Button Action"
 msgstr "Действие основной кнопки стилуса"
 
-#: rnote-ui/data/ui/settingspanel.ui:396
+#: rnote-ui/data/ui/settingspanel.ui:408
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
 msgstr "Выбрать действие основной кнопки стилуса"
 
-#: rnote-ui/data/ui/settingspanel.ui:408
+#: rnote-ui/data/ui/settingspanel.ui:420
 msgid "Stylus Secondary Button Action"
 msgstr "Действие дополнительной кнопки стилуса"
 
-#: rnote-ui/data/ui/settingspanel.ui:409
+#: rnote-ui/data/ui/settingspanel.ui:421
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
 msgstr "Выбрать действие дополнительной кнопки стилуса"
 
-#: rnote-ui/data/ui/settingspanel.ui:421
+#: rnote-ui/data/ui/settingspanel.ui:433
 msgid "Mouse Secondary Button Action"
 msgstr "Действие правой кнопки мыши"
 
-#: rnote-ui/data/ui/settingspanel.ui:422
+#: rnote-ui/data/ui/settingspanel.ui:434
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
 msgstr "Выбрать действие правой кнопки мыши"
 
-#: rnote-ui/data/ui/settingspanel.ui:434
+#: rnote-ui/data/ui/settingspanel.ui:446
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "Долгое прикосновение"
 
-#: rnote-ui/data/ui/settingspanel.ui:435
+#: rnote-ui/data/ui/settingspanel.ui:447
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
 msgstr "Выбрать действие правой кнопки мыши"
 
-#: rnote-ui/data/ui/settingspanel.ui:447
+#: rnote-ui/data/ui/settingspanel.ui:459
 msgid "Drawing Pad Button 1 Action"
 msgstr "Действие кнопки 1 графического планшета"
 
-#: rnote-ui/data/ui/settingspanel.ui:448
+#: rnote-ui/data/ui/settingspanel.ui:460
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
@@ -1419,11 +1429,11 @@ msgstr ""
 "Установить действие для кнопки 1\n"
 "графического планшета"
 
-#: rnote-ui/data/ui/settingspanel.ui:460
+#: rnote-ui/data/ui/settingspanel.ui:472
 msgid "Drawing Pad Button 2 Action"
 msgstr "Действие кнопки 2 графического планшета"
 
-#: rnote-ui/data/ui/settingspanel.ui:461
+#: rnote-ui/data/ui/settingspanel.ui:473
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
@@ -1431,11 +1441,11 @@ msgstr ""
 "Установить действие для кнопки 2\n"
 "графического планшета"
 
-#: rnote-ui/data/ui/settingspanel.ui:473
+#: rnote-ui/data/ui/settingspanel.ui:485
 msgid "Drawing Pad Button 3 Action"
 msgstr "Действие кнопки 3 графического планшета"
 
-#: rnote-ui/data/ui/settingspanel.ui:474
+#: rnote-ui/data/ui/settingspanel.ui:486
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
@@ -1443,11 +1453,11 @@ msgstr ""
 "Установить действие для кнопки 3\n"
 "графического планшета"
 
-#: rnote-ui/data/ui/settingspanel.ui:486
+#: rnote-ui/data/ui/settingspanel.ui:498
 msgid "Drawing Pad Button 4 Action"
 msgstr "Действие кнопки 4 графического планшета"
 
-#: rnote-ui/data/ui/settingspanel.ui:487
+#: rnote-ui/data/ui/settingspanel.ui:499
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
@@ -1617,7 +1627,7 @@ msgstr "Не удалось открыть файл: формат файла н�
 
 #: rnote-ui/src/appwindow/imp.rs:282
 #: rnote-ui/src/appwindow/appwindowactions.rs:612
-#: rnote-ui/src/dialogs/export.rs:67 rnote-ui/src/dialogs/import.rs:52
+#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/import.rs:52
 #: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:258
 #: rnote-ui/src/dialogs/mod.rs:405
 msgid "Saving document failed"
@@ -1692,40 +1702,40 @@ msgstr "Не удалось распечатать документ"
 msgid ".rnote"
 msgstr ".rnote"
 
-#: rnote-ui/src/dialogs/export.rs:56
+#: rnote-ui/src/dialogs/export.rs:55
 msgid "Saved document successfully"
 msgstr "Документ успешно сохранён."
 
-#: rnote-ui/src/dialogs/export.rs:196
+#: rnote-ui/src/dialogs/export.rs:197
 msgid "Exporting document failed"
 msgstr "Не удалось экспортировать документ."
 
-#: rnote-ui/src/dialogs/export.rs:198
+#: rnote-ui/src/dialogs/export.rs:199
 msgid "Exported document successfully"
 msgstr "Документ успешно экспортирован."
 
-#: rnote-ui/src/dialogs/export.rs:206
+#: rnote-ui/src/dialogs/export.rs:207
 msgid "Exporting document failed, no file selected"
 msgstr "Не удалось экспортировать документ, не указан файл."
 
-#: rnote-ui/src/dialogs/export.rs:221 rnote-ui/src/dialogs/export.rs:477
-#: rnote-ui/src/dialogs/export.rs:704 rnote-ui/src/dialogs/mod.rs:501
+#: rnote-ui/src/dialogs/export.rs:222 rnote-ui/src/dialogs/export.rs:478
+#: rnote-ui/src/dialogs/export.rs:706 rnote-ui/src/dialogs/mod.rs:501
 msgid "Select"
 msgstr "Выбрать"
 
-#: rnote-ui/src/dialogs/export.rs:452
+#: rnote-ui/src/dialogs/export.rs:453
 msgid "Exporting document pages failed"
 msgstr "Не удалось экспортировать документ."
 
-#: rnote-ui/src/dialogs/export.rs:454
+#: rnote-ui/src/dialogs/export.rs:455
 msgid "Exported document pages successfully"
 msgstr "Документ успешно экспортирован."
 
-#: rnote-ui/src/dialogs/export.rs:461
+#: rnote-ui/src/dialogs/export.rs:462
 msgid "Exporting document pages failed, no directory selected"
 msgstr "Не удалось экспортировать документ, директория не указана."
 
-#: rnote-ui/src/dialogs/export.rs:678
+#: rnote-ui/src/dialogs/export.rs:679
 msgid "Exporting selection failed"
 msgstr "Не удалось экспортировать выделение."
 
@@ -1733,35 +1743,35 @@ msgstr "Не удалось экспортировать выделение."
 msgid "Exported selection successfully"
 msgstr "Выделение успешно экспортировано."
 
-#: rnote-ui/src/dialogs/export.rs:689
+#: rnote-ui/src/dialogs/export.rs:691
 msgid "Exporting selection failed, no file selected"
 msgstr "Не удалось экспортировать выделение, не указан файл."
 
-#: rnote-ui/src/dialogs/export.rs:747 rnote-ui/src/dialogs/export.rs:793
+#: rnote-ui/src/dialogs/export.rs:749 rnote-ui/src/dialogs/export.rs:796
 msgid "Json"
 msgstr "JSON"
 
-#: rnote-ui/src/dialogs/export.rs:755
+#: rnote-ui/src/dialogs/export.rs:757
 msgid "Export Engine State"
 msgstr "Экспортировать состояние движка"
 
-#: rnote-ui/src/dialogs/export.rs:774
+#: rnote-ui/src/dialogs/export.rs:776
 msgid "Exporting engine state failed"
 msgstr "Не удалось экспортировать состояние движка."
 
-#: rnote-ui/src/dialogs/export.rs:778
+#: rnote-ui/src/dialogs/export.rs:779
 msgid "Exported engine state successfully"
 msgstr "Состояние движка успешно экспортировано."
 
-#: rnote-ui/src/dialogs/export.rs:801
+#: rnote-ui/src/dialogs/export.rs:804
 msgid "Export Engine Config"
 msgstr "Экспорт конфигурации движка"
 
-#: rnote-ui/src/dialogs/export.rs:820
+#: rnote-ui/src/dialogs/export.rs:823
 msgid "Exporting engine config failed"
 msgstr "Не удалось экспортировать конфиг движка."
 
-#: rnote-ui/src/dialogs/export.rs:824
+#: rnote-ui/src/dialogs/export.rs:826
 msgid "Exported engine config successfully"
 msgstr "Конфиг движка успешно экспортирован."
 
@@ -2097,126 +2107,130 @@ msgstr "Квадратичная кривая Безье"
 msgid "Cubic bezier curve"
 msgstr "Кубическая кривая Безье"
 
-#: rnote-ui/src/settingspanel/mod.rs:788
+#: rnote-ui/src/settingspanel/mod.rs:568
+msgid "Application restart is required"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:807
 #, fuzzy
 #| msgid "Crosshair (Small)"
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "Перекрестие (маленькое)"
 
-#: rnote-ui/src/settingspanel/mod.rs:789
+#: rnote-ui/src/settingspanel/mod.rs:808
 #, fuzzy
 #| msgid "Crosshair (Medium)"
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "Перекрестие (среднее)"
 
-#: rnote-ui/src/settingspanel/mod.rs:790
+#: rnote-ui/src/settingspanel/mod.rs:809
 #, fuzzy
 #| msgid "Crosshair (Large)"
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "Перекрестие (большое)"
 
-#: rnote-ui/src/settingspanel/mod.rs:791
+#: rnote-ui/src/settingspanel/mod.rs:810
 #, fuzzy
 #| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "Точка (маленькая)"
 
-#: rnote-ui/src/settingspanel/mod.rs:792
+#: rnote-ui/src/settingspanel/mod.rs:811
 #, fuzzy
 #| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "Точка (средняя)"
 
-#: rnote-ui/src/settingspanel/mod.rs:793
+#: rnote-ui/src/settingspanel/mod.rs:812
 #, fuzzy
 #| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "Точка (большая)"
 
-#: rnote-ui/src/settingspanel/mod.rs:794
+#: rnote-ui/src/settingspanel/mod.rs:813
 #, fuzzy
 #| msgid "Teardrop North-West (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "Cлеза, северо-запад (маленькая)"
 
-#: rnote-ui/src/settingspanel/mod.rs:795
+#: rnote-ui/src/settingspanel/mod.rs:814
 #, fuzzy
 #| msgid "Teardrop North-West (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "Слеза, северо-запад (средняя)"
 
-#: rnote-ui/src/settingspanel/mod.rs:796
+#: rnote-ui/src/settingspanel/mod.rs:815
 #, fuzzy
 #| msgid "Teardrop North-West (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "Слеза, северо-запад (большая)"
 
-#: rnote-ui/src/settingspanel/mod.rs:797
+#: rnote-ui/src/settingspanel/mod.rs:816
 #, fuzzy
 #| msgid "Teardrop North-East (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "Слеза, северо-восток (маленькая)"
 
-#: rnote-ui/src/settingspanel/mod.rs:798
+#: rnote-ui/src/settingspanel/mod.rs:817
 #, fuzzy
 #| msgid "Teardrop North-East (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "Слеза, северо-восток (средняя)"
 
-#: rnote-ui/src/settingspanel/mod.rs:799
+#: rnote-ui/src/settingspanel/mod.rs:818
 #, fuzzy
 #| msgid "Teardrop North-East (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "Слеза, северо-восток (большая)"
 
-#: rnote-ui/src/settingspanel/mod.rs:800
+#: rnote-ui/src/settingspanel/mod.rs:819
 #, fuzzy
 #| msgid "Teardrop North (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "Слеза, север (маленькая)"
 
-#: rnote-ui/src/settingspanel/mod.rs:801
+#: rnote-ui/src/settingspanel/mod.rs:820
 #, fuzzy
 #| msgid "Teardrop North (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "Слеза, север (средняя)"
 
-#: rnote-ui/src/settingspanel/mod.rs:802
+#: rnote-ui/src/settingspanel/mod.rs:821
 #, fuzzy
 #| msgid "Teardrop North (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "Слеза, север (большая)"
 
-#: rnote-ui/src/settingspanel/mod.rs:803
+#: rnote-ui/src/settingspanel/mod.rs:822
 #, fuzzy
 #| msgid "Beam (Small)"
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "Луч (маленький)"
 
-#: rnote-ui/src/settingspanel/mod.rs:804
+#: rnote-ui/src/settingspanel/mod.rs:823
 #, fuzzy
 #| msgid "Beam (Medium)"
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "Луч (средний)"
 
-#: rnote-ui/src/settingspanel/mod.rs:805
+#: rnote-ui/src/settingspanel/mod.rs:824
 #, fuzzy
 #| msgid "Beam (Large)"
 msgctxt "a cursor type"

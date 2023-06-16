@@ -51,9 +51,10 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
 
             match canvas.save_document_to_file(&selected_file).await {
                 Ok(true) => {
-                    appwindow
-                        .overlays()
-                        .dispatch_toast_text(&gettext("Saved document successfully"));
+                    appwindow.overlays().dispatch_toast_text(
+                        &gettext("Saved document successfully"),
+                        crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
+                    );
                 }
                 Ok(false) => {
                     // Saving was already in progress
@@ -195,7 +196,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
                                 log::error!("exporting document failed, Error: `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
                             } else {
-                                appwindow.overlays().dispatch_toast_text(&gettext("Exported document successfully"));
+                                appwindow.overlays().dispatch_toast_text(&gettext("Exported document successfully"), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
                             }
 
                             appwindow.overlays().finish_progressbar();
@@ -451,7 +452,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
                                 log::error!("exporting document pages failed, Error: `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed"));
                             } else {
-                                appwindow.overlays().dispatch_toast_text(&gettext("Exported document pages successfully"));
+                                appwindow.overlays().dispatch_toast_text(&gettext("Exported document pages successfully"), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
                             }
 
                             appwindow.overlays().finish_progressbar();
@@ -677,9 +678,10 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
                         .overlays()
                         .dispatch_toast_error(&gettext("Exporting selection failed"));
                 } else {
-                    appwindow
-                        .overlays()
-                        .dispatch_toast_text(&gettext("Exported selection successfully"));
+                    appwindow.overlays().dispatch_toast_text(
+                        &gettext("Exported selection successfully"),
+                        crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
+                    );
                 }
 
                 appwindow.overlays().finish_progressbar();
@@ -773,9 +775,10 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
                     .overlays()
                     .dispatch_toast_error(&gettext("Exporting engine state failed"));
             } else {
-                appwindow
-                    .overlays()
-                    .dispatch_toast_text(&gettext("Exported engine state successfully"));
+                appwindow.overlays().dispatch_toast_text(
+                    &gettext("Exported engine state successfully"),
+                    crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
+                );
             }
 
             appwindow.overlays().finish_progressbar();
@@ -819,9 +822,10 @@ pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, ca
                     .overlays()
                     .dispatch_toast_error(&gettext("Exporting engine config failed"));
             } else {
-                appwindow
-                    .overlays()
-                    .dispatch_toast_text(&gettext("Exported engine config successfully"));
+                appwindow.overlays().dispatch_toast_text(
+                    &gettext("Exported engine config successfully"),
+                    crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
+                );
             }
 
             appwindow.overlays().finish_progressbar();

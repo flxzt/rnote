@@ -28,6 +28,7 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/settingspanel.ui")]
     pub(crate) struct RnSettingsPanel {
         pub(crate) temporary_format: RefCell<Format>,
+        pub(crate) app_restart_toast_singleton: RefCell<Option<adw::Toast>>,
 
         #[template_child]
         pub(crate) settings_scroller: TemplateChild<ScrolledWindow>,
@@ -559,6 +560,18 @@ impl RnSettingsPanel {
             )
             .sync_create()
             .build();
+
+        imp.general_inertial_scrolling_switch.connect_active_notify(
+            clone!(@weak self as settingspanel, @weak appwindow => move |switch| {
+                if !switch.is_active() {
+                    appwindow.overlays().dispatch_toast_text_singleton(
+                        &gettext("The app needs to be restarted."),
+                        0,
+                        &mut settingspanel.imp().app_restart_toast_singleton.borrow_mut()
+                    );
+                }
+            }),
+        );
     }
 
     fn setup_format(&self, appwindow: &RnAppWindow) {

@@ -18,7 +18,7 @@ pub(crate) mod globals;
 pub(crate) mod groupediconpicker;
 mod iconpicker;
 mod mainheader;
-mod overlays;
+pub(crate) mod overlays;
 pub(crate) mod penssidebar;
 mod settingspanel;
 pub(crate) mod strokewidthpicker;

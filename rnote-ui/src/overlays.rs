@@ -100,6 +100,9 @@ mod imp {
     }
 }
 
+/// The default timeout for regular text toasts.
+pub(crate) const TEXT_TOAST_TIMEOUT_DEFAULT: u32 = 5;
+
 glib::wrapper! {
     pub(crate) struct RnOverlays(ObjectSubclass<imp::RnOverlays>)
     @extends Widget;

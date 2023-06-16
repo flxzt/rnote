@@ -33,7 +33,7 @@ jobs:
       - name: Register archive file names
         id: register_archive_file_names
         run: |
-          echo "archive =$(basename _mesonbuild/meson-dist/rnote-*.tar.xz | tail -n1)" >> $GITHUB_OUTPUT
+          echo "archive=$(basename _mesonbuild/meson-dist/rnote-*.tar.xz | tail -n1)" >> $GITHUB_OUTPUT
           echo "sha=$(basename _mesonbuild/meson-dist/rnote-*.tar.xz.sha256sum | tail -n1)" >> $GITHUB_OUTPUT
       - name: Upload dist archive (Workflow Artifact)
         uses: actions/upload-artifact@v3

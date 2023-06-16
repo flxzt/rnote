@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-12 07:25+0200\n"
+"POT-Creation-Date: 2023-06-16 15:25+0200\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/"
@@ -77,12 +77,12 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: rnote-ui/data/ui/dialogs/dialogs.ui:22
-#: rnote-ui/data/ui/dialogs/dialogs.ui:39
-#: rnote-ui/data/ui/dialogs/dialogs.ui:56
-#: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/dialogs/import.ui:10
+#: rnote-ui/data/ui/dialogs/dialogs.ui:40
+#: rnote-ui/data/ui/dialogs/dialogs.ui:58
+#: rnote-ui/data/ui/dialogs/dialogs.ui:70 rnote-ui/data/ui/dialogs/import.ui:10
 #: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:223
-#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:136
-#: rnote-ui/data/ui/dialogs/export.ui:348
+#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:151
+#: rnote-ui/data/ui/dialogs/export.ui:378
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
 msgstr "キャンセル"
@@ -104,14 +104,14 @@ msgid ""
 msgstr "保存していない編集内容はすべて削除されます。それでも終了しますか？"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
-#: rnote-ui/data/ui/dialogs/dialogs.ui:40 rnote-ui/data/ui/dialogs/import.ui:11
+#: rnote-ui/data/ui/dialogs/dialogs.ui:41 rnote-ui/data/ui/dialogs/import.ui:11
 msgid "Discard"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
-#: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#: rnote-ui/data/ui/dialogs/dialogs.ui:58 rnote-ui/data/ui/dialogs/import.ui:12
-#: rnote-ui/src/dialogs/export.rs:30
+#: rnote-ui/data/ui/dialogs/dialogs.ui:42
+#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/data/ui/dialogs/import.ui:12
+#: rnote-ui/src/dialogs/export.rs:32
 msgid "Save"
 msgstr ""
 
@@ -121,81 +121,81 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
-"This tab contains unsaved changes. Changes which are not saved will be "
-"permanently lost."
+"This tab contains unsaved changes.\n"
+"Changes which are not saved will be permanently lost."
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:46
+#: rnote-ui/data/ui/dialogs/dialogs.ui:47
 #, fuzzy
 #| msgid "New Window"
 msgid "Close Window"
 msgstr "新しいウィンドウ"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:47
+#: rnote-ui/data/ui/dialogs/dialogs.ui:48
 msgid ""
-"Some opened files contain unsaved changes. Changes which are not saved will "
-"be permanently lost."
+"Some opened files contain unsaved changes.\n"
+"Changes which are not saved will be permanently lost."
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:52
+#: rnote-ui/data/ui/dialogs/dialogs.ui:54
 #, fuzzy
 #| msgid "Export document as SVG"
 msgid "Unsaved Documents"
 msgstr "選択範囲をSVGに保存"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:57
+#: rnote-ui/data/ui/dialogs/dialogs.ui:59
 msgid "Discard All"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:65
+#: rnote-ui/data/ui/dialogs/dialogs.ui:67
 #, fuzzy
 #| msgid "Workspace"
 msgid "Edit Workspace"
 msgstr "ワークスペース"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:73 rnote-ui/data/ui/settingspanel.ui:264
+#: rnote-ui/data/ui/dialogs/dialogs.ui:75 rnote-ui/data/ui/settingspanel.ui:264
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:39
 msgid "Apply"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:115
+#: rnote-ui/data/ui/dialogs/dialogs.ui:117
 #, fuzzy
 msgid "Workspace Name"
 msgstr "ワークスペース"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:120
+#: rnote-ui/data/ui/dialogs/dialogs.ui:122
 msgid "Icon"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:121
+#: rnote-ui/data/ui/dialogs/dialogs.ui:123
 msgid "Change the workspace icon"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:141
+#: rnote-ui/data/ui/dialogs/dialogs.ui:143
 #: rnote-ui/data/ui/settingspanel.ui:301
 msgid "Color"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:142
+#: rnote-ui/data/ui/dialogs/dialogs.ui:144
 msgid "Change the workspace color"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:156
+#: rnote-ui/data/ui/dialogs/dialogs.ui:158
 msgid "Directory"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:157
+#: rnote-ui/data/ui/dialogs/dialogs.ui:159
 msgid "Change the workspace directory"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:166
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:300
-#: rnote-ui/src/dialogs/export.rs:339 rnote-ui/src/dialogs/export.rs:347
-#: rnote-ui/src/dialogs/mod.rs:517
+#: rnote-ui/data/ui/dialogs/dialogs.ui:168
+#: rnote-ui/data/ui/dialogs/export.ui:238 rnote-ui/src/dialogs/export.rs:322
+#: rnote-ui/src/dialogs/export.rs:363 rnote-ui/src/dialogs/export.rs:371
+#: rnote-ui/src/dialogs/mod.rs:519
 msgid "- no directory selected -"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:181
+#: rnote-ui/data/ui/dialogs/dialogs.ui:183
 #, fuzzy
 #| msgid "Export selection as SVG"
 msgid "Change the directory"
@@ -284,14 +284,14 @@ msgid "Bitmap"
 msgstr "ビットマップ"
 
 #: rnote-ui/data/ui/dialogs/import.ui:189
-#: rnote-ui/data/ui/dialogs/export.ui:293
-#: rnote-ui/data/ui/dialogs/export.ui:462
+#: rnote-ui/data/ui/dialogs/export.ui:323
+#: rnote-ui/data/ui/dialogs/export.ui:492
 msgid "Bitmap Scale-Factor"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/import.ui:190
-#: rnote-ui/data/ui/dialogs/export.ui:294
-#: rnote-ui/data/ui/dialogs/export.ui:463
+#: rnote-ui/data/ui/dialogs/export.ui:324
+#: rnote-ui/data/ui/dialogs/export.ui:493
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
@@ -315,155 +315,182 @@ msgstr ""
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:200
+#: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:219
 #, fuzzy
 #| msgid "Export document as SVG"
 msgid "Export Document"
 msgstr "選択範囲をSVGに保存"
 
-#: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:728
-#: rnote-ui/src/dialogs/export.rs:774
+#: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:156
+#: rnote-ui/data/ui/dialogs/export.ui:383 rnote-ui/src/dialogs/export.rs:757
+#: rnote-ui/src/dialogs/export.rs:803
 msgid "Export"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
+#: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:417
 #, fuzzy
 #| msgid "Selector"
 msgid "Export File"
 msgstr "選択"
 
-#: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:388
+#: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:418
 msgid "Select the export file"
 msgstr ""
 
 #. force the user to pick another file
-#: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:397
-#: rnote-ui/src/dialogs/export.rs:102 rnote-ui/src/dialogs/export.rs:126
-#: rnote-ui/src/dialogs/export.rs:133 rnote-ui/src/dialogs/export.rs:157
-#: rnote-ui/src/dialogs/export.rs:549 rnote-ui/src/dialogs/export.rs:579
-#: rnote-ui/src/dialogs/export.rs:586 rnote-ui/src/dialogs/export.rs:616
+#: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:427
+#: rnote-ui/src/dialogs/export.rs:107 rnote-ui/src/dialogs/export.rs:136
+#: rnote-ui/src/dialogs/export.rs:143 rnote-ui/src/dialogs/export.rs:171
+#: rnote-ui/src/dialogs/export.rs:578 rnote-ui/src/dialogs/export.rs:608
+#: rnote-ui/src/dialogs/export.rs:615 rnote-ui/src/dialogs/export.rs:645
 msgid "- no file selected -"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:252
-#: rnote-ui/data/ui/dialogs/export.ui:421
+#: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:267
+#: rnote-ui/data/ui/dialogs/export.ui:451
 #, fuzzy
 #| msgid "Selector"
 msgid "Export Preferences"
 msgstr "選択"
 
-#: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:256
-#: rnote-ui/data/ui/dialogs/export.ui:425
+#: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:271
+#: rnote-ui/data/ui/dialogs/export.ui:455
 msgid "With Background"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:257
-#: rnote-ui/data/ui/dialogs/export.ui:426
+#: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:272
+#: rnote-ui/data/ui/dialogs/export.ui:456
 msgid "Set whether the background should be exported"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
-#: rnote-ui/data/ui/dialogs/export.ui:436
+#: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:282
+#: rnote-ui/data/ui/dialogs/export.ui:466
 msgid "With Pattern"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
-#: rnote-ui/data/ui/dialogs/export.ui:437
+#: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:283
+#: rnote-ui/data/ui/dialogs/export.ui:467
 msgid "Set whether the background pattern should be exported"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:109
-#: rnote-ui/data/ui/dialogs/export.ui:278
-#: rnote-ui/data/ui/dialogs/export.ui:447
+#: rnote-ui/data/ui/dialogs/export.ui:293
+#: rnote-ui/data/ui/dialogs/export.ui:477
 #, fuzzy
 #| msgid "Export document as SVG"
 msgid "Export Format"
 msgstr "選択範囲をSVGに保存"
 
 #: rnote-ui/data/ui/dialogs/export.ui:110
-#: rnote-ui/data/ui/dialogs/export.ui:279
+#: rnote-ui/data/ui/dialogs/export.ui:294
 msgid "The export format"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:114
-#: rnote-ui/data/ui/dialogs/export.ui:283
-#: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:210
-#: rnote-ui/src/dialogs/export.rs:468 rnote-ui/src/dialogs/export.rs:687
+#: rnote-ui/data/ui/dialogs/export.ui:298
+#: rnote-ui/data/ui/dialogs/export.ui:482 rnote-ui/src/dialogs/export.rs:229
+#: rnote-ui/src/dialogs/export.rs:497 rnote-ui/src/dialogs/export.rs:716
 msgid "Svg"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:215
+#: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:234
 msgid "Pdf"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:220
+#: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:239
 msgid "Xopp"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:446
+#: rnote-ui/data/ui/dialogs/export.ui:124
+#: rnote-ui/data/ui/dialogs/export.ui:308
+msgid "Page Order"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/export.ui:125
+msgid ""
+"The page order when documents with layouts that expand \n"
+"in horizontal and vertical directions are cut into pages"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/export.ui:130
+#: rnote-ui/data/ui/dialogs/export.ui:314
+msgid "Horizontal First"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/export.ui:131
+#: rnote-ui/data/ui/dialogs/export.ui:315
+msgid "Vertical First"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/export.ui:148 rnote-ui/src/dialogs/export.rs:475
 #, fuzzy
 #| msgid "Export document as PDF"
 msgid "Export Document Pages"
 msgstr "選択範囲をPDFに保存"
 
-#: rnote-ui/data/ui/dialogs/export.ui:192
+#: rnote-ui/data/ui/dialogs/export.ui:207
 msgid "Page Files Naming:"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:213
+#: rnote-ui/data/ui/dialogs/export.ui:228
 #, fuzzy
 #| msgid "Export selection as SVG"
 msgid "Export Directory"
 msgstr "選択範囲をSVGに保存"
 
-#: rnote-ui/data/ui/dialogs/export.ui:214
+#: rnote-ui/data/ui/dialogs/export.ui:229
 msgid "Select the export directory"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:245
+#: rnote-ui/data/ui/dialogs/export.ui:260
 #, fuzzy
 #| msgid "Selector"
 msgid "Export Files Stem Name"
 msgstr "選択"
 
-#: rnote-ui/data/ui/dialogs/export.ui:284
-#: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:473
-#: rnote-ui/src/dialogs/export.rs:692
+#: rnote-ui/data/ui/dialogs/export.ui:299
+#: rnote-ui/data/ui/dialogs/export.ui:483 rnote-ui/src/dialogs/export.rs:502
+#: rnote-ui/src/dialogs/export.rs:721
 msgid "Png"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:285
-#: rnote-ui/data/ui/dialogs/export.ui:454 rnote-ui/src/dialogs/export.rs:479
-#: rnote-ui/src/dialogs/export.rs:698
+#: rnote-ui/data/ui/dialogs/export.ui:300
+#: rnote-ui/data/ui/dialogs/export.ui:484 rnote-ui/src/dialogs/export.rs:508
+#: rnote-ui/src/dialogs/export.rs:727
 msgid "Jpeg"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:315
-#: rnote-ui/data/ui/dialogs/export.ui:484
+#: rnote-ui/data/ui/dialogs/export.ui:309
+msgid ""
+"The page order when documents with layouts that expand\n"
+"in horizontal and vertical directions are cut into pages"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/export.ui:345
+#: rnote-ui/data/ui/dialogs/export.ui:514
 msgid "Jpeg Quality"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:316
-#: rnote-ui/data/ui/dialogs/export.ui:485
+#: rnote-ui/data/ui/dialogs/export.ui:346
+#: rnote-ui/data/ui/dialogs/export.ui:515
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:673
+#: rnote-ui/data/ui/dialogs/export.ui:375 rnote-ui/src/dialogs/export.rs:702
 #, fuzzy
 #| msgid "Export selection as SVG"
 msgid "Export Selection"
 msgstr "選択範囲をSVGに保存"
 
-#: rnote-ui/data/ui/dialogs/export.ui:448
+#: rnote-ui/data/ui/dialogs/export.ui:478
 msgid "The export image format"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:505
+#: rnote-ui/data/ui/dialogs/export.ui:535
 msgid "Margin"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:506
+#: rnote-ui/data/ui/dialogs/export.ui:536
 msgid "Set the margin around the selected area"
 msgstr ""
 
@@ -1331,7 +1358,7 @@ msgid "Revert"
 msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:277 rnote-ui/data/ui/shortcuts.ui:146
-#: rnote-ui/src/dialogs/mod.rs:623
+#: rnote-ui/src/dialogs/mod.rs:625
 #, fuzzy
 #| msgid "Export document as SVG"
 msgid "Document"
@@ -1562,7 +1589,7 @@ msgstr ""
 msgid "Open Document"
 msgstr "選択範囲をSVGに保存"
 
-#: rnote-ui/data/ui/shortcuts.ui:167 rnote-ui/src/dialogs/export.rs:28
+#: rnote-ui/data/ui/shortcuts.ui:167 rnote-ui/src/dialogs/export.rs:30
 #, fuzzy
 #| msgid "Export document as SVG"
 msgid "Save Document As"
@@ -1672,9 +1699,9 @@ msgstr ""
 
 #: rnote-ui/src/appwindow/imp.rs:282
 #: rnote-ui/src/appwindow/appwindowactions.rs:612
-#: rnote-ui/src/dialogs/export.rs:65 rnote-ui/src/dialogs/import.rs:52
-#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:257
-#: rnote-ui/src/dialogs/mod.rs:403
+#: rnote-ui/src/dialogs/export.rs:67 rnote-ui/src/dialogs/import.rs:52
+#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:258
+#: rnote-ui/src/dialogs/mod.rs:405
 #, fuzzy
 #| msgid "Exporting document as .xopp failed."
 msgid "Saving document failed"
@@ -1696,18 +1723,18 @@ msgstr ""
 msgid "Button 4"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:735
+#: rnote-ui/src/appwindow/appwindowactions.rs:736
 msgid "Printing document failed"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:770
+#: rnote-ui/src/appwindow/appwindowactions.rs:771
 #, fuzzy
 #| msgid "Exporting document as .xopp failed."
 msgid "Exporting selection failed, nothing selected"
 msgstr ".xoppへの保存に失敗しました。"
 
 #: rnote-ui/src/canvas/mod.rs:768 rnote-ui/src/dialogs/mod.rs:205
-#: rnote-ui/src/dialogs/mod.rs:334
+#: rnote-ui/src/dialogs/mod.rs:335
 msgid "- invalid file name -"
 msgstr ""
 
@@ -1747,110 +1774,110 @@ msgstr "ビットマップ画像の読み込みに失敗しました。"
 msgid "Inserting text failed"
 msgstr ".xoppへの保存に失敗しました。"
 
-#: rnote-ui/src/dialogs/export.rs:25 rnote-ui/src/dialogs/import.rs:78
+#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:78
 msgid ".rnote"
 msgstr ""
 
-#: rnote-ui/src/dialogs/export.rs:54
+#: rnote-ui/src/dialogs/export.rs:56
 #, fuzzy
 #| msgid "Exported document as .xopp successfully."
 msgid "Saved document successfully"
 msgstr ".xoppに保存しました。"
 
-#: rnote-ui/src/dialogs/export.rs:177
+#: rnote-ui/src/dialogs/export.rs:196
 #, fuzzy
 #| msgid "Exporting document as .xopp failed."
 msgid "Exporting document failed"
 msgstr ".xoppへの保存に失敗しました。"
 
-#: rnote-ui/src/dialogs/export.rs:179
+#: rnote-ui/src/dialogs/export.rs:198
 #, fuzzy
 #| msgid "Exported document as .xopp successfully."
 msgid "Exported document successfully"
 msgstr ".xoppに保存しました。"
 
-#: rnote-ui/src/dialogs/export.rs:187
+#: rnote-ui/src/dialogs/export.rs:206
 #, fuzzy
 #| msgid "Exporting document as .xopp failed."
 msgid "Exporting document failed, no file selected"
 msgstr ".xoppへの保存に失敗しました。"
 
-#: rnote-ui/src/dialogs/export.rs:202 rnote-ui/src/dialogs/export.rs:448
-#: rnote-ui/src/dialogs/export.rs:675 rnote-ui/src/dialogs/mod.rs:499
+#: rnote-ui/src/dialogs/export.rs:221 rnote-ui/src/dialogs/export.rs:477
+#: rnote-ui/src/dialogs/export.rs:704 rnote-ui/src/dialogs/mod.rs:501
 msgid "Select"
 msgstr ""
 
-#: rnote-ui/src/dialogs/export.rs:423
+#: rnote-ui/src/dialogs/export.rs:452
 #, fuzzy
 #| msgid "Exporting document as .xopp failed."
 msgid "Exporting document pages failed"
 msgstr ".xoppへの保存に失敗しました。"
 
-#: rnote-ui/src/dialogs/export.rs:425
+#: rnote-ui/src/dialogs/export.rs:454
 #, fuzzy
 #| msgid "Exported document as .xopp successfully."
 msgid "Exported document pages successfully"
 msgstr ".xoppに保存しました。"
 
-#: rnote-ui/src/dialogs/export.rs:432
+#: rnote-ui/src/dialogs/export.rs:461
 #, fuzzy
 #| msgid "Exporting document as .xopp failed."
 msgid "Exporting document pages failed, no directory selected"
 msgstr ".xoppへの保存に失敗しました。"
 
-#: rnote-ui/src/dialogs/export.rs:649
+#: rnote-ui/src/dialogs/export.rs:678
 #, fuzzy
 #| msgid "Export selection as SVG"
 msgid "Exporting selection failed"
 msgstr "選択範囲をSVGに保存"
 
-#: rnote-ui/src/dialogs/export.rs:653
+#: rnote-ui/src/dialogs/export.rs:682
 #, fuzzy
 #| msgid "Exported document as .xopp successfully."
 msgid "Exported selection successfully"
 msgstr ".xoppに保存しました。"
 
-#: rnote-ui/src/dialogs/export.rs:660
+#: rnote-ui/src/dialogs/export.rs:689
 #, fuzzy
 #| msgid "Exporting document as .xopp failed."
 msgid "Exporting selection failed, no file selected"
 msgstr ".xoppへの保存に失敗しました。"
 
-#: rnote-ui/src/dialogs/export.rs:718 rnote-ui/src/dialogs/export.rs:764
+#: rnote-ui/src/dialogs/export.rs:747 rnote-ui/src/dialogs/export.rs:793
 msgid "Json"
 msgstr ""
 
-#: rnote-ui/src/dialogs/export.rs:726
+#: rnote-ui/src/dialogs/export.rs:755
 #, fuzzy
 #| msgid "Selector"
 msgid "Export Engine State"
 msgstr "選択"
 
-#: rnote-ui/src/dialogs/export.rs:745
+#: rnote-ui/src/dialogs/export.rs:774
 #, fuzzy
 #| msgid "Selector"
 msgid "Exporting engine state failed"
 msgstr "選択"
 
-#: rnote-ui/src/dialogs/export.rs:749
+#: rnote-ui/src/dialogs/export.rs:778
 #, fuzzy
 #| msgid "Exported document as .xopp successfully."
 msgid "Exported engine state successfully"
 msgstr ".xoppに保存しました。"
 
-#: rnote-ui/src/dialogs/export.rs:772
+#: rnote-ui/src/dialogs/export.rs:801
 #, fuzzy
 #| msgid "Export selection as SVG"
 msgid "Export Engine Config"
 msgstr "選択範囲をSVGに保存"
 
-#: rnote-ui/src/dialogs/export.rs:791
+#: rnote-ui/src/dialogs/export.rs:820
 #, fuzzy
 #| msgid "Export selection as SVG"
 msgid "Exporting engine config failed"
 msgstr "選択範囲をSVGに保存"
 
-#: rnote-ui/src/dialogs/export.rs:795
+#: rnote-ui/src/dialogs/export.rs:824
 #, fuzzy
 #| msgid "Exported document as .xopp successfully."
 msgid "Exported engine config successfully"
@@ -1907,230 +1934,230 @@ msgstr ""
 msgid "translator-credits"
 msgstr "Seio Inoue <sei0okun@gmail.com>"
 
-#: rnote-ui/src/dialogs/mod.rs:212 rnote-ui/src/dialogs/mod.rs:341
+#: rnote-ui/src/dialogs/mod.rs:212 rnote-ui/src/dialogs/mod.rs:342
 msgid "- invalid save folder name -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:227 rnote-ui/src/dialogs/mod.rs:355
+#: rnote-ui/src/dialogs/mod.rs:228 rnote-ui/src/dialogs/mod.rs:357
 msgid "The changes will be saved"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:232 rnote-ui/src/dialogs/mod.rs:360
+#: rnote-ui/src/dialogs/mod.rs:233 rnote-ui/src/dialogs/mod.rs:362
 msgid "A new file will be created"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:497
+#: rnote-ui/src/dialogs/mod.rs:499
 #, fuzzy
 #| msgid "Export selection as SVG"
 msgid "Change Workspace Directory"
 msgstr "選択範囲をSVGに保存"
 
-#: rnote-ui/src/dialogs/mod.rs:610
+#: rnote-ui/src/dialogs/mod.rs:612
 msgid "Band-Aid"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:611
+#: rnote-ui/src/dialogs/mod.rs:613
 msgid "Bank"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:612
+#: rnote-ui/src/dialogs/mod.rs:614
 msgid "Bookmark"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:613
+#: rnote-ui/src/dialogs/mod.rs:615
 msgid "Book"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:614
+#: rnote-ui/src/dialogs/mod.rs:616
 msgid "Bread"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:615
+#: rnote-ui/src/dialogs/mod.rs:617
 msgid "Calendar"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:616
+#: rnote-ui/src/dialogs/mod.rs:618
 msgid "Camera"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:617
+#: rnote-ui/src/dialogs/mod.rs:619
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:618
+#: rnote-ui/src/dialogs/mod.rs:620
 msgid "Clock"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:619
+#: rnote-ui/src/dialogs/mod.rs:621
 msgid "Code"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:620
+#: rnote-ui/src/dialogs/mod.rs:622
 msgid "Compose"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:621
+#: rnote-ui/src/dialogs/mod.rs:623
 msgctxt "as in plant"
 msgid "Crop"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:622
+#: rnote-ui/src/dialogs/mod.rs:624
 msgid "Dictionary"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:624
+#: rnote-ui/src/dialogs/mod.rs:626
 msgid "Drinks"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:625
+#: rnote-ui/src/dialogs/mod.rs:627
 msgid "Flag"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:626
+#: rnote-ui/src/dialogs/mod.rs:628
 msgid "Folder"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:627
+#: rnote-ui/src/dialogs/mod.rs:629
 msgid "Footprints"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:628
+#: rnote-ui/src/dialogs/mod.rs:630
 msgid "Gamepad"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:629
+#: rnote-ui/src/dialogs/mod.rs:631
 msgid "Gear"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:630
+#: rnote-ui/src/dialogs/mod.rs:632
 msgid "Globe"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:631
+#: rnote-ui/src/dialogs/mod.rs:633
 msgid "Hammer"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:632
+#: rnote-ui/src/dialogs/mod.rs:634
 msgid "Heart"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:633
+#: rnote-ui/src/dialogs/mod.rs:635
 msgid "Hourglass"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:634
+#: rnote-ui/src/dialogs/mod.rs:636
 msgid "Key"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:635
+#: rnote-ui/src/dialogs/mod.rs:637
 msgid "Language"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:636
+#: rnote-ui/src/dialogs/mod.rs:638
 msgid "Library"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:637
+#: rnote-ui/src/dialogs/mod.rs:639
 msgid "Lightbulb"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:638
+#: rnote-ui/src/dialogs/mod.rs:640
 msgid "Mathematics"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:639
+#: rnote-ui/src/dialogs/mod.rs:641
 #, fuzzy
 #| msgid "Settings"
 msgid "Meeting"
 msgstr "設定"
 
-#: rnote-ui/src/dialogs/mod.rs:640
+#: rnote-ui/src/dialogs/mod.rs:642
 msgid "Money"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:641
+#: rnote-ui/src/dialogs/mod.rs:643
 msgid "Musical Note"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:642
+#: rnote-ui/src/dialogs/mod.rs:644
 msgid "Nature"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:643
+#: rnote-ui/src/dialogs/mod.rs:645
 msgid "Open Book"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:644
+#: rnote-ui/src/dialogs/mod.rs:646
 msgid "Paintbrush"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:645
+#: rnote-ui/src/dialogs/mod.rs:647
 msgid "Pencil and Paper"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:646
+#: rnote-ui/src/dialogs/mod.rs:648
 msgid "People"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:647
+#: rnote-ui/src/dialogs/mod.rs:649
 msgid "Person"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:648
+#: rnote-ui/src/dialogs/mod.rs:650
 #, fuzzy
 #| msgid "Vector"
 msgid "Projector"
 msgstr "ベクター"
 
-#: rnote-ui/src/dialogs/mod.rs:649
+#: rnote-ui/src/dialogs/mod.rs:651
 msgid "Science"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:650
+#: rnote-ui/src/dialogs/mod.rs:652
 msgid "Scratchpad"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:651
+#: rnote-ui/src/dialogs/mod.rs:653
 #, fuzzy
 #| msgid "Shaper"
 msgid "Shapes"
 msgstr "図形"
 
-#: rnote-ui/src/dialogs/mod.rs:652
+#: rnote-ui/src/dialogs/mod.rs:654
 msgid "Shopping"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:653
+#: rnote-ui/src/dialogs/mod.rs:655
 msgid "Speech Bubble"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:654
+#: rnote-ui/src/dialogs/mod.rs:656
 msgid "Speedometer"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:655
+#: rnote-ui/src/dialogs/mod.rs:657
 msgid "Star"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:657
+#: rnote-ui/src/dialogs/mod.rs:659
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:659
+#: rnote-ui/src/dialogs/mod.rs:661
 msgid "Text"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:660
+#: rnote-ui/src/dialogs/mod.rs:662
 msgid "Travel"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:661
+#: rnote-ui/src/dialogs/mod.rs:663
 msgid "Weather"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:662
+#: rnote-ui/src/dialogs/mod.rs:664
 msgid "Weight"
 msgstr ""
 

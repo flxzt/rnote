@@ -54,7 +54,7 @@ struct RnotefileWrapper {
 pub type RnoteFile = RnoteFileMaj0Min6;
 
 impl RnoteFile {
-    pub const SEMVER: &str = "0.6.0";
+    pub const SEMVER: &str = "0.7.0";
 }
 
 impl FileFormatLoader for RnoteFile {

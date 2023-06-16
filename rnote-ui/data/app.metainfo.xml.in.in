@@ -72,6 +72,30 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.7.0" date="2023-06-16">
+      <description>
+        <p>this release changes:</p>
+        <ul>installation: windows users - the installer now uses 64-bit mode, and now (correctly) installs into "Program Files" by default.
+If you are upgrading from a previous version, you need to uninstall the old version in "Program Files (x86)" manually.</ul>
+        <ul>feature: remove page from fixed size document (thanks to @PhilDevProg)</ul>
+        <ul>feature: specify page order when exporting documents with layouts that expand in horizontal and vertical directions (thanks to @Kneemund)</ul>
+        <ul>feature: inertial touch scrolling (thanks to @Kneemund)</ul>
+        <ul>feature: ability to toggle drawing cursor visibility</ul>
+        <ul>feature: "focus mode" that hides the toolbars, improving the experience on low-resolution tablets</ul>
+        <ul>feature: dedicated zoom tool, making navigating while touch-drawing is enabled easier</ul>
+        <ul>improvement: selection highlights for brush-strokes</ul>
+        <ul>improvement: ctrl + scroll following the pointer</ul>
+        <ul>improvement: scale-ratio when resizing the selection with locked aspect-ratio</ul>
+        <ul>improvement: provide selection content as Svg and Png when copying/cutting to the clipboard</ul>
+        <ul>improvement: save file logic in close tab/window dialogs</ul>
+        <ul>improvement: memory consumption when loading rnote files</ul>
+        <ul>UI: page controls for the fixed-size layout were moved into the canvas menu dropdown</ul>
+        <ul>UI: undo/redo buttons were moved to the pen switcher toolbar</ul>
+        <ul>fix: apply pressure curves when exporting to xopp</ul>
+        <ul>fix: single element/position strokes were not rendered</ul>
+        <ul>fix: stop document autoexpanding when scrolling with scrollbars</ul>
+      </description>
+    </release>
     <release version="0.6.0" date="2023-04-23">
       <description>
         <p>this release changes:</p>

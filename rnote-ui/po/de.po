@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-16 17:49+0200\n"
-"PO-Revision-Date: 2023-06-16 13:34+0000\n"
+"PO-Revision-Date: 2023-06-16 15:57+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1158,13 +1158,15 @@ msgstr "Ändere ob die Scrollbalken der Leinwand sichtbar sind"
 
 #: rnote-ui/data/ui/settingspanel.ui:87
 msgid "Inertial Touch Scrolling"
-msgstr ""
+msgstr "Touch-Scrolling mit Trägheit"
 
 #: rnote-ui/data/ui/settingspanel.ui:88
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option gets disabled."
 msgstr ""
+"Ändere ob Touch-Scrolling auf der Leinwand träge ist. Die Anwendung\n"
+"muss neu gestartet werden, wenn diese Option ausgeschaltet wird."
 
 #: rnote-ui/data/ui/settingspanel.ui:99
 msgid "Regular Cursor"
@@ -2076,7 +2078,7 @@ msgstr "Kubische Bezierkurve"
 
 #: rnote-ui/src/settingspanel/mod.rs:568
 msgid "Application restart is required"
-msgstr ""
+msgstr "Anwendungsneustart ist erforderlich"
 
 #: rnote-ui/src/settingspanel/mod.rs:807
 msgctxt "a cursor type"

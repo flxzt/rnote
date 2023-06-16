@@ -277,9 +277,6 @@ mod imp {
             self.scroller.set_kinetic_scrolling(
                 !self.canvas.touch_drawing() && self.inertial_scrolling.get(),
             );
-
-            // Workaround for https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/5863.
-            self.scroller.queue_allocate();
         }
 
         fn setup_input(&self) {

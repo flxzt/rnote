@@ -8,7 +8,7 @@ pub(crate) use penshortcutrow::RnPenShortcutRow;
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
 use adw::prelude::*;
-use gettextrs::pgettext;
+use gettextrs::{gettext, pgettext};
 use gtk4::{
     gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorDialogButton,
     CompositeTemplate, MenuButton, ScrolledWindow, SpinButton, StringList, Switch, ToggleButton,

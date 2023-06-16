@@ -122,7 +122,7 @@
                 <child>
                   <object class="AdwComboRow" id="export_doc_page_order_row">
                     <property name="title" translatable="yes">Page Order</property>
-                    <property name="subtitle" translatable="yes">The page order when documents with layouts that expand 
+                    <property name="subtitle" translatable="yes">The page order when documents with layouts that expand
 in horizontal and vertical directions are cut into pages</property>
                     <property name="model">
                       <object class="GtkStringList">

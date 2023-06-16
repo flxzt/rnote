@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-16 17:49+0200\n"
-"PO-Revision-Date: 2023-05-13 10:17+0000\n"
+"PO-Revision-Date: 2023-05-20 12:33+0000\n"
 "Last-Translator: Mr-Spade <Mr_Spade@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
@@ -1090,7 +1090,7 @@ msgstr "新標籤頁"
 
 #: rnote-ui/data/ui/mainheader.ui:53
 msgid "Focus Mode"
-msgstr ""
+msgstr "專注模式"
 
 #: rnote-ui/data/ui/mainheader.ui:65 rnote-ui/data/ui/shortcuts.ui:161
 msgid "Save Document"
@@ -1175,16 +1175,12 @@ msgid "Set the regular cursor"
 msgstr "設定通常的游標樣式"
 
 #: rnote-ui/data/ui/settingspanel.ui:122
-#, fuzzy
-#| msgid "Drawing Cursor"
 msgid "Show Drawing Cursor"
-msgstr "畫筆游標"
+msgstr "顯示畫筆游標"
 
 #: rnote-ui/data/ui/settingspanel.ui:123
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set whether the drawing cursor is visible"
-msgstr "設定畫筆的游標"
+msgstr "設定畫筆游標是否可見"
 
 #: rnote-ui/data/ui/settingspanel.ui:137
 msgid "Drawing Cursor"

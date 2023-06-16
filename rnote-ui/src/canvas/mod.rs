@@ -858,7 +858,7 @@ impl RnCanvas {
 
                             canvas.set_output_file(other_file.cloned());
 
-                            appwindow.overlays().dispatch_toast_text(&gettext("Opened file was renamed on disk"))
+                            appwindow.overlays().dispatch_toast_text(&gettext("Opened file was renamed on disk"), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
                         }
                     },
                     gio::FileMonitorEvent::Deleted | gio::FileMonitorEvent::MovedOut => {
@@ -871,7 +871,7 @@ impl RnCanvas {
                         canvas.set_unsaved_changes(true);
                         canvas.set_output_file(None);
 
-                        appwindow.overlays().dispatch_toast_text(&gettext("Opened file was moved or deleted on disk"));
+                        appwindow.overlays().dispatch_toast_text(&gettext("Opened file was moved or deleted on disk"), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
                     },
                     _ => {},
                 }

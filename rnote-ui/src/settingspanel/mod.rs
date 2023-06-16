@@ -8,7 +8,7 @@ pub(crate) use penshortcutrow::RnPenShortcutRow;
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
 use adw::prelude::*;
-use gettextrs::pgettext;
+use gettextrs::{gettext, pgettext};
 use gtk4::{
     gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorDialogButton,
     CompositeTemplate, MenuButton, ScrolledWindow, SpinButton, StringList, Switch, ToggleButton,
@@ -28,6 +28,7 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/settingspanel.ui")]
     pub(crate) struct RnSettingsPanel {
         pub(crate) temporary_format: RefCell<Format>,
+        pub(crate) app_restart_toast_singleton: RefCell<Option<adw::Toast>>,
 
         #[template_child]
         pub(crate) settings_scroller: TemplateChild<ScrolledWindow>,
@@ -39,6 +40,8 @@ mod imp {
         pub(crate) general_autosave_interval_secs_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
         pub(crate) general_show_scrollbars_switch: TemplateChild<Switch>,
+        #[template_child]
+        pub(crate) general_inertial_scrolling_switch: TemplateChild<Switch>,
         #[template_child]
         pub(crate) general_regular_cursor_picker: TemplateChild<RnIconPicker>,
         #[template_child]
@@ -363,6 +366,10 @@ impl RnSettingsPanel {
         self.imp().general_show_scrollbars_switch.clone()
     }
 
+    pub(crate) fn general_inertial_scrolling_switch(&self) -> Switch {
+        self.imp().general_inertial_scrolling_switch.clone()
+    }
+
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
         self.refresh_general_ui(active_tab);
         self.refresh_format_ui(active_tab);
@@ -553,6 +560,18 @@ impl RnSettingsPanel {
             )
             .sync_create()
             .build();
+
+        imp.general_inertial_scrolling_switch.connect_active_notify(
+            clone!(@weak self as settingspanel, @weak appwindow => move |switch| {
+                if !switch.is_active() {
+                    appwindow.overlays().dispatch_toast_text_singleton(
+                        &gettext("Application restart is required"),
+                        0,
+                        &mut settingspanel.imp().app_restart_toast_singleton.borrow_mut()
+                    );
+                }
+            }),
+        );
     }
 
     fn setup_format(&self, appwindow: &RnAppWindow) {

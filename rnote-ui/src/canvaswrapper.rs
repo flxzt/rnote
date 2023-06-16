@@ -20,10 +20,12 @@ mod imp {
     pub(crate) struct RnCanvasWrapper {
         pub(crate) show_scrollbars: Cell<bool>,
         pub(crate) block_pinch_zoom: Cell<bool>,
+        pub(crate) inertial_scrolling: Cell<bool>,
         pub(crate) pointer_pos: Cell<Option<na::Vector2<f64>>>,
 
         pub(crate) appwindow_block_pinch_zoom_bind: RefCell<Option<glib::Binding>>,
         pub(crate) appwindow_show_scrollbars_bind: RefCell<Option<glib::Binding>>,
+        pub(crate) appwindow_inertial_scrolling_bind: RefCell<Option<glib::Binding>>,
         pub(crate) appwindow_righthanded_bind: RefCell<Option<glib::Binding>>,
         pub(crate) canvas_touch_drawing_handler: RefCell<Option<glib::SignalHandlerId>>,
 
@@ -104,10 +106,12 @@ mod imp {
             Self {
                 show_scrollbars: Cell::new(false),
                 block_pinch_zoom: Cell::new(false),
+                inertial_scrolling: Cell::new(true),
                 pointer_pos: Cell::new(None),
 
                 appwindow_block_pinch_zoom_bind: RefCell::new(None),
                 appwindow_show_scrollbars_bind: RefCell::new(None),
+                appwindow_inertial_scrolling_bind: RefCell::new(None),
                 appwindow_righthanded_bind: RefCell::new(None),
                 canvas_touch_drawing_handler: RefCell::new(None),
 
@@ -173,7 +177,8 @@ mod imp {
             let canvas_touch_drawing_handler = self.canvas.connect_notify_local(
                 Some("touch-drawing"),
                 clone!(@weak obj as canvaswrapper => move |_canvas, _pspec| {
-                    // Disable the zoom gesture when touch drawing is enabled
+                    // Disable the zoom gesture and kinetic scrolling when touch drawing is enabled.
+                    canvaswrapper.imp().canvas_kinetic_scrolling_update();
                     canvaswrapper.imp().canvas_zoom_gesture_update();
                 }),
             );
@@ -207,6 +212,9 @@ mod imp {
                     glib::ParamSpecBoolean::builder("block-pinch-zoom")
                         .default_value(false)
                         .build(),
+                    glib::ParamSpecBoolean::builder("inertial-scrolling")
+                        .default_value(true)
+                        .build(),
                 ]
             });
             PROPERTIES.as_ref()
@@ -216,6 +224,7 @@ mod imp {
             match pspec.name() {
                 "show-scrollbars" => self.show_scrollbars.get().to_value(),
                 "block-pinch-zoom" => self.block_pinch_zoom.get().to_value(),
+                "inertial-scrolling" => self.inertial_scrolling.get().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -238,7 +247,14 @@ mod imp {
                     self.block_pinch_zoom.replace(block_pinch_zoom);
                     self.canvas_zoom_gesture_update();
                 }
+                "inertial-scrolling" => {
+                    let inertial_scrolling = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`");
 
+                    self.inertial_scrolling.replace(inertial_scrolling);
+                    self.canvas_kinetic_scrolling_update();
+                }
                 _ => unimplemented!(),
             }
         }
@@ -256,6 +272,13 @@ mod imp {
                     .set_propagation_phase(PropagationPhase::None);
             }
         }
+
+        fn canvas_kinetic_scrolling_update(&self) {
+            self.scroller.set_kinetic_scrolling(
+                !self.canvas.touch_drawing() && self.inertial_scrolling.get(),
+            );
+        }
+
         fn setup_input(&self) {
             let obj = self.obj();
 
@@ -607,6 +630,16 @@ impl RnCanvasWrapper {
         self.set_property("block-pinch-zoom", block_pinch_zoom);
     }
 
+    #[allow(unused)]
+    pub(crate) fn inertial_scrolling(&self) -> bool {
+        self.property::<bool>("inertial-scrolling")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_inertial_scrolling(&self, inertial_scrolling: bool) {
+        self.set_property("inertial-scrolling", inertial_scrolling);
+    }
+
     pub(crate) fn scroller(&self) -> ScrolledWindow {
         self.imp().scroller.get()
     }
@@ -633,6 +666,13 @@ impl RnCanvasWrapper {
             .settings_panel()
             .general_show_scrollbars_switch()
             .bind_property("state", self, "show-scrollbars")
+            .sync_create()
+            .build();
+
+        let appwindow_inertial_scrolling_bind = appwindow
+            .settings_panel()
+            .general_inertial_scrolling_switch()
+            .bind_property("state", self, "inertial-scrolling")
             .sync_create()
             .build();
 
@@ -665,6 +705,14 @@ impl RnCanvasWrapper {
         }
 
         if let Some(old) = imp
+            .appwindow_inertial_scrolling_bind
+            .borrow_mut()
+            .replace(appwindow_inertial_scrolling_bind)
+        {
+            old.unbind();
+        }
+
+        if let Some(old) = imp
             .appwindow_righthanded_bind
             .borrow_mut()
             .replace(appwindow_righthanded_bind)
@@ -687,6 +735,10 @@ impl RnCanvasWrapper {
         }
 
         if let Some(old) = imp.appwindow_show_scrollbars_bind.borrow_mut().take() {
+            old.unbind();
+        }
+
+        if let Some(old) = imp.appwindow_inertial_scrolling_bind.borrow_mut().take() {
             old.unbind();
         }
 

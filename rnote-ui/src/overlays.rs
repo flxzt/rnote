@@ -100,6 +100,9 @@ mod imp {
     }
 }
 
+/// The default timeout for regular text toasts.
+pub(crate) const TEXT_TOAST_TIMEOUT_DEFAULT: u32 = 5;
+
 glib::wrapper! {
     pub(crate) struct RnOverlays(ObjectSubclass<imp::RnOverlays>)
     @extends Widget;
@@ -473,17 +476,15 @@ impl RnOverlays {
         button_callback: F,
         timeout: u32,
     ) -> adw::Toast {
-        let text_notify_toast = adw::Toast::builder()
+        let toast = adw::Toast::builder()
             .title(text)
             .priority(adw::ToastPriority::High)
             .button_label(button_label)
             .timeout(timeout)
             .build();
-
-        text_notify_toast.connect_button_clicked(button_callback);
-        self.toast_overlay().add_toast(text_notify_toast.clone());
-
-        text_notify_toast
+        toast.connect_button_clicked(button_callback);
+        self.toast_overlay().add_toast(toast.clone());
+        toast
     }
 
     /// Ensures that only one toast per `singleton_toast` is queued at the same time by dismissing the previous toast.
@@ -501,31 +502,40 @@ impl RnOverlays {
         if let Some(previous_toast) = singleton_toast {
             previous_toast.dismiss();
         }
-
-        let text_notify_toast =
-            self.dispatch_toast_w_button(text, button_label, button_callback, timeout);
-        *singleton_toast = Some(text_notify_toast);
+        *singleton_toast =
+            Some(self.dispatch_toast_w_button(text, button_label, button_callback, timeout));
     }
 
-    pub(crate) fn dispatch_toast_text(&self, text: &str) {
-        let text_notify_toast = adw::Toast::builder()
+    pub(crate) fn dispatch_toast_text(&self, text: &str, timeout: u32) -> adw::Toast {
+        let toast = adw::Toast::builder()
             .title(text)
             .priority(adw::ToastPriority::High)
-            .timeout(5)
+            .timeout(timeout)
             .build();
-
-        self.toast_overlay().add_toast(text_notify_toast);
+        self.toast_overlay().add_toast(toast.clone());
+        toast
     }
 
-    pub(crate) fn dispatch_toast_error(&self, error: &String) {
-        let text_notify_toast = adw::Toast::builder()
-            .title(error.as_str())
+    pub(crate) fn dispatch_toast_text_singleton(
+        &self,
+        text: &str,
+        timeout: u32,
+        singleton_toast: &mut Option<adw::Toast>,
+    ) {
+        if let Some(previous_toast) = singleton_toast {
+            previous_toast.dismiss();
+        }
+        *singleton_toast = Some(self.dispatch_toast_text(text, timeout));
+    }
+
+    pub(crate) fn dispatch_toast_error(&self, error: &str) -> adw::Toast {
+        let toast = adw::Toast::builder()
+            .title(error)
             .priority(adw::ToastPriority::High)
             .timeout(0)
             .build();
-
+        self.toast_overlay().add_toast(toast.clone());
         log::error!("{error}");
-
-        self.toast_overlay().add_toast(text_notify_toast);
+        toast
     }
 }

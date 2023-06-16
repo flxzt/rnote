@@ -214,6 +214,7 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
     let row = adw::ActionRow::builder()
         .title(save_file_display_name)
         .subtitle(save_folder_display_name)
+        .subtitle_lines(2)
         .build();
 
     let check = CheckButton::builder().active(true).build();
@@ -343,6 +344,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         let row = adw::ActionRow::builder()
             .title(save_file_display_name)
             .subtitle(save_folder_display_name)
+            .subtitle_lines(2)
             .build();
 
         // Checkbox active by default

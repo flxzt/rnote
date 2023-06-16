@@ -565,7 +565,7 @@ impl RnSettingsPanel {
             clone!(@weak self as settingspanel, @weak appwindow => move |switch| {
                 if !switch.is_active() {
                     appwindow.overlays().dispatch_toast_text_singleton(
-                        &gettext("The application needs to be restarted."),
+                        &gettext("Application restart is required"),
                         0,
                         &mut settingspanel.imp().app_restart_toast_singleton.borrow_mut()
                     );

@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-16 17:49+0200\n"
-"PO-Revision-Date: 2023-06-11 19:39+0000\n"
-"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
+"PO-Revision-Date: 2023-06-18 10:45+0000\n"
+"Last-Translator: maymage <maymage@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 4.18.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:35
@@ -119,32 +119,24 @@ msgid "Close Tab"
 msgstr "Chiudi Scheda"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
-#, fuzzy
-#| msgid ""
-#| "This tab contains unsaved changes. Changes which are not saved will be "
-#| "permanently lost."
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"Questa scheda contiene modifiche non salvate. Le modifiche non salvate "
-"andranno perse."
+"Questa scheda contiene modifiche non salvate.\n"
+"Le modifiche non salvate andranno perse."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
 msgstr "Chiudi Finestra"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:48
-#, fuzzy
-#| msgid ""
-#| "Some opened files contain unsaved changes. Changes which are not saved "
-#| "will be permanently lost."
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"Alcuni dei file aperti contengono modifiche non salvate. Le modifiche non "
-"salvate andranno perse."
+"Alcuni dei file aperti contengono modifiche non salvate. \n"
+"Le modifiche non salvate andranno perse."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
@@ -186,7 +178,7 @@ msgstr "Cambia il colore dell'area di lavoro"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:158
 msgid "Directory"
-msgstr "Cartella"
+msgstr "Cartelle"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:159
 msgid "Change the workspace directory"
@@ -395,10 +387,8 @@ msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:124
 #: rnote-ui/data/ui/dialogs/export.ui:308
-#, fuzzy
-#| msgid "Pages Type"
 msgid "Page Order"
-msgstr "Tipo di pagine"
+msgstr "Ordine di pagine"
 
 #: rnote-ui/data/ui/dialogs/export.ui:125
 #: rnote-ui/data/ui/dialogs/export.ui:309
@@ -406,16 +396,18 @@ msgid ""
 "The page order when documents with layouts that expand\n"
 "in horizontal and vertical directions are cut into pages"
 msgstr ""
+"L'ordine di pagine quando documenti con layout, che espandono\n"
+"in direzioni orizzontali e vertical, sono tagliati in pagine"
 
 #: rnote-ui/data/ui/dialogs/export.ui:130
 #: rnote-ui/data/ui/dialogs/export.ui:314
 msgid "Horizontal First"
-msgstr ""
+msgstr "Orizzontale prima"
 
 #: rnote-ui/data/ui/dialogs/export.ui:131
 #: rnote-ui/data/ui/dialogs/export.ui:315
 msgid "Vertical First"
-msgstr ""
+msgstr "Verticale prima"
 
 #: rnote-ui/data/ui/dialogs/export.ui:148 rnote-ui/src/dialogs/export.rs:476
 msgid "Export Document Pages"
@@ -1106,7 +1098,7 @@ msgstr "Salva Documento"
 
 #: rnote-ui/data/ui/overlays.ui:123 rnote-ui/data/ui/shortcuts.ui:218
 msgid "Undo"
-msgstr "Annulla"
+msgstr "Disfare"
 
 #: rnote-ui/data/ui/overlays.ui:134 rnote-ui/data/ui/shortcuts.ui:224
 msgid "Redo"
@@ -1166,13 +1158,15 @@ msgstr "Imposta se le barre di scorrimento sull'area di disegno sono mostrate"
 
 #: rnote-ui/data/ui/settingspanel.ui:87
 msgid "Inertial Touch Scrolling"
-msgstr ""
+msgstr "Scrollare inertiale a tocco"
 
 #: rnote-ui/data/ui/settingspanel.ui:88
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option gets disabled."
 msgstr ""
+"Imponi, se il scrollare a tocco con canvas sia inerziale.\n"
+"Bisogna riavviare l'applicazione, quando questa opzione va disattivata."
 
 #: rnote-ui/data/ui/settingspanel.ui:99
 msgid "Regular Cursor"
@@ -1811,20 +1805,16 @@ msgid "translator-credits"
 msgstr "Albano Battistella <albano_battistella@hotmail.com>"
 
 #: rnote-ui/src/dialogs/mod.rs:212 rnote-ui/src/dialogs/mod.rs:342
-#, fuzzy
-#| msgid "- invalid file name -"
 msgid "- invalid save folder name -"
-msgstr "- nome del file invalido -"
+msgstr "- nome di salva cartella invalido -"
 
 #: rnote-ui/src/dialogs/mod.rs:228 rnote-ui/src/dialogs/mod.rs:357
 msgid "The changes will be saved"
-msgstr ""
+msgstr "I cambiamenti saranno salvati"
 
 #: rnote-ui/src/dialogs/mod.rs:233 rnote-ui/src/dialogs/mod.rs:362
-#, fuzzy
-#| msgid "- no file selected -"
 msgid "A new file will be created"
-msgstr "- nessun file selezionato -"
+msgstr "Un nuovo file verra creato"
 
 #: rnote-ui/src/dialogs/mod.rs:499
 msgid "Change Workspace Directory"
@@ -1962,7 +1952,7 @@ msgstr "Natura"
 
 #: rnote-ui/src/dialogs/mod.rs:645
 msgid "Open Book"
-msgstr "Apri"
+msgstr "Apri libro"
 
 #: rnote-ui/src/dialogs/mod.rs:646
 msgid "Paintbrush"
@@ -2091,7 +2081,7 @@ msgstr "Curva di Bézier cubica"
 
 #: rnote-ui/src/settingspanel/mod.rs:568
 msgid "Application restart is required"
-msgstr ""
+msgstr "Riavvio di applicazione necessario"
 
 #: rnote-ui/src/settingspanel/mod.rs:807
 msgctxt "a cursor type"

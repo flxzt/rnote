@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-16 15:25+0200\n"
-"PO-Revision-Date: 2023-06-12 05:25+0000\n"
+"PO-Revision-Date: 2023-06-16 13:34+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 4.18.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:35
@@ -119,32 +119,24 @@ msgid "Close Tab"
 msgstr "Tab Schließen"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
-#, fuzzy
-#| msgid ""
-#| "This tab contains unsaved changes. Changes which are not saved will be "
-#| "permanently lost."
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"Dieser Tab enthält ungesicherte Änderungen. Änderungen die nicht gespeichert "
-"werden gehen unwiderruflich verloren."
+"Dieser Tab enthält ungesicherte Änderungen.\n"
+"Änderungen die nicht gespeichert werden gehen unwiderruflich verloren."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
 msgstr "Fenster Schließen"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:48
-#, fuzzy
-#| msgid ""
-#| "Some opened files contain unsaved changes. Changes which are not saved "
-#| "will be permanently lost."
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"Manche geöffnete Dateien enthalten ungesicherte Änderungen. Änderungen die "
-"nicht gesichert werden gehen unwiderruflich verloren."
+"Manche geöffnete Dateien enthalten ungesicherte Änderungen.\n"
+"Änderungen die nicht gesichert werden gehen unwiderruflich verloren."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
@@ -395,26 +387,26 @@ msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:124
 #: rnote-ui/data/ui/dialogs/export.ui:308
-#, fuzzy
-#| msgid "Pages Type"
 msgid "Page Order"
-msgstr "Seitentyp"
+msgstr "Seitenreihenfolge"
 
 #: rnote-ui/data/ui/dialogs/export.ui:125
 msgid ""
 "The page order when documents with layouts that expand \n"
 "in horizontal and vertical directions are cut into pages"
 msgstr ""
+"Die Seitenreihenfolge wenn Dokumente mit Layouts, die in horizontale\n"
+"und vertikale Richtung expandieren in Seiten unterteilt werden"
 
 #: rnote-ui/data/ui/dialogs/export.ui:130
 #: rnote-ui/data/ui/dialogs/export.ui:314
 msgid "Horizontal First"
-msgstr ""
+msgstr "Horizontal zuerst"
 
 #: rnote-ui/data/ui/dialogs/export.ui:131
 #: rnote-ui/data/ui/dialogs/export.ui:315
 msgid "Vertical First"
-msgstr ""
+msgstr "Vertikal zuerst"
 
 #: rnote-ui/data/ui/dialogs/export.ui:148 rnote-ui/src/dialogs/export.rs:475
 msgid "Export Document Pages"
@@ -453,6 +445,8 @@ msgid ""
 "The page order when documents with layouts that expand\n"
 "in horizontal and vertical directions are cut into pages"
 msgstr ""
+"Die Seitenreihenfolge wenn Dokumente mit Layouts, die in horizontale\n"
+"und vertikale Richtung expandieren in Seiten unterteilt werden"
 
 #: rnote-ui/data/ui/dialogs/export.ui:345
 #: rnote-ui/data/ui/dialogs/export.ui:514

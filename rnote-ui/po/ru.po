@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-16 15:25+0200\n"
+"POT-Creation-Date: 2023-06-16 15:33+0200\n"
 "PO-Revision-Date: 2023-03-19 17:59+0000\n"
 "Last-Translator: kek <farline99@yandex.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -412,8 +412,9 @@ msgid "Page Order"
 msgstr "Тип страниц"
 
 #: rnote-ui/data/ui/dialogs/export.ui:125
+#: rnote-ui/data/ui/dialogs/export.ui:309
 msgid ""
-"The page order when documents with layouts that expand \n"
+"The page order when documents with layouts that expand\n"
 "in horizontal and vertical directions are cut into pages"
 msgstr ""
 
@@ -458,12 +459,6 @@ msgstr "Png"
 #: rnote-ui/src/dialogs/export.rs:727
 msgid "Jpeg"
 msgstr "Jpeg"
-
-#: rnote-ui/data/ui/dialogs/export.ui:309
-msgid ""
-"The page order when documents with layouts that expand\n"
-"in horizontal and vertical directions are cut into pages"
-msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:345
 #: rnote-ui/data/ui/dialogs/export.ui:514

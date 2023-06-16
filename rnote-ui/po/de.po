@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-16 15:25+0200\n"
+"POT-Creation-Date: 2023-06-16 15:33+0200\n"
 "PO-Revision-Date: 2023-06-16 13:34+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
@@ -391,8 +391,9 @@ msgid "Page Order"
 msgstr "Seitenreihenfolge"
 
 #: rnote-ui/data/ui/dialogs/export.ui:125
+#: rnote-ui/data/ui/dialogs/export.ui:309
 msgid ""
-"The page order when documents with layouts that expand \n"
+"The page order when documents with layouts that expand\n"
 "in horizontal and vertical directions are cut into pages"
 msgstr ""
 "Die Seitenreihenfolge wenn Dokumente mit Layouts, die in horizontale\n"
@@ -439,14 +440,6 @@ msgstr "Png"
 #: rnote-ui/src/dialogs/export.rs:727
 msgid "Jpeg"
 msgstr "Jpeg"
-
-#: rnote-ui/data/ui/dialogs/export.ui:309
-msgid ""
-"The page order when documents with layouts that expand\n"
-"in horizontal and vertical directions are cut into pages"
-msgstr ""
-"Die Seitenreihenfolge wenn Dokumente mit Layouts, die in horizontale\n"
-"und vertikale Richtung expandieren in Seiten unterteilt werden"
 
 #: rnote-ui/data/ui/dialogs/export.ui:345
 #: rnote-ui/data/ui/dialogs/export.ui:514
@@ -2168,6 +2161,13 @@ msgstr "Ordnername"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "Neuer Ordner"
+
+#~ msgid ""
+#~ "The page order when documents with layouts that expand \n"
+#~ "in horizontal and vertical directions are cut into pages"
+#~ msgstr ""
+#~ "Die Seitenreihenfolge wenn Dokumente mit Layouts, die in horizontale\n"
+#~ "und vertikale Richtung expandieren in Seiten unterteilt werden"
 
 #~ msgid "- unable to find a valid save folder -"
 #~ msgstr "- Nicht in der Lage einen gültigen Sicherungsordner zu finden -"

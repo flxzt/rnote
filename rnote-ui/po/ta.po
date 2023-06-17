@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-16 17:49+0200\n"
-"PO-Revision-Date: 2023-06-10 18:43+0000\n"
+"PO-Revision-Date: 2023-06-18 10:45+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 4.18.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:35
@@ -118,31 +118,24 @@ msgid "Close Tab"
 msgstr "தாவலை மூடவும்"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
-#, fuzzy
-#| msgid ""
-#| "This tab contains unsaved changes. Changes which are not saved will be "
-#| "permanently lost."
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"இந்த தாவலில் சேமிக்கப்படாத மாற்றங்கள் உள்ளன. சேமிக்கப்படாத மாற்றங்கள் நிரந்தரமாக இழக்கப்படும்."
+"இந்த தாவலில் சேமிக்கப்படாத மாற்றங்கள் உள்ளன.\n"
+"சேமிக்கப்படாத மாற்றங்கள் நிரந்தரமாக இழக்கப்படும்."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
 msgstr "சாளரத்தை மூடு"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:48
-#, fuzzy
-#| msgid ""
-#| "Some opened files contain unsaved changes. Changes which are not saved "
-#| "will be permanently lost."
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"திறக்கப்பட்ட சில கோப்புகளில் சேமிக்கப்படாத மாற்றங்கள் உள்ளன. சேமிக்கப்படாத மாற்றங்கள் "
-"நிரந்தரமாக இழக்கப்படும்."
+"திறக்கப்பட்ட சில கோப்புகளில் சேமிக்கப்படாத மாற்றங்கள் உள்ளன.\n"
+"சேமிக்கப்படாத மாற்றங்கள் நிரந்தரமாக இழக்கப்படும்."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
@@ -372,7 +365,7 @@ msgstr "ஏற்றுமதி வடிவம்"
 #: rnote-ui/data/ui/dialogs/export.ui:110
 #: rnote-ui/data/ui/dialogs/export.ui:294
 msgid "The export format"
-msgstr "ஏற்றுமதி வடிவம்"
+msgstr "ஏற்றுமதி வடிவமைப்பு"
 
 #: rnote-ui/data/ui/dialogs/export.ui:114
 #: rnote-ui/data/ui/dialogs/export.ui:298
@@ -391,10 +384,8 @@ msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:124
 #: rnote-ui/data/ui/dialogs/export.ui:308
-#, fuzzy
-#| msgid "Pages Type"
 msgid "Page Order"
-msgstr "பக்கங்களின் வகை"
+msgstr "பக்க வரிசை"
 
 #: rnote-ui/data/ui/dialogs/export.ui:125
 #: rnote-ui/data/ui/dialogs/export.ui:309
@@ -402,16 +393,18 @@ msgid ""
 "The page order when documents with layouts that expand\n"
 "in horizontal and vertical directions are cut into pages"
 msgstr ""
+"தளவமைப்புகளுடன் கூடிய ஆவணங்கள் விரிவடையும் போது பக்க வரிசை\n"
+"கிடைமட்ட மற்றும் செங்குத்து திசைகளில் பக்கங்களாக வெட்டப்படுகின்றன"
 
 #: rnote-ui/data/ui/dialogs/export.ui:130
 #: rnote-ui/data/ui/dialogs/export.ui:314
 msgid "Horizontal First"
-msgstr ""
+msgstr "கிடைமட்ட முதல்"
 
 #: rnote-ui/data/ui/dialogs/export.ui:131
 #: rnote-ui/data/ui/dialogs/export.ui:315
 msgid "Vertical First"
-msgstr ""
+msgstr "செங்குத்து முதல்"
 
 #: rnote-ui/data/ui/dialogs/export.ui:148 rnote-ui/src/dialogs/export.rs:476
 msgid "Export Document Pages"
@@ -1162,13 +1155,15 @@ msgstr "கேன்வாஸில் உள்ள சுருள் பட்
 
 #: rnote-ui/data/ui/settingspanel.ui:87
 msgid "Inertial Touch Scrolling"
-msgstr ""
+msgstr "செயலற்ற தொடு உருட்டுதல்"
 
 #: rnote-ui/data/ui/settingspanel.ui:88
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option gets disabled."
 msgstr ""
+"கேன்வாஸில் தொடு உருட்டுதல் செயலற்றதா என்பதை அமைக்கவும்.\n"
+"இந்த விருப்பம் முடக்கப்படும் போது, பயன்பாட்டை மறுதொடக்கம் செய்ய வேண்டும்."
 
 #: rnote-ui/data/ui/settingspanel.ui:99
 msgid "Regular Cursor"
@@ -1804,24 +1799,20 @@ msgid "translator-credits"
 msgstr "'K.B.Dharun Krishna <kbdharunkrishna@gmail.com>'"
 
 #: rnote-ui/src/dialogs/mod.rs:212 rnote-ui/src/dialogs/mod.rs:342
-#, fuzzy
-#| msgid "- invalid file name -"
 msgid "- invalid save folder name -"
-msgstr "- தவறான கோப்பு பெயர் -"
+msgstr "- தவறான சேமிப்பு கோப்புறை பெயர் -"
 
 #: rnote-ui/src/dialogs/mod.rs:228 rnote-ui/src/dialogs/mod.rs:357
 msgid "The changes will be saved"
-msgstr ""
+msgstr "மாற்றங்கள் சேமிக்கப்படும்"
 
 #: rnote-ui/src/dialogs/mod.rs:233 rnote-ui/src/dialogs/mod.rs:362
-#, fuzzy
-#| msgid "- no file selected -"
 msgid "A new file will be created"
-msgstr "- எந்த கோப்பும் தேர்ந்தெடுக்கப்படவில்லை -"
+msgstr "ஒரு புதிய கோப்பு உருவாக்கப்படும்"
 
 #: rnote-ui/src/dialogs/mod.rs:499
 msgid "Change Workspace Directory"
-msgstr "பணியிட கோப்பகத்தை மாற்றவும்"
+msgstr "பணியிட கோப்பகத்தை மாற்று"
 
 #: rnote-ui/src/dialogs/mod.rs:612
 msgid "Band-Aid"
@@ -2084,7 +2075,7 @@ msgstr "க்யூபிக் பெஜியர் வளைவு"
 
 #: rnote-ui/src/settingspanel/mod.rs:568
 msgid "Application restart is required"
-msgstr ""
+msgstr "விண்ணப்பத்தை மறுதொடக்கம் செய்ய வேண்டும்"
 
 #: rnote-ui/src/settingspanel/mod.rs:807
 msgctxt "a cursor type"

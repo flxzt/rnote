@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-16 17:49+0200\n"
-"PO-Revision-Date: 2023-06-12 05:25+0000\n"
+"PO-Revision-Date: 2023-06-18 10:45+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 4.18.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:35
@@ -121,32 +121,24 @@ msgid "Close Tab"
 msgstr "ট্যাব বন্ধ করুন"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
-#, fuzzy
-#| msgid ""
-#| "This tab contains unsaved changes. Changes which are not saved will be "
-#| "permanently lost."
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"এই ট্যাবে অসংরক্ষিত পরিবর্তন রয়েছে। যে পরিবর্তনগুলি সংরক্ষণ করা হয়নি সেগুলি "
-"স্থায়ীভাবে হারিয়ে যাবে।"
+"এই ট্যাবে অসংরক্ষিত পরিবর্তন রয়েছে।\n"
+"যে পরিবর্তনগুলি সংরক্ষণ করা হয়নি সেগুলি স্থায়ীভাবে হারিয়ে যাবে।"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
 msgstr "উইন্ডো বন্ধ করুন"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:48
-#, fuzzy
-#| msgid ""
-#| "Some opened files contain unsaved changes. Changes which are not saved "
-#| "will be permanently lost."
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"কিছু খোলা ফাইলে অসংরক্ষিত পরিবর্তন রয়েছে। যে পরিবর্তনগুলি সংরক্ষণ করা হয়নি সেগুলি "
-"স্থায়ীভাবে হারিয়ে যাবে।"
+"কিছু খোলা ফাইলে অসংরক্ষিত পরিবর্তন রয়েছে।\n"
+"যে পরিবর্তনগুলি সংরক্ষণ করা হয়নি সেগুলি স্থায়ীভাবে হারিয়ে যাবে।"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
@@ -366,7 +358,7 @@ msgstr "প্যাটার্ন সহ"
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:283
 #: rnote-ui/data/ui/dialogs/export.ui:467
 msgid "Set whether the background pattern should be exported"
-msgstr "পটভূমি রপ্তানি করা উচিত কিনা তা সেট করুন"
+msgstr "পটভূমির প্যাটার্ন রপ্তানি করা উচিত কিনা তা সেট করুন"
 
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:293
@@ -407,16 +399,20 @@ msgid ""
 "The page order when documents with layouts that expand\n"
 "in horizontal and vertical directions are cut into pages"
 msgstr ""
+"পৃষ্ঠার ক্রম যখন অনুভূমিক এবং উল্লম্ব ভাবে বিস্তারিত\n"
+"ডকুমেন্টগুলি পৃষ্ঠাতে কাটা হয়"
 
 #: rnote-ui/data/ui/dialogs/export.ui:130
 #: rnote-ui/data/ui/dialogs/export.ui:314
+#, fuzzy
 msgid "Horizontal First"
-msgstr ""
+msgstr "অনুভূমিক প্রথম"
 
 #: rnote-ui/data/ui/dialogs/export.ui:131
 #: rnote-ui/data/ui/dialogs/export.ui:315
+#, fuzzy
 msgid "Vertical First"
-msgstr ""
+msgstr "উল্লম্ব প্রথম"
 
 #: rnote-ui/data/ui/dialogs/export.ui:148 rnote-ui/src/dialogs/export.rs:476
 msgid "Export Document Pages"
@@ -548,7 +544,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:183
 msgid "Solid Style"
-msgstr "পূর্ণ করা স্টাইল"
+msgstr "পূর্ণ স্টাইল"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:186
 msgid "Pressure Curve"
@@ -672,7 +668,7 @@ msgstr "আয়তক্ষেত্র দিয়ে নির্বাচ�
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:42
 msgid "Select One by One"
-msgstr "একে একে নির্বাচন করুন"
+msgstr "একের পর এক নির্বাচন করুন"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:52
 msgid "Select Intersecting Path"
@@ -1018,7 +1014,7 @@ msgstr "_টাচ ইনপুট দিয়ে আঁকুন"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Block Pinch to _Zoom"
-msgstr ""
+msgstr "পিঞ্চ করে _জুম ব্লক করুন"
 
 #: rnote-ui/data/ui/canvasmenu.ui:64
 msgid "_Pen Sounds"
@@ -1170,14 +1166,18 @@ msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "ক্যানভাসের স্ক্রোলবারগুলি দেখান আছে কিনা তা ঠিক করুন"
 
 #: rnote-ui/data/ui/settingspanel.ui:87
+#, fuzzy
 msgid "Inertial Touch Scrolling"
-msgstr ""
+msgstr "ইনর্শিয়াল টাচ স্ক্রোলিং"
 
 #: rnote-ui/data/ui/settingspanel.ui:88
+#, fuzzy
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option gets disabled."
 msgstr ""
+"ক্যানভাসে স্পর্শ স্ক্রোলিং ইনর্শিয়াল কিনা তা সেট করুন।\n"
+"এই বিকল্পটি অক্ষম হয়ে গেলে একটি অ্যাপ্লিকেশন পুনরায় চালু করা প্রয়োজন।"
 
 #: rnote-ui/data/ui/settingspanel.ui:99
 msgid "Regular Cursor"
@@ -1420,10 +1420,13 @@ msgid "Drawing Pad Button 1 Action"
 msgstr "অঙ্কন প্যাড বোতাম ১ ক্রিয়া"
 
 #: rnote-ui/data/ui/settingspanel.ui:460
+#, fuzzy
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
+"ক্রিয়া সেট করুন\n"
+"একটি ড্রয়িং প্যাডে বোতাম 1 এর জন্য"
 
 #: rnote-ui/data/ui/settingspanel.ui:472
 msgid "Drawing Pad Button 2 Action"

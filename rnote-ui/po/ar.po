@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-16 17:49+0200\n"
-"PO-Revision-Date: 2023-06-15 14:51+0000\n"
+"PO-Revision-Date: 2023-06-18 10:45+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.18.1-dev\n"
+"X-Generator: Weblate 4.18.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:35
@@ -119,32 +119,24 @@ msgid "Close Tab"
 msgstr "أغلق اللسان"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
-#, fuzzy
-#| msgid ""
-#| "This tab contains unsaved changes. Changes which are not saved will be "
-#| "permanently lost."
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"يحتوي هذا اللسان على تغييرات غير محفوظة. سوف تحذف التغييرات الغير محفوظة "
-"نهائيًّا."
+"يحتوي هذا اللسان على تغييرات غير محفوظة.\n"
+"سوف تحذف التغييرات غير المحفوظة نهائيًّا."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
 msgstr "أغلق النافذة"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:48
-#, fuzzy
-#| msgid ""
-#| "Some opened files contain unsaved changes. Changes which are not saved "
-#| "will be permanently lost."
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"في بعض الملفَّات المفتوحة تغييرات غير محفوظة. سوف تحذف التغييرات الغير محفوظة "
-"نهائيًّا."
+"في بعض الملفَّات المفتوحة تغييرات غير محفوظةز\n"
+"سوف تحذف التغييرات غير المحفوظة نهائيًّا."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
@@ -392,10 +384,8 @@ msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:124
 #: rnote-ui/data/ui/dialogs/export.ui:308
-#, fuzzy
-#| msgid "Pages Type"
 msgid "Page Order"
-msgstr "نوع الصفحات"
+msgstr "ترتيب الصفحات"
 
 #: rnote-ui/data/ui/dialogs/export.ui:125
 #: rnote-ui/data/ui/dialogs/export.ui:309
@@ -403,16 +393,18 @@ msgid ""
 "The page order when documents with layouts that expand\n"
 "in horizontal and vertical directions are cut into pages"
 msgstr ""
+"ترتيب الصفحات حين تقسيم المستندات التي\n"
+"تخطيطاتها تتوسع رأسيًّا أو أفقيًّا صفحاتٍ"
 
 #: rnote-ui/data/ui/dialogs/export.ui:130
 #: rnote-ui/data/ui/dialogs/export.ui:314
 msgid "Horizontal First"
-msgstr ""
+msgstr "الأفقي أولًا"
 
 #: rnote-ui/data/ui/dialogs/export.ui:131
 #: rnote-ui/data/ui/dialogs/export.ui:315
 msgid "Vertical First"
-msgstr ""
+msgstr "الرأسيُّ أولًا"
 
 #: rnote-ui/data/ui/dialogs/export.ui:148 rnote-ui/src/dialogs/export.rs:476
 msgid "Export Document Pages"
@@ -1163,13 +1155,15 @@ msgstr "عيِّن ما إذا كانت شُرُط التمرير على الل�
 
 #: rnote-ui/data/ui/settingspanel.ui:87
 msgid "Inertial Touch Scrolling"
-msgstr ""
+msgstr "التمرير بالزخم"
 
 #: rnote-ui/data/ui/settingspanel.ui:88
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option gets disabled."
 msgstr ""
+"عيِّن ما إذا كان التمرير باللمس له زخم.\n"
+"تجب إعادة تشغيل التطبيق حال تعطيل هذا الخيار."
 
 #: rnote-ui/data/ui/settingspanel.ui:99
 msgid "Regular Cursor"
@@ -2083,7 +2077,7 @@ msgstr "منحنى بيزير مكعَّب"
 
 #: rnote-ui/src/settingspanel/mod.rs:568
 msgid "Application restart is required"
-msgstr ""
+msgstr "تجب إعادة تشغيل التطبيق"
 
 #: rnote-ui/src/settingspanel/mod.rs:807
 msgctxt "a cursor type"

@@ -8,63 +8,69 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-16 17:49+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-06-19 13:53+0000\n"
+"Last-Translator: vikdevelop <super-vik1@protonmail.com>\n"
+"Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Weblate 4.18.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:35
 msgid "Sketch and take handwritten notes"
-msgstr ""
+msgstr "Skicujte a dělejte si ručně psané poznámky"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr ""
+msgstr "Gnome;GTK;Office;Graphics;Notes;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
-msgstr ""
+msgstr "Nové okno"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
+"Rnote je na vektoru založená kreslící aplikace pro náčrtky, ručně psané "
+"poznámky a poznámek k dokumentům a obrázkům."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
+"Upozornění: formát souborů je nestabilní. Může se změnit a narušit "
+"kompatibilitu mezi verzemi."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An Overview"
-msgstr ""
+msgstr "Přehled"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
-msgstr ""
+msgstr "Čtení Poznámka 1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A Pdf annotation"
-msgstr ""
+msgstr "Anotace PDF"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Lecture Note 2"
-msgstr ""
+msgstr "Čtení Poznámka 2"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5 rnote-ui/data/ui/shortcuts.ui:173
 msgid "Clear Document"
-msgstr ""
+msgstr "Čistý dokument"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
-msgstr ""
+msgstr "Tím se vymaže celý dokument. Prosím potvrďte."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: rnote-ui/data/ui/dialogs/dialogs.ui:22
@@ -76,192 +82,202 @@ msgstr ""
 #: rnote-ui/data/ui/dialogs/export.ui:378
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
-msgstr ""
+msgstr "Zrušit"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
-msgstr ""
+msgstr "Vymazat"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
 #: rnote-ui/data/ui/shortcuts.ui:149 rnote-ui/src/canvas/mod.rs:536
 msgid "New Document"
-msgstr ""
+msgstr "Nový dokument"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
 msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
 msgstr ""
+"Vytvoření nového dokument dojde k zahození neuložených změn.\n"
+"Chcete uložit aktuální dokument?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41 rnote-ui/data/ui/dialogs/import.ui:11
 msgid "Discard"
-msgstr ""
+msgstr "Zahodit"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/data/ui/dialogs/import.ui:12
 #: rnote-ui/src/dialogs/export.rs:32
 msgid "Save"
-msgstr ""
+msgstr "Uložit"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
 msgid "Close Tab"
-msgstr ""
+msgstr "Zavřít kartu"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
+"Tato karta obsahuje neuložené změny.\n"
+"Neuložené změny budou trvale ztraceny."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
-msgstr ""
+msgstr "Zavřít okno"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:48
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
+"Některé otevřené soubory obsahují neuložené změny.\n"
+"Neuložené změny budou trvale ztraceny."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
-msgstr ""
+msgstr "Neuložené dokumenty"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:59
 msgid "Discard All"
-msgstr ""
+msgstr "Zahodit vše"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:67
 msgid "Edit Workspace"
-msgstr ""
+msgstr "Upravit plochu"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:75 rnote-ui/data/ui/settingspanel.ui:276
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:39
 msgid "Apply"
-msgstr ""
+msgstr "Použít"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:117
 msgid "Workspace Name"
-msgstr ""
+msgstr "Název plochy"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:122
 msgid "Icon"
-msgstr ""
+msgstr "Ikona"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:123
 msgid "Change the workspace icon"
-msgstr ""
+msgstr "Změnit ikonu plochy"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:143
 #: rnote-ui/data/ui/settingspanel.ui:313
 msgid "Color"
-msgstr ""
+msgstr "Barva"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:144
 msgid "Change the workspace color"
-msgstr ""
+msgstr "Změnit barvu plochy"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:158
 msgid "Directory"
-msgstr ""
+msgstr "Adresář"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:159
 msgid "Change the workspace directory"
-msgstr ""
+msgstr "Změnit adresář plochy"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: rnote-ui/data/ui/dialogs/export.ui:238 rnote-ui/src/dialogs/export.rs:323
 #: rnote-ui/src/dialogs/export.rs:364 rnote-ui/src/dialogs/export.rs:372
 #: rnote-ui/src/dialogs/mod.rs:519
 msgid "- no directory selected -"
-msgstr ""
+msgstr "- žádný adresář nevybrán -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:183
 msgid "Change the directory"
-msgstr ""
+msgstr "Změnit adresář"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:81
 msgid "Open File"
-msgstr ""
+msgstr "Otevřít soubor"
 
 #: rnote-ui/data/ui/dialogs/import.ui:6
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
 msgstr ""
+"Otevřením souboru se přepíšou neuložené změny. Chcete uložit aktuální "
+"dokument?"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
 msgid "Import Pdf"
-msgstr ""
+msgstr "Importovat PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
 #: rnote-ui/src/dialogs/import.rs:119
 msgid "Import"
-msgstr ""
+msgstr "Importovat"
 
 #: rnote-ui/data/ui/dialogs/import.ui:73
 msgid "Info"
-msgstr ""
+msgstr "Info"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "Pdf Import Preferences"
-msgstr ""
+msgstr "Předvolby importu PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
 msgid "Start Page"
-msgstr ""
+msgstr "Začínající stránka"
 
 #: rnote-ui/data/ui/dialogs/import.ui:110
 msgid "End Page"
-msgstr ""
+msgstr "Končící stránka"
 
 #: rnote-ui/data/ui/dialogs/import.ui:125
 msgid "Page Width (%)"
-msgstr ""
+msgstr "Šířka stránky (%)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
 msgid "Set the width of imported Pdf's in percentage to the format width"
-msgstr ""
+msgstr "Nastavení šířky importovaných PDF v procentech na šířku formátu"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
 msgid "Page Spacing"
-msgstr ""
+msgstr "Rozestupy mezi stránkami"
 
 #: rnote-ui/data/ui/dialogs/import.ui:147
 msgid "How Pdf pages are spaced"
-msgstr ""
+msgstr "Jak jsou stránky PDF rozděleny"
 
 #: rnote-ui/data/ui/dialogs/import.ui:151
 msgid "Continuous"
-msgstr ""
+msgstr "Průběžné"
 
 #: rnote-ui/data/ui/dialogs/import.ui:152
 msgid "One per Document Page"
-msgstr ""
+msgstr "Jeden na stránku dokumentu"
 
 #: rnote-ui/data/ui/dialogs/import.ui:160
 msgid "Pages Type"
-msgstr ""
+msgstr "Typ stránek"
 
 #: rnote-ui/data/ui/dialogs/import.ui:161
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr ""
+"Nastavit, zda se mají soubory PDF importovat jako vektorové nebo bitmapové "
+"obrázky"
 
 #: rnote-ui/data/ui/dialogs/import.ui:173
 msgid "Vector"
-msgstr ""
+msgstr "Vektor"
 
 #: rnote-ui/data/ui/dialogs/import.ui:180
 msgid "Bitmap"
-msgstr ""
+msgstr "Bitmap"
 
 #: rnote-ui/data/ui/dialogs/import.ui:189
 #: rnote-ui/data/ui/dialogs/export.ui:323
 #: rnote-ui/data/ui/dialogs/export.ui:492
 msgid "Bitmap Scale-Factor"
-msgstr ""
+msgstr "Škálovací faktor Bitmap"
 
 #: rnote-ui/data/ui/dialogs/import.ui:190
 #: rnote-ui/data/ui/dialogs/export.ui:324
@@ -270,40 +286,42 @@ msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
+"Nastavení faktoru měřítka bitmapy ve vztahu k\n"
+"ke skutečné velikosti v dokumentu"
 
 #: rnote-ui/data/ui/dialogs/import.ui:220
 msgid "Import Xournal++ File"
-msgstr ""
+msgstr "Importovat soubor Xournal++"
 
 #: rnote-ui/data/ui/dialogs/import.ui:259
 msgid "Xournal++ File Import Preferences"
-msgstr ""
+msgstr "Předvolby importu souboru Xournal++"
 
 #: rnote-ui/data/ui/dialogs/import.ui:263
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:264
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr ""
+msgstr "Nastavit preferované DPI pro soubor Xournal++"
 
 #: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:220
 msgid "Export Document"
-msgstr ""
+msgstr "Exportovat dokument"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:156
 #: rnote-ui/data/ui/dialogs/export.ui:383 rnote-ui/src/dialogs/export.rs:759
 #: rnote-ui/src/dialogs/export.rs:806
 msgid "Export"
-msgstr ""
+msgstr "Exportovat"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:417
 msgid "Export File"
-msgstr ""
+msgstr "Exportovat soubor"
 
 #: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:418
 msgid "Select the export file"
-msgstr ""
+msgstr "Vybrat exportovaný soubor"
 
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:427
@@ -312,63 +330,63 @@ msgstr ""
 #: rnote-ui/src/dialogs/export.rs:579 rnote-ui/src/dialogs/export.rs:609
 #: rnote-ui/src/dialogs/export.rs:616 rnote-ui/src/dialogs/export.rs:646
 msgid "- no file selected -"
-msgstr ""
+msgstr "- žádný soubor nevybrán -"
 
 #: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:451
 msgid "Export Preferences"
-msgstr ""
+msgstr "Nastavení exportu"
 
 #: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:271
 #: rnote-ui/data/ui/dialogs/export.ui:455
 msgid "With Background"
-msgstr ""
+msgstr "S pozadím"
 
 #: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:272
 #: rnote-ui/data/ui/dialogs/export.ui:456
 msgid "Set whether the background should be exported"
-msgstr ""
+msgstr "Nastavit zda má být pozadí exportováno"
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:282
 #: rnote-ui/data/ui/dialogs/export.ui:466
 msgid "With Pattern"
-msgstr ""
+msgstr "Se vzorem"
 
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:283
 #: rnote-ui/data/ui/dialogs/export.ui:467
 msgid "Set whether the background pattern should be exported"
-msgstr ""
+msgstr "Nastavit zda se má vzor pozadí exportovat"
 
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:477
 msgid "Export Format"
-msgstr ""
+msgstr "Formát pro export"
 
 #: rnote-ui/data/ui/dialogs/export.ui:110
 #: rnote-ui/data/ui/dialogs/export.ui:294
 msgid "The export format"
-msgstr ""
+msgstr "Formát exportu"
 
 #: rnote-ui/data/ui/dialogs/export.ui:114
 #: rnote-ui/data/ui/dialogs/export.ui:298
 #: rnote-ui/data/ui/dialogs/export.ui:482 rnote-ui/src/dialogs/export.rs:230
 #: rnote-ui/src/dialogs/export.rs:498 rnote-ui/src/dialogs/export.rs:718
 msgid "Svg"
-msgstr ""
+msgstr "Svg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:235
 msgid "Pdf"
-msgstr ""
+msgstr "PDF"
 
 #: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:240
 msgid "Xopp"
-msgstr ""
+msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:124
 #: rnote-ui/data/ui/dialogs/export.ui:308
 msgid "Page Order"
-msgstr ""
+msgstr "Objednávky"
 
 #: rnote-ui/data/ui/dialogs/export.ui:125
 #: rnote-ui/data/ui/dialogs/export.ui:309
@@ -376,334 +394,338 @@ msgid ""
 "The page order when documents with layouts that expand\n"
 "in horizontal and vertical directions are cut into pages"
 msgstr ""
+"Pořadí stránek u dokumentů s rozvržením, které se rozšiřuje\n"
+"ve vodorovném a svislém směru, jsou rozděleny na stránky"
 
 #: rnote-ui/data/ui/dialogs/export.ui:130
 #: rnote-ui/data/ui/dialogs/export.ui:314
 msgid "Horizontal First"
-msgstr ""
+msgstr "Nejdříve horizontálně"
 
 #: rnote-ui/data/ui/dialogs/export.ui:131
 #: rnote-ui/data/ui/dialogs/export.ui:315
 msgid "Vertical First"
-msgstr ""
+msgstr "Nejdříve vertikálně"
 
 #: rnote-ui/data/ui/dialogs/export.ui:148 rnote-ui/src/dialogs/export.rs:476
 msgid "Export Document Pages"
-msgstr ""
+msgstr "Exportovat stránky dokumentu"
 
 #: rnote-ui/data/ui/dialogs/export.ui:207
 msgid "Page Files Naming:"
-msgstr ""
+msgstr "Pojmenování souboru stránky:"
 
 #: rnote-ui/data/ui/dialogs/export.ui:228
 msgid "Export Directory"
-msgstr ""
+msgstr "Adresář pro export"
 
 #: rnote-ui/data/ui/dialogs/export.ui:229
 msgid "Select the export directory"
-msgstr ""
+msgstr "Vybrat adresář pro export"
 
 #: rnote-ui/data/ui/dialogs/export.ui:260
 msgid "Export Files Stem Name"
-msgstr ""
+msgstr "Export souborů Název kmene"
 
 #: rnote-ui/data/ui/dialogs/export.ui:299
 #: rnote-ui/data/ui/dialogs/export.ui:483 rnote-ui/src/dialogs/export.rs:503
 #: rnote-ui/src/dialogs/export.rs:723
 msgid "Png"
-msgstr ""
+msgstr "PNG"
 
 #: rnote-ui/data/ui/dialogs/export.ui:300
 #: rnote-ui/data/ui/dialogs/export.ui:484 rnote-ui/src/dialogs/export.rs:509
 #: rnote-ui/src/dialogs/export.rs:729
 msgid "Jpeg"
-msgstr ""
+msgstr "JPEG"
 
 #: rnote-ui/data/ui/dialogs/export.ui:345
 #: rnote-ui/data/ui/dialogs/export.ui:514
 msgid "Jpeg Quality"
-msgstr ""
+msgstr "Kvalita JPEG"
 
 #: rnote-ui/data/ui/dialogs/export.ui:346
 #: rnote-ui/data/ui/dialogs/export.ui:515
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr ""
+msgstr "Nastavit kvalitu obrázku JPEG (1 až 100)"
 
 #: rnote-ui/data/ui/dialogs/export.ui:375 rnote-ui/src/dialogs/export.rs:704
 msgid "Export Selection"
-msgstr ""
+msgstr "Výběr exportu"
 
 #: rnote-ui/data/ui/dialogs/export.ui:478
 msgid "The export image format"
-msgstr ""
+msgstr "Formát exportu"
 
 #: rnote-ui/data/ui/dialogs/export.ui:535
 msgid "Margin"
-msgstr ""
+msgstr "Okraj"
 
 #: rnote-ui/data/ui/dialogs/export.ui:536
 msgid "Set the margin around the selected area"
-msgstr ""
+msgstr "Nastavit okraj kolem vybrané oblasti"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
-msgstr ""
+msgstr "Styl štětce"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:133
 msgid "Brush Configuration"
-msgstr ""
+msgstr "Konfigurace štětce"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:64
 msgid "Brush Styles"
-msgstr ""
+msgstr "Styly štětce"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:81
 msgid "Marker"
-msgstr ""
+msgstr "Popisovač"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:82
 msgid "Mark underneath other strokes"
-msgstr ""
+msgstr "Označení pod ostatními tahy"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:93
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
 msgid "Solid"
-msgstr ""
+msgstr "Solidní"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:94
 msgid "Draw solid color strokes"
-msgstr ""
+msgstr "Nakreslete jednobarevné tahy"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:105
 msgid "Textured"
-msgstr ""
+msgstr "Texturovaný"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:106
 msgid "Draw textured strokes"
-msgstr ""
+msgstr "Kreslení tahů s texturou"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:142
 msgid "Path Modelling"
-msgstr ""
+msgstr "Modelování cesty"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:159
 msgid "Simple"
-msgstr ""
+msgstr "Jednoduchý"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:160
 msgid "Produces line segments from the raw input.\n"
-msgstr ""
+msgstr "Vytvoří úsečky z nezpracovaného vstupu.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:166
 msgid "Curved"
-msgstr ""
+msgstr "Zakřivené"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:167
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "Vytváří hladké, zakřivené segmenty.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:173
 msgid "Modeled"
-msgstr ""
+msgstr "Modelované"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"Vytváří modelovanou cestu pomocí algoritmů založených na fyzice.\n"
+"Výsledkem je nejlépe vypadající rukopis."
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:183
 msgid "Solid Style"
-msgstr ""
+msgstr "Solidní styl"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:186
 msgid "Pressure Curve"
-msgstr ""
+msgstr "Tlaková křivka"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:187
 msgid "Choose a pressure curve"
-msgstr ""
+msgstr "Výběr tlakové křivky"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 msgid "Constant"
-msgstr ""
+msgstr "Konstantní"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:192
 msgid "Linear"
-msgstr ""
+msgstr "Lineární"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:193
 msgid "Square root"
-msgstr ""
+msgstr "Odmocnina"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "Cubic root"
-msgstr ""
+msgstr "Třetí odmocnina"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Quadratic Parabola"
-msgstr ""
+msgstr "Kvadratická parabola"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:196
 msgid "Cubic Parabola"
-msgstr ""
+msgstr "Kubická parabola"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:207
 msgid "Textured Style"
-msgstr ""
+msgstr "Texturovaný styl"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:210
 msgid "Density"
-msgstr ""
+msgstr "Hustota"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:211
 msgid "The density is the amount of dots per 10x10 area"
-msgstr ""
+msgstr "Hustota je počet bodů na plochu 10x10"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:226
 msgid "Stroke Dots Position Distribution"
-msgstr ""
+msgstr "Rozložení polohy tahových bodů"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:227
 msgid "Choose a dots position probability distribution"
-msgstr ""
+msgstr "Zvolte rozdělení pravděpodobnosti polohy bodů"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:231
 msgid "Uniform"
-msgstr ""
+msgstr "Uniforma"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:232
 msgid "Normal"
-msgstr ""
+msgstr "Normální"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:233
 msgid "Exponential"
-msgstr ""
+msgstr "Exponenciální"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:234
 msgid "Reverse Exponential"
-msgstr ""
+msgstr "Reverzní exponenciála"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:21
 msgid "Trash Strokes"
-msgstr ""
+msgstr "Tahy koše"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:31
 msgid "Split Strokes"
-msgstr ""
+msgstr "Rozdělené tahy"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
 #: rnote-ui/data/ui/overlays.ui:46
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:81
 msgid "Brush"
-msgstr ""
+msgstr "Kartáček"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:33
 #: rnote-ui/data/ui/overlays.ui:56
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:82
 msgid "Shaper"
-msgstr ""
+msgstr "Tvarovač"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:49
 #: rnote-ui/data/ui/overlays.ui:67
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:83
 msgid "Typewriter"
-msgstr ""
+msgstr "Psací stroj"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:65
 #: rnote-ui/data/ui/overlays.ui:78
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:84
 msgid "Eraser"
-msgstr ""
+msgstr "Guma"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:81
 #: rnote-ui/data/ui/overlays.ui:89
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:85
 msgid "Selector"
-msgstr ""
+msgstr "Selektor"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:97
 #: rnote-ui/data/ui/overlays.ui:100
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:86
 msgid "Tools"
-msgstr ""
+msgstr "Nástroje"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:22
 msgid "Select With a Polygon"
-msgstr ""
+msgstr "Vybrat pomocí mnohoúhelníku"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:32
 msgid "Select With a Rectangle"
-msgstr ""
+msgstr "Vybrat pomocí obdélníku"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:42
 msgid "Select One by One"
-msgstr ""
+msgstr "Vybrat po jednom"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:52
 msgid "Select Intersecting Path"
-msgstr ""
+msgstr "Vybrat křížící se cestu"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:73
 msgid "Lock Aspectratio While Resizing the Selection"
-msgstr ""
+msgstr "Uzamčení poměru stran při změně velikosti výběru"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select All Strokes"
-msgstr ""
+msgstr "Vybrat všechny tahy"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:94
 msgid "Deselect All Strokes"
-msgstr ""
+msgstr "Zrušit výběr všech tahů"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 #: rnote-ui/data/ui/shortcuts.ui:212
 msgid "Duplicate Selection"
-msgstr ""
+msgstr "Duplikovat výběr"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 msgid "Delete Selection"
-msgstr ""
+msgstr "Odstranit výběr"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:18
 msgid "Shaper Style"
-msgstr ""
+msgstr "Styl tvarování"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:31
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:154
 msgid "Shape Configuration"
-msgstr ""
+msgstr "Konfigurace tvarování"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:61
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:225
 msgid "Shape Builders"
-msgstr ""
+msgstr "Tvůrci tvarů"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:77
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:253
 msgid "Constraints"
-msgstr ""
+msgstr "Omezení"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:99
 msgid "Shaper Styles"
-msgstr ""
+msgstr "Styl tvarování"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:116
 msgid "Smooth"
-msgstr ""
+msgstr "Hladký"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:127
 msgid "Rough"
-msgstr ""
+msgstr "Hrubý"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:164
 msgid "Rough style"
-msgstr ""
+msgstr "Hrubý styl"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
 msgid "Fill Style"
-msgstr ""
+msgstr "Styl výplně"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:169
 msgid "Choose a fill style"

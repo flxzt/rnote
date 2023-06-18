@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-16 17:49+0200\n"
-"PO-Revision-Date: 2023-06-18 10:45+0000\n"
+"PO-Revision-Date: 2023-06-19 13:53+0000\n"
 "Last-Translator: maymage <maymage@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -263,7 +263,7 @@ msgstr "Seitentyp"
 
 #: rnote-ui/data/ui/dialogs/import.ui:161
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
-msgstr "Wählt, ob Pdf's als Bitmap- oder Vektorbilder importiert werden sollen"
+msgstr "Wählt, ob Pdf's als Bitmap- oder Vektorbilder importiert werden"
 
 #: rnote-ui/data/ui/dialogs/import.ui:173
 msgid "Vector"
@@ -801,7 +801,7 @@ msgstr "Ansicht bewegen"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:40
 msgid "Zoom In/Out"
-msgstr "Zoome herein/heraus"
+msgstr "Herein/aus zoomen"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:43
 msgid "Pick And Insert Emoji"
@@ -933,7 +933,7 @@ msgstr "Dokument_seiten exportieren"
 
 #: rnote-ui/data/ui/appmenu.ui:119
 msgid "Export _Selection"
-msgstr "Auswahl exportieren"
+msgstr "Auswahl _exportieren"
 
 #: rnote-ui/data/ui/appmenu.ui:126
 msgid "Se_ttings"
@@ -1506,7 +1506,7 @@ msgstr "Alt + Ziehen"
 
 #: rnote-ui/data/ui/shortcuts.ui:138
 msgid "Zoom in/out"
-msgstr "Zoome herein/heraus"
+msgstr "Herein/aus zoomen"
 
 #: rnote-ui/data/ui/shortcuts.ui:139
 msgid "Alt + Shift + Drag"

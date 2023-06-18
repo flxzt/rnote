@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-16 17:49+0200\n"
 "PO-Revision-Date: 2023-06-19 13:53+0000\n"
-"Last-Translator: maymage <maymage@gmail.com>\n"
+"Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -1176,7 +1176,7 @@ msgstr "Regulären Cursor ändern"
 
 #: rnote-ui/data/ui/settingspanel.ui:122
 msgid "Show Drawing Cursor"
-msgstr "Stift-Cursor zeigen"
+msgstr "Zeichnen-Cursor zeigen"
 
 #: rnote-ui/data/ui/settingspanel.ui:123
 msgid "Set whether the drawing cursor is visible"
@@ -1184,11 +1184,11 @@ msgstr "Sichtbarkeit des Zeichnen-Cursor ändern"
 
 #: rnote-ui/data/ui/settingspanel.ui:137
 msgid "Drawing Cursor"
-msgstr "Stift-Cursor"
+msgstr "Zeichnen-Cursor"
 
 #: rnote-ui/data/ui/settingspanel.ui:138
 msgid "Set the drawing cursor"
-msgstr "Stift-Cursor ändern"
+msgstr "Zeichnen-Cursor ändern"
 
 #: rnote-ui/data/ui/settingspanel.ui:163
 msgid "Page Format"

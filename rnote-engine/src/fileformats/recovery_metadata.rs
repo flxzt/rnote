@@ -1,12 +1,17 @@
 // Imports
 use serde::{Deserialize, Serialize};
-use std::{cell::Cell, path::PathBuf};
+use std::{
+    cell::{Cell, RefCell},
+    path::PathBuf,
+};
 
 #[derive(Debug, Serialize, Deserialize)]
 /// Metadata of a revovery save
 pub struct RecoveryMetadata {
-    last_changed: Cell<u64>,
-    rnote_path: PathBuf,
+    title: RefCell<Option<String>>,
+    document_path: RefCell<Option<PathBuf>>,
+    last_changed: Cell<i64>,
+    recovery_file_path: PathBuf,
     #[serde(skip)]
     metdata_path: PathBuf,
 }
@@ -15,8 +20,10 @@ impl RecoveryMetadata {
     /// Create new Cargo metadata
     pub fn new(metadata_path: impl Into<PathBuf>, rnote_path: impl Into<PathBuf>) -> Self {
         let out = Self {
+            title: RefCell::new(None),
+            document_path: RefCell::new(None),
             last_changed: Cell::new(0),
-            rnote_path: rnote_path.into(),
+            recovery_file_path: rnote_path.into(),
             metdata_path: metadata_path.into(),
         };
         out.update_last_changed();
@@ -30,14 +37,44 @@ impl RecoveryMetadata {
         )
         .expect("Failed to write file")
     }
+    pub fn update(&self, document_path: &Option<PathBuf>) {
+        self.update_last_changed();
+        match document_path {
+            Some(p) if document_path.ne(&*self.document_path.borrow()) => {
+                self.document_path.replace(document_path.clone());
+                self.title
+                    .borrow_mut()
+                    .replace(p.file_stem().unwrap().to_string_lossy().to_string());
+            }
+            Some(_) => (),
+            None => (),
+        };
+    }
 
     /// Replace last_changed with the current unix time
-    pub fn update_last_changed(&self) {
+    pub(crate) fn update_last_changed(&self) {
         self.last_changed.replace(
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .expect("Failed to get unix time")
-                .as_secs(),
+                .as_secs() as i64,
         );
+    }
+    /// Get the metadata path
+    pub fn metadata_path(&self) -> PathBuf {
+        self.metdata_path.clone()
+    }
+    pub fn document_path(&self) -> Option<PathBuf> {
+        self.document_path.borrow().clone()
+    }
+    pub fn recovery_file_path(&self) -> PathBuf {
+        self.recovery_file_path.clone()
+    }
+    pub fn last_changed(&self) -> i64 {
+        self.last_changed.get()
+    }
+    /// Get the document title
+    pub fn title(&self) -> Option<String> {
+        self.title.borrow().clone()
     }
 }

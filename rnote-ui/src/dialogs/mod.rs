@@ -559,6 +559,10 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     }
 }
 
+pub(crate) async fn dialog_recover_documents() {
+    todo!()
+}
+
 const WORKSPACELISTENTRY_ICONS_LIST: &[&str] = &[
     "workspacelistentryicon-bandaid-symbolic",
     "workspacelistentryicon-bank-symbolic",

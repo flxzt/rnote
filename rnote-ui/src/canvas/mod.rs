@@ -1328,7 +1328,14 @@ impl RnCanvas {
     }
     pub(crate) fn update_recovery_file_metadata_last_changed(&self) {
         if let Some(m) = self.imp().recovery_file_metadata.borrow().as_ref() {
-            m.update_last_changed()
+            m.update(
+                &self
+                    .imp()
+                    .output_file
+                    .borrow()
+                    .clone()
+                    .map(|f| f.path().unwrap()),
+            )
         }
     }
 }

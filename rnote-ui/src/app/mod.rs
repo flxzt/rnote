@@ -16,6 +16,8 @@ use adw::subclass::prelude::AdwApplicationImpl;
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 
 mod imp {
+    use crate::recoveryrow::RnRecoveryRow;
+
     use super::*;
 
     #[derive(Debug, Default)]
@@ -110,6 +112,7 @@ mod imp {
             RnWorkspaceBrowser::static_type();
             RnWorkspacesBar::static_type();
             RnFileRow::static_type();
+            RnRecoveryRow::static_type();
             RnWorkspaceRow::static_type();
             RnUnitEntry::static_type();
             RnIconPicker::static_type();

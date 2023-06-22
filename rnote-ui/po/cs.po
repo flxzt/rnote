@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-16 17:49+0200\n"
-"PO-Revision-Date: 2023-06-19 13:53+0000\n"
+"PO-Revision-Date: 2023-06-22 19:29+0000\n"
 "Last-Translator: vikdevelop <super-vik1@protonmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
@@ -729,44 +729,44 @@ msgstr "Styl výplně"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:169
 msgid "Choose a fill style"
-msgstr ""
+msgstr "Vybrat styl výplně"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:174
 msgid "Hachure"
-msgstr ""
+msgstr "Hachure"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:175
 msgid "Zig-Zag"
-msgstr ""
+msgstr "Cikcak"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:176
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "Klikatá čára"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
 msgid "Crosshatch"
-msgstr ""
+msgstr "Křížový šraf"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
 #: rnote-ui/data/ui/settingspanel.ui:342
 msgid "Dots"
-msgstr ""
+msgstr "Tečky"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:179
 msgid "Dashed"
-msgstr ""
+msgstr "Čárkované"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 msgid "Hachure Angle"
-msgstr ""
+msgstr "Úhel hachure"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 msgid "Set the angle of hachure fills"
-msgstr ""
+msgstr "Nastavit úhel výplní hachure"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:270
 msgid "Enabled"
-msgstr ""
+msgstr "Povoleno"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:271
 msgid ""
@@ -774,366 +774,369 @@ msgid ""
 "enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
+"Podržením klávesy Ctrl dočasně\n"
+"povolit/zakázat omezení\n"
+"když je tento přepínač vypnutý/zapnutý"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:283
 msgid "1:1"
-msgstr ""
+msgstr "1:1"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:293
 msgid "3:2"
-msgstr ""
+msgstr "3:2"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:303
 msgid "Golden Ratio (1:1.618)"
-msgstr ""
+msgstr "Zlatý řez (1:1.618)"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:19
 msgid "Insert Vertical Space"
-msgstr ""
+msgstr "Vložení vertikálního prostoru"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
 #: rnote-ui/data/ui/shortcuts.ui:96
 msgid "Move View"
-msgstr ""
+msgstr "Přesunout zobrazení"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:40
 msgid "Zoom In/Out"
-msgstr ""
+msgstr "Přibížit/Oddálit"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:43
 msgid "Pick And Insert Emoji"
-msgstr ""
+msgstr "Vybrat a vložit emodži"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:68
 msgid "Reset Text Attributes"
-msgstr ""
+msgstr "Resetovat textovou atributů"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:77
 msgid "Bold"
-msgstr ""
+msgstr "Tučný"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:86
 msgid "Italic"
-msgstr ""
+msgstr "Kurzíva"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:95
 msgid "Underline"
-msgstr ""
+msgstr "Podtržené"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:104
 msgid "Strikethrough"
-msgstr ""
+msgstr "Přeškrtnutí"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:126
 msgid "Align Left"
-msgstr ""
+msgstr "Zarovnat vlevo"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:133
 msgid "Align Center"
-msgstr ""
+msgstr "Zarovnat doprostřed"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:140
 msgid "Align Right"
-msgstr ""
+msgstr "Zarovnat doprava"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:147
 msgid "Fill"
-msgstr ""
+msgstr "Vyplnit"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 msgid "Co_lor Scheme"
-msgstr ""
+msgstr "Barevné schéma"
 
 #: rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _System Colors"
-msgstr ""
+msgstr "Použít systémové barvy"
 
 #: rnote-ui/data/ui/appmenu.ui:31
 msgid "Use _Light Colors"
-msgstr ""
+msgstr "Použít světlé barvy"
 
 #: rnote-ui/data/ui/appmenu.ui:36
 msgid "Use _Dark Colors"
-msgstr ""
+msgstr "Použít tmavé barvy"
 
 #: rnote-ui/data/ui/appmenu.ui:42
 msgid "De_veloper Mode"
-msgstr ""
+msgstr "Vývojářský režim"
 
 #: rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _Menu"
-msgstr ""
+msgstr "Vývojářské menu"
 
 #: rnote-ui/data/ui/appmenu.ui:52
 msgid "Visual _Debugging"
-msgstr ""
+msgstr "Vizuální ladění"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export Engine _State"
-msgstr ""
+msgstr "Exportovat stav motoru (Engine)"
 
 #: rnote-ui/data/ui/appmenu.ui:60
 msgid "Export Engine _Config"
-msgstr ""
+msgstr "Exportovat konfiguraci motoru (Engine)"
 
 #: rnote-ui/data/ui/appmenu.ui:68
 msgid "_New"
-msgstr ""
+msgstr "_Nový"
 
 #: rnote-ui/data/ui/appmenu.ui:72
 msgid "_Open"
-msgstr ""
+msgstr "_Otevřít"
 
 #: rnote-ui/data/ui/appmenu.ui:76
 msgid "_Save"
-msgstr ""
+msgstr "_Uložit"
 
 #: rnote-ui/data/ui/appmenu.ui:80
 msgid "Save _As"
-msgstr ""
+msgstr "Uložit _jako"
 
 #: rnote-ui/data/ui/appmenu.ui:86
 msgid "_Print"
-msgstr ""
+msgstr "_Tisknout"
 
 #: rnote-ui/data/ui/appmenu.ui:90
 msgid "_Import File"
-msgstr ""
+msgstr "_Importovat soubor"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Clipboard"
-msgstr ""
+msgstr "_Schránka"
 
 #: rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy"
-msgstr ""
+msgstr "_Kopírovat"
 
 #: rnote-ui/data/ui/appmenu.ui:100
 msgid "C_ut"
-msgstr ""
+msgstr "_Vyjmout"
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste"
-msgstr ""
+msgstr "_Vložit"
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
-msgstr ""
+msgstr "_Exportovat…"
 
 #: rnote-ui/data/ui/appmenu.ui:111
 msgid "Export _Document"
-msgstr ""
+msgstr "Exportovat dokument"
 
 #: rnote-ui/data/ui/appmenu.ui:115
 msgid "Export Document _Pages"
-msgstr ""
+msgstr "Exportovat stránky dokumentu"
 
 #: rnote-ui/data/ui/appmenu.ui:119
 msgid "Export _Selection"
-msgstr ""
+msgstr "Exportovat vybrané"
 
 #: rnote-ui/data/ui/appmenu.ui:126
 msgid "Se_ttings"
-msgstr ""
+msgstr "Nastavení"
 
 #: rnote-ui/data/ui/appmenu.ui:130
 msgid "_Keyboard Shortcuts"
-msgstr ""
+msgstr "_Klávesové zkratky"
 
 #: rnote-ui/data/ui/appmenu.ui:134
 msgid "_Donate 💝"
-msgstr ""
+msgstr "_Podpořit 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:138
 msgid "A_bout Rnote"
-msgstr ""
+msgstr "O aplikaci Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:169
 msgid "Sidebar on the Left Side"
-msgstr ""
+msgstr "Boční panel na levé straně"
 
 #: rnote-ui/data/ui/appmenu.ui:178
 msgid "Sidebar on the Right Side"
-msgstr ""
+msgstr "Boční panel na pravé straně"
 
 #: rnote-ui/data/ui/appmenu.ui:188 rnote-ui/data/ui/shortcuts.ui:44
 msgid "Toggle Fullscreen"
-msgstr ""
+msgstr "Přepnout do režimu celé obrazovky"
 
 #: rnote-ui/data/ui/appwindow.ui:109
 msgid "Close the Folded Flap"
-msgstr ""
+msgstr "Zavřít složenou klapku"
 
 #: rnote-ui/data/ui/appwindow.ui:126
 msgid "Workspace"
-msgstr ""
+msgstr "Plocha"
 
 #: rnote-ui/data/ui/appwindow.ui:137
 msgid "Settings"
-msgstr ""
+msgstr "Nastavení"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
 msgid "_Document Layout"
-msgstr ""
+msgstr "_Rozvržení dokumenty"
 
 #: rnote-ui/data/ui/canvasmenu.ui:27
 msgid "_Fixed Size"
-msgstr ""
+msgstr "_Pevná velikost"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
 msgid "_Continuous Vertical"
-msgstr ""
+msgstr "_Průběžně vertikální"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
 msgid "_Semi Infinite"
-msgstr ""
+msgstr "_Částečně nekonečný"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"
-msgstr ""
+msgstr "_Nekonečný"
 
 #: rnote-ui/data/ui/canvasmenu.ui:49
 msgid "Show _Format Borders"
-msgstr ""
+msgstr "Zobrazit formátované hranice"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
 msgid "Draw With _Touch Input"
-msgstr ""
+msgstr "Kreslení pomocí _dotykového vstupu"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Block Pinch to _Zoom"
-msgstr ""
+msgstr "Blokovat stisknutí na _Přiblížení/Oddálení"
 
 #: rnote-ui/data/ui/canvasmenu.ui:64
 msgid "_Pen Sounds"
-msgstr ""
+msgstr "_Zvuky pera"
 
 #: rnote-ui/data/ui/canvasmenu.ui:71
 msgid "C_lear Document"
-msgstr ""
+msgstr "Vyčistit dokument"
 
 #: rnote-ui/data/ui/canvasmenu.ui:75
 msgid "_Return to Origin Page"
-msgstr ""
+msgstr "_Zpět na původní stránku"
 
 #: rnote-ui/data/ui/canvasmenu.ui:105 rnote-ui/data/ui/shortcuts.ui:120
 #: rnote-ui/data/ui/shortcuts.ui:126 rnote-ui/data/ui/shortcuts.ui:132
 msgid "Zoom out"
-msgstr ""
+msgstr "Oddálit"
 
 #: rnote-ui/data/ui/canvasmenu.ui:114
 msgid "Reset Zoom"
-msgstr ""
+msgstr "Resetovat zvětšení"
 
 #: rnote-ui/data/ui/canvasmenu.ui:121 rnote-ui/data/ui/shortcuts.ui:102
 #: rnote-ui/data/ui/shortcuts.ui:108 rnote-ui/data/ui/shortcuts.ui:114
 msgid "Zoom in"
-msgstr ""
+msgstr "Přiblížit"
 
 #: rnote-ui/data/ui/canvasmenu.ui:133
 msgid "Zoom to Page Width"
-msgstr ""
+msgstr "Přiblížení na šířku stránky"
 
 #: rnote-ui/data/ui/canvasmenu.ui:148
 msgid "Remove Page"
-msgstr ""
+msgstr "Odstranit stránku"
 
 #: rnote-ui/data/ui/canvasmenu.ui:156
 msgid "Add Page"
-msgstr ""
+msgstr "Přidat stránku"
 
 #: rnote-ui/data/ui/canvasmenu.ui:164
 msgid "Resize Document to Fit Strokes"
-msgstr ""
+msgstr "Změnit velikost dokument podle tahů"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
-msgstr ""
+msgstr "Barva tahu"
 
 #: rnote-ui/data/ui/colorpicker.ui:26
 msgid "Fill Color"
-msgstr ""
+msgstr "Barva výplně"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:83
 msgid "Open"
-msgstr ""
+msgstr "Otevřít"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
-msgstr ""
+msgstr "Přejmenovat"
 
 #: rnote-ui/data/ui/filerow.ui:66
 msgid "Move to Trash"
-msgstr ""
+msgstr "Přesunout do koše"
 
 #: rnote-ui/data/ui/filerow.ui:70
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplikovat"
 
 #: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:538
 msgid "Draft"
-msgstr ""
+msgstr "Koncept"
 
 #: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:73
 msgid "Reveal/Hide Flap"
-msgstr ""
+msgstr "Odhalení/skrytí klapky"
 
 #: rnote-ui/data/ui/mainheader.ui:46
 msgid "New Tab"
-msgstr ""
+msgstr "Nová karta"
 
 #: rnote-ui/data/ui/mainheader.ui:53
 msgid "Focus Mode"
-msgstr ""
+msgstr "Režim ostření"
 
 #: rnote-ui/data/ui/mainheader.ui:65 rnote-ui/data/ui/shortcuts.ui:161
 msgid "Save Document"
-msgstr ""
+msgstr "Uložit dokument"
 
 #: rnote-ui/data/ui/overlays.ui:123 rnote-ui/data/ui/shortcuts.ui:218
 msgid "Undo"
-msgstr ""
+msgstr "Zpět"
 
 #: rnote-ui/data/ui/overlays.ui:134 rnote-ui/data/ui/shortcuts.ui:224
 msgid "Redo"
-msgstr ""
+msgstr "Znovu"
 
 #: rnote-ui/data/ui/overlays.ui:205
 msgid "Move _Left"
-msgstr ""
+msgstr "Přesunout doleva"
 
 #: rnote-ui/data/ui/overlays.ui:209
 msgid "Move _Right"
-msgstr ""
+msgstr "Přesunout doprava"
 
 #: rnote-ui/data/ui/overlays.ui:215
 msgid "_Close"
-msgstr ""
+msgstr "_Zavřít"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
-msgstr ""
+msgstr "Dočasné"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:12
 msgid "Permanent"
-msgstr ""
+msgstr "Permanentní"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
-msgstr ""
+msgstr "Přepnout"
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
-msgstr ""
+msgstr "Obecné"
 
 #: rnote-ui/data/ui/settingspanel.ui:44
 msgid "Autosave"
-msgstr ""
+msgstr "Automatické uložení"
 
 #: rnote-ui/data/ui/settingspanel.ui:45
 msgid "Enable or disable autosave"
-msgstr ""
+msgstr "Povolit nebo zakázat automatické uložení"
 
 #: rnote-ui/data/ui/settingspanel.ui:55
 msgid "Autosave Interval (secs)"

@@ -494,7 +494,7 @@ impl RnAppWindow {
                 }
             }
             crate::utils::FileType::XoppFile => {
-                glib::MainContext::default().spawn_local(clone!(@weak input_file, @weak self as appwindow => async move {
+                glib::MainContext::default().spawn_local(clone!(@strong input_file, @weak self as appwindow => async move {
                     // open a new tab for xopp file import
                     let new_tab = appwindow.new_tab();
                     let canvas = new_tab
@@ -508,7 +508,7 @@ impl RnAppWindow {
             }
             crate::utils::FileType::PdfFile => {
                 glib::MainContext::default().spawn_local(
-                    clone!(@weak input_file, @weak self as appwindow => async move {
+                    clone!(@strong input_file, @weak self as appwindow => async move {
                         let canvas =
                             appwindow.active_tab().canvas();
 

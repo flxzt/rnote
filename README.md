@@ -79,8 +79,7 @@ Download the Windows installer from the latest release which can be found [here]
 Install using [Winget](https://github.com/microsoft/winget-pkgs/tree/master/manifests/f/FelixZwettler/Rnote):
 
 ```
-winget install rnote
-winget install flxzt.Rnote
+winget install flxzt.rnote
 ```
 
 ### Downgrading

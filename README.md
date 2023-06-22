@@ -80,7 +80,7 @@ Install using [Winget](https://github.com/microsoft/winget-pkgs/tree/master/mani
 
 ```
 winget install rnote
-winget install FelixZwettler.Rnote
+winget install flxzt.Rnote
 ```
 
 ### Downgrading

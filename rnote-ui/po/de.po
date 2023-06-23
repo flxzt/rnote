@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-16 17:49+0200\n"
-"PO-Revision-Date: 2023-06-19 13:53+0000\n"
+"PO-Revision-Date: 2023-06-23 12:10+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -801,7 +801,7 @@ msgstr "Ansicht bewegen"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:40
 msgid "Zoom In/Out"
-msgstr "Herein/aus zoomen"
+msgstr "Zoome Hinein/Heraus"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:43
 msgid "Pick And Insert Emoji"
@@ -1813,7 +1813,7 @@ msgstr "Eine neue Datei wird erstellt"
 
 #: rnote-ui/src/dialogs/mod.rs:499
 msgid "Change Workspace Directory"
-msgstr "Arbeitsflächenverzeichnis ändern"
+msgstr "Ändere Arbeitsflächenverzeichnis"
 
 #: rnote-ui/src/dialogs/mod.rs:612
 msgid "Band-Aid"
@@ -1857,12 +1857,10 @@ msgid "Code"
 msgstr "Code"
 
 #: rnote-ui/src/dialogs/mod.rs:622
-#, fuzzy
 msgid "Compose"
 msgstr "Komposition"
 
 #: rnote-ui/src/dialogs/mod.rs:623
-#, fuzzy
 msgctxt "as in plant"
 msgid "Crop"
 msgstr "Getreide"
@@ -1872,12 +1870,10 @@ msgid "Dictionary"
 msgstr "Wörterbuch"
 
 #: rnote-ui/src/dialogs/mod.rs:626
-#, fuzzy
 msgid "Drinks"
 msgstr "Drinks"
 
 #: rnote-ui/src/dialogs/mod.rs:627
-#, fuzzy
 msgid "Flag"
 msgstr "Flagge"
 
@@ -1886,12 +1882,10 @@ msgid "Folder"
 msgstr "Ordner"
 
 #: rnote-ui/src/dialogs/mod.rs:629
-#, fuzzy
 msgid "Footprints"
 msgstr "Fußabdrücke"
 
 #: rnote-ui/src/dialogs/mod.rs:630
-#, fuzzy
 msgid "Gamepad"
 msgstr "Gamepad"
 
@@ -1904,7 +1898,6 @@ msgid "Globe"
 msgstr "Globus"
 
 #: rnote-ui/src/dialogs/mod.rs:633
-#, fuzzy
 msgid "Hammer"
 msgstr "Hammer"
 

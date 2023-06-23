@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-16 17:49+0200\n"
+"POT-Creation-Date: 2023-06-23 14:06+0200\n"
 "PO-Revision-Date: 2023-06-07 14:52+0000\n"
 "Last-Translator: Steph Ma <Stephma@pm.me>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -158,7 +158,7 @@ msgstr "Tout abandonner"
 msgid "Edit Workspace"
 msgstr "Modifier l’espace de travail"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:75 rnote-ui/data/ui/settingspanel.ui:276
+#: rnote-ui/data/ui/dialogs/dialogs.ui:75 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:39
 msgid "Apply"
 msgstr "Appliquer"
@@ -176,7 +176,7 @@ msgid "Change the workspace icon"
 msgstr "Modifier l'icône de l'espace de travail"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:143
-#: rnote-ui/data/ui/settingspanel.ui:313
+#: rnote-ui/data/ui/settingspanel.ui:314
 msgid "Color"
 msgstr "Couleur"
 
@@ -762,7 +762,7 @@ msgid "Crosshatch"
 msgstr "Hachures croisées"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
-#: rnote-ui/data/ui/settingspanel.ui:342
+#: rnote-ui/data/ui/settingspanel.ui:343
 msgid "Dots"
 msgstr "Points"
 
@@ -1177,200 +1177,201 @@ msgstr ""
 #: rnote-ui/data/ui/settingspanel.ui:88
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
-"An application restart is required when this option gets disabled."
+"An application restart is required when this option\n"
+"gets disabled."
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:99
+#: rnote-ui/data/ui/settingspanel.ui:100
 msgid "Regular Cursor"
 msgstr "Curseur normal"
 
-#: rnote-ui/data/ui/settingspanel.ui:100
+#: rnote-ui/data/ui/settingspanel.ui:101
 msgid "Set the regular cursor"
 msgstr "Définir le curseur régulier"
 
-#: rnote-ui/data/ui/settingspanel.ui:122
+#: rnote-ui/data/ui/settingspanel.ui:123
 msgid "Show Drawing Cursor"
 msgstr "Afficher le curseur du stylet"
 
-#: rnote-ui/data/ui/settingspanel.ui:123
+#: rnote-ui/data/ui/settingspanel.ui:124
 msgid "Set whether the drawing cursor is visible"
 msgstr "Afficher le curseur de dessin"
 
-#: rnote-ui/data/ui/settingspanel.ui:137
+#: rnote-ui/data/ui/settingspanel.ui:138
 msgid "Drawing Cursor"
 msgstr "Curseur de dessin"
 
-#: rnote-ui/data/ui/settingspanel.ui:138
+#: rnote-ui/data/ui/settingspanel.ui:139
 msgid "Set the drawing cursor"
 msgstr "Définir le curseur de dessin"
 
-#: rnote-ui/data/ui/settingspanel.ui:163
+#: rnote-ui/data/ui/settingspanel.ui:164
 msgid "Page Format"
 msgstr "Format de page"
 
-#: rnote-ui/data/ui/settingspanel.ui:166
+#: rnote-ui/data/ui/settingspanel.ui:167
 msgid "Format"
 msgstr "Format"
 
-#: rnote-ui/data/ui/settingspanel.ui:167
+#: rnote-ui/data/ui/settingspanel.ui:168
 msgid "Choose a format"
 msgstr "Choisissez un format"
 
-#: rnote-ui/data/ui/settingspanel.ui:171
+#: rnote-ui/data/ui/settingspanel.ui:172
 msgid "A6"
 msgstr "A6"
 
-#: rnote-ui/data/ui/settingspanel.ui:172
+#: rnote-ui/data/ui/settingspanel.ui:173
 msgid "A5"
 msgstr "A5"
 
-#: rnote-ui/data/ui/settingspanel.ui:173
+#: rnote-ui/data/ui/settingspanel.ui:174
 msgid "A4"
 msgstr "A4"
 
-#: rnote-ui/data/ui/settingspanel.ui:174
+#: rnote-ui/data/ui/settingspanel.ui:175
 msgid "A3"
 msgstr "A3"
 
-#: rnote-ui/data/ui/settingspanel.ui:175
+#: rnote-ui/data/ui/settingspanel.ui:176
 msgid "A2"
 msgstr "A2"
 
-#: rnote-ui/data/ui/settingspanel.ui:176
+#: rnote-ui/data/ui/settingspanel.ui:177
 msgid "US letter"
 msgstr "Lettre américaine"
 
-#: rnote-ui/data/ui/settingspanel.ui:177
+#: rnote-ui/data/ui/settingspanel.ui:178
 msgid "US legal"
 msgstr "US légal"
 
-#: rnote-ui/data/ui/settingspanel.ui:178
+#: rnote-ui/data/ui/settingspanel.ui:179
 msgid "Custom"
 msgstr "Personnalisé"
 
-#: rnote-ui/data/ui/settingspanel.ui:186
+#: rnote-ui/data/ui/settingspanel.ui:187
 msgid "Orientation"
 msgstr "Orientation"
 
-#: rnote-ui/data/ui/settingspanel.ui:187
+#: rnote-ui/data/ui/settingspanel.ui:188
 msgid "Set the format orientation"
 msgstr "Définir l’orientation du format"
 
-#: rnote-ui/data/ui/settingspanel.ui:199
+#: rnote-ui/data/ui/settingspanel.ui:200
 msgid "Portrait"
 msgstr "Portait"
 
-#: rnote-ui/data/ui/settingspanel.ui:205
+#: rnote-ui/data/ui/settingspanel.ui:206
 msgid "Landscape"
 msgstr "Paysage"
 
-#: rnote-ui/data/ui/settingspanel.ui:215
+#: rnote-ui/data/ui/settingspanel.ui:216
 msgid "Width"
 msgstr "Largeur"
 
-#: rnote-ui/data/ui/settingspanel.ui:216
+#: rnote-ui/data/ui/settingspanel.ui:217
 msgid "Set the format width"
 msgstr "Définir la largeur du format"
 
-#: rnote-ui/data/ui/settingspanel.ui:229
+#: rnote-ui/data/ui/settingspanel.ui:230
 msgid "Height"
 msgstr "Hauteur"
 
-#: rnote-ui/data/ui/settingspanel.ui:230
+#: rnote-ui/data/ui/settingspanel.ui:231
 msgid "Set the format height"
 msgstr "Définir la hauteur du format"
 
-#: rnote-ui/data/ui/settingspanel.ui:243
+#: rnote-ui/data/ui/settingspanel.ui:244
 msgid "Dpi"
 msgstr "PPP"
 
-#: rnote-ui/data/ui/settingspanel.ui:244
+#: rnote-ui/data/ui/settingspanel.ui:245
 msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr "Définir les PPP (points par pouce). Par défaut à 96."
 
-#: rnote-ui/data/ui/settingspanel.ui:267
+#: rnote-ui/data/ui/settingspanel.ui:268
 msgid "Revert"
 msgstr "Restaurer"
 
-#: rnote-ui/data/ui/settingspanel.ui:289 rnote-ui/data/ui/shortcuts.ui:146
+#: rnote-ui/data/ui/settingspanel.ui:290 rnote-ui/data/ui/shortcuts.ui:146
 #: rnote-ui/src/dialogs/mod.rs:625
 msgid "Document"
 msgstr "Document"
 
-#: rnote-ui/data/ui/settingspanel.ui:292
+#: rnote-ui/data/ui/settingspanel.ui:293
 msgid "Format Border Color"
 msgstr "Couleur des bordures du format"
 
-#: rnote-ui/data/ui/settingspanel.ui:293
+#: rnote-ui/data/ui/settingspanel.ui:294
 msgid "Set the format border color"
 msgstr "Définir la couleur des bordures du format"
 
-#: rnote-ui/data/ui/settingspanel.ui:314
+#: rnote-ui/data/ui/settingspanel.ui:315
 msgid "Set the background color"
 msgstr "Définir la couleur de l'arrière-plan"
 
-#: rnote-ui/data/ui/settingspanel.ui:334
+#: rnote-ui/data/ui/settingspanel.ui:335
 msgid "Pattern"
 msgstr "Motif"
 
-#: rnote-ui/data/ui/settingspanel.ui:335
+#: rnote-ui/data/ui/settingspanel.ui:336
 msgid "Choose a background pattern"
 msgstr "Choisissez un motif d'arrière-plan"
 
-#: rnote-ui/data/ui/settingspanel.ui:339
+#: rnote-ui/data/ui/settingspanel.ui:340
 msgid "None"
 msgstr "Aucun"
 
-#: rnote-ui/data/ui/settingspanel.ui:340
+#: rnote-ui/data/ui/settingspanel.ui:341
 msgid "Lines"
 msgstr "Lignes"
 
-#: rnote-ui/data/ui/settingspanel.ui:341
+#: rnote-ui/data/ui/settingspanel.ui:342
 #: rnote-ui/src/penssidebar/shaperpage.rs:388
 msgid "Grid"
 msgstr "Quadrillage"
 
-#: rnote-ui/data/ui/settingspanel.ui:343
+#: rnote-ui/data/ui/settingspanel.ui:344
 msgid "Isometric Grid"
 msgstr "Quadrillage isométrique"
 
-#: rnote-ui/data/ui/settingspanel.ui:344
+#: rnote-ui/data/ui/settingspanel.ui:345
 msgid "Isometric Dots"
 msgstr "Points isométriques"
 
-#: rnote-ui/data/ui/settingspanel.ui:352
+#: rnote-ui/data/ui/settingspanel.ui:353
 msgid "Pattern Color"
 msgstr "Couleur du motif"
 
-#: rnote-ui/data/ui/settingspanel.ui:353
+#: rnote-ui/data/ui/settingspanel.ui:354
 msgid "Set the background pattern color"
 msgstr "Définir la couleur du motif d’arrière-plan"
 
-#: rnote-ui/data/ui/settingspanel.ui:373
+#: rnote-ui/data/ui/settingspanel.ui:374
 msgid "Pattern Width"
 msgstr "Largeur du motif"
 
-#: rnote-ui/data/ui/settingspanel.ui:374
+#: rnote-ui/data/ui/settingspanel.ui:375
 msgid "Set the background pattern width"
 msgstr "Définir la largeur du motif d’arrière-plan"
 
-#: rnote-ui/data/ui/settingspanel.ui:387
+#: rnote-ui/data/ui/settingspanel.ui:388
 msgid "Pattern Height"
 msgstr "Hauteur du motif"
 
-#: rnote-ui/data/ui/settingspanel.ui:388
+#: rnote-ui/data/ui/settingspanel.ui:389
 msgid "Set the background pattern height"
 msgstr "Définir la hauteur du motif d’arrière-plan"
 
-#: rnote-ui/data/ui/settingspanel.ui:404
+#: rnote-ui/data/ui/settingspanel.ui:405
 msgid "Button Shortcuts"
 msgstr "Raccourcis des boutons"
 
-#: rnote-ui/data/ui/settingspanel.ui:407
+#: rnote-ui/data/ui/settingspanel.ui:408
 msgid "Stylus Primary Button Action"
 msgstr "Action du bouton principal du stylet"
 
-#: rnote-ui/data/ui/settingspanel.ui:408
+#: rnote-ui/data/ui/settingspanel.ui:409
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
@@ -1378,11 +1379,11 @@ msgstr ""
 "Définir l’action du bouton\n"
 "principal du stylet"
 
-#: rnote-ui/data/ui/settingspanel.ui:420
+#: rnote-ui/data/ui/settingspanel.ui:421
 msgid "Stylus Secondary Button Action"
 msgstr "Action du bouton secondaire du stylet"
 
-#: rnote-ui/data/ui/settingspanel.ui:421
+#: rnote-ui/data/ui/settingspanel.ui:422
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
@@ -1390,11 +1391,11 @@ msgstr ""
 "Définir l’action du bouton\n"
 "secondaire du stylet"
 
-#: rnote-ui/data/ui/settingspanel.ui:433
+#: rnote-ui/data/ui/settingspanel.ui:434
 msgid "Mouse Secondary Button Action"
 msgstr "Action du bouton secondaire de la souris"
 
-#: rnote-ui/data/ui/settingspanel.ui:434
+#: rnote-ui/data/ui/settingspanel.ui:435
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
@@ -1402,11 +1403,11 @@ msgstr ""
 "Définir l’action du bouton\n"
 "secondaire de la souris"
 
-#: rnote-ui/data/ui/settingspanel.ui:446
+#: rnote-ui/data/ui/settingspanel.ui:447
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "Appui long à deux doigts"
 
-#: rnote-ui/data/ui/settingspanel.ui:447
+#: rnote-ui/data/ui/settingspanel.ui:448
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
@@ -1414,11 +1415,11 @@ msgstr ""
 "Définir l’action de l'appui\n"
 "long à deux doigts"
 
-#: rnote-ui/data/ui/settingspanel.ui:459
+#: rnote-ui/data/ui/settingspanel.ui:460
 msgid "Drawing Pad Button 1 Action"
 msgstr "Action du bouton 1 de la tablette graphique"
 
-#: rnote-ui/data/ui/settingspanel.ui:460
+#: rnote-ui/data/ui/settingspanel.ui:461
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
@@ -1426,11 +1427,11 @@ msgstr ""
 "Définir l’action du bouton 1\n"
 "de la tablette graphique"
 
-#: rnote-ui/data/ui/settingspanel.ui:472
+#: rnote-ui/data/ui/settingspanel.ui:473
 msgid "Drawing Pad Button 2 Action"
 msgstr "Action du bouton 2 de la tablette graphique"
 
-#: rnote-ui/data/ui/settingspanel.ui:473
+#: rnote-ui/data/ui/settingspanel.ui:474
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
@@ -1438,11 +1439,11 @@ msgstr ""
 "Définir l’action du bouton 2\n"
 "de la tablette graphique"
 
-#: rnote-ui/data/ui/settingspanel.ui:485
+#: rnote-ui/data/ui/settingspanel.ui:486
 msgid "Drawing Pad Button 3 Action"
 msgstr "Action du bouton 3 de la tablette graphique"
 
-#: rnote-ui/data/ui/settingspanel.ui:486
+#: rnote-ui/data/ui/settingspanel.ui:487
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
@@ -1450,11 +1451,11 @@ msgstr ""
 "Définir l’action du bouton 3\n"
 "de la tablette graphique"
 
-#: rnote-ui/data/ui/settingspanel.ui:498
+#: rnote-ui/data/ui/settingspanel.ui:499
 msgid "Drawing Pad Button 4 Action"
 msgstr "Action du bouton 4 de la tablette graphique"
 
-#: rnote-ui/data/ui/settingspanel.ui:499
+#: rnote-ui/data/ui/settingspanel.ui:500
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"

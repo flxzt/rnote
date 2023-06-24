@@ -3,16 +3,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-23 14:06+0200\n"
-"PO-Revision-Date: 2023-06-18 10:45+0000\n"
+"PO-Revision-Date: 2023-06-26 08:36+0000\n"
 "Last-Translator: Dan <jonweblin2205@protonmail.com>\n"
-"Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
-">\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/>"
+"\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 4.18.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
@@ -101,7 +101,7 @@ msgstr ""
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41 rnote-ui/data/ui/dialogs/import.ui:11
 msgid "Discard"
-msgstr "Скасувати"
+msgstr "Відхилити"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
@@ -1092,7 +1092,7 @@ msgstr "Зберегти документ"
 
 #: rnote-ui/data/ui/overlays.ui:123 rnote-ui/data/ui/shortcuts.ui:218
 msgid "Undo"
-msgstr "Скасувати"
+msgstr "Відмінити"
 
 #: rnote-ui/data/ui/overlays.ui:134 rnote-ui/data/ui/shortcuts.ui:224
 msgid "Redo"
@@ -1155,10 +1155,6 @@ msgid "Inertial Touch Scrolling"
 msgstr "Інерційна сенсорна прокрутка"
 
 #: rnote-ui/data/ui/settingspanel.ui:88
-#, fuzzy
-#| msgid ""
-#| "Set whether touch scrolling on the canvas is inertial.\n"
-#| "An application restart is required when this option gets disabled."
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option\n"

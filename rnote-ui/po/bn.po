@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-23 14:06+0200\n"
-"PO-Revision-Date: 2023-06-18 10:45+0000\n"
+"PO-Revision-Date: 2023-06-26 08:36+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -49,17 +49,14 @@ msgstr ""
 "ভাঙ্গতে সক্ষম।"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
-#, fuzzy
 msgid "An Overview"
-msgstr "একটি সংক্ষিপ্ত বিবরণ"
+msgstr "একটি সংক্ষিপ্ত পরিদর্শন"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
 msgstr "লেকচার নোট ১"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
-#| msgid "A PDF annotation"
 msgid "A Pdf annotation"
 msgstr "একটি পিডিএফ টীকা"
 
@@ -210,8 +207,6 @@ msgstr ""
 "সংরক্ষণ করতে চান?"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
-#, fuzzy
-#| msgid "Import PDF"
 msgid "Import Pdf"
 msgstr "পিডিএফ আমদানি করুন"
 
@@ -225,8 +220,6 @@ msgid "Info"
 msgstr "তথ্য"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-#, fuzzy
-#| msgid "PDF Import Preferences"
 msgid "Pdf Import Preferences"
 msgstr "পিডিএফ আমদানি পছন্দসমূহ"
 
@@ -388,10 +381,8 @@ msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:124
 #: rnote-ui/data/ui/dialogs/export.ui:308
-#, fuzzy
-#| msgid "Pages Type"
 msgid "Page Order"
-msgstr "পৃষ্ঠার ধরন"
+msgstr "পৃষ্ঠার ক্রম"
 
 #: rnote-ui/data/ui/dialogs/export.ui:125
 #: rnote-ui/data/ui/dialogs/export.ui:309
@@ -807,8 +798,6 @@ msgid "Move View"
 msgstr "দৃশ্য সরান"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:40
-#, fuzzy
-#| msgid "Zoom in/out"
 msgid "Zoom In/Out"
 msgstr "জুম ইন/আউট"
 
@@ -1047,7 +1036,6 @@ msgid "Zoom to Page Width"
 msgstr "পৃষ্ঠার প্রস্থ মাপসই করতে জুম করুন"
 
 #: rnote-ui/data/ui/canvasmenu.ui:148
-#, fuzzy
 msgid "Remove Page"
 msgstr "পৃষ্ঠা অপসারণ করুন"
 
@@ -1097,7 +1085,6 @@ msgid "New Tab"
 msgstr "নতুন ট্যাব"
 
 #: rnote-ui/data/ui/mainheader.ui:53
-#, fuzzy
 msgid "Focus Mode"
 msgstr "ফোকাস মোড"
 
@@ -1171,14 +1158,14 @@ msgid "Inertial Touch Scrolling"
 msgstr "ইনর্শিয়াল টাচ স্ক্রোলিং"
 
 #: rnote-ui/data/ui/settingspanel.ui:88
-#, fuzzy
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option\n"
 "gets disabled."
 msgstr ""
 "ক্যানভাসে স্পর্শ স্ক্রোলিং ইনর্শিয়াল কিনা তা সেট করুন।\n"
-"এই বিকল্পটি অক্ষম হয়ে গেলে একটি অ্যাপ্লিকেশন পুনরায় চালু করা প্রয়োজন।"
+"এই অ্যাপ্লিকেশন পুনরায় চালু করা প্রয়োজন এই বিকল্পটি\n"
+"অক্ষম হয়ে গেলে।"
 
 #: rnote-ui/data/ui/settingspanel.ui:100
 msgid "Regular Cursor"
@@ -1421,13 +1408,12 @@ msgid "Drawing Pad Button 1 Action"
 msgstr "অঙ্কন প্যাড বোতাম ১ ক্রিয়া"
 
 #: rnote-ui/data/ui/settingspanel.ui:461
-#, fuzzy
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
 "ক্রিয়া সেট করুন\n"
-"একটি ড্রয়িং প্যাডে বোতাম 1 এর জন্য"
+"একটি ড্রয়িং প্যাডে বোতাম ১ এর জন্য"
 
 #: rnote-ui/data/ui/settingspanel.ui:473
 msgid "Drawing Pad Button 2 Action"
@@ -1438,6 +1424,8 @@ msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
+"ক্রিয়া সেট করুন\n"
+"একটি ড্রয়িং প্যাডে বোতাম ২ এর জন্য"
 
 #: rnote-ui/data/ui/settingspanel.ui:486
 msgid "Drawing Pad Button 3 Action"
@@ -1448,6 +1436,8 @@ msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
+"ক্রিয়া সেট করুন\n"
+"একটি ড্রয়িং প্যাডে বোতাম ৩ এর জন্য"
 
 #: rnote-ui/data/ui/settingspanel.ui:499
 msgid "Drawing Pad Button 4 Action"
@@ -1458,6 +1448,8 @@ msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
 msgstr ""
+"ক্রিয়া সেট করুন\n"
+"একটি ড্রয়িং প্যাডে বোতাম ৪ এর জন্য"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"
@@ -1512,7 +1504,6 @@ msgid "View"
 msgstr "দেখুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:97
-#, fuzzy
 msgid "Alt + Drag"
 msgstr "Alt + টেনে আনুন"
 
@@ -1521,7 +1512,6 @@ msgid "Zoom in/out"
 msgstr "জুম ইন/আউট"
 
 #: rnote-ui/data/ui/shortcuts.ui:139
-#, fuzzy
 msgid "Alt + Shift + Drag"
 msgstr "Alt + Shift + টেনে আনুন"
 
@@ -1679,14 +1669,10 @@ msgid "Opened file was moved or deleted on disk"
 msgstr "খোলা ফাইলটি ডিস্কে সরানো বা মুছে ফেলা হয়েছে"
 
 #: rnote-ui/src/canvas/mod.rs:1005
-#, fuzzy
-#| msgid "Opening file failed"
 msgid "Inserting file failed"
 msgstr "ফাইল সন্নিবেশ ব্যর্থ হয়েছে"
 
 #: rnote-ui/src/canvas/mod.rs:1015
-#, fuzzy
-#| msgid "Printing document failed"
 msgid "Inserting text failed"
 msgstr "পাঠ্য সন্নিবেশ ব্যর্থ হয়েছে"
 
@@ -1817,19 +1803,14 @@ msgid "translator-credits"
 msgstr "অনুবাদক-কৃতিত্ব"
 
 #: rnote-ui/src/dialogs/mod.rs:212 rnote-ui/src/dialogs/mod.rs:342
-#, fuzzy
-#| msgid "- invalid file name -"
 msgid "- invalid save folder name -"
 msgstr "- অবৈধ সংরক্ষণ ফোল্ডার নাম -"
 
 #: rnote-ui/src/dialogs/mod.rs:228 rnote-ui/src/dialogs/mod.rs:357
-#, fuzzy
 msgid "The changes will be saved"
 msgstr "পরিবর্তনগুলি সংরক্ষণ করা হবে"
 
 #: rnote-ui/src/dialogs/mod.rs:233 rnote-ui/src/dialogs/mod.rs:362
-#, fuzzy
-#| msgid "- no file selected -"
 msgid "A new file will be created"
 msgstr "একটি নতুন ফাইল তৈরি করা হবে"
 
@@ -1871,7 +1852,6 @@ msgid "Chip"
 msgstr "চিপ"
 
 #: rnote-ui/src/dialogs/mod.rs:620
-#, fuzzy
 msgid "Clock"
 msgstr "ঘড়ি"
 
@@ -1886,10 +1866,9 @@ msgstr "কম্পোজ করুন"
 #: rnote-ui/src/dialogs/mod.rs:623
 msgctxt "as in plant"
 msgid "Crop"
-msgstr "ক্রপ"
+msgstr "ফসল"
 
 #: rnote-ui/src/dialogs/mod.rs:624
-#, fuzzy
 msgid "Dictionary"
 msgstr "অভিধান"
 
@@ -1918,7 +1897,6 @@ msgid "Gear"
 msgstr "গিয়ার"
 
 #: rnote-ui/src/dialogs/mod.rs:632
-#, fuzzy
 msgid "Globe"
 msgstr "গ্লোব"
 
@@ -1943,7 +1921,6 @@ msgid "Language"
 msgstr "ভাষা"
 
 #: rnote-ui/src/dialogs/mod.rs:638
-#, fuzzy
 msgid "Library"
 msgstr "লাইব্রেরি"
 
@@ -1968,7 +1945,6 @@ msgid "Musical Note"
 msgstr "মিউজিক্যাল নোট"
 
 #: rnote-ui/src/dialogs/mod.rs:644
-#, fuzzy
 msgid "Nature"
 msgstr "প্রকৃতি"
 
@@ -1997,7 +1973,6 @@ msgid "Projector"
 msgstr "প্রজেক্টর"
 
 #: rnote-ui/src/dialogs/mod.rs:651
-#, fuzzy
 msgid "Science"
 msgstr "বিজ্ঞান"
 
@@ -2063,7 +2038,6 @@ msgid "Curves"
 msgstr "বক্ররেখা"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:385
-#, fuzzy
 msgid "Arrow"
 msgstr "তীর"
 
@@ -2105,7 +2079,7 @@ msgstr "ত্রিঘাত বেজিয়ে বক্ররেখা"
 
 #: rnote-ui/src/settingspanel/mod.rs:568
 msgid "Application restart is required"
-msgstr ""
+msgstr "অ্যাপ্লিকেশন পুনরায় চালু করা প্রয়োজন"
 
 #: rnote-ui/src/settingspanel/mod.rs:807
 msgctxt "a cursor type"
@@ -2138,64 +2112,46 @@ msgid "Dot (Large)"
 msgstr "বিন্দু (বড়)"
 
 #: rnote-ui/src/settingspanel/mod.rs:813
-#, fuzzy
-#| msgid "Teardrop North-West (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "টিয়ারড্রপ উত্তর-পশ্চিম (ছোট)"
 
 #: rnote-ui/src/settingspanel/mod.rs:814
-#, fuzzy
-#| msgid "Teardrop North-West (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "টিয়ারড্রপ উত্তর-পশ্চিম (মাঝারি)"
 
 #: rnote-ui/src/settingspanel/mod.rs:815
-#, fuzzy
-#| msgid "Teardrop North-West (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "টিয়ারড্রপ উত্তর-পশ্চিম (বড়)"
 
 #: rnote-ui/src/settingspanel/mod.rs:816
-#, fuzzy
-#| msgid "Teardrop North-East (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "টিয়ারড্রপ উত্তর-পূর্ব (ছোট)"
 
 #: rnote-ui/src/settingspanel/mod.rs:817
-#, fuzzy
-#| msgid "Teardrop North-East (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "টিয়ারড্রপ উত্তর-পূর্ব (মাঝারি)"
 
 #: rnote-ui/src/settingspanel/mod.rs:818
-#, fuzzy
-#| msgid "Teardrop North-East (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "টিয়ারড্রপ উত্তর-পূর্ব (বড়)"
 
 #: rnote-ui/src/settingspanel/mod.rs:819
-#, fuzzy
-#| msgid "Teardrop North (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "টিয়ারড্রপ উত্তর (ছোট)"
 
 #: rnote-ui/src/settingspanel/mod.rs:820
-#, fuzzy
-#| msgid "Teardrop North (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "টিয়ারড্রপ উত্তর (মাঝারি)"
 
 #: rnote-ui/src/settingspanel/mod.rs:821
-#, fuzzy
-#| msgid "Teardrop North (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "টিয়ারড্রপ উত্তর (বড়)"

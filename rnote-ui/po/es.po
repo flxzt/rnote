@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-23 14:06+0200\n"
-"PO-Revision-Date: 2023-06-18 10:45+0000\n"
-"Last-Translator: Óscar Fernández Díaz <oscfdezdz@users.noreply.hosted."
-"weblate.org>\n"
+"PO-Revision-Date: 2023-06-26 08:36+0000\n"
+"Last-Translator: Óscar Fernández Díaz <oscfdezdz@users.noreply.hosted.weblate"
+".org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -622,13 +622,13 @@ msgstr "Trazos discontinuos"
 #: rnote-ui/data/ui/overlays.ui:46
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:81
 msgid "Brush"
-msgstr "Pincel"
+msgstr "Brocha"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:33
 #: rnote-ui/data/ui/overlays.ui:56
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:82
 msgid "Shaper"
-msgstr "Formas"
+msgstr "Modelador"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:49
 #: rnote-ui/data/ui/overlays.ui:67
@@ -1162,17 +1162,14 @@ msgid "Inertial Touch Scrolling"
 msgstr "Desplazamiento táctil inercial"
 
 #: rnote-ui/data/ui/settingspanel.ui:88
-#, fuzzy
-#| msgid ""
-#| "Set whether touch scrolling on the canvas is inertial.\n"
-#| "An application restart is required when this option gets disabled."
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option\n"
 "gets disabled."
 msgstr ""
 "Establece si el desplazamiento táctil en el lienzo es inercial.\n"
-"Si se desactiva esta opción, es necesario reiniciar la aplicación."
+"Se requiere un reinicio de la aplicación cuando esta opción\n"
+"se desactiva."
 
 #: rnote-ui/data/ui/settingspanel.ui:100
 msgid "Regular Cursor"

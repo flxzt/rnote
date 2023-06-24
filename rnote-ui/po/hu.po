@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-23 14:06+0200\n"
-"PO-Revision-Date: 2023-06-10 13:06+0000\n"
+"PO-Revision-Date: 2023-06-26 08:36+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 4.18.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:35
@@ -119,32 +119,24 @@ msgid "Close Tab"
 msgstr "Lap bezárása"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
-#, fuzzy
-#| msgid ""
-#| "This tab contains unsaved changes. Changes which are not saved will be "
-#| "permanently lost."
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"Ez a lap nem mentett módosításokat tartalmaz. A nem mentett módosítások "
-"véglegesen elvesznek."
+"Ez a lap nem mentett módosításokat tartalmaz.\n"
+"A nem mentett módosítások véglegesen elvesznek."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
 msgstr "Ablak bezárása"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:48
-#, fuzzy
-#| msgid ""
-#| "Some opened files contain unsaved changes. Changes which are not saved "
-#| "will be permanently lost."
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"Egyes megnyitott fájlok nem mentett módosításokat tartalmaznak. A nem "
-"mentett módosítások véglegesen elvesznek."
+"Egyes megnyitott fájlok nem mentett módosításokat tartalmaznak.\n"
+"A nem mentett módosítások véglegesen elvesznek."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
@@ -394,10 +386,8 @@ msgstr "XOPP-fájl"
 
 #: rnote-ui/data/ui/dialogs/export.ui:124
 #: rnote-ui/data/ui/dialogs/export.ui:308
-#, fuzzy
-#| msgid "Pages Type"
 msgid "Page Order"
-msgstr "Oldalak típusa"
+msgstr "Oldalsorrend"
 
 #: rnote-ui/data/ui/dialogs/export.ui:125
 #: rnote-ui/data/ui/dialogs/export.ui:309
@@ -405,16 +395,18 @@ msgid ""
 "The page order when documents with layouts that expand\n"
 "in horizontal and vertical directions are cut into pages"
 msgstr ""
+"Az az oldalsorrend, amikor a vízszintes és függőleges irányban\n"
+"bővülő elrendezésű dokumentumokat lapokra vágja"
 
 #: rnote-ui/data/ui/dialogs/export.ui:130
 #: rnote-ui/data/ui/dialogs/export.ui:314
 msgid "Horizontal First"
-msgstr ""
+msgstr "Először vízszintes"
 
 #: rnote-ui/data/ui/dialogs/export.ui:131
 #: rnote-ui/data/ui/dialogs/export.ui:315
 msgid "Vertical First"
-msgstr ""
+msgstr "Először függőleges"
 
 #: rnote-ui/data/ui/dialogs/export.ui:148 rnote-ui/src/dialogs/export.rs:476
 msgid "Export Document Pages"
@@ -934,7 +926,7 @@ msgstr "_Exportálás…"
 
 #: rnote-ui/data/ui/appmenu.ui:111
 msgid "Export _Document"
-msgstr "Dokumentum exportálása"
+msgstr "Dokumentum _exportálása"
 
 #: rnote-ui/data/ui/appmenu.ui:115
 msgid "Export Document _Pages"
@@ -1165,7 +1157,7 @@ msgstr "Állítsa be, hogy megjelenjenek-e a görgetősávok a vásznon"
 
 #: rnote-ui/data/ui/settingspanel.ui:87
 msgid "Inertial Touch Scrolling"
-msgstr ""
+msgstr "Inerciális érintéses görgetés"
 
 #: rnote-ui/data/ui/settingspanel.ui:88
 msgid ""
@@ -1173,6 +1165,9 @@ msgid ""
 "An application restart is required when this option\n"
 "gets disabled."
 msgstr ""
+"Vászon inerciális érintéses görgetés beállítása.\n"
+"Az alkalmazás újraindítása szükséges, ha ez a\n"
+"beállítás letiltásra kerül."
 
 #: rnote-ui/data/ui/settingspanel.ui:100
 msgid "Regular Cursor"
@@ -1369,7 +1364,9 @@ msgstr "Ceruza elsődleges gombjának művelete"
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
-msgstr "A ceruza elsődleges gombjának műveletének beállítása"
+msgstr ""
+"A ceruza elsődleges gombjának\n"
+"műveletének beállítása"
 
 #: rnote-ui/data/ui/settingspanel.ui:421
 msgid "Stylus Secondary Button Action"
@@ -1379,7 +1376,9 @@ msgstr "Ceruza másodlagos gombjának művelete"
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
-msgstr "A ceruza elsődleges gombjának műveletének beállítása"
+msgstr ""
+"A ceruza elsődleges gombjának\n"
+"műveletének beállítása"
 
 #: rnote-ui/data/ui/settingspanel.ui:434
 msgid "Mouse Secondary Button Action"
@@ -1794,20 +1793,16 @@ msgid "translator-credits"
 msgstr "Óvári"
 
 #: rnote-ui/src/dialogs/mod.rs:212 rnote-ui/src/dialogs/mod.rs:342
-#, fuzzy
-#| msgid "- invalid file name -"
 msgid "- invalid save folder name -"
-msgstr "- érvénytelen fáljnév -"
+msgstr "- érvénytelen mentési mappanév -"
 
 #: rnote-ui/src/dialogs/mod.rs:228 rnote-ui/src/dialogs/mod.rs:357
 msgid "The changes will be saved"
-msgstr ""
+msgstr "A módosítások mentésre kerülnek"
 
 #: rnote-ui/src/dialogs/mod.rs:233 rnote-ui/src/dialogs/mod.rs:362
-#, fuzzy
-#| msgid "- no file selected -"
 msgid "A new file will be created"
-msgstr "- nincs kijelölt fájl -"
+msgstr "Új fájl jön létre"
 
 #: rnote-ui/src/dialogs/mod.rs:499
 msgid "Change Workspace Directory"
@@ -2074,7 +2069,7 @@ msgstr "Köbös bezier-görbe"
 
 #: rnote-ui/src/settingspanel/mod.rs:568
 msgid "Application restart is required"
-msgstr ""
+msgstr "Szükséges az alkalmazás újraindítása"
 
 #: rnote-ui/src/settingspanel/mod.rs:807
 msgctxt "a cursor type"

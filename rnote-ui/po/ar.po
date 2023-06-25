@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-23 14:06+0200\n"
-"PO-Revision-Date: 2023-06-18 10:45+0000\n"
+"PO-Revision-Date: 2023-06-26 08:36+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -1158,17 +1158,14 @@ msgid "Inertial Touch Scrolling"
 msgstr "التمرير بالزخم"
 
 #: rnote-ui/data/ui/settingspanel.ui:88
-#, fuzzy
-#| msgid ""
-#| "Set whether touch scrolling on the canvas is inertial.\n"
-#| "An application restart is required when this option gets disabled."
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option\n"
 "gets disabled."
 msgstr ""
 "عيِّن ما إذا كان التمرير باللمس له زخم.\n"
-"تجب إعادة تشغيل التطبيق حال تعطيل هذا الخيار."
+"تجب إعادة تشغيل التطبيق حال\n"
+"تعطيل هذا الخيار."
 
 #: rnote-ui/data/ui/settingspanel.ui:100
 msgid "Regular Cursor"

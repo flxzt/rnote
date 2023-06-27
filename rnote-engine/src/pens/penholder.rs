@@ -304,7 +304,7 @@ impl PenHolder {
         if let Some(action) = self.get_shortcut_action(shortcut_key) {
             match action {
                 ShortcutAction::ChangePenStyle { style, mode } => match mode {
-                    ShortcutMode::Temporary => {
+                    ShortcutMode::Temporary | ShortcutMode::Hold => {
                         widget_flags.merge(self.change_style_override(Some(style), engine_view));
                     }
                     ShortcutMode::Permanent => {

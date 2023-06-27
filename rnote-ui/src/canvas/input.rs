@@ -121,6 +121,16 @@ pub(crate) fn handle_pointer_controller_event(
                     inhibit = true;
                 }
             };
+
+            let shortcut_key = retrieve_button_shortcut_key(gdk_button, is_stylus);
+
+            if let Some(shortcut_key) = shortcut_key {
+                widget_flags.merge(
+                    canvas
+                        .engine_mut()
+                        .handle_released_shortcut_key(shortcut_key, now),
+                );
+            }
         }
         gdk::EventType::ProximityIn => {
             state = PenState::Proximity;

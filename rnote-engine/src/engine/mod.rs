@@ -698,6 +698,26 @@ impl RnoteEngine {
         )
     }
 
+    /// Handle a released shortcut key.
+    pub fn handle_released_shortcut_key(
+        &mut self,
+        shortcut_key: ShortcutKey,
+        now: Instant,
+    ) -> WidgetFlags {
+        self.penholder.handle_released_shortcut_key(
+            shortcut_key,
+            now,
+            &mut EngineViewMut {
+                tasks_tx: self.tasks_tx(),
+                pens_config: &mut self.pens_config,
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            },
+        )
+    }
+
     /// Change the pen style.
     pub fn change_pen_style(&mut self, new_style: PenStyle) -> WidgetFlags {
         self.penholder.change_style(

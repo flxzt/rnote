@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-23 14:06+0200\n"
-"PO-Revision-Date: 2023-06-18 10:45+0000\n"
+"PO-Revision-Date: 2023-06-29 11:52+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -1158,17 +1158,14 @@ msgid "Inertial Touch Scrolling"
 msgstr "செயலற்ற தொடு உருட்டுதல்"
 
 #: rnote-ui/data/ui/settingspanel.ui:88
-#, fuzzy
-#| msgid ""
-#| "Set whether touch scrolling on the canvas is inertial.\n"
-#| "An application restart is required when this option gets disabled."
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option\n"
 "gets disabled."
 msgstr ""
 "கேன்வாஸில் தொடு உருட்டுதல் செயலற்றதா என்பதை அமைக்கவும்.\n"
-"இந்த விருப்பம் முடக்கப்படும் போது, பயன்பாட்டை மறுதொடக்கம் செய்ய வேண்டும்."
+"இந்த விருப்பத்தின் போது பயன்பாட்டை மறுதொடக்கம் செய்ய வேண்டியது\n"
+"முடக்கப்படுகிறது."
 
 #: rnote-ui/data/ui/settingspanel.ui:100
 msgid "Regular Cursor"

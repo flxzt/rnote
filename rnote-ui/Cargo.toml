@@ -49,3 +49,4 @@ fs_extra = "1"
 same-file = "1"
 regex = "1.7"
 directories = "5"
+time = { version = "0.3.22", default-features = false, features = ["formatting"] }

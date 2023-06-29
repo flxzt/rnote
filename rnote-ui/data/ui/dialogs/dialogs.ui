@@ -199,4 +199,33 @@ Changes which are not saved will be permanently lost.</property>
       <object class="RnIconPicker" id="edit_selected_workspace_icon_picker"></object>
     </child>
   </object>
+  
+  <object class="GtkPopover" id="recover_documents">
+    <object class="AdwClamp">
+      <property name="maximum-size">800</property>
+      <property name="tightening-threshold">600</property>
+      <property name="hexpand">true</property>
+      <property name="vexpand">false</property>
+      <property name="valign">fill</property>
+      <property name="halign">fill</property>
+      <child>
+        <object class="GtkBox">
+          <property name="orientation">vertical</property>
+          <property name="spacing">24</property>
+          <property name="margin-start">12</property>
+          <property name="margin-end">12</property>
+          <property name="margin-top">12</property>
+          <property name="margin-bottom">12</property>
+          <style>
+            <class name="background" />
+          </style>
+          <child>
+            <object class="">
+              
+            </object>
+          </child>
+        </object>
+      </child>
+    </object>
+  </object>
 </interface>

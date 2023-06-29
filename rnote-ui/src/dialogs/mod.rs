@@ -4,6 +4,7 @@
 // Modules
 pub(crate) mod export;
 pub(crate) mod import;
+mod recovery;
 
 // Imports
 use crate::appwindow::RnAppWindow;
@@ -18,6 +19,9 @@ use gtk4::{
     gio, glib, glib::clone, Builder, Button, CheckButton, ColorDialogButton, Dialog, FileDialog,
     Label, MenuButton, ResponseType, ShortcutsWindow, StringList,
 };
+
+// Re-exports
+pub(crate) use recovery::dialog_recover_documents;
 
 // About Dialog
 pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
@@ -557,10 +561,6 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
             // Cancel
         }
     }
-}
-
-pub(crate) async fn dialog_recover_documents() {
-    todo!()
 }
 
 const WORKSPACELISTENTRY_ICONS_LIST: &[&str] = &[

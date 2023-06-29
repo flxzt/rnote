@@ -339,6 +339,7 @@ impl RnAppWindow {
                     let canvas = appwindow.active_tab().canvas();
 
                     glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+                        if !canvas.unsaved_changes_recovery() {return;}
                         let tmp_file = canvas.get_or_generate_tmp_file();
                         appwindow.overlays().start_pulsing_progressbar();
                         canvas.set_recovery_in_progress(true);

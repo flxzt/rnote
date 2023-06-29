@@ -54,6 +54,15 @@ impl RnAppWindow {
     pub(crate) fn set_recovery(&self, recovery: bool) {
         self.set_property("recovery", recovery.to_value());
     }
+    #[allow(unused)]
+    pub(crate) fn recovery_interval_secs(&self) -> u32 {
+        self.property::<u32>("recovery-interval-secs")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_recovery_interval_secs(&self, autosave_interval_secs: u32) {
+        self.set_property("recovery-interval-secs", autosave_interval_secs.to_value());
+    }
 
     #[allow(unused)]
     pub(crate) fn autosave_interval_secs(&self) -> u32 {
@@ -187,6 +196,9 @@ impl RnAppWindow {
         self.overlays().undo_button().set_sensitive(false);
         self.overlays().redo_button().set_sensitive(false);
         self.refresh_ui_from_engine(&self.active_tab());
+        glib::MainContext::default().spawn_local(clone!(@weak self as appwindow => async move {
+            dialogs::dialog_recover_documents(&appwindow).await;
+        }));
     }
 
     /// Called to close the window

@@ -290,7 +290,7 @@ impl RnCanvas {
             self.set_output_file_expect_write(false);
             return Err(e);
         }
-        self.update_recovery_file_metadata_last_changed();
+        self.update_recovery_file();
 
         if self.recovery_in_progress() {
             self.set_unsaved_changes_recovery(false);

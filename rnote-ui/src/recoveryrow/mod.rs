@@ -7,8 +7,9 @@ use adw::{
     prelude::{ButtonExt, WidgetExt},
     subclass::prelude::CompositeTemplateDisposeExt,
 };
-use cairo::glib::{self, clone};
+use cairo::glib::{self, clone, ToValue};
 use gtk4::{
+    gio,
     subclass::{
         prelude::{
             ObjectImpl, ObjectImplExt, ObjectSubclass, ObjectSubclassExt, ObjectSubclassIsExt,
@@ -18,8 +19,9 @@ use gtk4::{
     },
     Button, CompositeTemplate, Label, TemplateChild, Widget,
 };
+use once_cell::sync::Lazy;
 use rnote_fileformats::recovery_metadata::RecoveryMetadata;
-use std::{cell::RefCell, path::PathBuf};
+use std::cell::RefCell;
 use time::{format_description::well_known::Rfc2822, OffsetDateTime};
 
 use crate::appwindow::RnAppWindow;
@@ -33,7 +35,7 @@ mod imp {
     pub(crate) struct RnRecoveryRow {
         pub(crate) last_changed_format: String,
         pub(crate) meta: RefCell<Option<RecoveryMetadata>>,
-        pub(crate) meta_path: RefCell<Option<PathBuf>>,
+        pub(crate) meta_path: RefCell<Option<gio::File>>,
 
         #[template_child]
         pub(crate) document_name_label: TemplateChild<Label>,
@@ -88,34 +90,37 @@ mod imp {
                 child.unparent();
             }
         }
-        // fn properties() -> &'static [glib::ParamSpec] {
-        //     static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-        //         vec![
-        //             // this is nullable, so it can be used to represent Option<gio::File>
-        //             glib::ParamSpecObject::builder::<Path>("current-file").build(),
-        //         ]
-        //     });
-        //     PROPERTIES.as_ref()
-        // }
+        fn properties() -> &'static [glib::ParamSpec] {
+            static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
+                vec![
+                    // this is nullable, so it can be used to represent Option<gio::File>
+                    glib::ParamSpecObject::builder::<gio::File>("meta-path").build(),
+                    glib::ParamSpecString::builder("last-changed-format").build(),
+                ]
+            });
+            PROPERTIES.as_ref()
+        }
 
-        // fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
-        //     match pspec.name() {
-        //         "current-file" => {
-        //             let current_file = value
-        //                 .get::<Option<gio::File>>()
-        //                 .expect("The value needs to be of type `Option<gio::File>`");
-        //             self.current_file.replace(current_file);
-        //         }
-        //         _ => unimplemented!(),
-        //     }
-        // }
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
+            match pspec.name() {
+                "meta-path" => {
+                    let meta_path = value
+                        .get::<Option<gio::File>>()
+                        .expect("The value needs to be of type `Option<gio::File>`");
+                    self.meta_path.replace(meta_path);
+                }
+                "last-changed-format" => unimplemented!("You cannot edit `last-changed-format`"),
+                _ => unimplemented!(),
+            }
+        }
 
-        // fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
-        //     match pspec.name() {
-        //         "current-file" => self.current_file.borrow().to_value(),
-        //         _ => unimplemented!(),
-        //     }
-        // }
+        fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+            match pspec.name() {
+                "meta-path" => self.meta_path.borrow().to_value(),
+                "last-changed-format" => self.last_changed_format.to_value(),
+                _ => unimplemented!(),
+            }
+        }
     }
 
     impl RnRecoveryRow {
@@ -156,7 +161,7 @@ impl RnRecoveryRow {
         self.setup_actions(appwindow);
     }
 
-    fn setup_actions(&self, appwindow: &RnAppWindow) {
+    fn setup_actions(&self, _appwindow: &RnAppWindow) {
         let imp = self.imp();
         imp.recover_button.connect_clicked(
             clone!(@weak self as recoveryrow => move |_button| actions::recover(&recoveryrow)),

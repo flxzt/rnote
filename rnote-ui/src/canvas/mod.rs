@@ -605,31 +605,27 @@ impl RnCanvas {
     pub(crate) fn get_or_generate_tmp_file(&self) -> gio::File {
         if self.imp().recovery_file.borrow().is_none() {
             let imp = self.imp();
-            let mut rnote_path = directories::ProjectDirs::from("com.gthub", "flxt", "rnote")
-                .expect("Failed to get ProjectDirs")
-                .data_dir()
-                .to_path_buf();
-            rnote_path.push("recovery");
-            if !rnote_path.exists() {
-                std::fs::create_dir_all(&rnote_path).expect("Failed to create directory")
+            let mut recovery_path = crate::env::recovery_dir().unwrap();
+            if !recovery_path.exists() {
+                std::fs::create_dir_all(&recovery_path).expect("Failed to create directory")
             };
             let time = std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .expect("Failed to get unix time")
                 .as_secs();
 
-            if !rnote_path.exists() {
-                std::fs::create_dir(&rnote_path).expect("Failed to create tmp dir");
+            if !recovery_path.exists() {
+                std::fs::create_dir(&recovery_path).expect("Failed to create tmp dir");
             }
             let name = format!("{time}.rnote");
-            rnote_path.push(name);
-            let mut metadata_path = rnote_path.clone();
+            recovery_path.push(name);
+            let mut metadata_path = recovery_path.clone();
             self.imp()
                 .recovery_file
-                .replace(Some(gio::File::for_path(&rnote_path)));
+                .replace(Some(gio::File::for_path(&recovery_path)));
 
             metadata_path.set_extension("json");
-            let metadata = RecoveryMetadata::new(metadata_path, rnote_path);
+            let metadata = RecoveryMetadata::new(metadata_path, recovery_path);
             imp.recovery_file_metadata.replace(Some(metadata));
         }
         self.imp().recovery_file.borrow().as_ref().unwrap().clone()
@@ -697,12 +693,10 @@ impl RnCanvas {
 
     #[allow(unused)]
     pub(crate) fn set_unsaved_changes_recovery(&self, unsaved_changes_recovery: bool) {
-        if self.imp().unsaved_changes_recovery.get() != unsaved_changes_recovery {
-            self.set_property(
-                "unsaved-changes-recovery",
-                unsaved_changes_recovery.to_value(),
-            );
-        }
+        self.set_property(
+            "unsaved-changes-recovery",
+            dbg!(unsaved_changes_recovery).to_value(),
+        );
     }
 
     #[allow(unused)]
@@ -1326,7 +1320,7 @@ impl RnCanvas {
         self.engine_mut().background_regenerate_pattern();
         self.queue_draw();
     }
-    pub(crate) fn update_recovery_file_metadata_last_changed(&self) {
+    pub(crate) fn update_recovery_file(&self) {
         if let Some(m) = self.imp().recovery_file_metadata.borrow().as_ref() {
             m.update(
                 &self
@@ -1335,7 +1329,8 @@ impl RnCanvas {
                     .borrow()
                     .clone()
                     .map(|f| f.path().unwrap()),
-            )
+            );
+            m.save();
         }
     }
 }

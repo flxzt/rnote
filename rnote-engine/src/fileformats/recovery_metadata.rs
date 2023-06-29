@@ -37,6 +37,7 @@ impl RecoveryMetadata {
         )
         .expect("Failed to write file")
     }
+    /// Update Metadate based of the given document option
     pub fn update(&self, document_path: &Option<PathBuf>) {
         self.update_last_changed();
         match document_path {
@@ -64,12 +65,15 @@ impl RecoveryMetadata {
     pub fn metadata_path(&self) -> PathBuf {
         self.metdata_path.clone()
     }
+    /// Get the path to the file being backed up
     pub fn document_path(&self) -> Option<PathBuf> {
         self.document_path.borrow().clone()
     }
+    /// Get the path to Recovery file
     pub fn recovery_file_path(&self) -> PathBuf {
         self.recovery_file_path.clone()
     }
+    /// Get the last changed date as unix timestamp
     pub fn last_changed(&self) -> i64 {
         self.last_changed.get()
     }

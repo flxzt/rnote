@@ -11,8 +11,8 @@
     <property name="valign">fill</property>
     <property name="hexpand">true</property>
     <property name="vexpand">true</property>
-    <property name="margin-top">3</property>
-    <property name="margin-bottom">3</property>
+    <property name="margin-top">1</property>
+    <property name="margin-bottom">1</property>
     <property name="margin-start">6</property>
     <property name="margin-end">6</property>
     <child>

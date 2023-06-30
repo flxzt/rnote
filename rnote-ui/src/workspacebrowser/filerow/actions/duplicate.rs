@@ -2,25 +2,30 @@
 use crate::workspacebrowser::RnFileRow;
 use crate::RnAppWindow;
 use fs_extra::dir::{CopyOptions, TransitProcessResult};
-use fs_extra::{copy_items_with_progress, TransitProcess};
+use fs_extra::TransitProcess;
 use gtk4::prelude::FileExt;
 use gtk4::{gio, glib, glib::clone};
+use once_cell::sync::Lazy;
 use regex::Regex;
 use std::ffi::{OsStr, OsString};
 use std::path::{Path, PathBuf};
 
+/// The suffix delimiter when naming duplicated files
+const DUP_SUFFIX_DELIM: &str = "-";
+
+/// The regex used to search for duplicated files
 /// ```text
-/// - Look for `.dup` pattern
-/// |   - Look for `.dup1`/`.dup123`/`.dup1234`/...
-/// |   |        - Look for the text after the `.dup<num>` part
-/// |   |       |       - At the end of the word (here: file-path)
-/// |  \d*      |       $
-/// |           |
-/// \.dup   (?P<rest>(.*))
+/// - Look for delimiter
+/// |         - Look for `-1`/`-2`/`-123`/...
+/// |         |        - Look for the rest after the `-<num>` part
+/// |         |       |       - At the end of the file name
+/// |         |       |       |
+/// |        \d*      |       $
+/// |                 |
+/// DUP_DELIM   (?P<rest>(.*))
 /// ```
-const DUP_REGEX_PATTERN: &str = r"\.dup\d*(?P<rest>(.*))$";
-const DUPLICATE_SUFFIX: &str = ".dup";
-const DOT: &str = ".";
+static DUP_REGEX: Lazy<Regex> =
+    Lazy::new(|| Regex::new(&(DUP_SUFFIX_DELIM.to_string() + r"\d*(?P<rest>(.*))$")).unwrap());
 
 /// Create a new `duplicate` action.
 pub(crate) fn duplicate(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleAction {
@@ -28,18 +33,22 @@ pub(crate) fn duplicate(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::Si
 
     action.connect_activate(
         clone!(@weak filerow as filerow, @weak appwindow => move |_action_duplicate_file, _| {
-            let process_evaluator = create_process_evaluator(appwindow.clone());
-
             if let Some(current_file) = filerow.current_file() {
                 if let Some(current_path) = current_file.path() {
-                    let source_path = current_path.clone().into_boxed_path();
+                    if current_path.is_file() {
+                        if let Err(e) = duplicate_file(&current_path) {
+                            log::error!("duplicating file {current_path:?} failed, Err: {e:?}");
+                        }
+                    } else if current_path.is_dir() {
+                        let progress_handler = creat_dup_dir_progress_handler(appwindow.clone());
 
-                    if source_path.is_dir() {
-                        duplicate_dir(current_path, process_evaluator);
-                    } else if source_path.is_file() {
-                        duplicate_file(current_path);
+                        if let Err(e) = duplicate_dir(&current_path, progress_handler) {
+                            log::error!("duplicating directory {current_path:?} failed, Err: {e:?}");
+                        }
                     }
                 }
+            } else {
+                log::warn!("Could not duplicate file, current file is None.");
             }
 
             appwindow.overlays().finish_progressbar();
@@ -51,7 +60,7 @@ pub(crate) fn duplicate(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::Si
 
 /// Returns the progress handler for
 /// [copy_items_with_progress](https://docs.rs/fs_extra/1.2.0/fs_extra/fn.copy_items_with_progress.html).
-fn create_process_evaluator(
+fn creat_dup_dir_progress_handler(
     appwindow: RnAppWindow,
 ) -> impl Fn(TransitProcess) -> TransitProcessResult {
     move |process: TransitProcess| -> TransitProcessResult {
@@ -59,110 +68,91 @@ fn create_process_evaluator(
             let status = process.copied_bytes / process.total_bytes;
             status as f64
         };
-
         appwindow.overlays().progressbar().set_fraction(status);
         TransitProcessResult::ContinueOrAbort
     }
 }
 
-fn duplicate_file(source_path: PathBuf) {
-    if let Some(destination) = get_destination_path(&source_path) {
-        let source = source_path.into_boxed_path();
-
-        log::debug!("Duplicate source: {}", source.display());
-        log::debug!("Duplicate destination: {}", destination.display());
-        if let Err(e) = std::fs::copy(source, destination) {
-            log::error!("Couldn't duplicate file, Err: {e:?}");
-        }
-    } else {
-        log::warn!("Destination-file for duplication not found");
-    }
+fn duplicate_file(source: impl AsRef<Path>) -> anyhow::Result<()> {
+    let destination = generate_destination_path(&source)?;
+    std::fs::copy(source, destination)?;
+    Ok(())
 }
 
-fn duplicate_dir<F>(source_path: PathBuf, process_evaluator: F)
+fn duplicate_dir<F>(source: impl AsRef<Path>, progress_handler: F) -> anyhow::Result<()>
 where
     F: Fn(TransitProcess) -> TransitProcessResult,
 {
-    if let Some(destination) = get_destination_path(&source_path) {
-        let source = source_path.into_boxed_path();
-        let options = CopyOptions {
-            copy_inside: true,
-            ..CopyOptions::default()
-        };
-
-        log::debug!("Duplicate source: {}", source.display());
-        log::debug!("Duplicate destination: {}", destination.display());
-        if let Err(e) =
-            copy_items_with_progress(&[source], destination, &options, process_evaluator)
-        {
-            log::error!("Couldn't copy items, Err: {e:?}");
-        }
-    }
+    let destination = generate_destination_path(&source)?;
+    let options = CopyOptions {
+        copy_inside: true,
+        ..CopyOptions::default()
+    };
+    fs_extra::copy_items_with_progress(
+        &[source.as_ref()],
+        destination,
+        &options,
+        progress_handler,
+    )?;
+    Ok(())
 }
 
-/// returns a suitable destination path from the given source path
-/// by adding `.dup` as often as needed to the source-path.
-fn get_destination_path(source_path: &PathBuf) -> Option<PathBuf> {
-    let mut duplicate_index = 0;
-    let mut destination_path = source_path.clone();
-    let adjusted_source_path = remove_dup_word(source_path);
+/// returns a suitable not-already-existing destination path from the given source path
+/// by adding or replacing `-<num>` to the source-path, where <num> is incremented as often as needed.
+fn generate_destination_path(source: impl AsRef<Path>) -> anyhow::Result<PathBuf> {
+    let mut duplicate_index = 1;
+    let mut destination_path = source.as_ref().to_owned();
+    let adjusted_source_path = remove_dup_suffix(source);
 
-    if let Some(source_stem) = adjusted_source_path.file_stem() {
-        loop {
-            let destination_filename = generate_duplicate_filename(
-                source_stem,
-                adjusted_source_path.extension(),
-                duplicate_index,
-            );
-            destination_path.set_file_name(destination_filename);
+    let Some(source_stem) = adjusted_source_path.file_stem() else {
+        return Err(anyhow::anyhow!("file of source path '{adjusted_source_path:?}' does not have a file stem."));
+    };
+    loop {
+        destination_path.set_file_name(generate_duplicate_filename(
+            source_stem,
+            adjusted_source_path.extension(),
+            duplicate_index,
+        ));
 
-            if !destination_path.exists() {
-                return Some(destination_path);
-            }
-
-            log::debug!("File '{}' already exists.", destination_path.display());
-            duplicate_index += 1;
+        if !destination_path.exists() {
+            return Ok(destination_path);
         }
-    } else {
-        log::debug!("No source stem for '{}'.", source_path.display());
-    }
 
-    None
+        log::debug!("file '{destination_path:?}' already exists. Incrementing duplication index.",);
+        duplicate_index += 1;
+    }
 }
 
 /// Creates the duplicate-filename by the given information about the source.
 ///
 /// For example:
-/// "test.txt" => "test.dup.txt" => "test.dup1.txt"
+/// "test.txt" => "test-1.txt" => "test-2.txt"
 fn generate_duplicate_filename(
     source_stem: &OsStr,
     source_extension: Option<&OsStr>,
     duplicate_index: i32,
 ) -> OsString {
-    let mut duplicate_filename = OsString::new();
-
-    duplicate_filename.push(source_stem);
-    duplicate_filename.push(DUPLICATE_SUFFIX);
-
-    if duplicate_index > 0 {
-        duplicate_filename.push(duplicate_index.to_string());
-    }
-
+    let mut duplicate_filename = OsString::from(source_stem);
+    duplicate_filename.push(DUP_SUFFIX_DELIM);
+    duplicate_filename.push(duplicate_index.to_string());
     if let Some(extension) = source_extension {
-        duplicate_filename.push(DOT);
+        duplicate_filename.push(OsString::from("."));
         duplicate_filename.push(extension);
     }
-
     duplicate_filename
 }
 
-fn remove_dup_word(source_stem: impl AsRef<Path>) -> PathBuf {
-    let source_stem = source_stem.as_ref().to_string_lossy().to_string();
-
-    let re = Regex::new(DUP_REGEX_PATTERN).unwrap();
-
-    let removed_dup_suffix = re.replace(&source_stem, "$rest").to_string();
-    PathBuf::from(removed_dup_suffix)
+/// Recursively removes found file-name suffixes that match with the above regex from the given file path.
+fn remove_dup_suffix(source: impl AsRef<Path>) -> PathBuf {
+    let mut removed = source.as_ref().to_string_lossy().to_string();
+    loop {
+        let new = DUP_REGEX.replace(&removed, "$rest").to_string();
+        if removed == new {
+            break;
+        }
+        removed = new;
+    }
+    PathBuf::from(removed)
 }
 
 #[cfg(test)]
@@ -171,19 +161,40 @@ mod tests {
 
     #[test]
     fn test_remove_dup_suffix() {
-        // test on filename without ".dup" in name
-        let normal = PathBuf::from("normal_file.txt");
-        let normal_expected = normal.clone();
-        assert_eq!(normal_expected, remove_dup_word(&normal));
+        {
+            let source = PathBuf::from("normal_file.txt");
+            let expected = source.clone();
+            assert_eq!(expected, remove_dup_suffix(&source));
+        }
 
-        // test with ".dup" name
-        let normal_dup = PathBuf::from("normal_file.dup.txt");
-        let normal_dup_expected = PathBuf::from("normal_file.txt");
-        assert_eq!(normal_dup_expected, remove_dup_word(&normal_dup));
+        {
+            let source = PathBuf::from("normal_file-1.txt");
+            let expected = PathBuf::from("normal_file.txt");
+            assert_eq!(expected, remove_dup_suffix(&source));
+        }
 
-        // test with ".dup1" which means, that a duplicated file has been duplicated
-        let normal_dup1 = PathBuf::from("normal_file.dup1.txt");
-        let normal_dup1_expected = PathBuf::from("normal_file.txt");
-        assert_eq!(normal_dup1_expected, remove_dup_word(&normal_dup1));
+        {
+            let source = PathBuf::from("normal_file-2.txt");
+            let expected = PathBuf::from("normal_file.txt");
+            assert_eq!(expected, remove_dup_suffix(&source));
+        }
+
+        {
+            let source = PathBuf::from("normal_file.1.txt");
+            let expected = PathBuf::from("normal_file.1.txt");
+            assert_eq!(expected, remove_dup_suffix(&source));
+        }
+
+        {
+            let source = PathBuf::from("normal_folder");
+            let expected = source.clone();
+            assert_eq!(expected, remove_dup_suffix(&source));
+        }
+
+        {
+            let source = PathBuf::from("normal_folder-1");
+            let expected = PathBuf::from("normal_folder");
+            assert_eq!(expected, remove_dup_suffix(&source));
+        }
     }
 }

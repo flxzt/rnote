@@ -15,7 +15,7 @@ use std::path::{Path, PathBuf};
 pub(crate) fn rename(filerow: &RnFileRow) -> gio::SimpleAction {
     let rename_action = gio::SimpleAction::new("rename-file", None);
 
-    rename_action.connect_activate(clone!(@weak filerow as filerow => move |_action_rename_file, _| {
+    rename_action.connect_activate(clone!(@weak filerow => move |_action_rename_file, _| {
         if let Some(current_file) = filerow.current_file() {
             if let Some(current_path) = current_file.path() {
                 if let Some(parent_path) = current_path.parent().map(|parent_path| parent_path.to_path_buf()) {

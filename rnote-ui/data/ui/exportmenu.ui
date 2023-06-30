@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="RnCanvasMenu" parent="GtkWidget">
+  <template class="RnExportMenu" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBinLayout" />
     </property>
     <child>
       <object class="GtkMenuButton" id="menubutton">
-        <property name="icon_name">export-document</property>
+        <property name="icon_name">document-export</property>
       </object>
     </child>
     <object class="GtkPopoverMenu" id="popovermenu">
@@ -14,7 +14,6 @@
       <property name="width-request">300</property>
       <property name="hexpand">true</property>
       <menu id="menu_model">
-        <attribute name="label" translatable="yes">_Export…</attribute>
         <item>
           <attribute name="label" translatable="yes">Export _Document</attribute>
           <attribute name="action">win.export-doc</attribute>

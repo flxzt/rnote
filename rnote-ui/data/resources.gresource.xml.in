@@ -6,6 +6,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/shortcuts.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/appmenu.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/canvasmenu.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/exportmenu.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/overlays.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/canvaswrapper.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/settingspanel.ui</file>

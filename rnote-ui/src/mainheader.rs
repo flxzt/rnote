@@ -1,5 +1,7 @@
 // Imports
-use crate::{appmenu::RnAppMenu, appwindow::RnAppWindow, canvasmenu::RnCanvasMenu};
+use crate::{
+    appmenu::RnAppMenu, appwindow::RnAppWindow, canvasmenu::RnCanvasMenu, exportmenu::RnExportMenu,
+};
 use gtk4::{
     glib, prelude::*, subclass::prelude::*, CompositeTemplate, Label, ToggleButton, Widget,
 };
@@ -22,6 +24,8 @@ mod imp {
         pub(crate) right_flapreveal_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) menus_box: TemplateChild<gtk4::Box>,
+        #[template_child]
+        pub(crate) exportmenu: TemplateChild<RnExportMenu>,
         #[template_child]
         pub(crate) canvasmenu: TemplateChild<RnCanvasMenu>,
         #[template_child]

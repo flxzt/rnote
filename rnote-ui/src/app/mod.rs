@@ -9,8 +9,9 @@ use crate::{
     strokewidthpicker::RnStrokeWidthPreview, strokewidthpicker::RnStrokeWidthSetter,
     strokewidthpicker::StrokeWidthPreviewStyle, workspacebrowser::workspacesbar::RnWorkspaceRow,
     workspacebrowser::RnFileRow, workspacebrowser::RnWorkspacesBar, RnAppMenu, RnAppWindow,
-    RnCanvas, RnCanvasMenu, RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays,
-    RnPensSideBar, RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
+    RnCanvas, RnCanvasMenu, RnCanvasWrapper, RnColorPicker, RnExportMenu, RnIconPicker,
+    RnMainHeader, RnOverlays, RnPensSideBar, RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry,
+    RnWorkspaceBrowser,
 };
 use adw::subclass::prelude::AdwApplicationImpl;
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
@@ -97,6 +98,7 @@ mod imp {
             RnColorSetter::static_type();
             RnColorPad::static_type();
             RnCanvasMenu::static_type();
+            RnExportMenu::static_type();
             RnSettingsPanel::static_type();
             RnAppMenu::static_type();
             RnMainHeader::static_type();

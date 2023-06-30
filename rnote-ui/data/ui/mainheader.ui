@@ -77,6 +77,9 @@
               <object class="GtkBox" id="menus_box">
                 <property name="spacing">3</property>
                 <child>
+                  <object class="RnExportMenu" id="exportmenu"></object>
+                </child>
+                <child>
                   <object class="RnCanvasMenu" id="canvasmenu"></object>
                 </child>
                 <child>

@@ -4,6 +4,11 @@ use p2d::bounding_volume::Aabb;
 use std::cell::Ref;
 use std::slice::Iter;
 
+/// The suffix delimiter when duplicating/renaming already existing files
+pub(crate) const FILE_DUP_SUFFIX_DELIM: &str = " - ";
+/// The suffix delimiter when duplicating/renaming already existing files for usage in a regular expression
+pub(crate) const FILE_DUP_SUFFIX_DELIM_REGEX: &str = r"\s-\s";
+
 /// File types supported by Rnote.
 #[derive(Debug)]
 pub(crate) enum FileType {

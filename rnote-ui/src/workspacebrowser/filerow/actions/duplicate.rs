@@ -10,22 +10,21 @@ use regex::Regex;
 use std::ffi::{OsStr, OsString};
 use std::path::{Path, PathBuf};
 
-/// The suffix delimiter when naming duplicated files
-const DUP_SUFFIX_DELIM: &str = "-";
-
 /// The regex used to search for duplicated files
 /// ```text
 /// - Look for delimiter
-/// |         - Look for `-1`/`-2`/`-123`/...
-/// |         |        - Look for the rest after the `-<num>` part
+/// |         - Look for `<delim>1`/`<delim>2`/`<delim>123`/...
+/// |         |        - Look for the rest after the `<delim><num>` part
 /// |         |       |       - At the end of the file name
 /// |         |       |       |
 /// |        \d*      |       $
 /// |                 |
-/// DUP_DELIM   (?P<rest>(.*))
+/// DELIM       (?P<rest>(.*))
 /// ```
-static DUP_REGEX: Lazy<Regex> =
-    Lazy::new(|| Regex::new(&(DUP_SUFFIX_DELIM.to_string() + r"\d*(?P<rest>(.*))$")).unwrap());
+static DUP_REGEX: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(&(crate::utils::FILE_DUP_SUFFIX_DELIM_REGEX.to_string() + r"\d*(?P<rest>(.*))$"))
+        .unwrap()
+});
 
 /// Create a new `duplicate` action.
 pub(crate) fn duplicate(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleAction {
@@ -98,7 +97,7 @@ where
 }
 
 /// returns a suitable not-already-existing destination path from the given source path
-/// by adding or replacing `-<num>` to the source-path, where <num> is incremented as often as needed.
+/// by adding or replacing `<delim><num>` to the source-path, where `<num>` is incremented as often as needed.
 fn generate_destination_path(source: impl AsRef<Path>) -> anyhow::Result<PathBuf> {
     let mut duplicate_index = 1;
     let mut destination_path = source.as_ref().to_owned();
@@ -133,7 +132,7 @@ fn generate_duplicate_filename(
     duplicate_index: i32,
 ) -> OsString {
     let mut duplicate_filename = OsString::from(source_stem);
-    duplicate_filename.push(DUP_SUFFIX_DELIM);
+    duplicate_filename.push(crate::utils::FILE_DUP_SUFFIX_DELIM);
     duplicate_filename.push(duplicate_index.to_string());
     if let Some(extension) = source_extension {
         duplicate_filename.push(OsString::from("."));

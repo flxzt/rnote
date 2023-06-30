@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-23 14:06+0200\n"
-"PO-Revision-Date: 2023-06-26 08:36+0000\n"
+"PO-Revision-Date: 2023-06-30 10:40+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18.1\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:35
@@ -1132,19 +1132,19 @@ msgstr "Allgemein"
 
 #: rnote-ui/data/ui/settingspanel.ui:44
 msgid "Autosave"
-msgstr "Selbstspeichern"
+msgstr "Automatisches Speichern"
 
 #: rnote-ui/data/ui/settingspanel.ui:45
 msgid "Enable or disable autosave"
-msgstr "Selbstspeichern de- / aktivieren"
+msgstr "Automatisches Speichern de- / aktivieren"
 
 #: rnote-ui/data/ui/settingspanel.ui:55
 msgid "Autosave Interval (secs)"
-msgstr "Selbstspeicherungsintervall (Sek.)"
+msgstr "Automatisches Speichern Intervall (Sek.)"
 
 #: rnote-ui/data/ui/settingspanel.ui:56
 msgid "Set the autosave interval in seconds"
-msgstr "Intervall der Selbstspeicherung ändern"
+msgstr "Intervall für automatisches Speichern ändern"
 
 #: rnote-ui/data/ui/settingspanel.ui:76
 msgid "Show Scrollbars"

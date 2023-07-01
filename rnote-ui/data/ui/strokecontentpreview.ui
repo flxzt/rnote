@@ -9,7 +9,7 @@
       </object>
     </property>
     <style>
-      <class name="stroke_content_preview" />
+      <class name="card" />
     </style>
     <child>
       <object class="GtkOverlay" id="preview_overlay">

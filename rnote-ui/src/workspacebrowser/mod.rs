@@ -18,7 +18,7 @@ use gtk4::{
     SortListModel, SorterChange, Widget,
 };
 use std::cell::RefCell;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 mod imp {
     use super::*;
@@ -446,5 +446,39 @@ impl RnWorkspaceBrowser {
                 multisorter.changed(SorterChange::Different);
                 filefilter.changed(FilterChange::Different);
             }));
+    }
+
+    /// Query the selection model to return the position of the file in the list
+    /// that matches with the given path.
+    pub(crate) fn query_selected_file_path_pos(
+        &self,
+        file_path: impl AsRef<Path>,
+    ) -> Option<usize> {
+        self.imp()
+            .files_selection_model
+            .borrow()
+            .iter::<glib::Object>()
+            .map(|o| o.unwrap().downcast::<gio::FileInfo>().unwrap())
+            .enumerate()
+            .find(move |(_, info)| {
+                let file = info
+                    .attribute_object("standard::file")
+                    .unwrap()
+                    .downcast::<gio::File>()
+                    .unwrap();
+                let Some(p) = file.path() else {
+                    return false;
+                };
+                p == file_path.as_ref()
+            })
+            .map(|(i, _)| i)
+    }
+
+    /// Set the selected file in the list with its position/index.
+    pub(crate) fn dirlist_set_selected(&self, pos: usize) {
+        self.imp()
+            .files_selection_model
+            .borrow()
+            .set_selected(pos as u32);
     }
 }

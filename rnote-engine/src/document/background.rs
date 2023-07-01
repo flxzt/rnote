@@ -480,4 +480,15 @@ impl Background {
         let svg = self.gen_svg(tile_bounds, true)?;
         render::Image::gen_image_from_svg(svg, tile_bounds, image_scale)
     }
+
+    pub fn draw_to_cairo(
+        &self,
+        cx: &cairo::Context,
+        bounds: Aabb,
+        with_pattern: bool,
+    ) -> anyhow::Result<()> {
+        let mut svg = self.gen_svg(bounds, with_pattern)?;
+        svg.wrap_svg_root(Some(bounds), Some(bounds), false);
+        svg.draw_to_cairo(cx)
+    }
 }

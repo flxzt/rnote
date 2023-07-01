@@ -27,11 +27,29 @@ impl StrokeStore {
             .map(Arc::make_mut)
     }
 
+    /// Gets the stroke by cloning the Arc that is wrapped around it.
+    pub fn get_stroke_arc(&self, key: StrokeKey) -> Option<Arc<Stroke>> {
+        self.stroke_components
+            .get(key)
+            .map(|stroke| Arc::clone(stroke))
+    }
+
     /// Gets immutable references to the strokes.
     pub fn get_strokes_ref(&self, keys: &[StrokeKey]) -> Vec<&Stroke> {
         keys.iter()
             .filter_map(|&key| self.stroke_components.get(key).map(|stroke| &**stroke))
-            .collect::<Vec<&Stroke>>()
+            .collect()
+    }
+
+    /// Gets the strokes by cloning the Arc's that are wrapped around them.
+    pub fn get_strokes_arc(&self, keys: &[StrokeKey]) -> Vec<Arc<Stroke>> {
+        keys.iter()
+            .filter_map(|&key| {
+                self.stroke_components
+                    .get(key)
+                    .map(|stroke| Arc::clone(stroke))
+            })
+            .collect()
     }
 
     /// Add a segment to the brush-stroke.
@@ -667,7 +685,7 @@ impl StrokeStore {
             .filter_map(|k| self.stroke_components.get(*k).map(Arc::clone))
             .collect();
 
-        StrokeContent { strokes }
+        StrokeContent::default().with_strokes(strokes)
     }
 
     /// Cut the strokes for the given keys and return them as stroke content.
@@ -681,7 +699,7 @@ impl StrokeStore {
             })
             .collect();
 
-        StrokeContent { strokes }
+        StrokeContent::default().with_strokes(strokes)
     }
 
     /// Paste the clipboard content as a selection.

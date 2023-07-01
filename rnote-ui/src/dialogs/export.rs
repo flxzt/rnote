@@ -3,9 +3,11 @@
 
 // Imports
 use crate::canvas::{self, RnCanvas};
+use crate::StrokeContentPaintable;
 use crate::{config, RnAppWindow};
 use adw::prelude::*;
 use gettextrs::gettext;
+use gtk4::Picture;
 use gtk4::{
     gio, glib, glib::clone, Builder, Button, Dialog, FileDialog, FileFilter, Label, ResponseType,
     SpinButton, Switch,
@@ -93,16 +95,22 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     let page_order_row: adw::ComboRow = builder.object("export_doc_page_order_row").unwrap();
     let export_file_label: Label = builder.object("export_doc_export_file_label").unwrap();
     let export_file_button: Button = builder.object("export_doc_export_file_button").unwrap();
+    let content_preview: Picture = builder.object("export_doc_content_preview").unwrap();
 
     let initial_doc_export_prefs = canvas.engine_ref().export_prefs.doc_export_prefs;
     let doc_layout = canvas.engine_ref().document.layout;
 
     dialog.set_transient_for(Some(appwindow));
+    let stroke_content_paintable =
+        StrokeContentPaintable::from_stroke_content(canvas.engine_ref().extract_document_content());
+    content_preview.set_paintable(Some(&stroke_content_paintable));
 
     // initial widget state with the preferences
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
     with_background_switch.set_active(initial_doc_export_prefs.with_background);
     with_pattern_switch.set_active(initial_doc_export_prefs.with_pattern);
+    stroke_content_paintable.set_draw_background(initial_doc_export_prefs.with_background);
+    stroke_content_paintable.set_draw_pattern(initial_doc_export_prefs.with_pattern);
     export_format_row.set_selected(initial_doc_export_prefs.export_format.to_u32().unwrap());
     page_order_row.set_selected(initial_doc_export_prefs.page_order.to_u32().unwrap());
     export_file_label.set_label(&gettext("- no file selected -"));
@@ -114,11 +122,6 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     button_confirm.set_sensitive(false);
 
     // Update prefs
-    with_background_switch
-        .bind_property("active", &with_pattern_row, "sensitive")
-        .sync_create()
-        .build();
-
     export_file_button.connect_clicked(
         clone!(@strong selected_file, @weak export_file_label, @weak button_confirm, @weak dialog, @weak canvas, @weak appwindow => move |_| {
             glib::MainContext::default().spawn_local(clone!(@strong selected_file, @weak export_file_label, @weak button_confirm, @weak dialog, @weak canvas, @weak appwindow => async move {
@@ -152,12 +155,20 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         }),
     );
 
-    with_background_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |with_background_switch| {
-        canvas.engine_mut().export_prefs.doc_export_prefs.with_background = with_background_switch.is_active();
+    with_background_switch
+        .bind_property("active", &with_pattern_row, "sensitive")
+        .sync_create()
+        .build();
+    with_background_switch.connect_active_notify(clone!(@weak stroke_content_paintable, @weak canvas, @weak appwindow => move |with_background_switch| {
+        let active = with_background_switch.is_active();
+        canvas.engine_mut().export_prefs.doc_export_prefs.with_background = active;
+        stroke_content_paintable.set_draw_background(active)
     }));
 
-    with_pattern_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |with_pattern_switch| {
-        canvas.engine_mut().export_prefs.doc_export_prefs.with_pattern = with_pattern_switch.is_active();
+    with_pattern_switch.connect_active_notify(clone!(@weak stroke_content_paintable, @weak canvas, @weak appwindow => move |with_pattern_switch| {
+        let active = with_pattern_switch.is_active();
+        canvas.engine_mut().export_prefs.doc_export_prefs.with_pattern = active;
+        stroke_content_paintable.set_draw_pattern(active)
     }));
 
     export_format_row.connect_selected_notify(clone!(@strong selected_file, @weak export_file_label, @weak page_order_row, @weak button_confirm, @weak canvas, @weak appwindow => move |row| {

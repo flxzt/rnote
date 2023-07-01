@@ -464,7 +464,7 @@ impl RnoteEngine {
                         cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
 
                         if let Some(background_svg) = background_svg.clone() {
-                            render::Svg::draw_svgs_to_cairo_context(&[background_svg], &cairo_cx)?;
+                            background_svg.draw_to_cairo(&cairo_cx)?;
                         }
                         cairo_cx.restore()?;
 

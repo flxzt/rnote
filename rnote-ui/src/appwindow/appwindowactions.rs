@@ -11,7 +11,7 @@ use rnote_compose::penevents::ShortcutKey;
 use rnote_engine::document::Layout;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::pens::PenStyle;
-use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine, WidgetFlags};
+use rnote_engine::{Camera, DrawBehaviour, RnoteEngine, WidgetFlags};
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::Instant;
@@ -701,10 +701,7 @@ impl RnAppWindow {
 
                     // We can't render the background svg with piet, so we have to do it with cairo.
                     if let Some(background_svg) = background_svg.to_owned() {
-                        render::Svg::draw_svgs_to_cairo_context(
-                            &[background_svg],
-                            &cairo_cx,
-                        )?;
+                        background_svg.draw_to_cairo(&cairo_cx)?;
                     }
                     cairo_cx.restore()?;
 

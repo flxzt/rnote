@@ -542,33 +542,29 @@ impl Svg {
         })
     }
 
-    pub fn draw_svgs_to_cairo_context(svgs: &[Self], cx: &cairo::Context) -> anyhow::Result<()> {
-        for svg in svgs {
-            let svg_data = rnote_compose::utils::wrap_svg_root(
-                svg.svg_data.as_str(),
-                Some(svg.bounds),
-                Some(svg.bounds),
-                false,
-            );
+    pub fn draw_to_cairo(&self, cx: &cairo::Context) -> anyhow::Result<()> {
+        let svg_data = rnote_compose::utils::wrap_svg_root(
+            self.svg_data.as_str(),
+            Some(self.bounds),
+            Some(self.bounds),
+            false,
+        );
 
-            let stream =
-                gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
+        let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
 
-            let handle = rsvg::Loader::new()
-                .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
-                    &stream, None, None,
-                )
-                .context("read stream to librsvg Loader failed")?;
+        let handle = rsvg::Loader::new()
+            .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(&stream, None, None)
+            .context("read stream to librsvg Loader failed")?;
 
-            let renderer = rsvg::CairoRenderer::new(&handle);
-            renderer
+        let renderer = rsvg::CairoRenderer::new(&handle);
+        renderer
                 .render_document(
                     cx,
                     &cairo::Rectangle::new(
-                        svg.bounds.mins[0],
-                        svg.bounds.mins[1],
-                        svg.bounds.extents()[0],
-                        svg.bounds.extents()[1],
+                        self.bounds.mins[0],
+                        self.bounds.mins[1],
+                        self.bounds.extents()[0],
+                        self.bounds.extents()[1],
                     ),
                 )
                 .map_err(|e| {
@@ -576,7 +572,6 @@ impl Svg {
                     "librsvg render_document() failed in draw_svgs_to_cairo_context() with Err: {e:?}"
                 ))
                 })?;
-        }
         Ok(())
     }
 
@@ -608,19 +603,12 @@ impl Svg {
     }
 
     #[allow(unused)]
-    fn render_to_caironode(&self) -> Result<gsk::CairoNode, anyhow::Error> {
-        if self.bounds.extents()[0] < 0.0 || self.bounds.extents()[1] < 0.0 {
-            return Err(anyhow::anyhow!(
-                "render_to_caironode() failed, bounds width/ height is < 0.0"
-            ));
-        }
-
-        let new_caironode = gsk::CairoNode::new(&graphene::Rect::from_p2d_aabb(self.bounds));
-        let cx = new_caironode.draw_context();
-
-        Svg::draw_svgs_to_cairo_context(&[self.to_owned()], &cx)?;
-
-        Ok(new_caironode)
+    pub fn draw_as_caironode(&self) -> Result<gsk::CairoNode, anyhow::Error> {
+        self.bounds.assert_valid()?;
+        let node = gsk::CairoNode::new(&graphene::Rect::from_p2d_aabb(self.bounds));
+        let cx = node.draw_context();
+        self.draw_to_cairo(&cx)?;
+        Ok(node)
     }
 }
 

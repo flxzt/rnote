@@ -8,7 +8,9 @@ use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
-/// Stroke content. Used when copying/cutting/pasting a selection into/from the clipboard.
+/// Stroke content.
+///
+/// Used when exporting and pasting/copying/cutting from/into the clipboard.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default, rename = "stroke_content")]
 pub struct StrokeContent {
@@ -38,10 +40,6 @@ impl StrokeContent {
         self
     }
 
-    pub fn size(&self) -> Option<na::Vector2<f64>> {
-        self.bounds().map(|b| b.extents())
-    }
-
     pub fn bounds(&self) -> Option<Aabb> {
         if self.strokes.is_empty() {
             return None;
@@ -57,17 +55,27 @@ impl StrokeContent {
         )
     }
 
+    pub fn size(&self) -> Option<na::Vector2<f64>> {
+        self.bounds().map(|b| b.extents())
+    }
+
     /// Generate a Svg from the content.
-    pub fn generate_svg(&self) -> anyhow::Result<Option<Svg>> {
-        if self.strokes.is_empty() {
-            return Ok(None);
-        }
+    ///
+    // Moves the bounds to mins: [0.0, 0.0], maxs: extents.
+    pub fn gen_svg(
+        &self,
+        with_background: bool,
+        with_pattern: bool,
+    ) -> anyhow::Result<Option<Svg>> {
         let Some(bounds) = self.bounds() else {
             return Ok(None)
         };
-        let mut svg = Svg {
-            svg_data: String::new(),
-            bounds,
+        let mut svg = match (with_background, self.background) {
+            (true, Some(background)) => background.gen_svg(bounds, with_pattern)?,
+            _ => Svg {
+                svg_data: String::new(),
+                bounds,
+            },
         };
         svg.merge([Svg::gen_with_piet_cairo_backend(
             |piet_cx| {
@@ -93,7 +101,7 @@ impl StrokeContent {
         image_scale: f64,
     ) -> anyhow::Result<()> {
         let Some(bounds) = self.bounds() else { return Ok(()) };
-        let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+        let mut piet_cx = piet_cairo::CairoRenderContext::new(cairo_cx);
 
         cairo_cx.rectangle(
             bounds.mins[0],
@@ -105,7 +113,7 @@ impl StrokeContent {
 
         if draw_background {
             if let Some(background) = &self.background {
-                background.draw_to_cairo(&cairo_cx, bounds, draw_pattern)?;
+                background.draw_to_cairo(cairo_cx, bounds, draw_pattern)?;
             }
         }
         for stroke in self.strokes.iter() {

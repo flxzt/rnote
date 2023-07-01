@@ -169,7 +169,7 @@ impl PenBehaviour for Selector {
         rayon::spawn(move || {
             let result = move || {
                 if let Some(stroke_content) = stroke_content {
-                    let stroke_content_svg = stroke_content.generate_svg()?;
+                    let stroke_content_svg = stroke_content.gen_svg(false, false)?;
 
                     // Add StrokeContent
                     clipboard_content.push((
@@ -228,7 +228,7 @@ impl PenBehaviour for Selector {
         rayon::spawn(move || {
             let result = move || {
                 if let Some(stroke_content) = stroke_content {
-                    let stroke_content_svg = stroke_content.generate_svg()?;
+                    let stroke_content_svg = stroke_content.gen_svg(false, false)?;
 
                     // Add StrokeContent
                     clipboard_content.push((

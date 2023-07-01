@@ -29,9 +29,7 @@ impl StrokeStore {
 
     /// Gets the stroke by cloning the Arc that is wrapped around it.
     pub fn get_stroke_arc(&self, key: StrokeKey) -> Option<Arc<Stroke>> {
-        self.stroke_components
-            .get(key)
-            .map(|stroke| Arc::clone(stroke))
+        self.stroke_components.get(key).map(Arc::clone)
     }
 
     /// Gets immutable references to the strokes.
@@ -44,11 +42,7 @@ impl StrokeStore {
     /// Gets the strokes by cloning the Arc's that are wrapped around them.
     pub fn get_strokes_arc(&self, keys: &[StrokeKey]) -> Vec<Arc<Stroke>> {
         keys.iter()
-            .filter_map(|&key| {
-                self.stroke_components
-                    .get(key)
-                    .map(|stroke| Arc::clone(stroke))
-            })
+            .filter_map(|&key| self.stroke_components.get(key).map(Arc::clone))
             .collect()
     }
 

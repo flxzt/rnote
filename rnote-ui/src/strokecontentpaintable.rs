@@ -100,8 +100,7 @@ mod imp {
             if intrinsic_size[0] <= 0.0 || intrinsic_size[1] <= 0.0 {
                 return;
             }
-            let scale_factor =
-                (width as f64 / intrinsic_size[0]).min(height as f64 / intrinsic_size[1]);
+            let scale_factor = (width / intrinsic_size[0]).min(height / intrinsic_size[1]);
             let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(Aabb::new(
                 na::point![0.0, 0.0],
                 intrinsic_size.into(),

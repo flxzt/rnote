@@ -1,17 +1,16 @@
 // Imports
-use super::{EngineConfig, EngineSnapshot, RnoteEngine};
+use super::{EngineConfig, RnoteEngine, StrokeContent};
 use crate::fileformats::rnoteformat::RnoteFile;
 use crate::fileformats::{xoppformat, FileFormatSaver};
-use crate::store::StrokeKey;
-use crate::strokes::Stroke;
-use crate::{render, DrawBehaviour};
+use crate::render;
 use anyhow::Context;
 use futures::channel::oneshot;
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-use rnote_compose::helpers::{SplitOrder, Vector2Helpers};
+use p2d::bounding_volume::BoundingVolume;
+use rayon::prelude::*;
+use rnote_compose::helpers::SplitOrder;
 use rnote_compose::transform::TransformBehaviour;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 /// Document export format.
 #[derive(
@@ -327,6 +326,49 @@ impl RnoteEngine {
         }
     }
 
+    pub fn extract_document_content(&self) -> StrokeContent {
+        StrokeContent::default()
+            .with_strokes(
+                self.store
+                    .get_strokes_arc(&self.store.stroke_keys_as_rendered()),
+            )
+            .with_bounds(Some(
+                self.bounds_w_content_extended()
+                    .unwrap_or(self.document.bounds()),
+            ))
+            .with_background(Some(self.document.background))
+    }
+
+    pub fn extract_pages_content(&self, page_order: SplitOrder) -> Vec<StrokeContent> {
+        self.pages_bounds_w_content(page_order)
+            .into_iter()
+            .map(|bounds| {
+                StrokeContent::default()
+                    .with_strokes(
+                        self.store.get_strokes_arc(
+                            &self
+                                .store
+                                .stroke_keys_as_rendered_intersecting_bounds(bounds),
+                        ),
+                    )
+                    .with_bounds(Some(bounds))
+                    .with_background(Some(self.document.background))
+            })
+            .collect()
+    }
+
+    pub fn extract_selection_content(&self) -> Option<StrokeContent> {
+        let selection_keys = self.store.selection_keys_as_rendered();
+        if selection_keys.is_empty() {
+            return None;
+        }
+        Some(
+            StrokeContent::default()
+                .with_strokes(self.store.get_strokes_arc(&selection_keys))
+                .with_background(Some(self.document.background)),
+        )
+    }
+
     /// Export the current engine config as Json string.
     pub fn export_engine_config_as_json(&self) -> anyhow::Result<String> {
         Ok(serde_json::to_string(&self.extract_engine_config())?)
@@ -363,19 +405,18 @@ impl RnoteEngine {
         doc_export_prefs_override: Option<DocExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<u8>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
-
         let doc_export_prefs =
             doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
-        let stroke_keys = self.store.stroke_keys_as_rendered();
-        let snapshot = self.take_snapshot();
-        let content_bounds = self
-            .bounds_w_content_extended()
-            .unwrap_or_else(|| snapshot.document.bounds());
+        let doc_content = self.extract_document_content();
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
-                let doc_svg =
-                    gen_doc_svg(content_bounds, stroke_keys, &snapshot, doc_export_prefs)?;
+                let doc_svg = doc_content
+                    .gen_svg(
+                        doc_export_prefs.with_background,
+                        doc_export_prefs.with_pattern,
+                    )?
+                    .ok_or(anyhow::anyhow!("Generating doc svg failed, returned None."))?;
                 Ok(rnote_compose::utils::add_xml_header(
                     rnote_compose::utils::wrap_svg_root(
                         doc_svg.svg_data.as_str(),
@@ -389,7 +430,7 @@ impl RnoteEngine {
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in export_doc_as_svg_bytes() failed. Receiver already dropped");
+                log::error!("Sending result to receiver failed. Receiver already dropped.");
             }
         });
 
@@ -403,114 +444,65 @@ impl RnoteEngine {
         doc_export_prefs_override: Option<DocExportPrefs>,
     ) -> oneshot::Receiver<anyhow::Result<Vec<u8>>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
-
         let doc_export_prefs =
             doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
-        let snapshot = self.take_snapshot();
-
-        let pages_strokes = self
-            .pages_bounds_w_content(doc_export_prefs.page_order)
-            .into_iter()
-            .map(|page_bounds| {
-                let strokes_in_viewport = self
-                    .store
-                    .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
-
-                (page_bounds, strokes_in_viewport)
-            })
-            .collect::<Vec<(Aabb, Vec<StrokeKey>)>>();
+        let pages_content = self.extract_pages_content(doc_export_prefs.page_order);
+        let format_size = na::vector![self.document.format.width, self.document.format.height];
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
-                let format_size = na::vector![
-                    snapshot.document.format.width,
-                    snapshot.document.format.height
-                ];
-
-                let background_svg = if doc_export_prefs.with_background {
-                    Some(
-                        snapshot
-                            .document
-                            .background
-                            .gen_svg(snapshot.document.bounds(), doc_export_prefs.with_pattern)?,
-                    )
-                } else {
-                    None
-                };
-
-                let surface =
+                let target_surface =
                     cairo::PdfSurface::for_stream(format_size[0], format_size[1], Vec::<u8>::new())
-                        .context("pdfsurface creation failed")?;
+                        .context("Creating Pdf target surface failed.")?;
 
-                surface
+                target_surface
                     .set_metadata(cairo::PdfMetadata::Title, title.as_str())
-                    .context("set pdf surface title metadata failed")?;
-                surface
+                    .context("Set pdf surface title metadata failed.")?;
+                target_surface
                     .set_metadata(
                         cairo::PdfMetadata::CreateDate,
                         crate::utils::now_formatted_string().as_str(),
                     )
-                    .context("set pdf surface date metadata failed")?;
+                    .context("Set pdf surface date metadata failed.")?;
 
                 // New scope to avoid errors when flushing
                 {
-                    let cairo_cx =
-                        cairo::Context::new(&surface).context("cario cx new() failed")?;
+                    let cairo_cx = cairo::Context::new(&target_surface)
+                        .context("Creating new cairo context for pdf target surface failed.")?;
 
-                    for (i, (page_bounds, page_strokes)) in pages_strokes.into_iter().enumerate() {
-                        // We can't render the background svg with piet, so we have to do it with cairo.
+                    for (i, page_content) in pages_content.into_iter().enumerate() {
+                        let Some(page_bounds) = page_content.bounds() else {
+                            continue;
+                        };
                         cairo_cx.save()?;
-
                         cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
-
-                        if let Some(background_svg) = background_svg.clone() {
-                            background_svg.draw_to_cairo(&cairo_cx)?;
-                        }
-                        cairo_cx.restore()?;
-
-                        // Draw the strokes with piet.
-                        let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-                        piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-                        piet_cx.transform(kurbo::Affine::translate(
-                            -page_bounds.mins.coords.to_kurbo_vec(),
-                        ));
-
-                        for stroke in page_strokes.into_iter() {
-                            if let Some(stroke) = snapshot.stroke_components.get(stroke) {
-                                stroke
-                                    .draw(&mut piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
-                            }
-                        }
-
+                        page_content.draw_to_cairo(
+                            &cairo_cx,
+                            doc_export_prefs.with_background,
+                            doc_export_prefs.with_pattern,
+                            RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                        )?;
                         cairo_cx.show_page().map_err(|e| {
                             anyhow::anyhow!(
-                                "show_page() failed when exporting page {i} as pdf, Err: {e:?}"
+                                "Showing page failed when exporting page {i} as pdf, Err: {e:?}"
                             )
                         })?;
-
-                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+                        cairo_cx.restore()?;
                     }
                 }
-                let data = *surface
+                let data = *target_surface
                     .finish_output_stream()
-                    .map_err(|e| {
-                        anyhow::anyhow!(
-                            "finish_outputstream() failed in export_doc_as_pdf_bytes with Err: {e:?}"
-                        )
-                    })?
+                    .map_err(|e| anyhow::anyhow!("Finishing outputstream failed with Err: {e:?}"))?
                     .downcast::<Vec<u8>>()
                     .map_err(|e| {
-                        anyhow::anyhow!(
-                            "downcast() finished output stream failed in export_doc_as_pdf_bytes with Err: {e:?}"
-                        )
+                        anyhow::anyhow!("Downcasting finished output stream failed with Err: {e:?}")
                     })?;
 
                 Ok(data)
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in export_doc_as_pdf_bytes() failed. Receiver already dropped");
+                log::error!("Sending result to receiver failed. Receiver already dropped.");
             }
         });
 
@@ -524,24 +516,10 @@ impl RnoteEngine {
         doc_export_prefs_override: Option<DocExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<u8>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
-
         let doc_export_prefs =
             doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
-        let snapshot = self.take_snapshot();
-
-        let pages_strokes: Vec<(Aabb, Vec<Stroke>)> = self
-            .pages_bounds_w_content(doc_export_prefs.page_order)
-            .into_iter()
-            .map(|page_bounds| {
-                let page_keys = self
-                    .store
-                    .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
-
-                let strokes = self.store.clone_strokes(&page_keys);
-
-                (page_bounds, strokes)
-            })
-            .collect();
+        let pages_content = self.extract_pages_content(doc_export_prefs.page_order);
+        let document = self.document;
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
@@ -549,25 +527,25 @@ impl RnoteEngine {
                 let xopp_background = xoppformat::XoppBackground {
                     name: None,
                     bg_type: xoppformat::XoppBackgroundType::Solid {
-                        color: crate::utils::xoppcolor_from_color(
-                            snapshot.document.background.color,
-                        ),
+                        color: crate::utils::xoppcolor_from_color(document.background.color),
                         style: xoppformat::XoppBackgroundSolidStyle::Plain,
                     },
                 };
 
                 // xopp spec needs at least one page in vec,
                 // but it is fine because pages_bounds_w_content() always produces at least one.
-                let pages = pages_strokes
+                let pages = pages_content
                     .into_iter()
-                    .map(|(page_bounds, strokes)| {
+                    .filter_map(|page_content| {
+                        let page_bounds = page_content.bounds()?;
                         // Translate strokes to to page mins and convert to XoppStrokStyle
-                        let xopp_strokestyles = strokes
+                        let xopp_strokestyles = page_content
+                            .strokes
                             .into_iter()
                             .filter_map(|mut stroke| {
+                                let mut stroke = Arc::make_mut(&mut stroke).clone();
                                 stroke.translate(-page_bounds.mins.coords);
-
-                                stroke.into_xopp(snapshot.document.format.dpi)
+                                stroke.into_xopp(document.format.dpi)
                             })
                             .collect::<Vec<xoppformat::XoppStrokeType>>();
 
@@ -625,16 +603,16 @@ impl RnoteEngine {
 
                         let page_dimensions = crate::utils::convert_coord_dpi(
                             page_bounds.extents(),
-                            snapshot.document.format.dpi,
+                            document.format.dpi,
                             xoppformat::XoppFile::DPI,
                         );
 
-                        xoppformat::XoppPage {
+                        Some(xoppformat::XoppPage {
                             width: page_dimensions[0],
                             height: page_dimensions[1],
                             background: xopp_background.clone(),
                             layers: vec![image_layer, strokes_layer],
-                        }
+                        })
                     })
                     .collect::<Vec<xoppformat::XoppPage>>();
 
@@ -652,7 +630,7 @@ impl RnoteEngine {
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in export_doc_as_xopp_bytes() failed. Receiver already dropped");
+                log::error!("Sending result to receiver in export_doc_as_xopp_bytes() failed. Receiver already dropped.");
             }
         });
 
@@ -683,48 +661,40 @@ impl RnoteEngine {
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Vec<u8>>>>();
-
         let doc_pages_export_prefs =
             doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
-
-        let snapshot = self.take_snapshot();
-
-        let pages_strokes: Vec<(Aabb, Vec<StrokeKey>)> = self
-            .pages_bounds_w_content(doc_pages_export_prefs.page_order)
-            .into_iter()
-            .map(|page_bounds| {
-                let page_strokes = self
-                    .store
-                    .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
-
-                (page_bounds, page_strokes)
-            })
-            .collect();
+        let pages_content = self.extract_pages_content(doc_pages_export_prefs.page_order);
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<Vec<u8>>> {
-                let doc_pages_svgs: Vec<Vec<u8>> =
-                    gen_doc_pages_svgs(pages_strokes, &snapshot, doc_pages_export_prefs)?
-                        .into_iter()
-                        .map(|page_svg| {
-                            rnote_compose::utils::add_xml_header(
-                                rnote_compose::utils::wrap_svg_root(
-                                    page_svg.svg_data.as_str(),
-                                    Some(page_svg.bounds),
-                                    Some(page_svg.bounds),
-                                    false,
-                                )
-                                .as_str(),
+                pages_content
+                    .into_par_iter()
+                    .enumerate()
+                    .map(|(i, page_content)| {
+                        let page_svg = page_content
+                            .gen_svg(
+                                doc_pages_export_prefs.with_background,
+                                doc_pages_export_prefs.with_pattern,
+                            )?
+                            .ok_or(anyhow::anyhow!(
+                                "Generating Svg for page {i} failed, returned None."
+                            ))?;
+                        Ok(rnote_compose::utils::add_xml_header(
+                            rnote_compose::utils::wrap_svg_root(
+                                page_svg.svg_data.as_str(),
+                                Some(page_svg.bounds),
+                                Some(page_svg.bounds),
+                                false,
                             )
-                            .into_bytes()
-                        })
-                        .collect();
-
-                Ok(doc_pages_svgs)
+                            .as_str(),
+                        )
+                        .into_bytes())
+                    })
+                    .collect()
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in export_doc_pages_as_svgs_bytes() failed. Receiver already dropped");
+                log::error!("Sending result to receiver in export_doc_pages_as_svgs_bytes() failed. Receiver already dropped.");
             }
         });
 
@@ -739,37 +709,31 @@ impl RnoteEngine {
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Vec<u8>>>>();
-
         let doc_pages_export_prefs =
             doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
-
-        let snapshot = self.take_snapshot();
-
-        let pages_strokes: Vec<(Aabb, Vec<StrokeKey>)> = self
-            .pages_bounds_w_content(doc_pages_export_prefs.page_order)
-            .into_iter()
-            .map(|page_bounds| {
-                let page_strokes = self
-                    .store
-                    .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
-
-                (page_bounds, page_strokes)
-            })
-            .collect();
+        let pages_content = self.extract_pages_content(doc_pages_export_prefs.page_order);
 
         rayon::spawn(move || {
             let result = || -> Result<Vec<Vec<u8>>, anyhow::Error> {
                 let bitmapimage_format = match doc_pages_export_prefs.export_format {
-                    DocPagesExportFormat::Svg => return Err(anyhow::anyhow!("extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format")),
+                    DocPagesExportFormat::Svg => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
                     DocPagesExportFormat::Png => image::ImageOutputFormat::Png,
                     DocPagesExportFormat::Jpeg => {
                         image::ImageOutputFormat::Jpeg(doc_pages_export_prefs.jpeg_quality)
                     }
                 };
-
-                gen_doc_pages_svgs(pages_strokes, &snapshot, doc_pages_export_prefs)?
-                    .into_iter()
-                    .map(|page_svg| {
+                pages_content
+                    .into_par_iter()
+                    .enumerate()
+                    .map(|(i, page_content)| {
+                        let page_svg = page_content
+                            .gen_svg(
+                                doc_pages_export_prefs.with_background,
+                                doc_pages_export_prefs.with_pattern,
+                            )?
+                            .ok_or(anyhow::anyhow!(
+                                "Generating Svg for page {i} failed, returned None."
+                            ))?;
                         let page_svg_bounds = page_svg.bounds;
 
                         render::Image::gen_image_from_svg(
@@ -782,7 +746,7 @@ impl RnoteEngine {
                     .collect()
             };
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in export_doc_pages_as_bitmap_bytes() failed. Receiver already dropped");
+                log::error!("Sending result to receiver failed. Receiver already dropped.");
             }
         });
 
@@ -814,23 +778,20 @@ impl RnoteEngine {
     ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<Option<Vec<u8>>>>();
-
         let selection_export_prefs =
             selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
-        let snapshot = self.take_snapshot();
-        let selection_keys = self.store.selection_keys_as_rendered();
-        let selection_bounds = self
-            .store
-            .bounds_for_strokes(&selection_keys)
-            .map(|b| b.loosened(selection_export_prefs.margin));
+        let selection_content = self.extract_selection_content();
 
         rayon::spawn(move || {
             let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
-                let Some(selection_bounds) = selection_bounds else {
+                let Some(mut selection_content) = selection_content else {
                     return Ok(None);
                 };
-
-                let Some(selection_svg) = gen_selection_svg(selection_keys, selection_bounds, &snapshot, selection_export_prefs)? else {
+                let Some(selection_bounds) = selection_content.bounds().map(|b| b.loosened(selection_export_prefs.margin)) else {
+                    return Ok(None);
+                };
+                selection_content.bounds = Some(selection_bounds);
+                let Some(selection_svg) = selection_content.gen_svg(selection_export_prefs.with_background, selection_export_prefs.with_pattern)? else {
                     return Ok(None);
                 };
 
@@ -848,7 +809,7 @@ impl RnoteEngine {
                 ))
             };
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in export_selection_as_svgs_bytes() failed. Receiver already dropped");
+                log::error!("Sending result to receiver failed. Receiver already dropped.");
             }
         });
 
@@ -864,35 +825,30 @@ impl RnoteEngine {
     ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<Option<Vec<u8>>>>();
-
         let selection_export_prefs =
             selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
-        let snapshot = self.take_snapshot();
-        let selection_keys = self.store.selection_keys_as_rendered();
-        let selection_bounds = self
-            .store
-            .bounds_for_strokes(&selection_keys)
-            .map(|b| b.loosened(selection_export_prefs.margin));
+        let selection_content = self.extract_selection_content();
 
         rayon::spawn(move || {
             let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
-                let Some(selection_bounds) = selection_bounds else {
+                let Some(mut selection_content) = selection_content else {
                     return Ok(None);
                 };
-
-                let Some(selection_svg) = gen_selection_svg(selection_keys, selection_bounds, &snapshot, selection_export_prefs)? else {
-                return Ok(None);
-            };
-
+                let Some(selection_bounds) = selection_content.bounds().map(|b| b.loosened(selection_export_prefs.margin)) else {
+                    return Ok(None);
+                };
+                selection_content.bounds = Some(selection_bounds);
+                let Some(selection_svg) = selection_content.gen_svg(selection_export_prefs.with_background, selection_export_prefs.with_pattern)? else {
+                    return Ok(None);
+                };
                 let selection_svg_bounds = selection_svg.bounds;
-
                 let bitmapimage_format = match selection_export_prefs.export_format {
-                SelectionExportFormat::Svg => return Err(anyhow::anyhow!("export_selection_as_bitmap_bytes() failed, export preferences have Svg as export format")),
-                SelectionExportFormat::Png => image::ImageOutputFormat::Png,
-                SelectionExportFormat::Jpeg => {
-                    image::ImageOutputFormat::Jpeg(selection_export_prefs.jpeg_quality)
-                }
-            };
+                    SelectionExportFormat::Svg => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
+                    SelectionExportFormat::Png => image::ImageOutputFormat::Png,
+                    SelectionExportFormat::Jpeg => {
+                        image::ImageOutputFormat::Jpeg(selection_export_prefs.jpeg_quality)
+                    }
+                };
 
                 Ok(Some(
                     render::Image::gen_image_from_svg(
@@ -904,143 +860,10 @@ impl RnoteEngine {
                 ))
             };
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in export_selection_as_bitmap_bytes() failed. Receiver already dropped");
+                log::error!("Sending result to receiver failed. Receiver already dropped");
             }
         });
 
         oneshot_receiver
     }
-}
-
-/// Generates the doc Svg.
-///
-/// Without root or Xml header.
-fn gen_doc_svg(
-    doc_w_content_bounds: Aabb,
-    stroke_keys: Vec<StrokeKey>,
-    snapshot: &EngineSnapshot,
-    doc_export_prefs: DocExportPrefs,
-) -> Result<render::Svg, anyhow::Error> {
-    let mut doc_svg = if doc_export_prefs.with_background {
-        snapshot
-            .document
-            .background
-            .gen_svg(doc_w_content_bounds, doc_export_prefs.with_pattern)?
-    } else {
-        render::Svg {
-            svg_data: String::new(),
-            bounds: doc_w_content_bounds,
-        }
-    };
-
-    doc_svg.merge([render::Svg::gen_with_piet_cairo_backend(
-        |piet_cx| {
-            for key in stroke_keys {
-                if let Some(stroke) = snapshot.stroke_components.get(key) {
-                    stroke.draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
-                }
-            }
-
-            Ok(())
-        },
-        doc_w_content_bounds,
-    )?]);
-
-    // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
-    if let Err(e) = doc_svg.simplify() {
-        log::warn!("simplifying svg in gen_doc_svg() failed, Err: {e:?}");
-    };
-
-    Ok(doc_svg)
-}
-
-/// Generates the doc pages Svg's.
-///
-/// Without root or Xml header.
-fn gen_doc_pages_svgs(
-    pages_strokes: Vec<(Aabb, Vec<StrokeKey>)>,
-    snapshot: &EngineSnapshot,
-    doc_pages_export_prefs: DocPagesExportPrefs,
-) -> Result<Vec<render::Svg>, anyhow::Error> {
-    let mut pages_svgs = vec![];
-
-    for (page_bounds, strokes) in pages_strokes {
-        let mut page_svg = if doc_pages_export_prefs.with_background {
-            snapshot
-                .document
-                .background
-                .gen_svg(page_bounds, doc_pages_export_prefs.with_pattern)?
-        } else {
-            render::Svg {
-                svg_data: String::new(),
-                bounds: page_bounds,
-            }
-        };
-
-        page_svg.merge([render::Svg::gen_with_piet_cairo_backend(
-            |piet_cx| {
-                for key in strokes {
-                    if let Some(stroke) = snapshot.stroke_components.get(key) {
-                        stroke.draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
-                    }
-                }
-                Ok(())
-            },
-            page_bounds,
-        )?]);
-
-        // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
-        if let Err(e) = page_svg.simplify() {
-            log::warn!("simplifying svg in gen_doc_pages_svgs() failed, Err: {e:?}");
-        };
-
-        pages_svgs.push(page_svg);
-    }
-
-    Ok(pages_svgs)
-}
-
-/// Generates the selection Svg.
-///
-/// Without root or Xml header.
-fn gen_selection_svg(
-    selection_keys: Vec<StrokeKey>,
-    selection_bounds: Aabb,
-    snapshot: &EngineSnapshot,
-    selection_export_prefs: SelectionExportPrefs,
-) -> Result<Option<render::Svg>, anyhow::Error> {
-    if selection_keys.is_empty() {
-        return Ok(None);
-    }
-
-    let mut selection_svg = if selection_export_prefs.with_background {
-        snapshot
-            .document
-            .background
-            .gen_svg(selection_bounds, selection_export_prefs.with_pattern)?
-    } else {
-        render::Svg {
-            svg_data: String::new(),
-            bounds: selection_bounds,
-        }
-    };
-
-    selection_svg.merge([render::Svg::gen_with_piet_cairo_backend(
-        |piet_cx| {
-            for key in selection_keys {
-                if let Some(stroke) = snapshot.stroke_components.get(key) {
-                    stroke.draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
-                }
-            }
-            Ok(())
-        },
-        selection_bounds,
-    )?]);
-
-    // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
-    if let Err(e) = selection_svg.simplify() {
-        log::warn!("simplifying svg in gen_selection_svg() failed, Err: {e:?}");
-    };
-
-    Ok(Some(selection_svg))
 }

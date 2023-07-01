@@ -741,8 +741,8 @@ impl RnoteEngine {
             .with_background(Some(self.document.background))
     }
 
-    pub fn extract_pages_content(&self, split_order: SplitOrder) -> Vec<StrokeContent> {
-        self.pages_bounds_w_content(split_order)
+    pub fn extract_pages_content(&self, page_order: SplitOrder) -> Vec<StrokeContent> {
+        self.pages_bounds_w_content(page_order)
             .into_iter()
             .map(|bounds| {
                 StrokeContent::default()

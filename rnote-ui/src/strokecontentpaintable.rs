@@ -12,7 +12,6 @@ mod imp {
 
     #[derive(Debug, Default)]
     pub struct StrokeContentPaintable {
-        pub(super) cache: RefCell<Option<cairo::ImageSurface>>,
         pub(super) draw_background: Cell<bool>,
         pub(super) draw_pattern: Cell<bool>,
         pub(super) stroke_content: RefCell<StrokeContent>,
@@ -55,7 +54,6 @@ mod imp {
                         .get::<bool>()
                         .expect("The value needs to be of type `bool`");
                     self.draw_background.replace(draw_background);
-                    self.refresh_cache();
                     self.obj().invalidate_contents();
                 }
                 "draw-pattern" => {
@@ -63,7 +61,6 @@ mod imp {
                         .get::<bool>()
                         .expect("The value needs to be of type `bool`");
                     self.draw_pattern.replace(draw_pattern);
-                    self.refresh_cache();
                     self.obj().invalidate_contents();
                 }
                 _ => unimplemented!(),
@@ -122,12 +119,6 @@ mod imp {
             }
         }
     }
-
-    impl StrokeContentPaintable {
-        pub(super) fn refresh_cache(&self) {
-            self.cache.borrow_mut().take();
-        }
-    }
 }
 
 glib::wrapper! {
@@ -177,7 +168,6 @@ impl StrokeContentPaintable {
 
     pub(crate) fn set_stroke_content(&self, stroke_content: StrokeContent) {
         self.imp().stroke_content.replace(stroke_content);
-        self.imp().refresh_cache();
         self.invalidate_size();
         self.invalidate_contents();
     }

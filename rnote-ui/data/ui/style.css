@@ -250,3 +250,8 @@ from https://gitlab.com/posidon_software/paper/-/blob/main/src/css/style.css
 toast {
     margin-bottom: 72px;
 }
+
+.content_preview_container {
+    background-color: @view_bg_color;
+    border-radius: 12px;
+}

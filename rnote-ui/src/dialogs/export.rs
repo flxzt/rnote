@@ -7,10 +7,9 @@ use crate::StrokeContentPaintable;
 use crate::{config, RnAppWindow};
 use adw::prelude::*;
 use gettextrs::gettext;
-use gtk4::Picture;
 use gtk4::{
-    gio, glib, glib::clone, Builder, Button, Dialog, FileDialog, FileFilter, Label, ResponseType,
-    SpinButton, Switch,
+    gio, glib, glib::clone, Builder, Button, Dialog, FileDialog, FileFilter, Label, Picture,
+    ResponseType, SpinButton, Switch,
 };
 use num_traits::ToPrimitive;
 use rnote_compose::helpers::SplitOrder;
@@ -19,7 +18,7 @@ use rnote_engine::engine::export::{
     DocExportFormat, DocExportPrefs, DocPagesExportFormat, DocPagesExportPrefs,
     SelectionExportFormat, SelectionExportPrefs,
 };
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanvas) {
@@ -95,22 +94,38 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     let page_order_row: adw::ComboRow = builder.object("export_doc_page_order_row").unwrap();
     let export_file_label: Label = builder.object("export_doc_export_file_label").unwrap();
     let export_file_button: Button = builder.object("export_doc_export_file_button").unwrap();
-    let content_preview: Picture = builder.object("export_doc_content_preview").unwrap();
+    let preview_picture: Picture = builder.object("export_doc_preview_picture").unwrap();
+    let preview_prev_page_button: Button = builder
+        .object("export_doc_preview_prev_page_button")
+        .unwrap();
+    let preview_next_page_button: Button = builder
+        .object("export_doc_preview_next_page_button")
+        .unwrap();
 
     let initial_doc_export_prefs = canvas.engine_ref().export_prefs.doc_export_prefs;
     let doc_layout = canvas.engine_ref().document.layout;
+    let pages_content = Rc::new(RefCell::new(
+        canvas
+            .engine_ref()
+            .extract_pages_content(initial_doc_export_prefs.page_order),
+    ));
+    let current_page = Rc::new(Cell::new(0_usize));
+    let n_pages = pages_content.borrow().len();
+    if n_pages == 0 {
+        return;
+    }
 
     dialog.set_transient_for(Some(appwindow));
-    let stroke_content_paintable =
-        StrokeContentPaintable::from_stroke_content(canvas.engine_ref().extract_document_content());
-    content_preview.set_paintable(Some(&stroke_content_paintable));
+    let preview_paintable =
+        StrokeContentPaintable::from_stroke_content(pages_content.borrow()[0].clone());
+    preview_picture.set_paintable(Some(&preview_paintable));
 
     // initial widget state with the preferences
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
     with_background_switch.set_active(initial_doc_export_prefs.with_background);
     with_pattern_switch.set_active(initial_doc_export_prefs.with_pattern);
-    stroke_content_paintable.set_draw_background(initial_doc_export_prefs.with_background);
-    stroke_content_paintable.set_draw_pattern(initial_doc_export_prefs.with_pattern);
+    preview_paintable.set_draw_background(initial_doc_export_prefs.with_background);
+    preview_paintable.set_draw_pattern(initial_doc_export_prefs.with_pattern);
     export_format_row.set_selected(initial_doc_export_prefs.export_format.to_u32().unwrap());
     page_order_row.set_selected(initial_doc_export_prefs.page_order.to_u32().unwrap());
     export_file_label.set_label(&gettext("- no file selected -"));
@@ -120,6 +135,8 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
             && (doc_layout == Layout::SemiInfinite || doc_layout == Layout::Infinite),
     );
     button_confirm.set_sensitive(false);
+    preview_prev_page_button.set_sensitive(false);
+    preview_next_page_button.set_sensitive(current_page.get() < n_pages - 1);
 
     // Update prefs
     export_file_button.connect_clicked(
@@ -159,16 +176,34 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         .bind_property("active", &with_pattern_row, "sensitive")
         .sync_create()
         .build();
-    with_background_switch.connect_active_notify(clone!(@weak stroke_content_paintable, @weak canvas, @weak appwindow => move |with_background_switch| {
+    with_background_switch.connect_active_notify(clone!(@weak preview_paintable, @weak canvas, @weak appwindow => move |with_background_switch| {
         let active = with_background_switch.is_active();
         canvas.engine_mut().export_prefs.doc_export_prefs.with_background = active;
-        stroke_content_paintable.set_draw_background(active)
+        preview_paintable.set_draw_background(active)
     }));
 
-    with_pattern_switch.connect_active_notify(clone!(@weak stroke_content_paintable, @weak canvas, @weak appwindow => move |with_pattern_switch| {
+    with_pattern_switch.connect_active_notify(clone!(@weak preview_paintable, @weak canvas, @weak appwindow => move |with_pattern_switch| {
         let active = with_pattern_switch.is_active();
         canvas.engine_mut().export_prefs.doc_export_prefs.with_pattern = active;
-        stroke_content_paintable.set_draw_pattern(active)
+        preview_paintable.set_draw_pattern(active)
+    }));
+
+    preview_prev_page_button.connect_clicked(clone!(@strong current_page, @strong pages_content, @weak preview_paintable, @weak preview_next_page_button => move |preview_prev_page_button| {
+        if current_page.get() > 0 {
+            current_page.set(current_page.get() - 1);
+        }
+        preview_paintable.set_stroke_content(pages_content.borrow()[current_page.get()].clone());
+        preview_prev_page_button.set_sensitive(current_page.get() > 0);
+        preview_next_page_button.set_sensitive(current_page.get() < n_pages - 1);
+    }));
+
+    preview_next_page_button.connect_clicked(clone!(@strong current_page, @strong pages_content, @weak preview_paintable, @weak preview_prev_page_button => move |preview_next_page_button| {
+        if current_page.get() < n_pages - 1 {
+            current_page.set(current_page.get() + 1);
+        }
+        preview_paintable.set_stroke_content(pages_content.borrow()[current_page.get()].clone());
+        preview_prev_page_button.set_sensitive(current_page.get() > 0);
+        preview_next_page_button.set_sensitive(current_page.get() < n_pages - 1);
     }));
 
     export_format_row.connect_selected_notify(clone!(@strong selected_file, @weak export_file_label, @weak page_order_row, @weak button_confirm, @weak canvas, @weak appwindow => move |row| {

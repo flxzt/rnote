@@ -734,7 +734,10 @@ impl RnoteEngine {
                 self.store
                     .get_strokes_arc(&self.store.stroke_keys_as_rendered()),
             )
-            .with_bounds(self.bounds_w_content_extended())
+            .with_bounds(Some(
+                self.bounds_w_content_extended()
+                    .unwrap_or(self.document.bounds()),
+            ))
             .with_background(Some(self.document.background))
     }
 

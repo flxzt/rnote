@@ -12,7 +12,7 @@
       <class name="stroke_content_preview" />
     </style>
     <child>
-      <object class="GtkOverlay">
+      <object class="GtkOverlay" id="preview_overlay">
         <property name="halign">fill</property>
         <property name="valign">fill</property>
         <property name="hexpand">true</property>
@@ -60,8 +60,10 @@
             <property name="halign">fill</property>
             <property name="valign">fill</property>
             <property name="hexpand">true</property>
-            <property name="vexpand">true</property>
-            <property name="min-content-height">350</property>
+            <property name="vexpand">false</property>
+            <property name="min-content-width">400</property>
+            <property name="min-content-height">400</property>
+            <property name="max-content-width">600</property>
             <property name="max-content-height">600</property>
             <child>
               <object class="GtkPicture" id="preview_picture">

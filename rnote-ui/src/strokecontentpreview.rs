@@ -1,8 +1,8 @@
 // Imports
 use crate::StrokeContentPaintable;
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Picture,
-    ScrolledWindow, Widget,
+    glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Overlay,
+    Picture, ScrolledWindow, Widget,
 };
 use once_cell::sync::Lazy;
 use rnote_engine::engine::StrokeContent;
@@ -18,6 +18,8 @@ mod imp {
         pub(crate) paintable: StrokeContentPaintable,
         pub(crate) current_page: Cell<usize>,
 
+        #[template_child]
+        pub(crate) preview_overlay: TemplateChild<Overlay>,
         #[template_child]
         pub(crate) preview_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
@@ -51,6 +53,8 @@ mod imp {
             let obj = self.obj();
 
             self.preview_picture.set_paintable(Some(&self.paintable));
+            self.preview_overlay
+                .set_measure_overlay(&*self.controls_box, true);
 
             self.prev_page_button.connect_clicked(
                 clone!(@weak obj as strokecontentpreview => move |_| {

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ### StrokeContentPicker ### -->
+<interface>
+  <template class="RnStrokeContentPreview" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBoxLayout">
+        <property name="spacing">6</property>
+        <property name="orientation">vertical</property>
+      </object>
+    </property>
+    <style>
+      <class name="stroke_content_preview" />
+    </style>
+    <child>
+      <object class="GtkOverlay">
+        <property name="halign">fill</property>
+        <property name="valign">fill</property>
+        <property name="hexpand">true</property>
+        <property name="vexpand">true</property>
+        <child type="overlay">
+          <object class="GtkBox" id="controls_box">
+            <property name="orientation">horizontal</property>
+            <property name="halign">fill</property>
+            <property name="valign">start</property>
+            <property name="margin-start">6</property>
+            <property name="margin-end">6</property>
+            <property name="margin-top">6</property>
+            <property name="margin-bottom">6</property>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <property name="halign">start</property>
+                <style>
+                  <class name="linked" />
+                </style>
+                <child>
+                  <object class="GtkButton" id="prev_page_button">
+                    <property name="icon-name">left-symbolic</property>
+                    <style>
+                      <class name="osd" />
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="next_page_button">
+                    <property name="icon-name">right-symbolic</property>
+                    <style>
+                      <class name="osd" />
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow" id="preview_scroller">
+            <property name="hscrollbar-policy">automatic</property>
+            <property name="vscrollbar-policy">automatic</property>
+            <property name="halign">fill</property>
+            <property name="valign">fill</property>
+            <property name="hexpand">true</property>
+            <property name="vexpand">true</property>
+            <property name="min-content-height">350</property>
+            <property name="max-content-height">600</property>
+            <child>
+              <object class="GtkPicture" id="preview_picture">
+                <property name="keep-aspect-ratio">true</property>
+                <property name="content-fit">contain</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="margin-start">12</property>
+                <property name="margin-end">12</property>
+                <property name="margin-top">12</property>
+                <property name="margin-bottom">12</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

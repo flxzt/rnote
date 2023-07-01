@@ -251,7 +251,7 @@ toast {
     margin-bottom: 72px;
 }
 
-.content_preview_container {
+.stroke_content_preview {
     background-color: @view_bg_color;
     border-radius: 12px;
 }

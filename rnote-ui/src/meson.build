@@ -91,6 +91,7 @@ rnote_ui_sources = files(
     'main.rs',
     'env.rs',
     'mainheader.rs',
+    'strokecontentpreview.rs',
     'unitentry.rs',
     'utils.rs',
 )

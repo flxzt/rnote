@@ -239,6 +239,14 @@ from https://gitlab.com/posidon_software/paper/-/blob/main/src/css/style.css
     box-shadow: 0px 3px 6px @shade_color;
 }
 
+.overlay_toolbar_scrollable {
+    padding: 0px;
+    border-radius: 12px;
+    background-color: @window_bg_color;
+    border: 1px solid @borders;
+    box-shadow: 0px 3px 6px @shade_color;
+}
+
 toast {
     margin-bottom: 72px;
 }

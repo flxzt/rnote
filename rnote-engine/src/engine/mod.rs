@@ -737,4 +737,34 @@ impl RnoteEngine {
             .with_bounds(self.bounds_w_content_extended())
             .with_background(Some(self.document.background))
     }
+
+    pub fn extract_pages_content(&self, split_order: SplitOrder) -> Vec<StrokeContent> {
+        self.pages_bounds_w_content(split_order)
+            .into_iter()
+            .map(|bounds| {
+                StrokeContent::default()
+                    .with_strokes(
+                        self.store.get_strokes_arc(
+                            &&self
+                                .store
+                                .stroke_keys_as_rendered_intersecting_bounds(bounds),
+                        ),
+                    )
+                    .with_bounds(Some(bounds))
+                    .with_background(Some(self.document.background))
+            })
+            .collect()
+    }
+
+    pub fn extract_selection_content(&self) -> Option<StrokeContent> {
+        let selection_keys = self.store.selection_keys_as_rendered();
+        if selection_keys.is_empty() {
+            return None;
+        }
+        Some(
+            StrokeContent::default()
+                .with_strokes(self.store.get_strokes_arc(&selection_keys))
+                .with_background(Some(self.document.background)),
+        )
+    }
 }

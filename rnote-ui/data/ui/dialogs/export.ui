@@ -54,7 +54,7 @@
                 <child>
                   <object class="GtkPicture" id="export_doc_content_preview">
                     <property name="keep-aspect-ratio">true</property>
-                    <property name="content-fit">fill</property>
+                    <property name="content-fit">contain</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <property name="margin-start">12</property>

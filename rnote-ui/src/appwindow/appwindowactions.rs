@@ -5,13 +5,12 @@ use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit,
     UriLauncher, Window,
 };
-use piet::RenderContext;
-use rnote_compose::helpers::{SplitOrder, Vector2Helpers};
+use rnote_compose::helpers::SplitOrder;
 use rnote_compose::penevents::ShortcutKey;
 use rnote_engine::document::Layout;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::pens::PenStyle;
-use rnote_engine::{Camera, DrawBehaviour, RnoteEngine, WidgetFlags};
+use rnote_engine::{Camera, RnoteEngine, WidgetFlags};
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::Instant;
@@ -631,33 +630,16 @@ impl RnAppWindow {
 
         // Print doc
         action_print_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            let canvas = appwindow.active_tab_wrapper().canvas();
-
-            // TODO: Exposing this as a setting in the print dialog
-            let with_background = true;
+            // TODO: Expose these variables as options in the print dialog
+            let draw_background = true;
+            let draw_pattern = true;
             let page_order = SplitOrder::default();
 
-            let pages_bounds = canvas.engine_ref().pages_bounds_w_content(page_order);
-            let n_pages = pages_bounds.len();
-            let engine_snapshot = canvas.engine_ref().take_snapshot();
-            let doc_bounds = engine_snapshot.document.bounds();
-            let format_size = na::vector![engine_snapshot.document.format.width, engine_snapshot.document.format.height];
+            let canvas = appwindow.active_tab_wrapper().canvas();
+            let pages_content = canvas.engine_ref().extract_pages_content(page_order);
+            let n_pages = pages_content.len();
 
             appwindow.overlays().progressbar_start_pulsing();
-
-            let background_svg = if with_background {
-                canvas.engine_ref().document
-                    .background
-                    .gen_svg(doc_bounds, true)
-                    .map_err(|e| {
-                        log::error!(
-                            "background.gen_svg() failed in in the print document action, with Err: {e:?}"
-                        )
-                    })
-                    .ok()
-            } else {
-                None
-            };
 
             let print_op = PrintOperation::builder()
                 .unit(Unit::None)
@@ -669,58 +651,15 @@ impl RnAppWindow {
 
 
             print_op.connect_draw_page(clone!(@weak appwindow, @weak canvas => move |_print_op, print_cx, page_no| {
-                if let Err(e) = || -> anyhow::Result<()> {
-                    let page_bounds = pages_bounds[page_no as usize];
+                let page_content = &pages_content[page_no as usize];
+                let page_bounds = page_content.bounds.unwrap();
+                let print_scale = (print_cx.width() / page_bounds.extents()[0]).min(print_cx.height() / page_bounds.extents()[1]);
+                let cairo_cx = print_cx.cairo_context();
 
-                    let page_strokes = canvas.engine_ref()
-                        .store
-                        .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
-
-                    let print_zoom = {
-                        let width_scale = print_cx.width() / format_size[0];
-                        let height_scale = print_cx.height() / format_size[1];
-
-                        width_scale.min(height_scale)
-                    };
-
-                    let cairo_cx = print_cx.cairo_context();
-
-                    cairo_cx.scale(print_zoom, print_zoom);
-
-                    // Clip everything outside page bounds
-                    cairo_cx.rectangle(
-                        0.0,
-                        0.0,
-                        page_bounds.extents()[0],
-                        page_bounds.extents()[1]
-                    );
-                    cairo_cx.clip();
-
-                    cairo_cx.save()?;
-                    cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
-
-                    // We can't render the background svg with piet, so we have to do it with cairo.
-                    if let Some(background_svg) = background_svg.to_owned() {
-                        background_svg.draw_to_cairo(&cairo_cx)?;
-                    }
-                    cairo_cx.restore()?;
-
-                    // Draw the strokes with piet
-                    let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-
-                    piet_cx.transform(kurbo::Affine::translate(
-                        -page_bounds.mins.coords.to_kurbo_vec(),
-                    ));
-
-                    for stroke in page_strokes.into_iter() {
-                        if let Some(stroke) = engine_snapshot.stroke_components.get(stroke) {
-                            stroke.draw(&mut piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
-                        }
-                    }
-
-                    piet_cx.finish().map_err(|e| anyhow::anyhow!("piet_cx finish() failed while printing page {page_no}, with Err: {e:?}"))
-                }() {
-                    log::error!("draw_page() failed while printing page: {page_no}, Err: {e:?}");
+                cairo_cx.scale(print_scale, print_scale);
+                cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
+                if let Err(e) = page_content.draw_to_cairo(&cairo_cx, draw_background, draw_pattern, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE) {
+                    log::error!("drawing page no: {page_no} while printing failed, Err: {e:?}");
                 }
             }));
 
@@ -730,7 +669,7 @@ impl RnAppWindow {
 
             // Run the print op
             if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
-                log::error!("print_op.run() failed with Err, {e:?}");
+                log::error!("running print operation failed with Err, {e:?}");
                 appwindow.overlays().dispatch_toast_error(&gettext("Printing document failed"));
             }
 

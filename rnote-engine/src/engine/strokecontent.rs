@@ -95,6 +95,14 @@ impl StrokeContent {
         let Some(bounds) = self.bounds() else { return Ok(()) };
         let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
 
+        cairo_cx.rectangle(
+            bounds.mins[0],
+            bounds.mins[1],
+            bounds.extents()[0],
+            bounds.extents()[1],
+        );
+        cairo_cx.clip();
+
         if draw_background {
             if let Some(background) = &self.background {
                 background.draw_to_cairo(&cairo_cx, bounds, draw_pattern)?;

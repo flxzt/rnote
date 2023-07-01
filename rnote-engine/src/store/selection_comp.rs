@@ -104,7 +104,7 @@ impl StrokeStore {
     /// Generate the bounds that include all selected strokes.
     ///
     /// None if no strokes are selected
-    pub fn gen_selection_bounds(&self) -> Option<Aabb> {
+    pub fn selection_bounds(&self) -> Option<Aabb> {
         self.bounds_for_strokes(&self.selection_keys_unordered())
     }
 

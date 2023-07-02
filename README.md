@@ -193,7 +193,7 @@ To be able to open and export older files that are incompatible with the newest 
 
 ## Drawings Created With Rnote
 
-If you have drawn something cool in Rnote and want to share it, submit a PR so it can be showcased here. :)  
+If you have drawn something cool in Rnote and want to share it, submit a PR to add it here. :)  
 
 <div align="center" spacing="20px">
         <img alt="Pikachu" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/pikachu.png" height="400">

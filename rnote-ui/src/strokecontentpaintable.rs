@@ -2,6 +2,7 @@
 use gtk4::{gdk, glib, graphene, prelude::*, subclass::prelude::*};
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use rnote_engine::document::Format;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::utils::GrapheneRectHelpers;
 use std::cell::{Cell, RefCell};
@@ -128,15 +129,41 @@ mod imp {
                 intrinsic_size.into(),
             )));
 
-            cairo_cx.scale(scale_x, scale_y);
-            cairo_cx.translate(-bounds.mins[0], -bounds.mins[1]);
-            if let Err(e) = stroke_content.draw_to_cairo(
-                &cairo_cx,
-                self.draw_background.get(),
-                self.draw_pattern.get(),
-                self.margin.get(),
-                image_scale,
-            ) {
+            let draw = || -> anyhow::Result<()> {
+                let border_width: f64 = 1.5 / scale_x.max(scale_y);
+
+                cairo_cx.scale(scale_x, scale_y);
+                cairo_cx.translate(-bounds.mins[0], -bounds.mins[1]);
+
+                // Draw content
+                stroke_content.draw_to_cairo(
+                    &cairo_cx,
+                    self.draw_background.get(),
+                    self.draw_pattern.get(),
+                    self.margin.get(),
+                    image_scale,
+                )?;
+
+                // Draw borders
+                cairo_cx.set_line_width(border_width);
+                cairo_cx.rectangle(
+                    bounds.mins[0] + border_width * 0.5,
+                    bounds.mins[1] + border_width * 0.5,
+                    bounds.extents()[0] - border_width,
+                    bounds.extents()[1] - border_width,
+                );
+                cairo_cx.set_source_rgba(
+                    Format::BORDER_COLOR_DEFAULT.as_rgba().0,
+                    Format::BORDER_COLOR_DEFAULT.as_rgba().1,
+                    Format::BORDER_COLOR_DEFAULT.as_rgba().2,
+                    0.5,
+                );
+                cairo_cx.stroke()?;
+
+                Ok(())
+            };
+
+            if let Err(e) = draw() {
                 log::error!("drawing content of StrokeContentPaintable failed, Err: {e:?}");
             }
         }

@@ -133,8 +133,13 @@ mod imp {
         pub(super) fn update_current_content_changed(&self) {
             let current_page = self.obj().current_page();
             let n_pages = self.obj().n_pages();
-            self.paintable
-                .set_stroke_content(self.contents.borrow().get(current_page).cloned());
+            self.paintable.set_stroke_content(
+                self.contents
+                    .borrow()
+                    .get(current_page)
+                    .cloned()
+                    .unwrap_or_default(),
+            );
             self.pages_controls_box.set_visible(n_pages > 1);
             self.obj().queue_resize()
         }

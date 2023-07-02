@@ -44,11 +44,11 @@ impl StrokeContent {
     }
 
     pub fn bounds(&self) -> Option<Aabb> {
-        if self.strokes.is_empty() {
-            return None;
-        }
         if self.bounds.is_some() {
             return self.bounds;
+        }
+        if self.strokes.is_empty() {
+            return None;
         }
         Some(
             self.strokes

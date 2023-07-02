@@ -15,7 +15,7 @@ mod imp {
         pub(super) draw_background: Cell<bool>,
         pub(super) draw_pattern: Cell<bool>,
         pub(super) margin: Cell<f64>,
-        pub(super) stroke_content: RefCell<Option<StrokeContent>>,
+        pub(super) stroke_content: RefCell<StrokeContent>,
     }
 
     #[glib::object_subclass]
@@ -89,29 +89,21 @@ mod imp {
         fn intrinsic_width(&self) -> i32 {
             self.stroke_content
                 .borrow()
-                .as_ref()
-                .and_then(|c| {
-                    c.size()
-                        .map(|s| (s[0] + 2. * self.margin.get()).ceil() as i32)
-                })
+                .size()
+                .map(|s| (s[0] + 2. * self.margin.get()).ceil() as i32)
                 .unwrap_or(0)
         }
 
         fn intrinsic_height(&self) -> i32 {
             self.stroke_content
                 .borrow()
-                .as_ref()
-                .and_then(|c| {
-                    c.size()
-                        .map(|s| (s[1] + 2. * self.margin.get()).ceil() as i32)
-                })
+                .size()
+                .map(|s| (s[1] + 2. * self.margin.get()).ceil() as i32)
                 .unwrap_or(0)
         }
 
         fn snapshot(&self, snapshot: &gdk::Snapshot, width: f64, height: f64) {
-            let Some(stroke_content) = &*self.stroke_content.borrow() else {
-                return;
-            };
+            let stroke_content = &*self.stroke_content.borrow();
             let Some(bounds) = stroke_content.bounds().map(|b| b.loosened(self.margin.get())) else {
                 return;
             };
@@ -188,7 +180,7 @@ impl StrokeContentPaintable {
     #[allow(unused)]
     pub(crate) fn from_stroke_content(stroke_content: StrokeContent) -> Self {
         let p = Self::new();
-        p.set_stroke_content(Some(stroke_content));
+        p.set_stroke_content(stroke_content);
         p
     }
 
@@ -228,7 +220,7 @@ impl StrokeContentPaintable {
         }
     }
 
-    pub(crate) fn set_stroke_content(&self, stroke_content: Option<StrokeContent>) {
+    pub(crate) fn set_stroke_content(&self, stroke_content: StrokeContent) {
         self.imp().stroke_content.replace(stroke_content);
         self.invalidate_size();
         self.invalidate_contents();

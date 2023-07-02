@@ -610,6 +610,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
     with_pattern_switch.set_active(initial_selection_export_prefs.with_pattern);
     preview.set_draw_background(initial_selection_export_prefs.with_background);
     preview.set_draw_pattern(initial_selection_export_prefs.with_pattern);
+    preview.set_margin(initial_selection_export_prefs.margin);
     preview.set_contents(
         canvas
             .engine_ref()
@@ -726,9 +727,13 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         canvas.engine_mut().export_prefs.selection_export_prefs.jpeg_quality = jpeg_quality_spinbutton.value().clamp(1.0, 100.0) as u8;
     }));
 
-    margin_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |margin_spinbutton| {
-        canvas.engine_mut().export_prefs.selection_export_prefs.margin = margin_spinbutton.value();
-    }));
+    margin_spinbutton.connect_value_changed(
+        clone!(@weak preview, @weak canvas, @weak appwindow => move |margin_spinbutton| {
+            let value = margin_spinbutton.value();
+            canvas.engine_mut().export_prefs.selection_export_prefs.margin = value;
+            preview.set_margin(value);
+        }),
+    );
 
     let response = dialog.run_future().await;
     dialog.close();

@@ -5,7 +5,6 @@ use crate::fileformats::{xoppformat, FileFormatSaver};
 use crate::render;
 use anyhow::Context;
 use futures::channel::oneshot;
-use p2d::bounding_volume::BoundingVolume;
 use rayon::prelude::*;
 use rnote_compose::helpers::SplitOrder;
 use rnote_compose::transform::TransformBehaviour;
@@ -95,6 +94,10 @@ impl Default for DocExportPrefs {
     }
 }
 
+impl DocExportPrefs {
+    const MARGIN: f64 = 0.0;
+}
+
 /// Document pages export format.
 #[derive(
     Debug,
@@ -125,6 +128,29 @@ impl Default for DocPagesExportFormat {
     }
 }
 
+impl TryFrom<u32> for DocPagesExportFormat {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "DocPagesExportFormat try_from::<u32>() for value {} failed",
+                value
+            )
+        })
+    }
+}
+
+impl DocPagesExportFormat {
+    pub fn file_ext(self) -> String {
+        match self {
+            Self::Svg => String::from("svg"),
+            Self::Png => String::from("png"),
+            Self::Jpeg => String::from("jpg"),
+        }
+    }
+}
+
 /// Document pages export preferences.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "doc_pages_export_prefs")]
@@ -149,6 +175,10 @@ pub struct DocPagesExportPrefs {
     pub jpeg_quality: u8,
 }
 
+impl DocPagesExportPrefs {
+    const MARGIN: f64 = 0.0;
+}
+
 impl Default for DocPagesExportPrefs {
     fn default() -> Self {
         Self {
@@ -158,29 +188,6 @@ impl Default for DocPagesExportPrefs {
             page_order: SplitOrder::default(),
             bitmap_scalefactor: 1.8,
             jpeg_quality: 85,
-        }
-    }
-}
-
-impl TryFrom<u32> for DocPagesExportFormat {
-    type Error = anyhow::Error;
-
-    fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!(
-                "DocPagesExportFormat try_from::<u32>() for value {} failed",
-                value
-            )
-        })
-    }
-}
-
-impl DocPagesExportFormat {
-    pub fn file_ext(self) -> String {
-        match self {
-            Self::Svg => String::from("svg"),
-            Self::Png => String::from("png"),
-            Self::Jpeg => String::from("jpg"),
         }
     }
 }
@@ -415,6 +422,7 @@ impl RnoteEngine {
                     .gen_svg(
                         doc_export_prefs.with_background,
                         doc_export_prefs.with_pattern,
+                        DocExportPrefs::MARGIN,
                     )?
                     .ok_or(anyhow::anyhow!("Generating doc svg failed, returned None."))?;
                 Ok(rnote_compose::utils::add_xml_header(
@@ -480,6 +488,7 @@ impl RnoteEngine {
                             &cairo_cx,
                             doc_export_prefs.with_background,
                             doc_export_prefs.with_pattern,
+                            DocExportPrefs::MARGIN,
                             RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
                         )?;
                         cairo_cx.show_page().map_err(|e| {
@@ -675,6 +684,7 @@ impl RnoteEngine {
                             .gen_svg(
                                 doc_pages_export_prefs.with_background,
                                 doc_pages_export_prefs.with_pattern,
+                                DocPagesExportPrefs::MARGIN,
                             )?
                             .ok_or(anyhow::anyhow!(
                                 "Generating Svg for page {i} failed, returned None."
@@ -730,6 +740,7 @@ impl RnoteEngine {
                             .gen_svg(
                                 doc_pages_export_prefs.with_background,
                                 doc_pages_export_prefs.with_pattern,
+                                DocPagesExportPrefs::MARGIN,
                             )?
                             .ok_or(anyhow::anyhow!(
                                 "Generating Svg for page {i} failed, returned None."
@@ -784,14 +795,10 @@ impl RnoteEngine {
 
         rayon::spawn(move || {
             let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
-                let Some(mut selection_content) = selection_content else {
+                let Some(selection_content) = selection_content else {
                     return Ok(None);
                 };
-                let Some(selection_bounds) = selection_content.bounds().map(|b| b.loosened(selection_export_prefs.margin)) else {
-                    return Ok(None);
-                };
-                selection_content.bounds = Some(selection_bounds);
-                let Some(selection_svg) = selection_content.gen_svg(selection_export_prefs.with_background, selection_export_prefs.with_pattern)? else {
+                let Some(selection_svg) = selection_content.gen_svg(selection_export_prefs.with_background, selection_export_prefs.with_pattern, selection_export_prefs.margin)? else {
                     return Ok(None);
                 };
 
@@ -831,14 +838,10 @@ impl RnoteEngine {
 
         rayon::spawn(move || {
             let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
-                let Some(mut selection_content) = selection_content else {
+                let Some(selection_content) = selection_content else {
                     return Ok(None);
                 };
-                let Some(selection_bounds) = selection_content.bounds().map(|b| b.loosened(selection_export_prefs.margin)) else {
-                    return Ok(None);
-                };
-                selection_content.bounds = Some(selection_bounds);
-                let Some(selection_svg) = selection_content.gen_svg(selection_export_prefs.with_background, selection_export_prefs.with_pattern)? else {
+                let Some(selection_svg) = selection_content.gen_svg(selection_export_prefs.with_background, selection_export_prefs.with_pattern, selection_export_prefs.margin)? else {
                     return Ok(None);
                 };
                 let selection_svg_bounds = selection_svg.bounds;

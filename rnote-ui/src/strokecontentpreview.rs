@@ -237,4 +237,14 @@ impl RnStrokeContentPreview {
     pub(crate) fn set_draw_pattern(&self, draw_pattern: bool) {
         self.imp().paintable.set_draw_pattern(draw_pattern);
     }
+
+    #[allow(unused)]
+    pub(crate) fn margin(&self) -> f64 {
+        self.imp().paintable.margin()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_margin(&self, margin: f64) {
+        self.imp().paintable.set_margin(margin);
+    }
 }

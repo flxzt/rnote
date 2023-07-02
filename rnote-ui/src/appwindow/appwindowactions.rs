@@ -5,6 +5,7 @@ use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit,
     UriLauncher, Window,
 };
+use p2d::bounding_volume::BoundingVolume;
 use rnote_compose::helpers::SplitOrder;
 use rnote_compose::penevents::ShortcutKey;
 use rnote_engine::document::Layout;
@@ -634,6 +635,7 @@ impl RnAppWindow {
             let draw_background = true;
             let draw_pattern = true;
             let page_order = SplitOrder::default();
+            let margin = 0.0;
 
             let canvas = appwindow.active_tab_wrapper().canvas();
             let pages_content = canvas.engine_ref().extract_pages_content(page_order);
@@ -652,13 +654,13 @@ impl RnAppWindow {
 
             print_op.connect_draw_page(clone!(@weak appwindow, @weak canvas => move |_print_op, print_cx, page_no| {
                 let page_content = &pages_content[page_no as usize];
-                let page_bounds = page_content.bounds.unwrap();
+                let page_bounds = page_content.bounds.unwrap().loosened(margin);
                 let print_scale = (print_cx.width() / page_bounds.extents()[0]).min(print_cx.height() / page_bounds.extents()[1]);
                 let cairo_cx = print_cx.cairo_context();
 
                 cairo_cx.scale(print_scale, print_scale);
                 cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
-                if let Err(e) = page_content.draw_to_cairo(&cairo_cx, draw_background, draw_pattern, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE) {
+                if let Err(e) = page_content.draw_to_cairo(&cairo_cx, draw_background, draw_pattern, margin, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE) {
                     log::error!("drawing page no: {page_no} while printing failed, Err: {e:?}");
                 }
             }));

@@ -487,16 +487,13 @@ impl Svg {
 
         let width = bounds.extents()[0];
         let height = bounds.extents()[1];
-
         let svg_stream: Vec<u8> = vec![];
-
-        let mut svg_surface = cairo::SvgSurface::for_stream(
-            width, height, svg_stream
-        )
-        .map_err(|e| {
-            anyhow::anyhow!("create SvgSurface with dimensions ({}, {}) failed in Svg gen_with_piet_cairo_backend(), {}", width, height, e)
-        })?;
-
+        let mut svg_surface =
+            cairo::SvgSurface::for_stream(width, height, svg_stream).map_err(|e| {
+                anyhow::anyhow!(
+                    "create SvgSurface with dimensions ({width}, {height}) failed, Err: {e:?}"
+                )
+            })?;
         svg_surface.set_document_unit(cairo::SvgUnit::Px);
 
         {

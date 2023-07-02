@@ -1,19 +1,19 @@
 // Imports
 use gtk4::{gdk, glib, graphene, prelude::*, subclass::prelude::*};
 use once_cell::sync::Lazy;
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_engine::engine::StrokeContent;
+use rnote_engine::utils::GrapheneRectHelpers;
 use std::cell::{Cell, RefCell};
 
 mod imp {
-    use p2d::bounding_volume::Aabb;
-    use rnote_engine::utils::GrapheneRectHelpers;
-
     use super::*;
 
     #[derive(Debug, Default)]
     pub struct StrokeContentPaintable {
         pub(super) draw_background: Cell<bool>,
         pub(super) draw_pattern: Cell<bool>,
+        pub(super) margin: Cell<f64>,
         pub(super) stroke_content: RefCell<Option<StrokeContent>>,
     }
 
@@ -34,6 +34,9 @@ mod imp {
                     glib::ParamSpecBoolean::builder("draw-pattern")
                         .default_value(true)
                         .build(),
+                    glib::ParamSpecDouble::builder("margin")
+                        .default_value(0.0)
+                        .build(),
                 ]
             });
             PROPERTIES.as_ref()
@@ -43,6 +46,7 @@ mod imp {
             match pspec.name() {
                 "draw-background" => self.draw_background.get().to_value(),
                 "draw-pattern" => self.draw_pattern.get().to_value(),
+                "margin" => self.margin.get().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -63,6 +67,14 @@ mod imp {
                     self.draw_pattern.replace(draw_pattern);
                     self.obj().invalidate_contents();
                 }
+                "margin" => {
+                    let margin = value
+                        .get::<f64>()
+                        .expect("The value needs to be of type `f64`");
+                    self.margin.replace(margin.max(0.0));
+                    self.obj().invalidate_contents();
+                    self.obj().invalidate_size();
+                }
                 _ => unimplemented!(),
             }
         }
@@ -77,7 +89,10 @@ mod imp {
             self.stroke_content
                 .borrow()
                 .as_ref()
-                .and_then(|c| c.size().map(|s| s[0].ceil() as i32))
+                .and_then(|c| {
+                    c.size()
+                        .map(|s| (s[0] + 2. * self.margin.get()).ceil() as i32)
+                })
                 .unwrap_or(0)
         }
 
@@ -85,7 +100,10 @@ mod imp {
             self.stroke_content
                 .borrow()
                 .as_ref()
-                .and_then(|c| c.size().map(|s| s[1].ceil() as i32))
+                .and_then(|c| {
+                    c.size()
+                        .map(|s| (s[1] + 2. * self.margin.get()).ceil() as i32)
+                })
                 .unwrap_or(0)
         }
 
@@ -93,7 +111,7 @@ mod imp {
             let Some(stroke_content) = &*self.stroke_content.borrow() else {
                 return;
             };
-            let Some(bounds) = stroke_content.bounds() else {
+            let Some(bounds) = stroke_content.bounds().map(|b| b.loosened(self.margin.get())) else {
                 return;
             };
             let intrinsic_size = na::vector![
@@ -103,19 +121,21 @@ mod imp {
             if intrinsic_size[0] <= 0.0 || intrinsic_size[1] <= 0.0 {
                 return;
             }
-            let scale_factor = (width / intrinsic_size[0]).min(height / intrinsic_size[1]);
+            let (scale_x, scale_y) = (width / bounds.extents()[0], height / bounds.extents()[1]);
+            let image_scale = scale_x.max(scale_y);
             let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(Aabb::new(
                 na::point![0.0, 0.0],
                 intrinsic_size.into(),
             )));
 
-            cairo_cx.scale(scale_factor, scale_factor);
+            cairo_cx.scale(scale_x, scale_y);
             cairo_cx.translate(-bounds.mins[0], -bounds.mins[1]);
             if let Err(e) = stroke_content.draw_to_cairo(
                 &cairo_cx,
                 self.draw_background.get(),
                 self.draw_pattern.get(),
-                scale_factor,
+                self.margin.get(),
+                image_scale,
             ) {
                 log::error!("drawing content of StrokeContentPaintable failed, Err: {e:?}");
             }
@@ -166,6 +186,18 @@ impl StrokeContentPaintable {
     pub(crate) fn set_draw_pattern(&self, draw_pattern: bool) {
         if self.imp().draw_pattern.get() != draw_pattern {
             self.set_property("draw-pattern", draw_pattern.to_value());
+        }
+    }
+
+    #[allow(unused)]
+    pub(crate) fn margin(&self) -> f64 {
+        self.property::<f64>("margin")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_margin(&self, margin: f64) {
+        if self.imp().margin.get() != margin {
+            self.set_property("margin", margin.to_value());
         }
     }
 

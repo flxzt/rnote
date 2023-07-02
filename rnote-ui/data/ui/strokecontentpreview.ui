@@ -18,10 +18,12 @@
         <property name="hexpand">true</property>
         <property name="vexpand">true</property>
         <child type="overlay">
-          <object class="GtkBox" id="controls_box">
+          <object class="GtkBox" id="pages_controls_box">
             <property name="orientation">horizontal</property>
             <property name="halign">fill</property>
             <property name="valign">start</property>
+            <property name="hexpand">true</property>
+            <property name="vexpand">false</property>
             <property name="margin-start">6</property>
             <property name="margin-end">6</property>
             <property name="margin-top">6</property>
@@ -30,6 +32,7 @@
               <object class="GtkBox">
                 <property name="orientation">horizontal</property>
                 <property name="halign">start</property>
+                <property name="hexpand">true</property>
                 <style>
                   <class name="linked" />
                 </style>
@@ -49,6 +52,19 @@
                     </style>
                   </object>
                 </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="page_entry">
+                <property name="halign">end</property>
+                <property name="hexpand">false</property>
+                <property name="input-purpose">digits</property>
+                <property name="max-width-chars">4</property>
+                <property name="xalign">0.5</property>
+                <property name="placeholder-text" translatable="yes">Page</property>
+                <style>
+                  <class name="osd" />
+                </style>
               </object>
             </child>
           </object>

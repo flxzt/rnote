@@ -1,7 +1,7 @@
 // Imports
 use crate::StrokeContentPaintable;
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Overlay,
+    glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Entry, Overlay,
     Picture, ScrolledWindow, Widget,
 };
 use once_cell::sync::Lazy;
@@ -25,7 +25,9 @@ mod imp {
         #[template_child]
         pub(crate) preview_picture: TemplateChild<Picture>,
         #[template_child]
-        pub(crate) controls_box: TemplateChild<gtk4::Box>,
+        pub(crate) pages_controls_box: TemplateChild<gtk4::Box>,
+        #[template_child]
+        pub(crate) page_entry: TemplateChild<Entry>,
         #[template_child]
         pub(crate) prev_page_button: TemplateChild<Button>,
         #[template_child]
@@ -54,13 +56,27 @@ mod imp {
 
             self.preview_picture.set_paintable(Some(&self.paintable));
             self.preview_overlay
-                .set_measure_overlay(&*self.controls_box, true);
+                .set_measure_overlay(&*self.pages_controls_box, true);
+
+            self.page_entry.connect_changed(
+                clone!(@weak obj as stroke_content_preview => move |entry| {
+                    let n_pages = stroke_content_preview.n_pages();
+                    match parse_page_text(&entry.text(), n_pages) {
+                        Ok(text_page) => {
+                            entry.remove_css_class("error");
+                            stroke_content_preview.set_current_page(text_page);
+                        }
+                        _ => {
+                            entry.add_css_class("error");
+                        }
+                    }
+                }),
+            );
 
             self.prev_page_button.connect_clicked(
                 clone!(@weak obj as strokecontentpreview => move |_| {
                     let current_page = strokecontentpreview.current_page();
                     strokecontentpreview.set_current_page(current_page.saturating_sub(1));
-                    strokecontentpreview.imp().update_widgets();
                 }),
             );
 
@@ -69,7 +85,6 @@ mod imp {
                     let current_page = strokecontentpreview.current_page();
                     let n_pages = strokecontentpreview.n_pages();
                     strokecontentpreview.set_current_page(current_page.saturating_add(1).min(n_pages - 1));
-                    strokecontentpreview.imp().update_widgets();
                 }),
             );
         }
@@ -101,8 +116,11 @@ mod imp {
             match pspec.name() {
                 "current-page" => {
                     let current_page = value.get::<u32>().unwrap() as usize;
-                    self.current_page.set(current_page);
-                    self.update_widgets();
+                    let n_pages = self.obj().n_pages();
+                    self.current_page
+                        .set(current_page.min(n_pages.saturating_sub(1)));
+                    self.update_current_content_changed();
+                    self.update_widgets_current_page_changed();
                 }
                 _ => unimplemented!(),
             }
@@ -112,19 +130,49 @@ mod imp {
     impl WidgetImpl for RnStrokeContentPreview {}
 
     impl RnStrokeContentPreview {
-        pub(super) fn update_widgets(&self) {
+        pub(super) fn update_current_content_changed(&self) {
             let current_page = self.obj().current_page();
             let n_pages = self.obj().n_pages();
-            let content = if !self.contents.borrow().is_empty() {
-                Some(self.contents.borrow()[current_page].clone())
-            } else {
-                None
-            };
-            self.paintable.set_stroke_content(content);
+            self.paintable
+                .set_stroke_content(self.contents.borrow().get(current_page).cloned());
+            self.pages_controls_box.set_visible(n_pages > 1);
+            self.obj().queue_resize()
+        }
+
+        pub(super) fn update_entry_text(&self) {
+            let current_page = self.obj().current_page();
+            let n_pages = self.obj().n_pages();
+
+            match parse_page_text(&self.page_entry.text(), n_pages) {
+                Ok(text_page) if text_page == current_page => {
+                    // Don't update text if it is already the current page
+                }
+                Ok(_) | Err(_) => {
+                    self.page_entry.set_text(&current_page.to_string());
+                }
+            }
+        }
+
+        fn update_widgets_current_page_changed(&self) {
+            let current_page = self.obj().current_page();
+            let n_pages = self.obj().n_pages();
+
             self.prev_page_button.set_sensitive(current_page > 0);
             self.next_page_button
-                .set_sensitive(current_page < n_pages - 1);
-            self.obj().queue_resize()
+                .set_sensitive(current_page < n_pages.saturating_sub(1));
+            self.update_entry_text();
+        }
+    }
+
+    fn parse_page_text(text: &str, n_pages: usize) -> anyhow::Result<usize> {
+        match text.parse::<usize>() {
+            Ok(page) if page < n_pages => Ok(page),
+            Ok(page) => Err(anyhow::anyhow!(
+                "Could not parse text as page number, '{page}' out of valid range"
+            )),
+            Err(e) => Err(anyhow::anyhow!(
+                "Could not parse text as page number, parsing error: {e:?}"
+            )),
         }
     }
 }
@@ -162,8 +210,8 @@ impl RnStrokeContentPreview {
         self.imp().contents.replace(contents);
         let n_pages = self.n_pages();
         self.set_current_page(self.current_page().min(n_pages.saturating_sub(1)));
-        self.imp().update_widgets();
-        self.imp().controls_box.set_visible(self.n_pages() > 1);
+        self.imp().update_current_content_changed();
+        self.imp().update_entry_text();
     }
 
     pub(crate) fn n_pages(&self) -> usize {

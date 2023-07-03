@@ -132,7 +132,6 @@ mod imp {
     impl RnStrokeContentPreview {
         pub(super) fn update_paintable_content(&self) {
             let current_page = self.obj().current_page();
-            let n_pages = self.obj().n_pages();
             self.paintable.set_stroke_content(
                 self.contents
                     .borrow()
@@ -140,7 +139,6 @@ mod imp {
                     .cloned()
                     .unwrap_or_default(),
             );
-            self.pages_controls_box.set_visible(n_pages > 1);
             self.obj().queue_resize();
         }
 
@@ -148,6 +146,7 @@ mod imp {
             let current_page = self.obj().current_page();
             let n_pages = self.obj().n_pages();
 
+            self.pages_controls_box.set_visible(n_pages > 1);
             self.prev_page_button.set_sensitive(current_page > 0);
             self.next_page_button
                 .set_sensitive(current_page < n_pages.saturating_sub(1));

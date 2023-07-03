@@ -62,9 +62,9 @@ mod imp {
                 clone!(@weak obj as stroke_content_preview => move |entry| {
                     let n_pages = stroke_content_preview.n_pages();
                     match parse_page_text(&entry.text(), n_pages) {
-                        Ok(text_page) => {
+                        Ok(page) => {
                             entry.remove_css_class("error");
-                            stroke_content_preview.set_current_page(text_page);
+                            stroke_content_preview.set_current_page(page);
                         }
                         _ => {
                             entry.add_css_class("error");
@@ -119,8 +119,8 @@ mod imp {
                     let n_pages = self.obj().n_pages();
                     self.current_page
                         .set(current_page.min(n_pages.saturating_sub(1)));
-                    self.update_current_content_changed();
-                    self.update_widgets_current_page_changed();
+                    self.update_paintable_content();
+                    self.update_widgets();
                 }
                 _ => unimplemented!(),
             }
@@ -130,7 +130,7 @@ mod imp {
     impl WidgetImpl for RnStrokeContentPreview {}
 
     impl RnStrokeContentPreview {
-        pub(super) fn update_current_content_changed(&self) {
+        pub(super) fn update_paintable_content(&self) {
             let current_page = self.obj().current_page();
             let n_pages = self.obj().n_pages();
             self.paintable.set_stroke_content(
@@ -141,39 +141,35 @@ mod imp {
                     .unwrap_or_default(),
             );
             self.pages_controls_box.set_visible(n_pages > 1);
-            self.obj().queue_resize()
+            self.obj().queue_resize();
         }
 
-        pub(super) fn update_entry_text(&self) {
-            let current_page = self.obj().current_page();
-            let n_pages = self.obj().n_pages();
-
-            match parse_page_text(&self.page_entry.text(), n_pages) {
-                Ok(text_page) if text_page == current_page => {
-                    // Don't update text if it is already the current page
-                }
-                Ok(_) | Err(_) => {
-                    self.page_entry.set_text(&current_page.to_string());
-                }
-            }
-        }
-
-        fn update_widgets_current_page_changed(&self) {
+        pub(super) fn update_widgets(&self) {
             let current_page = self.obj().current_page();
             let n_pages = self.obj().n_pages();
 
             self.prev_page_button.set_sensitive(current_page > 0);
             self.next_page_button
                 .set_sensitive(current_page < n_pages.saturating_sub(1));
-            self.update_entry_text();
+            match parse_page_text(&self.page_entry.text(), n_pages) {
+                Ok(page) if page == current_page => {
+                    // Don't update entry if it is already the current page
+                }
+                Ok(_) | Err(_) => {
+                    // user facing page number is 1 indexed
+                    self.page_entry.set_text(&(current_page + 1).to_string());
+                }
+            }
         }
     }
 
     fn parse_page_text(text: &str, n_pages: usize) -> anyhow::Result<usize> {
+        // user facing page number is 1 indexed
+        let page_range = 1..=n_pages;
         match text.parse::<usize>() {
-            Ok(page) if page < n_pages => Ok(page),
+            Ok(page) if page_range.contains(&page) => Ok(page - 1),
             Ok(page) => Err(anyhow::anyhow!(
-                "Could not parse text as page number, '{page}' out of valid range"
+                "Could not parse text as page number, '{page}' outside valid range '{page_range:?}'.",
             )),
             Err(e) => Err(anyhow::anyhow!(
                 "Could not parse text as page number, parsing error: {e:?}"
@@ -215,8 +211,8 @@ impl RnStrokeContentPreview {
         self.imp().contents.replace(contents);
         let n_pages = self.n_pages();
         self.set_current_page(self.current_page().min(n_pages.saturating_sub(1)));
-        self.imp().update_current_content_changed();
-        self.imp().update_entry_text();
+        self.imp().update_paintable_content();
+        self.imp().update_widgets();
     }
 
     pub(crate) fn n_pages(&self) -> usize {

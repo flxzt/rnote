@@ -15,6 +15,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/workspacesbar/workspacesbar.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/workspacesbar/workspacerow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/filerow.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/recoveryrow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/unitentry.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/iconpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/groupediconpicker/groupediconpicker.ui</file>
@@ -30,6 +31,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/toolspage.ui</file>
         <file preprocess="xml-stripblanks">ui/dialogs/dialogs.ui</file>
         <file preprocess="xml-stripblanks">ui/dialogs/import.ui</file>
+        <file preprocess="xml-stripblanks">ui/dialogs/recovery.ui</file>
         <file preprocess="xml-stripblanks">ui/dialogs/export.ui</file>
         <file compressed="true">icons/scalable/apps/@APP_NAME@.svg</file>
         <file compressed="true">icons/scalable/apps/@APP_NAME@-devel.svg</file>

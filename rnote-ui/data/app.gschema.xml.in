@@ -125,6 +125,14 @@
       <default>120</default>
       <summary>the sec interval for the autosave</summary>
     </key>
+    <key name="recovery" type="b">
+      <default>true</default>
+      <summary>true when document recovery is enabled</summary>
+    </key>
+    <key name="recovery-interval-secs" type="u">
+      <default>80</default>
+      <summary>the sec interval for the recovery saves</summary>
+    </key>
     <key name="show-scrollbars" type="b">
       <default>false</default>
       <summary>Whether the canvas scrollbars are shown</summary>

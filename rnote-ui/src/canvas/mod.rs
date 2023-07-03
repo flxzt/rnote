@@ -70,6 +70,9 @@ mod imp {
         pub(crate) engine: RefCell<RnoteEngine>,
         pub(crate) engine_task_handler_handle: RefCell<Option<glib::JoinHandle<()>>>,
 
+        pub(crate) recovery_in_progress: Cell<bool>,
+        pub(crate) recovery_file: RefCell<Option<gio::File>>,
+        pub(crate) output_file_cache: RefCell<Option<gio::File>>,
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
         pub(crate) output_file_monitor_changed_handler: RefCell<Option<glib::SignalHandlerId>>,
@@ -77,6 +80,7 @@ mod imp {
         pub(crate) output_file_expect_write: Cell<bool>,
         pub(crate) save_in_progress: Cell<bool>,
         pub(crate) unsaved_changes: Cell<bool>,
+        pub(crate) unsaved_changes_recovery: Cell<bool>,
         pub(crate) empty: Cell<bool>,
         pub(crate) touch_drawing: Cell<bool>,
         pub(crate) show_drawing_cursor: Cell<bool>,
@@ -162,6 +166,9 @@ mod imp {
                 engine: RefCell::new(engine),
                 engine_task_handler_handle: RefCell::new(None),
 
+                recovery_in_progress: Cell::new(false),
+                recovery_file: RefCell::new(None),
+                output_file_cache: RefCell::new(None),
                 output_file: RefCell::new(None),
                 output_file_monitor: RefCell::new(None),
                 output_file_monitor_changed_handler: RefCell::new(None),
@@ -169,6 +176,7 @@ mod imp {
                 output_file_expect_write: Cell::new(false),
                 save_in_progress: Cell::new(false),
                 unsaved_changes: Cell::new(false),
+                unsaved_changes_recovery: Cell::new(false),
                 empty: Cell::new(true),
                 touch_drawing: Cell::new(false),
                 show_drawing_cursor: Cell::new(false),
@@ -253,6 +261,9 @@ mod imp {
                     glib::ParamSpecBoolean::builder("unsaved-changes")
                         .default_value(false)
                         .build(),
+                    glib::ParamSpecBoolean::builder("unsaved-changes-recovery")
+                        .default_value(false)
+                        .build(),
                     glib::ParamSpecBoolean::builder("empty")
                         .default_value(true)
                         .build(),
@@ -282,6 +293,7 @@ mod imp {
             match pspec.name() {
                 "output-file" => self.output_file.borrow().to_value(),
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
+                "unsaved-changes-recovery" => self.unsaved_changes.get().to_value(),
                 "empty" => self.empty.get().to_value(),
                 "hadjustment" => self.hadjustment.borrow().to_value(),
                 "vadjustment" => self.vadjustment.borrow().to_value(),
@@ -309,6 +321,12 @@ mod imp {
                     let unsaved_changes: bool =
                         value.get().expect("The value needs to be of type `bool`");
                     self.unsaved_changes.replace(unsaved_changes);
+                }
+                "unsaved-changes-recovery" => {
+                    let unsaved_changes_recovery: bool =
+                        value.get().expect("The value needs to be of type `bool`");
+                    self.unsaved_changes_recovery
+                        .replace(unsaved_changes_recovery);
                 }
                 "empty" => {
                     let empty: bool = value.get().expect("The value needs to be of type `bool`");
@@ -568,6 +586,49 @@ impl RnCanvas {
     }
 
     #[allow(unused)]
+    pub(crate) fn tmp_file(&self) -> Option<gio::File> {
+        self.imp().recovery_file.borrow().clone()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_tmp_file(&self, tmp_file: Option<gio::File>) {
+        self.imp().recovery_file.replace(tmp_file);
+    }
+
+    #[allow(unused)]
+    pub(crate) fn output_file_cache(&self) -> Option<gio::File> {
+        self.imp().recovery_file.borrow().clone()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_output_file_cache(&self) -> Option<gio::File> {
+        self.imp().recovery_file.borrow().clone()
+    }
+
+    pub(crate) fn get_or_generate_tmp_file(&self) -> gio::File {
+        // if !recovery {
+        // return None;
+        // }
+        if self.imp().recovery_file.borrow().is_none() {
+            let mut path = std::path::PathBuf::from("/tmp/rnote-recovery/");
+            let time = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs();
+
+            if !path.exists() {
+                std::fs::create_dir(&path).expect("Failed to create tmp dir");
+            }
+            let name = format!("draft-{time}.rnote");
+            path.push(name);
+            self.imp()
+                .recovery_file
+                .replace(Some(gio::File::for_path(path)));
+        }
+        self.imp().recovery_file.borrow().as_ref().unwrap().clone()
+    }
+
+    #[allow(unused)]
     pub(crate) fn output_file(&self) -> Option<gio::File> {
         self.property::<Option<gio::File>>("output-file")
     }
@@ -593,6 +654,16 @@ impl RnCanvas {
     }
 
     #[allow(unused)]
+    pub(crate) fn recovery_in_progress(&self) -> bool {
+        self.imp().recovery_in_progress.get()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_recovery_in_progress(&self, save_in_progress: bool) {
+        self.imp().recovery_in_progress.set(save_in_progress);
+    }
+
+    #[allow(unused)]
     pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
         self.set_property("output-file", output_file.to_value());
     }
@@ -605,7 +676,25 @@ impl RnCanvas {
     #[allow(unused)]
     pub(crate) fn set_unsaved_changes(&self, unsaved_changes: bool) {
         if self.imp().unsaved_changes.get() != unsaved_changes {
+            if unsaved_changes {
+                self.set_unsaved_changes_recovery(true);
+            }
             self.set_property("unsaved-changes", unsaved_changes.to_value());
+        }
+    }
+
+    #[allow(unused)]
+    pub(crate) fn unsaved_changes_recovery(&self) -> bool {
+        self.property::<bool>("unsaved-changes-recovery")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_unsaved_changes_recovery(&self, unsaved_changes_recovery: bool) {
+        if self.imp().unsaved_changes_recovery.get() != unsaved_changes_recovery {
+            self.set_property(
+                "unsaved-changes-recovery",
+                unsaved_changes_recovery.to_value(),
+            );
         }
     }
 
@@ -761,26 +850,32 @@ impl RnCanvas {
     ///
     /// When there is no output-file, falls back to the "New document" string
     pub(crate) fn doc_title_display(&self) -> String {
-        self.output_file()
-            .map(|f| {
-                f.basename()
-                    .and_then(|t| Some(t.file_stem()?.to_string_lossy().to_string()))
-                    .unwrap_or_else(|| gettext("- invalid file name -"))
-            })
-            .unwrap_or_else(|| OUTPUT_FILE_NEW_TITLE.to_string())
+        match self.recovery_in_progress() {
+            true => self.output_file_cache(),
+            false => self.output_file(),
+        }
+        .map(|f| {
+            f.basename()
+                .and_then(|t| Some(t.file_stem()?.to_string_lossy().to_string()))
+                .unwrap_or_else(|| gettext("- invalid file name -"))
+        })
+        .unwrap_or_else(|| OUTPUT_FILE_NEW_TITLE.to_string())
     }
 
     /// The document folder path for display. To get the actual path, use output-file
     ///
     /// When there is no output-file, falls back to the "Draft" string
     pub(crate) fn doc_folderpath_display(&self) -> String {
-        self.output_file()
-            .map(|f| {
-                f.parent()
-                    .and_then(|p| Some(p.path()?.display().to_string()))
-                    .unwrap_or_else(|| gettext("- invalid folder path -"))
-            })
-            .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string())
+        match self.recovery_in_progress() {
+            true => self.output_file_cache(),
+            false => self.output_file(),
+        }
+        .map(|f| {
+            f.parent()
+                .and_then(|p| Some(p.path()?.display().to_string()))
+                .unwrap_or_else(|| gettext("- invalid folder path -"))
+        })
+        .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string())
     }
 
     pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnAppWindow) {

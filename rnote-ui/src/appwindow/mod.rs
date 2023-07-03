@@ -27,6 +27,7 @@ glib::wrapper! {
 
 impl RnAppWindow {
     const AUTOSAVE_INTERVAL_DEFAULT: u32 = 30;
+    const RECOVERY_INTERVAL_DEFAULT: u32 = 20;
     const PERIODIC_CONFIGSAVE_INTERVAL: u32 = 10;
     const FLAP_FOLDED_RESIZE_MARGIN: u32 = 64;
 
@@ -42,6 +43,16 @@ impl RnAppWindow {
     #[allow(unused)]
     pub(crate) fn set_autosave(&self, autosave: bool) {
         self.set_property("autosave", autosave.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn recovery(&self) -> bool {
+        self.property::<bool>("recovery")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_recovery(&self, recovery: bool) {
+        self.set_property("recovery", recovery.to_value());
     }
 
     #[allow(unused)]
@@ -433,6 +444,9 @@ impl RnAppWindow {
         self.mainheader()
             .main_title_unsaved_indicator()
             .set_visible(canvas.unsaved_changes());
+        self.mainheader()
+            .main_title_unsaved_recovery_indicator()
+            .set_visible(canvas.unsaved_changes_recovery());
         if canvas.unsaved_changes() {
             self.mainheader()
                 .main_title()

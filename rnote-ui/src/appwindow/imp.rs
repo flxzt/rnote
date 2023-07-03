@@ -21,10 +21,13 @@ pub(crate) struct RnAppWindow {
     pub(crate) app_settings: gio::Settings,
     pub(crate) drawing_pad_controller: RefCell<Option<PadController>>,
     pub(crate) autosave_source_id: RefCell<Option<glib::SourceId>>,
+    pub(crate) recovery_source_id: RefCell<Option<glib::SourceId>>,
     pub(crate) periodic_configsave_source_id: RefCell<Option<glib::SourceId>>,
 
     pub(crate) autosave: Cell<bool>,
     pub(crate) autosave_interval_secs: Cell<u32>,
+    pub(crate) recovery: Cell<bool>,
+    pub(crate) recovery_interval_secs: Cell<u32>,
     pub(crate) righthanded: Cell<bool>,
     pub(crate) block_pinch_zoom: Cell<bool>,
     pub(crate) touch_drawing: Cell<bool>,
@@ -66,10 +69,13 @@ impl Default for RnAppWindow {
             app_settings: gio::Settings::new(config::APP_ID),
             drawing_pad_controller: RefCell::new(None),
             autosave_source_id: RefCell::new(None),
+            recovery_source_id: RefCell::new(None),
             periodic_configsave_source_id: RefCell::new(None),
 
             autosave: Cell::new(true),
             autosave_interval_secs: Cell::new(super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
+            recovery: Cell::new(true),
+            recovery_interval_secs: Cell::new(super::RnAppWindow::RECOVERY_INTERVAL_DEFAULT),
             righthanded: Cell::new(true),
             block_pinch_zoom: Cell::new(false),
             touch_drawing: Cell::new(false),
@@ -152,6 +158,14 @@ impl ObjectImpl for RnAppWindow {
                     .maximum(u32::MAX)
                     .default_value(super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT)
                     .build(),
+                glib::ParamSpecBoolean::builder("recovery")
+                    .default_value(true)
+                    .build(),
+                glib::ParamSpecUInt::builder("recovery-interval-secs")
+                    .minimum(5)
+                    .maximum(u32::MAX)
+                    .default_value(super::RnAppWindow::RECOVERY_INTERVAL_DEFAULT)
+                    .build(),
                 glib::ParamSpecBoolean::builder("righthanded")
                     .default_value(false)
                     .build(),
@@ -173,6 +187,8 @@ impl ObjectImpl for RnAppWindow {
         match pspec.name() {
             "autosave" => self.autosave.get().to_value(),
             "autosave-interval-secs" => self.autosave_interval_secs.get().to_value(),
+            "recovery" => self.recovery.get().to_value(),
+            "recovery-interval-secs" => self.recovery_interval_secs.get().to_value(),
             "righthanded" => self.righthanded.get().to_value(),
             "block-pinch-zoom" => self.block_pinch_zoom.get().to_value(),
             "touch-drawing" => self.touch_drawing.get().to_value(),
@@ -203,6 +219,31 @@ impl ObjectImpl for RnAppWindow {
                     .expect("The value needs to be of type `u32`");
 
                 self.autosave_interval_secs.replace(autosave_interval_secs);
+
+                if self.autosave.get() {
+                    self.update_autosave_handler();
+                }
+            }
+            "recovery" => {
+                let recovery = value
+                    .get::<bool>()
+                    .expect("The value needs to be of type `bool`");
+
+                self.recovery.replace(recovery);
+
+                if recovery {
+                    self.update_recovery_handler();
+                } else if let Some(recovery_source_id) = self.recovery_source_id.borrow_mut().take()
+                {
+                    recovery_source_id.remove();
+                }
+            }
+            "recovery-interval-secs" => {
+                let recovery_interval_secs = value
+                    .get::<u32>()
+                    .expect("The value needs to be of type `u32`");
+
+                self.recovery_interval_secs.replace(recovery_interval_secs);
 
                 if self.autosave.get() {
                     self.update_autosave_handler();
@@ -284,7 +325,33 @@ impl RnAppWindow {
                         }
                     ));
                 }
+                glib::source::Continue(true)
+            }))) {
+            removed_id.remove();
+        }
+    }
 
+    fn update_recovery_handler(&self) {
+        let obj = self.obj();
+
+        if let Some(removed_id) = self.recovery_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.recovery_interval_secs.get(),
+                clone!(@weak obj as appwindow => @default-return glib::source::Continue(false), move || {
+                    let canvas = appwindow.active_tab().canvas();
+
+                    glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+                        let tmp_file = canvas.get_or_generate_tmp_file();
+                        appwindow.overlays().start_pulsing_progressbar();
+                        canvas.set_recovery_in_progress(true);
+                        canvas.imp().output_file_cache.replace(canvas.imp().output_file.take());
+                        if let Err(e) = canvas.save_document_to_file(&tmp_file).await {
+                            log::error!("saving document failed, Error: `{e:?}`");
+                            appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
+                        }
+                        canvas.imp().output_file.replace(canvas.imp().output_file_cache.take());
+                        canvas.set_recovery_in_progress(false);
+                        appwindow.overlays().finish_progressbar();
+                    }
+                ));
                 glib::source::Continue(true)
             }))) {
                 removed_id.remove();

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- ### StrokeContentPicker ### -->
+<!-- ### StrokeContentPreview ### -->
 <interface>
   <template class="RnStrokeContentPreview" parent="GtkWidget">
     <property name="layout-manager">

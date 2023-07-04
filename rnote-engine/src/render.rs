@@ -365,14 +365,14 @@ impl Image {
         })
     }
 
-    /// Generates an image with a provided closure that draws onto a piet CairoRenderContext.
-    pub fn gen_with_piet<F>(
+    /// Generates an image with a provided closure that draws onto a [cairo::Context].
+    pub fn gen_with_cairo<F>(
         draw_func: F,
         mut bounds: Aabb,
         image_scale: f64,
     ) -> anyhow::Result<Self>
     where
-        F: FnOnce(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
+        F: FnOnce(&cairo::Context) -> anyhow::Result<()>,
     {
         bounds.ensure_positive();
         bounds = bounds.ceil().loosened(1.0);
@@ -388,38 +388,29 @@ impl Image {
         )
         .map_err(|e| {
             anyhow::anyhow!(
-                "create ImageSurface with dimensions ({}, {}) failed in Image gen_with_piet(), {}",
+                "create ImageSurface with dimensions ({}, {}) failed, Err: {e:?}",
                 width_scaled,
                 height_scaled,
-                e
             )
         })?;
 
         {
             let cairo_cx = cairo::Context::new(&image_surface)?;
-            let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-
-            piet_cx.transform(kurbo::Affine::scale(image_scale));
-            piet_cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
+            cairo_cx.scale(image_scale, image_scale);
+            cairo_cx.translate(-bounds.mins[0], -bounds.mins[1]);
 
             // Apply the draw function
-            draw_func(&mut piet_cx)?;
-
-            piet_cx.finish().map_err(|e| {
-                anyhow::anyhow!("piet_cx.finish() failed in image.gen_with_piet() with Err: {e:?}")
-            })?;
+            draw_func(&cairo_cx)?;
         }
         // Surface needs to be flushed before accessing its data
         image_surface.flush();
 
         let data = image_surface
-                .data()
-                .map_err(|e| {
-                    anyhow::Error::msg(format!(
-                "accessing imagesurface data failed in strokebehaviour image.gen_with_piet() with Err: {e:?}"
-            ))
-                })?
-                .to_vec();
+            .data()
+            .map_err(|e| {
+                anyhow::Error::msg(format!("accessing imagesurface data failed, Err: {e:?}"))
+            })?
+            .to_vec();
 
         Ok(Image {
             data: glib::Bytes::from_owned(convert_image_bgra_to_rgba(
@@ -433,6 +424,25 @@ impl Image {
             // cairo renders to bgra8-premultiplied, but we convert it to rgba8-premultiplied
             memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
         })
+    }
+
+    /// Generates an image with a provided closure that draws onto a [piet::CairoRenderContext].
+    pub fn gen_with_piet<F>(draw_func: F, bounds: Aabb, image_scale: f64) -> anyhow::Result<Self>
+    where
+        F: FnOnce(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
+    {
+        let cairo_draw_fn = move |cairo_cx: &cairo::Context| -> anyhow::Result<()> {
+            let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+
+            // Apply the draw function
+            draw_func(&mut piet_cx)?;
+
+            piet_cx
+                .finish()
+                .map_err(|e| anyhow::anyhow!("finishing piet context failed, Err: {e:?}"))?;
+            Ok(())
+        };
+        Self::gen_with_cairo(cairo_draw_fn, bounds, image_scale)
     }
 }
 

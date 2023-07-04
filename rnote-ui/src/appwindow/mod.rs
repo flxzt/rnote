@@ -457,9 +457,9 @@ impl RnAppWindow {
             .main_title_unsaved_indicator()
             .set_visible(canvas.unsaved_changes());
         // This is not in the title bar, but I will keep the logic here to keep it close to the other unsaved indicator
-        self.settings_panel()
-            .general_recovery_unsaved_indicator()
-            .set_visible(dbg!(canvas.unsaved_changes_recovery()));
+        // self.settings_panel()
+        //     .general_recovery_unsaved_indicator()
+        //     .set_visible(dbg!(canvas.unsaved_changes_recovery()));
         if canvas.unsaved_changes() {
             self.mainheader()
                 .main_title()

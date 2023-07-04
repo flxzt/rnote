@@ -5,7 +5,6 @@ mod input;
 
 // Re-exports
 pub(crate) use canvaslayout::RnCanvasLayout;
-use rnote_fileformats::recovery_metadata::RecoveryMetadata;
 
 // Imports
 use crate::{config, RnAppWindow};
@@ -20,6 +19,7 @@ use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::penevents::PenState;
+use rnote_engine::fileformats::recovery_metadata::RecoveryMetadata;
 use rnote_engine::utils::GrapheneRectHelpers;
 use rnote_engine::Document;
 use rnote_engine::{RnoteEngine, WidgetFlags};
@@ -47,8 +47,6 @@ pub(crate) struct Handlers {
 }
 
 mod imp {
-    use rnote_fileformats::recovery_metadata::RecoveryMetadata;
-
     use super::*;
 
     #[derive(Debug)]

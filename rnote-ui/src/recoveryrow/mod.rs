@@ -20,11 +20,11 @@ use gtk4::{
     Button, CompositeTemplate, Label, TemplateChild, Widget,
 };
 use once_cell::sync::Lazy;
-use rnote_fileformats::recovery_metadata::RecoveryMetadata;
 use std::cell::RefCell;
 use time::{format_description::well_known::Rfc2822, OffsetDateTime};
 
 use crate::appwindow::RnAppWindow;
+use rnote_engine::fileformats::recovery_metadata::RecoveryMetadata;
 
 mod imp {
 

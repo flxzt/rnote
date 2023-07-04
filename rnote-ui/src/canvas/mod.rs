@@ -671,7 +671,7 @@ impl RnCanvas {
     ///
     /// Because the installed engine task handler holds a reference to the canvas,
     /// this MUST be called when the widget is removed from the widget tree,
-    /// it's instance should be detroyed and it's memory should be freed.
+    /// it's instance should be destroyed and it's memory should be freed.
     pub(crate) fn abort_engine_task_handler(&self) {
         if let Some(h) = self.imp().engine_task_handler_handle.take() {
             h.abort();

@@ -12,7 +12,7 @@ ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs"
 log = "0.4"
 anyhow = "1"
 serde = {version = "1", features = ["derive"]}
-num-derive = "0.3"
+num-derive = "0.4"
 num-traits = "0.2"
 base64 = "0.21"
 rand = "0.8"

@@ -160,6 +160,7 @@ mod tests {
 
     #[test]
     fn test_remove_dup_suffix() {
+        let suf = crate::utils::FILE_DUP_SUFFIX_DELIM;
         {
             let source = PathBuf::from("normal_file.txt");
             let expected = source.clone();
@@ -167,13 +168,13 @@ mod tests {
         }
 
         {
-            let source = PathBuf::from("normal_file-1.txt");
+            let source = PathBuf::from(String::from("normal_file") + suf + "1.txt");
             let expected = PathBuf::from("normal_file.txt");
             assert_eq!(expected, remove_dup_suffix(&source));
         }
 
         {
-            let source = PathBuf::from("normal_file-2.txt");
+            let source = PathBuf::from(String::from("normal_file") + suf + "2.txt");
             let expected = PathBuf::from("normal_file.txt");
             assert_eq!(expected, remove_dup_suffix(&source));
         }
@@ -191,7 +192,7 @@ mod tests {
         }
 
         {
-            let source = PathBuf::from("normal_folder-1");
+            let source = PathBuf::from(String::from("normal_folder") + suf);
             let expected = PathBuf::from("normal_folder");
             assert_eq!(expected, remove_dup_suffix(&source));
         }

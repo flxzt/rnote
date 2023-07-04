@@ -1,10 +1,7 @@
 // Modules
 pub mod rnoteformat;
-/// The Xournal++ `.xopp` file format.
 pub mod xoppformat;
-
-// Renames
-extern crate nalgebra as na;
+pub mod recovery_metadata;
 
 // Imports
 use roxmltree::Node;

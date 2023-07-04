@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-23 14:06+0200\n"
+"POT-Creation-Date: 2023-07-04 13:51+0200\n"
 "PO-Revision-Date: 2023-06-18 10:45+0000\n"
 "Last-Translator: kek <farline99@yandex.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -187,7 +187,7 @@ msgstr "Выбрать каталог коллекции"
 #: rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: rnote-ui/data/ui/dialogs/export.ui:238 rnote-ui/src/dialogs/export.rs:323
 #: rnote-ui/src/dialogs/export.rs:364 rnote-ui/src/dialogs/export.rs:372
-#: rnote-ui/src/dialogs/mod.rs:519
+#: rnote-ui/src/dialogs/mod.rs:525
 msgid "- no directory selected -"
 msgstr "- каталог не выбран -"
 
@@ -1060,20 +1060,20 @@ msgstr "Цвет обводки"
 msgid "Fill Color"
 msgstr "Цвет заливки"
 
-#: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:83
 msgid "Open"
 msgstr "Открыть"
 
-#: rnote-ui/data/ui/filerow.ui:62
+#: rnote-ui/data/ui/filerow.ui:65
 #: rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
 msgstr "Переименовать"
 
-#: rnote-ui/data/ui/filerow.ui:66
+#: rnote-ui/data/ui/filerow.ui:69
 msgid "Move to Trash"
 msgstr "Переместить в корзину"
 
-#: rnote-ui/data/ui/filerow.ui:70
+#: rnote-ui/data/ui/filerow.ui:73
 msgid "Duplicate"
 msgstr "Дублировать"
 
@@ -1287,7 +1287,7 @@ msgid "Revert"
 msgstr "По умолчанию"
 
 #: rnote-ui/data/ui/settingspanel.ui:290 rnote-ui/data/ui/shortcuts.ui:146
-#: rnote-ui/src/dialogs/mod.rs:625
+#: rnote-ui/src/dialogs/mod.rs:631
 msgid "Document"
 msgstr "Документ"
 
@@ -1560,27 +1560,27 @@ msgstr "Перейти в родительский каталог"
 msgid "Workspace Directory Actions"
 msgstr "Действия над каталогом коллекции"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:161
+#: rnote-ui/data/ui/workspacebrowser.ui:163
 msgid "Create new Folder"
 msgstr "Создать новую папку"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:54
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:60
 msgid "Move Selected Workspace Up"
 msgstr "Сместить коллекцию выше"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:63
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:69
 msgid "Move Selected Workspace Down"
 msgstr "Сместить коллекцию ниже"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:72
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:80
 msgid "Add Workspace"
 msgstr "Добавить коллекцию"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:81
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:89
 msgid "Remove Selected Workspace"
 msgstr "Удалить выбранную коллекцию"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:91
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:99
 msgid "Edit Selected Workspace"
 msgstr "Редактировать выбранную коллекцию"
 
@@ -1615,8 +1615,8 @@ msgstr "Не удалось открыть файл, неподдерживае�
 #: rnote-ui/src/appwindow/imp.rs:282
 #: rnote-ui/src/appwindow/appwindowactions.rs:612
 #: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/import.rs:52
-#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:258
-#: rnote-ui/src/dialogs/mod.rs:405
+#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:260
+#: rnote-ui/src/dialogs/mod.rs:411
 msgid "Saving document failed"
 msgstr "Не удалось сохранить документ"
 
@@ -1644,8 +1644,8 @@ msgstr "Не удалось распечатать документ"
 msgid "Exporting selection failed, nothing selected"
 msgstr "Не удалось экспортировать выделение, ничего не выделено"
 
-#: rnote-ui/src/canvas/mod.rs:768 rnote-ui/src/dialogs/mod.rs:205
-#: rnote-ui/src/dialogs/mod.rs:335
+#: rnote-ui/src/canvas/mod.rs:768 rnote-ui/src/dialogs/mod.rs:207
+#: rnote-ui/src/dialogs/mod.rs:341
 msgid "- invalid file name -"
 msgstr "- недопустимое имя файла -"
 
@@ -1702,7 +1702,7 @@ msgid "Exporting document failed, no file selected"
 msgstr "Не удалось экспортировать документ, файл не выбран"
 
 #: rnote-ui/src/dialogs/export.rs:222 rnote-ui/src/dialogs/export.rs:478
-#: rnote-ui/src/dialogs/export.rs:706 rnote-ui/src/dialogs/mod.rs:501
+#: rnote-ui/src/dialogs/export.rs:706 rnote-ui/src/dialogs/mod.rs:507
 msgid "Select"
 msgstr "Выбрать"
 
@@ -1809,222 +1809,222 @@ msgstr ""
 "Валерий Манжос <Manzhos.VA@gmail.com>\n"
 "Павел Чернышов <farline99@yandex.ru>"
 
-#: rnote-ui/src/dialogs/mod.rs:212 rnote-ui/src/dialogs/mod.rs:342
+#: rnote-ui/src/dialogs/mod.rs:214 rnote-ui/src/dialogs/mod.rs:348
 msgid "- invalid save folder name -"
 msgstr "- неправильное имя папки сохранения -"
 
-#: rnote-ui/src/dialogs/mod.rs:228 rnote-ui/src/dialogs/mod.rs:357
+#: rnote-ui/src/dialogs/mod.rs:230 rnote-ui/src/dialogs/mod.rs:363
 msgid "The changes will be saved"
 msgstr "Изменения будут сохранены"
 
-#: rnote-ui/src/dialogs/mod.rs:233 rnote-ui/src/dialogs/mod.rs:362
+#: rnote-ui/src/dialogs/mod.rs:235 rnote-ui/src/dialogs/mod.rs:368
 msgid "A new file will be created"
 msgstr "Будет создан новый файл"
 
-#: rnote-ui/src/dialogs/mod.rs:499
+#: rnote-ui/src/dialogs/mod.rs:505
 msgid "Change Workspace Directory"
 msgstr "Изменить каталог коллекции"
 
-#: rnote-ui/src/dialogs/mod.rs:612
+#: rnote-ui/src/dialogs/mod.rs:618
 msgid "Band-Aid"
 msgstr "Лейкопластырь"
 
-#: rnote-ui/src/dialogs/mod.rs:613
+#: rnote-ui/src/dialogs/mod.rs:619
 msgid "Bank"
 msgstr "Банк"
 
-#: rnote-ui/src/dialogs/mod.rs:614
+#: rnote-ui/src/dialogs/mod.rs:620
 msgid "Bookmark"
 msgstr "Закладка"
 
-#: rnote-ui/src/dialogs/mod.rs:615
+#: rnote-ui/src/dialogs/mod.rs:621
 msgid "Book"
 msgstr "Книга"
 
-#: rnote-ui/src/dialogs/mod.rs:616
+#: rnote-ui/src/dialogs/mod.rs:622
 msgid "Bread"
 msgstr "Хлеб"
 
-#: rnote-ui/src/dialogs/mod.rs:617
+#: rnote-ui/src/dialogs/mod.rs:623
 msgid "Calendar"
 msgstr "Календарь"
 
-#: rnote-ui/src/dialogs/mod.rs:618
+#: rnote-ui/src/dialogs/mod.rs:624
 msgid "Camera"
 msgstr "Камера"
 
-#: rnote-ui/src/dialogs/mod.rs:619
+#: rnote-ui/src/dialogs/mod.rs:625
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "Чип"
 
-#: rnote-ui/src/dialogs/mod.rs:620
+#: rnote-ui/src/dialogs/mod.rs:626
 msgid "Clock"
 msgstr "Часы"
 
-#: rnote-ui/src/dialogs/mod.rs:621
+#: rnote-ui/src/dialogs/mod.rs:627
 msgid "Code"
 msgstr "Код"
 
-#: rnote-ui/src/dialogs/mod.rs:622
+#: rnote-ui/src/dialogs/mod.rs:628
 msgid "Compose"
 msgstr "Композиция"
 
-#: rnote-ui/src/dialogs/mod.rs:623
+#: rnote-ui/src/dialogs/mod.rs:629
 msgctxt "as in plant"
 msgid "Crop"
 msgstr "Злак"
 
-#: rnote-ui/src/dialogs/mod.rs:624
+#: rnote-ui/src/dialogs/mod.rs:630
 msgid "Dictionary"
 msgstr "Словарь"
 
-#: rnote-ui/src/dialogs/mod.rs:626
+#: rnote-ui/src/dialogs/mod.rs:632
 msgid "Drinks"
 msgstr "Напитки"
 
-#: rnote-ui/src/dialogs/mod.rs:627
+#: rnote-ui/src/dialogs/mod.rs:633
 msgid "Flag"
 msgstr "Флаг"
 
-#: rnote-ui/src/dialogs/mod.rs:628
+#: rnote-ui/src/dialogs/mod.rs:634
 msgid "Folder"
 msgstr "Папка"
 
-#: rnote-ui/src/dialogs/mod.rs:629
+#: rnote-ui/src/dialogs/mod.rs:635
 msgid "Footprints"
 msgstr "Следы"
 
-#: rnote-ui/src/dialogs/mod.rs:630
+#: rnote-ui/src/dialogs/mod.rs:636
 msgid "Gamepad"
 msgstr "Геймпад"
 
-#: rnote-ui/src/dialogs/mod.rs:631
+#: rnote-ui/src/dialogs/mod.rs:637
 msgid "Gear"
 msgstr "Механизм"
 
-#: rnote-ui/src/dialogs/mod.rs:632
+#: rnote-ui/src/dialogs/mod.rs:638
 msgid "Globe"
 msgstr "Земной шар"
 
-#: rnote-ui/src/dialogs/mod.rs:633
+#: rnote-ui/src/dialogs/mod.rs:639
 msgid "Hammer"
 msgstr "Молоток"
 
-#: rnote-ui/src/dialogs/mod.rs:634
+#: rnote-ui/src/dialogs/mod.rs:640
 msgid "Heart"
 msgstr "Сердце"
 
-#: rnote-ui/src/dialogs/mod.rs:635
+#: rnote-ui/src/dialogs/mod.rs:641
 msgid "Hourglass"
 msgstr "Песочные часы"
 
-#: rnote-ui/src/dialogs/mod.rs:636
+#: rnote-ui/src/dialogs/mod.rs:642
 msgid "Key"
 msgstr "Ключ"
 
-#: rnote-ui/src/dialogs/mod.rs:637
+#: rnote-ui/src/dialogs/mod.rs:643
 msgid "Language"
 msgstr "Язык"
 
-#: rnote-ui/src/dialogs/mod.rs:638
+#: rnote-ui/src/dialogs/mod.rs:644
 msgid "Library"
 msgstr "Библиотека"
 
-#: rnote-ui/src/dialogs/mod.rs:639
+#: rnote-ui/src/dialogs/mod.rs:645
 msgid "Lightbulb"
 msgstr "Лампочка"
 
-#: rnote-ui/src/dialogs/mod.rs:640
+#: rnote-ui/src/dialogs/mod.rs:646
 msgid "Mathematics"
 msgstr "Математика"
 
-#: rnote-ui/src/dialogs/mod.rs:641
+#: rnote-ui/src/dialogs/mod.rs:647
 msgid "Meeting"
 msgstr "Встреча"
 
-#: rnote-ui/src/dialogs/mod.rs:642
+#: rnote-ui/src/dialogs/mod.rs:648
 msgid "Money"
 msgstr "Монета"
 
-#: rnote-ui/src/dialogs/mod.rs:643
+#: rnote-ui/src/dialogs/mod.rs:649
 msgid "Musical Note"
 msgstr "Нота"
 
-#: rnote-ui/src/dialogs/mod.rs:644
+#: rnote-ui/src/dialogs/mod.rs:650
 msgid "Nature"
 msgstr "Природа"
 
-#: rnote-ui/src/dialogs/mod.rs:645
+#: rnote-ui/src/dialogs/mod.rs:651
 msgid "Open Book"
 msgstr "Открытая книга"
 
-#: rnote-ui/src/dialogs/mod.rs:646
+#: rnote-ui/src/dialogs/mod.rs:652
 msgid "Paintbrush"
 msgstr "Кисть"
 
-#: rnote-ui/src/dialogs/mod.rs:647
+#: rnote-ui/src/dialogs/mod.rs:653
 msgid "Pencil and Paper"
 msgstr "Бумага и карандаш"
 
-#: rnote-ui/src/dialogs/mod.rs:648
+#: rnote-ui/src/dialogs/mod.rs:654
 msgid "People"
 msgstr "Люди"
 
-#: rnote-ui/src/dialogs/mod.rs:649
+#: rnote-ui/src/dialogs/mod.rs:655
 msgid "Person"
 msgstr "Человек"
 
-#: rnote-ui/src/dialogs/mod.rs:650
+#: rnote-ui/src/dialogs/mod.rs:656
 msgid "Projector"
 msgstr "Проектор"
 
-#: rnote-ui/src/dialogs/mod.rs:651
+#: rnote-ui/src/dialogs/mod.rs:657
 msgid "Science"
 msgstr "Наука"
 
-#: rnote-ui/src/dialogs/mod.rs:652
+#: rnote-ui/src/dialogs/mod.rs:658
 msgid "Scratchpad"
 msgstr "Блокнот"
 
-#: rnote-ui/src/dialogs/mod.rs:653
+#: rnote-ui/src/dialogs/mod.rs:659
 msgid "Shapes"
 msgstr "Формы"
 
-#: rnote-ui/src/dialogs/mod.rs:654
+#: rnote-ui/src/dialogs/mod.rs:660
 msgid "Shopping"
 msgstr "Покупки"
 
-#: rnote-ui/src/dialogs/mod.rs:655
+#: rnote-ui/src/dialogs/mod.rs:661
 msgid "Speech Bubble"
 msgstr "Диалоговое окно"
 
-#: rnote-ui/src/dialogs/mod.rs:656
+#: rnote-ui/src/dialogs/mod.rs:662
 msgid "Speedometer"
 msgstr "Спидометр"
 
-#: rnote-ui/src/dialogs/mod.rs:657
+#: rnote-ui/src/dialogs/mod.rs:663
 msgid "Star"
 msgstr "Звезда"
 
-#: rnote-ui/src/dialogs/mod.rs:659
+#: rnote-ui/src/dialogs/mod.rs:665
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "Терминал"
 
-#: rnote-ui/src/dialogs/mod.rs:661
+#: rnote-ui/src/dialogs/mod.rs:667
 msgid "Text"
 msgstr "Текст"
 
-#: rnote-ui/src/dialogs/mod.rs:662
+#: rnote-ui/src/dialogs/mod.rs:668
 msgid "Travel"
 msgstr "Путешествие"
 
-#: rnote-ui/src/dialogs/mod.rs:663
+#: rnote-ui/src/dialogs/mod.rs:669
 msgid "Weather"
 msgstr "Погода"
 
-#: rnote-ui/src/dialogs/mod.rs:664
+#: rnote-ui/src/dialogs/mod.rs:670
 msgid "Weight"
 msgstr "Масса"
 

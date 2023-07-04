@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-23 14:06+0200\n"
+"POT-Creation-Date: 2023-07-04 13:51+0200\n"
 "PO-Revision-Date: 2023-05-20 12:33+0000\n"
 "Last-Translator: Mr-Spade <Mr_Spade@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -190,7 +190,7 @@ msgstr "更改工作区目录"
 #: rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: rnote-ui/data/ui/dialogs/export.ui:238 rnote-ui/src/dialogs/export.rs:323
 #: rnote-ui/src/dialogs/export.rs:364 rnote-ui/src/dialogs/export.rs:372
-#: rnote-ui/src/dialogs/mod.rs:519
+#: rnote-ui/src/dialogs/mod.rs:525
 msgid "- no directory selected -"
 msgstr "—— 没有选择目录 ——"
 
@@ -1059,20 +1059,20 @@ msgstr "笔画颜色"
 msgid "Fill Color"
 msgstr "填充颜色"
 
-#: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:83
 msgid "Open"
 msgstr "打开"
 
-#: rnote-ui/data/ui/filerow.ui:62
+#: rnote-ui/data/ui/filerow.ui:65
 #: rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
 msgstr "重命名"
 
-#: rnote-ui/data/ui/filerow.ui:66
+#: rnote-ui/data/ui/filerow.ui:69
 msgid "Move to Trash"
 msgstr "移至回收站"
 
-#: rnote-ui/data/ui/filerow.ui:70
+#: rnote-ui/data/ui/filerow.ui:73
 msgid "Duplicate"
 msgstr "重复所选内容"
 
@@ -1280,7 +1280,7 @@ msgid "Revert"
 msgstr "撤销"
 
 #: rnote-ui/data/ui/settingspanel.ui:290 rnote-ui/data/ui/shortcuts.ui:146
-#: rnote-ui/src/dialogs/mod.rs:625
+#: rnote-ui/src/dialogs/mod.rs:631
 msgid "Document"
 msgstr "文档"
 
@@ -1553,27 +1553,27 @@ msgstr "向上移动目录"
 msgid "Workspace Directory Actions"
 msgstr "工作区目录操作"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:161
+#: rnote-ui/data/ui/workspacebrowser.ui:163
 msgid "Create new Folder"
 msgstr "创建新文件夹"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:54
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:60
 msgid "Move Selected Workspace Up"
 msgstr "向上移动选定的工作区"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:63
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:69
 msgid "Move Selected Workspace Down"
 msgstr "向下移动选定的工作区"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:72
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:80
 msgid "Add Workspace"
 msgstr "添加工作区"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:81
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:89
 msgid "Remove Selected Workspace"
 msgstr "移除选定的工作区"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:91
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:99
 msgid "Edit Selected Workspace"
 msgstr "编辑选定的工作区"
 
@@ -1608,8 +1608,8 @@ msgstr "无法打开文件，不支持的文件类型"
 #: rnote-ui/src/appwindow/imp.rs:282
 #: rnote-ui/src/appwindow/appwindowactions.rs:612
 #: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/import.rs:52
-#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:258
-#: rnote-ui/src/dialogs/mod.rs:405
+#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:260
+#: rnote-ui/src/dialogs/mod.rs:411
 msgid "Saving document failed"
 msgstr "文档保存失败"
 
@@ -1637,8 +1637,8 @@ msgstr "打印失败"
 msgid "Exporting selection failed, nothing selected"
 msgstr "导出选择内容失败，没有选择内容"
 
-#: rnote-ui/src/canvas/mod.rs:768 rnote-ui/src/dialogs/mod.rs:205
-#: rnote-ui/src/dialogs/mod.rs:335
+#: rnote-ui/src/canvas/mod.rs:768 rnote-ui/src/dialogs/mod.rs:207
+#: rnote-ui/src/dialogs/mod.rs:341
 msgid "- invalid file name -"
 msgstr "—— 无效文件名 ——"
 
@@ -1699,7 +1699,7 @@ msgid "Exporting document failed, no file selected"
 msgstr "导出文件失败，没有选择文件"
 
 #: rnote-ui/src/dialogs/export.rs:222 rnote-ui/src/dialogs/export.rs:478
-#: rnote-ui/src/dialogs/export.rs:706 rnote-ui/src/dialogs/mod.rs:501
+#: rnote-ui/src/dialogs/export.rs:706 rnote-ui/src/dialogs/mod.rs:507
 msgid "Select"
 msgstr "选择"
 
@@ -1804,226 +1804,226 @@ msgstr "页码："
 msgid "translator-credits"
 msgstr "Mr_Spade <Mr_Spade@foxmail.com>"
 
-#: rnote-ui/src/dialogs/mod.rs:212 rnote-ui/src/dialogs/mod.rs:342
+#: rnote-ui/src/dialogs/mod.rs:214 rnote-ui/src/dialogs/mod.rs:348
 #, fuzzy
 #| msgid "- invalid file name -"
 msgid "- invalid save folder name -"
 msgstr "—— 无效文件名 ——"
 
-#: rnote-ui/src/dialogs/mod.rs:228 rnote-ui/src/dialogs/mod.rs:357
+#: rnote-ui/src/dialogs/mod.rs:230 rnote-ui/src/dialogs/mod.rs:363
 msgid "The changes will be saved"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:233 rnote-ui/src/dialogs/mod.rs:362
+#: rnote-ui/src/dialogs/mod.rs:235 rnote-ui/src/dialogs/mod.rs:368
 #, fuzzy
 #| msgid "- no file selected -"
 msgid "A new file will be created"
 msgstr "— 没有文件被选中 —"
 
-#: rnote-ui/src/dialogs/mod.rs:499
+#: rnote-ui/src/dialogs/mod.rs:505
 msgid "Change Workspace Directory"
 msgstr "更改工作区目录"
 
-#: rnote-ui/src/dialogs/mod.rs:612
+#: rnote-ui/src/dialogs/mod.rs:618
 msgid "Band-Aid"
 msgstr "胶布"
 
-#: rnote-ui/src/dialogs/mod.rs:613
+#: rnote-ui/src/dialogs/mod.rs:619
 msgid "Bank"
 msgstr "银行"
 
-#: rnote-ui/src/dialogs/mod.rs:614
+#: rnote-ui/src/dialogs/mod.rs:620
 msgid "Bookmark"
 msgstr "书签"
 
-#: rnote-ui/src/dialogs/mod.rs:615
+#: rnote-ui/src/dialogs/mod.rs:621
 msgid "Book"
 msgstr "书籍"
 
-#: rnote-ui/src/dialogs/mod.rs:616
+#: rnote-ui/src/dialogs/mod.rs:622
 msgid "Bread"
 msgstr "面包"
 
-#: rnote-ui/src/dialogs/mod.rs:617
+#: rnote-ui/src/dialogs/mod.rs:623
 msgid "Calendar"
 msgstr "日历"
 
-#: rnote-ui/src/dialogs/mod.rs:618
+#: rnote-ui/src/dialogs/mod.rs:624
 msgid "Camera"
 msgstr "相机"
 
-#: rnote-ui/src/dialogs/mod.rs:619
+#: rnote-ui/src/dialogs/mod.rs:625
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "芯片"
 
-#: rnote-ui/src/dialogs/mod.rs:620
+#: rnote-ui/src/dialogs/mod.rs:626
 msgid "Clock"
 msgstr "时钟"
 
-#: rnote-ui/src/dialogs/mod.rs:621
+#: rnote-ui/src/dialogs/mod.rs:627
 msgid "Code"
 msgstr "代码"
 
-#: rnote-ui/src/dialogs/mod.rs:622
+#: rnote-ui/src/dialogs/mod.rs:628
 msgid "Compose"
 msgstr "作品"
 
-#: rnote-ui/src/dialogs/mod.rs:623
+#: rnote-ui/src/dialogs/mod.rs:629
 msgctxt "as in plant"
 msgid "Crop"
 msgstr "作物"
 
-#: rnote-ui/src/dialogs/mod.rs:624
+#: rnote-ui/src/dialogs/mod.rs:630
 msgid "Dictionary"
 msgstr "字典"
 
-#: rnote-ui/src/dialogs/mod.rs:626
+#: rnote-ui/src/dialogs/mod.rs:632
 msgid "Drinks"
 msgstr "饮料"
 
-#: rnote-ui/src/dialogs/mod.rs:627
+#: rnote-ui/src/dialogs/mod.rs:633
 msgid "Flag"
 msgstr "旗帜"
 
-#: rnote-ui/src/dialogs/mod.rs:628
+#: rnote-ui/src/dialogs/mod.rs:634
 msgid "Folder"
 msgstr "文件夹"
 
-#: rnote-ui/src/dialogs/mod.rs:629
+#: rnote-ui/src/dialogs/mod.rs:635
 msgid "Footprints"
 msgstr "足迹"
 
-#: rnote-ui/src/dialogs/mod.rs:630
+#: rnote-ui/src/dialogs/mod.rs:636
 msgid "Gamepad"
 msgstr "手柄"
 
-#: rnote-ui/src/dialogs/mod.rs:631
+#: rnote-ui/src/dialogs/mod.rs:637
 msgid "Gear"
 msgstr "齿轮"
 
-#: rnote-ui/src/dialogs/mod.rs:632
+#: rnote-ui/src/dialogs/mod.rs:638
 msgid "Globe"
 msgstr "地球"
 
-#: rnote-ui/src/dialogs/mod.rs:633
+#: rnote-ui/src/dialogs/mod.rs:639
 msgid "Hammer"
 msgstr "锤子"
 
-#: rnote-ui/src/dialogs/mod.rs:634
+#: rnote-ui/src/dialogs/mod.rs:640
 msgid "Heart"
 msgstr "爱心"
 
-#: rnote-ui/src/dialogs/mod.rs:635
+#: rnote-ui/src/dialogs/mod.rs:641
 msgid "Hourglass"
 msgstr "沙漏"
 
-#: rnote-ui/src/dialogs/mod.rs:636
+#: rnote-ui/src/dialogs/mod.rs:642
 msgid "Key"
 msgstr "钥匙"
 
-#: rnote-ui/src/dialogs/mod.rs:637
+#: rnote-ui/src/dialogs/mod.rs:643
 msgid "Language"
 msgstr "语言"
 
-#: rnote-ui/src/dialogs/mod.rs:638
+#: rnote-ui/src/dialogs/mod.rs:644
 msgid "Library"
 msgstr "图书馆"
 
-#: rnote-ui/src/dialogs/mod.rs:639
+#: rnote-ui/src/dialogs/mod.rs:645
 msgid "Lightbulb"
 msgstr "灯泡"
 
-#: rnote-ui/src/dialogs/mod.rs:640
+#: rnote-ui/src/dialogs/mod.rs:646
 msgid "Mathematics"
 msgstr "数学"
 
-#: rnote-ui/src/dialogs/mod.rs:641
+#: rnote-ui/src/dialogs/mod.rs:647
 msgid "Meeting"
 msgstr "会议"
 
-#: rnote-ui/src/dialogs/mod.rs:642
+#: rnote-ui/src/dialogs/mod.rs:648
 msgid "Money"
 msgstr "钱"
 
-#: rnote-ui/src/dialogs/mod.rs:643
+#: rnote-ui/src/dialogs/mod.rs:649
 msgid "Musical Note"
 msgstr "音符"
 
-#: rnote-ui/src/dialogs/mod.rs:644
+#: rnote-ui/src/dialogs/mod.rs:650
 msgid "Nature"
 msgstr "自然"
 
-#: rnote-ui/src/dialogs/mod.rs:645
+#: rnote-ui/src/dialogs/mod.rs:651
 msgid "Open Book"
 msgstr "打开的书籍"
 
-#: rnote-ui/src/dialogs/mod.rs:646
+#: rnote-ui/src/dialogs/mod.rs:652
 msgid "Paintbrush"
 msgstr "画笔"
 
-#: rnote-ui/src/dialogs/mod.rs:647
+#: rnote-ui/src/dialogs/mod.rs:653
 msgid "Pencil and Paper"
 msgstr "铅笔和纸"
 
-#: rnote-ui/src/dialogs/mod.rs:648
+#: rnote-ui/src/dialogs/mod.rs:654
 msgid "People"
 msgstr "人们"
 
-#: rnote-ui/src/dialogs/mod.rs:649
+#: rnote-ui/src/dialogs/mod.rs:655
 msgid "Person"
 msgstr "单人"
 
-#: rnote-ui/src/dialogs/mod.rs:650
+#: rnote-ui/src/dialogs/mod.rs:656
 msgid "Projector"
 msgstr "投影仪"
 
-#: rnote-ui/src/dialogs/mod.rs:651
+#: rnote-ui/src/dialogs/mod.rs:657
 msgid "Science"
 msgstr "科学"
 
-#: rnote-ui/src/dialogs/mod.rs:652
+#: rnote-ui/src/dialogs/mod.rs:658
 msgid "Scratchpad"
 msgstr "便笺"
 
-#: rnote-ui/src/dialogs/mod.rs:653
+#: rnote-ui/src/dialogs/mod.rs:659
 msgid "Shapes"
 msgstr "形状"
 
-#: rnote-ui/src/dialogs/mod.rs:654
+#: rnote-ui/src/dialogs/mod.rs:660
 msgid "Shopping"
 msgstr "购物"
 
-#: rnote-ui/src/dialogs/mod.rs:655
+#: rnote-ui/src/dialogs/mod.rs:661
 msgid "Speech Bubble"
 msgstr "会话框"
 
-#: rnote-ui/src/dialogs/mod.rs:656
+#: rnote-ui/src/dialogs/mod.rs:662
 msgid "Speedometer"
 msgstr "里程计"
 
-#: rnote-ui/src/dialogs/mod.rs:657
+#: rnote-ui/src/dialogs/mod.rs:663
 msgid "Star"
 msgstr "星星"
 
-#: rnote-ui/src/dialogs/mod.rs:659
+#: rnote-ui/src/dialogs/mod.rs:665
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "终端"
 
-#: rnote-ui/src/dialogs/mod.rs:661
+#: rnote-ui/src/dialogs/mod.rs:667
 msgid "Text"
 msgstr "文本"
 
-#: rnote-ui/src/dialogs/mod.rs:662
+#: rnote-ui/src/dialogs/mod.rs:668
 msgid "Travel"
 msgstr "旅行"
 
-#: rnote-ui/src/dialogs/mod.rs:663
+#: rnote-ui/src/dialogs/mod.rs:669
 msgid "Weather"
 msgstr "天气"
 
-#: rnote-ui/src/dialogs/mod.rs:664
+#: rnote-ui/src/dialogs/mod.rs:670
 msgid "Weight"
 msgstr "权重"
 

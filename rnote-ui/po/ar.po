@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-23 14:06+0200\n"
+"POT-Creation-Date: 2023-07-04 13:51+0200\n"
 "PO-Revision-Date: 2023-06-26 08:36+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
@@ -187,7 +187,7 @@ msgstr "غيِّر مجلَّد ساحة العمل"
 #: rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: rnote-ui/data/ui/dialogs/export.ui:238 rnote-ui/src/dialogs/export.rs:323
 #: rnote-ui/src/dialogs/export.rs:364 rnote-ui/src/dialogs/export.rs:372
-#: rnote-ui/src/dialogs/mod.rs:519
+#: rnote-ui/src/dialogs/mod.rs:525
 msgid "- no directory selected -"
 msgstr "- لم يُحدَّد أيُّ مجلَّد -"
 
@@ -1056,20 +1056,20 @@ msgstr "لون الخطِّ المرسوم"
 msgid "Fill Color"
 msgstr "لون الملء"
 
-#: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:83
 msgid "Open"
 msgstr "افتح"
 
-#: rnote-ui/data/ui/filerow.ui:62
+#: rnote-ui/data/ui/filerow.ui:65
 #: rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
 msgstr "أعِد التسمية"
 
-#: rnote-ui/data/ui/filerow.ui:66
+#: rnote-ui/data/ui/filerow.ui:69
 msgid "Move to Trash"
 msgstr "احذف لسلَّة المهملات"
 
-#: rnote-ui/data/ui/filerow.ui:70
+#: rnote-ui/data/ui/filerow.ui:73
 msgid "Duplicate"
 msgstr "كرِّر"
 
@@ -1280,7 +1280,7 @@ msgid "Revert"
 msgstr "استرجع"
 
 #: rnote-ui/data/ui/settingspanel.ui:290 rnote-ui/data/ui/shortcuts.ui:146
-#: rnote-ui/src/dialogs/mod.rs:625
+#: rnote-ui/src/dialogs/mod.rs:631
 msgid "Document"
 msgstr "المستند"
 
@@ -1553,27 +1553,27 @@ msgstr "انقل المجلَّد للأعلى"
 msgid "Workspace Directory Actions"
 msgstr "إجراءات مجلَّد مساحة العمل"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:161
+#: rnote-ui/data/ui/workspacebrowser.ui:163
 msgid "Create new Folder"
 msgstr "أنشئ مجلَّدًا جديدًا"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:54
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:60
 msgid "Move Selected Workspace Up"
 msgstr "حرِّك مساحة العمل المحدَّدة للأعلى"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:63
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:69
 msgid "Move Selected Workspace Down"
 msgstr "حرِّك مساحة العمل المحدَّدة للأسفل"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:72
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:80
 msgid "Add Workspace"
 msgstr "أضف مساحة عمل"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:81
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:89
 msgid "Remove Selected Workspace"
 msgstr "أزل مساحة العمل المحدَّدة"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:91
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:99
 msgid "Edit Selected Workspace"
 msgstr "حرِّر مساحة العمل المحدَّدة"
 
@@ -1608,8 +1608,8 @@ msgstr "فشل فتح الملفِّ، نوع الملفِّ غير مدعوم"
 #: rnote-ui/src/appwindow/imp.rs:282
 #: rnote-ui/src/appwindow/appwindowactions.rs:612
 #: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/import.rs:52
-#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:258
-#: rnote-ui/src/dialogs/mod.rs:405
+#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:260
+#: rnote-ui/src/dialogs/mod.rs:411
 msgid "Saving document failed"
 msgstr "فشل حفظ المستند"
 
@@ -1637,8 +1637,8 @@ msgstr "فشلت طباعة المستند"
 msgid "Exporting selection failed, nothing selected"
 msgstr "فشل تصدير المحدَّد، لم يحدَّد أيُّ شيء"
 
-#: rnote-ui/src/canvas/mod.rs:768 rnote-ui/src/dialogs/mod.rs:205
-#: rnote-ui/src/dialogs/mod.rs:335
+#: rnote-ui/src/canvas/mod.rs:768 rnote-ui/src/dialogs/mod.rs:207
+#: rnote-ui/src/dialogs/mod.rs:341
 msgid "- invalid file name -"
 msgstr "- اسم الملفِّ غير صالح -"
 
@@ -1695,7 +1695,7 @@ msgid "Exporting document failed, no file selected"
 msgstr "فشل تصدير المستند، لم يحدَّد أيُّ ملفٍّ"
 
 #: rnote-ui/src/dialogs/export.rs:222 rnote-ui/src/dialogs/export.rs:478
-#: rnote-ui/src/dialogs/export.rs:706 rnote-ui/src/dialogs/mod.rs:501
+#: rnote-ui/src/dialogs/export.rs:706 rnote-ui/src/dialogs/mod.rs:507
 msgid "Select"
 msgstr "حدِّد"
 
@@ -1802,222 +1802,222 @@ msgstr ""
 "Ali Aljishi <ahj696@hotmail.com>\n"
 "mahmoud ibrahim atiyah <mahmoudaboattia1999@gmail.com>"
 
-#: rnote-ui/src/dialogs/mod.rs:212 rnote-ui/src/dialogs/mod.rs:342
+#: rnote-ui/src/dialogs/mod.rs:214 rnote-ui/src/dialogs/mod.rs:348
 msgid "- invalid save folder name -"
 msgstr "- اسم مجلد الحفظ غير صالح -"
 
-#: rnote-ui/src/dialogs/mod.rs:228 rnote-ui/src/dialogs/mod.rs:357
+#: rnote-ui/src/dialogs/mod.rs:230 rnote-ui/src/dialogs/mod.rs:363
 msgid "The changes will be saved"
 msgstr "سوف تُحفظ التغييرات"
 
-#: rnote-ui/src/dialogs/mod.rs:233 rnote-ui/src/dialogs/mod.rs:362
+#: rnote-ui/src/dialogs/mod.rs:235 rnote-ui/src/dialogs/mod.rs:368
 msgid "A new file will be created"
 msgstr "سوف يُنشأ ملف جديد"
 
-#: rnote-ui/src/dialogs/mod.rs:499
+#: rnote-ui/src/dialogs/mod.rs:505
 msgid "Change Workspace Directory"
 msgstr "غيِّر مجلَّد العمل"
 
-#: rnote-ui/src/dialogs/mod.rs:612
+#: rnote-ui/src/dialogs/mod.rs:618
 msgid "Band-Aid"
 msgstr "ضمادة"
 
-#: rnote-ui/src/dialogs/mod.rs:613
+#: rnote-ui/src/dialogs/mod.rs:619
 msgid "Bank"
 msgstr "مخزن"
 
-#: rnote-ui/src/dialogs/mod.rs:614
+#: rnote-ui/src/dialogs/mod.rs:620
 msgid "Bookmark"
 msgstr "علامة"
 
-#: rnote-ui/src/dialogs/mod.rs:615
+#: rnote-ui/src/dialogs/mod.rs:621
 msgid "Book"
 msgstr "كتاب"
 
-#: rnote-ui/src/dialogs/mod.rs:616
+#: rnote-ui/src/dialogs/mod.rs:622
 msgid "Bread"
 msgstr "خبز"
 
-#: rnote-ui/src/dialogs/mod.rs:617
+#: rnote-ui/src/dialogs/mod.rs:623
 msgid "Calendar"
 msgstr "تقويم"
 
-#: rnote-ui/src/dialogs/mod.rs:618
+#: rnote-ui/src/dialogs/mod.rs:624
 msgid "Camera"
 msgstr "كاميرة"
 
-#: rnote-ui/src/dialogs/mod.rs:619
+#: rnote-ui/src/dialogs/mod.rs:625
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "رقاقة"
 
-#: rnote-ui/src/dialogs/mod.rs:620
+#: rnote-ui/src/dialogs/mod.rs:626
 msgid "Clock"
 msgstr "ساعة"
 
-#: rnote-ui/src/dialogs/mod.rs:621
+#: rnote-ui/src/dialogs/mod.rs:627
 msgid "Code"
 msgstr "رمز"
 
-#: rnote-ui/src/dialogs/mod.rs:622
+#: rnote-ui/src/dialogs/mod.rs:628
 msgid "Compose"
 msgstr "أنشئ"
 
-#: rnote-ui/src/dialogs/mod.rs:623
+#: rnote-ui/src/dialogs/mod.rs:629
 msgctxt "as in plant"
 msgid "Crop"
 msgstr "قصاصة"
 
-#: rnote-ui/src/dialogs/mod.rs:624
+#: rnote-ui/src/dialogs/mod.rs:630
 msgid "Dictionary"
 msgstr "قاموس"
 
-#: rnote-ui/src/dialogs/mod.rs:626
+#: rnote-ui/src/dialogs/mod.rs:632
 msgid "Drinks"
 msgstr "شراب"
 
-#: rnote-ui/src/dialogs/mod.rs:627
+#: rnote-ui/src/dialogs/mod.rs:633
 msgid "Flag"
 msgstr "علم"
 
-#: rnote-ui/src/dialogs/mod.rs:628
+#: rnote-ui/src/dialogs/mod.rs:634
 msgid "Folder"
 msgstr "المجلَّد"
 
-#: rnote-ui/src/dialogs/mod.rs:629
+#: rnote-ui/src/dialogs/mod.rs:635
 msgid "Footprints"
 msgstr "الآثار"
 
-#: rnote-ui/src/dialogs/mod.rs:630
+#: rnote-ui/src/dialogs/mod.rs:636
 msgid "Gamepad"
 msgstr "لوحة ألعاب"
 
-#: rnote-ui/src/dialogs/mod.rs:631
+#: rnote-ui/src/dialogs/mod.rs:637
 msgid "Gear"
 msgstr "ترس"
 
-#: rnote-ui/src/dialogs/mod.rs:632
+#: rnote-ui/src/dialogs/mod.rs:638
 msgid "Globe"
 msgstr "كرة أرضية"
 
-#: rnote-ui/src/dialogs/mod.rs:633
+#: rnote-ui/src/dialogs/mod.rs:639
 msgid "Hammer"
 msgstr "مطرقة"
 
-#: rnote-ui/src/dialogs/mod.rs:634
+#: rnote-ui/src/dialogs/mod.rs:640
 msgid "Heart"
 msgstr "قلب"
 
-#: rnote-ui/src/dialogs/mod.rs:635
+#: rnote-ui/src/dialogs/mod.rs:641
 msgid "Hourglass"
 msgstr "ساعة رمليَّة"
 
-#: rnote-ui/src/dialogs/mod.rs:636
+#: rnote-ui/src/dialogs/mod.rs:642
 msgid "Key"
 msgstr "مفتاح"
 
-#: rnote-ui/src/dialogs/mod.rs:637
+#: rnote-ui/src/dialogs/mod.rs:643
 msgid "Language"
 msgstr "لغة"
 
-#: rnote-ui/src/dialogs/mod.rs:638
+#: rnote-ui/src/dialogs/mod.rs:644
 msgid "Library"
 msgstr "مكتبة"
 
-#: rnote-ui/src/dialogs/mod.rs:639
+#: rnote-ui/src/dialogs/mod.rs:645
 msgid "Lightbulb"
 msgstr "مصباح"
 
-#: rnote-ui/src/dialogs/mod.rs:640
+#: rnote-ui/src/dialogs/mod.rs:646
 msgid "Mathematics"
 msgstr "رياضيَّات"
 
-#: rnote-ui/src/dialogs/mod.rs:641
+#: rnote-ui/src/dialogs/mod.rs:647
 msgid "Meeting"
 msgstr "إجتماع"
 
-#: rnote-ui/src/dialogs/mod.rs:642
+#: rnote-ui/src/dialogs/mod.rs:648
 msgid "Money"
 msgstr "مال"
 
-#: rnote-ui/src/dialogs/mod.rs:643
+#: rnote-ui/src/dialogs/mod.rs:649
 msgid "Musical Note"
 msgstr "نغمة موسيقة"
 
-#: rnote-ui/src/dialogs/mod.rs:644
+#: rnote-ui/src/dialogs/mod.rs:650
 msgid "Nature"
 msgstr "طبيعة"
 
-#: rnote-ui/src/dialogs/mod.rs:645
+#: rnote-ui/src/dialogs/mod.rs:651
 msgid "Open Book"
 msgstr "كتاب مفتوح"
 
-#: rnote-ui/src/dialogs/mod.rs:646
+#: rnote-ui/src/dialogs/mod.rs:652
 msgid "Paintbrush"
 msgstr "فرشاة رسم"
 
-#: rnote-ui/src/dialogs/mod.rs:647
+#: rnote-ui/src/dialogs/mod.rs:653
 msgid "Pencil and Paper"
 msgstr "قلم رصاص وورقة"
 
-#: rnote-ui/src/dialogs/mod.rs:648
+#: rnote-ui/src/dialogs/mod.rs:654
 msgid "People"
 msgstr "ناس"
 
-#: rnote-ui/src/dialogs/mod.rs:649
+#: rnote-ui/src/dialogs/mod.rs:655
 msgid "Person"
 msgstr "شخص"
 
-#: rnote-ui/src/dialogs/mod.rs:650
+#: rnote-ui/src/dialogs/mod.rs:656
 msgid "Projector"
 msgstr "العارِض"
 
-#: rnote-ui/src/dialogs/mod.rs:651
+#: rnote-ui/src/dialogs/mod.rs:657
 msgid "Science"
 msgstr "علم"
 
-#: rnote-ui/src/dialogs/mod.rs:652
+#: rnote-ui/src/dialogs/mod.rs:658
 msgid "Scratchpad"
 msgstr "مفكِّرة"
 
-#: rnote-ui/src/dialogs/mod.rs:653
+#: rnote-ui/src/dialogs/mod.rs:659
 msgid "Shapes"
 msgstr "الأشكال"
 
-#: rnote-ui/src/dialogs/mod.rs:654
+#: rnote-ui/src/dialogs/mod.rs:660
 msgid "Shopping"
 msgstr "تسوُّق"
 
-#: rnote-ui/src/dialogs/mod.rs:655
+#: rnote-ui/src/dialogs/mod.rs:661
 msgid "Speech Bubble"
 msgstr "فقاعة حوار"
 
-#: rnote-ui/src/dialogs/mod.rs:656
+#: rnote-ui/src/dialogs/mod.rs:662
 msgid "Speedometer"
 msgstr "عدَّاد سرعة"
 
-#: rnote-ui/src/dialogs/mod.rs:657
+#: rnote-ui/src/dialogs/mod.rs:663
 msgid "Star"
 msgstr "نجم"
 
-#: rnote-ui/src/dialogs/mod.rs:659
+#: rnote-ui/src/dialogs/mod.rs:665
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "طرفيَّة"
 
-#: rnote-ui/src/dialogs/mod.rs:661
+#: rnote-ui/src/dialogs/mod.rs:667
 msgid "Text"
 msgstr "النصُّ"
 
-#: rnote-ui/src/dialogs/mod.rs:662
+#: rnote-ui/src/dialogs/mod.rs:668
 msgid "Travel"
 msgstr "سفر"
 
-#: rnote-ui/src/dialogs/mod.rs:663
+#: rnote-ui/src/dialogs/mod.rs:669
 msgid "Weather"
 msgstr "طقس"
 
-#: rnote-ui/src/dialogs/mod.rs:664
+#: rnote-ui/src/dialogs/mod.rs:670
 msgid "Weight"
 msgstr "الوزن"
 

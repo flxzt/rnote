@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-23 14:06+0200\n"
+"POT-Creation-Date: 2023-07-04 13:51+0200\n"
 "PO-Revision-Date: 2023-06-26 08:36+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
-"\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
+">\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -187,7 +187,7 @@ msgstr "Munkaterület könyvtárának módosítása"
 #: rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: rnote-ui/data/ui/dialogs/export.ui:238 rnote-ui/src/dialogs/export.rs:323
 #: rnote-ui/src/dialogs/export.rs:364 rnote-ui/src/dialogs/export.rs:372
-#: rnote-ui/src/dialogs/mod.rs:519
+#: rnote-ui/src/dialogs/mod.rs:525
 msgid "- no directory selected -"
 msgstr "- nincs kiválasztott könyvtár -"
 
@@ -1058,20 +1058,20 @@ msgstr "Körvonal színe"
 msgid "Fill Color"
 msgstr "Kitöltőszín"
 
-#: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:83
 msgid "Open"
 msgstr "Megnyitás"
 
-#: rnote-ui/data/ui/filerow.ui:62
+#: rnote-ui/data/ui/filerow.ui:65
 #: rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
 msgstr "Átnevezés"
 
-#: rnote-ui/data/ui/filerow.ui:66
+#: rnote-ui/data/ui/filerow.ui:69
 msgid "Move to Trash"
 msgstr "Áthelyezés a kukába"
 
-#: rnote-ui/data/ui/filerow.ui:70
+#: rnote-ui/data/ui/filerow.ui:73
 msgid "Duplicate"
 msgstr "Megkettőzés"
 
@@ -1283,7 +1283,7 @@ msgid "Revert"
 msgstr "Visszaállítás"
 
 #: rnote-ui/data/ui/settingspanel.ui:290 rnote-ui/data/ui/shortcuts.ui:146
-#: rnote-ui/src/dialogs/mod.rs:625
+#: rnote-ui/src/dialogs/mod.rs:631
 msgid "Document"
 msgstr "Dokumentum"
 
@@ -1544,27 +1544,27 @@ msgstr "Könyvtár feljebb mozgatása"
 msgid "Workspace Directory Actions"
 msgstr "Munkaterületi könyvtárműveletek"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:161
+#: rnote-ui/data/ui/workspacebrowser.ui:163
 msgid "Create new Folder"
 msgstr "Új mappa létrehozása"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:54
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:60
 msgid "Move Selected Workspace Up"
 msgstr "Kijelölt munkaterület mozgatása felfelé"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:63
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:69
 msgid "Move Selected Workspace Down"
 msgstr "Kijelölt munkaterület mozgatása lefelé"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:72
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:80
 msgid "Add Workspace"
 msgstr "Munkaterület hozzáadása"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:81
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:89
 msgid "Remove Selected Workspace"
 msgstr "Kijelölt munkaterület eltávolítása"
 
-#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:91
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:99
 msgid "Edit Selected Workspace"
 msgstr "Kijelölt munkaterület szerkesztése"
 
@@ -1600,8 +1600,8 @@ msgstr "A fájl megnyitása sikertelen, nem támogatott fájltípus"
 #: rnote-ui/src/appwindow/imp.rs:282
 #: rnote-ui/src/appwindow/appwindowactions.rs:612
 #: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/import.rs:52
-#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:258
-#: rnote-ui/src/dialogs/mod.rs:405
+#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:260
+#: rnote-ui/src/dialogs/mod.rs:411
 msgid "Saving document failed"
 msgstr "A dokumentum mentése sikertelen"
 
@@ -1629,8 +1629,8 @@ msgstr "A dokumentum nyomtatása nem sikerült"
 msgid "Exporting selection failed, nothing selected"
 msgstr "Kijelölés exportálása sikertelen, nincs kijelölve semmi"
 
-#: rnote-ui/src/canvas/mod.rs:768 rnote-ui/src/dialogs/mod.rs:205
-#: rnote-ui/src/dialogs/mod.rs:335
+#: rnote-ui/src/canvas/mod.rs:768 rnote-ui/src/dialogs/mod.rs:207
+#: rnote-ui/src/dialogs/mod.rs:341
 msgid "- invalid file name -"
 msgstr "- érvénytelen fáljnév -"
 
@@ -1687,7 +1687,7 @@ msgid "Exporting document failed, no file selected"
 msgstr "Dokumentum exportálása sikertelen, nincs fájl kiválasztva"
 
 #: rnote-ui/src/dialogs/export.rs:222 rnote-ui/src/dialogs/export.rs:478
-#: rnote-ui/src/dialogs/export.rs:706 rnote-ui/src/dialogs/mod.rs:501
+#: rnote-ui/src/dialogs/export.rs:706 rnote-ui/src/dialogs/mod.rs:507
 msgid "Select"
 msgstr "Kijelölés"
 
@@ -1792,222 +1792,222 @@ msgstr "Oldalak:"
 msgid "translator-credits"
 msgstr "Óvári"
 
-#: rnote-ui/src/dialogs/mod.rs:212 rnote-ui/src/dialogs/mod.rs:342
+#: rnote-ui/src/dialogs/mod.rs:214 rnote-ui/src/dialogs/mod.rs:348
 msgid "- invalid save folder name -"
 msgstr "- érvénytelen mentési mappanév -"
 
-#: rnote-ui/src/dialogs/mod.rs:228 rnote-ui/src/dialogs/mod.rs:357
+#: rnote-ui/src/dialogs/mod.rs:230 rnote-ui/src/dialogs/mod.rs:363
 msgid "The changes will be saved"
 msgstr "A módosítások mentésre kerülnek"
 
-#: rnote-ui/src/dialogs/mod.rs:233 rnote-ui/src/dialogs/mod.rs:362
+#: rnote-ui/src/dialogs/mod.rs:235 rnote-ui/src/dialogs/mod.rs:368
 msgid "A new file will be created"
 msgstr "Új fájl jön létre"
 
-#: rnote-ui/src/dialogs/mod.rs:499
+#: rnote-ui/src/dialogs/mod.rs:505
 msgid "Change Workspace Directory"
 msgstr "Munkaterület-könyvtár módosítása"
 
-#: rnote-ui/src/dialogs/mod.rs:612
+#: rnote-ui/src/dialogs/mod.rs:618
 msgid "Band-Aid"
 msgstr "Sebtapasz"
 
-#: rnote-ui/src/dialogs/mod.rs:613
+#: rnote-ui/src/dialogs/mod.rs:619
 msgid "Bank"
 msgstr "Bank"
 
-#: rnote-ui/src/dialogs/mod.rs:614
+#: rnote-ui/src/dialogs/mod.rs:620
 msgid "Bookmark"
 msgstr "Könyvjelző"
 
-#: rnote-ui/src/dialogs/mod.rs:615
+#: rnote-ui/src/dialogs/mod.rs:621
 msgid "Book"
 msgstr "Könyv"
 
-#: rnote-ui/src/dialogs/mod.rs:616
+#: rnote-ui/src/dialogs/mod.rs:622
 msgid "Bread"
 msgstr "Kenyér"
 
-#: rnote-ui/src/dialogs/mod.rs:617
+#: rnote-ui/src/dialogs/mod.rs:623
 msgid "Calendar"
 msgstr "Naptár"
 
-#: rnote-ui/src/dialogs/mod.rs:618
+#: rnote-ui/src/dialogs/mod.rs:624
 msgid "Camera"
 msgstr "Fényképezőgép"
 
-#: rnote-ui/src/dialogs/mod.rs:619
+#: rnote-ui/src/dialogs/mod.rs:625
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "Forgács"
 
-#: rnote-ui/src/dialogs/mod.rs:620
+#: rnote-ui/src/dialogs/mod.rs:626
 msgid "Clock"
 msgstr "Óra"
 
-#: rnote-ui/src/dialogs/mod.rs:621
+#: rnote-ui/src/dialogs/mod.rs:627
 msgid "Code"
 msgstr "Kód"
 
-#: rnote-ui/src/dialogs/mod.rs:622
+#: rnote-ui/src/dialogs/mod.rs:628
 msgid "Compose"
 msgstr "Összeállítás"
 
-#: rnote-ui/src/dialogs/mod.rs:623
+#: rnote-ui/src/dialogs/mod.rs:629
 msgctxt "as in plant"
 msgid "Crop"
 msgstr "Körülvágás"
 
-#: rnote-ui/src/dialogs/mod.rs:624
+#: rnote-ui/src/dialogs/mod.rs:630
 msgid "Dictionary"
 msgstr "Szótár"
 
-#: rnote-ui/src/dialogs/mod.rs:626
+#: rnote-ui/src/dialogs/mod.rs:632
 msgid "Drinks"
 msgstr "Italok"
 
-#: rnote-ui/src/dialogs/mod.rs:627
+#: rnote-ui/src/dialogs/mod.rs:633
 msgid "Flag"
 msgstr "Zászló"
 
-#: rnote-ui/src/dialogs/mod.rs:628
+#: rnote-ui/src/dialogs/mod.rs:634
 msgid "Folder"
 msgstr "Mappa"
 
-#: rnote-ui/src/dialogs/mod.rs:629
+#: rnote-ui/src/dialogs/mod.rs:635
 msgid "Footprints"
 msgstr "Lábnyomok"
 
-#: rnote-ui/src/dialogs/mod.rs:630
+#: rnote-ui/src/dialogs/mod.rs:636
 msgid "Gamepad"
 msgstr "Gombkormány"
 
-#: rnote-ui/src/dialogs/mod.rs:631
+#: rnote-ui/src/dialogs/mod.rs:637
 msgid "Gear"
 msgstr "Fogaskerék"
 
-#: rnote-ui/src/dialogs/mod.rs:632
+#: rnote-ui/src/dialogs/mod.rs:638
 msgid "Globe"
 msgstr "Földgömb"
 
-#: rnote-ui/src/dialogs/mod.rs:633
+#: rnote-ui/src/dialogs/mod.rs:639
 msgid "Hammer"
 msgstr "Kalapács"
 
-#: rnote-ui/src/dialogs/mod.rs:634
+#: rnote-ui/src/dialogs/mod.rs:640
 msgid "Heart"
 msgstr "Szív"
 
-#: rnote-ui/src/dialogs/mod.rs:635
+#: rnote-ui/src/dialogs/mod.rs:641
 msgid "Hourglass"
 msgstr "Homokóra"
 
-#: rnote-ui/src/dialogs/mod.rs:636
+#: rnote-ui/src/dialogs/mod.rs:642
 msgid "Key"
 msgstr "Kulcs"
 
-#: rnote-ui/src/dialogs/mod.rs:637
+#: rnote-ui/src/dialogs/mod.rs:643
 msgid "Language"
 msgstr "Nyelv"
 
-#: rnote-ui/src/dialogs/mod.rs:638
+#: rnote-ui/src/dialogs/mod.rs:644
 msgid "Library"
 msgstr "Könyvtár"
 
-#: rnote-ui/src/dialogs/mod.rs:639
+#: rnote-ui/src/dialogs/mod.rs:645
 msgid "Lightbulb"
 msgstr "Villanykörte"
 
-#: rnote-ui/src/dialogs/mod.rs:640
+#: rnote-ui/src/dialogs/mod.rs:646
 msgid "Mathematics"
 msgstr "Matematika"
 
-#: rnote-ui/src/dialogs/mod.rs:641
+#: rnote-ui/src/dialogs/mod.rs:647
 msgid "Meeting"
 msgstr "Értekezlet"
 
-#: rnote-ui/src/dialogs/mod.rs:642
+#: rnote-ui/src/dialogs/mod.rs:648
 msgid "Money"
 msgstr "Pénz"
 
-#: rnote-ui/src/dialogs/mod.rs:643
+#: rnote-ui/src/dialogs/mod.rs:649
 msgid "Musical Note"
 msgstr "Hangjegy"
 
-#: rnote-ui/src/dialogs/mod.rs:644
+#: rnote-ui/src/dialogs/mod.rs:650
 msgid "Nature"
 msgstr "Természet"
 
-#: rnote-ui/src/dialogs/mod.rs:645
+#: rnote-ui/src/dialogs/mod.rs:651
 msgid "Open Book"
 msgstr "Könyv megnyitása"
 
-#: rnote-ui/src/dialogs/mod.rs:646
+#: rnote-ui/src/dialogs/mod.rs:652
 msgid "Paintbrush"
 msgstr "Ecset"
 
-#: rnote-ui/src/dialogs/mod.rs:647
+#: rnote-ui/src/dialogs/mod.rs:653
 msgid "Pencil and Paper"
 msgstr "Ceruza és papír"
 
-#: rnote-ui/src/dialogs/mod.rs:648
+#: rnote-ui/src/dialogs/mod.rs:654
 msgid "People"
 msgstr "Emberek"
 
-#: rnote-ui/src/dialogs/mod.rs:649
+#: rnote-ui/src/dialogs/mod.rs:655
 msgid "Person"
 msgstr "Személy"
 
-#: rnote-ui/src/dialogs/mod.rs:650
+#: rnote-ui/src/dialogs/mod.rs:656
 msgid "Projector"
 msgstr "Kivetítő"
 
-#: rnote-ui/src/dialogs/mod.rs:651
+#: rnote-ui/src/dialogs/mod.rs:657
 msgid "Science"
 msgstr "Tudomány"
 
-#: rnote-ui/src/dialogs/mod.rs:652
+#: rnote-ui/src/dialogs/mod.rs:658
 msgid "Scratchpad"
 msgstr "Firkálótömb"
 
-#: rnote-ui/src/dialogs/mod.rs:653
+#: rnote-ui/src/dialogs/mod.rs:659
 msgid "Shapes"
 msgstr "Alakzatok"
 
-#: rnote-ui/src/dialogs/mod.rs:654
+#: rnote-ui/src/dialogs/mod.rs:660
 msgid "Shopping"
 msgstr "Bevásárlás"
 
-#: rnote-ui/src/dialogs/mod.rs:655
+#: rnote-ui/src/dialogs/mod.rs:661
 msgid "Speech Bubble"
 msgstr "Beszédbuborék"
 
-#: rnote-ui/src/dialogs/mod.rs:656
+#: rnote-ui/src/dialogs/mod.rs:662
 msgid "Speedometer"
 msgstr "Sebességmérő"
 
-#: rnote-ui/src/dialogs/mod.rs:657
+#: rnote-ui/src/dialogs/mod.rs:663
 msgid "Star"
 msgstr "Csillag"
 
-#: rnote-ui/src/dialogs/mod.rs:659
+#: rnote-ui/src/dialogs/mod.rs:665
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "Terminál"
 
-#: rnote-ui/src/dialogs/mod.rs:661
+#: rnote-ui/src/dialogs/mod.rs:667
 msgid "Text"
 msgstr "Szöveg"
 
-#: rnote-ui/src/dialogs/mod.rs:662
+#: rnote-ui/src/dialogs/mod.rs:668
 msgid "Travel"
 msgstr "Utazás"
 
-#: rnote-ui/src/dialogs/mod.rs:663
+#: rnote-ui/src/dialogs/mod.rs:669
 msgid "Weather"
 msgstr "Időjárás"
 
-#: rnote-ui/src/dialogs/mod.rs:664
+#: rnote-ui/src/dialogs/mod.rs:670
 msgid "Weight"
 msgstr "Súly"
 

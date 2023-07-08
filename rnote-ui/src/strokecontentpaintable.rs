@@ -7,7 +7,7 @@ use rnote_engine::engine::StrokeContent;
 use rnote_engine::render::Image;
 use rnote_engine::tasks::{OneOffTaskError, OneOffTaskHandle};
 use rnote_engine::utils::GdkRGBAHelpers;
-use std::cell::{Cell, RefCell};
+use std::cell::{Cell, OnceCell, RefCell};
 use std::time::Duration;
 
 mod imp {
@@ -28,6 +28,7 @@ mod imp {
         pub(super) paint_task_handle: RefCell<Option<OneOffTaskHandle>>,
         // The handler that is spawn on the glib main context and integrates the received paint cache image
         pub(super) paint_task_handler: RefCell<Option<glib::SourceId>>,
+        pub(super) paint_task_tx: OnceCell<glib::Sender<anyhow::Result<Image>>>,
     }
 
     #[glib::object_subclass]
@@ -114,11 +115,36 @@ mod imp {
         }
 
         fn constructed(&self) {
+            let obj = self.obj();
             self.parent_constructed();
 
             // For some reason these default values are not set, but are instead 0.
-            self.obj().set_paint_max_width(1000.);
-            self.obj().set_paint_max_height(1000.);
+            //
+            // TODO: fix it
+            obj.set_paint_max_width(1000.);
+            obj.set_paint_max_height(1000.);
+            let (tx, rx) =
+                glib::MainContext::channel::<anyhow::Result<Image>>(glib::PRIORITY_DEFAULT);
+            self.paint_task_tx.set(tx).unwrap();
+
+            let handler = rx.attach(Some(&glib::MainContext::default()), clone!(@weak obj as paintable => @default-return glib::Continue(false), move |res| {
+                paintable.imp().paint_task_handle.take();
+                match res {
+                    Ok(image) => paintable.imp().replace_paint_cache(image),
+                    Err(e) => {
+                        log::error!("StrokeContentPaintable repainting cache image in task failed, Err: {e:?}");
+                    }
+                }
+                glib::Continue(true)
+            }));
+            self.paint_task_handler.replace(Some(handler));
+        }
+
+        fn dispose(&self) {
+            self.paint_task_handle.take();
+            if let Some(s) = self.paint_task_handler.take() {
+                s.remove();
+            }
         }
     }
 
@@ -364,7 +390,7 @@ impl StrokeContentPaintable {
         let draw_background = self.imp().draw_background.get();
         let draw_pattern = self.imp().draw_pattern.get();
         let margin = self.imp().margin.get();
-        let (tx, rx) = glib::MainContext::channel::<anyhow::Result<Image>>(glib::PRIORITY_DEFAULT);
+        let tx = self.imp().paint_task_tx.get().unwrap().clone();
         rayon::spawn(move || {
             if let Err(e) = tx.send(imp::paint_content(
                 &stroke_content,
@@ -377,15 +403,6 @@ impl StrokeContentPaintable {
                 log::error!("StrokeContentPaintable failed to send painted cache image through channel, Err: {e:?}");
             };
         });
-        rx.attach(Some(&glib::MainContext::default()), clone!(@strong self as paintable => @default-return glib::Continue(false), move |res| {
-            match res {
-                Ok(image) => paintable.imp().replace_paint_cache(image),
-                Err(e) => {
-                    log::error!("StrokeContentPaintable repainting cache image failed, Err: {e:?}");
-                }
-            }
-            glib::Continue(false)
-        }));
     }
 
     /// Regenerates the paint cache after a timeout.
@@ -405,8 +422,8 @@ impl StrokeContentPaintable {
         let draw_background = self.imp().draw_background.get();
         let draw_pattern = self.imp().draw_pattern.get();
         let margin = self.imp().margin.get();
-        let (tx, rx) = glib::MainContext::channel::<anyhow::Result<Image>>(glib::PRIORITY_DEFAULT);
         let mut reinstall_task = false;
+        let tx = self.imp().paint_task_tx.get().unwrap().clone();
 
         let paint_task = move || {
             if let Err(e) = tx.send(imp::paint_content(
@@ -439,22 +456,6 @@ impl StrokeContentPaintable {
         if reinstall_task {
             *self.imp().paint_task_handle.borrow_mut() =
                 Some(OneOffTaskHandle::new(paint_task, TIMEOUT));
-        }
-
-        let handler = rx.attach(Some(&glib::MainContext::default()), clone!(@strong self as paintable => @default-return glib::Continue(false), move |res| {
-            paintable.imp().paint_task_handle.take();
-            paintable.imp().paint_task_handler.take();
-            match res {
-                Ok(image) => paintable.imp().replace_paint_cache(image),
-                Err(e) => {
-                    log::error!("repainting StrokeContentPaintable cache image failed, Err: {e:?}");
-                }
-            }
-            glib::Continue(false)
-        }));
-
-        if let Some(old) = self.imp().paint_task_handler.replace(Some(handler)) {
-            old.remove();
         }
     }
 }

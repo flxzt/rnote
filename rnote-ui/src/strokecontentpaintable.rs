@@ -1,12 +1,14 @@
 // Imports
 use gtk4::graphene;
-use gtk4::{gdk, glib, gsk, prelude::*, subclass::prelude::*};
+use gtk4::{gdk, glib, glib::clone, gsk, prelude::*, subclass::prelude::*};
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::render::Image;
+use rnote_engine::tasks::{OneOffTaskError, OneOffTaskHandle};
 use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::{Cell, RefCell};
+use std::time::Duration;
 
 mod imp {
     use super::*;
@@ -20,7 +22,12 @@ mod imp {
         pub(super) draw_background: Cell<bool>,
         pub(super) draw_pattern: Cell<bool>,
         pub(super) margin: Cell<f64>,
+
         pub(super) stroke_content: RefCell<StrokeContent>,
+        // The handle executing the paint task when regenerating the paint cache after a timeout
+        pub(super) paint_task_handle: RefCell<Option<OneOffTaskHandle>>,
+        // The handler that is spawn on the glib main context and integrates the received paint cache image
+        pub(super) paint_task_handler: RefCell<Option<glib::SourceId>>,
     }
 
     #[glib::object_subclass]
@@ -72,41 +79,35 @@ mod imp {
                         .get::<f64>()
                         .expect("The value needs to be of type `f64`");
                     self.paint_max_width.replace(paint_max_width.max(0.0));
-                    self.obj().repaint_cache();
-                    self.obj().invalidate_contents();
+                    self.obj().repaint_cache_async();
                 }
                 "paint-max-height" => {
                     let paint_max_height = value
                         .get::<f64>()
                         .expect("The value needs to be of type `f64`");
                     self.paint_max_height.replace(paint_max_height.max(0.0));
-                    self.obj().repaint_cache();
-                    self.obj().invalidate_contents();
+                    self.obj().repaint_cache_async();
                 }
                 "draw-background" => {
                     let draw_background = value
                         .get::<bool>()
                         .expect("The value needs to be of type `bool`");
                     self.draw_background.replace(draw_background);
-                    self.obj().repaint_cache();
-                    self.obj().invalidate_contents();
+                    self.obj().repaint_cache_async();
                 }
                 "draw-pattern" => {
                     let draw_pattern = value
                         .get::<bool>()
                         .expect("The value needs to be of type `bool`");
                     self.draw_pattern.replace(draw_pattern);
-                    self.obj().repaint_cache();
-                    self.obj().invalidate_contents();
+                    self.obj().repaint_cache_async();
                 }
                 "margin" => {
                     let margin = value
                         .get::<f64>()
                         .expect("The value needs to be of type `f64`");
                     self.margin.replace(margin.max(0.0));
-                    self.obj().repaint_cache();
-                    self.obj().invalidate_contents();
-                    self.obj().invalidate_size();
+                    self.obj().repaint_cache_async();
                 }
                 _ => unimplemented!(),
             }
@@ -158,6 +159,22 @@ mod imp {
                     &[1.5; 4],
                     &[gdk::RGBA::from_piet_color(Self::CONTENT_BORDER_COLOR); 4],
                 );
+            }
+        }
+    }
+
+    impl StrokeContentPaintable {
+        pub(super) fn replace_paint_cache(&self, image: Image) {
+            match image.to_memtexture() {
+                Ok(texture) => {
+                    self.paint_cache.replace(Some(image));
+                    self.paint_cache_texture.replace(Some(texture));
+                    self.obj().invalidate_contents();
+                    self.obj().invalidate_size();
+                }
+                Err(e) => {
+                    log::error!("StrokeContentPaintable creating memory texture from new cache image failed, Err: {e:?}");
+                }
             }
         }
     }
@@ -293,11 +310,13 @@ impl StrokeContentPaintable {
 
     pub(crate) fn set_stroke_content(&self, stroke_content: StrokeContent) {
         self.imp().stroke_content.replace(stroke_content);
-        self.repaint_cache();
+        self.repaint_cache_async();
         self.invalidate_size();
         self.invalidate_contents();
     }
 
+    /// Regenerates the paint cache.
+    #[allow(unused)]
     pub(crate) fn repaint_cache(&self) {
         let (width, height) = (
             (self.intrinsic_width() as f64).min(self.imp().paint_max_width.get()),
@@ -318,6 +337,8 @@ impl StrokeContentPaintable {
                 Ok(texture) => {
                     self.imp().paint_cache.replace(Some(image));
                     self.imp().paint_cache_texture.replace(Some(texture));
+                    self.invalidate_contents();
+                    self.invalidate_size();
                 }
                 Err(e) => {
                     log::error!("StrokeContentPaintable creating memory texture from repainted cache image failed: {e:?}");
@@ -326,6 +347,114 @@ impl StrokeContentPaintable {
             Err(e) => {
                 log::error!("repainting StrokeContentPaintable cache image failed: {e:?}");
             }
+        }
+    }
+
+    /// Regenerates the paint cache asynchronously.
+    #[allow(unused)]
+    pub(crate) fn repaint_cache_async(&self) {
+        let (width, height) = (
+            (self.intrinsic_width() as f64).min(self.imp().paint_max_width.get()),
+            (self.intrinsic_height() as f64).min(self.imp().paint_max_height.get()),
+        );
+        if width <= 0. && height <= 0. {
+            return;
+        }
+        let stroke_content = self.imp().stroke_content.borrow().clone();
+        let draw_background = self.imp().draw_background.get();
+        let draw_pattern = self.imp().draw_pattern.get();
+        let margin = self.imp().margin.get();
+        let (tx, rx) = glib::MainContext::channel::<anyhow::Result<Image>>(glib::PRIORITY_DEFAULT);
+        rayon::spawn(move || {
+            if let Err(e) = tx.send(imp::paint_content(
+                &stroke_content,
+                width,
+                height,
+                draw_background,
+                draw_pattern,
+                margin,
+            )) {
+                log::error!("StrokeContentPaintable failed to send painted cache image through channel, Err: {e:?}");
+            };
+        });
+        rx.attach(Some(&glib::MainContext::default()), clone!(@strong self as paintable => @default-return glib::Continue(false), move |res| {
+            match res {
+                Ok(image) => paintable.imp().replace_paint_cache(image),
+                Err(e) => {
+                    log::error!("StrokeContentPaintable repainting cache image failed, Err: {e:?}");
+                }
+            }
+            glib::Continue(false)
+        }));
+    }
+
+    /// Regenerates the paint cache after a timeout.
+    ///
+    /// Subsequent calls to this function reset the timeout.
+    #[allow(unused)]
+    pub(crate) fn repaint_cache_w_timeout(&self) {
+        const TIMEOUT: Duration = Duration::from_millis(500);
+        let (width, height) = (
+            (self.intrinsic_width() as f64).min(self.imp().paint_max_width.get()),
+            (self.intrinsic_height() as f64).min(self.imp().paint_max_height.get()),
+        );
+        if width <= 0. && height <= 0. {
+            return;
+        }
+        let stroke_content = self.imp().stroke_content.borrow().clone();
+        let draw_background = self.imp().draw_background.get();
+        let draw_pattern = self.imp().draw_pattern.get();
+        let margin = self.imp().margin.get();
+        let (tx, rx) = glib::MainContext::channel::<anyhow::Result<Image>>(glib::PRIORITY_DEFAULT);
+        let mut reinstall_task = false;
+
+        let paint_task = move || {
+            if let Err(e) = tx.send(imp::paint_content(
+                &stroke_content,
+                width,
+                height,
+                draw_background,
+                draw_pattern,
+                margin,
+            )) {
+                log::error!("StrokeContentPaintable failed to send painted cache image through channel, Err: {e:?}");
+            };
+        };
+
+        if let Some(handle) = self.imp().paint_task_handle.borrow_mut().as_mut() {
+            match handle.replace_task(paint_task.clone()) {
+                Ok(()) => {}
+                Err(OneOffTaskError::TimeoutReached) => {
+                    reinstall_task = true;
+                }
+                Err(e) => {
+                    log::error!("Could not replace task for one off paint task, Err: {e:?}");
+                    reinstall_task = true;
+                }
+            }
+        } else {
+            reinstall_task = true;
+        }
+
+        if reinstall_task {
+            *self.imp().paint_task_handle.borrow_mut() =
+                Some(OneOffTaskHandle::new(paint_task, TIMEOUT));
+        }
+
+        let handler = rx.attach(Some(&glib::MainContext::default()), clone!(@strong self as paintable => @default-return glib::Continue(false), move |res| {
+            paintable.imp().paint_task_handle.take();
+            paintable.imp().paint_task_handler.take();
+            match res {
+                Ok(image) => paintable.imp().replace_paint_cache(image),
+                Err(e) => {
+                    log::error!("repainting StrokeContentPaintable cache image failed, Err: {e:?}");
+                }
+            }
+            glib::Continue(false)
+        }));
+
+        if let Some(old) = self.imp().paint_task_handler.replace(Some(handler)) {
+            old.remove();
         }
     }
 }

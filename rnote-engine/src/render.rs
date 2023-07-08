@@ -197,6 +197,24 @@ impl Image {
         Ok(Image::from(reader.decode()?))
     }
 
+    pub fn try_from_cairo_surface(
+        mut surface: cairo::ImageSurface,
+        bounds: Aabb,
+    ) -> anyhow::Result<Self> {
+        let width = surface.width() as u32;
+        let height = surface.height() as u32;
+        let data = surface.data()?.to_vec();
+
+        Ok(Image {
+            data: glib::Bytes::from_owned(convert_image_bgra_to_rgba(width, height, data)),
+            rect: Rectangle::from_p2d_aabb(bounds),
+            pixel_width: width,
+            pixel_height: height,
+            // cairo renders to bgra8-premultiplied, but we convert it to rgba8-premultiplied
+            memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
+        })
+    }
+
     pub fn to_imgbuf(self) -> Result<image::ImageBuffer<image::Rgba<u8>, Vec<u8>>, anyhow::Error> {
         self.assert_valid()?;
 
@@ -432,7 +450,7 @@ impl Image {
         F: FnOnce(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
     {
         let cairo_draw_fn = move |cairo_cx: &cairo::Context| -> anyhow::Result<()> {
-            let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+            let mut piet_cx = piet_cairo::CairoRenderContext::new(cairo_cx);
 
             // Apply the draw function
             draw_func(&mut piet_cx)?;

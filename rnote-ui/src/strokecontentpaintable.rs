@@ -1,10 +1,11 @@
 // Imports
-use gtk4::{gdk, glib, graphene, prelude::*, subclass::prelude::*};
+use gtk4::graphene;
+use gtk4::{gdk, glib, gsk, prelude::*, subclass::prelude::*};
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use rnote_engine::document::Format;
 use rnote_engine::engine::StrokeContent;
-use rnote_engine::utils::GrapheneRectHelpers;
+use rnote_engine::render::Image;
+use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::{Cell, RefCell};
 
 mod imp {
@@ -12,6 +13,10 @@ mod imp {
 
     #[derive(Debug, Default)]
     pub struct StrokeContentPaintable {
+        pub(super) paint_max_width: Cell<f64>,
+        pub(super) paint_max_height: Cell<f64>,
+        pub(super) paint_cache: RefCell<Option<Image>>,
+        pub(super) paint_cache_texture: RefCell<Option<gdk::MemoryTexture>>,
         pub(super) draw_background: Cell<bool>,
         pub(super) draw_pattern: Cell<bool>,
         pub(super) margin: Cell<f64>,
@@ -29,6 +34,12 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
+                    glib::ParamSpecDouble::builder("paint-max-width")
+                        .default_value(1000.)
+                        .build(),
+                    glib::ParamSpecDouble::builder("paint-max-height")
+                        .default_value(1000.)
+                        .build(),
                     glib::ParamSpecBoolean::builder("draw-background")
                         .default_value(true)
                         .build(),
@@ -45,6 +56,8 @@ mod imp {
 
         fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
+                "paint-max-width" => self.paint_max_width.get().to_value(),
+                "paint-max-height" => self.paint_max_height.get().to_value(),
                 "draw-background" => self.draw_background.get().to_value(),
                 "draw-pattern" => self.draw_pattern.get().to_value(),
                 "margin" => self.margin.get().to_value(),
@@ -54,11 +67,28 @@ mod imp {
 
         fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
             match pspec.name() {
+                "paint-max-width" => {
+                    let paint_max_width = value
+                        .get::<f64>()
+                        .expect("The value needs to be of type `f64`");
+                    self.paint_max_width.replace(paint_max_width.max(0.0));
+                    self.obj().repaint_cache();
+                    self.obj().invalidate_contents();
+                }
+                "paint-max-height" => {
+                    let paint_max_height = value
+                        .get::<f64>()
+                        .expect("The value needs to be of type `f64`");
+                    self.paint_max_height.replace(paint_max_height.max(0.0));
+                    self.obj().repaint_cache();
+                    self.obj().invalidate_contents();
+                }
                 "draw-background" => {
                     let draw_background = value
                         .get::<bool>()
                         .expect("The value needs to be of type `bool`");
                     self.draw_background.replace(draw_background);
+                    self.obj().repaint_cache();
                     self.obj().invalidate_contents();
                 }
                 "draw-pattern" => {
@@ -66,6 +96,7 @@ mod imp {
                         .get::<bool>()
                         .expect("The value needs to be of type `bool`");
                     self.draw_pattern.replace(draw_pattern);
+                    self.obj().repaint_cache();
                     self.obj().invalidate_contents();
                 }
                 "margin" => {
@@ -73,11 +104,20 @@ mod imp {
                         .get::<f64>()
                         .expect("The value needs to be of type `f64`");
                     self.margin.replace(margin.max(0.0));
+                    self.obj().repaint_cache();
                     self.obj().invalidate_contents();
                     self.obj().invalidate_size();
                 }
                 _ => unimplemented!(),
             }
+        }
+
+        fn constructed(&self) {
+            self.parent_constructed();
+
+            // For some reason these default values are not set, but are instead 0.
+            self.obj().set_paint_max_width(1000.);
+            self.obj().set_paint_max_height(1000.);
         }
     }
 
@@ -103,62 +143,69 @@ mod imp {
         }
 
         fn snapshot(&self, snapshot: &gdk::Snapshot, width: f64, height: f64) {
-            let stroke_content = &*self.stroke_content.borrow();
-            let Some(bounds) = stroke_content.bounds().map(|b| b.loosened(self.margin.get())) else {
-                return;
-            };
-            let intrinsic_size = na::vector![
-                self.intrinsic_width() as f64,
-                self.intrinsic_height() as f64
-            ];
-            if intrinsic_size[0] <= 0.0 || intrinsic_size[1] <= 0.0 {
-                return;
-            }
-            let (scale_x, scale_y) = (width / bounds.extents()[0], height / bounds.extents()[1]);
-            let image_scale = scale_x.max(scale_y);
-            let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(Aabb::new(
-                na::point![0.0, 0.0],
-                intrinsic_size.into(),
-            )));
-
-            let draw = || -> anyhow::Result<()> {
-                let border_width: f64 = 1.5 / scale_x.max(scale_y);
-
-                cairo_cx.scale(scale_x, scale_y);
-                cairo_cx.translate(-bounds.mins[0], -bounds.mins[1]);
-
-                // Draw content
-                stroke_content.draw_to_cairo(
-                    &cairo_cx,
-                    self.draw_background.get(),
-                    self.draw_pattern.get(),
-                    self.margin.get(),
-                    image_scale,
-                )?;
-
-                // Draw borders
-                cairo_cx.set_line_width(border_width);
-                cairo_cx.rectangle(
-                    bounds.mins[0] + border_width * 0.5,
-                    bounds.mins[1] + border_width * 0.5,
-                    bounds.extents()[0] - border_width,
-                    bounds.extents()[1] - border_width,
+            if let Some(texture) = &*self.paint_cache_texture.borrow() {
+                snapshot.append_scaled_texture(
+                    texture,
+                    gsk::ScalingFilter::Nearest,
+                    &graphene::Rect::new(0., 0., width as f32, height as f32),
                 );
-                cairo_cx.set_source_rgba(
-                    Format::BORDER_COLOR_DEFAULT.as_rgba().0,
-                    Format::BORDER_COLOR_DEFAULT.as_rgba().1,
-                    Format::BORDER_COLOR_DEFAULT.as_rgba().2,
-                    0.5,
+                // Draw a border
+                snapshot.append_border(
+                    &gsk::RoundedRect::from_rect(
+                        graphene::Rect::new(0.0, 0.0, width as f32, height as f32),
+                        0.,
+                    ),
+                    &[1.5; 4],
+                    &[gdk::RGBA::from_piet_color(Self::CONTENT_BORDER_COLOR); 4],
                 );
-                cairo_cx.stroke()?;
-
-                Ok(())
-            };
-
-            if let Err(e) = draw() {
-                log::error!("drawing content of StrokeContentPaintable failed, Err: {e:?}");
             }
         }
+    }
+
+    pub(super) fn paint_content(
+        stroke_content: &StrokeContent,
+        width: f64,
+        height: f64,
+        draw_background: bool,
+        draw_pattern: bool,
+        margin: f64,
+    ) -> anyhow::Result<Image> {
+        let Some(bounds) = stroke_content.bounds().map(|b| b.loosened(margin))else {
+                return Ok(Image::default());
+            };
+        if width <= 0. || height <= 0. {
+            return Ok(Image::default());
+        }
+        let (scale_x, scale_y) = (width / bounds.extents()[0], height / bounds.extents()[1]);
+        let image_scale = scale_x.max(scale_y);
+        let surface_width = width.ceil() as i32;
+        let surface_height = height.ceil() as i32;
+        let target_surface =
+            cairo::ImageSurface::create(cairo::Format::ARgb32, surface_width, surface_height)?;
+        {
+            let cairo_cx = cairo::Context::new(&target_surface)?;
+
+            cairo_cx.scale(scale_x, scale_y);
+            cairo_cx.translate(-bounds.mins[0], -bounds.mins[1]);
+
+            // Draw the content
+            stroke_content.draw_to_cairo(
+                &cairo_cx,
+                draw_background,
+                draw_pattern,
+                margin,
+                image_scale,
+            )?;
+        }
+
+        Image::try_from_cairo_surface(
+            target_surface,
+            Aabb::new(na::point![0., 0.], na::point![width, height]),
+        )
+    }
+
+    impl StrokeContentPaintable {
+        const CONTENT_BORDER_COLOR: piet::Color = rnote_compose::color::GNOME_BRIGHTS[4];
     }
 }
 
@@ -182,6 +229,30 @@ impl StrokeContentPaintable {
         let p = Self::new();
         p.set_stroke_content(stroke_content);
         p
+    }
+
+    #[allow(unused)]
+    pub(crate) fn paint_max_width(&self) -> f64 {
+        self.property::<f64>("paint-max-width")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_paint_max_width(&self, paint_max_width: f64) {
+        if self.imp().paint_max_width.get() != paint_max_width {
+            self.set_property("paint-max-width", paint_max_width.to_value());
+        }
+    }
+
+    #[allow(unused)]
+    pub(crate) fn paint_max_height(&self) -> f64 {
+        self.property::<f64>("paint-max-height")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_paint_max_height(&self, paint_max_height: f64) {
+        if self.imp().paint_max_height.get() != paint_max_height {
+            self.set_property("paint-max-height", paint_max_height.to_value());
+        }
     }
 
     #[allow(unused)]
@@ -222,7 +293,39 @@ impl StrokeContentPaintable {
 
     pub(crate) fn set_stroke_content(&self, stroke_content: StrokeContent) {
         self.imp().stroke_content.replace(stroke_content);
+        self.repaint_cache();
         self.invalidate_size();
         self.invalidate_contents();
+    }
+
+    pub(crate) fn repaint_cache(&self) {
+        let (width, height) = (
+            (self.intrinsic_width() as f64).min(self.imp().paint_max_width.get()),
+            (self.intrinsic_height() as f64).min(self.imp().paint_max_height.get()),
+        );
+        if width <= 0. && height <= 0. {
+            return;
+        }
+        match imp::paint_content(
+            &self.imp().stroke_content.borrow(),
+            width,
+            height,
+            self.imp().draw_background.get(),
+            self.imp().draw_pattern.get(),
+            self.imp().margin.get(),
+        ) {
+            Ok(image) => match image.to_memtexture() {
+                Ok(texture) => {
+                    self.imp().paint_cache.replace(Some(image));
+                    self.imp().paint_cache_texture.replace(Some(texture));
+                }
+                Err(e) => {
+                    log::error!("StrokeContentPaintable creating memory texture from repainted cache image failed: {e:?}");
+                }
+            },
+            Err(e) => {
+                log::error!("repainting StrokeContentPaintable cache image failed: {e:?}");
+            }
+        }
     }
 }

@@ -139,6 +139,7 @@ mod imp {
                     .cloned()
                     .unwrap_or_default(),
             );
+            self.paintable.repaint_cache();
             self.obj().queue_resize();
         }
 

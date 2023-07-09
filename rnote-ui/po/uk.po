@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-04 13:51+0200\n"
+"POT-Creation-Date: 2023-07-09 12:56+0200\n"
 "PO-Revision-Date: 2023-06-26 08:36+0000\n"
 "Last-Translator: Dan <jonweblin2205@protonmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
@@ -74,8 +74,8 @@ msgstr "Весь аркуш буде очищено, ви впевненні?"
 #: rnote-ui/data/ui/dialogs/dialogs.ui:40
 #: rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: rnote-ui/data/ui/dialogs/dialogs.ui:70 rnote-ui/data/ui/dialogs/import.ui:10
-#: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:223
-#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:211 rnote-ui/data/ui/dialogs/export.ui:10
+#: rnote-ui/data/ui/dialogs/export.ui:151
 #: rnote-ui/data/ui/dialogs/export.ui:378
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
@@ -99,14 +99,13 @@ msgstr ""
 "документ?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
-#: rnote-ui/data/ui/dialogs/dialogs.ui:41 rnote-ui/data/ui/dialogs/import.ui:11
+#: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Discard"
 msgstr "Відхилити"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/data/ui/dialogs/import.ui:12
-#: rnote-ui/src/dialogs/export.rs:32
+#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/src/dialogs/export.rs:32
 msgid "Save"
 msgstr "Зберегти"
 
@@ -191,91 +190,79 @@ msgstr "- каталог не вибрано -"
 msgid "Change the directory"
 msgstr "Змінити каталог"
 
-#: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:81
-msgid "Open File"
-msgstr "Відкрити файл"
-
-#: rnote-ui/data/ui/dialogs/import.ui:6
-msgid ""
-"Opening this file overwrites any unsaved changes. Do you want to save the "
-"current document?"
-msgstr ""
-"Відкриття цього файлу перезаписує будь-які незбережені зміни. Зберегти "
-"поточний документ?"
-
-#: rnote-ui/data/ui/dialogs/import.ui:19
+#: rnote-ui/data/ui/dialogs/import.ui:7
 msgid "Import Pdf"
 msgstr "Імпортувати Pdf"
 
-#: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
-#: rnote-ui/src/dialogs/import.rs:119
+#: rnote-ui/data/ui/dialogs/import.ui:15 rnote-ui/data/ui/dialogs/import.ui:216
+#: rnote-ui/src/dialogs/import.rs:64
 msgid "Import"
 msgstr "Імпортувати"
 
-#: rnote-ui/data/ui/dialogs/import.ui:73
+#: rnote-ui/data/ui/dialogs/import.ui:61
 msgid "Info"
 msgstr "Інформація"
 
-#: rnote-ui/data/ui/dialogs/import.ui:91
+#: rnote-ui/data/ui/dialogs/import.ui:79
 msgid "Pdf Import Preferences"
 msgstr "Параметри імпорту Pdf"
 
-#: rnote-ui/data/ui/dialogs/import.ui:95
+#: rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start Page"
 msgstr "Початкова сторінка"
 
-#: rnote-ui/data/ui/dialogs/import.ui:110
+#: rnote-ui/data/ui/dialogs/import.ui:98
 msgid "End Page"
 msgstr "Кінцева сторінка"
 
-#: rnote-ui/data/ui/dialogs/import.ui:125
+#: rnote-ui/data/ui/dialogs/import.ui:113
 msgid "Page Width (%)"
 msgstr "Ширина сторінки (%)"
 
-#: rnote-ui/data/ui/dialogs/import.ui:126
+#: rnote-ui/data/ui/dialogs/import.ui:114
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr ""
 "Встановити ширину імпортованих Pdf-файлів у відсотках від ширини аркуша"
 
-#: rnote-ui/data/ui/dialogs/import.ui:146
+#: rnote-ui/data/ui/dialogs/import.ui:134
 msgid "Page Spacing"
 msgstr "Міжсторінковий інтервал"
 
-#: rnote-ui/data/ui/dialogs/import.ui:147
+#: rnote-ui/data/ui/dialogs/import.ui:135
 msgid "How Pdf pages are spaced"
 msgstr "Як розділені сторінки Pdf"
 
-#: rnote-ui/data/ui/dialogs/import.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:139
 msgid "Continuous"
 msgstr "Безперервно"
 
-#: rnote-ui/data/ui/dialogs/import.ui:152
+#: rnote-ui/data/ui/dialogs/import.ui:140
 msgid "One per Document Page"
 msgstr "Один на сторінку документа"
 
-#: rnote-ui/data/ui/dialogs/import.ui:160
+#: rnote-ui/data/ui/dialogs/import.ui:148
 msgid "Pages Type"
 msgstr "Тип сторінок"
 
-#: rnote-ui/data/ui/dialogs/import.ui:161
+#: rnote-ui/data/ui/dialogs/import.ui:149
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr "Імпортувати Pdf-файли як векторні чи растрові зображення"
 
-#: rnote-ui/data/ui/dialogs/import.ui:173
+#: rnote-ui/data/ui/dialogs/import.ui:161
 msgid "Vector"
 msgstr "Вектор"
 
-#: rnote-ui/data/ui/dialogs/import.ui:180
+#: rnote-ui/data/ui/dialogs/import.ui:168
 msgid "Bitmap"
 msgstr "Растр"
 
-#: rnote-ui/data/ui/dialogs/import.ui:189
+#: rnote-ui/data/ui/dialogs/import.ui:177
 #: rnote-ui/data/ui/dialogs/export.ui:323
 #: rnote-ui/data/ui/dialogs/export.ui:492
 msgid "Bitmap Scale-Factor"
 msgstr "Масштабний коефіцієнт растрового зображення"
 
-#: rnote-ui/data/ui/dialogs/import.ui:190
+#: rnote-ui/data/ui/dialogs/import.ui:178
 #: rnote-ui/data/ui/dialogs/export.ui:324
 #: rnote-ui/data/ui/dialogs/export.ui:493
 msgid ""
@@ -285,19 +272,19 @@ msgstr ""
 "Встановлення коефіцієнта растрового масштабу по відношенню\n"
 "до фактичного розміру документа"
 
-#: rnote-ui/data/ui/dialogs/import.ui:220
+#: rnote-ui/data/ui/dialogs/import.ui:208
 msgid "Import Xournal++ File"
 msgstr "Імпортувати файл Xournal++"
 
-#: rnote-ui/data/ui/dialogs/import.ui:259
+#: rnote-ui/data/ui/dialogs/import.ui:247
 msgid "Xournal++ File Import Preferences"
 msgstr "Налаштування імпорту файлів Xournal++"
 
-#: rnote-ui/data/ui/dialogs/import.ui:263
+#: rnote-ui/data/ui/dialogs/import.ui:251
 msgid "DPI"
 msgstr "DPI"
 
-#: rnote-ui/data/ui/dialogs/import.ui:264
+#: rnote-ui/data/ui/dialogs/import.ui:252
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Бажаний DPI для файлу Xournal++"
 
@@ -1053,7 +1040,7 @@ msgstr "Колір обведення"
 msgid "Fill Color"
 msgstr "Колір заливки"
 
-#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:26
 msgid "Open"
 msgstr "Відкрити"
 
@@ -1513,7 +1500,7 @@ msgstr "Зберегти документ як"
 msgid "Print Document"
 msgstr "Роздрукувати документ"
 
-#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:117
+#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:62
 msgid "Import File"
 msgstr "Імпортувати файл"
 
@@ -1565,39 +1552,14 @@ msgstr "Видалити вибрану робочу область"
 msgid "Edit Selected Workspace"
 msgstr "Редагувати вибрану робочу область"
 
-#: rnote-ui/src/appwindow/mod.rs:555
-msgid "Opening .rnote file failed"
-msgstr "Не вдалося відкрити файл .rnote"
-
-#: rnote-ui/src/appwindow/mod.rs:566
-msgid "Opening vector image file failed"
-msgstr "Не вдалося відкрити файл векторного зображення"
-
-#: rnote-ui/src/appwindow/mod.rs:577
-msgid "Opening bitmap image file failed"
-msgstr "Не вдалося відкрити файл растрового зображення"
-
-#: rnote-ui/src/appwindow/mod.rs:588 rnote-ui/src/dialogs/import.rs:350
-msgid "Opening Xournal++ file failed"
-msgstr "Не вдалося відкрити файл Xournal++"
-
-#: rnote-ui/src/appwindow/mod.rs:599 rnote-ui/src/dialogs/import.rs:301
-msgid "Opening Pdf file failed"
-msgstr "Не вдалося відкрити файл Pdf"
-
-#: rnote-ui/src/appwindow/mod.rs:608
-msgid "Failed to open file, tried to open folder as file"
-msgstr "Не вдалося відкрити файл, спробуйте відкрити папку як файл"
-
-#: rnote-ui/src/appwindow/mod.rs:613
-msgid "Failed to open file, unsupported file type"
-msgstr "Не вдалося відкрити файл, непідтримуваний тип файлу"
+#: rnote-ui/src/appwindow/mod.rs:539
+msgid "Opening file failed"
+msgstr "Не вдалося відкрити файл"
 
 #: rnote-ui/src/appwindow/imp.rs:282
-#: rnote-ui/src/appwindow/appwindowactions.rs:612
-#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/import.rs:52
-#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:260
-#: rnote-ui/src/dialogs/mod.rs:411
+#: rnote-ui/src/appwindow/appwindowactions.rs:613
+#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/mod.rs:130
+#: rnote-ui/src/dialogs/mod.rs:260 rnote-ui/src/dialogs/mod.rs:411
 msgid "Saving document failed"
 msgstr "Не вдалося зберегти документ"
 
@@ -1617,11 +1579,11 @@ msgstr "Кнопка 3"
 msgid "Button 4"
 msgstr "Кнопка 4"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:736
+#: rnote-ui/src/appwindow/appwindowactions.rs:737
 msgid "Printing document failed"
 msgstr "Не вдалося надрукувати документ"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:771
+#: rnote-ui/src/appwindow/appwindowactions.rs:772
 msgid "Exporting selection failed, nothing selected"
 msgstr "Не вдалося експортувати вибране, нічого не вибрано"
 
@@ -1654,15 +1616,15 @@ msgstr "Відкритий файл було перейменовано на д�
 msgid "Opened file was moved or deleted on disk"
 msgstr "Відкритий файл було переміщено або видалено на диску"
 
-#: rnote-ui/src/canvas/mod.rs:1005
+#: rnote-ui/src/canvas/mod.rs:1008
 msgid "Inserting file failed"
 msgstr "Не вдалося вставити файл"
 
-#: rnote-ui/src/canvas/mod.rs:1015
+#: rnote-ui/src/canvas/mod.rs:1018
 msgid "Inserting text failed"
 msgstr "Не вдалося вставити текст"
 
-#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:78
+#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:21
 msgid ".rnote"
 msgstr ".rnote"
 
@@ -1739,47 +1701,47 @@ msgstr "Не вдалося експортувати конфігурацію р
 msgid "Exported engine config successfully"
 msgstr "Конфігурацію рушія успішно експортовано"
 
-#: rnote-ui/src/dialogs/import.rs:34
-msgid "Opening file failed"
-msgstr "Не вдалося відкрити файл"
+#: rnote-ui/src/dialogs/import.rs:24
+msgid "Open File"
+msgstr "Відкрити файл"
 
-#: rnote-ui/src/dialogs/import.rs:114
+#: rnote-ui/src/dialogs/import.rs:59
 msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgstr "Jpg, Pdf, Png, Svg, Xopp"
 
-#: rnote-ui/src/dialogs/import.rs:236
+#: rnote-ui/src/dialogs/import.rs:183
 msgid "- no file name -"
 msgstr "- немає імені файлу -"
 
-#: rnote-ui/src/dialogs/import.rs:241
+#: rnote-ui/src/dialogs/import.rs:188
 msgid "- no title -"
 msgstr "- без назви -"
 
-#: rnote-ui/src/dialogs/import.rs:244
+#: rnote-ui/src/dialogs/import.rs:191
 msgid "- no author -"
 msgstr "- немає автора -"
 
-#: rnote-ui/src/dialogs/import.rs:248
+#: rnote-ui/src/dialogs/import.rs:195
 msgid "- no date -"
 msgstr "- без дати -"
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:202
 msgid "File name:"
 msgstr "Ім'я файлу:"
 
-#: rnote-ui/src/dialogs/import.rs:259
+#: rnote-ui/src/dialogs/import.rs:206
 msgid "Title:"
 msgstr "Назва:"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:210
 msgid "Author:"
 msgstr "Автор:"
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:214
 msgid "Modification date:"
 msgstr "Дата зміни:"
 
-#: rnote-ui/src/dialogs/import.rs:271
+#: rnote-ui/src/dialogs/import.rs:218
 msgid "Pages:"
 msgstr "Сторінок:"
 
@@ -2167,6 +2129,34 @@ msgstr "Назва папки"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "Нова папка"
+
+#~ msgid ""
+#~ "Opening this file overwrites any unsaved changes. Do you want to save the "
+#~ "current document?"
+#~ msgstr ""
+#~ "Відкриття цього файлу перезаписує будь-які незбережені зміни. Зберегти "
+#~ "поточний документ?"
+
+#~ msgid "Opening .rnote file failed"
+#~ msgstr "Не вдалося відкрити файл .rnote"
+
+#~ msgid "Opening vector image file failed"
+#~ msgstr "Не вдалося відкрити файл векторного зображення"
+
+#~ msgid "Opening bitmap image file failed"
+#~ msgstr "Не вдалося відкрити файл растрового зображення"
+
+#~ msgid "Opening Xournal++ file failed"
+#~ msgstr "Не вдалося відкрити файл Xournal++"
+
+#~ msgid "Opening Pdf file failed"
+#~ msgstr "Не вдалося відкрити файл Pdf"
+
+#~ msgid "Failed to open file, tried to open folder as file"
+#~ msgstr "Не вдалося відкрити файл, спробуйте відкрити папку як файл"
+
+#~ msgid "Failed to open file, unsupported file type"
+#~ msgstr "Не вдалося відкрити файл, непідтримуваний тип файлу"
 
 #~ msgid "- unable to find a valid save folder -"
 #~ msgstr "- неможливо знайти дійсну папку для збереження -"

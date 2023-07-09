@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-04 13:51+0200\n"
+"POT-Creation-Date: 2023-07-09 12:56+0200\n"
 "PO-Revision-Date: 2023-06-29 11:52+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -77,8 +77,8 @@ msgstr "இது முழு ஆவணத்தையும் அழிக்
 #: rnote-ui/data/ui/dialogs/dialogs.ui:40
 #: rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: rnote-ui/data/ui/dialogs/dialogs.ui:70 rnote-ui/data/ui/dialogs/import.ui:10
-#: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:223
-#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:211 rnote-ui/data/ui/dialogs/export.ui:10
+#: rnote-ui/data/ui/dialogs/export.ui:151
 #: rnote-ui/data/ui/dialogs/export.ui:378
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
@@ -102,14 +102,13 @@ msgstr ""
 "தற்போதைய ஆவணத்தை சேமிக்க விரும்புகிறீர்களா?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
-#: rnote-ui/data/ui/dialogs/dialogs.ui:41 rnote-ui/data/ui/dialogs/import.ui:11
+#: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Discard"
 msgstr "நிராகரிக்கவும்"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/data/ui/dialogs/import.ui:12
-#: rnote-ui/src/dialogs/export.rs:32
+#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/src/dialogs/export.rs:32
 msgid "Save"
 msgstr "சேமி"
 
@@ -194,91 +193,79 @@ msgstr "- எந்த கோப்பகமும் தேர்ந்தெ�
 msgid "Change the directory"
 msgstr "கோப்பகத்தை மாற்றவும்"
 
-#: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:81
-msgid "Open File"
-msgstr "திறந்த கோப்பு"
-
-#: rnote-ui/data/ui/dialogs/import.ui:6
-msgid ""
-"Opening this file overwrites any unsaved changes. Do you want to save the "
-"current document?"
-msgstr ""
-"இந்தக் கோப்பைத் திறப்பது சேமிக்கப்படாத மாற்றங்களை மேலெழுதும். தற்போதைய ஆவணத்தை சேமிக்க "
-"விரும்புகிறீர்களா?"
-
-#: rnote-ui/data/ui/dialogs/import.ui:19
+#: rnote-ui/data/ui/dialogs/import.ui:7
 msgid "Import Pdf"
 msgstr "Pdf ஐ இறக்குமதி செய்"
 
-#: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
-#: rnote-ui/src/dialogs/import.rs:119
+#: rnote-ui/data/ui/dialogs/import.ui:15 rnote-ui/data/ui/dialogs/import.ui:216
+#: rnote-ui/src/dialogs/import.rs:64
 msgid "Import"
 msgstr "இறக்குமதி"
 
-#: rnote-ui/data/ui/dialogs/import.ui:73
+#: rnote-ui/data/ui/dialogs/import.ui:61
 msgid "Info"
 msgstr "தகவல்"
 
-#: rnote-ui/data/ui/dialogs/import.ui:91
+#: rnote-ui/data/ui/dialogs/import.ui:79
 msgid "Pdf Import Preferences"
 msgstr "Pdf இறக்குமதி விருப்பத்தேர்வுகள்"
 
-#: rnote-ui/data/ui/dialogs/import.ui:95
+#: rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start Page"
 msgstr "தொடக்க பக்கம்"
 
-#: rnote-ui/data/ui/dialogs/import.ui:110
+#: rnote-ui/data/ui/dialogs/import.ui:98
 msgid "End Page"
 msgstr "முடிவுப் பக்கம்"
 
-#: rnote-ui/data/ui/dialogs/import.ui:125
+#: rnote-ui/data/ui/dialogs/import.ui:113
 msgid "Page Width (%)"
 msgstr "பக்கத்தின் அகலம் (%)"
 
-#: rnote-ui/data/ui/dialogs/import.ui:126
+#: rnote-ui/data/ui/dialogs/import.ui:114
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr "இறக்குமதி செய்யப்பட்ட Pdf இன் அகலத்தை வடிவ அகலத்திற்கு சதவீதத்தில் அமைக்கவும்"
 
-#: rnote-ui/data/ui/dialogs/import.ui:146
+#: rnote-ui/data/ui/dialogs/import.ui:134
 msgid "Page Spacing"
 msgstr "பக்க இடைவெளி"
 
-#: rnote-ui/data/ui/dialogs/import.ui:147
+#: rnote-ui/data/ui/dialogs/import.ui:135
 msgid "How Pdf pages are spaced"
 msgstr "Pdf பக்கங்கள் எவ்வாறு இடைவெளியில் உள்ளன"
 
-#: rnote-ui/data/ui/dialogs/import.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:139
 msgid "Continuous"
 msgstr "தொடர்ச்சியான"
 
-#: rnote-ui/data/ui/dialogs/import.ui:152
+#: rnote-ui/data/ui/dialogs/import.ui:140
 msgid "One per Document Page"
 msgstr "ஒரு ஆவணப் பக்கத்திற்கு ஒன்று"
 
-#: rnote-ui/data/ui/dialogs/import.ui:160
+#: rnote-ui/data/ui/dialogs/import.ui:148
 msgid "Pages Type"
 msgstr "பக்கங்களின் வகை"
 
-#: rnote-ui/data/ui/dialogs/import.ui:161
+#: rnote-ui/data/ui/dialogs/import.ui:149
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr ""
 "Pdfகளை வெக்டரா அல்லது பிட்மேப் படங்களாக இறக்குமதி செய்ய வேண்டுமா என்பதை அமைக்கவும்"
 
-#: rnote-ui/data/ui/dialogs/import.ui:173
+#: rnote-ui/data/ui/dialogs/import.ui:161
 msgid "Vector"
 msgstr "திசையன்"
 
-#: rnote-ui/data/ui/dialogs/import.ui:180
+#: rnote-ui/data/ui/dialogs/import.ui:168
 msgid "Bitmap"
 msgstr "பிட்மேப்"
 
-#: rnote-ui/data/ui/dialogs/import.ui:189
+#: rnote-ui/data/ui/dialogs/import.ui:177
 #: rnote-ui/data/ui/dialogs/export.ui:323
 #: rnote-ui/data/ui/dialogs/export.ui:492
 msgid "Bitmap Scale-Factor"
 msgstr "பிட்மேப் அளவிலான-காரணி"
 
-#: rnote-ui/data/ui/dialogs/import.ui:190
+#: rnote-ui/data/ui/dialogs/import.ui:178
 #: rnote-ui/data/ui/dialogs/export.ui:324
 #: rnote-ui/data/ui/dialogs/export.ui:493
 msgid ""
@@ -288,19 +275,19 @@ msgstr ""
 "தொடர்பில் பிட்மேப் அளவுகோலை அமைக்கவும் \n"
 "ஆவணத்தின் உண்மையான அளவிற்கு"
 
-#: rnote-ui/data/ui/dialogs/import.ui:220
+#: rnote-ui/data/ui/dialogs/import.ui:208
 msgid "Import Xournal++ File"
 msgstr "Xournal++ கோப்பை இறக்குமதி செய்யவும்"
 
-#: rnote-ui/data/ui/dialogs/import.ui:259
+#: rnote-ui/data/ui/dialogs/import.ui:247
 msgid "Xournal++ File Import Preferences"
 msgstr "Xournal++ கோப்பு இறக்குமதி விருப்பத்தேர்வுகள்"
 
-#: rnote-ui/data/ui/dialogs/import.ui:263
+#: rnote-ui/data/ui/dialogs/import.ui:251
 msgid "DPI"
 msgstr "DPI"
 
-#: rnote-ui/data/ui/dialogs/import.ui:264
+#: rnote-ui/data/ui/dialogs/import.ui:252
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Xournal++ கோப்பிற்கு விருப்பமான DPI ஐ அமைக்கவும்"
 
@@ -1056,7 +1043,7 @@ msgstr "பக்கவாதம் நிறம்"
 msgid "Fill Color"
 msgstr "வண்ணத்தை நிரப்பவும்"
 
-#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:26
 msgid "Open"
 msgstr "திற"
 
@@ -1525,7 +1512,7 @@ msgstr "ஆவணத்தை இவ்வாறு சேமிக்கவு�
 msgid "Print Document"
 msgstr "ஆவணத்தை அச்சிடுங்கள்"
 
-#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:117
+#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:62
 msgid "Import File"
 msgstr "கோப்பு இறக்குமதி"
 
@@ -1577,39 +1564,14 @@ msgstr "தேர்ந்தெடுக்கப்பட்ட பணிய�
 msgid "Edit Selected Workspace"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பணியிடத்தைத் திருத்தவும்"
 
-#: rnote-ui/src/appwindow/mod.rs:555
-msgid "Opening .rnote file failed"
-msgstr ".rnote கோப்பை திறக்க முடியவில்லை"
-
-#: rnote-ui/src/appwindow/mod.rs:566
-msgid "Opening vector image file failed"
-msgstr "திசையன் படக் கோப்பைத் திறப்பதில் தோல்வி"
-
-#: rnote-ui/src/appwindow/mod.rs:577
-msgid "Opening bitmap image file failed"
-msgstr "பிட்மேப் படக் கோப்பைத் திறப்பதில் தோல்வி"
-
-#: rnote-ui/src/appwindow/mod.rs:588 rnote-ui/src/dialogs/import.rs:350
-msgid "Opening Xournal++ file failed"
-msgstr "Xournal++ கோப்பை திறப்பதில் தோல்வி"
-
-#: rnote-ui/src/appwindow/mod.rs:599 rnote-ui/src/dialogs/import.rs:301
-msgid "Opening Pdf file failed"
-msgstr "Pdf கோப்பை திறக்க முடியவில்லை"
-
-#: rnote-ui/src/appwindow/mod.rs:608
-msgid "Failed to open file, tried to open folder as file"
-msgstr "கோப்பை திறக்க முடியவில்லை, கோப்புறையை கோப்பாக திறக்க முயற்சித்தேன்"
-
-#: rnote-ui/src/appwindow/mod.rs:613
-msgid "Failed to open file, unsupported file type"
-msgstr "கோப்பைத் திறக்க முடியவில்லை, ஆதரிக்கப்படாத கோப்பு வகை"
+#: rnote-ui/src/appwindow/mod.rs:539
+msgid "Opening file failed"
+msgstr "கோப்பைத் திறப்பதில் தோல்வி"
 
 #: rnote-ui/src/appwindow/imp.rs:282
-#: rnote-ui/src/appwindow/appwindowactions.rs:612
-#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/import.rs:52
-#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:260
-#: rnote-ui/src/dialogs/mod.rs:411
+#: rnote-ui/src/appwindow/appwindowactions.rs:613
+#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/mod.rs:130
+#: rnote-ui/src/dialogs/mod.rs:260 rnote-ui/src/dialogs/mod.rs:411
 msgid "Saving document failed"
 msgstr "ஆவணத்தைச் சேமிப்பதில் தோல்வி"
 
@@ -1629,11 +1591,11 @@ msgstr "பொத்தான் 3"
 msgid "Button 4"
 msgstr "பொத்தான் 4"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:736
+#: rnote-ui/src/appwindow/appwindowactions.rs:737
 msgid "Printing document failed"
 msgstr "ஆவணத்தை அச்சிட முடியவில்லை"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:771
+#: rnote-ui/src/appwindow/appwindowactions.rs:772
 msgid "Exporting selection failed, nothing selected"
 msgstr "தேர்வை ஏற்றுமதி செய்வதில் தோல்வி, எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 
@@ -1666,15 +1628,15 @@ msgstr "திறந்த கோப்பு வட்டில் மறுப
 msgid "Opened file was moved or deleted on disk"
 msgstr "திறக்கப்பட்ட கோப்பு வட்டில் நகர்த்தப்பட்டது அல்லது நீக்கப்பட்டது"
 
-#: rnote-ui/src/canvas/mod.rs:1005
+#: rnote-ui/src/canvas/mod.rs:1008
 msgid "Inserting file failed"
 msgstr "கோப்பைச் செருகுவதில் தோல்வி"
 
-#: rnote-ui/src/canvas/mod.rs:1015
+#: rnote-ui/src/canvas/mod.rs:1018
 msgid "Inserting text failed"
 msgstr "உரையைச் செருகுவதில் தோல்வி"
 
-#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:78
+#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:21
 msgid ".rnote"
 msgstr ".rnote"
 
@@ -1751,47 +1713,47 @@ msgstr "இயந்திர உள்ளமைவை ஏற்றுமதி 
 msgid "Exported engine config successfully"
 msgstr "இயந்திர கட்டமைப்பு வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது"
 
-#: rnote-ui/src/dialogs/import.rs:34
-msgid "Opening file failed"
-msgstr "கோப்பைத் திறப்பதில் தோல்வி"
+#: rnote-ui/src/dialogs/import.rs:24
+msgid "Open File"
+msgstr "திறந்த கோப்பு"
 
-#: rnote-ui/src/dialogs/import.rs:114
+#: rnote-ui/src/dialogs/import.rs:59
 msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgstr "Jpg, Pdf, Png, Svg, Xopp"
 
-#: rnote-ui/src/dialogs/import.rs:236
+#: rnote-ui/src/dialogs/import.rs:183
 msgid "- no file name -"
 msgstr "- கோப்பு பெயர் இல்லை -"
 
-#: rnote-ui/src/dialogs/import.rs:241
+#: rnote-ui/src/dialogs/import.rs:188
 msgid "- no title -"
 msgstr "- தலைப்பு இல்லை -"
 
-#: rnote-ui/src/dialogs/import.rs:244
+#: rnote-ui/src/dialogs/import.rs:191
 msgid "- no author -"
 msgstr "- ஆசிரியர் இல்லை -"
 
-#: rnote-ui/src/dialogs/import.rs:248
+#: rnote-ui/src/dialogs/import.rs:195
 msgid "- no date -"
 msgstr "- தேதி இல்லை -"
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:202
 msgid "File name:"
 msgstr "கோப்பு பெயர்:"
 
-#: rnote-ui/src/dialogs/import.rs:259
+#: rnote-ui/src/dialogs/import.rs:206
 msgid "Title:"
 msgstr "தலைப்பு:"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:210
 msgid "Author:"
 msgstr "ஆசிரியர்:"
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:214
 msgid "Modification date:"
 msgstr "மாற்றியமைத்தல் தேதி:"
 
-#: rnote-ui/src/dialogs/import.rs:271
+#: rnote-ui/src/dialogs/import.rs:218
 msgid "Pages:"
 msgstr "பக்கங்கள்:"
 
@@ -2176,6 +2138,34 @@ msgstr "கோப்புறை பெயர்"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "புதிய அடைவு"
+
+#~ msgid ""
+#~ "Opening this file overwrites any unsaved changes. Do you want to save the "
+#~ "current document?"
+#~ msgstr ""
+#~ "இந்தக் கோப்பைத் திறப்பது சேமிக்கப்படாத மாற்றங்களை மேலெழுதும். தற்போதைய ஆவணத்தை சேமிக்க "
+#~ "விரும்புகிறீர்களா?"
+
+#~ msgid "Opening .rnote file failed"
+#~ msgstr ".rnote கோப்பை திறக்க முடியவில்லை"
+
+#~ msgid "Opening vector image file failed"
+#~ msgstr "திசையன் படக் கோப்பைத் திறப்பதில் தோல்வி"
+
+#~ msgid "Opening bitmap image file failed"
+#~ msgstr "பிட்மேப் படக் கோப்பைத் திறப்பதில் தோல்வி"
+
+#~ msgid "Opening Xournal++ file failed"
+#~ msgstr "Xournal++ கோப்பை திறப்பதில் தோல்வி"
+
+#~ msgid "Opening Pdf file failed"
+#~ msgstr "Pdf கோப்பை திறக்க முடியவில்லை"
+
+#~ msgid "Failed to open file, tried to open folder as file"
+#~ msgstr "கோப்பை திறக்க முடியவில்லை, கோப்புறையை கோப்பாக திறக்க முயற்சித்தேன்"
+
+#~ msgid "Failed to open file, unsupported file type"
+#~ msgstr "கோப்பைத் திறக்க முடியவில்லை, ஆதரிக்கப்படாத கோப்பு வகை"
 
 #~ msgid "- unable to find a valid save folder -"
 #~ msgstr "- சரியான சேமிப்பு கோப்புறையை கண்டுபிடிக்க முடியவில்லை -"

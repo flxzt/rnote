@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-04 13:51+0200\n"
+"POT-Creation-Date: 2023-07-09 12:56+0200\n"
 "PO-Revision-Date: 2023-06-22 19:29+0000\n"
 "Last-Translator: vikdevelop <super-vik1@protonmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
@@ -77,8 +77,8 @@ msgstr "Tím se vymaže celý dokument. Prosím potvrďte."
 #: rnote-ui/data/ui/dialogs/dialogs.ui:40
 #: rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: rnote-ui/data/ui/dialogs/dialogs.ui:70 rnote-ui/data/ui/dialogs/import.ui:10
-#: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:223
-#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:211 rnote-ui/data/ui/dialogs/export.ui:10
+#: rnote-ui/data/ui/dialogs/export.ui:151
 #: rnote-ui/data/ui/dialogs/export.ui:378
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
@@ -102,14 +102,13 @@ msgstr ""
 "Chcete uložit aktuální dokument?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
-#: rnote-ui/data/ui/dialogs/dialogs.ui:41 rnote-ui/data/ui/dialogs/import.ui:11
+#: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Discard"
 msgstr "Zahodit"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/data/ui/dialogs/import.ui:12
-#: rnote-ui/src/dialogs/export.rs:32
+#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/src/dialogs/export.rs:32
 msgid "Save"
 msgstr "Uložit"
 
@@ -194,92 +193,80 @@ msgstr "- žádný adresář nevybrán -"
 msgid "Change the directory"
 msgstr "Změnit adresář"
 
-#: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:81
-msgid "Open File"
-msgstr "Otevřít soubor"
-
-#: rnote-ui/data/ui/dialogs/import.ui:6
-msgid ""
-"Opening this file overwrites any unsaved changes. Do you want to save the "
-"current document?"
-msgstr ""
-"Otevřením souboru se přepíšou neuložené změny. Chcete uložit aktuální "
-"dokument?"
-
-#: rnote-ui/data/ui/dialogs/import.ui:19
+#: rnote-ui/data/ui/dialogs/import.ui:7
 msgid "Import Pdf"
 msgstr "Importovat PDF"
 
-#: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
-#: rnote-ui/src/dialogs/import.rs:119
+#: rnote-ui/data/ui/dialogs/import.ui:15 rnote-ui/data/ui/dialogs/import.ui:216
+#: rnote-ui/src/dialogs/import.rs:64
 msgid "Import"
 msgstr "Importovat"
 
-#: rnote-ui/data/ui/dialogs/import.ui:73
+#: rnote-ui/data/ui/dialogs/import.ui:61
 msgid "Info"
 msgstr "Info"
 
-#: rnote-ui/data/ui/dialogs/import.ui:91
+#: rnote-ui/data/ui/dialogs/import.ui:79
 msgid "Pdf Import Preferences"
 msgstr "Předvolby importu PDF"
 
-#: rnote-ui/data/ui/dialogs/import.ui:95
+#: rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start Page"
 msgstr "Začínající stránka"
 
-#: rnote-ui/data/ui/dialogs/import.ui:110
+#: rnote-ui/data/ui/dialogs/import.ui:98
 msgid "End Page"
 msgstr "Končící stránka"
 
-#: rnote-ui/data/ui/dialogs/import.ui:125
+#: rnote-ui/data/ui/dialogs/import.ui:113
 msgid "Page Width (%)"
 msgstr "Šířka stránky (%)"
 
-#: rnote-ui/data/ui/dialogs/import.ui:126
+#: rnote-ui/data/ui/dialogs/import.ui:114
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr "Nastavení šířky importovaných PDF v procentech na šířku formátu"
 
-#: rnote-ui/data/ui/dialogs/import.ui:146
+#: rnote-ui/data/ui/dialogs/import.ui:134
 msgid "Page Spacing"
 msgstr "Rozestupy mezi stránkami"
 
-#: rnote-ui/data/ui/dialogs/import.ui:147
+#: rnote-ui/data/ui/dialogs/import.ui:135
 msgid "How Pdf pages are spaced"
 msgstr "Jak jsou stránky PDF rozděleny"
 
-#: rnote-ui/data/ui/dialogs/import.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:139
 msgid "Continuous"
 msgstr "Průběžné"
 
-#: rnote-ui/data/ui/dialogs/import.ui:152
+#: rnote-ui/data/ui/dialogs/import.ui:140
 msgid "One per Document Page"
 msgstr "Jeden na stránku dokumentu"
 
-#: rnote-ui/data/ui/dialogs/import.ui:160
+#: rnote-ui/data/ui/dialogs/import.ui:148
 msgid "Pages Type"
 msgstr "Typ stránek"
 
-#: rnote-ui/data/ui/dialogs/import.ui:161
+#: rnote-ui/data/ui/dialogs/import.ui:149
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr ""
 "Nastavit, zda se mají soubory PDF importovat jako vektorové nebo bitmapové "
 "obrázky"
 
-#: rnote-ui/data/ui/dialogs/import.ui:173
+#: rnote-ui/data/ui/dialogs/import.ui:161
 msgid "Vector"
 msgstr "Vektor"
 
-#: rnote-ui/data/ui/dialogs/import.ui:180
+#: rnote-ui/data/ui/dialogs/import.ui:168
 msgid "Bitmap"
 msgstr "Bitmap"
 
-#: rnote-ui/data/ui/dialogs/import.ui:189
+#: rnote-ui/data/ui/dialogs/import.ui:177
 #: rnote-ui/data/ui/dialogs/export.ui:323
 #: rnote-ui/data/ui/dialogs/export.ui:492
 msgid "Bitmap Scale-Factor"
 msgstr "Škálovací faktor Bitmap"
 
-#: rnote-ui/data/ui/dialogs/import.ui:190
+#: rnote-ui/data/ui/dialogs/import.ui:178
 #: rnote-ui/data/ui/dialogs/export.ui:324
 #: rnote-ui/data/ui/dialogs/export.ui:493
 msgid ""
@@ -289,19 +276,19 @@ msgstr ""
 "Nastavení faktoru měřítka bitmapy ve vztahu k\n"
 "ke skutečné velikosti v dokumentu"
 
-#: rnote-ui/data/ui/dialogs/import.ui:220
+#: rnote-ui/data/ui/dialogs/import.ui:208
 msgid "Import Xournal++ File"
 msgstr "Importovat soubor Xournal++"
 
-#: rnote-ui/data/ui/dialogs/import.ui:259
+#: rnote-ui/data/ui/dialogs/import.ui:247
 msgid "Xournal++ File Import Preferences"
 msgstr "Předvolby importu souboru Xournal++"
 
-#: rnote-ui/data/ui/dialogs/import.ui:263
+#: rnote-ui/data/ui/dialogs/import.ui:251
 msgid "DPI"
 msgstr "DPI"
 
-#: rnote-ui/data/ui/dialogs/import.ui:264
+#: rnote-ui/data/ui/dialogs/import.ui:252
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Nastavit preferované DPI pro soubor Xournal++"
 
@@ -1057,7 +1044,7 @@ msgstr "Barva tahu"
 msgid "Fill Color"
 msgstr "Barva výplně"
 
-#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:26
 msgid "Open"
 msgstr "Otevřít"
 
@@ -1507,7 +1494,7 @@ msgstr ""
 msgid "Print Document"
 msgstr ""
 
-#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:117
+#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:62
 msgid "Import File"
 msgstr ""
 
@@ -1559,39 +1546,14 @@ msgstr ""
 msgid "Edit Selected Workspace"
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:555
-msgid "Opening .rnote file failed"
-msgstr ""
-
-#: rnote-ui/src/appwindow/mod.rs:566
-msgid "Opening vector image file failed"
-msgstr ""
-
-#: rnote-ui/src/appwindow/mod.rs:577
-msgid "Opening bitmap image file failed"
-msgstr ""
-
-#: rnote-ui/src/appwindow/mod.rs:588 rnote-ui/src/dialogs/import.rs:350
-msgid "Opening Xournal++ file failed"
-msgstr ""
-
-#: rnote-ui/src/appwindow/mod.rs:599 rnote-ui/src/dialogs/import.rs:301
-msgid "Opening Pdf file failed"
-msgstr ""
-
-#: rnote-ui/src/appwindow/mod.rs:608
-msgid "Failed to open file, tried to open folder as file"
-msgstr ""
-
-#: rnote-ui/src/appwindow/mod.rs:613
-msgid "Failed to open file, unsupported file type"
+#: rnote-ui/src/appwindow/mod.rs:539
+msgid "Opening file failed"
 msgstr ""
 
 #: rnote-ui/src/appwindow/imp.rs:282
-#: rnote-ui/src/appwindow/appwindowactions.rs:612
-#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/import.rs:52
-#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:260
-#: rnote-ui/src/dialogs/mod.rs:411
+#: rnote-ui/src/appwindow/appwindowactions.rs:613
+#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/mod.rs:130
+#: rnote-ui/src/dialogs/mod.rs:260 rnote-ui/src/dialogs/mod.rs:411
 msgid "Saving document failed"
 msgstr ""
 
@@ -1611,11 +1573,11 @@ msgstr ""
 msgid "Button 4"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:736
+#: rnote-ui/src/appwindow/appwindowactions.rs:737
 msgid "Printing document failed"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:771
+#: rnote-ui/src/appwindow/appwindowactions.rs:772
 msgid "Exporting selection failed, nothing selected"
 msgstr ""
 
@@ -1648,15 +1610,15 @@ msgstr ""
 msgid "Opened file was moved or deleted on disk"
 msgstr ""
 
-#: rnote-ui/src/canvas/mod.rs:1005
+#: rnote-ui/src/canvas/mod.rs:1008
 msgid "Inserting file failed"
 msgstr ""
 
-#: rnote-ui/src/canvas/mod.rs:1015
+#: rnote-ui/src/canvas/mod.rs:1018
 msgid "Inserting text failed"
 msgstr ""
 
-#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:78
+#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:21
 msgid ".rnote"
 msgstr ""
 
@@ -1733,47 +1695,47 @@ msgstr ""
 msgid "Exported engine config successfully"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:34
-msgid "Opening file failed"
-msgstr ""
+#: rnote-ui/src/dialogs/import.rs:24
+msgid "Open File"
+msgstr "Otevřít soubor"
 
-#: rnote-ui/src/dialogs/import.rs:114
+#: rnote-ui/src/dialogs/import.rs:59
 msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:236
+#: rnote-ui/src/dialogs/import.rs:183
 msgid "- no file name -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:241
+#: rnote-ui/src/dialogs/import.rs:188
 msgid "- no title -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:244
+#: rnote-ui/src/dialogs/import.rs:191
 msgid "- no author -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:248
+#: rnote-ui/src/dialogs/import.rs:195
 msgid "- no date -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:202
 msgid "File name:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:259
+#: rnote-ui/src/dialogs/import.rs:206
 msgid "Title:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:210
 msgid "Author:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:214
 msgid "Modification date:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:271
+#: rnote-ui/src/dialogs/import.rs:218
 msgid "Pages:"
 msgstr ""
 
@@ -2158,3 +2120,10 @@ msgstr ""
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr ""
+
+#~ msgid ""
+#~ "Opening this file overwrites any unsaved changes. Do you want to save the "
+#~ "current document?"
+#~ msgstr ""
+#~ "Otevřením souboru se přepíšou neuložené změny. Chcete uložit aktuální "
+#~ "dokument?"

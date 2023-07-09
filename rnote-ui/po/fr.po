@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-04 13:51+0200\n"
+"POT-Creation-Date: 2023-07-09 12:56+0200\n"
 "PO-Revision-Date: 2023-06-07 14:52+0000\n"
 "Last-Translator: Steph Ma <Stephma@pm.me>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -78,8 +78,8 @@ msgstr "Ceci efface tout le document. Veuillez confirmer."
 #: rnote-ui/data/ui/dialogs/dialogs.ui:40
 #: rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: rnote-ui/data/ui/dialogs/dialogs.ui:70 rnote-ui/data/ui/dialogs/import.ui:10
-#: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:223
-#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:211 rnote-ui/data/ui/dialogs/export.ui:10
+#: rnote-ui/data/ui/dialogs/export.ui:151
 #: rnote-ui/data/ui/dialogs/export.ui:378
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
@@ -103,14 +103,13 @@ msgstr ""
 "non enregistrées. Voulez-vous sauvegarder le document actuel ?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
-#: rnote-ui/data/ui/dialogs/dialogs.ui:41 rnote-ui/data/ui/dialogs/import.ui:11
+#: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Discard"
 msgstr "Effacer"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/data/ui/dialogs/import.ui:12
-#: rnote-ui/src/dialogs/export.rs:32
+#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/src/dialogs/export.rs:32
 msgid "Save"
 msgstr "Sauvegarder"
 
@@ -203,75 +202,63 @@ msgstr "- aucun répertoire sélectionné -"
 msgid "Change the directory"
 msgstr "Changer de répertoire"
 
-#: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:81
-msgid "Open File"
-msgstr "Ouvrir le fichier"
-
-#: rnote-ui/data/ui/dialogs/import.ui:6
-msgid ""
-"Opening this file overwrites any unsaved changes. Do you want to save the "
-"current document?"
-msgstr ""
-"L’ouverture de ce fichier écrasera toutes les modifications non-"
-"sauvegardées. Voulez-vous sauvegarder le document actuel ?"
-
-#: rnote-ui/data/ui/dialogs/import.ui:19
+#: rnote-ui/data/ui/dialogs/import.ui:7
 msgid "Import Pdf"
 msgstr "Importer PDF"
 
-#: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
-#: rnote-ui/src/dialogs/import.rs:119
+#: rnote-ui/data/ui/dialogs/import.ui:15 rnote-ui/data/ui/dialogs/import.ui:216
+#: rnote-ui/src/dialogs/import.rs:64
 msgid "Import"
 msgstr "Importer"
 
-#: rnote-ui/data/ui/dialogs/import.ui:73
+#: rnote-ui/data/ui/dialogs/import.ui:61
 msgid "Info"
 msgstr "Info"
 
-#: rnote-ui/data/ui/dialogs/import.ui:91
+#: rnote-ui/data/ui/dialogs/import.ui:79
 msgid "Pdf Import Preferences"
 msgstr "Paramètres d’importation PDF"
 
-#: rnote-ui/data/ui/dialogs/import.ui:95
+#: rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start Page"
 msgstr "Première page"
 
-#: rnote-ui/data/ui/dialogs/import.ui:110
+#: rnote-ui/data/ui/dialogs/import.ui:98
 msgid "End Page"
 msgstr "Dernière page"
 
-#: rnote-ui/data/ui/dialogs/import.ui:125
+#: rnote-ui/data/ui/dialogs/import.ui:113
 msgid "Page Width (%)"
 msgstr "Largeur de page (%)"
 
-#: rnote-ui/data/ui/dialogs/import.ui:126
+#: rnote-ui/data/ui/dialogs/import.ui:114
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr ""
 "Définir la largeur des PDF importés en pourcentage de la largeur de la page"
 
-#: rnote-ui/data/ui/dialogs/import.ui:146
+#: rnote-ui/data/ui/dialogs/import.ui:134
 msgid "Page Spacing"
 msgstr "Espacement des pages"
 
-#: rnote-ui/data/ui/dialogs/import.ui:147
+#: rnote-ui/data/ui/dialogs/import.ui:135
 #, fuzzy
 #| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
 msgstr "Comment les pages du PDF sont espacées"
 
-#: rnote-ui/data/ui/dialogs/import.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:139
 msgid "Continuous"
 msgstr "Continu"
 
-#: rnote-ui/data/ui/dialogs/import.ui:152
+#: rnote-ui/data/ui/dialogs/import.ui:140
 msgid "One per Document Page"
 msgstr "Une par page de document"
 
-#: rnote-ui/data/ui/dialogs/import.ui:160
+#: rnote-ui/data/ui/dialogs/import.ui:148
 msgid "Pages Type"
 msgstr "Type de pages"
 
-#: rnote-ui/data/ui/dialogs/import.ui:161
+#: rnote-ui/data/ui/dialogs/import.ui:149
 #, fuzzy
 #| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
@@ -279,21 +266,21 @@ msgstr ""
 "Définir si les PDF doivent être importés en tant qu’images vectorielles ou "
 "matricielles (bitmap)"
 
-#: rnote-ui/data/ui/dialogs/import.ui:173
+#: rnote-ui/data/ui/dialogs/import.ui:161
 msgid "Vector"
 msgstr "Vectorielle"
 
-#: rnote-ui/data/ui/dialogs/import.ui:180
+#: rnote-ui/data/ui/dialogs/import.ui:168
 msgid "Bitmap"
 msgstr "Matricielle"
 
-#: rnote-ui/data/ui/dialogs/import.ui:189
+#: rnote-ui/data/ui/dialogs/import.ui:177
 #: rnote-ui/data/ui/dialogs/export.ui:323
 #: rnote-ui/data/ui/dialogs/export.ui:492
 msgid "Bitmap Scale-Factor"
 msgstr "Échelle des images matricielles"
 
-#: rnote-ui/data/ui/dialogs/import.ui:190
+#: rnote-ui/data/ui/dialogs/import.ui:178
 #: rnote-ui/data/ui/dialogs/export.ui:324
 #: rnote-ui/data/ui/dialogs/export.ui:493
 msgid ""
@@ -303,19 +290,19 @@ msgstr ""
 "Définir la taille de l’image matricielle\n"
 "par rapport à sa taille réelle dans le document"
 
-#: rnote-ui/data/ui/dialogs/import.ui:220
+#: rnote-ui/data/ui/dialogs/import.ui:208
 msgid "Import Xournal++ File"
 msgstr "Importer un fichier Xournal++"
 
-#: rnote-ui/data/ui/dialogs/import.ui:259
+#: rnote-ui/data/ui/dialogs/import.ui:247
 msgid "Xournal++ File Import Preferences"
 msgstr "Paramètres d’importation de fichiers Xournal++"
 
-#: rnote-ui/data/ui/dialogs/import.ui:263
+#: rnote-ui/data/ui/dialogs/import.ui:251
 msgid "DPI"
 msgstr "PPP"
 
-#: rnote-ui/data/ui/dialogs/import.ui:264
+#: rnote-ui/data/ui/dialogs/import.ui:252
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Définit le nombre de PPP préféré pour le fichier Xournal++"
 
@@ -1073,7 +1060,7 @@ msgstr "Couleur du trait"
 msgid "Fill Color"
 msgstr "Couleur du remplissage"
 
-#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:26
 msgid "Open"
 msgstr "Ouvrir"
 
@@ -1541,7 +1528,7 @@ msgstr "Enregistrer document sous"
 msgid "Print Document"
 msgstr "Imprimer document"
 
-#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:117
+#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:62
 msgid "Import File"
 msgstr "Importer fichier"
 
@@ -1593,41 +1580,14 @@ msgstr "Supprimer l’espace de travail sélectionné"
 msgid "Edit Selected Workspace"
 msgstr "Modifier l’espace de travail sélectionné"
 
-#: rnote-ui/src/appwindow/mod.rs:555
-msgid "Opening .rnote file failed"
-msgstr "L'ouverture du fichier .rnote a échoué"
-
-#: rnote-ui/src/appwindow/mod.rs:566
-msgid "Opening vector image file failed"
-msgstr "L'ouverture du fichier image vectorielle a échoué"
-
-#: rnote-ui/src/appwindow/mod.rs:577
-msgid "Opening bitmap image file failed"
-msgstr "L'ouverture du fichier image matricielle a échoué"
-
-#: rnote-ui/src/appwindow/mod.rs:588 rnote-ui/src/dialogs/import.rs:350
-msgid "Opening Xournal++ file failed"
-msgstr "L'ouverture du fichier Xournal++ a échoué"
-
-#: rnote-ui/src/appwindow/mod.rs:599 rnote-ui/src/dialogs/import.rs:301
-msgid "Opening Pdf file failed"
-msgstr "L'ouverture du fichier Pdf a échoué"
-
-#: rnote-ui/src/appwindow/mod.rs:608
-msgid "Failed to open file, tried to open folder as file"
-msgstr ""
-"Échec de l'ouverture du fichier, tentative d'ouverture d'un répertoire en "
-"tant que fichier"
-
-#: rnote-ui/src/appwindow/mod.rs:613
-msgid "Failed to open file, unsupported file type"
-msgstr "Impossible d’ouvrir le fichier : type de fichier non pris en charge"
+#: rnote-ui/src/appwindow/mod.rs:539
+msgid "Opening file failed"
+msgstr "L'ouverture du fichier a échoué"
 
 #: rnote-ui/src/appwindow/imp.rs:282
-#: rnote-ui/src/appwindow/appwindowactions.rs:612
-#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/import.rs:52
-#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:260
-#: rnote-ui/src/dialogs/mod.rs:411
+#: rnote-ui/src/appwindow/appwindowactions.rs:613
+#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/mod.rs:130
+#: rnote-ui/src/dialogs/mod.rs:260 rnote-ui/src/dialogs/mod.rs:411
 msgid "Saving document failed"
 msgstr "Échec de l'enregistrement du document"
 
@@ -1647,11 +1607,11 @@ msgstr "Bouton 3"
 msgid "Button 4"
 msgstr "Bouton 4"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:736
+#: rnote-ui/src/appwindow/appwindowactions.rs:737
 msgid "Printing document failed"
 msgstr "Échec de l'impression du document"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:771
+#: rnote-ui/src/appwindow/appwindowactions.rs:772
 msgid "Exporting selection failed, nothing selected"
 msgstr "Échec de l’exportation de la sélection, rien n'est sélectionné"
 
@@ -1684,19 +1644,19 @@ msgstr "Le fichier ouvert a été renommé sur le disque"
 msgid "Opened file was moved or deleted on disk"
 msgstr "Le fichier ouvert a été déplacé ou supprimé sur le disque"
 
-#: rnote-ui/src/canvas/mod.rs:1005
+#: rnote-ui/src/canvas/mod.rs:1008
 #, fuzzy
 #| msgid "Importing file failed."
 msgid "Inserting file failed"
 msgstr "Échec de l'importation du fichier."
 
-#: rnote-ui/src/canvas/mod.rs:1015
+#: rnote-ui/src/canvas/mod.rs:1018
 #, fuzzy
 #| msgid "Importing file failed."
 msgid "Inserting text failed"
 msgstr "Échec de l'importation du fichier."
 
-#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:78
+#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:21
 msgid ".rnote"
 msgstr ".rnote"
 
@@ -1775,47 +1735,47 @@ msgstr "Échec de l'exportation de la configuration interne"
 msgid "Exported engine config successfully"
 msgstr "La configuration interne a été exportée avec succès"
 
-#: rnote-ui/src/dialogs/import.rs:34
-msgid "Opening file failed"
-msgstr "L'ouverture du fichier a échoué"
+#: rnote-ui/src/dialogs/import.rs:24
+msgid "Open File"
+msgstr "Ouvrir le fichier"
 
-#: rnote-ui/src/dialogs/import.rs:114
+#: rnote-ui/src/dialogs/import.rs:59
 msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgstr "JPG, PDF, PNG, SVG, Xopp"
 
-#: rnote-ui/src/dialogs/import.rs:236
+#: rnote-ui/src/dialogs/import.rs:183
 msgid "- no file name -"
 msgstr "- aucun nom de fichier -"
 
-#: rnote-ui/src/dialogs/import.rs:241
+#: rnote-ui/src/dialogs/import.rs:188
 msgid "- no title -"
 msgstr "- aucun titre -"
 
-#: rnote-ui/src/dialogs/import.rs:244
+#: rnote-ui/src/dialogs/import.rs:191
 msgid "- no author -"
 msgstr "- aucun auteur -"
 
-#: rnote-ui/src/dialogs/import.rs:248
+#: rnote-ui/src/dialogs/import.rs:195
 msgid "- no date -"
 msgstr "- aucune date -"
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:202
 msgid "File name:"
 msgstr "Nom du fichier :"
 
-#: rnote-ui/src/dialogs/import.rs:259
+#: rnote-ui/src/dialogs/import.rs:206
 msgid "Title:"
 msgstr "Titre :"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:210
 msgid "Author:"
 msgstr "Auteur :"
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:214
 msgid "Modification date:"
 msgstr "Date de modification :"
 
-#: rnote-ui/src/dialogs/import.rs:271
+#: rnote-ui/src/dialogs/import.rs:218
 msgid "Pages:"
 msgstr "Pages :"
 
@@ -2240,6 +2200,36 @@ msgstr "Nom du répertoire"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "Nouveau répertoire"
+
+#~ msgid ""
+#~ "Opening this file overwrites any unsaved changes. Do you want to save the "
+#~ "current document?"
+#~ msgstr ""
+#~ "L’ouverture de ce fichier écrasera toutes les modifications non-"
+#~ "sauvegardées. Voulez-vous sauvegarder le document actuel ?"
+
+#~ msgid "Opening .rnote file failed"
+#~ msgstr "L'ouverture du fichier .rnote a échoué"
+
+#~ msgid "Opening vector image file failed"
+#~ msgstr "L'ouverture du fichier image vectorielle a échoué"
+
+#~ msgid "Opening bitmap image file failed"
+#~ msgstr "L'ouverture du fichier image matricielle a échoué"
+
+#~ msgid "Opening Xournal++ file failed"
+#~ msgstr "L'ouverture du fichier Xournal++ a échoué"
+
+#~ msgid "Opening Pdf file failed"
+#~ msgstr "L'ouverture du fichier Pdf a échoué"
+
+#~ msgid "Failed to open file, tried to open folder as file"
+#~ msgstr ""
+#~ "Échec de l'ouverture du fichier, tentative d'ouverture d'un répertoire en "
+#~ "tant que fichier"
+
+#~ msgid "Failed to open file, unsupported file type"
+#~ msgstr "Impossible d’ouvrir le fichier : type de fichier non pris en charge"
 
 #~ msgid "- unable to find a valid save folder -"
 #~ msgstr "- impossible de trouver un répertoire de sauvegarde valide -"

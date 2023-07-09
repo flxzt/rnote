@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-04 13:51+0200\n"
+"POT-Creation-Date: 2023-07-09 12:56+0200\n"
 "PO-Revision-Date: 2023-02-09 20:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
@@ -79,8 +79,8 @@ msgstr "전체 문서를 지웁니다. 확인 부탁드립니다."
 #: rnote-ui/data/ui/dialogs/dialogs.ui:40
 #: rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: rnote-ui/data/ui/dialogs/dialogs.ui:70 rnote-ui/data/ui/dialogs/import.ui:10
-#: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:223
-#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:211 rnote-ui/data/ui/dialogs/export.ui:10
+#: rnote-ui/data/ui/dialogs/export.ui:151
 #: rnote-ui/data/ui/dialogs/export.ui:378
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
@@ -104,14 +104,13 @@ msgstr ""
 "현재 문서를 저장하시겠습니까?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
-#: rnote-ui/data/ui/dialogs/dialogs.ui:41 rnote-ui/data/ui/dialogs/import.ui:11
+#: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Discard"
 msgstr "폐기하기"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/data/ui/dialogs/import.ui:12
-#: rnote-ui/src/dialogs/export.rs:32
+#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/src/dialogs/export.rs:32
 msgid "Save"
 msgstr "저장하기"
 
@@ -204,100 +203,88 @@ msgstr "- 선택된 디렉터리 없음 -"
 msgid "Change the directory"
 msgstr "디렉터리 변경하기"
 
-#: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:81
-msgid "Open File"
-msgstr "파일 열기"
-
-#: rnote-ui/data/ui/dialogs/import.ui:6
-msgid ""
-"Opening this file overwrites any unsaved changes. Do you want to save the "
-"current document?"
-msgstr ""
-"이 파일을 열면 저장되지 않은 변경 사항을 덮어씁니다. 현재 문서를 저장하시겠습"
-"니까?"
-
-#: rnote-ui/data/ui/dialogs/import.ui:19
+#: rnote-ui/data/ui/dialogs/import.ui:7
 #, fuzzy
 #| msgid "Import PDF"
 msgid "Import Pdf"
 msgstr "PDF 가져오기"
 
-#: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
-#: rnote-ui/src/dialogs/import.rs:119
+#: rnote-ui/data/ui/dialogs/import.ui:15 rnote-ui/data/ui/dialogs/import.ui:216
+#: rnote-ui/src/dialogs/import.rs:64
 msgid "Import"
 msgstr "가져오기"
 
-#: rnote-ui/data/ui/dialogs/import.ui:73
+#: rnote-ui/data/ui/dialogs/import.ui:61
 msgid "Info"
 msgstr "정보"
 
-#: rnote-ui/data/ui/dialogs/import.ui:91
+#: rnote-ui/data/ui/dialogs/import.ui:79
 #, fuzzy
 #| msgid "PDF Import Preferences"
 msgid "Pdf Import Preferences"
 msgstr "PDF 가져오기 환경설정"
 
-#: rnote-ui/data/ui/dialogs/import.ui:95
+#: rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start Page"
 msgstr "시작 페이지"
 
-#: rnote-ui/data/ui/dialogs/import.ui:110
+#: rnote-ui/data/ui/dialogs/import.ui:98
 msgid "End Page"
 msgstr "끝 페이지"
 
-#: rnote-ui/data/ui/dialogs/import.ui:125
+#: rnote-ui/data/ui/dialogs/import.ui:113
 msgid "Page Width (%)"
 msgstr "페이지 너비 (%)"
 
-#: rnote-ui/data/ui/dialogs/import.ui:126
+#: rnote-ui/data/ui/dialogs/import.ui:114
 #, fuzzy
 #| msgid "Set the width of imported PDF's in percentage to the format width"
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr "가져온 PDF의 너비를 형식 너비에 대한 백분율로 설정합니다"
 
-#: rnote-ui/data/ui/dialogs/import.ui:146
+#: rnote-ui/data/ui/dialogs/import.ui:134
 msgid "Page Spacing"
 msgstr "페이지 간격"
 
-#: rnote-ui/data/ui/dialogs/import.ui:147
+#: rnote-ui/data/ui/dialogs/import.ui:135
 #, fuzzy
 #| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
 msgstr "PDF 페이지 간격 지정 방법"
 
-#: rnote-ui/data/ui/dialogs/import.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:139
 msgid "Continuous"
 msgstr "연속"
 
-#: rnote-ui/data/ui/dialogs/import.ui:152
+#: rnote-ui/data/ui/dialogs/import.ui:140
 msgid "One per Document Page"
 msgstr "문서 페이지당 하나"
 
-#: rnote-ui/data/ui/dialogs/import.ui:160
+#: rnote-ui/data/ui/dialogs/import.ui:148
 msgid "Pages Type"
 msgstr "페이지 유형"
 
-#: rnote-ui/data/ui/dialogs/import.ui:161
+#: rnote-ui/data/ui/dialogs/import.ui:149
 #, fuzzy
 #| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr "PDF를 벡터 이미지로 가져올지 비트맵 이미지로 가져올지 설정합니다"
 
-#: rnote-ui/data/ui/dialogs/import.ui:173
+#: rnote-ui/data/ui/dialogs/import.ui:161
 msgid "Vector"
 msgstr "벡터"
 
-#: rnote-ui/data/ui/dialogs/import.ui:180
+#: rnote-ui/data/ui/dialogs/import.ui:168
 msgid "Bitmap"
 msgstr "비트맵"
 
-#: rnote-ui/data/ui/dialogs/import.ui:189
+#: rnote-ui/data/ui/dialogs/import.ui:177
 #: rnote-ui/data/ui/dialogs/export.ui:323
 #: rnote-ui/data/ui/dialogs/export.ui:492
 msgid "Bitmap Scale-Factor"
 msgstr "비트맵 배율 인수"
 
-#: rnote-ui/data/ui/dialogs/import.ui:190
+#: rnote-ui/data/ui/dialogs/import.ui:178
 #: rnote-ui/data/ui/dialogs/export.ui:324
 #: rnote-ui/data/ui/dialogs/export.ui:493
 msgid ""
@@ -307,19 +294,19 @@ msgstr ""
 "문서의 실제 크기를 기준으로 비트맵\n"
 "배율을 설정합니다"
 
-#: rnote-ui/data/ui/dialogs/import.ui:220
+#: rnote-ui/data/ui/dialogs/import.ui:208
 msgid "Import Xournal++ File"
 msgstr "Xournal++ 파일 가져오기"
 
-#: rnote-ui/data/ui/dialogs/import.ui:259
+#: rnote-ui/data/ui/dialogs/import.ui:247
 msgid "Xournal++ File Import Preferences"
 msgstr "Xournal++ 파일 가져오기 환경설정"
 
-#: rnote-ui/data/ui/dialogs/import.ui:263
+#: rnote-ui/data/ui/dialogs/import.ui:251
 msgid "DPI"
 msgstr "DPI"
 
-#: rnote-ui/data/ui/dialogs/import.ui:264
+#: rnote-ui/data/ui/dialogs/import.ui:252
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Xournal++ 파일에 대한 선호 DPI를 설정합니다"
 
@@ -1078,7 +1065,7 @@ msgstr "자획 색상"
 msgid "Fill Color"
 msgstr "채움 색상"
 
-#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:26
 msgid "Open"
 msgstr "열기"
 
@@ -1550,7 +1537,7 @@ msgstr "문서를 다른 이름으로 저장"
 msgid "Print Document"
 msgstr "문서 인쇄하기"
 
-#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:117
+#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:62
 msgid "Import File"
 msgstr "파일 가져오기"
 
@@ -1602,41 +1589,14 @@ msgstr "선택된 작업 공간 제거하기"
 msgid "Edit Selected Workspace"
 msgstr "선택된 작업 공간 편집하기"
 
-#: rnote-ui/src/appwindow/mod.rs:555
-msgid "Opening .rnote file failed"
-msgstr ".rnote 파일 열기에 실패했습니다"
-
-#: rnote-ui/src/appwindow/mod.rs:566
-msgid "Opening vector image file failed"
-msgstr "벡터 이미지 파일 열기에 실패했습니다"
-
-#: rnote-ui/src/appwindow/mod.rs:577
-msgid "Opening bitmap image file failed"
-msgstr "비트맵 이미지 파일 열기에 실패했습니다"
-
-#: rnote-ui/src/appwindow/mod.rs:588 rnote-ui/src/dialogs/import.rs:350
-msgid "Opening Xournal++ file failed"
-msgstr "Xournal++ 파일 열기에 실패했습니다"
-
-#: rnote-ui/src/appwindow/mod.rs:599 rnote-ui/src/dialogs/import.rs:301
-#, fuzzy
-#| msgid "Opening PDF file failed"
-msgid "Opening Pdf file failed"
-msgstr "PDF 파일 열기에 실패했습니다"
-
-#: rnote-ui/src/appwindow/mod.rs:608
-msgid "Failed to open file, tried to open folder as file"
-msgstr "파일을 열지 못했습니다. 폴더를 파일로 열려고 했습니다"
-
-#: rnote-ui/src/appwindow/mod.rs:613
-msgid "Failed to open file, unsupported file type"
-msgstr "파일을 열지 못했습니다. 지원되지 않는 파일 형식입니다"
+#: rnote-ui/src/appwindow/mod.rs:539
+msgid "Opening file failed"
+msgstr "파일을 열지 못했습니다"
 
 #: rnote-ui/src/appwindow/imp.rs:282
-#: rnote-ui/src/appwindow/appwindowactions.rs:612
-#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/import.rs:52
-#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:260
-#: rnote-ui/src/dialogs/mod.rs:411
+#: rnote-ui/src/appwindow/appwindowactions.rs:613
+#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/mod.rs:130
+#: rnote-ui/src/dialogs/mod.rs:260 rnote-ui/src/dialogs/mod.rs:411
 msgid "Saving document failed"
 msgstr "문서 저장에 실패했습니다"
 
@@ -1656,11 +1616,11 @@ msgstr ""
 msgid "Button 4"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:736
+#: rnote-ui/src/appwindow/appwindowactions.rs:737
 msgid "Printing document failed"
 msgstr "문서 인쇄에 실패했습니다"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:771
+#: rnote-ui/src/appwindow/appwindowactions.rs:772
 msgid "Exporting selection failed, nothing selected"
 msgstr "선택항목 내보내기에 실패했습니다. 선택한 항목이 없습니다"
 
@@ -1693,19 +1653,19 @@ msgstr "디스크에서 열린 파일의 이름이 변경되었습니다"
 msgid "Opened file was moved or deleted on disk"
 msgstr "디스크에서 열린 파일이 이동 또는 삭제되었습니다"
 
-#: rnote-ui/src/canvas/mod.rs:1005
+#: rnote-ui/src/canvas/mod.rs:1008
 #, fuzzy
 #| msgid "Opening file failed"
 msgid "Inserting file failed"
 msgstr "파일을 열지 못했습니다"
 
-#: rnote-ui/src/canvas/mod.rs:1015
+#: rnote-ui/src/canvas/mod.rs:1018
 #, fuzzy
 #| msgid "Printing document failed"
 msgid "Inserting text failed"
 msgstr "문서 인쇄에 실패했습니다"
 
-#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:78
+#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:21
 msgid ".rnote"
 msgstr ".rnote"
 
@@ -1782,47 +1742,47 @@ msgstr "엔진 구성 내보내기에 실패했습니다"
 msgid "Exported engine config successfully"
 msgstr "엔진 구성을 성공적으로 내보냈습니다"
 
-#: rnote-ui/src/dialogs/import.rs:34
-msgid "Opening file failed"
-msgstr "파일을 열지 못했습니다"
+#: rnote-ui/src/dialogs/import.rs:24
+msgid "Open File"
+msgstr "파일 열기"
 
-#: rnote-ui/src/dialogs/import.rs:114
+#: rnote-ui/src/dialogs/import.rs:59
 msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgstr "Jpg, Pdf, Png, Svg, Xopp"
 
-#: rnote-ui/src/dialogs/import.rs:236
+#: rnote-ui/src/dialogs/import.rs:183
 msgid "- no file name -"
 msgstr "- 파일 이름 없음 -"
 
-#: rnote-ui/src/dialogs/import.rs:241
+#: rnote-ui/src/dialogs/import.rs:188
 msgid "- no title -"
 msgstr "- 제목 없음 -"
 
-#: rnote-ui/src/dialogs/import.rs:244
+#: rnote-ui/src/dialogs/import.rs:191
 msgid "- no author -"
 msgstr "- 작성자 없음 -"
 
-#: rnote-ui/src/dialogs/import.rs:248
+#: rnote-ui/src/dialogs/import.rs:195
 msgid "- no date -"
 msgstr "- 날짜 없음 -"
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:202
 msgid "File name:"
 msgstr "파일 이름:"
 
-#: rnote-ui/src/dialogs/import.rs:259
+#: rnote-ui/src/dialogs/import.rs:206
 msgid "Title:"
 msgstr "제목:"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:210
 msgid "Author:"
 msgstr "작성자:"
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:214
 msgid "Modification date:"
 msgstr "수정 날짜:"
 
-#: rnote-ui/src/dialogs/import.rs:271
+#: rnote-ui/src/dialogs/import.rs:218
 msgid "Pages:"
 msgstr "페이지:"
 
@@ -2237,6 +2197,36 @@ msgstr "폴더 이름"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "새 폴더"
+
+#~ msgid ""
+#~ "Opening this file overwrites any unsaved changes. Do you want to save the "
+#~ "current document?"
+#~ msgstr ""
+#~ "이 파일을 열면 저장되지 않은 변경 사항을 덮어씁니다. 현재 문서를 저장하시"
+#~ "겠습니까?"
+
+#~ msgid "Opening .rnote file failed"
+#~ msgstr ".rnote 파일 열기에 실패했습니다"
+
+#~ msgid "Opening vector image file failed"
+#~ msgstr "벡터 이미지 파일 열기에 실패했습니다"
+
+#~ msgid "Opening bitmap image file failed"
+#~ msgstr "비트맵 이미지 파일 열기에 실패했습니다"
+
+#~ msgid "Opening Xournal++ file failed"
+#~ msgstr "Xournal++ 파일 열기에 실패했습니다"
+
+#, fuzzy
+#~| msgid "Opening PDF file failed"
+#~ msgid "Opening Pdf file failed"
+#~ msgstr "PDF 파일 열기에 실패했습니다"
+
+#~ msgid "Failed to open file, tried to open folder as file"
+#~ msgstr "파일을 열지 못했습니다. 폴더를 파일로 열려고 했습니다"
+
+#~ msgid "Failed to open file, unsupported file type"
+#~ msgstr "파일을 열지 못했습니다. 지원되지 않는 파일 형식입니다"
 
 #~ msgid "- unable to find a valid save folder -"
 #~ msgstr "- 유효한 저장 폴더를 찾을 수 없음 -"

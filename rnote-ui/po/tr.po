@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-04 13:51+0200\n"
+"POT-Creation-Date: 2023-07-09 12:56+0200\n"
 "PO-Revision-Date: 2023-06-12 05:25+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
@@ -77,8 +77,8 @@ msgstr "Bu, tüm belgeyi temizleyecek. Lütfen doğrulayın."
 #: rnote-ui/data/ui/dialogs/dialogs.ui:40
 #: rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: rnote-ui/data/ui/dialogs/dialogs.ui:70 rnote-ui/data/ui/dialogs/import.ui:10
-#: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:223
-#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:211 rnote-ui/data/ui/dialogs/export.ui:10
+#: rnote-ui/data/ui/dialogs/export.ui:151
 #: rnote-ui/data/ui/dialogs/export.ui:378
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
@@ -102,14 +102,13 @@ msgstr ""
 "Geçerli belgeyi kaydetmek istiyor musunuz?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
-#: rnote-ui/data/ui/dialogs/dialogs.ui:41 rnote-ui/data/ui/dialogs/import.ui:11
+#: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Discard"
 msgstr "Gözden çıkar"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/data/ui/dialogs/import.ui:12
-#: rnote-ui/src/dialogs/export.rs:32
+#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/src/dialogs/export.rs:32
 msgid "Save"
 msgstr "Kaydet"
 
@@ -202,93 +201,81 @@ msgstr "- dizin seçilmedi -"
 msgid "Change the directory"
 msgstr "Dizini değiştir"
 
-#: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:81
-msgid "Open File"
-msgstr "Dosya Aç"
-
-#: rnote-ui/data/ui/dialogs/import.ui:6
-msgid ""
-"Opening this file overwrites any unsaved changes. Do you want to save the "
-"current document?"
-msgstr ""
-"Bu dosyanın açılması, kaydedilmemiş tüm değişikliklerin üzerine yazacak. "
-"Geçerli belgeyi kaydetmek istiyor musunuz?"
-
-#: rnote-ui/data/ui/dialogs/import.ui:19
+#: rnote-ui/data/ui/dialogs/import.ui:7
 msgid "Import Pdf"
 msgstr "PDF İçe Aktar"
 
-#: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
-#: rnote-ui/src/dialogs/import.rs:119
+#: rnote-ui/data/ui/dialogs/import.ui:15 rnote-ui/data/ui/dialogs/import.ui:216
+#: rnote-ui/src/dialogs/import.rs:64
 msgid "Import"
 msgstr "İçe aktar"
 
-#: rnote-ui/data/ui/dialogs/import.ui:73
+#: rnote-ui/data/ui/dialogs/import.ui:61
 msgid "Info"
 msgstr "Bilgi"
 
-#: rnote-ui/data/ui/dialogs/import.ui:91
+#: rnote-ui/data/ui/dialogs/import.ui:79
 msgid "Pdf Import Preferences"
 msgstr "PDF İçe Aktarma Tercihleri"
 
-#: rnote-ui/data/ui/dialogs/import.ui:95
+#: rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start Page"
 msgstr "Başlangıç Sayfası"
 
-#: rnote-ui/data/ui/dialogs/import.ui:110
+#: rnote-ui/data/ui/dialogs/import.ui:98
 msgid "End Page"
 msgstr "Bitiş sayfası"
 
-#: rnote-ui/data/ui/dialogs/import.ui:125
+#: rnote-ui/data/ui/dialogs/import.ui:113
 msgid "Page Width (%)"
 msgstr "Sayfa Genişliği (%)"
 
-#: rnote-ui/data/ui/dialogs/import.ui:126
+#: rnote-ui/data/ui/dialogs/import.ui:114
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr ""
 "İçe aktarılan PDFʼlerin genişliğini biçim genişliğine yüzde olarak ayarla"
 
-#: rnote-ui/data/ui/dialogs/import.ui:146
+#: rnote-ui/data/ui/dialogs/import.ui:134
 msgid "Page Spacing"
 msgstr "Sayfa Boşluğu"
 
-#: rnote-ui/data/ui/dialogs/import.ui:147
+#: rnote-ui/data/ui/dialogs/import.ui:135
 msgid "How Pdf pages are spaced"
 msgstr "PDF sayfaları nasıl boşluklu"
 
-#: rnote-ui/data/ui/dialogs/import.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:139
 msgid "Continuous"
 msgstr "Sürekli"
 
-#: rnote-ui/data/ui/dialogs/import.ui:152
+#: rnote-ui/data/ui/dialogs/import.ui:140
 msgid "One per Document Page"
 msgstr "Belge Sayfası Başına Bir"
 
-#: rnote-ui/data/ui/dialogs/import.ui:160
+#: rnote-ui/data/ui/dialogs/import.ui:148
 msgid "Pages Type"
 msgstr "Sayfa Türü"
 
-#: rnote-ui/data/ui/dialogs/import.ui:161
+#: rnote-ui/data/ui/dialogs/import.ui:149
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr ""
 "PDFʼlerin vektör olarak mı yoksa biteşlem görüntüleri olarak mı içe "
 "aktarılacağını ayarla"
 
-#: rnote-ui/data/ui/dialogs/import.ui:173
+#: rnote-ui/data/ui/dialogs/import.ui:161
 msgid "Vector"
 msgstr "Vektör"
 
-#: rnote-ui/data/ui/dialogs/import.ui:180
+#: rnote-ui/data/ui/dialogs/import.ui:168
 msgid "Bitmap"
 msgstr "Biteşlem"
 
-#: rnote-ui/data/ui/dialogs/import.ui:189
+#: rnote-ui/data/ui/dialogs/import.ui:177
 #: rnote-ui/data/ui/dialogs/export.ui:323
 #: rnote-ui/data/ui/dialogs/export.ui:492
 msgid "Bitmap Scale-Factor"
 msgstr "Bitmap Ölçek Faktörü"
 
-#: rnote-ui/data/ui/dialogs/import.ui:190
+#: rnote-ui/data/ui/dialogs/import.ui:178
 #: rnote-ui/data/ui/dialogs/export.ui:324
 #: rnote-ui/data/ui/dialogs/export.ui:493
 msgid ""
@@ -298,19 +285,19 @@ msgstr ""
 "Belgedeki gerçek boyuta göre bitmap \n"
 "ölçek faktörünü ayarlayın"
 
-#: rnote-ui/data/ui/dialogs/import.ui:220
+#: rnote-ui/data/ui/dialogs/import.ui:208
 msgid "Import Xournal++ File"
 msgstr "Xournal++ Dosyasını İçe Aktar"
 
-#: rnote-ui/data/ui/dialogs/import.ui:259
+#: rnote-ui/data/ui/dialogs/import.ui:247
 msgid "Xournal++ File Import Preferences"
 msgstr "Xournal++ Dosya İçe Aktarma Tercihleri"
 
-#: rnote-ui/data/ui/dialogs/import.ui:263
+#: rnote-ui/data/ui/dialogs/import.ui:251
 msgid "DPI"
 msgstr "DPI"
 
-#: rnote-ui/data/ui/dialogs/import.ui:264
+#: rnote-ui/data/ui/dialogs/import.ui:252
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Xournal++ dosyası için tercih edilen DPI değerini ayarla"
 
@@ -1067,7 +1054,7 @@ msgstr "Darbe Rengi"
 msgid "Fill Color"
 msgstr "Dolgu Rengi"
 
-#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:26
 msgid "Open"
 msgstr "Aç"
 
@@ -1533,7 +1520,7 @@ msgstr "Belgeyi Farklı Kaydet"
 msgid "Print Document"
 msgstr "Belgeyi Yazdır"
 
-#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:117
+#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:62
 msgid "Import File"
 msgstr "Dosya İçe Aktar"
 
@@ -1585,39 +1572,14 @@ msgstr "Çalışma Alanı Kaldır"
 msgid "Edit Selected Workspace"
 msgstr "Çalışma Alanını Düzenle"
 
-#: rnote-ui/src/appwindow/mod.rs:555
-msgid "Opening .rnote file failed"
-msgstr ".rnote dosyası açılamadı"
-
-#: rnote-ui/src/appwindow/mod.rs:566
-msgid "Opening vector image file failed"
-msgstr "Vektör görüntü dosyası açılamadı"
-
-#: rnote-ui/src/appwindow/mod.rs:577
-msgid "Opening bitmap image file failed"
-msgstr "Biteşlem görüntü dosyası açılamadı"
-
-#: rnote-ui/src/appwindow/mod.rs:588 rnote-ui/src/dialogs/import.rs:350
-msgid "Opening Xournal++ file failed"
-msgstr "Xournal++ dosyası açılamadı"
-
-#: rnote-ui/src/appwindow/mod.rs:599 rnote-ui/src/dialogs/import.rs:301
-msgid "Opening Pdf file failed"
-msgstr "PDF dosyası açılamadı"
-
-#: rnote-ui/src/appwindow/mod.rs:608
-msgid "Failed to open file, tried to open folder as file"
-msgstr "Hata: Klasör, dosya olarak açılmaya çalışıldı"
-
-#: rnote-ui/src/appwindow/mod.rs:613
-msgid "Failed to open file, unsupported file type"
-msgstr "Dosya açılamadı: Desteklenmeyen dosya türü"
+#: rnote-ui/src/appwindow/mod.rs:539
+msgid "Opening file failed"
+msgstr "Dosya açılamadı"
 
 #: rnote-ui/src/appwindow/imp.rs:282
-#: rnote-ui/src/appwindow/appwindowactions.rs:612
-#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/import.rs:52
-#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:260
-#: rnote-ui/src/dialogs/mod.rs:411
+#: rnote-ui/src/appwindow/appwindowactions.rs:613
+#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/mod.rs:130
+#: rnote-ui/src/dialogs/mod.rs:260 rnote-ui/src/dialogs/mod.rs:411
 msgid "Saving document failed"
 msgstr "Belge kaydedilemedi"
 
@@ -1637,11 +1599,11 @@ msgstr "Düğme 3"
 msgid "Button 4"
 msgstr "Düğme 4"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:736
+#: rnote-ui/src/appwindow/appwindowactions.rs:737
 msgid "Printing document failed"
 msgstr "Belge yazdırılamadı"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:771
+#: rnote-ui/src/appwindow/appwindowactions.rs:772
 msgid "Exporting selection failed, nothing selected"
 msgstr "Seçim dışa aktarılamadı, hiçbir şey seçilmedi"
 
@@ -1674,15 +1636,15 @@ msgstr "Açılan dosya disk üzerinde yeniden adlandırıldı"
 msgid "Opened file was moved or deleted on disk"
 msgstr "Açılan dosya diskte taşınmış veya silinmiş"
 
-#: rnote-ui/src/canvas/mod.rs:1005
+#: rnote-ui/src/canvas/mod.rs:1008
 msgid "Inserting file failed"
 msgstr "Dosya eklenemedi"
 
-#: rnote-ui/src/canvas/mod.rs:1015
+#: rnote-ui/src/canvas/mod.rs:1018
 msgid "Inserting text failed"
 msgstr "Metin eklenemedi"
 
-#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:78
+#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:21
 msgid ".rnote"
 msgstr ".rnote"
 
@@ -1759,47 +1721,47 @@ msgstr "Motor ayarı dışa aktarılamadı"
 msgid "Exported engine config successfully"
 msgstr "Motor ayarı dışa aktarıldı"
 
-#: rnote-ui/src/dialogs/import.rs:34
-msgid "Opening file failed"
-msgstr "Dosya açılamadı"
+#: rnote-ui/src/dialogs/import.rs:24
+msgid "Open File"
+msgstr "Dosya Aç"
 
-#: rnote-ui/src/dialogs/import.rs:114
+#: rnote-ui/src/dialogs/import.rs:59
 msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgstr "Jpg, Pdf, Png, Svg, Xopp"
 
-#: rnote-ui/src/dialogs/import.rs:236
+#: rnote-ui/src/dialogs/import.rs:183
 msgid "- no file name -"
 msgstr "- adsız -"
 
-#: rnote-ui/src/dialogs/import.rs:241
+#: rnote-ui/src/dialogs/import.rs:188
 msgid "- no title -"
 msgstr "- başlıksız -"
 
-#: rnote-ui/src/dialogs/import.rs:244
+#: rnote-ui/src/dialogs/import.rs:191
 msgid "- no author -"
 msgstr "- yazar yok -"
 
-#: rnote-ui/src/dialogs/import.rs:248
+#: rnote-ui/src/dialogs/import.rs:195
 msgid "- no date -"
 msgstr "- tarih yok -"
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:202
 msgid "File name:"
 msgstr "Dosya adı:"
 
-#: rnote-ui/src/dialogs/import.rs:259
+#: rnote-ui/src/dialogs/import.rs:206
 msgid "Title:"
 msgstr "Başlık:"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:210
 msgid "Author:"
 msgstr "Yazar:"
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:214
 msgid "Modification date:"
 msgstr "Değiştirilme tarihi:"
 
-#: rnote-ui/src/dialogs/import.rs:271
+#: rnote-ui/src/dialogs/import.rs:218
 msgid "Pages:"
 msgstr "Sayfalar:"
 
@@ -2186,6 +2148,34 @@ msgstr "Klasör Adı"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "Yeni Klasör"
+
+#~ msgid ""
+#~ "Opening this file overwrites any unsaved changes. Do you want to save the "
+#~ "current document?"
+#~ msgstr ""
+#~ "Bu dosyanın açılması, kaydedilmemiş tüm değişikliklerin üzerine yazacak. "
+#~ "Geçerli belgeyi kaydetmek istiyor musunuz?"
+
+#~ msgid "Opening .rnote file failed"
+#~ msgstr ".rnote dosyası açılamadı"
+
+#~ msgid "Opening vector image file failed"
+#~ msgstr "Vektör görüntü dosyası açılamadı"
+
+#~ msgid "Opening bitmap image file failed"
+#~ msgstr "Biteşlem görüntü dosyası açılamadı"
+
+#~ msgid "Opening Xournal++ file failed"
+#~ msgstr "Xournal++ dosyası açılamadı"
+
+#~ msgid "Opening Pdf file failed"
+#~ msgstr "PDF dosyası açılamadı"
+
+#~ msgid "Failed to open file, tried to open folder as file"
+#~ msgstr "Hata: Klasör, dosya olarak açılmaya çalışıldı"
+
+#~ msgid "Failed to open file, unsupported file type"
+#~ msgstr "Dosya açılamadı: Desteklenmeyen dosya türü"
 
 #~ msgid "The changes will be saved."
 #~ msgstr "Değişiklikler kaydedilecek."

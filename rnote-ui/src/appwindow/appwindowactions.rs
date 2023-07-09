@@ -651,7 +651,6 @@ impl RnAppWindow {
                 print_op.set_n_pages(n_pages as i32);
             }));
 
-
             print_op.connect_draw_page(clone!(@weak appwindow, @weak canvas => move |_print_op, print_cx, page_no| {
                 let page_content = &pages_content[page_no as usize];
                 let page_bounds = page_content.bounds.unwrap().loosened(margin);
@@ -673,9 +672,10 @@ impl RnAppWindow {
             if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
                 log::error!("running print operation failed with Err, {e:?}");
                 appwindow.overlays().dispatch_toast_error(&gettext("Printing document failed"));
+                appwindow.overlays().progressbar_abort();
+            } else {
+                appwindow.overlays().progressbar_finish();
             }
-
-            appwindow.overlays().progressbar_finish();
         }));
 
         // Import

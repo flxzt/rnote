@@ -271,7 +271,7 @@ impl RnAppWindow {
 
         if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(),
                 clone!(@weak obj as appwindow => @default-return glib::source::Continue(false), move || {
-                    let canvas = appwindow.active_tab().canvas();
+                    let canvas = appwindow.active_tab_wrapper().canvas();
 
                     if let Some(output_file) = canvas.output_file() {
                         glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {

@@ -50,7 +50,7 @@ pub(crate) fn duplicate(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::Si
                 log::warn!("Could not duplicate file, current file is None.");
             }
 
-            appwindow.overlays().finish_progressbar();
+            appwindow.overlays().progressbar_finish();
         }),
     );
 

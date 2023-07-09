@@ -173,7 +173,7 @@ mod imp {
             if let Some(texture) = &*self.paint_cache_texture.borrow() {
                 snapshot.append_scaled_texture(
                     texture,
-                    gsk::ScalingFilter::Nearest,
+                    gsk::ScalingFilter::Linear,
                     &graphene::Rect::new(0., 0., width as f32, height as f32),
                 );
                 // Draw a border

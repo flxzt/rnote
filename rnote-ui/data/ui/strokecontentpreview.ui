@@ -18,6 +18,16 @@
         <property name="hexpand">true</property>
         <property name="vexpand">true</property>
         <child type="overlay">
+          <object class="GtkProgressBar" id="progressbar">
+            <property name="halign">fill</property>
+            <property name="valign">start</property>
+            <property name="pulse-step">0.33</property>
+            <style>
+              <class name="osd" />
+            </style>
+          </object>
+        </child>
+        <child type="overlay">
           <object class="GtkBox" id="pages_controls_box">
             <property name="orientation">horizontal</property>
             <property name="halign">fill</property>

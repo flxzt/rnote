@@ -29,6 +29,7 @@ mod imp {
         // The handler that is spawn on the glib main context and integrates the received paint cache image
         pub(super) paint_task_handler: RefCell<Option<glib::SourceId>>,
         pub(super) paint_task_tx: OnceCell<glib::Sender<anyhow::Result<Image>>>,
+        pub(super) paint_tasks_in_progress: Cell<usize>,
     }
 
     #[glib::object_subclass]
@@ -130,7 +131,13 @@ mod imp {
             let handler = rx.attach(Some(&glib::MainContext::default()), clone!(@weak obj as paintable => @default-return glib::Continue(false), move |res| {
                 paintable.imp().paint_task_handle.take();
                 match res {
-                    Ok(image) => paintable.imp().replace_paint_cache(image),
+                    Ok(image) => {
+                        paintable.imp().replace_paint_cache(image);
+                        if paintable.imp().paint_tasks_in_progress.get() <= 1 {
+                            paintable.imp().emit_repaint_in_progress(false);
+                        }
+                        paintable.imp().paint_tasks_in_progress.set(paintable.imp().paint_tasks_in_progress.get().saturating_sub(1));
+                    }
                     Err(e) => {
                         log::error!("StrokeContentPaintable repainting cache image in task failed, Err: {e:?}");
                     }
@@ -145,6 +152,15 @@ mod imp {
             if let Some(s) = self.paint_task_handler.take() {
                 s.remove();
             }
+        }
+
+        fn signals() -> &'static [glib::subclass::Signal] {
+            static SIGNALS: Lazy<Vec<glib::subclass::Signal>> = Lazy::new(|| {
+                vec![glib::subclass::Signal::builder("repaint-in-progress")
+                    .param_types([bool::static_type()])
+                    .build()]
+            });
+            SIGNALS.as_ref()
         }
     }
 
@@ -190,6 +206,12 @@ mod imp {
     }
 
     impl StrokeContentPaintable {
+        #[allow(unused)]
+        pub(super) fn emit_repaint_in_progress(&self, in_progress: bool) {
+            self.obj()
+                .emit_by_name::<()>("repaint-in-progress", &[&in_progress]);
+        }
+
         pub(super) fn replace_paint_cache(&self, image: Image) {
             match image.to_memtexture() {
                 Ok(texture) => {
@@ -391,6 +413,12 @@ impl StrokeContentPaintable {
         let draw_pattern = self.imp().draw_pattern.get();
         let margin = self.imp().margin.get();
         let tx = self.imp().paint_task_tx.get().unwrap().clone();
+
+        self.imp().emit_repaint_in_progress(true);
+        self.imp()
+            .paint_tasks_in_progress
+            .set(self.imp().paint_tasks_in_progress.get() + 1);
+
         rayon::spawn(move || {
             if let Err(e) = tx.send(imp::paint_content(
                 &stroke_content,
@@ -456,6 +484,10 @@ impl StrokeContentPaintable {
         if reinstall_task {
             *self.imp().paint_task_handle.borrow_mut() =
                 Some(OneOffTaskHandle::new(paint_task, TIMEOUT));
+            self.imp().emit_repaint_in_progress(true);
+            self.imp()
+                .paint_tasks_in_progress
+                .set(self.imp().paint_tasks_in_progress.get() + 1);
         }
     }
 }

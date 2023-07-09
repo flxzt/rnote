@@ -2,7 +2,7 @@
 use crate::StrokeContentPaintable;
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Entry, Overlay,
-    Picture, ScrolledWindow, Widget,
+    Picture, ProgressBar, ScrolledWindow, Widget,
 };
 use once_cell::sync::Lazy;
 use rnote_engine::engine::StrokeContent;
@@ -17,6 +17,7 @@ mod imp {
         pub(crate) contents: RefCell<Vec<StrokeContent>>,
         pub(crate) paintable: StrokeContentPaintable,
         pub(crate) current_page: Cell<usize>,
+        pub(crate) progresspulse_id: RefCell<Option<glib::SourceId>>,
 
         #[template_child]
         pub(crate) preview_overlay: TemplateChild<Overlay>,
@@ -24,6 +25,8 @@ mod imp {
         pub(crate) preview_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
         pub(crate) preview_picture: TemplateChild<Picture>,
+        #[template_child]
+        pub(crate) progressbar: TemplateChild<ProgressBar>,
         #[template_child]
         pub(crate) pages_controls_box: TemplateChild<gtk4::Box>,
         #[template_child]
@@ -57,6 +60,20 @@ mod imp {
             self.preview_picture.set_paintable(Some(&self.paintable));
             self.preview_overlay
                 .set_measure_overlay(&*self.pages_controls_box, true);
+
+            self.paintable.connect_local(
+                "repaint-in-progress",
+                false,
+                clone!(@weak obj as strokecontentpreview => @default-return None, move |vals| {
+                    let in_progress = vals[1].get::<bool>().unwrap();
+                    if in_progress {
+                        strokecontentpreview.progressbar_start_pulsing();
+                    } else {
+                        strokecontentpreview.progressbar_finish();
+                    }
+                    None
+                }),
+            );
 
             self.page_entry.connect_changed(
                 clone!(@weak obj as stroke_content_preview => move |entry| {
@@ -139,7 +156,6 @@ mod imp {
                     .cloned()
                     .unwrap_or_default(),
             );
-            self.obj().queue_resize();
         }
 
         pub(super) fn update_widgets(&self) {
@@ -246,5 +262,40 @@ impl RnStrokeContentPreview {
     #[allow(unused)]
     pub(crate) fn set_margin(&self, margin: f64) {
         self.imp().paintable.set_margin(margin);
+    }
+
+    pub(crate) fn progressbar_start_pulsing(&self) {
+        const PULSE_INTERVAL: std::time::Duration = std::time::Duration::from_millis(100);
+        if let Some(src) = self.imp().progresspulse_id.replace(Some(glib::source::timeout_add_local(
+            PULSE_INTERVAL,
+            clone!(@weak self as strokecontentpreview => @default-return glib::source::Continue(false), move || {
+                strokecontentpreview.imp().progressbar.pulse();
+                glib::source::Continue(true)
+            })),
+        )) {
+            src.remove();
+        }
+    }
+
+    pub(crate) fn progressbar_finish(&self) {
+        const FINISH_TIMEOUT: std::time::Duration = std::time::Duration::from_millis(200);
+        if let Some(pulse_source) = self.imp().progresspulse_id.take() {
+            pulse_source.remove();
+        }
+        self.imp().progressbar.set_fraction(1.);
+        glib::source::timeout_add_local_once(
+            FINISH_TIMEOUT,
+            clone!(@weak self as strokecontentpreview => move || {
+                strokecontentpreview.imp().progressbar.set_fraction(0.);
+            }),
+        );
+    }
+
+    #[allow(unused)]
+    pub(crate) fn progressbar_abort(&self) {
+        if let Some(src) = self.imp().progresspulse_id.take() {
+            src.remove();
+        }
+        self.imp().progressbar.set_fraction(0.);
     }
 }

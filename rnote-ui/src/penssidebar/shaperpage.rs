@@ -181,7 +181,7 @@ impl RnShaperPage {
             Some("stroke-width"),
             clone!(@weak self as shaperpage, @weak appwindow => move |picker, _| {
                 let stroke_width = picker.stroke_width();
-                let canvas = appwindow.active_tab().canvas();
+                let canvas = appwindow.active_tab_wrapper().canvas();
                 let engine = &mut *canvas.engine_mut();
 
                 match engine.pens_config.shaper_config.style {
@@ -199,17 +199,17 @@ impl RnShaperPage {
         imp.shaperstyle_listbox.connect_row_selected(
             clone!(@weak self as shaperpage, @weak appwindow => move |_, _| {
                 if let Some(shaper_style) = shaperpage.shaper_style() {
-                    appwindow.active_tab().canvas().engine_mut().pens_config.shaper_config.style = shaper_style;
+                    appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.style = shaper_style;
                     shaperpage.stroke_width_picker().deselect_setters();
 
                     match shaper_style {
                         ShaperStyle::Smooth => {
-                            let stroke_width = appwindow.active_tab().canvas().engine_mut().pens_config.shaper_config.smooth_options.stroke_width;
+                            let stroke_width = appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.smooth_options.stroke_width;
                             shaperpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
                             shaperpage.imp().shaperstyle_menubutton.set_icon_name("pen-shaper-style-smooth-symbolic");
                         },
                         ShaperStyle::Rough => {
-                            let stroke_width = appwindow.active_tab().canvas().engine_mut().pens_config.shaper_config.rough_options.stroke_width;
+                            let stroke_width = appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.rough_options.stroke_width;
                             shaperpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
                             shaperpage.imp().shaperstyle_menubutton.set_icon_name("pen-shaper-style-rough-symbolic");
                         },
@@ -221,12 +221,12 @@ impl RnShaperPage {
         // Rough style
         // Fill style
         imp.roughstyle_fillstyle_row.get().connect_selected_notify(clone!(@weak self as shaperpage, @weak appwindow => move |_roughstyle_fillstyle_row| {
-            appwindow.active_tab().canvas().engine_mut().pens_config.shaper_config.rough_options.fill_style = shaperpage.roughstyle_fillstyle();
+            appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.rough_options.fill_style = shaperpage.roughstyle_fillstyle();
         }));
 
         // Hachure angle
         imp.roughstyle_hachure_angle_spinbutton.get().connect_value_changed(clone!(@weak self as shaperpage, @weak appwindow => move |spinbutton| {
-            appwindow.active_tab().canvas().engine_mut().pens_config.shaper_config.rough_options.hachure_angle = spinbutton.value().round().to_radians().clamp(-std::f64::consts::PI, std::f64::consts::PI);
+            appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.rough_options.hachure_angle = spinbutton.value().round().to_radians().clamp(-std::f64::consts::PI, std::f64::consts::PI);
         }));
 
         // shape builder type
@@ -239,7 +239,7 @@ impl RnShaperPage {
             Some("picked"),
             clone!(@weak self as shaperpage, @weak appwindow => move |picker, _| {
                 if let (Some(buildertype), Some(icon_name)) = (shaperpage.shapebuildertype(), picker.picked()) {
-                    appwindow.active_tab().canvas().engine_mut().pens_config.shaper_config.builder_type = buildertype;
+                    appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.builder_type = buildertype;
                     shaperpage.imp().shapebuildertype_menubutton.set_icon_name(&icon_name);
                 }
             }),
@@ -250,7 +250,7 @@ impl RnShaperPage {
             .constraint_enabled_switch
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.active_tab().canvas().engine_mut().pens_config.shaper_config.constraints.enabled = switch.state();
+                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.enabled = switch.state();
             }));
 
         imp
@@ -258,9 +258,9 @@ impl RnShaperPage {
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
                 if switch.state() {
-                    appwindow.active_tab().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::OneToOne);
+                    appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::OneToOne);
                 } else {
-                    appwindow.active_tab().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::OneToOne);
+                    appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::OneToOne);
                 }
             }));
 
@@ -269,9 +269,9 @@ impl RnShaperPage {
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
                 if switch.state() {
-                    appwindow.active_tab().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::ThreeToTwo);
+                    appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::ThreeToTwo);
                 } else {
-                    appwindow.active_tab().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::ThreeToTwo);
+                    appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::ThreeToTwo);
                 }
             }));
 
@@ -280,9 +280,9 @@ impl RnShaperPage {
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
                 if switch.state() {
-                    appwindow.active_tab().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::Golden);
+                    appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::Golden);
                 } else {
-                    appwindow.active_tab().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::Golden);
+                    appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::Golden);
                 }
             }));
     }

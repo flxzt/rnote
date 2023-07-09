@@ -18,7 +18,7 @@ mod imp {
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/overlays.ui")]
     pub(crate) struct RnOverlays {
-        pub(crate) progresspulse_source_id: RefCell<Option<glib::SourceId>>,
+        pub(crate) progresspulse_id: RefCell<Option<glib::SourceId>>,
         pub(super) prev_active_tab_page: glib::WeakRef<adw::TabPage>,
 
         #[template_child]
@@ -260,7 +260,7 @@ impl RnOverlays {
                 Some("stroke-color"),
                 clone!(@weak appwindow => move |colorpicker, _paramspec| {
                     let stroke_color = colorpicker.stroke_color().into_compose_color();
-                    let canvas = appwindow.active_tab().canvas();
+                    let canvas = appwindow.active_tab_wrapper().canvas();
                     let engine = &mut *canvas.engine_mut();
 
                     match engine.penholder.current_pen_style_w_override() {
@@ -309,7 +309,7 @@ impl RnOverlays {
             Some("fill-color"),
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let fill_color = colorpicker.fill_color().into_compose_color();
-                let canvas = appwindow.active_tab().canvas();
+                let canvas = appwindow.active_tab_wrapper().canvas();
                 let stroke_style = canvas.engine_ref().penholder.current_pen_style_w_override();
                 let engine = &mut *canvas.engine_mut();
 
@@ -342,7 +342,7 @@ impl RnOverlays {
             .connect_selected_page_notify(clone!(@weak self as overlays, @weak appwindow => move |_| {
                 let active_tab_page = appwindow.active_tab_page();
                 let active_canvaswrapper = active_tab_page.child().downcast::<RnCanvasWrapper>().unwrap();
-                appwindow.set_unselected_tabs_inactive();
+                appwindow.tabs_set_unselected_inactive();
 
                 if let Some(prev_active_tab_page) = overlays.imp().prev_active_tab_page.upgrade() {
                         if prev_active_tab_page != active_tab_page {
@@ -426,47 +426,40 @@ impl RnOverlays {
         }));
     }
 
-    pub(crate) fn start_pulsing_progressbar(&self) {
-        const PROGRESS_BAR_PULSE_INTERVAL: std::time::Duration =
-            std::time::Duration::from_millis(300);
-
-        if let Some(old_pulse_source) = self.imp().progresspulse_source_id.replace(Some(glib::source::timeout_add_local(
-            PROGRESS_BAR_PULSE_INTERVAL,
+    pub(crate) fn progressbar_start_pulsing(&self) {
+        const PULSE_INTERVAL: std::time::Duration = std::time::Duration::from_millis(300);
+        if let Some(src) = self.imp().progresspulse_id.replace(Some(glib::source::timeout_add_local(
+            PULSE_INTERVAL,
             clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
                 appwindow.progressbar().pulse();
 
                 glib::source::Continue(true)
             })),
         )) {
-            old_pulse_source.remove();
+            src.remove();
         }
     }
 
-    pub(crate) fn finish_progressbar(&self) {
-        const PROGRESS_BAR_TIMEOUT_TIME: std::time::Duration =
-            std::time::Duration::from_millis(300);
-
-        if let Some(pulse_source) = self.imp().progresspulse_source_id.take() {
-            pulse_source.remove();
+    pub(crate) fn progressbar_finish(&self) {
+        const FINISH_TIMEOUT: std::time::Duration = std::time::Duration::from_millis(300);
+        if let Some(src) = self.imp().progresspulse_id.take() {
+            src.remove();
         }
-
-        self.progressbar().set_fraction(1.0);
-
+        self.progressbar().set_fraction(1.);
         glib::source::timeout_add_local_once(
-            PROGRESS_BAR_TIMEOUT_TIME,
+            FINISH_TIMEOUT,
             clone!(@weak self as appwindow => move || {
-                appwindow.progressbar().set_fraction(0.0);
+                appwindow.progressbar().set_fraction(0.);
             }),
         );
     }
 
     #[allow(unused)]
-    pub(crate) fn abort_progressbar(&self) {
-        if let Some(pulse_source) = self.imp().progresspulse_source_id.take() {
-            pulse_source.remove();
+    pub(crate) fn progressbar_abort(&self) {
+        if let Some(src) = self.imp().progresspulse_id.take() {
+            src.remove();
         }
-
-        self.progressbar().set_fraction(0.0);
+        self.progressbar().set_fraction(0.);
     }
 
     pub(crate) fn dispatch_toast_w_button<F: Fn(&adw::Toast) + 'static>(

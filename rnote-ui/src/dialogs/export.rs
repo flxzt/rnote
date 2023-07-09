@@ -47,7 +47,7 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
 
     match filedialog.save_future(Some(appwindow)).await {
         Ok(selected_file) => {
-            appwindow.overlays().start_pulsing_progressbar();
+            appwindow.overlays().progressbar_start_pulsing();
 
             match canvas.save_document_to_file(&selected_file).await {
                 Ok(true) => {
@@ -69,7 +69,7 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
                 }
             }
 
-            appwindow.overlays().finish_progressbar();
+            appwindow.overlays().progressbar_finish();
         }
         Err(e) => {
             log::debug!(
@@ -185,7 +185,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         ResponseType::Apply => {
             if let Some(file) = selected_file.take() {
                 glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
-                            appwindow.overlays().start_pulsing_progressbar();
+                            appwindow.overlays().progressbar_start_pulsing();
 
                             let file_title = crate::utils::default_file_title_for_export(
                                 Some(file.clone()),
@@ -199,7 +199,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
                                 appwindow.overlays().dispatch_toast_text(&gettext("Exported document successfully"), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
                             }
 
-                            appwindow.overlays().finish_progressbar();
+                            appwindow.overlays().progressbar_finish();
                         }));
             } else {
                 appwindow
@@ -445,7 +445,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         ResponseType::Apply => {
             if let Some(dir) = selected_file.take() {
                 glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
-                            appwindow.overlays().start_pulsing_progressbar();
+                            appwindow.overlays().progressbar_start_pulsing();
 
                             let file_stem_name = export_files_stemname_entryrow.text().to_string();
                             if let Err(e) = canvas.export_doc_pages(&dir, file_stem_name, None).await {
@@ -455,7 +455,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
                                 appwindow.overlays().dispatch_toast_text(&gettext("Exported document pages successfully"), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
                             }
 
-                            appwindow.overlays().finish_progressbar();
+                            appwindow.overlays().progressbar_finish();
                         }));
             } else {
                 appwindow.overlays().dispatch_toast_error(&gettext(
@@ -670,7 +670,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
     match response {
         ResponseType::Apply => {
             if let Some(file) = selected_file.take() {
-                appwindow.overlays().start_pulsing_progressbar();
+                appwindow.overlays().progressbar_start_pulsing();
 
                 if let Err(e) = canvas.export_selection(&file, None).await {
                     log::error!("exporting selection failed, Error: `{e:?}`");
@@ -684,7 +684,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
                     );
                 }
 
-                appwindow.overlays().finish_progressbar();
+                appwindow.overlays().progressbar_finish();
             } else {
                 appwindow
                     .overlays()
@@ -767,7 +767,7 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
 
     match filedialog.save_future(Some(appwindow)).await {
         Ok(selected_file) => {
-            appwindow.overlays().start_pulsing_progressbar();
+            appwindow.overlays().progressbar_start_pulsing();
 
             if let Err(e) = canvas.export_engine_state(&selected_file).await {
                 log::error!("exporting engine state failed, Error: `{e:?}`");
@@ -781,7 +781,7 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
                 );
             }
 
-            appwindow.overlays().finish_progressbar();
+            appwindow.overlays().progressbar_finish();
         }
         Err(e) => {
             log::debug!("did not export engine state (Error or dialog dismissed by user), {e:?}");
@@ -814,7 +814,7 @@ pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, ca
 
     match filedialog.save_future(Some(appwindow)).await {
         Ok(selected_file) => {
-            appwindow.overlays().start_pulsing_progressbar();
+            appwindow.overlays().progressbar_start_pulsing();
 
             if let Err(e) = canvas.export_engine_config(&selected_file).await {
                 log::error!("exporting engine state failed, Error: `{e:?}`");
@@ -828,7 +828,7 @@ pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, ca
                 );
             }
 
-            appwindow.overlays().finish_progressbar();
+            appwindow.overlays().progressbar_finish();
         }
         Err(e) => {
             log::debug!("did not export engine config (Error or dialog dismissed by user), {e:?}");

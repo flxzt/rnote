@@ -695,7 +695,10 @@ impl RnCanvas {
         Ok(settings.set_string("engine-config", engine_config.as_str())?)
     }
 
-    pub(crate) fn load_engine_config(&self, settings: &gio::Settings) -> anyhow::Result<()> {
+    pub(crate) fn load_engine_config_from_settings(
+        &self,
+        settings: &gio::Settings,
+    ) -> anyhow::Result<()> {
         // load engine config
         let engine_config = settings.string("engine-config");
         let widget_flags = match self
@@ -806,14 +809,14 @@ impl RnCanvas {
                         &gettext("Reload"),
                         clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
                             glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                                appwindow.overlays().start_pulsing_progressbar();
+                                appwindow.overlays().progressbar_start_pulsing();
 
                                 if let Err(e) = canvas.reload_from_disk().await {
                                     appwindow.overlays().dispatch_toast_error(&gettext("Reloading .rnote file from disk failed"));
                                     log::error!("failed to reload current output file, {}", e);
                                 }
 
-                                appwindow.overlays().finish_progressbar();
+                                appwindow.overlays().progressbar_finish();
                             }));
                         }),
                         0,
@@ -926,7 +929,7 @@ impl RnCanvas {
                     canvas.dismiss_output_file_modified_toast();
                 }
 
-                appwindow.refresh_titles(&appwindow.active_tab());
+                appwindow.refresh_titles(&appwindow.active_tab_wrapper());
             }),
         );
 
@@ -952,7 +955,7 @@ impl RnCanvas {
         let appwindow_unsaved_changes = self.connect_notify_local(
             Some("unsaved-changes"),
             clone!(@weak appwindow => move |_canvas, _pspec| {
-                appwindow.refresh_titles(&appwindow.active_tab());
+                appwindow.refresh_titles(&appwindow.active_tab_wrapper());
             }),
         );
 
@@ -989,16 +992,19 @@ impl RnCanvas {
 
         // Drop Target
         let appwindow_drop_target = self.imp().drop_target.connect_drop(
-            clone!(@weak self as canvas, @weak appwindow => @default-return false, move |_drop_target, value, x, y| {
+            clone!(@weak self as canvas, @weak appwindow => @default-return false, move |_, value, x, y| {
                 let pos = (canvas.engine_ref().camera.transform().inverse() *
                     na::point![x,y]).coords;
+                let mut accept_drop = false;
 
                 if value.is::<gio::File>() {
                     // In some scenarios, get() can fail with `UnexpectedNone` even though is() returned true, e.g. when dealing with trashed files.
                     match value.get::<gio::File>() {
                         Ok(file) => {
-                            appwindow.open_file_w_dialogs(file, Some(pos), true);
-                            return true;
+                            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                                appwindow.open_file_w_dialogs(file, Some(pos), true).await;
+                            }));
+                            accept_drop = true;
                         },
                         Err(e) => {
                             log::error!("failed to get dropped in file, Err: {e:?}");
@@ -1008,7 +1014,7 @@ impl RnCanvas {
                 } else if value.is::<String>() {
                     match canvas.load_in_text(value.get::<String>().unwrap(), Some(pos)) {
                         Ok(_) => {
-                            return true;
+                            accept_drop = true;
                         },
                         Err(e) => {
                             log::error!("failed to insert dropped in text, Err: {e:?}");
@@ -1017,7 +1023,7 @@ impl RnCanvas {
                     };
                 }
 
-                false
+                accept_drop
             }),
         );
 

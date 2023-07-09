@@ -425,7 +425,9 @@ impl RnWorkspaceBrowser {
                 .downcast::<gio::FileInfo>().expect("selected item in primary_list is not of Type `gio::FileInfo`");
 
             if let Some(input_file) = fileinfo.attribute_object("standard::file") {
-                appwindow.open_file_w_dialogs(input_file.downcast::<gio::File>().unwrap(), None, true);
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    appwindow.open_file_w_dialogs(input_file.downcast::<gio::File>().unwrap(), None, true).await;
+                }));
             };
 
             multisorter.changed(SorterChange::Different);

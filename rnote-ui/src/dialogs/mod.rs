@@ -121,7 +121,7 @@ pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
         "save" => {
             glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
                     if let Some(output_file) = canvas.output_file() {
-                        appwindow.overlays().start_pulsing_progressbar();
+                        appwindow.overlays().progressbar_start_pulsing();
 
                         if let Err(e) = canvas.save_document_to_file(&output_file).await {
                             canvas.set_output_file(None);
@@ -130,7 +130,7 @@ pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
                             appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                         }
 
-                        appwindow.overlays().finish_progressbar();
+                        appwindow.overlays().progressbar_finish();
                         // No success toast on saving without dialog, success is already indicated in the header title
 
                         // only create new document if saving was successful
@@ -249,7 +249,7 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
         "discard" => true,
         "save" => {
             if let Some(save_file) = save_file {
-                appwindow.overlays().start_pulsing_progressbar();
+                appwindow.overlays().progressbar_start_pulsing();
 
                 if let Err(e) = canvas.save_document_to_file(&save_file).await {
                     canvas.set_output_file(None);
@@ -260,7 +260,7 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
                         .dispatch_toast_error(&gettext("Saving document failed"));
                 }
 
-                appwindow.overlays().finish_progressbar();
+                appwindow.overlays().progressbar_finish();
                 // No success toast on saving without dialog, success is already indicated in the header title
             }
 
@@ -282,7 +282,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
     let files_group: adw::PreferencesGroup = builder.object("close_window_files_group").unwrap();
     dialog.set_transient_for(Some(appwindow));
 
-    let tabs = appwindow.tab_pages_snapshot();
+    let tabs = appwindow.tabs_snapshot();
     let mut rows = Vec::new();
     let mut doc_postfix = 0;
     for (i, tab) in tabs.iter().enumerate() {
@@ -386,7 +386,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         }
         "save" => {
             let mut close = true;
-            appwindow.overlays().start_pulsing_progressbar();
+            appwindow.overlays().progressbar_start_pulsing();
 
             for (i, check, save_file) in rows {
                 if !check.is_active() {
@@ -412,7 +412,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
                 }
             }
 
-            appwindow.overlays().finish_progressbar();
+            appwindow.overlays().progressbar_finish();
             close
         }
         _ => {

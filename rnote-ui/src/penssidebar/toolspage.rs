@@ -95,19 +95,19 @@ impl RnToolsPage {
 
         imp.toolstyle_verticalspace_toggle.connect_toggled(clone!(@weak appwindow => move |toggle| {
             if toggle.is_active() {
-                appwindow.active_tab().canvas().engine_mut().pens_config.tools_config.style = ToolStyle::VerticalSpace;
+                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.style = ToolStyle::VerticalSpace;
             }
         }));
 
         imp.toolstyle_offsetcamera_toggle.connect_toggled(clone!(@weak appwindow => move |toggle| {
             if toggle.is_active() {
-                appwindow.active_tab().canvas().engine_mut().pens_config.tools_config.style = ToolStyle::OffsetCamera;
+                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.style = ToolStyle::OffsetCamera;
             }
         }));
 
         imp.toolstyle_zoom_toggle.connect_toggled(clone!(@weak appwindow => move |toggle| {
             if toggle.is_active() {
-                appwindow.active_tab().canvas().engine_mut().pens_config.tools_config.style = ToolStyle::Zoom;
+                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.style = ToolStyle::Zoom;
             }
         }));
     }

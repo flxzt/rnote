@@ -37,8 +37,8 @@
             <property name="spacing">12</property>
             <property name="margin-start">12</property>
             <property name="margin-end">0</property>
-            <property name="margin-top">6</property>
-            <property name="margin-bottom">6</property>
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">12</property>
             <style>
               <class name="background" />
             </style>
@@ -60,16 +60,11 @@
                 <property name="propagate-natural-width">true</property>
                 <property name="propagate-natural-height">true</property>
                 <property name="window-placement">top-left</property>
-                <property name="margin-top">6</property>
-                <property name="margin-bottom">6</property>
                 <child>
                   <object class="GtkBox">
                     <property name="orientation">vertical</property>
                     <property name="spacing">12</property>
-                    <property name="margin-start">6</property>
                     <property name="margin-end">18</property>
-                    <property name="margin-top">6</property>
-                    <property name="margin-bottom">6</property>
                     <child>
                       <object class="AdwPreferencesGroup">
                         <child>
@@ -211,8 +206,8 @@ are cut into pages</property>
             <property name="spacing">12</property>
             <property name="margin-start">12</property>
             <property name="margin-end">0</property>
-            <property name="margin-top">6</property>
-            <property name="margin-bottom">6</property>
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">12</property>
             <style>
               <class name="background" />
             </style>
@@ -222,8 +217,6 @@ are cut into pages</property>
                 <property name="valign">fill</property>
                 <property name="hexpand">true</property>
                 <property name="vexpand">true</property>
-                <property name="margin-top">6</property>
-                <property name="margin-bottom">6</property>
               </object>
             </child>
             <child>
@@ -240,10 +233,7 @@ are cut into pages</property>
                   <object class="GtkBox">
                     <property name="orientation">vertical</property>
                     <property name="spacing">12</property>
-                    <property name="margin-start">6</property>
                     <property name="margin-end">18</property>
-                    <property name="margin-top">6</property>
-                    <property name="margin-bottom">6</property>
                     <child>
                       <object class="GtkBox">
                         <property name="orientation">vertical</property>
@@ -273,7 +263,6 @@ are cut into pages</property>
                                 <property name="sensitive">false</property>
                                 <property name="hexpand">true</property>
                                 <property name="halign">end</property>
-                                <property name="margin-start">12</property>
                                 <property name="use-markup">true</property>
                                 <property name="ellipsize">end</property>
                               </object>
@@ -471,8 +460,8 @@ to the actual size on the document</property>
             <property name="spacing">12</property>
             <property name="margin-start">12</property>
             <property name="margin-end">0</property>
-            <property name="margin-top">6</property>
-            <property name="margin-bottom">6</property>
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">12</property>
             <style>
               <class name="background" />
             </style>
@@ -482,8 +471,6 @@ to the actual size on the document</property>
                 <property name="valign">fill</property>
                 <property name="hexpand">true</property>
                 <property name="vexpand">true</property>
-                <property name="margin-top">6</property>
-                <property name="margin-bottom">6</property>
               </object>
             </child>
             <child>
@@ -500,10 +487,7 @@ to the actual size on the document</property>
                   <object class="GtkBox">
                     <property name="orientation">vertical</property>
                     <property name="spacing">12</property>
-                    <property name="margin-start">6</property>
                     <property name="margin-end">18</property>
-                    <property name="margin-top">6</property>
-                    <property name="margin-bottom">6</property>
                     <child>
                       <object class="AdwPreferencesGroup">
                         <child>

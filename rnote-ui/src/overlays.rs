@@ -370,7 +370,7 @@ impl RnOverlays {
             clone!(@weak self as overlays, @weak appwindow => move |_, page, _| {
                 let canvaswrapper = page.child().downcast::<RnCanvasWrapper>().unwrap();
 
-                // if the to be detached page is saved as prev selected, remove it.
+                // if the to be detached page was the active (selected), remove it.
                 if overlays.imp().prev_active_tab_page.upgrade().map_or(true, |prev| prev == *page) {
                     overlays.imp().prev_active_tab_page.set(None);
                 }
@@ -395,13 +395,6 @@ impl RnOverlays {
                         true
                     };
 
-                    #[allow(clippy::collapsible_if)]
-                    if close_finish_confirm {
-                        // if the to be closed page is saved as prev selected, remove it.
-                        if overlays.imp().prev_active_tab_page.upgrade().map_or(true, |prev| prev == page) {
-                            overlays.imp().prev_active_tab_page.set(None);
-                        }
-                    }
                     appwindow.close_tab_finish(&page, close_finish_confirm);
                 }));
 

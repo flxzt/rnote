@@ -3,6 +3,7 @@
 
 // Imports
 use crate::canvas::{self, RnCanvas};
+use crate::RnStrokeContentPreview;
 use crate::{config, RnAppWindow};
 use adw::prelude::*;
 use gettextrs::gettext;
@@ -93,31 +94,31 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     let page_order_row: adw::ComboRow = builder.object("export_doc_page_order_row").unwrap();
     let export_file_label: Label = builder.object("export_doc_export_file_label").unwrap();
     let export_file_button: Button = builder.object("export_doc_export_file_button").unwrap();
+    let preview: RnStrokeContentPreview = builder.object("export_doc_preview").unwrap();
 
     let initial_doc_export_prefs = canvas.engine_ref().export_prefs.doc_export_prefs;
     let doc_layout = canvas.engine_ref().document.layout;
-
     dialog.set_transient_for(Some(appwindow));
 
     // initial widget state with the preferences
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
     with_background_switch.set_active(initial_doc_export_prefs.with_background);
     with_pattern_switch.set_active(initial_doc_export_prefs.with_pattern);
+    preview.set_draw_background(initial_doc_export_prefs.with_background);
+    preview.set_draw_pattern(initial_doc_export_prefs.with_pattern);
+    preview.set_contents(
+        canvas
+            .engine_ref()
+            .extract_pages_content(initial_doc_export_prefs.page_order),
+    );
     export_format_row.set_selected(initial_doc_export_prefs.export_format.to_u32().unwrap());
     page_order_row.set_selected(initial_doc_export_prefs.page_order.to_u32().unwrap());
     export_file_label.set_label(&gettext("- no file selected -"));
-    page_order_row.set_sensitive(
-        (initial_doc_export_prefs.export_format == DocExportFormat::Pdf
-            || initial_doc_export_prefs.export_format == DocExportFormat::Xopp)
-            && (doc_layout == Layout::SemiInfinite || doc_layout == Layout::Infinite),
-    );
+    page_order_row
+        .set_sensitive(doc_layout == Layout::SemiInfinite || doc_layout == Layout::Infinite);
     button_confirm.set_sensitive(false);
 
     // Update prefs
-    with_background_switch
-        .bind_property("active", &with_pattern_row, "sensitive")
-        .sync_create()
-        .build();
 
     export_file_button.connect_clicked(
         clone!(@strong selected_file, @weak export_file_label, @weak button_confirm, @weak dialog, @weak canvas, @weak appwindow => move |_| {
@@ -152,21 +153,30 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         }),
     );
 
-    with_background_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |with_background_switch| {
-        canvas.engine_mut().export_prefs.doc_export_prefs.with_background = with_background_switch.is_active();
-    }));
+    with_background_switch
+        .bind_property("active", &with_pattern_row, "sensitive")
+        .sync_create()
+        .build();
 
-    with_pattern_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |with_pattern_switch| {
-        canvas.engine_mut().export_prefs.doc_export_prefs.with_pattern = with_pattern_switch.is_active();
-    }));
+    with_background_switch.connect_active_notify(
+        clone!(@weak preview, @weak canvas, @weak appwindow => move |with_background_switch| {
+            let active = with_background_switch.is_active();
+            canvas.engine_mut().export_prefs.doc_export_prefs.with_background = active;
+            preview.set_draw_background(active);
+        }),
+    );
+
+    with_pattern_switch.connect_active_notify(
+        clone!(@weak preview, @weak canvas, @weak appwindow => move |with_pattern_switch| {
+            let active = with_pattern_switch.is_active();
+            canvas.engine_mut().export_prefs.doc_export_prefs.with_pattern = active;
+            preview.set_draw_pattern(active);
+        }),
+    );
 
     export_format_row.connect_selected_notify(clone!(@strong selected_file, @weak export_file_label, @weak page_order_row, @weak button_confirm, @weak canvas, @weak appwindow => move |row| {
         let export_format = DocExportFormat::try_from(row.selected()).unwrap();
         canvas.engine_mut().export_prefs.doc_export_prefs.export_format = export_format;
-
-        // enable page direction row when export format is finite and document layout is infinite (i.e. layout will be split into pages)
-        let doc_layout = canvas.engine_ref().document.layout;
-        page_order_row.set_sensitive((export_format == DocExportFormat::Pdf || export_format == DocExportFormat::Xopp) && (doc_layout == Layout::SemiInfinite || doc_layout == Layout::Infinite));
 
         // force the user to pick another file
         export_file_label.set_label(&gettext("- no file selected -"));
@@ -174,10 +184,17 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         selected_file.replace(None);
     }));
 
-    page_order_row.connect_selected_notify(clone!(@weak canvas, @weak appwindow => move |row| {
-        let page_order = SplitOrder::try_from(row.selected()).unwrap();
-        canvas.engine_mut().export_prefs.doc_export_prefs.page_order = page_order;
-    }));
+    page_order_row.connect_selected_notify(
+        clone!(@weak preview, @weak canvas, @weak appwindow => move |row| {
+            let page_order = SplitOrder::try_from(row.selected()).unwrap();
+            canvas.engine_mut().export_prefs.doc_export_prefs.page_order = page_order;
+            preview.set_contents(
+                canvas
+                    .engine_ref()
+                    .extract_pages_content(page_order),
+            );
+        }),
+    );
 
     let response = dialog.run_future().await;
     dialog.close();
@@ -295,16 +312,23 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
     let page_files_naming_info_label: Label = builder
         .object("export_doc_pages_page_files_naming_info_label")
         .unwrap();
+    let preview: RnStrokeContentPreview = builder.object("export_doc_pages_preview").unwrap();
 
     let initial_doc_pages_export_prefs = canvas.engine_ref().export_prefs.doc_pages_export_prefs;
     let doc_layout = canvas.engine_ref().document.layout;
-
     dialog.set_transient_for(Some(appwindow));
 
     // initial widget state with the preferences
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
     with_background_switch.set_active(initial_doc_pages_export_prefs.with_background);
     with_pattern_switch.set_active(initial_doc_pages_export_prefs.with_pattern);
+    preview.set_draw_background(initial_doc_pages_export_prefs.with_background);
+    preview.set_draw_pattern(initial_doc_pages_export_prefs.with_pattern);
+    preview.set_contents(
+        canvas
+            .engine_ref()
+            .extract_pages_content(initial_doc_pages_export_prefs.page_order),
+    );
     export_format_row.set_selected(
         initial_doc_pages_export_prefs
             .export_format
@@ -338,10 +362,6 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
     );
 
     // Update prefs
-    with_background_switch
-        .bind_property("active", &with_pattern_row, "sensitive")
-        .sync_create()
-        .build();
 
     export_dir_button.connect_clicked(
         clone!(@strong selected_file, @weak export_dir_label, @weak button_confirm, @weak dialog, @weak canvas, @weak appwindow => move |_| {
@@ -380,13 +400,26 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         }),
     );
 
-    with_background_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |with_background_switch| {
-        canvas.engine_mut().export_prefs.doc_pages_export_prefs.with_background = with_background_switch.is_active();
-    }));
+    with_background_switch
+        .bind_property("active", &with_pattern_row, "sensitive")
+        .sync_create()
+        .build();
 
-    with_pattern_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |with_pattern_switch| {
-        canvas.engine_mut().export_prefs.doc_pages_export_prefs.with_pattern = with_pattern_switch.is_active();
-    }));
+    with_background_switch.connect_active_notify(
+        clone!(@weak preview, @weak canvas, @weak appwindow => move |with_background_switch| {
+            let active = with_background_switch.is_active();
+            canvas.engine_mut().export_prefs.doc_pages_export_prefs.with_background = active;
+            preview.set_draw_background(active);
+        }),
+    );
+
+    with_pattern_switch.connect_active_notify(
+        clone!(@weak preview, @weak canvas, @weak appwindow => move |switch| {
+            let active = switch.is_active();
+            canvas.engine_mut().export_prefs.doc_pages_export_prefs.with_pattern = active;
+            preview.set_draw_pattern(active);
+        }),
+    );
 
     export_format_row.connect_selected_notify(clone!(
         @strong selected_file,
@@ -413,10 +446,17 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
             ));
     }));
 
-    page_order_row.connect_selected_notify(clone!(@weak canvas, @weak appwindow => move |row| {
-        let page_order = SplitOrder::try_from(row.selected()).unwrap();
-        canvas.engine_mut().export_prefs.doc_pages_export_prefs.page_order = page_order;
-    }));
+    page_order_row.connect_selected_notify(
+        clone!(@weak preview, @weak canvas, @weak appwindow => move |row| {
+            let page_order = SplitOrder::try_from(row.selected()).unwrap();
+            canvas.engine_mut().export_prefs.doc_pages_export_prefs.page_order = page_order;
+            preview.set_contents(
+                canvas
+                    .engine_ref()
+                    .extract_pages_content(page_order),
+            );
+        }),
+    );
 
     bitmap_scalefactor_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |bitmap_scalefactor_spinbutton| {
         canvas.engine_mut().export_prefs.doc_pages_export_prefs.bitmap_scalefactor = bitmap_scalefactor_spinbutton.value();
@@ -552,15 +592,25 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
     let margin_spinbutton: SpinButton = builder
         .object("export_selection_margin_spinbutton")
         .unwrap();
+    let preview: RnStrokeContentPreview = builder.object("export_selection_preview").unwrap();
 
     let initial_selection_export_prefs = canvas.engine_ref().export_prefs.selection_export_prefs;
-
     dialog.set_transient_for(Some(appwindow));
 
     // initial widget state with the preferences
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
     with_background_switch.set_active(initial_selection_export_prefs.with_background);
     with_pattern_switch.set_active(initial_selection_export_prefs.with_pattern);
+    preview.set_draw_background(initial_selection_export_prefs.with_background);
+    preview.set_draw_pattern(initial_selection_export_prefs.with_pattern);
+    preview.set_margin(initial_selection_export_prefs.margin);
+    preview.set_contents(
+        canvas
+            .engine_ref()
+            .extract_selection_content()
+            .into_iter()
+            .collect(),
+    );
     export_format_row.set_selected(
         initial_selection_export_prefs
             .export_format
@@ -580,10 +630,6 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
     button_confirm.set_sensitive(false);
 
     // Update prefs
-    with_background_switch
-        .bind_property("active", &with_pattern_row, "sensitive")
-        .sync_create()
-        .build();
 
     export_file_button.connect_clicked(
         clone!(@strong selected_file, @weak export_file_label, @weak button_confirm, @weak dialog, @weak canvas, @weak appwindow => move |_| {
@@ -624,13 +670,26 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         }),
     );
 
-    with_background_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |with_background_switch| {
-        canvas.engine_mut().export_prefs.selection_export_prefs.with_background = with_background_switch.is_active();
-    }));
+    with_background_switch
+        .bind_property("active", &with_pattern_row, "sensitive")
+        .sync_create()
+        .build();
 
-    with_pattern_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |with_pattern_switch| {
-        canvas.engine_mut().export_prefs.selection_export_prefs.with_pattern = with_pattern_switch.is_active();
-    }));
+    with_background_switch.connect_active_notify(
+        clone!(@weak preview, @weak canvas, @weak appwindow => move |switch| {
+            let active = switch.is_active();
+            canvas.engine_mut().export_prefs.selection_export_prefs.with_background = active;
+            preview.set_draw_background(active);
+        }),
+    );
+
+    with_pattern_switch.connect_active_notify(
+        clone!(@weak preview, @weak canvas, @weak appwindow => move |switch| {
+            let active = switch.is_active();
+            canvas.engine_mut().export_prefs.selection_export_prefs.with_pattern = active;
+            preview.set_draw_pattern(active);
+        }),
+    );
 
     export_format_row.connect_selected_notify(clone!(
         @strong selected_file,
@@ -661,9 +720,13 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         canvas.engine_mut().export_prefs.selection_export_prefs.jpeg_quality = jpeg_quality_spinbutton.value().clamp(1.0, 100.0) as u8;
     }));
 
-    margin_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |margin_spinbutton| {
-        canvas.engine_mut().export_prefs.selection_export_prefs.margin = margin_spinbutton.value();
-    }));
+    margin_spinbutton.connect_value_changed(
+        clone!(@weak preview, @weak canvas, @weak appwindow => move |margin_spinbutton| {
+            let value = margin_spinbutton.value();
+            canvas.engine_mut().export_prefs.selection_export_prefs.margin = value;
+            preview.set_margin(value);
+        }),
+    );
 
     let response = dialog.run_future().await;
     dialog.close();

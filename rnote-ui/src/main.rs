@@ -4,27 +4,29 @@
 #![windows_subsystem = "windows"]
 
 // Modules
-mod app;
-mod appmenu;
-mod appwindow;
-mod canvas;
-mod canvasmenu;
-mod canvaswrapper;
-mod colorpicker;
+pub(crate) mod app;
+pub(crate) mod appmenu;
+pub(crate) mod appwindow;
+pub(crate) mod canvas;
+pub(crate) mod canvasmenu;
+pub(crate) mod canvaswrapper;
+pub(crate) mod colorpicker;
 pub(crate) mod config;
 pub(crate) mod dialogs;
 pub(crate) mod env;
 pub(crate) mod globals;
 pub(crate) mod groupediconpicker;
-mod iconpicker;
-mod mainheader;
+pub(crate) mod iconpicker;
+pub(crate) mod mainheader;
 pub(crate) mod overlays;
 pub(crate) mod penssidebar;
-mod settingspanel;
+pub(crate) mod settingspanel;
+pub(crate) mod strokecontentpaintable;
+pub(crate) mod strokecontentpreview;
 pub(crate) mod strokewidthpicker;
-mod unitentry;
+pub(crate) mod unitentry;
 pub(crate) mod utils;
-mod workspacebrowser;
+pub(crate) mod workspacebrowser;
 
 // Re-exports
 pub(crate) use app::RnApp;
@@ -40,6 +42,8 @@ pub(crate) use mainheader::RnMainHeader;
 pub(crate) use overlays::RnOverlays;
 pub(crate) use penssidebar::RnPensSideBar;
 pub(crate) use settingspanel::RnSettingsPanel;
+pub(crate) use strokecontentpaintable::StrokeContentPaintable;
+pub(crate) use strokecontentpreview::RnStrokeContentPreview;
 pub(crate) use strokewidthpicker::RnStrokeWidthPicker;
 pub(crate) use unitentry::RnUnitEntry;
 pub(crate) use workspacebrowser::RnWorkspaceBrowser;

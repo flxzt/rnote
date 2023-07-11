@@ -9,7 +9,7 @@ use rnote_engine::WidgetFlags;
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
 use adw::prelude::*;
-use gettextrs::gettext;
+use gettextrs::{gettext, pgettext};
 use gtk4::{
     gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorDialogButton,
     CompositeTemplate, MenuButton, ScrolledWindow, SpinButton, StringList, Switch, ToggleButton,
@@ -21,7 +21,6 @@ use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
 use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
-use std::rc::Rc;
 
 mod imp {
     use super::*;
@@ -29,7 +28,8 @@ mod imp {
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/settingspanel.ui")]
     pub(crate) struct RnSettingsPanel {
-        pub(crate) temporary_format: Rc<RefCell<Format>>,
+        pub(crate) temporary_format: RefCell<Format>,
+        pub(crate) app_restart_toast_singleton: RefCell<Option<adw::Toast>>,
 
         #[template_child]
         pub(crate) settings_scroller: TemplateChild<ScrolledWindow>,
@@ -40,9 +40,9 @@ mod imp {
         #[template_child]
         pub(crate) general_autosave_interval_secs_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub(crate) general_format_border_color_button: TemplateChild<ColorDialogButton>,
-        #[template_child]
         pub(crate) general_show_scrollbars_switch: TemplateChild<Switch>,
+        #[template_child]
+        pub(crate) general_inertial_scrolling_switch: TemplateChild<Switch>,
         #[template_child]
         pub(crate) general_regular_cursor_picker: TemplateChild<RnIconPicker>,
         #[template_child]
@@ -80,15 +80,17 @@ mod imp {
         #[template_child]
         pub(crate) format_apply_button: TemplateChild<Button>,
         #[template_child]
-        pub(crate) background_color_button: TemplateChild<ColorDialogButton>,
+        pub(crate) doc_format_border_color_button: TemplateChild<ColorDialogButton>,
         #[template_child]
-        pub(crate) background_patterns_row: TemplateChild<adw::ComboRow>,
+        pub(crate) doc_background_color_button: TemplateChild<ColorDialogButton>,
         #[template_child]
-        pub(crate) background_pattern_color_button: TemplateChild<ColorDialogButton>,
+        pub(crate) doc_background_patterns_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub(crate) background_pattern_width_unitentry: TemplateChild<RnUnitEntry>,
+        pub(crate) doc_background_pattern_color_button: TemplateChild<ColorDialogButton>,
         #[template_child]
-        pub(crate) background_pattern_height_unitentry: TemplateChild<RnUnitEntry>,
+        pub(crate) doc_background_pattern_width_unitentry: TemplateChild<RnUnitEntry>,
+        #[template_child]
+        pub(crate) doc_background_pattern_height_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
         pub(crate) background_pattern_invert_color_button: TemplateChild<Button>,
         #[template_child]
@@ -175,6 +177,7 @@ mod imp {
         }
 
         fn dispose(&self) {
+            self.dispose_template();
             while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
@@ -187,7 +190,7 @@ mod imp {
         pub(crate) fn update_temporary_format_from_ui(&self) {
             // border color
             self.temporary_format.borrow_mut().border_color = self
-                .general_format_border_color_button
+                .doc_format_border_color_button
                 .rgba()
                 .into_compose_color();
 
@@ -322,14 +325,14 @@ impl RnSettingsPanel {
     }
 
     pub(crate) fn background_pattern(&self) -> PatternStyle {
-        PatternStyle::try_from(self.imp().background_patterns_row.get().selected()).unwrap()
+        PatternStyle::try_from(self.imp().doc_background_patterns_row.get().selected()).unwrap()
     }
 
     pub(crate) fn set_background_pattern(&self, pattern: PatternStyle) {
         let position = pattern.to_u32().unwrap();
 
         self.imp()
-            .background_patterns_row
+            .doc_background_patterns_row
             .get()
             .set_selected(position);
     }
@@ -366,10 +369,14 @@ impl RnSettingsPanel {
         self.imp().general_show_scrollbars_switch.clone()
     }
 
+    pub(crate) fn general_inertial_scrolling_switch(&self) -> Switch {
+        self.imp().general_inertial_scrolling_switch.clone()
+    }
+
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
         self.refresh_general_ui(active_tab);
         self.refresh_format_ui(active_tab);
-        self.refresh_background_ui(active_tab);
+        self.refresh_doc_ui(active_tab);
         self.refresh_shortcuts_ui(active_tab);
     }
 
@@ -377,16 +384,16 @@ impl RnSettingsPanel {
         let imp = self.imp();
         let canvas = active_tab.canvas();
 
-        let format_border_color = canvas.engine().borrow().document.format.border_color;
+        let format_border_color = canvas.engine_ref().document.format.border_color;
 
-        imp.general_format_border_color_button
+        imp.doc_format_border_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
     }
 
     fn refresh_format_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
-        let format = canvas.engine().borrow().document.format;
+        let format = canvas.engine_ref().document.format;
         *self.imp().temporary_format.borrow_mut() = format;
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
@@ -398,29 +405,31 @@ impl RnSettingsPanel {
         imp.format_height_unitentry.set_value_in_px(format.height);
     }
 
-    fn refresh_background_ui(&self, active_tab: &RnCanvasWrapper) {
+    fn refresh_doc_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
-        let background = canvas.engine().borrow().document.background;
-        let format = canvas.engine().borrow().document.format;
+        let background = canvas.engine_ref().document.background;
+        let format = canvas.engine_ref().document.format;
 
-        imp.background_color_button
+        imp.doc_background_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
         self.set_background_pattern(background.pattern);
-        imp.background_pattern_color_button
+        imp.doc_background_pattern_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(background.pattern_color));
-        imp.background_pattern_width_unitentry.set_dpi(format.dpi);
-        imp.background_pattern_width_unitentry
+        imp.doc_background_pattern_width_unitentry
+            .set_dpi(format.dpi);
+        imp.doc_background_pattern_width_unitentry
             .set_value_in_px(background.pattern_size[0]);
-        imp.background_pattern_height_unitentry.set_dpi(format.dpi);
-        imp.background_pattern_height_unitentry
+        imp.doc_background_pattern_height_unitentry
+            .set_dpi(format.dpi);
+        imp.doc_background_pattern_height_unitentry
             .set_value_in_px(background.pattern_size[1]);
     }
 
     fn refresh_shortcuts_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
-        let current_shortcuts = canvas.engine().borrow().penholder.list_current_shortcuts();
+        let current_shortcuts = canvas.engine_ref().penholder.list_current_shortcuts();
 
         current_shortcuts
             .into_iter()
@@ -459,7 +468,7 @@ impl RnSettingsPanel {
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.setup_general(appwindow);
         self.setup_format(appwindow);
-        self.setup_background(appwindow);
+        self.setup_doc(appwindow);
         self.setup_shortcuts(appwindow);
     }
 
@@ -554,11 +563,22 @@ impl RnSettingsPanel {
             )
             .sync_create()
             .build();
+
+        imp.general_inertial_scrolling_switch.connect_active_notify(
+            clone!(@weak self as settingspanel, @weak appwindow => move |switch| {
+                if !switch.is_active() {
+                    appwindow.overlays().dispatch_toast_text_singleton(
+                        &gettext("Application restart is required"),
+                        0,
+                        &mut settingspanel.imp().app_restart_toast_singleton.borrow_mut()
+                    );
+                }
+            }),
+        );
     }
 
     fn setup_format(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        let temporary_format = imp.temporary_format.clone();
 
         // revert format
         imp.format_revert_button.get().connect_clicked(
@@ -569,135 +589,141 @@ impl RnSettingsPanel {
 
         // Apply format
         imp.format_apply_button.get().connect_clicked(
-            clone!(@weak temporary_format, @weak self as settingspanel, @weak appwindow => move |_| {
+            clone!(@weak self as settingspanel, @weak appwindow => move |_| {
                 let imp = settingspanel.imp();
-                let temporary_format = *temporary_format.borrow();
-                let canvas = appwindow.active_tab().canvas();
+                let canvas = appwindow.active_tab_wrapper().canvas();
+                let temporary_format = *imp.temporary_format.borrow();
 
-                canvas.engine().borrow_mut().document.format = temporary_format;
-                let widget_flags = canvas.engine().borrow_mut().doc_resize_to_fit_strokes();
-                canvas.update_engine_rendering();
+                canvas.engine_mut().document.format = temporary_format;
+                let widget_flags = canvas.engine_mut().doc_resize_to_fit_strokes();
+                canvas.update_rendering_current_viewport();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
 
-                imp.background_pattern_width_unitentry.set_dpi_keep_value(temporary_format.dpi);
-                imp.background_pattern_height_unitentry.set_dpi_keep_value(temporary_format.dpi);
+                imp.doc_background_pattern_width_unitentry.set_dpi_keep_value(temporary_format.dpi);
+                imp.doc_background_pattern_height_unitentry.set_dpi_keep_value(temporary_format.dpi);
+            }),
+        );
+    }
+
+    fn setup_doc(&self, appwindow: &RnAppWindow) {
+        let imp = self.imp();
+
+        imp.doc_format_border_color_button.connect_rgba_notify(clone!(@weak self as settingspanel, @weak appwindow => move |button| {
+            let format_border_color = button.rgba().into_compose_color();
+            let canvas = appwindow.active_tab_wrapper().canvas();
+
+            canvas.engine_mut().document.format.border_color = format_border_color;
+            // Because the format border color is applied immediately to the engine,
+            // we need to update the temporary format too.
+            settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
+            canvas.update_rendering_current_viewport();
+        }));
+
+        imp.doc_background_color_button.connect_rgba_notify(
+            clone!(@weak appwindow => move |button| {
+                let canvas = appwindow.active_tab_wrapper().canvas();
+
+                canvas.engine_mut().document.background.color = button.rgba().into_compose_color();
+                canvas.background_regenerate_pattern();
+                canvas.update_rendering_current_viewport();
             }),
         );
 
-        imp.general_format_border_color_button.connect_rgba_notify(clone!(@weak self as settingspanel, @weak appwindow => move |button| {
-            let format_border_color = button.rgba().into_compose_color();
-            let canvas = appwindow.active_tab().canvas();
-
-            canvas.engine().borrow_mut().document.format.border_color = format_border_color;
-            // Because the format border color is applied immediately to the engine, we need to update the temporary format too.
-            settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
-            canvas.update_engine_rendering();
-        }));
-    }
-
-    fn setup_background(&self, appwindow: &RnAppWindow) {
-        let imp = self.imp();
-
-        imp.background_color_button.connect_rgba_notify(clone!(@weak appwindow => move |button| {
-            let canvas = appwindow.active_tab().canvas();
-
-            canvas.engine().borrow_mut().document.background.color = button.rgba().into_compose_color();
-            canvas.regenerate_background_pattern();
-            canvas.update_engine_rendering();
-        }));
-
-        imp.background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_| {
+        imp.doc_background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_| {
             let pattern = settings_panel.background_pattern();
-            let canvas = appwindow.active_tab().canvas();
+            let canvas = appwindow.active_tab_wrapper().canvas();
 
-            canvas.engine().borrow_mut().document.background.pattern = pattern;
+            canvas.engine_mut().document.background.pattern = pattern;
 
             match pattern {
                 PatternStyle::None => {
-                    settings_panel.imp().background_pattern_width_unitentry.set_sensitive(false);
-                    settings_panel.imp().background_pattern_height_unitentry.set_sensitive(false);
+                    settings_panel.imp().doc_background_pattern_width_unitentry.set_sensitive(false);
+                    settings_panel.imp().doc_background_pattern_height_unitentry.set_sensitive(false);
                 },
                 PatternStyle::Lines => {
-                    settings_panel.imp().background_pattern_width_unitentry.set_sensitive(false);
-                    settings_panel.imp().background_pattern_height_unitentry.set_sensitive(true);
+                    settings_panel.imp().doc_background_pattern_width_unitentry.set_sensitive(false);
+                    settings_panel.imp().doc_background_pattern_height_unitentry.set_sensitive(true);
                 },
                 PatternStyle::Grid => {
-                    settings_panel.imp().background_pattern_width_unitentry.set_sensitive(true);
-                    settings_panel.imp().background_pattern_height_unitentry.set_sensitive(true);
+                    settings_panel.imp().doc_background_pattern_width_unitentry.set_sensitive(true);
+                    settings_panel.imp().doc_background_pattern_height_unitentry.set_sensitive(true);
                 },
                 PatternStyle::Dots => {
-                    settings_panel.imp().background_pattern_width_unitentry.set_sensitive(true);
-                    settings_panel.imp().background_pattern_height_unitentry.set_sensitive(true);
+                    settings_panel.imp().doc_background_pattern_width_unitentry.set_sensitive(true);
+                    settings_panel.imp().doc_background_pattern_height_unitentry.set_sensitive(true);
                 },
                 PatternStyle::IsometricGrid => {
-                    settings_panel.imp().background_pattern_width_unitentry.set_sensitive(false);
-                    settings_panel.imp().background_pattern_height_unitentry.set_sensitive(true);
+                    settings_panel.imp().doc_background_pattern_width_unitentry.set_sensitive(false);
+                    settings_panel.imp().doc_background_pattern_height_unitentry.set_sensitive(true);
                 },
                 PatternStyle::IsometricDots => {
-                    settings_panel.imp().background_pattern_width_unitentry.set_sensitive(false);
-                    settings_panel.imp().background_pattern_height_unitentry.set_sensitive(true);
+                    settings_panel.imp().doc_background_pattern_width_unitentry.set_sensitive(false);
+                    settings_panel.imp().doc_background_pattern_height_unitentry.set_sensitive(true);
                 },
             }
 
-            canvas.regenerate_background_pattern();
-            canvas.update_engine_rendering();
+            canvas.background_regenerate_pattern();
+            canvas.update_rendering_current_viewport();
         }));
 
-        imp.background_pattern_color_button.connect_rgba_notify(clone!(@weak appwindow => move |button| {
-            let canvas = appwindow.active_tab().canvas();
+        imp.doc_background_pattern_color_button.connect_rgba_notify(clone!(@weak appwindow => move |button| {
+            let canvas = appwindow.active_tab_wrapper().canvas();
 
-            canvas.engine().borrow_mut().document.background.pattern_color = button.rgba().into_compose_color();
-            canvas.regenerate_background_pattern();
-            canvas.update_engine_rendering();
+            canvas.engine_mut().document.background.pattern_color = button.rgba().into_compose_color();
+            canvas.background_regenerate_pattern();
+            canvas.update_rendering_current_viewport();
         }));
 
-        imp.background_pattern_width_unitentry.get().connect_notify_local(
-            Some("value"),
-            clone!(@weak self as settings_panel, @weak appwindow => move |unit_entry, _| {
-                    let canvas = appwindow.active_tab().canvas();
+        imp.doc_background_pattern_width_unitentry
+            .get()
+            .connect_notify_local(
+                Some("value"),
+                clone!(@weak self as settings_panel, @weak appwindow => move |unit_entry, _| {
+                        let canvas = appwindow.active_tab_wrapper().canvas();
 
-                    let mut pattern_size = canvas.engine().borrow().document.background.pattern_size;
-                    pattern_size[0] = unit_entry.value_in_px();
-                    canvas.engine().borrow_mut().document.background.pattern_size = pattern_size;
-                    canvas.regenerate_background_pattern();
-                    canvas.update_engine_rendering();
-            }),
-        );
+                        let mut pattern_size = canvas.engine_ref().document.background.pattern_size;
+                        pattern_size[0] = unit_entry.value_in_px();
+                        canvas.engine_mut().document.background.pattern_size = pattern_size;
+                        canvas.background_regenerate_pattern();
+                        canvas.update_rendering_current_viewport();
+                }),
+            );
 
-        imp.background_pattern_height_unitentry.get().connect_notify_local(
-            Some("value"),
-            clone!(@weak self as settings_panel, @weak appwindow => move |unit_entry, _| {
-                    let canvas = appwindow.active_tab().canvas();
-                    let mut pattern_size = canvas.engine().borrow().document.background.pattern_size;
-                    pattern_size[1] = unit_entry.value_in_px();
-                    canvas.engine().borrow_mut().document.background.pattern_size = pattern_size;
-                    canvas.regenerate_background_pattern();
-                    canvas.update_engine_rendering();
-            }),
-        );
+        imp.doc_background_pattern_height_unitentry
+            .get()
+            .connect_notify_local(
+                Some("value"),
+                clone!(@weak self as settings_panel, @weak appwindow => move |unit_entry, _| {
+                        let canvas = appwindow.active_tab_wrapper().canvas();
+                        let mut pattern_size = canvas.engine_ref().document.background.pattern_size;
+                        pattern_size[1] = unit_entry.value_in_px();
+                        canvas.engine_mut().document.background.pattern_size = pattern_size;
+                        canvas.background_regenerate_pattern();
+                        canvas.update_rendering_current_viewport();
+                }),
+            );
 
-        imp.background_pattern_invert_color_button.get().connect_clicked(
-            clone!(@weak self as settings_panel, @weak appwindow => move |_| {
-                let canvas = appwindow.active_tab().canvas();
-
-                let widget_flags = {
-                    let engine = canvas.engine();
-                    let engine = &mut *engine.borrow_mut();
-
-                    engine.document.background.color = engine.document.background.color.to_inverted_lightness_color();
-                    engine.document.background.pattern_color = engine.document.background.pattern_color.to_inverted_lightness_color();
-                    engine.document.format.border_color = engine.document.format.border_color.to_inverted_lightness_color();
-
-                    WidgetFlags {
-                        refresh_ui: true,
-                        ..Default::default()
-                    }
-                };
-
-                appwindow.handle_widget_flags(widget_flags, &canvas);
-                canvas.regenerate_background_pattern();
-            }),
-        );
+            imp.background_pattern_invert_color_button.get().connect_clicked(
+                clone!(@weak self as settings_panel, @weak appwindow => move |_| {
+                    let canvas = appwindow.active_tab_wrapper().canvas();
+    
+                    let widget_flags = {
+                        let mut engine = canvas.engine_mut();
+    
+                        engine.document.background.color = engine.document.background.color.to_inverted_brightness_color();
+                        engine.document.background.pattern_color = engine.document.background.pattern_color.to_inverted_brightness_color();
+                        engine.document.format.border_color = engine.document.format.border_color.to_inverted_brightness_color();
+    
+                        WidgetFlags {
+                            refresh_ui: true,
+                            ..Default::default()
+                        }
+                    };
+    
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                    canvas.background_regenerate_pattern();
+                }),
+            );
     }
 
     fn setup_shortcuts(&self, appwindow: &RnAppWindow) {
@@ -716,58 +742,58 @@ impl RnSettingsPanel {
 
         imp.penshortcut_stylus_button_primary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_primary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_primary_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::StylusPrimaryButton, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::StylusPrimaryButton, action);
             None
         }));
 
         imp.penshortcut_stylus_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_secondary_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::StylusSecondaryButton, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::StylusSecondaryButton, action);
             None
         }));
 
         imp.penshortcut_mouse_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_mouse_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_mouse_button_secondary_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::MouseSecondaryButton, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::MouseSecondaryButton, action);
             None
         }));
 
         imp.penshortcut_touch_two_finger_long_press_row.connect_local("action-changed", false, clone!(@weak penshortcut_touch_two_finger_long_press_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_touch_two_finger_long_press_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::TouchTwoFingerLongPress, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::TouchTwoFingerLongPress, action);
             None
         }));
 
         imp.penshortcut_drawing_pad_button_0.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_0, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_drawing_pad_button_0.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton0, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton0, action);
             None
         }));
 
         imp.penshortcut_drawing_pad_button_1.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_1, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_drawing_pad_button_1.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton1, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton1, action);
             None
         }));
 
         imp.penshortcut_drawing_pad_button_2.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_2, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_drawing_pad_button_2.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton2, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton2, action);
             None
         }));
 
         imp.penshortcut_drawing_pad_button_3.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_3, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_drawing_pad_button_3.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton3, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton3, action);
             None
         }));
     }
 
     fn revert_format(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        let canvas = appwindow.active_tab().canvas();
-        *imp.temporary_format.borrow_mut() = canvas.engine().borrow().document.format;
-        let revert_format = canvas.engine().borrow().document.format;
+        let canvas = appwindow.active_tab_wrapper().canvas();
+        *imp.temporary_format.borrow_mut() = canvas.engine_ref().document.format;
+        let revert_format = canvas.engine_ref().document.format;
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
         imp.format_dpi_adj.set_value(revert_format.dpi);
@@ -803,24 +829,24 @@ const CURSORS_LIST: &[&str] = &[
 
 fn cursors_list_to_display_name(icon_name: &str) -> String {
     match icon_name {
-        "cursor-crosshair-small" => gettext("Crosshair (Small)"),
-        "cursor-crosshair-medium" => gettext("Crosshair (Medium)"),
-        "cursor-crosshair-large" => gettext("Crosshair (Large)"),
-        "cursor-dot-small" => gettext("Dot (Small)"),
-        "cursor-dot-medium" => gettext("Dot (Medium)"),
-        "cursor-dot-large" => gettext("Dot (Large)"),
-        "cursor-teardrop-nw-small" => gettext("Teardrop North-West (Small)"),
-        "cursor-teardrop-nw-medium" => gettext("Teardrop North-West (Medium)"),
-        "cursor-teardrop-nw-large" => gettext("Teardrop North-West (Large)"),
-        "cursor-teardrop-ne-small" => gettext("Teardrop North-East (Small)"),
-        "cursor-teardrop-ne-medium" => gettext("Teardrop North-East (Medium)"),
-        "cursor-teardrop-ne-large" => gettext("Teardrop North-East (Large)"),
-        "cursor-teardrop-n-small" => gettext("Teardrop North (Small)"),
-        "cursor-teardrop-n-medium" => gettext("Teardrop North (Medium)"),
-        "cursor-teardrop-n-large" => gettext("Teardrop North (Large)"),
-        "cursor-beam-small" => gettext("Beam (Small)"),
-        "cursor-beam-medium" => gettext("Beam (Medium)"),
-        "cursor-beam-large" => gettext("Beam (Large)"),
+        "cursor-crosshair-small" => pgettext("a cursor type", "Crosshair (Small)"),
+        "cursor-crosshair-medium" => pgettext("a cursor type", "Crosshair (Medium)"),
+        "cursor-crosshair-large" => pgettext("a cursor type", "Crosshair (Large)"),
+        "cursor-dot-small" => pgettext("a cursor type", "Dot (Small)"),
+        "cursor-dot-medium" => pgettext("a cursor type", "Dot (Medium)"),
+        "cursor-dot-large" => pgettext("a cursor type", "Dot (Large)"),
+        "cursor-teardrop-nw-small" => pgettext("a cursor type", "Teardrop North-West (Small)"),
+        "cursor-teardrop-nw-medium" => pgettext("a cursor type", "Teardrop North-West (Medium)"),
+        "cursor-teardrop-nw-large" => pgettext("a cursor type", "Teardrop North-West (Large)"),
+        "cursor-teardrop-ne-small" => pgettext("a cursor type", "Teardrop North-East (Small)"),
+        "cursor-teardrop-ne-medium" => pgettext("a cursor type", "Teardrop North-East (Medium)"),
+        "cursor-teardrop-ne-large" => pgettext("a cursor type", "Teardrop North-East (Large)"),
+        "cursor-teardrop-n-small" => pgettext("a cursor type", "Teardrop North (Small)"),
+        "cursor-teardrop-n-medium" => pgettext("a cursor type", "Teardrop North (Medium)"),
+        "cursor-teardrop-n-large" => pgettext("a cursor type", "Teardrop North (Large)"),
+        "cursor-beam-small" => pgettext("a cursor type", "Beam (Small)"),
+        "cursor-beam-medium" => pgettext("a cursor type", "Beam (Medium)"),
+        "cursor-beam-large" => pgettext("a cursor type", "Beam (Large)"),
         _ => unimplemented!(),
     }
 }

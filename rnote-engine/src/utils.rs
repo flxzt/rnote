@@ -1,10 +1,10 @@
 // Imports
+use crate::fileformats::xoppformat;
 use geo::line_string;
 use gtk4::{gdk, graphene, gsk};
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
 use rnote_compose::Transform;
-use rnote_fileformats::xoppformat;
 use std::ops::Range;
 
 pub trait GdkRGBAHelpers
@@ -137,5 +137,20 @@ where
         first..second
     } else {
         second..first
+    }
+}
+
+/// (De)Serialize a [glib::Bytes] with base64 encoding
+pub mod glib_bytes_base64 {
+    use serde::{Deserializer, Serializer};
+
+    /// Serialize a [`Vec<u8>`] as base64 encoded
+    pub fn serialize<S: Serializer>(v: &glib::Bytes, s: S) -> Result<S::Ok, S::Error> {
+        rnote_compose::serialize::sliceu8_base64::serialize(v, s)
+    }
+
+    /// Deserialize base64 encoded [glib::Bytes]
+    pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<glib::Bytes, D::Error> {
+        rnote_compose::serialize::sliceu8_base64::deserialize(d).map(glib::Bytes::from_owned)
     }
 }

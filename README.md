@@ -56,7 +56,7 @@ Rnote has a project website: [rnote.flxzt.net](https://rnote.flxzt.net/)
 Download the official flatpak on Flathub [here](https://flathub.org/apps/details/com.github.flxzt.rnote).
 
 <div align="start">
-<a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width="250" alt='Download on Flathub' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/flathub-badge.png'/></a>
+<a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width="250" alt='Download on Flathub' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/flathub-badge.svg'/></a>
 </div><br>
 
 ### MacOS
@@ -76,10 +76,10 @@ Download the Windows installer from the latest release which can be found [here]
 <a href='https://github.com/flxzt/rnote/releases/latest'><img width="250" alt='Download Windows installer' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/windows-installer-badge.svg'/></a>
 </div><br>
 
-Install using winget:
+Install using [Winget](https://github.com/microsoft/winget-pkgs/tree/master/manifests/f/flxzt/rnote):
 
 ```
-winget install rnote
+winget install flxzt.rnote
 ```
 
 ### Downgrading
@@ -193,7 +193,7 @@ To be able to open and export older files that are incompatible with the newest 
 
 ## Drawings Created With Rnote
 
-If you have drawn something cool in Rnote and want to share it, submit a PR so it can be showcased here. :)  
+If you have drawn something cool in Rnote and want to share it, submit a PR to add it here. :)  
 
 <div align="center" spacing="20px">
         <img alt="Pikachu" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/pikachu.png" height="400">

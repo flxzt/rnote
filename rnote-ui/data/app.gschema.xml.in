@@ -129,6 +129,10 @@
       <default>false</default>
       <summary>Whether the canvas scrollbars are shown</summary>
     </key>
+    <key name="inertial-scrolling" type="b">
+      <default>true</default>
+      <summary>Whether touch scrolling on the canvas is inertial</summary>
+    </key>
     <key name="righthanded" type="b">
       <default>true</default>
       <summary>Whether the user is righthanded (or lefthanded)</summary>

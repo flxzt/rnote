@@ -72,6 +72,42 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.7.1" date="2023-07-04">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>improvement: more consistent duplicate file naming</li>
+          <li>UI: more compact sidebar, shape-picker, workspacebrowser</li>
+          <li>fix: import dialogs were not shown when importing files or drag-and-drop from file-managers (thanks to @Kneemund)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.7.0" date="2023-06-16">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>installation: windows users - the installer now uses 64-bit mode, and now (correctly) installs into "Program Files" by default.
+If you are upgrading from a previous version, you need to uninstall the old version in "Program Files (x86)" manually.</li>
+          <li>feature: remove page from fixed size document (thanks to @PhilDevProg)</li>
+          <li>feature: specify page order when exporting documents with layouts that expand in horizontal and vertical directions (thanks to @Kneemund)</li>
+          <li>feature: inertial touch scrolling (thanks to @Kneemund)</li>
+          <li>feature: ability to toggle drawing cursor visibility</li>
+          <li>feature: "focus mode" that hides the toolbars, improving the experience on low-resolution tablets</li>
+          <li>feature: dedicated zoom tool, making navigating while touch-drawing is enabled easier</li>
+          <li>improvement: selection highlights for brush-strokes</li>
+          <li>improvement: ctrl + scroll following the pointer</li>
+          <li>improvement: scale-ratio when resizing the selection with locked aspect-ratio</li>
+          <li>improvement: provide selection content as Svg and Png when copying/cutting to the clipboard</li>
+          <li>improvement: save file logic in close tab/window dialogs</li>
+          <li>improvement: memory consumption when loading rnote files</li>
+          <li>UI: page controls for the fixed-size layout were moved into the canvas menu dropdown</li>
+          <li>UI: undo/redo buttons were moved to the pen switcher toolbar</li>
+          <li>fix: apply pressure curves when exporting to xopp</li>
+          <li>fix: single element/position strokes were not rendered</li>
+          <li>fix: stop document autoexpanding when scrolling with scrollbars</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.6.0" date="2023-04-23">
       <description>
         <p>this release changes:</p>

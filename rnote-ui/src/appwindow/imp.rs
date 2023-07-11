@@ -134,6 +134,13 @@ impl ObjectImpl for RnAppWindow {
         self.setup_input();
     }
 
+    fn dispose(&self) {
+        self.dispose_template();
+        while let Some(child) = self.obj().first_child() {
+            child.unparent();
+        }
+    }
+
     fn properties() -> &'static [glib::ParamSpec] {
         static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
             vec![
@@ -264,7 +271,7 @@ impl RnAppWindow {
 
         if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(),
                 clone!(@weak obj as appwindow => @default-return glib::source::Continue(false), move || {
-                    let canvas = appwindow.active_tab().canvas();
+                    let canvas = appwindow.active_tab_wrapper().canvas();
 
                     if let Some(output_file) = canvas.output_file() {
                         glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {

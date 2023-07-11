@@ -5,10 +5,12 @@ mod penevents;
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::selectorconfig::SelectorStyle;
 use super::PenStyle;
-use crate::engine::{EngineView, EngineViewMut, RNOTE_STROKE_CONTENT_MIME_TYPE};
+use crate::engine::{EngineView, EngineViewMut, StrokeContent};
+use crate::render::{self, Svg};
 use crate::store::StrokeKey;
 use crate::strokes::StrokeBehaviour;
-use crate::{Camera, DrawOnDocBehaviour, WidgetFlags};
+use crate::{Camera, DrawOnDocBehaviour, RnoteEngine, WidgetFlags};
+use futures::channel::oneshot;
 use kurbo::Shape;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
@@ -152,61 +154,122 @@ impl PenBehaviour for Selector {
     fn fetch_clipboard_content(
         &self,
         engine_view: &EngineView,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
         let widget_flags = WidgetFlags::default();
+        let (sender, receiver) =
+            oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
+        let mut clipboard_content = Vec::with_capacity(1);
 
-        let selected_keys = if let SelectorState::ModifySelection { selection, .. } = &self.state {
-            Some(selection.clone())
+        let stroke_content = if let SelectorState::ModifySelection { selection, .. } = &self.state {
+            Some(engine_view.store.fetch_stroke_content(selection))
         } else {
             None
         };
 
-        if let Some(selected_keys) = selected_keys {
-            let clipboard_content = engine_view.store.fetch_stroke_content(&selected_keys);
+        rayon::spawn(move || {
+            let result = move || {
+                if let Some(stroke_content) = stroke_content {
+                    let stroke_content_svg = stroke_content.gen_svg(
+                        false,
+                        false,
+                        StrokeContent::CLIPBOARD_EXPORT_MARGIN,
+                    )?;
 
-            return Ok((
-                Some((
-                    serde_json::to_string(&clipboard_content)?.into_bytes(),
-                    RNOTE_STROKE_CONTENT_MIME_TYPE.to_string(),
-                )),
-                widget_flags,
-            ));
-        }
+                    // Add StrokeContent
+                    clipboard_content.push((
+                        serde_json::to_string(&stroke_content)?.into_bytes(),
+                        StrokeContent::MIME_TYPE.to_string(),
+                    ));
+                    if let Some(stroke_content_svg) = stroke_content_svg {
+                        let stroke_content_svg_bounds = stroke_content_svg.bounds;
 
-        Ok((None, widget_flags))
+                        // Add generated Svg
+                        clipboard_content.push((
+                            stroke_content_svg.svg_data.clone().into_bytes(),
+                            Svg::MIME_TYPE.to_string(),
+                        ));
+
+                        // Add rendered Png
+                        let image = render::Image::gen_image_from_svg(
+                            stroke_content_svg,
+                            stroke_content_svg_bounds,
+                            RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                        )?
+                        .into_encoded_bytes(image::ImageOutputFormat::Png)?;
+                        clipboard_content.push((image, String::from("image/png")));
+                    }
+                }
+                Ok((clipboard_content, widget_flags))
+            };
+            if let Err(e) = sender.send(result()) {
+                log::error!("sending fetched selector clipboard content failed, Err: {e:?}");
+            }
+        });
+
+        receiver
     }
 
     fn cut_clipboard_content(
         &mut self,
         engine_view: &mut EngineViewMut,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
+        let (sender, receiver) =
+            oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
         let mut widget_flags = WidgetFlags::default();
+        let mut clipboard_content = Vec::with_capacity(1);
 
-        let selected_keys = if let SelectorState::ModifySelection { selection, .. } = &self.state {
-            Some(selection.clone())
+        let stroke_content = if let SelectorState::ModifySelection { selection, .. } = &self.state {
+            let c = Some(engine_view.store.cut_stroke_content(selection));
+            self.state = SelectorState::Idle;
+            widget_flags.merge(engine_view.store.record(Instant::now()));
+            widget_flags.store_modified = true;
+            widget_flags.redraw = true;
+            c
         } else {
             None
         };
 
-        if let Some(selected_keys) = selected_keys {
-            let clipboard_content = engine_view.store.cut_stroke_content(&selected_keys);
+        rayon::spawn(move || {
+            let result = move || {
+                if let Some(stroke_content) = stroke_content {
+                    let stroke_content_svg = stroke_content.gen_svg(
+                        false,
+                        false,
+                        StrokeContent::CLIPBOARD_EXPORT_MARGIN,
+                    )?;
 
-            self.state = SelectorState::Idle;
+                    // Add StrokeContent
+                    clipboard_content.push((
+                        serde_json::to_string(&stroke_content)?.into_bytes(),
+                        StrokeContent::MIME_TYPE.to_string(),
+                    ));
+                    if let Some(stroke_content_svg) = stroke_content_svg {
+                        let stroke_content_svg_bounds = stroke_content_svg.bounds;
 
-            widget_flags.merge(engine_view.store.record(Instant::now()));
-            widget_flags.store_modified = true;
-            widget_flags.redraw = true;
+                        // Add generated Svg
+                        clipboard_content.push((
+                            stroke_content_svg.svg_data.clone().into_bytes(),
+                            Svg::MIME_TYPE.to_string(),
+                        ));
 
-            return Ok((
-                Some((
-                    serde_json::to_string(&clipboard_content)?.into_bytes(),
-                    RNOTE_STROKE_CONTENT_MIME_TYPE.to_string(),
-                )),
-                widget_flags,
-            ));
-        }
+                        // Add rendered Png
+                        let image = render::Image::gen_image_from_svg(
+                            stroke_content_svg,
+                            stroke_content_svg_bounds,
+                            RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                        )?
+                        .into_encoded_bytes(image::ImageOutputFormat::Png)?;
+                        clipboard_content.push((image, String::from("image/png")));
+                    }
+                }
+                Ok((clipboard_content, widget_flags))
+            };
+            if let Err(e) = sender.send(result()) {
+                log::error!("sending cut selector clipboard content failed, Err: {e:?}");
+            }
+        });
 
-        Ok((None, widget_flags))
+        receiver
     }
 }
 
@@ -221,13 +284,13 @@ impl DrawOnDocBehaviour for Selector {
                 let mut path_iter = path.iter();
                 if let Some(first) = path_iter.next() {
                     let mut new_bounds = Aabb::from_half_extents(
-                        na::Point2::from(first.pos),
+                        first.pos.into(),
                         na::Vector2::repeat(Self::OUTLINE_STROKE_WIDTH / total_zoom),
                     );
 
                     path_iter.for_each(|element| {
                         let pos_bounds = Aabb::from_half_extents(
-                            na::Point2::from(element.pos),
+                            element.pos.into(),
                             na::Vector2::repeat(Self::OUTLINE_STROKE_WIDTH / total_zoom),
                         );
                         new_bounds.merge(&pos_bounds);
@@ -477,7 +540,7 @@ impl Selector {
         let rotate_node_state = match modify_state {
             ModifyState::Rotate { .. } => PenState::Down,
             ModifyState::Hover(pos) => {
-                if rotate_node_sphere.contains_local_point(&na::Point2::from(*pos)) {
+                if rotate_node_sphere.contains_local_point(&(*pos).into()) {
                     PenState::Proximity
                 } else {
                     PenState::Up
@@ -494,7 +557,7 @@ impl Selector {
                 ..
             } => PenState::Down,
             ModifyState::Hover(pos) => {
-                if resize_tl_node_bounds.contains_local_point(&na::Point2::from(*pos)) {
+                if resize_tl_node_bounds.contains_local_point(&(*pos).into()) {
                     PenState::Proximity
                 } else {
                     PenState::Up
@@ -511,7 +574,7 @@ impl Selector {
                 ..
             } => PenState::Down,
             ModifyState::Hover(pos) => {
-                if resize_tr_node_bounds.contains_local_point(&na::Point2::from(*pos)) {
+                if resize_tr_node_bounds.contains_local_point(&(*pos).into()) {
                     PenState::Proximity
                 } else {
                     PenState::Up
@@ -528,7 +591,7 @@ impl Selector {
                 ..
             } => PenState::Down,
             ModifyState::Hover(pos) => {
-                if resize_bl_node_bounds.contains_local_point(&na::Point2::from(*pos)) {
+                if resize_bl_node_bounds.contains_local_point(&(*pos).into()) {
                     PenState::Proximity
                 } else {
                     PenState::Up
@@ -545,7 +608,7 @@ impl Selector {
                 ..
             } => PenState::Down,
             ModifyState::Hover(pos) => {
-                if resize_br_node_bounds.contains_local_point(&na::Point2::from(*pos)) {
+                if resize_br_node_bounds.contains_local_point(&(*pos).into()) {
                     PenState::Proximity
                 } else {
                     PenState::Up

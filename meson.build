@@ -1,7 +1,7 @@
 project(
     'rnote',
     ['rust', 'cpp'],
-    version: '0.6.0',
+    version: '0.7.1',
     meson_version: '>= 0.57',
 )
 # add a patch suffix for alpha or beta version, starting with a dash.
@@ -105,13 +105,12 @@ endif
 
 # workspace crates
 subdir('rnote-compose')
-subdir('rnote-fileformats')
 subdir('rnote-engine')
 subdir('rnote-ui')
 
+cargo_env = ['CARGO_HOME=' + meson.project_build_root() / 'cargo-home']
 cargo_manifest_path = meson.project_source_root() / 'Cargo.toml'
 cargo_target_dir = meson.project_build_root() / 'target'
-cargo_env = ['CARGO_HOME=' + meson.project_build_root() / 'cargo-home']
 
 # cargo fmt check
 run_target(
@@ -122,8 +121,7 @@ run_target(
             'fmt',
             '--all',
             '--check',
-            '--manifest-path',
-            cargo_manifest_path,
+            '--manifest-path', cargo_manifest_path,
         ],
     ],
     env: cargo_env,
@@ -136,24 +134,23 @@ run_target(
         cargo,
         [
             'test',
-            '--manifest-path',
-            cargo_manifest_path,
+            '--workspace',
+            '--manifest-path', cargo_manifest_path,
+            '--target-dir', cargo_target_dir,
         ],
     ],
     env: cargo_env,
 )
 
-# build / install the app
+# build/install the app
 app_sources = [
     rnote_compose_sources,
-    rnote_fileformats_sources,
     rnote_engine_sources,
     rnote_ui_sources,
     files(
         meson.project_source_root() + '/Cargo.toml',
         meson.project_source_root() + '/Cargo.lock',
         meson.project_source_root() + '/rnote-compose/Cargo.toml',
-        meson.project_source_root() + '/rnote-fileformats/Cargo.toml',
         meson.project_source_root() + '/rnote-engine/Cargo.toml',
         meson.project_source_root() + '/rnote-ui/Cargo.toml',
         meson.project_source_root() + '/rnote-ui/build.rs',
@@ -250,14 +247,12 @@ if build_cli == true
 
     cli_sources = [
         rnote_compose_sources,
-        rnote_fileformats_sources,
         rnote_engine_sources,
         rnote_cli_sources,
         files(
             meson.project_source_root() + '/Cargo.toml',
             meson.project_source_root() + '/Cargo.lock',
             meson.project_source_root() + '/rnote-compose/Cargo.toml',
-            meson.project_source_root() + '/rnote-fileformats/Cargo.toml',
             meson.project_source_root() + '/rnote-engine/Cargo.toml',
             meson.project_source_root() + '/rnote-cli/Cargo.toml',
         ),

@@ -115,12 +115,12 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
         match &self.state {
             FociEllipseBuilderState::Start(first)
             | FociEllipseBuilderState::StartFinished(first) => Some(Aabb::from_half_extents(
-                na::Point2::from(*first),
+                (*first).into(),
                 na::Vector2::repeat(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
             )),
             FociEllipseBuilderState::Foci(foci) | FociEllipseBuilderState::FociFinished(foci) => {
                 Some(
-                    Aabb::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
+                    Aabb::new_positive(foci[0].into(), foci[1].into())
                         .loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
                 )
             }

@@ -69,6 +69,16 @@ impl RnAppWindow {
             .get_no_changes()
             .build();
 
+        // inertial scrolling
+        self.app_settings()
+            .bind(
+                "inertial-scrolling",
+                &self.settings_panel().general_inertial_scrolling_switch(),
+                "active",
+            )
+            .get_no_changes()
+            .build();
+
         // regular cursor
         self.app_settings()
             .bind(
@@ -403,7 +413,7 @@ impl RnAppWindow {
 
         {
             // Save engine config of the last active tab
-            self.active_tab()
+            self.active_tab_wrapper()
                 .canvas()
                 .save_engine_config(&self.app_settings())?;
         }

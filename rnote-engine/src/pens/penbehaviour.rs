@@ -2,6 +2,7 @@
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawOnDocBehaviour, WidgetFlags};
+use futures::channel::oneshot;
 use rnote_compose::penevents::PenEvent;
 use std::time::Instant;
 
@@ -30,21 +31,41 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
     ) -> (PenProgress, WidgetFlags);
 
     /// Fetch clipboard content from the pen.
+    ///
+    /// The fetched content can be available in multiple formats,
+    /// so it is returned as: `Vec<(data, MIME-Type)>`.
     #[allow(clippy::type_complexity)]
     fn fetch_clipboard_content(
         &self,
         _engine_view: &EngineView,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
-        Ok((None, WidgetFlags::default()))
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
+        let (sender, receiver) =
+            oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
+        rayon::spawn(move || {
+            if let Err(e) = sender.send(Ok((vec![], WidgetFlags::default()))) {
+                log::error!("sending (empty) clipboard content in `fetch_clipboard_content()` default impl failed, Err: {e:?}")
+            }
+        });
+        receiver
     }
 
     /// Cut clipboard content from the pen.
+    ///
+    /// The cut content can be available in multiple formats,
+    /// so it is returned as: `Vec<(data, MIME-Type)>`.
     #[allow(clippy::type_complexity)]
     fn cut_clipboard_content(
         &mut self,
         _engine_view: &mut EngineViewMut,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
-        Ok((None, WidgetFlags::default()))
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
+        let (sender, receiver) =
+            oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
+        rayon::spawn(move || {
+            if let Err(e) = sender.send(Ok((vec![], WidgetFlags::default()))) {
+                log::error!("sending (empty) clipboard content in `cut_clipboard_content()` default impl failed, Err: {e:?}")
+            }
+        });
+        receiver
     }
 }
 

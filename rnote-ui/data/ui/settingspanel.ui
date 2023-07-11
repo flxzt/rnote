@@ -72,32 +72,24 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="general_format_border_color_row">
-                        <property name="title" translatable="yes">Format Border Color</property>
-                        <property name="subtitle" translatable="yes">Set the format border color</property>
-                        <child type="suffix">
-                          <object class="GtkBox">
-                            <property name="orientation">horizontal</property>
-                            <property name="spacing">6</property>
-                            <property name="hexpand">false</property>
-                            <property name="vexpand">false</property>
-                            <property name="valign">center</property>
-                            <child>
-                              <object class="GtkColorDialog" id="general_format_border_color_dialog"></object>
-                              <object class="GtkColorDialogButton" id="general_format_border_color_button">
-                                <property name="dialog">general_format_border_color_dialog</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
                       <object class="AdwActionRow" id="general_show_scrollbars_row">
                         <property name="title" translatable="yes">Show Scrollbars</property>
                         <property name="subtitle" translatable="yes">Set whether the scrollbars on the canvas are shown</property>
                         <child type="suffix">
                           <object class="GtkSwitch" id="general_show_scrollbars_switch">
+                            <property name="valign">center</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="general_inertial_scrolling_row">
+                        <property name="title" translatable="yes">Inertial Touch Scrolling</property>
+                        <property name="subtitle" translatable="yes">Set whether touch scrolling on the canvas is inertial.
+An application restart is required when this option
+gets disabled.</property>
+                        <child type="suffix">
+                          <object class="GtkSwitch" id="general_inertial_scrolling_switch">
                             <property name="valign">center</property>
                           </object>
                         </child>
@@ -292,12 +284,33 @@
                     </child>
                   </object>
                 </child>
-                <!-- Background Group -->
+                <!-- Document Group -->
                 <child>
                   <object class="AdwPreferencesGroup">
-                    <property name="title" translatable="yes">Document Background</property>
+                    <property name="title" translatable="yes">Document</property>
                     <child>
-                      <object class="AdwActionRow" id="background_color_row">
+                      <object class="AdwActionRow" id="doc_format_border_color_row">
+                        <property name="title" translatable="yes">Format Border Color</property>
+                        <property name="subtitle" translatable="yes">Set the format border color</property>
+                        <child type="suffix">
+                          <object class="GtkBox">
+                            <property name="orientation">horizontal</property>
+                            <property name="spacing">6</property>
+                            <property name="hexpand">false</property>
+                            <property name="vexpand">false</property>
+                            <property name="valign">center</property>
+                            <child>
+                              <object class="GtkColorDialog" id="doc_format_border_color_dialog"></object>
+                              <object class="GtkColorDialogButton" id="doc_format_border_color_button">
+                                <property name="dialog">doc_format_border_color_dialog</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="doc_background_color_row">
                         <property name="title" translatable="yes">Color</property>
                         <property name="subtitle" translatable="yes">Set the background color</property>
                         <child type="suffix">
@@ -308,9 +321,9 @@
                             <property name="vexpand">false</property>
                             <property name="valign">center</property>
                             <child>
-                              <object class="GtkColorDialog" id="background_color_dialog"></object>
-                              <object class="GtkColorDialogButton" id="background_color_button">
-                                <property name="dialog">background_color_dialog</property>
+                              <object class="GtkColorDialog" id="doc_background_color_dialog"></object>
+                              <object class="GtkColorDialogButton" id="doc_background_color_button">
+                                <property name="dialog">doc_background_color_dialog</property>
                               </object>
                             </child>
                           </object>
@@ -318,7 +331,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwComboRow" id="background_patterns_row">
+                      <object class="AdwComboRow" id="doc_background_patterns_row">
                         <property name="title" translatable="yes">Pattern</property>
                         <property name="subtitle" translatable="yes">Choose a background pattern</property>
                         <property name="model">
@@ -336,7 +349,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="background_pattern_color_row">
+                      <object class="AdwActionRow" id="doc_background_pattern_color_row">
                         <property name="title" translatable="yes">Pattern Color</property>
                         <property name="subtitle" translatable="yes">Set the background pattern color</property>
                         <child type="suffix">
@@ -347,9 +360,9 @@
                             <property name="vexpand">false</property>
                             <property name="valign">center</property>
                             <child>
-                              <object class="GtkColorDialog" id="background_pattern_color_dialog"></object>
-                              <object class="GtkColorDialogButton" id="background_pattern_color_button">
-                                <property name="dialog">background_pattern_color_dialog</property>
+                              <object class="GtkColorDialog" id="doc_background_pattern_color_dialog"></object>
+                              <object class="GtkColorDialogButton" id="doc_background_pattern_color_button">
+                                <property name="dialog">doc_background_pattern_color_dialog</property>
                               </object>
                             </child>
                           </object>
@@ -357,11 +370,11 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="background_pattern_width_row">
+                      <object class="AdwActionRow" id="doc_background_pattern_width_row">
                         <property name="title" translatable="yes">Pattern Width</property>
                         <property name="subtitle" translatable="yes">Set the background pattern width</property>
                         <child type="suffix">
-                          <object class="RnUnitEntry" id="background_pattern_width_unitentry">
+                          <object class="RnUnitEntry" id="doc_background_pattern_width_unitentry">
                             <property name="vexpand">false</property>
                             <property name="hexpand">false</property>
                             <property name="halign">end</property>
@@ -371,11 +384,11 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="background_pattern_height_row">
+                      <object class="AdwActionRow" id="doc_background_pattern_height_row">
                         <property name="title" translatable="yes">Pattern Height</property>
                         <property name="subtitle" translatable="yes">Set the background pattern height</property>
                         <child type="suffix">
-                          <object class="RnUnitEntry" id="background_pattern_height_unitentry">
+                          <object class="RnUnitEntry" id="doc_background_pattern_height_unitentry">
                             <property name="vexpand">false</property>
                             <property name="hexpand">false</property>
                             <property name="halign">end</property>

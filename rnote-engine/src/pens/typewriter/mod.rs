@@ -10,6 +10,7 @@ use crate::store::StrokeKey;
 use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
 use crate::strokes::{Stroke, TextStroke};
 use crate::{AudioPlayer, Camera, DrawOnDocBehaviour, WidgetFlags};
+use futures::channel::oneshot;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
@@ -79,17 +80,16 @@ impl DrawOnDocBehaviour for Typewriter {
         match &self.state {
             TypewriterState::Idle => None,
             TypewriterState::Start(pos) => Some(Aabb::new(
-                na::Point2::from(*pos),
-                na::Point2::from(
-                    pos + na::vector![
-                        Self::STATE_START_TEXT_WIDTH,
-                        engine_view
-                            .pens_config
-                            .typewriter_config
-                            .text_style
-                            .font_size
-                    ],
-                ),
+                (*pos).into(),
+                (pos + na::vector![
+                    Self::STATE_START_TEXT_WIDTH,
+                    engine_view
+                        .pens_config
+                        .typewriter_config
+                        .text_style
+                        .font_size
+                ])
+                .into(),
             )),
             TypewriterState::Modifying { stroke_key, .. } => {
                 if let Some(Stroke::TextStroke(textstroke)) =
@@ -205,9 +205,7 @@ impl DrawOnDocBehaviour for Typewriter {
                     let adjust_text_width_node_state = match modify_state {
                         ModifyState::AdjustTextWidth { .. } => PenState::Down,
                         ModifyState::Hover(pos) => {
-                            if adjust_text_width_node_bounds
-                                .contains_local_point(&na::Point2::from(*pos))
-                            {
+                            if adjust_text_width_node_bounds.contains_local_point(&(*pos).into()) {
                                 PenState::Proximity
                             } else {
                                 PenState::Up
@@ -234,9 +232,7 @@ impl DrawOnDocBehaviour for Typewriter {
                         let translate_node_state = match modify_state {
                             ModifyState::Translating { .. } => PenState::Down,
                             ModifyState::Hover(pos) => {
-                                if translate_node_bounds
-                                    .contains_local_point(&na::Point2::from(*pos))
-                                {
+                                if translate_node_bounds.contains_local_point(&(*pos).into()) {
                                     PenState::Proximity
                                 } else {
                                     PenState::Up
@@ -265,7 +261,7 @@ impl PenBehaviour for Typewriter {
         let tasks_tx = engine_view.tasks_tx.clone();
         let blink_task = move || -> crate::tasks::PeriodicTaskResult {
             if let Err(e) = tasks_tx.unbounded_send(EngineTask::BlinkTypewriterCursor) {
-                log::error!("Failed to send BlinkTypewriterCursor task from BlinkTask, {e:?}");
+                log::error!("Failed to send BlinkTypewriterCursor task from blink task, {e:?}");
                 crate::tasks::PeriodicTaskResult::Quit
             } else {
                 crate::tasks::PeriodicTaskResult::Continue
@@ -384,11 +380,14 @@ impl PenBehaviour for Typewriter {
     fn fetch_clipboard_content(
         &self,
         engine_view: &EngineView,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
         let widget_flags = WidgetFlags::default();
+        let (sender, receiver) =
+            oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
+        let mut clipboard_content = Vec::with_capacity(1);
 
         match &self.state {
-            TypewriterState::Idle | TypewriterState::Start(_) => Ok((None, widget_flags)),
+            TypewriterState::Idle | TypewriterState::Start(_) => {}
             TypewriterState::Modifying {
                 modify_state,
                 stroke_key,
@@ -406,35 +405,35 @@ impl PenBehaviour for Typewriter {
                                 cursor.cur_cursor(),
                                 selection_cursor.cur_cursor(),
                             );
-
                             // Current selection as clipboard text
                             let selection_text = textstroke
                                 .get_text_slice_for_range(selection_range)
                                 .to_string();
-
-                            Ok((
-                                Some((
-                                    selection_text.into_bytes(),
-                                    String::from("text/plain;charset=utf-8"),
-                                )),
-                                widget_flags,
-                            ))
-                        } else {
-                            Ok((None, widget_flags))
+                            clipboard_content.push((
+                                selection_text.into_bytes(),
+                                String::from("text/plain;charset=utf-8"),
+                            ));
                         }
                     }
-                    _ => Ok((None, widget_flags)),
+                    _ => {}
                 }
             }
         }
+
+        if let Err(e) = sender.send(Ok((clipboard_content, widget_flags))) {
+            log::error!("sending fetched typewriter clipboard content failed, Err: {e:?}");
+        }
+        receiver
     }
 
     fn cut_clipboard_content(
         &mut self,
         engine_view: &mut EngineViewMut,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
+        let (sender, receiver) =
+            oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
         let mut widget_flags = WidgetFlags::default();
-        let mut content = None;
+        let mut clipboard_content = Vec::with_capacity(1);
 
         match &mut self.state {
             TypewriterState::Idle | TypewriterState::Start(_) => {}
@@ -492,7 +491,7 @@ impl PenBehaviour for Typewriter {
                             widget_flags.store_modified = true;
                             widget_flags.redraw = true;
 
-                            content = Some((
+                            clipboard_content.push((
                                 selection_text.into_bytes(),
                                 String::from("text/plain;charset=utf-8"),
                             ));
@@ -505,7 +504,10 @@ impl PenBehaviour for Typewriter {
 
         self.reset_blink();
 
-        Ok((content, widget_flags))
+        if let Err(e) = sender.send(Ok((clipboard_content, widget_flags))) {
+            log::error!("sending cut typewriter clipboard content failed, Err: {e:?}");
+        }
+        receiver
     }
 }
 
@@ -549,12 +551,6 @@ impl Typewriter {
     /// The time for the cursor blink.
     const BLINK_TIME: Duration = Duration::from_millis(800);
 
-    fn start_audio(keyboard_key: Option<KeyboardKey>, audioplayer: &mut Option<AudioPlayer>) {
-        if let Some(audioplayer) = audioplayer {
-            audioplayer.play_typewriter_key_sound(keyboard_key);
-        }
-    }
-
     pub(crate) fn toggle_cursor_visibility(&mut self) {
         self.cursor_visible = !self.cursor_visible;
     }
@@ -562,20 +558,15 @@ impl Typewriter {
     /// The bounds of the text rect enclosing the textstroke.
     fn text_rect_bounds(text_width: f64, textstroke: &TextStroke) -> Aabb {
         let origin = textstroke.transform.translation_part();
-        Aabb::new(
-            na::Point2::from(origin),
-            na::point![origin[0] + text_width, origin[1]],
-        )
-        .merged(&textstroke.bounds())
+        Aabb::new(origin.into(), na::point![origin[0] + text_width, origin[1]])
+            .merged(&textstroke.bounds())
     }
 
     /// The bounds of the translate node.
     fn translate_node_bounds(typewriter_bounds: Aabb, camera: &Camera) -> Aabb {
         let total_zoom = camera.total_zoom();
         Aabb::from_half_extents(
-            na::Point2::from(
-                typewriter_bounds.mins.coords + Self::TRANSLATE_NODE_SIZE * 0.5 / total_zoom,
-            ),
+            (typewriter_bounds.mins.coords + Self::TRANSLATE_NODE_SIZE * 0.5 / total_zoom).into(),
             Self::TRANSLATE_NODE_SIZE * 0.5 / total_zoom,
         )
     }
@@ -602,7 +593,7 @@ impl Typewriter {
         let total_zoom = camera.total_zoom();
         let center = Self::adjust_text_width_node_center(text_rect_origin, text_width, camera);
         Aabb::from_half_extents(
-            na::Point2::from(center),
+            center.into(),
             Self::ADJUST_TEXT_WIDTH_NODE_SIZE * 0.5 / total_zoom,
         )
     }
@@ -875,5 +866,11 @@ impl Typewriter {
             }
         }
         self.cursor_visible = true;
+    }
+}
+
+fn play_sound(keyboard_key: Option<KeyboardKey>, audioplayer: &mut Option<AudioPlayer>) {
+    if let Some(audioplayer) = audioplayer {
+        audioplayer.play_typewriter_key_sound(keyboard_key);
     }
 }

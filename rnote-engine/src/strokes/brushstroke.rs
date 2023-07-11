@@ -46,17 +46,31 @@ impl StrokeBehaviour for BrushStroke {
         viewport: Aabb,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
-        let bounds = self.bounds();
-        let (bounds, partial) = if viewport.contains(&bounds) {
-            (bounds, false)
-        } else {
-            (viewport, true)
-        };
+        /// The threshold of the image size on either axis.
+        /// When below it the stroke is rendered as a single image
+        const IMAGES_SIZE_THRESHOLD: f64 = 1000.0;
+        /// The threshold of the stroke width in relation to either bound axis.
+        /// When above it the stroke is rendered as a single image
+        const IMAGES_STROKE_WIDTH_BOUNDS_THRESHOLD: f64 = 0.2;
 
-        let images = if bounds.extents()[0] < Self::IMAGES_SEGMENTS_THRESHOLD / image_scale
-            && bounds.extents()[1] < Self::IMAGES_SEGMENTS_THRESHOLD / image_scale
-        {
-            // generate a single image when bounds are below threshold
+        let bounds = self.bounds();
+        let partial = !viewport.contains(&bounds);
+        let Some(bounds) = viewport.intersection(&bounds) else {
+            return Ok(GeneratedStrokeImages::Partial { images: vec![], viewport });
+        };
+        let bounds_extents = bounds.extents();
+
+        let image_size_condition = bounds_extents[0] < IMAGES_SIZE_THRESHOLD / image_scale
+            && bounds_extents[1] < IMAGES_SIZE_THRESHOLD / image_scale;
+
+        //
+        let stroke_width_condition = self.style.stroke_width()
+            > IMAGES_STROKE_WIDTH_BOUNDS_THRESHOLD * bounds_extents[0]
+            || self.style.stroke_width() > IMAGES_STROKE_WIDTH_BOUNDS_THRESHOLD * bounds_extents[1];
+
+        // if these conditions evaluate true the stroke is rendered as a single imaeg
+        let images = if image_size_condition || stroke_width_condition {
+            // generate a single image when bounds are smaller than threshold
             match &self.style {
                 Style::Smooth(options) => {
                     let image = render::Image::gen_with_piet(
@@ -249,9 +263,6 @@ impl TransformBehaviour for BrushStroke {
 }
 
 impl BrushStroke {
-    /// The threshold where when above it, images are generated for each segment instead of one for the entire stroke.
-    pub const IMAGES_SEGMENTS_THRESHOLD: f64 = 1000.0;
-
     pub fn new(start: Element, style: Style) -> Self {
         let path = PenPath::new(start);
 

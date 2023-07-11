@@ -127,8 +127,10 @@ impl StrokeStore {
     /// Import from a engine snapshot. A loaded strokes store should always be imported with this method.
     ///
     /// The store then needs to update its rendering.
-    pub(crate) fn import_from_snapshot(&mut self, snapshot: &EngineSnapshot) {
-        self.clear();
+    pub(crate) fn import_from_snapshot(&mut self, snapshot: &EngineSnapshot) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        widget_flags.merge(self.clear());
         self.stroke_components = Arc::clone(&snapshot.stroke_components);
         self.chrono_components = Arc::clone(&snapshot.chrono_components);
         self.chrono_counter = snapshot.chrono_counter;
@@ -138,6 +140,9 @@ impl StrokeStore {
         self.rebuild_trash_components_slotmap();
         self.rebuild_render_components_slotmap();
         self.rebuild_rtree();
+        widget_flags.merge(self.clear_history(self.create_history_entry()));
+
+        widget_flags
     }
 
     /// Rebuild the rtree with the current stored strokes keys and bounds.
@@ -293,9 +298,16 @@ impl StrokeStore {
     }
 
     /// Clear the history.
-    pub(crate) fn clear_history(&mut self) {
-        self.history = VecDeque::from(vec![HistoryEntry::default()]);
+    pub(crate) fn clear_history(&mut self, initial_state: HistoryEntry) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        self.history = VecDeque::from(vec![initial_state]);
         self.live_index = 0;
+
+        widget_flags.hide_undo = Some(true);
+        widget_flags.hide_redo = Some(true);
+
+        widget_flags
     }
 
     /// Insert a new stroke into the store.
@@ -338,16 +350,18 @@ impl StrokeStore {
     }
 
     /// Clears the entire store.
-    pub(super) fn clear(&mut self) {
+    pub(super) fn clear(&mut self) -> WidgetFlags {
         Arc::make_mut(&mut self.stroke_components).clear();
         Arc::make_mut(&mut self.trash_components).clear();
         Arc::make_mut(&mut self.selection_components).clear();
         Arc::make_mut(&mut self.chrono_components).clear();
 
         self.chrono_counter = 0;
-        self.clear_history();
+        let widget_flags = self.clear_history(HistoryEntry::default());
 
         self.render_components.clear();
         self.key_tree.clear();
+
+        widget_flags
     }
 }

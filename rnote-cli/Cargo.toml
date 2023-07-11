@@ -1,6 +1,6 @@
 [package]
 name = "rnote-cli"
-version = "0.6.0"
+version = "0.7.1"
 edition = "2021"
 rust-version = "1.65"
 
@@ -9,7 +9,6 @@ rust-version = "1.65"
 [dependencies]
 rnote-engine = {path = "../rnote-engine", version="0.1"}
 rnote-compose = {path = "../rnote-compose", version="0.1"}
-rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
 
 log = "0.4"
 anyhow = "1"

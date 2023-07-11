@@ -2,34 +2,32 @@
 pub mod export;
 pub mod import;
 pub mod rendering;
+pub mod snapshot;
+pub mod strokecontent;
 pub mod visual_debug;
 
 // Re-exports
-pub use self::export::ExportPrefs;
-pub use self::import::ImportPrefs;
+pub use export::ExportPrefs;
+pub use import::ImportPrefs;
+pub use snapshot::EngineSnapshot;
+pub use strokecontent::StrokeContent;
 
 // Imports
-use self::import::XoppImportPrefs;
-use crate::document::{background, Layout};
+use crate::document::Layout;
 use crate::pens::{Pen, PenStyle};
 use crate::pens::{PenMode, PensConfig};
 use crate::store::render_comp::{self, RenderCompState};
-use crate::store::{ChronoComponent, StrokeKey};
+use crate::store::StrokeKey;
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
-use crate::strokes::Stroke;
 use crate::{render, AudioPlayer, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
-use anyhow::Context;
 use futures::channel::{mpsc, oneshot};
 use gtk4::gsk;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use rnote_compose::helpers::AabbHelpers;
+use rnote_compose::helpers::{AabbHelpers, SplitOrder};
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 use rnote_compose::shapes::ShapeBehaviour;
-use rnote_compose::Color;
-use rnote_fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use serde::{Deserialize, Serialize};
-use slotmap::{HopSlotMap, SecondaryMap};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
@@ -99,6 +97,8 @@ pub enum EngineTask {
     },
     /// Requests that the typewriter cursor should be blinked/toggled
     BlinkTypewriterCursor,
+    /// Change the permanent zoom to the given value
+    Zoom(f64),
     /// Indicates that the application is quitting. Sent to quit the handler which receives the tasks.
     Quit,
 }
@@ -119,263 +119,6 @@ pub struct EngineConfig {
     export_prefs: ExportPrefs,
     #[serde(rename = "pen_sounds")]
     pen_sounds: bool,
-}
-
-// An engine snapshot, used when loading/saving the current document from/into a file.
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(default, rename = "engine_snapshot")]
-pub struct EngineSnapshot {
-    #[serde(rename = "document")]
-    pub document: Document,
-    #[serde(rename = "stroke_components")]
-    pub stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
-    #[serde(rename = "chrono_components")]
-    pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
-    #[serde(rename = "chrono_counter")]
-    pub chrono_counter: u32,
-}
-
-impl Default for EngineSnapshot {
-    fn default() -> Self {
-        Self {
-            document: Document::default(),
-            stroke_components: Arc::new(HopSlotMap::with_key()),
-            chrono_components: Arc::new(SecondaryMap::new()),
-            chrono_counter: 0,
-        }
-    }
-}
-
-impl EngineSnapshot {
-    /// Loads a snapshot from the bytes of a .rnote file.
-    ///
-    /// To import this snapshot into the current engine, use `import_snapshot()`.
-    pub async fn load_from_rnote_bytes(bytes: Vec<u8>) -> anyhow::Result<Self> {
-        let (snapshot_sender, snapshot_receiver) = oneshot::channel::<anyhow::Result<Self>>();
-
-        rayon::spawn(move || {
-            let result = || -> anyhow::Result<Self> {
-                let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
-                    .context("RnoteFile load_from_bytes() failed")?;
-
-                serde_json::from_value(rnote_file.engine_snapshot)
-                    .context("serde_json::from_value() for rnote_file.engine_snapshot failed")
-            };
-
-            if let Err(_data) = snapshot_sender.send(result()) {
-                log::error!("sending result to receiver in open_from_rnote_bytes() failed. Receiver already dropped");
-            }
-        });
-
-        snapshot_receiver.await?
-    }
-    /// Loads from the bytes of a Xournal++ .xopp file.
-    ///
-    /// To import this snapshot into the current engine, use `import_snapshot()`.
-    pub async fn load_from_xopp_bytes(
-        bytes: Vec<u8>,
-        xopp_import_prefs: XoppImportPrefs,
-    ) -> anyhow::Result<Self> {
-        let (snapshot_sender, snapshot_receiver) = oneshot::channel::<anyhow::Result<Self>>();
-
-        rayon::spawn(move || {
-            let result = || -> anyhow::Result<Self> {
-                let xopp_file = xoppformat::XoppFile::load_from_bytes(&bytes)?;
-
-                // Extract the largest width of all pages, add together all heights
-                let (doc_width, doc_height) = xopp_file
-                    .xopp_root
-                    .pages
-                    .iter()
-                    .map(|page| (page.width, page.height))
-                    .fold((0_f64, 0_f64), |prev, next| {
-                        // Max of width, sum heights
-                        (prev.0.max(next.0), prev.1 + next.1)
-                    });
-                let no_pages = xopp_file.xopp_root.pages.len() as u32;
-
-                let mut engine = RnoteEngine::default();
-
-                // We convert all values from the hardcoded 72 DPI of Xopp files to the preferred dpi
-                engine.document.format.dpi = xopp_import_prefs.dpi;
-
-                engine.document.x = 0.0;
-                engine.document.y = 0.0;
-                engine.document.width = crate::utils::convert_value_dpi(
-                    doc_width,
-                    xoppformat::XoppFile::DPI,
-                    xopp_import_prefs.dpi,
-                );
-                engine.document.height = crate::utils::convert_value_dpi(
-                    doc_height,
-                    xoppformat::XoppFile::DPI,
-                    xopp_import_prefs.dpi,
-                );
-
-                engine.document.format.width = crate::utils::convert_value_dpi(
-                    doc_width,
-                    xoppformat::XoppFile::DPI,
-                    xopp_import_prefs.dpi,
-                );
-                engine.document.format.height = crate::utils::convert_value_dpi(
-                    doc_height / (no_pages as f64),
-                    xoppformat::XoppFile::DPI,
-                    xopp_import_prefs.dpi,
-                );
-
-                if let Some(first_page) = xopp_file.xopp_root.pages.get(0) {
-                    if let xoppformat::XoppBackgroundType::Solid {
-                        color: _color,
-                        style: _style,
-                    } = &first_page.background.bg_type
-                    {
-                        // Xopp background styles are not compatible with Rnotes, so everything is plain for now
-                        engine.document.background.pattern = background::PatternStyle::None;
-                    }
-                }
-
-                // Offsetting as rnote has one global coordinate space
-                let mut offset = na::Vector2::<f64>::zeros();
-
-                for (_page_i, page) in xopp_file.xopp_root.pages.into_iter().enumerate() {
-                    for layers in page.layers.into_iter() {
-                        // import strokes
-                        for new_xoppstroke in layers.strokes.into_iter() {
-                            match Stroke::from_xoppstroke(
-                                new_xoppstroke,
-                                offset,
-                                xopp_import_prefs.dpi,
-                            ) {
-                                Ok((new_stroke, layer)) => {
-                                    engine.store.insert_stroke(new_stroke, Some(layer));
-                                }
-                                Err(e) => {
-                                    log::error!(
-                                        "from_xoppstroke() failed in open_from_xopp_bytes() with Err {:?}",
-                                        e
-                                    );
-                                }
-                            }
-                        }
-
-                        // import images
-                        for new_xoppimage in layers.images.into_iter() {
-                            match Stroke::from_xoppimage(
-                                new_xoppimage,
-                                offset,
-                                xopp_import_prefs.dpi,
-                            ) {
-                                Ok(new_image) => {
-                                    engine.store.insert_stroke(new_image, None);
-                                }
-                                Err(e) => {
-                                    log::error!(
-                                        "from_xoppimage() failed in open_from_xopp_bytes() with Err {:?}",
-                                        e
-                                    );
-                                }
-                            }
-                        }
-                    }
-
-                    // Only add to y offset, results in vertical pages
-                    offset[1] += crate::utils::convert_value_dpi(
-                        page.height,
-                        xoppformat::XoppFile::DPI,
-                        xopp_import_prefs.dpi,
-                    );
-                }
-
-                Ok(engine.take_snapshot())
-            };
-
-            if let Err(_data) = snapshot_sender.send(result()) {
-                log::error!("sending result to receiver in open_from_xopp_bytes() failed. Receiver already dropped");
-            }
-        });
-
-        snapshot_receiver.await?
-    }
-
-    pub fn optimize_for_printing(&mut self, keys: &[StrokeKey]) {
-        self.document.background.color = Color::WHITE;
-
-        self.document.background.pattern_color =
-            self.document.background.pattern_color.to_darkest_color();
-
-        let image_bounds = keys
-            .iter()
-            .filter_map(|key| {
-                if let Some(stroke) = self.stroke_components.get(*key) {
-                    return match stroke.as_ref() {
-                        Stroke::BitmapImage(image) => Some(image.rectangle.bounds()),
-                        Stroke::VectorImage(image) => Some(image.rectangle.bounds()),
-                        _ => None,
-                    };
-                }
-
-                None
-            })
-            .collect::<Vec<Aabb>>();
-
-        for key in keys {
-            if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
-                .get_mut(*key)
-                .map(Arc::make_mut)
-            {
-                let stroke_bounds = stroke.bounds();
-
-                // Using the stroke's bounds instead of hitboxes works for inclusion.
-                // If this is changed to intersection, all hitboxes must be checked individually.
-                if image_bounds
-                    .iter()
-                    .any(|bounds| bounds.contains(&stroke_bounds))
-                {
-                    continue;
-                }
-
-                match stroke {
-                    Stroke::BrushStroke(brush_stroke) => {
-                        if let Some(color) = brush_stroke.style.stroke_color() {
-                            brush_stroke
-                                .style
-                                .set_stroke_color(color.to_darkest_color());
-                        }
-
-                        if let Some(color) = brush_stroke.style.fill_color() {
-                            brush_stroke.style.set_fill_color(color.to_darkest_color());
-                        }
-                    }
-                    Stroke::ShapeStroke(shape_stroke) => {
-                        if let Some(color) = shape_stroke.style.stroke_color() {
-                            shape_stroke
-                                .style
-                                .set_stroke_color(color.to_darkest_color());
-                        }
-
-                        if let Some(color) = shape_stroke.style.fill_color() {
-                            shape_stroke.style.set_fill_color(color.to_darkest_color());
-                        }
-                    }
-                    Stroke::TextStroke(text_stroke) => {
-                        text_stroke.text_style.color =
-                            text_stroke.text_style.color.to_darkest_color();
-                    }
-                    _ => {}
-                };
-            }
-        }
-    }
-}
-
-pub const RNOTE_STROKE_CONTENT_MIME_TYPE: &str = "application/rnote-stroke-content";
-
-/// Stroke content. Used when copying/cutting/pasting a selection into/from the clipboard
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[serde(default, rename = "stroke_content")]
-pub struct StrokeContent {
-    #[serde(rename = "strokes")]
-    pub strokes: Vec<Arc<Stroke>>,
 }
 
 pub type EngineTaskSender = mpsc::UnboundedSender<EngineTask>;
@@ -527,10 +270,13 @@ impl RnoteEngine {
     ///
     /// The store then needs to update its rendering.
     pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) -> WidgetFlags {
-        self.document = snapshot.document;
-        self.store.import_from_snapshot(&snapshot);
+        let mut widget_flags = WidgetFlags::default();
 
-        self.current_pen_update_state()
+        self.document = snapshot.document;
+        widget_flags.merge(self.store.import_from_snapshot(&snapshot));
+        widget_flags.merge(self.current_pen_update_state());
+
+        widget_flags
     }
 
     /// Records the current store state and saves it as a history entry.
@@ -579,9 +325,12 @@ impl RnoteEngine {
 
     // Clears the entire store.
     pub fn clear(&mut self) -> WidgetFlags {
-        self.store.clear();
+        let mut widget_flags = WidgetFlags::default();
 
-        self.current_pen_update_state()
+        widget_flags.merge(self.store.clear());
+        widget_flags.merge(self.current_pen_update_state());
+
+        widget_flags
     }
 
     /// Handle a received task from tasks_rx.
@@ -591,11 +340,11 @@ impl RnoteEngine {
     /// ```rust, ignore
     ///
     /// glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
-    ///    let mut task_rx = canvas.engine().borrow_mut().regenerate_channel();
+    ///    let mut task_rx = canvas.engine_mut().regenerate_channel();
     ///
     ///    loop {
     ///        if let Some(task) = task_rx.next().await {
-    ///            let (widget_flags, quit) = canvas.engine().borrow_mut().handle_engine_task(task);
+    ///            let (widget_flags, quit) = canvas.engine_mut().handle_engine_task(task);
     ///            canvas.emit_handle_widget_flags(widget_flags);
 
     ///            if quit {
@@ -658,8 +407,19 @@ impl RnoteEngine {
                     widget_flags.redraw = true;
                 }
             }
+            EngineTask::Zoom(zoom) => {
+                widget_flags.merge(self.camera.zoom_temporarily_to(1.0));
+                widget_flags.merge(self.camera.zoom_to(zoom));
+
+                let all_strokes = self.store.stroke_keys_unordered();
+                self.store.set_rendering_dirty_for_strokes(&all_strokes);
+                widget_flags.merge(self.doc_resize_autoexpand());
+
+                self.background_regenerate_pattern();
+                self.update_rendering_current_viewport();
+            }
             EngineTask::Quit => {
-                widget_flags.merge(self.deinit_current_pen());
+                widget_flags.merge(self.set_active(false));
                 quit = true;
             }
         }
@@ -770,25 +530,32 @@ impl RnoteEngine {
             })
     }
 
-    /// Deinits the current pen.
-    ///
-    /// The pen must be reinitialized or reinstalled again to work as expected.
-    pub fn deinit_current_pen(&mut self) -> WidgetFlags {
-        self.penholder.deinit_current_pen()
+    /// Set the engine active or inactive.
+    pub fn set_active(&mut self, active: bool) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if active {
+            widget_flags.merge(self.reinstall_pen_current_style());
+            self.background_regenerate_pattern();
+            self.update_content_rendering_current_viewport();
+        } else {
+            self.clear_rendering();
+            widget_flags.merge(self.penholder.deinit_current_pen());
+        }
+        widget_flags
     }
 
-    /// Generates bounds for each page on the document which contains content.
-    pub fn pages_bounds_w_content(&self) -> Vec<Aabb> {
+    /// Generate bounds for each page on the document which contains content.
+    pub fn pages_bounds_w_content(&self, split_order: SplitOrder) -> Vec<Aabb> {
         let doc_bounds = self.document.bounds();
         let keys = self.store.stroke_keys_as_rendered();
 
         let strokes_bounds = self.store.strokes_bounds(&keys);
 
         let pages_bounds = doc_bounds
-            .split_extended_origin_aligned(na::vector![
-                self.document.format.width,
-                self.document.format.height
-            ])
+            .split_extended_origin_aligned(
+                na::vector![self.document.format.width, self.document.format.height],
+                split_order,
+            )
             .into_iter()
             .filter(|page_bounds| {
                 // Filter the pages out that don't intersect with any stroke
@@ -811,7 +578,7 @@ impl RnoteEngine {
 
     /// Generates bounds which contain all pages on the doc with content, extended to fit the current format.
     pub fn bounds_w_content_extended(&self) -> Option<Aabb> {
-        let pages_bounds = self.pages_bounds_w_content();
+        let pages_bounds = self.pages_bounds_w_content(SplitOrder::default());
 
         if pages_bounds.is_empty() {
             return None;
@@ -822,6 +589,13 @@ impl RnoteEngine {
                 .into_iter()
                 .fold(Aabb::new_invalid(), |prev, next| prev.merged(&next)),
         )
+    }
+
+    /// First zoom temporarily and then permanently after a timeout.
+    ///
+    /// Repeated calls to this function reset the timeout.
+    pub fn zoom_w_timeout(&mut self, zoom: f64) -> WidgetFlags {
+        self.camera.zoom_w_timeout(zoom, self.tasks_tx.clone())
     }
 
     /// Resizes the doc to the format and to fit all strokes.
@@ -888,21 +662,31 @@ impl RnoteEngine {
         true
     }
 
-    /// Update the camera and updates doc dimensions with the new offset and size.
+    /// Update the viewport offset of the camera, clamped to mins and maxs values depending on the document layout.
     ///
     /// Background and strokes rendering then need to be updated.
-    pub fn camera_update_offset_size(
-        &mut self,
-        new_offset: na::Vector2<f64>,
-        new_size: na::Vector2<f64>,
-    ) {
-        self.camera.offset = new_offset;
-        self.camera.size = new_size;
+    pub fn camera_set_offset(&mut self, offset: na::Vector2<f64>) -> WidgetFlags {
+        self.camera.set_offset(offset, &self.document)
+    }
+
+    /// Update the viewport size of the camera.
+    ///
+    /// Background and strokes rendering then need to be updated.
+    pub fn camera_set_size(&mut self, size: na::Vector2<f64>) -> WidgetFlags {
+        self.camera.set_size(size)
+    }
+
+    /// Update the viewport size of the camera.
+    ///
+    /// Background and strokes rendering then need to be updated.
+    pub fn camera_offset_mins_maxs(&mut self) -> (na::Vector2<f64>, na::Vector2<f64>) {
+        self.camera.offset_lower_upper(&self.document)
     }
 
     /// Update the current pen with the current engine state.
     ///
-    /// Needs to be called when the engine state was changed outside of pen events. ( e.g. trash all strokes, set strokes selected, etc. )
+    /// Needs to be called when the engine state was changed outside of pen events.
+    /// ( e.g. trash all strokes, set strokes selected, etc. )
     pub fn current_pen_update_state(&mut self) -> WidgetFlags {
         self.penholder.current_pen_update_state(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
@@ -915,12 +699,10 @@ impl RnoteEngine {
     }
 
     /// Fetch clipboard content from the current pen.
-    ///
-    /// Returns (the clipboard content, MIME-type).
     #[allow(clippy::type_complexity)]
     pub fn fetch_clipboard_content(
         &self,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
         self.penholder.fetch_clipboard_content(&EngineView {
             tasks_tx: self.tasks_tx(),
             pens_config: &self.pens_config,
@@ -932,12 +714,10 @@ impl RnoteEngine {
     }
 
     /// Cut clipboard content from the current pen.
-    ///
-    /// Returns (the clipboard content, MIME-type).
     #[allow(clippy::type_complexity)]
     pub fn cut_clipboard_content(
         &mut self,
-    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
         self.penholder.cut_clipboard_content(&mut EngineViewMut {
             tasks_tx: self.tasks_tx(),
             pens_config: &mut self.pens_config,

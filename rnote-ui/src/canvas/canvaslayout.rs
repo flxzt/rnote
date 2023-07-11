@@ -5,7 +5,7 @@ use gtk4::{
 };
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::helpers::AabbHelpers;
-use rnote_engine::{document::Layout, render};
+use rnote_engine::{render, Camera};
 use std::cell::Cell;
 
 mod imp {
@@ -13,14 +13,12 @@ mod imp {
 
     #[derive(Debug)]
     pub(crate) struct RnCanvasLayout {
-        pub(crate) autoexpand: Cell<bool>,
         pub(crate) old_viewport: Cell<Aabb>,
     }
 
     impl Default for RnCanvasLayout {
         fn default() -> Self {
             Self {
-                autoexpand: Cell::new(false),
                 old_viewport: Cell::new(Aabb::new_zero()),
             }
         }
@@ -47,23 +45,18 @@ mod imp {
             _for_size: i32,
         ) -> (i32, i32, i32, i32) {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
-            let total_zoom = canvas.engine().borrow().camera.total_zoom();
-            let document = canvas.engine().borrow().document;
+            let total_zoom = canvas.engine_ref().camera.total_zoom();
+            let document = canvas.engine_ref().document;
 
             if orientation == Orientation::Horizontal {
-                // let canvas_width = canvas.width() as f64;
-
                 let natural_width = (document.width * total_zoom
-                    + 2.0 * super::RnCanvasLayout::OVERSHOOT_HORIZONTAL)
+                    + 2.0 * Camera::OVERSHOOT_HORIZONTAL)
                     .ceil() as i32;
 
                 (0, natural_width, -1, -1)
             } else {
-                // let canvas_height = canvas.height() as f64;
-
-                let natural_height = (document.height * total_zoom
-                    + 2.0 * super::RnCanvasLayout::OVERSHOOT_VERTICAL)
-                    .ceil() as i32;
+                let natural_height =
+                    (document.height * total_zoom + 2.0 * Camera::OVERSHOOT_VERTICAL).ceil() as i32;
 
                 (0, natural_height, -1, -1)
             }
@@ -73,72 +66,38 @@ mod imp {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
             let hadj = canvas.hadjustment().unwrap();
             let vadj = canvas.vadjustment().unwrap();
-            let engine = canvas.engine();
-            let mut engine = engine.borrow_mut();
-            let total_zoom = engine.camera.total_zoom();
-            let document = engine.document;
-            let new_size = na::vector![f64::from(width), f64::from(height)];
+            let engine = &mut *canvas.engine_mut();
 
-            // Update the adjustments
-            let (h_lower, h_upper) = match document.layout {
-                Layout::FixedSize | Layout::ContinuousVertical => (
-                    document.x * total_zoom - super::RnCanvasLayout::OVERSHOOT_HORIZONTAL,
-                    (document.x + document.width) * total_zoom
-                        + super::RnCanvasLayout::OVERSHOOT_HORIZONTAL,
-                ),
-                Layout::SemiInfinite => (
-                    document.x * total_zoom - super::RnCanvasLayout::OVERSHOOT_HORIZONTAL,
-                    (document.x + document.width) * total_zoom,
-                ),
-                Layout::Infinite => (
-                    document.x * total_zoom,
-                    (document.x + document.width) * total_zoom,
-                ),
-            };
-
-            let (v_lower, v_upper) = match document.layout {
-                Layout::FixedSize | Layout::ContinuousVertical => (
-                    document.y * total_zoom - super::RnCanvasLayout::OVERSHOOT_VERTICAL,
-                    (document.y + document.height) * total_zoom
-                        + super::RnCanvasLayout::OVERSHOOT_VERTICAL,
-                ),
-                Layout::SemiInfinite => (
-                    document.y * total_zoom - super::RnCanvasLayout::OVERSHOOT_VERTICAL,
-                    (document.y + document.height) * total_zoom,
-                ),
-                Layout::Infinite => (
-                    document.y * total_zoom,
-                    (document.y + document.height) * total_zoom,
-                ),
-            };
+            let (offset_mins, offset_maxs) = engine.camera_offset_mins_maxs();
+            let new_size = na::vector![width as f64, height as f64];
 
             hadj.configure(
+                // This gets clamped to the lower and upper values
                 hadj.value(),
-                h_lower,
-                h_upper,
+                offset_mins[0],
+                offset_maxs[0],
                 0.1 * new_size[0],
                 0.9 * new_size[0],
                 new_size[0],
             );
 
             vadj.configure(
+                // This gets clamped to the lower and upper values
                 vadj.value(),
-                v_lower,
-                v_upper,
+                offset_mins[1],
+                offset_maxs[1],
                 0.1 * new_size[1],
                 0.9 * new_size[1],
                 new_size[1],
             );
 
-            // Update the camera in the engine
-            engine.camera_update_offset_size(na::vector![hadj.value(), vadj.value()], new_size);
-            // only autoexpand when "flagged"
-            if self.autoexpand.get() {
-                self.autoexpand.set(false);
-                let _ = engine.doc_expand_autoexpand();
-            }
+            let new_offset = na::vector![hadj.value(), vadj.value()];
 
-            let viewport = engine.camera.viewport();
+            // Update the camera
+            let _ = engine.camera_set_offset(new_offset);
+            let _ = engine.camera_set_size(new_size);
+
+            let new_viewport = engine.camera.viewport();
             let old_viewport = self.old_viewport.get();
 
             // We only extend the viewport by a (tweakable) fraction of the margin, because we want to trigger rendering before we reach it.
@@ -154,8 +113,8 @@ mod imp {
 
             // On zoom outs or viewport translations this will evaluate true, so we render the strokes that are coming into view.
             // But after zoom ins we need to update old_viewport with layout_manager.update_state()
-            if !old_viewport_extended.contains(&viewport) {
-                self.old_viewport.set(viewport);
+            if !old_viewport_extended.contains(&new_viewport) {
+                self.old_viewport.set(new_viewport);
 
                 // Because we don't set the rendering of strokes that are already in the view dirty, we only rerender those that may come into the view and are flagged dirty.
                 engine.update_content_rendering_current_viewport();
@@ -176,21 +135,12 @@ impl Default for RnCanvasLayout {
 }
 
 impl RnCanvasLayout {
-    pub(crate) const OVERSHOOT_VERTICAL: f64 = 96.0;
-    pub(crate) const OVERSHOOT_HORIZONTAL: f64 = 96.0;
-
     pub(crate) fn new() -> Self {
         glib::Object::new()
     }
 
-    pub(crate) fn flag_allocate_autoexpand(&self, autoexpand: bool) {
-        self.imp().autoexpand.set(autoexpand);
-    }
-
     // needs to be called after zooming
-    pub(crate) fn update_state(&self, canvas: &RnCanvas) {
-        self.imp()
-            .old_viewport
-            .set(canvas.engine().borrow().camera.viewport());
+    pub(crate) fn update_old_viewport(&self, viewport: Aabb) {
+        self.imp().old_viewport.set(viewport);
     }
 }

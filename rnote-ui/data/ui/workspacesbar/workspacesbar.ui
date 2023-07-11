@@ -49,21 +49,29 @@
         <property name="halign">fill</property>
         <property name="valign">end</property>
         <child>
-          <object class="GtkButton" id="move_selected_workspace_up_button">
-            <property name="icon_name">up-symbolic</property>
-            <property name="tooltip_text" translatable="yes">Move Selected Workspace Up</property>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
             <style>
-              <class name="flat" />
+              <class name="linked"/>
             </style>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="move_selected_workspace_down_button">
-            <property name="icon_name">down-symbolic</property>
-            <property name="tooltip_text" translatable="yes">Move Selected Workspace Down</property>
-            <style>
-              <class name="flat" />
-            </style>
+            <child>
+              <object class="GtkButton" id="move_selected_workspace_up_button">
+                <property name="icon_name">up-symbolic</property>
+                <property name="tooltip_text" translatable="yes">Move Selected Workspace Up</property>
+                <style>
+                  <class name="flat" />
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="move_selected_workspace_down_button">
+                <property name="icon_name">down-symbolic</property>
+                <property name="tooltip_text" translatable="yes">Move Selected Workspace Down</property>
+                <style>
+                  <class name="flat" />
+                </style>
+              </object>
+            </child>
           </object>
         </child>
         <child>

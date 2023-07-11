@@ -120,10 +120,10 @@ pub(crate) fn draw_fill_to_gtk_snapshot(snapshot: &Snapshot, rect: Aabb, color: 
     );
 }
 
-/// Draw bounds, positions, .. for visual debugging purposes.
+/// Draw some engine statistics for debugging purposes.
 ///
-/// Expects that the snapshot is transformed in surface coords.
-pub(crate) fn draw_statistics_overlay_to_gtk_snapshot(
+/// Expects that the snapshot is untransformed in surface coordinate space.
+pub(crate) fn draw_statistics_to_gtk_snapshot(
     snapshot: &Snapshot,
     engine: &RnoteEngine,
     surface_bounds: Aabb,
@@ -186,8 +186,8 @@ pub(crate) fn draw_statistics_overlay_to_gtk_snapshot(
     Ok(())
 }
 
-/// Draw bounds, positions, .. for visual debugging purposes.
-pub(crate) fn draw_debug_to_gtk_snapshot(
+/// Draw stroke bounds, positions, etc. for visual debugging purposes.
+pub(crate) fn draw_stroke_debug_to_gtk_snapshot(
     snapshot: &Snapshot,
     engine: &RnoteEngine,
     surface_bounds: Aabb,

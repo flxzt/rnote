@@ -20,6 +20,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/groupediconpicker/groupediconpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/groupediconpicker/groupediconpickergroup.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/strokewidthpicker.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/strokecontentpreview.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penshortcutrow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/penssidebar.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/brushpage.ui</file>
@@ -32,8 +33,9 @@
         <file preprocess="xml-stripblanks">ui/dialogs/import.ui</file>
         <file preprocess="xml-stripblanks">ui/dialogs/export.ui</file>
         <file compressed="true">icons/scalable/apps/@APP_NAME@.svg</file>
-        <file compressed="true">icons/symbolic/apps/@APP_NAME@-symbolic.svg</file>
         <file compressed="true">icons/scalable/apps/@APP_NAME@-devel.svg</file>
+        <file compressed="true">icons/symbolic/apps/@APP_NAME@-symbolic.svg</file>
+        <file compressed="true">icons/scalable/mimetypes/application-@APP_NAME@.svg</file>
         <file compressed="true">icons/scalable/actions/settings-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dir-actions-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/misc-menu-symbolic.svg</file>
@@ -41,7 +43,7 @@
         <file compressed="true">icons/scalable/actions/appwindow-fullscreen-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/flap-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/focus-mode-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/tab-new-filled-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/tab-new-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/zoom-in-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/zoom-out-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/edit-undo-symbolic.svg</file>
@@ -90,6 +92,7 @@
         <file compressed="true">icons/scalable/actions/stroke-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/fill-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/doc-save-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/doc-create-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-trash-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-duplicate-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-invert-color-symbolic.svg</file>
@@ -117,6 +120,7 @@
         <file compressed="true">icons/scalable/actions/pen-tools-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-verticalspacetool-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-offsetcameratool-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-tools-zoomtool-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/text-bold-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/text-indent-less-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/text-indent-more-symbolic.svg</file>

@@ -10,10 +10,11 @@ use crate::{
     strokewidthpicker::StrokeWidthPreviewStyle, workspacebrowser::workspacesbar::RnWorkspaceRow,
     workspacebrowser::RnFileRow, workspacebrowser::RnWorkspacesBar, RnAppMenu, RnAppWindow,
     RnCanvas, RnCanvasMenu, RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays,
-    RnPensSideBar, RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
+    RnPensSideBar, RnSettingsPanel, RnStrokeContentPreview, RnStrokeWidthPicker, RnUnitEntry,
+    RnWorkspaceBrowser,
 };
 use adw::subclass::prelude::AdwApplicationImpl;
-use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
+use gtk4::{gio, glib, glib::clone, prelude::*, subclass::prelude::*};
 
 mod imp {
     use super::*;
@@ -54,7 +55,11 @@ mod imp {
                 .map(|w| w.downcast::<RnAppWindow>().unwrap())
             {
                 if let Some(input_file) = input_file {
-                    appwindow.open_file_w_dialogs(input_file, None, true);
+                    glib::MainContext::default().spawn_local(
+                        clone!(@weak appwindow => async move {
+                            appwindow.open_file_w_dialogs(input_file, None, true).await;
+                        }),
+                    );
                 }
             } else {
                 self.new_appwindow_init_show(input_file);
@@ -83,7 +88,9 @@ mod imp {
 
             // Loading in input file in the first tab, if Some
             if let Some(input_file) = input_file {
-                appwindow.open_file_w_dialogs(input_file, None, false);
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    appwindow.open_file_w_dialogs(input_file, None, false).await;
+                }));
             }
         }
 
@@ -118,6 +125,7 @@ mod imp {
             RnStrokeWidthSetter::static_type();
             RnStrokeWidthPreview::static_type();
             StrokeWidthPreviewStyle::static_type();
+            RnStrokeContentPreview::static_type();
 
             self.obj().set_resource_base_path(Some(config::APP_IDPATH));
             let resource = gio::Resource::load(

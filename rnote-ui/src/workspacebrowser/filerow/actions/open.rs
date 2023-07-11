@@ -7,9 +7,11 @@ use gtk4::{gio, glib, glib::clone};
 pub(crate) fn open(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleAction {
     let action_open_file = gio::SimpleAction::new("open-file", None);
     action_open_file.connect_activate(
-        clone!(@weak filerow as filerow, @weak appwindow => move |_action_open_file, _| {
+        clone!(@weak filerow, @weak appwindow => move |_action_open_file, _| {
             if let Some(current_file) = filerow.current_file() {
-                 appwindow.open_file_w_dialogs(current_file, None, true);
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    appwindow.open_file_w_dialogs(current_file, None, true).await;
+                }));
             }
         }),
     );

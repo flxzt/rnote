@@ -153,13 +153,15 @@ impl Composer<SmoothOptions> for PenPath {
         let Some(color) = options.stroke_color else {
             return;
         };
-        cx.save().unwrap();
+        let n_segs = self.segments.len();
         let mut single_pos = true;
         let mut prev = self.start;
 
+        cx.save().unwrap();
+
         for seg in self.segments.iter() {
-            if seg.end().pos == self.start.pos {
-                continue;
+            if seg.end().pos == self.start.pos && n_segs <= 1 {
+                break;
             } else {
                 single_pos = false;
             }
@@ -253,7 +255,7 @@ impl Composer<SmoothOptions> for PenPath {
         }
 
         // Single element/position strokes need special treatment to be rendered
-        if self.segments.is_empty() || single_pos {
+        if n_segs == 0 || single_pos {
             let start_width = options
                 .pressure_curve
                 .apply(options.stroke_width, self.start.pressure);

@@ -17,7 +17,8 @@ use gtk4::{
     PropertyExpression, ScrolledWindow, Separator, SignalListItemFactory, SingleSelection,
     SortListModel, SorterChange, Widget,
 };
-use std::path::PathBuf;
+use std::cell::RefCell;
+use std::path::{Path, PathBuf};
 
 mod imp {
     use super::*;
@@ -27,6 +28,7 @@ mod imp {
     pub(crate) struct RnWorkspaceBrowser {
         pub(crate) action_group: gio::SimpleActionGroup,
         pub(crate) files_dirlist: DirectoryList,
+        pub(crate) files_selection_model: RefCell<SingleSelection>,
 
         #[template_child]
         pub(crate) grid: TemplateChild<Grid>,
@@ -58,6 +60,7 @@ mod imp {
             Self {
                 action_group: gio::SimpleActionGroup::new(),
                 files_dirlist,
+                files_selection_model: RefCell::new(SingleSelection::default()),
 
                 grid: TemplateChild::<Grid>::default(),
                 dir_box: TemplateChild::<gtk4::Box>::default(),
@@ -97,6 +100,7 @@ mod imp {
         }
 
         fn dispose(&self) {
+            self.dispose_template();
             while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
@@ -218,36 +222,73 @@ impl RnWorkspaceBrowser {
         let primary_list_factory = SignalListItemFactory::new();
 
         primary_list_factory.connect_setup(clone!(@weak appwindow => move |_, list_item| {
-        let list_item = list_item.downcast_ref::<ListItem>().unwrap();
+            let list_item = list_item.downcast_ref::<ListItem>().unwrap();
 
-        let filerow = RnFileRow::new();
-        filerow.init(&appwindow);
+            let filerow = RnFileRow::new();
+            filerow.init(&appwindow);
+            list_item.set_child(Some(&filerow));
 
-        list_item.set_child(Some(&filerow));
+            let list_item_expr = ConstantExpression::new(list_item);
+            let fileinfo_expr =
+                PropertyExpression::new(ListItem::static_type(), Some(&list_item_expr), "item");
 
-        let list_item_expr = ConstantExpression::new(list_item);
-        let fileinfo_expr =
-            PropertyExpression::new(ListItem::static_type(), Some(&list_item_expr), "item");
+            let file_expr = fileinfo_expr.chain_closure::<Option<gio::File>>(closure!(
+                |_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
+                    fileinfo_obj
+                        .map(|fileinfo_obj| {
+                            fileinfo_obj
+                                .downcast::<gio::FileInfo>()
+                                .unwrap()
+                                .attribute_object("standard::file")
+                                .unwrap()
+                                .downcast::<gio::File>()
+                                .unwrap()
+                        })
+                        .to_value()
+                }
+            ));
 
-        let file_expr = fileinfo_expr.chain_closure::<Option<gio::File>>(closure!(
-            |_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
-                fileinfo_obj
-                    .map(|fileinfo_obj| {
-                        fileinfo_obj
+            let content_provider_expr =
+                fileinfo_expr.chain_closure::<gdk::ContentProvider>(closure!(
+                    |_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
+                        if let Some(fileinfo_obj) = fileinfo_obj {
+                            if let Some(file) = fileinfo_obj
+                                .downcast::<gio::FileInfo>()
+                                .unwrap()
+                                .attribute_object("standard::file")
+                            {
+                                let file = file
+                                    .downcast::<gio::File>()
+                                    .expect("failed to downcast::<gio::File>() from file GObject");
+
+                                return gdk::ContentProvider::for_value(&file.to_value());
+                            }
+                        }
+
+                        gdk::ContentProvider::for_value(&None::<gio::File>.to_value())
+                    }
+                ));
+
+            let icon_name_expr =
+                fileinfo_expr.chain_closure::<gio::ThemedIcon>(closure!(|_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
+                    if let Some(fileinfo_obj) = fileinfo_obj {
+                        if let Some(themed_icon) = fileinfo_obj
                             .downcast::<gio::FileInfo>()
                             .unwrap()
-                            .attribute_object("standard::file")
-                            .unwrap()
-                            .downcast::<gio::File>()
-                            .unwrap()
-                    })
-                    .to_value()
-            }
-        ));
+                            .attribute_object("standard::icon")
+                        {
+                            return themed_icon.downcast::<gio::ThemedIcon>().unwrap();
+                        }
+                    }
 
-        let content_provider_expr =
-            fileinfo_expr.chain_closure::<gdk::ContentProvider>(closure!(
-                |_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
+                    gio::ThemedIcon::from_names(&[
+                        "workspace-folder-symbolic",
+                        "folder-documents-symbolic",
+                    ])
+                }));
+
+            let basename_expr =
+                fileinfo_expr.chain_closure::<String>(closure!(|_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
                     if let Some(fileinfo_obj) = fileinfo_obj {
                         if let Some(file) = fileinfo_obj
                             .downcast::<gio::FileInfo>()
@@ -258,60 +299,22 @@ impl RnWorkspaceBrowser {
                                 .downcast::<gio::File>()
                                 .expect("failed to downcast::<gio::File>() from file GObject");
 
-                            return gdk::ContentProvider::for_value(&file.to_value());
+                            return String::from(
+                                file.basename()
+                                    .expect("failed to get file.basename()")
+                                    .to_string_lossy(),
+                            );
                         }
                     }
 
-                    gdk::ContentProvider::for_value(&None::<gio::File>.to_value())
-                }
-            ));
+                    String::from("")
+                }));
 
-        let icon_name_expr =
-            fileinfo_expr.chain_closure::<gio::ThemedIcon>(closure!(|_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
-                if let Some(fileinfo_obj) = fileinfo_obj {
-                    if let Some(themed_icon) = fileinfo_obj
-                        .downcast::<gio::FileInfo>()
-                        .unwrap()
-                        .attribute_object("standard::icon")
-                    {
-                        return themed_icon.downcast::<gio::ThemedIcon>().unwrap();
-                    }
-                }
-
-                gio::ThemedIcon::from_names(&[
-                    "workspace-folder-symbolic",
-                    "folder-documents-symbolic",
-                ])
-            }));
-
-        let basename_expr =
-            fileinfo_expr.chain_closure::<String>(closure!(|_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
-                if let Some(fileinfo_obj) = fileinfo_obj {
-                    if let Some(file) = fileinfo_obj
-                        .downcast::<gio::FileInfo>()
-                        .unwrap()
-                        .attribute_object("standard::file")
-                    {
-                        let file = file
-                            .downcast::<gio::File>()
-                            .expect("failed to downcast::<gio::File>() from file GObject");
-
-                        return String::from(
-                            file.basename()
-                                .expect("failed to get file.basename()")
-                                .to_string_lossy(),
-                        );
-                    }
-                }
-
-                String::from("")
-            }));
-
-        file_expr.bind(&filerow, "current-file", Widget::NONE);
-        basename_expr.bind(&filerow.file_label(), "label", Widget::NONE);
-        icon_name_expr.bind(&filerow.file_image(), "gicon", Widget::NONE);
-        content_provider_expr.bind(&filerow.drag_source(), "content", Widget::NONE);
-    }));
+            file_expr.bind(&filerow, "current-file", Widget::NONE);
+            basename_expr.bind(&filerow.file_label(), "label", Widget::NONE);
+            icon_name_expr.bind(&filerow.file_image(), "gicon", Widget::NONE);
+            content_provider_expr.bind(&filerow.drag_source(), "content", Widget::NONE);
+        }));
 
         let filefilter = FileFilter::new();
         filefilter.add_mime_type("application/rnote");
@@ -403,7 +406,8 @@ impl RnWorkspaceBrowser {
         let multi_sort_model =
             SortListModel::new(Some(filter_listmodel), Some(multisorter.clone()));
 
-        let primary_selection_model = SingleSelection::new(Some(multi_sort_model));
+        *self.imp().files_selection_model.borrow_mut() =
+            SingleSelection::new(Some(multi_sort_model));
 
         self.imp()
             .files_listview
@@ -412,21 +416,23 @@ impl RnWorkspaceBrowser {
         self.imp()
             .files_listview
             .get()
-            .set_model(Some(&primary_selection_model));
+            .set_model(Some(&*self.imp().files_selection_model.borrow()));
 
         self.imp().files_listview.get().connect_activate(clone!(@weak filefilter, @weak multisorter, @weak appwindow => move |files_listview, position| {
-                let model = files_listview.model().expect("model for primary_listview does not exist");
-                let fileinfo = model.item(position)
-                    .expect("selected item in primary_listview does not exist")
-                    .downcast::<gio::FileInfo>().expect("selected item in primary_list is not of Type `gio::FileInfo`");
+            let model = files_listview.model().expect("model for primary_listview does not exist");
+            let fileinfo = model.item(position)
+                .expect("selected item in primary_listview does not exist")
+                .downcast::<gio::FileInfo>().expect("selected item in primary_list is not of Type `gio::FileInfo`");
 
-                if let Some(input_file) = fileinfo.attribute_object("standard::file") {
-                    appwindow.open_file_w_dialogs(input_file.downcast::<gio::File>().unwrap(), None, true);
-                };
+            if let Some(input_file) = fileinfo.attribute_object("standard::file") {
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    appwindow.open_file_w_dialogs(input_file.downcast::<gio::File>().unwrap(), None, true).await;
+                }));
+            };
 
-                multisorter.changed(SorterChange::Different);
-                filefilter.changed(FilterChange::Different);
-            }));
+            multisorter.changed(SorterChange::Different);
+            filefilter.changed(FilterChange::Different);
+        }));
 
         self.imp().files_dirlist.connect_file_notify(
                 clone!(@weak self as workspacebrowser, @weak appwindow, @weak filefilter, @weak multisorter => move |files_dirlist| {
@@ -442,5 +448,39 @@ impl RnWorkspaceBrowser {
                 multisorter.changed(SorterChange::Different);
                 filefilter.changed(FilterChange::Different);
             }));
+    }
+
+    /// Query the selection model to return the position of the file in the list
+    /// that matches with the given path.
+    pub(crate) fn query_selected_file_path_pos(
+        &self,
+        file_path: impl AsRef<Path>,
+    ) -> Option<usize> {
+        self.imp()
+            .files_selection_model
+            .borrow()
+            .iter::<glib::Object>()
+            .map(|o| o.unwrap().downcast::<gio::FileInfo>().unwrap())
+            .enumerate()
+            .find(move |(_, info)| {
+                let file = info
+                    .attribute_object("standard::file")
+                    .unwrap()
+                    .downcast::<gio::File>()
+                    .unwrap();
+                let Some(p) = file.path() else {
+                    return false;
+                };
+                p == file_path.as_ref()
+            })
+            .map(|(i, _)| i)
+    }
+
+    /// Set the selected file in the list with its position/index.
+    pub(crate) fn dirlist_set_selected(&self, pos: usize) {
+        self.imp()
+            .files_selection_model
+            .borrow()
+            .set_selected(pos as u32);
     }
 }

@@ -54,9 +54,6 @@ impl EraserConfig {
     pub const WIDTH_DEFAULT: f64 = 12.0;
 
     pub fn eraser_bounds(&self, element: Element) -> Aabb {
-        Aabb::from_half_extents(
-            na::Point2::from(element.pos),
-            na::Vector2::repeat(self.width * 0.5),
-        )
+        Aabb::from_half_extents(element.pos.into(), na::Vector2::repeat(self.width * 0.5))
     }
 }

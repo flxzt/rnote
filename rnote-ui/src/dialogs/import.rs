@@ -81,12 +81,15 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
     }
 }
 
+/// Imports the file as Pdf with an import dialog.
+///
+/// Returns true when the file was imported, else false.
 pub(crate) async fn dialog_import_pdf_w_prefs(
     appwindow: &RnAppWindow,
     canvas: &RnCanvas,
     input_file: gio::File,
     target_pos: Option<na::Vector2<f64>>,
-) -> anyhow::Result<()> {
+) -> anyhow::Result<bool> {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );
@@ -239,19 +242,23 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
             canvas
                 .load_in_pdf_bytes(bytes.to_vec(), target_pos, Some(page_range))
                 .await?;
+            Ok(true)
         }
         _ => {
             // Cancel
+            Ok(false)
         }
     }
-    Ok(())
 }
 
+/// Imports the file as Xopp with an import dialog.
+///
+/// Returns true when the file was imported, else false.
 pub(crate) async fn dialog_import_xopp_w_prefs(
     appwindow: &RnAppWindow,
     canvas: &RnCanvas,
     input_file: gio::File,
-) -> anyhow::Result<()> {
+) -> anyhow::Result<bool> {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );
@@ -275,10 +282,11 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
         ResponseType::Apply => {
             let (bytes, _) = input_file.load_bytes_future().await?;
             canvas.load_in_xopp_bytes(bytes.to_vec()).await?;
+            Ok(true)
         }
         _ => {
             // Cancel
+            Ok(false)
         }
     }
-    Ok(())
 }

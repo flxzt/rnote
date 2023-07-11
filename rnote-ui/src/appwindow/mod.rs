@@ -506,9 +506,12 @@ impl RnAppWindow {
                     let wrapper = appwindow.new_canvas_wrapper();
                     let canvas = wrapper.canvas();
                     appwindow.overlays().progressbar_start_pulsing();
-                    dialogs::import::dialog_import_xopp_w_prefs(appwindow, &canvas, input_file)
-                        .await?;
-                    appwindow.append_wrapper_new_tab(&wrapper);
+                    let file_imported =
+                        dialogs::import::dialog_import_xopp_w_prefs(appwindow, &canvas, input_file)
+                            .await?;
+                    if file_imported {
+                        appwindow.append_wrapper_new_tab(&wrapper);
+                    }
                 }
                 crate::utils::FileType::PdfFile => {
                     let canvas = appwindow.active_tab_wrapper().canvas();

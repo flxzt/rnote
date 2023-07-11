@@ -703,23 +703,23 @@ impl RnSettingsPanel {
                 }),
             );
 
-            imp.background_pattern_invert_color_button.get().connect_clicked(
+        imp.background_pattern_invert_color_button.get().connect_clicked(
                 clone!(@weak self as settings_panel, @weak appwindow => move |_| {
                     let canvas = appwindow.active_tab_wrapper().canvas();
-    
+
                     let widget_flags = {
                         let mut engine = canvas.engine_mut();
-    
+
                         engine.document.background.color = engine.document.background.color.to_inverted_brightness_color();
                         engine.document.background.pattern_color = engine.document.background.pattern_color.to_inverted_brightness_color();
                         engine.document.format.border_color = engine.document.format.border_color.to_inverted_brightness_color();
-    
+
                         WidgetFlags {
                             refresh_ui: true,
                             ..Default::default()
                         }
                     };
-    
+
                     appwindow.handle_widget_flags(widget_flags, &canvas);
                     canvas.background_regenerate_pattern();
                 }),

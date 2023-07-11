@@ -255,6 +255,18 @@ impl RnStrokeContentPreview {
     }
 
     #[allow(unused)]
+    pub(crate) fn optimize_printing(&self) -> bool {
+        self.imp().paintable.optimize_printing()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_optimize_printing(&self, optimize_printing: bool) {
+        self.imp()
+            .paintable
+            .set_optimize_printing(optimize_printing);
+    }
+
+    #[allow(unused)]
     pub(crate) fn margin(&self) -> f64 {
         self.imp().paintable.margin()
     }

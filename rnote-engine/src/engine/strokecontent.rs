@@ -69,6 +69,7 @@ impl StrokeContent {
         &self,
         with_background: bool,
         with_pattern: bool,
+        optimize_printing: bool,
         margin: f64,
     ) -> anyhow::Result<Option<Svg>> {
         let Some(bounds) = self.bounds() else {
@@ -76,18 +77,93 @@ impl StrokeContent {
         };
         let bounds_loosened = bounds.loosened(margin);
         let mut svg = match (with_background, self.background) {
-            (true, Some(background)) => background.gen_svg(bounds_loosened, with_pattern)?,
+            (true, Some(background)) => {
+                background.gen_svg(bounds_loosened, with_pattern, optimize_printing)?
+            }
             _ => Svg {
                 svg_data: String::new(),
                 bounds,
             },
         };
+
+        let image_bounds = self
+            .strokes
+            .iter()
+            .filter_map(|stroke| match stroke.as_ref() {
+                Stroke::BitmapImage(image) => Some(image.rectangle.bounds()),
+                Stroke::VectorImage(image) => Some(image.rectangle.bounds()),
+                _ => None,
+            })
+            .collect::<Vec<Aabb>>();
+
         svg.merge([Svg::gen_with_piet_cairo_backend(
             |piet_cx| {
                 piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
                 piet_cx.clip(bounds.to_kurbo_rect());
                 for stroke in self.strokes.iter() {
+                    let stroke_bounds = stroke.bounds();
+
                     stroke.draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
+
+                    if optimize_printing
+                        && image_bounds
+                            .iter()
+                            .all(|bounds| !bounds.contains(&stroke_bounds))
+                    {
+                        // Using the stroke's bounds instead of hitboxes works for inclusion.
+                        // If this is changed to intersection, all hitboxes must be checked individually.
+
+                        match stroke.as_ref() {
+                            Stroke::BrushStroke(brush_stroke) => {
+                                let mut modified_brush_stroke = brush_stroke.clone();
+
+                                if let Some(color) = modified_brush_stroke.style.stroke_color() {
+                                    modified_brush_stroke
+                                        .style
+                                        .set_stroke_color(color.to_darkest_color());
+                                }
+
+                                if let Some(color) = modified_brush_stroke.style.fill_color() {
+                                    modified_brush_stroke
+                                        .style
+                                        .set_fill_color(color.to_darkest_color());
+                                }
+
+                                modified_brush_stroke
+                                    .draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
+                            }
+                            Stroke::ShapeStroke(shape_stroke) => {
+                                let mut modified_shape_stroke = shape_stroke.clone();
+
+                                if let Some(color) = modified_shape_stroke.style.stroke_color() {
+                                    modified_shape_stroke
+                                        .style
+                                        .set_stroke_color(color.to_darkest_color());
+                                }
+
+                                if let Some(color) = modified_shape_stroke.style.fill_color() {
+                                    modified_shape_stroke
+                                        .style
+                                        .set_fill_color(color.to_darkest_color());
+                                }
+
+                                modified_shape_stroke
+                                    .draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
+                            }
+                            Stroke::TextStroke(text_stroke) => {
+                                let mut modified_text_stroke = text_stroke.clone();
+
+                                modified_text_stroke.text_style.color =
+                                    modified_text_stroke.text_style.color.to_darkest_color();
+
+                                modified_text_stroke
+                                    .draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
+                            }
+                            _ => stroke.draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?,
+                        };
+                    } else {
+                        stroke.draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
+                    }
                 }
                 piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
                 Ok(())
@@ -106,6 +182,7 @@ impl StrokeContent {
         cairo_cx: &cairo::Context,
         draw_background: bool,
         draw_pattern: bool,
+        optimize_printing: bool,
         margin: f64,
         image_scale: f64,
     ) -> anyhow::Result<()> {
@@ -123,7 +200,12 @@ impl StrokeContent {
 
         if draw_background {
             if let Some(background) = &self.background {
-                background.draw_to_cairo(cairo_cx, bounds_loosened, draw_pattern)?;
+                background.draw_to_cairo(
+                    cairo_cx,
+                    bounds_loosened,
+                    draw_pattern,
+                    optimize_printing,
+                )?;
             }
         }
 
@@ -136,9 +218,121 @@ impl StrokeContent {
         );
         cairo_cx.clip();
 
+        let image_bounds = self
+            .strokes
+            .iter()
+            .filter_map(|stroke| match stroke.as_ref() {
+                Stroke::BitmapImage(image) => Some(image.rectangle.bounds()),
+                Stroke::VectorImage(image) => Some(image.rectangle.bounds()),
+                _ => None,
+            })
+            .collect::<Vec<Aabb>>();
+
         let mut piet_cx = piet_cairo::CairoRenderContext::new(cairo_cx);
         for stroke in self.strokes.iter() {
-            stroke.draw(&mut piet_cx, image_scale)?;
+            let stroke_bounds = stroke.bounds();
+
+            // if optimize_printing
+            //     && image_bounds
+            //         .iter()
+            //         .all(|bounds| !bounds.contains(&stroke_bounds))
+            // {
+            //     // Using the stroke's bounds instead of hitboxes works for inclusion.
+            //     // If this is changed to intersection, all hitboxes must be checked individually.
+
+            //     let mut stroke = stroke.as_ref().clone();
+
+            //     match &mut stroke {
+            //         Stroke::BrushStroke(brush_stroke) => {
+            //             if let Some(color) = brush_stroke.style.stroke_color() {
+            //                 brush_stroke
+            //                     .style
+            //                     .set_stroke_color(color.to_darkest_color());
+            //             }
+
+            //             if let Some(color) = brush_stroke.style.fill_color() {
+            //                 brush_stroke.style.set_fill_color(color.to_darkest_color());
+            //             }
+            //         }
+            //         Stroke::ShapeStroke(shape_stroke) => {
+            //             if let Some(color) = shape_stroke.style.stroke_color() {
+            //                 shape_stroke
+            //                     .style
+            //                     .set_stroke_color(color.to_darkest_color());
+            //             }
+
+            //             if let Some(color) = shape_stroke.style.fill_color() {
+            //                 shape_stroke.style.set_fill_color(color.to_darkest_color());
+            //             }
+            //         }
+            //         Stroke::TextStroke(text_stroke) => {
+            //             text_stroke.text_style.color =
+            //                 text_stroke.text_style.color.to_darkest_color();
+            //         }
+            //         _ => {}
+            //     };
+
+            //     stroke.draw(&mut piet_cx, image_scale)?;
+            // } else {
+            //     stroke.draw(&mut piet_cx, image_scale)?;
+            // }
+
+            if optimize_printing
+                && image_bounds
+                    .iter()
+                    .all(|bounds| !bounds.contains(&stroke_bounds))
+            {
+                // Using the stroke's bounds instead of hitboxes works for inclusion.
+                // If this is changed to intersection, all hitboxes must be checked individually.
+
+                match stroke.as_ref() {
+                    Stroke::BrushStroke(brush_stroke) => {
+                        let mut modified_brush_stroke = brush_stroke.clone();
+
+                        if let Some(color) = modified_brush_stroke.style.stroke_color() {
+                            modified_brush_stroke
+                                .style
+                                .set_stroke_color(color.to_darkest_color());
+                        }
+
+                        if let Some(color) = modified_brush_stroke.style.fill_color() {
+                            modified_brush_stroke
+                                .style
+                                .set_fill_color(color.to_darkest_color());
+                        }
+
+                        modified_brush_stroke.draw(&mut piet_cx, image_scale)?;
+                    }
+                    Stroke::ShapeStroke(shape_stroke) => {
+                        let mut modified_shape_stroke = shape_stroke.clone();
+
+                        if let Some(color) = modified_shape_stroke.style.stroke_color() {
+                            modified_shape_stroke
+                                .style
+                                .set_stroke_color(color.to_darkest_color());
+                        }
+
+                        if let Some(color) = modified_shape_stroke.style.fill_color() {
+                            modified_shape_stroke
+                                .style
+                                .set_fill_color(color.to_darkest_color());
+                        }
+
+                        modified_shape_stroke.draw(&mut piet_cx, image_scale)?;
+                    }
+                    Stroke::TextStroke(text_stroke) => {
+                        let mut modified_text_stroke = text_stroke.clone();
+
+                        modified_text_stroke.text_style.color =
+                            modified_text_stroke.text_style.color.to_darkest_color();
+
+                        modified_text_stroke.draw(&mut piet_cx, image_scale)?;
+                    }
+                    _ => stroke.draw(&mut piet_cx, image_scale)?,
+                };
+            } else {
+                stroke.draw(&mut piet_cx, image_scale)?;
+            }
         }
         cairo_cx.restore()?;
         cairo_cx.restore()?;

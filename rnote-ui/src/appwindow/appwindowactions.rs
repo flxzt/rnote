@@ -435,14 +435,14 @@ impl RnAppWindow {
         // invert color brightness of selection
         action_selection_invert_color.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
-                let canvas = appwindow.active_tab().canvas();
+                let canvas = appwindow.active_tab_wrapper().canvas();
 
-                let selection_keys = canvas.engine().borrow().store.selection_keys_unordered();
-                let mut widget_flags = canvas.engine().borrow_mut().store.invert_color_brightness(&selection_keys);
-                widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
+                let selection_keys = canvas.engine_ref().store.selection_keys_unordered();
+                let mut widget_flags = canvas.engine_mut().store.invert_color_brightness(&selection_keys);
+                widget_flags.merge(canvas.engine_mut().record(Instant::now()));
+                canvas.update_rendering_current_viewport();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
-                canvas.update_engine_rendering();
             }),
         );
 
@@ -650,6 +650,7 @@ impl RnAppWindow {
             // TODO: Expose these variables as options in the print dialog
             let draw_background = true;
             let draw_pattern = true;
+            let optimize_printing = true;
             let page_order = SplitOrder::default();
             let margin = 0.0;
 
@@ -675,7 +676,7 @@ impl RnAppWindow {
 
                 cairo_cx.scale(print_scale, print_scale);
                 cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
-                if let Err(e) = page_content.draw_to_cairo(&cairo_cx, draw_background, draw_pattern, margin, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE) {
+                if let Err(e) = page_content.draw_to_cairo(&cairo_cx, draw_background, draw_pattern, optimize_printing, margin, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE) {
                     log::error!("drawing page no: {page_no} while printing failed, Err: {e:?}");
                 }
             }));

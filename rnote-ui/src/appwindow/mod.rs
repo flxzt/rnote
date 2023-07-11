@@ -455,13 +455,14 @@ impl RnAppWindow {
         target_pos: Option<na::Vector2<f64>>,
         rnote_file_new_tab: bool,
     ) {
+        // Returns Ok(true) if file was imported, else Ok(false)
         async fn try_open_file(
             appwindow: &RnAppWindow,
             input_file: gio::File,
             target_pos: Option<na::Vector2<f64>>,
             rnote_file_new_tab: bool,
-        ) -> anyhow::Result<()> {
-            match crate::utils::FileType::lookup_file_type(&input_file) {
+        ) -> anyhow::Result<bool> {
+            let file_imported = match crate::utils::FileType::lookup_file_type(&input_file) {
                 crate::utils::FileType::RnoteFile => {
                     let Some(input_file_path) = input_file.path() else {
                         return Err(anyhow::anyhow!("Could not open file: {input_file:?}, path returned None"));
@@ -470,6 +471,7 @@ impl RnAppWindow {
                     // If the file is already opened in a tab, simply switch to it
                     if let Some(page) = appwindow.tabs_query_file_opened(input_file_path) {
                         appwindow.overlays().tabview().set_selected_page(&page);
+                        false
                     } else {
                         let wrapper = if rnote_file_new_tab {
                             // a new tab for rnote files
@@ -485,6 +487,7 @@ impl RnAppWindow {
                         if rnote_file_new_tab {
                             appwindow.append_wrapper_new_tab(&wrapper);
                         }
+                        true
                     }
                 }
                 crate::utils::FileType::VectorImageFile => {
@@ -493,6 +496,7 @@ impl RnAppWindow {
                     canvas
                         .load_in_vectorimage_bytes(bytes.to_vec(), target_pos)
                         .await?;
+                    true
                 }
                 crate::utils::FileType::BitmapImageFile => {
                     let canvas = appwindow.active_tab_wrapper().canvas();
@@ -500,6 +504,7 @@ impl RnAppWindow {
                     canvas
                         .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos)
                         .await?;
+                    true
                 }
                 crate::utils::FileType::XoppFile => {
                     // a new tab for xopp file import
@@ -512,13 +517,14 @@ impl RnAppWindow {
                     if file_imported {
                         appwindow.append_wrapper_new_tab(&wrapper);
                     }
+                    file_imported
                 }
                 crate::utils::FileType::PdfFile => {
                     let canvas = appwindow.active_tab_wrapper().canvas();
                     dialogs::import::dialog_import_pdf_w_prefs(
                         appwindow, &canvas, input_file, target_pos,
                     )
-                    .await?;
+                    .await?
                 }
                 crate::utils::FileType::Folder => {
                     if let Some(dir) = input_file.path() {
@@ -527,22 +533,29 @@ impl RnAppWindow {
                             .workspacesbar()
                             .set_selected_workspace_dir(dir);
                     }
+                    false
                 }
                 crate::utils::FileType::Unsupported => {
                     return Err(anyhow::anyhow!("tried to open unsupported file type"));
                 }
-            }
-            Ok(())
+            };
+            Ok(file_imported)
         }
 
         self.overlays().progressbar_start_pulsing();
-        if let Err(e) = try_open_file(self, input_file, target_pos, rnote_file_new_tab).await {
-            log::error!("Opening file with dialogs failed, Err: {e:?}");
-            self.overlays().progressbar_abort();
-            self.overlays()
-                .dispatch_toast_error(&gettext("Opening file failed"));
-        } else {
-            self.overlays().progressbar_finish();
+        match try_open_file(self, input_file, target_pos, rnote_file_new_tab).await {
+            Ok(true) => {
+                self.overlays().progressbar_finish();
+            }
+            Ok(false) => {
+                self.overlays().progressbar_abort();
+            }
+            Err(e) => {
+                self.overlays().progressbar_abort();
+                log::error!("Opening file with dialogs failed, Err: {e:?}");
+                self.overlays()
+                    .dispatch_toast_error(&gettext("Opening file failed"));
+            }
         }
     }
 

@@ -103,8 +103,6 @@ impl StrokeContent {
                 for stroke in self.strokes.iter() {
                     let stroke_bounds = stroke.bounds();
 
-                    stroke.draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
-
                     if optimize_printing
                         && image_bounds
                             .iter()
@@ -231,51 +229,6 @@ impl StrokeContent {
         let mut piet_cx = piet_cairo::CairoRenderContext::new(cairo_cx);
         for stroke in self.strokes.iter() {
             let stroke_bounds = stroke.bounds();
-
-            // if optimize_printing
-            //     && image_bounds
-            //         .iter()
-            //         .all(|bounds| !bounds.contains(&stroke_bounds))
-            // {
-            //     // Using the stroke's bounds instead of hitboxes works for inclusion.
-            //     // If this is changed to intersection, all hitboxes must be checked individually.
-
-            //     let mut stroke = stroke.as_ref().clone();
-
-            //     match &mut stroke {
-            //         Stroke::BrushStroke(brush_stroke) => {
-            //             if let Some(color) = brush_stroke.style.stroke_color() {
-            //                 brush_stroke
-            //                     .style
-            //                     .set_stroke_color(color.to_darkest_color());
-            //             }
-
-            //             if let Some(color) = brush_stroke.style.fill_color() {
-            //                 brush_stroke.style.set_fill_color(color.to_darkest_color());
-            //             }
-            //         }
-            //         Stroke::ShapeStroke(shape_stroke) => {
-            //             if let Some(color) = shape_stroke.style.stroke_color() {
-            //                 shape_stroke
-            //                     .style
-            //                     .set_stroke_color(color.to_darkest_color());
-            //             }
-
-            //             if let Some(color) = shape_stroke.style.fill_color() {
-            //                 shape_stroke.style.set_fill_color(color.to_darkest_color());
-            //             }
-            //         }
-            //         Stroke::TextStroke(text_stroke) => {
-            //             text_stroke.text_style.color =
-            //                 text_stroke.text_style.color.to_darkest_color();
-            //         }
-            //         _ => {}
-            //     };
-
-            //     stroke.draw(&mut piet_cx, image_scale)?;
-            // } else {
-            //     stroke.draw(&mut piet_cx, image_scale)?;
-            // }
 
             if optimize_printing
                 && image_bounds

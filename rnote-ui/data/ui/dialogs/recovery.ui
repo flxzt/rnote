@@ -2,17 +2,20 @@
 <interface>
   <object class="AdwMessageDialog" id="dialog_recover_documents">
     <property name="heading" translatable="yes">Recover Documents</property>
-    <property name="body" translatable="yes">Look like Rnote crashed last time.
-      We recovered some documents.Please select what you want to do with them:</property>
-    <property name="default-response">save</property>
-    <property name="close-response">cancel</property>
+    <property name="body" translatable="yes">Oops, looks like Rnote crashed last time!
+      We recovered documents.
+      Please select what you want to do with them:</property>
+    <property name="default-response">confirm</property>
+    <property name="close-response">show_later</property>
     <property name="extra-child">
       <object class="AdwPreferencesGroup" id="recover_documents_group">
         <property name="title" translatable="yes">Recovered Documents</property>
       </object>
     </property>
     <responses>
-      <response id="confirm" translatable="yes">Confirm</response>
+      <response id="show_later" translatable="yes">Show Later</response>
+      <response id="discard_all" appearance="destructive" translatable="yes">Discard All</response>
+      <response id="apply" appearance="suggested" translatable="yes">Apply</response>
     </responses>
   </object>
 </interface>

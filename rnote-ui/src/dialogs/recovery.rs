@@ -8,23 +8,28 @@ use gtk4::{prelude::FileExt, traits::ToggleButtonExt};
 use gtk4::{
     subclass::prelude::ObjectSubclassIsExt, traits::GtkWindowExt, Builder, FileDialog, ToggleButton,
 };
-use std::{ffi::OsStr, fs::read_dir, path::PathBuf};
+use std::{
+    ffi::OsStr,
+    fs::remove_file,
+    path::{Path, PathBuf},
+};
 use time::{format_description::well_known::Rfc2822, OffsetDateTime};
 
 use crate::{appwindow::RnAppWindow, config, env::recovery_dir};
 use rnote_engine::fileformats::recovery_metadata::RecoveryMetadata;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub(crate) enum RnRecoveryAction {
     Discard,
     SaveAs(PathBuf),
-    Keep,
+    ShowLater,
+    #[default]
     Open,
 }
 
 pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
-    let files = get_files();
-    if files.is_empty() {
+    let metadata_found = find_metadata();
+    if metadata_found.is_empty() {
         log::debug!("No recovery files found");
         // return;
     }
@@ -36,11 +41,11 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
     let recover_documents_group: adw::PreferencesGroup =
         builder.object("recover_documents_group").unwrap();
     dialog.set_transient_for(Some(appwindow));
-    appwindow
-        .imp()
-        .recovery_actions
-        .replace([(); 4].map(|_| RnRecoveryAction::Discard).to_vec());
-    for (i, metadata) in files.iter().enumerate() {
+    appwindow.imp().recovery_actions.replace(Some(vec![
+        RnRecoveryAction::default();
+        metadata_found.len()
+    ]));
+    for (i, metadata) in metadata_found.iter().enumerate() {
         // let recovery_row: RnRecoveryRow = RnRecoveryRow::new();
         // recovery_row.init(appwindow, metadata.clone());
         let row: adw::ActionRow = adw::ActionRow::builder()
@@ -51,21 +56,21 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
         let open_button = ToggleButton::builder()
             .icon_name("tab-new-filled-symbolic")
             .tooltip_text("Recover document in new tab")
+            .active(true)
             .build();
         let save_as_button = ToggleButton::builder()
             .icon_name("doc-save-symbolic")
             .tooltip_text("Save file to selected path")
             .group(&open_button)
             .build();
-        let keep_button = ToggleButton::builder()
+        let show_later_button = ToggleButton::builder()
             .icon_name("workspacelistentryicon-clock-symbolic")
-            .tooltip_text("Ask me again next session")
+            .tooltip_text("Show option again next launch")
             .group(&open_button)
             .build();
         let discard_button = ToggleButton::builder()
             .icon_name("trash-empty")
             .tooltip_text("Discard document")
-            .active(true)
             .group(&open_button)
             .build();
         discard_button.connect_toggled(clone!(@weak appwindow => move |button| {
@@ -103,9 +108,9 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
                 }
             }));
         }));
-        keep_button.connect_toggled(clone!(@weak appwindow => move |button| {
+        show_later_button.connect_toggled(clone!(@weak appwindow => move |button| {
             if button.is_active(){
-                appwindow.set_recovery_action(i, RnRecoveryAction::Keep)
+                appwindow.set_recovery_action(i, RnRecoveryAction::ShowLater)
             }
         }));
         // recover_document_button.connect_clicked();
@@ -116,17 +121,36 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
         // }));
         row.add_suffix(&open_button);
         row.add_suffix(&save_as_button);
+        row.add_suffix(&show_later_button);
         row.add_suffix(&discard_button);
         recover_documents_group.add(&row);
         rows.push(row);
     }
-    dialog.choose_future().await;
+    let choice = dialog.choose_future().await;
+    let mut actions = appwindow.imp().recovery_actions.replace(None).unwrap();
+    assert_eq!(metadata_found.len(), actions.len());
+    match choice.as_str() {
+        "discard_all" => actions.fill(RnRecoveryAction::Discard),
+        "show_later" => actions.fill(RnRecoveryAction::ShowLater),
+        "apply" => actions.fill(RnRecoveryAction::ShowLater),
+        c => unimplemented!("unknown coice {}", c),
+    };
+    for (i, meta) in metadata_found.iter().enumerate() {
+        match &actions[i] {
+            RnRecoveryAction::Discard => discard(meta),
+            RnRecoveryAction::ShowLater => (),
+            RnRecoveryAction::Open => todo!(),
+            RnRecoveryAction::SaveAs(target) => save_as(meta, target),
+        }
+    }
 }
 
-fn get_files() -> Vec<RecoveryMetadata> {
+fn find_metadata() -> Vec<RecoveryMetadata> {
     let mut recovery_files = Vec::new();
     let recovery_ext: &OsStr = OsStr::new("json");
-    for file in read_dir(recovery_dir().expect("Failed to get recovery dir"))
+    for file in recovery_dir()
+        .expect("Failed to get recovery dir")
+        .read_dir()
         .expect("failed to read recovery dir")
     {
         let file = file.expect("Failed to get DirEntry");
@@ -154,26 +178,26 @@ fn format_unix_timestamp(unix: i64) -> String {
     }
 }
 
-// pub(crate) async fn discard(appwindow: &RnAppWindow, i: usize) /*-> gio::SimpleAction*/
-// {
-//     let action_discard_file = gio::SimpleAction::new("discard", None);
-//     action_discard_file.connect_activate(
-//         clone!(@weak appwindow => move |_action_discard_file, _| {
-//             let medata = appwindow.imp().recovered_documents.borrow().get(i);
-//             if metadata.is_some() && imp.meta.borrow().is_some() {
-//                 // Unwrapping should be safe here since the condition makes sure they're not None
-//                 let meta = imp.meta.replace(None).unwrap();
-//                 let meta_path = imp.meta_path.replace(None).unwrap();
-
-//                 if let Err(e) = remove_file(meta.recovery_file_path()){
-//                     log::error!("Failed to remove recovery file {}: {e}", meta.recovery_file_path().display())
-//                 };
-//                 if let Err(e) = remove_file(meta_path.path().unwrap()){
-//                     log::error!("Failed to remove recovery file {}: {e}", meta_path)
-//                 };
-//             }
-//         }),
-//     );
-
-//     // action_discard_file
-// }
+pub(crate) fn discard(meta: &RecoveryMetadata) {
+    if let Err(e) = remove_file(meta.recovery_file_path()) {
+        log::error!(
+            "Failed to remove recovery file {}: {e}",
+            meta.recovery_file_path().display()
+        )
+    };
+    if let Err(e) = remove_file(meta.metadata_path()) {
+        log::error!(
+            "Failed to remove recovery file {}: {e}",
+            meta.metadata_path().display()
+        )
+    };
+}
+pub(crate) fn save_as(meta: &RecoveryMetadata, target: &Path) {
+    if let Err(e) = std::fs::rename(meta.recovery_file_path(), target) {
+        log::error!(
+            "Failed to move recovered document from {} to {}, because {e}",
+            meta.recovery_file_path().display(),
+            target.display()
+        )
+    }
+}

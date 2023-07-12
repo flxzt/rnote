@@ -2,6 +2,7 @@ use anyhow::Context;
 use serde::{Deserialize, Serialize};
 use std::{
     cell::{Cell, RefCell},
+    fs::remove_file,
     path::{Path, PathBuf},
 };
 
@@ -36,6 +37,40 @@ impl FileFormatLoader for RecoveryMetadata {
 }
 
 impl RecoveryMetadata {
+    /// Get the path to the file being backed up
+    pub fn document_path(&self) -> Option<PathBuf> {
+        self.document_path.borrow().clone()
+    }
+    /// Remove recovery file and metadata from disk
+    pub fn delete(&self) {
+        if let Err(e) = remove_file(&self.recovery_file_path) {
+            log::error!(
+                "Failed to delete recovery file {}: {e}",
+                self.recovery_file_path.display()
+            )
+        };
+        if let Err(e) = remove_file(&self.metdata_path) {
+            log::error!(
+                "Failed to delete recovery metadata {}: {e}",
+                self.metdata_path.display()
+            )
+        }
+    }
+    /// Get the last changed date as unix timestamp
+    pub fn last_changed(&self) -> i64 {
+        self.last_changed.get()
+    }
+    /// Load instance from given Path
+    pub fn load_from_path(path: impl AsRef<Path>) -> anyhow::Result<Self> {
+        let path = path.as_ref();
+        let bytes = std::fs::read(path).context("Failed to read file")?;
+        Self::load_from_bytes(&bytes)
+    }
+    /// Get the metadata path
+    pub fn metadata_path(&self) -> PathBuf {
+        self.metdata_path.clone()
+    }
+
     /// Create new Cargo metadata
     pub fn new(metadata_path: impl Into<PathBuf>, rnote_path: impl Into<PathBuf>) -> Self {
         let out = Self {
@@ -48,14 +83,17 @@ impl RecoveryMetadata {
         out.update_last_changed();
         out
     }
-    pub fn load_from_path(path: impl AsRef<Path>) -> anyhow::Result<Self> {
-        let path = path.as_ref();
-        let bytes = std::fs::read(path).context("Failed to read file")?;
-        Self::load_from_bytes(&bytes)
+    /// Get the path to Recovery file
+    pub fn recovery_file_path(&self) -> PathBuf {
+        self.recovery_file_path.clone()
     }
     /// Save recovery data
     pub fn save(&self) -> anyhow::Result<Vec<u8>> {
         self.save_as_bytes(self.metdata_path.to_str().unwrap())
+    }
+    /// Get the document title
+    pub fn title(&self) -> Option<String> {
+        self.title.borrow().clone()
     }
     /// Update Metadate based of the given document option
     pub fn update(&self, document_path: &Option<PathBuf>) {
@@ -71,7 +109,6 @@ impl RecoveryMetadata {
             None => (),
         };
     }
-
     /// Replace last_changed with the current unix time
     pub(crate) fn update_last_changed(&self) {
         self.last_changed.replace(
@@ -80,25 +117,5 @@ impl RecoveryMetadata {
                 .expect("Failed to get unix time")
                 .as_secs() as i64,
         );
-    }
-    /// Get the metadata path
-    pub fn metadata_path(&self) -> PathBuf {
-        self.metdata_path.clone()
-    }
-    /// Get the path to the file being backed up
-    pub fn document_path(&self) -> Option<PathBuf> {
-        self.document_path.borrow().clone()
-    }
-    /// Get the path to Recovery file
-    pub fn recovery_file_path(&self) -> PathBuf {
-        self.recovery_file_path.clone()
-    }
-    /// Get the last changed date as unix timestamp
-    pub fn last_changed(&self) -> i64 {
-        self.last_changed.get()
-    }
-    /// Get the document title
-    pub fn title(&self) -> Option<String> {
-        self.title.borrow().clone()
     }
 }

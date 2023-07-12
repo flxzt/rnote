@@ -36,7 +36,11 @@ impl RnAppWindow {
     }
 
     pub(crate) fn set_recovery_action(&self, i: usize, action: RnRecoveryAction) {
-        self.imp().recovery_actions.borrow_mut()[i] = dbg!(action)
+        self.imp()
+            .recovery_actions
+            .borrow_mut()
+            .as_mut()
+            .expect("Recovery actions not set")[i] = action
     }
 
     #[allow(unused)]

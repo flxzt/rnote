@@ -29,7 +29,7 @@ pub(crate) struct RnAppWindow {
     pub(crate) autosave_interval_secs: Cell<u32>,
     pub(crate) recovery: Cell<bool>,
     pub(crate) recovery_interval_secs: Cell<u32>,
-    pub(crate) recovery_actions: RefCell<Vec<RnRecoveryAction>>,
+    pub(crate) recovery_actions: RefCell<Option<Vec<RnRecoveryAction>>>,
     pub(crate) righthanded: Cell<bool>,
     pub(crate) block_pinch_zoom: Cell<bool>,
     pub(crate) touch_drawing: Cell<bool>,
@@ -78,7 +78,7 @@ impl Default for RnAppWindow {
             autosave_interval_secs: Cell::new(super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
             recovery: Cell::new(true),
             recovery_interval_secs: Cell::new(super::RnAppWindow::RECOVERY_INTERVAL_DEFAULT),
-            recovery_actions: RefCell::new(Vec::new()),
+            recovery_actions: RefCell::new(None),
             righthanded: Cell::new(true),
             block_pinch_zoom: Cell::new(false),
             touch_drawing: Cell::new(false),
@@ -340,6 +340,15 @@ impl RnAppWindow {
         if let Some(removed_id) = self.recovery_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.recovery_interval_secs.get(),
                 clone!(@weak obj as appwindow => @default-return glib::source::Continue(false), move || {
                     let canvas = appwindow.active_tab().canvas();
+                    if canvas.output_file().is_some() && appwindow.autosave() {
+                        // Delete recovery files from disk to avoid suggesting the user an outdated file on next boot
+                        canvas.imp().recovery_file_metadata.borrow_mut().iter_mut().for_each(|meta| {
+                            meta.delete();
+                        });
+                        // We keep the metadata path in the canvas to make sure it doesnt change when the user toggles autosave.
+                        // This would otherwise lead to confusing timestamps on next launch.
+                        return glib::source::Continue(true);
+                    }
 
                     glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
                         if !canvas.unsaved_changes_recovery() {return;}

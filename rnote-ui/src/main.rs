@@ -1,4 +1,4 @@
-#![warn(missing_debug_implementations)]
+#![warn(missing_debug_implementations, clippy::todo)]
 #![allow(clippy::single_match)]
 // Hides console window on windows
 #![windows_subsystem = "windows"]
@@ -35,6 +35,7 @@ pub(crate) use canvas::RnCanvas;
 pub(crate) use canvasmenu::RnCanvasMenu;
 pub(crate) use canvaswrapper::RnCanvasWrapper;
 pub(crate) use colorpicker::RnColorPicker;
+pub(crate) use dialogs::recovery::RnRecoveryAction;
 pub(crate) use groupediconpicker::RnGroupedIconPicker;
 pub(crate) use iconpicker::RnIconPicker;
 pub(crate) use mainheader::RnMainHeader;

@@ -198,5 +198,5 @@ Changes which are not saved will be permanently lost.</property>
     <child>
       <object class="RnIconPicker" id="edit_selected_workspace_icon_picker"></object>
     </child>
-  </object> 
+  </object>
 </interface>

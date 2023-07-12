@@ -1,6 +1,7 @@
 // Imports
 use crate::{
-    config, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser, {dialogs, RnMainHeader},
+    config, RnOverlays, RnRecoveryAction, RnSettingsPanel, RnWorkspaceBrowser,
+    {dialogs, RnMainHeader},
 };
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
@@ -28,6 +29,7 @@ pub(crate) struct RnAppWindow {
     pub(crate) autosave_interval_secs: Cell<u32>,
     pub(crate) recovery: Cell<bool>,
     pub(crate) recovery_interval_secs: Cell<u32>,
+    pub(crate) recovery_actions: RefCell<Vec<RnRecoveryAction>>,
     pub(crate) righthanded: Cell<bool>,
     pub(crate) block_pinch_zoom: Cell<bool>,
     pub(crate) touch_drawing: Cell<bool>,
@@ -76,6 +78,7 @@ impl Default for RnAppWindow {
             autosave_interval_secs: Cell::new(super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
             recovery: Cell::new(true),
             recovery_interval_secs: Cell::new(super::RnAppWindow::RECOVERY_INTERVAL_DEFAULT),
+            recovery_actions: RefCell::new(Vec::new()),
             righthanded: Cell::new(true),
             block_pinch_zoom: Cell::new(false),
             touch_drawing: Cell::new(false),

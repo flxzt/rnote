@@ -1328,7 +1328,9 @@ impl RnCanvas {
                     .clone()
                     .map(|f| f.path().unwrap()),
             );
-            m.save();
+            if let Err(e) = m.save() {
+                log::error!("Failed to save recovery metadata: {e}")
+            };
         }
     }
 }

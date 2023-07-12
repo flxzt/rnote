@@ -4,7 +4,7 @@
 // Modules
 pub(crate) mod export;
 pub(crate) mod import;
-mod recovery;
+pub(crate) mod recovery;
 
 // Imports
 use crate::appwindow::RnAppWindow;

@@ -5,8 +5,8 @@ mod imp;
 
 // Imports
 use crate::{
-    config, RnApp, RnCanvas, RnCanvasWrapper, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser,
-    {dialogs, RnMainHeader},
+    config, RnApp, RnCanvas, RnCanvasWrapper, RnOverlays, RnRecoveryAction, RnSettingsPanel,
+    RnWorkspaceBrowser, {dialogs, RnMainHeader},
 };
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
@@ -33,6 +33,10 @@ impl RnAppWindow {
 
     pub(crate) fn new(app: &Application) -> Self {
         glib::Object::builder().property("application", app).build()
+    }
+
+    pub(crate) fn set_recovery_action(&self, i: usize, action: RnRecoveryAction) {
+        self.imp().recovery_actions.borrow_mut()[i] = dbg!(action)
     }
 
     #[allow(unused)]

@@ -4,7 +4,7 @@ use cairo::glib::{self, clone};
 use gtk4::{gio, prelude::FileExt, subclass::prelude::ObjectSubclassIsExt};
 use std::fs::remove_file;
 
-pub(crate) fn discard(recoveryrow: &RnRecoveryRow) /*-> gio::SimpleAction*/
+pub(crate) async fn discard(recoveryrow: &RnRecoveryRow) /*-> gio::SimpleAction*/
 {
     let action_discard_file = gio::SimpleAction::new("discard", None);
     action_discard_file.connect_activate(

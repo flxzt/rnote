@@ -1,4 +1,3 @@
-#![warn(clippy::todo)]
 // modules
 mod actions;
 
@@ -31,7 +30,7 @@ mod imp {
     use super::*;
 
     #[derive(Debug, CompositeTemplate, Default)]
-    #[template(resource = "/com/github/flxzt/rnote/ui/recoveryentry.ui")]
+    #[template(resource = "/com/github/flxzt/rnote/ui/recoveryrow.ui")]
     pub(crate) struct RnRecoveryRow {
         pub(crate) last_changed_format: String,
         pub(crate) meta: RefCell<Option<RecoveryMetadata>>,
@@ -51,19 +50,19 @@ mod imp {
         pub(crate) discard_button: TemplateChild<Button>,
     }
 
-    impl From<RecoveryMetadata> for RnRecoveryRow {
-        fn from(meta: RecoveryMetadata) -> Self {
-            Self {
-                last_changed_format: format_unix_timestamp(meta.last_changed()),
-                meta: RefCell::new(Some(meta)),
-                ..Default::default()
-            }
-        }
-    }
+    // impl From<&RecoveryMetadata> for RnRecoveryRow {
+    //     fn from(meta: &RecoveryMetadata) -> Self {
+    //         Self {
+    //             last_changed_format: format_unix_timestamp(meta.last_changed()),
+    //             meta: RefCell::new(Some(meta.clone())),
+    //             ..Default::default()
+    //         }
+    //     }
+    // }
 
     #[glib::object_subclass]
     impl ObjectSubclass for RnRecoveryRow {
-        const NAME: &'static str = "RnRecoveryEntry";
+        const NAME: &'static str = "RnRecoveryRow";
         type Type = super::RnRecoveryRow;
         type ParentType = Widget;
 
@@ -157,20 +156,33 @@ impl RnRecoveryRow {
         glib::Object::new()
     }
 
-    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow, metadata: RecoveryMetadata) {
         self.setup_actions(appwindow);
+        self.imp().meta.replace(Some(metadata));
     }
 
-    fn setup_actions(&self, _appwindow: &RnAppWindow) {
+    fn setup_actions(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        imp.recover_button.connect_clicked(
-            clone!(@weak self as recoveryrow => move |_button| actions::recover(&recoveryrow)),
+        imp.recover_button.connect_activate(
+            clone!(@weak self as recoveryrow, @weak appwindow => move |_button| {
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    actions::recover(&recoveryrow, &appwindow).await;
+                }));
+            }),
         );
-        imp.discard_button.connect_clicked(
-            clone!(@weak self as recoveryrow => move |_button| actions::discard(&recoveryrow)),
+        imp.discard_button.connect_activate(
+            clone!(@weak self as recoveryrow, @weak appwindow => move |_button| {
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    actions::discard(&recoveryrow).await;
+                }));
+            }),
         );
-        imp.save_as_button.connect_clicked(
-            clone!(@weak self as recoveryrow => move |_button| actions::save_as(&recoveryrow)),
+        imp.save_as_button.connect_activate(
+            clone!(@weak self as recoveryrow, @weak appwindow => move |_button| {
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    actions::save_as(&recoveryrow, &appwindow).await;
+                }));
+            }),
         );
     }
 }

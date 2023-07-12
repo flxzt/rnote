@@ -2,6 +2,7 @@
 use crate::config;
 use anyhow::Context;
 use std::ffi::OsStr;
+use std::fs::create_dir_all;
 use std::path::{Component, Path, PathBuf};
 
 pub(crate) fn recovery_dir() -> anyhow::Result<PathBuf> {
@@ -10,6 +11,9 @@ pub(crate) fn recovery_dir() -> anyhow::Result<PathBuf> {
         .data_dir()
         .to_path_buf();
     rnote_path.push("recovery");
+    if !rnote_path.exists() {
+        create_dir_all(&rnote_path).context("Failed to create recovery dir")?;
+    }
     Ok(rnote_path)
 }
 

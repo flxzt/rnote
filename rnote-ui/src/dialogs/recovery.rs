@@ -6,6 +6,7 @@ use cairo::glib::{self, clone};
 use gettextrs::gettext;
 use gtk4::{
     gdk::Display,
+    gio,
     prelude::{DisplayExt, FileExt},
     subclass::prelude::ObjectSubclassIsExt,
     traits::GtkWindowExt,
@@ -36,13 +37,23 @@ pub(crate) async fn dialog_recovery_info(appwindow: &RnAppWindow) {
         (String::from(config::APP_IDPATH) + "ui/dialogs/recovery.ui").as_str(),
     );
     let dialog: adw::MessageDialog = builder.object("dialog_recovery_info").unwrap();
+    dialog.set_transient_for(Some(appwindow));
+    dialog.set_modal(true);
     let canvas = appwindow.active_tab().canvas();
+    let last_changed = canvas
+        .imp()
+        .recovery_file_metadata
+        .borrow()
+        .as_ref()
+        .map(|m| format_unix_timestamp(m.last_changed()));
     let info = format!(
-        "enabled: {}\nautosave: {}\nmetadata: {:#?}\nrecovery_paused: {}",
+        "enabled: {}\nautosave: {}\nunsaved_changes_recovery: {}\nmetadata: {:#?}\nrecovery_paused: {}\n timestamp: {:?}",
         appwindow.recovery(),
         appwindow.autosave(),
+        canvas.unsaved_changes_recovery(),
         canvas.imp().recovery_file_metadata.borrow(),
-        canvas.recovery_paused()
+        canvas.recovery_paused(),
+        last_changed,
     );
     dialog.set_body(&info);
     match dialog.choose_future().await.as_str() {
@@ -56,7 +67,7 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
     let metadata_found = find_metadata();
     if metadata_found.is_empty() {
         log::debug!("No recovery files found");
-        // return;
+        return;
     }
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/recovery.ui").as_str(),
@@ -164,7 +175,11 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
         match &actions[i] {
             RnRecoveryAction::Discard => (),
             RnRecoveryAction::ShowLater => continue,
-            RnRecoveryAction::Open => todo!(),
+            RnRecoveryAction::Open => appwindow.open_file_w_dialogs(
+                gio::File::for_path(meta.metadata_path()),
+                None,
+                false,
+            ),
             RnRecoveryAction::SaveAs(target) => save_as(meta, target),
         }
         discard(meta);
@@ -173,7 +188,7 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
 
 fn find_metadata() -> Vec<RecoveryMetadata> {
     let mut recovery_files = Vec::new();
-    let recovery_ext: &OsStr = OsStr::new("json");
+    let recovery_ext: &OsStr = OsStr::new("rnoterecovery");
     for file in recovery_dir()
         .expect("Failed to get recovery dir")
         .read_dir()

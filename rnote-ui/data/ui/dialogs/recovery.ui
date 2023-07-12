@@ -5,8 +5,8 @@
     <property name="body" translatable="yes">Info about document recovery for the current document.</property>
     <property name="default-response">ok</property>
     <responses>
-      <response id="ok" translatable="yes">Ok</response>
       <response id="copy" translatable="yes">Copy</response>
+      <response id="ok" translatable="yes">Ok</response>
     </responses>
   </object>
 

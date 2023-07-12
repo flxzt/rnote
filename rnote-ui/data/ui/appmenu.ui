@@ -60,6 +60,10 @@
                 <attribute name="label" translatable="yes">Export Engine _Config</attribute>
                 <attribute name="action">win.debug-export-engine-config</attribute>
               </item>
+              <item>
+                <attribute name="label" translatable="yes">Get _Recovery Info</attribute>
+                <attribute name="action">win.debug-recovery-info</attribute>
+              </item>
             </section>
           </submenu>
         </section>

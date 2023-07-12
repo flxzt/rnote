@@ -20,7 +20,6 @@ mod iconpicker;
 mod mainheader;
 pub(crate) mod overlays;
 pub(crate) mod penssidebar;
-mod recoveryrow;
 mod settingspanel;
 pub(crate) mod strokewidthpicker;
 mod unitentry;

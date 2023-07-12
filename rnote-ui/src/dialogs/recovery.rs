@@ -1,12 +1,16 @@
 use adw::{
     prelude::MessageDialogExtManual,
-    traits::{ActionRowExt, PreferencesGroupExt},
+    traits::{ActionRowExt, MessageDialogExt, PreferencesGroupExt},
 };
 use cairo::glib::{self, clone};
 use gettextrs::gettext;
-use gtk4::{prelude::FileExt, traits::ToggleButtonExt};
 use gtk4::{
-    subclass::prelude::ObjectSubclassIsExt, traits::GtkWindowExt, Builder, FileDialog, ToggleButton,
+    gdk::Display,
+    prelude::{DisplayExt, FileExt},
+    subclass::prelude::ObjectSubclassIsExt,
+    traits::GtkWindowExt,
+    traits::ToggleButtonExt,
+    Builder, FileDialog, ToggleButton,
 };
 use std::{
     ffi::OsStr,
@@ -25,6 +29,27 @@ pub(crate) enum RnRecoveryAction {
     ShowLater,
     #[default]
     Open,
+}
+
+pub(crate) async fn dialog_recovery_info(appwindow: &RnAppWindow) {
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/recovery.ui").as_str(),
+    );
+    let dialog: adw::MessageDialog = builder.object("dialog_recovery_info").unwrap();
+    let canvas = appwindow.active_tab().canvas();
+    let info = format!(
+        "enabled: {}\nautosave: {}\nmetadata: {:#?}\nrecovery_paused: {}",
+        appwindow.recovery(),
+        appwindow.autosave(),
+        canvas.imp().recovery_file_metadata.borrow(),
+        canvas.recovery_paused()
+    );
+    dialog.set_body(&info);
+    match dialog.choose_future().await.as_str() {
+        "copy" => Display::default().unwrap().clipboard().set_text(&info),
+        "ok" => (),
+        c => unimplemented!("{c}"),
+    };
 }
 
 pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
@@ -137,11 +162,12 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
     };
     for (i, meta) in metadata_found.iter().enumerate() {
         match &actions[i] {
-            RnRecoveryAction::Discard => discard(meta),
-            RnRecoveryAction::ShowLater => (),
+            RnRecoveryAction::Discard => (),
+            RnRecoveryAction::ShowLater => continue,
             RnRecoveryAction::Open => todo!(),
             RnRecoveryAction::SaveAs(target) => save_as(meta, target),
         }
+        discard(meta);
     }
 }
 

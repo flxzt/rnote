@@ -5,13 +5,12 @@ mod appactions;
 use crate::{
     colorpicker::RnColorPad, colorpicker::RnColorSetter, config, globals, penssidebar::RnBrushPage,
     penssidebar::RnEraserPage, penssidebar::RnSelectorPage, penssidebar::RnShaperPage,
-    penssidebar::RnToolsPage, penssidebar::RnTypewriterPage, recoveryrow::RnRecoveryRow,
-    settingspanel::RnPenShortcutRow, strokewidthpicker::RnStrokeWidthPreview,
-    strokewidthpicker::RnStrokeWidthSetter, strokewidthpicker::StrokeWidthPreviewStyle,
-    workspacebrowser::workspacesbar::RnWorkspaceRow, workspacebrowser::RnFileRow,
-    workspacebrowser::RnWorkspacesBar, RnAppMenu, RnAppWindow, RnCanvas, RnCanvasMenu,
-    RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays, RnPensSideBar,
-    RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
+    penssidebar::RnToolsPage, penssidebar::RnTypewriterPage, settingspanel::RnPenShortcutRow,
+    strokewidthpicker::RnStrokeWidthPreview, strokewidthpicker::RnStrokeWidthSetter,
+    strokewidthpicker::StrokeWidthPreviewStyle, workspacebrowser::workspacesbar::RnWorkspaceRow,
+    workspacebrowser::RnFileRow, workspacebrowser::RnWorkspacesBar, RnAppMenu, RnAppWindow,
+    RnCanvas, RnCanvasMenu, RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays,
+    RnPensSideBar, RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
 };
 use adw::subclass::prelude::AdwApplicationImpl;
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
@@ -111,7 +110,6 @@ mod imp {
             RnWorkspaceBrowser::static_type();
             RnWorkspacesBar::static_type();
             RnFileRow::static_type();
-            RnRecoveryRow::static_type();
             RnWorkspaceRow::static_type();
             RnUnitEntry::static_type();
             RnIconPicker::static_type();

@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
+  <object class="AdwMessageDialog" id="dialog_recovery_info">
+    <property name="heading" translatable="yes">Recovery Info</property>
+    <property name="body" translatable="yes">Info about document recovery for the current document.</property>
+    <property name="default-response">ok</property>
+    <responses>
+      <response id="ok" translatable="yes">Ok</response>
+      <response id="copy" translatable="yes">Copy</response>
+    </responses>
+  </object>
+
   <object class="AdwMessageDialog" id="dialog_recover_documents">
     <property name="heading" translatable="yes">Recover Documents</property>
     <property name="body" translatable="yes">Oops, looks like Rnote crashed last time!

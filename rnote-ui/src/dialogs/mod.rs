@@ -22,6 +22,7 @@ use gtk4::{
 
 // Re-exports
 pub(crate) use recovery::dialog_recover_documents;
+pub(crate) use recovery::dialog_recovery_info;
 
 // About Dialog
 pub(crate) fn dialog_about(appwindow: &RnAppWindow) {

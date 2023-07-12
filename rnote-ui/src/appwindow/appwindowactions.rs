@@ -54,6 +54,9 @@ impl RnAppWindow {
         let action_debug_export_engine_config =
             gio::SimpleAction::new("debug-export-engine-config", None);
         self.add_action(&action_debug_export_engine_config);
+        let action_debug_display_recovery_info =
+            gio::SimpleAction::new("debug-recovery-info", None);
+        self.add_action(&action_debug_display_recovery_info);
         let action_righthanded = gio::PropertyAction::new("righthanded", self, "righthanded");
         self.add_action(&action_righthanded);
         let action_touch_drawing = gio::PropertyAction::new("touch-drawing", self, "touch-drawing");
@@ -248,6 +251,15 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |_, _| {
                 glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                     dialogs::export::filechooser_export_engine_config(&appwindow, &appwindow.active_tab().canvas()).await;
+                }));
+            }),
+        );
+
+        // Show recovery info
+        action_debug_display_recovery_info.connect_activate(
+            clone!(@weak self as appwindow => move |_, _| {
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    dialogs::dialog_recovery_info(&appwindow).await;
                 }));
             }),
         );

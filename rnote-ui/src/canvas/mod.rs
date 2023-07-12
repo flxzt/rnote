@@ -73,9 +73,8 @@ mod imp {
 
         pub(crate) recovery_in_progress: Cell<bool>,
         pub(crate) recovery_file: RefCell<Option<gio::File>>,
-        // pub(crate) recovery_file_monitor: RefCell<Option<gio::FileMonitor>>,
         pub(crate) recovery_file_metadata: RefCell<Option<RecoveryMetadata>>,
-        // pub(crate) output_file_cache: RefCell<Option<gio::File>>,
+        pub(crate) recovery_paused: Cell<bool>,
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
         pub(crate) output_file_monitor_changed_handler: RefCell<Option<glib::SignalHandlerId>>,
@@ -171,9 +170,8 @@ mod imp {
 
                 recovery_in_progress: Cell::new(false),
                 recovery_file: RefCell::new(None),
-                // recovery_file_monitor: RefCell::new(None),
                 recovery_file_metadata: RefCell::new(None),
-                // output_file_cache: RefCell::new(None),
+                recovery_paused: Cell::new(false),
                 output_file: RefCell::new(None),
                 output_file_monitor: RefCell::new(None),
                 output_file_monitor_changed_handler: RefCell::new(None),
@@ -622,7 +620,7 @@ impl RnCanvas {
                 .recovery_file
                 .replace(Some(gio::File::for_path(&recovery_path)));
 
-            metadata_path.set_extension("json");
+            metadata_path.set_extension("rnoterecovery");
             let metadata = RecoveryMetadata::new(metadata_path, recovery_path);
             imp.recovery_file_metadata.replace(Some(metadata));
         }
@@ -662,6 +660,14 @@ impl RnCanvas {
     #[allow(unused)]
     pub(crate) fn set_recovery_in_progress(&self, recovery_in_progress: bool) {
         self.imp().recovery_in_progress.set(recovery_in_progress);
+    }
+
+    pub(crate) fn recovery_paused(&self) -> bool {
+        self.imp().recovery_paused.get()
+    }
+
+    pub(crate) fn set_recovery_paused(&self, recovery_paused: bool) {
+        self.imp().recovery_paused.replace(recovery_paused);
     }
 
     #[allow(unused)]

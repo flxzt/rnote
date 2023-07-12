@@ -1,11 +1,13 @@
-// Imports
+use anyhow::Context;
 use serde::{Deserialize, Serialize};
 use std::{
     cell::{Cell, RefCell},
-    path::PathBuf,
+    path::{Path, PathBuf},
 };
 
-#[derive(Debug, Serialize, Deserialize)]
+use super::{FileFormatLoader, FileFormatSaver};
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 /// Metadata of a revovery save
 pub struct RecoveryMetadata {
     title: RefCell<Option<String>>,
@@ -14,6 +16,23 @@ pub struct RecoveryMetadata {
     recovery_file_path: PathBuf,
     #[serde(skip)]
     metdata_path: PathBuf,
+}
+
+impl FileFormatSaver for RecoveryMetadata {
+    fn save_as_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
+        let data = serde_json::to_string(self).expect("Failed to parse recovery format");
+        let bytes = data.as_bytes();
+        std::fs::write(file_name, bytes).expect("Failed to write file");
+        Ok(bytes.to_vec())
+    }
+}
+impl FileFormatLoader for RecoveryMetadata {
+    fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self>
+    where
+        Self: Sized,
+    {
+        serde_json::from_slice(bytes).context("failed to parse bytes")
+    }
 }
 
 impl RecoveryMetadata {
@@ -29,13 +48,14 @@ impl RecoveryMetadata {
         out.update_last_changed();
         out
     }
+    pub fn load_from_path(path: impl AsRef<Path>) -> anyhow::Result<Self> {
+        let path = path.as_ref();
+        let bytes = std::fs::read(path).context("Failed to read file")?;
+        Self::load_from_bytes(&bytes)
+    }
     /// Save recovery data
-    pub fn save(&self) {
-        std::fs::write(
-            &self.metdata_path,
-            serde_json::to_string(self).expect("Failed to parse recovery format"),
-        )
-        .expect("Failed to write file")
+    pub fn save(&self) -> anyhow::Result<Vec<u8>> {
+        self.save_as_bytes(self.metdata_path.to_str().unwrap())
     }
     /// Update Metadate based of the given document option
     pub fn update(&self, document_path: &Option<PathBuf>) {

@@ -341,21 +341,21 @@ impl RnAppWindow {
             clone!(@weak obj as appwindow => @default-return glib::source::Continue(false), move || {
                     let canvas = appwindow.active_tab().canvas();
                     glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+                        // Doing both recovery and autosaves of saved files serves little advatage but could lead to slowdowns or conflicts
                         if canvas.output_file().is_some() && appwindow.autosave() {
                             // Delete recovery files from disk to avoid suggesting the user an outdated file on next boot
                             if let Some(meta) = &*canvas.imp().recovery_metadata.borrow_mut() {
                                 meta.delete();
                             };
                             canvas.set_recovery_paused(true);
-                            // We keep the metadata path in the canvas to make sure it doesnt change when the user toggles autosave.
-                            // This would otherwise lead to confusing timestamps on next launch.
-                        }else{
+                            // We keep the metadata itself in the canvas to make sure the path doesnt change when the user toggles autosave
+                            // which would lead to confusing timestamps on next launch.
+                        } else if canvas.unsaved_changes_recovery() {
                             canvas.set_recovery_paused(false);
-                            if !canvas.unsaved_changes_recovery() {return;}
-                            let removery_file = canvas.get_or_generate_recovery_file();
+                            let recovery_file = canvas.get_or_generate_recovery_file();
                             appwindow.overlays().start_pulsing_progressbar();
                             canvas.set_recovery_in_progress(true);
-                            if let Err(e) = canvas.save_document_to_file(&removery_file).await {
+                            if let Err(e) = canvas.save_document_to_file(&recovery_file).await {
                                 log::error!("saving document failed, Error: `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                             }

@@ -587,7 +587,7 @@ impl RnCanvas {
     pub(crate) fn get_or_generate_recovery_file(&self) -> gio::File {
         if self.imp().recovery_metadata.borrow().is_none() {
             let imp = self.imp();
-            let mut recovery_path = crate::env::recovery_dir().unwrap();
+            let recovery_path = crate::env::recovery_dir().expect("Failed to get recovery path");
             if !recovery_path.exists() {
                 std::fs::create_dir_all(&recovery_path).expect("Failed to create directory")
             };
@@ -595,10 +595,6 @@ impl RnCanvas {
                 .duration_since(std::time::UNIX_EPOCH)
                 .expect("Failed to get unix time")
                 .as_secs();
-
-            if !recovery_path.exists() {
-                std::fs::create_dir(&recovery_path).expect("Failed to create tmp dir");
-            }
             let name = format!("{time}.rnote");
             let mut recovery_file_path = recovery_path.join(&name);
             // add incrementing suffix if nessary
@@ -620,6 +616,13 @@ impl RnCanvas {
                 .unwrap()
                 .recovery_file_path(),
         )
+    }
+
+    /// Deletes recovery save and metadate from disk
+    pub fn recovery_metadata_delete(&self) {
+        if let Some(meta) = &*self.imp().recovery_metadata.borrow() {
+            meta.delete()
+        }
     }
 
     #[allow(unused)]
@@ -681,12 +684,10 @@ impl RnCanvas {
 
     #[allow(unused)]
     pub(crate) fn set_unsaved_changes(&self, unsaved_changes: bool) {
-        if self.imp().unsaved_changes.get() != unsaved_changes {
-            if unsaved_changes {
-                self.set_unsaved_changes_recovery(true);
-            }
-            self.set_property("unsaved-changes", unsaved_changes.to_value());
+        if unsaved_changes {
+            self.set_unsaved_changes_recovery(true);
         }
+        self.set_property("unsaved-changes", unsaved_changes.to_value());
     }
 
     #[allow(unused)]
@@ -698,7 +699,7 @@ impl RnCanvas {
     pub(crate) fn set_unsaved_changes_recovery(&self, unsaved_changes_recovery: bool) {
         self.set_property(
             "unsaved-changes-recovery",
-            dbg!(unsaved_changes_recovery).to_value(),
+            unsaved_changes_recovery.to_value(),
         );
     }
 

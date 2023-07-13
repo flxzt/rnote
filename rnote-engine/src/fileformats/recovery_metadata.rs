@@ -9,14 +9,31 @@ use std::{
 use super::{FileFormatLoader, FileFormatSaver};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(default)]
 /// Metadata of a revovery save
 pub struct RnRecoveryMetadata {
     title: RefCell<Option<String>>,
     document_path: RefCell<Option<PathBuf>>,
-    last_changed: Cell<i64>,
+    created: u64,
+    last_changed: Cell<u64>,
     recovery_file_path: PathBuf,
     #[serde(skip)]
-    metdata_path: PathBuf,
+    metadata_path: PathBuf,
+}
+
+impl Default for RnRecoveryMetadata {
+    fn default() -> Self {
+        Self {
+            title: RefCell::new(None),
+            document_path: RefCell::new(None),
+            created: 0,
+            last_changed: Cell::new(0),
+            // Triggers error if default used
+            recovery_file_path: PathBuf::from("/"),
+            // Will be overwritten
+            metadata_path: PathBuf::from("/"),
+        }
+    }
 }
 
 impl FileFormatSaver for RnRecoveryMetadata {
@@ -49,15 +66,19 @@ impl RnRecoveryMetadata {
                 self.recovery_file_path.display()
             )
         };
-        if let Err(e) = remove_file(&self.metdata_path) {
+        if let Err(e) = remove_file(&self.metadata_path) {
             log::error!(
                 "Failed to delete recovery metadata {}: {e}",
-                self.metdata_path.display()
+                self.metadata_path.display()
             )
         }
     }
+    /// Get the creation date as unix timestamp
+    pub fn crated(&self) -> u64 {
+        self.created
+    }
     /// Get the last changed date as unix timestamp
-    pub fn last_changed(&self) -> i64 {
+    pub fn last_changed(&self) -> u64 {
         self.last_changed.get()
     }
     /// Load instance from given Path
@@ -65,22 +86,27 @@ impl RnRecoveryMetadata {
         let path = path.as_ref();
         let bytes = std::fs::read(path).context("Failed to read file")?;
         let mut out = Self::load_from_bytes(&bytes)?;
-        out.metdata_path = path.to_path_buf();
+        out.metadata_path = path.to_path_buf();
         Ok(out)
     }
     /// Get the metadata path
     pub fn metadata_path(&self) -> PathBuf {
-        self.metdata_path.clone()
+        self.metadata_path.clone()
     }
 
     /// Create new Cargo metadata
-    pub fn new(metadata_path: impl Into<PathBuf>, rnote_path: impl Into<PathBuf>) -> Self {
+    pub fn new(
+        created: u64,
+        metadata_path: impl Into<PathBuf>,
+        recovery_file_path: impl Into<PathBuf>,
+    ) -> Self {
         let out = Self {
             title: RefCell::new(None),
             document_path: RefCell::new(None),
             last_changed: Cell::new(0),
-            recovery_file_path: rnote_path.into(),
-            metdata_path: metadata_path.into(),
+            created,
+            recovery_file_path: recovery_file_path.into(),
+            metadata_path: metadata_path.into(),
         };
         out.update_last_changed();
         out
@@ -91,7 +117,7 @@ impl RnRecoveryMetadata {
     }
     /// Save recovery data
     pub fn save(&self) -> anyhow::Result<Vec<u8>> {
-        self.save_as_bytes(self.metdata_path.to_str().unwrap())
+        self.save_as_bytes(self.metadata_path.to_str().unwrap())
     }
     /// Get the document title
     pub fn title(&self) -> Option<String> {
@@ -117,7 +143,7 @@ impl RnRecoveryMetadata {
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .expect("Failed to get unix time")
-                .as_secs() as i64,
+                .as_secs(),
         );
     }
 }

@@ -130,7 +130,7 @@
       <summary>true when document recovery is enabled</summary>
     </key>
     <key name="recovery-interval-secs" type="u">
-      <default>80</default>
+      <default>120</default>
       <summary>the sec interval for the recovery saves</summary>
     </key>
     <key name="show-scrollbars" type="b">

@@ -600,10 +600,16 @@ impl RnCanvas {
                 std::fs::create_dir(&recovery_path).expect("Failed to create tmp dir");
             }
             let name = format!("{time}.rnote");
-            recovery_path.push(name);
-            let mut metadata_path = recovery_path.clone();
+            let mut recovery_file_path = recovery_path.join(&name);
+            // add incrementing suffix if nessary
+            let mut suffix = 1;
+            while recovery_file_path.exists() {
+                recovery_file_path = recovery_path.join(format!("{name}_{suffix}.rnote"));
+                suffix += 1;
+            }
+            let mut metadata_path = recovery_file_path.clone();
             metadata_path.set_extension("json");
-            let metadata = RnRecoveryMetadata::new(metadata_path, recovery_path);
+            let metadata = RnRecoveryMetadata::new(time, metadata_path, recovery_file_path);
             imp.recovery_metadata.replace(Some(metadata));
         }
         gio::File::for_path(

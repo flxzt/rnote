@@ -10,7 +10,7 @@ use super::{FileFormatLoader, FileFormatSaver};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 /// Metadata of a revovery save
-pub struct RecoveryMetadata {
+pub struct RnRecoveryMetadata {
     title: RefCell<Option<String>>,
     document_path: RefCell<Option<PathBuf>>,
     last_changed: Cell<i64>,
@@ -19,7 +19,7 @@ pub struct RecoveryMetadata {
     metdata_path: PathBuf,
 }
 
-impl FileFormatSaver for RecoveryMetadata {
+impl FileFormatSaver for RnRecoveryMetadata {
     fn save_as_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
         let data = serde_json::to_string(self).expect("Failed to parse recovery format");
         let bytes = data.as_bytes();
@@ -27,7 +27,7 @@ impl FileFormatSaver for RecoveryMetadata {
         Ok(bytes.to_vec())
     }
 }
-impl FileFormatLoader for RecoveryMetadata {
+impl FileFormatLoader for RnRecoveryMetadata {
     fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self>
     where
         Self: Sized,
@@ -36,7 +36,7 @@ impl FileFormatLoader for RecoveryMetadata {
     }
 }
 
-impl RecoveryMetadata {
+impl RnRecoveryMetadata {
     /// Get the path to the file being backed up
     pub fn document_path(&self) -> Option<PathBuf> {
         self.document_path.borrow().clone()
@@ -64,7 +64,9 @@ impl RecoveryMetadata {
     pub fn load_from_path(path: impl AsRef<Path>) -> anyhow::Result<Self> {
         let path = path.as_ref();
         let bytes = std::fs::read(path).context("Failed to read file")?;
-        Self::load_from_bytes(&bytes)
+        let mut out = Self::load_from_bytes(&bytes)?;
+        out.metdata_path = path.to_path_buf();
+        Ok(out)
     }
     /// Get the metadata path
     pub fn metadata_path(&self) -> PathBuf {

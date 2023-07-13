@@ -30,6 +30,7 @@ pub use document::Document;
 pub use drawbehaviour::DrawBehaviour;
 pub use drawbehaviour::DrawOnDocBehaviour;
 pub use engine::RnoteEngine;
+pub use fileformats::recovery_metadata::RnRecoveryMetadata;
 pub use pens::PenHolder;
 pub use store::StrokeStore;
 pub use widgetflags::WidgetFlags;

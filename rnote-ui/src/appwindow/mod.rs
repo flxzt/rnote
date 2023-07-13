@@ -585,7 +585,7 @@ impl RnAppWindow {
                 crate::utils::FileType::RnoteFile => {
                     match file.load_bytes_future().await {
                         Ok((bytes, _)) => {
-                            if let Err(e) = canvas.load_in_rnote_bytes(bytes.to_vec(), file.path()).await {
+                            if let Err(e) = canvas.load_in_rnote_bytes(bytes.to_vec(), file.path(), None).await {
                                 log::error!("load_in_rnote_bytes() failed with Err: {e:?}");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Opening .rnote file failed"));
                             }

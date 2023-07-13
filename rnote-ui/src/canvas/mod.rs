@@ -19,10 +19,8 @@ use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::penevents::PenState;
-use rnote_engine::fileformats::recovery_metadata::RecoveryMetadata;
 use rnote_engine::utils::GrapheneRectHelpers;
-use rnote_engine::Document;
-use rnote_engine::{RnoteEngine, WidgetFlags};
+use rnote_engine::{Document, RnRecoveryMetadata, RnoteEngine, WidgetFlags};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, glib::Boxed)]
@@ -72,8 +70,7 @@ mod imp {
         pub(crate) engine_task_handler_handle: RefCell<Option<glib::JoinHandle<()>>>,
 
         pub(crate) recovery_in_progress: Cell<bool>,
-        pub(crate) recovery_file: RefCell<Option<gio::File>>,
-        pub(crate) recovery_file_metadata: RefCell<Option<RecoveryMetadata>>,
+        pub(crate) recovery_metadata: RefCell<Option<RnRecoveryMetadata>>,
         pub(crate) recovery_paused: Cell<bool>,
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
@@ -169,8 +166,7 @@ mod imp {
                 engine_task_handler_handle: RefCell::new(None),
 
                 recovery_in_progress: Cell::new(false),
-                recovery_file: RefCell::new(None),
-                recovery_file_metadata: RefCell::new(None),
+                recovery_metadata: RefCell::new(None),
                 recovery_paused: Cell::new(false),
                 output_file: RefCell::new(None),
                 output_file_monitor: RefCell::new(None),
@@ -588,18 +584,8 @@ impl RnCanvas {
         self.set_property("drawing-cursor", drawing_cursor.to_value());
     }
 
-    #[allow(unused)]
-    pub(crate) fn tmp_file(&self) -> Option<gio::File> {
-        self.imp().recovery_file.borrow().clone()
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_tmp_file(&self, tmp_file: Option<gio::File>) {
-        self.imp().recovery_file.replace(tmp_file);
-    }
-
-    pub(crate) fn get_or_generate_tmp_file(&self) -> gio::File {
-        if self.imp().recovery_file.borrow().is_none() {
+    pub(crate) fn get_or_generate_recovery_file(&self) -> gio::File {
+        if self.imp().recovery_metadata.borrow().is_none() {
             let imp = self.imp();
             let mut recovery_path = crate::env::recovery_dir().unwrap();
             if !recovery_path.exists() {
@@ -616,15 +602,18 @@ impl RnCanvas {
             let name = format!("{time}.rnote");
             recovery_path.push(name);
             let mut metadata_path = recovery_path.clone();
-            self.imp()
-                .recovery_file
-                .replace(Some(gio::File::for_path(&recovery_path)));
-
-            metadata_path.set_extension("rnoterecovery");
-            let metadata = RecoveryMetadata::new(metadata_path, recovery_path);
-            imp.recovery_file_metadata.replace(Some(metadata));
+            metadata_path.set_extension("json");
+            let metadata = RnRecoveryMetadata::new(metadata_path, recovery_path);
+            imp.recovery_metadata.replace(Some(metadata));
         }
-        self.imp().recovery_file.borrow().as_ref().unwrap().clone()
+        gio::File::for_path(
+            self.imp()
+                .recovery_metadata
+                .borrow()
+                .as_ref()
+                .unwrap()
+                .recovery_file_path(),
+        )
     }
 
     #[allow(unused)]
@@ -668,6 +657,10 @@ impl RnCanvas {
 
     pub(crate) fn set_recovery_paused(&self, recovery_paused: bool) {
         self.imp().recovery_paused.replace(recovery_paused);
+    }
+
+    pub(crate) fn set_recovery_metadata(&self, recovery_metadata: Option<RnRecoveryMetadata>) {
+        self.imp().recovery_metadata.replace(recovery_metadata);
     }
 
     #[allow(unused)]
@@ -1325,7 +1318,7 @@ impl RnCanvas {
         self.queue_draw();
     }
     pub(crate) fn update_recovery_file(&self) {
-        if let Some(m) = self.imp().recovery_file_metadata.borrow().as_ref() {
+        if let Some(m) = self.imp().recovery_metadata.borrow().as_ref() {
             m.update(
                 &self
                     .imp()

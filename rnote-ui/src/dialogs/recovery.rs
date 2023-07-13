@@ -2,7 +2,7 @@ use adw::{
     prelude::MessageDialogExtManual,
     traits::{ActionRowExt, MessageDialogExt, PreferencesGroupExt},
 };
-use cairo::glib::{self, clone};
+use cairo::glib::{self, clone, Cast};
 use gettextrs::gettext;
 use gtk4::{
     gdk::Display,
@@ -15,13 +15,12 @@ use gtk4::{
 };
 use std::{
     ffi::OsStr,
-    fs::remove_file,
     path::{Path, PathBuf},
 };
 use time::{format_description::well_known::Rfc2822, OffsetDateTime};
 
-use crate::{appwindow::RnAppWindow, config, env::recovery_dir};
-use rnote_engine::fileformats::recovery_metadata::RecoveryMetadata;
+use crate::{appwindow::RnAppWindow, canvaswrapper::RnCanvasWrapper, config, env::recovery_dir};
+use rnote_engine::RnRecoveryMetadata;
 
 #[derive(Clone, Debug, Default)]
 pub(crate) enum RnRecoveryAction {
@@ -42,7 +41,7 @@ pub(crate) async fn dialog_recovery_info(appwindow: &RnAppWindow) {
     let canvas = appwindow.active_tab().canvas();
     let last_changed = canvas
         .imp()
-        .recovery_file_metadata
+        .recovery_metadata
         .borrow()
         .as_ref()
         .map(|m| format_unix_timestamp(m.last_changed()));
@@ -51,7 +50,7 @@ pub(crate) async fn dialog_recovery_info(appwindow: &RnAppWindow) {
         appwindow.recovery(),
         appwindow.autosave(),
         canvas.unsaved_changes_recovery(),
-        canvas.imp().recovery_file_metadata.borrow(),
+        canvas.imp().recovery_metadata.borrow(),
         canvas.recovery_paused(),
         last_changed,
     );
@@ -168,27 +167,25 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
     match choice.as_str() {
         "discard_all" => actions.fill(RnRecoveryAction::Discard),
         "show_later" => actions.fill(RnRecoveryAction::ShowLater),
-        "apply" => actions.fill(RnRecoveryAction::ShowLater),
-        c => unimplemented!("unknown coice {}", c),
+        "apply" => (),
+        c => unimplemented!("unknown choice {}", c),
     };
-    for (i, meta) in metadata_found.iter().enumerate() {
+    for (i, meta) in metadata_found.into_iter().enumerate() {
         match &actions[i] {
-            RnRecoveryAction::Discard => (),
-            RnRecoveryAction::ShowLater => continue,
-            RnRecoveryAction::Open => appwindow.open_file_w_dialogs(
-                gio::File::for_path(meta.metadata_path()),
-                None,
-                false,
-            ),
-            RnRecoveryAction::SaveAs(target) => save_as(meta, target),
+            RnRecoveryAction::Discard => discard(meta),
+            RnRecoveryAction::ShowLater => (),
+            RnRecoveryAction::Open => open(appwindow, meta),
+            RnRecoveryAction::SaveAs(target) => {
+                save_as(&meta, target);
+                discard(meta)
+            }
         }
-        discard(meta);
     }
 }
 
-fn find_metadata() -> Vec<RecoveryMetadata> {
+fn find_metadata() -> Vec<RnRecoveryMetadata> {
     let mut recovery_files = Vec::new();
-    let recovery_ext: &OsStr = OsStr::new("rnoterecovery");
+    let recovery_ext: &OsStr = OsStr::new("json");
     for file in recovery_dir()
         .expect("Failed to get recovery dir")
         .read_dir()
@@ -199,7 +196,7 @@ fn find_metadata() -> Vec<RecoveryMetadata> {
             continue;
         }
         let metadata =
-            RecoveryMetadata::load_from_path(&file.path()).expect("Failed to load recovery file");
+            RnRecoveryMetadata::load_from_path(&file.path()).expect("Failed to load recovery file");
         recovery_files.push(metadata);
     }
     recovery_files
@@ -219,21 +216,10 @@ fn format_unix_timestamp(unix: i64) -> String {
     }
 }
 
-pub(crate) fn discard(meta: &RecoveryMetadata) {
-    if let Err(e) = remove_file(meta.recovery_file_path()) {
-        log::error!(
-            "Failed to remove recovery file {}: {e}",
-            meta.recovery_file_path().display()
-        )
-    };
-    if let Err(e) = remove_file(meta.metadata_path()) {
-        log::error!(
-            "Failed to remove recovery file {}: {e}",
-            meta.metadata_path().display()
-        )
-    };
+pub(crate) fn discard(meta: RnRecoveryMetadata) {
+    meta.delete()
 }
-pub(crate) fn save_as(meta: &RecoveryMetadata, target: &Path) {
+pub(crate) fn save_as(meta: &RnRecoveryMetadata, target: &Path) {
     if let Err(e) = std::fs::rename(meta.recovery_file_path(), target) {
         log::error!(
             "Failed to move recovered document from {} to {}, because {e}",
@@ -241,4 +227,31 @@ pub(crate) fn save_as(meta: &RecoveryMetadata, target: &Path) {
             target.display()
         )
     }
+}
+
+pub(crate) fn open(appwindow: &RnAppWindow, meta: RnRecoveryMetadata) {
+    let file = gio::File::for_path(meta.recovery_file_path());
+    let canvas = {
+        // open a new tab for rnote files
+        let new_tab = appwindow.new_tab();
+        new_tab
+            .child()
+            .downcast::<RnCanvasWrapper>()
+            .unwrap()
+            .canvas()
+    };
+
+    glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+        appwindow.overlays().start_pulsing_progressbar();
+        match file.load_bytes_future().await {
+            Ok((bytes, _)) => {
+                if let Err(e) = canvas.load_in_rnote_bytes(bytes.to_vec(), file.path(), Some(meta)).await {
+                    log::error!("load_in_rnote_bytes() failed with Err: {e:?}");
+                    appwindow.overlays().dispatch_toast_error(&gettext("Opening .rnote file from recovery failed"));
+                }
+            }
+            Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
+        }
+        appwindow.overlays().finish_progressbar();
+    }));
 }

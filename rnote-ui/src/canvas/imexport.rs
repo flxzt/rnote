@@ -6,6 +6,7 @@ use rnote_compose::helpers::Vector2Helpers;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
 use rnote_engine::engine::{EngineSnapshot, StrokeContent};
 use rnote_engine::strokes::Stroke;
+use rnote_engine::RnRecoveryMetadata;
 use std::ops::Range;
 use std::path::Path;
 
@@ -14,6 +15,7 @@ impl RnCanvas {
         &self,
         bytes: Vec<u8>,
         file_path: Option<P>,
+        recovery_metadata: Option<RnRecoveryMetadata>,
     ) -> anyhow::Result<()>
     where
         P: AsRef<Path>,
@@ -34,6 +36,10 @@ impl RnCanvas {
         self.background_regenerate_pattern();
         widget_flags.merge(self.engine_mut().doc_resize_autoexpand());
         self.update_rendering_current_viewport();
+        if recovery_metadata.is_some() {
+            self.set_output_file(None);
+            self.set_recovery_metadata(recovery_metadata)
+        }
 
         widget_flags.refresh_ui = true;
 
@@ -45,7 +51,7 @@ impl RnCanvas {
         if let Some(output_file) = self.output_file() {
             let (bytes, _) = output_file.load_bytes_future().await?;
 
-            self.load_in_rnote_bytes(bytes.to_vec(), output_file.path())
+            self.load_in_rnote_bytes(bytes.to_vec(), output_file.path(), None)
                 .await?;
         }
 

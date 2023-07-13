@@ -15,6 +15,7 @@ use gtk4::{
 };
 use std::{
     ffi::OsStr,
+    fs::remove_file,
     path::{Path, PathBuf},
 };
 use time::{format_description::well_known::Rfc2822, OffsetDateTime};
@@ -29,6 +30,7 @@ pub(crate) enum RnRecoveryAction {
     ShowLater,
     #[default]
     Open,
+    CleanInvalid,
 }
 
 pub(crate) async fn dialog_recovery_info(appwindow: &RnAppWindow) {
@@ -92,9 +94,26 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
     for (i, metadata) in metadata_found.iter().enumerate() {
         // let recovery_row: RnRecoveryRow = RnRecoveryRow::new();
         // recovery_row.init(appwindow, metadata.clone());
+        let mut valid = true;
+        let subtitle = match metadata.recovery_file_path() {
+            // detect default value => missing path
+            p if p == PathBuf::from("/") => {
+                valid = false;
+                "ERROR: No recovery_file specified".to_string()
+            }
+            p if !p.exists() => {
+                valid = false;
+                "ERROR: recovery_file does not exist".to_string()
+            }
+            _ => format!(
+                "Created: {}\nLast Changed: {}",
+                format_unix_timestamp(metadata.crated()),
+                format_unix_timestamp(metadata.last_changed())
+            ),
+        };
         let row: adw::ActionRow = adw::ActionRow::builder()
             .title(metadata.title().unwrap_or_else(|| String::from("Unsaved")))
-            .subtitle(format_unix_timestamp(metadata.last_changed()))
+            .subtitle(subtitle)
             .subtitle_lines(2)
             .build();
         let open_button = ToggleButton::builder()
@@ -117,56 +136,55 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
             .tooltip_text("Discard document")
             .group(&open_button)
             .build();
-        discard_button.connect_toggled(clone!(@weak appwindow => move |button| {
-            if button.is_active() {
-                appwindow.set_recovery_action(i, RnRecoveryAction::Discard)
-            }
-        }));
-        open_button.connect_toggled(clone!(@weak appwindow => move |button| {
-            if button.is_active(){
-                appwindow.set_recovery_action(i, RnRecoveryAction::Open)
-            }
-        }));
-        save_as_button.connect_toggled(clone!(@weak appwindow => move |button| {
-            if !button.is_active(){
-                return;
-            }
-            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                let filedialog = FileDialog::builder()
-                    .title("Save recovered file as...")
-                    .accept_label(gettext("Save"))
-                    .modal(true)
-                    .build();
-
-                match filedialog.save_future(Some(&appwindow)).await {
-                    Ok(f) => {
-                        let path = f.path().unwrap();
-                        // if path.extension().ne(Some("rnote")){
-                        //     path.set_extension()
-                        // }
-                        appwindow.set_recovery_action(i, RnRecoveryAction::SaveAs(path))
-                    }
-                    Err(e) => {
-                        log::error!("Failed to get save path for revovery file: {e}")
-                    }
+        if valid {
+            discard_button.connect_toggled(clone!(@weak appwindow => move |button| {
+                if button.is_active() {
+                    appwindow.set_recovery_action(i, RnRecoveryAction::Discard)
                 }
             }));
-        }));
-        show_later_button.connect_toggled(clone!(@weak appwindow => move |button| {
-            if button.is_active(){
-                appwindow.set_recovery_action(i, RnRecoveryAction::ShowLater)
-            }
-        }));
-        // recover_document_button.connect_clicked();
-        // save_as_button.connect_clicked();
-        // discard_button.connect_clicked(clone!(@weak appwindow => move |button|{
-        //      b
+            open_button.connect_toggled(clone!(@weak appwindow => move |button| {
+                if button.is_active(){
+                    appwindow.set_recovery_action(i, RnRecoveryAction::Open)
+                }
+            }));
+            save_as_button.connect_toggled(clone!(@weak appwindow => move |button| {
+                if !button.is_active(){
+                    return;
+                }
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    let filedialog = FileDialog::builder()
+                        .title("Save recovered file as...")
+                        .accept_label(gettext("Save"))
+                        .modal(true)
+                        .build();
 
-        // }));
-        row.add_suffix(&open_button);
-        row.add_suffix(&save_as_button);
-        row.add_suffix(&show_later_button);
-        row.add_suffix(&discard_button);
+                    match filedialog.save_future(Some(&appwindow)).await {
+                        Ok(f) => {
+                            let path = f.path().unwrap();
+                            // if path.extension().ne(Some("rnote")){
+                            //     path.set_extension()
+                            // }
+                            appwindow.set_recovery_action(i, RnRecoveryAction::SaveAs(path))
+                        }
+                        Err(e) => {
+                            log::error!("Failed to get save path for revovery file: {e}")
+                        }
+                    }
+                }));
+            }));
+            show_later_button.connect_toggled(clone!(@weak appwindow => move |button| {
+                if button.is_active(){
+                    appwindow.set_recovery_action(i, RnRecoveryAction::ShowLater)
+                }
+            }));
+            row.add_suffix(&open_button);
+            row.add_suffix(&save_as_button);
+            row.add_suffix(&show_later_button);
+            row.add_suffix(&discard_button);
+        } else {
+            appwindow.set_recovery_action(i, RnRecoveryAction::CleanInvalid)
+        }
+
         recover_documents_group.add(&row);
         rows.push(row);
     }
@@ -174,8 +192,24 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
     let mut actions = appwindow.imp().recovery_actions.replace(None).unwrap();
     assert_eq!(metadata_found.len(), actions.len());
     match choice.as_str() {
-        "discard_all" => actions.fill(RnRecoveryAction::Discard),
-        "show_later" => actions.fill(RnRecoveryAction::ShowLater),
+        // CleanInvalid will always be executed
+        "discard_all" => {
+            for action in &mut actions {
+                match action {
+                    RnRecoveryAction::CleanInvalid => (),
+                    _ => *action = RnRecoveryAction::Discard,
+                }
+            }
+        }
+        "show_later" => {
+            for action in &mut actions {
+                match action {
+                    RnRecoveryAction::CleanInvalid => (),
+                    _ => *action = RnRecoveryAction::ShowLater,
+                }
+            }
+        }
+
         "apply" => (),
         c => unimplemented!("unknown choice {}", c),
     };
@@ -188,20 +222,38 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
                 save_as(&meta, target);
                 discard(meta)
             }
+            RnRecoveryAction::CleanInvalid => {
+                if let Err(e) = remove_file(&meta.metadata_path()) {
+                    log::error!("Failedro delete {}, {e}", meta.metadata_path().display())
+                }
+            }
         }
     }
 }
 
 fn find_metadata() -> Vec<RnRecoveryMetadata> {
     let mut recovery_files = Vec::new();
-    let recovery_ext: &OsStr = OsStr::new("json");
     for file in recovery_dir()
         .expect("Failed to get recovery dir")
         .read_dir()
         .expect("failed to read recovery dir")
     {
-        let file = file.expect("Failed to get DirEntry");
-        if file.path().extension().ne(&Some(recovery_ext)) {
+        let Ok(file) = file else {
+            log::error!("failed to get DirEntry");
+            continue
+        };
+        // clean up .rnote files without metadata in the recovery dir
+        // they are usally a result of broken recovery metadata
+        if file.path().extension() == Some(OsStr::new("rnote")) {
+            let mut json_path = file.path();
+            json_path.set_extension("json");
+            if !json_path.exists() {
+                if let Err(e) = remove_file(&file.path()) {
+                    log::error!("failed to remove {}, {e}", file.path().display())
+                }
+            }
+            continue;
+        } else if file.path().extension() != Some(OsStr::new("json")) {
             continue;
         }
         let metadata =
@@ -211,9 +263,9 @@ fn find_metadata() -> Vec<RnRecoveryMetadata> {
     recovery_files
 }
 
-fn format_unix_timestamp(unix: i64) -> String {
+fn format_unix_timestamp(unix: u64) -> String {
     // Shows occuring errors in timesptamp label field instead of crashing
-    match OffsetDateTime::from_unix_timestamp(unix) {
+    match OffsetDateTime::from_unix_timestamp(unix as i64) {
         Err(e) => {
             log::error!("Failed to get time from unix time: {e}");
             String::from("Error getting time")

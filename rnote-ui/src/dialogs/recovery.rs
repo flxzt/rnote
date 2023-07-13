@@ -39,21 +39,30 @@ pub(crate) async fn dialog_recovery_info(appwindow: &RnAppWindow) {
     dialog.set_transient_for(Some(appwindow));
     dialog.set_modal(true);
     let canvas = appwindow.active_tab().canvas();
-    let last_changed = canvas
-        .imp()
-        .recovery_metadata
-        .borrow()
-        .as_ref()
-        .map(|m| format_unix_timestamp(m.last_changed()));
-    let info = format!(
-        "enabled: {}\nautosave: {}\nunsaved_changes_recovery: {}\nmetadata: {:#?}\nrecovery_paused: {}\n timestamp: {:?}",
-        appwindow.recovery(),
-        appwindow.autosave(),
-        canvas.unsaved_changes_recovery(),
-        canvas.imp().recovery_metadata.borrow(),
-        canvas.recovery_paused(),
-        last_changed,
-    );
+    let info = {
+        let recovery = appwindow.recovery();
+        let autosave = appwindow.autosave();
+        let unsaved_changes_recovery = canvas.unsaved_changes_recovery();
+        let unsaved_changes = canvas.unsaved_changes();
+        let recovery_metadata = canvas.imp().recovery_metadata.borrow();
+        let recovery_paused = canvas.recovery_paused();
+        let created = recovery_metadata
+            .as_ref()
+            .map(|m| format_unix_timestamp(m.crated()));
+        let last_changed = recovery_metadata
+            .as_ref()
+            .map(|m| format_unix_timestamp(m.last_changed()));
+        format!(
+            "recovery: {recovery}
+autosave: {autosave}
+unsaved_changed: {unsaved_changes}
+unsaved_changes_recovery: {unsaved_changes_recovery}
+metadata: {recovery_metadata:#?}
+recovery_paused: {recovery_paused}
+created: {created:?}
+last_changed: {last_changed:?}",
+        )
+    };
     dialog.set_body(&info);
     match dialog.choose_future().await.as_str() {
         "copy" => Display::default().unwrap().clipboard().set_text(&info),

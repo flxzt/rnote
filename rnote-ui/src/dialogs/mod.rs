@@ -251,7 +251,10 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
     // Returns close_finish_confirm, a boolean that indicates if the tab should actually be closed or closing
     // should be aborted.
     match dialog.choose_future().await.as_str() {
-        "discard" => true,
+        "discard" => {
+            canvas.recovery_metadata_delete();
+            true
+        }
         "save" => {
             if let Some(save_file) = save_file {
                 appwindow.overlays().start_pulsing_progressbar();
@@ -386,7 +389,16 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
 
     let close = match dialog.choose_future().await.as_str() {
         "discard" => {
-            // do nothing and close
+            // remove recovery artifacts and close
+            for (i, _check, _save_file) in rows {
+                let canvas = tabs[i]
+                    .child()
+                    .downcast::<RnCanvasWrapper>()
+                    .unwrap()
+                    .canvas();
+
+                canvas.recovery_metadata_delete();
+            }
             true
         }
         "save" => {

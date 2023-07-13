@@ -24,22 +24,26 @@ impl RnCanvas {
 
         let mut widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
 
-        if let Some(file_path) = file_path {
+        let mut unsaved_changes = false;
+        if let Some(meta) = &recovery_metadata {
+            self.set_output_file(meta.document_path().map(gio::File::for_path));
+            unsaved_changes = true;
+            self.dismiss_output_file_modified_toast();
+            self.set_unsaved_changes_recovery(false);
+        } else if let Some(file_path) = file_path {
             let file = gio::File::for_path(file_path);
             self.dismiss_output_file_modified_toast();
             self.set_output_file(Some(file));
         }
 
-        self.set_unsaved_changes(false);
+        self.set_recovery_metadata(recovery_metadata);
+
+        self.set_unsaved_changes(unsaved_changes);
         self.set_empty(false);
         self.return_to_origin_page();
         self.background_regenerate_pattern();
         widget_flags.merge(self.engine_mut().doc_resize_autoexpand());
         self.update_rendering_current_viewport();
-        if recovery_metadata.is_some() {
-            self.set_output_file(None);
-            self.set_recovery_metadata(recovery_metadata)
-        }
 
         widget_flags.refresh_ui = true;
 

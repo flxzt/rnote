@@ -298,6 +298,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         let canvas_output_file = canvas.output_file();
 
         if !canvas.unsaved_changes() {
+            canvas.recovery_metadata_delete();
             continue;
         }
 

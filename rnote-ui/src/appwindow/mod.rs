@@ -379,6 +379,25 @@ impl RnAppWindow {
             })
             .any(|c| c.unsaved_changes())
     }
+    pub(crate) fn tabs_recovery_metadata_delete(&self) {
+        for canvas in self
+            .overlays()
+            .tabview()
+            .pages()
+            .snapshot()
+            .iter()
+            .map(|o| {
+                o.downcast_ref::<adw::TabPage>()
+                    .unwrap()
+                    .child()
+                    .downcast_ref::<RnCanvasWrapper>()
+                    .unwrap()
+                    .canvas()
+            })
+        {
+            canvas.recovery_metadata_delete();
+        }
+    }
 
     pub(crate) fn tabs_query_file_opened(
         &self,

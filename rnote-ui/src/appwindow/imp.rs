@@ -297,6 +297,7 @@ impl WindowImpl for RnAppWindow {
                 dialogs::dialog_close_window(&obj).await;
             }));
         } else {
+            obj.tabs_recovery_metadata_delete();
             obj.close_force();
         }
 

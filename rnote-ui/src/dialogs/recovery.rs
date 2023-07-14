@@ -160,10 +160,10 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
 
                     match filedialog.save_future(Some(&appwindow)).await {
                         Ok(f) => {
-                            let path = f.path().unwrap();
-                            // if path.extension().ne(Some("rnote")){
-                            //     path.set_extension()
-                            // }
+                            let mut path = f.path().unwrap();
+                            if path.extension() != Some(OsStr::new("rnote")){
+                                path.set_extension("rnote");
+                            }
                             appwindow.set_recovery_action(i, RnRecoveryAction::SaveAs(path))
                         }
                         Err(e) => {

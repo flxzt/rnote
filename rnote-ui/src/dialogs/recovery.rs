@@ -270,10 +270,18 @@ fn format_unix_timestamp(unix: u64) -> String {
             log::error!("Failed to get time from unix time: {e}");
             String::from("Error getting time")
         }
-        Ok(ts) => ts.format(&Rfc2822).unwrap_or_else(|e| {
-            log::error!("Failed to format time: {e}");
-            String::from("Error formatting time")
-        }),
+        Ok(ts) => {
+            let local_offset = time::UtcOffset::current_local_offset().unwrap_or_else(|e| {
+                log::error!("Failed to get get local time, defaulting to UTC: {e}");
+                time::UtcOffset::UTC
+            });
+            ts.to_offset(local_offset)
+                .format(&Rfc2822)
+                .unwrap_or_else(|e| {
+                    log::error!("Failed to format time: {e}");
+                    String::from("Error formatting time")
+                })
+        }
     }
 }
 

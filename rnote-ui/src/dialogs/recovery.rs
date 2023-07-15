@@ -152,24 +152,11 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
                 if !button.is_active(){
                     return;
                 }
-                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                    let filedialog = FileDialog::builder()
-                        .title("Save recovered file as...")
-                        .accept_label(gettext("Save"))
-                        .modal(true)
-                        .build();
-
-                    match filedialog.save_future(Some(&appwindow)).await {
-                        Ok(f) => {
-                            let mut path = f.path().unwrap();
-                            if path.extension() != Some(OsStr::new("rnote")){
-                                path.set_extension("rnote");
-                            }
-                            appwindow.set_recovery_action(i, RnRecoveryAction::SaveAs(path))
-                        }
-                        Err(e) => {
-                            log::error!("Failed to get save path for revovery file: {e}")
-                        }
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow, @weak button => async move {
+                    if let Some(path) = get_save_as_path(&appwindow).await {
+                        appwindow.set_recovery_action(i, RnRecoveryAction::SaveAs(path))
+                    }else{
+                        button.set_active(false);
                     }
                 }));
             }));
@@ -284,6 +271,58 @@ fn format_unix_timestamp(unix: u64) -> String {
 pub(crate) fn discard(meta: RnRecoveryMetadata) {
     meta.delete()
 }
+
+pub(crate) async fn get_save_as_path(appwindow: &RnAppWindow) -> Option<PathBuf> {
+    let filedialog = FileDialog::builder()
+        .title("Save recovered file as...")
+        .accept_label(gettext("Save"))
+        .modal(true)
+        .build();
+    if let Some(dir) = appwindow.workspacebrowser().dirlist_dir() {
+        filedialog.set_initial_folder(Some(&gio::File::for_path(dir)));
+    }
+    let mut initial_name: Option<String> = None;
+    let mut cancel = false;
+    let mut out = None;
+    while out.is_none() && !cancel {
+        filedialog.set_initial_name(initial_name.as_deref());
+        match filedialog.save_future(Some(appwindow)).await {
+            Ok(f) => {
+                let Some(mut path) = f.path() else {
+                    log::error!("Failed to parse defined file no path");
+                    // Cancel
+                    return None;
+                };
+                if path.extension() != Some(OsStr::new("rnote")) {
+                    path.set_extension("rnote");
+                }
+                if path.exists() {
+                    match super::dialog_confirm_overwrite_document(appwindow, &path)
+                        .await
+                        .as_str()
+                    {
+                        "overwrite" => out = Some(path),
+                        "cancel" => cancel = true,
+                        "selectnew" => {
+                            if let Some(name) = path.file_name().and_then(|name| name.to_str()) {
+                                initial_name = Some(name.to_string())
+                            }
+                        }
+                        r => unimplemented!("{r}"),
+                    }
+                } else {
+                    out = Some(path)
+                }
+            }
+            Err(e) => {
+                log::error!("Failed to get save path for revovery file: {e}");
+                cancel = true;
+            }
+        }
+    }
+    out
+}
+
 pub(crate) fn save_as(meta: &RnRecoveryMetadata, target: &Path) {
     if let Err(e) = std::fs::rename(meta.recovery_file_path(), target) {
         log::error!(

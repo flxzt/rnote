@@ -19,6 +19,7 @@ use gtk4::{
     gio, glib, glib::clone, Builder, Button, CheckButton, ColorDialogButton, Dialog, FileDialog,
     Label, MenuButton, ResponseType, ShortcutsWindow, StringList,
 };
+use std::path::Path;
 
 // Re-exports
 pub(crate) use recovery::dialog_recover_documents;
@@ -94,6 +95,26 @@ pub(crate) async fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas)
             // Cancel
         }
     }
+}
+
+/// Display a dialog confirming a file overwrite.
+///
+/// The file needs to be supplied as Path or PathBuf.
+/// The return value is "cancel", "selectnew" or "overwrite"
+pub(crate) async fn dialog_confirm_overwrite_document(
+    appwindow: &RnAppWindow,
+    path: impl AsRef<Path>,
+) -> glib::GString {
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
+    );
+    let dialog: adw::MessageDialog = builder.object("dialog_confirm_overwrite_file").unwrap();
+    dialog.set_transient_for(Some(appwindow));
+    dialog.set_body(&format!(
+        "File {} already exits!\n Overwrite existing file?",
+        path.as_ref().display()
+    ));
+    dialog.choose_future().await
 }
 
 pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {

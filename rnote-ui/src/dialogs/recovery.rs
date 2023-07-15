@@ -221,13 +221,8 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
             RnRecoveryAction::Open => open(appwindow, meta),
             RnRecoveryAction::SaveAs(target) => {
                 save_as(&meta, target);
-                discard(meta)
             }
-            RnRecoveryAction::CleanInvalid => {
-                if let Err(e) = remove_file(&meta.metadata_path()) {
-                    log::error!("Failedro delete {}, {e}", meta.metadata_path().display())
-                }
-            }
+            RnRecoveryAction::CleanInvalid => meta.delete_meta(),
         }
     }
 }
@@ -296,6 +291,8 @@ pub(crate) fn save_as(meta: &RnRecoveryMetadata, target: &Path) {
             meta.recovery_file_path().display(),
             target.display()
         )
+    } else {
+        meta.delete_meta();
     }
 }
 

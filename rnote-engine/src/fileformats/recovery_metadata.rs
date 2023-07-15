@@ -66,6 +66,10 @@ impl RnRecoveryMetadata {
                 self.recovery_file_path.display()
             )
         };
+        self.delete_meta()
+    }
+    /// Remove recovery metadata from disk
+    pub fn delete_meta(&self) {
         if let Err(e) = remove_file(&self.metadata_path) {
             log::error!(
                 "Failed to delete recovery metadata {}: {e}",
@@ -73,6 +77,7 @@ impl RnRecoveryMetadata {
             )
         }
     }
+
     /// Get the creation date as unix timestamp
     pub fn crated(&self) -> u64 {
         self.created

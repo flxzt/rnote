@@ -116,27 +116,28 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
             .subtitle(subtitle)
             .subtitle_lines(2)
             .build();
-        let open_button = ToggleButton::builder()
-            .icon_name("tab-new-filled-symbolic")
-            .tooltip_text("Recover document in new tab")
-            .active(true)
-            .build();
-        let save_as_button = ToggleButton::builder()
-            .icon_name("doc-save-symbolic")
-            .tooltip_text("Save file to selected path")
-            .group(&open_button)
-            .build();
-        let show_later_button = ToggleButton::builder()
-            .icon_name("workspacelistentryicon-clock-symbolic")
-            .tooltip_text("Show option again next launch")
-            .group(&open_button)
-            .build();
-        let discard_button = ToggleButton::builder()
-            .icon_name("trash-empty")
-            .tooltip_text("Discard document")
-            .group(&open_button)
-            .build();
         if valid {
+            let open_button = ToggleButton::builder()
+                .icon_name("tab-new-filled-symbolic")
+                .tooltip_text("Recover document in new tab")
+                .active(true)
+                .build();
+            let save_as_button = ToggleButton::builder()
+                .icon_name("doc-save-symbolic")
+                .tooltip_text("Save file to selected path")
+                .group(&open_button)
+                .build();
+            let show_later_button = ToggleButton::builder()
+                .icon_name("workspacelistentryicon-clock-symbolic")
+                .tooltip_text("Show option again next launch")
+                .group(&open_button)
+                .build();
+            let discard_button = ToggleButton::builder()
+                .icon_name("trash-empty")
+                .tooltip_text("Discard document")
+                .group(&open_button)
+                .build();
+
             discard_button.connect_toggled(clone!(@weak appwindow => move |button| {
                 if button.is_active() {
                     appwindow.set_recovery_action(i, RnRecoveryAction::Discard)

@@ -56,4 +56,4 @@ poppler-rs = { workspace = true }
 gtk4 = { workspace = true }
 
 [dev-dependencies]
-approx = "0.5.1"
+approx = { workspace = true }

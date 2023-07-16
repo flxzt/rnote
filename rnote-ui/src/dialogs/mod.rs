@@ -101,7 +101,7 @@ pub(crate) async fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas)
 ///
 /// The file needs to be supplied as Path or PathBuf.
 /// The return value is "cancel", "selectnew" or "overwrite"
-pub(crate) async fn dialog_confirm_overwrite_document(
+pub(crate) async fn dialog_confirm_overwrite_file(
     appwindow: &RnAppWindow,
     path: impl AsRef<Path>,
 ) -> glib::GString {

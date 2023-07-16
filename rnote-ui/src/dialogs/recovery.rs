@@ -297,7 +297,7 @@ pub(crate) async fn get_save_as_path(appwindow: &RnAppWindow) -> Option<PathBuf>
                     path.set_extension("rnote");
                 }
                 if path.exists() {
-                    match super::dialog_confirm_overwrite_document(appwindow, &path)
+                    match super::dialog_confirm_overwrite_file(appwindow, &path)
                         .await
                         .as_str()
                     {

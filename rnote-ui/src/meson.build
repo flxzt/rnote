@@ -78,6 +78,7 @@ rnote_ui_sources = files(
     'dialogs/mod.rs',
     'dialogs/import.rs',
     'dialogs/export.rs',
+    'dialogs/recovery.rs',
     'appmenu.rs',
     'canvasmenu.rs',
     'canvaswrapper.rs',

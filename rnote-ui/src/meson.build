@@ -83,6 +83,7 @@ rnote_ui_sources = files(
     'canvasmenu.rs',
     'canvaswrapper.rs',
     'overlays.rs',
+    'strokecontentpaintable.rs',
     'config.rs',
     'globals.rs',
     'iconpicker.rs',
@@ -91,6 +92,7 @@ rnote_ui_sources = files(
     'main.rs',
     'env.rs',
     'mainheader.rs',
+    'strokecontentpreview.rs',
     'unitentry.rs',
     'utils.rs',
 )

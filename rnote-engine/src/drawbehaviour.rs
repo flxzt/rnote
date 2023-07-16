@@ -40,8 +40,6 @@ pub trait DrawOnDocBehaviour {
         snapshot: &gtk4::Snapshot,
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
-        snapshot.save();
-
         if let Some(bounds) = self.bounds_on_doc(engine_view) {
             let viewport = engine_view.camera.viewport();
             // Restrict to viewport as maximum bounds, else cairo is very unperformant
@@ -54,13 +52,14 @@ pub trait DrawOnDocBehaviour {
             bounds_on_surface.ensure_positive();
             bounds_on_surface.assert_valid()?;
 
+            snapshot.save();
             let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(bounds_on_surface));
             let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
             piet_cx.transform(engine_view.camera.transform().to_kurbo());
             self.draw_on_doc(&mut piet_cx, engine_view)?;
+            snapshot.restore();
         }
 
-        snapshot.restore();
         Ok(())
     }
 }

@@ -189,7 +189,7 @@ impl RnAppWindow {
         if let Some(removed_id) = self.imp().periodic_configsave_source_id.borrow_mut().replace(
             glib::source::timeout_add_seconds_local(
                 Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
-                    if let Err(e) = appwindow.active_tab().canvas().save_engine_config(&appwindow.app_settings()) {
+                    if let Err(e) = appwindow.active_tab_wrapper().canvas().save_engine_config(&appwindow.app_settings()) {
                         log::error!("saving engine config in periodic task failed with Err: {e:?}");
                     }
 
@@ -203,7 +203,7 @@ impl RnAppWindow {
         // Set undo / redo as not sensitive as default ( setting it in .ui file did not work for some reason )
         self.overlays().undo_button().set_sensitive(false);
         self.overlays().redo_button().set_sensitive(false);
-        self.refresh_ui_from_engine(&self.active_tab());
+        self.refresh_ui_from_engine(&self.active_tab_wrapper());
         glib::MainContext::default().spawn_local(clone!(@weak self as appwindow => async move {
             dialogs::dialog_recover_documents(&appwindow).await;
         }));
@@ -218,7 +218,7 @@ impl RnAppWindow {
 
         // Closing the state tasks channel receiver for all tabs
         for tab in self
-            .tab_pages_snapshot()
+            .tabs_snapshot()
             .into_iter()
             .map(|p| p.child().downcast::<RnCanvasWrapper>().unwrap())
         {
@@ -248,7 +248,7 @@ impl RnAppWindow {
             canvas.queue_resize();
         }
         if widget_flags.refresh_ui {
-            self.refresh_ui_from_engine(&self.active_tab());
+            self.refresh_ui_from_engine(&self.active_tab_wrapper());
         }
         if widget_flags.store_modified {
             canvas.set_unsaved_changes(true);
@@ -305,7 +305,7 @@ impl RnAppWindow {
     }
 
     /// Get the active (selected) tab page child.
-    pub(crate) fn active_tab(&self) -> RnCanvasWrapper {
+    pub(crate) fn active_tab_wrapper(&self) -> RnCanvasWrapper {
         self.active_tab_page()
             .child()
             .downcast::<RnCanvasWrapper>()
@@ -314,46 +314,44 @@ impl RnAppWindow {
 
     /// adds the initial tab to the tabview
     fn add_initial_tab(&self) -> adw::TabPage {
-        let new_wrapper = RnCanvasWrapper::new();
-        if let Err(e) = new_wrapper
+        let wrapper = RnCanvasWrapper::new();
+        if let Err(e) = wrapper
             .canvas()
-            .load_engine_config(&self.app_settings())
+            .load_engine_config_from_settings(&self.app_settings())
         {
-            log::debug!("failed to load engine config for initial tab, Err: {e:?}");
+            log::error!("failed to load engine config for initial tab, Err: {e:?}");
         }
-        self.overlays().tabview().append(&new_wrapper)
+        self.append_wrapper_new_tab(&wrapper)
     }
 
-    /// Creates a new tab and set it as selected
-    pub(crate) fn new_tab(&self) -> adw::TabPage {
-        let current_engine_config = self
-            .active_tab()
+    /// Creates a new canvas wrapper without attaching it as a tab.
+    pub(crate) fn new_canvas_wrapper(&self) -> RnCanvasWrapper {
+        let engine_config = self
+            .active_tab_wrapper()
             .canvas()
             .engine_ref()
             .extract_engine_config();
-        let new_wrapper = RnCanvasWrapper::new();
-
-        let mut widget_flags = new_wrapper
+        let wrapper = RnCanvasWrapper::new();
+        let mut widget_flags = wrapper
             .canvas()
             .engine_mut()
-            .load_engine_config(current_engine_config, crate::env::pkg_data_dir().ok());
-        widget_flags.merge(
-            new_wrapper
-                .canvas()
-                .engine_mut()
-                .doc_resize_to_fit_strokes(),
-        );
-        new_wrapper.canvas().update_rendering_current_viewport();
-        self.handle_widget_flags(widget_flags, &new_wrapper.canvas());
+            .load_engine_config(engine_config, crate::env::pkg_data_dir().ok());
+        widget_flags.merge(wrapper.canvas().engine_mut().doc_resize_to_fit_strokes());
+        wrapper.canvas().update_rendering_current_viewport();
+        self.handle_widget_flags(widget_flags, &wrapper.canvas());
+        wrapper
+    }
 
-        // The tab page connections are handled in page_attached, which is fired when the page is added to the tabview
-        let page = self.overlays().tabview().append(&new_wrapper);
+    /// Append the wrapper as a new tab and set it selected.
+    pub(crate) fn append_wrapper_new_tab(&self, wrapper: &RnCanvasWrapper) -> adw::TabPage {
+        // The tab page connections are handled in page_attached,
+        // which is emitted when the page is added to the tabview.
+        let page = self.overlays().tabview().append(wrapper);
         self.overlays().tabview().set_selected_page(&page);
-
         page
     }
 
-    pub(crate) fn tab_pages_snapshot(&self) -> Vec<adw::TabPage> {
+    pub(crate) fn tabs_snapshot(&self) -> Vec<adw::TabPage> {
         self.overlays()
             .tabview()
             .pages()
@@ -429,10 +427,10 @@ impl RnAppWindow {
 
     /// Set all unselected tabs inactive.
     ///
-    /// Currently this clears the rendering and deinits the current pen of the engine in the tabs.
+    /// This clears the rendering and deinits the current pen of the engine in the tabs.
     ///
-    /// To set a tab active again and reinit all necessary state, use `engine_mut().set_active(true)`.
-    pub(crate) fn set_unselected_tabs_inactive(&self) {
+    /// To set a tab active again and reinit all necessary state, use `canvas.engine_mut().set_active(true)`.
+    pub(crate) fn tabs_set_unselected_inactive(&self) {
         for inactive_page in self
             .overlays()
             .tabview()
@@ -483,10 +481,6 @@ impl RnAppWindow {
         self.mainheader()
             .main_title_unsaved_indicator()
             .set_visible(canvas.unsaved_changes());
-        // This is not in the title bar, but I will keep the logic here to keep it close to the other unsaved indicator
-        // self.settings_panel()
-        //     .general_recovery_unsaved_indicator()
-        //     .set_visible(dbg!(canvas.unsaved_changes_recovery()));
         if canvas.unsaved_changes() {
             self.mainheader()
                 .main_title()
@@ -503,175 +497,116 @@ impl RnAppWindow {
 
     /// Open the file, with import dialogs when appropriate.
     ///
-    /// When the file is a rnote save file, `rnote_file_new_tab` determines if a new tab is opened, or if it overwrites the current active one.
-    pub(crate) fn open_file_w_dialogs(
+    /// When the file is a rnote save file, `rnote_file_new_tab` determines if a new tab is opened,
+    /// or if it loads and overwrites the content of the current active one.
+    pub(crate) async fn open_file_w_dialogs(
         &self,
         input_file: gio::File,
         target_pos: Option<na::Vector2<f64>>,
         rnote_file_new_tab: bool,
     ) {
-        match crate::utils::FileType::lookup_file_type(&input_file) {
-            crate::utils::FileType::RnoteFile => {
-                let Some(input_file_path) = input_file.path() else {
-                    log::error!("could not open file: {input_file:?}, path returned None");
-                    return;
-                };
-
-                // If the file is already opened in a tab, simply switch to it
-                if let Some(page) = self.tabs_query_file_opened(input_file_path) {
-                    self.overlays().tabview().set_selected_page(&page);
-                } else {
-                    let canvas = if rnote_file_new_tab {
-                        // open a new tab for rnote files
-                        let new_tab = self.new_tab();
-                        new_tab
-                            .child()
-                            .downcast::<RnCanvasWrapper>()
-                            .unwrap()
-                            .canvas()
-                    } else {
-                        self.active_tab().canvas()
+        // Returns Ok(true) if file was imported, else Ok(false)
+        async fn try_open_file(
+            appwindow: &RnAppWindow,
+            input_file: gio::File,
+            target_pos: Option<na::Vector2<f64>>,
+            rnote_file_new_tab: bool,
+        ) -> anyhow::Result<bool> {
+            let file_imported = match crate::utils::FileType::lookup_file_type(&input_file) {
+                crate::utils::FileType::RnoteFile => {
+                    let Some(input_file_path) = input_file.path() else {
+                        return Err(anyhow::anyhow!("Could not open file: {input_file:?}, path returned None"));
                     };
 
-                    if let Err(e) = self.load_in_file(input_file, target_pos, &canvas) {
-                        log::error!(
-                        "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {e:?}"
-                    );
-                    }
-                }
-            }
-            crate::utils::FileType::VectorImageFile | crate::utils::FileType::BitmapImageFile => {
-                if let Err(e) =
-                    self.load_in_file(input_file, target_pos, &self.active_tab().canvas())
-                {
-                    log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile / FileType::Pdf, {e:?}");
-                }
-            }
-            crate::utils::FileType::XoppFile => {
-                glib::MainContext::default().spawn_local(clone!(@strong input_file, @weak self as appwindow => async move {
-                    // open a new tab for xopp file import
-                    let new_tab = appwindow.new_tab();
-                    let canvas = new_tab
-                        .child()
-                        .downcast::<RnCanvasWrapper>()
-                        .unwrap()
-                        .canvas();
-
-                    dialogs::import::dialog_import_xopp_w_prefs(&appwindow, &canvas, input_file).await;
-                }));
-            }
-            crate::utils::FileType::PdfFile => {
-                glib::MainContext::default().spawn_local(
-                    clone!(@strong input_file, @weak self as appwindow => async move {
-                        let canvas =
-                            appwindow.active_tab().canvas();
-
-                        dialogs::import::dialog_import_pdf_w_prefs(
-                            &appwindow,
-                            &canvas,
-                            input_file,
-                            target_pos,
-                        ).await;
-                    }),
-                );
-            }
-            crate::utils::FileType::Folder => {
-                if let Some(dir) = input_file.path() {
-                    self.workspacebrowser()
-                        .workspacesbar()
-                        .set_selected_workspace_dir(dir);
-                }
-            }
-            crate::utils::FileType::Unsupported => {
-                log::error!("tried to open unsupported file type");
-            }
-        }
-    }
-
-    /// Load in a file of any supported type into the engine of the given canvas.
-    ///
-    /// ! if the file is a rnote save file, it will overwrite the state in the active tab so there should be a user prompt to confirm before this is called
-    pub(crate) fn load_in_file(
-        &self,
-        file: gio::File,
-        target_pos: Option<na::Vector2<f64>>,
-        canvas: &RnCanvas,
-    ) -> anyhow::Result<()> {
-        glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak self as appwindow => async move {
-            appwindow.overlays().start_pulsing_progressbar();
-
-            match crate::utils::FileType::lookup_file_type(&file) {
-                crate::utils::FileType::RnoteFile => {
-                    match file.load_bytes_future().await {
-                        Ok((bytes, _)) => {
-                            if let Err(e) = canvas.load_in_rnote_bytes(bytes.to_vec(), file.path(), None).await {
-                                log::error!("load_in_rnote_bytes() failed with Err: {e:?}");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening .rnote file failed"));
-                            }
+                    // If the file is already opened in a tab, simply switch to it
+                    if let Some(page) = appwindow.tabs_query_file_opened(input_file_path) {
+                        appwindow.overlays().tabview().set_selected_page(&page);
+                        false
+                    } else {
+                        let wrapper = if rnote_file_new_tab {
+                            // a new tab for rnote files
+                            appwindow.new_canvas_wrapper()
+                        } else {
+                            appwindow.active_tab_wrapper()
+                        };
+                        let (bytes, _) = input_file.load_bytes_future().await?;
+                        wrapper
+                            .canvas()
+                            .load_in_rnote_bytes(bytes.to_vec(), input_file.path())
+                            .await?;
+                        if rnote_file_new_tab {
+                            appwindow.append_wrapper_new_tab(&wrapper);
                         }
-                        Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
+                        true
                     }
                 }
                 crate::utils::FileType::VectorImageFile => {
-                    match file.load_bytes_future().await {
-                        Ok((bytes, _)) => {
-                            if let Err(e) = canvas.load_in_vectorimage_bytes(bytes.to_vec(), target_pos).await {
-                                log::error!("load_in_vectorimage_bytes() failed with Err: {e:?}");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening vector image file failed"));
-                            }
-                        }
-                        Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
-                    }
+                    let canvas = appwindow.active_tab_wrapper().canvas();
+                    let (bytes, _) = input_file.load_bytes_future().await?;
+                    canvas
+                        .load_in_vectorimage_bytes(bytes.to_vec(), target_pos)
+                        .await?;
+                    true
                 }
                 crate::utils::FileType::BitmapImageFile => {
-                    match file.load_bytes_future().await {
-                        Ok((bytes, _)) => {
-                            if let Err(e) = canvas.load_in_bitmapimage_bytes(bytes.to_vec(), target_pos).await {
-                                log::error!("load_in_bitmapimage_bytes() failed with Err: {e:?}");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening bitmap image file failed"));
-                            }
-                        }
-                        Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
-                    }
+                    let canvas = appwindow.active_tab_wrapper().canvas();
+                    let (bytes, _) = input_file.load_bytes_future().await?;
+                    canvas
+                        .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos)
+                        .await?;
+                    true
                 }
                 crate::utils::FileType::XoppFile => {
-                    match file.load_bytes_future().await {
-                        Ok((bytes, _)) => {
-                            if let Err(e) = canvas.load_in_xopp_bytes(bytes.to_vec()).await {
-                                log::error!("load_in_xopp_bytes() failed with Err: {e:?}");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening Xournal++ file failed"));
-                            }
-                        }
-                        Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
+                    // a new tab for xopp file import
+                    let wrapper = appwindow.new_canvas_wrapper();
+                    let canvas = wrapper.canvas();
+                    appwindow.overlays().progressbar_start_pulsing();
+                    let file_imported =
+                        dialogs::import::dialog_import_xopp_w_prefs(appwindow, &canvas, input_file)
+                            .await?;
+                    if file_imported {
+                        appwindow.append_wrapper_new_tab(&wrapper);
                     }
+                    file_imported
                 }
                 crate::utils::FileType::PdfFile => {
-                    match file.load_bytes_future().await {
-                        Ok((bytes, _)) => {
-                            if let Err(e) = canvas.load_in_pdf_bytes(bytes.to_vec(), target_pos, None).await {
-                                log::error!("load_in_pdf_bytes() failed with Err: {e:?}");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening Pdf file failed"));
-                            }
-                        }
-                        Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
-                    }
+                    let canvas = appwindow.active_tab_wrapper().canvas();
+                    dialogs::import::dialog_import_pdf_w_prefs(
+                        appwindow, &canvas, input_file, target_pos,
+                    )
+                    .await?
                 }
                 crate::utils::FileType::Folder => {
-                    log::error!("tried to open a folder as a file");
-                    appwindow.overlays()
-                        .dispatch_toast_error(&gettext("Failed to open file, tried to open folder as file"));
+                    if let Some(dir) = input_file.path() {
+                        appwindow
+                            .workspacebrowser()
+                            .workspacesbar()
+                            .set_selected_workspace_dir(dir);
+                    }
+                    false
                 }
                 crate::utils::FileType::Unsupported => {
-                    log::error!("tried to open a unsupported file type");
-                    appwindow.overlays()
-                        .dispatch_toast_error(&gettext("Failed to open file, unsupported file type"));
+                    return Err(anyhow::anyhow!("tried to open unsupported file type"));
                 }
+            };
+            Ok(file_imported)
+        }
+
+        self.overlays().progressbar_start_pulsing();
+        match try_open_file(self, input_file, target_pos, rnote_file_new_tab).await {
+            Ok(true) => {
+                self.overlays().progressbar_finish();
             }
-
-            appwindow.overlays().finish_progressbar();
-        }));
-
-        Ok(())
+            Ok(false) => {
+                self.overlays().progressbar_abort();
+            }
+            Err(e) => {
+                self.overlays().progressbar_abort();
+                log::error!("Opening file with dialogs failed, Err: {e:?}");
+                self.overlays()
+                    .dispatch_toast_error(&gettext("Opening file failed"));
+            }
+        }
     }
 
     /// Refresh the UI from the engine state from the given tab page.

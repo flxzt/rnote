@@ -98,7 +98,7 @@ impl TransformBehaviour for Segment {
 impl Segment {
     /// The end element of a segment.
     ///
-    /// All segment variants have an end.
+    /// All segment variants have an end element.
     pub fn end(&self) -> Element {
         match self {
             Segment::LineTo { end, .. } => *end,

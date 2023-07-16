@@ -72,6 +72,16 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.7.1" date="2023-07-04">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>improvement: more consistent duplicate file naming</li>
+          <li>UI: more compact sidebar, shape-picker, workspacebrowser</li>
+          <li>fix: import dialogs were not shown when importing files or drag-and-drop from file-managers (thanks to @Kneemund)</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.7.0" date="2023-06-16">
       <description>
         <p>this release changes:</p>

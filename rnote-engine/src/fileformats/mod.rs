@@ -1,7 +1,7 @@
 // Modules
+pub mod recovery_metadata;
 pub mod rnoteformat;
 pub mod xoppformat;
-pub mod recovery_metadata;
 
 // Imports
 use roxmltree::Node;

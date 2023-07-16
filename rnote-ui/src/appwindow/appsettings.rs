@@ -413,7 +413,7 @@ impl RnAppWindow {
 
         {
             // Save engine config of the last active tab
-            self.active_tab()
+            self.active_tab_wrapper()
                 .canvas()
                 .save_engine_config(&self.app_settings())?;
         }

@@ -201,7 +201,7 @@ impl RnBrushPage {
             Some("stroke-width"),
             clone!(@weak self as brushpage, @weak appwindow => move |picker, _| {
                 let stroke_width = picker.stroke_width();
-                let canvas = appwindow.active_tab().canvas();
+                let canvas = appwindow.active_tab_wrapper().canvas();
                 let engine = &mut *canvas.engine_mut();
 
                 match engine.pens_config.brush_config.style {
@@ -222,22 +222,22 @@ impl RnBrushPage {
         imp.brushstyle_listbox.connect_row_selected(
             clone!(@weak self as brushpage, @weak appwindow => move |_, _| {
                 if let Some(brush_style) = brushpage.brush_style() {
-                    appwindow.active_tab().canvas().engine_mut().pens_config.brush_config.style = brush_style;
+                    appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.brush_config.style = brush_style;
                     brushpage.stroke_width_picker().deselect_setters();
 
                     match brush_style {
                         BrushStyle::Marker => {
-                            let stroke_width = appwindow.active_tab().canvas().engine_mut().pens_config.brush_config.marker_options.stroke_width;
+                            let stroke_width = appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.brush_config.marker_options.stroke_width;
                             brushpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
                             brushpage.imp().brushstyle_menubutton.set_icon_name("pen-brush-style-marker-symbolic");
                         },
                         BrushStyle::Solid => {
-                            let stroke_width = appwindow.active_tab().canvas().engine_mut().pens_config.brush_config.solid_options.stroke_width;
+                            let stroke_width = appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.brush_config.solid_options.stroke_width;
                             brushpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
                             brushpage.imp().brushstyle_menubutton.set_icon_name("pen-brush-style-solid-symbolic");
                         },
                         BrushStyle::Textured => {
-                            let stroke_width = appwindow.active_tab().canvas().engine_mut().pens_config.brush_config.textured_options.stroke_width;
+                            let stroke_width = appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.brush_config.textured_options.stroke_width;
                             brushpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
                             brushpage.imp().brushstyle_menubutton.set_icon_name("pen-brush-style-textured-symbolic");
                         },
@@ -250,7 +250,7 @@ impl RnBrushPage {
         imp.brush_buildertype_listbox.connect_row_selected(
             clone!(@weak self as brushpage, @weak appwindow => move |_, _| {
                 if let Some(buildertype) = brushpage.buildertype() {
-                    appwindow.active_tab().canvas().engine_mut().pens_config.brush_config.builder_type = buildertype;
+                    appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.brush_config.builder_type = buildertype;
                 }
             }),
         );
@@ -258,7 +258,7 @@ impl RnBrushPage {
         // Solid style
         // Pressure curve
         imp.solidstyle_pressure_curves_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_smoothstyle_pressure_curves_row| {
-            appwindow.active_tab().canvas().engine_mut().pens_config.brush_config.solid_options.pressure_curve = brushpage.solidstyle_pressure_curve();
+            appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.brush_config.solid_options.pressure_curve = brushpage.solidstyle_pressure_curve();
         }));
 
         // Textured style
@@ -276,13 +276,13 @@ impl RnBrushPage {
 
         imp.texturedstyle_density_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |spinbutton| {
-                appwindow.active_tab().canvas().engine_mut().pens_config.brush_config.textured_options.density = spinbutton.value();
+                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.brush_config.textured_options.density = spinbutton.value();
             }),
         );
 
         // dots distribution
         imp.texturedstyle_distribution_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_texturedstyle_distribution_row| {
-            appwindow.active_tab().canvas().engine_mut().pens_config.brush_config.textured_options.distribution = brushpage.texturedstyle_dots_distribution();
+            appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.brush_config.textured_options.distribution = brushpage.texturedstyle_dots_distribution();
         }));
     }
 

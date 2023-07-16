@@ -2,26 +2,25 @@
 pub mod export;
 pub mod import;
 pub mod rendering;
+pub mod snapshot;
+pub mod strokecontent;
 pub mod visual_debug;
 
 // Re-exports
-pub use self::export::ExportPrefs;
-pub use self::import::ImportPrefs;
+pub use export::ExportPrefs;
+pub use import::ImportPrefs;
+pub use snapshot::EngineSnapshot;
+pub use strokecontent::StrokeContent;
 
 // Imports
-use self::import::XoppImportPrefs;
-use crate::document::{background, Layout};
-use crate::fileformats::{rnoteformat, xoppformat, FileFormatLoader};
+use crate::document::Layout;
 use crate::pens::{Pen, PenStyle};
 use crate::pens::{PenMode, PensConfig};
-use crate::render::Svg;
 use crate::store::render_comp::{self, RenderCompState};
-use crate::store::{ChronoComponent, StrokeKey};
+use crate::store::StrokeKey;
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
-use crate::strokes::Stroke;
-use crate::{render, AudioPlayer, DrawBehaviour, WidgetFlags};
+use crate::{render, AudioPlayer, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
-use anyhow::Context;
 use futures::channel::{mpsc, oneshot};
 use gtk4::gsk;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -29,7 +28,6 @@ use rnote_compose::helpers::{AabbHelpers, SplitOrder};
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
-use slotmap::{HopSlotMap, SecondaryMap};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
@@ -121,233 +119,6 @@ pub struct EngineConfig {
     export_prefs: ExportPrefs,
     #[serde(rename = "pen_sounds")]
     pen_sounds: bool,
-}
-
-// An engine snapshot, used when loading/saving the current document from/into a file.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(default, rename = "engine_snapshot")]
-pub struct EngineSnapshot {
-    #[serde(rename = "document")]
-    pub document: Document,
-    #[serde(rename = "stroke_components")]
-    pub stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
-    #[serde(rename = "chrono_components")]
-    pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
-    #[serde(rename = "chrono_counter")]
-    pub chrono_counter: u32,
-}
-
-impl Default for EngineSnapshot {
-    fn default() -> Self {
-        Self {
-            document: Document::default(),
-            stroke_components: Arc::new(HopSlotMap::with_key()),
-            chrono_components: Arc::new(SecondaryMap::new()),
-            chrono_counter: 0,
-        }
-    }
-}
-
-impl EngineSnapshot {
-    /// Loads a snapshot from the bytes of a .rnote file.
-    ///
-    /// To import this snapshot into the current engine, use `import_snapshot()`.
-    pub async fn load_from_rnote_bytes(bytes: Vec<u8>) -> anyhow::Result<Self> {
-        let (snapshot_sender, snapshot_receiver) = oneshot::channel::<anyhow::Result<Self>>();
-
-        rayon::spawn(move || {
-            let result = || -> anyhow::Result<Self> {
-                let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
-                    .context("loading RnoteFile from bytes failed.")?;
-                Ok(ijson::from_value(&rnote_file.engine_snapshot)?)
-            };
-
-            if let Err(_data) = snapshot_sender.send(result()) {
-                log::error!("Sending result to receiver in open_from_rnote_bytes() failed. Receiver was already dropped.");
-            }
-        });
-
-        snapshot_receiver.await?
-    }
-    /// Loads from the bytes of a Xournal++ .xopp file.
-    ///
-    /// To import this snapshot into the current engine, use `import_snapshot()`.
-    pub async fn load_from_xopp_bytes(
-        bytes: Vec<u8>,
-        xopp_import_prefs: XoppImportPrefs,
-    ) -> anyhow::Result<Self> {
-        let (snapshot_sender, snapshot_receiver) = oneshot::channel::<anyhow::Result<Self>>();
-
-        rayon::spawn(move || {
-            let result = || -> anyhow::Result<Self> {
-                let xopp_file = xoppformat::XoppFile::load_from_bytes(&bytes)?;
-
-                // Extract the largest width of all pages, add together all heights
-                let (doc_width, doc_height) = xopp_file
-                    .xopp_root
-                    .pages
-                    .iter()
-                    .map(|page| (page.width, page.height))
-                    .fold((0_f64, 0_f64), |prev, next| {
-                        // Max of width, sum heights
-                        (prev.0.max(next.0), prev.1 + next.1)
-                    });
-                let no_pages = xopp_file.xopp_root.pages.len() as u32;
-
-                let mut engine = RnoteEngine::default();
-
-                // We convert all values from the hardcoded 72 DPI of Xopp files to the preferred dpi
-                engine.document.format.dpi = xopp_import_prefs.dpi;
-
-                engine.document.x = 0.0;
-                engine.document.y = 0.0;
-                engine.document.width = crate::utils::convert_value_dpi(
-                    doc_width,
-                    xoppformat::XoppFile::DPI,
-                    xopp_import_prefs.dpi,
-                );
-                engine.document.height = crate::utils::convert_value_dpi(
-                    doc_height,
-                    xoppformat::XoppFile::DPI,
-                    xopp_import_prefs.dpi,
-                );
-
-                engine.document.format.width = crate::utils::convert_value_dpi(
-                    doc_width,
-                    xoppformat::XoppFile::DPI,
-                    xopp_import_prefs.dpi,
-                );
-                engine.document.format.height = crate::utils::convert_value_dpi(
-                    doc_height / (no_pages as f64),
-                    xoppformat::XoppFile::DPI,
-                    xopp_import_prefs.dpi,
-                );
-
-                if let Some(first_page) = xopp_file.xopp_root.pages.get(0) {
-                    if let xoppformat::XoppBackgroundType::Solid {
-                        color: _color,
-                        style: _style,
-                    } = &first_page.background.bg_type
-                    {
-                        // Xopp background styles are not compatible with Rnotes, so everything is plain for now
-                        engine.document.background.pattern = background::PatternStyle::None;
-                    }
-                }
-
-                // Offsetting as rnote has one global coordinate space
-                let mut offset = na::Vector2::<f64>::zeros();
-
-                for (_page_i, page) in xopp_file.xopp_root.pages.into_iter().enumerate() {
-                    for layers in page.layers.into_iter() {
-                        // import strokes
-                        for new_xoppstroke in layers.strokes.into_iter() {
-                            match Stroke::from_xoppstroke(
-                                new_xoppstroke,
-                                offset,
-                                xopp_import_prefs.dpi,
-                            ) {
-                                Ok((new_stroke, layer)) => {
-                                    engine.store.insert_stroke(new_stroke, Some(layer));
-                                }
-                                Err(e) => {
-                                    log::error!(
-                                        "from_xoppstroke() failed in open_from_xopp_bytes() with Err {:?}",
-                                        e
-                                    );
-                                }
-                            }
-                        }
-
-                        // import images
-                        for new_xoppimage in layers.images.into_iter() {
-                            match Stroke::from_xoppimage(
-                                new_xoppimage,
-                                offset,
-                                xopp_import_prefs.dpi,
-                            ) {
-                                Ok(new_image) => {
-                                    engine.store.insert_stroke(new_image, None);
-                                }
-                                Err(e) => {
-                                    log::error!(
-                                        "from_xoppimage() failed in open_from_xopp_bytes() with Err {:?}",
-                                        e
-                                    );
-                                }
-                            }
-                        }
-                    }
-
-                    // Only add to y offset, results in vertical pages
-                    offset[1] += crate::utils::convert_value_dpi(
-                        page.height,
-                        xoppformat::XoppFile::DPI,
-                        xopp_import_prefs.dpi,
-                    );
-                }
-
-                Ok(engine.take_snapshot())
-            };
-
-            if let Err(_data) = snapshot_sender.send(result()) {
-                log::error!("sending result to receiver in open_from_xopp_bytes() failed. Receiver already dropped");
-            }
-        });
-
-        snapshot_receiver.await?
-    }
-}
-
-/// Stroke content. Used when copying/cutting/pasting a selection into/from the clipboard
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[serde(default, rename = "stroke_content")]
-pub struct StrokeContent {
-    #[serde(rename = "strokes")]
-    pub strokes: Vec<Arc<Stroke>>,
-}
-
-impl StrokeContent {
-    pub const MIME_TYPE: &str = "application/rnote-stroke-content";
-
-    pub fn bounds(&self) -> Option<Aabb> {
-        if self.strokes.is_empty() {
-            return None;
-        }
-        Some(
-            self.strokes
-                .iter()
-                .map(|s| s.bounds())
-                .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x)),
-        )
-    }
-
-    /// Generate a Svg from the content.
-    pub fn generate_svg(&self) -> anyhow::Result<Option<Svg>> {
-        if self.strokes.is_empty() {
-            return Ok(None);
-        }
-        let Some(content_bounds) = self.bounds() else {
-            return Ok(None)
-        };
-        let mut content_svg = render::Svg {
-            svg_data: String::new(),
-            bounds: content_bounds,
-        };
-        content_svg.merge([render::Svg::gen_with_piet_cairo_backend(
-            |piet_cx| {
-                for stroke in self.strokes.iter() {
-                    stroke.draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
-                }
-                Ok(())
-            },
-            content_bounds,
-        )?]);
-        // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
-        if let Err(e) = content_svg.simplify() {
-            log::warn!("simplifying svg in StrokeContent::export_to_svg() failed, Err: {e:?}");
-        };
-        Ok(Some(content_svg))
-    }
 }
 
 pub type EngineTaskSender = mpsc::UnboundedSender<EngineTask>;

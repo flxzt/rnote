@@ -620,7 +620,7 @@ impl RnSettingsPanel {
         imp.format_apply_button.get().connect_clicked(
             clone!(@weak self as settingspanel, @weak appwindow => move |_| {
                 let imp = settingspanel.imp();
-                let canvas = appwindow.active_tab().canvas();
+                let canvas = appwindow.active_tab_wrapper().canvas();
                 let temporary_format = *imp.temporary_format.borrow();
 
                 canvas.engine_mut().document.format = temporary_format;
@@ -639,7 +639,7 @@ impl RnSettingsPanel {
 
         imp.doc_format_border_color_button.connect_rgba_notify(clone!(@weak self as settingspanel, @weak appwindow => move |button| {
             let format_border_color = button.rgba().into_compose_color();
-            let canvas = appwindow.active_tab().canvas();
+            let canvas = appwindow.active_tab_wrapper().canvas();
 
             canvas.engine_mut().document.format.border_color = format_border_color;
             // Because the format border color is applied immediately to the engine,
@@ -650,7 +650,7 @@ impl RnSettingsPanel {
 
         imp.doc_background_color_button.connect_rgba_notify(
             clone!(@weak appwindow => move |button| {
-                let canvas = appwindow.active_tab().canvas();
+                let canvas = appwindow.active_tab_wrapper().canvas();
 
                 canvas.engine_mut().document.background.color = button.rgba().into_compose_color();
                 canvas.background_regenerate_pattern();
@@ -660,7 +660,7 @@ impl RnSettingsPanel {
 
         imp.doc_background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_| {
             let pattern = settings_panel.background_pattern();
-            let canvas = appwindow.active_tab().canvas();
+            let canvas = appwindow.active_tab_wrapper().canvas();
 
             canvas.engine_mut().document.background.pattern = pattern;
 
@@ -696,7 +696,7 @@ impl RnSettingsPanel {
         }));
 
         imp.doc_background_pattern_color_button.connect_rgba_notify(clone!(@weak appwindow => move |button| {
-            let canvas = appwindow.active_tab().canvas();
+            let canvas = appwindow.active_tab_wrapper().canvas();
 
             canvas.engine_mut().document.background.pattern_color = button.rgba().into_compose_color();
             canvas.background_regenerate_pattern();
@@ -708,7 +708,7 @@ impl RnSettingsPanel {
             .connect_notify_local(
                 Some("value"),
                 clone!(@weak self as settings_panel, @weak appwindow => move |unit_entry, _| {
-                        let canvas = appwindow.active_tab().canvas();
+                        let canvas = appwindow.active_tab_wrapper().canvas();
 
                         let mut pattern_size = canvas.engine_ref().document.background.pattern_size;
                         pattern_size[0] = unit_entry.value_in_px();
@@ -723,7 +723,7 @@ impl RnSettingsPanel {
             .connect_notify_local(
                 Some("value"),
                 clone!(@weak self as settings_panel, @weak appwindow => move |unit_entry, _| {
-                        let canvas = appwindow.active_tab().canvas();
+                        let canvas = appwindow.active_tab_wrapper().canvas();
                         let mut pattern_size = canvas.engine_ref().document.background.pattern_size;
                         pattern_size[1] = unit_entry.value_in_px();
                         canvas.engine_mut().document.background.pattern_size = pattern_size;
@@ -749,56 +749,56 @@ impl RnSettingsPanel {
 
         imp.penshortcut_stylus_button_primary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_primary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_primary_row.action();
-            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::StylusPrimaryButton, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::StylusPrimaryButton, action);
             None
         }));
 
         imp.penshortcut_stylus_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_secondary_row.action();
-            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::StylusSecondaryButton, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::StylusSecondaryButton, action);
             None
         }));
 
         imp.penshortcut_mouse_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_mouse_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_mouse_button_secondary_row.action();
-            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::MouseSecondaryButton, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::MouseSecondaryButton, action);
             None
         }));
 
         imp.penshortcut_touch_two_finger_long_press_row.connect_local("action-changed", false, clone!(@weak penshortcut_touch_two_finger_long_press_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_touch_two_finger_long_press_row.action();
-            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::TouchTwoFingerLongPress, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::TouchTwoFingerLongPress, action);
             None
         }));
 
         imp.penshortcut_drawing_pad_button_0.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_0, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_drawing_pad_button_0.action();
-            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton0, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton0, action);
             None
         }));
 
         imp.penshortcut_drawing_pad_button_1.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_1, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_drawing_pad_button_1.action();
-            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton1, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton1, action);
             None
         }));
 
         imp.penshortcut_drawing_pad_button_2.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_2, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_drawing_pad_button_2.action();
-            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton2, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton2, action);
             None
         }));
 
         imp.penshortcut_drawing_pad_button_3.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_3, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_drawing_pad_button_3.action();
-            appwindow.active_tab().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton3, action);
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton3, action);
             None
         }));
     }
 
     fn revert_format(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        let canvas = appwindow.active_tab().canvas();
+        let canvas = appwindow.active_tab_wrapper().canvas();
         *imp.temporary_format.borrow_mut() = canvas.engine_ref().document.format;
         let revert_format = canvas.engine_ref().document.format;
 

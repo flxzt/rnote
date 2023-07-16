@@ -50,6 +50,7 @@ gettext-rs = {workspace = true }
 gtk4 = { workspace = true }
 adw = { workspace = true }
 time = { workspace = true }
+directories = { workspace = true }
 
 [build-dependencies]
 anyhow = { workspace = true }

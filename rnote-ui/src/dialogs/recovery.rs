@@ -2,7 +2,7 @@ use adw::{
     prelude::MessageDialogExtManual,
     traits::{ActionRowExt, MessageDialogExt, PreferencesGroupExt},
 };
-use cairo::glib::{self, clone, Cast};
+use cairo::glib::{self, clone};
 use gettextrs::gettext;
 use gtk4::{
     gdk::Display,
@@ -20,7 +20,7 @@ use std::{
 };
 use time::{format_description::well_known::Rfc2822, OffsetDateTime};
 
-use crate::{appwindow::RnAppWindow, canvaswrapper::RnCanvasWrapper, config, env::recovery_dir};
+use crate::{appwindow::RnAppWindow, config, env::recovery_dir};
 use rnote_engine::RnRecoveryMetadata;
 
 #[derive(Clone, Debug, Default)]
@@ -40,7 +40,7 @@ pub(crate) async fn dialog_recovery_info(appwindow: &RnAppWindow) {
     let dialog: adw::MessageDialog = builder.object("dialog_recovery_info").unwrap();
     dialog.set_transient_for(Some(appwindow));
     dialog.set_modal(true);
-    let canvas = appwindow.active_tab().canvas();
+    let canvas = appwindow.active_tab_wrapper().canvas();
     let info = {
         let recovery = appwindow.recovery();
         let autosave = appwindow.autosave();
@@ -118,7 +118,7 @@ pub(crate) async fn dialog_recover_documents(appwindow: &RnAppWindow) {
             .build();
         if valid {
             let open_button = ToggleButton::builder()
-                .icon_name("tab-new-filled-symbolic")
+                .icon_name("tab-new-symbolic")
                 .tooltip_text("Recover document in new tab")
                 .active(true)
                 .build();
@@ -337,18 +337,11 @@ pub(crate) fn save_as(meta: &RnRecoveryMetadata, target: &Path) {
 
 pub(crate) fn open(appwindow: &RnAppWindow, meta: RnRecoveryMetadata) {
     let file = gio::File::for_path(meta.recovery_file_path());
-    let canvas = {
-        // open a new tab for rnote files
-        let new_tab = appwindow.new_tab();
-        new_tab
-            .child()
-            .downcast::<RnCanvasWrapper>()
-            .unwrap()
-            .canvas()
-    };
+    let wrapper = appwindow.new_canvas_wrapper();
+    let canvas = wrapper.canvas();
 
     glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
-        appwindow.overlays().start_pulsing_progressbar();
+        appwindow.overlays().progressbar_start_pulsing();
         match file.load_bytes_future().await {
             Ok((bytes, _)) => {
                 if let Err(e) = canvas.load_in_rnote_bytes(bytes.to_vec(), file.path(), Some(meta)).await {
@@ -358,6 +351,7 @@ pub(crate) fn open(appwindow: &RnAppWindow, meta: RnRecoveryMetadata) {
             }
             Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
         }
-        appwindow.overlays().finish_progressbar();
+        appwindow.overlays().progressbar_finish();
     }));
+    appwindow.append_wrapper_new_tab(&wrapper);
 }

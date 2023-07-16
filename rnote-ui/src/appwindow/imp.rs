@@ -340,7 +340,7 @@ impl RnAppWindow {
 
         if let Some(removed_id) = self.recovery_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.recovery_interval_secs.get(),
             clone!(@weak obj as appwindow => @default-return glib::source::Continue(false), move || {
-                    let canvas = appwindow.active_tab().canvas();
+                    let canvas = appwindow.active_tab_wrapper().canvas();
                     glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
                         // Doing both recovery and autosaves of saved files serves little advatage but could lead to slowdowns or conflicts
                         if canvas.output_file().is_some() && appwindow.autosave() {
@@ -354,14 +354,14 @@ impl RnAppWindow {
                         } else if canvas.unsaved_changes_recovery() {
                             canvas.set_recovery_paused(false);
                             let recovery_file = canvas.get_or_generate_recovery_file();
-                            appwindow.overlays().start_pulsing_progressbar();
+                            appwindow.overlays().progressbar_start_pulsing();
                             canvas.set_recovery_in_progress(true);
                             if let Err(e) = canvas.save_document_to_file(&recovery_file).await {
                                 log::error!("saving document failed, Error: `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                             }
                             canvas.set_recovery_in_progress(false);
-                            appwindow.overlays().finish_progressbar();
+                            appwindow.overlays().progressbar_finish();
                         }
                     }));
                 glib::source::Continue(true)

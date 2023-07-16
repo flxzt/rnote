@@ -532,7 +532,7 @@ impl RnAppWindow {
                         let (bytes, _) = input_file.load_bytes_future().await?;
                         wrapper
                             .canvas()
-                            .load_in_rnote_bytes(bytes.to_vec(), input_file.path())
+                            .load_in_rnote_bytes(bytes.to_vec(), input_file.path(), None)
                             .await?;
                         if rnote_file_new_tab {
                             appwindow.append_wrapper_new_tab(&wrapper);

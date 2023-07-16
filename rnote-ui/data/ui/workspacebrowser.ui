@@ -40,17 +40,17 @@
                     <child>
                       <object class="GtkLabel" id="active_workspace_name_label">
                         <property name="label">default</property>
-                        <property name="halign">center</property>
+                        <property name="halign">fill</property>
+                        <property name="hexpand">true</property>
                         <property name="ellipsize">end</property>
-                        <property name="max-width-chars">60</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkLabel" id="active_workspace_dir_label">
                         <property name="label">./</property>
-                        <property name="halign">center</property>
+                        <property name="halign">fill</property>
+                        <property name="hexpand">true</property>
                         <property name="ellipsize">start</property>
-                        <property name="max-width-chars">60</property>
                         <style>
                           <class name="caption" />
                           <class name="dim-label" />

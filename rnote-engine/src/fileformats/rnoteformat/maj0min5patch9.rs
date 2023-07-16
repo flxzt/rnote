@@ -21,13 +21,27 @@ impl TryFrom<RnoteFileMaj0Min5Patch8> for RnoteFileMaj0Min5Patch9 {
     fn try_from(mut file: RnoteFileMaj0Min5Patch8) -> Result<RnoteFileMaj0Min5Patch9, Self::Error> {
         for value in file.store_snapshot["stroke_components"]
             .as_array_mut()
-            .ok_or_else(|| anyhow::anyhow!("stroke_components is not a JSON array."))?
+            .ok_or_else(|| anyhow::anyhow!("value `stroke_components` is not a JSON array."))?
         {
             let stroke = value
+                .as_object_mut()
+                .ok_or_else(|| {
+                    anyhow::anyhow!("value in `stroke_components` array is not a JSON Object.")
+                })?
                 .get_mut("value")
-                .ok_or_else(|| anyhow::anyhow!("failure"))?;
+                .ok_or_else(|| {
+                    anyhow::anyhow!("no value `value` in JSON object of `stroke_components` array.")
+                })?;
 
-            if let Some(brushstroke) = stroke.get_mut("brushstroke") {
+            if stroke.is_null() {
+                continue;
+            }
+
+            if let Some(brushstroke) = stroke
+                .as_object_mut()
+                .ok_or_else(|| anyhow::anyhow!("stroke value is not a JSON Object."))?
+                .get_mut("brushstroke")
+            {
                 let brushstroke = brushstroke
                     .as_object_mut()
                     .ok_or_else(|| anyhow::anyhow!("brushstroke is not a JSON object."))?;

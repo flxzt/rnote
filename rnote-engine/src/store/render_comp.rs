@@ -141,12 +141,10 @@ impl StrokeStore {
                 return;
             }
 
-            // extending the viewport by the factor
-            let viewport_render_margins =
-                viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
-            let viewport = viewport.extend_by(viewport_render_margins);
+            let viewport_extended =
+                viewport.extend_by(viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
-            match stroke.gen_images(viewport, image_scale) {
+            match stroke.gen_images(viewport_extended, image_scale) {
                 Ok(GeneratedStrokeImages::Partial { images, viewport }) => {
                     match render::Image::images_to_rendernodes(&images) {
                         Ok(rendernodes) => {
@@ -206,19 +204,18 @@ impl StrokeStore {
                 return;
             }
 
-            // extending the viewport by the factor
-            let viewport_render_margins =
-                viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
-            let viewport = viewport.extend_by(viewport_render_margins);
+            let stroke = stroke.clone();
+            let viewport_extended =
+                viewport.extend_by(viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
             // indicates that a task is now started rendering the stroke
             render_comp.state = RenderCompState::BusyRenderingInTask;
-            let stroke = stroke.clone();
 
             // Spawn a new thread for image rendering
-            rayon::spawn(move || match stroke.gen_images(viewport, image_scale) {
-                Ok(images) => {
-                    tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
+            rayon::spawn(
+                move || match stroke.gen_images(viewport_extended, image_scale) {
+                    Ok(images) => {
+                        tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
                             key,
                             images,
                             image_scale,
@@ -226,11 +223,12 @@ impl StrokeStore {
                         }).unwrap_or_else(|e| {
                             log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?}, with Err, {e:?}");
                         });
-                }
-                Err(e) => {
-                    log::debug!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?}, with Err: {e:?}");
-                }
-            });
+                    }
+                    Err(e) => {
+                        log::debug!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?}, with Err: {e:?}");
+                    }
+                },
+            );
         }
     }
 
@@ -268,13 +266,11 @@ impl StrokeStore {
             ) {
                 let tasks_tx = tasks_tx.clone();
                 let stroke_bounds = stroke.bounds();
-                // extending the viewport by the factor
-                let viewport_render_margins =
-                    viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
-                let viewport = viewport.extend_by(viewport_render_margins);
+                let viewport_extended =
+                    viewport.extend_by(viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
                 // skip and clear image buffer if stroke is not in viewport
-                if !viewport.intersects(&stroke_bounds) {
+                if !viewport_extended.intersects(&stroke_bounds) {
                     render_comp.rendernodes = vec![];
                     render_comp.images = vec![];
                     render_comp.state = RenderCompState::Dirty;
@@ -288,16 +284,18 @@ impl StrokeStore {
                             continue;
                         }
                         RenderCompState::ForViewport(old_viewport) => {
-                            // We don't skip if we pass the threshold in relation to the margin, so the stroke gets rerendered in time. between 0.0 and 1.0
-                            const SKIP_RERENDER_MARGIN_THRESHOLD: f64 = 0.7;
-                            let diff =
-                                (old_viewport.center().coords - viewport.center().coords).abs();
-                            if diff[0] < viewport_render_margins[0] * SKIP_RERENDER_MARGIN_THRESHOLD
-                                && diff[1]
-                                    < viewport_render_margins[1] * SKIP_RERENDER_MARGIN_THRESHOLD
-                            {
-                                // We don't update the state, to have the old bounds on the next call
-                                // so the rendering is only updated after it crossed the margin threshold
+                            /// This factor is applied on top of the viewport extents margin factor,
+                            /// so that rerendering is started a bit earlier to reaching
+                            /// the edges of the viewport of the current rendered images.
+                            const VIEWPORT_EXTENTS_MARGIN_RERENDER_THRESHOLD: f64 = 0.7;
+
+                            if old_viewport.contains(
+                                &(viewport.extend_by(
+                                    viewport.extents()
+                                        * render::VIEWPORT_EXTENTS_MARGIN_FACTOR
+                                        * VIEWPORT_EXTENTS_MARGIN_RERENDER_THRESHOLD,
+                                )),
+                            ) {
                                 continue;
                             }
                         }
@@ -310,9 +308,10 @@ impl StrokeStore {
                 let stroke = stroke.clone();
 
                 // Spawn a new thread for image rendering
-                rayon::spawn(move || match stroke.gen_images(viewport, image_scale) {
-                    Ok(images) => {
-                        tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
+                rayon::spawn(
+                    move || match stroke.gen_images(viewport_extended, image_scale) {
+                        Ok(images) => {
+                            tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
                                 key,
                                 images,
                                 image_scale,
@@ -320,11 +319,12 @@ impl StrokeStore {
                             }).unwrap_or_else(|e| {
                                 log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_in_viewport_threaded(), with Err, {e}");
                             });
-                    }
-                    Err(e) => {
-                        log::debug!("stroke.gen_image() failed in regenerate_rendering_in_viewport_threaded(), with Err: {e:?}");
-                    }
-                });
+                        }
+                        Err(e) => {
+                            log::debug!("stroke.gen_image() failed in regenerate_rendering_in_viewport_threaded(), with Err: {e:?}");
+                        }
+                    },
+                );
             }
         }
     }

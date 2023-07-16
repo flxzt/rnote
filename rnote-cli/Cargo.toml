@@ -1,17 +1,19 @@
 [package]
 name = "rnote-cli"
-version = "0.7.1"
-edition = "2021"
-rust-version = "1.65"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
 
 [dependencies]
-rnote-engine = {path = "../rnote-engine", version="0.1"}
-rnote-compose = {path = "../rnote-compose", version="0.1"}
+rnote-compose = { workspace = true }
+rnote-engine = { workspace = true }
 
-log = "0.4"
-anyhow = "1"
-smol = "1"
-clap = {version = "4", features = ["derive"] }
-indicatif = "0.17"
+log = { workspace = true }
+anyhow = { workspace = true }
+smol = { workspace = true }
+clap = { workspace = true }
+indicatif = { workspace = true }

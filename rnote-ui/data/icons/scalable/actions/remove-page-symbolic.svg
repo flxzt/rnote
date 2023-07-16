@@ -1,16 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   width="16"
-   height="16"
-   fill="#bebebe"
-   version="1.1"
-   id="svg4"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs8" />
-  <path
-     d="M 3,1 C 2.4477153,1 2,1.4477153 2,2 v 13 c 0,0.552285 0.4477153,1 1,1 h 10 c 0.552285,0 1,-0.447715 1,-1 v -5 c 0,-1.3333328 -2,-1.3333328 -2,0 v 4 H 4 V 3 H 6 C 7.3333328,3 7.3333328,1 6,1 Z m 4,3.02 v 1.99 c 6.018947,-0.00359 1.2704198,0 6,0 V 4.02 c -6.0090101,0.04333 -1.248855,0 -6,0 z"
-     id="path2"
-     style="fill:#333333;fill-opacity:1" />
+<?xml version="1.0" encoding="UTF-8"?>
+<svg height="16px" viewBox="0 0 16 16" width="16px" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 0C2.355 0 1 1.355 1 3v10c0 1.645 1.355 3 3 3h2.5c.55 0 1-.45 1-1s-.45-1-1-1H4c-.57 0-1-.43-1-1V3c0-.57.43-1 1-1h5.586L13 5.414V8.5c0 .55.45 1 1 1s1-.45 1-1V5a1 1 0 0 0-.293-.707l-4-4A1 1 0 0 0 10 0Zm4 11v2h8v-2h-4z" fill="#2e3436"/>
 </svg>

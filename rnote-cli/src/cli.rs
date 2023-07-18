@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::{ArgAction, Parser, Subcommand};
 use rnote_engine::engine::export::{DocExportFormat, DocExportPrefs};
 use rnote_engine::engine::EngineSnapshot;
 use rnote_engine::RnoteEngine;
@@ -10,7 +10,7 @@ use std::time::Duration;
 ///    rnote_cli  Copyright (C) 2023  The Rnote Authors{n}{n}
 ///    This program is free software; you can redistribute it and/or modify it under the terms of the GPL v3 or (at your option) any later version.
 #[derive(Parser)]
-#[command(author, version, about, long_about = None)]
+#[command(author, version, about, long_about = None, arg_required_else_help = true)]
 pub(crate) struct Cli {
     #[command(subcommand)]
     pub(crate) command: Commands,
@@ -54,12 +54,12 @@ pub(crate) enum Commands {
         /// the export output format. Exclusive with output-file.
         #[arg(short = 'f', long, conflicts_with("output_file"), required(true))]
         output_format: Option<String>,
-        /// export with background
-        #[arg(short = 'b', long)]
-        with_background: Option<bool>,
-        /// export with background pattern
-        #[arg(short = 'p', long)]
-        with_pattern: Option<bool>,
+        /// export without background
+        #[arg(short = 'b', long, action = ArgAction::SetTrue)]
+        without_background: bool,
+        /// export without background pattern
+        #[arg(short = 'p', long, action = ArgAction::SetTrue)]
+        without_pattern: bool,
     },
 }
 
@@ -143,8 +143,8 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             rnote_files,
             output_file,
             output_format,
-            with_background,
-            with_pattern,
+            without_background,
+            without_pattern,
         } => {
             println!("Exporting..");
 
@@ -152,8 +152,8 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
                 output_file.as_deref(),
                 output_format.as_deref(),
-                with_background,
-                with_pattern,
+                without_background,
+                without_pattern,
             )?;
 
             match output_file {
@@ -303,8 +303,8 @@ fn get_export_format(format: &str) -> anyhow::Result<DocExportFormat> {
 pub(crate) fn create_doc_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
     output_format: Option<&str>,
-    with_background: Option<bool>,
-    with_pattern: Option<bool>,
+    without_background: bool,
+    without_pattern: bool,
 ) -> anyhow::Result<DocExportPrefs> {
     let format = match (output_file, output_format) {
         (Some(file), None) => match file.as_ref().extension().and_then(|ext| ext.to_str()) {
@@ -335,13 +335,8 @@ pub(crate) fn create_doc_export_prefs_from_args(
         ..Default::default()
     };
 
-    if let Some(with_background) = with_background {
-        prefs.with_background = with_background;
-    }
-    if let Some(with_pattern) = with_pattern {
-        prefs.with_pattern = with_pattern;
-    }
-
+    prefs.with_background = !without_background;
+    prefs.with_pattern = !without_pattern;
     Ok(prefs)
 }
 

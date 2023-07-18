@@ -63,10 +63,37 @@ pub(crate) enum Commands {
         /// export without background pattern
         #[arg(short = 'p', long, action = ArgAction::SetTrue)]
         without_pattern: bool,
-        /// crop document to fit all strokes
-        #[arg(short = 'c', long, action = ArgAction::SetFalse)]
+        /// crop documents to fit all strokes
+        #[arg(short = 'c', long, action = ArgAction::SetTrue)]
         crop_to_content: bool,
+        /// direction documents with layouts that expand horizontally and vertically are split into pages
+        #[arg(long, conflicts_with("crop_to_content"))]
+        page_order: Option<PageOrder>,
+        /// bitmap scale factor in relation to the actual size on the document
+        #[arg(long, requires("crop_to_content"))]
+        bitmap_scale_factor: Option<f64>,
+        /// quality of the jpeg image
+        #[arg(long, requires("crop_to_content"))]
+        jpeg_quality: Option<u8>,
+        /// margin around the document
+        #[arg(long, requires("crop_to_content"))]
+        margin: Option<f64>,
     },
+}
+
+#[derive(ValueEnum, Clone, Debug)]
+pub(crate) enum PageOrder {
+    Horizontal,
+    Vertical,
+}
+
+impl From<PageOrder> for SplitOrder {
+    fn from(val: PageOrder) -> Self {
+        match val {
+            PageOrder::Horizontal => SplitOrder::RowMajor,
+            PageOrder::Vertical => SplitOrder::ColumnMajor,
+        }
+    }
 }
 
 pub(crate) async fn run() -> anyhow::Result<()> {
@@ -152,6 +179,10 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             without_background,
             without_pattern,
             crop_to_content,
+            page_order,
+            bitmap_scale_factor,
+            jpeg_quality,
+            margin,
         } => {
             println!("Exporting..");
 
@@ -161,17 +192,21 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                     engine.export_prefs.selection_export_prefs =
                         create_selection_export_prefs_from_args(
                             output_file.as_deref(),
-                            output_format.as_deref(),
+                            output_format,
                             without_background,
                             without_pattern,
+                            bitmap_scale_factor,
+                            jpeg_quality,
+                            margin,
                         )?;
                 }
                 false => {
                     engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
                         output_file.as_deref(),
-                        output_format.as_deref(),
+                        output_format,
                         without_background,
                         without_pattern,
+                        page_order,
                     )?
                 }
             }
@@ -213,6 +248,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                     }
                     None => return Err(anyhow::anyhow!("Failed to get filename from rnote_files")),
                 },
+
                 None => {
                     let output_files = rnote_files
                         .iter()
@@ -230,6 +266,10 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                         .collect::<Vec<PathBuf>>();
 
                     for (rnote_file, output_file) in rnote_files.iter().zip(output_files.iter()) {
+                        if let Err(e) = check_file_conflict(output_file) {
+                            println!("{e}");
+                            continue;
+                        }
                         let rnote_file_disp = rnote_file.display().to_string();
                         let output_file_disp = output_file.display().to_string();
                         let pb = indicatif::ProgressBar::new_spinner();
@@ -329,6 +369,7 @@ pub(crate) fn create_doc_export_prefs_from_args(
     output_format: Option<&str>,
     without_background: bool,
     without_pattern: bool,
+    page_order: Option<PageOrder>,
 ) -> anyhow::Result<DocExportPrefs> {
     let format = match (output_file, output_format) {
         (Some(file), None) => match file.as_ref().extension().and_then(|ext| ext.to_str()) {
@@ -356,11 +397,14 @@ pub(crate) fn create_doc_export_prefs_from_args(
 
     let mut prefs = DocExportPrefs {
         export_format: format,
+        with_background: !without_background,
+        with_pattern: !without_pattern,
         ..Default::default()
     };
 
-    prefs.with_background = !without_background;
-    prefs.with_pattern = !without_pattern;
+    if let Some(page_order) = page_order {
+        prefs.page_order = page_order.into();
+    }
     Ok(prefs)
 }
 
@@ -369,6 +413,9 @@ pub(crate) fn create_selection_export_prefs_from_args(
     output_format: Option<&str>,
     without_background: bool,
     without_pattern: bool,
+    bitmap_scalefactor: Option<f64>,
+    jpeg_quality: Option<u8>,
+    margin: Option<f64>,
 ) -> anyhow::Result<SelectionExportPrefs> {
     let format = match (output_file, output_format) {
         (Some(file), None) => match file.as_ref().extension().and_then(|ext| ext.to_str()) {
@@ -396,11 +443,20 @@ pub(crate) fn create_selection_export_prefs_from_args(
 
     let mut prefs = SelectionExportPrefs {
         export_format: format,
+        with_background: !without_background,
+        with_pattern: !without_pattern,
         ..Default::default()
     };
 
-    prefs.with_background = !without_background;
-    prefs.with_pattern = !without_pattern;
+    if let Some(bitmap_scalefactor) = bitmap_scalefactor {
+        prefs.bitmap_scalefactor = bitmap_scalefactor.clamp(0.1, 10.0);
+    }
+    if let Some(jpeg_quality) = jpeg_quality {
+        prefs.jpeg_quality = jpeg_quality.clamp(1, 100);
+    }
+    if let Some(margin) = margin {
+        prefs.margin = margin.clamp(0.0, 1000.0);
+    }
 
     Ok(prefs)
 }

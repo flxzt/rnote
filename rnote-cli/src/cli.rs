@@ -1,5 +1,6 @@
 use anyhow::Context;
-use clap::{ArgAction, Parser, Subcommand};
+use clap::{ArgAction, Parser, Subcommand, ValueEnum};
+use rnote_compose::helpers::SplitOrder;
 use rnote_engine::engine::export::{
     DocExportFormat, DocExportPrefs, SelectionExportFormat, SelectionExportPrefs,
 };
@@ -56,7 +57,7 @@ pub(crate) enum Commands {
         output_file: Option<PathBuf>,
         /// the export output format. Exclusive with output-file.
         #[arg(short = 'f', long, conflicts_with("output_file"), required(true))]
-        output_format: Option<String>,
+        output_format: Option<OutputFormat>,
         /// export without background
         #[arg(short = 'b', long, action = ArgAction::SetTrue)]
         without_background: bool,
@@ -93,6 +94,43 @@ impl From<PageOrder> for SplitOrder {
             PageOrder::Horizontal => SplitOrder::RowMajor,
             PageOrder::Vertical => SplitOrder::ColumnMajor,
         }
+    }
+}
+
+#[derive(ValueEnum, Clone, Debug)]
+pub(crate) enum OutputFormat {
+    Pdf,
+    Xopp,
+    Svg,
+    Png,
+    Jpg,
+}
+
+impl TryInto<DocExportFormat> for OutputFormat {
+    type Error = anyhow::Error;
+    fn try_into(self) -> Result<DocExportFormat, Self::Error> {
+        Ok(match self {
+            OutputFormat::Pdf => DocExportFormat::Pdf,
+            OutputFormat::Xopp => DocExportFormat::Xopp,
+            OutputFormat::Svg => DocExportFormat::Svg,
+            OutputFormat::Png | OutputFormat::Jpg => Err(anyhow::anyhow!(
+                "Cannot export as png/jpg without --crop-to-content"
+            ))?,
+        })
+    }
+}
+
+impl TryInto<SelectionExportFormat> for OutputFormat {
+    type Error = anyhow::Error;
+    fn try_into(self) -> Result<SelectionExportFormat, Self::Error> {
+        Ok(match self {
+            OutputFormat::Svg => SelectionExportFormat::Svg,
+            OutputFormat::Png => SelectionExportFormat::Png,
+            OutputFormat::Jpg => SelectionExportFormat::Jpeg,
+            OutputFormat::Pdf | OutputFormat::Xopp => Err(anyhow::anyhow!(
+                "Cannot export as pdf/xopp with --crop-to-content"
+            ))?,
+        })
     }
 }
 
@@ -383,7 +421,7 @@ fn get_doc_export_format(format: &str) -> anyhow::Result<DocExportFormat> {
 
 pub(crate) fn create_doc_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
-    output_format: Option<&str>,
+    output_format: Option<OutputFormat>,
     without_background: bool,
     without_pattern: bool,
     page_order: Option<PageOrder>,
@@ -397,7 +435,7 @@ pub(crate) fn create_doc_export_prefs_from_args(
                 ))
             }
         },
-        (None, Some(out_format)) => get_doc_export_format(out_format),
+        (None, Some(out_format)) => out_format.try_into(),
         // unreachable because they are exclusive (conflicts_with)
         (Some(_), Some(_)) => {
             return Err(anyhow::anyhow!(
@@ -427,7 +465,7 @@ pub(crate) fn create_doc_export_prefs_from_args(
 
 pub(crate) fn create_selection_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
-    output_format: Option<&str>,
+    output_format: Option<OutputFormat>,
     without_background: bool,
     without_pattern: bool,
     bitmap_scalefactor: Option<f64>,
@@ -443,7 +481,7 @@ pub(crate) fn create_selection_export_prefs_from_args(
                 ))
             }
         },
-        (None, Some(out_format)) => get_selection_export_format(out_format),
+        (None, Some(out_format)) => out_format.try_into(),
         // unreachable because they are exclusive (conflicts_with)
         (Some(_), Some(_)) => {
             return Err(anyhow::anyhow!(

@@ -213,6 +213,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             match output_file {
                 Some(ref output_file) => match rnote_files.get(0) {
                     Some(rnote_file) => {
+                        check_file_conflict(output_file)?;
                         if rnote_files.len() > 1 {
                             return Err(anyhow::anyhow!("Was expecting only 1 file. Use --output-format when exporting multiple files."));
                         }
@@ -310,6 +311,22 @@ pub(crate) async fn run() -> anyhow::Result<()> {
     Ok(())
 }
 
+pub(crate) fn check_file_conflict(output_file: &Path) -> anyhow::Result<()> {
+    if output_file.exists() {
+        match dialoguer::Confirm::new()
+            .with_prompt(format!(
+                "File {} already exits, Overwrite?",
+                output_file.display()
+            ))
+            .interact()
+        {
+            Ok(true) => (),
+            Ok(false) => return Err(anyhow::anyhow!("Canceled by user")),
+            Err(e) => return Err(anyhow::anyhow!("Failed to show promt: {e}")),
+        }
+    };
+    Ok(())
+}
 pub(crate) async fn test_file(
     _engine: &mut RnoteEngine,
     rnote_file: PathBuf,

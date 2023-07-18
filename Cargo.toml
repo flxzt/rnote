@@ -73,6 +73,7 @@ poppler-rs = { version = "0.21", features = ["v20_9"] }
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 gtk4 = { version = "0.6", features = ["v4_10"] }
 adw = { version = "0.4", package="libadwaita", features = ["v1_3"] }
+dialoguer = "0.10.4"
 
 [patch.crates-io]
 # once a new piet (current v0.6.2) is released with the updated cairo, this can be removed

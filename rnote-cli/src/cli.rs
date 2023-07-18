@@ -1,5 +1,7 @@
 use clap::{ArgAction, Parser, Subcommand};
-use rnote_engine::engine::export::{DocExportFormat, DocExportPrefs};
+use rnote_engine::engine::export::{
+    DocExportFormat, DocExportPrefs, SelectionExportFormat, SelectionExportPrefs,
+};
 use rnote_engine::engine::EngineSnapshot;
 use rnote_engine::RnoteEngine;
 use smol::fs::File;
@@ -60,6 +62,9 @@ pub(crate) enum Commands {
         /// export without background pattern
         #[arg(short = 'p', long, action = ArgAction::SetTrue)]
         without_pattern: bool,
+        /// crop document to fit all strokes
+        #[arg(short = 'c', long)]
+        crop_to_content: Option<bool>,
     },
 }
 
@@ -145,17 +150,30 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             output_format,
             without_background,
             without_pattern,
+            crop_to_content,
         } => {
             println!("Exporting..");
 
             // apply given arguments to export prefs
-            engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
-                output_file.as_deref(),
-                output_format.as_deref(),
-                without_background,
-                without_pattern,
-            )?;
-
+            match crop_to_content.unwrap_or(false) {
+                true => {
+                    engine.export_prefs.selection_export_prefs =
+                        create_selection_export_prefs_from_args(
+                            output_file.as_deref(),
+                            output_format.as_deref(),
+                            without_background,
+                            without_pattern,
+                        )?;
+                }
+                false => {
+                    engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
+                        output_file.as_deref(),
+                        output_format.as_deref(),
+                        with_background,
+                        with_pattern,
+                    )?
+                }
+            }
             match output_file {
                 Some(ref output_file) => match rnote_files.get(0) {
                     Some(rnote_file) => {
@@ -172,7 +190,14 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                         pb.enable_steady_tick(Duration::from_millis(8));
 
                         // export
-                        if let Err(e) = export_to_file(&mut engine, rnote_file, output_file).await {
+                        if let Err(e) = export_to_file(
+                            &mut engine,
+                            rnote_file,
+                            output_file,
+                            crop_to_content.unwrap_or(false),
+                        )
+                        .await
+                        {
                             let msg = format!("Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}");
                             if pb.is_hidden() {
                                 println!("{msg}")
@@ -218,7 +243,13 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                         pb.enable_steady_tick(Duration::from_millis(8));
 
                         // export
-                        if let Err(e) = export_to_file(&mut engine, &rnote_file, &output_file).await
+                        if let Err(e) = export_to_file(
+                            &mut engine,
+                            &rnote_file,
+                            &output_file,
+                            crop_to_content.unwrap_or(false),
+                        )
+                        .await
                         {
                             let msg = format!("Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}");
                             if pb.is_hidden() {
@@ -289,7 +320,7 @@ pub(crate) async fn import_file(
     Ok(())
 }
 
-fn get_export_format(format: &str) -> anyhow::Result<DocExportFormat> {
+fn get_doc_export_format(format: &str) -> anyhow::Result<DocExportFormat> {
     match format {
         "svg" => Ok(DocExportFormat::Svg),
         "xopp" => Ok(DocExportFormat::Xopp),
@@ -308,14 +339,14 @@ pub(crate) fn create_doc_export_prefs_from_args(
 ) -> anyhow::Result<DocExportPrefs> {
     let format = match (output_file, output_format) {
         (Some(file), None) => match file.as_ref().extension().and_then(|ext| ext.to_str()) {
-            Some(extension) => get_export_format(extension),
+            Some(extension) => get_doc_export_format(extension),
             None => {
                 return Err(anyhow::anyhow!(
                     "Output file needs to have an extension to determine the file type"
                 ))
             }
         },
-        (None, Some(out_format)) => get_export_format(out_format),
+        (None, Some(out_format)) => get_doc_export_format(out_format),
         // unreachable because they are exclusive (conflicts_with)
         (Some(_), Some(_)) => {
             return Err(anyhow::anyhow!(
@@ -340,10 +371,67 @@ pub(crate) fn create_doc_export_prefs_from_args(
     Ok(prefs)
 }
 
+pub(crate) fn create_selection_export_prefs_from_args(
+    output_file: Option<impl AsRef<Path>>,
+    output_format: Option<&str>,
+    with_background: Option<bool>,
+    with_pattern: Option<bool>,
+) -> anyhow::Result<SelectionExportPrefs> {
+    let format = match (output_file, output_format) {
+        (Some(file), None) => match file.as_ref().extension().and_then(|ext| ext.to_str()) {
+            Some(extension) => get_selection_export_format(extension),
+            None => {
+                return Err(anyhow::anyhow!(
+                    "Output file needs to have an extension to determine the file type"
+                ))
+            }
+        },
+        (None, Some(out_format)) => get_selection_export_format(out_format),
+        // unreachable because they are exclusive (conflicts_with)
+        (Some(_), Some(_)) => {
+            return Err(anyhow::anyhow!(
+                "--output-file and --output-format are mutually exclusive."
+            ))
+        }
+        // unreachable because they are required
+        (None, None) => {
+            return Err(anyhow::anyhow!(
+                "--output-file or --output-format is required."
+            ))
+        }
+    }?;
+
+    let mut prefs = SelectionExportPrefs {
+        export_format: format,
+        ..Default::default()
+    };
+
+    if let Some(with_background) = with_background {
+        prefs.with_background = with_background;
+    }
+    if let Some(with_pattern) = with_pattern {
+        prefs.with_pattern = with_pattern;
+    }
+
+    Ok(prefs)
+}
+
+fn get_selection_export_format(format: &str) -> anyhow::Result<SelectionExportFormat> {
+    match format {
+        "svg" => Ok(SelectionExportFormat::Svg),
+        "png" => Ok(SelectionExportFormat::Png),
+        "jpg" | "jpeg" => Ok(SelectionExportFormat::Jpeg),
+        ext => Err(anyhow::anyhow!(
+            "Could not create selection export prefs, unsupported export file extension `{ext}`"
+        )),
+    }
+}
+
 pub(crate) async fn export_to_file(
     engine: &mut RnoteEngine,
     rnote_file: impl AsRef<Path>,
     output_file: impl AsRef<Path>,
+    crop_to_content: bool,
 ) -> anyhow::Result<()> {
     let Some(export_file_name) = output_file.as_ref().file_name().map(|s| s.to_string_lossy().to_string()) else {
         return Err(anyhow::anyhow!("Failed to get filename from output_file"));
@@ -357,10 +445,24 @@ pub(crate) async fn export_to_file(
 
     let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(rnote_bytes).await?;
     let _ = engine.load_snapshot(engine_snapshot);
+    if crop_to_content {
+        let all_strokes = engine.store.stroke_keys_unordered();
+        if all_strokes.is_empty() {
+            return Err(anyhow::anyhow!(
+                "Cannot export empty document with --crop-to-content enabled"
+            ));
+        }
+        engine.store.set_selected_keys(&all_strokes, true);
+    }
 
     // We applied the prefs previously to the engine
-    let export_bytes = engine.export_doc(export_file_name, None).await??;
-
+    let export_bytes = match crop_to_content {
+        true => engine
+            .export_selection(None)
+            .await??
+            .context("Failed to export selection")?,
+        false => engine.export_doc(export_file_name, None).await??,
+    };
     let mut fh = File::create(output_file).await?;
     fh.write_all(&export_bytes).await?;
     fh.sync_all().await?;

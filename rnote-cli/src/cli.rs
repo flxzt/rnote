@@ -1,3 +1,4 @@
+use anyhow::Context;
 use clap::{ArgAction, Parser, Subcommand};
 use rnote_engine::engine::export::{
     DocExportFormat, DocExportPrefs, SelectionExportFormat, SelectionExportPrefs,
@@ -63,8 +64,8 @@ pub(crate) enum Commands {
         #[arg(short = 'p', long, action = ArgAction::SetTrue)]
         without_pattern: bool,
         /// crop document to fit all strokes
-        #[arg(short = 'c', long)]
-        crop_to_content: Option<bool>,
+        #[arg(short = 'c', long, action = ArgAction::SetFalse)]
+        crop_to_content: bool,
     },
 }
 
@@ -155,7 +156,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             println!("Exporting..");
 
             // apply given arguments to export prefs
-            match crop_to_content.unwrap_or(false) {
+            match crop_to_content {
                 true => {
                     engine.export_prefs.selection_export_prefs =
                         create_selection_export_prefs_from_args(
@@ -169,8 +170,8 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                     engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
                         output_file.as_deref(),
                         output_format.as_deref(),
-                        with_background,
-                        with_pattern,
+                        without_background,
+                        without_pattern,
                     )?
                 }
             }
@@ -190,13 +191,9 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                         pb.enable_steady_tick(Duration::from_millis(8));
 
                         // export
-                        if let Err(e) = export_to_file(
-                            &mut engine,
-                            rnote_file,
-                            output_file,
-                            crop_to_content.unwrap_or(false),
-                        )
-                        .await
+                        if let Err(e) =
+                            export_to_file(&mut engine, rnote_file, output_file, crop_to_content)
+                                .await
                         {
                             let msg = format!("Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}");
                             if pb.is_hidden() {
@@ -243,13 +240,9 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                         pb.enable_steady_tick(Duration::from_millis(8));
 
                         // export
-                        if let Err(e) = export_to_file(
-                            &mut engine,
-                            &rnote_file,
-                            &output_file,
-                            crop_to_content.unwrap_or(false),
-                        )
-                        .await
+                        if let Err(e) =
+                            export_to_file(&mut engine, &rnote_file, &output_file, crop_to_content)
+                                .await
                         {
                             let msg = format!("Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}");
                             if pb.is_hidden() {
@@ -374,8 +367,8 @@ pub(crate) fn create_doc_export_prefs_from_args(
 pub(crate) fn create_selection_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
     output_format: Option<&str>,
-    with_background: Option<bool>,
-    with_pattern: Option<bool>,
+    without_background: bool,
+    without_pattern: bool,
 ) -> anyhow::Result<SelectionExportPrefs> {
     let format = match (output_file, output_format) {
         (Some(file), None) => match file.as_ref().extension().and_then(|ext| ext.to_str()) {
@@ -406,12 +399,8 @@ pub(crate) fn create_selection_export_prefs_from_args(
         ..Default::default()
     };
 
-    if let Some(with_background) = with_background {
-        prefs.with_background = with_background;
-    }
-    if let Some(with_pattern) = with_pattern {
-        prefs.with_pattern = with_pattern;
-    }
+    prefs.with_background = !without_background;
+    prefs.with_pattern = !without_pattern;
 
     Ok(prefs)
 }

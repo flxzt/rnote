@@ -79,6 +79,9 @@ pub(crate) enum Commands {
         /// margin around the document
         #[arg(short = 'm', long, requires("crop_to_content"))]
         margin: Option<f64>,
+        /// What to do if exported files already exits
+        #[arg(short = 'e', long, default_value = "ask")]
+        on_conflict: OnConflict,
     },
 }
 
@@ -94,6 +97,30 @@ impl From<PageOrder> for SplitOrder {
             PageOrder::Horizontal => SplitOrder::RowMajor,
             PageOrder::Vertical => SplitOrder::ColumnMajor,
         }
+    }
+}
+
+#[derive(ValueEnum, Clone, Debug, Default)]
+pub(crate) enum OnConflict {
+    #[default]
+    Ask,
+    Overwrite,
+    Skip,
+    Suffix,
+}
+
+impl std::fmt::Display for OnConflict {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                Self::Ask => "ERROR: Unsupported choice",
+                Self::Overwrite => "Overwrite existing file",
+                Self::Skip => "Skip file",
+                Self::Suffix => "Append number at the end of the file name",
+            }
+        )
     }
 }
 
@@ -221,6 +248,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             bitmap_scale_factor,
             jpeg_quality,
             margin,
+            on_conflict,
         } => {
             println!("Exporting..");
 
@@ -251,7 +279,10 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             match output_file {
                 Some(ref output_file) => match rnote_files.get(0) {
                     Some(rnote_file) => {
-                        check_file_conflict(output_file)?;
+                        let new_path = check_file_conflict(output_file, &on_conflict)?;
+                        // Replace output file if suffix added
+                        let output_file = new_path.as_ref().unwrap_or(output_file);
+
                         if rnote_files.len() > 1 {
                             return Err(anyhow::anyhow!("Was expecting only 1 file. Use --output-format when exporting multiple files."));
                         }
@@ -305,10 +336,15 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                         .collect::<Vec<PathBuf>>();
 
                     for (rnote_file, output_file) in rnote_files.iter().zip(output_files.iter()) {
-                        if let Err(e) = check_file_conflict(output_file) {
-                            println!("{e}");
-                            continue;
-                        }
+                        let new_path = match check_file_conflict(output_file, &on_conflict) {
+                            Ok(r) => r,
+                            Err(e) => {
+                                println!("{e}");
+                                continue;
+                            }
+                        };
+                        let output_file = new_path.as_ref().unwrap_or(output_file);
+
                         let rnote_file_disp = rnote_file.display().to_string();
                         let output_file_disp = output_file.display().to_string();
                         let pb = indicatif::ProgressBar::new_spinner();
@@ -320,7 +356,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
 
                         // export
                         if let Err(e) =
-                            export_to_file(&mut engine, &rnote_file, &output_file, crop_to_content)
+                            export_to_file(&mut engine, &rnote_file, output_file, crop_to_content)
                                 .await
                         {
                             let msg = format!("Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}");
@@ -349,21 +385,50 @@ pub(crate) async fn run() -> anyhow::Result<()> {
     Ok(())
 }
 
-pub(crate) fn check_file_conflict(output_file: &Path) -> anyhow::Result<()> {
-    if output_file.exists() {
-        match dialoguer::Confirm::new()
-            .with_prompt(format!(
-                "File {} already exits, Overwrite?",
-                output_file.display()
-            ))
+pub(crate) fn check_file_conflict(
+    output_file: &Path,
+    mut on_conflict: &OnConflict,
+) -> anyhow::Result<Option<PathBuf>> {
+    if !output_file.exists() {
+        return Ok(None);
+    }
+    if matches!(on_conflict, OnConflict::Ask) {
+        let options = &[OnConflict::Overwrite, OnConflict::Skip, OnConflict::Suffix];
+        match dialoguer::Select::new()
+            .with_prompt(format!("File {} already exits:", output_file.display()))
+            .items(options)
             .interact()
         {
-            Ok(true) => (),
-            Ok(false) => return Err(anyhow::anyhow!("Canceled by user")),
-            Err(e) => return Err(anyhow::anyhow!("Failed to show promt: {e}")),
+            Ok(c) => on_conflict = &options[c],
+            Err(e) => {
+                return Err(anyhow::anyhow!(
+                "Failed to show select promt, retry or select an behavior with --on-conflict, {e}"
+            ))
+            }
+        };
+    }
+    let on_conflict = on_conflict;
+    match on_conflict {
+        OnConflict::Ask => Err(anyhow::anyhow!("Failed to save user choice!")),
+        OnConflict::Overwrite => Ok(None),
+        OnConflict::Skip => Err(anyhow::anyhow!("Skipped {}", output_file.display())),
+        OnConflict::Suffix => {
+            let mut i = 0;
+            let mut new_path = output_file.to_path_buf();
+            let Some(file_stem) = new_path.file_stem().map(|s| s.to_string_lossy().to_string()) else {
+                return Err(anyhow::anyhow!("Failed to get file stem"));
+            };
+            let ext = new_path
+                .extension()
+                .map(|n| n.to_string_lossy().to_string())
+                .unwrap_or(String::new());
+            while new_path.exists() {
+                i += 1;
+                new_path.set_file_name(format!("{file_stem}_{i}.{ext}"))
+            }
+            Ok(Some(new_path))
         }
-    };
-    Ok(())
+    }
 }
 pub(crate) async fn test_file(
     _engine: &mut RnoteEngine,

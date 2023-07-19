@@ -115,7 +115,7 @@ impl std::fmt::Display for OnConflict {
             f,
             "{}",
             match self {
-                Self::Ask => "ERROR: Unsupported choice",
+                Self::Ask => "Open existing file and ask again",
                 Self::Overwrite => "Overwrite existing file",
                 Self::Skip => "Skip file",
                 Self::Suffix => "Append number at the end of the file name",
@@ -392,13 +392,26 @@ pub(crate) fn check_file_conflict(
     if !output_file.exists() {
         return Ok(None);
     }
-    if matches!(on_conflict, OnConflict::Ask) {
-        let options = &[OnConflict::Overwrite, OnConflict::Skip, OnConflict::Suffix];
+    while matches!(on_conflict, OnConflict::Ask) {
+        let options = &[
+            OnConflict::Ask,
+            OnConflict::Overwrite,
+            OnConflict::Skip,
+            OnConflict::Suffix,
+        ];
         match dialoguer::Select::new()
             .with_prompt(format!("File {} already exits:", output_file.display()))
             .items(options)
             .interact()
         {
+            Ok(0) => {
+                if let Err(e) = open::that(output_file) {
+                    println!(
+                        "Failed to open {} with default program, {e}",
+                        output_file.display()
+                    );
+                }
+            }
             Ok(c) => on_conflict = &options[c],
             Err(e) => {
                 return Err(anyhow::anyhow!(
@@ -407,7 +420,6 @@ pub(crate) fn check_file_conflict(
             }
         };
     }
-    let on_conflict = on_conflict;
     match on_conflict {
         OnConflict::Ask => Err(anyhow::anyhow!("Failed to save user choice!")),
         OnConflict::Overwrite => Ok(None),

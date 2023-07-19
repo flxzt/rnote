@@ -18,3 +18,4 @@ smol = { workspace = true }
 clap = { workspace = true }
 indicatif = { workspace = true }
 dialoguer = { workspace = true }
+open = { workspace = true }

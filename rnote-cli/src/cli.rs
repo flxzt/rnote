@@ -68,16 +68,16 @@ pub(crate) enum Commands {
         #[arg(short = 'c', long, action = ArgAction::SetTrue)]
         crop_to_content: bool,
         /// direction documents with layouts that expand horizontally and vertically are split into pages
-        #[arg(long, conflicts_with("crop_to_content"))]
+        #[arg(short = 'P', long, conflicts_with("crop_to_content"))]
         page_order: Option<PageOrder>,
         /// bitmap scale factor in relation to the actual size on the document
-        #[arg(long, requires("crop_to_content"))]
+        #[arg(short = 'B', long, requires("crop_to_content"))]
         bitmap_scale_factor: Option<f64>,
         /// quality of the jpeg image
-        #[arg(long, requires("crop_to_content"))]
+        #[arg(short = 'j', long, requires("crop_to_content"))]
         jpeg_quality: Option<u8>,
         /// margin around the document
-        #[arg(long, requires("crop_to_content"))]
+        #[arg(short = 'm', long, requires("crop_to_content"))]
         margin: Option<f64>,
     },
 }

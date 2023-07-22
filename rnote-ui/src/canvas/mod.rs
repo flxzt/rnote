@@ -2,9 +2,11 @@
 mod canvaslayout;
 pub(crate) mod imexport;
 mod input;
+mod widgetflagsboxed;
 
 // Re-exports
 pub(crate) use canvaslayout::RnCanvasLayout;
+pub(crate) use widgetflagsboxed::WidgetFlagsBoxed;
 
 // Imports
 use crate::{config, RnAppWindow};
@@ -24,12 +26,8 @@ use rnote_engine::Document;
 use rnote_engine::{RnoteEngine, WidgetFlags};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, glib::Boxed)]
-#[boxed_type(name = "WidgetFlagsBoxed")]
-struct WidgetFlagsBoxed(WidgetFlags);
-
 #[derive(Debug, Default)]
-pub(crate) struct Handlers {
+pub(crate) struct Connections {
     pub(crate) hadjustment: Option<glib::SignalHandlerId>,
     pub(crate) vadjustment: Option<glib::SignalHandlerId>,
     pub(crate) tab_page_output_file: Option<glib::Binding>,
@@ -50,7 +48,7 @@ mod imp {
 
     #[derive(Debug)]
     pub(crate) struct RnCanvas {
-        pub(crate) handlers: RefCell<Handlers>,
+        pub(crate) handlers: RefCell<Connections>,
 
         pub(crate) hadjustment: RefCell<Option<Adjustment>>,
         pub(crate) vadjustment: RefCell<Option<Adjustment>>,
@@ -142,7 +140,7 @@ mod imp {
             let engine = RnoteEngine::default();
 
             Self {
-                handlers: RefCell::new(Handlers::default()),
+                handlers: RefCell::new(Connections::default()),
 
                 hadjustment: RefCell::new(None),
                 vadjustment: RefCell::new(None),
@@ -237,7 +235,7 @@ mod imp {
         }
 
         fn dispose(&self) {
-            self.obj().disconnect_handlers();
+            self.obj().disconnect_connections();
             self.obj().abort_engine_task_handler();
 
             while let Some(child) = self.obj().first_child() {
@@ -647,7 +645,10 @@ impl RnCanvas {
 
     #[allow(unused)]
     pub(super) fn emit_handle_widget_flags(&self, widget_flags: WidgetFlags) {
-        self.emit_by_name::<()>("handle-widget-flags", &[&WidgetFlagsBoxed(widget_flags)]);
+        self.emit_by_name::<()>(
+            "handle-widget-flags",
+            &[&WidgetFlagsBoxed::from(widget_flags)],
+        );
     }
 
     pub(crate) fn canvas_layout_manager(&self) -> RnCanvasLayout {
@@ -1032,65 +1033,65 @@ impl RnCanvas {
             "handle-widget-flags",
             false,
             clone!(@weak self as canvas, @weak appwindow => @default-return None, move |args| {
-                // first argument is the widget
-                let widget_flags = args[1].get::<WidgetFlagsBoxed>().unwrap().0;
+                // first argument is the widget, second is widget flags
+                let widget_flags = args[1].get::<WidgetFlagsBoxed>().unwrap().inner();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
                 None
             }),
         );
 
-        // Replace old handlers
-        let mut handlers = self.imp().handlers.borrow_mut();
-        if let Some(old) = handlers
+        // Replace connections
+        let mut connections = self.imp().handlers.borrow_mut();
+        if let Some(old) = connections
             .appwindow_output_file
             .replace(appwindow_output_file)
         {
             self.disconnect(old);
         }
-        if let Some(old) = handlers
+        if let Some(old) = connections
             .appwindow_scalefactor
             .replace(appwindow_scalefactor)
         {
             self.disconnect(old);
         }
-        if let Some(old) = handlers
+        if let Some(old) = connections
             .appwindow_unsaved_changes
             .replace(appwindow_unsaved_changes)
         {
             self.disconnect(old);
         }
-        if let Some(old) = handlers
+        if let Some(old) = connections
             .appwindow_touch_drawing
             .replace(appwindow_touch_drawing)
         {
             old.unbind();
         }
-        if let Some(old) = handlers
+        if let Some(old) = connections
             .appwindow_show_drawing_cursor
             .replace(appwindow_show_drawing_cursor)
         {
             old.unbind();
         }
-        if let Some(old) = handlers
+        if let Some(old) = connections
             .appwindow_regular_cursor
             .replace(appwindow_regular_cursor)
         {
             old.unbind();
         }
-        if let Some(old) = handlers
+        if let Some(old) = connections
             .appwindow_drawing_cursor
             .replace(appwindow_drawing_cursor)
         {
             old.unbind();
         }
-        if let Some(old) = handlers
+        if let Some(old) = connections
             .appwindow_drop_target
             .replace(appwindow_drop_target)
         {
             self.imp().drop_target.disconnect(old);
         }
-        if let Some(old) = handlers
+        if let Some(old) = connections
             .appwindow_handle_widget_flags
             .replace(appwindow_handle_widget_flags)
         {
@@ -1098,52 +1099,53 @@ impl RnCanvas {
         }
     }
 
-    /// Disconnect all handlers with references to external objects
-    /// to prepare moving the widget to another appwindow or closing it when inside a tab page.
-    pub(crate) fn disconnect_handlers(&self) {
+    /// Disconnect all connections with references to external objects
+    /// to prepare moving the widget to another appwindow or closing it,
+    /// when it is inside a tab page.
+    pub(crate) fn disconnect_connections(&self) {
         self.clear_output_file_monitor();
 
-        let mut handlers = self.imp().handlers.borrow_mut();
-        if let Some(old) = handlers.appwindow_output_file.take() {
+        let mut connections = self.imp().handlers.borrow_mut();
+        if let Some(old) = connections.appwindow_output_file.take() {
             self.disconnect(old);
         }
-        if let Some(old) = handlers.appwindow_scalefactor.take() {
+        if let Some(old) = connections.appwindow_scalefactor.take() {
             self.disconnect(old);
         }
-        if let Some(old) = handlers.appwindow_unsaved_changes.take() {
+        if let Some(old) = connections.appwindow_unsaved_changes.take() {
             self.disconnect(old);
         }
-        if let Some(old) = handlers.appwindow_touch_drawing.take() {
+        if let Some(old) = connections.appwindow_touch_drawing.take() {
             old.unbind();
         }
-        if let Some(old) = handlers.appwindow_show_drawing_cursor.take() {
+        if let Some(old) = connections.appwindow_show_drawing_cursor.take() {
             old.unbind();
         }
-        if let Some(old) = handlers.appwindow_regular_cursor.take() {
+        if let Some(old) = connections.appwindow_regular_cursor.take() {
             old.unbind();
         }
-        if let Some(old) = handlers.appwindow_drawing_cursor.take() {
+        if let Some(old) = connections.appwindow_drawing_cursor.take() {
             old.unbind();
         }
-        if let Some(old) = handlers.appwindow_drop_target.take() {
+        if let Some(old) = connections.appwindow_drop_target.take() {
             self.imp().drop_target.disconnect(old);
         }
-        if let Some(old) = handlers.appwindow_handle_widget_flags.take() {
+        if let Some(old) = connections.appwindow_handle_widget_flags.take() {
             self.disconnect(old);
         }
 
         // tab page connections
-        if let Some(old) = handlers.tab_page_output_file.take() {
+        if let Some(old) = connections.tab_page_output_file.take() {
             old.unbind();
         }
-        if let Some(old) = handlers.tab_page_unsaved_changes.take() {
+        if let Some(old) = connections.tab_page_unsaved_changes.take() {
             old.unbind();
         }
     }
 
     /// When the widget is the child of a tab page, we want to connect their titles, icons, ..
     ///
-    /// disconnects existing bindings / handlers to old tab pages.
+    /// disconnects existing connections to old tab pages.
     pub(crate) fn connect_to_tab_page(&self, page: &adw::TabPage) {
         // update the tab title whenever the canvas output file changes
         let tab_page_output_file = self
@@ -1168,12 +1170,14 @@ impl RnCanvas {
             .sync_create()
             .build();
 
-        let mut handlers = self.imp().handlers.borrow_mut();
-        if let Some(old) = handlers.tab_page_output_file.replace(tab_page_output_file) {
+        let mut connections = self.imp().handlers.borrow_mut();
+        if let Some(old) = connections
+            .tab_page_output_file
+            .replace(tab_page_output_file)
+        {
             old.unbind();
         }
-
-        if let Some(old) = handlers
+        if let Some(old) = connections
             .tab_page_unsaved_changes
             .replace(tab_page_unsaved_changes)
         {

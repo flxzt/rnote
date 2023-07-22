@@ -258,12 +258,26 @@ impl PenHolder {
             PenProgress::Idle => {}
             PenProgress::InProgress => {}
             PenProgress::Finished => {
-                // take the style override when pen is finished
-                if self.pen_mode_state.take_style_override().is_some() {
-                    widget_flags.refresh_ui = true;
-                }
+                if let Some(shortcut_key) = self.prev_shortcut_key {
+                    if let Some(action) = self.get_shortcut_action(shortcut_key) {
+                        match action {
+                            ShortcutAction::ChangePenStyle { style: _, mode } => match mode {
+                                ShortcutMode::Hold => {}
+                                ShortcutMode::Permanent
+                                | ShortcutMode::Temporary
+                                | ShortcutMode::Toggle => {
+                                    // take the style override when pen is finished
+                                    if self.pen_mode_state.take_style_override().is_some() {
+                                        widget_flags.refresh_ui = true;
+                                    }
 
-                widget_flags.merge(self.reinstall_pen_current_style(engine_view));
+                                    widget_flags
+                                        .merge(self.reinstall_pen_current_style(engine_view));
+                                }
+                            },
+                        }
+                    }
+                }
             }
         }
 
@@ -304,7 +318,7 @@ impl PenHolder {
         if let Some(action) = self.get_shortcut_action(shortcut_key) {
             match action {
                 ShortcutAction::ChangePenStyle { style, mode } => match mode {
-                    ShortcutMode::Temporary => {
+                    ShortcutMode::Temporary | ShortcutMode::Hold => {
                         widget_flags.merge(self.change_style_override(Some(style), engine_view));
                     }
                     ShortcutMode::Permanent => {
@@ -336,6 +350,34 @@ impl PenHolder {
 
         self.prev_shortcut_key = Some(shortcut_key);
         widget_flags.redraw = true;
+
+        widget_flags
+    }
+
+    /// Handle a released shortcut key.
+    pub fn handle_released_shortcut_key(
+        &mut self,
+        shortcut_key: ShortcutKey,
+        _now: Instant,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if let Some(action) = self.get_shortcut_action(shortcut_key) {
+            match action {
+                ShortcutAction::ChangePenStyle { style: _, mode } => match mode {
+                    ShortcutMode::Hold => {
+                        // take the style override when pen is finished
+                        if self.pen_mode_state.take_style_override().is_some() {
+                            widget_flags.refresh_ui = true;
+                        }
+
+                        widget_flags.merge(self.reinstall_pen_current_style(engine_view));
+                    }
+                    ShortcutMode::Permanent | ShortcutMode::Temporary | ShortcutMode::Toggle => {}
+                },
+            }
+        }
 
         widget_flags
     }

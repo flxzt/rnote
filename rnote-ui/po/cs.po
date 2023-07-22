@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-09 12:56+0200\n"
-"PO-Revision-Date: 2023-07-22 14:05+0000\n"
+"PO-Revision-Date: 2023-07-23 15:07+0000\n"
 "Last-Translator: vikdevelop <super-vik1@protonmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
@@ -1143,7 +1143,7 @@ msgstr "Nastavit, zda se mají zobrazovat posuvníky na plátně"
 
 #: rnote-ui/data/ui/settingspanel.ui:87
 msgid "Inertial Touch Scrolling"
-msgstr ""
+msgstr "Inerciální dotykové posouvání"
 
 #: rnote-ui/data/ui/settingspanel.ui:88
 msgid ""
@@ -1151,202 +1151,207 @@ msgid ""
 "An application restart is required when this option\n"
 "gets disabled."
 msgstr ""
+"Nastavit, zda je posouvání dotykem na plátně inerciální.\n"
+"Pokud je tato možnost nastavena, je nutné restartovat aplikaci.\n"
+"zakázán."
 
 #: rnote-ui/data/ui/settingspanel.ui:100
 msgid "Regular Cursor"
-msgstr ""
+msgstr "Běžný kurzor"
 
 #: rnote-ui/data/ui/settingspanel.ui:101
 msgid "Set the regular cursor"
-msgstr ""
+msgstr "Nastavit běžný kurzor"
 
 #: rnote-ui/data/ui/settingspanel.ui:123
 msgid "Show Drawing Cursor"
-msgstr ""
+msgstr "Zobrazit kreslící kurzor"
 
 #: rnote-ui/data/ui/settingspanel.ui:124
 msgid "Set whether the drawing cursor is visible"
-msgstr ""
+msgstr "Nastavení viditelnosti kreslicího kurzoru"
 
 #: rnote-ui/data/ui/settingspanel.ui:138
 msgid "Drawing Cursor"
-msgstr ""
+msgstr "Kreslící kurzor"
 
 #: rnote-ui/data/ui/settingspanel.ui:139
 msgid "Set the drawing cursor"
-msgstr ""
+msgstr "Nastavit kreslící kurzor"
 
 #: rnote-ui/data/ui/settingspanel.ui:164
 msgid "Page Format"
-msgstr ""
+msgstr "Formát stránky"
 
 #: rnote-ui/data/ui/settingspanel.ui:167
 msgid "Format"
-msgstr ""
+msgstr "Formát"
 
 #: rnote-ui/data/ui/settingspanel.ui:168
 msgid "Choose a format"
-msgstr ""
+msgstr "Vyberte formát"
 
 #: rnote-ui/data/ui/settingspanel.ui:172
 msgid "A6"
-msgstr ""
+msgstr "A6"
 
 #: rnote-ui/data/ui/settingspanel.ui:173
 msgid "A5"
-msgstr ""
+msgstr "A5"
 
 #: rnote-ui/data/ui/settingspanel.ui:174
 msgid "A4"
-msgstr ""
+msgstr "A4"
 
 #: rnote-ui/data/ui/settingspanel.ui:175
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #: rnote-ui/data/ui/settingspanel.ui:176
 msgid "A2"
-msgstr ""
+msgstr "A2"
 
 #: rnote-ui/data/ui/settingspanel.ui:177
 msgid "US letter"
-msgstr ""
+msgstr "US-letter"
 
 #: rnote-ui/data/ui/settingspanel.ui:178
 msgid "US legal"
-msgstr ""
+msgstr "US-legal"
 
 #: rnote-ui/data/ui/settingspanel.ui:179
 msgid "Custom"
-msgstr ""
+msgstr "Vlastní"
 
 #: rnote-ui/data/ui/settingspanel.ui:187
 msgid "Orientation"
-msgstr ""
+msgstr "Orientace"
 
 #: rnote-ui/data/ui/settingspanel.ui:188
 msgid "Set the format orientation"
-msgstr ""
+msgstr "Nastavit orientaci formátu"
 
 #: rnote-ui/data/ui/settingspanel.ui:200
 msgid "Portrait"
-msgstr ""
+msgstr "Portrét"
 
 #: rnote-ui/data/ui/settingspanel.ui:206
 msgid "Landscape"
-msgstr ""
+msgstr "Krajina"
 
 #: rnote-ui/data/ui/settingspanel.ui:216
 msgid "Width"
-msgstr ""
+msgstr "Šířka"
 
 #: rnote-ui/data/ui/settingspanel.ui:217
 msgid "Set the format width"
-msgstr ""
+msgstr "Nastavit šířku formátu"
 
 #: rnote-ui/data/ui/settingspanel.ui:230
 msgid "Height"
-msgstr ""
+msgstr "Výška"
 
 #: rnote-ui/data/ui/settingspanel.ui:231
 msgid "Set the format height"
-msgstr ""
+msgstr "Nastavit výšku formátu"
 
 #: rnote-ui/data/ui/settingspanel.ui:244
 msgid "Dpi"
-msgstr ""
+msgstr "DPI"
 
 #: rnote-ui/data/ui/settingspanel.ui:245
 msgid "Set the Dpi (dots per inch). Defaults to 96."
-msgstr ""
+msgstr "Nastavit DPI (počet bodů na palec). 86 je výchozí hodnotou."
 
 #: rnote-ui/data/ui/settingspanel.ui:268
 msgid "Revert"
-msgstr ""
+msgstr "Vrátit zpět"
 
 #: rnote-ui/data/ui/settingspanel.ui:290 rnote-ui/data/ui/shortcuts.ui:146
 #: rnote-ui/src/dialogs/mod.rs:631
 msgid "Document"
-msgstr ""
+msgstr "Dokument"
 
 #: rnote-ui/data/ui/settingspanel.ui:293
 msgid "Format Border Color"
-msgstr ""
+msgstr "Barva okraje formátu"
 
 #: rnote-ui/data/ui/settingspanel.ui:294
 msgid "Set the format border color"
-msgstr ""
+msgstr "Nastavit formát barvy okraje"
 
 #: rnote-ui/data/ui/settingspanel.ui:315
 msgid "Set the background color"
-msgstr ""
+msgstr "Nastavit barvu pozadí"
 
 #: rnote-ui/data/ui/settingspanel.ui:335
 msgid "Pattern"
-msgstr ""
+msgstr "Vzor"
 
 #: rnote-ui/data/ui/settingspanel.ui:336
 msgid "Choose a background pattern"
-msgstr ""
+msgstr "Vybrat vzor na pozadí"
 
 #: rnote-ui/data/ui/settingspanel.ui:340
 msgid "None"
-msgstr ""
+msgstr "Žádné"
 
 #: rnote-ui/data/ui/settingspanel.ui:341
 msgid "Lines"
-msgstr ""
+msgstr "Řádky"
 
 #: rnote-ui/data/ui/settingspanel.ui:342
 #: rnote-ui/src/penssidebar/shaperpage.rs:388
 msgid "Grid"
-msgstr ""
+msgstr "Mřížka"
 
 #: rnote-ui/data/ui/settingspanel.ui:344
 msgid "Isometric Grid"
-msgstr ""
+msgstr "Isometrická mřížka"
 
 #: rnote-ui/data/ui/settingspanel.ui:345
 msgid "Isometric Dots"
-msgstr ""
+msgstr "Isometrické tečky"
 
 #: rnote-ui/data/ui/settingspanel.ui:353
 msgid "Pattern Color"
-msgstr ""
+msgstr "Barva vzoru"
 
 #: rnote-ui/data/ui/settingspanel.ui:354
 msgid "Set the background pattern color"
-msgstr ""
+msgstr "Nastavit barvu vzoru pro pozadí"
 
 #: rnote-ui/data/ui/settingspanel.ui:374
 msgid "Pattern Width"
-msgstr ""
+msgstr "Vzorová šířka"
 
 #: rnote-ui/data/ui/settingspanel.ui:375
 msgid "Set the background pattern width"
-msgstr ""
+msgstr "Nastavení vzorové šířky pro pozadí"
 
 #: rnote-ui/data/ui/settingspanel.ui:388
 msgid "Pattern Height"
-msgstr ""
+msgstr "Vzorová výška"
 
 #: rnote-ui/data/ui/settingspanel.ui:389
 msgid "Set the background pattern height"
-msgstr ""
+msgstr "Nastavit vzorovou výšku pro pozadí"
 
 #: rnote-ui/data/ui/settingspanel.ui:405
 msgid "Button Shortcuts"
-msgstr ""
+msgstr "Zkratky pro tlačítko"
 
 #: rnote-ui/data/ui/settingspanel.ui:408
 msgid "Stylus Primary Button Action"
-msgstr ""
+msgstr "Akce primárního stylusu pro tlačítko"
 
 #: rnote-ui/data/ui/settingspanel.ui:409
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
 msgstr ""
+"Nastavení akce pro\n"
+"primárního tlačítka stylusu"
 
 #: rnote-ui/data/ui/settingspanel.ui:421
 msgid "Stylus Secondary Button Action"

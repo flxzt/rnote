@@ -721,14 +721,14 @@ impl RnCanvasWrapper {
         }
     }
 
-    /// This disconnects all handlers with references to external objects,
+    /// This disconnects all connections with references to external objects,
     /// to prepare moving the widget to another appwindow.
     ///
     /// The same method of the canvas child is chained up in here.
     pub(crate) fn disconnect_handlers(&self) {
         let imp = self.imp();
 
-        self.canvas().disconnect_handlers();
+        self.canvas().disconnect_connections();
 
         if let Some(old) = imp.appwindow_block_pinch_zoom_bind.borrow_mut().take() {
             old.unbind();
@@ -749,7 +749,7 @@ impl RnCanvasWrapper {
 
     /// When the widget is the child of a tab page, we want to connect the title, icons, ..
     ///
-    /// disconnects existing bindings / handlers to old tab pages.
+    /// disconnects existing connections to old tab pages.
     ///
     /// The same method of the canvas child is chained up in here.
     pub(crate) fn connect_to_tab_page(&self, page: &adw::TabPage) {

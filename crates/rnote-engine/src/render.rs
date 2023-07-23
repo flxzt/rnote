@@ -444,7 +444,7 @@ impl Image {
         })
     }
 
-    /// Generates an image with a provided closure that draws onto a [piet::CairoRenderContext].
+    /// Generates an image with a provided closure that draws onto a [piet_cairo::CairoRenderContext].
     pub fn gen_with_piet<F>(draw_func: F, bounds: Aabb, image_scale: f64) -> anyhow::Result<Self>
     where
         F: FnOnce(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,

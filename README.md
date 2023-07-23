@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/icons/scalable/apps/rnote.svg" width="300"></img>
+<img src="https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/icons/scalable/apps/rnote.svg" width="300"></img>
 </div><br><br><br>
 
 <div align="center">
@@ -109,10 +109,10 @@ To update to the latest version again, unpin and run `flatpak update`.
 
 ## Screenshots
 
-![overview](https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/overview.png)  
-![lecture_note_1](https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/lecture_note_1.png)  
-![pdf_annotation](https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/pdf_annotation.png)  
-![lecture_note_2](https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/lecture_note_2.png)  
+![overview](https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/overview.png)  
+![lecture_note_1](https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/lecture_note_1.png)  
+![pdf_annotation](https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/pdf_annotation.png)  
+![lecture_note_2](https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/lecture_note_2.png)  
 
 ## License
 

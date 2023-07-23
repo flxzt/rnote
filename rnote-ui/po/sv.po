@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-04 13:51+0200\n"
+"POT-Creation-Date: 2023-07-09 12:56+0200\n"
 "PO-Revision-Date: 2022-12-08 18:13+0000\n"
 "Last-Translator: D0V4HKIIN <jonas.bonnaudet@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/rnote/repo/sv/>\n"
@@ -81,8 +81,8 @@ msgstr "Detta rensar hela dokumentet. Var vänlig och bekräfta."
 #: rnote-ui/data/ui/dialogs/dialogs.ui:40
 #: rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: rnote-ui/data/ui/dialogs/dialogs.ui:70 rnote-ui/data/ui/dialogs/import.ui:10
-#: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:223
-#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:211 rnote-ui/data/ui/dialogs/export.ui:10
+#: rnote-ui/data/ui/dialogs/export.ui:151
 #: rnote-ui/data/ui/dialogs/export.ui:378
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
@@ -108,14 +108,13 @@ msgstr ""
 "du säker?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
-#: rnote-ui/data/ui/dialogs/dialogs.ui:41 rnote-ui/data/ui/dialogs/import.ui:11
+#: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Discard"
 msgstr "Kasta bort"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/data/ui/dialogs/import.ui:12
-#: rnote-ui/src/dialogs/export.rs:32
+#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/src/dialogs/export.rs:32
 msgid "Save"
 msgstr "Spara"
 
@@ -210,107 +209,96 @@ msgstr "- ingen mapp vald -"
 msgid "Change the directory"
 msgstr "Ändra arbetsplats mappen"
 
-#: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:81
-msgid "Open File"
-msgstr "Öppna Fil"
-
-#: rnote-ui/data/ui/dialogs/import.ui:6
-#, fuzzy
-msgid ""
-"Opening this file overwrites any unsaved changes. Do you want to save the "
-"current document?"
-msgstr "Om du öppnar denna fil skrivs osparade ändringar över"
-
-#: rnote-ui/data/ui/dialogs/import.ui:19
+#: rnote-ui/data/ui/dialogs/import.ui:7
 #, fuzzy
 #| msgid "Import PDF"
 msgid "Import Pdf"
 msgstr "Importera PDF"
 
-#: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
-#: rnote-ui/src/dialogs/import.rs:119
+#: rnote-ui/data/ui/dialogs/import.ui:15 rnote-ui/data/ui/dialogs/import.ui:216
+#: rnote-ui/src/dialogs/import.rs:64
 msgid "Import"
 msgstr "Importera"
 
-#: rnote-ui/data/ui/dialogs/import.ui:73
+#: rnote-ui/data/ui/dialogs/import.ui:61
 msgid "Info"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/import.ui:91
+#: rnote-ui/data/ui/dialogs/import.ui:79
 #, fuzzy
 #| msgid "PDF import preferences"
 msgid "Pdf Import Preferences"
 msgstr "Preferenser för PDF-import"
 
-#: rnote-ui/data/ui/dialogs/import.ui:95
+#: rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start Page"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/import.ui:110
+#: rnote-ui/data/ui/dialogs/import.ui:98
 #, fuzzy
 msgid "End Page"
 msgstr "Lägg till sida"
 
-#: rnote-ui/data/ui/dialogs/import.ui:125
+#: rnote-ui/data/ui/dialogs/import.ui:113
 #, fuzzy
 #| msgid "Page width (%)"
 msgid "Page Width (%)"
 msgstr "Sidbredd (%)"
 
-#: rnote-ui/data/ui/dialogs/import.ui:126
+#: rnote-ui/data/ui/dialogs/import.ui:114
 #, fuzzy
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr "Ange bredden på importerade PDF-filer i procent till bladbredden"
 
-#: rnote-ui/data/ui/dialogs/import.ui:146
+#: rnote-ui/data/ui/dialogs/import.ui:134
 #, fuzzy
 #| msgid "Page spacing"
 msgid "Page Spacing"
 msgstr "Sidavstånd"
 
-#: rnote-ui/data/ui/dialogs/import.ui:147
+#: rnote-ui/data/ui/dialogs/import.ui:135
 #, fuzzy
 #| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
 msgstr "Distans mellan sidor i PDF format"
 
-#: rnote-ui/data/ui/dialogs/import.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:139
 msgid "Continuous"
 msgstr "Kontinuerlig"
 
-#: rnote-ui/data/ui/dialogs/import.ui:152
+#: rnote-ui/data/ui/dialogs/import.ui:140
 #, fuzzy
 #| msgid "One per document page"
 msgid "One per Document Page"
 msgstr "En per dokumentsida"
 
-#: rnote-ui/data/ui/dialogs/import.ui:160
+#: rnote-ui/data/ui/dialogs/import.ui:148
 #, fuzzy
 #| msgid "Pages type"
 msgid "Pages Type"
 msgstr "Sidtyp"
 
-#: rnote-ui/data/ui/dialogs/import.ui:161
+#: rnote-ui/data/ui/dialogs/import.ui:149
 #, fuzzy
 #| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr "Ange om PDF-filer ska importeras som vektor- eller bitmappsbilder"
 
-#: rnote-ui/data/ui/dialogs/import.ui:173
+#: rnote-ui/data/ui/dialogs/import.ui:161
 msgid "Vector"
 msgstr "Vektor"
 
-#: rnote-ui/data/ui/dialogs/import.ui:180
+#: rnote-ui/data/ui/dialogs/import.ui:168
 msgid "Bitmap"
 msgstr "Bitmap"
 
-#: rnote-ui/data/ui/dialogs/import.ui:189
+#: rnote-ui/data/ui/dialogs/import.ui:177
 #: rnote-ui/data/ui/dialogs/export.ui:323
 #: rnote-ui/data/ui/dialogs/export.ui:492
 msgid "Bitmap Scale-Factor"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/import.ui:190
+#: rnote-ui/data/ui/dialogs/import.ui:178
 #: rnote-ui/data/ui/dialogs/export.ui:324
 #: rnote-ui/data/ui/dialogs/export.ui:493
 msgid ""
@@ -318,22 +306,22 @@ msgid ""
 "to the actual size on the document"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/import.ui:220
+#: rnote-ui/data/ui/dialogs/import.ui:208
 #, fuzzy
 #| msgid "Import file"
 msgid "Import Xournal++ File"
 msgstr "Importera Fil"
 
-#: rnote-ui/data/ui/dialogs/import.ui:259
+#: rnote-ui/data/ui/dialogs/import.ui:247
 #, fuzzy
 msgid "Xournal++ File Import Preferences"
 msgstr "Bildtyp för PDF-import"
 
-#: rnote-ui/data/ui/dialogs/import.ui:263
+#: rnote-ui/data/ui/dialogs/import.ui:251
 msgid "DPI"
 msgstr "DPI"
 
-#: rnote-ui/data/ui/dialogs/import.ui:264
+#: rnote-ui/data/ui/dialogs/import.ui:252
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
@@ -1222,7 +1210,7 @@ msgstr "Mönsterfärg"
 msgid "Fill Color"
 msgstr "Solid"
 
-#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:26
 msgid "Open"
 msgstr "Öppna"
 
@@ -1718,7 +1706,7 @@ msgstr "Nytt document"
 msgid "Print Document"
 msgstr "Nytt document"
 
-#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:117
+#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:62
 #, fuzzy
 #| msgid "Import file"
 msgid "Import File"
@@ -1789,45 +1777,15 @@ msgstr "Öppna arbetsyta"
 msgid "Edit Selected Workspace"
 msgstr "Redigera arbetsyta"
 
-#: rnote-ui/src/appwindow/mod.rs:555
+#: rnote-ui/src/appwindow/mod.rs:539
 #, fuzzy
-msgid "Opening .rnote file failed"
+msgid "Opening file failed"
 msgstr "Öppna fil"
-
-#: rnote-ui/src/appwindow/mod.rs:566
-#, fuzzy
-msgid "Opening vector image file failed"
-msgstr "Öppna fil"
-
-#: rnote-ui/src/appwindow/mod.rs:577
-#, fuzzy
-msgid "Opening bitmap image file failed"
-msgstr "Öppna fil"
-
-#: rnote-ui/src/appwindow/mod.rs:588 rnote-ui/src/dialogs/import.rs:350
-#, fuzzy
-msgid "Opening Xournal++ file failed"
-msgstr "Öppna fil"
-
-#: rnote-ui/src/appwindow/mod.rs:599 rnote-ui/src/dialogs/import.rs:301
-#, fuzzy
-#| msgid "Opening PDF file failed."
-msgid "Opening Pdf file failed"
-msgstr "Det gick inte att öppna PDF-filen."
-
-#: rnote-ui/src/appwindow/mod.rs:608
-msgid "Failed to open file, tried to open folder as file"
-msgstr ""
-
-#: rnote-ui/src/appwindow/mod.rs:613
-msgid "Failed to open file, unsupported file type"
-msgstr ""
 
 #: rnote-ui/src/appwindow/imp.rs:282
-#: rnote-ui/src/appwindow/appwindowactions.rs:612
-#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/import.rs:52
-#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:260
-#: rnote-ui/src/dialogs/mod.rs:411
+#: rnote-ui/src/appwindow/appwindowactions.rs:613
+#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/mod.rs:130
+#: rnote-ui/src/dialogs/mod.rs:260 rnote-ui/src/dialogs/mod.rs:411
 #, fuzzy
 #| msgid "Saving document failed."
 msgid "Saving document failed"
@@ -1849,11 +1807,11 @@ msgstr ""
 msgid "Button 4"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:736
+#: rnote-ui/src/appwindow/appwindowactions.rs:737
 msgid "Printing document failed"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:771
+#: rnote-ui/src/appwindow/appwindowactions.rs:772
 #, fuzzy
 msgid "Exporting selection failed, nothing selected"
 msgstr "Exportera val som SVG"
@@ -1889,17 +1847,17 @@ msgstr ""
 msgid "Opened file was moved or deleted on disk"
 msgstr ""
 
-#: rnote-ui/src/canvas/mod.rs:1005
+#: rnote-ui/src/canvas/mod.rs:1008
 #, fuzzy
 msgid "Inserting file failed"
 msgstr "Öppna fil"
 
-#: rnote-ui/src/canvas/mod.rs:1015
+#: rnote-ui/src/canvas/mod.rs:1018
 #, fuzzy
 msgid "Inserting text failed"
 msgstr "Exportera blad som SVG"
 
-#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:78
+#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:21
 #, fuzzy
 #| msgid ".rnote file"
 msgid ".rnote"
@@ -1998,48 +1956,47 @@ msgstr "Exportera markering"
 msgid "Exported engine config successfully"
 msgstr "Exportera val som SVG"
 
-#: rnote-ui/src/dialogs/import.rs:34
-#, fuzzy
-msgid "Opening file failed"
-msgstr "Öppna fil"
+#: rnote-ui/src/dialogs/import.rs:24
+msgid "Open File"
+msgstr "Öppna Fil"
 
-#: rnote-ui/src/dialogs/import.rs:114
+#: rnote-ui/src/dialogs/import.rs:59
 msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:236
+#: rnote-ui/src/dialogs/import.rs:183
 msgid "- no file name -"
 msgstr "- inget filnamn -"
 
-#: rnote-ui/src/dialogs/import.rs:241
+#: rnote-ui/src/dialogs/import.rs:188
 msgid "- no title -"
 msgstr "- ingen titel -"
 
-#: rnote-ui/src/dialogs/import.rs:244
+#: rnote-ui/src/dialogs/import.rs:191
 msgid "- no author -"
 msgstr "- ingen författare -"
 
-#: rnote-ui/src/dialogs/import.rs:248
+#: rnote-ui/src/dialogs/import.rs:195
 msgid "- no date -"
 msgstr "- inget datum -"
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:202
 msgid "File name:"
 msgstr "Filnamn:"
 
-#: rnote-ui/src/dialogs/import.rs:259
+#: rnote-ui/src/dialogs/import.rs:206
 msgid "Title:"
 msgstr "Titel:"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:210
 msgid "Author:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:214
 msgid "Modification date:"
 msgstr "Ändringsdatum:"
 
-#: rnote-ui/src/dialogs/import.rs:271
+#: rnote-ui/src/dialogs/import.rs:218
 msgid "Pages:"
 msgstr "Sidor:"
 
@@ -2449,6 +2406,33 @@ msgstr "Filnamn:"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr ""
+
+#, fuzzy
+#~ msgid ""
+#~ "Opening this file overwrites any unsaved changes. Do you want to save the "
+#~ "current document?"
+#~ msgstr "Om du öppnar denna fil skrivs osparade ändringar över"
+
+#, fuzzy
+#~ msgid "Opening .rnote file failed"
+#~ msgstr "Öppna fil"
+
+#, fuzzy
+#~ msgid "Opening vector image file failed"
+#~ msgstr "Öppna fil"
+
+#, fuzzy
+#~ msgid "Opening bitmap image file failed"
+#~ msgstr "Öppna fil"
+
+#, fuzzy
+#~ msgid "Opening Xournal++ file failed"
+#~ msgstr "Öppna fil"
+
+#, fuzzy
+#~| msgid "Opening PDF file failed."
+#~ msgid "Opening Pdf file failed"
+#~ msgstr "Det gick inte att öppna PDF-filen."
 
 #, fuzzy
 #~| msgid "Document background"

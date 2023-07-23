@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-04 13:51+0200\n"
+"POT-Creation-Date: 2023-07-09 12:56+0200\n"
 "PO-Revision-Date: 2023-03-13 09:11+0000\n"
 "Last-Translator: Reza Almanda <rezaalmanda27@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/rnote/repo/id/"
@@ -80,8 +80,8 @@ msgstr "Ini akan menghapus seluruh dokumen. Mohon konfirmasi."
 #: rnote-ui/data/ui/dialogs/dialogs.ui:40
 #: rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: rnote-ui/data/ui/dialogs/dialogs.ui:70 rnote-ui/data/ui/dialogs/import.ui:10
-#: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:223
-#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:211 rnote-ui/data/ui/dialogs/export.ui:10
+#: rnote-ui/data/ui/dialogs/export.ui:151
 #: rnote-ui/data/ui/dialogs/export.ui:378
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
@@ -105,14 +105,13 @@ msgstr ""
 "Apakah Anda ingin menyimpan dokumen saat ini?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
-#: rnote-ui/data/ui/dialogs/dialogs.ui:41 rnote-ui/data/ui/dialogs/import.ui:11
+#: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Discard"
 msgstr "Buang"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/data/ui/dialogs/import.ui:12
-#: rnote-ui/src/dialogs/export.rs:32
+#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/src/dialogs/export.rs:32
 msgid "Save"
 msgstr "Simpan"
 
@@ -205,100 +204,88 @@ msgstr "- tidak ada direktori yang dipilih -"
 msgid "Change the directory"
 msgstr "Ubah direktori"
 
-#: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:81
-msgid "Open File"
-msgstr "Buka File"
-
-#: rnote-ui/data/ui/dialogs/import.ui:6
-msgid ""
-"Opening this file overwrites any unsaved changes. Do you want to save the "
-"current document?"
-msgstr ""
-"Membuka file ini akan menimpa perubahan yang belum disimpan. Apakah Anda "
-"ingin menyimpan dokumen saat ini?"
-
-#: rnote-ui/data/ui/dialogs/import.ui:19
+#: rnote-ui/data/ui/dialogs/import.ui:7
 #, fuzzy
 #| msgid "Import PDF"
 msgid "Import Pdf"
 msgstr "Impor PDF"
 
-#: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
-#: rnote-ui/src/dialogs/import.rs:119
+#: rnote-ui/data/ui/dialogs/import.ui:15 rnote-ui/data/ui/dialogs/import.ui:216
+#: rnote-ui/src/dialogs/import.rs:64
 msgid "Import"
 msgstr "Impor"
 
-#: rnote-ui/data/ui/dialogs/import.ui:73
+#: rnote-ui/data/ui/dialogs/import.ui:61
 msgid "Info"
 msgstr "Info"
 
-#: rnote-ui/data/ui/dialogs/import.ui:91
+#: rnote-ui/data/ui/dialogs/import.ui:79
 #, fuzzy
 #| msgid "PDF Import Preferences"
 msgid "Pdf Import Preferences"
 msgstr "Preferensi Impor PDF"
 
-#: rnote-ui/data/ui/dialogs/import.ui:95
+#: rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start Page"
 msgstr "Halaman Awal"
 
-#: rnote-ui/data/ui/dialogs/import.ui:110
+#: rnote-ui/data/ui/dialogs/import.ui:98
 msgid "End Page"
 msgstr "Halaman Akhir"
 
-#: rnote-ui/data/ui/dialogs/import.ui:125
+#: rnote-ui/data/ui/dialogs/import.ui:113
 msgid "Page Width (%)"
 msgstr "Lebar Halaman (%)"
 
-#: rnote-ui/data/ui/dialogs/import.ui:126
+#: rnote-ui/data/ui/dialogs/import.ui:114
 #, fuzzy
 #| msgid "Set the width of imported PDF's in percentage to the format width"
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr "Atur lebar PDF yang diimpor dalam persentase terhadap lebar format"
 
-#: rnote-ui/data/ui/dialogs/import.ui:146
+#: rnote-ui/data/ui/dialogs/import.ui:134
 msgid "Page Spacing"
 msgstr "Spasi Halaman"
 
-#: rnote-ui/data/ui/dialogs/import.ui:147
+#: rnote-ui/data/ui/dialogs/import.ui:135
 #, fuzzy
 #| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
 msgstr "Bagaimana halaman PDF diberi spasi"
 
-#: rnote-ui/data/ui/dialogs/import.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:139
 msgid "Continuous"
 msgstr "Berkelanjutan"
 
-#: rnote-ui/data/ui/dialogs/import.ui:152
+#: rnote-ui/data/ui/dialogs/import.ui:140
 msgid "One per Document Page"
 msgstr "Satu per Halaman Dokumen"
 
-#: rnote-ui/data/ui/dialogs/import.ui:160
+#: rnote-ui/data/ui/dialogs/import.ui:148
 msgid "Pages Type"
 msgstr "Jenis Halaman"
 
-#: rnote-ui/data/ui/dialogs/import.ui:161
+#: rnote-ui/data/ui/dialogs/import.ui:149
 #, fuzzy
 #| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr "Atur apakah PDF harus diimpor sebagai gambar vektor atau bitmap"
 
-#: rnote-ui/data/ui/dialogs/import.ui:173
+#: rnote-ui/data/ui/dialogs/import.ui:161
 msgid "Vector"
 msgstr "Vektor"
 
-#: rnote-ui/data/ui/dialogs/import.ui:180
+#: rnote-ui/data/ui/dialogs/import.ui:168
 msgid "Bitmap"
 msgstr "Bitmap"
 
-#: rnote-ui/data/ui/dialogs/import.ui:189
+#: rnote-ui/data/ui/dialogs/import.ui:177
 #: rnote-ui/data/ui/dialogs/export.ui:323
 #: rnote-ui/data/ui/dialogs/export.ui:492
 msgid "Bitmap Scale-Factor"
 msgstr "Faktor Skala Bitmap"
 
-#: rnote-ui/data/ui/dialogs/import.ui:190
+#: rnote-ui/data/ui/dialogs/import.ui:178
 #: rnote-ui/data/ui/dialogs/export.ui:324
 #: rnote-ui/data/ui/dialogs/export.ui:493
 msgid ""
@@ -308,19 +295,19 @@ msgstr ""
 "Atur faktor skala bitmap dalam kaitannya\n"
 "dengan ukuran sebenarnya pada dokumen"
 
-#: rnote-ui/data/ui/dialogs/import.ui:220
+#: rnote-ui/data/ui/dialogs/import.ui:208
 msgid "Import Xournal++ File"
 msgstr "Impor File Xournal++"
 
-#: rnote-ui/data/ui/dialogs/import.ui:259
+#: rnote-ui/data/ui/dialogs/import.ui:247
 msgid "Xournal++ File Import Preferences"
 msgstr "Preferensi Impor File Xournal++"
 
-#: rnote-ui/data/ui/dialogs/import.ui:263
+#: rnote-ui/data/ui/dialogs/import.ui:251
 msgid "DPI"
 msgstr "DPI"
 
-#: rnote-ui/data/ui/dialogs/import.ui:264
+#: rnote-ui/data/ui/dialogs/import.ui:252
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
@@ -1087,7 +1074,7 @@ msgstr ""
 msgid "Fill Color"
 msgstr "Warna"
 
-#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:26
 msgid "Open"
 msgstr ""
 
@@ -1549,7 +1536,7 @@ msgstr "Dokumen belum tersimpan"
 msgid "Print Document"
 msgstr "Dokumen Baru"
 
-#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:117
+#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:62
 msgid "Import File"
 msgstr ""
 
@@ -1607,53 +1594,16 @@ msgstr ""
 msgid "Edit Selected Workspace"
 msgstr "Ubah ruang kerja"
 
-#: rnote-ui/src/appwindow/mod.rs:555
+#: rnote-ui/src/appwindow/mod.rs:539
 #, fuzzy
 #| msgid "Opening .rnote file failed."
-msgid "Opening .rnote file failed"
+msgid "Opening file failed"
 msgstr "Pembukaan berkas .rnote gagal."
-
-#: rnote-ui/src/appwindow/mod.rs:566
-#, fuzzy
-#| msgid "Opening vector image file failed."
-msgid "Opening vector image file failed"
-msgstr "Pembukaan berkas gambar vektor gagal."
-
-#: rnote-ui/src/appwindow/mod.rs:577
-#, fuzzy
-#| msgid "Opening bitmap image file failed."
-msgid "Opening bitmap image file failed"
-msgstr "Pembukaan berkas gambar bitmap gagal."
-
-#: rnote-ui/src/appwindow/mod.rs:588 rnote-ui/src/dialogs/import.rs:350
-#, fuzzy
-#| msgid "Opening .rnote file failed."
-msgid "Opening Xournal++ file failed"
-msgstr "Pembukaan berkas .rnote gagal."
-
-#: rnote-ui/src/appwindow/mod.rs:599 rnote-ui/src/dialogs/import.rs:301
-#, fuzzy
-#| msgid "Opening .rnote file failed."
-msgid "Opening Pdf file failed"
-msgstr "Pembukaan berkas .rnote gagal."
-
-#: rnote-ui/src/appwindow/mod.rs:608
-#, fuzzy
-#| msgid "Error: Tried opening folder as file"
-msgid "Failed to open file, tried to open folder as file"
-msgstr "Galat: Mencoba membuka folder sebagai berkas"
-
-#: rnote-ui/src/appwindow/mod.rs:613
-#, fuzzy
-#| msgid "Failed to open file: Unsupported file type."
-msgid "Failed to open file, unsupported file type"
-msgstr "Gagal membuka file: tipe file tidak didukung."
 
 #: rnote-ui/src/appwindow/imp.rs:282
-#: rnote-ui/src/appwindow/appwindowactions.rs:612
-#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/import.rs:52
-#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:260
-#: rnote-ui/src/dialogs/mod.rs:411
+#: rnote-ui/src/appwindow/appwindowactions.rs:613
+#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/mod.rs:130
+#: rnote-ui/src/dialogs/mod.rs:260 rnote-ui/src/dialogs/mod.rs:411
 #, fuzzy
 #| msgid "Printing document failed"
 msgid "Saving document failed"
@@ -1675,11 +1625,11 @@ msgstr ""
 msgid "Button 4"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:736
+#: rnote-ui/src/appwindow/appwindowactions.rs:737
 msgid "Printing document failed"
 msgstr "Pencetakan dokumen gagal"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:771
+#: rnote-ui/src/appwindow/appwindowactions.rs:772
 #, fuzzy
 #| msgid "Export selection failed, nothing selected."
 msgid "Exporting selection failed, nothing selected"
@@ -1722,19 +1672,19 @@ msgstr "File yang dibuka diganti nama pada disk"
 msgid "Opened file was moved or deleted on disk"
 msgstr "File yang terbuka dipindahkan atau dihapus pada disk."
 
-#: rnote-ui/src/canvas/mod.rs:1005
+#: rnote-ui/src/canvas/mod.rs:1008
 #, fuzzy
 #| msgid "Opening .rnote file failed."
 msgid "Inserting file failed"
 msgstr "Pembukaan berkas .rnote gagal."
 
-#: rnote-ui/src/canvas/mod.rs:1015
+#: rnote-ui/src/canvas/mod.rs:1018
 #, fuzzy
 #| msgid "Printing document failed"
 msgid "Inserting text failed"
 msgstr "Pencetakan dokumen gagal"
 
-#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:78
+#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:21
 msgid ".rnote"
 msgstr ""
 
@@ -1843,49 +1793,47 @@ msgstr "konfigurasi mesin expor gagal."
 msgid "Exported engine config successfully"
 msgstr "konfigurasi mesin expor gagal."
 
-#: rnote-ui/src/dialogs/import.rs:34
-#, fuzzy
-#| msgid "Opening .rnote file failed."
-msgid "Opening file failed"
-msgstr "Pembukaan berkas .rnote gagal."
+#: rnote-ui/src/dialogs/import.rs:24
+msgid "Open File"
+msgstr "Buka File"
 
-#: rnote-ui/src/dialogs/import.rs:114
+#: rnote-ui/src/dialogs/import.rs:59
 msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:236
+#: rnote-ui/src/dialogs/import.rs:183
 msgid "- no file name -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:241
+#: rnote-ui/src/dialogs/import.rs:188
 msgid "- no title -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:244
+#: rnote-ui/src/dialogs/import.rs:191
 msgid "- no author -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:248
+#: rnote-ui/src/dialogs/import.rs:195
 msgid "- no date -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:202
 msgid "File name:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:259
+#: rnote-ui/src/dialogs/import.rs:206
 msgid "Title:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:210
 msgid "Author:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:214
 msgid "Modification date:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:271
+#: rnote-ui/src/dialogs/import.rs:218
 msgid "Pages:"
 msgstr ""
 
@@ -2278,6 +2226,48 @@ msgstr "Nama folder"
 #| msgid "New folder"
 msgid "New Folder"
 msgstr "Folder Baru"
+
+#~ msgid ""
+#~ "Opening this file overwrites any unsaved changes. Do you want to save the "
+#~ "current document?"
+#~ msgstr ""
+#~ "Membuka file ini akan menimpa perubahan yang belum disimpan. Apakah Anda "
+#~ "ingin menyimpan dokumen saat ini?"
+
+#, fuzzy
+#~| msgid "Opening .rnote file failed."
+#~ msgid "Opening .rnote file failed"
+#~ msgstr "Pembukaan berkas .rnote gagal."
+
+#, fuzzy
+#~| msgid "Opening vector image file failed."
+#~ msgid "Opening vector image file failed"
+#~ msgstr "Pembukaan berkas gambar vektor gagal."
+
+#, fuzzy
+#~| msgid "Opening bitmap image file failed."
+#~ msgid "Opening bitmap image file failed"
+#~ msgstr "Pembukaan berkas gambar bitmap gagal."
+
+#, fuzzy
+#~| msgid "Opening .rnote file failed."
+#~ msgid "Opening Xournal++ file failed"
+#~ msgstr "Pembukaan berkas .rnote gagal."
+
+#, fuzzy
+#~| msgid "Opening .rnote file failed."
+#~ msgid "Opening Pdf file failed"
+#~ msgstr "Pembukaan berkas .rnote gagal."
+
+#, fuzzy
+#~| msgid "Error: Tried opening folder as file"
+#~ msgid "Failed to open file, tried to open folder as file"
+#~ msgstr "Galat: Mencoba membuka folder sebagai berkas"
+
+#, fuzzy
+#~| msgid "Failed to open file: Unsupported file type."
+#~ msgid "Failed to open file, unsupported file type"
+#~ msgstr "Gagal membuka file: tipe file tidak didukung."
 
 #~ msgid "Main window in light colors"
 #~ msgstr "Jendela utama dalam warna cerah"

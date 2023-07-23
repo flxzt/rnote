@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-04 13:51+0200\n"
+"POT-Creation-Date: 2023-07-09 12:56+0200\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -80,8 +80,8 @@ msgstr "การทำสิ่งนี้ จะล้างเอกสา�
 #: rnote-ui/data/ui/dialogs/dialogs.ui:40
 #: rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: rnote-ui/data/ui/dialogs/dialogs.ui:70 rnote-ui/data/ui/dialogs/import.ui:10
-#: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:223
-#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:211 rnote-ui/data/ui/dialogs/export.ui:10
+#: rnote-ui/data/ui/dialogs/export.ui:151
 #: rnote-ui/data/ui/dialogs/export.ui:378
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
@@ -105,14 +105,13 @@ msgstr ""
 "การสร้างเอกสารใหม่จะลบการเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมด คุณต้องการบันทึกเอกสารนี้หรือไม่?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
-#: rnote-ui/data/ui/dialogs/dialogs.ui:41 rnote-ui/data/ui/dialogs/import.ui:11
+#: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Discard"
 msgstr "ทิ้ง"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/data/ui/dialogs/import.ui:12
-#: rnote-ui/src/dialogs/export.rs:32
+#: rnote-ui/data/ui/dialogs/dialogs.ui:60 rnote-ui/src/dialogs/export.rs:32
 msgid "Save"
 msgstr "บันทึก"
 
@@ -207,108 +206,97 @@ msgstr "- ไม่มีไดเรกทอรีที่เลือกไ�
 msgid "Change the directory"
 msgstr "เปลี่ยนไดเรกทอรีของพื้นที่ทำงานนี้"
 
-#: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:81
-msgid "Open File"
-msgstr "เปิดไฟล์"
-
-#: rnote-ui/data/ui/dialogs/import.ui:6
-msgid ""
-"Opening this file overwrites any unsaved changes. Do you want to save the "
-"current document?"
-msgstr ""
-"การเปิดไฟล์นี้ จะเขียนทับการเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมด คุณต้องการบันทึกเอกสารนี้หรือไม่?"
-
-#: rnote-ui/data/ui/dialogs/import.ui:19
+#: rnote-ui/data/ui/dialogs/import.ui:7
 #, fuzzy
 #| msgid "Import PDF"
 msgid "Import Pdf"
 msgstr "นำเข้า PDF"
 
-#: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
-#: rnote-ui/src/dialogs/import.rs:119
+#: rnote-ui/data/ui/dialogs/import.ui:15 rnote-ui/data/ui/dialogs/import.ui:216
+#: rnote-ui/src/dialogs/import.rs:64
 msgid "Import"
 msgstr "นำเข้า"
 
-#: rnote-ui/data/ui/dialogs/import.ui:73
+#: rnote-ui/data/ui/dialogs/import.ui:61
 msgid "Info"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/import.ui:91
+#: rnote-ui/data/ui/dialogs/import.ui:79
 #, fuzzy
 #| msgid "PDF import preferences"
 msgid "Pdf Import Preferences"
 msgstr "ตั้งค่าการนำเข้า PDF"
 
-#: rnote-ui/data/ui/dialogs/import.ui:95
+#: rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start Page"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/import.ui:110
+#: rnote-ui/data/ui/dialogs/import.ui:98
 #, fuzzy
 msgid "End Page"
 msgstr "เพิ่มหน้าใหม่"
 
-#: rnote-ui/data/ui/dialogs/import.ui:125
+#: rnote-ui/data/ui/dialogs/import.ui:113
 #, fuzzy
 #| msgid "Page width (%)"
 msgid "Page Width (%)"
 msgstr "ความกว้างหน้ากระดาษ (%)"
 
-#: rnote-ui/data/ui/dialogs/import.ui:126
+#: rnote-ui/data/ui/dialogs/import.ui:114
 #, fuzzy
 #| msgid "Set the width of imported PDF's in percentage to the format width"
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr "ตั้งความกว้างของไฟล์ PDF ที่นำเข้ามา เป็นเปอร์เซ็นต์อิงจากความกว้างของหน้ากระดาษ"
 
-#: rnote-ui/data/ui/dialogs/import.ui:146
+#: rnote-ui/data/ui/dialogs/import.ui:134
 #, fuzzy
 #| msgid "Page spacing"
 msgid "Page Spacing"
 msgstr "ระยะห่างหน้ากระดาษ"
 
-#: rnote-ui/data/ui/dialogs/import.ui:147
+#: rnote-ui/data/ui/dialogs/import.ui:135
 #, fuzzy
 #| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
 msgstr "การเว้นระยะห่างหน้ากระดาษของไฟล์ PDF"
 
-#: rnote-ui/data/ui/dialogs/import.ui:151
+#: rnote-ui/data/ui/dialogs/import.ui:139
 msgid "Continuous"
 msgstr "แบบต่อเนื่อง"
 
-#: rnote-ui/data/ui/dialogs/import.ui:152
+#: rnote-ui/data/ui/dialogs/import.ui:140
 #, fuzzy
 #| msgid "One per document page"
 msgid "One per Document Page"
 msgstr "หน้าต่อหน้า"
 
-#: rnote-ui/data/ui/dialogs/import.ui:160
+#: rnote-ui/data/ui/dialogs/import.ui:148
 #, fuzzy
 #| msgid "Pages type"
 msgid "Pages Type"
 msgstr "ประเภทของหน้ากระดาษ"
 
-#: rnote-ui/data/ui/dialogs/import.ui:161
+#: rnote-ui/data/ui/dialogs/import.ui:149
 #, fuzzy
 #| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr "ตั้งเพื่อกำหนดว่าจะนำเข้าไฟล์ PDF เป็นรูปแบบเวกเตอร์หรือบิตแมพ"
 
-#: rnote-ui/data/ui/dialogs/import.ui:173
+#: rnote-ui/data/ui/dialogs/import.ui:161
 msgid "Vector"
 msgstr "เวกเตอร์"
 
-#: rnote-ui/data/ui/dialogs/import.ui:180
+#: rnote-ui/data/ui/dialogs/import.ui:168
 msgid "Bitmap"
 msgstr "บิตแมพ"
 
-#: rnote-ui/data/ui/dialogs/import.ui:189
+#: rnote-ui/data/ui/dialogs/import.ui:177
 #: rnote-ui/data/ui/dialogs/export.ui:323
 #: rnote-ui/data/ui/dialogs/export.ui:492
 msgid "Bitmap Scale-Factor"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/import.ui:190
+#: rnote-ui/data/ui/dialogs/import.ui:178
 #: rnote-ui/data/ui/dialogs/export.ui:324
 #: rnote-ui/data/ui/dialogs/export.ui:493
 msgid ""
@@ -316,23 +304,23 @@ msgid ""
 "to the actual size on the document"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/import.ui:220
+#: rnote-ui/data/ui/dialogs/import.ui:208
 #, fuzzy
 #| msgid "Import file"
 msgid "Import Xournal++ File"
 msgstr "นำเข้าไฟล์"
 
-#: rnote-ui/data/ui/dialogs/import.ui:259
+#: rnote-ui/data/ui/dialogs/import.ui:247
 #, fuzzy
 #| msgid "PDF import preferences"
 msgid "Xournal++ File Import Preferences"
 msgstr "ตั้งค่าการนำเข้า PDF"
 
-#: rnote-ui/data/ui/dialogs/import.ui:263
+#: rnote-ui/data/ui/dialogs/import.ui:251
 msgid "DPI"
 msgstr "DPI"
 
-#: rnote-ui/data/ui/dialogs/import.ui:264
+#: rnote-ui/data/ui/dialogs/import.ui:252
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
@@ -1264,7 +1252,7 @@ msgstr "รัศมีของจุดต่าง ๆ บนเส้น"
 msgid "Fill Color"
 msgstr "รูปแบบเส้นทึบ"
 
-#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/data/ui/filerow.ui:61 rnote-ui/src/dialogs/import.rs:26
 msgid "Open"
 msgstr "เปิด"
 
@@ -1790,7 +1778,7 @@ msgstr "บันทึกเอกสารที่"
 msgid "Print Document"
 msgstr "พิมพ์เอกสาร"
 
-#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:117
+#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:62
 #, fuzzy
 #| msgid "Import file"
 msgid "Import File"
@@ -1870,53 +1858,16 @@ msgstr "ลบพื้นที่ทำงาน"
 msgid "Edit Selected Workspace"
 msgstr "แก้ไขพื้นที่ทำงาน"
 
-#: rnote-ui/src/appwindow/mod.rs:555
+#: rnote-ui/src/appwindow/mod.rs:539
 #, fuzzy
-#| msgid "Opening .rnote file failed."
-msgid "Opening .rnote file failed"
-msgstr "การเปิดไฟล์ .rnote ล้มเหลว"
-
-#: rnote-ui/src/appwindow/mod.rs:566
-#, fuzzy
-#| msgid "Opening vector image file failed."
-msgid "Opening vector image file failed"
-msgstr "การเปิดไฟล์ภาพเวกเตอร์ล้มเหลว"
-
-#: rnote-ui/src/appwindow/mod.rs:577
-#, fuzzy
-#| msgid "Opening bitmap image file failed."
-msgid "Opening bitmap image file failed"
-msgstr "การเปิดไฟล์ภาพบิตแมพล้มเหลว"
-
-#: rnote-ui/src/appwindow/mod.rs:588 rnote-ui/src/dialogs/import.rs:350
-#, fuzzy
-#| msgid "Opening .xopp file failed."
-msgid "Opening Xournal++ file failed"
-msgstr "การเปิดไฟล์ .xopp ล้มเหลว"
-
-#: rnote-ui/src/appwindow/mod.rs:599 rnote-ui/src/dialogs/import.rs:301
-#, fuzzy
-#| msgid "Opening PDF file failed."
-msgid "Opening Pdf file failed"
-msgstr "การเปิดไฟล์ PDF ล้มเหลว"
-
-#: rnote-ui/src/appwindow/mod.rs:608
-#, fuzzy
-#| msgid "Error: Tried opening folder as file"
-msgid "Failed to open file, tried to open folder as file"
-msgstr "ข้อผิดพลาด: คุณพยายามเปิดโฟลเดอร์เป็นไฟล์"
-
-#: rnote-ui/src/appwindow/mod.rs:613
-#, fuzzy
-#| msgid "Failed to open file: Unsupported file type."
-msgid "Failed to open file, unsupported file type"
-msgstr "การเปิดไฟล์ล้มเหลว, ไม่รองรับประเภทไฟล์ที่เปิด"
+#| msgid "Opening file failed."
+msgid "Opening file failed"
+msgstr "การเปิดไฟล์ล้มเหลว"
 
 #: rnote-ui/src/appwindow/imp.rs:282
-#: rnote-ui/src/appwindow/appwindowactions.rs:612
-#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/import.rs:52
-#: rnote-ui/src/dialogs/mod.rs:130 rnote-ui/src/dialogs/mod.rs:260
-#: rnote-ui/src/dialogs/mod.rs:411
+#: rnote-ui/src/appwindow/appwindowactions.rs:613
+#: rnote-ui/src/dialogs/export.rs:68 rnote-ui/src/dialogs/mod.rs:130
+#: rnote-ui/src/dialogs/mod.rs:260 rnote-ui/src/dialogs/mod.rs:411
 #, fuzzy
 #| msgid "Saving document failed."
 msgid "Saving document failed"
@@ -1938,11 +1889,11 @@ msgstr ""
 msgid "Button 4"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:736
+#: rnote-ui/src/appwindow/appwindowactions.rs:737
 msgid "Printing document failed"
 msgstr "การพิมพ์เอกสารล้มเหลว"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:771
+#: rnote-ui/src/appwindow/appwindowactions.rs:772
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Exporting selection failed, nothing selected"
@@ -1981,19 +1932,19 @@ msgstr ""
 msgid "Opened file was moved or deleted on disk"
 msgstr ""
 
-#: rnote-ui/src/canvas/mod.rs:1005
+#: rnote-ui/src/canvas/mod.rs:1008
 #, fuzzy
 #| msgid "Opening file failed."
 msgid "Inserting file failed"
 msgstr "การเปิดไฟล์ล้มเหลว"
 
-#: rnote-ui/src/canvas/mod.rs:1015
+#: rnote-ui/src/canvas/mod.rs:1018
 #, fuzzy
 #| msgid "Printing document failed"
 msgid "Inserting text failed"
 msgstr "การพิมพ์เอกสารล้มเหลว"
 
-#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:78
+#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/import.rs:21
 #, fuzzy
 #| msgid ".rnote file"
 msgid ".rnote"
@@ -2104,49 +2055,47 @@ msgstr "ส่งออกการตั้งค่าเอนจินล้
 msgid "Exported engine config successfully"
 msgstr "ส่งออกการตั้งค่าเอนจินสำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs/import.rs:34
-#, fuzzy
-#| msgid "Opening file failed."
-msgid "Opening file failed"
-msgstr "การเปิดไฟล์ล้มเหลว"
+#: rnote-ui/src/dialogs/import.rs:24
+msgid "Open File"
+msgstr "เปิดไฟล์"
 
-#: rnote-ui/src/dialogs/import.rs:114
+#: rnote-ui/src/dialogs/import.rs:59
 msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:236
+#: rnote-ui/src/dialogs/import.rs:183
 msgid "- no file name -"
 msgstr "- ไม่มีชื่อไฟล์ -"
 
-#: rnote-ui/src/dialogs/import.rs:241
+#: rnote-ui/src/dialogs/import.rs:188
 msgid "- no title -"
 msgstr "- ไม่มีชื่อเรื่อง -"
 
-#: rnote-ui/src/dialogs/import.rs:244
+#: rnote-ui/src/dialogs/import.rs:191
 msgid "- no author -"
 msgstr "- ไม่มีผู้เขียน -"
 
-#: rnote-ui/src/dialogs/import.rs:248
+#: rnote-ui/src/dialogs/import.rs:195
 msgid "- no date -"
 msgstr "- ไม่มีวันที่ -"
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:202
 msgid "File name:"
 msgstr "ชื่อไฟล์:"
 
-#: rnote-ui/src/dialogs/import.rs:259
+#: rnote-ui/src/dialogs/import.rs:206
 msgid "Title:"
 msgstr "ชื่อเรื่อง:"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:210
 msgid "Author:"
 msgstr "ผู้เขียน:"
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:214
 msgid "Modification date:"
 msgstr "วันที่แก้ไข:"
 
-#: rnote-ui/src/dialogs/import.rs:271
+#: rnote-ui/src/dialogs/import.rs:218
 msgid "Pages:"
 msgstr "จำนวนหน้า:"
 
@@ -2557,6 +2506,47 @@ msgstr "ชื่อไฟล์:"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr ""
+
+#~ msgid ""
+#~ "Opening this file overwrites any unsaved changes. Do you want to save the "
+#~ "current document?"
+#~ msgstr ""
+#~ "การเปิดไฟล์นี้ จะเขียนทับการเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมด คุณต้องการบันทึกเอกสารนี้หรือไม่?"
+
+#, fuzzy
+#~| msgid "Opening .rnote file failed."
+#~ msgid "Opening .rnote file failed"
+#~ msgstr "การเปิดไฟล์ .rnote ล้มเหลว"
+
+#, fuzzy
+#~| msgid "Opening vector image file failed."
+#~ msgid "Opening vector image file failed"
+#~ msgstr "การเปิดไฟล์ภาพเวกเตอร์ล้มเหลว"
+
+#, fuzzy
+#~| msgid "Opening bitmap image file failed."
+#~ msgid "Opening bitmap image file failed"
+#~ msgstr "การเปิดไฟล์ภาพบิตแมพล้มเหลว"
+
+#, fuzzy
+#~| msgid "Opening .xopp file failed."
+#~ msgid "Opening Xournal++ file failed"
+#~ msgstr "การเปิดไฟล์ .xopp ล้มเหลว"
+
+#, fuzzy
+#~| msgid "Opening PDF file failed."
+#~ msgid "Opening Pdf file failed"
+#~ msgstr "การเปิดไฟล์ PDF ล้มเหลว"
+
+#, fuzzy
+#~| msgid "Error: Tried opening folder as file"
+#~ msgid "Failed to open file, tried to open folder as file"
+#~ msgstr "ข้อผิดพลาด: คุณพยายามเปิดโฟลเดอร์เป็นไฟล์"
+
+#, fuzzy
+#~| msgid "Failed to open file: Unsupported file type."
+#~ msgid "Failed to open file, unsupported file type"
+#~ msgstr "การเปิดไฟล์ล้มเหลว, ไม่รองรับประเภทไฟล์ที่เปิด"
 
 #, fuzzy
 #~| msgid "Document background"

@@ -131,6 +131,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             xopp_dpi,
         } => {
             validators::file_has_ext(&rnote_file, "rnote")?;
+            // xopp files dont require file extensions
             validators::path_is_file(&input_file)?;
             println!("Importing..");
 

@@ -29,7 +29,7 @@ pub(crate) enum ExportCommands {
     /// Export entire document
     Doc {
         /// the export output file. Only allows for one input file. Exclusive with output-format.
-        #[arg(short = 'o', long, conflicts_with("output_file"), required(true))]
+        #[arg(short = 'o', long, conflicts_with("output_format"), required(true))]
         output_file: Option<PathBuf>,
         /// the export output format. Exclusive with output-file.
         #[arg(short = 'f', long, conflicts_with("output_file"), required(true))]
@@ -62,7 +62,7 @@ pub(crate) enum ExportCommands {
     /// Export selection
     Selection {
         /// the export output file. Only allows for one input file. Exclusive with output-format.
-        #[arg(short = 'o', long, conflicts_with("output_file"), required(true))]
+        #[arg(short = 'o', long, conflicts_with("output_format"), required(true))]
         output_file: Option<PathBuf>,
         /// the export output format. Exclusive with output-file.
         #[arg(short = 'f', long, conflicts_with("output_file"), required(true))]

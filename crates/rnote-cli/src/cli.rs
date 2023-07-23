@@ -7,7 +7,7 @@ use smol::io::{AsyncReadExt, AsyncWriteExt};
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-///    rnote_cli  Copyright (C) 2023  The Rnote Authors{n}{n}
+///    rnote-cli  Copyright (C) 2023  The Rnote Authors{n}{n}
 ///    This program is free software; you can redistribute it and/or modify it under the terms of the GPL v3 or (at your option) any later version.
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]

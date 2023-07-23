@@ -7,6 +7,7 @@ use std::path::PathBuf;
 use std::time::Duration;
 
 use crate::export::{run_export, ExportCommands};
+use crate::validators;
 
 ///    rnote-cli  Copyright (C) 2023  The Rnote Authors{n}{n}
 ///    This program is free software; you can redistribute it and/or modify it under the terms of the GPL v3 or (at your option) any later version.
@@ -98,6 +99,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             println!("Testing..");
 
             for rnote_file in rnote_files.into_iter() {
+                validators::file_has_ext(&rnote_file, "rnote")?;
                 let file_disp = rnote_file.display().to_string();
                 let pb = indicatif::ProgressBar::new_spinner();
                 pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
@@ -128,6 +130,8 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             input_file,
             xopp_dpi,
         } => {
+            validators::file_has_ext(&rnote_file, "rnote")?;
+            validators::path_is_file(&input_file)?;
             println!("Importing..");
 
             // apply given arguments to import prefs

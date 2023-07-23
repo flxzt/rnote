@@ -41,7 +41,7 @@ pub(crate) enum ExportCommands {
     /// Export pages of document individually
     DocPages {
         /// the folder the pages get exported to
-        #[arg(short = 'o', long, value_parser = validators::path_is_dir)]
+        #[arg(short = 'o', long)]
         output_dir: PathBuf,
         /// the folder the pages get exported to
         #[arg(short = 's', long)]
@@ -156,6 +156,9 @@ pub(crate) async fn run_export(
     without_pattern: bool,
     on_conflict: OnConflict,
 ) -> anyhow::Result<()> {
+    if rnote_files.is_empty() {
+        return Err(anyhow::anyhow!("No rnote files to export!"));
+    }
     let output_file: Option<PathBuf>;
     // apply given arguments to export prefs
     match &export_commands {
@@ -214,6 +217,7 @@ pub(crate) async fn run_export(
         Some(ref output_file) => {
             match rnote_files.get(0) {
                 Some(rnote_file) => {
+                    validators::file_has_ext(rnote_file, "rnote")?;
                     let new_path = check_file_conflict(output_file, &on_conflict)?;
                     // Replace output file if suffix added
                     let output_file = new_path.as_ref().unwrap_or(output_file);
@@ -288,6 +292,7 @@ pub(crate) async fn run_export(
                 .collect::<Vec<PathBuf>>();
 
             for (rnote_file, output_file) in rnote_files.iter().zip(output_files.iter()) {
+                validators::file_has_ext(rnote_file, "rnote")?;
                 let new_path = match check_file_conflict(output_file, &on_conflict) {
                     Ok(r) => r,
                     Err(e) => {
@@ -601,7 +606,8 @@ pub(crate) async fn export_to_file(
             output_format,
             ..
         } => {
-            // The output file cannnot be set here
+            validators::path_is_dir(output_dir)?;
+            // The output file cannnot be set with this subcommand
             drop(output_file);
             let rnote_file = rnote_file.as_ref();
             let export_bytes = engine.export_doc_pages(None).await??;

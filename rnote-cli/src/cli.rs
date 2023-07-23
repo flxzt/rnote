@@ -47,10 +47,8 @@ pub(crate) enum Commands {
     /// rnote-cli export --output-file [filename.(svg|xopp|pdf)] [1 file]{n}
     /// rnote-cli export --output-format [svg|xopp|pdf] [list of files]
     Export {
-        /// the export output file. Only allows for one input file. Exclusive with output-format.
-        #[arg(short = 'o', long, global = true)]
-        output_file: Option<PathBuf>,
         /// the rnote save file
+        #[arg(global = true)]
         rnote_files: Vec<PathBuf>,
         /// What to do if exported files already exits
         #[arg(short = 'e', long, default_value = "ask", global = true)]
@@ -168,7 +166,6 @@ pub(crate) async fn run() -> anyhow::Result<()> {
         }
         Commands::Export {
             rnote_files,
-            output_file,
             without_background,
             without_pattern,
             on_conflict,
@@ -179,7 +176,6 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                 export_command,
                 &mut engine,
                 rnote_files,
-                output_file,
                 without_background,
                 without_pattern,
                 on_conflict,

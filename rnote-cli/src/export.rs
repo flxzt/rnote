@@ -8,7 +8,10 @@ use clap::{ArgAction, Subcommand, ValueEnum};
 use rnote_compose::helpers::SplitOrder;
 use rnote_engine::{
     engine::{
-        export::{DocExportFormat, DocExportPrefs, SelectionExportFormat, SelectionExportPrefs},
+        export::{
+            DocExportFormat, DocExportPrefs, DocPagesExportFormat, DocPagesExportPrefs,
+            SelectionExportFormat, SelectionExportPrefs,
+        },
         EngineSnapshot,
     },
     RnoteEngine,
@@ -19,23 +22,15 @@ use smol::{
 };
 
 use crate::cli::OnConflict;
+use crate::validators;
 
-#[derive(Subcommand, Clone)]
+#[derive(Subcommand, Clone, Debug)]
 pub(crate) enum ExportCommands {
+    /// Export entire document
     Doc {
-        /// the export output format. Exclusive with output-file.
-        #[arg(
-            short = 'f',
-            long,
-            conflicts_with("output_file"),
-            required_unless_present("output_file")
-        )]
-        output_format: Option<DocOutputFormat>,
-        /// if pagaes are exported horizontal or vertical first
-        #[arg(short = 'P', long)]
-        page_order: Option<PageOrder>,
-    },
-    DocPages {
+        /// the export output file. Only allows for one input file. Exclusive with output-format.
+        #[arg(short = 'o', long, conflicts_with("output_file"), required(true))]
+        output_file: Option<PathBuf>,
         /// the export output format. Exclusive with output-file.
         #[arg(short = 'f', long, conflicts_with("output_file"), required(true))]
         output_format: Option<DocOutputFormat>,
@@ -43,7 +38,32 @@ pub(crate) enum ExportCommands {
         #[arg(short = 'P', long)]
         page_order: Option<PageOrder>,
     },
+    /// Export pages of document individually
+    DocPages {
+        /// the folder the pages get exported to
+        #[arg(short = 'o', long, value_parser = validators::path_is_dir)]
+        output_dir: PathBuf,
+        /// the folder the pages get exported to
+        #[arg(short = 's', long)]
+        output_file_stem: Option<String>,
+        /// the export output format. Exclusive with output-file.
+        #[arg(short = 'f', long)]
+        output_format: DocPagesOutputFormat,
+        /// if pagaes are exported horizontal or vertical first
+        #[arg(short = 'P', long)]
+        page_order: Option<PageOrder>,
+        /// bitmap scale factor in relation to the actual size on the document
+        #[arg(long)]
+        bitmap_scalefactor: Option<f64>,
+        /// quality of the jpeg image
+        #[arg(long)]
+        jpeg_quality: Option<u8>,
+    },
+    /// Export selection
     Selection {
+        /// the export output file. Only allows for one input file. Exclusive with output-format.
+        #[arg(short = 'o', long, conflicts_with("output_file"), required(true))]
+        output_file: Option<PathBuf>,
         /// the export output format. Exclusive with output-file.
         #[arg(short = 'f', long, conflicts_with("output_file"), required(true))]
         output_format: Option<SelectionOutputFormat>,
@@ -69,8 +89,8 @@ pub(crate) enum DocOutputFormat {
     Svg,
 }
 
-impl From<DocOutputFormat> for DocExportFormat {
-    fn from(val: DocOutputFormat) -> Self {
+impl From<&DocOutputFormat> for DocExportFormat {
+    fn from(val: &DocOutputFormat) -> Self {
         match val {
             DocOutputFormat::Pdf => DocExportFormat::Pdf,
             DocOutputFormat::Xopp => DocExportFormat::Xopp,
@@ -86,12 +106,29 @@ pub(crate) enum SelectionOutputFormat {
     Jpeg,
 }
 
-impl From<SelectionOutputFormat> for SelectionExportFormat {
-    fn from(val: SelectionOutputFormat) -> Self {
+impl From<&SelectionOutputFormat> for SelectionExportFormat {
+    fn from(val: &SelectionOutputFormat) -> Self {
         match val {
             SelectionOutputFormat::Svg => SelectionExportFormat::Svg,
             SelectionOutputFormat::Png => SelectionExportFormat::Png,
             SelectionOutputFormat::Jpeg => SelectionExportFormat::Jpeg,
+        }
+    }
+}
+
+#[derive(ValueEnum, Clone, Debug)]
+pub(crate) enum DocPagesOutputFormat {
+    Svg,
+    Png,
+    Jpeg,
+}
+
+impl From<&DocPagesOutputFormat> for DocPagesExportFormat {
+    fn from(val: &DocPagesOutputFormat) -> Self {
+        match val {
+            DocPagesOutputFormat::Svg => DocPagesExportFormat::Svg,
+            DocPagesOutputFormat::Png => DocPagesExportFormat::Png,
+            DocPagesOutputFormat::Jpeg => DocPagesExportFormat::Jpeg,
         }
     }
 }
@@ -102,8 +139,8 @@ pub(crate) enum PageOrder {
     Vertical,
 }
 
-impl From<PageOrder> for SplitOrder {
-    fn from(val: PageOrder) -> Self {
+impl From<&PageOrder> for SplitOrder {
+    fn from(val: &PageOrder) -> Self {
         match val {
             PageOrder::Horizontal => SplitOrder::RowMajor,
             PageOrder::Vertical => SplitOrder::ColumnMajor,
@@ -111,42 +148,60 @@ impl From<PageOrder> for SplitOrder {
     }
 }
 
-#[allow(clippy::too_many_arguments)]
 pub(crate) async fn run_export(
     export_commands: ExportCommands,
     engine: &mut RnoteEngine,
     rnote_files: Vec<PathBuf>,
-    output_file: Option<PathBuf>,
     without_background: bool,
     without_pattern: bool,
     on_conflict: OnConflict,
 ) -> anyhow::Result<()> {
-    // let mut select_all: bool = false;
+    let output_file: Option<PathBuf>;
     // apply given arguments to export prefs
     match &export_commands {
         ExportCommands::Doc {
+            output_file: out_file,
             page_order,
             output_format,
         } => {
+            output_file = out_file.clone();
             engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
                 output_file.as_deref(),
-                output_format.clone(),
+                output_format.as_ref(),
                 without_background,
                 without_pattern,
-                page_order.clone(),
+                page_order.as_ref(),
             )?
         }
-        ExportCommands::DocPages { .. } => (),
+        ExportCommands::DocPages {
+            output_format,
+            page_order,
+            bitmap_scalefactor,
+            jpeg_quality,
+            ..
+        } => {
+            engine.export_prefs.doc_pages_export_prefs = create_doc_pages_export_prefs_from_args(
+                output_format,
+                page_order.as_ref(),
+                without_background,
+                without_pattern,
+                *bitmap_scalefactor,
+                *jpeg_quality,
+            )?;
+            output_file = None
+        }
         ExportCommands::Selection {
+            output_file: out_file,
             bitmap_scalefactor,
             jpeg_quality,
             margin,
             output_format,
             ..
         } => {
+            output_file = out_file.clone();
             engine.export_prefs.selection_export_prefs = create_selection_export_prefs_from_args(
                 output_file.as_deref(),
-                output_format.clone(),
+                output_format.as_ref(),
                 without_background,
                 without_pattern,
                 *bitmap_scalefactor,
@@ -176,8 +231,14 @@ pub(crate) async fn run_export(
                     pb.enable_steady_tick(Duration::from_millis(8));
 
                     // export
-                    if let Err(e) =
-                        export_to_file(engine, rnote_file, output_file, &export_commands).await
+                    if let Err(e) = export_to_file(
+                        engine,
+                        rnote_file,
+                        output_file,
+                        &export_commands,
+                        &on_conflict,
+                    )
+                    .await
                     {
                         let msg = format!("Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}");
                         if pb.is_hidden() {
@@ -200,17 +261,28 @@ pub(crate) async fn run_export(
         }
 
         None => {
+            let doc_pages = matches!(export_commands, ExportCommands::DocPages { .. });
             let output_files = rnote_files
                 .iter()
                 .map(|file| {
                     let mut output = file.clone();
-                    output.set_extension(
-                        engine
+                    output.set_extension(match &export_commands {
+                        ExportCommands::Doc { .. } => engine
                             .export_prefs
                             .doc_export_prefs
                             .export_format
                             .file_ext(),
-                    );
+                        ExportCommands::DocPages { .. } => engine
+                            .export_prefs
+                            .doc_pages_export_prefs
+                            .export_format
+                            .file_ext(),
+                        ExportCommands::Selection { .. } => engine
+                            .export_prefs
+                            .selection_export_prefs
+                            .export_format
+                            .file_ext(),
+                    });
                     output
                 })
                 .collect::<Vec<PathBuf>>();
@@ -229,14 +301,21 @@ pub(crate) async fn run_export(
                 let output_file_disp = output_file.display().to_string();
                 let pb = indicatif::ProgressBar::new_spinner();
                 pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
-                pb.set_message(format!(
-                    "Exporting \"{rnote_file_disp}\" to: \"{output_file_disp}\""
-                ));
                 pb.enable_steady_tick(Duration::from_millis(8));
+                pb.set_message(match doc_pages {
+                    true => format!("Exporting \"{rnote_file_disp}\""),
+                    false => format!("Exporting \"{rnote_file_disp}\" to: \"{output_file_disp}\""),
+                });
 
                 // export
-                if let Err(e) =
-                    export_to_file(engine, &rnote_file, output_file, &export_commands).await
+                if let Err(e) = export_to_file(
+                    engine,
+                    &rnote_file,
+                    output_file,
+                    &export_commands,
+                    &on_conflict,
+                )
+                .await
                 {
                     let msg = format!(
                         "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}"
@@ -247,9 +326,12 @@ pub(crate) async fn run_export(
                     pb.abandon_with_message(msg);
                     return Err(e);
                 } else {
-                    let msg = format!(
-                        "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" succeeded"
-                    );
+                    let msg = match doc_pages {
+                        false => format!(
+                            "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" succeeded"
+                        ),
+                        true => format!("Export \"{rnote_file_disp}\" succeeded"),
+                    };
                     if pb.is_hidden() {
                         println!("{msg}")
                     }
@@ -265,10 +347,10 @@ pub(crate) async fn run_export(
 
 pub(crate) fn create_doc_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
-    output_format: Option<DocOutputFormat>,
+    output_format: Option<&DocOutputFormat>,
     without_background: bool,
     without_pattern: bool,
-    page_order: Option<PageOrder>,
+    page_order: Option<&PageOrder>,
 ) -> anyhow::Result<DocExportPrefs> {
     let format = match (output_file, output_format) {
         (Some(file), None) => match file.as_ref().extension().and_then(|ext| ext.to_str()) {
@@ -319,7 +401,7 @@ fn get_doc_export_format(format: &str) -> anyhow::Result<DocExportFormat> {
 }
 pub(crate) fn create_selection_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
-    output_format: Option<SelectionOutputFormat>,
+    output_format: Option<&SelectionOutputFormat>,
     without_background: bool,
     without_pattern: bool,
     bitmap_scalefactor: Option<f64>,
@@ -379,6 +461,34 @@ fn get_selection_export_format(format: &str) -> anyhow::Result<SelectionExportFo
             "Could not create selection export prefs, unsupported export file extension `{ext}`"
         )),
     }
+}
+
+pub(crate) fn create_doc_pages_export_prefs_from_args(
+    output_format: &DocPagesOutputFormat,
+    page_order: Option<&PageOrder>,
+    without_background: bool,
+    without_pattern: bool,
+    bitmap_scalefactor: Option<f64>,
+    jpeg_quality: Option<u8>,
+) -> anyhow::Result<DocPagesExportPrefs> {
+    let mut prefs = DocPagesExportPrefs {
+        export_format: output_format.into(),
+        with_background: !without_background,
+        with_pattern: !without_pattern,
+        ..Default::default()
+    };
+
+    if let Some(page_order) = page_order {
+        prefs.page_order = page_order.into();
+    }
+    if let Some(bitmap_scalefactor) = bitmap_scalefactor {
+        prefs.bitmap_scalefactor = bitmap_scalefactor.clamp(0.1, 10.0);
+    }
+    if let Some(jpeg_quality) = jpeg_quality {
+        prefs.jpeg_quality = jpeg_quality.clamp(1, 100);
+    }
+
+    Ok(prefs)
 }
 
 pub(crate) fn check_file_conflict(
@@ -444,22 +554,23 @@ pub(crate) async fn export_to_file(
     rnote_file: impl AsRef<Path>,
     output_file: impl AsRef<Path>,
     export_commands: &ExportCommands,
+    on_conflict: &OnConflict,
 ) -> anyhow::Result<()> {
-    let Some(export_file_name) = output_file.as_ref().file_name().map(|s| s.to_string_lossy().to_string()) else {
-        return Err(anyhow::anyhow!("Failed to get filename from output_file"));
-    };
-
-    let mut rnote_bytes = vec![];
-    File::open(rnote_file)
-        .await?
-        .read_to_end(&mut rnote_bytes)
-        .await?;
-
-    let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(rnote_bytes).await?;
-    let _ = engine.load_snapshot(engine_snapshot);
-
     match export_commands {
         ExportCommands::Doc { .. } | ExportCommands::Selection { .. } => {
+            let Some(export_file_name) = output_file.as_ref().file_name().map(|s| s.to_string_lossy().to_string()) else {
+                return Err(anyhow::anyhow!("Failed to get filename from output_file"));
+            };
+
+            let mut rnote_bytes = vec![];
+            File::open(rnote_file)
+                .await?
+                .read_to_end(&mut rnote_bytes)
+                .await?;
+
+            let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(rnote_bytes).await?;
+            let _ = engine.load_snapshot(engine_snapshot);
+
             // We applied the prefs previously to the engine
             let export_bytes = match export_commands {
                 ExportCommands::Selection { all, .. } => {
@@ -484,15 +595,66 @@ pub(crate) async fn export_to_file(
             fh.write_all(&export_bytes).await?;
             fh.sync_all().await?;
         }
-        ExportCommands::DocPages { .. } => {
+        ExportCommands::DocPages {
+            output_dir,
+            output_file_stem,
+            output_format,
+            ..
+        } => {
+            // The output file cannnot be set here
+            drop(output_file);
+            let rnote_file = rnote_file.as_ref();
             let export_bytes = engine.export_doc_pages(None).await??;
-            let mut fh = File::create(output_file).await?;
+            let out_ext = DocPagesExportFormat::from(output_format).file_ext();
+            let output_file_stem = match output_file_stem {
+                Some(o) => o.clone(),
+                None => match rnote_file.file_stem() {
+                    Some(stem) => stem.to_string_lossy().to_string(),
+                    None => {
+                        return Err(anyhow::anyhow!(
+                            "Failed to generate output_file_stem from rnote_file"
+                        ))
+                    }
+                },
+            };
             for (i, bytes) in export_bytes.into_iter().enumerate() {
-                let err_print_page = || format!("Failed to export page {i}");
-                fh.write_all(&bytes).await.with_context(err_print_page)?;
-                fh.sync_all().await.with_context(err_print_page)?;
+                export_doc_page(
+                    i,
+                    output_dir,
+                    &output_file_stem,
+                    &out_ext,
+                    &bytes,
+                    on_conflict,
+                )
+                .await
+                .context(format!(
+                    "Failed to export page {i} of document {}",
+                    rnote_file.display()
+                ))?
             }
         }
+    };
+    Ok(())
+}
+
+async fn export_doc_page(
+    i: usize,
+    output_dir: &Path,
+    output_file_stem: &str,
+    out_ext: &str,
+    bytes: &[u8],
+    on_conflict: &OnConflict,
+) -> anyhow::Result<()> {
+    let mut output_file = output_dir.join(format!(
+        "{output_file_stem} - page {}{}.{out_ext}",
+        if i + 1 < 10 { "0" } else { "" },
+        i + 1,
+    ));
+    if let Some(new_out) = check_file_conflict(&output_file, on_conflict)? {
+        output_file = new_out;
     }
+    let mut fh = File::create(output_file).await?;
+    fh.write_all(bytes).await?;
+    fh.sync_all().await?;
     Ok(())
 }

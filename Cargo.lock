@@ -3511,6 +3511,7 @@ dependencies = [
  "indicatif",
  "log",
  "open",
+ "parry2d-f64",
  "rnote-compose",
  "rnote-engine",
  "smol",

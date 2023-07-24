@@ -24,13 +24,8 @@ pub(crate) fn file_has_ext(path: &Path, expected_ext: &str) -> anyhow::Result<()
     path_is_file(path)?;
     match path.extension() {
         Some(ext) if ext == expected_ext => Ok(()),
-        Some(ext) => Err(anyhow::anyhow!(
-            "{} neeeds to be an .{expected_ext} file, found .{} file",
-            path.display(),
-            ext.to_string_lossy()
-        )),
-        None => Err(anyhow::anyhow!(
-            "{} has to be an .{expected_ext} file",
+        _ => Err(anyhow::anyhow!(
+            "expected .{expected_ext} file, found {}",
             path.display()
         )),
     }

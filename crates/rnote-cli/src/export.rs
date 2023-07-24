@@ -5,6 +5,7 @@ use std::{
 
 use anyhow::Context;
 use clap::{ArgAction, Subcommand, ValueEnum};
+use parry2d_f64::{bounding_volume::Aabb, na::Point2};
 use rnote_compose::helpers::SplitOrder;
 use rnote_engine::{
     engine::{
@@ -68,8 +69,18 @@ pub(crate) enum ExportCommands {
         #[arg(short = 'f', long, conflicts_with("output_file"), required(true))]
         output_format: Option<SelectionOutputFormat>,
         /// export all strokes
-        #[arg(short = 'a', long, action = ArgAction::SetTrue)]
+        #[arg(short = 'a', long, action = ArgAction::SetTrue, conflicts_with("area"), required(true))]
         all: bool,
+        /// Export an area of the canvas: X1 Y1 X2 Y2
+        #[arg(
+            short = 'r',
+            long,
+            value_name = "XY",
+            num_args = 4,
+            conflicts_with("all"),
+            required(true)
+        )]
+        area: Option<Vec<f64>>,
         /// bitmap scale factor in relation to the actual size on the document
         #[arg(long)]
         bitmap_scalefactor: Option<f64>,
@@ -88,7 +99,6 @@ pub(crate) enum DocOutputFormat {
     Xopp,
     Svg,
 }
-
 impl From<&DocOutputFormat> for DocExportFormat {
     fn from(val: &DocOutputFormat) -> Self {
         match val {
@@ -503,13 +513,13 @@ pub(crate) fn check_file_conflict(
     if !output_file.exists() {
         return Ok(None);
     }
+    let options = &[
+        OnConflict::Ask,
+        OnConflict::Overwrite,
+        OnConflict::Skip,
+        OnConflict::Suffix,
+    ];
     while matches!(on_conflict, OnConflict::Ask) {
-        let options = &[
-            OnConflict::Ask,
-            OnConflict::Overwrite,
-            OnConflict::Skip,
-            OnConflict::Suffix,
-        ];
         match dialoguer::Select::new()
             .with_prompt(format!("File {} already exits:", output_file.display()))
             .items(options)
@@ -578,7 +588,16 @@ pub(crate) async fn export_to_file(
 
             // We applied the prefs previously to the engine
             let export_bytes = match export_commands {
-                ExportCommands::Selection { all, .. } => {
+                ExportCommands::Selection { all, area, .. } => {
+                    if let Some(area) = area {
+                        let x1 = area[0];
+                        let y1 = area[1];
+                        let x2 = area[2];
+                        let y2 = area[3];
+                        let points = vec![Point2::new(x1, y1), Point2::new(x2, y2)];
+                        let aabb = Aabb::from_points(&points);
+                        engine.store.keys_unordered_intersecting_bounds(aabb);
+                    }
                     if *all {
                         let all_strokes = engine.store.stroke_keys_unordered();
                         if all_strokes.is_empty() {
@@ -591,7 +610,7 @@ pub(crate) async fn export_to_file(
                     engine
                         .export_selection(None)
                         .await??
-                        .context("Failed to export selection")?
+                        .context("No strokes selected")?
                 }
                 ExportCommands::Doc { .. } => engine.export_doc(export_file_name, None).await??,
                 ExportCommands::DocPages { .. } => unreachable!(),

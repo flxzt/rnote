@@ -4,7 +4,7 @@ use std::{
 };
 
 use anyhow::Context;
-use clap::{ArgAction, Subcommand, ValueEnum};
+use clap::{ArgAction, Args, Subcommand, ValueEnum};
 use parry2d_f64::{bounding_volume::Aabb, na::Vector2};
 use rnote_compose::helpers::SplitOrder;
 use rnote_engine::{
@@ -25,21 +25,17 @@ use smol::{
 use crate::cli::OnConflict;
 use crate::validators;
 
-#[derive(Subcommand, Clone, Debug)]
+#[derive(Subcommand, Debug)]
 pub(crate) enum ExportCommands {
     /// Export entire document
     Doc {
-        /// the export output file. Only allows for one input file. Exclusive with output-format.
-        #[arg(short = 'o', long, conflicts_with("output_format"), required(true))]
-        output_file: Option<PathBuf>,
-        /// the export output format. Exclusive with output-file.
-        #[arg(short = 'f', long, conflicts_with("output_file"), required(true))]
-        output_format: Option<DocOutputFormat>,
+        #[command(flatten)]
+        file: FileArgs<DocOutputFormat>,
         /// if pagaes are exported horizontal or vertical first
         #[arg(short = 'P', long)]
         page_order: Option<PageOrder>,
     },
-    /// Export pages of document individually
+    /// Export each page of the documents individually
     DocPages {
         /// the folder the pages get exported to
         #[arg(short = 'o', long)]
@@ -62,25 +58,10 @@ pub(crate) enum ExportCommands {
     },
     /// Export selection
     Selection {
-        /// the export output file. Only allows for one input file. Exclusive with output-format.
-        #[arg(short = 'o', long, conflicts_with("output_format"), required(true))]
-        output_file: Option<PathBuf>,
-        /// the export output format. Exclusive with output-file.
-        #[arg(short = 'f', long, conflicts_with("output_file"), required(true))]
-        output_format: Option<SelectionOutputFormat>,
-        /// export all strokes
-        #[arg(short = 'a', long, action = ArgAction::SetTrue, conflicts_with("area"), required(true))]
-        all: bool,
-        /// Export an area of the canvas, usaage: X Y deltaX deltaY
-        #[arg(
-            short = 'r',
-            long,
-            value_name = "X",
-            num_args = 4,
-            conflicts_with("all"),
-            required(true)
-        )]
-        area: Option<Vec<f64>>,
+        #[command(flatten)]
+        file: FileArgs<SelectionOutputFormat>,
+        #[command(flatten)]
+        selection: SelectionArgs,
         /// bitmap scale factor in relation to the actual size on the document
         #[arg(long)]
         bitmap_scalefactor: Option<f64>,
@@ -91,6 +72,28 @@ pub(crate) enum ExportCommands {
         #[arg(long)]
         margin: Option<f64>,
     },
+}
+
+#[derive(Args, Debug)]
+#[group(required = true, multiple = false)]
+pub(crate) struct FileArgs<T: ValueEnum + 'static + std::marker::Send + std::marker::Sync> {
+    /// the export output file. Only allows for one input file. Exclusive with output-format
+    #[arg(short = 'o', long)]
+    output_file: Option<PathBuf>,
+    /// the export output format. Exclusive with output-file
+    #[arg(short = 'f', long)]
+    output_format: Option<T>,
+}
+
+#[derive(Args, Debug)]
+#[group(required = true, multiple = false)]
+pub(crate) struct SelectionArgs {
+    /// export all strokes
+    #[arg(short = 'a', long, action = ArgAction::SetTrue)]
+    all: bool,
+    /// Export an rectengular area of the canvas, usage: X Y deltaX deltaY
+    #[arg(short = 'r', long, value_name = "X", num_args = 4)]
+    rect: Option<Vec<f64>>,
 }
 
 #[derive(ValueEnum, Clone, Debug)]
@@ -172,15 +175,11 @@ pub(crate) async fn run_export(
     let output_file: Option<PathBuf>;
     // apply given arguments to export prefs
     match &export_commands {
-        ExportCommands::Doc {
-            output_file: out_file,
-            page_order,
-            output_format,
-        } => {
-            output_file = out_file.clone();
+        ExportCommands::Doc { file, page_order } => {
+            output_file = file.output_file.clone();
             engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
                 output_file.as_deref(),
-                output_format.as_ref(),
+                file.output_format.as_ref(),
                 without_background,
                 without_pattern,
                 page_order.as_ref(),
@@ -204,17 +203,16 @@ pub(crate) async fn run_export(
             output_file = None
         }
         ExportCommands::Selection {
-            output_file: out_file,
+            file,
             bitmap_scalefactor,
             jpeg_quality,
             margin,
-            output_format,
             ..
         } => {
-            output_file = out_file.clone();
+            output_file = file.output_file.clone();
             engine.export_prefs.selection_export_prefs = create_selection_export_prefs_from_args(
                 output_file.as_deref(),
-                output_format.as_ref(),
+                file.output_format.as_ref(),
                 without_background,
                 without_pattern,
                 *bitmap_scalefactor,
@@ -588,10 +586,8 @@ pub(crate) async fn export_to_file(
 
             // We applied the prefs previously to the engine
             let export_bytes = match export_commands {
-                ExportCommands::Selection {
-                    all, area: rect, ..
-                } => {
-                    let strokes = if let Some(rect) = rect {
+                ExportCommands::Selection { selection, .. } => {
+                    let strokes = if let Some(rect) = &selection.rect {
                         let x = rect[0];
                         let y = rect[1];
                         let dx = rect[2];
@@ -601,7 +597,7 @@ pub(crate) async fn export_to_file(
                         let points = vec![v1.into(), v2.into()];
                         let aabb = Aabb::from_points(&points);
                         engine.store.keys_unordered_intersecting_bounds(aabb)
-                    } else if *all {
+                    } else if selection.all {
                         engine.store.stroke_keys_unordered()
                     } else {
                         // Clap should make sure eighter of them are used

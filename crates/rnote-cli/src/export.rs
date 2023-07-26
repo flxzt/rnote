@@ -5,7 +5,7 @@ use std::{
 
 use anyhow::Context;
 use clap::{ArgAction, Subcommand, ValueEnum};
-use parry2d_f64::{bounding_volume::Aabb, na::Point2};
+use parry2d_f64::{bounding_volume::Aabb, na::Vector2};
 use rnote_compose::helpers::SplitOrder;
 use rnote_engine::{
     engine::{
@@ -47,7 +47,7 @@ pub(crate) enum ExportCommands {
         /// the folder the pages get exported to
         #[arg(short = 's', long)]
         output_file_stem: Option<String>,
-        /// the export output format. Exclusive with output-file.
+        /// the export output format
         #[arg(short = 'f', long)]
         output_format: DocPagesOutputFormat,
         /// if pagaes are exported horizontal or vertical first
@@ -71,11 +71,11 @@ pub(crate) enum ExportCommands {
         /// export all strokes
         #[arg(short = 'a', long, action = ArgAction::SetTrue, conflicts_with("area"), required(true))]
         all: bool,
-        /// Export an area of the canvas: X1 Y1 X2 Y2
+        /// Export an area of the canvas, usaage: X Y deltaX deltaY
         #[arg(
             short = 'r',
             long,
-            value_name = "XY",
+            value_name = "X",
             num_args = 4,
             conflicts_with("all"),
             required(true)
@@ -588,25 +588,26 @@ pub(crate) async fn export_to_file(
 
             // We applied the prefs previously to the engine
             let export_bytes = match export_commands {
-                ExportCommands::Selection { all, area, .. } => {
-                    if let Some(area) = area {
-                        let x1 = area[0];
-                        let y1 = area[1];
-                        let x2 = area[2];
-                        let y2 = area[3];
-                        let points = vec![Point2::new(x1, y1), Point2::new(x2, y2)];
+                ExportCommands::Selection {
+                    all, area: rect, ..
+                } => {
+                    let strokes = if let Some(rect) = rect {
+                        let x = rect[0];
+                        let y = rect[1];
+                        let dx = rect[2];
+                        let dy = rect[3];
+                        let v1 = Vector2::new(x, y);
+                        let v2 = v1 + Vector2::new(dx, dy);
+                        let points = vec![v1.into(), v2.into()];
                         let aabb = Aabb::from_points(&points);
-                        engine.store.keys_unordered_intersecting_bounds(aabb);
-                    }
-                    if *all {
-                        let all_strokes = engine.store.stroke_keys_unordered();
-                        if all_strokes.is_empty() {
-                            return Err(anyhow::anyhow!(
-                                "Cannot export empty document with --crop-to-content enabled"
-                            ));
-                        }
-                        engine.store.set_selected_keys(&all_strokes, true);
-                    }
+                        engine.store.keys_unordered_intersecting_bounds(aabb)
+                    } else if *all {
+                        engine.store.stroke_keys_unordered()
+                    } else {
+                        // Clap should make sure eighter of them are used
+                        return Err(anyhow::anyhow!(" --all or --rect required"));
+                    };
+                    engine.store.set_selected_keys(&strokes, true);
                     engine
                         .export_selection(None)
                         .await??

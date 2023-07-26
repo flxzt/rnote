@@ -34,9 +34,8 @@ pub(crate) enum Commands {
         #[arg(short = 'i', long)]
         input_file: PathBuf,
         /// When importing a .xopp file, the import dpi can be specified.{n}
-        /// Else the default (96) is used.
-        #[arg(long)]
-        xopp_dpi: Option<f64>,
+        #[arg(long, default_value_t = 96.0)]
+        xopp_dpi: f64,
     },
     /// Exports the Rnote file(s) and saves it in the desired format.{n}
     /// When using --output-file, only one input file can be given.{n}
@@ -136,9 +135,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             println!("Importing..");
 
             // apply given arguments to import prefs
-            if let Some(xopp_dpi) = xopp_dpi {
-                engine.import_prefs.xopp_import_prefs.dpi = xopp_dpi;
-            }
+            engine.import_prefs.xopp_import_prefs.dpi = xopp_dpi;
 
             let rnote_file_disp = rnote_file.display().to_string();
             let input_file_disp = input_file.display().to_string();

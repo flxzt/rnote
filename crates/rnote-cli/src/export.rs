@@ -1,4 +1,5 @@
 use std::{
+    fmt::Display,
     path::{Path, PathBuf},
     time::Duration,
 };
@@ -32,8 +33,8 @@ pub(crate) enum ExportCommands {
         #[command(flatten)]
         file: FileArgs<DocOutputFormat>,
         /// if pagaes are exported horizontal or vertical first
-        #[arg(short = 'P', long)]
-        page_order: Option<PageOrder>,
+        #[arg(short = 'P', long, default_value_t = PageOrder::default())]
+        page_order: PageOrder,
     },
     /// Export each page of the documents individually
     DocPages {
@@ -47,14 +48,14 @@ pub(crate) enum ExportCommands {
         #[arg(short = 'f', long)]
         output_format: DocPagesOutputFormat,
         /// if pagaes are exported horizontal or vertical first
-        #[arg(short = 'P', long)]
-        page_order: Option<PageOrder>,
+        #[arg(short = 'P', long, default_value_t = PageOrder::default())]
+        page_order: PageOrder,
         /// bitmap scale factor in relation to the actual size on the document
-        #[arg(long)]
-        bitmap_scalefactor: Option<f64>,
+        #[arg(long, default_value_t = 1.8)]
+        bitmap_scalefactor: f64,
         /// quality of the jpeg image
-        #[arg(long)]
-        jpeg_quality: Option<u8>,
+        #[arg(long, default_value_t = 85)]
+        jpeg_quality: u8,
     },
     /// Export selection
     Selection {
@@ -63,20 +64,20 @@ pub(crate) enum ExportCommands {
         #[command(flatten)]
         selection: SelectionArgs,
         /// bitmap scale factor in relation to the actual size on the document
-        #[arg(long)]
-        bitmap_scalefactor: Option<f64>,
+        #[arg(long, default_value_t = 1.8)]
+        bitmap_scalefactor: f64,
         /// quality of the jpeg image
-        #[arg(long)]
-        jpeg_quality: Option<u8>,
+        #[arg(long, default_value_t = 85)]
+        jpeg_quality: u8,
         /// margin around the document
-        #[arg(long)]
-        margin: Option<f64>,
+        #[arg(long, default_value_t = 12.0)]
+        margin: f64,
     },
 }
 
 #[derive(Args, Debug)]
 #[group(required = true, multiple = false)]
-pub(crate) struct FileArgs<T: ValueEnum + 'static + std::marker::Send + std::marker::Sync> {
+pub(crate) struct FileArgs<T: ValueEnum + 'static + Send + Sync> {
     /// the export output file. Only allows for one input file. Exclusive with output-format
     #[arg(short = 'o', long)]
     output_file: Option<PathBuf>,
@@ -146,10 +147,17 @@ impl From<&DocPagesOutputFormat> for DocPagesExportFormat {
     }
 }
 
-#[derive(ValueEnum, Clone, Debug)]
+#[derive(ValueEnum, Clone, Debug, Default)]
 pub(crate) enum PageOrder {
+    #[default]
     Horizontal,
     Vertical,
+}
+
+impl Display for PageOrder {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 impl From<&PageOrder> for SplitOrder {
@@ -182,7 +190,7 @@ pub(crate) async fn run_export(
                 file.output_format.as_ref(),
                 without_background,
                 without_pattern,
-                page_order.as_ref(),
+                page_order,
             )?
         }
         ExportCommands::DocPages {
@@ -192,14 +200,14 @@ pub(crate) async fn run_export(
             jpeg_quality,
             ..
         } => {
-            engine.export_prefs.doc_pages_export_prefs = create_doc_pages_export_prefs_from_args(
-                output_format,
-                page_order.as_ref(),
-                without_background,
-                without_pattern,
-                *bitmap_scalefactor,
-                *jpeg_quality,
-            )?;
+            engine.export_prefs.doc_pages_export_prefs = DocPagesExportPrefs {
+                export_format: output_format.into(),
+                with_background: !without_background,
+                with_pattern: !without_pattern,
+                page_order: page_order.into(),
+                bitmap_scalefactor: *bitmap_scalefactor,
+                jpeg_quality: *jpeg_quality,
+            };
             output_file = None
         }
         ExportCommands::Selection {
@@ -363,7 +371,7 @@ pub(crate) fn create_doc_export_prefs_from_args(
     output_format: Option<&DocOutputFormat>,
     without_background: bool,
     without_pattern: bool,
-    page_order: Option<&PageOrder>,
+    page_order: &PageOrder,
 ) -> anyhow::Result<DocExportPrefs> {
     let format = match (output_file, output_format) {
         (Some(file), None) => match file.as_ref().extension().and_then(|ext| ext.to_str()) {
@@ -389,16 +397,13 @@ pub(crate) fn create_doc_export_prefs_from_args(
         }
     }?;
 
-    let mut prefs = DocExportPrefs {
+    let prefs = DocExportPrefs {
         export_format: format,
         with_background: !without_background,
         with_pattern: !without_pattern,
-        ..Default::default()
+        page_order: page_order.into(),
     };
 
-    if let Some(page_order) = page_order {
-        prefs.page_order = page_order.into();
-    }
     Ok(prefs)
 }
 
@@ -417,9 +422,9 @@ pub(crate) fn create_selection_export_prefs_from_args(
     output_format: Option<&SelectionOutputFormat>,
     without_background: bool,
     without_pattern: bool,
-    bitmap_scalefactor: Option<f64>,
-    jpeg_quality: Option<u8>,
-    margin: Option<f64>,
+    bitmap_scalefactor: f64,
+    jpeg_quality: u8,
+    margin: f64,
 ) -> anyhow::Result<SelectionExportPrefs> {
     let format = match (output_file, output_format) {
         (Some(file), None) => match file.as_ref().extension().and_then(|ext| ext.to_str()) {
@@ -445,22 +450,14 @@ pub(crate) fn create_selection_export_prefs_from_args(
         }
     }?;
 
-    let mut prefs = SelectionExportPrefs {
+    let prefs = SelectionExportPrefs {
         export_format: format,
         with_background: !without_background,
         with_pattern: !without_pattern,
-        ..Default::default()
+        bitmap_scalefactor,
+        jpeg_quality,
+        margin,
     };
-
-    if let Some(bitmap_scalefactor) = bitmap_scalefactor {
-        prefs.bitmap_scalefactor = bitmap_scalefactor.clamp(0.1, 10.0);
-    }
-    if let Some(jpeg_quality) = jpeg_quality {
-        prefs.jpeg_quality = jpeg_quality.clamp(1, 100);
-    }
-    if let Some(margin) = margin {
-        prefs.margin = margin.clamp(0.0, 1000.0);
-    }
 
     Ok(prefs)
 }
@@ -474,34 +471,6 @@ fn get_selection_export_format(format: &str) -> anyhow::Result<SelectionExportFo
             "Could not create selection export prefs, unsupported export file extension `{ext}`"
         )),
     }
-}
-
-pub(crate) fn create_doc_pages_export_prefs_from_args(
-    output_format: &DocPagesOutputFormat,
-    page_order: Option<&PageOrder>,
-    without_background: bool,
-    without_pattern: bool,
-    bitmap_scalefactor: Option<f64>,
-    jpeg_quality: Option<u8>,
-) -> anyhow::Result<DocPagesExportPrefs> {
-    let mut prefs = DocPagesExportPrefs {
-        export_format: output_format.into(),
-        with_background: !without_background,
-        with_pattern: !without_pattern,
-        ..Default::default()
-    };
-
-    if let Some(page_order) = page_order {
-        prefs.page_order = page_order.into();
-    }
-    if let Some(bitmap_scalefactor) = bitmap_scalefactor {
-        prefs.bitmap_scalefactor = bitmap_scalefactor.clamp(0.1, 10.0);
-    }
-    if let Some(jpeg_quality) = jpeg_quality {
-        prefs.jpeg_quality = jpeg_quality.clamp(1, 100);
-    }
-
-    Ok(prefs)
 }
 
 pub(crate) fn check_file_conflict(

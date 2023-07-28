@@ -7,9 +7,9 @@ pub use element::Element;
 pub use segment::Segment;
 
 // Imports
-use crate::helpers::{KurboHelpers, Vector2Helpers};
-use crate::shapes::{CubicBezier, Line, QuadraticBezier, ShapeBehaviour};
-use crate::transform::TransformBehaviour;
+use crate::ext::{KurboShapeExt, Vector2Ext};
+use crate::shapes::{CubicBezier, Line, QuadraticBezier, Shapeable};
+use crate::transform::Transformable;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
@@ -26,7 +26,7 @@ pub struct PenPath {
     pub segments: Vec<Segment>,
 }
 
-impl ShapeBehaviour for PenPath {
+impl Shapeable for PenPath {
     fn bounds(&self) -> Aabb {
         let mut bounds = Aabb::from_points(&[self.start.pos.into()]);
 
@@ -45,7 +45,7 @@ impl ShapeBehaviour for PenPath {
                         end: end.pos,
                     };
 
-                    bounds.merge(&quadbez.to_kurbo().bounding_box().bounds_as_p2d_aabb());
+                    bounds.merge(&quadbez.to_kurbo().bounding_box().bounds_to_p2d_aabb());
                     prev = *end;
                 }
                 Segment::CubBezTo { cp1, cp2, end } => {
@@ -56,7 +56,7 @@ impl ShapeBehaviour for PenPath {
                         end: end.pos,
                     };
 
-                    bounds.merge(&cubbez.to_kurbo().bounding_box().bounds_as_p2d_aabb());
+                    bounds.merge(&cubbez.to_kurbo().bounding_box().bounds_to_p2d_aabb());
                     prev = *end;
                 }
             }
@@ -73,7 +73,7 @@ impl ShapeBehaviour for PenPath {
     }
 }
 
-impl TransformBehaviour for PenPath {
+impl Transformable for PenPath {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.start.translate(offset);
         self.segments.iter_mut().for_each(|segment| {

@@ -27,7 +27,7 @@ pub trait PenPathBuilderCreator {
 ///
 /// They receive pen events, and return path segments.
 /// They usually are drawn while building the shape and are finite state machines.
-pub trait PenPathBuilderBehaviour: std::fmt::Debug {
+pub trait PenPathBuildable: std::fmt::Debug {
     /// Handle a pen event.
     ///
     /// Returns the builder progress.

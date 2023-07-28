@@ -2,7 +2,7 @@
 use super::RnCanvas;
 use futures::channel::oneshot;
 use gtk4::{gio, prelude::*};
-use rnote_compose::helpers::Vector2Helpers;
+use rnote_compose::ext::Vector2Ext;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
 use rnote_engine::engine::{EngineSnapshot, StrokeContent};
 use rnote_engine::strokes::Stroke;

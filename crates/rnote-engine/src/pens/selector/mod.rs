@@ -8,15 +8,15 @@ use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut, StrokeContent};
 use crate::render::{self, Svg};
 use crate::store::StrokeKey;
-use crate::strokes::StrokeBehaviour;
-use crate::{Camera, DrawOnDocBehaviour, RnoteEngine, WidgetFlags};
+use crate::strokes::Content;
+use crate::{Camera, DrawableOnDoc, RnoteEngine, WidgetFlags};
 use futures::channel::oneshot;
 use kurbo::Shape;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use p2d::query::PointQuery;
 use piet::RenderContext;
-use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
+use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevents::{ModifierKey, PenEvent, PenState};
 use rnote_compose::penpath::Element;
 use rnote_compose::style::indicators;
@@ -273,7 +273,7 @@ impl PenBehaviour for Selector {
     }
 }
 
-impl DrawOnDocBehaviour for Selector {
+impl DrawableOnDoc for Selector {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let total_zoom = engine_view.camera.total_zoom();
 

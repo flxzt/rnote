@@ -1,8 +1,8 @@
 // Imports
-use crate::helpers::{AabbHelpers, Vector2Helpers};
+use crate::ext::{AabbExt, Vector2Ext};
 use crate::shapes::Rectangle;
-use crate::shapes::ShapeBehaviour;
-use crate::transform::TransformBehaviour;
+use crate::shapes::Shapeable;
+use crate::transform::Transformable;
 use crate::Transform;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -19,7 +19,7 @@ pub struct Line {
     pub end: na::Vector2<f64>,
 }
 
-impl TransformBehaviour for Line {
+impl Transformable for Line {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.start += offset;
         self.end += offset;
@@ -39,9 +39,9 @@ impl TransformBehaviour for Line {
     }
 }
 
-impl ShapeBehaviour for Line {
+impl Shapeable for Line {
     fn bounds(&self) -> Aabb {
-        AabbHelpers::new_positive(self.start.into(), self.end.into())
+        AabbExt::new_positive(self.start.into(), self.end.into())
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {

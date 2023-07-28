@@ -1,11 +1,11 @@
 // Modules
-mod transformbehaviour;
+mod transformable;
 
 // Re-exports
-pub use transformbehaviour::TransformBehaviour;
+pub use transformable::Transformable;
 
 // Imports
-use crate::helpers::{AabbHelpers, Affine2Helpers};
+use crate::ext::{AabbExt, Affine2Ext};
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -41,7 +41,7 @@ impl From<Transform> for kurbo::Affine {
     }
 }
 
-impl TransformBehaviour for Transform {
+impl Transformable for Transform {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.append_translation_mut(offset)
     }

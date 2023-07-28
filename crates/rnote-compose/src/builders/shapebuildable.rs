@@ -19,7 +19,7 @@ pub enum ShapeBuilderProgress {
 
 /// Creator for a shape builder.
 ///
-/// This needs to be a separate trait because ShapeBuilderBehaviour is used as trait object,
+/// This needs to be a separate trait to ShapeBuildable, because it is used as trait object,
 /// so we can't have a method on it returning `Self`.
 pub trait ShapeBuilderCreator {
     /// Start the builder.
@@ -30,7 +30,7 @@ pub trait ShapeBuilderCreator {
 ///
 /// They receive pen events, and return built shapes.
 /// They are usually drawn while building the shape, and are finite state machines.
-pub trait ShapeBuilderBehaviour: std::fmt::Debug {
+pub trait ShapeBuildable: std::fmt::Debug {
     /// Handle a pen event.
     ///
     /// Returns the builder progress.

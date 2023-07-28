@@ -9,14 +9,14 @@ use crate::engine::{EngineTask, EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
 use crate::strokes::{Stroke, TextStroke};
-use crate::{AudioPlayer, Camera, DrawOnDocBehaviour, WidgetFlags};
+use crate::{AudioPlayer, Camera, DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
-use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
+use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevents::{KeyboardKey, PenEvent, PenState};
-use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::indicators;
 use rnote_compose::{color, Transform};
 use std::ops::Range;
@@ -73,7 +73,7 @@ impl Default for Typewriter {
     }
 }
 
-impl DrawOnDocBehaviour for Typewriter {
+impl DrawableOnDoc for Typewriter {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let total_zoom = engine_view.camera.total_zoom();
 

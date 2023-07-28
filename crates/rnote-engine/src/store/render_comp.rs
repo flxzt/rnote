@@ -2,15 +2,15 @@
 use super::{Stroke, StrokeKey, StrokeStore};
 use crate::engine::visual_debug;
 use crate::engine::{EngineTask, EngineTaskSender};
-use crate::strokes::strokebehaviour::GeneratedStrokeImages;
-use crate::strokes::StrokeBehaviour;
-use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
-use crate::{render, DrawBehaviour, RnoteEngine};
+use crate::ext::{GdkRGBAExt, GrapheneRectExt};
+use crate::strokes::content::GeneratedContentImages;
+use crate::strokes::Content;
+use crate::{render, Drawable, RnoteEngine};
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::color;
-use rnote_compose::helpers::AabbHelpers;
-use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::ext::AabbExt;
+use rnote_compose::shapes::Shapeable;
 
 /// The tolerance where check between scale-factors are considered "equal".
 pub(crate) const RENDER_IMAGE_SCALE_EQUALITY_TOLERANCE: f64 = 0.01;
@@ -145,7 +145,7 @@ impl StrokeStore {
                 viewport.extend_by(viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
             match stroke.gen_images(viewport_extended, image_scale) {
-                Ok(GeneratedStrokeImages::Partial { images, viewport }) => {
+                Ok(GeneratedContentImages::Partial { images, viewport }) => {
                     match render::Image::images_to_rendernodes(&images) {
                         Ok(rendernodes) => {
                             render_comp.rendernodes = rendernodes;
@@ -158,7 +158,7 @@ impl StrokeStore {
                         }
                     }
                 }
-                Ok(GeneratedStrokeImages::Full(images)) => {
+                Ok(GeneratedContentImages::Full(images)) => {
                     match render::Image::images_to_rendernodes(&images) {
                         Ok(rendernodes) => {
                             render_comp.rendernodes = rendernodes;
@@ -394,10 +394,14 @@ impl StrokeStore {
     /// Replace the entire current rendering with the given new images.
     ///
     /// Also updates the render component state.
-    pub fn replace_rendering_with_images(&mut self, key: StrokeKey, images: GeneratedStrokeImages) {
+    pub fn replace_rendering_with_images(
+        &mut self,
+        key: StrokeKey,
+        images: GeneratedContentImages,
+    ) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
             match images {
-                GeneratedStrokeImages::Partial { images, viewport } => {
+                GeneratedContentImages::Partial { images, viewport } => {
                     match render::Image::images_to_rendernodes(&images) {
                         Ok(rendernodes) => {
                             render_comp.rendernodes = rendernodes;
@@ -410,7 +414,7 @@ impl StrokeStore {
                         }
                     }
                 }
-                GeneratedStrokeImages::Full(images) => {
+                GeneratedContentImages::Full(images) => {
                     match render::Image::images_to_rendernodes(&images) {
                         Ok(rendernodes) => {
                             render_comp.rendernodes = rendernodes;
@@ -430,14 +434,14 @@ impl StrokeStore {
     /// Appends the images to the render component of the stroke.
     ///
     /// Not modifying the render component state, that is the responsibility of the caller.
-    pub fn append_rendering_images(&mut self, key: StrokeKey, images: GeneratedStrokeImages) {
+    pub fn append_rendering_images(&mut self, key: StrokeKey, images: GeneratedContentImages) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
             match images {
-                GeneratedStrokeImages::Partial {
+                GeneratedContentImages::Partial {
                     mut images,
                     viewport: _,
                 }
-                | GeneratedStrokeImages::Full(mut images) => {
+                | GeneratedContentImages::Full(mut images) => {
                     match render::Image::images_to_rendernodes(&images) {
                         Ok(mut rendernodes) => {
                             render_comp.rendernodes.append(&mut rendernodes);

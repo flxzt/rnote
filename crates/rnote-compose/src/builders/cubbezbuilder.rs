@@ -1,8 +1,8 @@
 // Impoorts
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
+use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuildable;
 use crate::constraints::ConstraintRatio;
-use crate::helpers::AabbHelpers;
+use crate::ext::AabbExt;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::CubicBezier;
@@ -57,7 +57,7 @@ impl ShapeBuilderCreator for CubBezBuilder {
     }
 }
 
-impl ShapeBuilderBehaviour for CubBezBuilder {
+impl ShapeBuildable for CubBezBuilder {
     fn handle_event(
         &mut self,
         event: PenEvent,

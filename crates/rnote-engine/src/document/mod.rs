@@ -9,8 +9,8 @@ pub use format::Format;
 // Imports
 use crate::{Camera, StrokeStore, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use rnote_compose::helpers::{AabbHelpers, SplitOrder};
-use rnote_compose::Color;
+use rnote_compose::ext::AabbExt;
+use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
 
 #[derive(

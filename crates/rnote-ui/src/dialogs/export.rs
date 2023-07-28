@@ -12,7 +12,7 @@ use gtk4::{
     SpinButton, Switch,
 };
 use num_traits::ToPrimitive;
-use rnote_compose::helpers::SplitOrder;
+use rnote_compose::SplitOrder;
 use rnote_engine::document::Layout;
 use rnote_engine::engine::export::{
     DocExportFormat, DocExportPrefs, DocPagesExportFormat, DocPagesExportPrefs,

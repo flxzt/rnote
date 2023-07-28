@@ -1,7 +1,7 @@
 // Modules
 /// Composer
 mod composer;
-/// Draw helpers
+/// Draw indicators
 pub mod indicators;
 /// The rough module for rough styles
 pub mod rough;

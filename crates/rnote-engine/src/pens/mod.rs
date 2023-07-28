@@ -27,7 +27,7 @@ pub use typewriter::Typewriter;
 // Imports
 use self::penbehaviour::PenProgress;
 use crate::engine::{EngineView, EngineViewMut};
-use crate::{DrawOnDocBehaviour, WidgetFlags};
+use crate::{DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
 use piet_cairo::CairoRenderContext;
 use rnote_compose::penevents::PenEvent;
@@ -140,7 +140,7 @@ impl PenBehaviour for Pen {
     }
 }
 
-impl DrawOnDocBehaviour for Pen {
+impl DrawableOnDoc for Pen {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<p2d::bounding_volume::Aabb> {
         match self {
             Pen::Brush(brush) => brush.bounds_on_doc(engine_view),

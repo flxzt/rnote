@@ -1,6 +1,6 @@
 // Imports
-use super::penpathbuilderbehaviour::PenPathBuilderCreator;
-use super::{PenPathBuilderBehaviour, PenPathBuilderProgress};
+use super::penpathbuildable::PenPathBuilderCreator;
+use super::{PenPathBuildable, PenPathBuilderProgress};
 use crate::penevents::PenEvent;
 use crate::penpath::{Element, Segment};
 use crate::shapes::CubicBezier;
@@ -37,7 +37,7 @@ impl PenPathBuilderCreator for PenPathCurvedBuilder {
     }
 }
 
-impl PenPathBuilderBehaviour for PenPathCurvedBuilder {
+impl PenPathBuildable for PenPathCurvedBuilder {
     fn handle_event(
         &mut self,
         event: PenEvent,

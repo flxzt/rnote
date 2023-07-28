@@ -1,7 +1,7 @@
 // Imports
 use super::render_comp::RenderCompState;
 use super::{StrokeKey, StrokeStore};
-use crate::strokes::strokebehaviour::GeneratedStrokeImages;
+use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::Stroke;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -128,12 +128,12 @@ impl StrokeStore {
                     if let RenderCompState::ForViewport(viewport) = render_comp.state {
                         self.replace_rendering_with_images(
                             new_key,
-                            GeneratedStrokeImages::Partial { images, viewport },
+                            GeneratedContentImages::Partial { images, viewport },
                         );
                     } else if render_comp.state == RenderCompState::Complete {
                         self.replace_rendering_with_images(
                             new_key,
-                            GeneratedStrokeImages::Full(images),
+                            GeneratedContentImages::Full(images),
                         );
                     }
                 }

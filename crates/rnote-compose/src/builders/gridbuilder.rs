@@ -1,7 +1,7 @@
 // Imports
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
-use crate::helpers::AabbHelpers;
+use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuildable;
+use crate::ext::AabbExt;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::{Line, Rectangle};
@@ -46,7 +46,7 @@ impl ShapeBuilderCreator for GridBuilder {
     }
 }
 
-impl ShapeBuilderBehaviour for GridBuilder {
+impl ShapeBuildable for GridBuilder {
     fn handle_event(
         &mut self,
         event: PenEvent,

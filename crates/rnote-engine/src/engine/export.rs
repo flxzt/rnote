@@ -6,8 +6,8 @@ use crate::render;
 use anyhow::Context;
 use futures::channel::oneshot;
 use rayon::prelude::*;
-use rnote_compose::helpers::SplitOrder;
-use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::transform::Transformable;
+use rnote_compose::SplitOrder;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 

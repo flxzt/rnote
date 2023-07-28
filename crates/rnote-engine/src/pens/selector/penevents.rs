@@ -3,10 +3,10 @@ use super::{ModifyState, ResizeCorner, Selector, SelectorState};
 use crate::engine::EngineViewMut;
 use crate::pens::penbehaviour::PenProgress;
 use crate::pens::pensconfig::selectorconfig::SelectorStyle;
-use crate::{DrawOnDocBehaviour, WidgetFlags};
+use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use p2d::query::PointQuery;
-use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
+use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevents::{KeyboardKey, ModifierKey};
 use rnote_compose::penpath::Element;
 use std::time::Instant;
@@ -247,7 +247,7 @@ impl Selector {
                             || modifier_keys.contains(&ModifierKey::KeyboardCtrl)
                         {
                             // Lock aspectratio
-                            rnote_compose::helpers::scale_w_locked_aspectratio(
+                            rnote_compose::utils::scale_w_locked_aspectratio(
                                 start_bounds.extents(),
                                 start_bounds.extents() + pos_offset,
                             )

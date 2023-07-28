@@ -4,7 +4,7 @@ use gtk4::{
     glib, prelude::*, subclass::prelude::*, LayoutManager, Orientation, SizeRequestMode, Widget,
 };
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use rnote_compose::helpers::AabbHelpers;
+use rnote_compose::ext::AabbExt;
 use rnote_engine::{render, Camera};
 use std::cell::Cell;
 

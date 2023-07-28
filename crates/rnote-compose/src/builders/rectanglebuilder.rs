@@ -1,6 +1,6 @@
 // Imports
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
+use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuildable;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Rectangle;
@@ -30,7 +30,7 @@ impl ShapeBuilderCreator for RectangleBuilder {
     }
 }
 
-impl ShapeBuilderBehaviour for RectangleBuilder {
+impl ShapeBuildable for RectangleBuilder {
     fn handle_event(
         &mut self,
         event: PenEvent,

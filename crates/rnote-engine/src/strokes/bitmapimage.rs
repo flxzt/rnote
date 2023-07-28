@@ -1,20 +1,20 @@
 // Imports
-use super::strokebehaviour::{self, GeneratedStrokeImages};
-use super::{Stroke, StrokeBehaviour};
+use super::content::{self, GeneratedContentImages};
+use super::{Content, Stroke};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::render;
-use crate::DrawBehaviour;
+use crate::Drawable;
 use anyhow::Context;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
-use rnote_compose::helpers::{AabbHelpers, Affine2Helpers, Vector2Helpers};
+use rnote_compose::ext::{AabbExt, Affine2Ext, Vector2Ext};
 use rnote_compose::shapes::Rectangle;
-use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::shapes::Shapeable;
 use rnote_compose::transform::Transform;
-use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 
@@ -40,7 +40,7 @@ impl Default for BitmapImage {
     }
 }
 
-impl StrokeBehaviour for BitmapImage {
+impl Content for BitmapImage {
     fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
         let bounds = self.bounds();
 
@@ -57,11 +57,11 @@ impl StrokeBehaviour for BitmapImage {
         &self,
         viewport: Aabb,
         image_scale: f64,
-    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
+    ) -> Result<GeneratedContentImages, anyhow::Error> {
         let bounds = self.bounds();
 
         if viewport.contains(&bounds) {
-            Ok(GeneratedStrokeImages::Full(vec![
+            Ok(GeneratedContentImages::Full(vec![
                 render::Image::gen_with_piet(
                     |piet_cx| self.draw(piet_cx, image_scale),
                     bounds,
@@ -69,7 +69,7 @@ impl StrokeBehaviour for BitmapImage {
                 )?,
             ]))
         } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
-            Ok(GeneratedStrokeImages::Partial {
+            Ok(GeneratedContentImages::Partial {
                 images: vec![render::Image::gen_with_piet(
                     |piet_cx| self.draw(piet_cx, image_scale),
                     intersection_bounds,
@@ -78,7 +78,7 @@ impl StrokeBehaviour for BitmapImage {
                 viewport,
             })
         } else {
-            Ok(GeneratedStrokeImages::Partial {
+            Ok(GeneratedContentImages::Partial {
                 images: vec![],
                 viewport,
             })
@@ -93,7 +93,7 @@ impl StrokeBehaviour for BitmapImage {
         const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
         cx.stroke(
             self.bounds().to_kurbo_rect(),
-            &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
+            &*content::STROKE_HIGHLIGHT_COLOR,
             HIGHLIGHT_STROKE_WIDTH / total_zoom,
         );
         Ok(())
@@ -102,7 +102,7 @@ impl StrokeBehaviour for BitmapImage {
     fn update_geometry(&mut self) {}
 }
 
-impl DrawBehaviour for BitmapImage {
+impl Drawable for BitmapImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
@@ -127,7 +127,7 @@ impl DrawBehaviour for BitmapImage {
     }
 }
 
-impl ShapeBehaviour for BitmapImage {
+impl Shapeable for BitmapImage {
     fn bounds(&self) -> Aabb {
         self.rectangle.bounds()
     }
@@ -137,7 +137,7 @@ impl ShapeBehaviour for BitmapImage {
     }
 }
 
-impl TransformBehaviour for BitmapImage {
+impl Transformable for BitmapImage {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.rectangle.translate(offset);
     }

@@ -6,12 +6,12 @@ use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
-use crate::{DrawOnDocBehaviour, WidgetFlags};
+use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::builders::{
-    PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress, PenPathModeledBuilder,
+    PenPathBuildable, PenPathBuilderCreator, PenPathBuilderProgress, PenPathModeledBuilder,
 };
 use rnote_compose::builders::{PenPathCurvedBuilder, PenPathSimpleBuilder};
 use rnote_compose::penevents::PenEvent;
@@ -23,7 +23,7 @@ use std::time::Instant;
 enum BrushState {
     Idle,
     Drawing {
-        path_builder: Box<dyn PenPathBuilderBehaviour>,
+        path_builder: Box<dyn PenPathBuildable>,
         current_stroke_key: StrokeKey,
     },
 }
@@ -238,7 +238,7 @@ impl PenBehaviour for Brush {
     }
 }
 
-impl DrawOnDocBehaviour for Brush {
+impl DrawableOnDoc for Brush {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let style = engine_view
             .pens_config
@@ -303,7 +303,7 @@ fn new_builder(
     builder_type: PenPathBuilderType,
     element: Element,
     now: Instant,
-) -> Box<dyn PenPathBuilderBehaviour> {
+) -> Box<dyn PenPathBuildable> {
     match builder_type {
         PenPathBuilderType::Simple => Box::new(PenPathSimpleBuilder::start(element, now)),
         PenPathBuilderType::Curved => Box::new(PenPathCurvedBuilder::start(element, now)),

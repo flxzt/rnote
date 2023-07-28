@@ -18,15 +18,16 @@ use crate::pens::{Pen, PenStyle};
 use crate::pens::{PenMode, PensConfig};
 use crate::store::render_comp::{self, RenderCompState};
 use crate::store::StrokeKey;
-use crate::strokes::strokebehaviour::GeneratedStrokeImages;
+use crate::strokes::content::GeneratedContentImages;
 use crate::{render, AudioPlayer, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use futures::channel::{mpsc, oneshot};
 use gtk4::gsk;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use rnote_compose::helpers::{AabbHelpers, SplitOrder};
+use rnote_compose::ext::AabbExt;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
-use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::shapes::Shapeable;
+use rnote_compose::SplitOrder;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -79,7 +80,7 @@ pub enum EngineTask {
         /// The stroke key.
         key: StrokeKey,
         /// The generated images.
-        images: GeneratedStrokeImages,
+        images: GeneratedContentImages,
         /// The image scale-factor the render task was using while generating the images.
         image_scale: f64,
         /// The stroke bounds at the time when the render task has launched.
@@ -93,7 +94,7 @@ pub enum EngineTask {
         /// The stroke key
         key: StrokeKey,
         /// The generated images
-        images: GeneratedStrokeImages,
+        images: GeneratedContentImages,
     },
     /// Requests that the typewriter cursor should be blinked/toggled
     BlinkTypewriterCursor,

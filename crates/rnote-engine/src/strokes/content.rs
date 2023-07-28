@@ -1,29 +1,29 @@
 // Imports
 use crate::render;
-use crate::DrawBehaviour;
+use crate::Drawable;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
-use rnote_compose::{color, shapes::ShapeBehaviour};
+use rnote_compose::{color, shapes::Shapeable};
 
 #[derive(Debug, Clone)]
-/// Generated stroke images.
+/// Generated content images.
 ///
-/// Some stroke types may only support generating image(s) for the whole stroke.
-pub enum GeneratedStrokeImages {
-    /// Only part of the stroke was rendered (for example when part of it is out of the current viewport).
+/// Some types may only support generating image(s) for the entire content.
+pub enum GeneratedContentImages {
+    /// Only part of the content was rendered (for example when part of it is out of the current viewport).
     Partial {
         images: Vec<render::Image>,
         viewport: Aabb,
     },
-    /// All stroke images were rendered.
+    /// All content image(s) were rendered.
     Full(Vec<render::Image>),
 }
 
 pub(crate) static STROKE_HIGHLIGHT_COLOR: Lazy<piet::Color> =
     Lazy::new(|| color::GNOME_BLUES[1].with_alpha(0.376));
 
-/// Types that are strokes.
-pub trait StrokeBehaviour: DrawBehaviour + ShapeBehaviour
+/// Types that are content.
+pub trait Content: Drawable + Shapeable
 where
     Self: Sized,
 {
@@ -40,7 +40,7 @@ where
         &self,
         viewport: Aabb,
         image_scale: f64,
-    ) -> Result<GeneratedStrokeImages, anyhow::Error>;
+    ) -> Result<GeneratedContentImages, anyhow::Error>;
 
     /// Draw it's highlight.
     /// The implementors are expected to save/restore the drawing context.

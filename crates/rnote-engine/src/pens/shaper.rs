@@ -4,13 +4,13 @@ use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
-use crate::{DrawOnDocBehaviour, WidgetFlags};
+use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::builders::{ArrowBuilder, GridBuilder};
 use rnote_compose::builders::{
     CoordSystem2DBuilder, CoordSystem3DBuilder, EllipseBuilder, FociEllipseBuilder, LineBuilder,
-    QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuilderBehaviour,
+    QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuildable,
 };
 use rnote_compose::builders::{CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
 use rnote_compose::builders::{ShapeBuilderCreator, ShapeBuilderProgress};
@@ -21,9 +21,7 @@ use std::time::Instant;
 #[derive(Debug)]
 enum ShaperState {
     Idle,
-    BuildShape {
-        builder: Box<dyn ShapeBuilderBehaviour>,
-    },
+    BuildShape { builder: Box<dyn ShapeBuildable> },
 }
 
 #[derive(Debug)]
@@ -188,7 +186,7 @@ impl PenBehaviour for Shaper {
     }
 }
 
-impl DrawOnDocBehaviour for Shaper {
+impl DrawableOnDoc for Shaper {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let style = engine_view
             .pens_config
@@ -230,7 +228,7 @@ fn new_builder(
     builder_type: ShapeBuilderType,
     element: Element,
     now: Instant,
-) -> Box<dyn ShapeBuilderBehaviour> {
+) -> Box<dyn ShapeBuildable> {
     match builder_type {
         ShapeBuilderType::Arrow => Box::new(ArrowBuilder::start(element, now)),
         ShapeBuilderType::Line => Box::new(LineBuilder::start(element, now)),

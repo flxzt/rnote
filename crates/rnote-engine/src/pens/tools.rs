@@ -4,12 +4,12 @@ use super::pensconfig::toolsconfig::ToolStyle;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
-use crate::{Camera, DrawOnDocBehaviour, WidgetFlags};
+use crate::{Camera, DrawableOnDoc, WidgetFlags};
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::color;
-use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
+use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevents::PenEvent;
 use std::time::Instant;
 
@@ -43,7 +43,7 @@ impl VerticalSpaceTool {
     const OFFSET_LINE_WIDTH: f64 = 1.5;
 }
 
-impl DrawOnDocBehaviour for VerticalSpaceTool {
+impl DrawableOnDoc for VerticalSpaceTool {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let viewport = engine_view.camera.viewport();
 
@@ -125,7 +125,7 @@ impl OffsetCameraTool {
     const CURSOR_PATH: &str = "m 8 1.078125 l -3 3 h 2 v 2.929687 h -2.960938 v -2 l -3 3 l 3 3 v -2 h 2.960938 v 2.960938 h -2 l 3 3 l 3 -3 h -2 v -2.960938 h 3.054688 v 2 l 3 -3 l -3 -3 v 2 h -3.054688 v -2.929687 h 2 z m 0 0";
 }
 
-impl DrawOnDocBehaviour for OffsetCameraTool {
+impl DrawableOnDoc for OffsetCameraTool {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         Some(Aabb::from_half_extents(
             self.start.into(),
@@ -185,7 +185,7 @@ impl ZoomTool {
     const CURSOR_STROKE_WIDTH: f64 = 2.0;
 }
 
-impl DrawOnDocBehaviour for ZoomTool {
+impl DrawableOnDoc for ZoomTool {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let start_circle_center = engine_view
             .camera
@@ -468,7 +468,7 @@ impl PenBehaviour for Tools {
     }
 }
 
-impl DrawOnDocBehaviour for Tools {
+impl DrawableOnDoc for Tools {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         match self.state {
             ToolsState::Active => match engine_view.pens_config.tools_config.style {

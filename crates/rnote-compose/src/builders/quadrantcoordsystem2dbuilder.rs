@@ -2,8 +2,8 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use std::time::Instant;
 
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
+use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuildable;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
@@ -29,7 +29,7 @@ impl ShapeBuilderCreator for QuadrantCoordSystem2DBuilder {
     }
 }
 
-impl ShapeBuilderBehaviour for QuadrantCoordSystem2DBuilder {
+impl ShapeBuildable for QuadrantCoordSystem2DBuilder {
     fn handle_event(
         &mut self,
         event: PenEvent,

@@ -1,6 +1,6 @@
 // Imports
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
+use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuildable;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Ellipse;
@@ -29,7 +29,7 @@ impl ShapeBuilderCreator for EllipseBuilder {
     }
 }
 
-impl ShapeBuilderBehaviour for EllipseBuilder {
+impl ShapeBuildable for EllipseBuilder {
     fn handle_event(
         &mut self,
         event: PenEvent,

@@ -1,22 +1,22 @@
 // Imports
 use super::bitmapimage::BitmapImage;
 use super::brushstroke::BrushStroke;
+use super::content::GeneratedContentImages;
 use super::shapestroke::ShapeStroke;
-use super::strokebehaviour::GeneratedStrokeImages;
 use super::vectorimage::VectorImage;
-use super::{StrokeBehaviour, TextStroke};
+use super::{Content, TextStroke};
 use crate::fileformats::xoppformat::{self, XoppColor};
 use crate::store::chrono_comp::StrokeLayer;
 use crate::{render, RnoteEngine};
-use crate::{utils, DrawBehaviour};
+use crate::{utils, Drawable};
 use base64::Engine;
 use p2d::bounding_volume::Aabb;
-use rnote_compose::helpers::AabbHelpers;
+use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::Element;
-use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
+use rnote_compose::shapes::{Rectangle, Shapeable};
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::transform::Transform;
-use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::transform::Transformable;
 use rnote_compose::{Color, PenPath, Style};
 use serde::{Deserialize, Serialize};
 
@@ -35,7 +35,7 @@ pub enum Stroke {
     BitmapImage(BitmapImage),
 }
 
-impl StrokeBehaviour for Stroke {
+impl Content for Stroke {
     fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
         match self {
             Stroke::BrushStroke(brushstroke) => brushstroke.gen_svg(),
@@ -50,7 +50,7 @@ impl StrokeBehaviour for Stroke {
         &self,
         viewport: Aabb,
         image_scale: f64,
-    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
+    ) -> Result<GeneratedContentImages, anyhow::Error> {
         match self {
             Stroke::BrushStroke(brushstroke) => brushstroke.gen_images(viewport, image_scale),
             Stroke::ShapeStroke(shapestroke) => shapestroke.gen_images(viewport, image_scale),
@@ -85,7 +85,7 @@ impl StrokeBehaviour for Stroke {
     }
 }
 
-impl DrawBehaviour for Stroke {
+impl Drawable for Stroke {
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
         match self {
             Stroke::BrushStroke(brushstroke) => brushstroke.draw(cx, image_scale),
@@ -97,7 +97,7 @@ impl DrawBehaviour for Stroke {
     }
 }
 
-impl ShapeBehaviour for Stroke {
+impl Shapeable for Stroke {
     fn bounds(&self) -> Aabb {
         match self {
             Self::BrushStroke(brushstroke) => brushstroke.bounds(),
@@ -119,7 +119,7 @@ impl ShapeBehaviour for Stroke {
     }
 }
 
-impl TransformBehaviour for Stroke {
+impl Transformable for Stroke {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         match self {
             Self::BrushStroke(brushstroke) => {

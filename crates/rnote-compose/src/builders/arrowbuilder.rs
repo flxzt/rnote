@@ -1,6 +1,6 @@
 // Imports
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
+use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuildable;
 use crate::constraints::ConstraintRatio;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
@@ -30,7 +30,7 @@ impl ShapeBuilderCreator for ArrowBuilder {
     }
 }
 
-impl ShapeBuilderBehaviour for ArrowBuilder {
+impl ShapeBuildable for ArrowBuilder {
     fn handle_event(
         &mut self,
         event: PenEvent,

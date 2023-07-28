@@ -1,14 +1,14 @@
 // Imports
-use super::strokebehaviour::GeneratedStrokeImages;
-use super::StrokeBehaviour;
-use crate::{render, strokes::strokebehaviour, Camera, DrawBehaviour};
+use super::content::GeneratedContentImages;
+use super::Content;
+use crate::{render, strokes::content, Camera, Drawable};
 use kurbo::Shape;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::{RenderContext, TextLayout, TextLayoutBuilder};
-use rnote_compose::helpers::{AabbHelpers, Affine2Helpers, Vector2Helpers};
-use rnote_compose::shapes::ShapeBehaviour;
-use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::ext::{AabbExt, Affine2Ext, Vector2Ext};
+use rnote_compose::shapes::Shapeable;
+use rnote_compose::transform::Transformable;
 use rnote_compose::{color, Color, Transform};
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
@@ -419,7 +419,7 @@ impl Default for TextStroke {
     }
 }
 
-impl TransformBehaviour for TextStroke {
+impl Transformable for TextStroke {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.transform.append_translation_mut(offset);
     }
@@ -433,7 +433,7 @@ impl TransformBehaviour for TextStroke {
     }
 }
 
-impl ShapeBehaviour for TextStroke {
+impl Shapeable for TextStroke {
     fn bounds(&self) -> Aabb {
         let untransformed_size = self
             .text_style
@@ -483,7 +483,7 @@ impl ShapeBehaviour for TextStroke {
     }
 }
 
-impl StrokeBehaviour for TextStroke {
+impl Content for TextStroke {
     fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
         let bounds = self.bounds();
 
@@ -501,11 +501,11 @@ impl StrokeBehaviour for TextStroke {
         &self,
         viewport: Aabb,
         image_scale: f64,
-    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
+    ) -> Result<GeneratedContentImages, anyhow::Error> {
         let bounds = self.bounds();
 
         if viewport.contains(&bounds) {
-            Ok(GeneratedStrokeImages::Full(vec![
+            Ok(GeneratedContentImages::Full(vec![
                 render::Image::gen_with_piet(
                     |piet_cx| self.draw(piet_cx, image_scale),
                     bounds,
@@ -513,7 +513,7 @@ impl StrokeBehaviour for TextStroke {
                 )?,
             ]))
         } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
-            Ok(GeneratedStrokeImages::Partial {
+            Ok(GeneratedContentImages::Partial {
                 images: vec![render::Image::gen_with_piet(
                     |piet_cx| self.draw(piet_cx, image_scale),
                     intersection_bounds,
@@ -522,7 +522,7 @@ impl StrokeBehaviour for TextStroke {
                 viewport,
             })
         } else {
-            Ok(GeneratedStrokeImages::Partial {
+            Ok(GeneratedContentImages::Partial {
                 images: vec![],
                 viewport,
             })
@@ -537,7 +537,7 @@ impl StrokeBehaviour for TextStroke {
         const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
         cx.stroke(
             self.bounds().to_kurbo_rect(),
-            &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
+            &*content::STROKE_HIGHLIGHT_COLOR,
             HIGHLIGHT_STROKE_WIDTH / total_zoom,
         );
         Ok(())
@@ -546,7 +546,7 @@ impl StrokeBehaviour for TextStroke {
     fn update_geometry(&mut self) {}
 }
 
-impl DrawBehaviour for TextStroke {
+impl Drawable for TextStroke {
     fn draw(&self, cx: &mut impl RenderContext, _image_scale: f64) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 

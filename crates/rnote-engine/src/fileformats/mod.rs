@@ -31,15 +31,15 @@ pub trait XmlWritable {
     fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter);
 }
 
-/// Implemented on types that can be represented as a Xml attribute value.
-pub trait AsXmlAttributeValue {
-    /// Type as Xml attribute value.
-    fn as_xml_attr_value(&self) -> String;
+/// Implemented on types that can be saved a Xml attribute value.
+pub trait ToXmlAttributeValue {
+    /// To Xml attribute value.
+    fn to_xml_attr_value(&self) -> String;
 }
 
 /// Implemented on types that can be loaded from a Xml attribute value.
 pub trait FromXmlAttributeValue {
-    /// load from a Xml attribute value string.
+    /// From Xml attribute value.
     fn from_xml_attr_value(s: &str) -> Result<Self, anyhow::Error>
     where
         Self: Sized;

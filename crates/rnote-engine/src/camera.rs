@@ -3,7 +3,7 @@ use std::time::Duration;
 // Imports
 use gtk4::{graphene, gsk};
 use p2d::bounding_volume::Aabb;
-use rnote_compose::helpers::AabbHelpers;
+use rnote_compose::ext::AabbExt;
 use serde::{Deserialize, Serialize};
 
 use crate::document::Layout;

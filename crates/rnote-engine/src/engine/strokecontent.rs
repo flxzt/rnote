@@ -2,11 +2,11 @@
 use crate::document::Background;
 use crate::render::Svg;
 use crate::strokes::Stroke;
-use crate::{DrawBehaviour, RnoteEngine};
+use crate::{Drawable, RnoteEngine};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
-use rnote_compose::helpers::AabbHelpers;
-use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::ext::AabbExt;
+use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 

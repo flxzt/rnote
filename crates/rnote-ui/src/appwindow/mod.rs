@@ -12,10 +12,10 @@ use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{gdk, gio, glib, glib::clone, Application, Box, Button, IconTheme};
 use rnote_compose::Color;
+use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::PenStyle;
-use rnote_engine::utils::GdkRGBAHelpers;
 use rnote_engine::{engine::EngineTask, WidgetFlags};
 use std::path::Path;
 

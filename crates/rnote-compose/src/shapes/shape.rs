@@ -1,6 +1,6 @@
 // Imports
-use super::{Arrow, CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle, ShapeBehaviour};
-use crate::transform::TransformBehaviour;
+use super::{Arrow, CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle, Shapeable};
+use crate::transform::Transformable;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -34,7 +34,7 @@ impl Default for Shape {
     }
 }
 
-impl TransformBehaviour for Shape {
+impl Transformable for Shape {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         match self {
             Self::Arrow(arrow) => {
@@ -105,7 +105,7 @@ impl TransformBehaviour for Shape {
     }
 }
 
-impl ShapeBehaviour for Shape {
+impl Shapeable for Shape {
     fn bounds(&self) -> Aabb {
         match self {
             Self::Arrow(arrow) => arrow.bounds(),

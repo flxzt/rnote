@@ -4,7 +4,7 @@ use super::{StrokeKey, StrokeStore};
 use crate::strokes::{BrushStroke, Stroke};
 use crate::WidgetFlags;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::shapes::Shapeable;
 use rnote_compose::PenPath;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;

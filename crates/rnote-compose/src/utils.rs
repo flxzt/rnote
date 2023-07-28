@@ -118,3 +118,50 @@ pub fn seed_advance(seed: u64) -> u64 {
     let mut rng = rand_pcg::Pcg64::seed_from_u64(seed);
     rng.gen()
 }
+
+/// Scale the source size with a specified max size, while keeping its aspect ratio
+pub fn scale_w_locked_aspectratio(
+    src_size: na::Vector2<f64>,
+    max_size: na::Vector2<f64>,
+) -> na::Vector2<f64> {
+    let ratio = (max_size[0] / src_size[0] + max_size[1] / src_size[1]) / 2.0;
+    src_size * ratio
+}
+
+/// Scales inner bounds in context to new outer bounds
+pub fn scale_inner_bounds_in_context_new_outer_bounds(
+    old_inner_bounds: Aabb,
+    old_outer_bounds: Aabb,
+    new_outer_bounds: Aabb,
+) -> Aabb {
+    let offset = na::vector![
+        new_outer_bounds.mins[0] - old_outer_bounds.mins[0],
+        new_outer_bounds.mins[1] - old_outer_bounds.mins[1]
+    ];
+
+    let scalevector = na::vector![
+        (new_outer_bounds.extents()[0]) / (old_outer_bounds.extents()[0]),
+        (new_outer_bounds.extents()[1]) / (old_outer_bounds.extents()[1])
+    ];
+
+    Aabb::new(
+        na::point![
+            (old_inner_bounds.mins[0] - old_outer_bounds.mins[0]) * scalevector[0]
+                + old_outer_bounds.mins[0]
+                + offset[0],
+            (old_inner_bounds.mins[1] - old_outer_bounds.mins[1]) * scalevector[1]
+                + old_outer_bounds.mins[1]
+                + offset[1]
+        ],
+        na::point![
+            (old_inner_bounds.mins[0] - old_outer_bounds.mins[0]) * scalevector[0]
+                + old_outer_bounds.mins[0]
+                + offset[0]
+                + (old_inner_bounds.extents()[0]) * scalevector[0],
+            (old_inner_bounds.mins[1] - old_outer_bounds.mins[1]) * scalevector[1]
+                + old_outer_bounds.mins[1]
+                + offset[1]
+                + (old_inner_bounds.extents()[1]) * scalevector[1]
+        ],
+    )
+}

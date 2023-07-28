@@ -7,14 +7,14 @@ mod ellipsebuilder;
 mod fociellipsebuilder;
 mod gridbuilder;
 mod linebuilder;
-mod penpathbuilderbehaviour;
+mod penpathbuildable;
 mod penpathcurvedbuilder;
 mod penpathmodeledbuilder;
 mod penpathsimplebuilder;
 mod quadbezbuilder;
 mod quadrantcoordsystem2dbuilder;
 mod rectanglebuilder;
-mod shapebuilderbehaviour;
+mod shapebuildable;
 
 // Re-exports
 pub use arrowbuilder::ArrowBuilder;
@@ -25,18 +25,18 @@ pub use ellipsebuilder::EllipseBuilder;
 pub use fociellipsebuilder::FociEllipseBuilder;
 pub use gridbuilder::GridBuilder;
 pub use linebuilder::LineBuilder;
-pub use penpathbuilderbehaviour::PenPathBuilderBehaviour;
-pub use penpathbuilderbehaviour::PenPathBuilderCreator;
-pub use penpathbuilderbehaviour::PenPathBuilderProgress;
+pub use penpathbuildable::PenPathBuildable;
+pub use penpathbuildable::PenPathBuilderCreator;
+pub use penpathbuildable::PenPathBuilderProgress;
 pub use penpathcurvedbuilder::PenPathCurvedBuilder;
 pub use penpathmodeledbuilder::PenPathModeledBuilder;
 pub use penpathsimplebuilder::PenPathSimpleBuilder;
 pub use quadbezbuilder::QuadBezBuilder;
 pub use quadrantcoordsystem2dbuilder::QuadrantCoordSystem2DBuilder;
 pub use rectanglebuilder::RectangleBuilder;
-pub use shapebuilderbehaviour::ShapeBuilderBehaviour;
-pub use shapebuilderbehaviour::ShapeBuilderCreator;
-pub use shapebuilderbehaviour::ShapeBuilderProgress;
+pub use shapebuildable::ShapeBuildable;
+pub use shapebuildable::ShapeBuilderCreator;
+pub use shapebuildable::ShapeBuilderProgress;
 
 // Imports
 use anyhow::Context;

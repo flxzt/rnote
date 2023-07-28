@@ -9,7 +9,7 @@ use super::{
 use crate::engine::{EngineView, EngineViewMut};
 use crate::pens::shortcuts::ShortcutAction;
 use crate::widgetflags::WidgetFlags;
-use crate::DrawOnDocBehaviour;
+use crate::DrawableOnDoc;
 use futures::channel::oneshot;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
@@ -359,7 +359,7 @@ impl PenHolder {
     }
 }
 
-impl DrawOnDocBehaviour for PenHolder {
+impl DrawableOnDoc for PenHolder {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         self.current_pen.bounds_on_doc(engine_view)
     }

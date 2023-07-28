@@ -1,17 +1,17 @@
 // Imports
-use super::strokebehaviour::GeneratedStrokeImages;
-use super::{Stroke, StrokeBehaviour};
+use super::content::GeneratedContentImages;
+use super::{Content, Stroke};
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
-use crate::{document::Format, strokes::strokebehaviour};
-use crate::{render, DrawBehaviour};
+use crate::{document::Format, strokes::content};
+use crate::{render, Drawable};
 use p2d::bounding_volume::Aabb;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
-use rnote_compose::helpers::AabbHelpers;
+use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Rectangle;
-use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::shapes::Shapeable;
 use rnote_compose::transform::Transform;
-use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use usvg::{TreeParsing, TreeTextToPath, TreeWriting};
@@ -40,7 +40,7 @@ impl Default for VectorImage {
     }
 }
 
-impl StrokeBehaviour for VectorImage {
+impl Content for VectorImage {
     fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
         let svg_root = svg::node::element::SVG::new()
             .set("x", -self.rectangle.cuboid.half_extents[0])
@@ -77,11 +77,11 @@ impl StrokeBehaviour for VectorImage {
         &self,
         _viewport: Aabb,
         image_scale: f64,
-    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
+    ) -> Result<GeneratedContentImages, anyhow::Error> {
         let bounds = self.bounds();
 
         // Always generate full stroke images for vectorimages, as they are too expensive to be repeatedly rendered
-        Ok(GeneratedStrokeImages::Full(vec![
+        Ok(GeneratedContentImages::Full(vec![
             render::Image::gen_with_piet(
                 |piet_cx| self.draw(piet_cx, image_scale),
                 bounds,
@@ -98,7 +98,7 @@ impl StrokeBehaviour for VectorImage {
         const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
         cx.stroke(
             self.bounds().to_kurbo_rect(),
-            &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
+            &*content::STROKE_HIGHLIGHT_COLOR,
             HIGHLIGHT_STROKE_WIDTH / total_zoom,
         );
         Ok(())
@@ -110,7 +110,7 @@ impl StrokeBehaviour for VectorImage {
 // Because we can't render svgs directly in piet, so we need to overwrite the gen_svgs() default implementation and call it in draw().
 // here we use a svg renderer to generate the bitmap images.
 // This way we ensure to export an actual svg when calling gen_svgs(),but are also able to draw it onto piet.
-impl DrawBehaviour for VectorImage {
+impl Drawable for VectorImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
@@ -124,7 +124,7 @@ impl DrawBehaviour for VectorImage {
     }
 }
 
-impl ShapeBehaviour for VectorImage {
+impl Shapeable for VectorImage {
     fn bounds(&self) -> Aabb {
         self.rectangle.bounds()
     }
@@ -134,7 +134,7 @@ impl ShapeBehaviour for VectorImage {
     }
 }
 
-impl TransformBehaviour for VectorImage {
+impl Transformable for VectorImage {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.rectangle.translate(offset);
     }

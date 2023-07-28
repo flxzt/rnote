@@ -7,8 +7,8 @@ use gtk4::{
     ProgressBar, ScrolledWindow, ToggleButton, Widget,
 };
 use rnote_engine::engine::EngineViewMut;
+use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::{Pen, PenStyle};
-use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
 use std::time::Instant;
 

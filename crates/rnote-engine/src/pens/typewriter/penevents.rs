@@ -4,7 +4,7 @@ use crate::engine::EngineViewMut;
 use crate::pens::penbehaviour::PenProgress;
 use crate::pens::PenBehaviour;
 use crate::strokes::{Stroke, TextStroke};
-use crate::{DrawOnDocBehaviour, StrokeStore, WidgetFlags};
+use crate::{DrawableOnDoc, StrokeStore, WidgetFlags};
 use rnote_compose::penevents::{KeyboardKey, ModifierKey};
 use rnote_compose::penpath::Element;
 use std::time::Instant;

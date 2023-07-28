@@ -42,7 +42,7 @@ jobs:
       - name: Setup
         run: |
           meson setup --prefix=/usr -Dprofile=devel -Dcli=true _mesonbuild
-      - name: Run cargo fmt
+      - name: Run fmt check
         run: meson compile cargo-fmt-check -C _mesonbuild
       - name: Compile
         run: meson compile -v -C _mesonbuild

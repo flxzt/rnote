@@ -2186,8 +2186,8 @@ checksum = "f7012b1bbb0719e1097c47611d3898568c546d597c2e74d66f6087edd5233ff4"
 
 [[package]]
 name = "librsvg"
-version = "2.56.2"
-source = "git+https://gitlab.gnome.org/GNOME/librsvg?tag=2.56.2#5c74c40bb3f4f7e6c347e7712e0293188e70c6ed"
+version = "2.56.3"
+source = "git+https://gitlab.gnome.org/GNOME/librsvg?tag=2.56.3#312c4b8c28c99b9051ee6de6fa966cf977b0f7b4"
 dependencies = [
  "anyhow",
  "byteorder",

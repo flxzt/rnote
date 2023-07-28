@@ -67,7 +67,7 @@ clap = { version = "4", features = ["derive"] }
 indicatif = "0.17"
 glib = "0.17"
 cairo-rs = { version = "0.17", features = ["png", "svg", "pdf"] }
-librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", tag = "2.56.2" }
+librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", tag = "2.56.3" }
 # newest poppler feature ("v21_12") is causing linking errors when building in mingw for some reason.
 poppler-rs = { version = "0.21", features = ["v20_9"] }
 gettext-rs = { version = "0.7", features = ["gettext-system"] }

@@ -51,8 +51,8 @@ impl Default for Camera {
 }
 
 impl Camera {
-    pub const ZOOM_MIN: f64 = 0.2;
-    pub const ZOOM_MAX: f64 = 6.0;
+    pub const ZOOM_MIN: f64 = 0.01;
+    pub const ZOOM_MAX: f64 = 20.0;
     pub const ZOOM_DEFAULT: f64 = 1.0;
     // The zoom timeout time.
     pub const ZOOM_TIMEOUT: Duration = Duration::from_millis(400);

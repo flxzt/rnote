@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-23 18:32+0200\n"
-"PO-Revision-Date: 2023-07-07 16:52+0000\n"
-"Last-Translator: TecCheck <mcteccy@protonmail.com>\n"
+"PO-Revision-Date: 2023-07-28 07:54+0000\n"
+"Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -407,17 +407,14 @@ msgstr "Seitenreihenfolge"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:148
 #: crates/rnote-ui/data/ui/dialogs/export.ui:359
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts that expand \n"
-#| "in horizontal and vertical directions are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
-"Die Seitenreihenfolge wenn Dokumente mit Layouts, die in horizontale\n"
-"und vertikale Richtung expandieren in Seiten unterteilt werden"
+"Die Seitenreihenfolge wenn Dokumente mit Layouts,\n"
+"die in horizontale und vertikale Richtung expandieren\n"
+"in Seiten unterteilt werden"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:154
 #: crates/rnote-ui/data/ui/dialogs/export.ui:365
@@ -481,7 +478,7 @@ msgstr "Auswahl exportieren"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:556
 msgid "The export image format"
-msgstr "Das Exportformat"
+msgstr "Das Export Bildformat"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:613
 msgid "Margin"
@@ -1608,10 +1605,8 @@ msgid "Paste Clipboard"
 msgstr "Zwischenablage einfügen"
 
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:74
-#, fuzzy
-#| msgid "Pages:"
 msgid "Page"
-msgstr "Seiten:"
+msgstr "Seite"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"

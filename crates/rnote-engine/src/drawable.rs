@@ -1,13 +1,13 @@
 // Imports
 use crate::engine::EngineView;
-use crate::utils::GrapheneRectHelpers;
+use crate::ext::GrapheneRectExt;
 use gtk4::{graphene, prelude::*};
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
-use rnote_compose::helpers::{AabbHelpers, Affine2Helpers};
+use rnote_compose::ext::{AabbExt, Affine2Ext};
 
 /// Trait for types that can draw themselves on a [piet::RenderContext].
-pub trait DrawBehaviour {
+pub trait Drawable {
     /// Draw itself.
     /// The implementors are expected to save/restore the drawing context.
     ///
@@ -19,7 +19,7 @@ pub trait DrawBehaviour {
 /// Trait for types that can draw themselves on the document.
 ///
 /// In the coordinate space of the document.
-pub trait DrawOnDocBehaviour {
+pub trait DrawableOnDoc {
     /// Bounds on the document.
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb>;
 

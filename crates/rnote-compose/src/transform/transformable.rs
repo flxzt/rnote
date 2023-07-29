@@ -1,5 +1,5 @@
 /// Trait for types that can be (geometrically) transformed.
-pub trait TransformBehaviour {
+pub trait Transformable {
     /// Translate (as in moves) by the given offset.
     fn translate(&mut self, offset: na::Vector2<f64>);
     /// Rotate by the given angle (in radians).

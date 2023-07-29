@@ -7,11 +7,11 @@ pub use roughoptions::RoughOptions;
 
 // Imports
 use super::Composer;
-use crate::helpers::Vector2Helpers;
+use crate::ext::Vector2Ext;
 use crate::shapes::Arrow;
 use crate::shapes::Line;
 use crate::shapes::Rectangle;
-use crate::shapes::{CubicBezier, ShapeBehaviour};
+use crate::shapes::{CubicBezier, Shapeable};
 use crate::shapes::{Ellipse, QuadraticBezier};
 use crate::Color;
 use p2d::bounding_volume::{Aabb, BoundingVolume};

@@ -1,6 +1,6 @@
 // Imports
 use super::Element;
-use crate::transform::TransformBehaviour;
+use crate::transform::Transformable;
 use serde::{Deserialize, Serialize};
 
 /// A single segment, usually of a pen path.
@@ -39,7 +39,7 @@ pub enum Segment {
     },
 }
 
-impl TransformBehaviour for Segment {
+impl Transformable for Segment {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         match self {
             Self::LineTo { end } => {

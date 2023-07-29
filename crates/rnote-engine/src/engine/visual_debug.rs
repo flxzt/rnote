@@ -1,11 +1,11 @@
 // Imports
 use super::EngineView;
-use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
-use crate::{DrawOnDocBehaviour, RnoteEngine};
+use crate::ext::{GdkRGBAExt, GrapheneRectExt};
+use crate::{DrawableOnDoc, RnoteEngine};
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::{RenderContext, Text, TextLayoutBuilder};
-use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
+use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::Color;
 
 pub const COLOR_POS: Color = Color {

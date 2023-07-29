@@ -1,7 +1,5 @@
 // Imports
-use super::penpathbuilderbehaviour::{
-    PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress,
-};
+use super::penpathbuildable::{PenPathBuildable, PenPathBuilderCreator, PenPathBuilderProgress};
 use crate::penevents::PenEvent;
 use crate::penpath::{Element, Segment};
 use crate::style::Composer;
@@ -27,7 +25,7 @@ impl PenPathBuilderCreator for PenPathSimpleBuilder {
     }
 }
 
-impl PenPathBuilderBehaviour for PenPathSimpleBuilder {
+impl PenPathBuildable for PenPathSimpleBuilder {
     fn handle_event(
         &mut self,
         event: PenEvent,

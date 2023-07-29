@@ -1,5 +1,5 @@
 // Imports
-use crate::transform::TransformBehaviour;
+use crate::transform::Transformable;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -21,7 +21,7 @@ impl Default for Element {
     }
 }
 
-impl TransformBehaviour for Element {
+impl Transformable for Element {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.pos += offset;
     }

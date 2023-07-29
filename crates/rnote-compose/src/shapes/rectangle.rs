@@ -1,8 +1,8 @@
 // Imports
 use super::Line;
-use crate::helpers::{AabbHelpers, Vector2Helpers};
-use crate::shapes::ShapeBehaviour;
-use crate::transform::TransformBehaviour;
+use crate::ext::{AabbExt, Vector2Ext};
+use crate::shapes::Shapeable;
+use crate::transform::Transformable;
 use crate::Transform;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -28,7 +28,7 @@ impl Default for Rectangle {
     }
 }
 
-impl ShapeBehaviour for Rectangle {
+impl Shapeable for Rectangle {
     fn bounds(&self) -> Aabb {
         let center = self.transform.affine * na::point![0.0, 0.0];
         // using a vector to ignore the translation
@@ -50,7 +50,7 @@ impl ShapeBehaviour for Rectangle {
     }
 }
 
-impl TransformBehaviour for Rectangle {
+impl Transformable for Rectangle {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.transform.append_translation_mut(offset);
     }

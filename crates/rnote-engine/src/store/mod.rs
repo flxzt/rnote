@@ -18,7 +18,7 @@ use self::chrono_comp::StrokeLayer;
 use crate::engine::EngineSnapshot;
 use crate::strokes::Stroke;
 use crate::WidgetFlags;
-use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 use std::collections::VecDeque;

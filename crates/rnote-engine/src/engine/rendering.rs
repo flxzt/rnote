@@ -1,12 +1,12 @@
 // Imports
 use super::{visual_debug, EngineView};
-use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
-use crate::{Document, DrawOnDocBehaviour, RnoteEngine};
+use crate::ext::{GdkRGBAExt, GrapheneRectExt};
+use crate::{Document, DrawableOnDoc, RnoteEngine};
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
-use rnote_compose::color;
-use rnote_compose::helpers::{AabbHelpers, Affine2Helpers, SplitOrder};
+use rnote_compose::ext::{AabbExt, Affine2Ext};
+use rnote_compose::{color, SplitOrder};
 
 impl RnoteEngine {
     /// Update the background rendering for the current viewport.

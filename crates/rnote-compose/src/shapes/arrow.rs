@@ -1,8 +1,8 @@
 // Imports
 use super::Line;
-use crate::helpers::Vector2Helpers;
-use crate::shapes::ShapeBehaviour;
-use crate::transform::TransformBehaviour;
+use crate::ext::Vector2Ext;
+use crate::shapes::Shapeable;
+use crate::transform::Transformable;
 use kurbo::PathEl;
 use na::Rotation2;
 use p2d::bounding_volume::Aabb;
@@ -35,7 +35,7 @@ pub struct Arrow {
     pub tip: na::Vector2<f64>,
 }
 
-impl TransformBehaviour for Arrow {
+impl Transformable for Arrow {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.start += offset;
         self.tip += offset;
@@ -58,7 +58,7 @@ impl TransformBehaviour for Arrow {
     }
 }
 
-impl ShapeBehaviour for Arrow {
+impl Shapeable for Arrow {
     fn bounds(&self) -> Aabb {
         self.internal_compute_bounds(None)
     }

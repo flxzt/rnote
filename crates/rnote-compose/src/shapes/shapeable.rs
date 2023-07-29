@@ -1,9 +1,9 @@
 // Imports
-use crate::transform::TransformBehaviour;
+use crate::transform::Transformable;
 use p2d::bounding_volume::Aabb;
 
 /// Types that behave as a shape.
-pub trait ShapeBehaviour: TransformBehaviour {
+pub trait Shapeable: Transformable {
     /// The bounds of the shape.
     fn bounds(&self) -> Aabb;
     /// The hitboxes of the shape.

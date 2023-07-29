@@ -1,6 +1,6 @@
 // Imports
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
+use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuildable;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
@@ -29,7 +29,7 @@ impl ShapeBuilderCreator for CoordSystem3DBuilder {
     }
 }
 
-impl ShapeBuilderBehaviour for CoordSystem3DBuilder {
+impl ShapeBuildable for CoordSystem3DBuilder {
     fn handle_event(
         &mut self,
         event: PenEvent,

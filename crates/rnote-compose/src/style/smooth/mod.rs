@@ -6,13 +6,13 @@ pub use smoothoptions::SmoothOptions;
 
 // Imports
 use super::Composer;
-use crate::helpers::Vector2Helpers;
+use crate::ext::Vector2Ext;
 use crate::penpath::{self, Segment};
 use crate::shapes::Ellipse;
 use crate::shapes::Line;
 use crate::shapes::QuadraticBezier;
 use crate::shapes::Rectangle;
-use crate::shapes::ShapeBehaviour;
+use crate::shapes::Shapeable;
 use crate::shapes::{Arrow, CubicBezier};
 use crate::PenPath;
 use kurbo::Shape;

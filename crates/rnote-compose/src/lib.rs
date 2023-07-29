@@ -11,9 +11,9 @@ pub mod builders;
 pub mod color;
 /// constraints
 pub mod constraints;
-/// module for helper traits that extend foreign types
-pub mod helpers;
-/// module for pen helpers
+/// module for extension traits for foreign types
+pub mod ext;
+/// module for pen events
 pub mod penevents;
 /// module for pen paths
 pub mod penpath;
@@ -21,6 +21,8 @@ pub mod penpath;
 pub mod serialize;
 /// module for shapes
 pub mod shapes;
+/// module for splitorder
+pub mod splitorder;
 /// module for styles, that can be applied onto shapes
 pub mod style;
 /// module for transformation
@@ -33,6 +35,7 @@ pub use color::Color;
 pub use constraints::Constraints;
 pub use penpath::PenPath;
 pub use shapes::Shape;
+pub use splitorder::SplitOrder;
 pub use style::Style;
 pub use transform::Transform;
 

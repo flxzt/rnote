@@ -1,15 +1,15 @@
 // Imports
-use crate::utils::GrapheneRectHelpers;
-use crate::DrawBehaviour;
+use crate::ext::GrapheneRectExt;
+use crate::Drawable;
 use anyhow::Context;
 use gtk4::{gdk, gio, graphene, gsk, prelude::*};
 use image::io::Reader;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
-use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
-use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
-use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::ext::{AabbExt, Vector2Ext};
+use rnote_compose::shapes::{Rectangle, Shapeable};
+use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::io::{self, Cursor};
 use svg::Node;
@@ -131,7 +131,7 @@ impl From<image::DynamicImage> for Image {
     }
 }
 
-impl DrawBehaviour for Image {
+impl Drawable for Image {
     /// Draw itself on a [piet::RenderContext].
     ///
     /// Expects image to be in rgba8-premultiplied format, else drawing will fail.
@@ -162,7 +162,7 @@ impl DrawBehaviour for Image {
     }
 }
 
-impl TransformBehaviour for Image {
+impl Transformable for Image {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.rect.translate(offset)
     }

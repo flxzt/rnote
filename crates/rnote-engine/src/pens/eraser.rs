@@ -3,12 +3,12 @@ use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::eraserconfig::EraserStyle;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
-use crate::{DrawOnDocBehaviour, WidgetFlags};
+use crate::{DrawableOnDoc, WidgetFlags};
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::color;
-use rnote_compose::helpers::AabbHelpers;
+use rnote_compose::ext::AabbExt;
 use rnote_compose::penevents::PenEvent;
 use rnote_compose::penpath::Element;
 use std::time::Instant;
@@ -118,7 +118,7 @@ impl PenBehaviour for Eraser {
     }
 }
 
-impl DrawOnDocBehaviour for Eraser {
+impl DrawableOnDoc for Eraser {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         match &self.state {
             EraserState::Up => None,

@@ -2,15 +2,15 @@
 use super::render_comp::RenderCompState;
 use super::StrokeKey;
 use crate::engine::StrokeContent;
-use crate::strokes::{Stroke, StrokeBehaviour};
+use crate::strokes::{Content, Stroke};
 use crate::{render, StrokeStore, WidgetFlags};
 use geo::intersects::Intersects;
 use geo::prelude::Contains;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::penpath::{Element, Segment};
-use rnote_compose::shapes::ShapeBehaviour;
-use rnote_compose::transform::TransformBehaviour;
-use rnote_compose::{helpers, Color};
+use rnote_compose::shapes::Shapeable;
+use rnote_compose::transform::Transformable;
+use rnote_compose::Color;
 use std::sync::Arc;
 
 /// Systems that are related to the stroke components.
@@ -443,11 +443,12 @@ impl StrokeStore {
                 {
                     // resize the stroke geometry
                     let old_stroke_bounds = stroke.bounds();
-                    let new_stroke_bounds = helpers::scale_inner_bounds_in_context_new_outer_bounds(
-                        old_stroke_bounds,
-                        old_bounds,
-                        new_bounds,
-                    );
+                    let new_stroke_bounds =
+                        rnote_compose::utils::scale_inner_bounds_in_context_new_outer_bounds(
+                            old_stroke_bounds,
+                            old_bounds,
+                            new_bounds,
+                        );
                     let scale = new_stroke_bounds
                         .extents()
                         .component_div(&old_stroke_bounds.extents());
@@ -480,11 +481,12 @@ impl StrokeStore {
                 for image in render_comp.images.iter_mut() {
                     // resize the stroke geometry
                     let old_image_bounds = image.rect.bounds();
-                    let new_image_bounds = helpers::scale_inner_bounds_in_context_new_outer_bounds(
-                        old_image_bounds,
-                        old_bounds,
-                        new_bounds,
-                    );
+                    let new_image_bounds =
+                        rnote_compose::utils::scale_inner_bounds_in_context_new_outer_bounds(
+                            old_image_bounds,
+                            old_bounds,
+                            new_bounds,
+                        );
                     let scale = new_image_bounds
                         .extents()
                         .component_div(&old_image_bounds.extents());

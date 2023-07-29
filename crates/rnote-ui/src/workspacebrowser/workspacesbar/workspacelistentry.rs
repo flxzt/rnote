@@ -5,7 +5,7 @@ use gtk4::subclass::prelude::*;
 use gtk4::{gdk, glib};
 use once_cell::sync::Lazy;
 use rnote_compose::color;
-use rnote_engine::utils::GdkRGBAHelpers;
+use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
 use std::path::PathBuf;
 

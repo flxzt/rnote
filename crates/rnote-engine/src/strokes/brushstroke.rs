@@ -1,18 +1,18 @@
 // Imports
-use super::strokebehaviour::GeneratedStrokeImages;
-use super::StrokeBehaviour;
-use crate::DrawBehaviour;
+use super::content::GeneratedContentImages;
+use super::Content;
+use crate::Drawable;
 use crate::{
     render::{self},
-    strokes::strokebehaviour,
+    strokes::content,
 };
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
-use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
+use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penpath::{Element, Segment};
-use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::Composer;
-use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::transform::Transformable;
 use rnote_compose::{PenPath, Style};
 use serde::{Deserialize, Serialize};
 
@@ -28,7 +28,7 @@ pub struct BrushStroke {
     hitboxes: Vec<Aabb>,
 }
 
-impl StrokeBehaviour for BrushStroke {
+impl Content for BrushStroke {
     fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
         let bounds = self.bounds();
 
@@ -45,7 +45,7 @@ impl StrokeBehaviour for BrushStroke {
         &self,
         viewport: Aabb,
         image_scale: f64,
-    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
+    ) -> Result<GeneratedContentImages, anyhow::Error> {
         /// The threshold of the image size on either axis.
         /// When below it the stroke is rendered as a single image
         const IMAGES_SIZE_THRESHOLD: f64 = 1000.0;
@@ -56,7 +56,7 @@ impl StrokeBehaviour for BrushStroke {
         let bounds = self.bounds();
         let partial = !viewport.contains(&bounds);
         let Some(bounds) = viewport.intersection(&bounds) else {
-            return Ok(GeneratedStrokeImages::Partial { images: vec![], viewport });
+            return Ok(GeneratedContentImages::Partial { images: vec![], viewport });
         };
         let bounds_extents = bounds.extents();
 
@@ -178,9 +178,9 @@ impl StrokeBehaviour for BrushStroke {
         };
 
         if partial {
-            Ok(GeneratedStrokeImages::Partial { images, viewport })
+            Ok(GeneratedContentImages::Partial { images, viewport })
         } else {
-            Ok(GeneratedStrokeImages::Full(images))
+            Ok(GeneratedContentImages::Full(images))
         }
     }
 
@@ -195,14 +195,11 @@ impl StrokeBehaviour for BrushStroke {
         let bounds = self.bounds();
 
         if bounds.scale(total_zoom).volume() < DRAW_BOUNDS_THRESHOLD_AREA {
-            cx.fill(
-                bounds.to_kurbo_rect(),
-                &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
-            );
+            cx.fill(bounds.to_kurbo_rect(), &*content::STROKE_HIGHLIGHT_COLOR);
         } else {
             cx.stroke_styled(
                 self.path.to_kurbo(),
-                &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
+                &*content::STROKE_HIGHLIGHT_COLOR,
                 (HIGHLIGHT_STROKE_WIDTH / total_zoom)
                     .max(self.style.stroke_width() + 2.0 / total_zoom),
                 &piet::StrokeStyle::new()
@@ -218,7 +215,7 @@ impl StrokeBehaviour for BrushStroke {
     }
 }
 
-impl DrawBehaviour for BrushStroke {
+impl Drawable for BrushStroke {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
@@ -236,7 +233,7 @@ impl DrawBehaviour for BrushStroke {
     }
 }
 
-impl ShapeBehaviour for BrushStroke {
+impl Shapeable for BrushStroke {
     fn bounds(&self) -> Aabb {
         match &self.style {
             Style::Smooth(options) => self.path.composed_bounds(options),
@@ -250,7 +247,7 @@ impl ShapeBehaviour for BrushStroke {
     }
 }
 
-impl TransformBehaviour for BrushStroke {
+impl Transformable for BrushStroke {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.path.translate(offset);
     }

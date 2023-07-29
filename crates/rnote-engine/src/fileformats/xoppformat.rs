@@ -1,6 +1,6 @@
 // Imports
 use super::FromXmlAttributeValue;
-use super::{AsXmlAttributeValue, FileFormatLoader, FileFormatSaver, XmlLoadable, XmlWritable};
+use super::{FileFormatLoader, FileFormatSaver, ToXmlAttributeValue, XmlLoadable, XmlWritable};
 use roxmltree::{Node, NodeType};
 use serde::{Deserialize, Serialize};
 use std::io::{Read, Write};
@@ -225,12 +225,12 @@ impl XmlWritable for XoppBackgroundType {
         match self {
             Self::Solid { color, style } => {
                 w.write_attribute("type", "solid");
-                w.write_attribute("color", &color.as_xml_attr_value());
-                w.write_attribute("style", &style.as_xml_attr_value());
+                w.write_attribute("color", &color.to_xml_attr_value());
+                w.write_attribute("style", &style.to_xml_attr_value());
             }
             Self::Pixmap { domain, filename } => {
                 w.write_attribute("type", "pixmap");
-                w.write_attribute("domain", &domain.as_xml_attr_value());
+                w.write_attribute("domain", &domain.to_xml_attr_value());
                 w.write_attribute("filename", filename);
             }
             Self::Pdf => {
@@ -281,8 +281,8 @@ impl Default for XoppBackgroundSolidStyle {
     }
 }
 
-impl AsXmlAttributeValue for XoppBackgroundSolidStyle {
-    fn as_xml_attr_value(&self) -> String {
+impl ToXmlAttributeValue for XoppBackgroundSolidStyle {
+    fn to_xml_attr_value(&self) -> String {
         match self {
             Self::Plain => String::from("plain"),
             Self::Lined => String::from("lined"),
@@ -329,8 +329,8 @@ pub enum XoppBackgroundPixmapDomain {
     Clone,
 }
 
-impl AsXmlAttributeValue for XoppBackgroundPixmapDomain {
-    fn as_xml_attr_value(&self) -> String {
+impl ToXmlAttributeValue for XoppBackgroundPixmapDomain {
+    fn to_xml_attr_value(&self) -> String {
         match self {
             Self::Absolute => String::from("absolute"),
             Self::Attach => String::from("attach"),
@@ -507,8 +507,8 @@ pub struct XoppColor {
     pub alpha: u8,
 }
 
-impl AsXmlAttributeValue for XoppColor {
-    fn as_xml_attr_value(&self) -> String {
+impl ToXmlAttributeValue for XoppColor {
+    fn to_xml_attr_value(&self) -> String {
         format!(
             "#{:02x}{:02x}{:02x}{:02x}",
             self.red, self.green, self.blue, self.alpha
@@ -769,8 +769,8 @@ impl XmlWritable for XoppStroke {
     fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
         w.set_preserve_whitespaces(true);
         w.start_element("stroke");
-        w.write_attribute("tool", &self.tool.as_xml_attr_value());
-        w.write_attribute("color", &self.color.as_xml_attr_value());
+        w.write_attribute("tool", &self.tool.to_xml_attr_value());
+        w.write_attribute("color", &self.color.to_xml_attr_value());
         if let Some(fill) = self.fill {
             w.write_attribute("fill", format!("{fill}").as_str());
         }
@@ -816,8 +816,8 @@ pub enum XoppTool {
     Eraser,
 }
 
-impl AsXmlAttributeValue for XoppTool {
-    fn as_xml_attr_value(&self) -> String {
+impl ToXmlAttributeValue for XoppTool {
+    fn to_xml_attr_value(&self) -> String {
         match self {
             Self::Pen => String::from("pen"),
             Self::Highlighter => String::from("highlighter"),
@@ -915,7 +915,7 @@ impl XmlWritable for XoppText {
         w.write_attribute("size", &format!("{:.*}", VALS_DEC_PLACES, self.size));
         w.write_attribute("x", &format!("{:.*}", VALS_DEC_PLACES, self.x));
         w.write_attribute("y", &format!("{:.*}", VALS_DEC_PLACES, self.y));
-        w.write_attribute("color", &self.color.as_xml_attr_value());
+        w.write_attribute("color", &self.color.to_xml_attr_value());
 
         w.write_text(&self.text);
         w.end_element();

@@ -1,9 +1,9 @@
 // Imports
 use super::line::Line;
 use super::quadbez::QuadraticBezier;
-use crate::helpers::{KurboHelpers, Vector2Helpers};
-use crate::shapes::ShapeBehaviour;
-use crate::transform::TransformBehaviour;
+use crate::ext::{KurboShapeExt, Vector2Ext};
+use crate::shapes::Shapeable;
+use crate::transform::Transformable;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -26,7 +26,7 @@ pub struct CubicBezier {
     pub end: na::Vector2<f64>,
 }
 
-impl TransformBehaviour for CubicBezier {
+impl Transformable for CubicBezier {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.start += offset;
         self.cp1 += offset;
@@ -52,9 +52,9 @@ impl TransformBehaviour for CubicBezier {
     }
 }
 
-impl ShapeBehaviour for CubicBezier {
+impl Shapeable for CubicBezier {
     fn bounds(&self) -> p2d::bounding_volume::Aabb {
-        self.to_kurbo().bounding_box().bounds_as_p2d_aabb()
+        self.to_kurbo().bounding_box().bounds_to_p2d_aabb()
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {

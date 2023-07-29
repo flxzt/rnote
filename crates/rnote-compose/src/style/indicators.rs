@@ -1,8 +1,6 @@
-//! Helpers for drawing indicators, edit nodes, guides, etc.
-
 // Imports
 use crate::color;
-use crate::helpers::{AabbHelpers, Vector2Helpers};
+use crate::ext::{AabbExt, Vector2Ext};
 use crate::penevents::PenState;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};

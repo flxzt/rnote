@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-23 18:32+0200\n"
-"PO-Revision-Date: 2023-06-26 08:36+0000\n"
+"PO-Revision-Date: 2023-07-30 15:04+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.18.1\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -282,6 +282,8 @@ msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
+"বিটম্যাপ স্কেল ফ্যাক্টর এর সাপেক্ষে সেট করুন\n"
+"নথির প্রকৃত আকার"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:208
 msgid "Import Xournal++ File"
@@ -403,27 +405,22 @@ msgstr "পৃষ্ঠার ক্রম"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:148
 #: crates/rnote-ui/data/ui/dialogs/export.ui:359
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts that expand\n"
-#| "in horizontal and vertical directions are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
-"পৃষ্ঠার ক্রম যখন অনুভূমিক এবং উল্লম্ব ভাবে বিস্তারিত\n"
-"ডকুমেন্টগুলি পৃষ্ঠাতে কাটা হয়"
+"পৃষ্ঠার ক্রম যখন লেআউট সহ নথি\n"
+"যেটি অনুভূমিক এবং উল্লম্ব দিকগুলিতে প্রসারিত হয়\n"
+"পৃষ্ঠায় কাটা হয়"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:154
 #: crates/rnote-ui/data/ui/dialogs/export.ui:365
-#, fuzzy
 msgid "Horizontal First"
 msgstr "অনুভূমিক প্রথম"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:155
 #: crates/rnote-ui/data/ui/dialogs/export.ui:366
-#, fuzzy
 msgid "Vertical First"
 msgstr "উল্লম্ব প্রথম"
 
@@ -1211,7 +1208,6 @@ msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "ক্যানভাসের স্ক্রোলবারগুলি দেখান আছে কিনা তা ঠিক করুন"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:87
-#, fuzzy
 msgid "Inertial Touch Scrolling"
 msgstr "ইনর্শিয়াল টাচ স্ক্রোলিং"
 
@@ -1377,14 +1373,12 @@ msgid "Grid"
 msgstr "গ্রিড"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:344
-#, fuzzy
 msgid "Isometric Grid"
 msgstr "আইসোমেট্রিক গ্রিড"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:345
-#, fuzzy
 msgid "Isometric Dots"
-msgstr "আইসোমেট্রিক ডটস"
+msgstr "আইসোমেট্রিক বিন্দু"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:353
 msgid "Pattern Color"
@@ -1609,10 +1603,8 @@ msgid "Paste Clipboard"
 msgstr "ক্লিপবোর্ডে পেস্ট করুন"
 
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:74
-#, fuzzy
-#| msgid "Pages:"
 msgid "Page"
-msgstr "পৃষ্ঠা:"
+msgstr "পৃষ্ঠা"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"

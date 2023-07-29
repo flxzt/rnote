@@ -198,8 +198,14 @@ pub(crate) async fn run_export(
             page_order,
             bitmap_scalefactor,
             jpeg_quality,
+            output_file_stem,
             ..
         } => {
+            if rnote_files.len() > 1 && output_file_stem.is_some() {
+                return Err(anyhow::anyhow!(
+                    "You cannot use --file-stem when exporting multiple rnote files"
+                ));
+            }
             engine.export_prefs.doc_pages_export_prefs = DocPagesExportPrefs {
                 export_format: output_format.into(),
                 with_background: !without_background,
@@ -282,38 +288,44 @@ pub(crate) async fn run_export(
 
         None => {
             let doc_pages = matches!(export_commands, ExportCommands::DocPages { .. });
+            let output_ext = match &export_commands {
+                ExportCommands::Doc { .. } => engine
+                    .export_prefs
+                    .doc_export_prefs
+                    .export_format
+                    .file_ext(),
+                ExportCommands::DocPages { .. } => engine
+                    .export_prefs
+                    .doc_pages_export_prefs
+                    .export_format
+                    .file_ext(),
+                ExportCommands::Selection { .. } => engine
+                    .export_prefs
+                    .selection_export_prefs
+                    .export_format
+                    .file_ext(),
+            };
             let output_files = rnote_files
                 .iter()
                 .map(|file| {
                     let mut output = file.clone();
-                    output.set_extension(match &export_commands {
-                        ExportCommands::Doc { .. } => engine
-                            .export_prefs
-                            .doc_export_prefs
-                            .export_format
-                            .file_ext(),
-                        ExportCommands::DocPages { .. } => engine
-                            .export_prefs
-                            .doc_pages_export_prefs
-                            .export_format
-                            .file_ext(),
-                        ExportCommands::Selection { .. } => engine
-                            .export_prefs
-                            .selection_export_prefs
-                            .export_format
-                            .file_ext(),
-                    });
+                    output.set_extension(&output_ext);
                     output
                 })
                 .collect::<Vec<PathBuf>>();
 
             for (rnote_file, output_file) in rnote_files.iter().zip(output_files.iter()) {
                 validators::file_has_ext(rnote_file, "rnote")?;
-                let new_path = match check_file_conflict(output_file, &on_conflict) {
-                    Ok(r) => r,
-                    Err(e) => {
-                        println!("{e}");
-                        continue;
+                let new_path = if doc_pages {
+                    // conflicts are allowed here, generated output path will be ignored
+                    None
+                } else {
+                    match check_file_conflict(output_file, &on_conflict) {
+                        Ok(r) => r,
+                        Err(e) => {
+                            println!("{e}");
+                            continue;
+                        }
                     }
                 };
                 let output_file = new_path.as_ref().unwrap_or(output_file);
@@ -556,7 +568,7 @@ pub(crate) async fn export_to_file(
             // We applied the prefs previously to the engine
             let export_bytes = match export_commands {
                 ExportCommands::Selection { selection, .. } => {
-                    let strokes = if let Some(rect) = &selection.rect {
+                    let (strokes, err_msg) = if let Some(rect) = &selection.rect {
                         let x = rect[0];
                         let y = rect[1];
                         let dx = rect[2];
@@ -565,13 +577,19 @@ pub(crate) async fn export_to_file(
                         let v2 = v1 + Vector2::new(dx, dy);
                         let points = vec![v1.into(), v2.into()];
                         let aabb = Aabb::from_points(&points);
-                        engine.store.keys_unordered_intersecting_bounds(aabb)
+                        (
+                            engine.store.keys_unordered_intersecting_bounds(aabb),
+                            "No strokes in given rectangle",
+                        )
                     } else if selection.all {
-                        engine.store.stroke_keys_unordered()
+                        (engine.store.stroke_keys_unordered(), "Document is empty")
                     } else {
                         // Clap should make sure eighter of them are used
                         return Err(anyhow::anyhow!(" --all or --rect required"));
                     };
+                    if strokes.is_empty() {
+                        return Err(anyhow::anyhow!("{err_msg}"));
+                    }
                     engine.store.set_selected_keys(&strokes, true);
                     engine
                         .export_selection(None)
@@ -595,6 +613,16 @@ pub(crate) async fn export_to_file(
             // The output file cannnot be set with this subcommand
             drop(output_file);
             let rnote_file = rnote_file.as_ref();
+
+            let mut rnote_bytes = vec![];
+            File::open(rnote_file)
+                .await?
+                .read_to_end(&mut rnote_bytes)
+                .await?;
+
+            let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(rnote_bytes).await?;
+            let _ = engine.load_snapshot(engine_snapshot);
+
             let export_bytes = engine.export_doc_pages(None).await??;
             let out_ext = DocPagesExportFormat::from(output_format).file_ext();
             let output_file_stem = match output_file_stem {

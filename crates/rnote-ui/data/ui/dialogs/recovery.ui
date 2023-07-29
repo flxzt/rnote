@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="AdwMessageDialog" id="dialog_recovery_info">
+    <property name="heading" translatable="yes">Recovery Info</property>
+    <property name="body" translatable="yes">Info about document recovery for the current document.</property>
+    <property name="default-response">ok</property>
+    <responses>
+      <response id="copy" translatable="yes">Copy</response>
+      <response id="ok" translatable="yes">Ok</response>
+    </responses>
+  </object>
+
+  <object class="AdwMessageDialog" id="dialog_recover_documents">
+    <property name="heading" translatable="yes">Recover Documents</property>
+    <property name="body" translatable="yes">Oops, looks like Rnote crashed last time!
+      We recovered documents.
+      Please select what you want to do with them:</property>
+    <property name="default-response">confirm</property>
+    <property name="close-response">show_later</property>
+    <property name="extra-child">
+      <object class="AdwPreferencesGroup" id="recover_documents_group">
+        <property name="title" translatable="yes">Recovered Documents</property>
+      </object>
+    </property>
+    <responses>
+      <response id="show_later" translatable="yes">Show Later</response>
+      <response id="discard_all" appearance="destructive" translatable="yes">Discard All</response>
+      <response id="apply" appearance="suggested" translatable="yes">Apply</response>
+    </responses>
+  </object>
+</interface>

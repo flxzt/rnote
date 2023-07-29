@@ -1,9 +1,9 @@
 [workspace]
 members = [
-    "rnote-compose",
-    "rnote-engine",
-    "rnote-cli",
-    "rnote-ui",
+    "crates/rnote-compose",
+    "crates/rnote-engine",
+    "crates/rnote-cli",
+    "crates/rnote-ui",
 ]
 
 [workspace.package]
@@ -16,8 +16,8 @@ homepage = "https://rnote.flxzt.net"
 repository = "https://github.com/flxzt/rnote"
 
 [workspace.dependencies]
-rnote-compose = { version="0.7.1", path = "rnote-compose" }
-rnote-engine = { version="0.7.1", path = "rnote-engine" }
+rnote-compose = { version="0.7.1", path = "crates/rnote-compose" }
+rnote-engine = { version="0.7.1", path = "crates/rnote-engine" }
 
 log = "0.4"
 pretty_env_logger = "0.5"
@@ -67,7 +67,7 @@ clap = { version = "4", features = ["derive"] }
 indicatif = "0.17"
 glib = "0.17"
 cairo-rs = { version = "0.17", features = ["png", "svg", "pdf"] }
-librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", tag = "2.56.2" }
+librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", tag = "2.56.3" }
 # newest poppler feature ("v21_12") is causing linking errors when building in mingw for some reason.
 poppler-rs = { version = "0.21", features = ["v20_9"] }
 gettext-rs = { version = "0.7", features = ["gettext-system"] }

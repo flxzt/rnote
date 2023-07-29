@@ -7,7 +7,7 @@ use std::{
 use anyhow::Context;
 use clap::{ArgAction, Args, Subcommand, ValueEnum};
 use parry2d_f64::{bounding_volume::Aabb, na::Vector2};
-use rnote_compose::helpers::SplitOrder;
+use rnote_compose::SplitOrder;
 use rnote_engine::{
     engine::{
         export::{

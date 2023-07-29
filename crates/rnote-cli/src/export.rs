@@ -173,8 +173,8 @@ pub(crate) async fn run_export(
     export_commands: ExportCommands,
     engine: &mut RnoteEngine,
     rnote_files: Vec<PathBuf>,
-    without_background: bool,
-    without_pattern: bool,
+    no_background: bool,
+    no_pattern: bool,
     on_conflict: OnConflict,
 ) -> anyhow::Result<()> {
     if rnote_files.is_empty() {
@@ -188,8 +188,8 @@ pub(crate) async fn run_export(
             engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
                 output_file.as_deref(),
                 file.output_format.as_ref(),
-                without_background,
-                without_pattern,
+                no_background,
+                no_pattern,
                 page_order,
             )?
         }
@@ -208,8 +208,8 @@ pub(crate) async fn run_export(
             }
             engine.export_prefs.doc_pages_export_prefs = DocPagesExportPrefs {
                 export_format: output_format.into(),
-                with_background: !without_background,
-                with_pattern: !without_pattern,
+                with_background: !no_background,
+                with_pattern: !no_pattern,
                 page_order: page_order.into(),
                 bitmap_scalefactor: *bitmap_scalefactor,
                 jpeg_quality: *jpeg_quality,
@@ -227,8 +227,8 @@ pub(crate) async fn run_export(
             engine.export_prefs.selection_export_prefs = create_selection_export_prefs_from_args(
                 output_file.as_deref(),
                 file.output_format.as_ref(),
-                without_background,
-                without_pattern,
+                no_background,
+                no_pattern,
                 *bitmap_scalefactor,
                 *jpeg_quality,
                 *margin,
@@ -381,8 +381,8 @@ pub(crate) async fn run_export(
 pub(crate) fn create_doc_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
     output_format: Option<&DocOutputFormat>,
-    without_background: bool,
-    without_pattern: bool,
+    no_background: bool,
+    no_pattern: bool,
     page_order: &PageOrder,
 ) -> anyhow::Result<DocExportPrefs> {
     let format = match (output_file, output_format) {
@@ -411,8 +411,8 @@ pub(crate) fn create_doc_export_prefs_from_args(
 
     let prefs = DocExportPrefs {
         export_format: format,
-        with_background: !without_background,
-        with_pattern: !without_pattern,
+        with_background: !no_background,
+        with_pattern: !no_pattern,
         page_order: page_order.into(),
     };
 
@@ -432,8 +432,8 @@ fn get_doc_export_format(format: &str) -> anyhow::Result<DocExportFormat> {
 pub(crate) fn create_selection_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
     output_format: Option<&SelectionOutputFormat>,
-    without_background: bool,
-    without_pattern: bool,
+    no_background: bool,
+    no_pattern: bool,
     bitmap_scalefactor: f64,
     jpeg_quality: u8,
     margin: f64,
@@ -464,8 +464,8 @@ pub(crate) fn create_selection_export_prefs_from_args(
 
     let prefs = SelectionExportPrefs {
         export_format: format,
-        with_background: !without_background,
-        with_pattern: !without_pattern,
+        with_background: !no_background,
+        with_pattern: !no_pattern,
         bitmap_scalefactor,
         jpeg_quality,
         margin,
@@ -550,20 +550,20 @@ pub(crate) async fn export_to_file(
     export_commands: &ExportCommands,
     on_conflict: &OnConflict,
 ) -> anyhow::Result<()> {
+    let rnote_file = rnote_file.as_ref();
+    let rnote_bytes = {
+        let mut out = vec![];
+        File::open(rnote_file).await?.read_to_end(&mut out).await?;
+        out
+    };
+    let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(rnote_bytes).await?;
+    let _ = engine.load_snapshot(engine_snapshot);
+
     match export_commands {
         ExportCommands::Doc { .. } | ExportCommands::Selection { .. } => {
             let Some(export_file_name) = output_file.as_ref().file_name().map(|s| s.to_string_lossy().to_string()) else {
                 return Err(anyhow::anyhow!("Failed to get filename from output_file"));
             };
-
-            let mut rnote_bytes = vec![];
-            File::open(rnote_file)
-                .await?
-                .read_to_end(&mut rnote_bytes)
-                .await?;
-
-            let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(rnote_bytes).await?;
-            let _ = engine.load_snapshot(engine_snapshot);
 
             // We applied the prefs previously to the engine
             let export_bytes = match export_commands {
@@ -612,16 +612,6 @@ pub(crate) async fn export_to_file(
             validators::path_is_dir(output_dir)?;
             // The output file cannnot be set with this subcommand
             drop(output_file);
-            let rnote_file = rnote_file.as_ref();
-
-            let mut rnote_bytes = vec![];
-            File::open(rnote_file)
-                .await?
-                .read_to_end(&mut rnote_bytes)
-                .await?;
-
-            let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(rnote_bytes).await?;
-            let _ = engine.load_snapshot(engine_snapshot);
 
             let export_bytes = engine.export_doc_pages(None).await??;
             let out_ext = DocPagesExportFormat::from(output_format).file_ext();

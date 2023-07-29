@@ -55,10 +55,10 @@ pub(crate) enum Commands {
         on_conflict: OnConflict,
         /// export without background
         #[arg(short = 'b', long, action = ArgAction::SetTrue, global = true)]
-        without_background: bool,
+        no_background: bool,
         /// export without background pattern
         #[arg(short = 'p', long, action = ArgAction::SetTrue, global = true)]
-        without_pattern: bool,
+        no_pattern: bool,
         #[command(subcommand)]
         export_command: ExportCommands,
     },
@@ -168,8 +168,8 @@ pub(crate) async fn run() -> anyhow::Result<()> {
         }
         Commands::Export {
             rnote_files,
-            without_background,
-            without_pattern,
+            no_background,
+            no_pattern,
             on_conflict,
             export_command,
         } => {
@@ -178,8 +178,8 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                 export_command,
                 &mut engine,
                 rnote_files,
-                without_background,
-                without_pattern,
+                no_background,
+                no_pattern,
                 on_conflict,
             )
             .await?

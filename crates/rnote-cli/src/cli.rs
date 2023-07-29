@@ -38,14 +38,7 @@ pub(crate) enum Commands {
         xopp_dpi: f64,
     },
     /// Exports the Rnote file(s) and saves it in the desired format.{n}
-    /// When using --output-file, only one input file can be given.{n}
-    /// The export format is recognized from the file extension of the output file.{n}
-    /// When using --output-format, the same file name is used with the extension changed.{n}
-    /// --output-file and --output-format are mutually exclusive but one of them is required.{n}
-    /// Currently `.svg`, `.xopp` and `.pdf` are supported.{n}
-    /// Usages: {n}
-    /// rnote-cli export --output-file [filename.(svg|xopp|pdf)] [1 file]{n}
-    /// rnote-cli export --output-format [svg|xopp|pdf] [list of files]
+    /// See subcommands for usage
     Export {
         /// the rnote save file
         #[arg(global = true)]

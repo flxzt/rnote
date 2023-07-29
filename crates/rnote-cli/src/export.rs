@@ -28,15 +28,26 @@ use crate::validators;
 
 #[derive(Subcommand, Debug)]
 pub(crate) enum ExportCommands {
-    /// Export entire document
+    /// Export entire document {n}
+    /// When using --output-file, only one input file can be given.{n}
+    /// The export format is recognized from the file extension of the output file.{n}
+    /// When using --output-format, the file name and path of the rnote file is used with the extension changed.{n}
+    /// --output-file and --output-format are mutually exclusive but one of them is required.{n}
+    /// Currently `.svg`, `.xopp` and `.pdf` are supported.{n}
+    /// Usages: {n}
+    /// rnote-cli export doc --output-file [filename.(svg|xopp|pdf)] [1 file]{n}
+    /// rnote-cli export doc --output-format [svg|xopp|pdf] [list of files]
     Doc {
         #[command(flatten)]
         file: FileArgs<DocOutputFormat>,
-        /// if pagaes are exported horizontal or vertical first
+        /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into pages.
         #[arg(short = 'P', long, default_value_t = PageOrder::default())]
         page_order: PageOrder,
     },
-    /// Export each page of the documents individually
+    /// Export each page of the documents individually. {n}
+    /// Both --output-dir and --output-format need to be set {n}
+    /// Usage: {n}
+    /// rnote-cli export doc-pages --output-dir [folder] --output-format [svg|png|jpeg] [list of files]
     DocPages {
         /// the folder the pages get exported to
         #[arg(short = 'o', long)]
@@ -47,7 +58,7 @@ pub(crate) enum ExportCommands {
         /// the export output format
         #[arg(short = 'f', long)]
         output_format: DocPagesOutputFormat,
-        /// if pagaes are exported horizontal or vertical first
+        /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into pages.
         #[arg(short = 'P', long, default_value_t = PageOrder::default())]
         page_order: PageOrder,
         /// bitmap scale factor in relation to the actual size on the document
@@ -57,7 +68,17 @@ pub(crate) enum ExportCommands {
         #[arg(long, default_value_t = 85)]
         jpeg_quality: u8,
     },
-    /// Export selection
+    /// Export selection of a document {n}
+    /// When using --output-file, only one input file can be given.{n}
+    /// The export format is recognized from the file extension of the output file.{n}
+    /// When using --output-format, the same file name is used with the extension changed.{n}
+    /// --output-file and --output-format are mutually exclusive but one of them is required.{n}
+    /// Usages: {n}
+    /// rnote-cli export doc --output-file [filename.(svg|xopp|pdf)] [1 file] selection {n}
+    /// rnote-cli export doc --output-format [svg|xopp|pdf] [list of files] selection {n}
+    /// Available selection args: only use one of them {n}
+    /// --all: select all strokes {n}
+    /// --rect X Y deltaX deltaY : Select all strokes in given area {n}
     Selection {
         #[command(flatten)]
         file: FileArgs<SelectionOutputFormat>,
@@ -78,10 +99,10 @@ pub(crate) enum ExportCommands {
 #[derive(Args, Debug)]
 #[group(required = true, multiple = false)]
 pub(crate) struct FileArgs<T: ValueEnum + 'static + Send + Sync> {
-    /// the export output file. Only allows for one input file. Exclusive with output-format
+    /// the export output file. Only allows for one input file. Exclusive with --output-format
     #[arg(short = 'o', long)]
     output_file: Option<PathBuf>,
-    /// the export output format. Exclusive with output-file
+    /// the export output format. Exclusive with --output-file
     #[arg(short = 'f', long)]
     output_format: Option<T>,
 }
@@ -89,10 +110,12 @@ pub(crate) struct FileArgs<T: ValueEnum + 'static + Send + Sync> {
 #[derive(Args, Debug)]
 #[group(required = true, multiple = false)]
 pub(crate) struct SelectionArgs {
-    /// export all strokes
+    /// export all strokes. Exclusive with --rect
     #[arg(short = 'a', long, action = ArgAction::SetTrue)]
     all: bool,
-    /// Export an rectengular area of the canvas, usage: X Y deltaX deltaY
+    /// Export an rectengular area of the canvas, exclusive with --all  {n}
+    /// usage: X Y deltaX deltaY {n}
+    /// Goes to given coordiates and selects all strokes in a given rectangle based of the given delta values
     #[arg(short = 'r', long, value_name = "X", num_args = 4)]
     rect: Option<Vec<f64>>,
 }

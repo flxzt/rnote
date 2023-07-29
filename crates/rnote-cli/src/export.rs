@@ -84,6 +84,9 @@ pub(crate) enum ExportCommands {
         file: FileArgs<SelectionOutputFormat>,
         #[command(flatten)]
         selection: SelectionArgs,
+        #[arg(short = 'i', long, default_value_t = Bounds::default(), conflicts_with = "all")]
+        /// if the lines inside or intersecting with the given bounds are exported. Exclusive with --all
+        bounds: Bounds,
         /// bitmap scale factor in relation to the actual size on the document
         #[arg(long, default_value_t = 1.8)]
         bitmap_scalefactor: f64,
@@ -118,6 +121,19 @@ pub(crate) struct SelectionArgs {
     /// Goes to given coordiates and selects all strokes in a given rectangle based of the given delta values
     #[arg(short = 'r', long, value_name = "X", num_args = 4)]
     rect: Option<Vec<f64>>,
+}
+
+#[derive(ValueEnum, Clone, Debug, Default)]
+pub(crate) enum Bounds {
+    #[default]
+    Inside,
+    Intersecting,
+}
+
+impl Display for Bounds {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", format!("{self:?}").to_lowercase())
+    }
 }
 
 #[derive(ValueEnum, Clone, Debug)]
@@ -590,7 +606,9 @@ pub(crate) async fn export_to_file(
 
             // We applied the prefs previously to the engine
             let export_bytes = match export_commands {
-                ExportCommands::Selection { selection, .. } => {
+                ExportCommands::Selection {
+                    selection, bounds, ..
+                } => {
                     let (strokes, err_msg) = if let Some(rect) = &selection.rect {
                         let x = rect[0];
                         let y = rect[1];
@@ -601,7 +619,12 @@ pub(crate) async fn export_to_file(
                         let points = vec![v1.into(), v2.into()];
                         let aabb = Aabb::from_points(&points);
                         (
-                            engine.store.keys_unordered_intersecting_bounds(aabb),
+                            match bounds {
+                                Bounds::Inside => engine.store.keys_sorted_chrono_in_bounds(aabb),
+                                Bounds::Intersecting => {
+                                    engine.store.keys_unordered_intersecting_bounds(aabb)
+                                }
+                            },
                             "No strokes in given rectangle",
                         )
                     } else if selection.all {

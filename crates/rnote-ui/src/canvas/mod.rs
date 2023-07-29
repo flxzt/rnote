@@ -22,7 +22,6 @@ use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevents::PenState;
 use rnote_engine::ext::GrapheneRectExt;
-use rnote_engine::Document;
 use rnote_engine::{Document, RnRecoveryMetadata, RnoteEngine, WidgetFlags};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 

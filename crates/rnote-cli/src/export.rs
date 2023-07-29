@@ -156,7 +156,7 @@ pub(crate) enum PageOrder {
 
 impl Display for PageOrder {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{self:?}")
+        write!(f, "{}", format!("{self:?}").to_lowercase())
     }
 }
 

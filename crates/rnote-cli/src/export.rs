@@ -5,7 +5,7 @@ use std::{
 };
 
 use anyhow::Context;
-use clap::{ArgAction, Args, Subcommand, ValueEnum};
+use clap::{Args, Subcommand, ValueEnum};
 use parry2d_f64::{bounding_volume::Aabb, na::Vector2};
 use rnote_compose::SplitOrder;
 use rnote_engine::{
@@ -79,20 +79,35 @@ pub(crate) enum ExportCommands {
     Selection {
         #[command(flatten)]
         file: FileArgs<SelectionOutputFormat>,
-        #[command(flatten)]
-        selection: SelectionArgs,
-        #[arg(short = 'i', long, default_value_t = Bounds::default(), conflicts_with = "all")]
-        /// if the strokes inside or intersecting with the given bounds are exported. Exclusive with --all
+        #[command(subcommand)]
+        selection: SelectionCommands,
+        #[arg(short = 'i', long, default_value_t = Bounds::default(), global = true)]
+        /// if the strokes inside or intersecting with the given bounds are exported. Ignored when using all
         bounds: Bounds,
         /// bitmap scale factor in relation to the actual size on the document
-        #[arg(long, default_value_t = SelectionExportPrefs::default().bitmap_scalefactor)]
+        #[arg(long, default_value_t = SelectionExportPrefs::default().bitmap_scalefactor, global = true)]
         bitmap_scalefactor: f64,
         /// quality of the jpeg image
-        #[arg(long, default_value_t = SelectionExportPrefs::default().jpeg_quality)]
+        #[arg(long, default_value_t = SelectionExportPrefs::default().jpeg_quality, global = true)]
         jpeg_quality: u8,
         /// margin around the document
-        #[arg(long, default_value_t = SelectionExportPrefs::default().margin)]
+        #[arg(long, default_value_t = SelectionExportPrefs::default().margin, global = true)]
         margin: f64,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+pub(crate) enum SelectionCommands {
+    /// Export all strokes
+    All,
+    /// Export a rectangular area of the document{n}
+    /// usage: X Y deltaX deltaY{n}
+    /// Goes to given coordiates and selects all strokes in a given rectangle based of the given delta values
+    Rect {
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
     },
 }
 
@@ -100,24 +115,11 @@ pub(crate) enum ExportCommands {
 #[group(required = true, multiple = false)]
 pub(crate) struct FileArgs<T: ValueEnum + 'static + Send + Sync> {
     /// the export output file. Only allows for one input file. Exclusive with --output-format
-    #[arg(short = 'o', long)]
+    #[arg(short = 'o', long, global = true)]
     output_file: Option<PathBuf>,
     /// the export output format. Exclusive with --output-file
-    #[arg(short = 'f', long)]
+    #[arg(short = 'f', long, global = true)]
     output_format: Option<T>,
-}
-
-#[derive(Args, Debug)]
-#[group(required = true, multiple = false)]
-pub(crate) struct SelectionArgs {
-    /// export all strokes. Exclusive with --rect
-    #[arg(short = 'a', long, action = ArgAction::SetTrue)]
-    all: bool,
-    /// Export a rectangular area of the document, exclusive with --all{n}
-    /// usage: X Y deltaX deltaY{n}
-    /// Goes to given coordiates and selects all strokes in a given rectangle based of the given delta values
-    #[arg(short = 'r', long, value_name = "X", num_args = 4)]
-    rect: Option<Vec<f64>>,
 }
 
 #[derive(ValueEnum, Clone, Debug, Default)]
@@ -613,29 +615,32 @@ pub(crate) async fn export_to_file(
         ExportCommands::Selection {
             selection, bounds, ..
         } => {
-            let (strokes, err_msg) = if let Some(rect) = &selection.rect {
-                let x = rect[0];
-                let y = rect[1];
-                let width = rect[2];
-                let height = rect[3];
-                let v1 = Vector2::new(x, y);
-                let v2 = v1 + Vector2::new(width, height);
-                let points = vec![v1.into(), v2.into()];
-                let aabb = Aabb::from_points(&points);
-                (
-                    match bounds {
-                        Bounds::Contains => engine.store.stroke_keys_as_rendered_in_bounds(aabb),
-                        Bounds::Intersects => engine
-                            .store
-                            .stroke_keys_as_rendered_intersecting_bounds(aabb),
-                    },
-                    "No strokes in given rectangle",
-                )
-            } else if selection.all {
-                (engine.store.stroke_keys_as_rendered(), "Document is empty")
-            } else {
-                // Clap should make sure one of them is used
-                return Err(anyhow::anyhow!(" --all or --rect required"));
+            let (strokes, err_msg) = match selection {
+                SelectionCommands::Rect {
+                    x,
+                    y,
+                    width,
+                    height,
+                } => {
+                    let v1 = Vector2::new(*x, *y);
+                    let v2 = v1 + Vector2::new(*width, *height);
+                    let points = vec![v1.into(), v2.into()];
+                    let aabb = Aabb::from_points(&points);
+                    (
+                        match bounds {
+                            Bounds::Contains => {
+                                engine.store.stroke_keys_as_rendered_in_bounds(aabb)
+                            }
+                            Bounds::Intersects => engine
+                                .store
+                                .stroke_keys_as_rendered_intersecting_bounds(aabb),
+                        },
+                        "No strokes in given rectangle",
+                    )
+                }
+                SelectionCommands::All => {
+                    (engine.store.stroke_keys_as_rendered(), "Document is empty")
+                }
             };
             if strokes.is_empty() {
                 return Err(anyhow::anyhow!("{err_msg}"));

@@ -43,8 +43,7 @@ pub(crate) enum ExportCommands {
     },
     /// Export each page of the documents individually.{n}
     /// Both --output-dir and --output-format need to be set.{n}
-    /// Usage:{n}
-    /// rnote-cli export doc-pages --output-dir [folder] --output-format [svg|png|jpeg] [list of files]
+    #[command(alias = "pages")]
     DocPages {
         /// the directory the pages get exported to
         #[arg(short = 'o', long)]
@@ -76,6 +75,7 @@ pub(crate) enum ExportCommands {
     /// --all: select all strokes{n}
     /// --rect X Y width height: Select all strokes in given area{n}
     /// When not using --all, use --bounds to switch between intersecting and inside bounds
+    #[command(alias = "sel")]
     Selection {
         #[command(flatten)]
         file: FileArgs<SelectionOutputFormat>,
@@ -223,8 +223,8 @@ pub(crate) async fn run_export(
     export_commands: ExportCommands,
     engine: &mut RnoteEngine,
     rnote_files: Vec<PathBuf>,
-    no_background: bool,
-    no_pattern: bool,
+    background: bool,
+    pattern: bool,
     on_conflict: OnConflict,
 ) -> anyhow::Result<()> {
     if rnote_files.is_empty() {
@@ -238,8 +238,8 @@ pub(crate) async fn run_export(
             engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
                 output_file.as_deref(),
                 file.output_format.as_ref(),
-                no_background,
-                no_pattern,
+                background,
+                pattern,
                 page_order,
             )?
         }
@@ -258,8 +258,8 @@ pub(crate) async fn run_export(
             }
             engine.export_prefs.doc_pages_export_prefs = DocPagesExportPrefs {
                 export_format: output_format.into(),
-                with_background: !no_background,
-                with_pattern: !no_pattern,
+                with_background: background,
+                with_pattern: pattern,
                 page_order: page_order.into(),
                 bitmap_scalefactor: *bitmap_scalefactor,
                 jpeg_quality: *jpeg_quality,
@@ -277,8 +277,8 @@ pub(crate) async fn run_export(
             engine.export_prefs.selection_export_prefs = create_selection_export_prefs_from_args(
                 output_file.as_deref(),
                 file.output_format.as_ref(),
-                no_background,
-                no_pattern,
+                background,
+                pattern,
                 *bitmap_scalefactor,
                 *jpeg_quality,
                 *margin,
@@ -431,8 +431,8 @@ pub(crate) async fn run_export(
 pub(crate) fn create_doc_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
     output_format: Option<&DocOutputFormat>,
-    no_background: bool,
-    no_pattern: bool,
+    background: bool,
+    pattern: bool,
     page_order: &PageOrder,
 ) -> anyhow::Result<DocExportPrefs> {
     let format = match (output_file, output_format) {
@@ -461,8 +461,8 @@ pub(crate) fn create_doc_export_prefs_from_args(
 
     let prefs = DocExportPrefs {
         export_format: format,
-        with_background: !no_background,
-        with_pattern: !no_pattern,
+        with_background: background,
+        with_pattern: pattern,
         page_order: page_order.into(),
     };
 
@@ -482,8 +482,8 @@ fn get_doc_export_format(format: &str) -> anyhow::Result<DocExportFormat> {
 pub(crate) fn create_selection_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
     output_format: Option<&SelectionOutputFormat>,
-    no_background: bool,
-    no_pattern: bool,
+    background: bool,
+    pattern: bool,
     bitmap_scalefactor: f64,
     jpeg_quality: u8,
     margin: f64,
@@ -514,8 +514,8 @@ pub(crate) fn create_selection_export_prefs_from_args(
 
     let prefs = SelectionExportPrefs {
         export_format: format,
-        with_background: !no_background,
-        with_pattern: !no_pattern,
+        with_background: background,
+        with_pattern: pattern,
         bitmap_scalefactor,
         jpeg_quality,
         margin,

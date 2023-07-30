@@ -1,5 +1,5 @@
 use clap::{ArgAction, Parser, Subcommand, ValueEnum};
-use rnote_engine::engine::EngineSnapshot;
+use rnote_engine::engine::{import::XoppImportPrefs, EngineSnapshot};
 use rnote_engine::RnoteEngine;
 use smol::fs::File;
 use smol::io::{AsyncReadExt, AsyncWriteExt};
@@ -34,7 +34,7 @@ pub(crate) enum Commands {
         #[arg(short = 'i', long)]
         input_file: PathBuf,
         /// When importing a .xopp file, the import dpi can be specified.{n}
-        #[arg(long, default_value_t = 96.0)]
+        #[arg(long, default_value_t = XoppImportPrefs::default().dpi)]
         xopp_dpi: f64,
     },
     /// Exports the Rnote file(s) and saves it in the desired format.{n}

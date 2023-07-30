@@ -62,10 +62,10 @@ pub(crate) enum ExportCommands {
         #[arg(short = 'P', long, default_value_t = PageOrder::default())]
         page_order: PageOrder,
         /// bitmap scale factor in relation to the actual size on the document
-        #[arg(long, default_value_t = 1.8)]
+        #[arg(long, default_value_t = DocPagesExportPrefs::default().bitmap_scalefactor)]
         bitmap_scalefactor: f64,
         /// quality of the jpeg image
-        #[arg(long, default_value_t = 85)]
+        #[arg(long, default_value_t = DocPagesExportPrefs::default().jpeg_quality)]
         jpeg_quality: u8,
     },
     /// Export selection of a document {n}
@@ -88,13 +88,13 @@ pub(crate) enum ExportCommands {
         /// if the lines inside or intersecting with the given bounds are exported. Exclusive with --all
         bounds: Bounds,
         /// bitmap scale factor in relation to the actual size on the document
-        #[arg(long, default_value_t = 1.8)]
+        #[arg(long, default_value_t = SelectionExportPrefs::default().bitmap_scalefactor)]
         bitmap_scalefactor: f64,
         /// quality of the jpeg image
-        #[arg(long, default_value_t = 85)]
+        #[arg(long, default_value_t = SelectionExportPrefs::default().jpeg_quality)]
         jpeg_quality: u8,
         /// margin around the document
-        #[arg(long, default_value_t = 12.0)]
+        #[arg(long, default_value_t = SelectionExportPrefs::default().margin)]
         margin: f64,
     },
 }

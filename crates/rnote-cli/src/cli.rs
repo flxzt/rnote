@@ -20,7 +20,7 @@ pub(crate) struct Cli {
 
 #[derive(Subcommand)]
 pub(crate) enum Commands {
-    /// Tests if the specified files can be opened and are valid rnote files.
+    /// Tests if the specified files can be opened and are valid rnote files
     Test {
         /// the rnote files
         rnote_files: Vec<PathBuf>,
@@ -43,8 +43,8 @@ pub(crate) enum Commands {
         /// the rnote save file
         #[arg(global = true)]
         rnote_files: Vec<PathBuf>,
-        /// What to do if exported files already exits
-        #[arg(short = 'e', long, default_value = "ask", global = true)]
+        /// The action that will be performed if the to be exported file(s) already exist(s)
+        #[arg(long, default_value = "ask", global = true)]
         on_conflict: OnConflict,
         /// export without background
         #[arg(short = 'b', long, action = ArgAction::SetTrue, global = true)]
@@ -72,7 +72,7 @@ impl std::fmt::Display for OnConflict {
             f,
             "{}",
             match self {
-                Self::Ask => "Open existing file and ask again",
+                Self::Ask => "Open existing file for inspection and ask again",
                 Self::Overwrite => "Overwrite existing file",
                 Self::Skip => "Skip file",
                 Self::Suffix => "Append number at the end of the file name",

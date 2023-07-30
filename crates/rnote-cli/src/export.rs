@@ -28,15 +28,12 @@ use crate::validators;
 
 #[derive(Subcommand, Debug)]
 pub(crate) enum ExportCommands {
-    /// Export entire document {n}
+    /// Export the entire document.{n}
     /// When using --output-file, only one input file can be given.{n}
     /// The export format is recognized from the file extension of the output file.{n}
     /// When using --output-format, the file name and path of the rnote file is used with the extension changed.{n}
     /// --output-file and --output-format are mutually exclusive but one of them is required.{n}
     /// Currently `.svg`, `.xopp` and `.pdf` are supported.{n}
-    /// Usages: {n}
-    /// rnote-cli export doc --output-file [filename.(svg|xopp|pdf)] [1 file]{n}
-    /// rnote-cli export doc --output-format [svg|xopp|pdf] [list of files]
     Doc {
         #[command(flatten)]
         file: FileArgs<DocOutputFormat>,
@@ -44,21 +41,23 @@ pub(crate) enum ExportCommands {
         #[arg(short = 'P', long, default_value_t = PageOrder::default())]
         page_order: PageOrder,
     },
-    /// Export each page of the documents individually. {n}
-    /// Both --output-dir and --output-format need to be set {n}
-    /// Usage: {n}
+    /// Export each page of the documents individually.{n}
+    /// Both --output-dir and --output-format need to be set.{n}
+    /// Usage:{n}
     /// rnote-cli export doc-pages --output-dir [folder] --output-format [svg|png|jpeg] [list of files]
     DocPages {
         /// the folder the pages get exported to
         #[arg(short = 'o', long)]
         output_dir: PathBuf,
-        /// the folder the pages get exported to
+        /// The directory the pages get exported to.{n}
+        /// Uses file stem of input file if not set.{n}
+        /// Cannot be used when exporting multiple files
         #[arg(short = 's', long)]
         output_file_stem: Option<String>,
         /// the export output format
         #[arg(short = 'f', long)]
         output_format: DocPagesOutputFormat,
-        /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into pages.
+        /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into pages
         #[arg(short = 'P', long, default_value_t = PageOrder::default())]
         page_order: PageOrder,
         /// bitmap scale factor in relation to the actual size on the document
@@ -68,24 +67,22 @@ pub(crate) enum ExportCommands {
         #[arg(long, default_value_t = DocPagesExportPrefs::default().jpeg_quality)]
         jpeg_quality: u8,
     },
-    /// Export selection of a document {n}
+    /// Export a selection in a document.{n}
     /// When using --output-file, only one input file can be given.{n}
     /// The export format is recognized from the file extension of the output file.{n}
     /// When using --output-format, the same file name is used with the extension changed.{n}
     /// --output-file and --output-format are mutually exclusive but one of them is required.{n}
-    /// Usages: {n}
-    /// rnote-cli export doc --output-file [filename.(svg|xopp|pdf)] [1 file] selection {n}
-    /// rnote-cli export doc --output-format [svg|xopp|pdf] [list of files] selection {n}
-    /// Available selection args: only use one of them {n}
-    /// --all: select all strokes {n}
-    /// --rect X Y deltaX deltaY : Select all strokes in given area {n}
+    /// Available selection arguments - one of:{n}
+    /// --all: select all strokes{n}
+    /// --rect X Y width height: Select all strokes in given area{n}
+    /// When not using --all, use --bounds to switch between intersecting and inside bounds
     Selection {
         #[command(flatten)]
         file: FileArgs<SelectionOutputFormat>,
         #[command(flatten)]
         selection: SelectionArgs,
         #[arg(short = 'i', long, default_value_t = Bounds::default(), conflicts_with = "all")]
-        /// if the lines inside or intersecting with the given bounds are exported. Exclusive with --all
+        /// if the strokes inside or intersecting with the given bounds are exported. Exclusive with --all
         bounds: Bounds,
         /// bitmap scale factor in relation to the actual size on the document
         #[arg(long, default_value_t = SelectionExportPrefs::default().bitmap_scalefactor)]
@@ -116,8 +113,8 @@ pub(crate) struct SelectionArgs {
     /// export all strokes. Exclusive with --rect
     #[arg(short = 'a', long, action = ArgAction::SetTrue)]
     all: bool,
-    /// Export an rectengular area of the canvas, exclusive with --all  {n}
-    /// usage: X Y deltaX deltaY {n}
+    /// Export a rectangular area of the document, exclusive with --all{n}
+    /// usage: X Y deltaX deltaY{n}
     /// Goes to given coordiates and selects all strokes in a given rectangle based of the given delta values
     #[arg(short = 'r', long, value_name = "X", num_args = 4)]
     rect: Option<Vec<f64>>,
@@ -126,8 +123,8 @@ pub(crate) struct SelectionArgs {
 #[derive(ValueEnum, Clone, Debug, Default)]
 pub(crate) enum Bounds {
     #[default]
-    Inside,
-    Intersecting,
+    Contains,
+    Intersects,
 }
 
 impl Display for Bounds {
@@ -612,25 +609,27 @@ pub(crate) async fn export_to_file(
                     let (strokes, err_msg) = if let Some(rect) = &selection.rect {
                         let x = rect[0];
                         let y = rect[1];
-                        let dx = rect[2];
-                        let dy = rect[3];
+                        let width = rect[2];
+                        let height = rect[3];
                         let v1 = Vector2::new(x, y);
-                        let v2 = v1 + Vector2::new(dx, dy);
+                        let v2 = v1 + Vector2::new(width, height);
                         let points = vec![v1.into(), v2.into()];
                         let aabb = Aabb::from_points(&points);
                         (
                             match bounds {
-                                Bounds::Inside => engine.store.keys_sorted_chrono_in_bounds(aabb),
-                                Bounds::Intersecting => {
-                                    engine.store.keys_unordered_intersecting_bounds(aabb)
+                                Bounds::Contains => {
+                                    engine.store.stroke_keys_as_rendered_in_bounds(aabb)
                                 }
+                                Bounds::Intersects => engine
+                                    .store
+                                    .stroke_keys_as_rendered_intersecting_bounds(aabb),
                             },
                             "No strokes in given rectangle",
                         )
                     } else if selection.all {
-                        (engine.store.stroke_keys_unordered(), "Document is empty")
+                        (engine.store.stroke_keys_as_rendered(), "Document is empty")
                     } else {
-                        // Clap should make sure eighter of them are used
+                        // Clap should make sure one of them is used
                         return Err(anyhow::anyhow!(" --all or --rect required"));
                     };
                     if strokes.is_empty() {
@@ -673,7 +672,7 @@ pub(crate) async fn export_to_file(
                 },
             };
             for (i, bytes) in export_bytes.into_iter().enumerate() {
-                export_doc_page(
+                store_doc_page(
                     i,
                     output_dir,
                     &output_file_stem,
@@ -692,7 +691,7 @@ pub(crate) async fn export_to_file(
     Ok(())
 }
 
-async fn export_doc_page(
+async fn store_doc_page(
     i: usize,
     output_dir: &Path,
     output_file_stem: &str,

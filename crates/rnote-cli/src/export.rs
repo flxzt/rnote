@@ -46,7 +46,7 @@ pub(crate) enum ExportCommands {
     /// Usage:{n}
     /// rnote-cli export doc-pages --output-dir [folder] --output-format [svg|png|jpeg] [list of files]
     DocPages {
-        /// the folder the pages get exported to
+        /// the directory the pages get exported to
         #[arg(short = 'o', long)]
         output_dir: PathBuf,
         /// The directory the pages get exported to.{n}
@@ -129,7 +129,14 @@ pub(crate) enum Bounds {
 
 impl Display for Bounds {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", format!("{self:?}").to_lowercase())
+        write!(
+            f,
+            "{}",
+            match self {
+                Bounds::Contains => "contains",
+                Self::Intersects => "intersects",
+            }
+        )
     }
 }
 
@@ -192,7 +199,14 @@ pub(crate) enum PageOrder {
 
 impl Display for PageOrder {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", format!("{self:?}").to_lowercase())
+        write!(
+            f,
+            "{}",
+            match self {
+                PageOrder::Horizontal => "horizontal",
+                PageOrder::Vertical => "vertical",
+            }
+        )
     }
 }
 
@@ -596,57 +610,49 @@ pub(crate) async fn export_to_file(
     let _ = engine.load_snapshot(engine_snapshot);
 
     match export_commands {
-        ExportCommands::Doc { .. } | ExportCommands::Selection { .. } => {
+        ExportCommands::Selection {
+            selection, bounds, ..
+        } => {
+            let (strokes, err_msg) = if let Some(rect) = &selection.rect {
+                let x = rect[0];
+                let y = rect[1];
+                let width = rect[2];
+                let height = rect[3];
+                let v1 = Vector2::new(x, y);
+                let v2 = v1 + Vector2::new(width, height);
+                let points = vec![v1.into(), v2.into()];
+                let aabb = Aabb::from_points(&points);
+                (
+                    match bounds {
+                        Bounds::Contains => engine.store.stroke_keys_as_rendered_in_bounds(aabb),
+                        Bounds::Intersects => engine
+                            .store
+                            .stroke_keys_as_rendered_intersecting_bounds(aabb),
+                    },
+                    "No strokes in given rectangle",
+                )
+            } else if selection.all {
+                (engine.store.stroke_keys_as_rendered(), "Document is empty")
+            } else {
+                // Clap should make sure one of them is used
+                return Err(anyhow::anyhow!(" --all or --rect required"));
+            };
+            if strokes.is_empty() {
+                return Err(anyhow::anyhow!("{err_msg}"));
+            }
+            engine.store.set_selected_keys(&strokes, true);
+            let export_bytes = engine
+                .export_selection(None)
+                .await??
+                .context("No strokes selected")?;
+            store_export(output_file, &export_bytes).await?;
+        }
+        ExportCommands::Doc { .. } => {
             let Some(export_file_name) = output_file.as_ref().file_name().map(|s| s.to_string_lossy().to_string()) else {
                 return Err(anyhow::anyhow!("Failed to get filename from output_file"));
             };
-
-            // We applied the prefs previously to the engine
-            let export_bytes = match export_commands {
-                ExportCommands::Selection {
-                    selection, bounds, ..
-                } => {
-                    let (strokes, err_msg) = if let Some(rect) = &selection.rect {
-                        let x = rect[0];
-                        let y = rect[1];
-                        let width = rect[2];
-                        let height = rect[3];
-                        let v1 = Vector2::new(x, y);
-                        let v2 = v1 + Vector2::new(width, height);
-                        let points = vec![v1.into(), v2.into()];
-                        let aabb = Aabb::from_points(&points);
-                        (
-                            match bounds {
-                                Bounds::Contains => {
-                                    engine.store.stroke_keys_as_rendered_in_bounds(aabb)
-                                }
-                                Bounds::Intersects => engine
-                                    .store
-                                    .stroke_keys_as_rendered_intersecting_bounds(aabb),
-                            },
-                            "No strokes in given rectangle",
-                        )
-                    } else if selection.all {
-                        (engine.store.stroke_keys_as_rendered(), "Document is empty")
-                    } else {
-                        // Clap should make sure one of them is used
-                        return Err(anyhow::anyhow!(" --all or --rect required"));
-                    };
-                    if strokes.is_empty() {
-                        return Err(anyhow::anyhow!("{err_msg}"));
-                    }
-                    engine.store.set_selected_keys(&strokes, true);
-                    engine
-                        .export_selection(None)
-                        .await??
-                        .context("No strokes selected")?
-                }
-                ExportCommands::Doc { .. } => engine.export_doc(export_file_name, None).await??,
-                ExportCommands::DocPages { .. } => unreachable!(),
-            };
-            let mut fh = File::create(output_file).await?;
-            fh.write_all(&export_bytes).await?;
-            fh.sync_all().await?;
+            let export_bytes = engine.export_doc(export_file_name, None).await??;
+            store_export(output_file, &export_bytes).await?;
         }
         ExportCommands::DocPages {
             output_dir,
@@ -672,13 +678,9 @@ pub(crate) async fn export_to_file(
                 },
             };
             for (i, bytes) in export_bytes.into_iter().enumerate() {
-                store_doc_page(
-                    i,
-                    output_dir,
-                    &output_file_stem,
-                    &out_ext,
+                store_export(
+                    &doc_page_output_file(i, output_dir, &out_ext, &output_file_stem, on_conflict)?,
                     &bytes,
-                    on_conflict,
                 )
                 .await
                 .context(format!(
@@ -691,22 +693,25 @@ pub(crate) async fn export_to_file(
     Ok(())
 }
 
-async fn store_doc_page(
+fn doc_page_output_file(
     i: usize,
     output_dir: &Path,
-    output_file_stem: &str,
     out_ext: &str,
-    bytes: &[u8],
+    output_file_stem: &str,
     on_conflict: &OnConflict,
-) -> anyhow::Result<()> {
-    let mut output_file = output_dir.join(format!(
+) -> anyhow::Result<PathBuf> {
+    let mut out = output_dir.join(format!(
         "{output_file_stem} - page {}{}.{out_ext}",
         if i + 1 < 10 { "0" } else { "" },
         i + 1,
     ));
-    if let Some(new_out) = check_file_conflict(&output_file, on_conflict)? {
-        output_file = new_out;
+    if let Some(new_out) = check_file_conflict(out.as_ref(), on_conflict)? {
+        out = new_out;
     }
+    Ok(out)
+}
+
+async fn store_export(output_file: impl AsRef<Path>, bytes: &[u8]) -> anyhow::Result<()> {
     let mut fh = File::create(output_file).await?;
     fh.write_all(bytes).await?;
     fh.sync_all().await?;

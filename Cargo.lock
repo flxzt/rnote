@@ -3544,6 +3544,7 @@ dependencies = [
  "base64",
  "cairo-rs",
  "chrono",
+ "clap",
  "flate2",
  "futures",
  "geo",

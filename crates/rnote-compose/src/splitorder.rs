@@ -12,21 +12,17 @@ use serde::{Deserialize, Serialize};
     Deserialize,
     num_derive::FromPrimitive,
     num_derive::ToPrimitive,
+    Default,
 )]
 #[serde(rename = "split_order")]
 pub enum SplitOrder {
+    #[default]
     /// Split in row-major order.
     #[serde(rename = "row_major")]
     RowMajor,
     /// Split in column-major order.
     #[serde(rename = "column_major")]
     ColumnMajor,
-}
-
-impl Default for SplitOrder {
-    fn default() -> Self {
-        Self::RowMajor
-    }
 }
 
 impl TryFrom<u32> for SplitOrder {

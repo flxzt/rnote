@@ -36,9 +36,9 @@ pub(crate) enum ExportCommands {
     /// Currently `.svg`, `.xopp` and `.pdf` are supported.{n}
     Doc {
         #[command(flatten)]
-        file: FileArgs<DocOutputFormat>,
+        file: FileArgs<DocExportFormat>,
         /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into pages.
-        #[arg(long, default_value_t = PageOrder::default())]
+        #[arg(long, default_value_t = Default::default())]
         page_order: PageOrder,
     },
     /// Export each page of the documents individually.{n}
@@ -55,9 +55,9 @@ pub(crate) enum ExportCommands {
         output_file_stem: Option<String>,
         /// the export output format
         #[arg(short = 'f', long)]
-        output_format: DocPagesOutputFormat,
+        output_format: DocPagesExportFormat,
         /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into pages
-        #[arg(long, default_value_t = PageOrder::default())]
+        #[arg(long, default_value_t = Default::default())]
         page_order: PageOrder,
         /// bitmap scale factor in relation to the actual size on the document
         #[arg(long, default_value_t = DocPagesExportPrefs::default().bitmap_scalefactor)]
@@ -79,10 +79,10 @@ pub(crate) enum ExportCommands {
     #[command(alias = "sel")]
     Selection {
         #[command(flatten)]
-        file: FileArgs<SelectionOutputFormat>,
+        file: FileArgs<SelectionExportFormat>,
         #[command(subcommand)]
         selection: SelectionCommands,
-        #[arg(short = 'i', long, default_value_t = Bounds::default(), global = true)]
+        #[arg(short = 'i', long, default_value_t = Default::default(), global = true)]
         /// if the strokes inside or intersecting with the given bounds are exported. Ignored when using all
         bounds: Bounds,
         /// bitmap scale factor in relation to the actual size on the document
@@ -139,63 +139,13 @@ impl Display for Bounds {
             "{}",
             match self {
                 Bounds::Contains => "contains",
-                Self::Intersects => "intersects",
+                Bounds::Intersects => "intersects",
             }
         )
     }
 }
 
-#[derive(ValueEnum, Clone, Debug)]
-pub(crate) enum DocOutputFormat {
-    Pdf,
-    Xopp,
-    Svg,
-}
-impl From<&DocOutputFormat> for DocExportFormat {
-    fn from(val: &DocOutputFormat) -> Self {
-        match val {
-            DocOutputFormat::Pdf => DocExportFormat::Pdf,
-            DocOutputFormat::Xopp => DocExportFormat::Xopp,
-            DocOutputFormat::Svg => DocExportFormat::Svg,
-        }
-    }
-}
-
-#[derive(ValueEnum, Clone, Debug)]
-pub(crate) enum SelectionOutputFormat {
-    Svg,
-    Png,
-    Jpeg,
-}
-
-impl From<&SelectionOutputFormat> for SelectionExportFormat {
-    fn from(val: &SelectionOutputFormat) -> Self {
-        match val {
-            SelectionOutputFormat::Svg => SelectionExportFormat::Svg,
-            SelectionOutputFormat::Png => SelectionExportFormat::Png,
-            SelectionOutputFormat::Jpeg => SelectionExportFormat::Jpeg,
-        }
-    }
-}
-
-#[derive(ValueEnum, Clone, Debug)]
-pub(crate) enum DocPagesOutputFormat {
-    Svg,
-    Png,
-    Jpeg,
-}
-
-impl From<&DocPagesOutputFormat> for DocPagesExportFormat {
-    fn from(val: &DocPagesOutputFormat) -> Self {
-        match val {
-            DocPagesOutputFormat::Svg => DocPagesExportFormat::Svg,
-            DocPagesOutputFormat::Png => DocPagesExportFormat::Png,
-            DocPagesOutputFormat::Jpeg => DocPagesExportFormat::Jpeg,
-        }
-    }
-}
-
-#[derive(ValueEnum, Clone, Debug, Default)]
+#[derive(ValueEnum, Copy, Clone, Debug, Default)]
 pub(crate) enum PageOrder {
     #[default]
     /// Exports Horizontal pages first, then Vertical Pages
@@ -217,8 +167,8 @@ impl Display for PageOrder {
     }
 }
 
-impl From<&PageOrder> for SplitOrder {
-    fn from(val: &PageOrder) -> Self {
+impl From<PageOrder> for SplitOrder {
+    fn from(val: PageOrder) -> Self {
         match val {
             PageOrder::Horizontal => SplitOrder::RowMajor,
             PageOrder::Vertical => SplitOrder::ColumnMajor,
@@ -244,10 +194,10 @@ pub(crate) async fn run_export(
             output_file = file.output_file.clone();
             engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
                 output_file.as_deref(),
-                file.output_format.as_ref(),
+                file.output_format,
                 background,
                 pattern,
-                page_order,
+                *page_order,
             )?
         }
         ExportCommands::DocPages {
@@ -264,10 +214,10 @@ pub(crate) async fn run_export(
                 ));
             }
             engine.export_prefs.doc_pages_export_prefs = DocPagesExportPrefs {
-                export_format: output_format.into(),
+                export_format: *output_format,
                 with_background: background,
                 with_pattern: pattern,
-                page_order: page_order.into(),
+                page_order: (*page_order).into(),
                 bitmap_scalefactor: *bitmap_scalefactor,
                 jpeg_quality: *jpeg_quality,
             };
@@ -283,7 +233,7 @@ pub(crate) async fn run_export(
             output_file = file.output_file.clone();
             engine.export_prefs.selection_export_prefs = create_selection_export_prefs_from_args(
                 output_file.as_deref(),
-                file.output_format.as_ref(),
+                file.output_format,
                 background,
                 pattern,
                 *bitmap_scalefactor,
@@ -437,10 +387,10 @@ pub(crate) async fn run_export(
 
 pub(crate) fn create_doc_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
-    output_format: Option<&DocOutputFormat>,
+    output_format: Option<DocExportFormat>,
     background: bool,
     pattern: bool,
-    page_order: &PageOrder,
+    page_order: PageOrder,
 ) -> anyhow::Result<DocExportPrefs> {
     let format = match (output_file, output_format) {
         (Some(file), None) => match file.as_ref().extension().and_then(|ext| ext.to_str()) {
@@ -451,7 +401,7 @@ pub(crate) fn create_doc_export_prefs_from_args(
                 ))
             }
         },
-        (None, Some(out_format)) => Ok(out_format.into()),
+        (None, Some(out_format)) => Ok(out_format),
         // unreachable because they are exclusive (conflicts_with)
         (Some(_), Some(_)) => {
             return Err(anyhow::anyhow!(
@@ -488,7 +438,7 @@ fn get_doc_export_format(format: &str) -> anyhow::Result<DocExportFormat> {
 }
 pub(crate) fn create_selection_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
-    output_format: Option<&SelectionOutputFormat>,
+    output_format: Option<SelectionExportFormat>,
     background: bool,
     pattern: bool,
     bitmap_scalefactor: f64,
@@ -504,7 +454,7 @@ pub(crate) fn create_selection_export_prefs_from_args(
                 ))
             }
         },
-        (None, Some(out_format)) => Ok(out_format.into()),
+        (None, Some(out_format)) => Ok(out_format),
         // unreachable because they are exclusive (conflicts_with)
         (Some(_), Some(_)) => {
             return Err(anyhow::anyhow!(
@@ -675,7 +625,7 @@ pub(crate) async fn export_to_file(
             drop(output_file);
 
             let export_bytes = engine.export_doc_pages(None).await??;
-            let out_ext = DocPagesExportFormat::from(output_format).file_ext();
+            let out_ext = output_format.file_ext();
             let output_file_stem = match output_file_stem {
                 Some(o) => o.clone(),
                 None => match rnote_file.file_stem() {

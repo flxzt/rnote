@@ -187,6 +187,7 @@ pub(crate) async fn run_export(
     if rnote_files.is_empty() {
         return Err(anyhow::anyhow!("No rnote files to export!"));
     }
+    let mut on_conflict_overwrite = None;
     let output_file: Option<PathBuf>;
     // apply given arguments to export prefs
     match &export_commands {
@@ -247,7 +248,8 @@ pub(crate) async fn run_export(
             match rnote_files.get(0) {
                 Some(rnote_file) => {
                     validators::file_has_ext(rnote_file, "rnote")?;
-                    let new_path = check_file_conflict(output_file, &on_conflict)?;
+                    let new_path =
+                        check_file_conflict(output_file, on_conflict, &mut on_conflict_overwrite)?;
                     // Replace output file if suffix added
                     let output_file = new_path.as_ref().unwrap_or(output_file);
 
@@ -269,7 +271,8 @@ pub(crate) async fn run_export(
                         rnote_file,
                         output_file,
                         &export_commands,
-                        &on_conflict,
+                        on_conflict,
+                        &mut on_conflict_overwrite,
                     )
                     .await
                     {
@@ -327,7 +330,8 @@ pub(crate) async fn run_export(
                     // conflicts are allowed here, generated output path will be ignored
                     None
                 } else {
-                    match check_file_conflict(output_file, &on_conflict) {
+                    match check_file_conflict(output_file, on_conflict, &mut on_conflict_overwrite)
+                    {
                         Ok(r) => r,
                         Err(e) => {
                             println!("{e}");
@@ -353,13 +357,17 @@ pub(crate) async fn run_export(
                     &rnote_file,
                     output_file,
                     &export_commands,
-                    &on_conflict,
+                    on_conflict,
+                    &mut on_conflict_overwrite,
                 )
                 .await
                 {
-                    let msg = format!(
+                    let msg = match doc_pages {
+                        true => format!("Export \"{rnote_file_disp}\" failed, Err {e:?}"),
+                        false => format!(
                         "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}"
-                    );
+                    ),
+                    };
                     if pb.is_hidden() {
                         println!("{msg}")
                     }
@@ -494,38 +502,63 @@ fn get_selection_export_format(format: &str) -> anyhow::Result<SelectionExportFo
 
 pub(crate) fn check_file_conflict(
     output_file: &Path,
-    mut on_conflict: &OnConflict,
+    mut on_conflict: OnConflict,
+    on_conflict_overwrite: &mut Option<OnConflict>,
 ) -> anyhow::Result<Option<PathBuf>> {
     if !output_file.exists() {
         return Ok(None);
     }
-    let options = &[
-        OnConflict::Ask,
-        OnConflict::Overwrite,
-        OnConflict::Skip,
-        OnConflict::Suffix,
-    ];
-    while matches!(on_conflict, OnConflict::Ask) {
-        match dialoguer::Select::new()
-            .with_prompt(format!("File {} already exits:", output_file.display()))
-            .items(options)
-            .interact()
-        {
-            Ok(0) => {
-                if let Err(e) = open::that(output_file) {
-                    println!(
-                        "Failed to open {} with default program, {e}",
-                        output_file.display()
-                    );
-                }
+    match on_conflict_overwrite {
+        Some(o) => on_conflict = *o,
+        None => {
+            let options = &[
+                OnConflict::Ask,
+                OnConflict::Overwrite,
+                OnConflict::AlwaysOverwrite,
+                OnConflict::Skip,
+                OnConflict::AlwaysSkip,
+                OnConflict::Suffix,
+                OnConflict::AlwaysSuffix,
+            ];
+            while matches!(on_conflict, OnConflict::Ask) {
+                match dialoguer::Select::new()
+                    .with_prompt(format!("File {} already exits:", output_file.display()))
+                    .items(options)
+                    .interact()
+                {
+                    Ok(0) => {
+                        if let Err(e) = open::that(output_file) {
+                            println!(
+                                "Failed to open {} with default program, {e}",
+                                output_file.display()
+                            );
+                        }
+                    }
+                    Ok(c) => on_conflict = options[c],
+                    Err(e) => {
+                        return Err(anyhow::anyhow!(
+                            "Failed to show select promt, retry or select an behavior with --on-conflict, {e}"
+                        ))
+                    }
+                };
             }
-            Ok(c) => on_conflict = &options[c],
-            Err(e) => {
-                return Err(anyhow::anyhow!(
-                "Failed to show select promt, retry or select an behavior with --on-conflict, {e}"
-            ))
-            }
-        };
+        }
+    };
+    match on_conflict {
+        OnConflict::Ask => return Err(anyhow::anyhow!("Failed to save user choice!")),
+        OnConflict::AlwaysOverwrite => {
+            on_conflict = OnConflict::Overwrite;
+            *on_conflict_overwrite = Some(on_conflict);
+        }
+        OnConflict::AlwaysSkip => {
+            on_conflict = OnConflict::Skip;
+            *on_conflict_overwrite = Some(on_conflict);
+        }
+        OnConflict::AlwaysSuffix => {
+            on_conflict = OnConflict::Suffix;
+            *on_conflict_overwrite = Some(on_conflict);
+        }
+        OnConflict::Overwrite | OnConflict::Skip | OnConflict::Suffix => (),
     }
     match on_conflict {
         OnConflict::Ask => Err(anyhow::anyhow!("Failed to save user choice!")),
@@ -547,6 +580,9 @@ pub(crate) fn check_file_conflict(
             }
             Ok(Some(new_path))
         }
+        OnConflict::AlwaysOverwrite | OnConflict::AlwaysSkip | OnConflict::AlwaysSuffix => {
+            Err(anyhow::anyhow!("Failed to set on_conflict_overwrite"))
+        }
     }
 }
 
@@ -555,7 +591,8 @@ pub(crate) async fn export_to_file(
     rnote_file: impl AsRef<Path>,
     output_file: impl AsRef<Path>,
     export_commands: &ExportCommands,
-    on_conflict: &OnConflict,
+    on_conflict: OnConflict,
+    on_conflict_overwrite: &mut Option<OnConflict>,
 ) -> anyhow::Result<()> {
     let rnote_file = rnote_file.as_ref();
     let rnote_bytes = {
@@ -639,7 +676,14 @@ pub(crate) async fn export_to_file(
             };
             for (i, bytes) in export_bytes.into_iter().enumerate() {
                 store_export(
-                    &doc_page_output_file(i, output_dir, &out_ext, &output_file_stem, on_conflict)?,
+                    &doc_page_output_file(
+                        i,
+                        output_dir,
+                        &out_ext,
+                        &output_file_stem,
+                        on_conflict,
+                        on_conflict_overwrite,
+                    )?,
                     &bytes,
                 )
                 .await
@@ -658,14 +702,15 @@ fn doc_page_output_file(
     output_dir: &Path,
     out_ext: &str,
     output_file_stem: &str,
-    on_conflict: &OnConflict,
+    on_conflict: OnConflict,
+    on_conflict_overwrite: &mut Option<OnConflict>,
 ) -> anyhow::Result<PathBuf> {
     let mut out = output_dir.join(format!(
         "{output_file_stem} - page {}{}.{out_ext}",
         if i + 1 < 10 { "0" } else { "" },
         i + 1,
     ));
-    if let Some(new_out) = check_file_conflict(out.as_ref(), on_conflict)? {
+    if let Some(new_out) = check_file_conflict(out.as_ref(), on_conflict, on_conflict_overwrite)? {
         out = new_out;
     }
     Ok(out)

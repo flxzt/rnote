@@ -57,17 +57,23 @@ pub(crate) enum Commands {
     },
 }
 
-#[derive(ValueEnum, Clone, Debug, Default)]
+#[derive(ValueEnum, Copy, Clone, Debug, Default)]
 pub(crate) enum OnConflict {
     #[default]
     /// Ask before Overwriting
     Ask,
     /// Overwrite Files
     Overwrite,
+    #[value(skip)]
+    AlwaysOverwrite,
     /// Skip current Export
     Skip,
+    #[value(skip)]
+    AlwaysSkip,
     /// Add number to the end of the file
     Suffix,
+    #[value(skip)]
+    AlwaysSuffix,
 }
 
 impl std::fmt::Display for OnConflict {
@@ -78,8 +84,11 @@ impl std::fmt::Display for OnConflict {
             match self {
                 Self::Ask => "Open existing file for inspection and ask again",
                 Self::Overwrite => "Overwrite existing file",
+                Self::AlwaysOverwrite => "Always Overwrite exitings file",
                 Self::Skip => "Skip file",
+                Self::AlwaysSkip => "Always skip file",
                 Self::Suffix => "Append number at the end of the file name",
+                Self::AlwaysSuffix => "Always append number at the end of the file name",
             }
         )
     }

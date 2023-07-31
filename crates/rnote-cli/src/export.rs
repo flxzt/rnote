@@ -38,7 +38,7 @@ pub(crate) enum ExportCommands {
         #[command(flatten)]
         file: FileArgs<DocOutputFormat>,
         /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into pages.
-        #[arg(short = 'P', long, default_value_t = PageOrder::default())]
+        #[arg(long, default_value_t = PageOrder::default())]
         page_order: PageOrder,
     },
     /// Export each page of the documents individually.{n}
@@ -57,7 +57,7 @@ pub(crate) enum ExportCommands {
         #[arg(short = 'f', long)]
         output_format: DocPagesOutputFormat,
         /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into pages
-        #[arg(short = 'P', long, default_value_t = PageOrder::default())]
+        #[arg(long, default_value_t = PageOrder::default())]
         page_order: PageOrder,
         /// bitmap scale factor in relation to the actual size on the document
         #[arg(long, default_value_t = DocPagesExportPrefs::default().bitmap_scalefactor)]

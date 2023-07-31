@@ -71,6 +71,7 @@ pub(crate) enum ExportCommands {
     /// The export format is recognized from the file extension of the output file.{n}
     /// When using --output-format, the same file name is used with the extension changed.{n}
     /// --output-file and --output-format are mutually exclusive but one of them is required.{n}
+    /// Currently `.svg`, `.png` and `.jpeg` are supported.{n}
     /// Available selection arguments - one of:{n}
     /// --all: select all strokes{n}
     /// --rect X Y width height: Select all strokes in given area{n}
@@ -125,7 +126,9 @@ pub(crate) struct FileArgs<T: ValueEnum + 'static + Send + Sync> {
 #[derive(ValueEnum, Clone, Debug, Default)]
 pub(crate) enum Bounds {
     #[default]
+    /// All strokes completely inside the area
     Contains,
+    /// All Strokes intersecting with the area
     Intersects,
 }
 
@@ -195,7 +198,9 @@ impl From<&DocPagesOutputFormat> for DocPagesExportFormat {
 #[derive(ValueEnum, Clone, Debug, Default)]
 pub(crate) enum PageOrder {
     #[default]
+    /// Exports Horizontal pages first, then Vertical Pages
     Horizontal,
+    /// Exports Vertical pages first, then Horizontal Pages
     Vertical,
 }
 

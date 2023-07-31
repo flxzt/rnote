@@ -60,9 +60,13 @@ pub(crate) enum Commands {
 #[derive(ValueEnum, Clone, Debug, Default)]
 pub(crate) enum OnConflict {
     #[default]
+    /// Ask before Overwriting
     Ask,
+    /// Overwrite Files
     Overwrite,
+    /// Skip current Export
     Skip,
+    /// Add number to the end of the file
     Suffix,
 }
 

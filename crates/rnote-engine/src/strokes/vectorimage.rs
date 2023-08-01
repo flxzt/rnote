@@ -112,14 +112,14 @@ impl Content for VectorImage {
 // ensure to export an actual Svg when calling gen_svg(), but are also able to draw to piet.
 impl Drawable for VectorImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
         let image = self.gen_svg()?.gen_image(image_scale)?;
         // image_scale does not have a meaning here
         image.draw(cx, image_scale)?;
-
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
+    }
+
+    fn draw_to_cairo(&self, cx: &cairo::Context, _image_scale: f64) -> anyhow::Result<()> {
+        self.gen_svg()?.draw_to_cairo(cx)
     }
 }
 

@@ -9,7 +9,7 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-rnote-compose = { workspace = true }
+rnote-compose = { workspace = true, features = ["clap-derive"]  }
 rnote-engine = { workspace = true, features = ["clap-derive"] }
 
 log = { workspace = true }

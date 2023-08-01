@@ -3515,6 +3515,7 @@ version = "0.7.1"
 dependencies = [
  "anyhow",
  "base64",
+ "clap",
  "ink-stroke-modeler-rs",
  "kurbo",
  "log",

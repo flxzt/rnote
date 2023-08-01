@@ -1,5 +1,4 @@
 use std::{
-    fmt::Display,
     path::{Path, PathBuf},
     time::Duration,
 };
@@ -40,7 +39,7 @@ pub(crate) enum ExportCommands {
         file: FileArgs<DocExportFormat>,
         /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into pages.
         #[arg(long, default_value_t = Default::default())]
-        page_order: PageOrder,
+        page_order: SplitOrder,
     },
     /// Export each page of the documents individually.{n}
     /// Both --output-dir and --output-format need to be set.{n}
@@ -59,7 +58,7 @@ pub(crate) enum ExportCommands {
         output_format: DocPagesExportFormat,
         /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into pages
         #[arg(long, default_value_t = Default::default())]
-        page_order: PageOrder,
+        page_order: SplitOrder,
         /// bitmap scale factor in relation to the actual size on the document
         #[arg(long, default_value_t = DocPagesExportPrefs::default().bitmap_scalefactor)]
         bitmap_scalefactor: f64,
@@ -166,7 +165,7 @@ pub(crate) async fn run_export(
                 export_format: *output_format,
                 with_background: background,
                 with_pattern: pattern,
-                page_order: (*page_order).into(),
+                page_order: *page_order,
                 bitmap_scalefactor: *bitmap_scalefactor,
                 jpeg_quality: *jpeg_quality,
             };
@@ -346,7 +345,7 @@ pub(crate) fn create_doc_export_prefs_from_args(
     output_format: Option<DocExportFormat>,
     background: bool,
     pattern: bool,
-    page_order: PageOrder,
+    page_order: SplitOrder,
 ) -> anyhow::Result<DocExportPrefs> {
     let format = match (output_file, output_format) {
         (Some(file), None) => match file.as_ref().extension().and_then(|ext| ext.to_str()) {
@@ -376,7 +375,7 @@ pub(crate) fn create_doc_export_prefs_from_args(
         export_format: format,
         with_background: background,
         with_pattern: pattern,
-        page_order: page_order.into(),
+        page_order,
     };
 
     Ok(prefs)

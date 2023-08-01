@@ -80,7 +80,7 @@ impl Content for VectorImage {
     ) -> Result<GeneratedContentImages, anyhow::Error> {
         let bounds = self.bounds();
 
-        // Always generate full stroke images for vectorimages, as they are too expensive to be repeatedly rendered
+        // always generate full stroke images for vectorimages, they are too expensive to be repeatedly rendered
         Ok(GeneratedContentImages::Full(vec![
             render::Image::gen_with_piet(
                 |piet_cx| self.draw(piet_cx, image_scale),
@@ -107,16 +107,15 @@ impl Content for VectorImage {
     fn update_geometry(&mut self) {}
 }
 
-// Because we can't render svgs directly in piet, so we need to overwrite the gen_svgs() default implementation and call it in draw().
-// here we use a svg renderer to generate the bitmap images.
-// This way we ensure to export an actual svg when calling gen_svgs(),but are also able to draw it onto piet.
+// Because it is currently not possible to render SVGs directly with piet, we need to overwrite the gen_svg() default
+// implementation and call it in draw(). There the librsvg renderer is used to generate bitmap images. This way we
+// ensure to export an actual Svg when calling gen_svg(), but are also able to draw to piet.
 impl Drawable for VectorImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
-        let image = render::Image::gen_image_from_svg(self.gen_svg()?, self.bounds(), image_scale)?;
-
-        // image_scale does not have a meaning here, as the pixel image is already provided
+        let image = self.gen_svg()?.gen_image(image_scale)?;
+        // image_scale does not have a meaning here
         image.draw(cx, image_scale)?;
 
         cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
@@ -149,7 +148,7 @@ impl Transformable for VectorImage {
 }
 
 impl VectorImage {
-    pub fn import_from_svg_data(
+    pub fn import_from_svg_str(
         svg_data: &str,
         pos: na::Vector2<f64>,
         size: Option<na::Vector2<f64>>,
@@ -238,7 +237,7 @@ impl VectorImage {
                 {
                     let cx = cairo::Context::new(&svg_surface).map_err(|e| {
                         anyhow::anyhow!(
-                            "new cairo::Context failed in vectorimage import_from_pdf_bytes() with Err: {e:?}"
+                            "new cairo::Context failed, Err: {e:?}"
                         )
                     })?;
 
@@ -267,7 +266,7 @@ impl VectorImage {
                     *svg_surface.finish_output_stream()
                         .map_err(|e| anyhow::anyhow!("{e:?}"))?
                         .downcast::<Vec<u8>>()
-                        .map_err(|_e| anyhow::anyhow!("failed to downcast svg surface content in VectorImage import_from_pdf_bytes()"))?)?;
+                        .map_err(|e| anyhow::anyhow!("failed to downcast svg surface content, Err: {e:?}"))?)?;
 
 
                 Ok(svg_content)
@@ -295,7 +294,7 @@ impl VectorImage {
         Ok(svgs
             .into_par_iter()
             .filter_map(|svg| {
-                match Self::import_from_svg_data(
+                match Self::import_from_svg_str(
                     svg.svg_data.as_str(),
                     svg.bounds.mins.coords,
                     Some(svg.bounds.extents()),

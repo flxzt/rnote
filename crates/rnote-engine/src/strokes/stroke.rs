@@ -95,6 +95,16 @@ impl Drawable for Stroke {
             Stroke::BitmapImage(bitmapimage) => bitmapimage.draw(cx, image_scale),
         }
     }
+
+    fn draw_to_cairo(&self, cx: &cairo::Context, image_scale: f64) -> anyhow::Result<()> {
+        match self {
+            Stroke::BrushStroke(brushstroke) => brushstroke.draw_to_cairo(cx, image_scale),
+            Stroke::ShapeStroke(shapestroke) => shapestroke.draw_to_cairo(cx, image_scale),
+            Stroke::TextStroke(textstroke) => textstroke.draw_to_cairo(cx, image_scale),
+            Stroke::VectorImage(vectorimage) => vectorimage.draw_to_cairo(cx, image_scale),
+            Stroke::BitmapImage(bitmapimage) => bitmapimage.draw_to_cairo(cx, image_scale),
+        }
+    }
 }
 
 impl Shapeable for Stroke {
@@ -389,7 +399,7 @@ impl Stroke {
                 ))
             }
             Stroke::ShapeStroke(shapestroke) => {
-                let png_data = match shapestroke.export_as_bitmapimage_bytes(
+                let png_data = match shapestroke.export_to_bitmap_image_bytes(
                     image::ImageOutputFormat::Png,
                     RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
@@ -430,7 +440,7 @@ impl Stroke {
             Stroke::TextStroke(textstroke) => {
                 // Xournal++ text strokes do not support affine transformations, so we have to convert on best effort here.
                 // The best solution for now seems to be to export them as a bitmap image.
-                let png_data = match textstroke.export_as_bitmapimage_bytes(
+                let png_data = match textstroke.export_to_bitmap_image_bytes(
                     image::ImageOutputFormat::Png,
                     RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
@@ -469,7 +479,7 @@ impl Stroke {
                 ))
             }
             Stroke::VectorImage(vectorimage) => {
-                let png_data = match vectorimage.export_as_bitmapimage_bytes(
+                let png_data = match vectorimage.export_to_bitmap_image_bytes(
                     image::ImageOutputFormat::Png,
                     RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
@@ -508,7 +518,7 @@ impl Stroke {
                 ))
             }
             Stroke::BitmapImage(bitmapimage) => {
-                let png_data = match bitmapimage.export_as_bitmapimage_bytes(
+                let png_data = match bitmapimage.export_to_bitmap_image_bytes(
                     image::ImageOutputFormat::Png,
                     RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {

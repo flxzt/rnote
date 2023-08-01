@@ -192,7 +192,7 @@ impl RnoteEngine {
             let result = || -> anyhow::Result<VectorImage> {
                 let svg_str = String::from_utf8(bytes)?;
 
-                VectorImage::import_from_svg_data(&svg_str, pos, None)
+                VectorImage::import_from_svg_str(&svg_str, pos, None)
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {

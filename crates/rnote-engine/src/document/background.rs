@@ -475,10 +475,8 @@ impl Background {
     }
 
     pub fn gen_tile_image(&self, image_scale: f64) -> Result<render::Image, anyhow::Error> {
-        let tile_size = self.tile_size();
-        let tile_bounds = Aabb::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
-        let svg = self.gen_svg(tile_bounds, true)?;
-        render::Image::gen_image_from_svg(svg, tile_bounds, image_scale)
+        let tile_bounds = Aabb::new(na::point![0.0, 0.0], self.tile_size().into());
+        self.gen_svg(tile_bounds, true)?.gen_image(image_scale)
     }
 
     pub fn draw_to_cairo(
@@ -487,8 +485,8 @@ impl Background {
         bounds: Aabb,
         with_pattern: bool,
     ) -> anyhow::Result<()> {
-        let mut svg = self.gen_svg(bounds, with_pattern)?;
-        svg.wrap_svg_root(Some(bounds), Some(bounds), false);
-        svg.draw_to_cairo(cx)
+        let mut background_svg = self.gen_svg(bounds, with_pattern)?;
+        background_svg.wrap_svg_root(Some(bounds), Some(bounds), false);
+        background_svg.draw_to_cairo(cx)
     }
 }

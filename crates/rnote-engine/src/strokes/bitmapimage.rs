@@ -1,16 +1,15 @@
 // Imports
-use super::content::{self, GeneratedContentImages};
+use super::content::{self};
 use super::{Content, Stroke};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::render;
 use crate::Drawable;
 use anyhow::Context;
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
+use p2d::bounding_volume::Aabb;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
-use rnote_compose::ext::{AabbExt, Affine2Ext, Vector2Ext};
+use rnote_compose::ext::{AabbExt, Affine2Ext};
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::transform::Transform;
@@ -41,50 +40,6 @@ impl Default for BitmapImage {
 }
 
 impl Content for BitmapImage {
-    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
-        let bounds = self.bounds();
-
-        render::Svg::gen_with_piet_cairo_backend(
-            |cx| {
-                cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
-                self.draw(cx, 1.0)
-            },
-            bounds,
-        )
-    }
-
-    fn gen_images(
-        &self,
-        viewport: Aabb,
-        image_scale: f64,
-    ) -> Result<GeneratedContentImages, anyhow::Error> {
-        let bounds = self.bounds();
-
-        if viewport.contains(&bounds) {
-            Ok(GeneratedContentImages::Full(vec![
-                render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    bounds,
-                    image_scale,
-                )?,
-            ]))
-        } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
-            Ok(GeneratedContentImages::Partial {
-                images: vec![render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    intersection_bounds,
-                    image_scale,
-                )?],
-                viewport,
-            })
-        } else {
-            Ok(GeneratedContentImages::Partial {
-                images: vec![],
-                viewport,
-            })
-        }
-    }
-
     fn draw_highlight(
         &self,
         cx: &mut impl piet::RenderContext,

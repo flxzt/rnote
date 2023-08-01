@@ -139,7 +139,7 @@ impl EngineSnapshot {
                                 }
                                 Err(e) => {
                                     log::error!(
-                                        "from_xoppstroke() failed in open_from_xopp_bytes() with Err {:?}",
+                                        "from_xoppstroke() failed in open_from_xopp_bytes() , Err {:?}",
                                         e
                                     );
                                 }
@@ -158,7 +158,7 @@ impl EngineSnapshot {
                                 }
                                 Err(e) => {
                                     log::error!(
-                                        "from_xoppimage() failed in open_from_xopp_bytes() with Err {:?}",
+                                        "from_xoppimage() failed in open_from_xopp_bytes() , Err {:?}",
                                         e
                                     );
                                 }

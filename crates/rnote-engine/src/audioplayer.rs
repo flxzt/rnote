@@ -248,8 +248,8 @@ fn load_sound_from_path(
 
         Ok(buffered)
     } else {
-        Err(anyhow::Error::msg(format!(
+        Err(anyhow::anyhow!(
             "failed to init audioplayer. File `{resource_path:?}` is missing."
-        )))
+        ))
     }
 }

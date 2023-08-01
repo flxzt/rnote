@@ -207,7 +207,7 @@ impl Camera {
         self.zoom * self.temporary_zoom
     }
 
-    /// The scaling factor for generating pixel images with the current permanent zoom.
+    /// The scaling factor for generating bitmap images with the current permanent zoom.
     ///
     /// Takes the scale factor in account
     pub fn image_scale(&self) -> f64 {

@@ -1,10 +1,9 @@
 // Imports
-use super::content::GeneratedContentImages;
 use super::Content;
-use crate::{render, strokes::content, Camera, Drawable};
+use crate::{strokes::content, Camera, Drawable};
 use kurbo::Shape;
 use once_cell::sync::Lazy;
-use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::bounding_volume::Aabb;
 use piet::{RenderContext, TextLayout, TextLayoutBuilder};
 use rnote_compose::ext::{AabbExt, Affine2Ext, Vector2Ext};
 use rnote_compose::shapes::Shapeable;
@@ -484,51 +483,6 @@ impl Shapeable for TextStroke {
 }
 
 impl Content for TextStroke {
-    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
-        let bounds = self.bounds();
-
-        // We need to generate the svg with the cairo backend, because text layout would differ with the svg backend
-        render::Svg::gen_with_piet_cairo_backend(
-            |cx| {
-                cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
-                self.draw(cx, 1.0)
-            },
-            bounds,
-        )
-    }
-
-    fn gen_images(
-        &self,
-        viewport: Aabb,
-        image_scale: f64,
-    ) -> Result<GeneratedContentImages, anyhow::Error> {
-        let bounds = self.bounds();
-
-        if viewport.contains(&bounds) {
-            Ok(GeneratedContentImages::Full(vec![
-                render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    bounds,
-                    image_scale,
-                )?,
-            ]))
-        } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
-            Ok(GeneratedContentImages::Partial {
-                images: vec![render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    intersection_bounds,
-                    image_scale,
-                )?],
-                viewport,
-            })
-        } else {
-            Ok(GeneratedContentImages::Partial {
-                images: vec![],
-                viewport,
-            })
-        }
-    }
-
     fn draw_highlight(
         &self,
         cx: &mut impl piet::RenderContext,

@@ -221,11 +221,11 @@ impl StrokeStore {
                             image_scale,
                             stroke_bounds: stroke.bounds(),
                         }).unwrap_or_else(|e| {
-                            log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?}, with Err, {e:?}");
+                            log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?} , Err, {e:?}");
                         });
                     }
                     Err(e) => {
-                        log::debug!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?}, with Err: {e:?}");
+                        log::debug!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?} , Err: {e:?}");
                     }
                 },
             );
@@ -317,11 +317,11 @@ impl StrokeStore {
                                 image_scale,
                                 stroke_bounds: stroke.bounds(),
                             }).unwrap_or_else(|e| {
-                                log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_in_viewport_threaded(), with Err, {e}");
+                                log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_in_viewport_threaded(), , Err, {e}");
                             });
                         }
                         Err(e) => {
-                            log::debug!("stroke.gen_image() failed in regenerate_rendering_in_viewport_threaded(), with Err: {e:?}");
+                            log::debug!("stroke.gen_image() failed in regenerate_rendering_in_viewport_threaded(), , Err: {e:?}");
                         }
                     },
                 );
@@ -526,7 +526,7 @@ impl StrokeStore {
             if let Some(stroke) = self.stroke_components.get(key) {
                 if let Err(e) = stroke.draw(piet_cx, image_scale) {
                     log::error!(
-                        "drawing stroke in draw_strokes_immediate_w_piet() failed with Err: {e:?}"
+                        "drawing stroke in draw_strokes_immediate_w_piet() failed , Err: {e:?}"
                     );
                 }
             }

@@ -2,7 +2,6 @@
 use super::{EngineConfig, RnoteEngine, StrokeContent};
 use crate::fileformats::rnoteformat::RnoteFile;
 use crate::fileformats::{xoppformat, FileFormatSaver};
-use crate::render;
 use anyhow::Context;
 use futures::channel::oneshot;
 use rayon::prelude::*;
@@ -493,7 +492,7 @@ impl RnoteEngine {
                         )?;
                         cairo_cx.show_page().map_err(|e| {
                             anyhow::anyhow!(
-                                "Showing page failed when exporting page {i} as pdf, Err: {e:?}"
+                                "Showing page failed while exporting page {i} as pdf, Err: {e:?}"
                             )
                         })?;
                         cairo_cx.restore()?;
@@ -501,10 +500,10 @@ impl RnoteEngine {
                 }
                 let data = *target_surface
                     .finish_output_stream()
-                    .map_err(|e| anyhow::anyhow!("Finishing outputstream failed with Err: {e:?}"))?
+                    .map_err(|e| anyhow::anyhow!("Finishing outputstream failed, Err: {e:?}"))?
                     .downcast::<Vec<u8>>()
                     .map_err(|e| {
-                        anyhow::anyhow!("Downcasting finished output stream failed with Err: {e:?}")
+                        anyhow::anyhow!("Downcasting finished output stream failed, Err: {e:?}")
                     })?;
 
                 Ok(data)
@@ -736,7 +735,7 @@ impl RnoteEngine {
                     .into_par_iter()
                     .enumerate()
                     .map(|(i, page_content)| {
-                        let page_svg = page_content
+                        page_content
                             .gen_svg(
                                 doc_pages_export_prefs.with_background,
                                 doc_pages_export_prefs.with_pattern,
@@ -744,15 +743,9 @@ impl RnoteEngine {
                             )?
                             .ok_or(anyhow::anyhow!(
                                 "Generating Svg for page {i} failed, returned None."
-                            ))?;
-                        let page_svg_bounds = page_svg.bounds;
-
-                        render::Image::gen_image_from_svg(
-                            page_svg,
-                            page_svg_bounds,
-                            doc_pages_export_prefs.bitmap_scalefactor,
-                        )?
-                        .into_encoded_bytes(bitmapimage_format.clone())
+                            ))?
+                            .gen_image(doc_pages_export_prefs.bitmap_scalefactor)?
+                            .into_encoded_bytes(bitmapimage_format.clone())
                     })
                     .collect()
             };
@@ -841,10 +834,13 @@ impl RnoteEngine {
                 let Some(selection_content) = selection_content else {
                     return Ok(None);
                 };
-                let Some(selection_svg) = selection_content.gen_svg(selection_export_prefs.with_background, selection_export_prefs.with_pattern, selection_export_prefs.margin)? else {
+                let Some(selection_svg) = selection_content.gen_svg(
+                        selection_export_prefs.with_background,
+                        selection_export_prefs.with_pattern,
+                        selection_export_prefs.margin,
+                    )? else {
                     return Ok(None);
                 };
-                let selection_svg_bounds = selection_svg.bounds;
                 let bitmapimage_format = match selection_export_prefs.export_format {
                     SelectionExportFormat::Svg => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
                     SelectionExportFormat::Png => image::ImageOutputFormat::Png,
@@ -854,12 +850,9 @@ impl RnoteEngine {
                 };
 
                 Ok(Some(
-                    render::Image::gen_image_from_svg(
-                        selection_svg,
-                        selection_svg_bounds,
-                        selection_export_prefs.bitmap_scalefactor,
-                    )?
-                    .into_encoded_bytes(bitmapimage_format)?,
+                    selection_svg
+                        .gen_image(selection_export_prefs.bitmap_scalefactor)?
+                        .into_encoded_bytes(bitmapimage_format)?,
                 ))
             };
             if let Err(_data) = oneshot_sender.send(result()) {

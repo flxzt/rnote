@@ -56,20 +56,17 @@ impl Content for VectorImage {
             )
             .set("preserveAspectRatio", "none")
             .add(svg::node::Text::new(self.svg_data.clone()));
-
         let group = svg::node::element::Group::new()
             .set(
                 "transform",
                 self.rectangle.transform.to_svg_transform_attr_str(),
             )
             .add(svg_root);
-
         let svg_data = rnote_compose::utils::svg_node_to_string(&group)?;
         let svg = render::Svg {
             bounds: self.rectangle.bounds(),
             svg_data,
         };
-
         Ok(svg)
     }
 
@@ -79,8 +76,7 @@ impl Content for VectorImage {
         image_scale: f64,
     ) -> Result<GeneratedContentImages, anyhow::Error> {
         let bounds = self.bounds();
-
-        // Always generate full stroke images for vectorimages, as they are too expensive to be repeatedly rendered
+        // always generate full stroke images for vectorimages, they are too expensive to be repeatedly rendered
         Ok(GeneratedContentImages::Full(vec![
             render::Image::gen_with_piet(
                 |piet_cx| self.draw(piet_cx, image_scale),
@@ -107,20 +103,19 @@ impl Content for VectorImage {
     fn update_geometry(&mut self) {}
 }
 
-// Because we can't render svgs directly in piet, so we need to overwrite the gen_svgs() default implementation and call it in draw().
-// here we use a svg renderer to generate the bitmap images.
-// This way we ensure to export an actual svg when calling gen_svgs(),but are also able to draw it onto piet.
+// Because it is currently not possible to render SVGs directly with piet, the default gen_svg() implementation is
+// overwritten and called in `draw()` and `draw_to_cairo()`. There the librsvg renderer is used to generate bitmap
+// images. This way it is ensured that an actual Svg is generated when calling `gen_svg()`, but it is also possible to
+// to be drawn to piet.
 impl Drawable for VectorImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+        let image = self.gen_svg()?.gen_image(image_scale)?;
+        // image_scale does not have a meaning here
+        image.draw(cx, image_scale)
+    }
 
-        let image = render::Image::gen_image_from_svg(self.gen_svg()?, self.bounds(), image_scale)?;
-
-        // image_scale does not have a meaning here, as the pixel image is already provided
-        image.draw(cx, image_scale)?;
-
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-        Ok(())
+    fn draw_to_cairo(&self, cx: &cairo::Context, _image_scale: f64) -> anyhow::Result<()> {
+        self.gen_svg()?.draw_to_cairo(cx)
     }
 }
 
@@ -149,7 +144,7 @@ impl Transformable for VectorImage {
 }
 
 impl VectorImage {
-    pub fn import_from_svg_data(
+    pub fn from_svg_str(
         svg_data: &str,
         pos: na::Vector2<f64>,
         size: Option<na::Vector2<f64>>,
@@ -164,13 +159,12 @@ impl VectorImage {
                 attributes_indent: xmlwriter::Indent::None,
             },
         };
-
         let mut svg_tree = usvg::Tree::from_str(svg_data, &usvg::Options::default())?;
         svg_tree.convert_text(&render::USVG_FONTDB);
-        let svg_data = svg_tree.to_string(&xml_options);
+
         let intrinsic_size =
             na::vector![svg_tree.size.width() as f64, svg_tree.size.height() as f64];
-
+        let svg_data = svg_tree.to_string(&xml_options);
         let rectangle = if let Some(size) = size {
             Rectangle {
                 cuboid: p2d::shape::Cuboid::new(size * 0.5),
@@ -187,13 +181,13 @@ impl VectorImage {
         };
 
         Ok(Self {
-            svg_data,
+            svg_data: svg_data.to_string(),
             intrinsic_size,
             rectangle,
         })
     }
 
-    pub fn import_from_pdf_bytes(
+    pub fn from_pdf_bytes(
         to_be_read: &[u8],
         pdf_import_prefs: PdfImportPrefs,
         insert_pos: na::Vector2<f64>,
@@ -213,115 +207,105 @@ impl VectorImage {
         let x = insert_pos[0];
         let mut y = insert_pos[1];
 
-        let svgs = page_range.filter_map(|page_i| {
-            let page = doc.page(page_i as i32)?;
-            let intrinsic_size = page.size();
-            let width = intrinsic_size.0 * page_zoom;
-            let height = intrinsic_size.1 * page_zoom;
+        let svgs = page_range
+            .filter_map(|page_i| {
+                let page = doc.page(page_i as i32)?;
+                let intrinsic_size = page.size();
+                let width = intrinsic_size.0 * page_zoom;
+                let height = intrinsic_size.1 * page_zoom;
 
-            let res = move || -> anyhow::Result<String> {
-                let svg_stream: Vec<u8> = vec![];
+                let res = move || -> anyhow::Result<String> {
+                    let svg_stream: Vec<u8> = vec![];
 
-                let mut svg_surface =
-                    cairo::SvgSurface::for_stream(intrinsic_size.0, intrinsic_size.1, svg_stream)
-                        .map_err(|e| {
+                    let mut svg_surface = cairo::SvgSurface::for_stream(
+                        intrinsic_size.0,
+                        intrinsic_size.1,
+                        svg_stream,
+                    )
+                    .map_err(|e| {
                         anyhow::anyhow!(
-                            "create SvgSurface with dimensions ({}, {}) failed in vectorimage import_from_pdf_bytes with Err: {e:?}",
+                            "creating SvgSurface with dimensions ({}, {}) failed, Err: {e:?}",
                             intrinsic_size.0,
                             intrinsic_size.1
                         )
                     })?;
 
-                // Popplers page units are in points ( ^= 1 / 72 inch )
-                svg_surface.set_document_unit(cairo::SvgUnit::Pt);
+                    // Popplers page units are in points ( equals 1/72 inch )
+                    svg_surface.set_document_unit(cairo::SvgUnit::Pt);
 
-                {
-                    let cx = cairo::Context::new(&svg_surface).map_err(|e| {
-                        anyhow::anyhow!(
-                            "new cairo::Context failed in vectorimage import_from_pdf_bytes() with Err: {e:?}"
-                        )
-                    })?;
+                    {
+                        let cx = cairo::Context::new(&svg_surface).map_err(|e| {
+                            anyhow::anyhow!("creating new cairo context failed, Err: {e:?}")
+                        })?;
 
-                    // Set margin to white
-                    cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
-                    cx.paint()?;
+                        // Set margin to white
+                        cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
+                        cx.paint()?;
 
-                    // Render the poppler page
-                    page.render_for_printing(&cx);
+                        // Render the poppler page
+                        page.render_for_printing(&cx);
 
-                    // Draw outline around page
-                    cx.set_source_rgba(color::GNOME_REDS[4].as_rgba().0, color::GNOME_REDS[4].as_rgba().1, color::GNOME_REDS[4].as_rgba().2, 1.0);
+                        // Draw outline around page
+                        cx.set_source_rgba(
+                            color::GNOME_REDS[4].as_rgba().0,
+                            color::GNOME_REDS[4].as_rgba().1,
+                            color::GNOME_REDS[4].as_rgba().2,
+                            1.0,
+                        );
 
-                    let line_width = 1.0;
-                    cx.set_line_width(line_width);
-                    cx.rectangle(
-                        line_width * 0.5,
-                        line_width * 0.5,
-                        intrinsic_size.0 - line_width,
-                        intrinsic_size.1 - line_width,
-                    );
-                    cx.stroke()?;
-                }
+                        let line_width = 1.0;
+                        cx.set_line_width(line_width);
+                        cx.rectangle(
+                            line_width * 0.5,
+                            line_width * 0.5,
+                            intrinsic_size.0 - line_width,
+                            intrinsic_size.1 - line_width,
+                        );
+                        cx.stroke()?;
+                    }
 
-                let svg_content = String::from_utf8(
-                    *svg_surface.finish_output_stream()
-                        .map_err(|e| anyhow::anyhow!("{e:?}"))?
-                        .downcast::<Vec<u8>>()
-                        .map_err(|_e| anyhow::anyhow!("failed to downcast svg surface content in VectorImage import_from_pdf_bytes()"))?)?;
+                    let svg_content = String::from_utf8(
+                        *svg_surface
+                            .finish_output_stream()
+                            .map_err(|e| anyhow::anyhow!("{e:?}"))?
+                            .downcast::<Vec<u8>>()
+                            .map_err(|e| {
+                                anyhow::anyhow!(
+                                    "failed to downcast svg surface content, Err: {e:?}"
+                                )
+                            })?,
+                    )?;
 
+                    Ok(svg_content)
+                };
 
-                Ok(svg_content)
-            };
+                let bounds = Aabb::new(na::point![x, y], na::point![x + width, y + height]);
 
-            let bounds = Aabb::new(na::point![x, y], na::point![x + width, y + height]);
+                y += match pdf_import_prefs.page_spacing {
+                    PdfImportPageSpacing::Continuous => {
+                        height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5
+                    }
+                    PdfImportPageSpacing::OnePerDocumentPage => format.height,
+                };
 
-            y += match pdf_import_prefs.page_spacing {
-                PdfImportPageSpacing::Continuous => height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5,
-                PdfImportPageSpacing::OnePerDocumentPage => format.height
-            };
-
-            match res() {
-                Ok(svg_data) => Some(render::Svg {
-                    svg_data,
-                    bounds,
-                }),
-                Err(e) => {
-                    log::error!("importing page {page_i} from pdf failed with Err: {e:?}");
-                    None
-                }
-            }
-        }).collect::<Vec<render::Svg>>();
-
-        Ok(svgs
-            .into_par_iter()
-            .filter_map(|svg| {
-                match Self::import_from_svg_data(
-                    svg.svg_data.as_str(),
-                    svg.bounds.mins.coords,
-                    Some(svg.bounds.extents()),
-                ) {
-                    Ok(vectorimage) => Some(vectorimage),
+                match res() {
+                    Ok(svg_data) => Some(render::Svg { svg_data, bounds }),
                     Err(e) => {
-                        log::error!("import_from_svg_data() failed failed in vectorimage import_from_pdf_bytes() with Err: {e:?}");
+                        log::error!("importing page {page_i} from pdf failed, Err: {e:?}");
                         None
                     }
                 }
             })
-            .collect())
-    }
+            .collect::<Vec<render::Svg>>();
 
-    pub fn export_as_svg(&self) -> Result<String, anyhow::Error> {
-        let export_bounds = self.bounds().translate(-self.bounds().mins.coords);
-
-        let mut export_svg_data = self.gen_svg()?.svg_data;
-
-        export_svg_data = rnote_compose::utils::wrap_svg_root(
-            export_svg_data.as_str(),
-            Some(export_bounds),
-            Some(export_bounds),
-            false,
-        );
-
-        Ok(export_svg_data)
+        svgs.into_par_iter()
+            .map(|svg| {
+                Self::from_svg_str(
+                    svg.svg_data.as_str(),
+                    svg.bounds.mins.coords,
+                    Some(svg.bounds.extents()),
+                )
+            })
+            .collect()
     }
 }

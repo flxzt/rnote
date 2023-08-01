@@ -373,6 +373,10 @@ impl StrokeContentPaintable {
         if width <= 0. && height <= 0. {
             return;
         }
+
+        // emit `repaint-in-progress` signal even for the synchronous repaint for consistency.
+        self.imp().emit_repaint_in_progress(true);
+
         match imp::paint_content(
             &self.imp().stroke_content.borrow(),
             width,
@@ -396,6 +400,8 @@ impl StrokeContentPaintable {
                 log::error!("repainting StrokeContentPaintable cache image failed: {e:?}");
             }
         }
+
+        self.imp().emit_repaint_in_progress(false);
     }
 
     /// Regenerates the paint cache asynchronously.

@@ -56,20 +56,17 @@ impl Content for VectorImage {
             )
             .set("preserveAspectRatio", "none")
             .add(svg::node::Text::new(self.svg_data.clone()));
-
         let group = svg::node::element::Group::new()
             .set(
                 "transform",
                 self.rectangle.transform.to_svg_transform_attr_str(),
             )
             .add(svg_root);
-
         let svg_data = rnote_compose::utils::svg_node_to_string(&group)?;
         let svg = render::Svg {
             bounds: self.rectangle.bounds(),
             svg_data,
         };
-
         Ok(svg)
     }
 
@@ -79,7 +76,6 @@ impl Content for VectorImage {
         image_scale: f64,
     ) -> Result<GeneratedContentImages, anyhow::Error> {
         let bounds = self.bounds();
-
         // always generate full stroke images for vectorimages, they are too expensive to be repeatedly rendered
         Ok(GeneratedContentImages::Full(vec![
             render::Image::gen_with_piet(
@@ -107,15 +103,15 @@ impl Content for VectorImage {
     fn update_geometry(&mut self) {}
 }
 
-// Because it is currently not possible to render SVGs directly with piet, we need to overwrite the gen_svg() default
-// implementation and call it in draw(). There the librsvg renderer is used to generate bitmap images. This way we
-// ensure to export an actual Svg when calling gen_svg(), but are also able to draw to piet.
+// Because it is currently not possible to render SVGs directly with piet, the default gen_svg() implementation is
+// overwritten and called in `draw()` and `draw_to_cairo()`. There the librsvg renderer is used to generate bitmap
+// images. This way it is ensured that an actual Svg is generated when calling `gen_svg()`, but it is also possible to
+// to be drawn to piet.
 impl Drawable for VectorImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
         let image = self.gen_svg()?.gen_image(image_scale)?;
         // image_scale does not have a meaning here
-        image.draw(cx, image_scale)?;
-        Ok(())
+        image.draw(cx, image_scale)
     }
 
     fn draw_to_cairo(&self, cx: &cairo::Context, _image_scale: f64) -> anyhow::Result<()> {

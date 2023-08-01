@@ -7,7 +7,7 @@ use rnote_compose::{color, shapes::Shapeable};
 #[derive(Debug, Clone)]
 /// Generated content images.
 ///
-/// Some types may only support generating image(s) for the entire content.
+/// Some `Content` trait implementors only support generating image(s) for the entire content (Full).
 pub enum GeneratedContentImages {
     /// Only part of the content was rendered (for example when part of it is out of the current viewport).
     Partial {
@@ -70,18 +70,18 @@ where
         }
     }
 
-    /// Draw it's highlight.
+    /// Draw the content highlight. Used when indicating a selection.
     ///
     /// The implementors are expected to save/restore the drawing context.
     ///
-    /// `total_zoom` is the zoom-factor of the surface that draws the highlight.
+    /// `total_zoom` is the zoom-factor of the surface that the highlight gets drawn on.
     fn draw_highlight(
         &self,
         cx: &mut impl piet::RenderContext,
         total_zoom: f64,
     ) -> anyhow::Result<()>;
 
-    /// Update the geometry, possibly regenerating internally stored state.
+    /// Update the content geometry, possibly regenerating internally stored state.
     ///
     /// Must be called after the stroke has been (geometrically) modified or transformed.
     fn update_geometry(&mut self);

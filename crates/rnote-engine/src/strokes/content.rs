@@ -1,6 +1,5 @@
 // Imports
-use crate::render;
-use crate::Drawable;
+use crate::{render, Drawable};
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::{color, shapes::Shapeable};
@@ -27,13 +26,15 @@ pub trait Content: Drawable + Shapeable
 where
     Self: Sized,
 {
-    /// Generate Svg, without the xml header or the svg root. Used for export.
+    /// Generate Svg from the content, without the Xml header or the Svg root.
+    ///
+    /// Used for exporting.
     fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
         let bounds = self.bounds();
         render::Svg::gen_with_cairo(|cx| self.draw_to_cairo(cx, 1.0), bounds)
     }
 
-    /// Generates bitmap images.
+    /// Generate bitmap images for rendering in the app.
     ///
     /// A larger `image_scale` value renders them in a higher than native resolution (usually set as the camera zoom).
     /// The bounds are not scaled by it.
@@ -70,6 +71,7 @@ where
     }
 
     /// Draw it's highlight.
+    ///
     /// The implementors are expected to save/restore the drawing context.
     ///
     /// `total_zoom` is the zoom-factor of the surface that draws the highlight.
@@ -84,7 +86,7 @@ where
     /// Must be called after the stroke has been (geometrically) modified or transformed.
     fn update_geometry(&mut self);
 
-    /// Export to encoded bitmap image (Png/Jpg/..).
+    /// Export to encoded bitmap image (Png/Jpeg/..).
     fn export_to_bitmap_image_bytes(
         &self,
         format: image::ImageOutputFormat,

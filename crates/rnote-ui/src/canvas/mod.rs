@@ -436,7 +436,7 @@ mod imp {
                 snapshot.pop();
                 Ok(())
             }() {
-                log::error!("canvas snapshot() failed with Err: {e:?}");
+                log::error!("canvas snapshot() failed , Err: {e:?}");
             }
         }
     }
@@ -788,17 +788,16 @@ impl RnCanvas {
     }
 
     pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnAppWindow) {
-        let new_monitor =
-            match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
-                Ok(output_file_monitor) => output_file_monitor,
-                Err(e) => {
-                    self.clear_output_file_monitor();
-                    log::error!(
-                        "creating a file monitor for the new output file failed with Err: {e:?}"
-                    );
-                    return;
-                }
-            };
+        let new_monitor = match file
+            .monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE)
+        {
+            Ok(output_file_monitor) => output_file_monitor,
+            Err(e) => {
+                self.clear_output_file_monitor();
+                log::error!("creating a file monitor for the new output file failed , Err: {e:?}");
+                return;
+            }
+        };
 
         let new_handler = new_monitor.connect_changed(
             glib::clone!(@weak self as canvas, @weak appwindow => move |_monitor, file, other_file, event| {

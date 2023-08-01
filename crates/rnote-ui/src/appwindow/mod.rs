@@ -162,7 +162,7 @@ impl RnAppWindow {
             glib::source::timeout_add_seconds_local(
                 Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
                     if let Err(e) = appwindow.active_tab_wrapper().canvas().save_engine_config(&appwindow.app_settings()) {
-                        log::error!("saving engine config in periodic task failed with Err: {e:?}");
+                        log::error!("saving engine config in periodic task failed , Err: {e:?}");
                     }
 
                     glib::source::Continue(true)
@@ -182,7 +182,7 @@ impl RnAppWindow {
     pub(crate) fn close_force(&self) {
         // Saving all state
         if let Err(e) = self.save_to_settings() {
-            log::error!("Failed to save appwindow to settings, with Err: {e:?}");
+            log::error!("Failed to save appwindow to settings, , Err: {e:?}");
         }
 
         // Closing the state tasks channel receiver for all tabs

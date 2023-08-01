@@ -670,7 +670,7 @@ impl RnAppWindow {
 
             // Run the print op
             if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
-                log::error!("running print operation failed with Err, {e:?}");
+                log::error!("running print operation failed , Err, {e:?}");
                 appwindow.overlays().dispatch_toast_error(&gettext("Printing document failed"));
                 appwindow.overlays().progressbar_abort();
             } else {
@@ -801,7 +801,7 @@ impl RnAppWindow {
                         }
                         Ok(None) => {}
                         Err(e) => {
-                            log::error!("failed to paste clipboard from path, read_text() failed with Err: {e:?}");
+                            log::error!("failed to paste clipboard from path, read_text() failed , Err: {e:?}");
 
                         }
                     }
@@ -841,7 +841,7 @@ impl RnAppWindow {
                             }
                         }
                         Err(e) => {
-                            log::error!("failed to paste clipboard as {}, read_future() failed with Err: {e:?}", StrokeContent::MIME_TYPE);
+                            log::error!("failed to paste clipboard as {}, read_future() failed , Err: {e:?}", StrokeContent::MIME_TYPE);
                         }
                     };
                 }));
@@ -879,7 +879,7 @@ impl RnAppWindow {
                             }
                         }
                         Err(e) => {
-                            log::error!("failed to paste clipboard as vector image, read_future() failed with Err: {e:?}");
+                            log::error!("failed to paste clipboard as vector image, read_future() failed , Err: {e:?}");
                         }
                     };
                 }));
@@ -906,7 +906,7 @@ impl RnAppWindow {
                             }
                             Ok(None) => {}
                             Err(e) => {
-                                log::error!("failed to paste clipboard as {mime_type}, read_texture_future() failed with Err: {e:?}");
+                                log::error!("failed to paste clipboard as {mime_type}, read_texture_future() failed , Err: {e:?}");
                             }
                         };
                     }));
@@ -922,7 +922,7 @@ impl RnAppWindow {
                         }
                         Ok(None) => {}
                         Err(e) => {
-                            log::error!("failed to paste clipboard text, read_text() failed with Err: {e:?}");
+                            log::error!("failed to paste clipboard text, read_text() failed , Err: {e:?}");
 
                         }
                     }

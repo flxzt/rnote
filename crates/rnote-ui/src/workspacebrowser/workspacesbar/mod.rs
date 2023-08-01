@@ -257,14 +257,14 @@ impl RnWorkspacesBar {
 
     pub(crate) fn save_to_settings(&self, settings: &gio::Settings) {
         if let Err(e) = settings.set("workspace-list", self.imp().workspace_list.to_variant()) {
-            log::error!("saving `workspace-list` to settings failed with Err: {e:?}");
+            log::error!("saving `workspace-list` to settings failed , Err: {e:?}");
         }
 
         if let Err(e) = settings.set(
             "selected-workspace-index",
             self.selected_workspace_index().unwrap_or(0),
         ) {
-            log::error!("saving `selected-workspace-index` to settings failed with Err: {e:?}");
+            log::error!("saving `selected-workspace-index` to settings failed , Err: {e:?}");
         }
     }
 

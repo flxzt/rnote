@@ -500,10 +500,10 @@ impl RnoteEngine {
                 }
                 let data = *target_surface
                     .finish_output_stream()
-                    .map_err(|e| anyhow::anyhow!("Finishing outputstream failed with Err: {e:?}"))?
+                    .map_err(|e| anyhow::anyhow!("Finishing outputstream failed, Err: {e:?}"))?
                     .downcast::<Vec<u8>>()
                     .map_err(|e| {
-                        anyhow::anyhow!("Downcasting finished output stream failed with Err: {e:?}")
+                        anyhow::anyhow!("Downcasting finished output stream failed, Err: {e:?}")
                     })?;
 
                 Ok(data)
@@ -834,7 +834,11 @@ impl RnoteEngine {
                 let Some(selection_content) = selection_content else {
                     return Ok(None);
                 };
-                let Some(selection_svg) = selection_content.gen_svg(selection_export_prefs.with_background, selection_export_prefs.with_pattern, selection_export_prefs.margin)? else {
+                let Some(selection_svg) = selection_content.gen_svg(
+                        selection_export_prefs.with_background,
+                        selection_export_prefs.with_pattern,
+                        selection_export_prefs.margin,
+                    )? else {
                     return Ok(None);
                 };
                 let bitmapimage_format = match selection_export_prefs.export_format {

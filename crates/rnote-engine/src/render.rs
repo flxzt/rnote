@@ -293,6 +293,7 @@ impl Image {
         F: FnOnce(&cairo::Context) -> anyhow::Result<()>,
     {
         bounds.ensure_positive();
+        bounds.loosen(1.0);
         bounds.assert_valid()?;
 
         let width_scaled = ((bounds.extents()[0]) * image_scale).round() as u32;
@@ -354,6 +355,7 @@ impl Image {
                 .map_err(|e| anyhow::anyhow!("finishing piet context failed, Err: {e:?}"))?;
             Ok(())
         };
+
         Self::gen_with_cairo(cairo_draw_fn, bounds, image_scale)
     }
 }
@@ -485,17 +487,16 @@ impl Svg {
     where
         F: FnOnce(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
     {
-        Self::gen_with_cairo(
-            |cairo_cx| {
-                let mut piet_cx = piet_cairo::CairoRenderContext::new(cairo_cx);
-                // Apply the draw function
-                draw_func(&mut piet_cx)?;
-                piet_cx
-                    .finish()
-                    .map_err(|e| anyhow::anyhow!("finishing piet context failed, Err: {e:?}"))
-            },
-            bounds,
-        )
+        let cairo_draw_fn = |cairo_cx: &cairo::Context| {
+            let mut piet_cx = piet_cairo::CairoRenderContext::new(cairo_cx);
+            // Apply the draw function
+            draw_func(&mut piet_cx)?;
+            piet_cx
+                .finish()
+                .map_err(|e| anyhow::anyhow!("finishing piet context failed, Err: {e:?}"))
+        };
+
+        Self::gen_with_cairo(cairo_draw_fn, bounds)
     }
 
     pub fn draw_to_cairo(&self, cx: &cairo::Context) -> anyhow::Result<()> {

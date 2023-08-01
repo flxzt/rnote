@@ -192,7 +192,7 @@ impl RnoteEngine {
             let result = || -> anyhow::Result<VectorImage> {
                 let svg_str = String::from_utf8(bytes)?;
 
-                VectorImage::import_from_svg_str(&svg_str, pos, None)
+                VectorImage::from_svg_str(&svg_str, pos, None)
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
@@ -215,7 +215,7 @@ impl RnoteEngine {
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<BitmapImage> {
-                BitmapImage::import_from_image_bytes(&bytes, pos, None)
+                BitmapImage::from_image_bytes(&bytes, pos, None)
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
@@ -245,7 +245,7 @@ impl RnoteEngine {
             let result = || -> anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>> {
                 match pdf_import_prefs.pages_type {
                     PdfImportPagesType::Bitmap => {
-                        let bitmapimages = BitmapImage::import_from_pdf_bytes(
+                        let bitmapimages = BitmapImage::from_pdf_bytes(
                             &bytes,
                             pdf_import_prefs,
                             insert_pos,
@@ -258,7 +258,7 @@ impl RnoteEngine {
                         Ok(bitmapimages)
                     }
                     PdfImportPagesType::Vector => {
-                        let vectorimages = VectorImage::import_from_pdf_bytes(
+                        let vectorimages = VectorImage::from_pdf_bytes(
                             &bytes,
                             pdf_import_prefs,
                             insert_pos,

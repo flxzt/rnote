@@ -1,8 +1,8 @@
-use crate::Drawable;
 // Imports
 use crate::document::Background;
 use crate::render::Svg;
-use crate::strokes::{Content, Stroke};
+use crate::strokes::Stroke;
+use crate::Drawable;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
@@ -65,30 +65,22 @@ impl StrokeContent {
     // Moves the bounds to mins: [0.0, 0.0], maxs: extents.
     pub fn gen_svg(
         &self,
-        with_background: bool,
-        with_pattern: bool,
+        draw_background: bool,
+        draw_pattern: bool,
         margin: f64,
     ) -> anyhow::Result<Option<Svg>> {
         let Some(bounds) = self.bounds() else {
             return Ok(None);
         };
-        let bounds_loosened = bounds.loosened(margin);
-        let mut content_svg = match (with_background, self.background) {
-            (true, Some(background)) => background.gen_svg(bounds_loosened, with_pattern)?,
-            _ => Svg {
-                svg_data: String::new(),
-                bounds,
-            },
-        };
-
-        for stroke in &self.strokes {
-            content_svg.merge(std::iter::once(stroke.gen_svg()?));
-        }
-
+        let mut content_svg = Svg::gen_with_cairo(
+            |cairo_cx| self.draw_to_cairo(cairo_cx, draw_background, draw_pattern, margin, 1.0),
+            bounds,
+        )?;
         // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
         if let Err(e) = content_svg.simplify() {
-            log::warn!("simplifying Svg while generating StrokeContent Svg failed, Err: {e:?}");
+            log::warn!("Simplifying Svg while generating StrokeContent Svg failed, Err: {e:?}");
         };
+
         Ok(Some(content_svg))
     }
 

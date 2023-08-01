@@ -88,7 +88,7 @@ fn connect_apply_button(
             log::error!("file already exists");
         } else {
             if let Err(e) = current_file.move_(&new_file, gio::FileCopyFlags::NONE, None::<&gio::Cancellable>, None) {
-                log::error!("rename file failed with Err: {e:?}");
+                log::error!("rename file failed , Err: {e:?}");
             }
 
             popover.popdown();

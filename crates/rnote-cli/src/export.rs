@@ -16,6 +16,7 @@ use rnote_engine::{
         },
         EngineSnapshot,
     },
+    selectioncollision::SelectionCollision,
     RnoteEngine,
 };
 use smol::{
@@ -82,9 +83,9 @@ pub(crate) enum ExportCommands {
         file: FileArgs<SelectionExportFormat>,
         #[command(subcommand)]
         selection: SelectionCommands,
-        #[arg(short = 'i', long, default_value_t = Default::default(), global = true)]
+        #[arg(short = 'c', long, default_value_t = Default::default(), global = true)]
         /// if the strokes inside or intersecting with the given bounds are exported. Ignored when using all
-        bounds: Bounds,
+        selection_collision: SelectionCollision,
         /// bitmap scale factor in relation to the actual size on the document
         #[arg(long, default_value_t = SelectionExportPrefs::default().bitmap_scalefactor, global = true)]
         bitmap_scalefactor: f64,
@@ -121,59 +122,6 @@ pub(crate) struct FileArgs<T: ValueEnum + 'static + Send + Sync> {
     /// the export output format. Exclusive with --output-file
     #[arg(short = 'f', long, global = true)]
     output_format: Option<T>,
-}
-
-#[derive(ValueEnum, Clone, Debug, Default)]
-pub(crate) enum Bounds {
-    #[default]
-    /// All strokes completely inside the area
-    Contains,
-    /// All Strokes intersecting with the area
-    Intersects,
-}
-
-impl Display for Bounds {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{}",
-            match self {
-                Bounds::Contains => "contains",
-                Bounds::Intersects => "intersects",
-            }
-        )
-    }
-}
-
-#[derive(ValueEnum, Copy, Clone, Debug, Default)]
-pub(crate) enum PageOrder {
-    #[default]
-    /// Exports Horizontal pages first, then Vertical Pages
-    Horizontal,
-    /// Exports Vertical pages first, then Horizontal Pages
-    Vertical,
-}
-
-impl Display for PageOrder {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{}",
-            match self {
-                PageOrder::Horizontal => "horizontal",
-                PageOrder::Vertical => "vertical",
-            }
-        )
-    }
-}
-
-impl From<PageOrder> for SplitOrder {
-    fn from(val: PageOrder) -> Self {
-        match val {
-            PageOrder::Horizontal => SplitOrder::RowMajor,
-            PageOrder::Vertical => SplitOrder::ColumnMajor,
-        }
-    }
 }
 
 pub(crate) async fn run_export(
@@ -605,7 +553,9 @@ pub(crate) async fn export_to_file(
 
     match export_commands {
         ExportCommands::Selection {
-            selection, bounds, ..
+            selection,
+            selection_collision,
+            ..
         } => {
             let (strokes, err_msg) = match selection {
                 SelectionCommands::Rect {
@@ -619,11 +569,11 @@ pub(crate) async fn export_to_file(
                     let points = vec![v1.into(), v2.into()];
                     let aabb = Aabb::from_points(&points);
                     (
-                        match bounds {
-                            Bounds::Contains => {
+                        match selection_collision {
+                            SelectionCollision::Contains => {
                                 engine.store.stroke_keys_as_rendered_in_bounds(aabb)
                             }
-                            Bounds::Intersects => engine
+                            SelectionCollision::Intersects => engine
                                 .store
                                 .stroke_keys_as_rendered_intersecting_bounds(aabb),
                         },

@@ -57,6 +57,7 @@ rnote_engine_sources = files(
     'ext.rs',
     'lib.rs',
     'render.rs',
+    'selectioncollision.rs',
     'tasks.rs',
     'utils.rs',
     'widgetflags.rs',

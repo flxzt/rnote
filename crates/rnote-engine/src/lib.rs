@@ -18,6 +18,7 @@ pub mod ext;
 pub mod fileformats;
 pub mod pens;
 pub mod render;
+pub mod selectioncollision;
 pub mod store;
 pub mod strokes;
 pub mod tasks;

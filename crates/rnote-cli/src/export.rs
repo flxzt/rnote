@@ -628,10 +628,12 @@ pub(crate) async fn export_to_file(
                     }
                 },
             };
+            let pages_amount = export_bytes.len();
             for (i, bytes) in export_bytes.into_iter().enumerate() {
                 store_export(
                     &doc_page_output_file(
                         i,
+                        pages_amount,
                         output_dir,
                         &out_ext,
                         &output_file_stem,
@@ -652,18 +654,24 @@ pub(crate) async fn export_to_file(
 }
 
 fn doc_page_output_file(
-    i: usize,
+    mut i: usize,
+    pages_amount: usize,
     output_dir: &Path,
     out_ext: &str,
     output_file_stem: &str,
     on_conflict: OnConflict,
     on_conflict_overwrite: &mut Option<OnConflict>,
 ) -> anyhow::Result<PathBuf> {
-    let mut out = output_dir.join(format!(
-        "{output_file_stem} - page {}{}.{out_ext}",
-        if i + 1 < 10 { "0" } else { "" },
-        i + 1,
-    ));
+    i += 1;
+    // match digits of page amount to prepend leading zeros on lower numbers
+    let number = match pages_amount.to_string().len() {
+        2 => format!("{i:02}"),
+        3 => format!("{i:03}"),
+        4 => format!("{i:04}"),
+        5 => format!("{i:05}"),
+        _ => i.to_string(),
+    };
+    let mut out = output_dir.join(format!("{output_file_stem} - page {number}.{out_ext}"));
     if let Some(new_out) = check_file_conflict(out.as_ref(), on_conflict, on_conflict_overwrite)? {
         out = new_out;
     }

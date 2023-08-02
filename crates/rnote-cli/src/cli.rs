@@ -84,7 +84,7 @@ impl std::fmt::Display for OnConflict {
             match self {
                 Self::Ask => "Open existing file for inspection and ask again",
                 Self::Overwrite => "Overwrite existing file",
-                Self::AlwaysOverwrite => "Always Overwrite exitings file",
+                Self::AlwaysOverwrite => "Always overwrite existing files",
                 Self::Skip => "Skip file",
                 Self::AlwaysSkip => "Always skip file",
                 Self::Suffix => "Append number at the end of the file name",

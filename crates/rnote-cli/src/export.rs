@@ -36,7 +36,7 @@ pub(crate) enum ExportCommands {
     /// Currently `.svg`, `.xopp` and `.pdf` are supported.{n}
     Doc {
         #[command(flatten)]
-        file: FileArgs<DocExportFormat>,
+        file_args: FileArgs<DocExportFormat>,
         /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into pages.
         #[arg(long, default_value_t = Default::default())]
         page_order: SplitOrder,
@@ -79,7 +79,7 @@ pub(crate) enum ExportCommands {
     #[command(alias = "sel")]
     Selection {
         #[command(flatten)]
-        file: FileArgs<SelectionExportFormat>,
+        file_args: FileArgs<SelectionExportFormat>,
         #[command(subcommand)]
         selection: SelectionCommands,
         #[arg(short = 'c', long, default_value_t = Default::default(), global = true)]
@@ -102,12 +102,15 @@ pub(crate) enum SelectionCommands {
     /// Export all strokes
     All,
     /// Export a rectangular area of the document{n}
-    /// usage: X Y deltaX deltaY{n}
-    /// Goes to given coordiates and selects all strokes in a given rectangle based of the given delta values
+    /// Goes to starting point and selects all strokes in a given rectangle based of the given height and width
     Rect {
+        /// x position of the starting point
         x: f64,
+        /// y position of the starting point
         y: f64,
+        /// width of the rectangle
         width: f64,
+        /// height of the rectangle
         height: f64,
     },
 }
@@ -138,11 +141,14 @@ pub(crate) async fn run_export(
     let output_file: Option<PathBuf>;
     // apply given arguments to export prefs
     match &export_commands {
-        ExportCommands::Doc { file, page_order } => {
-            output_file = file.output_file.clone();
+        ExportCommands::Doc {
+            file_args,
+            page_order,
+        } => {
+            output_file = file_args.output_file.clone();
             engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
                 output_file.as_deref(),
-                file.output_format,
+                file_args.output_format,
                 background,
                 pattern,
                 *page_order,
@@ -172,16 +178,16 @@ pub(crate) async fn run_export(
             output_file = None
         }
         ExportCommands::Selection {
-            file,
+            file_args,
             bitmap_scalefactor,
             jpeg_quality,
             margin,
             ..
         } => {
-            output_file = file.output_file.clone();
+            output_file = file_args.output_file.clone();
             engine.export_prefs.selection_export_prefs = create_selection_export_prefs_from_args(
                 output_file.as_deref(),
-                file.output_format,
+                file_args.output_format,
                 background,
                 pattern,
                 *bitmap_scalefactor,
@@ -281,7 +287,7 @@ pub(crate) async fn run_export(
                     {
                         Ok(r) => r,
                         Err(e) => {
-                            println!("{e}");
+                            println!("Failed to resolve file conflict: {e:?}");
                             continue;
                         }
                     }
@@ -474,14 +480,15 @@ pub(crate) fn check_file_conflict(
             ];
             while matches!(on_conflict, OnConflict::Ask) {
                 match dialoguer::Select::new()
-                    .with_prompt(format!("File {} already exits:", output_file.display()))
+                    .with_prompt(format!("File \"{}\" already exists:", output_file.display()))
                     .items(options)
+                    .default(1)
                     .interact()
                 {
                     Ok(0) => {
                         if let Err(e) = open::that(output_file) {
                             println!(
-                                "Failed to open {} with default program, {e}",
+                                "Failed to open {} with default program, {e:?}",
                                 output_file.display()
                             );
                         }
@@ -489,7 +496,7 @@ pub(crate) fn check_file_conflict(
                     Ok(c) => on_conflict = options[c],
                     Err(e) => {
                         return Err(anyhow::anyhow!(
-                            "Failed to show select promt, retry or select an behavior with --on-conflict, {e}"
+                            "Failed to show select prompt, retry or select an behavior with --on-conflict, {e:?}"
                         ))
                     }
                 };
@@ -612,7 +619,7 @@ pub(crate) async fn export_to_file(
             ..
         } => {
             validators::path_is_dir(output_dir)?;
-            // The output file cannnot be set with this subcommand
+            // The output file cannot be set with this subcommand
             drop(output_file);
 
             let export_bytes = engine.export_doc_pages(None).await??;

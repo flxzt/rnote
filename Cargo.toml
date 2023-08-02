@@ -75,6 +75,7 @@ gtk4 = { version = "0.6", features = ["v4_10"] }
 adw = { version = "0.4", package="libadwaita", features = ["v1_3"] }
 dialoguer = "0.10.4"
 open = "5"
+atty = "0.2"
 
 [patch.crates-io]
 # once a new piet (current v0.6.2) is released with the updated cairo, this can be removed

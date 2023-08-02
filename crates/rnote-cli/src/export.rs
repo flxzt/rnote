@@ -455,6 +455,11 @@ pub(crate) fn check_file_conflict(
     if !output_file.exists() {
         return Ok(None);
     }
+    if atty::isnt(atty::Stream::Stdout) {
+        return Err(anyhow::anyhow!(
+            "File conflict detected and terminal is not interactive. Please supply --on-conflict"
+        ));
+    }
     match on_conflict_overwrite {
         Some(o) => on_conflict = *o,
         None => {

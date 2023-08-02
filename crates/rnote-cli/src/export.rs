@@ -603,14 +603,14 @@ pub(crate) async fn export_to_file(
                 .export_selection(None)
                 .await??
                 .context("No strokes selected")?;
-            store_export(output_file, &export_bytes).await?;
+            create_overwrite_file_w_bytes(output_file, &export_bytes).await?;
         }
         ExportCommands::Doc { .. } => {
             let Some(export_file_name) = output_file.as_ref().file_name().map(|s| s.to_string_lossy().to_string()) else {
                 return Err(anyhow::anyhow!("Failed to get filename from output_file"));
             };
             let export_bytes = engine.export_doc(export_file_name, None).await??;
-            store_export(output_file, &export_bytes).await?;
+            create_overwrite_file_w_bytes(output_file, &export_bytes).await?;
         }
         ExportCommands::DocPages {
             output_dir,
@@ -637,7 +637,7 @@ pub(crate) async fn export_to_file(
             };
             let pages_amount = export_bytes.len();
             for (i, bytes) in export_bytes.into_iter().enumerate() {
-                store_export(
+                create_overwrite_file_w_bytes(
                     &doc_page_output_file(
                         i,
                         pages_amount,
@@ -685,7 +685,10 @@ fn doc_page_output_file(
     Ok(out)
 }
 
-async fn store_export(output_file: impl AsRef<Path>, bytes: &[u8]) -> anyhow::Result<()> {
+async fn create_overwrite_file_w_bytes(
+    output_file: impl AsRef<Path>,
+    bytes: &[u8],
+) -> anyhow::Result<()> {
     let mut fh = File::create(output_file).await?;
     fh.write_all(bytes).await?;
     fh.sync_all().await?;

@@ -181,11 +181,11 @@ impl Content for BrushStroke {
         let bounds = self.bounds();
 
         if bounds.scale(total_zoom).volume() < DRAW_BOUNDS_THRESHOLD_AREA {
-            cx.fill(bounds.to_kurbo_rect(), &*content::STROKE_HIGHLIGHT_COLOR);
+            cx.fill(bounds.to_kurbo_rect(), &content::CONTENT_HIGHLIGHT_COLOR);
         } else {
             cx.stroke_styled(
                 self.path.to_kurbo(),
-                &*content::STROKE_HIGHLIGHT_COLOR,
+                &content::CONTENT_HIGHLIGHT_COLOR,
                 (HIGHLIGHT_STROKE_WIDTH / total_zoom)
                     .max(self.style.stroke_width() + 2.0 / total_zoom),
                 &piet::StrokeStyle::new()

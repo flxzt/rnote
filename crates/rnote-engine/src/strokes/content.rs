@@ -1,6 +1,5 @@
 // Imports
 use crate::{render, Drawable};
-use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::{color, shapes::Shapeable};
 
@@ -18,8 +17,7 @@ pub enum GeneratedContentImages {
     Full(Vec<render::Image>),
 }
 
-pub(crate) static STROKE_HIGHLIGHT_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_BLUES[1].with_alpha(0.376));
+pub(crate) const CONTENT_HIGHLIGHT_COLOR: piet::Color = color::GNOME_BLUES[1].with_a8(96);
 
 /// Types that are content.
 pub trait Content: Drawable + Shapeable

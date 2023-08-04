@@ -509,7 +509,7 @@ impl Svg {
         let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
         let handle = rsvg::Loader::new()
             .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(&stream, None, None)
-            .context("reading stream to librsvg loader failed.")?;
+            .context("reading stream to rsvg loader failed.")?;
         let renderer = rsvg::CairoRenderer::new(&handle);
         renderer
             .render_document(
@@ -521,7 +521,7 @@ impl Svg {
                     self.bounds.extents()[1],
                 ),
             )
-            .map_err(|e| anyhow::anyhow!("rendering librsvg document failed, Err: {e:?}"))?;
+            .map_err(|e| anyhow::anyhow!("rendering rsvg document failed, Err: {e:?}"))?;
         Ok(())
     }
 
@@ -536,7 +536,7 @@ impl Svg {
 
     /// Generate an image from an Svg.
     ///
-    /// Using librsvg for rendering.
+    /// Using rsvg for rendering.
     pub fn gen_image(&self, image_scale: f64) -> Result<Image, anyhow::Error> {
         let mut bounds = self.bounds;
         bounds.ensure_positive();
@@ -576,7 +576,7 @@ impl Svg {
                 .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
                     &stream, None, None,
                 )
-                .context("read stream to librsvg loader failed.")?;
+                .context("read stream to rsvg loader failed.")?;
 
             let renderer = rsvg::CairoRenderer::new(&handle);
             renderer
@@ -589,7 +589,7 @@ impl Svg {
                         bounds.extents()[1],
                     ),
                 )
-                .map_err(|e| anyhow::anyhow!("rendering librsvg document failed, Err: {e:?}"))?;
+                .map_err(|e| anyhow::anyhow!("rendering rsvg document failed, Err: {e:?}"))?;
         }
         // Surface needs to be flushed before accessing its data
         surface.flush();

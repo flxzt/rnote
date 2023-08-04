@@ -39,14 +39,14 @@ impl RnAppWindow {
         let action_open_appmenu = gio::SimpleAction::new("open-appmenu", None);
         self.add_action(&action_open_appmenu);
         let action_devel_mode =
-            gio::SimpleAction::new_stateful("devel-mode", None, false.to_variant());
+            gio::SimpleAction::new_stateful("devel-mode", None, &false.to_variant());
         self.add_action(&action_devel_mode);
         let action_devel_menu = gio::SimpleAction::new("devel-menu", None);
         self.add_action(&action_devel_menu);
         let action_new_tab = gio::SimpleAction::new("new-tab", None);
         self.add_action(&action_new_tab);
         let action_visual_debug =
-            gio::SimpleAction::new_stateful("visual-debug", None, false.to_variant());
+            gio::SimpleAction::new_stateful("visual-debug", None, &false.to_variant());
         self.add_action(&action_visual_debug);
         let action_debug_export_engine_state =
             gio::SimpleAction::new("debug-export-engine-state", None);
@@ -62,10 +62,10 @@ impl RnAppWindow {
         self.add_action(&action_focus_mode);
 
         let action_pen_sounds =
-            gio::SimpleAction::new_stateful("pen-sounds", None, false.to_variant());
+            gio::SimpleAction::new_stateful("pen-sounds", None, &false.to_variant());
         self.add_action(&action_pen_sounds);
         let action_format_borders =
-            gio::SimpleAction::new_stateful("format-borders", None, true.to_variant());
+            gio::SimpleAction::new_stateful("format-borders", None, &true.to_variant());
         self.add_action(&action_format_borders);
         let action_block_pinch_zoom =
             gio::PropertyAction::new("block-pinch-zoom", self, "block-pinch-zoom");
@@ -74,13 +74,13 @@ impl RnAppWindow {
         let action_doc_layout = gio::SimpleAction::new_stateful(
             "doc-layout",
             Some(&String::static_variant_type()),
-            String::from("infinite").to_variant(),
+            &String::from("infinite").to_variant(),
         );
         self.add_action(&action_doc_layout);
         let action_pen_style = gio::SimpleAction::new_stateful(
             "pen-style",
             Some(&String::static_variant_type()),
-            String::from("brush").to_variant(),
+            &String::from("brush").to_variant(),
         );
         self.add_action(&action_pen_style);
         let action_undo_stroke = gio::SimpleAction::new("undo", None);
@@ -225,7 +225,7 @@ impl RnAppWindow {
 
                 canvas.engine_mut().visual_debug = requested_state;
                 canvas.queue_draw();
-                action_visual_debug.set_state(requested_state.to_variant());
+                action_visual_debug.set_state(&requested_state.to_variant());
             }),
         );
 
@@ -266,7 +266,7 @@ impl RnAppWindow {
                         return;
                     }
                 };
-                action_doc_layout.set_state(doc_layout_str.to_variant());
+                action_doc_layout.set_state(&doc_layout_str.to_variant());
 
                 appwindow
                     .mainheader()
@@ -294,7 +294,7 @@ impl RnAppWindow {
 
                 appwindow.active_tab_wrapper().canvas().engine_mut().set_pen_sounds(pen_sounds, crate::env::pkg_data_dir().ok());
 
-                action_pen_sounds.set_state(pen_sounds.to_variant());
+                action_pen_sounds.set_state(&pen_sounds.to_variant());
             }),
         );
 
@@ -307,7 +307,7 @@ impl RnAppWindow {
                 canvas.engine_mut().document.format.show_borders = format_borders;
                 canvas.queue_draw();
 
-                action_format_borders.set_state(format_borders.to_variant());
+                action_format_borders.set_state(&format_borders.to_variant());
             }),
         );
 
@@ -322,7 +322,7 @@ impl RnAppWindow {
                         return;
                     }
                 };
-                action.set_state(pen_style_str.to_variant());
+                action.set_state(&pen_style_str.to_variant());
 
                 let canvas = appwindow.active_tab_wrapper().canvas();
 
@@ -810,11 +810,11 @@ impl RnAppWindow {
                 glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
                     log::debug!("recognized clipboard content format: {}", StrokeContent::MIME_TYPE);
 
-                    match appwindow.clipboard().read_future(&[StrokeContent::MIME_TYPE], glib::PRIORITY_DEFAULT).await {
+                    match appwindow.clipboard().read_future(&[StrokeContent::MIME_TYPE], glib::source::Priority::DEFAULT).await {
                         Ok((input_stream, _)) => {
                             let mut acc = Vec::new();
                             loop {
-                                match input_stream.read_future(vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE], glib::PRIORITY_DEFAULT).await {
+                                match input_stream.read_future(vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE], glib::source::Priority::DEFAULT).await {
                                     Ok((mut bytes, n)) => {
                                         if n == 0 {
                                             break;
@@ -848,11 +848,11 @@ impl RnAppWindow {
             } else if content_formats.contain_mime_type("image/svg+xml") {
                 glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                     log::debug!("recognized clipboard content: svg image");
-                    match appwindow.clipboard().read_future(&["image/svg+xml"], glib::PRIORITY_DEFAULT).await {
+                    match appwindow.clipboard().read_future(&["image/svg+xml"], glib::source::Priority::DEFAULT).await {
                         Ok((input_stream, _)) => {
                             let mut acc = Vec::new();
                             loop {
-                                match input_stream.read_future(vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE], glib::PRIORITY_DEFAULT).await {
+                                match input_stream.read_future(vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE], glib::source::Priority::DEFAULT).await {
                                     Ok((mut bytes, n)) => {
                                         if n == 0 {
                                             break;

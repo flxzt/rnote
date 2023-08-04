@@ -31,7 +31,7 @@ impl Content for ShapeStroke {
         const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
         cx.stroke(
             self.bounds().to_kurbo_rect(),
-            &*content::STROKE_HIGHLIGHT_COLOR,
+            &content::CONTENT_HIGHLIGHT_COLOR,
             HIGHLIGHT_STROKE_WIDTH / total_zoom,
         );
         Ok(())

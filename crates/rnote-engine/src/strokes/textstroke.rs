@@ -2,7 +2,6 @@
 use super::Content;
 use crate::{strokes::content, Camera, Drawable};
 use kurbo::Shape;
-use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use piet::{RenderContext, TextLayout, TextLayoutBuilder};
 use rnote_compose::ext::{AabbExt, Affine2Ext, Vector2Ext};
@@ -377,8 +376,8 @@ impl TextStyle {
         transform: &Transform,
         camera: &Camera,
     ) {
-        static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[2]);
-        static FILL_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[1].with_alpha(0.1));
+        const OUTLINE_COLOR: piet::Color = color::GNOME_BLUES[2];
+        const FILL_COLOR: piet::Color = color::GNOME_BLUES[1].with_a8(25);
         let outline_width = 1.5 / camera.total_zoom();
 
         if let Ok(selection_rects) =
@@ -387,8 +386,8 @@ impl TextStyle {
             for selection_rect in selection_rects {
                 let outline = transform.to_kurbo() * selection_rect.to_path(0.5);
 
-                cx.fill(&outline, &*FILL_COLOR);
-                cx.stroke(&outline, &*OUTLINE_COLOR, outline_width);
+                cx.fill(&outline, &FILL_COLOR);
+                cx.stroke(&outline, &OUTLINE_COLOR, outline_width);
             }
         }
     }
@@ -491,7 +490,7 @@ impl Content for TextStroke {
         const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
         cx.stroke(
             self.bounds().to_kurbo_rect(),
-            &*content::STROKE_HIGHLIGHT_COLOR,
+            &content::CONTENT_HIGHLIGHT_COLOR,
             HIGHLIGHT_STROKE_WIDTH / total_zoom,
         );
         Ok(())

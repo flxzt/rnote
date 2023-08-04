@@ -124,11 +124,12 @@ mod imp {
             // TODO: fix it
             obj.set_paint_max_width(1000.);
             obj.set_paint_max_height(1000.);
-            let (tx, rx) =
-                glib::MainContext::channel::<anyhow::Result<Image>>(glib::PRIORITY_DEFAULT);
+            let (tx, rx) = glib::MainContext::channel::<anyhow::Result<Image>>(
+                glib::source::Priority::DEFAULT,
+            );
             self.paint_task_tx.set(tx).unwrap();
 
-            let handler = rx.attach(Some(&glib::MainContext::default()), clone!(@weak obj as paintable => @default-return glib::Continue(false), move |res| {
+            let handler = rx.attach(Some(&glib::MainContext::default()), clone!(@weak obj as paintable => @default-return glib::ControlFlow::Break, move |res| {
                 paintable.imp().paint_task_handle.take();
                 match res {
                     Ok(image) => {
@@ -142,7 +143,7 @@ mod imp {
                         log::error!("StrokeContentPaintable repainting cache image in task failed, Err: {e:?}");
                     }
                 }
-                glib::Continue(true)
+                glib::ControlFlow::Continue
             }));
             self.paint_task_handler.replace(Some(handler));
         }

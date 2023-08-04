@@ -12,7 +12,6 @@ use crate::strokes::Content;
 use crate::{Camera, DrawableOnDoc, RnoteEngine, WidgetFlags};
 use futures::channel::oneshot;
 use kurbo::Shape;
-use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use p2d::query::PointQuery;
 use piet::RenderContext;
@@ -330,10 +329,10 @@ impl DrawableOnDoc for Selector {
                                     .collect::<Vec<f64>>(),
                             );
 
-                            cx.fill(bez_path.clone(), &*SELECTION_FILL_COLOR);
+                            cx.fill(bez_path.clone(), &Self::SELECTION_FILL_COLOR);
                             cx.stroke_styled(
                                 bez_path,
-                                &*SELECTION_OUTLINE_COLOR,
+                                &Self::SELECTION_OUTLINE_COLOR,
                                 Self::OUTLINE_STROKE_WIDTH / total_zoom,
                                 &stroke_style,
                             );
@@ -354,10 +353,10 @@ impl DrawableOnDoc for Selector {
                                     .collect::<Vec<f64>>(),
                             );
 
-                            cx.fill(select_rect, &*SELECTION_FILL_COLOR);
+                            cx.fill(select_rect, &Self::SELECTION_FILL_COLOR);
                             cx.stroke_styled(
                                 select_rect,
-                                &*SELECTION_OUTLINE_COLOR,
+                                &Self::SELECTION_OUTLINE_COLOR,
                                 Self::OUTLINE_STROKE_WIDTH / total_zoom,
                                 &stroke_style,
                             );
@@ -370,7 +369,7 @@ impl DrawableOnDoc for Selector {
                                     last.pos.to_kurbo_point(),
                                     Self::SELECTING_SINGLE_CIRCLE_RADIUS / total_zoom,
                                 ),
-                                &*SELECTION_OUTLINE_COLOR,
+                                &Self::SELECTION_OUTLINE_COLOR,
                                 Self::OUTLINE_STROKE_WIDTH / total_zoom,
                             );
                         }
@@ -396,7 +395,7 @@ impl DrawableOnDoc for Selector {
 
                             cx.stroke_styled(
                                 bez_path,
-                                &*SELECTION_OUTLINE_COLOR,
+                                &Self::SELECTION_OUTLINE_COLOR,
                                 Self::OUTLINE_STROKE_WIDTH / total_zoom,
                                 &stroke_style,
                             );
@@ -447,13 +446,6 @@ impl DrawableOnDoc for Selector {
     }
 }
 
-/// The outline color when drawing a selection
-static SELECTION_OUTLINE_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_BRIGHTS[4].with_alpha(0.941));
-/// The fill color when drawing a selection
-static SELECTION_FILL_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_BRIGHTS[2].with_alpha(0.050));
-
 impl Selector {
     /// The threshold magnitude where above it the translation is applied. In surface coordinates.
     const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.414;
@@ -469,6 +461,10 @@ impl Selector {
     const RESIZE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
     /// Rotate node size, in surface coordinates.
     const ROTATE_NODE_SIZE: f64 = 18.0;
+    /// The outline color when drawing a selection
+    const SELECTION_OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(240);
+    /// The fill color when drawing a selection
+    const SELECTION_FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(13);
 
     fn add_to_select_path(style: SelectorStyle, path: &mut Vec<Element>, element: Element) {
         match style {
@@ -664,11 +660,11 @@ impl Selector {
 
         piet_cx.clip(clip_path);
 
-        piet_cx.fill(selection_rect, &*SELECTION_FILL_COLOR);
+        piet_cx.fill(selection_rect, &Self::SELECTION_FILL_COLOR);
         piet_cx.stroke(
             selection_rect,
-            &*SELECTION_OUTLINE_COLOR,
-            Selector::OUTLINE_STROKE_WIDTH / total_zoom,
+            &Self::SELECTION_OUTLINE_COLOR,
+            Self::OUTLINE_STROKE_WIDTH / total_zoom,
         );
 
         piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;

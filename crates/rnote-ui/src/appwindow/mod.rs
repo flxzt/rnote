@@ -160,12 +160,12 @@ impl RnAppWindow {
         // Periodically save engine config
         if let Some(removed_id) = self.imp().periodic_configsave_source_id.borrow_mut().replace(
             glib::source::timeout_add_seconds_local(
-                Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
+                Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak self as appwindow => @default-return glib::ControlFlow::Break, move || {
                     if let Err(e) = appwindow.active_tab_wrapper().canvas().save_engine_config(&appwindow.app_settings()) {
                         log::error!("saving engine config in periodic task failed , Err: {e:?}");
                     }
 
-                    glib::source::Continue(true)
+                    glib::ControlFlow::Continue
         }))) {
             removed_id.remove();
         }

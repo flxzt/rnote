@@ -11,7 +11,6 @@ use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
 use crate::strokes::{Stroke, TextStroke};
 use crate::{AudioPlayer, Camera, DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
-use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
@@ -125,7 +124,7 @@ impl DrawableOnDoc for Typewriter {
 
             cx.stroke(
                 bounds.tightened(stroke_width * 0.5).to_kurbo_rect(),
-                &*TEXT_OUTLINE_COLOR,
+                &Self::TEXT_OUTLINE_COLOR,
                 stroke_width,
             );
         };
@@ -531,10 +530,6 @@ fn update_cursors_for_textstroke(
     }
 }
 
-/// The outline color when drawing a text box outline
-static TEXT_OUTLINE_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_BRIGHTS[4].with_alpha(0.941));
-
 impl Typewriter {
     // The size of the translate node, located in the upper left corner.
     const TRANSLATE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
@@ -550,6 +545,8 @@ impl Typewriter {
     const TEXT_OUTLINE_STROKE_WIDTH: f64 = 2.0;
     /// The time for the cursor blink.
     const BLINK_TIME: Duration = Duration::from_millis(800);
+    /// The outline color when drawing a text box outline
+    const TEXT_OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(240);
 
     pub(crate) fn toggle_cursor_visibility(&mut self) {
         self.cursor_visible = !self.cursor_visible;

@@ -6,7 +6,7 @@ use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, Align, ArrowType, Box, Button, CompositeTemplate, CornerType,
-    CssProvider, GestureDrag, Grid, Inhibit, PackType, PadActionType, PadController, PositionType,
+    CssProvider, GestureDrag, Grid, PackType, PadActionType, PadController, PositionType,
     PropagationPhase,
 };
 use once_cell::sync::Lazy;
@@ -244,7 +244,7 @@ impl WidgetImpl for RnAppWindow {}
 
 impl WindowImpl for RnAppWindow {
     // Save window state right before the window will be closed
-    fn close_request(&self) -> Inhibit {
+    fn close_request(&self) -> glib::Propagation {
         let obj = self.obj().to_owned();
 
         // Save current doc
@@ -256,8 +256,8 @@ impl WindowImpl for RnAppWindow {
             obj.close_force();
         }
 
-        // Inhibit (Overwrite) the default handler. This handler is then responsible for destoying the window.
-        Inhibit(true)
+        // Inhibit (Overwrite) the default handler. This handler is then responsible for destroying the window.
+        glib::Propagation::Stop
     }
 }
 
@@ -270,7 +270,7 @@ impl RnAppWindow {
         let obj = self.obj();
 
         if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(),
-                clone!(@weak obj as appwindow => @default-return glib::source::Continue(false), move || {
+                clone!(@weak obj as appwindow => @default-return glib::ControlFlow::Break, move || {
                     let canvas = appwindow.active_tab_wrapper().canvas();
 
                     if let Some(output_file) = canvas.output_file() {
@@ -285,7 +285,7 @@ impl RnAppWindow {
                     ));
                 }
 
-                glib::source::Continue(true)
+                glib::ControlFlow::Continue
             }))) {
                 removed_id.remove();
             }

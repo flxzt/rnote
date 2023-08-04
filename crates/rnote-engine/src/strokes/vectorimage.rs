@@ -94,7 +94,7 @@ impl Content for VectorImage {
         const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
         cx.stroke(
             self.bounds().to_kurbo_rect(),
-            &*content::STROKE_HIGHLIGHT_COLOR,
+            &content::CONTENT_HIGHLIGHT_COLOR,
             HIGHLIGHT_STROKE_WIDTH / total_zoom,
         );
         Ok(())
@@ -104,7 +104,7 @@ impl Content for VectorImage {
 }
 
 // Because it is currently not possible to render SVGs directly with piet, the default gen_svg() implementation is
-// overwritten and called in `draw()` and `draw_to_cairo()`. There the librsvg renderer is used to generate bitmap
+// overwritten and called in `draw()` and `draw_to_cairo()`. There the rsvg renderer is used to generate bitmap
 // images. This way it is ensured that an actual Svg is generated when calling `gen_svg()`, but it is also possible to
 // to be drawn to piet.
 impl Drawable for VectorImage {

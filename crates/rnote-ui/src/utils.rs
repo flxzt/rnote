@@ -134,7 +134,7 @@ pub(crate) async fn create_replace_file_future(
             None,
             false,
             gio::FileCreateFlags::REPLACE_DESTINATION,
-            glib::PRIORITY_HIGH,
+            glib::source::Priority::HIGH,
         )
         .await
         .map_err(|e| {
@@ -144,7 +144,7 @@ pub(crate) async fn create_replace_file_future(
         })?;
 
     output_stream
-        .write_all_future(bytes, glib::PRIORITY_HIGH)
+        .write_all_future(bytes, glib::source::Priority::HIGH)
         .await
         .map_err(|(_, e)| {
             anyhow::anyhow!(
@@ -152,7 +152,7 @@ pub(crate) async fn create_replace_file_future(
             )
         })?;
     output_stream
-        .close_future(glib::PRIORITY_HIGH)
+        .close_future(glib::source::Priority::HIGH)
         .await
         .map_err(|e| {
             anyhow::anyhow!(

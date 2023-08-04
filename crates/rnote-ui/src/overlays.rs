@@ -423,10 +423,10 @@ impl RnOverlays {
         const PULSE_INTERVAL: std::time::Duration = std::time::Duration::from_millis(300);
         if let Some(src) = self.imp().progresspulse_id.replace(Some(glib::source::timeout_add_local(
             PULSE_INTERVAL,
-            clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
+            clone!(@weak self as appwindow => @default-return glib::ControlFlow::Break, move || {
                 appwindow.progressbar().pulse();
 
-                glib::source::Continue(true)
+                glib::ControlFlow::Continue
             })),
         )) {
             src.remove();

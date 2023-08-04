@@ -5,7 +5,6 @@ use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::{Camera, DrawableOnDoc, WidgetFlags};
-use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::color;
@@ -30,17 +29,14 @@ impl Default for VerticalSpaceTool {
     }
 }
 
-static VERTICALSPACETOOL_FILL_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_BRIGHTS[2].with_alpha(0.090));
-static VERTICALSPACETOOL_THRESHOLD_LINE_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_GREENS[4].with_alpha(0.941));
-
 impl VerticalSpaceTool {
     const Y_OFFSET_THRESHOLD: f64 = 0.1;
     const OFFSET_LINE_COLOR: piet::Color = color::GNOME_BLUES[3];
     const THRESHOLD_LINE_WIDTH: f64 = 3.0;
     const THRESHOLD_LINE_DASH_PATTERN: [f64; 2] = [9.0, 6.0];
     const OFFSET_LINE_WIDTH: f64 = 1.5;
+    const FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(23);
+    const THRESHOLD_LINE_COLOR: piet::Color = color::GNOME_GREENS[4].with_a8(240);
 }
 
 impl DrawableOnDoc for VerticalSpaceTool {
@@ -75,13 +71,13 @@ impl DrawableOnDoc for VerticalSpaceTool {
             tool_bounds.mins.coords.to_kurbo_point(),
             tool_bounds.maxs.coords.to_kurbo_point(),
         );
-        cx.fill(tool_bounds_rect, &*VERTICALSPACETOOL_FILL_COLOR);
+        cx.fill(tool_bounds_rect, &Self::FILL_COLOR);
 
         let threshold_line =
             kurbo::Line::new(kurbo::Point::new(x, y), kurbo::Point::new(x + width, y));
         cx.stroke_styled(
             threshold_line,
-            &*VERTICALSPACETOOL_THRESHOLD_LINE_COLOR,
+            &Self::THRESHOLD_LINE_COLOR,
             Self::THRESHOLD_LINE_WIDTH / total_zoom,
             &piet::StrokeStyle::new().dash_pattern(&Self::THRESHOLD_LINE_DASH_PATTERN),
         );
@@ -114,15 +110,12 @@ impl Default for OffsetCameraTool {
     }
 }
 
-static OFFSETCAMERATOOL_DARK_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_DARKS[3].with_alpha(0.941));
-static OFFSETCAMERATOOL_LIGHT_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_BRIGHTS[1].with_alpha(0.941));
-
 impl OffsetCameraTool {
     const CURSOR_SIZE: na::Vector2<f64> = na::vector![16.0, 16.0];
     const CURSOR_STROKE_WIDTH: f64 = 2.0;
     const CURSOR_PATH: &str = "m 8 1.078125 l -3 3 h 2 v 2.929687 h -2.960938 v -2 l -3 3 l 3 3 v -2 h 2.960938 v 2.960938 h -2 l 3 3 l 3 -3 h -2 v -2.960938 h 3.054688 v 2 l 3 -3 l -3 -3 v 2 h -3.054688 v -2.929687 h 2 z m 0 0";
+    const DARK_COLOR: piet::Color = color::GNOME_DARKS[3].with_a8(240);
+    const LIGHT_COLOR: piet::Color = color::GNOME_BRIGHTS[1].with_a8(240);
 }
 
 impl DrawableOnDoc for OffsetCameraTool {
@@ -149,10 +142,10 @@ impl DrawableOnDoc for OffsetCameraTool {
 
             cx.stroke(
                 bez_path.clone(),
-                &*OFFSETCAMERATOOL_LIGHT_COLOR,
+                &Self::LIGHT_COLOR,
                 Self::CURSOR_STROKE_WIDTH,
             );
-            cx.fill(bez_path, &*OFFSETCAMERATOOL_DARK_COLOR);
+            cx.fill(bez_path, &Self::DARK_COLOR);
         }
 
         cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
@@ -175,14 +168,11 @@ impl Default for ZoomTool {
     }
 }
 
-static ZOOMTOOL_DARK_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_DARKS[3].with_alpha(0.941));
-static ZOOMTOOL_LIGHT_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_BRIGHTS[1].with_alpha(0.941));
-
 impl ZoomTool {
     const CURSOR_RADIUS: f64 = 4.0;
     const CURSOR_STROKE_WIDTH: f64 = 2.0;
+    const DARK_COLOR: piet::Color = color::GNOME_DARKS[3].with_a8(240);
+    const LIGHT_COLOR: piet::Color = color::GNOME_BRIGHTS[1].with_a8(240);
 }
 
 impl DrawableOnDoc for ZoomTool {
@@ -232,22 +222,22 @@ impl DrawableOnDoc for ZoomTool {
         // start circle
         cx.fill(
             kurbo::Circle::new(start_circle_center, Self::CURSOR_RADIUS * 0.8 / total_zoom),
-            &*ZOOMTOOL_LIGHT_COLOR,
+            &Self::LIGHT_COLOR,
         );
         cx.fill(
             kurbo::Circle::new(start_circle_center, Self::CURSOR_RADIUS * 0.6 / total_zoom),
-            &*ZOOMTOOL_DARK_COLOR,
+            &Self::DARK_COLOR,
         );
 
         // current circle
         cx.stroke(
             kurbo::Circle::new(current_circle_center, Self::CURSOR_RADIUS / total_zoom),
-            &*ZOOMTOOL_LIGHT_COLOR,
+            &Self::LIGHT_COLOR,
             Self::CURSOR_STROKE_WIDTH / total_zoom,
         );
         cx.stroke(
             kurbo::Circle::new(current_circle_center, Self::CURSOR_RADIUS / total_zoom),
-            &*ZOOMTOOL_DARK_COLOR,
+            &Self::DARK_COLOR,
             Self::CURSOR_STROKE_WIDTH * 0.7 / total_zoom,
         );
 

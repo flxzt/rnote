@@ -48,8 +48,8 @@ modules:
           - "-DENABLE_LIBOPENJPEG=none"
       sources:
           - type: archive
-            url: "https://poppler.freedesktop.org/poppler-23.06.0.tar.xz"
-            sha256: d38c6b2f31c8f6f3727fb60a011a0e6c567ebf56ef1ccad36263ca9ed6448a65
+            url: "https://poppler.freedesktop.org/poppler-23.08.0.tar.xz"
+            sha256: 4a4bf7fc903b9f1a2ab7d04b7c5d8220db9bc6261cc73fdb9a826dc272f49aa8
     - name: poppler-data
       buildsystem: cmake-ninja
       config-opts:

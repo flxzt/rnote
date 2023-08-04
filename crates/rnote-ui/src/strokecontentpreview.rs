@@ -268,9 +268,10 @@ impl RnStrokeContentPreview {
         const PULSE_INTERVAL: std::time::Duration = std::time::Duration::from_millis(100);
         if let Some(src) = self.imp().progresspulse_id.replace(Some(glib::source::timeout_add_local(
             PULSE_INTERVAL,
-            clone!(@weak self as strokecontentpreview => @default-return glib::source::Continue(false), move || {
+            clone!(@weak self as strokecontentpreview => @default-return glib::ControlFlow::Break, move || {
                 strokecontentpreview.imp().progressbar.pulse();
-                glib::source::Continue(true)
+
+                glib::ControlFlow::Continue
             })),
         )) {
             src.remove();

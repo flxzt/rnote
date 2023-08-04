@@ -3,7 +3,7 @@ use crate::{RnAppWindow, RnCanvas};
 use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, CornerType,
     EventControllerMotion, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
-    GestureDrag, GestureLongPress, GestureZoom, Inhibit, PropagationPhase, ScrolledWindow, Widget,
+    GestureDrag, GestureLongPress, GestureZoom, PropagationPhase, ScrolledWindow, Widget,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::penevents::ShortcutKey;
@@ -299,34 +299,32 @@ mod imp {
             // zoom scrolling with <ctrl> + scroll
             {
                 self.canvas_zoom_scroll_controller.connect_scroll(
-                    clone!(@weak obj as canvaswrapper => @default-return Inhibit(false), move |controller, _, dy| {
-                    if controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                        let canvas = canvaswrapper.canvas();
-                        let old_zoom = canvas.engine_ref().camera.total_zoom();
-                        let new_zoom = old_zoom * (1.0 - dy * RnCanvas::ZOOM_SCROLL_STEP);
-
-                        if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
-                            let camera_offset = canvas.engine_ref().camera.offset();
-                            let camera_size = canvas.engine_ref().camera.size();
-                            let screen_offset = canvaswrapper.imp().pointer_pos.get()
-                                .map(|p| {
-                                    let p = canvaswrapper.translate_coordinates(&canvas, p[0], p[1]).unwrap();
-                                    na::vector![p.0, p.1]
-                                })
-                                .unwrap_or_else(|| camera_size * 0.5);
-                            let new_camera_offset = (((camera_offset + screen_offset) / old_zoom) * new_zoom) - screen_offset;
-
-                            let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-                            widget_flags.merge(canvas.engine_mut().camera_set_offset(new_camera_offset));
-                            widget_flags.merge(canvas.engine_mut().doc_expand_autoexpand());
-                            canvas.emit_handle_widget_flags(widget_flags);
-                        }
-
-                        // Stop event propagation
-                        Inhibit(true)
-                    } else {
-                        Inhibit(false)
+                    clone!(@weak obj as canvaswrapper => @default-return glib::Propagation::Proceed, move |controller, _, dy| {
+                    if controller.current_event_state() != gdk::ModifierType::CONTROL_MASK {
+                        return glib::Propagation::Proceed;
                     }
+                    let canvas = canvaswrapper.canvas();
+                    let old_zoom = canvas.engine_ref().camera.total_zoom();
+                    let new_zoom = old_zoom * (1.0 - dy * RnCanvas::ZOOM_SCROLL_STEP);
+
+                    if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
+                        let camera_offset = canvas.engine_ref().camera.offset();
+                        let camera_size = canvas.engine_ref().camera.size();
+                        let screen_offset = canvaswrapper.imp().pointer_pos.get()
+                            .map(|p| {
+                                let p = canvaswrapper.translate_coordinates(&canvas, p[0], p[1]).unwrap();
+                                na::vector![p.0, p.1]
+                            })
+                            .unwrap_or_else(|| camera_size * 0.5);
+                        let new_camera_offset = (((camera_offset + screen_offset) / old_zoom) * new_zoom) - screen_offset;
+
+                        let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
+                        widget_flags.merge(canvas.engine_mut().camera_set_offset(new_camera_offset));
+                        widget_flags.merge(canvas.engine_mut().doc_expand_autoexpand());
+                        canvas.emit_handle_widget_flags(widget_flags);
+                    }
+
+                    glib::Propagation::Stop
                 }));
             }
 

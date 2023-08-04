@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-23 18:32+0200\n"
-"PO-Revision-Date: 2023-08-04 05:08+0000\n"
+"PO-Revision-Date: 2023-08-04 19:55+0000\n"
 "Last-Translator: Dhruva Choudhary <choudharydhruva@gmail.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/rnote/repo/hi/>\n"
 "Language: hi\n"
@@ -26,49 +26,56 @@ msgstr "स्केच बनाएं और हस्तलिखित न�
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:15
+#, fuzzy
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr ""
+msgstr "जिनोम;जिटिके;कार्यालय;गरापहिकस;नोटस"
 
 #: crates/rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
-msgstr ""
+msgstr "नई विंडो"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
+"आरनोट स्केचिंग , हस्तलिखित नोट्स, दस्तावेजों और चित्रों का एनोटेशन करने के लि"
+"ए एक वेक्टर-आधारित ड्राइंग ऐप है।"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
+#, fuzzy
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
+"अस्वीकरण: फ़ाइल स्वरूप अभी भी अस्थिर है. यह संस्करणों के बीच संगतता को बदल "
+"और/या तोड़ सकता है।"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An Overview"
-msgstr ""
+msgstr "एक अवलोकन"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
-msgstr ""
+msgstr "लेकचर नोट १"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A Pdf annotation"
-msgstr ""
+msgstr "एक पीडीएफ एनोटेशन"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Lecture Note 2"
-msgstr ""
+msgstr "लेकचर नोट २"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:173
+#, fuzzy
 msgid "Clear Document"
-msgstr ""
+msgstr "दस्तावेज़ साफ़ करें"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
-msgstr ""
+msgstr "इससे संपूर्ण दस्तावेज़ साफ़ हो जाता है. कृपया पुष्टि करें।"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:22
@@ -81,92 +88,99 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:179
 #: crates/rnote-ui/data/ui/dialogs/export.ui:433
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:34
+#, fuzzy
 msgid "Cancel"
-msgstr ""
+msgstr "रद्द करे"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
-msgstr ""
+msgstr "साफ़ करे"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:18
 #: crates/rnote-ui/data/ui/shortcuts.ui:149
 #: crates/rnote-ui/src/canvas/mod.rs:534
 msgid "New Document"
-msgstr ""
+msgstr "नया दस्तावेज़"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:17
 msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
 msgstr ""
+"नया दस्तावेज़ बनाने से कोई भी सहेजे न गए परिवर्तन खारिज हो जाएंगे।\n"
+"क्या आप वर्तमान दस्तावेज़ को सहेजना चाहते हैं?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Discard"
-msgstr ""
+msgstr "खारिज करना"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:42
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:60
 #: crates/rnote-ui/src/dialogs/export.rs:33
 msgid "Save"
-msgstr ""
+msgstr "सहेजें"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:29
 msgid "Close Tab"
-msgstr ""
+msgstr "टैब बंद करें"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
+"इस टैब में सहेजे न गए परिवर्तन शामिल हैं.\n"
+"जो परिवर्तन सहेजे नहीं गए वे स्थायी रूप से नष्ट हो जाएंगे।"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
-msgstr ""
+msgstr "विंडो बंद करे"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:48
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
+"कुछ खुली हुई फ़ाइलों में सहेजे न गए परिवर्तन हैं।\n"
+"जो परिवर्तन सहेजे नहीं गए वे स्थायी रूप से नष्ट हो जाएंगे।"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
-msgstr ""
+msgstr "सहेजे न गए दस्तावेज़"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:59
 msgid "Discard All"
-msgstr ""
+msgstr "सभी को त्यागें"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:67
 msgid "Edit Workspace"
-msgstr ""
+msgstr "कार्यक्षेत्र संपादित करें"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:75
 #: crates/rnote-ui/data/ui/settingspanel.ui:277
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:39
 msgid "Apply"
-msgstr ""
+msgstr "आवेदन करे"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:117
 msgid "Workspace Name"
-msgstr ""
+msgstr "कार्यस्थल का नाम"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:122
 msgid "Icon"
-msgstr ""
+msgstr "आइकोन"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:123
 msgid "Change the workspace icon"
-msgstr ""
+msgstr "कार्यक्षेत्र आइकोन बदलें"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:143
 #: crates/rnote-ui/data/ui/settingspanel.ui:314
 msgid "Color"
-msgstr ""
+msgstr "रिंग"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:144
 msgid "Change the workspace color"

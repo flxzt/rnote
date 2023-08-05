@@ -9,7 +9,7 @@ members = [
 [workspace.package]
 version = "0.7.1"
 edition = "2021"
-rust-version = "1.65"
+rust-version = "1.70"
 authors = ["The Rnote Authors"]
 license = "GPL-3.0-or-later"
 homepage = "https://rnote.flxzt.net"

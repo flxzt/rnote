@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-05 16:42+0200\n"
-"PO-Revision-Date: 2023-07-28 07:54+0000\n"
+"PO-Revision-Date: 2023-08-05 14:54+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1090,18 +1090,24 @@ msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"Seite entfernen.\n"
+"Verfügbar im Feste-Größe Dokument-Layout."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:157
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"Seite hinzufügen.\n"
+"Verfügbar im Feste-Größe Dokument-Layout."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:166
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"Dokumentgröße an Inhalt anpassen.\n"
+"Verfügbar im Feste-Größe Dokument-Layout."
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"

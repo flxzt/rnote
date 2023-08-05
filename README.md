@@ -147,6 +147,12 @@ A great way to contribute to the project without writing code is adding a new or
 - take the `rnote.pot` file and generate a new `.po` translation file from it, for example with "Poedit". Add the new translation language to `LINGUAS` and submit a PR with the changed files.
 - use [weblate](https://hosted.weblate.org/projects/rnote/repo/) for an easy way to translate in the browser without having to deal with git.
 
+## Fonts
+
+The following fonts are bundled with the application:
+
+- [Virgil](https://virgil.excalidraw.com/): A handwrite-y font to complement stylus-written notes and sketches. 
+
 ## File Format
 
 The `.rnote` file format is a gzipped json file.

@@ -99,8 +99,8 @@ impl RnAppWindow {
         self.add_action(&action_add_page_to_doc);
         let action_remove_page_from_doc = gio::SimpleAction::new("remove-page-from-doc", None);
         self.add_action(&action_remove_page_from_doc);
-        let action_resize_to_fit_strokes = gio::SimpleAction::new("resize-to-fit-strokes", None);
-        self.add_action(&action_resize_to_fit_strokes);
+        let action_resize_to_fit_content = gio::SimpleAction::new("resize-to-fit-content", None);
+        self.add_action(&action_resize_to_fit_content);
         let action_return_origin_page = gio::SimpleAction::new("return-origin-page", None);
         self.add_action(&action_return_origin_page);
         let action_selection_trash = gio::SimpleAction::new("selection-trash", None);
@@ -272,13 +272,13 @@ impl RnAppWindow {
                     .mainheader()
                     .canvasmenu()
                     .fixedsize_quickactions_box()
-                    .set_visible(doc_layout == Layout::FixedSize);
+                    .set_sensitive(doc_layout == Layout::FixedSize);
 
                 let mut widget_flags = WidgetFlags::default();
 
                 if prev_layout != doc_layout {
                     canvas.engine_mut().document.layout = doc_layout;
-                    widget_flags.merge(canvas.engine_mut().doc_resize_to_fit_strokes());
+                    widget_flags.merge(canvas.engine_mut().doc_resize_to_fit_content());
                 } else {
                     widget_flags.merge(canvas.engine_mut().doc_resize_autoexpand());
                 }
@@ -563,12 +563,12 @@ impl RnAppWindow {
             }),
         );
 
-        // Resize to fit strokes
-        action_resize_to_fit_strokes.connect_activate(
-            clone!(@weak self as appwindow => move |_action_resize_to_fit_strokes, _target| {
+        // Resize to fit content
+        action_resize_to_fit_content.connect_activate(
+            clone!(@weak self as appwindow => move |_action_resize_to_fit_content, _target| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
 
-                let widget_flags = canvas.engine_mut().doc_resize_to_fit_strokes();
+                let widget_flags = canvas.engine_mut().doc_resize_to_fit_content();
                 canvas.update_rendering_current_viewport();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }),

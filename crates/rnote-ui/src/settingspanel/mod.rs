@@ -592,7 +592,7 @@ impl RnSettingsPanel {
                 let temporary_format = *imp.temporary_format.borrow();
 
                 canvas.engine_mut().document.format = temporary_format;
-                let widget_flags = canvas.engine_mut().doc_resize_to_fit_strokes();
+                let widget_flags = canvas.engine_mut().doc_resize_to_fit_content();
                 canvas.update_rendering_current_viewport();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
 

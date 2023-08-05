@@ -602,9 +602,9 @@ impl RnoteEngine {
     /// Resizes the doc to the format and to fit all strokes.
     ///
     /// Background rendering then needs to be updated.
-    pub fn doc_resize_to_fit_strokes(&mut self) -> WidgetFlags {
+    pub fn doc_resize_to_fit_content(&mut self) -> WidgetFlags {
         self.document
-            .resize_to_fit_strokes(&self.store, &self.camera)
+            .resize_to_fit_content(&self.store, &self.camera)
     }
 
     /// Resize the doc when in autoexpanding layouts. called e.g. when finishing a new stroke.

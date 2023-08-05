@@ -305,7 +305,7 @@ impl RnAppWindow {
             .canvas()
             .engine_mut()
             .load_engine_config(engine_config, crate::env::pkg_data_dir().ok());
-        widget_flags.merge(wrapper.canvas().engine_mut().doc_resize_to_fit_strokes());
+        widget_flags.merge(wrapper.canvas().engine_mut().doc_resize_to_fit_content());
         wrapper.canvas().update_rendering_current_viewport();
         self.handle_widget_flags(widget_flags, &wrapper.canvas());
         wrapper

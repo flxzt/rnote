@@ -52,5 +52,30 @@ sounds_files = files(
     'sounds/typewriter/typewriter_thump.wav',
 )
 
-# install flat in one directory
+# install sounds flat in one directory
 install_data(sounds_files, install_dir: pkgdatadir / 'sounds')
+
+
+# fonts
+fonts_files = files(
+    'fonts/virgil.ttf'
+)
+
+# install fonts
+install_data(fonts_files, install_dir: pkgdatadir / 'fonts')
+
+# fontconfig file
+message('Configuring fontconfig file')
+
+fc_conf = configuration_data()
+fc_conf.set('APP_ID', app_id)
+fc_conf.set('APP_NAME', app_name)
+fc_conf.set('APP_NAME_CAPITALIZED', app_name_capitalized)
+fc_conf.set('PKG_DATA_DIR', pkgdatadir)
+fc_file_in = configure_file(
+    input: '09-app.conf.in',
+    output: '09-' + app_name + '.conf',
+    configuration: fc_conf,
+    install: true,
+    install_dir: sysconfdir / 'fonts/conf.d',
+)

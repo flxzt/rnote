@@ -73,7 +73,7 @@ fc_conf.set('APP_NAME', app_name)
 fc_conf.set('APP_NAME_CAPITALIZED', app_name_capitalized)
 fc_conf.set('PKG_DATA_DIR', pkgdatadir)
 fc_file_in = configure_file(
-    input: '09-app.conf.in',
+    input: '09-fc.conf.in',
     output: '09-' + app_name + '.conf',
     configuration: fc_conf,
     install: true,

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-23 18:32+0200\n"
+"POT-Creation-Date: 2023-08-05 16:42+0200\n"
 "PO-Revision-Date: 2023-03-13 09:11+0000\n"
 "Last-Translator: Reza Almanda <rezaalmanda27@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/rnote/repo/id/"
@@ -1119,15 +1119,21 @@ msgid "Zoom to Page Width"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:148
-msgid "Remove Page"
+msgid ""
+"Remove Page.\n"
+"Available in Fixed-Size Document Layout."
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:156
-msgid "Add Page"
+#: crates/rnote-ui/data/ui/canvasmenu.ui:157
+msgid ""
+"Add Page.\n"
+"Available in Fixed-Size Document Layout."
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:164
-msgid "Resize Document to Fit Strokes"
+#: crates/rnote-ui/data/ui/canvasmenu.ui:166
+msgid ""
+"Resize Document to Fit Content.\n"
+"Available in Fixed-Size Document Layout."
 msgstr ""
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
@@ -1702,41 +1708,41 @@ msgstr ""
 msgid "- invalid folder path -"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:809
+#: crates/rnote-ui/src/canvas/mod.rs:808
 #, fuzzy
 #| msgid "Opened file was modified on disk."
 msgid "Opened file was modified on disk"
 msgstr "File yang dibuka telah dimodifikasi pada disk."
 
-#: crates/rnote-ui/src/canvas/mod.rs:810
+#: crates/rnote-ui/src/canvas/mod.rs:809
 msgid "Reload"
 msgstr "Muat ulang"
 
-#: crates/rnote-ui/src/canvas/mod.rs:816
+#: crates/rnote-ui/src/canvas/mod.rs:815
 #, fuzzy
 #| msgid "Opening .rnote file failed."
 msgid "Reloading .rnote file from disk failed"
 msgstr "Pembukaan berkas .rnote gagal."
 
-#: crates/rnote-ui/src/canvas/mod.rs:865
+#: crates/rnote-ui/src/canvas/mod.rs:864
 #, fuzzy
 #| msgid "Opened file was renamed on disk."
 msgid "Opened file was renamed on disk"
 msgstr "File yang dibuka diganti nama pada disk"
 
-#: crates/rnote-ui/src/canvas/mod.rs:878
+#: crates/rnote-ui/src/canvas/mod.rs:877
 #, fuzzy
 #| msgid "Opened file was moved or deleted on disk."
 msgid "Opened file was moved or deleted on disk"
 msgstr "File yang terbuka dipindahkan atau dihapus pada disk."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1012
+#: crates/rnote-ui/src/canvas/mod.rs:1011
 #, fuzzy
 #| msgid "Opening .rnote file failed."
 msgid "Inserting file failed"
 msgstr "Pembukaan berkas .rnote gagal."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1022
+#: crates/rnote-ui/src/canvas/mod.rs:1021
 #, fuzzy
 #| msgid "Printing document failed"
 msgid "Inserting text failed"

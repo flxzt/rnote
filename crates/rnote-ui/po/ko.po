@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-23 18:32+0200\n"
+"POT-Creation-Date: 2023-08-05 16:42+0200\n"
 "PO-Revision-Date: 2023-02-09 20:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
@@ -1106,16 +1106,22 @@ msgid "Zoom to Page Width"
 msgstr "페이지 너비로 확대/축소"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:148
-msgid "Remove Page"
+msgid ""
+"Remove Page.\n"
+"Available in Fixed-Size Document Layout."
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:156
-msgid "Add Page"
-msgstr "페이지 추가하기"
+#: crates/rnote-ui/data/ui/canvasmenu.ui:157
+msgid ""
+"Add Page.\n"
+"Available in Fixed-Size Document Layout."
+msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:164
-msgid "Resize Document to Fit Strokes"
-msgstr "자획에 맞게 문서 크기 조정하기"
+#: crates/rnote-ui/data/ui/canvasmenu.ui:166
+msgid ""
+"Resize Document to Fit Content.\n"
+"Available in Fixed-Size Document Layout."
+msgstr ""
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
@@ -1691,33 +1697,33 @@ msgstr "- 잘못된 파일 이름 -"
 msgid "- invalid folder path -"
 msgstr "- 잘못된 폴더 경로 -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:809
+#: crates/rnote-ui/src/canvas/mod.rs:808
 msgid "Opened file was modified on disk"
 msgstr "디스크에서 열린 파일이 수정되었습니다"
 
-#: crates/rnote-ui/src/canvas/mod.rs:810
+#: crates/rnote-ui/src/canvas/mod.rs:809
 msgid "Reload"
 msgstr "다시 불러오기"
 
-#: crates/rnote-ui/src/canvas/mod.rs:816
+#: crates/rnote-ui/src/canvas/mod.rs:815
 msgid "Reloading .rnote file from disk failed"
 msgstr "디스크에서 .rnote 파일을 다시 불러오기에 실패했습니다"
 
-#: crates/rnote-ui/src/canvas/mod.rs:865
+#: crates/rnote-ui/src/canvas/mod.rs:864
 msgid "Opened file was renamed on disk"
 msgstr "디스크에서 열린 파일의 이름이 변경되었습니다"
 
-#: crates/rnote-ui/src/canvas/mod.rs:878
+#: crates/rnote-ui/src/canvas/mod.rs:877
 msgid "Opened file was moved or deleted on disk"
 msgstr "디스크에서 열린 파일이 이동 또는 삭제되었습니다"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1012
+#: crates/rnote-ui/src/canvas/mod.rs:1011
 #, fuzzy
 #| msgid "Opening file failed"
 msgid "Inserting file failed"
 msgstr "파일을 열지 못했습니다"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1022
+#: crates/rnote-ui/src/canvas/mod.rs:1021
 #, fuzzy
 #| msgid "Printing document failed"
 msgid "Inserting text failed"
@@ -2262,6 +2268,12 @@ msgstr "폴더 이름"
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "새 폴더"
+
+#~ msgid "Add Page"
+#~ msgstr "페이지 추가하기"
+
+#~ msgid "Resize Document to Fit Strokes"
+#~ msgstr "자획에 맞게 문서 크기 조정하기"
 
 #~ msgid ""
 #~ "Opening this file overwrites any unsaved changes. Do you want to save the "

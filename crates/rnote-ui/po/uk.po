@@ -2,17 +2,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-23 18:32+0200\n"
+"POT-Creation-Date: 2023-08-05 16:42+0200\n"
 "PO-Revision-Date: 2023-07-30 15:04+0000\n"
 "Last-Translator: diminDDL <dimin21590@gmail.com>\n"
-"Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/>"
-"\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
+">\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 5.0-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
@@ -1082,16 +1082,22 @@ msgid "Zoom to Page Width"
 msgstr "Масштабувати до ширини сторінки"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:148
-msgid "Remove Page"
-msgstr "Видалити сторінку"
+msgid ""
+"Remove Page.\n"
+"Available in Fixed-Size Document Layout."
+msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:156
-msgid "Add Page"
-msgstr "Додати сторінку"
+#: crates/rnote-ui/data/ui/canvasmenu.ui:157
+msgid ""
+"Add Page.\n"
+"Available in Fixed-Size Document Layout."
+msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:164
-msgid "Resize Document to Fit Strokes"
-msgstr "Змінити розмір відповідно до вмісту"
+#: crates/rnote-ui/data/ui/canvasmenu.ui:166
+msgid ""
+"Resize Document to Fit Content.\n"
+"Available in Fixed-Size Document Layout."
+msgstr ""
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
@@ -1662,31 +1668,31 @@ msgstr "-недійсна назва файлу-"
 msgid "- invalid folder path -"
 msgstr "- недійсний шлях до папки -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:809
+#: crates/rnote-ui/src/canvas/mod.rs:808
 msgid "Opened file was modified on disk"
 msgstr "Відкритий файл змінено на диску"
 
-#: crates/rnote-ui/src/canvas/mod.rs:810
+#: crates/rnote-ui/src/canvas/mod.rs:809
 msgid "Reload"
 msgstr "Перезавантажити"
 
-#: crates/rnote-ui/src/canvas/mod.rs:816
+#: crates/rnote-ui/src/canvas/mod.rs:815
 msgid "Reloading .rnote file from disk failed"
 msgstr "Не вдалося перезавантажити файл .rnote з диска"
 
-#: crates/rnote-ui/src/canvas/mod.rs:865
+#: crates/rnote-ui/src/canvas/mod.rs:864
 msgid "Opened file was renamed on disk"
 msgstr "Відкритий файл було перейменовано на диску"
 
-#: crates/rnote-ui/src/canvas/mod.rs:878
+#: crates/rnote-ui/src/canvas/mod.rs:877
 msgid "Opened file was moved or deleted on disk"
 msgstr "Відкритий файл було переміщено або видалено на диску"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1012
+#: crates/rnote-ui/src/canvas/mod.rs:1011
 msgid "Inserting file failed"
 msgstr "Не вдалося вставити файл"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1022
+#: crates/rnote-ui/src/canvas/mod.rs:1021
 msgid "Inserting text failed"
 msgstr "Не вдалося вставити текст"
 
@@ -2203,6 +2209,15 @@ msgstr "Назва папки"
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "Нова папка"
+
+#~ msgid "Remove Page"
+#~ msgstr "Видалити сторінку"
+
+#~ msgid "Add Page"
+#~ msgstr "Додати сторінку"
+
+#~ msgid "Resize Document to Fit Strokes"
+#~ msgstr "Змінити розмір відповідно до вмісту"
 
 #~ msgid ""
 #~ "Opening this file overwrites any unsaved changes. Do you want to save the "

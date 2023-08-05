@@ -58,7 +58,10 @@ install_data(sounds_files, install_dir: pkgdatadir / 'sounds')
 
 # fonts
 fonts_files = files(
-    'fonts/virgil.ttf'
+    'fonts/GrapeNuts-Regular.ttf',
+    'fonts/OpenDyslexic-Regular.ttf',
+    'fonts/TT2020Base-Regular.ttf',
+    'fonts/Virgil.ttf',
 )
 
 # install fonts

@@ -301,7 +301,7 @@ impl RnoteEngine {
             .collect::<Vec<StrokeKey>>();
 
         // resize after the strokes are inserted, but before they are set selected
-        widget_flags.merge(self.doc_resize_to_fit_strokes());
+        widget_flags.merge(self.doc_resize_to_fit_content());
         self.store.set_selected_keys(&inserted, true);
         widget_flags.merge(self.current_pen_update_state());
         self.update_rendering_current_viewport();

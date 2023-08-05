@@ -151,7 +151,12 @@ A great way to contribute to the project without writing code is adding a new or
 
 The following fonts are bundled with the application:
 
-- [Virgil](https://virgil.excalidraw.com/): A handwrite-y font to complement stylus-written notes and sketches. 
+- [Grape Nuts](https://fonts.google.com/specimen/Grape+Nuts): Grape Nuts is a simple handwritten casual font.
+- [OpenDyslexic-Regular](https://github.com/antijingoist/opendyslexic): OpenDyslexic is a typeface designed against some
+    common symptoms of dyslexia.
+- [TT2020Base-Regular](https://github.com/ctrlcctrlv/TT2020): TT2020 is an advanced, open source, hyperrealistic,
+    multilingual typewriter font for a new decade.
+- [Virgil](https://virgil.excalidraw.com/): The font that powers Excalidraw.
 
 ## File Format
 

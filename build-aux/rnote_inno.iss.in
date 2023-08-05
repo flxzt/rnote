@@ -72,7 +72,9 @@ Source: "{#meson_source_root}\crates\rnote-ui\data\icons\application-rnote.ico";
 Source: "{#meson_source_root}\crates\rnote-ui\data\icons\scalable\apps\{#app_name}.svg"; DestDir: "{app}\share\icons\hicolor\scalable\apps"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Locale
 Source: "{#meson_build_root}\locale\*"; DestDir: "{app}\share\locale"; Flags: ignoreversion recursesubdirs createallsubdirs
-; data files (that go into pkg-data-dir)
+; Fonts
+Source: "{#meson_source_root}\crates\rnote-engine\data\fonts\virgil.ttf"; DestDir: "{autofonts}"; FontInstall: "Virgil"; Flags: onlyifdoesntexist uninsneveruninstall
+; app data (that goes to pkg-data-dir)
 Source: "{#meson_build_root}\crates\rnote-ui\data\resources.gresource"; DestDir: "{app}\share\rnote"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\*"; DestDir: "{app}\share\rnote\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Binary

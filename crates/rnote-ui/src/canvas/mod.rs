@@ -21,6 +21,7 @@ use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevents::PenState;
+use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::ext::GrapheneRectExt;
 use rnote_engine::Document;
 use rnote_engine::{RnoteEngine, WidgetFlags};
@@ -415,10 +416,11 @@ mod imp {
 
             if let Err(e) = || -> anyhow::Result<()> {
                 let clip_bounds = if let Some(parent) = obj.parent() {
-                    // unwrapping is fine, because its the parent
-                    let (clip_x, clip_y) = parent.translate_coordinates(&*obj, 0.0, 0.0).unwrap();
                     Aabb::new_positive(
-                        na::point![clip_x, clip_y],
+                        parent
+                            .compute_point(&*obj, &graphene::Point::zero())
+                            .unwrap()
+                            .to_na_point(),
                         na::point![f64::from(parent.width()), f64::from(parent.height())],
                     )
                 } else {

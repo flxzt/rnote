@@ -46,6 +46,35 @@ impl GdkRGBAExt for gdk::RGBA {
     }
 }
 
+/// Extension trait for [graphene::Point].
+pub trait GraphenePointExt
+where
+    Self: Sized,
+{
+    fn from_na_point(p: na::Point2<f64>) -> Self;
+    fn to_na_point(&self) -> na::Point2<f64>;
+    fn from_na_vec(v: na::Vector2<f64>) -> Self;
+    fn to_na_vec(&self) -> na::Vector2<f64>;
+}
+
+impl GraphenePointExt for graphene::Point {
+    fn from_na_point(p: nalgebra::Point2<f64>) -> Self {
+        Self::new(p.x as f32, p.y as f32)
+    }
+
+    fn to_na_point(&self) -> nalgebra::Point2<f64> {
+        na::point![self.x() as f64, self.y() as f64]
+    }
+
+    fn from_na_vec(v: nalgebra::Vector2<f64>) -> Self {
+        Self::new(v.x as f32, v.y as f32)
+    }
+
+    fn to_na_vec(&self) -> nalgebra::Vector2<f64> {
+        na::vector![self.x() as f64, self.y() as f64]
+    }
+}
+
 /// Extension trait for [graphene::Rect].
 pub trait GrapheneRectExt
 where

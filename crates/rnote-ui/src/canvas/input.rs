@@ -1,10 +1,11 @@
 // Imports
 use super::RnCanvas;
-use gtk4::{gdk, glib, prelude::*, Native};
+use gtk4::{gdk, glib, graphene, prelude::*, Native};
 use rnote_compose::penevents::ShortcutKey;
 use rnote_compose::penevents::{KeyboardKey, PenState};
 use rnote_compose::penevents::{ModifierKey, PenEvent};
 use rnote_compose::penpath::Element;
+use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::pens::penholder::BacklogPolicy;
 use rnote_engine::pens::PenMode;
 use rnote_engine::WidgetFlags;
@@ -310,9 +311,14 @@ fn retrieve_pointer_elements(
     // Transforms the pos given in surface coordinate space to the canvas document coordinate space
     let transform_pos = |pos: na::Vector2<f64>| -> na::Vector2<f64> {
         event_native
-            .translate_coordinates(canvas, pos[0] - surface_trans_x, pos[1] - surface_trans_y)
-            .map(|(x, y)| {
-                (canvas.engine_ref().camera.transform().inverse() * na::point![x, y]).coords
+            .compute_point(
+                canvas,
+                &graphene::Point::from_na_vec(pos - na::vector![surface_trans_x, surface_trans_y]),
+            )
+            .map(|p| {
+                (canvas.engine_ref().camera.transform().inverse()
+                    * na::point![p.x() as f64, p.y() as f64])
+                .coords
             })
             .unwrap()
     };

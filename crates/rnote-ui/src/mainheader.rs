@@ -17,11 +17,9 @@ mod imp {
         #[template_child]
         pub(crate) main_title_unsaved_indicator: TemplateChild<Label>,
         #[template_child]
-        pub(crate) left_flapreveal_toggle: TemplateChild<ToggleButton>,
+        pub(crate) left_sidebar_reveal_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub(crate) right_flapreveal_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) menus_box: TemplateChild<gtk4::Box>,
+        pub(crate) right_sidebar_reveal_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) canvasmenu: TemplateChild<RnCanvasMenu>,
         #[template_child]
@@ -82,16 +80,12 @@ impl RnMainHeader {
         self.imp().main_title_unsaved_indicator.get()
     }
 
-    pub(crate) fn left_flapreveal_toggle(&self) -> ToggleButton {
-        self.imp().left_flapreveal_toggle.get()
+    pub(crate) fn left_sidebar_reveal_toggle(&self) -> ToggleButton {
+        self.imp().left_sidebar_reveal_toggle.get()
     }
 
-    pub(crate) fn right_flapreveal_toggle(&self) -> ToggleButton {
-        self.imp().right_flapreveal_toggle.get()
-    }
-
-    pub(crate) fn menus_box(&self) -> gtk4::Box {
-        self.imp().menus_box.get()
+    pub(crate) fn right_sidebar_reveal_toggle(&self) -> ToggleButton {
+        self.imp().right_sidebar_reveal_toggle.get()
     }
 
     pub(crate) fn canvasmenu(&self) -> RnCanvasMenu {
@@ -102,31 +96,5 @@ impl RnMainHeader {
         self.imp().appmenu.get()
     }
 
-    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
-        self.imp()
-            .headerbar
-            .get()
-            .bind_property(
-                "show-end-title-buttons",
-                &appwindow.flap_header(),
-                "show-end-title-buttons",
-            )
-            .sync_create()
-            .bidirectional()
-            .invert_boolean()
-            .build();
-
-        self.imp()
-            .headerbar
-            .get()
-            .bind_property(
-                "show-start-title-buttons",
-                &appwindow.flap_header(),
-                "show-start-title-buttons",
-            )
-            .sync_create()
-            .bidirectional()
-            .invert_boolean()
-            .build();
-    }
+    pub(crate) fn init(&self, _appwindow: &RnAppWindow) {}
 }

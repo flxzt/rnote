@@ -10,7 +10,7 @@ use crate::{
 };
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
-use gtk4::{gdk, gio, glib, glib::clone, Application, Box, Button, IconTheme};
+use gtk4::{gdk, gio, glib, glib::clone, Application, IconTheme};
 use rnote_compose::Color;
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
@@ -28,7 +28,6 @@ glib::wrapper! {
 impl RnAppWindow {
     const AUTOSAVE_INTERVAL_DEFAULT: u32 = 30;
     const PERIODIC_CONFIGSAVE_INTERVAL: u32 = 10;
-    const FLAP_FOLDED_RESIZE_MARGIN: u32 = 64;
 
     pub(crate) fn new(app: &Application) -> Self {
         glib::Object::builder().property("application", app).build()
@@ -92,56 +91,40 @@ impl RnAppWindow {
         self.imp().app_settings.clone()
     }
 
-    pub(crate) fn overlays(&self) -> RnOverlays {
-        self.imp().overlays.get()
+    pub(crate) fn main_header(&self) -> RnMainHeader {
+        self.imp().main_header.get()
     }
 
-    pub(crate) fn settings_panel(&self) -> RnSettingsPanel {
-        self.imp().settings_panel.get()
+    pub(crate) fn split_view(&self) -> adw::OverlaySplitView {
+        self.imp().split_view.get()
     }
 
-    pub(crate) fn flap_box(&self) -> gtk4::Box {
-        self.imp().flap_box.get()
-    }
-
-    pub(crate) fn flap_header(&self) -> adw::HeaderBar {
-        self.imp().flap_header.get()
+    pub(crate) fn sidebar_stack(&self) -> adw::ViewStack {
+        self.imp().sidebar_stack.get()
     }
 
     pub(crate) fn workspacebrowser(&self) -> RnWorkspaceBrowser {
         self.imp().workspacebrowser.get()
     }
 
-    pub(crate) fn flap(&self) -> adw::Flap {
-        self.imp().flap.get()
+    pub(crate) fn settings_panel(&self) -> RnSettingsPanel {
+        self.imp().settings_panel.get()
     }
 
-    pub(crate) fn flap_menus_box(&self) -> Box {
-        self.imp().flap_menus_box.get()
+    pub(crate) fn overlays(&self) -> RnOverlays {
+        self.imp().overlays.get()
     }
 
-    pub(crate) fn flap_close_button(&self) -> Button {
-        self.imp().flap_close_button.get()
-    }
-
-    pub(crate) fn flap_stack(&self) -> adw::ViewStack {
-        self.imp().flap_stack.get()
-    }
-
-    pub(crate) fn mainheader(&self) -> RnMainHeader {
-        self.imp().mainheader.get()
-    }
-
-    // Must be called after application is associated with it else it fails
+    /// Must be called after application is associated with the window else the init will panic
     pub(crate) fn init(&self) {
         let imp = self.imp();
 
         imp.overlays.get().init(self);
         imp.workspacebrowser.get().init(self);
         imp.settings_panel.get().init(self);
-        imp.mainheader.get().init(self);
-        imp.mainheader.get().canvasmenu().init(self);
-        imp.mainheader.get().appmenu().init(self);
+        imp.main_header.get().init(self);
+        imp.main_header.get().canvasmenu().init(self);
+        imp.main_header.get().appmenu().init(self);
         imp.overlays.get().colorpicker().init(self);
 
         // An initial tab. Must! come before setting up the settings binds and import
@@ -233,7 +216,7 @@ impl RnAppWindow {
             let total_zoom = canvas.engine_ref().camera.total_zoom();
 
             canvas.queue_resize();
-            self.mainheader()
+            self.main_header()
                 .canvasmenu()
                 .update_zoom_reset_label(total_zoom);
         }
@@ -242,7 +225,7 @@ impl RnAppWindow {
             let viewport = canvas.engine_ref().camera.viewport();
 
             canvas.canvas_layout_manager().update_old_viewport(viewport);
-            self.mainheader()
+            self.main_header()
                 .canvasmenu()
                 .update_zoom_reset_label(total_zoom);
             canvas.queue_resize();
@@ -428,21 +411,21 @@ impl RnAppWindow {
             &(title.clone() + " - " + config::APP_NAME_CAPITALIZED),
         ));
 
-        self.mainheader()
+        self.main_header()
             .main_title_unsaved_indicator()
             .set_visible(canvas.unsaved_changes());
         if canvas.unsaved_changes() {
-            self.mainheader()
+            self.main_header()
                 .main_title()
                 .add_css_class("unsaved_changes");
         } else {
-            self.mainheader()
+            self.main_header()
                 .main_title()
                 .remove_css_class("unsaved_changes");
         }
 
-        self.mainheader().main_title().set_title(&title);
-        self.mainheader().main_title().set_subtitle(&subtitle);
+        self.main_header().main_title().set_title(&title);
+        self.main_header().main_title().set_subtitle(&subtitle);
     }
 
     /// Open the file, with import dialogs when appropriate.

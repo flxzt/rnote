@@ -71,8 +71,8 @@ cairo-rs = { version = "0.18", features = ["png", "svg", "pdf"] }
 rsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", rev = "2b376c24d9b6718bed65fdff6b980de756a0f95c" }
 # newest poppler feature ("v21_12") is causing linking errors when building in mingw for some reason.
 poppler-rs = { version = "0.22", features = ["v20_9"] }
-gtk4 = { version = "0.7.1", features = ["v4_10"] }
-adw = { version = "0.5.2", package="libadwaita", features = ["v1_3"] }
+gtk4 = { version = "0.7.1", features = ["v4_12"] }
+adw = { version = "0.5.2", package="libadwaita", features = ["v1_4"] }
 dialoguer = "0.10.4"
 open = "5"
 atty = "0.2"

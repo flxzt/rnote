@@ -41,7 +41,6 @@
         <file compressed="true">icons/scalable/actions/misc-menu-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/preferences-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/appwindow-fullscreen-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/flap-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/focus-mode-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/tab-new-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/zoom-in-symbolic.svg</file>
@@ -141,6 +140,7 @@
         <file compressed="true">icons/scalable/actions/shapebuilder-fociellipse-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/shapebuilder-quadbez-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/shapebuilder-cubbez-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/sidebar-reveal-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/stylus-button-primary-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/stylus-button-secondary-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/stylus-button-eraser-symbolic.svg</file>

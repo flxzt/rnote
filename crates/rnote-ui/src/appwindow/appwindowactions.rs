@@ -161,8 +161,8 @@ impl RnAppWindow {
 
         // Open settings
         action_open_settings.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            appwindow.flap_stack().set_visible_child_name("settings_page");
-            appwindow.flap().set_reveal_flap(true);
+            appwindow.sidebar_stack().set_visible_child_name("settings_page");
+            appwindow.split_view().set_show_sidebar(true);
         }));
 
         // About Dialog
@@ -188,12 +188,12 @@ impl RnAppWindow {
 
         // Open Canvas Menu
         action_open_canvasmenu.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            appwindow.mainheader().canvasmenu().popovermenu().popup();
+            appwindow.main_header().canvasmenu().popovermenu().popup();
         }));
 
         // Open App Menu
         action_open_appmenu.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            appwindow.mainheader().appmenu().popovermenu().popup();
+            appwindow.main_header().appmenu().popovermenu().popup();
         }));
 
         // Developer mode
@@ -269,7 +269,7 @@ impl RnAppWindow {
                 action_doc_layout.set_state(&doc_layout_str.to_variant());
 
                 appwindow
-                    .mainheader()
+                    .main_header()
                     .canvasmenu()
                     .fixedsize_quickactions_box()
                     .set_sensitive(doc_layout == Layout::FixedSize);

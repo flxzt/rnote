@@ -176,7 +176,7 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
     {
         Some(p)
     } else {
-        appwindow.workspacebrowser().dirlist_dir()
+        appwindow.sidebar().workspacebrowser().dirlist_dir()
     };
 
     // Handle possible file collisions for new files
@@ -301,7 +301,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         {
             Some(p)
         } else {
-            appwindow.workspacebrowser().dirlist_dir()
+            appwindow.sidebar().workspacebrowser().dirlist_dir()
         };
 
         // Handle possible file collisions for new files
@@ -462,7 +462,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     );
 
     let Some(initial_entry) = appwindow
-        .workspacebrowser()
+        .sidebar().workspacebrowser()
         .workspacesbar()
         .selected_workspacelistentry() else {
             log::warn!("tried to edit workspace entry in dialog, but no workspace is selected");
@@ -540,15 +540,18 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
         ResponseType::Apply => {
             // update the actual selected entry
             appwindow
+                .sidebar()
                 .workspacebrowser()
                 .workspacesbar()
                 .replace_selected_workspacelistentry(preview_row.entry());
             // refreshing the files list
             appwindow
+                .sidebar()
                 .workspacebrowser()
                 .refresh_dirlist_selected_workspace();
             // And save the state
             appwindow
+                .sidebar()
                 .workspacebrowser()
                 .workspacesbar()
                 .save_to_settings(&appwindow.app_settings());

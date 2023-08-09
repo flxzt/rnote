@@ -10,8 +10,8 @@ use crate::{
     strokewidthpicker::StrokeWidthPreviewStyle, workspacebrowser::workspacesbar::RnWorkspaceRow,
     workspacebrowser::RnFileRow, workspacebrowser::RnWorkspacesBar, RnAppMenu, RnAppWindow,
     RnCanvas, RnCanvasMenu, RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays,
-    RnPensSideBar, RnSettingsPanel, RnStrokeContentPreview, RnStrokeWidthPicker, RnUnitEntry,
-    RnWorkspaceBrowser,
+    RnPensSideBar, RnSettingsPanel, RnSidebar, RnStrokeContentPreview, RnStrokeWidthPicker,
+    RnUnitEntry, RnWorkspaceBrowser,
 };
 use adw::subclass::prelude::AdwApplicationImpl;
 use gtk4::{gio, glib, glib::clone, prelude::*, subclass::prelude::*};
@@ -126,6 +126,7 @@ mod imp {
             RnStrokeWidthPreview::static_type();
             StrokeWidthPreviewStyle::static_type();
             RnStrokeContentPreview::static_type();
+            RnSidebar::static_type();
 
             self.obj().set_resource_base_path(Some(config::APP_IDPATH));
             let resource = gio::Resource::load(

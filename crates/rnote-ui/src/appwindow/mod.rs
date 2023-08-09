@@ -5,8 +5,7 @@ mod imp;
 
 // Imports
 use crate::{
-    config, RnApp, RnCanvas, RnCanvasWrapper, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser,
-    {dialogs, RnMainHeader},
+    config, dialogs, RnApp, RnCanvas, RnCanvasWrapper, RnMainHeader, RnOverlays, RnSidebar,
 };
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
@@ -99,16 +98,8 @@ impl RnAppWindow {
         self.imp().split_view.get()
     }
 
-    pub(crate) fn sidebar_stack(&self) -> adw::ViewStack {
-        self.imp().sidebar_stack.get()
-    }
-
-    pub(crate) fn workspacebrowser(&self) -> RnWorkspaceBrowser {
-        self.imp().workspacebrowser.get()
-    }
-
-    pub(crate) fn settings_panel(&self) -> RnSettingsPanel {
-        self.imp().settings_panel.get()
+    pub(crate) fn sidebar(&self) -> RnSidebar {
+        self.imp().sidebar.get()
     }
 
     pub(crate) fn overlays(&self) -> RnOverlays {
@@ -120,12 +111,8 @@ impl RnAppWindow {
         let imp = self.imp();
 
         imp.overlays.get().init(self);
-        imp.workspacebrowser.get().init(self);
-        imp.settings_panel.get().init(self);
+        imp.sidebar.get().init(self);
         imp.main_header.get().init(self);
-        imp.main_header.get().canvasmenu().init(self);
-        imp.main_header.get().appmenu().init(self);
-        imp.overlays.get().colorpicker().init(self);
 
         // An initial tab. Must! come before setting up the settings binds and import
         self.add_initial_tab();
@@ -512,6 +499,7 @@ impl RnAppWindow {
                 crate::utils::FileType::Folder => {
                     if let Some(dir) = input_file.path() {
                         appwindow
+                            .sidebar()
                             .workspacebrowser()
                             .workspacesbar()
                             .set_selected_workspace_dir(dir);
@@ -769,7 +757,7 @@ impl RnAppWindow {
             .penssidebar()
             .tools_page()
             .refresh_ui(active_tab);
-        self.settings_panel().refresh_ui(active_tab);
+        self.sidebar().settings_panel().refresh_ui(active_tab);
         self.refresh_titles(active_tab);
     }
 

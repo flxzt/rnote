@@ -1,7 +1,5 @@
 // Imports
-use crate::{
-    config, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser, {dialogs, RnMainHeader},
-};
+use crate::{config, dialogs, RnMainHeader, RnOverlays, RnSidebar};
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
@@ -31,11 +29,7 @@ pub(crate) struct RnAppWindow {
     #[template_child]
     pub(crate) split_view: TemplateChild<adw::OverlaySplitView>,
     #[template_child]
-    pub(crate) sidebar_stack: TemplateChild<adw::ViewStack>,
-    #[template_child]
-    pub(crate) workspacebrowser: TemplateChild<RnWorkspaceBrowser>,
-    #[template_child]
-    pub(crate) settings_panel: TemplateChild<RnSettingsPanel>,
+    pub(crate) sidebar: TemplateChild<RnSidebar>,
     #[template_child]
     pub(crate) tabbar: TemplateChild<adw::TabBar>,
     #[template_child]
@@ -59,9 +53,7 @@ impl Default for RnAppWindow {
 
             main_header: TemplateChild::<RnMainHeader>::default(),
             split_view: TemplateChild::<adw::OverlaySplitView>::default(),
-            sidebar_stack: TemplateChild::<adw::ViewStack>::default(),
-            workspacebrowser: TemplateChild::<RnWorkspaceBrowser>::default(),
-            settings_panel: TemplateChild::<RnSettingsPanel>::default(),
+            sidebar: TemplateChild::<RnSidebar>::default(),
             tabbar: TemplateChild::<adw::TabBar>::default(),
             overlays: TemplateChild::<RnOverlays>::default(),
         }
@@ -342,51 +334,62 @@ impl RnAppWindow {
                 .righthanded_toggle()
                 .set_active(true);
 
-            obj.workspacebrowser()
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().workspacesbar());
-            obj.workspacebrowser()
+                .remove(&obj.sidebar().workspacebrowser().workspacesbar());
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().corner_filler());
-            obj.workspacebrowser()
+                .remove(&obj.sidebar().workspacebrowser().corner_filler());
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().dir_box());
-            obj.workspacebrowser()
+                .remove(&obj.sidebar().workspacebrowser().dir_box());
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().files_scroller());
-            obj.workspacebrowser().grid().attach(
-                &obj.workspacebrowser().corner_filler(),
+                .remove(&obj.sidebar().workspacebrowser().files_scroller());
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().corner_filler(),
                 0,
                 0,
                 1,
                 1,
             );
-            obj.workspacebrowser().grid().attach(
-                &obj.workspacebrowser().workspacesbar(),
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().workspacesbar(),
                 0,
                 1,
                 1,
                 1,
             );
-            obj.workspacebrowser()
-                .grid()
-                .attach(&obj.workspacebrowser().dir_box(), 2, 0, 1, 1);
-            obj.workspacebrowser().grid().attach(
-                &obj.workspacebrowser().files_scroller(),
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().dir_box(),
+                2,
+                0,
+                1,
+                1,
+            );
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().files_scroller(),
                 2,
                 1,
                 1,
                 1,
             );
-            obj.workspacebrowser()
+            obj.sidebar()
+                .workspacebrowser()
                 .files_scroller()
                 .set_window_placement(CornerType::TopRight);
-            obj.workspacebrowser()
+            obj.sidebar()
+                .workspacebrowser()
                 .workspacesbar()
                 .workspaces_scroller()
                 .set_window_placement(CornerType::TopRight);
 
-            obj.settings_panel()
+            obj.sidebar()
+                .settings_panel()
                 .settings_scroller()
                 .set_window_placement(CornerType::TopRight);
 
@@ -452,51 +455,62 @@ impl RnAppWindow {
                 .lefthanded_toggle()
                 .set_active(true);
 
-            obj.workspacebrowser()
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().files_scroller());
-            obj.workspacebrowser()
+                .remove(&obj.sidebar().workspacebrowser().files_scroller());
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().dir_box());
-            obj.workspacebrowser()
+                .remove(&obj.sidebar().workspacebrowser().dir_box());
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().corner_filler());
-            obj.workspacebrowser()
+                .remove(&obj.sidebar().workspacebrowser().corner_filler());
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().workspacesbar());
-            obj.workspacebrowser()
-                .grid()
-                .attach(&obj.workspacebrowser().dir_box(), 0, 0, 1, 1);
-            obj.workspacebrowser().grid().attach(
-                &obj.workspacebrowser().files_scroller(),
+                .remove(&obj.sidebar().workspacebrowser().workspacesbar());
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().dir_box(),
+                0,
+                0,
+                1,
+                1,
+            );
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().files_scroller(),
                 0,
                 1,
                 1,
                 1,
             );
-            obj.workspacebrowser().grid().attach(
-                &obj.workspacebrowser().corner_filler(),
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().corner_filler(),
                 2,
                 0,
                 1,
                 1,
             );
-            obj.workspacebrowser().grid().attach(
-                &obj.workspacebrowser().workspacesbar(),
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().workspacesbar(),
                 2,
                 1,
                 1,
                 1,
             );
-            obj.workspacebrowser()
+            obj.sidebar()
+                .workspacebrowser()
                 .files_scroller()
                 .set_window_placement(CornerType::TopLeft);
-            obj.workspacebrowser()
+            obj.sidebar()
+                .workspacebrowser()
                 .workspacesbar()
                 .workspaces_scroller()
                 .set_window_placement(CornerType::TopLeft);
 
-            obj.settings_panel()
+            obj.sidebar()
+                .settings_panel()
                 .settings_scroller()
                 .set_window_placement(CornerType::TopLeft);
 

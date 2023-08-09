@@ -96,5 +96,10 @@ impl RnMainHeader {
         self.imp().appmenu.get()
     }
 
-    pub(crate) fn init(&self, _appwindow: &RnAppWindow) {}
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
+        let imp = self.imp();
+
+        imp.canvasmenu.get().init(appwindow);
+        imp.appmenu.get().init(appwindow);
+    }
 }

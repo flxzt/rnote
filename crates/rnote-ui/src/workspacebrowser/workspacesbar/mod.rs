@@ -308,9 +308,9 @@ impl RnWorkspacesBar {
                 if let Some(entry) = workspacesbar.selected_workspacelistentry() {
                     let dir = entry.dir();
                     let name = entry.name();
-                    appwindow.workspacebrowser().active_workspace_name_label().set_label(&name);
-                    appwindow.workspacebrowser().active_workspace_dir_label().set_label(&dir);
-                    appwindow.workspacebrowser().set_dirlist_file(Some(&gio::File::for_path(dir)));
+                    appwindow.sidebar().workspacebrowser().active_workspace_name_label().set_label(&name);
+                    appwindow.sidebar().workspacebrowser().active_workspace_dir_label().set_label(&dir);
+                    appwindow.sidebar().workspacebrowser().set_dirlist_file(Some(&gio::File::for_path(dir)));
 
                     workspacesbar.save_to_settings(&appwindow.app_settings());
                 }

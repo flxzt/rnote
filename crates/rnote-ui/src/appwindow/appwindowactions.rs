@@ -161,7 +161,7 @@ impl RnAppWindow {
 
         // Open settings
         action_open_settings.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            appwindow.sidebar_stack().set_visible_child_name("settings_page");
+            appwindow.sidebar().sidebar_stack().set_visible_child_name("settings_page");
             appwindow.split_view().set_show_sidebar(true);
         }));
 

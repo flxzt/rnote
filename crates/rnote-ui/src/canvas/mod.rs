@@ -967,6 +967,7 @@ impl RnCanvas {
 
         // bind cursors
         let appwindow_regular_cursor = appwindow
+            .sidebar()
             .settings_panel()
             .general_regular_cursor_picker()
             .bind_property("picked", self, "regular-cursor")
@@ -975,6 +976,7 @@ impl RnCanvas {
             .build();
 
         let appwindow_drawing_cursor = appwindow
+            .sidebar()
             .settings_panel()
             .general_drawing_cursor_picker()
             .bind_property("picked", self, "drawing-cursor")
@@ -984,6 +986,7 @@ impl RnCanvas {
 
         // bind show-drawing-cursor
         let appwindow_show_drawing_cursor = appwindow
+            .sidebar()
             .settings_panel()
             .general_show_drawing_cursor_switch()
             .bind_property("active", self, "show-drawing-cursor")

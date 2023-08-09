@@ -13,6 +13,9 @@
     </child>
     <property name="content">
       <object class="AdwOverlaySplitView" id="split_view">
+        <property name="min-sidebar-width">450</property>
+        <property name="max-sidebar-width">600</property>
+        <property name="sidebar-width-fraction">0.3</property>
         <!-- sidebar -->
         <property name="sidebar">
           <object class="RnSidebar" id="sidebar">

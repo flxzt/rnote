@@ -4,7 +4,6 @@
     <property name="layout-manager">
       <object class="GtkBinLayout" />
     </property>
-    <property name="width-request">450</property>
     <child>
       <object class="AdwToolbarView">
         <property name="top-bar-style">raised</property>

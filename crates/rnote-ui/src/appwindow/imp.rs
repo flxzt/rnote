@@ -335,6 +335,13 @@ impl RnAppWindow {
                 .set_active(true);
 
             obj.sidebar()
+                .headerbar()
+                .remove(&obj.sidebar().close_button());
+            obj.sidebar()
+                .headerbar()
+                .pack_end(&obj.sidebar().close_button());
+            obj.sidebar().close_button().set_icon_name("left-symbolic");
+            obj.sidebar()
                 .workspacebrowser()
                 .grid()
                 .remove(&obj.sidebar().workspacebrowser().workspacesbar());
@@ -455,6 +462,13 @@ impl RnAppWindow {
                 .lefthanded_toggle()
                 .set_active(true);
 
+            obj.sidebar()
+                .headerbar()
+                .remove(&obj.sidebar().close_button());
+            obj.sidebar()
+                .headerbar()
+                .pack_start(&obj.sidebar().close_button());
+            obj.sidebar().close_button().set_icon_name("right-symbolic");
             obj.sidebar()
                 .workspacebrowser()
                 .grid()

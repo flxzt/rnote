@@ -9,12 +9,17 @@
       <object class="AdwToolbarView">
         <property name="top-bar-style">raised</property>
         <child type="top">
-          <object class="AdwHeaderBar">
+          <object class="AdwHeaderBar" id="headerbar">
             <property name="title-widget">
               <object class="AdwViewSwitcherTitle">
                 <property name="stack">sidebar_stack</property>
               </object>
             </property>
+            <child type="start">
+              <object class="GtkButton" id="close_button">
+                <property name="icon-name">right-symbolic</property>
+              </object>
+            </child>
           </object>
         </child>
         <property name="content">

@@ -1,6 +1,8 @@
 // Imports
 use crate::{RnAppWindow, RnSettingsPanel, RnWorkspaceBrowser};
-use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate, Widget};
+use gtk4::{
+    glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Widget,
+};
 
 mod imp {
     use super::*;
@@ -8,6 +10,10 @@ mod imp {
     #[derive(Debug, CompositeTemplate, Default)]
     #[template(resource = "/com/github/flxzt/rnote/ui/sidebar.ui")]
     pub(crate) struct RnSidebar {
+        #[template_child]
+        pub(crate) headerbar: TemplateChild<adw::HeaderBar>,
+        #[template_child]
+        pub(crate) close_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) sidebar_stack: TemplateChild<adw::ViewStack>,
         #[template_child]
@@ -64,6 +70,14 @@ impl RnSidebar {
         glib::Object::new()
     }
 
+    pub(crate) fn headerbar(&self) -> adw::HeaderBar {
+        self.imp().headerbar.get()
+    }
+
+    pub(crate) fn close_button(&self) -> Button {
+        self.imp().close_button.get()
+    }
+
     pub(crate) fn sidebar_stack(&self) -> adw::ViewStack {
         self.imp().sidebar_stack.get()
     }
@@ -81,5 +95,16 @@ impl RnSidebar {
 
         imp.workspacebrowser.get().init(appwindow);
         imp.settings_panel.get().init(appwindow);
+
+        appwindow
+            .split_view()
+            .bind_property("collapsed", &imp.close_button.get(), "visible")
+            .sync_create()
+            .build();
+
+        imp.close_button
+            .connect_clicked(clone!(@weak appwindow => move |_| {
+                appwindow.split_view().set_show_sidebar(false);
+            }));
     }
 }

@@ -316,6 +316,75 @@ impl RnAppWindow {
             .sync_create()
             .bidirectional()
             .build();
+
+        let update_widgets = move |split_view: &adw::OverlaySplitView,
+                                   appwindow: &super::RnAppWindow| {
+            let sidebar_position = split_view.sidebar_position();
+            let sidebar_collapsed = split_view.is_collapsed();
+            let sidebar_shown = split_view.shows_sidebar();
+
+            let sidebar_appmenu_visibility =
+                (sidebar_position == PackType::End) && !sidebar_collapsed && sidebar_shown;
+            let sidebar_left_close_button_visibility =
+                (sidebar_position == PackType::End) && sidebar_collapsed && sidebar_shown;
+            let sidebar_right_close_button_visibility =
+                (sidebar_position == PackType::Start) && sidebar_collapsed && sidebar_shown;
+
+            appwindow
+                .main_header()
+                .appmenu()
+                .set_visible(!sidebar_appmenu_visibility);
+            appwindow
+                .sidebar()
+                .appmenu()
+                .set_visible(sidebar_appmenu_visibility);
+            appwindow
+                .sidebar()
+                .left_close_button()
+                .set_visible(sidebar_left_close_button_visibility);
+            appwindow
+                .sidebar()
+                .right_close_button()
+                .set_visible(sidebar_right_close_button_visibility);
+
+            if sidebar_position == PackType::End {
+                appwindow
+                    .sidebar()
+                    .left_close_button()
+                    .set_icon_name("right-symbolic");
+                appwindow
+                    .sidebar()
+                    .right_close_button()
+                    .set_icon_name("right-symbolic");
+            } else {
+                appwindow
+                    .sidebar()
+                    .left_close_button()
+                    .set_icon_name("left-symbolic");
+                appwindow
+                    .sidebar()
+                    .right_close_button()
+                    .set_icon_name("left-symbolic");
+            }
+        };
+
+        self.split_view.connect_show_sidebar_notify(
+            clone!(@weak obj as appwindow => move |split_view| {
+                update_widgets(split_view, &appwindow);
+            }),
+        );
+
+        self.split_view.connect_sidebar_position_notify(
+            clone!(@weak obj as appwindow => move |split_view| {
+                update_widgets(split_view, &appwindow);
+            }),
+        );
+
+        self.split_view.connect_collapsed_notify(
+            clone!(@weak obj as appwindow => move |split_view| {
+                update_widgets(split_view, &appwindow);
+            }),
+        );
     }
 
     fn handle_righthanded_property(&self, righthanded: bool) {
@@ -329,18 +398,7 @@ impl RnAppWindow {
             obj.main_header()
                 .right_sidebar_reveal_toggle()
                 .set_visible(false);
-            obj.main_header()
-                .appmenu()
-                .righthanded_toggle()
-                .set_active(true);
 
-            obj.sidebar()
-                .headerbar()
-                .remove(&obj.sidebar().close_button());
-            obj.sidebar()
-                .headerbar()
-                .pack_end(&obj.sidebar().close_button());
-            obj.sidebar().close_button().set_icon_name("left-symbolic");
             obj.sidebar()
                 .workspacebrowser()
                 .grid()
@@ -457,18 +515,7 @@ impl RnAppWindow {
             obj.main_header()
                 .right_sidebar_reveal_toggle()
                 .set_visible(true);
-            obj.main_header()
-                .appmenu()
-                .lefthanded_toggle()
-                .set_active(true);
 
-            obj.sidebar()
-                .headerbar()
-                .remove(&obj.sidebar().close_button());
-            obj.sidebar()
-                .headerbar()
-                .pack_start(&obj.sidebar().close_button());
-            obj.sidebar().close_button().set_icon_name("right-symbolic");
             obj.sidebar()
                 .workspacebrowser()
                 .grid()

@@ -16,8 +16,25 @@
               </object>
             </property>
             <child type="start">
-              <object class="GtkButton" id="close_button">
-                <property name="icon-name">right-symbolic</property>
+              <object class="GtkBox">
+                <child>
+                  <object class="GtkButton" id="left_close_button">
+                    <property name="icon-name">right-symbolic</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkBox">
+                <child>
+                  <object class="RnAppMenu" id="appmenu">
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="right_close_button">
+                    <property name="icon-name">right-symbolic</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

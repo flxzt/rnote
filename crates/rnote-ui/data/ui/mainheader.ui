@@ -75,7 +75,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkBox" id="menus_box">
+              <object class="GtkBox">
                 <property name="spacing">3</property>
                 <child>
                   <object class="RnCanvasMenu" id="canvasmenu"></object>

@@ -1,5 +1,5 @@
 // Imports
-use crate::{RnAppWindow, RnSettingsPanel, RnWorkspaceBrowser};
+use crate::{RnAppMenu, RnAppWindow, RnSettingsPanel, RnWorkspaceBrowser};
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Widget,
 };
@@ -11,9 +11,11 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/sidebar.ui")]
     pub(crate) struct RnSidebar {
         #[template_child]
-        pub(crate) headerbar: TemplateChild<adw::HeaderBar>,
+        pub(crate) left_close_button: TemplateChild<Button>,
         #[template_child]
-        pub(crate) close_button: TemplateChild<Button>,
+        pub(crate) right_close_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) appmenu: TemplateChild<RnAppMenu>,
         #[template_child]
         pub(crate) sidebar_stack: TemplateChild<adw::ViewStack>,
         #[template_child]
@@ -70,12 +72,16 @@ impl RnSidebar {
         glib::Object::new()
     }
 
-    pub(crate) fn headerbar(&self) -> adw::HeaderBar {
-        self.imp().headerbar.get()
+    pub(crate) fn left_close_button(&self) -> Button {
+        self.imp().left_close_button.get()
     }
 
-    pub(crate) fn close_button(&self) -> Button {
-        self.imp().close_button.get()
+    pub(crate) fn right_close_button(&self) -> Button {
+        self.imp().right_close_button.get()
+    }
+
+    pub(crate) fn appmenu(&self) -> RnAppMenu {
+        self.imp().appmenu.get()
     }
 
     pub(crate) fn sidebar_stack(&self) -> adw::ViewStack {
@@ -93,16 +99,15 @@ impl RnSidebar {
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
+        imp.appmenu.get().init(appwindow);
         imp.workspacebrowser.get().init(appwindow);
         imp.settings_panel.get().init(appwindow);
 
-        appwindow
-            .split_view()
-            .bind_property("collapsed", &imp.close_button.get(), "visible")
-            .sync_create()
-            .build();
-
-        imp.close_button
+        imp.left_close_button
+            .connect_clicked(clone!(@weak appwindow => move |_| {
+                appwindow.split_view().set_show_sidebar(false);
+            }));
+        imp.right_close_button
             .connect_clicked(clone!(@weak appwindow => move |_| {
                 appwindow.split_view().set_show_sidebar(false);
             }));

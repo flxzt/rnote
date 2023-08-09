@@ -193,7 +193,11 @@ impl RnAppWindow {
 
         // Open App Menu
         action_open_appmenu.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            appwindow.main_header().appmenu().popovermenu().popup();
+            if appwindow.split_view().is_collapsed() {
+                appwindow.sidebar().appmenu().popovermenu().popup();
+            } else {
+                appwindow.main_header().appmenu().popovermenu().popup();
+            }
         }));
 
         // Developer mode

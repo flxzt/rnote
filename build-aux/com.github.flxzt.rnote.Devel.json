@@ -79,6 +79,135 @@
       ]
     },
     {
+      "name": "cairo",
+      "buildsystem": "meson",
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://gitlab.freedesktop.org/cairo/cairo.git",
+          "commit": "542bfac286a945aa584f7dc2376f1f9f33b37ac9"
+        }
+      ]
+    },
+    {
+      "name": "gtk",
+      "buildsystem": "meson",
+      "config-opts": [
+        "-Dbuild-testsuite=false",
+        "-Dgtk_doc=false",
+        "-Dintrospection=disabled",
+        "-Dbuild-tests=false"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://download.gnome.org/sources/gtk/4.12/gtk-4.12.0.tar.xz",
+          "sha256": "a6d10829f405b1afc0b65e2a9642c04126a1d1b638d11c6d97426da4f84f1f6f",
+          "x-checker-data": {
+            "type": "gnome",
+            "name": "gtk",
+            "stable-only": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "libsass",
+      "buildsystem": "meson",
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/lazka/libsass.git",
+          "branch": "meson",
+          "commit": "aac79dccd3c8f7e8f22125f87a119f3b1ee9d487"
+        }
+      ]
+    },
+    {
+      "name": "sassc",
+      "buildsystem": "meson",
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/lazka/sassc.git",
+          "branch": "meson",
+          "commit": "a1950c2d95ea4c051feb90bb1f43559fbb54bf36"
+        }
+      ]
+    },
+    {
+      "name": "libyaml",
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/yaml/libyaml.git",
+          "commit": "2c891fc7a770e8ba2fec34fc6b545c672beb37e6"
+        }
+      ]
+    },
+    {
+      "name": "libxmlb",
+      "buildsystem": "meson",
+      "config-opts": [
+        "-Dintrospection=false",
+        "-Dgtkdoc=false",
+        "-Dstemmer=false",
+        "-Dcli=false",
+        "-Dtests=false"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/hughsie/libxmlb.git",
+          "commit": "6191220071233972d798b57841d08e4964952a17"
+        }
+      ]
+    },
+    {
+      "name": "appstream",
+      "buildsystem": "meson",
+      "config-opts": [
+        "-Dstemming=false",
+        "-Ddocs=false",
+        "-Dgir=false"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/ximion/appstream.git",
+          "tag": "v0.16.2",
+          "commit": "1ee6af91310f9deb47f3863a7a7ffb22c46bcce6",
+          "x-checker-data": {
+            "type": "git",
+            "tag-pattern": "^v([\\d.]+)$"
+          }
+        }
+      ]
+    },
+    {
+      "name": "libadwaita",
+      "buildsystem": "meson",
+      "config-opts": [
+        "-Dtests=false",
+        "-Dvapi=false",
+        "-Dintrospection=disabled",
+        "-Dgtk_doc=false",
+        "-Dexamples=false"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://download.gnome.org/sources/libadwaita/1.4/libadwaita-1.4.beta.tar.xz",
+          "sha256": "5b6a0e51fd7b6273564ce937a9d302ca683e61f05791b09a36a881d3952128a4",
+          "x-checker-data": {
+            "type": "gnome",
+            "name": "libadwaita",
+            "stable-only": false
+          }
+        }
+      ]
+    },
+    {
       "name": "rnote",
       "buildsystem": "meson",
       "run-tests": true,

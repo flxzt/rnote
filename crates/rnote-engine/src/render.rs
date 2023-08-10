@@ -319,8 +319,6 @@ impl Image {
             // Apply the draw function
             draw_func(&cairo_cx)?;
         }
-        // surface needs to be flushed before accessing its data
-        image_surface.flush();
 
         let data = image_surface
             .data()
@@ -452,8 +450,6 @@ impl Svg {
             // apply the draw function
             draw_func(&cairo_cx)?;
         }
-        // surface needs to be flushed before accessing its data
-        svg_surface.flush();
 
         let file_content = svg_surface
             .finish_output_stream()
@@ -591,8 +587,6 @@ impl Svg {
                 )
                 .map_err(|e| anyhow::anyhow!("rendering rsvg document failed, Err: {e:?}"))?;
         }
-        // Surface needs to be flushed before accessing its data
-        surface.flush();
 
         let data = surface
             .data()

@@ -69,10 +69,11 @@ cpp_compiler = meson.get_compiler('cpp')
 # TODO: How to fix this?
 #cpp_compiler.find_library('clang')
 
-dependency('glib-2.0', version: '>= 2.72')
-dependency('gio-2.0', version: '>= 2.72')
-dependency('gtk4', version: '>= 4.10')
-dependency('libadwaita-1', version: '>= 1.3')
+dependency('glib-2.0', version: '>= 2.76')
+dependency('gio-2.0', version: '>= 2.76')
+dependency('cairo', version: '>= 1.17')
+dependency('gtk4', version: '>= 4.12')
+dependency('libadwaita-1', version: '>= 1.4')
 dependency('poppler-glib', version: '>= 22.07')
 
 cargo = find_program('cargo', required: true)

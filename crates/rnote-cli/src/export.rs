@@ -38,7 +38,7 @@ pub(crate) enum ExportCommands {
         #[arg(long, default_value_t = Default::default())]
         page_order: SplitOrder,
     },
-    /// Export each page of the documents individually.{n}
+    /// Export each page of the documents individually. Alias: pages{n}
     /// Both --output-dir and --output-format need to be set.{n}
     #[command(alias = "pages")]
     DocPages {
@@ -63,7 +63,7 @@ pub(crate) enum ExportCommands {
         #[arg(long, default_value_t = DocPagesExportPrefs::default().jpeg_quality)]
         jpeg_quality: u8,
     },
-    /// Export a selection in a document.{n}
+    /// Export a selection in a document. Alias: sel{n}
     /// When using --output-file, only one input file can be given.{n}
     /// The export format is recognized from the file extension of the output file.{n}
     /// When using --output-format, the same file name is used with the extension changed.{n}
@@ -96,7 +96,7 @@ pub(crate) enum SelectionCommands {
     /// Export all strokes. Alias: a
     #[command(alias = "a")]
     All,
-    /// Export a rectangular area of the document. Alias: a{n}
+    /// Export a rectangular area of the document. Alias: r{n}
     /// Goes to starting point and selects all strokes in a given rectangle based of the given height and width
     #[command(alias = "r")]
     Rect {

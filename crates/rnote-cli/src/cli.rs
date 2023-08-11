@@ -106,11 +106,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             for rnote_file in rnote_files.into_iter() {
                 validators::file_has_ext(&rnote_file, "rnote")?;
                 let file_disp = rnote_file.display().to_string();
-                let pb = indicatif::ProgressBar::new_spinner();
-                pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
-                pb.set_message(format!("Testing file \"{file_disp}\""));
-                pb.enable_steady_tick(Duration::from_millis(8));
-
+                let pb = new_pb(format!("Testing file \"{file_disp}\""));
                 // test
                 if let Err(e) = test_file(&mut engine, rnote_file).await {
                     let msg = format!("Test failed, Err: {e:?}");
@@ -145,12 +141,9 @@ pub(crate) async fn run() -> anyhow::Result<()> {
 
             let rnote_file_disp = rnote_file.display().to_string();
             let input_file_disp = input_file.display().to_string();
-            let pb = indicatif::ProgressBar::new_spinner().with_message(format!(
+            let pb = new_pb(format!(
                 "Importing \"{input_file_disp}\" to: \"{rnote_file_disp}\""
             ));
-            pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
-            pb.enable_steady_tick(Duration::from_millis(8));
-
             // import
             if let Err(e) = import_file(&mut engine, input_file, rnote_file).await {
                 let msg = format!(
@@ -193,6 +186,13 @@ pub(crate) async fn run() -> anyhow::Result<()> {
     }
 
     Ok(())
+}
+
+pub(crate) fn new_pb(message: String) -> indicatif::ProgressBar {
+    let pb = indicatif::ProgressBar::new_spinner().with_message(message);
+    pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
+    pb.enable_steady_tick(Duration::from_millis(8));
+    pb
 }
 
 pub(crate) async fn test_file(

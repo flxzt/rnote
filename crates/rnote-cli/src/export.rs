@@ -1,7 +1,4 @@
-use std::{
-    path::{Path, PathBuf},
-    time::Duration,
-};
+use std::path::{Path, PathBuf};
 
 use anyhow::Context;
 use clap::{Args, Subcommand, ValueEnum};
@@ -23,7 +20,7 @@ use smol::{
     io::{AsyncReadExt, AsyncWriteExt},
 };
 
-use crate::cli::OnConflict;
+use crate::cli::{new_pb, OnConflict};
 use crate::validators;
 
 #[derive(Subcommand, Debug)]
@@ -96,10 +93,12 @@ pub(crate) enum ExportCommands {
 
 #[derive(Subcommand, Debug)]
 pub(crate) enum SelectionCommands {
-    /// Export all strokes
+    /// Export all strokes. Alias: a
+    #[command(alias = "a")]
     All,
-    /// Export a rectangular area of the document{n}
+    /// Export a rectangular area of the document. Alias: a{n}
     /// Goes to starting point and selects all strokes in a given rectangle based of the given height and width
+    #[command(alias = "r")]
     Rect {
         /// x position of the starting point
         x: f64,
@@ -167,11 +166,9 @@ pub(crate) async fn run_export(
 
                     let rnote_file_disp = rnote_file.display().to_string();
                     let output_file_disp = output_file.display().to_string();
-                    let pb = indicatif::ProgressBar::new_spinner().with_message(format!(
+                    let pb = new_pb(format!(
                         "Exporting \"{rnote_file_disp}\" to: \"{output_file_disp}\""
                     ));
-                    pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
-                    pb.enable_steady_tick(Duration::from_millis(8));
 
                     // export
                     if let Err(e) = export_to_file(
@@ -233,10 +230,7 @@ pub(crate) async fn run_export(
 
                 let rnote_file_disp = rnote_file.display().to_string();
                 let output_file_disp = output_file.display().to_string();
-                let pb = indicatif::ProgressBar::new_spinner();
-                pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
-                pb.enable_steady_tick(Duration::from_millis(8));
-                pb.set_message(match doc_pages {
+                let pb = new_pb(match doc_pages {
                     true => format!("Exporting \"{rnote_file_disp}\""),
                     false => format!("Exporting \"{rnote_file_disp}\" to: \"{output_file_disp}\""),
                 });

@@ -135,66 +135,23 @@ pub(crate) async fn run_export(
         return Err(anyhow::anyhow!("No rnote files to export!"));
     }
     let mut on_conflict_overwrite = None;
-    let output_file: Option<PathBuf>;
-    // apply given arguments to export prefs
-    match &export_commands {
-        ExportCommands::Doc {
-            file_args,
-            page_order,
-        } => {
-            output_file = file_args.output_file.clone();
-            engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
-                output_file.as_deref(),
-                file_args.output_format,
-                background,
-                pattern,
-                *page_order,
-            )?
-        }
+    let output_file = match &export_commands {
+        ExportCommands::Doc { file_args, .. } => file_args.output_file.as_ref(),
+        ExportCommands::Selection { file_args, .. } => file_args.output_file.as_ref(),
         ExportCommands::DocPages {
-            output_format,
-            page_order,
-            bitmap_scalefactor,
-            jpeg_quality,
-            output_file_stem,
-            ..
+            output_file_stem, ..
         } => {
             if rnote_files.len() > 1 && output_file_stem.is_some() {
                 return Err(anyhow::anyhow!(
                     "You cannot use --file-stem when exporting multiple rnote files"
                 ));
             }
-            engine.export_prefs.doc_pages_export_prefs = DocPagesExportPrefs {
-                export_format: *output_format,
-                with_background: background,
-                with_pattern: pattern,
-                page_order: *page_order,
-                bitmap_scalefactor: *bitmap_scalefactor,
-                jpeg_quality: *jpeg_quality,
-            };
-            output_file = None
+            None
         }
-        ExportCommands::Selection {
-            file_args,
-            bitmap_scalefactor,
-            jpeg_quality,
-            margin,
-            ..
-        } => {
-            output_file = file_args.output_file.clone();
-            engine.export_prefs.selection_export_prefs = create_selection_export_prefs_from_args(
-                output_file.as_deref(),
-                file_args.output_format,
-                background,
-                pattern,
-                *bitmap_scalefactor,
-                *jpeg_quality,
-                *margin,
-            )?
-        }
-    }
+    };
+    apply_export_prefs(engine, &export_commands, output_file, background, pattern)?;
     match output_file {
-        Some(ref output_file) => {
+        Some(output_file) => {
             match rnote_files.get(0) {
                 Some(rnote_file) => {
                     validators::file_has_ext(rnote_file, "rnote")?;
@@ -249,23 +206,7 @@ pub(crate) async fn run_export(
 
         None => {
             let doc_pages = matches!(export_commands, ExportCommands::DocPages { .. });
-            let output_ext = match &export_commands {
-                ExportCommands::Doc { .. } => engine
-                    .export_prefs
-                    .doc_export_prefs
-                    .export_format
-                    .file_ext(),
-                ExportCommands::DocPages { .. } => engine
-                    .export_prefs
-                    .doc_pages_export_prefs
-                    .export_format
-                    .file_ext(),
-                ExportCommands::Selection { .. } => engine
-                    .export_prefs
-                    .selection_export_prefs
-                    .export_format
-                    .file_ext(),
-            };
+            let output_ext = get_output_ext(engine, &export_commands);
             let output_files = rnote_files
                 .iter()
                 .map(|file| {
@@ -342,6 +283,83 @@ pub(crate) async fn run_export(
     Ok(())
 }
 
+fn apply_export_prefs(
+    engine: &mut RnoteEngine,
+    export_commands: &ExportCommands,
+    output_file: Option<&PathBuf>,
+    background: bool,
+    pattern: bool,
+) -> anyhow::Result<()> {
+    match &export_commands {
+        ExportCommands::Doc {
+            file_args,
+            page_order,
+        } => {
+            engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
+                output_file,
+                file_args.output_format,
+                background,
+                pattern,
+                *page_order,
+            )?
+        }
+        ExportCommands::DocPages {
+            output_format,
+            page_order,
+            bitmap_scalefactor,
+            jpeg_quality,
+            ..
+        } => {
+            engine.export_prefs.doc_pages_export_prefs = DocPagesExportPrefs {
+                export_format: *output_format,
+                with_background: background,
+                with_pattern: pattern,
+                page_order: *page_order,
+                bitmap_scalefactor: *bitmap_scalefactor,
+                jpeg_quality: *jpeg_quality,
+            };
+        }
+        ExportCommands::Selection {
+            file_args,
+            bitmap_scalefactor,
+            jpeg_quality,
+            margin,
+            ..
+        } => {
+            engine.export_prefs.selection_export_prefs = create_selection_export_prefs_from_args(
+                output_file,
+                file_args.output_format,
+                background,
+                pattern,
+                *bitmap_scalefactor,
+                *jpeg_quality,
+                *margin,
+            )?
+        }
+    }
+    Ok(())
+}
+
+fn get_output_ext(engine: &mut RnoteEngine, export_commands: &ExportCommands) -> String {
+    match &export_commands {
+        ExportCommands::Doc { .. } => engine
+            .export_prefs
+            .doc_export_prefs
+            .export_format
+            .file_ext(),
+        ExportCommands::DocPages { .. } => engine
+            .export_prefs
+            .doc_pages_export_prefs
+            .export_format
+            .file_ext(),
+        ExportCommands::Selection { .. } => engine
+            .export_prefs
+            .selection_export_prefs
+            .export_format
+            .file_ext(),
+    }
+}
+
 pub(crate) fn create_doc_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
     output_format: Option<DocExportFormat>,
@@ -393,6 +411,7 @@ fn get_doc_export_format(format: &str) -> anyhow::Result<DocExportFormat> {
         )),
     }
 }
+
 pub(crate) fn create_selection_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
     output_format: Option<SelectionExportFormat>,

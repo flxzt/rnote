@@ -201,11 +201,12 @@ pub(crate) async fn run_export(
             match rnote_files.get(0) {
                 Some(rnote_file) => {
                     validators::file_has_ext(rnote_file, "rnote")?;
-                    let new_path =
-                        check_file_conflict(output_file, on_conflict, &mut on_conflict_overwrite)?;
-                    // Replace output file if suffix added
-                    let output_file = new_path.as_ref().unwrap_or(output_file);
-
+                    let output_file = get_output_file_path(
+                        output_file,
+                        on_conflict,
+                        &mut on_conflict_overwrite,
+                        &export_commands,
+                    )?;
                     if rnote_files.len() > 1 {
                         return Err(anyhow::anyhow!("Was expecting only 1 file. Use --output-format when exporting multiple files."));
                     }
@@ -279,20 +280,18 @@ pub(crate) async fn run_export(
 
             for (rnote_file, output_file) in rnote_files.iter().zip(output_files.iter()) {
                 validators::file_has_ext(rnote_file, "rnote")?;
-                let new_path = if doc_pages {
-                    // conflicts are allowed here, generated output path will be ignored
-                    None
-                } else {
-                    match check_file_conflict(output_file, on_conflict, &mut on_conflict_overwrite)
-                    {
-                        Ok(r) => r,
-                        Err(e) => {
-                            println!("Failed to resolve file conflict: {e:?}");
-                            continue;
-                        }
+                let output_file = match get_output_file_path(
+                    output_file,
+                    on_conflict,
+                    &mut on_conflict_overwrite,
+                    &export_commands,
+                ) {
+                    Ok(file) => file,
+                    Err(e) => {
+                        println!("Failed to generate output file path: {e}");
+                        continue;
                     }
                 };
-                let output_file = new_path.as_ref().unwrap_or(output_file);
 
                 let rnote_file_disp = rnote_file.display().to_string();
                 let output_file_disp = output_file.display().to_string();
@@ -450,6 +449,22 @@ fn get_selection_export_format(format: &str) -> anyhow::Result<SelectionExportFo
         ext => Err(anyhow::anyhow!(
             "Could not create selection export prefs, unsupported export file extension `{ext}`"
         )),
+    }
+}
+
+pub(crate) fn get_output_file_path(
+    initial_output_file: &Path,
+    on_conflict: OnConflict,
+    on_conflict_overwrite: &mut Option<OnConflict>,
+    export_commands: &ExportCommands,
+) -> anyhow::Result<PathBuf> {
+    match export_commands {
+        // output file will be ignored when parsing output file
+        ExportCommands::DocPages { .. } => Ok(initial_output_file.to_path_buf()),
+        _ => Ok(
+            check_file_conflict(initial_output_file, on_conflict, on_conflict_overwrite)?
+                .unwrap_or(initial_output_file.to_path_buf()),
+        ),
     }
 }
 

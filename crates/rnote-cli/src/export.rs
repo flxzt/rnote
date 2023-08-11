@@ -97,7 +97,6 @@ pub(crate) enum SelectionCommands {
     #[command(alias = "a")]
     All,
     /// Export a rectangular area of the document. Alias: r{n}
-    /// Goes to starting point and selects all strokes in a given rectangle based of the given height and width
     #[command(alias = "r")]
     Rect {
         /// x position of the starting point

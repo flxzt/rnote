@@ -47,11 +47,11 @@ pub(crate) enum Commands {
         #[arg(long, default_value = "ask", global = true)]
         on_conflict: OnConflict,
         /// export without background
-        #[arg(short = 'b', long = "no-background", action = ArgAction::SetFalse, global = true)]
-        background: bool,
+        #[arg(short = 'b', long, action = ArgAction::SetTrue, global = true)]
+        no_background: bool,
         /// export without background pattern
-        #[arg(short = 'p', long = "no-pattern", action = ArgAction::SetFalse, global = true)]
-        pattern: bool,
+        #[arg(short = 'p', long, action = ArgAction::SetTrue, global = true)]
+        no_pattern: bool,
         #[command(subcommand)]
         export_command: ExportCommands,
     },
@@ -167,8 +167,8 @@ pub(crate) async fn run() -> anyhow::Result<()> {
         }
         Commands::Export {
             rnote_files,
-            background,
-            pattern,
+            no_background,
+            no_pattern,
             on_conflict,
             export_command,
         } => {
@@ -177,8 +177,8 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                 export_command,
                 &mut engine,
                 rnote_files,
-                background,
-                pattern,
+                no_background,
+                no_pattern,
                 on_conflict,
             )
             .await?

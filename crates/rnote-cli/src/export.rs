@@ -125,8 +125,8 @@ pub(crate) async fn run_export(
     export_commands: ExportCommands,
     engine: &mut RnoteEngine,
     rnote_files: Vec<PathBuf>,
-    background: bool,
-    pattern: bool,
+    no_background: bool,
+    no_pattern: bool,
     on_conflict: OnConflict,
 ) -> anyhow::Result<()> {
     if rnote_files.is_empty() {
@@ -147,7 +147,13 @@ pub(crate) async fn run_export(
             None
         }
     };
-    apply_export_prefs(engine, &export_commands, output_file, background, pattern)?;
+    apply_export_prefs(
+        engine,
+        &export_commands,
+        output_file,
+        no_background,
+        no_pattern,
+    )?;
     match output_file {
         Some(output_file) => {
             match rnote_files.get(0) {
@@ -280,8 +286,8 @@ fn apply_export_prefs(
     engine: &mut RnoteEngine,
     export_commands: &ExportCommands,
     output_file: Option<&PathBuf>,
-    background: bool,
-    pattern: bool,
+    no_background: bool,
+    no_pattern: bool,
 ) -> anyhow::Result<()> {
     match &export_commands {
         ExportCommands::Doc {
@@ -291,8 +297,8 @@ fn apply_export_prefs(
             engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
                 output_file,
                 file_args.output_format,
-                background,
-                pattern,
+                no_background,
+                no_pattern,
                 *page_order,
             )?
         }
@@ -305,8 +311,8 @@ fn apply_export_prefs(
         } => {
             engine.export_prefs.doc_pages_export_prefs = DocPagesExportPrefs {
                 export_format: *output_format,
-                with_background: background,
-                with_pattern: pattern,
+                with_background: !no_background,
+                with_pattern: !no_pattern,
                 page_order: *page_order,
                 bitmap_scalefactor: *bitmap_scalefactor,
                 jpeg_quality: *jpeg_quality,
@@ -322,8 +328,8 @@ fn apply_export_prefs(
             engine.export_prefs.selection_export_prefs = create_selection_export_prefs_from_args(
                 output_file,
                 file_args.output_format,
-                background,
-                pattern,
+                no_background,
+                no_pattern,
                 *bitmap_scalefactor,
                 *jpeg_quality,
                 *margin,
@@ -356,8 +362,8 @@ fn get_output_ext(engine: &mut RnoteEngine, export_commands: &ExportCommands) ->
 pub(crate) fn create_doc_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
     output_format: Option<DocExportFormat>,
-    background: bool,
-    pattern: bool,
+    no_background: bool,
+    no_pattern: bool,
     page_order: SplitOrder,
 ) -> anyhow::Result<DocExportPrefs> {
     let format = match (output_file, output_format) {
@@ -386,8 +392,8 @@ pub(crate) fn create_doc_export_prefs_from_args(
 
     let prefs = DocExportPrefs {
         export_format: format,
-        with_background: background,
-        with_pattern: pattern,
+        with_background: !no_background,
+        with_pattern: !no_pattern,
         page_order,
     };
 
@@ -408,8 +414,8 @@ fn get_doc_export_format(format: &str) -> anyhow::Result<DocExportFormat> {
 pub(crate) fn create_selection_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
     output_format: Option<SelectionExportFormat>,
-    background: bool,
-    pattern: bool,
+    no_background: bool,
+    no_pattern: bool,
     bitmap_scalefactor: f64,
     jpeg_quality: u8,
     margin: f64,
@@ -440,8 +446,8 @@ pub(crate) fn create_selection_export_prefs_from_args(
 
     let prefs = SelectionExportPrefs {
         export_format: format,
-        with_background: background,
-        with_pattern: pattern,
+        with_background: !no_background,
+        with_pattern: !no_pattern,
         bitmap_scalefactor,
         jpeg_quality,
         margin,

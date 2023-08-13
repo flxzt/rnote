@@ -597,37 +597,7 @@ pub(crate) async fn export_to_file(
             selection_collision,
             ..
         } => {
-            let (strokes, err_msg) = match selection {
-                SelectionCommands::Rect {
-                    x,
-                    y,
-                    width,
-                    height,
-                } => {
-                    let v1 = Vector2::new(*x, *y);
-                    let v2 = v1 + Vector2::new(*width, *height);
-                    let points = vec![v1.into(), v2.into()];
-                    let aabb = Aabb::from_points(&points);
-                    (
-                        match selection_collision {
-                            SelectionCollision::Contains => {
-                                engine.store.stroke_keys_as_rendered_in_bounds(aabb)
-                            }
-                            SelectionCollision::Intersects => engine
-                                .store
-                                .stroke_keys_as_rendered_intersecting_bounds(aabb),
-                        },
-                        "No strokes in given rectangle",
-                    )
-                }
-                SelectionCommands::All => {
-                    (engine.store.stroke_keys_as_rendered(), "Document is empty")
-                }
-            };
-            if strokes.is_empty() {
-                return Err(anyhow::anyhow!("{err_msg}"));
-            }
-            engine.store.set_selected_keys(&strokes, true);
+            select_strokes_in_selection(engine, selection, selection_collision)?;
             let export_bytes = engine
                 .export_selection(None)
                 .await??
@@ -689,6 +659,43 @@ pub(crate) async fn export_to_file(
             open_file(open, output_dir)?;
         }
     };
+    Ok(())
+}
+
+fn select_strokes_in_selection(
+    engine: &mut RnoteEngine,
+    selection: &SelectionCommands,
+    selection_collision: &SelectionCollision,
+) -> anyhow::Result<()> {
+    let (strokes, err_msg) = match selection {
+        SelectionCommands::Rect {
+            x,
+            y,
+            width,
+            height,
+        } => {
+            let v1 = Vector2::new(*x, *y);
+            let v2 = v1 + Vector2::new(*width, *height);
+            let points = vec![v1.into(), v2.into()];
+            let aabb = Aabb::from_points(&points);
+            (
+                match selection_collision {
+                    SelectionCollision::Contains => {
+                        engine.store.stroke_keys_as_rendered_in_bounds(aabb)
+                    }
+                    SelectionCollision::Intersects => engine
+                        .store
+                        .stroke_keys_as_rendered_intersecting_bounds(aabb),
+                },
+                "No strokes in given rectangle",
+            )
+        }
+        SelectionCommands::All => (engine.store.stroke_keys_as_rendered(), "Document is empty"),
+    };
+    if strokes.is_empty() {
+        return Err(anyhow::anyhow!("{err_msg}"));
+    }
+    engine.store.set_selected_keys(&strokes, true);
     Ok(())
 }
 

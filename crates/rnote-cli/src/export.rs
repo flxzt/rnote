@@ -128,6 +128,7 @@ pub(crate) async fn run_export(
     no_background: bool,
     no_pattern: bool,
     on_conflict: OnConflict,
+    open: bool,
 ) -> anyhow::Result<()> {
     if rnote_files.is_empty() {
         return Err(anyhow::anyhow!("No rnote files to export!"));
@@ -183,6 +184,7 @@ pub(crate) async fn run_export(
                         &export_commands,
                         on_conflict,
                         &mut on_conflict_overwrite,
+                        open,
                     )
                     .await
                     {
@@ -248,6 +250,7 @@ pub(crate) async fn run_export(
                     &export_commands,
                     on_conflict,
                     &mut on_conflict_overwrite,
+                    open,
                 )
                 .await
                 {
@@ -516,12 +519,7 @@ pub(crate) fn check_file_conflict(
                     .interact()
                 {
                     Ok(0) => {
-                        if let Err(e) = open::that(output_file) {
-                            println!(
-                                "Failed to open {} with default program, {e:?}",
-                                output_file.display()
-                            );
-                        }
+                        open_file(true, output_file)?
                     }
                     Ok(c) => on_conflict = options[c],
                     Err(e) => {
@@ -582,6 +580,7 @@ pub(crate) async fn export_to_file(
     export_commands: &ExportCommands,
     on_conflict: OnConflict,
     on_conflict_overwrite: &mut Option<OnConflict>,
+    open: bool,
 ) -> anyhow::Result<()> {
     let rnote_file = rnote_file.as_ref();
     let rnote_bytes = {
@@ -633,14 +632,16 @@ pub(crate) async fn export_to_file(
                 .export_selection(None)
                 .await??
                 .context("No strokes selected")?;
-            create_overwrite_file_w_bytes(output_file, &export_bytes).await?;
+            create_overwrite_file_w_bytes(&output_file, &export_bytes).await?;
+            open_file(open, output_file)?;
         }
         ExportCommands::Doc { .. } => {
             let Some(export_file_name) = output_file.as_ref().file_name().map(|s| s.to_string_lossy().to_string()) else {
                 return Err(anyhow::anyhow!("Failed to get filename from output_file"));
             };
             let export_bytes = engine.export_doc(export_file_name, None).await??;
-            create_overwrite_file_w_bytes(output_file, &export_bytes).await?;
+            create_overwrite_file_w_bytes(&output_file, &export_bytes).await?;
+            open_file(open, output_file)?;
         }
         ExportCommands::DocPages {
             output_dir,
@@ -685,6 +686,7 @@ pub(crate) async fn export_to_file(
                     rnote_file.display()
                 ))?
             }
+            open_file(open, output_dir)?;
         }
     };
     Ok(())
@@ -722,5 +724,17 @@ async fn create_overwrite_file_w_bytes(
     let mut fh = File::create(output_file).await?;
     fh.write_all(bytes).await?;
     fh.sync_all().await?;
+    Ok(())
+}
+
+fn open_file(open: bool, path: impl AsRef<Path>) -> anyhow::Result<()> {
+    if open {
+        open::that_detached(path.as_ref()).with_context(|| {
+            format!(
+                "Failed to open output file/folder {}",
+                path.as_ref().display()
+            )
+        })?;
+    }
     Ok(())
 }

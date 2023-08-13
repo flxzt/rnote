@@ -52,6 +52,9 @@ pub(crate) enum Commands {
         /// export without background pattern
         #[arg(short = 'p', long, action = ArgAction::SetTrue, global = true)]
         no_pattern: bool,
+        /// Inspect result after the export is finished. Open output folder when using doc-pages
+        #[arg(long, action = ArgAction::SetTrue, global = true)]
+        open: bool,
         #[command(subcommand)]
         export_command: ExportCommands,
     },
@@ -170,6 +173,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             no_background,
             no_pattern,
             on_conflict,
+            open,
             export_command,
         } => {
             println!("Exporting..");
@@ -180,6 +184,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                 no_background,
                 no_pattern,
                 on_conflict,
+                open,
             )
             .await?
         }

@@ -20,11 +20,11 @@ pub enum SplitOrder {
     #[default]
     /// Split in row-major order.
     #[serde(rename = "row_major")]
-    #[cfg_attr(feature = "clap-derive", value(name = "horizontal"))]
+    #[cfg_attr(feature = "clap-derive", value(name = "horizontal-first"))]
     RowMajor,
     /// Split in column-major order.
     #[serde(rename = "column_major")]
-    #[cfg_attr(feature = "clap-derive", value(name = "vertical"))]
+    #[cfg_attr(feature = "clap-derive", value(name = "vertical-first"))]
     ColumnMajor,
 }
 

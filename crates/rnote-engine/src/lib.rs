@@ -33,6 +33,7 @@ pub use drawable::Drawable;
 pub use drawable::DrawableOnDoc;
 pub use engine::RnoteEngine;
 pub use pens::PenHolder;
+pub use selectioncollision::SelectionCollision;
 pub use store::StrokeStore;
 pub use widgetflags::WidgetFlags;
 

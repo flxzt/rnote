@@ -12,8 +12,7 @@ use rnote_engine::{
         },
         EngineSnapshot,
     },
-    selectioncollision::SelectionCollision,
-    RnoteEngine,
+    RnoteEngine, SelectionCollision,
 };
 use smol::{
     fs::File,
@@ -30,7 +29,6 @@ pub(crate) enum ExportCommands {
     /// The export format is recognized from the file extension of the output file.{n}
     /// When using --output-format, the file name and path of the rnote file is used with the extension changed.{n}
     /// --output-file and --output-format are mutually exclusive but one of them is required.{n}
-    /// --output-file can currently take `.svg`, `.xopp` or `.pdf` files.{n}
     Doc {
         #[command(flatten)]
         file_args: FileArgs<DocExportFormat>,
@@ -68,7 +66,6 @@ pub(crate) enum ExportCommands {
     /// The export format is recognized from the file extension of the output file.{n}
     /// When using --output-format, the same file name is used with the extension changed.{n}
     /// --output-file and --output-format are mutually exclusive but one of them is required.{n}
-    /// --output-file can currently take `.svg`, `.png` or `.jpeg` files.{n}
     /// When not selecting all, you can use --selection-collision to switch between contains and intersects collision
     #[command(alias = "sel")]
     Selection {

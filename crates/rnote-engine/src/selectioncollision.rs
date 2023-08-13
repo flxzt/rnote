@@ -8,7 +8,6 @@ pub enum SelectionCollision {
     Intersects,
 }
 
-#[cfg(feature = "clap-derive")]
 impl std::fmt::Display for SelectionCollision {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(

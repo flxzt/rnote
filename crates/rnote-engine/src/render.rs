@@ -7,7 +7,7 @@ use image::io::Reader;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
-use rnote_compose::ext::{AabbExt, Vector2Ext};
+use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::{Rectangle, Shapeable};
 use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
@@ -115,7 +115,6 @@ impl From<image::DynamicImage> for Image {
         let pixel_height = dynamic_image.height();
         let memory_format = ImageMemoryFormat::R8g8b8a8Premultiplied;
         let data = glib::Bytes::from_owned(dynamic_image.into_rgba8().to_vec());
-
         let bounds = Aabb::new(
             na::point![0.0, 0.0],
             na::point![f64::from(pixel_width), f64::from(pixel_height)],
@@ -136,11 +135,11 @@ impl Drawable for Image {
     ///
     /// Expects image to be in rgba8-premultiplied format, else drawing will fail.
     ///
-    /// `image_scale` has no meaning here, as the image pixels are already provided
+    /// `image_scale` has no meaning here, because the bitamp is already provided.
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let piet_image_format = piet::ImageFormat::try_from(self.memory_format)?;
 
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let piet_image = cx
             .make_image(
                 self.pixel_width as usize,
@@ -149,9 +148,7 @@ impl Drawable for Image {
                 piet_image_format,
             )
             .map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
         cx.transform(self.rect.transform.to_kurbo());
-
         cx.draw_image(
             &piet_image,
             self.rect.cuboid.local_aabb().to_kurbo_rect(),
@@ -185,7 +182,7 @@ impl Image {
             || self.data.len() as u32 != 4 * self.pixel_width * self.pixel_height
         {
             Err(anyhow::anyhow!(
-                "assert_image() failed, invalid size or data"
+                "Asserting image validity failed, invalid size or data."
             ))
         } else {
             Ok(())
@@ -215,7 +212,9 @@ impl Image {
         })
     }
 
-    pub fn to_imgbuf(self) -> Result<image::ImageBuffer<image::Rgba<u8>, Vec<u8>>, anyhow::Error> {
+    pub fn into_imgbuf(
+        self,
+    ) -> Result<image::ImageBuffer<image::Rgba<u8>, Vec<u8>>, anyhow::Error> {
         self.assert_valid()?;
 
         match self.memory_format {
@@ -223,9 +222,9 @@ impl Image {
                 image::RgbaImage::from_vec(self.pixel_width, self.pixel_height, self.data.to_vec())
                     .ok_or_else(|| {
                         anyhow::anyhow!(
-                    "RgbaImage::from_vec() failed in Image to_imgbuf() for image with Format {:?}",
-                    self.memory_format
-                )
+                            "RgbaImage::from_vec() failed for image with memory-format {:?}.",
+                            self.memory_format
+                        )
                     })
             }
         }
@@ -239,12 +238,11 @@ impl Image {
         let mut bytes_buf: Cursor<Vec<u8>> = Cursor::new(Vec::new());
 
         let dynamic_image = image::DynamicImage::ImageRgba8(
-            self.to_imgbuf()
-                .context("image.to_imgbuf() failed in image_to_bytes()")?,
+            self.into_imgbuf().context("image.to_imgbuf() failed.")?,
         );
         dynamic_image
             .write_to(&mut bytes_buf, format)
-            .context("dynamic_image.write_to() failed in image_to_bytes()")?;
+            .context("dynamic_image.write_to() failed.")?;
 
         Ok(bytes_buf.into_inner())
     }
@@ -282,105 +280,7 @@ impl Image {
     pub fn images_to_rendernodes<'a>(
         images: impl IntoIterator<Item = &'a Self>,
     ) -> Result<Vec<gsk::RenderNode>, anyhow::Error> {
-        let mut rendernodes = Vec::new();
-
-        for image in images {
-            rendernodes.push(image.to_rendernode()?)
-        }
-
-        Ok(rendernodes)
-    }
-
-    /// Generate an image from an Svg.
-    ///
-    /// Using librsvg for rendering.
-    pub fn gen_image_from_svg(
-        svg: Svg,
-        mut bounds: Aabb,
-        image_scale: f64,
-    ) -> Result<Self, anyhow::Error> {
-        let svg_data = rnote_compose::utils::wrap_svg_root(
-            svg.svg_data.as_str(),
-            Some(bounds),
-            Some(bounds),
-            false,
-        );
-
-        bounds.ensure_positive();
-        bounds = bounds.ceil().loosened(1.0);
-        bounds.assert_valid()?;
-
-        let width_scaled = ((bounds.extents()[0]) * image_scale).round() as u32;
-        let height_scaled = ((bounds.extents()[1]) * image_scale).round() as u32;
-
-        let mut surface = cairo::ImageSurface::create(
-                cairo::Format::ARgb32,
-                width_scaled as i32,
-                height_scaled as i32,
-            )
-            .map_err(|e| {
-                anyhow::anyhow!(
-                    "create ImageSurface with dimensions ({width_scaled}, {height_scaled}) failed in gen_image_from_svg(), Err: {e:?}"
-                )
-            })?;
-
-        // Context in new scope, else accessing the surface data fails with a borrow error
-        {
-            let cx = cairo::Context::new(&surface)
-                .context("new cairo::Context failed in gen_image_from_svg()")?;
-            cx.scale(image_scale, image_scale);
-            cx.translate(-bounds.mins[0], -bounds.mins[1]);
-
-            let stream =
-                gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
-
-            let handle = rsvg::Loader::new()
-                .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
-                    &stream, None, None,
-                )
-                .context("read stream to librsvg Loader failed in gen_image_from_svg()")?;
-
-            let renderer = rsvg::CairoRenderer::new(&handle);
-            renderer
-                .render_document(
-                    &cx,
-                    &cairo::Rectangle::new(
-                        bounds.mins[0],
-                        bounds.mins[1],
-                        bounds.extents()[0],
-                        bounds.extents()[1],
-                    ),
-                )
-                .map_err(|e| {
-                    anyhow::Error::msg(format!(
-                        "librsvg render_document() failed in gen_image_from_svg() with Err: {e:?}"
-                    ))
-                })?;
-        }
-        // Surface needs to be flushed before accessing its data
-        surface.flush();
-
-        let data = surface
-            .data()
-            .map_err(|e| {
-                anyhow::Error::msg(format!(
-                    "accessing imagesurface data failed in gen_image_from_svg() with Err: {e:?}"
-                ))
-            })?
-            .to_vec();
-
-        Ok(Self {
-            data: glib::Bytes::from_owned(convert_image_bgra_to_rgba(
-                width_scaled,
-                height_scaled,
-                data,
-            )),
-            rect: Rectangle::from_p2d_aabb(bounds),
-            pixel_width: width_scaled,
-            pixel_height: height_scaled,
-            // cairo renders to bgra8-premultiplied, but we convert it to rgba8-premultiplied
-            memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
-        })
+        images.into_iter().map(|img| img.to_rendernode()).collect()
     }
 
     /// Generates an image with a provided closure that draws onto a [cairo::Context].
@@ -393,7 +293,7 @@ impl Image {
         F: FnOnce(&cairo::Context) -> anyhow::Result<()>,
     {
         bounds.ensure_positive();
-        bounds = bounds.ceil().loosened(1.0);
+        bounds.loosen(1.0);
         bounds.assert_valid()?;
 
         let width_scaled = ((bounds.extents()[0]) * image_scale).round() as u32;
@@ -406,7 +306,7 @@ impl Image {
         )
         .map_err(|e| {
             anyhow::anyhow!(
-                "create ImageSurface with dimensions ({}, {}) failed, Err: {e:?}",
+                "creating image surface with dimensions ({}, {}) failed, Err: {e:?}",
                 width_scaled,
                 height_scaled,
             )
@@ -416,18 +316,15 @@ impl Image {
             let cairo_cx = cairo::Context::new(&image_surface)?;
             cairo_cx.scale(image_scale, image_scale);
             cairo_cx.translate(-bounds.mins[0], -bounds.mins[1]);
-
             // Apply the draw function
             draw_func(&cairo_cx)?;
         }
-        // Surface needs to be flushed before accessing its data
+        // surface needs to be flushed before accessing its data
         image_surface.flush();
 
         let data = image_surface
             .data()
-            .map_err(|e| {
-                anyhow::Error::msg(format!("accessing imagesurface data failed, Err: {e:?}"))
-            })?
+            .map_err(|e| anyhow::anyhow!("accessing image surface data failed, Err: {e:?}"))?
             .to_vec();
 
         Ok(Image {
@@ -451,15 +348,14 @@ impl Image {
     {
         let cairo_draw_fn = move |cairo_cx: &cairo::Context| -> anyhow::Result<()> {
             let mut piet_cx = piet_cairo::CairoRenderContext::new(cairo_cx);
-
             // Apply the draw function
             draw_func(&mut piet_cx)?;
-
             piet_cx
                 .finish()
                 .map_err(|e| anyhow::anyhow!("finishing piet context failed, Err: {e:?}"))?;
             Ok(())
         };
+
         Self::gen_with_cairo(cairo_draw_fn, bounds, image_scale)
     }
 }
@@ -503,103 +399,6 @@ impl Svg {
         }
     }
 
-    /// Generate an Svg with piet, using the `piet_cairo` backend and cairo's SvgSurface.
-    ///
-    /// This might be preferable to the `piet_svg` backend, because especially text alignment and sizes can be different with it.
-    pub fn gen_with_piet_cairo_backend<F>(draw_func: F, mut bounds: Aabb) -> anyhow::Result<Self>
-    where
-        F: FnOnce(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
-    {
-        bounds.ensure_positive();
-        bounds.assert_valid()?;
-
-        let width = bounds.extents()[0];
-        let height = bounds.extents()[1];
-        let svg_stream: Vec<u8> = vec![];
-        let mut svg_surface =
-            cairo::SvgSurface::for_stream(width, height, svg_stream).map_err(|e| {
-                anyhow::anyhow!(
-                    "create SvgSurface with dimensions ({width}, {height}) failed, Err: {e:?}"
-                )
-            })?;
-        svg_surface.set_document_unit(cairo::SvgUnit::Px);
-
-        {
-            let cairo_cx = cairo::Context::new(&svg_surface)?;
-            let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-
-            // Cairo only draws elements with positive coordinates, so we need to transform them here
-            piet_cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
-
-            // Apply the draw function
-            draw_func(&mut piet_cx)?;
-
-            piet_cx.finish().map_err(|e| {
-                anyhow::anyhow!(
-                    "piet_cx.finish() failed in Svg gen_with_piet_cairo_backend() with Err: {e:?}"
-                )
-            })?;
-        }
-
-        let file_content = svg_surface
-            .finish_output_stream()
-            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-        let svg_data = rnote_compose::utils::remove_xml_header(
-            String::from_utf8(*file_content.downcast::<Vec<u8>>().map_err(|_e| {
-                anyhow::anyhow!(
-                    "failed to downcast svg surface content in Svg gen_with_piet_cairo_backend()"
-                )
-            })?)?
-            .as_str(),
-        );
-
-        let mut group = svg::node::element::Group::new().add(svg::node::Text::new(svg_data));
-
-        group.assign(
-            "transform",
-            format!("translate({} {})", bounds.mins[0], bounds.mins[1]),
-        );
-
-        Ok(Self {
-            svg_data: rnote_compose::utils::svg_node_to_string(&group)?,
-            bounds,
-        })
-    }
-
-    pub fn draw_to_cairo(&self, cx: &cairo::Context) -> anyhow::Result<()> {
-        let svg_data = rnote_compose::utils::wrap_svg_root(
-            self.svg_data.as_str(),
-            Some(self.bounds),
-            Some(self.bounds),
-            false,
-        );
-
-        let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
-
-        let handle = rsvg::Loader::new()
-            .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(&stream, None, None)
-            .context("read stream to librsvg Loader failed")?;
-
-        let renderer = rsvg::CairoRenderer::new(&handle);
-        renderer
-                .render_document(
-                    cx,
-                    &cairo::Rectangle::new(
-                        self.bounds.mins[0],
-                        self.bounds.mins[1],
-                        self.bounds.extents()[0],
-                        self.bounds.extents()[1],
-                    ),
-                )
-                .map_err(|e| {
-                    anyhow::Error::msg(format!(
-                    "librsvg render_document() failed in draw_svgs_to_cairo_context() with Err: {e:?}"
-                ))
-                })?;
-        Ok(())
-    }
-
     /// Simplify the Svg by passing it through [usvg].
     pub fn simplify(&mut self) -> anyhow::Result<()> {
         let xml_options = usvg::XmlOptions {
@@ -627,13 +426,191 @@ impl Svg {
         Ok(())
     }
 
+    /// Generate an Svg through cairo's SvgSurface.
+    pub fn gen_with_cairo<F>(draw_func: F, mut bounds: Aabb) -> anyhow::Result<Self>
+    where
+        F: FnOnce(&cairo::Context) -> anyhow::Result<()>,
+    {
+        bounds.ensure_positive();
+        bounds.assert_valid()?;
+
+        let width = bounds.extents()[0];
+        let height = bounds.extents()[1];
+        let svg_stream: Vec<u8> = vec![];
+        let mut svg_surface =
+            cairo::SvgSurface::for_stream(width, height, svg_stream).map_err(|e| {
+                anyhow::anyhow!(
+                    "create svg surface with dimensions ({width}, {height}) failed, Err: {e:?}"
+                )
+            })?;
+        svg_surface.set_document_unit(cairo::SvgUnit::Px);
+
+        {
+            let cairo_cx = cairo::Context::new(&svg_surface)?;
+            // cairo only draws elements with positive coordinates, so we need to translate the content here
+            cairo_cx.translate(-bounds.mins[0], -bounds.mins[1]);
+            // apply the draw function
+            draw_func(&cairo_cx)?;
+        }
+        // surface needs to be flushed before accessing its data
+        svg_surface.flush();
+
+        let file_content = svg_surface
+            .finish_output_stream()
+            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
+
+        let svg_data = rnote_compose::utils::remove_xml_header(
+            String::from_utf8(*file_content.downcast::<Vec<u8>>().map_err(|e| {
+                anyhow::anyhow!("downcasting svg surface content failed, Err: {e:?}")
+            })?)?
+            .as_str(),
+        );
+
+        let mut group = svg::node::element::Group::new().add(svg::node::Text::new(svg_data));
+        // translate the content back to it's original position
+        group.assign(
+            "transform",
+            format!("translate({} {})", bounds.mins[0], bounds.mins[1]),
+        );
+
+        Ok(Self {
+            svg_data: rnote_compose::utils::svg_node_to_string(&group)?,
+            bounds,
+        })
+    }
+
+    /// Generate an Svg with piet, using the `piet_cairo` backend and cairo's SvgSurface.
+    ///
+    /// This might be preferable to the `piet_svg` backend, because especially text alignment and sizes can be different
+    /// with it.
+    pub fn gen_with_piet_cairo_backend<F>(draw_func: F, bounds: Aabb) -> anyhow::Result<Self>
+    where
+        F: FnOnce(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
+    {
+        let cairo_draw_fn = |cairo_cx: &cairo::Context| {
+            let mut piet_cx = piet_cairo::CairoRenderContext::new(cairo_cx);
+            // Apply the draw function
+            draw_func(&mut piet_cx)?;
+            piet_cx
+                .finish()
+                .map_err(|e| anyhow::anyhow!("finishing piet context failed, Err: {e:?}"))
+        };
+
+        Self::gen_with_cairo(cairo_draw_fn, bounds)
+    }
+
+    pub fn draw_to_cairo(&self, cx: &cairo::Context) -> anyhow::Result<()> {
+        let svg_data = rnote_compose::utils::wrap_svg_root(
+            self.svg_data.as_str(),
+            Some(self.bounds),
+            Some(self.bounds),
+            false,
+        );
+        let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
+        let handle = rsvg::Loader::new()
+            .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(&stream, None, None)
+            .context("reading stream to rsvg loader failed.")?;
+        let renderer = rsvg::CairoRenderer::new(&handle);
+        renderer
+            .render_document(
+                cx,
+                &cairo::Rectangle::new(
+                    self.bounds.mins[0],
+                    self.bounds.mins[1],
+                    self.bounds.extents()[0],
+                    self.bounds.extents()[1],
+                ),
+            )
+            .map_err(|e| anyhow::anyhow!("rendering rsvg document failed, Err: {e:?}"))?;
+        Ok(())
+    }
+
     #[allow(unused)]
-    pub fn draw_as_caironode(&self) -> Result<gsk::CairoNode, anyhow::Error> {
+    pub fn gen_caironode(&self) -> Result<gsk::CairoNode, anyhow::Error> {
         self.bounds.assert_valid()?;
         let node = gsk::CairoNode::new(&graphene::Rect::from_p2d_aabb(self.bounds));
         let cx = node.draw_context();
         self.draw_to_cairo(&cx)?;
         Ok(node)
+    }
+
+    /// Generate an image from an Svg.
+    ///
+    /// Using rsvg for rendering.
+    pub fn gen_image(&self, image_scale: f64) -> Result<Image, anyhow::Error> {
+        let mut bounds = self.bounds;
+        bounds.ensure_positive();
+        bounds.assert_valid()?;
+
+        let svg_data = rnote_compose::utils::wrap_svg_root(
+            self.svg_data.as_str(),
+            Some(bounds),
+            Some(bounds),
+            false,
+        );
+        let width_scaled = ((bounds.extents()[0]) * image_scale).round() as u32;
+        let height_scaled = ((bounds.extents()[1]) * image_scale).round() as u32;
+
+        let mut surface = cairo::ImageSurface::create(
+                cairo::Format::ARgb32,
+                width_scaled as i32,
+                height_scaled as i32,
+            )
+            .map_err(|e| {
+                anyhow::anyhow!(
+                    "creating ImageSurface with dimensions ({width_scaled}, {height_scaled}) failed, Err: {e:?}"
+                )
+            })?;
+
+        // Context in new scope, else accessing the surface data fails with a borrow error
+        {
+            let cx =
+                cairo::Context::new(&surface).context("creating new cairo::Context failed.")?;
+            cx.scale(image_scale, image_scale);
+            cx.translate(-bounds.mins[0], -bounds.mins[1]);
+
+            let stream =
+                gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
+
+            let handle = rsvg::Loader::new()
+                .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
+                    &stream, None, None,
+                )
+                .context("read stream to rsvg loader failed.")?;
+
+            let renderer = rsvg::CairoRenderer::new(&handle);
+            renderer
+                .render_document(
+                    &cx,
+                    &cairo::Rectangle::new(
+                        bounds.mins[0],
+                        bounds.mins[1],
+                        bounds.extents()[0],
+                        bounds.extents()[1],
+                    ),
+                )
+                .map_err(|e| anyhow::anyhow!("rendering rsvg document failed, Err: {e:?}"))?;
+        }
+        // Surface needs to be flushed before accessing its data
+        surface.flush();
+
+        let data = surface
+            .data()
+            .map_err(|e| anyhow::anyhow!("accessing imagesurface data failed, Err: {e:?}"))?
+            .to_vec();
+
+        Ok(Image {
+            data: glib::Bytes::from_owned(convert_image_bgra_to_rgba(
+                width_scaled,
+                height_scaled,
+                data,
+            )),
+            rect: Rectangle::from_p2d_aabb(bounds),
+            pixel_width: width_scaled,
+            pixel_height: height_scaled,
+            // cairo renders to bgra8-premultiplied, but we convert it to rgba8-premultiplied
+            memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
+        })
     }
 }
 

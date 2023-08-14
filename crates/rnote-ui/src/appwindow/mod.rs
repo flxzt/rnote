@@ -160,12 +160,12 @@ impl RnAppWindow {
         // Periodically save engine config
         if let Some(removed_id) = self.imp().periodic_configsave_source_id.borrow_mut().replace(
             glib::source::timeout_add_seconds_local(
-                Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
+                Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak self as appwindow => @default-return glib::ControlFlow::Break, move || {
                     if let Err(e) = appwindow.active_tab_wrapper().canvas().save_engine_config(&appwindow.app_settings()) {
-                        log::error!("saving engine config in periodic task failed with Err: {e:?}");
+                        log::error!("saving engine config in periodic task failed , Err: {e:?}");
                     }
 
-                    glib::source::Continue(true)
+                    glib::ControlFlow::Continue
         }))) {
             removed_id.remove();
         }
@@ -182,7 +182,7 @@ impl RnAppWindow {
     pub(crate) fn close_force(&self) {
         // Saving all state
         if let Err(e) = self.save_to_settings() {
-            log::error!("Failed to save appwindow to settings, with Err: {e:?}");
+            log::error!("Failed to save appwindow to settings, , Err: {e:?}");
         }
 
         // Closing the state tasks channel receiver for all tabs
@@ -305,7 +305,7 @@ impl RnAppWindow {
             .canvas()
             .engine_mut()
             .load_engine_config(engine_config, crate::env::pkg_data_dir().ok());
-        widget_flags.merge(wrapper.canvas().engine_mut().doc_resize_to_fit_strokes());
+        widget_flags.merge(wrapper.canvas().engine_mut().doc_resize_to_fit_content());
         wrapper.canvas().update_rendering_current_viewport();
         self.handle_widget_flags(widget_flags, &wrapper.canvas());
         wrapper

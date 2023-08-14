@@ -143,9 +143,20 @@ On some devices one stylus button is mapped to a dedicated "Eraser" mode (which 
 
 A great way to contribute to the project without writing code is adding a new or start maintaining an existing translation language. The translations files are located in `crates/rnote-ui/po/`.
 
- Creating translations for new languages or updating existing ones can be done in mutliple ways:
+ Creating translations for new languages or updating existing ones can be done in multiple ways:
 - take the `rnote.pot` file and generate a new `.po` translation file from it, for example with "Poedit". Add the new translation language to `LINGUAS` and submit a PR with the changed files.
 - use [weblate](https://hosted.weblate.org/projects/rnote/repo/) for an easy way to translate in the browser without having to deal with git.
+
+## Fonts
+
+The following fonts are bundled with the application:
+
+- [Grape Nuts](https://fonts.google.com/specimen/Grape+Nuts): Grape Nuts is a simple handwritten casual font.
+- [OpenDyslexic-Regular](https://github.com/antijingoist/opendyslexic): OpenDyslexic is a typeface designed against some
+    common symptoms of dyslexia.
+- [TT2020Base-Regular](https://github.com/ctrlcctrlv/TT2020): TT2020 is an advanced, open source, hyperrealistic,
+    multilingual typewriter font for a new decade.
+- [Virgil](https://virgil.excalidraw.com/): The font that powers Excalidraw.
 
 ## File Format
 

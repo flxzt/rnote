@@ -14,7 +14,7 @@ use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
-    Adjustment, DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext, Inhibit,
+    Adjustment, DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext,
     PropagationPhase, Scrollable, ScrollablePolicy, Widget,
 };
 use once_cell::sync::Lazy;
@@ -436,7 +436,7 @@ mod imp {
                 snapshot.pop();
                 Ok(())
             }() {
-                log::error!("canvas snapshot() failed with Err: {e:?}");
+                log::error!("canvas snapshot() failed , Err: {e:?}");
             }
         }
     }
@@ -449,10 +449,10 @@ mod imp {
 
             // Pointer controller
             let pen_state = Cell::new(PenState::Up);
-            self.pointer_controller.connect_event(clone!(@strong pen_state, @weak obj as canvas => @default-return Inhibit(false), move |_, event| {
-                let (inhibit, new_state) = super::input::handle_pointer_controller_event(&canvas, event, pen_state.get());
+            self.pointer_controller.connect_event(clone!(@strong pen_state, @weak obj as canvas => @default-return glib::Propagation::Proceed, move |_, event| {
+                let (propagation, new_state) = super::input::handle_pointer_controller_event(&canvas, event, pen_state.get());
                 pen_state.set(new_state);
-                inhibit
+                propagation
             }));
 
             // For unicode text the input is committed from the IM context, and won't trigger the key_pressed signal
@@ -463,7 +463,7 @@ mod imp {
             );
 
             // Key controller
-            self.key_controller.connect_key_pressed(clone!(@weak obj as canvas => @default-return Inhibit(false), move |_, key, _raw, modifier| {
+            self.key_controller.connect_key_pressed(clone!(@weak obj as canvas => @default-return glib::Propagation::Proceed, move |_, key, _raw, modifier| {
                 super::input::handle_key_controller_key_pressed(&canvas, key, modifier)
             }));
 
@@ -788,17 +788,16 @@ impl RnCanvas {
     }
 
     pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnAppWindow) {
-        let new_monitor =
-            match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
-                Ok(output_file_monitor) => output_file_monitor,
-                Err(e) => {
-                    self.clear_output_file_monitor();
-                    log::error!(
-                        "creating a file monitor for the new output file failed with Err: {e:?}"
-                    );
-                    return;
-                }
-            };
+        let new_monitor = match file
+            .monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE)
+        {
+            Ok(output_file_monitor) => output_file_monitor,
+            Err(e) => {
+                self.clear_output_file_monitor();
+                log::error!("creating a file monitor for the new output file failed , Err: {e:?}");
+                return;
+            }
+        };
 
         let new_handler = new_monitor.connect_changed(
             glib::clone!(@weak self as canvas, @weak appwindow => move |_monitor, file, other_file, event| {

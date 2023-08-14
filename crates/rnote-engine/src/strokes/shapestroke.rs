@@ -1,10 +1,8 @@
 // Imports
-use super::content::GeneratedContentImages;
 use super::Content;
-use crate::{render, strokes::content, Drawable};
+use crate::{strokes::content, Drawable};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-use rnote_compose::ext::{AabbExt, Vector2Ext};
+use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Shape;
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::Composer;
@@ -25,50 +23,6 @@ pub struct ShapeStroke {
 }
 
 impl Content for ShapeStroke {
-    fn gen_svg(&self) -> Result<crate::render::Svg, anyhow::Error> {
-        let bounds = self.bounds();
-
-        render::Svg::gen_with_piet_cairo_backend(
-            |cx| {
-                cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
-                self.draw(cx, 1.0)
-            },
-            bounds,
-        )
-    }
-
-    fn gen_images(
-        &self,
-        viewport: Aabb,
-        image_scale: f64,
-    ) -> Result<GeneratedContentImages, anyhow::Error> {
-        let bounds = self.bounds();
-
-        if viewport.contains(&bounds) {
-            Ok(GeneratedContentImages::Full(vec![
-                render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    bounds,
-                    image_scale,
-                )?,
-            ]))
-        } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
-            Ok(GeneratedContentImages::Partial {
-                images: vec![render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    intersection_bounds,
-                    image_scale,
-                )?],
-                viewport,
-            })
-        } else {
-            Ok(GeneratedContentImages::Partial {
-                images: vec![],
-                viewport,
-            })
-        }
-    }
-
     fn draw_highlight(
         &self,
         cx: &mut impl piet::RenderContext,
@@ -77,7 +31,7 @@ impl Content for ShapeStroke {
         const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
         cx.stroke(
             self.bounds().to_kurbo_rect(),
-            &*content::STROKE_HIGHLIGHT_COLOR,
+            &content::CONTENT_HIGHLIGHT_COLOR,
             HIGHLIGHT_STROKE_WIDTH / total_zoom,
         );
         Ok(())

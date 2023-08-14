@@ -66,10 +66,18 @@ mod imp {
                 false,
                 clone!(@weak obj as strokecontentpreview => @default-return None, move |vals| {
                     let in_progress = vals[1].get::<bool>().unwrap();
+                    let current_page = strokecontentpreview.current_page();
+                    let n_pages = strokecontentpreview.n_pages();
+
                     if in_progress {
                         strokecontentpreview.progressbar_start_pulsing();
+                        strokecontentpreview.imp().prev_page_button.set_sensitive(false);
+                        strokecontentpreview.imp().next_page_button.set_sensitive(false);
                     } else {
                         strokecontentpreview.progressbar_finish();
+                        strokecontentpreview.imp().prev_page_button.set_sensitive(current_page > 0);
+                        strokecontentpreview.imp().next_page_button
+                            .set_sensitive(current_page < n_pages.saturating_sub(1));
                     }
                     None
                 }),
@@ -137,7 +145,6 @@ mod imp {
                     self.current_page
                         .set(current_page.min(n_pages.saturating_sub(1)));
                     self.update_paintable_content();
-                    self.update_widgets();
                 }
                 _ => unimplemented!(),
             }
@@ -149,6 +156,7 @@ mod imp {
     impl RnStrokeContentPreview {
         pub(super) fn update_paintable_content(&self) {
             let current_page = self.obj().current_page();
+            let n_pages = self.obj().n_pages();
             self.paintable.set_stroke_content(
                 self.contents
                     .borrow()
@@ -156,16 +164,9 @@ mod imp {
                     .cloned()
                     .unwrap_or_default(),
             );
-        }
-
-        pub(super) fn update_widgets(&self) {
-            let current_page = self.obj().current_page();
-            let n_pages = self.obj().n_pages();
 
             self.pages_controls_box.set_visible(n_pages > 1);
-            self.prev_page_button.set_sensitive(current_page > 0);
-            self.next_page_button
-                .set_sensitive(current_page < n_pages.saturating_sub(1));
+            // the prev/next page buttons sensitivity get updated in the paintable `repaint-in-progress` signal handler.
             match parse_page_text(&self.page_entry.text(), n_pages) {
                 Ok(page) if page == current_page => {
                     // Don't update entry if it is already the current page
@@ -227,7 +228,6 @@ impl RnStrokeContentPreview {
         let n_pages = self.n_pages();
         self.set_current_page(self.current_page().min(n_pages.saturating_sub(1)));
         self.imp().update_paintable_content();
-        self.imp().update_widgets();
     }
 
     pub(crate) fn n_pages(&self) -> usize {
@@ -268,9 +268,10 @@ impl RnStrokeContentPreview {
         const PULSE_INTERVAL: std::time::Duration = std::time::Duration::from_millis(100);
         if let Some(src) = self.imp().progresspulse_id.replace(Some(glib::source::timeout_add_local(
             PULSE_INTERVAL,
-            clone!(@weak self as strokecontentpreview => @default-return glib::source::Continue(false), move || {
+            clone!(@weak self as strokecontentpreview => @default-return glib::ControlFlow::Break, move || {
                 strokecontentpreview.imp().progressbar.pulse();
-                glib::source::Continue(true)
+
+                glib::ControlFlow::Continue
             })),
         )) {
             src.remove();

@@ -9,7 +9,7 @@ members = [
 [workspace.package]
 version = "0.7.1"
 edition = "2021"
-rust-version = "1.65"
+rust-version = "1.70"
 authors = ["The Rnote Authors"]
 license = "GPL-3.0-or-later"
 homepage = "https://rnote.flxzt.net"
@@ -65,22 +65,22 @@ winresource = "0.1"
 smol = "1"
 clap = { version = "4", features = ["derive"] }
 indicatif = "0.17"
-glib = "0.17"
-cairo-rs = { version = "0.17", features = ["png", "svg", "pdf"] }
-librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", tag = "2.56.3" }
-# newest poppler feature ("v21_12") is causing linking errors when building in mingw for some reason.
-poppler-rs = { version = "0.21", features = ["v20_9"] }
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
-gtk4 = { version = "0.6", features = ["v4_10"] }
-adw = { version = "0.4", package="libadwaita", features = ["v1_3"] }
+glib = "0.18.1"
+cairo-rs = { version = "0.18", features = ["png", "svg", "pdf"] }
+rsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", rev = "2b376c24d9b6718bed65fdff6b980de756a0f95c" }
+# newest poppler feature ("v21_12") is causing linking errors when building in mingw for some reason.
+poppler-rs = { version = "0.22", features = ["v20_9"] }
+gtk4 = { version = "0.7.1", features = ["v4_10"] }
+adw = { version = "0.5.2", package="libadwaita", features = ["v1_3"] }
 dialoguer = "0.10.4"
 open = "5"
 atty = "0.2"
 
 [patch.crates-io]
 # once a new piet (current v0.6.2) is released with the updated cairo, this can be removed
-piet = { git = "https://github.com/linebender/piet", rev = "24acaf6467bff134b7b5c7c0ec70973544020b49" }
-piet-cairo = { git = "https://github.com/linebender/piet", rev = "24acaf6467bff134b7b5c7c0ec70973544020b49" }
+piet = { git = "https://github.com/linebender/piet", rev = "88e8e6c6fe41d8c99e3bccbf3a076b3661c4472a" }
+piet-cairo = { git = "https://github.com/linebender/piet", rev = "88e8e6c6fe41d8c99e3bccbf3a076b3661c4472a" }
 
 [profile.dev]
 opt-level = 2
@@ -90,5 +90,5 @@ debug = true
 opt-level = 3
 lto = "fat"
 codegen-units = 1
-# We want to be able to debug in the release build too
+# We want to be able to debug in the release build as well
 debug = true 

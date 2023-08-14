@@ -156,7 +156,7 @@ impl Document {
         }
     }
 
-    pub(crate) fn resize_to_fit_strokes(
+    pub(crate) fn resize_to_fit_content(
         &mut self,
         store: &StrokeStore,
         camera: &Camera,
@@ -170,11 +170,11 @@ impl Document {
                 self.resize_doc_continuous_vertical_layout(store);
             }
             Layout::SemiInfinite => {
-                self.resize_doc_semi_infinite_layout_to_fit_strokes(store);
+                self.resize_doc_semi_infinite_layout_to_fit_content(store);
                 self.expand_doc_semi_infinite_layout(camera.viewport());
             }
             Layout::Infinite => {
-                self.resize_doc_infinite_layout_to_fit_strokes(store);
+                self.resize_doc_infinite_layout_to_fit_content(store);
                 self.expand_doc_infinite_layout(camera.viewport());
             }
         }
@@ -190,19 +190,19 @@ impl Document {
         let mut widget_flags = WidgetFlags::default();
         match self.layout {
             Layout::FixedSize => {
-                // do not resize in fixed size mode, if wanted use resize_doc_to_fit_strokes() for it.
+                // do not resize in fixed size mode, if wanted use resize_doc_to_fit_content() for it.
             }
             Layout::ContinuousVertical => {
                 self.resize_doc_continuous_vertical_layout(store);
                 widget_flags.resize = true;
             }
             Layout::SemiInfinite => {
-                self.resize_doc_semi_infinite_layout_to_fit_strokes(store);
+                self.resize_doc_semi_infinite_layout_to_fit_content(store);
                 self.expand_doc_semi_infinite_layout(camera.viewport());
                 widget_flags.resize = true;
             }
             Layout::Infinite => {
-                self.resize_doc_infinite_layout_to_fit_strokes(store);
+                self.resize_doc_infinite_layout_to_fit_content(store);
                 self.expand_doc_infinite_layout(camera.viewport());
                 widget_flags.resize = true;
             }
@@ -217,12 +217,12 @@ impl Document {
                 // not resizing in these modes, the size is not dependent on the camera
             }
             Layout::SemiInfinite => {
-                // only expand, don't resize to fit strokes
+                // only expand, don't resize to fit content
                 self.expand_doc_semi_infinite_layout(camera.viewport());
                 widget_flags.resize = true;
             }
             Layout::Infinite => {
-                // only expand, don't resize to fit strokes
+                // only expand, don't resize to fit content
                 self.expand_doc_infinite_layout(camera.viewport());
                 widget_flags.resize = true;
             }
@@ -282,7 +282,7 @@ impl Document {
         self.height = new_bounds.extents()[1];
     }
 
-    fn resize_doc_semi_infinite_layout_to_fit_strokes(&mut self, store: &StrokeStore) {
+    fn resize_doc_semi_infinite_layout_to_fit_content(&mut self, store: &StrokeStore) {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
 
@@ -304,7 +304,7 @@ impl Document {
         self.height = new_bounds.extents()[1];
     }
 
-    fn resize_doc_infinite_layout_to_fit_strokes(&mut self, store: &StrokeStore) {
+    fn resize_doc_infinite_layout_to_fit_content(&mut self, store: &StrokeStore) {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
 

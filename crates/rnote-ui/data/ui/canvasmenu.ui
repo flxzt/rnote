@@ -145,7 +145,8 @@
               <child>
                 <object class="GtkButton">
                   <property name="icon_name">remove-page-symbolic</property>
-                  <property name="tooltip_text" translatable="yes">Remove Page</property>
+                  <property name="tooltip_text" translatable="yes">Remove Page.
+Available in Fixed-Size Document Layout.</property>
                   <property name="action-name">win.remove-page-from-doc</property>
                   <property name="hexpand">true</property>
                 </object>
@@ -153,16 +154,18 @@
               <child>
                 <object class="GtkButton">
                   <property name="icon_name">add-page-symbolic</property>
-                  <property name="tooltip_text" translatable="yes">Add Page</property>
+                  <property name="tooltip_text" translatable="yes">Add Page.
+Available in Fixed-Size Document Layout.</property>
                   <property name="action-name">win.add-page-to-doc</property>
                   <property name="hexpand">true</property>
                 </object>
               </child>
               <child>
                 <object class="GtkButton">
-                  <property name="icon_name">resize-to-fit-strokes-symbolic</property>
-                  <property name="tooltip_text" translatable="yes">Resize Document to Fit Strokes</property>
-                  <property name="action-name">win.resize-to-fit-strokes</property>
+                  <property name="icon_name">resize-to-fit-content-symbolic</property>
+                  <property name="tooltip_text" translatable="yes">Resize Document to Fit Content.
+Available in Fixed-Size Document Layout.</property>
+                  <property name="action-name">win.resize-to-fit-content</property>
                       <property name="hexpand">true</property>
                 </object>
               </child>

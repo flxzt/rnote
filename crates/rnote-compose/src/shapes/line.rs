@@ -55,6 +55,11 @@ impl Shapeable for Line {
 }
 
 impl Line {
+    /// A new line.
+    pub fn new(start: na::Vector2<f64>, end: na::Vector2<f64>) -> Self {
+        Self { start, end }
+    }
+
     /// Create a rectangle rotated in the direction of the line, with the given width.
     pub fn line_w_width_to_rect(&self, width: f64) -> Rectangle {
         let vec = self.end - self.start;

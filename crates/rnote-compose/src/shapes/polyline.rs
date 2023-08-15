@@ -1,11 +1,9 @@
-use p2d::bounding_volume::Aabb;
 // Imports
-use serde::{Deserialize, Serialize};
-
+use super::{Line, Shapeable};
 use crate::ext::Vector2Ext;
 use crate::transform::Transformable;
-
-use super::{Line, Shapeable};
+use p2d::bounding_volume::Aabb;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default, rename = "polyline")]

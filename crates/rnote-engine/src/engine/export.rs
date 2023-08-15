@@ -24,6 +24,7 @@ use std::sync::Arc;
     num_derive::FromPrimitive,
     num_derive::ToPrimitive,
 )]
+#[cfg_attr(feature = "clap-derive", derive(clap::ValueEnum))]
 #[serde(rename = "doc_export_format")]
 pub enum DocExportFormat {
     #[serde(rename = "svg")]
@@ -111,6 +112,7 @@ impl DocExportPrefs {
     num_derive::FromPrimitive,
     num_derive::ToPrimitive,
 )]
+#[cfg_attr(feature = "clap-derive", derive(clap::ValueEnum))]
 #[serde(rename = "doc_pages_export_format")]
 pub enum DocPagesExportFormat {
     #[serde(rename = "svg")]
@@ -205,6 +207,7 @@ impl Default for DocPagesExportPrefs {
     num_derive::FromPrimitive,
     num_derive::ToPrimitive,
 )]
+#[cfg_attr(feature = "clap-derive", derive(clap::ValueEnum))]
 #[serde(rename = "selection_export_format")]
 pub enum SelectionExportFormat {
     #[serde(rename = "svg")]

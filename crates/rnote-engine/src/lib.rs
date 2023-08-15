@@ -18,6 +18,7 @@ pub mod ext;
 pub mod fileformats;
 pub mod pens;
 pub mod render;
+pub mod selectioncollision;
 pub mod store;
 pub mod strokes;
 pub mod tasks;
@@ -32,6 +33,7 @@ pub use drawable::Drawable;
 pub use drawable::DrawableOnDoc;
 pub use engine::RnoteEngine;
 pub use pens::PenHolder;
+pub use selectioncollision::SelectionCollision;
 pub use store::StrokeStore;
 pub use widgetflags::WidgetFlags;
 

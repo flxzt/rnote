@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-23 18:32+0200\n"
-"PO-Revision-Date: 2023-06-26 08:36+0000\n"
+"POT-Creation-Date: 2023-08-05 16:42+0200\n"
+"PO-Revision-Date: 2023-08-12 11:05+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.18.1\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -406,17 +406,15 @@ msgstr "ترتيب الصفحات"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:148
 #: crates/rnote-ui/data/ui/dialogs/export.ui:359
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts that expand\n"
-#| "in horizontal and vertical directions are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
-"ترتيب الصفحات حين تقسيم المستندات التي\n"
-"تخطيطاتها تتوسع رأسيًّا أو أفقيًّا صفحاتٍ"
+"ترتيب الصفحات حين\n"
+"تقسيم المستندات التي\n"
+" تخطيطاتها تتوسع\n"
+"رأسيًّا أو أفقيًّا صفحاتٍ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:154
 #: crates/rnote-ui/data/ui/dialogs/export.ui:365
@@ -1088,16 +1086,28 @@ msgid "Zoom to Page Width"
 msgstr "كبِّر حتَّى عرض الصفحة"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:148
-msgid "Remove Page"
-msgstr "أزل الصفحة"
+msgid ""
+"Remove Page.\n"
+"Available in Fixed-Size Document Layout."
+msgstr ""
+"أزل الصفحة.\n"
+"متاح في تخطيط المستندات ذات الحجم الثابت."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:156
-msgid "Add Page"
-msgstr "أضف صفحةً"
+#: crates/rnote-ui/data/ui/canvasmenu.ui:157
+msgid ""
+"Add Page.\n"
+"Available in Fixed-Size Document Layout."
+msgstr ""
+"أضف صفحةً.\n"
+"متاح في تخطيط المستندات ذات الحجم الثابت."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:164
-msgid "Resize Document to Fit Strokes"
-msgstr "غيّر حجم الصفحة لتناسب الخطوط المرسومة"
+#: crates/rnote-ui/data/ui/canvasmenu.ui:166
+msgid ""
+"Resize Document to Fit Content.\n"
+"Available in Fixed-Size Document Layout."
+msgstr ""
+"حجِّم المستند تناسب ما فيها.\n"
+"متاح في تخطيط المستندات ذات الحجم الثابت."
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
@@ -1607,10 +1617,8 @@ msgid "Paste Clipboard"
 msgstr "الصق الحافظة"
 
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:74
-#, fuzzy
-#| msgid "Pages:"
 msgid "Page"
-msgstr "الصفحات:"
+msgstr "الصفحة"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
@@ -1670,31 +1678,31 @@ msgstr "- اسم الملفِّ غير صالح -"
 msgid "- invalid folder path -"
 msgstr "- مسار الملفِّ غير صالح -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:809
+#: crates/rnote-ui/src/canvas/mod.rs:808
 msgid "Opened file was modified on disk"
 msgstr "عُدِّل الملفُّ المفتوح في القرص"
 
-#: crates/rnote-ui/src/canvas/mod.rs:810
+#: crates/rnote-ui/src/canvas/mod.rs:809
 msgid "Reload"
 msgstr "أعد التحميل"
 
-#: crates/rnote-ui/src/canvas/mod.rs:816
+#: crates/rnote-ui/src/canvas/mod.rs:815
 msgid "Reloading .rnote file from disk failed"
 msgstr "فشلت إعادة تحميل ملفِّ .rnote من القرص"
 
-#: crates/rnote-ui/src/canvas/mod.rs:865
+#: crates/rnote-ui/src/canvas/mod.rs:864
 msgid "Opened file was renamed on disk"
 msgstr "غُيِّر اسم الملفِّ المفتوح في القرص"
 
-#: crates/rnote-ui/src/canvas/mod.rs:878
+#: crates/rnote-ui/src/canvas/mod.rs:877
 msgid "Opened file was moved or deleted on disk"
 msgstr "نُقل الملفُّ المفتوح أو حُذف من القرص"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1012
+#: crates/rnote-ui/src/canvas/mod.rs:1011
 msgid "Inserting file failed"
 msgstr "فشل إدراج الملف"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1022
+#: crates/rnote-ui/src/canvas/mod.rs:1021
 msgid "Inserting text failed"
 msgstr "فشل إدراج النص"
 
@@ -2209,6 +2217,15 @@ msgstr "اسم المجلَّد"
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "مجلَّد جديد"
+
+#~ msgid "Remove Page"
+#~ msgstr "أزل الصفحة"
+
+#~ msgid "Add Page"
+#~ msgstr "أضف صفحةً"
+
+#~ msgid "Resize Document to Fit Strokes"
+#~ msgstr "غيّر حجم الصفحة لتناسب الخطوط المرسومة"
 
 #~ msgid ""
 #~ "Opening this file overwrites any unsaved changes. Do you want to save the "

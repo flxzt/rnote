@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-23 18:32+0200\n"
-"PO-Revision-Date: 2023-07-01 22:57+0000\n"
+"POT-Creation-Date: 2023-08-05 16:42+0200\n"
+"PO-Revision-Date: 2023-08-06 11:48+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -409,17 +409,14 @@ msgstr "Ordine di pagine"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:148
 #: crates/rnote-ui/data/ui/dialogs/export.ui:359
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts that expand\n"
-#| "in horizontal and vertical directions are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
-"L'ordine di pagine quando documenti con layout, che espandono\n"
-"in direzioni orizzontali e vertical, sono tagliati in pagine"
+"L'ordine delle pagine quando documenti con layout\n"
+"che si espandono in direzione orizzontale e verticale\n"
+"sono tagliati in pagine"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:154
 #: crates/rnote-ui/data/ui/dialogs/export.ui:365
@@ -1091,16 +1088,28 @@ msgid "Zoom to Page Width"
 msgstr "Adatta Larghezza Pagina"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:148
-msgid "Remove Page"
-msgstr "Rimuovi pagina"
+msgid ""
+"Remove Page.\n"
+"Available in Fixed-Size Document Layout."
+msgstr ""
+"Rimuovi pagina.\n"
+"Disponibile nel layout del documento a dimensione fissa."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:156
-msgid "Add Page"
-msgstr "Aggiungi Pagina"
+#: crates/rnote-ui/data/ui/canvasmenu.ui:157
+msgid ""
+"Add Page.\n"
+"Available in Fixed-Size Document Layout."
+msgstr ""
+"Aggiungi pagina.\n"
+"Disponibile nel layout del documento a dimensione fissa."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:164
-msgid "Resize Document to Fit Strokes"
-msgstr "Ridimensiona Il Documento Per Adattarlo Ai Tratti"
+#: crates/rnote-ui/data/ui/canvasmenu.ui:166
+msgid ""
+"Resize Document to Fit Content.\n"
+"Available in Fixed-Size Document Layout."
+msgstr ""
+"Ridimensiona il documento per adattarlo al contenuto.\n"
+"Disponibile nel layout del documento a dimensione fissa."
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
@@ -1610,10 +1619,8 @@ msgid "Paste Clipboard"
 msgstr "Incolla Appunti"
 
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:74
-#, fuzzy
-#| msgid "Pages:"
 msgid "Page"
-msgstr "Pagine:"
+msgstr "pagina"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
@@ -1673,31 +1680,31 @@ msgstr "- nome del file invalido -"
 msgid "- invalid folder path -"
 msgstr "- percorso della cartella invalido -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:809
+#: crates/rnote-ui/src/canvas/mod.rs:808
 msgid "Opened file was modified on disk"
 msgstr "Il file aperto è stato modificato sul disco"
 
-#: crates/rnote-ui/src/canvas/mod.rs:810
+#: crates/rnote-ui/src/canvas/mod.rs:809
 msgid "Reload"
 msgstr "Ricarica"
 
-#: crates/rnote-ui/src/canvas/mod.rs:816
+#: crates/rnote-ui/src/canvas/mod.rs:815
 msgid "Reloading .rnote file from disk failed"
 msgstr "Ricaricamento del file .rnote fallito"
 
-#: crates/rnote-ui/src/canvas/mod.rs:865
+#: crates/rnote-ui/src/canvas/mod.rs:864
 msgid "Opened file was renamed on disk"
 msgstr "Il file aperto è stato rinominato"
 
-#: crates/rnote-ui/src/canvas/mod.rs:878
+#: crates/rnote-ui/src/canvas/mod.rs:877
 msgid "Opened file was moved or deleted on disk"
 msgstr "Il file aperto è stato spostato o cancellato"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1012
+#: crates/rnote-ui/src/canvas/mod.rs:1011
 msgid "Inserting file failed"
 msgstr "Inserimento file non riuscito"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1022
+#: crates/rnote-ui/src/canvas/mod.rs:1021
 msgid "Inserting text failed"
 msgstr "Inserimento del testo non riuscito"
 
@@ -2212,6 +2219,15 @@ msgstr "Nome Cartella"
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "Nuova Cartella"
+
+#~ msgid "Remove Page"
+#~ msgstr "Rimuovi pagina"
+
+#~ msgid "Add Page"
+#~ msgstr "Aggiungi Pagina"
+
+#~ msgid "Resize Document to Fit Strokes"
+#~ msgstr "Ridimensiona Il Documento Per Adattarlo Ai Tratti"
 
 #~ msgid ""
 #~ "Opening this file overwrites any unsaved changes. Do you want to save the "

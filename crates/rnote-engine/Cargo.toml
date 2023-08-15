@@ -54,6 +54,10 @@ rsvg = { workspace = true }
 poppler-rs = { workspace = true }
 # the long-term plan is to remove the gtk4 dependency entirely after switching to another renderer.
 gtk4 = { workspace = true }
+clap = { workspace = true, optional = true }
 
 [dev-dependencies]
 approx = { workspace = true }
+
+[features]
+clap-derive = [ "dep:clap" ]

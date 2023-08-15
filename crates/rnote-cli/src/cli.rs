@@ -1,16 +1,18 @@
-use clap::{Parser, Subcommand};
-use rnote_engine::engine::export::{DocExportFormat, DocExportPrefs};
-use rnote_engine::engine::EngineSnapshot;
+use clap::{ArgAction, Parser, Subcommand, ValueEnum};
+use rnote_engine::engine::{import::XoppImportPrefs, EngineSnapshot};
 use rnote_engine::RnoteEngine;
 use smol::fs::File;
 use smol::io::{AsyncReadExt, AsyncWriteExt};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::time::Duration;
+
+use crate::export::{run_export, ExportCommands};
+use crate::validators;
 
 ///    rnote-cli  Copyright (C) 2023  The Rnote Authors{n}{n}
 ///    This program is free software; you can redistribute it and/or modify it under the terms of the GPL v3 or (at your option) any later version.
 #[derive(Parser)]
-#[command(author, version, about, long_about = None)]
+#[command(author, version, about, long_about = None, arg_required_else_help = true)]
 pub(crate) struct Cli {
     #[command(subcommand)]
     pub(crate) command: Commands,
@@ -18,7 +20,7 @@ pub(crate) struct Cli {
 
 #[derive(Subcommand)]
 pub(crate) enum Commands {
-    /// Tests if the specified files can be opened and are valid rnote files.
+    /// Tests if the specified files can be opened and are valid rnote files
     Test {
         /// the rnote files
         rnote_files: Vec<PathBuf>,
@@ -32,35 +34,67 @@ pub(crate) enum Commands {
         #[arg(short = 'i', long)]
         input_file: PathBuf,
         /// When importing a .xopp file, the import dpi can be specified.{n}
-        /// Else the default (96) is used.
-        #[arg(long)]
-        xopp_dpi: Option<f64>,
+        #[arg(long, default_value_t = XoppImportPrefs::default().dpi)]
+        xopp_dpi: f64,
     },
     /// Exports the Rnote file(s) and saves it in the desired format.{n}
-    /// When using --output-file, only one input file can be given.{n}
-    /// The export format is recognized from the file extension of the output file.{n}
-    /// When using --output-format, the same file name is used with the extension changed.{n}
-    /// --output-file and --output-format are mutually exclusive but one of them is required.{n}
-    /// Currently `.svg`, `.xopp` and `.pdf` are supported.{n}
-    /// Usages: {n}
-    /// rnote-cli export --output-file [filename.(svg|xopp|pdf)] [1 file]{n}
-    /// rnote-cli export --output-format [svg|xopp|pdf] [list of files]
+    /// See subcommands for usage
     Export {
         /// the rnote save file
+        #[arg(global = true)]
         rnote_files: Vec<PathBuf>,
-        /// the export output file. Only allows for one input file. Exclusive with output-format.
-        #[arg(short = 'o', long, conflicts_with("output_format"), required(true))]
-        output_file: Option<PathBuf>,
-        /// the export output format. Exclusive with output-file.
-        #[arg(short = 'f', long, conflicts_with("output_file"), required(true))]
-        output_format: Option<String>,
-        /// export with background
-        #[arg(short = 'b', long)]
-        with_background: Option<bool>,
-        /// export with background pattern
-        #[arg(short = 'p', long)]
-        with_pattern: Option<bool>,
+        /// The action that will be performed if the to be exported file(s) already exist(s)
+        #[arg(long, default_value = "ask", global = true)]
+        on_conflict: OnConflict,
+        /// export without background
+        #[arg(short = 'b', long, action = ArgAction::SetTrue, global = true)]
+        no_background: bool,
+        /// export without background pattern
+        #[arg(short = 'p', long, action = ArgAction::SetTrue, global = true)]
+        no_pattern: bool,
+        /// Inspect result after the export is finished. Open output folder when using doc-pages
+        #[arg(long, action = ArgAction::SetTrue, global = true)]
+        open: bool,
+        #[command(subcommand)]
+        export_command: ExportCommands,
     },
+}
+
+#[derive(ValueEnum, Copy, Clone, Debug, Default)]
+pub(crate) enum OnConflict {
+    #[default]
+    /// Ask before Overwriting
+    Ask,
+    /// Overwrite Files
+    Overwrite,
+    #[value(skip)]
+    AlwaysOverwrite,
+    /// Skip current Export
+    Skip,
+    #[value(skip)]
+    AlwaysSkip,
+    /// Add number to the end of the file
+    Suffix,
+    #[value(skip)]
+    AlwaysSuffix,
+}
+
+impl std::fmt::Display for OnConflict {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                Self::Ask => "Open existing file for inspection and ask again",
+                Self::Overwrite => "Overwrite existing file",
+                Self::AlwaysOverwrite => "Always overwrite existing files",
+                Self::Skip => "Skip file",
+                Self::AlwaysSkip => "Always skip file",
+                Self::Suffix => "Append number at the end of the file name",
+                Self::AlwaysSuffix => "Always append number at the end of the file name",
+            }
+        )
+    }
 }
 
 pub(crate) async fn run() -> anyhow::Result<()> {
@@ -73,12 +107,9 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             println!("Testing..");
 
             for rnote_file in rnote_files.into_iter() {
+                validators::file_has_ext(&rnote_file, "rnote")?;
                 let file_disp = rnote_file.display().to_string();
-                let pb = indicatif::ProgressBar::new_spinner();
-                pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
-                pb.set_message(format!("Testing file \"{file_disp}\""));
-                pb.enable_steady_tick(Duration::from_millis(8));
-
+                let pb = new_pb(format!("Testing file \"{file_disp}\""));
                 // test
                 if let Err(e) = test_file(&mut engine, rnote_file).await {
                     let msg = format!("Test failed, Err: {e:?}");
@@ -103,21 +134,19 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             input_file,
             xopp_dpi,
         } => {
+            validators::file_has_ext(&rnote_file, "rnote")?;
+            // xopp files dont require file extensions
+            validators::path_is_file(&input_file)?;
             println!("Importing..");
 
             // apply given arguments to import prefs
-            if let Some(xopp_dpi) = xopp_dpi {
-                engine.import_prefs.xopp_import_prefs.dpi = xopp_dpi;
-            }
+            engine.import_prefs.xopp_import_prefs.dpi = xopp_dpi;
 
             let rnote_file_disp = rnote_file.display().to_string();
             let input_file_disp = input_file.display().to_string();
-            let pb = indicatif::ProgressBar::new_spinner().with_message(format!(
+            let pb = new_pb(format!(
                 "Importing \"{input_file_disp}\" to: \"{rnote_file_disp}\""
             ));
-            pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
-            pb.enable_steady_tick(Duration::from_millis(8));
-
             // import
             if let Err(e) = import_file(&mut engine, input_file, rnote_file).await {
                 let msg = format!(
@@ -141,109 +170,34 @@ pub(crate) async fn run() -> anyhow::Result<()> {
         }
         Commands::Export {
             rnote_files,
-            output_file,
-            output_format,
-            with_background,
-            with_pattern,
+            no_background,
+            no_pattern,
+            on_conflict,
+            open,
+            export_command,
         } => {
             println!("Exporting..");
-
-            // apply given arguments to export prefs
-            engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
-                output_file.as_deref(),
-                output_format.as_deref(),
-                with_background,
-                with_pattern,
-            )?;
-
-            match output_file {
-                Some(ref output_file) => match rnote_files.get(0) {
-                    Some(rnote_file) => {
-                        if rnote_files.len() > 1 {
-                            return Err(anyhow::anyhow!("Was expecting only 1 file. Use --output-format when exporting multiple files."));
-                        }
-
-                        let rnote_file_disp = rnote_file.display().to_string();
-                        let output_file_disp = output_file.display().to_string();
-                        let pb = indicatif::ProgressBar::new_spinner().with_message(format!(
-                            "Exporting \"{rnote_file_disp}\" to: \"{output_file_disp}\""
-                        ));
-                        pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
-                        pb.enable_steady_tick(Duration::from_millis(8));
-
-                        // export
-                        if let Err(e) = export_to_file(&mut engine, rnote_file, output_file).await {
-                            let msg = format!("Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}");
-                            if pb.is_hidden() {
-                                println!("{msg}")
-                            }
-                            pb.abandon_with_message(msg);
-                            return Err(e);
-                        } else {
-                            let msg = format!(
-                                "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" succeeded"
-                            );
-                            if pb.is_hidden() {
-                                println!("{msg}")
-                            }
-                            pb.finish_with_message(msg);
-                        }
-                    }
-                    None => return Err(anyhow::anyhow!("Failed to get filename from rnote_files")),
-                },
-                None => {
-                    let output_files = rnote_files
-                        .iter()
-                        .map(|file| {
-                            let mut output = file.clone();
-                            output.set_extension(
-                                engine
-                                    .export_prefs
-                                    .doc_export_prefs
-                                    .export_format
-                                    .file_ext(),
-                            );
-                            output
-                        })
-                        .collect::<Vec<PathBuf>>();
-
-                    for (rnote_file, output_file) in rnote_files.iter().zip(output_files.iter()) {
-                        let rnote_file_disp = rnote_file.display().to_string();
-                        let output_file_disp = output_file.display().to_string();
-                        let pb = indicatif::ProgressBar::new_spinner();
-                        pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
-                        pb.set_message(format!(
-                            "Exporting \"{rnote_file_disp}\" to: \"{output_file_disp}\""
-                        ));
-                        pb.enable_steady_tick(Duration::from_millis(8));
-
-                        // export
-                        if let Err(e) = export_to_file(&mut engine, &rnote_file, &output_file).await
-                        {
-                            let msg = format!("Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}");
-                            if pb.is_hidden() {
-                                println!("{msg}")
-                            }
-                            pb.abandon_with_message(msg);
-                            return Err(e);
-                        } else {
-                            let msg = format!(
-                                "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" succeeded"
-                            );
-                            if pb.is_hidden() {
-                                println!("{msg}")
-                            }
-                            pb.finish_with_message(msg);
-                        }
-                    }
-                }
-            }
-
-            println!("Export Finished!");
+            run_export(
+                export_command,
+                &mut engine,
+                rnote_files,
+                no_background,
+                no_pattern,
+                on_conflict,
+                open,
+            )
+            .await?
         }
     }
 
     Ok(())
+}
+
+pub(crate) fn new_pb(message: String) -> indicatif::ProgressBar {
+    let pb = indicatif::ProgressBar::new_spinner().with_message(message);
+    pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
+    pb.enable_steady_tick(Duration::from_millis(8));
+    pb
 }
 
 pub(crate) async fn test_file(
@@ -285,90 +239,6 @@ pub(crate) async fn import_file(
     let mut ofh = File::create(rnote_file).await?;
     ofh.write_all(&rnote_bytes).await?;
     ofh.sync_all().await?;
-
-    Ok(())
-}
-
-fn get_export_format(format: &str) -> anyhow::Result<DocExportFormat> {
-    match format {
-        "svg" => Ok(DocExportFormat::Svg),
-        "xopp" => Ok(DocExportFormat::Xopp),
-        "pdf" => Ok(DocExportFormat::Pdf),
-        ext => Err(anyhow::anyhow!(
-            "Could not create doc export prefs, unsupported export file extension `{ext}`"
-        )),
-    }
-}
-
-pub(crate) fn create_doc_export_prefs_from_args(
-    output_file: Option<impl AsRef<Path>>,
-    output_format: Option<&str>,
-    with_background: Option<bool>,
-    with_pattern: Option<bool>,
-) -> anyhow::Result<DocExportPrefs> {
-    let format = match (output_file, output_format) {
-        (Some(file), None) => match file.as_ref().extension().and_then(|ext| ext.to_str()) {
-            Some(extension) => get_export_format(extension),
-            None => {
-                return Err(anyhow::anyhow!(
-                    "Output file needs to have an extension to determine the file type"
-                ))
-            }
-        },
-        (None, Some(out_format)) => get_export_format(out_format),
-        // unreachable because they are exclusive (conflicts_with)
-        (Some(_), Some(_)) => {
-            return Err(anyhow::anyhow!(
-                "--output-file and --output-format are mutually exclusive."
-            ))
-        }
-        // unreachable because they are required
-        (None, None) => {
-            return Err(anyhow::anyhow!(
-                "--output-file or --output-format is required."
-            ))
-        }
-    }?;
-
-    let mut prefs = DocExportPrefs {
-        export_format: format,
-        ..Default::default()
-    };
-
-    if let Some(with_background) = with_background {
-        prefs.with_background = with_background;
-    }
-    if let Some(with_pattern) = with_pattern {
-        prefs.with_pattern = with_pattern;
-    }
-
-    Ok(prefs)
-}
-
-pub(crate) async fn export_to_file(
-    engine: &mut RnoteEngine,
-    rnote_file: impl AsRef<Path>,
-    output_file: impl AsRef<Path>,
-) -> anyhow::Result<()> {
-    let Some(export_file_name) = output_file.as_ref().file_name().map(|s| s.to_string_lossy().to_string()) else {
-        return Err(anyhow::anyhow!("Failed to get filename from output_file"));
-    };
-
-    let mut rnote_bytes = vec![];
-    File::open(rnote_file)
-        .await?
-        .read_to_end(&mut rnote_bytes)
-        .await?;
-
-    let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(rnote_bytes).await?;
-    let _ = engine.load_snapshot(engine_snapshot);
-
-    // We applied the prefs previously to the engine
-    let export_bytes = engine.export_doc(export_file_name, None).await??;
-
-    let mut fh = File::create(output_file).await?;
-    fh.write_all(&export_bytes).await?;
-    fh.sync_all().await?;
 
     Ok(())
 }

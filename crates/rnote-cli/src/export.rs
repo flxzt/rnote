@@ -72,7 +72,7 @@ pub(crate) enum ExportCommands {
         selection: SelectionCommands,
         #[arg(short = 'c', long, default_value_t = Default::default(), global = true)]
         /// If strokes that are contained or intersect with the given bounds are selected.{n}
-        /// Ignored when using all.
+        /// Ignored when using option "all".
         selection_collision: SelectionCollision,
         /// The bitmap scale-factor in relation to the actual size on the document.
         #[arg(long, default_value_t = SelectionExportPrefs::default().bitmap_scalefactor, global = true)]
@@ -91,7 +91,7 @@ pub(crate) enum SelectionCommands {
     /// Export all strokes.
     #[command(alias = "a")]
     All,
-    /// Export a rectangular area of the document.{n}
+    /// Export a rectangular area of the document.
     #[command(alias = "r")]
     Rect {
         /// X-position of the upper-left point.

@@ -25,7 +25,7 @@ impl Composer<SmoothOptions> for Line {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
-        let line = self.to_kurbo();
+        let line = self.to_kurbo_bezpath();
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
@@ -45,11 +45,12 @@ impl Composer<SmoothOptions> for Arrow {
         cx.save().unwrap();
 
         if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
             let arrow = self.to_kurbo(Some(options.stroke_width));
-
-            cx.stroke(arrow.stem, &stroke_brush, options.stroke_width);
-            cx.stroke(arrow.tip_triangle, &stroke_brush, options.stroke_width);
+            cx.stroke(
+                arrow,
+                &Into::<piet::Color>::into(stroke_color),
+                options.stroke_width,
+            );
         }
 
         cx.restore().unwrap();
@@ -63,7 +64,7 @@ impl Composer<SmoothOptions> for Rectangle {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
-        let shape = self.to_kurbo();
+        let shape = self.to_kurbo_bezpath();
 
         if let Some(fill_color) = options.fill_color {
             let fill_brush = cx.solid_brush(fill_color.into());
@@ -85,11 +86,11 @@ impl Composer<SmoothOptions> for Ellipse {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
-        let ellipse = self.to_kurbo();
+        let ellipse = self.to_kurbo_bezpath();
 
         if let Some(fill_color) = options.fill_color {
             let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(ellipse, &fill_brush);
+            cx.fill(&ellipse, &fill_brush);
         }
 
         if let Some(stroke_color) = options.stroke_color {
@@ -107,11 +108,11 @@ impl Composer<SmoothOptions> for QuadraticBezier {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
-        let quadbez = self.to_kurbo();
+        let quadbez = self.to_kurbo_bezpath();
 
         if let Some(fill_color) = options.fill_color {
             let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(quadbez, &fill_brush);
+            cx.fill(&quadbez, &fill_brush);
         }
 
         if let Some(stroke_color) = options.stroke_color {
@@ -129,11 +130,11 @@ impl Composer<SmoothOptions> for CubicBezier {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
-        let cubbez = self.to_kurbo();
+        let cubbez = self.to_kurbo_bezpath();
 
         if let Some(fill_color) = options.fill_color {
             let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(cubbez, &fill_brush);
+            cx.fill(&cubbez, &fill_brush);
         }
 
         if let Some(stroke_color) = options.stroke_color {
@@ -164,7 +165,7 @@ impl Composer<SmoothOptions> for Polyline {
             );
         } else {
             cx.stroke_styled(
-                self.to_kurbo(),
+                self.to_kurbo_bezpath(),
                 &Into::<piet::Color>::into(color),
                 options.stroke_width,
                 &piet::StrokeStyle::default()
@@ -238,7 +239,7 @@ impl Composer<SmoothOptions> for PenPath {
                             end: end.pos,
                         };
                         let n_splits = penpath::no_subsegments_for_segment_len(
-                            quadbez.to_kurbo().perimeter(0.25),
+                            quadbez.to_kurbo_bezpath().perimeter(0.25),
                         )
                         .max(2);
                         let lines = quadbez.approx_with_lines(n_splits);
@@ -265,7 +266,7 @@ impl Composer<SmoothOptions> for PenPath {
                             end: end.pos,
                         };
                         let n_splits = penpath::no_subsegments_for_segment_len(
-                            cubbez.to_kurbo().perimeter(0.25),
+                            cubbez.to_kurbo_bezpath().perimeter(0.25),
                         )
                         .max(2);
                         let lines = cubbez.approx_with_lines(n_splits);

@@ -129,6 +129,7 @@ impl Shapeable for Shape {
             Self::Polyline(polyline) => polyline.bounds(),
         }
     }
+
     fn hitboxes(&self) -> Vec<Aabb> {
         match self {
             Self::Arrow(arrow) => arrow.hitboxes(),
@@ -138,6 +139,18 @@ impl Shapeable for Shape {
             Self::QuadraticBezier(quadbez) => quadbez.hitboxes(),
             Self::CubicBezier(cubbez) => cubbez.hitboxes(),
             Self::Polyline(polyline) => polyline.hitboxes(),
+        }
+    }
+
+    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
+        match self {
+            Self::Arrow(arrow) => arrow.to_kurbo_bezpath(),
+            Self::Line(line) => line.to_kurbo_bezpath(),
+            Self::Rectangle(rectangle) => rectangle.to_kurbo_bezpath(),
+            Self::Ellipse(ellipse) => ellipse.to_kurbo_bezpath(),
+            Self::QuadraticBezier(quadbez) => quadbez.to_kurbo_bezpath(),
+            Self::CubicBezier(cubbez) => cubbez.to_kurbo_bezpath(),
+            Self::Polyline(polyline) => polyline.to_kurbo_bezpath(),
         }
     }
 }

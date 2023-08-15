@@ -17,4 +17,6 @@ pub trait Shapeable: Transformable {
         self.translate(-self.pos());
         self.translate(pos)
     }
+    /// Convert its outline, or if applicable itself to a [kurbo::BezPath].
+    fn to_kurbo_bezpath(&self) -> kurbo::BezPath;
 }

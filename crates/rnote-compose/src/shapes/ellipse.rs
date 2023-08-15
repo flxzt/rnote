@@ -62,6 +62,12 @@ impl Shapeable for Ellipse {
             .map(|line| line.bounds())
             .collect()
     }
+
+    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
+        (self.transform.affine.to_kurbo()
+            * kurbo::Ellipse::new(kurbo::Point::ZERO, self.radii.to_kurbo_vec(), 0.0))
+        .to_path(0.25)
+    }
 }
 
 impl Ellipse {
@@ -92,24 +98,20 @@ impl Ellipse {
         let mut lines = Vec::new();
         let mut prev = kurbo::Point::new(0.0, 0.0);
 
-        self.to_kurbo().to_path(0.1).flatten(0.1, |el| match el {
-            kurbo::PathEl::MoveTo(point) => prev = point,
-            kurbo::PathEl::LineTo(next) => {
-                lines.push(Line {
-                    start: na::vector![prev.x, prev.y],
-                    end: na::vector![next.x, next.y],
-                });
-                prev = next
-            }
-            _ => {}
-        });
+        self.to_kurbo_bezpath()
+            .to_path(0.1)
+            .flatten(0.1, |el| match el {
+                kurbo::PathEl::MoveTo(point) => prev = point,
+                kurbo::PathEl::LineTo(next) => {
+                    lines.push(Line {
+                        start: na::vector![prev.x, prev.y],
+                        end: na::vector![next.x, next.y],
+                    });
+                    prev = next
+                }
+                _ => {}
+            });
 
         lines
-    }
-
-    /// Convert to kurbo shape.
-    pub fn to_kurbo(&self) -> kurbo::Ellipse {
-        self.transform.affine.to_kurbo()
-            * kurbo::Ellipse::new(kurbo::Point::ZERO, self.radii.to_kurbo_vec(), 0.0)
     }
 }

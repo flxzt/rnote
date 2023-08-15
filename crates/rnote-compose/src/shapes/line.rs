@@ -4,6 +4,7 @@ use crate::shapes::Rectangle;
 use crate::shapes::Shapeable;
 use crate::transform::Transformable;
 use crate::Transform;
+use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -52,6 +53,10 @@ impl Shapeable for Line {
             .map(|line| line.bounds())
             .collect()
     }
+
+    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
+        kurbo::Line::new(self.start.to_kurbo_point(), self.end.to_kurbo_point()).to_path(0.25)
+    }
 }
 
 impl Line {
@@ -89,10 +94,5 @@ impl Line {
                 }
             })
             .collect::<Vec<Self>>()
-    }
-
-    /// Convert to kurbo shape.
-    pub fn to_kurbo(&self) -> kurbo::Line {
-        kurbo::Line::new(self.start.to_kurbo_point(), self.end.to_kurbo_point())
     }
 }

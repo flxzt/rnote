@@ -70,6 +70,15 @@ impl Shapeable for Polyline {
 
         hitboxes
     }
+
+    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
+        let iter = std::iter::once(kurbo::PathEl::MoveTo(self.start.to_kurbo_point())).chain(
+            self.path
+                .iter()
+                .map(|p| kurbo::PathEl::LineTo(p.to_kurbo_point())),
+        );
+        kurbo::BezPath::from_iter(iter)
+    }
 }
 
 impl Polyline {
@@ -79,16 +88,6 @@ impl Polyline {
             start,
             path: Vec::new(),
         }
-    }
-
-    /// Convert to [kurbo::BezPath].
-    pub fn to_kurbo(&self) -> kurbo::BezPath {
-        let iter = std::iter::once(kurbo::PathEl::MoveTo(self.start.to_kurbo_point())).chain(
-            self.path
-                .iter()
-                .map(|p| kurbo::PathEl::LineTo(p.to_kurbo_point())),
-        );
-        kurbo::BezPath::from_iter(iter)
     }
 }
 

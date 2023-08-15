@@ -127,6 +127,16 @@ impl Shapeable for Stroke {
             Self::BitmapImage(bitmapimage) => bitmapimage.hitboxes(),
         }
     }
+
+    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
+        match self {
+            Self::BrushStroke(brushstroke) => brushstroke.to_kurbo_bezpath(),
+            Self::ShapeStroke(shapestroke) => shapestroke.to_kurbo_bezpath(),
+            Self::TextStroke(textstroke) => textstroke.to_kurbo_bezpath(),
+            Self::VectorImage(vectorimage) => vectorimage.to_kurbo_bezpath(),
+            Self::BitmapImage(bitmapimage) => bitmapimage.to_kurbo_bezpath(),
+        }
+    }
 }
 
 impl Transformable for Stroke {

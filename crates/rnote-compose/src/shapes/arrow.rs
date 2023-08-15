@@ -3,7 +3,7 @@ use super::Line;
 use crate::ext::Vector2Ext;
 use crate::shapes::Shapeable;
 use crate::transform::Transformable;
-use kurbo::PathEl;
+use kurbo::{PathEl, Shape};
 use na::Rotation2;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -71,6 +71,10 @@ impl Shapeable for Arrow {
             .map(|line| line.bounds())
             .collect()
     }
+
+    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
+        self.to_kurbo(None)
+    }
 }
 
 impl Arrow {
@@ -109,25 +113,21 @@ impl Arrow {
             .collect::<Vec<Line>>()
     }
 
-    /// Convert to kurbo shapes.
-    pub fn to_kurbo(&self, stroke_width: Option<f64>) -> ArrowKurbo {
-        let main = kurbo::Line::new(self.start.to_kurbo_point(), self.tip.to_kurbo_point());
-        let tip_triangle = {
-            let tip = self.tip.to_kurbo_point();
-            let lline = self.compute_lline(stroke_width).to_kurbo_point();
-            let rline = self.compute_rline(stroke_width).to_kurbo_point();
+    /// Convert to kurbo shape.
+    pub fn to_kurbo(&self, stroke_width: Option<f64>) -> kurbo::BezPath {
+        let mut bez_path =
+            kurbo::Line::new(self.start.to_kurbo_point(), self.tip.to_kurbo_point()).to_path(0.25);
+        let tip = self.tip.to_kurbo_point();
+        let lline = self.compute_lline(stroke_width).to_kurbo_point();
+        let rline = self.compute_rline(stroke_width).to_kurbo_point();
 
-            kurbo::BezPath::from_vec(vec![
-                PathEl::MoveTo(lline),
-                PathEl::LineTo(tip),
-                PathEl::LineTo(rline),
-            ])
-        };
+        bez_path.extend([
+            PathEl::MoveTo(lline),
+            PathEl::LineTo(tip),
+            PathEl::LineTo(rline),
+        ]);
 
-        ArrowKurbo {
-            stem: main,
-            tip_triangle,
-        }
+        bez_path
     }
 
     /// Compute the `lline` of the arrow tip.
@@ -185,13 +185,4 @@ impl Arrow {
         let factor = stroke_width.unwrap_or(0.0);
         Self::TIP_LINES_DEFAULT_LENGTH * (1.0 + 0.18 * factor)
     }
-}
-
-/// A helper struct which holds the kurbo-elements of the arrow.
-#[derive(Debug, Clone, PartialEq)]
-pub struct ArrowKurbo {
-    /// The line from `start` -> `tip`.
-    pub stem: kurbo::Line,
-    /// The line from `lline` -> `tip` -> `rline`.
-    pub tip_triangle: kurbo::BezPath,
 }

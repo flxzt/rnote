@@ -28,12 +28,25 @@ impl Content for ShapeStroke {
         cx: &mut impl piet::RenderContext,
         total_zoom: f64,
     ) -> anyhow::Result<()> {
-        const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
-        cx.stroke(
-            self.bounds().to_kurbo_rect(),
-            &content::CONTENT_HIGHLIGHT_COLOR,
-            HIGHLIGHT_STROKE_WIDTH / total_zoom,
-        );
+        const PATH_HIGHLIGHT_MIN_STROKE_WIDTH: f64 = 5.0;
+        const DRAW_BOUNDS_THRESHOLD_AREA: f64 = 10_u32.pow(2) as f64;
+        let bounds = self.bounds();
+        let bez_path = self.shape.to_kurbo_bezpath();
+
+        if bounds.scale(total_zoom).volume() < DRAW_BOUNDS_THRESHOLD_AREA {
+            cx.fill(bounds.to_kurbo_rect(), &content::CONTENT_HIGHLIGHT_COLOR);
+        } else {
+            cx.stroke_styled(
+                bez_path,
+                &content::CONTENT_HIGHLIGHT_COLOR,
+                (PATH_HIGHLIGHT_MIN_STROKE_WIDTH / total_zoom)
+                    .max(self.style.stroke_width() + 10.0 / total_zoom),
+                &piet::StrokeStyle::new()
+                    .line_join(piet::LineJoin::Round)
+                    .line_cap(piet::LineCap::Round),
+            );
+        }
+
         Ok(())
     }
 
@@ -64,6 +77,10 @@ impl Shapeable for ShapeStroke {
 
     fn hitboxes(&self) -> Vec<Aabb> {
         self.hitboxes.clone()
+    }
+
+    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
+        self.shape.to_kurbo_bezpath()
     }
 }
 

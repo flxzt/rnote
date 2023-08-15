@@ -25,64 +25,62 @@ use crate::validators;
 #[derive(Subcommand, Debug)]
 pub(crate) enum ExportCommands {
     /// Export the entire document.{n}
-    /// When using --output-file, only one input file can be given.{n}
-    /// The export format is recognized from the file extension of the output file.{n}
-    /// When using --output-format, the file name and path of the rnote file is used with the extension changed.{n}
-    /// --output-file and --output-format are mutually exclusive but one of them is required.{n}
+    /// When using "--output-file", only a single input file can be specified.{n}
+    /// The export format will be recognized from the file extension of the output file.{n}
+    /// When using "--output-format", the file name and path of the rnote file is used with the extension changed.{n}
+    /// "--output-file and "--output-format" are mutually exclusive and specifiying one of them is required.
     Doc {
         #[command(flatten)]
         file_args: FileArgs<DocExportFormat>,
-        /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into pages.
+        /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into
+        /// pages.
         #[arg(long, default_value_t = Default::default())]
         page_order: SplitOrder,
     },
-    /// Export each page of the documents individually. Alias: pages{n}
-    /// Both --output-dir and --output-format need to be set.{n}
-    #[command(alias = "pages")]
+    /// Export each page of the document(s) individually.{n}
+    /// Both "--output-dir" and "--output-format" need to be set.
     DocPages {
-        /// the directory the pages get exported to
+        /// The directory the pages get exported to.
         #[arg(short = 'o', long)]
         output_dir: PathBuf,
-        /// The directory the pages get exported to.{n}
-        /// Uses file stem of input file if not set.{n}
-        /// Cannot be used when exporting multiple files
+        /// The file name stem when naming the to be exported pages files.
         #[arg(short = 's', long)]
         output_file_stem: Option<String>,
-        /// the export output format
+        /// The export output format.
         #[arg(short = 'f', long)]
-        output_format: DocPagesExportFormat,
-        /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into pages
+        export_format: DocPagesExportFormat,
+        /// The page order when documents with layouts that expand in horizontal and vertical directions are cut into
+        /// pages.
         #[arg(long, default_value_t = Default::default())]
         page_order: SplitOrder,
-        /// bitmap scale factor in relation to the actual size on the document
+        /// The bitmap scale-factor in relation to the actual size on the document.
         #[arg(long, default_value_t = DocPagesExportPrefs::default().bitmap_scalefactor)]
         bitmap_scalefactor: f64,
-        /// quality of the jpeg image
+        /// The quality of the generated image(s) when Jpeg is used as export format.
         #[arg(long, default_value_t = DocPagesExportPrefs::default().jpeg_quality)]
         jpeg_quality: u8,
     },
-    /// Export a selection in a document. Alias: sel{n}
-    /// When using --output-file, only one input file can be given.{n}
-    /// The export format is recognized from the file extension of the output file.{n}
-    /// When using --output-format, the same file name is used with the extension changed.{n}
-    /// --output-file and --output-format are mutually exclusive but one of them is required.{n}
-    /// When not selecting all, you can use --selection-collision to switch between contains and intersects collision
-    #[command(alias = "sel")]
+    /// Export a selection in a document.{n}
+    /// When using "--output-file", only a single input file can be specified.{n}
+    /// The export format is then recognized from the file extension of the output file.{n}
+    /// When using "--output-format", the file name and path of the rnote file is used with the extension changed.{n}
+    /// "--output-file and "--output-format" are mutually exclusive and specifiying one of them is required.
     Selection {
         #[command(flatten)]
         file_args: FileArgs<SelectionExportFormat>,
         #[command(subcommand)]
         selection: SelectionCommands,
         #[arg(short = 'c', long, default_value_t = Default::default(), global = true)]
-        /// if the strokes inside or intersecting with the given bounds are exported. Ignored when using all
+        /// If strokes that are contained or intersect with the given bounds are selected.{n}
+        /// Ignored when using all.
         selection_collision: SelectionCollision,
-        /// bitmap scale factor in relation to the actual size on the document
+        /// The bitmap scale-factor in relation to the actual size on the document.
         #[arg(long, default_value_t = SelectionExportPrefs::default().bitmap_scalefactor, global = true)]
         bitmap_scalefactor: f64,
-        /// quality of the jpeg image
+        /// The quality of the generated image(s) when Jpeg is used as export format.
         #[arg(long, default_value_t = SelectionExportPrefs::default().jpeg_quality, global = true)]
         jpeg_quality: u8,
-        /// margin around the document
+        /// The margin around the to be exported content.
         #[arg(long, default_value_t = SelectionExportPrefs::default().margin, global = true)]
         margin: f64,
     },
@@ -90,19 +88,19 @@ pub(crate) enum ExportCommands {
 
 #[derive(Subcommand, Debug)]
 pub(crate) enum SelectionCommands {
-    /// Export all strokes. Alias: a
+    /// Export all strokes.
     #[command(alias = "a")]
     All,
-    /// Export a rectangular area of the document. Alias: r{n}
+    /// Export a rectangular area of the document.{n}
     #[command(alias = "r")]
     Rect {
-        /// x position of the starting point
+        /// X-position of the upper-left point.
         x: f64,
-        /// y position of the starting point
+        /// Y-position of the upper-left point.
         y: f64,
-        /// width of the rectangle
+        /// Width of the rectangle.
         width: f64,
-        /// height of the rectangle
+        /// Weight of the rectangle.
         height: f64,
     },
 }
@@ -110,10 +108,10 @@ pub(crate) enum SelectionCommands {
 #[derive(Args, Debug)]
 #[group(required = true, multiple = false)]
 pub(crate) struct FileArgs<T: ValueEnum + 'static + Send + Sync> {
-    /// the export output file. Only allows for one input file. Exclusive with --output-format
+    /// The export output file. Exclusive with "--output-format".
     #[arg(short = 'o', long, global = true)]
     output_file: Option<PathBuf>,
-    /// the export output format. Exclusive with --output-file
+    /// The export output format. Exclusive with "--output-file".
     #[arg(short = 'f', long, global = true)]
     output_format: Option<T>,
 }
@@ -128,7 +126,9 @@ pub(crate) async fn run_export(
     open: bool,
 ) -> anyhow::Result<()> {
     if rnote_files.is_empty() {
-        return Err(anyhow::anyhow!("No rnote files to export!"));
+        return Err(anyhow::anyhow!(
+            "There must be at least one rnote file specified for exporting."
+        ));
     }
     let mut on_conflict_overwrite = None;
     let output_file = match &export_commands {
@@ -139,7 +139,7 @@ pub(crate) async fn run_export(
         } => {
             if rnote_files.len() > 1 && output_file_stem.is_some() {
                 return Err(anyhow::anyhow!(
-                    "You cannot use --file-stem when exporting multiple rnote files"
+                    "The option \"--file-stem\" cannot be used when exporting multiple rnote files."
                 ));
             }
             None
@@ -164,13 +164,13 @@ pub(crate) async fn run_export(
                         &export_commands,
                     )?;
                     if rnote_files.len() > 1 {
-                        return Err(anyhow::anyhow!("Was expecting only 1 file. Use --output-format when exporting multiple files."));
+                        return Err(anyhow::anyhow!("Expected only a single rnote file. The option \"--output-format\" must be used when exporting multiple files."));
                     }
 
                     let rnote_file_disp = rnote_file.display().to_string();
                     let output_file_disp = output_file.display().to_string();
                     let pb = new_pb(format!(
-                        "Exporting \"{rnote_file_disp}\" to: \"{output_file_disp}\""
+                        "Exporting \"{rnote_file_disp}\" to: \"{output_file_disp}\"."
                     ));
 
                     // export
@@ -193,7 +193,7 @@ pub(crate) async fn run_export(
                         return Err(e);
                     } else {
                         let msg = format!(
-                            "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" succeeded"
+                            "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" succeeded."
                         );
                         if pb.is_hidden() {
                             println!("{msg}")
@@ -201,7 +201,11 @@ pub(crate) async fn run_export(
                         pb.finish_with_message(msg);
                     }
                 }
-                None => return Err(anyhow::anyhow!("Failed to get filename from rnote_files")),
+                None => {
+                    return Err(anyhow::anyhow!(
+                        "There must be at least one rnote file specified for exporting."
+                    ))
+                }
             }
         }
 
@@ -227,7 +231,7 @@ pub(crate) async fn run_export(
                 ) {
                     Ok(file) => file,
                     Err(e) => {
-                        println!("Failed to generate output file path: {e}");
+                        println!("Failed to generate output file path, Err: {e:?}");
                         continue;
                     }
                 };
@@ -235,8 +239,8 @@ pub(crate) async fn run_export(
                 let rnote_file_disp = rnote_file.display().to_string();
                 let output_file_disp = output_file.display().to_string();
                 let pb = new_pb(match doc_pages {
-                    true => format!("Exporting \"{rnote_file_disp}\""),
-                    false => format!("Exporting \"{rnote_file_disp}\" to: \"{output_file_disp}\""),
+                    true => format!("Exporting \"{rnote_file_disp}\"."),
+                    false => format!("Exporting \"{rnote_file_disp}\" to: \"{output_file_disp}\"."),
                 });
 
                 // export
@@ -265,9 +269,9 @@ pub(crate) async fn run_export(
                 } else {
                     let msg = match doc_pages {
                         false => format!(
-                            "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" succeeded"
+                            "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" succeeded."
                         ),
-                        true => format!("Export \"{rnote_file_disp}\" succeeded"),
+                        true => format!("Export \"{rnote_file_disp}\" succeeded."),
                     };
                     if pb.is_hidden() {
                         println!("{msg}")
@@ -278,7 +282,7 @@ pub(crate) async fn run_export(
         }
     }
 
-    println!("Export Finished!");
+    println!("Export finished!");
     Ok(())
 }
 
@@ -300,23 +304,23 @@ fn apply_export_prefs(
                 no_background,
                 no_pattern,
                 *page_order,
-            )?
+            )?;
         }
         ExportCommands::DocPages {
-            output_format,
+            export_format: output_format,
             page_order,
             bitmap_scalefactor,
             jpeg_quality,
             ..
         } => {
-            engine.export_prefs.doc_pages_export_prefs = DocPagesExportPrefs {
-                export_format: *output_format,
-                with_background: !no_background,
-                with_pattern: !no_pattern,
-                page_order: *page_order,
-                bitmap_scalefactor: *bitmap_scalefactor,
-                jpeg_quality: *jpeg_quality,
-            };
+            engine.export_prefs.doc_pages_export_prefs = create_doc_pages_export_prefs_from_args(
+                *output_format,
+                no_background,
+                no_pattern,
+                *page_order,
+                *bitmap_scalefactor,
+                *jpeg_quality,
+            )?;
         }
         ExportCommands::Selection {
             file_args,
@@ -333,7 +337,7 @@ fn apply_export_prefs(
                 *bitmap_scalefactor,
                 *jpeg_quality,
                 *margin,
-            )?
+            )?;
         }
     }
     Ok(())
@@ -368,27 +372,26 @@ pub(crate) fn create_doc_export_prefs_from_args(
 ) -> anyhow::Result<DocExportPrefs> {
     let format = match (output_file, output_format) {
         (Some(file), None) => match file.as_ref().extension().and_then(|ext| ext.to_str()) {
-            Some(extension) => get_doc_export_format(extension),
-            None => {
-                return Err(anyhow::anyhow!(
-                    "Output file needs to have an extension to determine the file type"
-                ))
-            }
+            Some(extension) => get_doc_export_format(extension)?,
+            None => return Err(anyhow::anyhow!(
+                "The output file \"{}\" needs to have a supported extension to determine its file type.",
+                file.as_ref().display()
+            )),
         },
-        (None, Some(out_format)) => Ok(out_format),
-        // unreachable because they are exclusive (conflicts_with)
+        (None, Some(out_format)) => out_format,
+        // should be unreachable because the arguments are exclusive (clap conflicts_with)
         (Some(_), Some(_)) => {
             return Err(anyhow::anyhow!(
-                "--output-file and --output-format are mutually exclusive."
+                "\"--output-file\" and \"--output-format\" are mutually exclusive."
             ))
         }
-        // unreachable because they are required
+        // should be unreachable because either --output-file or --output-format is required
         (None, None) => {
             return Err(anyhow::anyhow!(
-                "--output-file or --output-format is required."
+                "Either \"--output-file\" or \"--output-format\" is required."
             ))
         }
-    }?;
+    };
 
     let prefs = DocExportPrefs {
         export_format: format,
@@ -406,9 +409,27 @@ fn get_doc_export_format(format: &str) -> anyhow::Result<DocExportFormat> {
         "xopp" => Ok(DocExportFormat::Xopp),
         "pdf" => Ok(DocExportFormat::Pdf),
         ext => Err(anyhow::anyhow!(
-            "Could not create doc export prefs, unsupported export file extension `{ext}`"
+            "Exporting document to format with extension \"{ext}\" is not supported."
         )),
     }
+}
+
+pub(crate) fn create_doc_pages_export_prefs_from_args(
+    export_format: DocPagesExportFormat,
+    no_background: bool,
+    no_pattern: bool,
+    page_order: SplitOrder,
+    bitmap_scalefactor: f64,
+    jpeg_quality: u8,
+) -> anyhow::Result<DocPagesExportPrefs> {
+    Ok(DocPagesExportPrefs {
+        export_format,
+        with_background: !no_background,
+        with_pattern: !no_pattern,
+        page_order,
+        bitmap_scalefactor,
+        jpeg_quality,
+    })
 }
 
 pub(crate) fn create_selection_export_prefs_from_args(
@@ -422,27 +443,27 @@ pub(crate) fn create_selection_export_prefs_from_args(
 ) -> anyhow::Result<SelectionExportPrefs> {
     let format = match (output_file, output_format) {
         (Some(file), None) => match file.as_ref().extension().and_then(|ext| ext.to_str()) {
-            Some(extension) => get_selection_export_format(extension),
+            Some(extension) => get_selection_export_format(extension)?,
             None => {
                 return Err(anyhow::anyhow!(
-                    "Output file needs to have an extension to determine the file type"
+                    "The output file \"{}\" needs to have a supported extension to determine its file type.", file.as_ref().display()
                 ))
             }
         },
-        (None, Some(out_format)) => Ok(out_format),
-        // unreachable because they are exclusive (conflicts_with)
+        (None, Some(out_format)) => out_format,
+        // should be unreachable because the arguments are exclusive (clap conflicts_with)
         (Some(_), Some(_)) => {
             return Err(anyhow::anyhow!(
-                "--output-file and --output-format are mutually exclusive."
+                "\"--output-file\" and \"--output-format\" are mutually exclusive."
             ))
         }
-        // unreachable because they are required
+        // should be unreachable because either --output-file or --output-format is required
         (None, None) => {
             return Err(anyhow::anyhow!(
-                "--output-file or --output-format is required."
+                "Either \"--output-file\" or \"--output-format\" is required."
             ))
         }
-    }?;
+    };
 
     let prefs = SelectionExportPrefs {
         export_format: format,
@@ -462,7 +483,7 @@ fn get_selection_export_format(format: &str) -> anyhow::Result<SelectionExportFo
         "png" => Ok(SelectionExportFormat::Png),
         "jpg" | "jpeg" => Ok(SelectionExportFormat::Jpeg),
         ext => Err(anyhow::anyhow!(
-            "Could not create selection export prefs, unsupported export file extension `{ext}`"
+            "Exporting selection to format with extension \"{ext}\" is not supported."
         )),
     }
 }
@@ -476,14 +497,19 @@ pub(crate) fn get_output_file_path(
     match export_commands {
         // output file will be ignored when parsing output file
         ExportCommands::DocPages { .. } => Ok(initial_output_file.to_path_buf()),
-        _ => Ok(
-            check_file_conflict(initial_output_file, on_conflict, on_conflict_overwrite)?
-                .unwrap_or(initial_output_file.to_path_buf()),
-        ),
+        _ => Ok(file_conflict_prompt_action(
+            initial_output_file,
+            on_conflict,
+            on_conflict_overwrite,
+        )?
+        .unwrap_or(initial_output_file.to_path_buf())),
     }
 }
 
-pub(crate) fn check_file_conflict(
+/// Opens a dialog/prompt when a file conflict (file already exists) is detected.
+///
+/// Returns a new path for the output file optionally.
+pub(crate) fn file_conflict_prompt_action(
     output_file: &Path,
     mut on_conflict: OnConflict,
     on_conflict_overwrite: &mut Option<OnConflict>,
@@ -493,7 +519,7 @@ pub(crate) fn check_file_conflict(
     }
     if atty::isnt(atty::Stream::Stdout) {
         return Err(anyhow::anyhow!(
-            "File conflict detected and terminal is not interactive. Please supply --on-conflict"
+            "File conflict for file \"{}\" detected and terminal is not interactive. Option \"--on-conflict\" needs to be supplied.", output_file.display()
         ));
     }
     match on_conflict_overwrite {
@@ -516,12 +542,12 @@ pub(crate) fn check_file_conflict(
                     .interact()
                 {
                     Ok(0) => {
-                        open_file(true, output_file)?
+                            open_file(output_file)?
                     }
                     Ok(c) => on_conflict = options[c],
                     Err(e) => {
                         return Err(anyhow::anyhow!(
-                            "Failed to show select prompt, retry or select an behavior with --on-conflict, {e:?}"
+                            "Failed to show select prompt, retry or select the behavior with\"--on-conflict\", Err {e:?}"
                         ))
                     }
                 };
@@ -529,7 +555,11 @@ pub(crate) fn check_file_conflict(
         }
     };
     match on_conflict {
-        OnConflict::Ask => return Err(anyhow::anyhow!("Failed to save user choice!")),
+        OnConflict::Ask => {
+            return Err(anyhow::anyhow!(
+                "on-conflict behaviour is still Ask after prompting the user."
+            ))
+        }
         OnConflict::AlwaysOverwrite => {
             on_conflict = OnConflict::Overwrite;
             *on_conflict_overwrite = Some(on_conflict);
@@ -545,7 +575,9 @@ pub(crate) fn check_file_conflict(
         OnConflict::Overwrite | OnConflict::Skip | OnConflict::Suffix => (),
     }
     match on_conflict {
-        OnConflict::Ask => Err(anyhow::anyhow!("Failed to save user choice!")),
+        OnConflict::Ask => Err(anyhow::anyhow!(
+            "on-conflict behaviour is still Ask after prompting the user."
+        )),
         OnConflict::Overwrite => Ok(None),
         OnConflict::Skip => Err(anyhow::anyhow!("Skipped {}", output_file.display())),
         OnConflict::Suffix => {
@@ -565,7 +597,9 @@ pub(crate) fn check_file_conflict(
             Ok(Some(new_path))
         }
         OnConflict::AlwaysOverwrite | OnConflict::AlwaysSkip | OnConflict::AlwaysSuffix => {
-            Err(anyhow::anyhow!("Failed to set on_conflict_overwrite"))
+            Err(anyhow::anyhow!(
+                "on-conflict behaviour is still {on_conflict} after applying overwrite."
+            ))
         }
     }
 }
@@ -594,33 +628,37 @@ pub(crate) async fn export_to_file(
             selection_collision,
             ..
         } => {
-            select_strokes_in_selection(engine, selection, selection_collision)?;
+            select_strokes_for_selection_args(engine, selection, selection_collision)?;
             let export_bytes = engine
                 .export_selection(None)
                 .await??
-                .context("No strokes selected")?;
+                .context("Exporting selection failed, no strokes selected.")?;
             create_overwrite_file_w_bytes(&output_file, &export_bytes).await?;
-            open_file(open, output_file)?;
+            if open {
+                open_file(output_file)?;
+            }
         }
         ExportCommands::Doc { .. } => {
             let Some(export_file_name) = output_file.as_ref().file_name().map(|s| s.to_string_lossy().to_string()) else {
-                return Err(anyhow::anyhow!("Failed to get filename from output_file"));
+                return Err(anyhow::anyhow!("Failed to get file name from output-file \"{}\".", output_file.as_ref().display()));
             };
             let export_bytes = engine.export_doc(export_file_name, None).await??;
             create_overwrite_file_w_bytes(&output_file, &export_bytes).await?;
-            open_file(open, output_file)?;
+            if open {
+                open_file(output_file)?;
+            }
         }
         ExportCommands::DocPages {
             output_dir,
             output_file_stem,
-            output_format,
+            export_format: output_format,
             ..
         } => {
             validators::path_is_dir(output_dir)?;
             // The output file cannot be set with this subcommand
             drop(output_file);
 
-            let export_bytes = engine.export_doc_pages(None).await??;
+            let pages_export_bytes = engine.export_doc_pages(None).await??;
             let out_ext = output_format.file_ext();
             let output_file_stem = match output_file_stem {
                 Some(o) => o.clone(),
@@ -628,43 +666,44 @@ pub(crate) async fn export_to_file(
                     Some(stem) => stem.to_string_lossy().to_string(),
                     None => {
                         return Err(anyhow::anyhow!(
-                            "Failed to generate output_file_stem from rnote_file"
+                            "Failed to get file stem from rnote file \"{}\"",
+                            rnote_file.display()
                         ))
                     }
                 },
             };
-            let pages_amount = export_bytes.len();
-            for (i, bytes) in export_bytes.into_iter().enumerate() {
-                create_overwrite_file_w_bytes(
-                    &doc_page_output_file(
-                        i,
-                        pages_amount,
-                        output_dir,
-                        &out_ext,
-                        &output_file_stem,
-                        on_conflict,
-                        on_conflict_overwrite,
-                    )?,
-                    &bytes,
-                )
-                .await
-                .context(format!(
-                    "Failed to export page {i} of document {}",
-                    rnote_file.display()
-                ))?
+            let pages_amount = pages_export_bytes.len();
+            for (page_i, bytes) in pages_export_bytes.into_iter().enumerate() {
+                let output_file = doc_page_determine_output_file(
+                    page_i,
+                    pages_amount,
+                    output_dir,
+                    &out_ext,
+                    &output_file_stem,
+                    on_conflict,
+                    on_conflict_overwrite,
+                )?;
+                create_overwrite_file_w_bytes(&output_file, &bytes)
+                    .await
+                    .context(format!(
+                        "Failed to export page {page_i} of document \"{}\".",
+                        rnote_file.display()
+                    ))?
             }
-            open_file(open, output_dir)?;
+            if open {
+                open_file(output_dir)?;
+            }
         }
     };
     Ok(())
 }
 
-fn select_strokes_in_selection(
+fn select_strokes_for_selection_args(
     engine: &mut RnoteEngine,
     selection: &SelectionCommands,
     selection_collision: &SelectionCollision,
 ) -> anyhow::Result<()> {
-    let (strokes, err_msg) = match selection {
+    let strokes = match selection {
         SelectionCommands::Rect {
             x,
             y,
@@ -673,31 +712,45 @@ fn select_strokes_in_selection(
         } => {
             let v1 = Vector2::new(*x, *y);
             let v2 = v1 + Vector2::new(*width, *height);
-            let points = vec![v1.into(), v2.into()];
-            let aabb = Aabb::from_points(&points);
-            (
-                match selection_collision {
-                    SelectionCollision::Contains => {
-                        engine.store.stroke_keys_as_rendered_in_bounds(aabb)
+            let bounds = Aabb::from_points(&[v1.into(), v2.into()]);
+            match selection_collision {
+                SelectionCollision::Contains => {
+                    let strokes = engine.store.stroke_keys_as_rendered_in_bounds(bounds);
+                    if strokes.is_empty() {
+                        return Err(anyhow::anyhow!(
+                            "No strokes to select inside rectangle with bounds {bounds:?}."
+                        ));
                     }
-                    SelectionCollision::Intersects => engine
+                    strokes
+                }
+                SelectionCollision::Intersects => {
+                    let strokes = engine
                         .store
-                        .stroke_keys_as_rendered_intersecting_bounds(aabb),
-                },
-                "No strokes in given rectangle",
-            )
+                        .stroke_keys_as_rendered_intersecting_bounds(bounds);
+                    if strokes.is_empty() {
+                        return Err(anyhow::anyhow!(
+                            "No strokes to select that intersect with rectangle with bounds {bounds:?}."
+                        ));
+                    }
+                    strokes
+                }
+            }
         }
-        SelectionCommands::All => (engine.store.stroke_keys_as_rendered(), "Document is empty"),
+        SelectionCommands::All => {
+            let strokes = engine.store.stroke_keys_as_rendered();
+            if strokes.is_empty() {
+                return Err(anyhow::anyhow!("No strokes to select, document is empty."));
+            }
+            strokes
+        }
     };
-    if strokes.is_empty() {
-        return Err(anyhow::anyhow!("{err_msg}"));
-    }
+
     engine.store.set_selected_keys(&strokes, true);
     Ok(())
 }
 
-fn doc_page_output_file(
-    mut i: usize,
+fn doc_page_determine_output_file(
+    mut page_i: usize,
     pages_amount: usize,
     output_dir: &Path,
     out_ext: &str,
@@ -705,17 +758,14 @@ fn doc_page_output_file(
     on_conflict: OnConflict,
     on_conflict_overwrite: &mut Option<OnConflict>,
 ) -> anyhow::Result<PathBuf> {
-    i += 1;
-    // match digits of page amount to prepend leading zeros on lower numbers
-    let number = match pages_amount.to_string().len() {
-        2 => format!("{i:02}"),
-        3 => format!("{i:03}"),
-        4 => format!("{i:04}"),
-        5 => format!("{i:05}"),
-        _ => i.to_string(),
-    };
+    // user facing number is one-indexed
+    page_i += 1;
+    let leading_zeros = pages_amount.to_string().len();
+    let number = format!("{page_i:0fill$}", fill = leading_zeros);
     let mut out = output_dir.join(format!("{output_file_stem} - page {number}.{out_ext}"));
-    if let Some(new_out) = check_file_conflict(out.as_ref(), on_conflict, on_conflict_overwrite)? {
+    if let Some(new_out) =
+        file_conflict_prompt_action(out.as_ref(), on_conflict, on_conflict_overwrite)?
+    {
         out = new_out;
     }
     Ok(out)
@@ -731,14 +781,12 @@ async fn create_overwrite_file_w_bytes(
     Ok(())
 }
 
-fn open_file(open: bool, path: impl AsRef<Path>) -> anyhow::Result<()> {
-    if open {
-        open::that_detached(path.as_ref()).with_context(|| {
-            format!(
-                "Failed to open output file/folder {}",
-                path.as_ref().display()
-            )
-        })?;
-    }
+fn open_file(path: impl AsRef<Path>) -> anyhow::Result<()> {
+    open::that_detached(path.as_ref()).with_context(|| {
+        format!(
+            "Failed to open output file/folder \"{}\".",
+            path.as_ref().display()
+        )
+    })?;
     Ok(())
 }

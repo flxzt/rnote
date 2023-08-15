@@ -9,8 +9,9 @@ use std::time::Duration;
 use crate::export::{run_export, ExportCommands};
 use crate::validators;
 
-///    rnote-cli  Copyright (C) 2023  The Rnote Authors{n}{n}
-///    This program is free software; you can redistribute it and/or modify it under the terms of the GPL v3 or (at your option) any later version.
+///    rnote-cli{n}{n}
+///    This program is free software; you can redistribute it and/or modify it under the terms of the GPL v3 or
+///    (at your option) any later version.
 #[derive(Parser)]
 #[command(author, version, about, long_about = None, arg_required_else_help = true)]
 pub(crate) struct Cli {
@@ -20,60 +21,61 @@ pub(crate) struct Cli {
 
 #[derive(Subcommand)]
 pub(crate) enum Commands {
-    /// Tests if the specified files can be opened and are valid rnote files
+    /// Tests if the specified files can be opened and are valid rnote files.
     Test {
-        /// the rnote files
+        /// The rnote files.
         rnote_files: Vec<PathBuf>,
     },
     /// Imports the specified input file and saves it as a rnote save file.{n}
     /// Currently only `.xopp` files can be imported.
     Import {
-        /// the rnote save file
+        /// The rnote save file.
         rnote_file: PathBuf,
-        /// the import input file
+        /// The import input file.
         #[arg(short = 'i', long)]
         input_file: PathBuf,
-        /// When importing a .xopp file, the import dpi can be specified.{n}
+        /// When importing a .xopp file, the import dpi can be specified.
         #[arg(long, default_value_t = XoppImportPrefs::default().dpi)]
         xopp_dpi: f64,
     },
     /// Exports the Rnote file(s) and saves it in the desired format.{n}
-    /// See subcommands for usage
+    /// See sub-commands for usage.
     Export {
-        /// the rnote save file
-        #[arg(global = true)]
-        rnote_files: Vec<PathBuf>,
-        /// The action that will be performed if the to be exported file(s) already exist(s)
-        #[arg(long, default_value = "ask", global = true)]
-        on_conflict: OnConflict,
-        /// export without background
-        #[arg(short = 'b', long, action = ArgAction::SetTrue, global = true)]
-        no_background: bool,
-        /// export without background pattern
-        #[arg(short = 'p', long, action = ArgAction::SetTrue, global = true)]
-        no_pattern: bool,
-        /// Inspect result after the export is finished. Open output folder when using doc-pages
-        #[arg(long, action = ArgAction::SetTrue, global = true)]
-        open: bool,
         #[command(subcommand)]
         export_command: ExportCommands,
+        /// The rnote save file.
+        #[arg(global = true)]
+        rnote_files: Vec<PathBuf>,
+        /// The action that will be performed if the to be exported file(s) already exist(s).
+        #[arg(long, default_value = "ask", global = true)]
+        on_conflict: OnConflict,
+        /// Export without background.
+        #[arg(short = 'b', long, action = ArgAction::SetTrue, global = true)]
+        no_background: bool,
+        /// Export without background pattern.
+        #[arg(short = 'p', long, action = ArgAction::SetTrue, global = true)]
+        no_pattern: bool,
+        /// Inspect the result after the export is finished.{n}
+        /// Opens output folder when using "doc-pages" sub-command.
+        #[arg(long, action = ArgAction::SetTrue, global = true)]
+        open: bool,
     },
 }
 
 #[derive(ValueEnum, Copy, Clone, Debug, Default)]
 pub(crate) enum OnConflict {
     #[default]
-    /// Ask before Overwriting
+    /// Ask before overwriting.
     Ask,
-    /// Overwrite Files
+    /// Overwrite existing files.
     Overwrite,
     #[value(skip)]
     AlwaysOverwrite,
-    /// Skip current Export
+    /// Skip the export.
     Skip,
     #[value(skip)]
     AlwaysSkip,
-    /// Add number to the end of the file
+    /// Append a number as a suffix to the file name.
     Suffix,
     #[value(skip)]
     AlwaysSuffix,
@@ -90,8 +92,8 @@ impl std::fmt::Display for OnConflict {
                 Self::AlwaysOverwrite => "Always overwrite existing files",
                 Self::Skip => "Skip file",
                 Self::AlwaysSkip => "Always skip file",
-                Self::Suffix => "Append number at the end of the file name",
-                Self::AlwaysSuffix => "Always append number at the end of the file name",
+                Self::Suffix => "Append a number as a suffix to the file name",
+                Self::AlwaysSuffix => "Always append a number as a suffix to the file name",
             }
         )
     }

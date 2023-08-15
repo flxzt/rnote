@@ -52,7 +52,7 @@ impl ShapeBuildable for PolylineBuilder {
 
         match event {
             PenEvent::Down { element, .. } => {
-                if self.pen_state == PenState::Up
+                if (self.pen_state == PenState::Up || self.pen_state == PenState::Proximity)
                     && (element.pos - self.path.last().copied().unwrap_or(self.start)).magnitude()
                         < Self::FINISH_TRESHOLD_DIST
                 {
@@ -127,7 +127,7 @@ impl ShapeBuildable for PolylineBuilder {
 }
 
 impl PolylineBuilder {
-    const FINISH_TRESHOLD_DIST: f64 = 5.0;
+    const FINISH_TRESHOLD_DIST: f64 = 8.0;
 
     /// The current state as a polyline.
     pub fn state_as_polyline(&self) -> Polyline {

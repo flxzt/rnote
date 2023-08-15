@@ -72,7 +72,7 @@ impl Shapeable for Arrow {
             .collect()
     }
 
-    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
+    fn outline_path(&self) -> kurbo::BezPath {
         self.to_kurbo(None)
     }
 }

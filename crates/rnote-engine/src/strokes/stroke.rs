@@ -128,13 +128,13 @@ impl Shapeable for Stroke {
         }
     }
 
-    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
+    fn outline_path(&self) -> kurbo::BezPath {
         match self {
-            Self::BrushStroke(brushstroke) => brushstroke.to_kurbo_bezpath(),
-            Self::ShapeStroke(shapestroke) => shapestroke.to_kurbo_bezpath(),
-            Self::TextStroke(textstroke) => textstroke.to_kurbo_bezpath(),
-            Self::VectorImage(vectorimage) => vectorimage.to_kurbo_bezpath(),
-            Self::BitmapImage(bitmapimage) => bitmapimage.to_kurbo_bezpath(),
+            Self::BrushStroke(brushstroke) => brushstroke.outline_path(),
+            Self::ShapeStroke(shapestroke) => shapestroke.outline_path(),
+            Self::TextStroke(textstroke) => textstroke.outline_path(),
+            Self::VectorImage(vectorimage) => vectorimage.outline_path(),
+            Self::BitmapImage(bitmapimage) => bitmapimage.outline_path(),
         }
     }
 }

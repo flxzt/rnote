@@ -25,7 +25,7 @@ impl Composer<SmoothOptions> for Line {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
-        let line = self.to_kurbo_bezpath();
+        let line = self.outline_path();
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
@@ -64,7 +64,7 @@ impl Composer<SmoothOptions> for Rectangle {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
-        let shape = self.to_kurbo_bezpath();
+        let shape = self.outline_path();
 
         if let Some(fill_color) = options.fill_color {
             let fill_brush = cx.solid_brush(fill_color.into());
@@ -86,7 +86,7 @@ impl Composer<SmoothOptions> for Ellipse {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
-        let ellipse = self.to_kurbo_bezpath();
+        let ellipse = self.outline_path();
 
         if let Some(fill_color) = options.fill_color {
             let fill_brush = cx.solid_brush(fill_color.into());
@@ -108,7 +108,7 @@ impl Composer<SmoothOptions> for QuadraticBezier {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
-        let quadbez = self.to_kurbo_bezpath();
+        let quadbez = self.outline_path();
 
         if let Some(fill_color) = options.fill_color {
             let fill_brush = cx.solid_brush(fill_color.into());
@@ -130,7 +130,7 @@ impl Composer<SmoothOptions> for CubicBezier {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
-        let cubbez = self.to_kurbo_bezpath();
+        let cubbez = self.outline_path();
 
         if let Some(fill_color) = options.fill_color {
             let fill_brush = cx.solid_brush(fill_color.into());
@@ -165,7 +165,7 @@ impl Composer<SmoothOptions> for Polyline {
             );
         } else {
             cx.stroke_styled(
-                self.to_kurbo_bezpath(),
+                self.outline_path(),
                 &Into::<piet::Color>::into(color),
                 options.stroke_width,
                 &piet::StrokeStyle::default()
@@ -239,7 +239,7 @@ impl Composer<SmoothOptions> for PenPath {
                             end: end.pos,
                         };
                         let n_splits = penpath::no_subsegments_for_segment_len(
-                            quadbez.to_kurbo_bezpath().perimeter(0.25),
+                            quadbez.outline_path().perimeter(0.25),
                         )
                         .max(2);
                         let lines = quadbez.approx_with_lines(n_splits);
@@ -266,7 +266,7 @@ impl Composer<SmoothOptions> for PenPath {
                             end: end.pos,
                         };
                         let n_splits = penpath::no_subsegments_for_segment_len(
-                            cubbez.to_kurbo_bezpath().perimeter(0.25),
+                            cubbez.outline_path().perimeter(0.25),
                         )
                         .max(2);
                         let lines = cubbez.approx_with_lines(n_splits);

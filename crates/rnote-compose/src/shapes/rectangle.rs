@@ -49,7 +49,7 @@ impl Shapeable for Rectangle {
             .collect()
     }
 
-    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
+    fn outline_path(&self) -> kurbo::BezPath {
         let tl = self.transform.affine
             * na::point![-self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];
         let tr = self.transform.affine

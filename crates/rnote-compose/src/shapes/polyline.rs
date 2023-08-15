@@ -71,7 +71,7 @@ impl Shapeable for Polyline {
         hitboxes
     }
 
-    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
+    fn outline_path(&self) -> kurbo::BezPath {
         let iter = std::iter::once(kurbo::PathEl::MoveTo(self.start.to_kurbo_point())).chain(
             self.path
                 .iter()

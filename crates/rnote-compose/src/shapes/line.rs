@@ -54,7 +54,7 @@ impl Shapeable for Line {
             .collect()
     }
 
-    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
+    fn outline_path(&self) -> kurbo::BezPath {
         kurbo::Line::new(self.start.to_kurbo_point(), self.end.to_kurbo_point()).to_path(0.25)
     }
 }

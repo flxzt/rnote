@@ -115,7 +115,7 @@ impl Shapeable for VectorImage {
         vec![self.bounds()]
     }
 
-    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
+    fn outline_path(&self) -> kurbo::BezPath {
         self.bounds().to_kurbo_rect().to_path(0.25)
     }
 }

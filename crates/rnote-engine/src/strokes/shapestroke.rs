@@ -31,7 +31,7 @@ impl Content for ShapeStroke {
         const PATH_HIGHLIGHT_MIN_STROKE_WIDTH: f64 = 5.0;
         const DRAW_BOUNDS_THRESHOLD_AREA: f64 = 10_u32.pow(2) as f64;
         let bounds = self.bounds();
-        let bez_path = self.shape.to_kurbo_bezpath();
+        let bez_path = self.shape.outline_path();
 
         if bounds.scale(total_zoom).volume() < DRAW_BOUNDS_THRESHOLD_AREA {
             cx.fill(bounds.to_kurbo_rect(), &content::CONTENT_HIGHLIGHT_COLOR);
@@ -79,8 +79,8 @@ impl Shapeable for ShapeStroke {
         self.hitboxes.clone()
     }
 
-    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
-        self.shape.to_kurbo_bezpath()
+    fn outline_path(&self) -> kurbo::BezPath {
+        self.shape.outline_path()
     }
 }
 

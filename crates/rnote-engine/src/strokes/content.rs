@@ -82,7 +82,7 @@ where
         const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
         const DRAW_BOUNDS_THRESHOLD_AREA: f64 = 10_u32.pow(2) as f64;
         let bounds = self.bounds();
-        let bez_path = self.to_kurbo_bezpath();
+        let bez_path = self.outline_path();
 
         if bounds.scale(total_zoom).volume() < DRAW_BOUNDS_THRESHOLD_AREA {
             cx.fill(bounds.to_kurbo_rect(), &CONTENT_HIGHLIGHT_COLOR);

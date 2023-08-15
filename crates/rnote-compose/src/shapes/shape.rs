@@ -142,15 +142,15 @@ impl Shapeable for Shape {
         }
     }
 
-    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
+    fn outline_path(&self) -> kurbo::BezPath {
         match self {
-            Self::Arrow(arrow) => arrow.to_kurbo_bezpath(),
-            Self::Line(line) => line.to_kurbo_bezpath(),
-            Self::Rectangle(rectangle) => rectangle.to_kurbo_bezpath(),
-            Self::Ellipse(ellipse) => ellipse.to_kurbo_bezpath(),
-            Self::QuadraticBezier(quadbez) => quadbez.to_kurbo_bezpath(),
-            Self::CubicBezier(cubbez) => cubbez.to_kurbo_bezpath(),
-            Self::Polyline(polyline) => polyline.to_kurbo_bezpath(),
+            Self::Arrow(arrow) => arrow.outline_path(),
+            Self::Line(line) => line.outline_path(),
+            Self::Rectangle(rectangle) => rectangle.outline_path(),
+            Self::Ellipse(ellipse) => ellipse.outline_path(),
+            Self::QuadraticBezier(quadbez) => quadbez.outline_path(),
+            Self::CubicBezier(cubbez) => cubbez.outline_path(),
+            Self::Polyline(polyline) => polyline.outline_path(),
         }
     }
 }

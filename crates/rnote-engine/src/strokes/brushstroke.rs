@@ -184,7 +184,7 @@ impl Content for BrushStroke {
             cx.fill(bounds.to_kurbo_rect(), &content::CONTENT_HIGHLIGHT_COLOR);
         } else {
             cx.stroke_styled(
-                self.to_kurbo_bezpath(),
+                self.outline_path(),
                 &content::CONTENT_HIGHLIGHT_COLOR,
                 (PATH_HIGHLIGHT_MIN_STROKE_WIDTH / total_zoom)
                     .max(self.style.stroke_width() + 3.0 / total_zoom),
@@ -232,8 +232,8 @@ impl Shapeable for BrushStroke {
         self.hitboxes.clone()
     }
 
-    fn to_kurbo_bezpath(&self) -> kurbo::BezPath {
-        self.path.to_kurbo_bezpath()
+    fn outline_path(&self) -> kurbo::BezPath {
+        self.path.outline_path()
     }
 }
 

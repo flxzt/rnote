@@ -163,7 +163,7 @@ pub enum ModifierKey {
 }
 
 /// The current pen state. Used wherever there is internal state.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum PenState {
     /// Up.
     Up,

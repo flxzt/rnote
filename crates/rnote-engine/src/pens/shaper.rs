@@ -7,7 +7,7 @@ use crate::strokes::Stroke;
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
-use rnote_compose::builders::{ArrowBuilder, GridBuilder};
+use rnote_compose::builders::{ArrowBuilder, GridBuilder, PolylineBuilder};
 use rnote_compose::builders::{
     CoordSystem2DBuilder, CoordSystem3DBuilder, EllipseBuilder, FociEllipseBuilder, LineBuilder,
     QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuildable,
@@ -243,5 +243,6 @@ fn new_builder(
         ShapeBuilderType::FociEllipse => Box::new(FociEllipseBuilder::start(element, now)),
         ShapeBuilderType::QuadBez => Box::new(QuadBezBuilder::start(element, now)),
         ShapeBuilderType::CubBez => Box::new(CubBezBuilder::start(element, now)),
+        ShapeBuilderType::Polyline => Box::new(PolylineBuilder::start(element, now)),
     }
 }

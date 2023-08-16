@@ -175,7 +175,7 @@ impl Content for BrushStroke {
         cx: &mut impl piet::RenderContext,
         total_zoom: f64,
     ) -> anyhow::Result<()> {
-        const HIGHLIGHT_STROKE_WIDTH: f64 = 5.0;
+        const PATH_HIGHLIGHT_MIN_STROKE_WIDTH: f64 = 5.0;
         const DRAW_BOUNDS_THRESHOLD_AREA: f64 = 10_u32.pow(2) as f64;
 
         let bounds = self.bounds();
@@ -184,10 +184,10 @@ impl Content for BrushStroke {
             cx.fill(bounds.to_kurbo_rect(), &content::CONTENT_HIGHLIGHT_COLOR);
         } else {
             cx.stroke_styled(
-                self.path.to_kurbo(),
+                self.outline_path(),
                 &content::CONTENT_HIGHLIGHT_COLOR,
-                (HIGHLIGHT_STROKE_WIDTH / total_zoom)
-                    .max(self.style.stroke_width() + 2.0 / total_zoom),
+                (PATH_HIGHLIGHT_MIN_STROKE_WIDTH / total_zoom)
+                    .max(self.style.stroke_width() + 3.0 / total_zoom),
                 &piet::StrokeStyle::new()
                     .line_join(piet::LineJoin::Round)
                     .line_cap(piet::LineCap::Round),
@@ -230,6 +230,10 @@ impl Shapeable for BrushStroke {
 
     fn hitboxes(&self) -> Vec<Aabb> {
         self.hitboxes.clone()
+    }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        self.path.outline_path()
     }
 }
 

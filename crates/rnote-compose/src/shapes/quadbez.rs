@@ -48,16 +48,25 @@ impl Transformable for QuadraticBezier {
 
 impl Shapeable for QuadraticBezier {
     fn bounds(&self) -> p2d::bounding_volume::Aabb {
-        self.to_kurbo().bounding_box().bounds_to_p2d_aabb()
+        self.outline_path().bounding_box().bounds_to_p2d_aabb()
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {
-        let n_splits = super::hitbox_elems_for_shape_len(self.to_kurbo().perimeter(0.25));
+        let n_splits = super::hitbox_elems_for_shape_len(self.outline_path().perimeter(0.25));
 
         self.approx_with_lines(n_splits)
             .into_iter()
             .map(|line| line.bounds())
             .collect()
+    }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        kurbo::QuadBez::new(
+            self.start.to_kurbo_point(),
+            self.cp.to_kurbo_point(),
+            self.end.to_kurbo_point(),
+        )
+        .to_path(0.25)
     }
 }
 
@@ -108,15 +117,6 @@ impl QuadraticBezier {
         }
 
         lines
-    }
-
-    /// Convert to kurbo shape.
-    pub fn to_kurbo(&self) -> kurbo::QuadBez {
-        kurbo::QuadBez::new(
-            self.start.to_kurbo_point(),
-            self.cp.to_kurbo_point(),
-            self.end.to_kurbo_point(),
-        )
     }
 }
 

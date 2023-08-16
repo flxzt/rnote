@@ -1,6 +1,7 @@
 // Imports
 use crate::{render, Drawable};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use rnote_compose::ext::AabbExt;
 use rnote_compose::{color, shapes::Shapeable};
 
 #[derive(Debug, Clone)]
@@ -77,7 +78,26 @@ where
         &self,
         cx: &mut impl piet::RenderContext,
         total_zoom: f64,
-    ) -> anyhow::Result<()>;
+    ) -> anyhow::Result<()> {
+        const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
+        const DRAW_BOUNDS_THRESHOLD_AREA: f64 = 10_u32.pow(2) as f64;
+        let bounds = self.bounds();
+        let bez_path = self.outline_path();
+
+        if bounds.scale(total_zoom).volume() < DRAW_BOUNDS_THRESHOLD_AREA {
+            cx.fill(bounds.to_kurbo_rect(), &CONTENT_HIGHLIGHT_COLOR);
+        } else {
+            cx.stroke_styled(
+                bez_path,
+                &CONTENT_HIGHLIGHT_COLOR,
+                HIGHLIGHT_STROKE_WIDTH / total_zoom,
+                &piet::StrokeStyle::new()
+                    .line_join(piet::LineJoin::Round)
+                    .line_cap(piet::LineCap::Round),
+            );
+        }
+        Ok(())
+    }
 
     /// Update the content geometry, possibly regenerating internally stored state.
     ///

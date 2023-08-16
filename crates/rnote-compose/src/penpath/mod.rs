@@ -45,7 +45,7 @@ impl Shapeable for PenPath {
                         end: end.pos,
                     };
 
-                    bounds.merge(&quadbez.to_kurbo().bounding_box().bounds_to_p2d_aabb());
+                    bounds.merge(&quadbez.outline_path().bounding_box().bounds_to_p2d_aabb());
                     prev = *end;
                 }
                 Segment::CubBezTo { cp1, cp2, end } => {
@@ -56,7 +56,7 @@ impl Shapeable for PenPath {
                         end: end.pos,
                     };
 
-                    bounds.merge(&cubbez.to_kurbo().bounding_box().bounds_to_p2d_aabb());
+                    bounds.merge(&cubbez.outline_path().bounding_box().bounds_to_p2d_aabb());
                     prev = *end;
                 }
             }
@@ -70,6 +70,10 @@ impl Shapeable for PenPath {
             .into_iter()
             .flat_map(|(_, hb)| hb)
             .collect()
+    }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        kurbo::BezPath::from_iter(self.to_kurbo_el_iter())
     }
 }
 
@@ -183,7 +187,7 @@ impl PenPath {
                     };
 
                     let n_splits =
-                        no_subsegments_for_segment_len(quadbez.to_kurbo().perimeter(0.25));
+                        no_subsegments_for_segment_len(quadbez.outline_path().perimeter(0.25));
 
                     hitboxes.push((
                         i,
@@ -204,7 +208,7 @@ impl PenPath {
                     };
 
                     let n_splits =
-                        no_subsegments_for_segment_len(cubbez.to_kurbo().perimeter(0.25));
+                        no_subsegments_for_segment_len(cubbez.outline_path().perimeter(0.25));
 
                     hitboxes.push((
                         i,
@@ -220,13 +224,6 @@ impl PenPath {
         }
 
         hitboxes
-    }
-
-    /// Convert to [kurbo::BezPath].
-    pub fn to_kurbo(&self) -> kurbo::BezPath {
-        let elements = self.to_kurbo_el_iter();
-
-        kurbo::BezPath::from_iter(elements)
     }
 
     /// Convert to [kurbo::BezPath], flattened to the given precision.

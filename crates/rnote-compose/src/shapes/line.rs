@@ -4,6 +4,7 @@ use crate::shapes::Rectangle;
 use crate::shapes::Shapeable;
 use crate::transform::Transformable;
 use crate::Transform;
+use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -52,9 +53,18 @@ impl Shapeable for Line {
             .map(|line| line.bounds())
             .collect()
     }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        kurbo::Line::new(self.start.to_kurbo_point(), self.end.to_kurbo_point()).to_path(0.25)
+    }
 }
 
 impl Line {
+    /// A new line.
+    pub fn new(start: na::Vector2<f64>, end: na::Vector2<f64>) -> Self {
+        Self { start, end }
+    }
+
     /// Create a rectangle rotated in the direction of the line, with the given width.
     pub fn line_w_width_to_rect(&self, width: f64) -> Rectangle {
         let vec = self.end - self.start;
@@ -84,10 +94,5 @@ impl Line {
                 }
             })
             .collect::<Vec<Self>>()
-    }
-
-    /// Convert to kurbo shape.
-    pub fn to_kurbo(&self) -> kurbo::Line {
-        kurbo::Line::new(self.start.to_kurbo_point(), self.end.to_kurbo_point())
     }
 }

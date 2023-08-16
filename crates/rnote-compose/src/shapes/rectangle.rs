@@ -48,6 +48,25 @@ impl Shapeable for Rectangle {
             .flat_map(|line| line.hitboxes())
             .collect()
     }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        let tl = self.transform.affine
+            * na::point![-self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];
+        let tr = self.transform.affine
+            * na::point![self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];
+        let bl = self.transform.affine
+            * na::point![-self.cuboid.half_extents[0], self.cuboid.half_extents[1]];
+        let br = self.transform.affine
+            * na::point![self.cuboid.half_extents[0], self.cuboid.half_extents[1]];
+
+        kurbo::BezPath::from_vec(vec![
+            kurbo::PathEl::MoveTo(tl.coords.to_kurbo_point()),
+            kurbo::PathEl::LineTo(tr.coords.to_kurbo_point()),
+            kurbo::PathEl::LineTo(br.coords.to_kurbo_point()),
+            kurbo::PathEl::LineTo(bl.coords.to_kurbo_point()),
+            kurbo::PathEl::ClosePath,
+        ])
+    }
 }
 
 impl Transformable for Rectangle {
@@ -130,25 +149,5 @@ impl Rectangle {
                 end: upper_left.coords,
             },
         ]
-    }
-
-    /// Convert to kurbo shape.
-    pub fn to_kurbo(&self) -> kurbo::BezPath {
-        let tl = self.transform.affine
-            * na::point![-self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];
-        let tr = self.transform.affine
-            * na::point![self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];
-        let bl = self.transform.affine
-            * na::point![-self.cuboid.half_extents[0], self.cuboid.half_extents[1]];
-        let br = self.transform.affine
-            * na::point![self.cuboid.half_extents[0], self.cuboid.half_extents[1]];
-
-        kurbo::BezPath::from_vec(vec![
-            kurbo::PathEl::MoveTo(tl.coords.to_kurbo_point()),
-            kurbo::PathEl::LineTo(tr.coords.to_kurbo_point()),
-            kurbo::PathEl::LineTo(br.coords.to_kurbo_point()),
-            kurbo::PathEl::LineTo(bl.coords.to_kurbo_point()),
-            kurbo::PathEl::ClosePath,
-        ])
     }
 }

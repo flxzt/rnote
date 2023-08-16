@@ -1,11 +1,11 @@
 // Imports
-use super::content::{self};
 use super::{Content, Stroke};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::render;
 use crate::Drawable;
 use anyhow::Context;
+use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
@@ -40,20 +40,6 @@ impl Default for BitmapImage {
 }
 
 impl Content for BitmapImage {
-    fn draw_highlight(
-        &self,
-        cx: &mut impl piet::RenderContext,
-        total_zoom: f64,
-    ) -> anyhow::Result<()> {
-        const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
-        cx.stroke(
-            self.bounds().to_kurbo_rect(),
-            &content::CONTENT_HIGHLIGHT_COLOR,
-            HIGHLIGHT_STROKE_WIDTH / total_zoom,
-        );
-        Ok(())
-    }
-
     fn update_geometry(&mut self) {}
 }
 
@@ -87,6 +73,10 @@ impl Shapeable for BitmapImage {
 
     fn hitboxes(&self) -> Vec<Aabb> {
         vec![self.bounds()]
+    }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        self.bounds().to_kurbo_rect().to_path(0.25)
     }
 }
 

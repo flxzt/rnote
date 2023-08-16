@@ -11,6 +11,7 @@ mod penpathbuildable;
 mod penpathcurvedbuilder;
 mod penpathmodeledbuilder;
 mod penpathsimplebuilder;
+mod polylinebuilder;
 mod quadbezbuilder;
 mod quadrantcoordsystem2dbuilder;
 mod rectanglebuilder;
@@ -31,6 +32,7 @@ pub use penpathbuildable::PenPathBuilderProgress;
 pub use penpathcurvedbuilder::PenPathCurvedBuilder;
 pub use penpathmodeledbuilder::PenPathModeledBuilder;
 pub use penpathsimplebuilder::PenPathSimpleBuilder;
+pub use polylinebuilder::PolylineBuilder;
 pub use quadbezbuilder::QuadBezBuilder;
 pub use quadrantcoordsystem2dbuilder::QuadrantCoordSystem2DBuilder;
 pub use rectanglebuilder::RectangleBuilder;
@@ -75,12 +77,15 @@ pub enum ShapeBuilderType {
     /// A foci ellipse builder
     #[serde(rename = "foci_ellipse")]
     FociEllipse,
-    /// An quadbez builder
+    /// A quadbez builder
     #[serde(rename = "quadbez")]
     QuadBez,
-    /// An cubic bezier builder
+    /// A cubic bezier builder
     #[serde(rename = "cubbez")]
     CubBez,
+    /// A poyline builder
+    #[serde(rename = "polyline")]
+    Polyline,
 }
 
 impl ShapeBuilderType {
@@ -98,6 +103,7 @@ impl ShapeBuilderType {
             "shapebuilder-fociellipse-symbolic" => Some(Self::FociEllipse),
             "shapebuilder-quadbez-symbolic" => Some(Self::QuadBez),
             "shapebuilder-cubbez-symbolic" => Some(Self::CubBez),
+            "shapebuilder-polyline-symbolic" => Some(Self::Polyline),
             _ => None,
         }
     }
@@ -118,6 +124,7 @@ impl ShapeBuilderType {
             Self::FociEllipse => String::from("shapebuilder-fociellipse-symbolic"),
             Self::QuadBez => String::from("shapebuilder-quadbez-symbolic"),
             Self::CubBez => String::from("shapebuilder-cubbez-symbolic"),
+            Self::Polyline => String::from("shapebuilder-polyline-symbolic"),
         }
     }
 }

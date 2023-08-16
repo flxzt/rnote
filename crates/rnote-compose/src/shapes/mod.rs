@@ -1,20 +1,29 @@
 // Modules
-mod arrow;
-/// cubic bezier curves
+/// Arrow
+pub mod arrow;
+/// Cubic-bezier curve
 pub mod cubbez;
-mod ellipse;
-mod line;
-/// quadratic bezier curves
+/// Ellipse
+pub mod ellipse;
+/// Line
+pub mod line;
+/// Polyline
+pub mod polyline;
+/// Polyline
 pub mod quadbez;
-mod rectangle;
-mod shape;
-mod shapeable;
+/// Rectangle
+pub mod rectangle;
+/// Shape
+pub mod shape;
+/// Shapeable
+pub mod shapeable;
 
 // Re-exports
 pub use arrow::Arrow;
 pub use cubbez::CubicBezier;
 pub use ellipse::Ellipse;
 pub use line::Line;
+pub use polyline::Polyline;
 pub use quadbez::QuadraticBezier;
 pub use rectangle::Rectangle;
 pub use shape::Shape;

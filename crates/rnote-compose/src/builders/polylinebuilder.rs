@@ -81,13 +81,14 @@ impl ShapeBuildable for PolylineBuilder {
                 self.pen_state = PenState::Proximity;
                 self.pen_pos = element.pos;
             }
-            PenEvent::KeyPressed { keyboard_key, .. } => {
-                if keyboard_key == KeyboardKey::Escape {
+            PenEvent::KeyPressed { keyboard_key, .. } => match keyboard_key {
+                KeyboardKey::Escape | KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
                     return ShapeBuilderProgress::Finished(vec![Shape::Polyline(
                         self.state_as_polyline(),
                     )]);
                 }
-            }
+                _ => {}
+            },
             PenEvent::Text { .. } => {}
             PenEvent::Cancel => {
                 self.pen_state = PenState::Up;

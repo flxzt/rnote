@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-05 16:42+0200\n"
+"POT-Creation-Date: 2023-08-16 10:52+0200\n"
 "PO-Revision-Date: 2023-06-26 08:36+0000\n"
 "Last-Translator: Lucas Martins <luckshiba@protonmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
@@ -1488,7 +1488,7 @@ msgid "Lines"
 msgstr "Linhas"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:342
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:388
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:389
 msgid "Grid"
 msgstr "Grade"
 
@@ -2303,48 +2303,52 @@ msgid "Ellipses"
 msgstr "Elipse"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:372
-msgid "Curves"
-msgstr ""
-
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:385
-msgid "Arrow"
+msgid "Curves & Paths"
 msgstr ""
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:386
+msgid "Arrow"
+msgstr ""
+
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:387
 msgid "Line"
 msgstr "Linha"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:387
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:388
 msgid "Rectangle"
 msgstr "Retângulo"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:389
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:390
 msgid "2D coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:390
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:391
 msgid "3D coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:391
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:392
 msgid "2D single quadrant coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:392
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:393
 msgid "Ellipse"
 msgstr "Elipse"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:393
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:394
 msgid "Ellipse with foci"
 msgstr "Elipse com focos"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:394
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:395
 msgid "Quadratic bezier curve"
 msgstr "Curva de Bézier quadrática"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:395
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:396
 msgid "Cubic bezier curve"
 msgstr "Curva de Bézier cúbica"
+
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:397
+msgid "Polyline"
+msgstr ""
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:568
 msgid "Application restart is required"

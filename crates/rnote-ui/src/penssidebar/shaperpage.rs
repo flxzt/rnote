@@ -369,7 +369,7 @@ fn shape_builder_type_icons_get_groups() -> Vec<GroupedIconPickerGroupData> {
             ]),
         },
         GroupedIconPickerGroupData {
-            name: gettext("Curves"),
+            name: gettext("Curves & Paths"),
             icons: StringList::new(&[
                 "shapebuilder-quadbez-symbolic",
                 "shapebuilder-cubbez-symbolic",

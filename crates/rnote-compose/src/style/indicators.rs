@@ -84,6 +84,51 @@ pub fn draw_vec_indicator(
     cx.stroke(vec_indicator, &line_color, VEC_INDICATOR_LINE_WIDTH / zoom);
 }
 
+// Finish indicator
+
+/// Finish indicator radius.
+pub const FINISH_INDICATOR_RADIUS: f64 = 5.0;
+/// Finish indicator outline width.
+pub const FINISH_INDICATOR_OUTLINE_WIDTH: f64 = 5.0;
+
+/// A finish indicator shape.
+pub fn finish_indicator_shape(
+    _node_state: PenState,
+    pos: na::Vector2<f64>,
+    zoom: f64,
+) -> kurbo::Circle {
+    kurbo::Circle::new(
+        pos.to_kurbo_point(),
+        (FINISH_INDICATOR_RADIUS - FINISH_INDICATOR_OUTLINE_WIDTH * 0.5) / zoom,
+    )
+}
+
+/// Draw a finish indicator.
+pub fn draw_finish_indicator(
+    cx: &mut impl RenderContext,
+    node_state: PenState,
+    pos: na::Vector2<f64>,
+    zoom: f64,
+) {
+    const FILL_COLOR: piet::Color = color::GNOME_GREENS[3].with_a8(176);
+    const OUTLINE_COLOR: piet::Color = color::GNOME_GREENS[4];
+
+    let finish_indicator = finish_indicator_shape(node_state, pos, zoom);
+
+    match node_state {
+        PenState::Up => {}
+        PenState::Proximity => {}
+        PenState::Down => {
+            cx.fill(finish_indicator, &FILL_COLOR);
+        }
+    }
+    cx.stroke(
+        finish_indicator,
+        &OUTLINE_COLOR,
+        POS_INDICATOR_OUTLINE_WIDTH / zoom,
+    );
+}
+
 // Rectangular node
 
 /// Rectangular node outline width.

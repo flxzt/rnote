@@ -17,13 +17,15 @@ use std::time::Instant;
 pub struct PolylineBuilder {
     /// Start position.
     start: na::Vector2<f64>,
-    /// Current position.
+    /// Position of the next/current path segment.
     current: na::Vector2<f64>,
-    /// Path
+    /// Path.
     path: Vec<na::Vector2<f64>>,
-    /// Pen state
+    /// Pen state.
     pen_state: PenState,
-    /// Finish the polyline on the next `PenEvent::Up`
+    /// Pen position.
+    pen_pos: na::Vector2<f64>,
+    /// Finish the polyline on the next `PenEvent::Up`.
     finish: bool,
 }
 
@@ -34,6 +36,7 @@ impl ShapeBuilderCreator for PolylineBuilder {
             current: element.pos,
             path: Vec::new(),
             pen_state: PenState::Down,
+            pen_pos: element.pos,
             finish: false,
         }
     }
@@ -53,33 +56,30 @@ impl ShapeBuildable for PolylineBuilder {
         match event {
             PenEvent::Down { element, .. } => {
                 if (self.pen_state == PenState::Up || self.pen_state == PenState::Proximity)
-                    && (element.pos - self.path.last().copied().unwrap_or(self.start)).magnitude()
-                        < Self::FINISH_TRESHOLD_DIST
+                    && self.pos_in_finish(element.pos)
                 {
                     self.finish = true;
                 }
                 self.pen_state = PenState::Down;
-
-                if let Some(last) = self.path.last() {
-                    self.current = constraints.constrain(element.pos - *last) + *last;
-                } else {
-                    self.current = constraints.constrain(element.pos - self.start) + self.start;
-                }
+                self.pen_pos = element.pos;
+                let last_pos = self.path.last().copied().unwrap_or(self.start);
+                self.current = constraints.constrain(element.pos - last_pos) + last_pos;
             }
-            PenEvent::Up { .. } => {
+            PenEvent::Up { element, .. } => {
                 if self.finish {
                     return ShapeBuilderProgress::Finished(vec![Shape::Polyline(
                         self.state_as_polyline(),
                     )]);
                 }
-
                 if self.pen_state == PenState::Down {
                     self.path.push(self.current);
                 }
                 self.pen_state = PenState::Up;
+                self.pen_pos = element.pos;
             }
-            PenEvent::Proximity { .. } => {
+            PenEvent::Proximity { element, .. } => {
                 self.pen_state = PenState::Proximity;
+                self.pen_pos = element.pos;
             }
             PenEvent::KeyPressed { keyboard_key, .. } => {
                 if keyboard_key == KeyboardKey::Escape {
@@ -88,8 +88,10 @@ impl ShapeBuildable for PolylineBuilder {
                     )]);
                 }
             }
-            _ => {
+            PenEvent::Text { .. } => {}
+            PenEvent::Cancel => {
                 self.pen_state = PenState::Up;
+                self.finish = false;
             }
         }
 
@@ -115,11 +117,17 @@ impl ShapeBuildable for PolylineBuilder {
         if !self.finish {
             polyline.path.push(self.current);
         }
-        polyline.draw_composed(cx, style);
 
+        polyline.draw_composed(cx, style);
         indicators::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
         if !self.finish {
-            indicators::draw_pos_indicator(cx, PenState::Down, self.current, zoom);
+            if self.pos_in_finish(self.pen_pos)
+                && (self.pen_state == PenState::Up || self.pen_state == PenState::Proximity)
+            {
+                indicators::draw_finish_indicator(cx, self.pen_state, self.current, zoom);
+            } else {
+                indicators::draw_pos_indicator(cx, self.pen_state, self.current, zoom);
+            }
         }
 
         cx.restore().unwrap();
@@ -135,5 +143,10 @@ impl PolylineBuilder {
             start: self.start,
             path: self.path.clone(),
         }
+    }
+
+    fn pos_in_finish(&self, pos: na::Vector2<f64>) -> bool {
+        (pos - self.path.last().copied().unwrap_or(self.start)).magnitude()
+            < Self::FINISH_TRESHOLD_DIST
     }
 }

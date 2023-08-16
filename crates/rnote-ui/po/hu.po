@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-16 10:52+0200\n"
-"PO-Revision-Date: 2023-08-06 11:47+0000\n"
+"PO-Revision-Date: 2023-08-18 00:11+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -375,12 +375,12 @@ msgstr "Állítsa be, hogy exportálja-e a háttérmintát"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:343
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
 msgid "Export Format"
-msgstr "Exportálás formátuma"
+msgstr "Exportálási formátum"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:344
 msgid "The export format"
-msgstr "Exportálás formátuma"
+msgstr "Az exportálási formátum"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/data/ui/dialogs/export.ui:348
@@ -413,8 +413,9 @@ msgid ""
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
-"Az az oldalsorrend, amikor a vízszintes és függőleges irányban\n"
-"bővülő elrendezésű dokumentumokat lapokra vágja"
+"Az az oldalsorrend, amikor a vízszintes és függőleges\n"
+"irányban bővülő elrendezésű dokumentumokat\n"
+"lapokra vágja"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:154
 #: crates/rnote-ui/data/ui/dialogs/export.ui:365
@@ -2060,10 +2061,8 @@ msgid "Ellipses"
 msgstr "Ellipszisek"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:372
-#, fuzzy
-#| msgid "Curves"
 msgid "Curves & Paths"
-msgstr "Ívek"
+msgstr "Ívek és utak"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Arrow"
@@ -2107,7 +2106,7 @@ msgstr "Köbös bezier-görbe"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:397
 msgid "Polyline"
-msgstr ""
+msgstr "Vonallánc"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:568
 msgid "Application restart is required"

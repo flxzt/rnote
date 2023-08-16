@@ -71,6 +71,7 @@ cpp_compiler = meson.get_compiler('cpp')
 
 dependency('glib-2.0', version: '>= 2.72')
 dependency('gio-2.0', version: '>= 2.72')
+dependency('cairo', version: '>= 1.17')
 dependency('gtk4', version: '>= 4.10')
 dependency('libadwaita-1', version: '>= 1.3')
 dependency('poppler-glib', version: '>= 22.07')

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-16 10:52+0200\n"
-"PO-Revision-Date: 2023-08-05 14:54+0000\n"
+"PO-Revision-Date: 2023-08-16 09:31+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -2071,10 +2071,8 @@ msgid "Ellipses"
 msgstr "Ellipsen"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:372
-#, fuzzy
-#| msgid "Curves"
 msgid "Curves & Paths"
-msgstr "Kurven"
+msgstr "Kurven & Pfade"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Arrow"
@@ -2118,7 +2116,7 @@ msgstr "Kubische Bezierkurve"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:397
 msgid "Polyline"
-msgstr ""
+msgstr "Polylinie"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:568
 msgid "Application restart is required"

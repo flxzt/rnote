@@ -4,7 +4,7 @@ import sys
 import os
 from subprocess import call
 
-print("--- entering post-install script ---", file=sys.stderr)
+print("### executing post-install script ###", file=sys.stderr)
 
 datadir = sys.argv[1]
 bindir = sys.argv[2]
@@ -35,3 +35,5 @@ if not os.environ.get("DESTDIR", ""):
         call(["fc-cache.exe", "-v", "-f"])
     else:
         print(f"[WARNING] \"meson_post_install.py\" is not configured to run on platform: {sys.platform}", file=sys.stderr)
+
+print("### post-install script finished ###", file=sys.stderr)

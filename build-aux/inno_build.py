@@ -117,4 +117,4 @@ run_command(
     "Running ISCC failed"
 )
 
-sys.exit(0)
+print("### Inno-Setup installer build script finished ###", file=sys.stderr)

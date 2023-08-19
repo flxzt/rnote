@@ -5,8 +5,8 @@ mod imp;
 
 // Imports
 use crate::{
-    config, RnApp, RnCanvas, RnCanvasWrapper, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser,
-    {dialogs, RnMainHeader},
+    config, FileType, RnApp, RnCanvas, RnCanvasWrapper, RnOverlays, RnSettingsPanel,
+    RnWorkspaceBrowser, {dialogs, RnMainHeader},
 };
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
@@ -462,8 +462,8 @@ impl RnAppWindow {
             target_pos: Option<na::Vector2<f64>>,
             rnote_file_new_tab: bool,
         ) -> anyhow::Result<bool> {
-            let file_imported = match crate::utils::FileType::lookup_file_type(&input_file) {
-                crate::utils::FileType::RnoteFile => {
+            let file_imported = match FileType::lookup_file_type(&input_file) {
+                FileType::RnoteFile => {
                     let Some(input_file_path) = input_file.path() else {
                         return Err(anyhow::anyhow!("Could not open file: {input_file:?}, path returned None"));
                     };
@@ -490,7 +490,7 @@ impl RnAppWindow {
                         true
                     }
                 }
-                crate::utils::FileType::VectorImageFile => {
+                FileType::VectorImageFile => {
                     let canvas = appwindow.active_tab_wrapper().canvas();
                     let (bytes, _) = input_file.load_bytes_future().await?;
                     canvas
@@ -498,7 +498,7 @@ impl RnAppWindow {
                         .await?;
                     true
                 }
-                crate::utils::FileType::BitmapImageFile => {
+                FileType::BitmapImageFile => {
                     let canvas = appwindow.active_tab_wrapper().canvas();
                     let (bytes, _) = input_file.load_bytes_future().await?;
                     canvas
@@ -506,7 +506,7 @@ impl RnAppWindow {
                         .await?;
                     true
                 }
-                crate::utils::FileType::XoppFile => {
+                FileType::XoppFile => {
                     // a new tab for xopp file import
                     let wrapper = appwindow.new_canvas_wrapper();
                     let canvas = wrapper.canvas();
@@ -519,14 +519,14 @@ impl RnAppWindow {
                     }
                     file_imported
                 }
-                crate::utils::FileType::PdfFile => {
+                FileType::PdfFile => {
                     let canvas = appwindow.active_tab_wrapper().canvas();
                     dialogs::import::dialog_import_pdf_w_prefs(
                         appwindow, &canvas, input_file, target_pos,
                     )
                     .await?
                 }
-                crate::utils::FileType::Folder => {
+                FileType::Folder => {
                     if let Some(dir) = input_file.path() {
                         appwindow
                             .workspacebrowser()
@@ -535,7 +535,7 @@ impl RnAppWindow {
                     }
                     false
                 }
-                crate::utils::FileType::Unsupported => {
+                FileType::Unsupported => {
                     return Err(anyhow::anyhow!("tried to open unsupported file type"));
                 }
             };

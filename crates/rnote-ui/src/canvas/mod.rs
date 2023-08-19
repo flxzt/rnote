@@ -20,7 +20,7 @@ use gtk4::{
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
-use rnote_compose::penevents::PenState;
+use rnote_compose::penevent::PenState;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::ext::GrapheneRectExt;
 use rnote_engine::Document;
@@ -1222,7 +1222,7 @@ impl RnCanvas {
             };
 
         let mut widget_flags = self.engine_mut().camera_set_offset(new_offset);
-        widget_flags.merge(self.engine_mut().doc_expand_autoexpand());
+        widget_flags |= self.engine_mut().doc_expand_autoexpand();
         self.emit_handle_widget_flags(widget_flags);
     }
 

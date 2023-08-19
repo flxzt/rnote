@@ -2,7 +2,6 @@
 mod penevents;
 
 // Imports
-use super::penbehaviour::PenProgress;
 use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineTask, EngineView, EngineViewMut};
@@ -14,9 +13,10 @@ use futures::channel::oneshot;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevents::{KeyboardKey, PenEvent, PenState};
+use rnote_compose::penevent::{KeyboardKey, PenEvent, PenProgress, PenState};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::indicators;
+use rnote_compose::EventResult;
 use rnote_compose::{color, Transform};
 use std::ops::Range;
 use std::time::{Duration, Instant};
@@ -351,8 +351,8 @@ impl PenBehaviour for Typewriter {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
-        let (pen_progress, widget_flags) = match event {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
+        let (event_result, widget_flags) = match event {
             PenEvent::Down {
                 element,
                 modifier_keys,
@@ -373,7 +373,7 @@ impl PenBehaviour for Typewriter {
             PenEvent::Cancel => self.handle_pen_event_cancel(now, engine_view),
         };
 
-        (pen_progress, widget_flags)
+        (event_result, widget_flags)
     }
 
     fn fetch_clipboard_content(
@@ -472,11 +472,9 @@ impl PenBehaviour for Typewriter {
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
                             );
-                            widget_flags.merge(
-                                engine_view
-                                    .doc
-                                    .resize_autoexpand(engine_view.store, engine_view.camera),
-                            );
+                            widget_flags |= engine_view
+                                .doc
+                                .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             // Back to modifying state
                             self.state = TypewriterState::Modifying {
@@ -486,7 +484,7 @@ impl PenBehaviour for Typewriter {
                                 pen_down: false,
                             };
 
-                            widget_flags.merge(engine_view.store.record(Instant::now()));
+                            widget_flags |= engine_view.store.record(Instant::now());
                             widget_flags.store_modified = true;
                             widget_flags.redraw = true;
 
@@ -659,7 +657,7 @@ impl Typewriter {
                     pen_down: false,
                 };
 
-                widget_flags.merge(engine_view.store.record(Instant::now()));
+                widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.store_modified = true;
                 widget_flags.resize = true;
             }
@@ -688,7 +686,7 @@ impl Typewriter {
                     pen_down: false,
                 };
 
-                widget_flags.merge(engine_view.store.record(Instant::now()));
+                widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.store_modified = true;
                 widget_flags.resize = true;
             }
@@ -715,11 +713,9 @@ impl Typewriter {
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         );
-                        widget_flags.merge(
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera),
-                        );
+                        widget_flags |= engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
                             modify_state: ModifyState::Up,
@@ -728,7 +724,7 @@ impl Typewriter {
                             pen_down: false,
                         };
 
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
                     }
                 }
@@ -743,13 +739,11 @@ impl Typewriter {
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         );
-                        widget_flags.merge(
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera),
-                        );
+                        widget_flags |= engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
                     }
                 }
@@ -785,7 +779,7 @@ impl Typewriter {
                     engine_view.camera.image_scale(),
                 );
 
-                widget_flags.merge(engine_view.store.record(Instant::now()));
+                widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.redraw = true;
                 widget_flags.store_modified = true;
             }
@@ -812,7 +806,7 @@ impl Typewriter {
                     engine_view.camera.image_scale(),
                 );
 
-                widget_flags.merge(engine_view.store.record(Instant::now()));
+                widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.redraw = true;
                 widget_flags.store_modified = true;
             }
@@ -846,7 +840,7 @@ impl Typewriter {
                     engine_view.camera.image_scale(),
                 );
 
-                widget_flags.merge(engine_view.store.record(Instant::now()));
+                widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.redraw = true;
                 widget_flags.store_modified = true;
             }

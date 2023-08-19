@@ -10,90 +10,6 @@ pub(crate) const FILE_DUP_SUFFIX_DELIM: &str = " - ";
 /// The suffix delimiter when duplicating/renaming already existing files for usage in a regular expression
 pub(crate) const FILE_DUP_SUFFIX_DELIM_REGEX: &str = r"\s-\s";
 
-/// File types supported by Rnote.
-#[derive(Debug)]
-pub(crate) enum FileType {
-    Folder,
-    RnoteFile,
-    VectorImageFile,
-    BitmapImageFile,
-    XoppFile,
-    PdfFile,
-    Unsupported,
-}
-
-impl FileType {
-    pub(crate) fn lookup_file_type(file: &gio::File) -> Self {
-        if let Ok(info) = file.query_info(
-            "standard::*",
-            gio::FileQueryInfoFlags::NONE,
-            None::<&gio::Cancellable>,
-        ) {
-            match info.file_type() {
-                gio::FileType::Regular => {
-                    if let Some(content_type) = info.content_type() {
-                        match content_type.as_str() {
-                            "application/rnote" => {
-                                return Self::RnoteFile;
-                            }
-                            "image/svg+xml" => {
-                                return Self::VectorImageFile;
-                            }
-                            "image/png" | "image/jpeg" => {
-                                return Self::BitmapImageFile;
-                            }
-                            "application/x-xopp" => {
-                                return Self::XoppFile;
-                            }
-                            "application/pdf" => {
-                                return Self::PdfFile;
-                            }
-                            _ => {}
-                        }
-                    }
-                }
-                gio::FileType::Directory => {
-                    return Self::Folder;
-                }
-                _ => {
-                    log::warn!("unknown file type");
-                    return Self::Unsupported;
-                }
-            }
-        } else {
-            log::warn!("failed to query FileInfo from file");
-        }
-
-        // match on file extensions as fallback
-        if let Some(path) = file.path() {
-            if let Some(extension_str) = path.extension() {
-                match &*extension_str.to_string_lossy() {
-                    "rnote" => {
-                        return Self::RnoteFile;
-                    }
-                    "svg" => {
-                        return Self::VectorImageFile;
-                    }
-                    "jpg" | "jpeg" | "png" => {
-                        return Self::BitmapImageFile;
-                    }
-                    "xopp" => {
-                        return Self::XoppFile;
-                    }
-                    "pdf" => {
-                        return Self::PdfFile;
-                    }
-                    _ => {}
-                }
-            }
-        } else {
-            log::warn!("no path for file");
-        };
-
-        Self::Unsupported
-    }
-}
-
 /// Check if the file is a temporary goutputstream file.
 pub(crate) fn is_goutputstream_file(file: &gio::File) -> bool {
     if let Some(path) = file.path() {
@@ -114,12 +30,14 @@ pub(crate) fn translate_aabb_to_widget(
     widget: &impl IsA<Widget>,
     dest_widget: &impl IsA<Widget>,
 ) -> Option<Aabb> {
-    let mins = widget
-        .compute_point(dest_widget, &graphene::Point::from_na_point(aabb.mins))?
-        .to_na_point();
-    let maxs = widget
-        .compute_point(dest_widget, &graphene::Point::from_na_point(aabb.maxs))?
-        .to_na_point();
+    let mins = {
+        let coords = widget.translate_coordinates(dest_widget, aabb.mins[0], aabb.mins[1])?;
+        na::point![coords.0, coords.1]
+    };
+    let maxs = {
+        let coords = widget.translate_coordinates(dest_widget, aabb.maxs[0], aabb.maxs[1])?;
+        na::point![coords.0, coords.1]
+    };
     Some(Aabb::new(mins, maxs))
 }
 
@@ -172,7 +90,8 @@ pub(crate) fn str_from_u8_nul_utf8(utf8_src: &[u8]) -> Result<&str, std::str::Ut
 
 /// Get the index of the AxisUse enum
 ///
-/// TODO: Report to gtk-rs that [gdk::AxisUse] needs a [`Into<std::ops::Index>`] implementation for usage to retrieve pointer axes in [gdk::TimeCoord]
+/// TODO: Report to gtk-rs that [gdk::AxisUse] needs a [`Into<std::ops::Index>`] implementation
+/// for usage to retrieve pointer axes in [gdk::TimeCoord]
 pub(crate) fn axis_use_idx(a: gdk::AxisUse) -> usize {
     match a {
         gdk::AxisUse::Ignore => 0,
@@ -191,7 +110,7 @@ pub(crate) fn axis_use_idx(a: gdk::AxisUse) -> usize {
     }
 }
 
-pub fn default_file_title_for_export(
+pub(crate) fn default_file_title_for_export(
     output_file: Option<gio::File>,
     fallback: Option<&str>,
     suffix: Option<&str>,

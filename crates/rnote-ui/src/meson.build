@@ -87,6 +87,7 @@ rnote_ui_sources = files(
     'canvaswrapper.rs',
     'config.rs',
     'env.rs',
+    'filetype.rs',
     'globals.rs',
     'iconpicker.rs',
     'main.rs',

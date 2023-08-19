@@ -1,6 +1,7 @@
 // Imports
 use gtk4::{gdk, graphene};
 use p2d::bounding_volume::Aabb;
+use rnote_compose::eventresult::EventPropagation;
 
 /// Extension trait for [gdk::RGBA].
 pub trait GdkRGBAExt
@@ -91,5 +92,26 @@ impl GrapheneRectExt for graphene::Rect {
             (aabb.extents()[0]) as f32,
             (aabb.extents()[1]) as f32,
         )
+    }
+}
+
+pub trait EventPropagationExt {
+    fn into_glib(self) -> glib::Propagation;
+    fn from_glib(value: glib::Propagation) -> Self;
+}
+
+impl EventPropagationExt for EventPropagation {
+    fn into_glib(self) -> glib::Propagation {
+        match self {
+            EventPropagation::Proceed => glib::Propagation::Proceed,
+            EventPropagation::Stop => glib::Propagation::Stop,
+        }
+    }
+
+    fn from_glib(value: glib::Propagation) -> Self {
+        match value {
+            glib::Propagation::Stop => Self::Stop,
+            glib::Propagation::Proceed => Self::Proceed,
+        }
     }
 }

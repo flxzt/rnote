@@ -1,7 +1,7 @@
 // Imports
 use anyhow::Context;
 use rand::Rng;
-use rnote_compose::penevents::KeyboardKey;
+use rnote_compose::penevent::KeyboardKey;
 use rodio::source::Buffered;
 use rodio::{Decoder, Source};
 use std::collections::HashMap;

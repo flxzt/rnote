@@ -1,7 +1,7 @@
 // Imports
 use crate::color;
 use crate::ext::{AabbExt, Vector2Ext};
-use crate::penevents::PenState;
+use crate::penevent::PenState;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use piet::RenderContext;
 

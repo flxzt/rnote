@@ -1,6 +1,6 @@
 // Imports
-use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::toolsconfig::ToolStyle;
+use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
@@ -8,8 +8,9 @@ use crate::{Camera, DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::color;
+use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevents::PenEvent;
+use rnote_compose::penevent::{PenEvent, PenProgress};
 use std::time::Instant;
 
 #[derive(Clone, Debug)]
@@ -288,10 +289,10 @@ impl PenBehaviour for Tools {
         event: PenEvent,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let pen_progress = match (&mut self.state, event) {
+        let event_result = match (&mut self.state, event) {
             (ToolsState::Idle, PenEvent::Down { element, .. }) => {
                 match engine_view.pens_config.tools_config.style {
                     ToolStyle::VerticalSpace => {
@@ -318,17 +319,23 @@ impl PenBehaviour for Tools {
                             .coords;
                     }
                 }
-                widget_flags.merge(
-                    engine_view
-                        .doc
-                        .resize_autoexpand(engine_view.store, engine_view.camera),
-                );
+                widget_flags |= engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = ToolsState::Active;
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
-            (ToolsState::Idle, _) => PenProgress::Idle,
+            (ToolsState::Idle, _) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
             (ToolsState::Active, PenEvent::Down { element, .. }) => {
                 match engine_view.pens_config.tools_config.style {
                     ToolStyle::VerticalSpace => {
@@ -361,16 +368,12 @@ impl PenBehaviour for Tools {
                                 .transform_point(&self.offsetcamera_tool.start.into())
                                 .coords;
 
-                        widget_flags.merge(
-                            engine_view
-                                .camera
-                                .set_offset(engine_view.camera.offset() - offset, engine_view.doc),
-                        );
-                        widget_flags.merge(
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera),
-                        );
+                        widget_flags |= engine_view
+                            .camera
+                            .set_offset(engine_view.camera.offset() - offset, engine_view.doc);
+                        widget_flags |= engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
                     }
                     ToolStyle::Zoom => {
                         let total_zoom = engine_view.camera.total_zoom();
@@ -387,21 +390,21 @@ impl PenBehaviour for Tools {
                             total_zoom * (1.0 - offset[1] * Camera::DRAG_ZOOM_MAGN_ZOOM_FACTOR);
 
                         if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
-                            widget_flags.merge(
-                                engine_view
-                                    .camera
-                                    .zoom_w_timeout(new_zoom, engine_view.tasks_tx.clone()),
-                            );
-                            widget_flags
-                                .merge(engine_view.camera.set_viewport_center(viewport_center));
-                            widget_flags
-                                .merge(engine_view.doc.expand_autoexpand(engine_view.camera));
+                            widget_flags |= engine_view
+                                .camera
+                                .zoom_w_timeout(new_zoom, engine_view.tasks_tx.clone());
+                            widget_flags |= engine_view.camera.set_viewport_center(viewport_center)
+                                | engine_view.doc.expand_autoexpand(engine_view.camera);
                         }
                         self.zoom_tool.current_surface_coord = new_surface_coord;
                     }
                 }
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
             (ToolsState::Active, PenEvent::Up { .. }) => {
                 match engine_view.pens_config.tools_config.style {
@@ -410,17 +413,15 @@ impl PenBehaviour for Tools {
                             .store
                             .update_geometry_for_strokes(&self.verticalspace_tool.strokes_below);
 
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
                     }
                     ToolStyle::OffsetCamera | ToolStyle::Zoom => {}
                 }
 
-                widget_flags.merge(
-                    engine_view
-                        .doc
-                        .resize_autoexpand(engine_view.store, engine_view.camera),
-                );
+                widget_flags |= engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
                     engine_view.tasks_tx.clone(),
                     false,
@@ -430,16 +431,26 @@ impl PenBehaviour for Tools {
 
                 self.reset(engine_view);
 
-                PenProgress::Finished
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
-            (ToolsState::Active, PenEvent::Proximity { .. }) => PenProgress::InProgress,
-            (ToolsState::Active, PenEvent::KeyPressed { .. }) => PenProgress::InProgress,
+            (ToolsState::Active, PenEvent::Proximity { .. }) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
+            (ToolsState::Active, PenEvent::KeyPressed { .. }) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
             (ToolsState::Active, PenEvent::Cancel) => {
-                widget_flags.merge(
-                    engine_view
-                        .doc
-                        .resize_autoexpand(engine_view.store, engine_view.camera),
-                );
+                widget_flags |= engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
                     engine_view.tasks_tx.clone(),
                     false,
@@ -449,12 +460,20 @@ impl PenBehaviour for Tools {
 
                 self.reset(engine_view);
 
-                PenProgress::Finished
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
-            (ToolsState::Active, PenEvent::Text { .. }) => PenProgress::InProgress,
+            (ToolsState::Active, PenEvent::Text { .. }) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
         };
 
-        (pen_progress, widget_flags)
+        (event_result, widget_flags)
     }
 }
 

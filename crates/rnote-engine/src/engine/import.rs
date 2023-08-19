@@ -148,17 +148,16 @@ impl RnoteEngine {
         self.set_pen_sounds(self.pen_sounds, data_dir);
 
         // Reinstall the pen
-        widget_flags.merge(
-            self.penholder
-                .reinstall_pen_current_style(&mut EngineViewMut {
-                    tasks_tx: self.tasks_tx.clone(),
-                    pens_config: &mut self.pens_config,
-                    doc: &mut self.document,
-                    store: &mut self.store,
-                    camera: &mut self.camera,
-                    audioplayer: &mut self.audioplayer,
-                }),
-        );
+        widget_flags |= self
+            .penholder
+            .reinstall_pen_current_style(&mut EngineViewMut {
+                tasks_tx: self.tasks_tx.clone(),
+                pens_config: &mut self.pens_config,
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            });
 
         widget_flags.redraw = true;
         widget_flags.refresh_ui = true;
@@ -293,7 +292,7 @@ impl RnoteEngine {
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
 
-        widget_flags.merge(self.change_pen_style(PenStyle::Selector));
+        widget_flags |= self.change_pen_style(PenStyle::Selector);
 
         let inserted = strokes
             .into_iter()
@@ -301,12 +300,12 @@ impl RnoteEngine {
             .collect::<Vec<StrokeKey>>();
 
         // resize after the strokes are inserted, but before they are set selected
-        widget_flags.merge(self.doc_resize_to_fit_content());
+        widget_flags |= self.doc_resize_to_fit_content();
         self.store.set_selected_keys(&inserted, true);
-        widget_flags.merge(self.current_pen_update_state());
+        widget_flags |= self.current_pen_update_state();
         self.update_rendering_current_viewport();
 
-        widget_flags.merge(self.store.record(Instant::now()));
+        widget_flags |= self.store.record(Instant::now());
         widget_flags.redraw = true;
         widget_flags.resize = true;
         widget_flags.store_modified = true;
@@ -327,10 +326,10 @@ impl RnoteEngine {
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
 
-        widget_flags.merge(self.change_pen_style(PenStyle::Typewriter));
+        widget_flags |= self.change_pen_style(PenStyle::Typewriter);
 
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
-            widget_flags.merge(typewriter.insert_text(
+            widget_flags |= typewriter.insert_text(
                 text,
                 Some(pos),
                 &mut EngineViewMut {
@@ -341,10 +340,10 @@ impl RnoteEngine {
                     camera: &mut self.camera,
                     audioplayer: &mut self.audioplayer,
                 },
-            ));
+            );
         }
 
-        widget_flags.merge(self.store.record(Instant::now()));
+        widget_flags |= self.store.record(Instant::now());
         widget_flags.redraw = true;
 
         Ok(widget_flags)
@@ -364,7 +363,7 @@ impl RnoteEngine {
         // even though changing the pen style deselects too, but only when the pen is actually different.
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
-        widget_flags.merge(self.change_pen_style(PenStyle::Selector));
+        widget_flags |= self.change_pen_style(PenStyle::Selector);
 
         let inserted_keys = self.store.insert_stroke_content(content, pos);
         self.store.update_geometry_for_strokes(&inserted_keys);
@@ -374,16 +373,16 @@ impl RnoteEngine {
             self.camera.viewport(),
             self.camera.image_scale(),
         );
-        widget_flags.merge(self.penholder.current_pen_update_state(&mut EngineViewMut {
+        widget_flags |= self.penholder.current_pen_update_state(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &mut self.pens_config,
             doc: &mut self.document,
             store: &mut self.store,
             camera: &mut self.camera,
             audioplayer: &mut self.audioplayer,
-        }));
+        });
 
-        widget_flags.merge(self.store.record(Instant::now()));
+        widget_flags |= self.store.record(Instant::now());
         widget_flags.redraw = true;
 
         widget_flags

@@ -11,10 +11,12 @@ pub mod builders;
 pub mod color;
 /// constraints
 pub mod constraints;
+/// Event result.
+pub mod eventresult;
 /// module for extension traits for foreign types
 pub mod ext;
 /// module for pen events
-pub mod penevents;
+pub mod penevent;
 /// module for pen paths
 pub mod penpath;
 /// utilities for serializing / deserializing
@@ -33,6 +35,8 @@ pub mod utils;
 // Re-exports
 pub use color::Color;
 pub use constraints::Constraints;
+pub use eventresult::EventResult;
+pub use penevent::PenEvent;
 pub use penpath::PenPath;
 pub use shapes::Shape;
 pub use splitorder::SplitOrder;

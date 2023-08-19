@@ -2,8 +2,8 @@
 mod penevents;
 
 // Imports
-use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::selectorconfig::SelectorStyle;
+use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut, StrokeContent};
 use crate::render::Svg;
@@ -16,9 +16,10 @@ use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevents::{ModifierKey, PenEvent, PenState};
+use rnote_compose::penevent::{ModifierKey, PenEvent, PenProgress, PenState};
 use rnote_compose::penpath::Element;
 use rnote_compose::style::indicators;
+use rnote_compose::EventResult;
 use rnote_compose::{color, Color};
 use std::time::Instant;
 
@@ -127,7 +128,7 @@ impl PenBehaviour for Selector {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         match event {
             PenEvent::Down {
                 element,
@@ -215,7 +216,7 @@ impl PenBehaviour for Selector {
         let stroke_content = if let SelectorState::ModifySelection { selection, .. } = &self.state {
             let c = Some(engine_view.store.cut_stroke_content(selection));
             self.state = SelectorState::Idle;
-            widget_flags.merge(engine_view.store.record(Instant::now()));
+            widget_flags |= engine_view.store.record(Instant::now());
             widget_flags.store_modified = true;
             widget_flags.redraw = true;
             c
@@ -757,18 +758,16 @@ impl Selector {
         modifier_keys: Vec<ModifierKey>,
         engine_view: &mut EngineViewMut,
         widget_flags: &mut WidgetFlags,
-    ) -> PenProgress {
+    ) {
         if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
             // Select all keys
             let all_strokes = engine_view.store.stroke_keys_as_rendered();
 
             if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&all_strokes) {
                 engine_view.store.set_selected_keys(&all_strokes, true);
-                widget_flags.merge(
-                    engine_view
-                        .doc
-                        .resize_autoexpand(engine_view.store, engine_view.camera),
-                );
+                *widget_flags |= engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = SelectorState::ModifySelection {
                     modify_state: ModifyState::default(),
@@ -780,7 +779,6 @@ impl Selector {
                 widget_flags.deselect_color_setters = true;
             }
         }
-        PenProgress::InProgress
     }
 }
 
@@ -795,7 +793,7 @@ fn cancel_selection(selection: &[StrokeKey], engine_view: &mut EngineViewMut) ->
         engine_view.camera.image_scale(),
     );
 
-    widget_flags.merge(engine_view.store.record(Instant::now()));
+    widget_flags |= engine_view.store.record(Instant::now());
     widget_flags.store_modified = true;
     widget_flags.resize = true;
     widget_flags

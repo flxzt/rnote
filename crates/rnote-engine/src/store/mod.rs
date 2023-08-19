@@ -130,7 +130,7 @@ impl StrokeStore {
     pub(crate) fn import_from_snapshot(&mut self, snapshot: &EngineSnapshot) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        widget_flags.merge(self.clear());
+        widget_flags |= self.clear();
         self.stroke_components = Arc::clone(&snapshot.stroke_components);
         self.chrono_components = Arc::clone(&snapshot.chrono_components);
         self.chrono_counter = snapshot.chrono_counter;
@@ -140,7 +140,7 @@ impl StrokeStore {
         self.rebuild_trash_components_slotmap();
         self.rebuild_render_components_slotmap();
         self.rebuild_rtree();
-        widget_flags.merge(self.clear_history(self.create_history_entry()));
+        widget_flags |= self.clear_history(self.create_history_entry());
 
         widget_flags
     }

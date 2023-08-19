@@ -172,3 +172,14 @@ pub enum PenState {
     /// Down.
     Down,
 }
+
+/// The pen progress.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum PenProgress {
+    /// In idle state.
+    Idle,
+    /// In progress state.
+    InProgress,
+    /// Pen is finished.
+    Finished,
+}

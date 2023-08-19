@@ -6,7 +6,7 @@ use gtk4::{
     GestureDrag, GestureLongPress, GestureZoom, PropagationPhase, ScrolledWindow, Widget,
 };
 use once_cell::sync::Lazy;
-use rnote_compose::penevents::ShortcutKey;
+use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::Camera;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
@@ -319,8 +319,8 @@ mod imp {
                         let new_camera_offset = (((camera_offset + screen_offset) / old_zoom) * new_zoom) - screen_offset;
 
                         let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-                        widget_flags.merge(canvas.engine_mut().camera_set_offset(new_camera_offset));
-                        widget_flags.merge(canvas.engine_mut().doc_expand_autoexpand());
+                        widget_flags |= canvas.engine_mut().camera_set_offset(new_camera_offset);
+                        widget_flags |= canvas.engine_mut().doc_expand_autoexpand();
                         canvas.emit_handle_widget_flags(widget_flags);
                     }
 
@@ -349,7 +349,7 @@ mod imp {
                         let new_offset = touch_drag_start.get() - na::vector![x,y];
 
                         let mut widget_flags = canvas.engine_mut().camera_set_offset(new_offset);
-                        widget_flags.merge(canvas.engine_mut().doc_expand_autoexpand());
+                        widget_flags |= canvas.engine_mut().doc_expand_autoexpand();
                         canvas.emit_handle_widget_flags(widget_flags);
                     }),
                 );
@@ -375,7 +375,7 @@ mod imp {
                         let new_offset = mouse_drag_start.get() - na::vector![x,y];
 
                         let mut widget_flags = canvas.engine_mut().camera_set_offset(new_offset);
-                        widget_flags.merge(canvas.engine_mut().doc_expand_autoexpand());
+                        widget_flags |= canvas.engine_mut().doc_expand_autoexpand();
                         canvas.emit_handle_widget_flags(widget_flags);
                     }),
                 );
@@ -440,8 +440,8 @@ mod imp {
                             let bbcenter_delta = bbcenter_current - bbcenter_begin * prev_scale.get();
                             let new_offset = offset_begin.get() * prev_scale.get() - bbcenter_delta;
 
-                            widget_flags.merge(canvas.engine_mut().camera_set_offset(new_offset));
-                            widget_flags.merge(canvas.engine_mut().doc_expand_autoexpand());
+                            widget_flags |= canvas.engine_mut().camera_set_offset(new_offset);
+                            widget_flags |= canvas.engine_mut().doc_expand_autoexpand();
                         }
 
                         canvas.emit_handle_widget_flags(widget_flags);
@@ -487,7 +487,7 @@ mod imp {
                         let new_offset = offset_start.get() - na::vector![offset_x, offset_y];
 
                         let mut widget_flags = canvas.engine_mut().camera_set_offset(new_offset);
-                        widget_flags.merge(canvas.engine_mut().doc_expand_autoexpand());
+                        widget_flags |= canvas.engine_mut().doc_expand_autoexpand();
                         canvas.emit_handle_widget_flags(widget_flags);
                     })
                 );
@@ -539,8 +539,8 @@ mod imp {
                             let viewport_center = canvas.engine_ref().camera.viewport_center();
 
                             let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-                            widget_flags.merge(canvas.engine_mut().camera.set_viewport_center(viewport_center));
-                            widget_flags.merge(canvas.engine_mut().doc_expand_autoexpand());
+                            widget_flags |= canvas.engine_mut().camera.set_viewport_center(viewport_center);
+                            widget_flags |= canvas.engine_mut().doc_expand_autoexpand();
                             canvas.emit_handle_widget_flags(widget_flags);
                         }
 
@@ -558,7 +558,7 @@ mod imp {
             {
                 // Shortcut with touch two-finger long-press.
                 self.touch_two_finger_long_press_gesture.connect_pressed(clone!(@weak obj as canvaswrapper => move |_gesture, _, _| {
-                    let widget_flags = canvaswrapper.canvas()
+                    let (_, widget_flags) = canvaswrapper.canvas()
                         .engine_mut()
                         .handle_pressed_shortcut_key(ShortcutKey::TouchTwoFingerLongPress, Instant::now());
                     canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);

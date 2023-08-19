@@ -305,7 +305,7 @@ impl RnAppWindow {
             .canvas()
             .engine_mut()
             .load_engine_config(engine_config, crate::env::pkg_data_dir().ok());
-        widget_flags.merge(wrapper.canvas().engine_mut().doc_resize_to_fit_content());
+        widget_flags |= wrapper.canvas().engine_mut().doc_resize_to_fit_content();
         wrapper.canvas().update_rendering_current_viewport();
         self.handle_widget_flags(widget_flags, &wrapper.canvas());
         wrapper
@@ -813,10 +813,10 @@ impl RnAppWindow {
             active_engine.pens_config = prev_engine.pens_config.clone();
             active_engine.penholder.shortcuts = prev_engine.penholder.shortcuts.clone();
             active_engine.penholder.pen_mode_state = prev_engine.penholder.pen_mode_state.clone();
-            widget_flags
-                .merge(active_engine.change_pen_style(prev_engine.penholder.current_pen_style()));
+            widget_flags |=
+                active_engine.change_pen_style(prev_engine.penholder.current_pen_style());
             // ensures a clean and initialized state for the current pen
-            widget_flags.merge(active_engine.reinstall_pen_current_style());
+            widget_flags |= active_engine.reinstall_pen_current_style();
             active_engine.import_prefs = prev_engine.import_prefs;
             active_engine.export_prefs = prev_engine.export_prefs;
             active_engine.set_pen_sounds(prev_engine.pen_sounds(), crate::env::pkg_data_dir().ok());

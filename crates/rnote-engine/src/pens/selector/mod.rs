@@ -758,7 +758,7 @@ impl Selector {
         modifier_keys: Vec<ModifierKey>,
         engine_view: &mut EngineViewMut,
         widget_flags: &mut WidgetFlags,
-    ) -> PenProgress {
+    ) {
         if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
             // Select all keys
             let all_strokes = engine_view.store.stroke_keys_as_rendered();
@@ -781,7 +781,6 @@ impl Selector {
                 widget_flags.deselect_color_setters = true;
             }
         }
-        PenProgress::InProgress
     }
 }
 

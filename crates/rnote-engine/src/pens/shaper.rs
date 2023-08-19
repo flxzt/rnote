@@ -64,9 +64,8 @@ impl PenBehaviour for Shaper {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
-        let mut handled = !matches!(&event, &PenEvent::KeyPressed { .. });
 
-        let progress = match (&mut self.state, event) {
+        let event_result = match (&mut self.state, event) {
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
                 engine_view.pens_config.shaper_config.new_style_seeds();
 
@@ -78,13 +77,25 @@ impl PenBehaviour for Shaper {
                     ),
                 };
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
-            (ShaperState::Idle, _) => PenProgress::Idle,
+            (ShaperState::Idle, _) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
             (ShaperState::BuildShape { .. }, PenEvent::Cancel) => {
                 self.state = ShaperState::Idle;
 
-                PenProgress::Finished
+                EventResult {
+                    handled: false,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
             (ShaperState::BuildShape { builder }, event) => {
                 // Use Ctrl to temporarily enable/disable constraints when the switch is off/on
@@ -105,7 +116,8 @@ impl PenBehaviour for Shaper {
                     PenEvent::Text { .. } | PenEvent::Cancel => false,
                 };
                 let builder_result = builder.handle_event(event.clone(), now, constraints);
-                handled |= builder_result.handled;
+                let handled = builder_result.handled;
+                let propagate = builder_result.propagate;
 
                 let mut progress = match builder_result.progress {
                     BuilderProgress::InProgress => PenProgress::InProgress,
@@ -179,23 +191,19 @@ impl PenBehaviour for Shaper {
                 {
                     if keyboard_key == KeyboardKey::Escape && modifier_keys.is_empty() {
                         self.state = ShaperState::Idle;
-
                         progress = PenProgress::Finished;
                     }
                 }
 
-                progress
+                EventResult {
+                    handled,
+                    propagate,
+                    progress,
+                }
             }
         };
 
-        (
-            EventResult {
-                handled,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 }
 

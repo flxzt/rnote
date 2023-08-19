@@ -292,7 +292,7 @@ impl PenBehaviour for Tools {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let progress = match (&mut self.state, event) {
+        let event_result = match (&mut self.state, event) {
             (ToolsState::Idle, PenEvent::Down { element, .. }) => {
                 match engine_view.pens_config.tools_config.style {
                     ToolStyle::VerticalSpace => {
@@ -327,9 +327,17 @@ impl PenBehaviour for Tools {
 
                 self.state = ToolsState::Active;
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
-            (ToolsState::Idle, _) => PenProgress::Idle,
+            (ToolsState::Idle, _) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
             (ToolsState::Active, PenEvent::Down { element, .. }) => {
                 match engine_view.pens_config.tools_config.style {
                     ToolStyle::VerticalSpace => {
@@ -402,7 +410,11 @@ impl PenBehaviour for Tools {
                     }
                 }
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
             (ToolsState::Active, PenEvent::Up { .. }) => {
                 match engine_view.pens_config.tools_config.style {
@@ -431,10 +443,22 @@ impl PenBehaviour for Tools {
 
                 self.reset(engine_view);
 
-                PenProgress::Finished
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
-            (ToolsState::Active, PenEvent::Proximity { .. }) => PenProgress::InProgress,
-            (ToolsState::Active, PenEvent::KeyPressed { .. }) => PenProgress::InProgress,
+            (ToolsState::Active, PenEvent::Proximity { .. }) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
+            (ToolsState::Active, PenEvent::KeyPressed { .. }) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
             (ToolsState::Active, PenEvent::Cancel) => {
                 widget_flags.merge(
                     engine_view
@@ -450,19 +474,20 @@ impl PenBehaviour for Tools {
 
                 self.reset(engine_view);
 
-                PenProgress::Finished
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
-            (ToolsState::Active, PenEvent::Text { .. }) => PenProgress::InProgress,
+            (ToolsState::Active, PenEvent::Text { .. }) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
         };
 
-        (
-            EventResult {
-                handled: true,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 }
 

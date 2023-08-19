@@ -58,70 +58,104 @@ impl PenBehaviour for Eraser {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let progress = match (&mut self.state, event) {
+        let event_result = match (&mut self.state, event) {
             (EraserState::Up | EraserState::Proximity { .. }, PenEvent::Down { element, .. }) => {
                 widget_flags.merge(erase(element, engine_view));
-
                 self.state = EraserState::Down(element);
-
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
             (EraserState::Up | EraserState::Down { .. }, PenEvent::Proximity { element, .. }) => {
                 self.state = EraserState::Proximity(element);
-
-                PenProgress::Idle
+                EventResult {
+                    handled: false,
+                    propagate: EventPropagation::Proceed,
+                    progress: PenProgress::Idle,
+                }
             }
             (
                 EraserState::Up,
                 PenEvent::KeyPressed { .. } | PenEvent::Up { .. } | PenEvent::Cancel,
-            ) => PenProgress::Idle,
+            ) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
             (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
                 widget_flags.merge(erase(element, engine_view));
-
                 *current_element = element;
-
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
             (EraserState::Down { .. }, PenEvent::Up { element, .. }) => {
                 widget_flags.merge(erase(element, engine_view));
                 widget_flags.merge(engine_view.store.record(Instant::now()));
-
                 self.state = EraserState::Up;
-
-                PenProgress::Finished
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
-            (EraserState::Down(_), PenEvent::KeyPressed { .. }) => PenProgress::InProgress,
+            (EraserState::Down(_), PenEvent::KeyPressed { .. }) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
             (EraserState::Proximity(_), PenEvent::Up { .. }) => {
                 self.state = EraserState::Up;
-
-                PenProgress::Idle
+                EventResult {
+                    handled: false,
+                    propagate: EventPropagation::Proceed,
+                    progress: PenProgress::Idle,
+                }
             }
             (EraserState::Proximity(current_element), PenEvent::Proximity { element, .. }) => {
                 *current_element = element;
-
-                PenProgress::Idle
+                EventResult {
+                    handled: false,
+                    propagate: EventPropagation::Proceed,
+                    progress: PenProgress::Idle,
+                }
             }
             (EraserState::Proximity { .. } | EraserState::Down { .. }, PenEvent::Cancel) => {
                 self.state = EraserState::Up;
-
                 widget_flags.merge(engine_view.store.record(Instant::now()));
-
-                PenProgress::Finished
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
-            (EraserState::Proximity(_), PenEvent::KeyPressed { .. }) => PenProgress::Idle,
-            (EraserState::Up, PenEvent::Text { .. }) => PenProgress::Idle,
-            (EraserState::Proximity(_), PenEvent::Text { .. }) => PenProgress::Idle,
-            (EraserState::Down(_), PenEvent::Text { .. }) => PenProgress::InProgress,
+            (EraserState::Proximity(_), PenEvent::KeyPressed { .. }) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
+            (EraserState::Up, PenEvent::Text { .. }) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
+            (EraserState::Proximity(_), PenEvent::Text { .. }) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
+            (EraserState::Down(_), PenEvent::Text { .. }) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
         };
 
-        (
-            EventResult {
-                handled: true,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 }
 

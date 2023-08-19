@@ -22,7 +22,7 @@ impl Typewriter {
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
         let text_width = engine_view.pens_config.typewriter_config.text_width;
 
-        let progress = match &mut self.state {
+        let event_result = match &mut self.state {
             TypewriterState::Idle | TypewriterState::Start { .. } => {
                 let mut refresh_state = false;
                 let mut new_state = TypewriterState::Start(element.pos);
@@ -67,7 +67,11 @@ impl Typewriter {
                     widget_flags.refresh_ui = true;
                 }
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
             TypewriterState::Modifying {
                 modify_state,
@@ -148,7 +152,11 @@ impl Typewriter {
                             }
                         }
 
-                        progress
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress,
+                        }
                     }
                     ModifyState::Selecting { finished, .. } => {
                         let mut progress = PenProgress::InProgress;
@@ -200,7 +208,11 @@ impl Typewriter {
                             }
                         }
 
-                        progress
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress,
+                        }
                     }
                     ModifyState::Translating { current_pos, .. } => {
                         let offset = element.pos - *current_pos;
@@ -218,7 +230,11 @@ impl Typewriter {
                             widget_flags.store_modified = true;
                         }
 
-                        PenProgress::InProgress
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::InProgress,
+                        }
                     }
                     ModifyState::AdjustTextWidth {
                         start_text_width,
@@ -251,20 +267,17 @@ impl Typewriter {
                             }
                         }
 
-                        PenProgress::InProgress
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::InProgress,
+                        }
                     }
                 }
             }
         };
 
-        (
-            EventResult {
-                handled: true,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 
     pub(super) fn handle_pen_event_up(
@@ -277,9 +290,17 @@ impl Typewriter {
         let mut widget_flags = WidgetFlags::default();
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
 
-        let progress = match &mut self.state {
-            TypewriterState::Idle => PenProgress::Idle,
-            TypewriterState::Start(_) => PenProgress::InProgress,
+        let event_result = match &mut self.state {
+            TypewriterState::Idle => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
+            TypewriterState::Start(_) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
             TypewriterState::Modifying {
                 modify_state,
                 stroke_key,
@@ -356,18 +377,16 @@ impl Typewriter {
                         widget_flags.store_modified = true;
                     }
                 }
-                PenProgress::InProgress
+
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
         };
 
-        (
-            EventResult {
-                handled: true,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 
     pub(super) fn handle_pen_event_proximity(
@@ -380,9 +399,17 @@ impl Typewriter {
         let widget_flags = WidgetFlags::default();
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
 
-        let progress = match &mut self.state {
-            TypewriterState::Idle => PenProgress::Idle,
-            TypewriterState::Start(_) => PenProgress::InProgress,
+        let event_result = match &mut self.state {
+            TypewriterState::Idle => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
+            TypewriterState::Start(_) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
             TypewriterState::Modifying {
                 modify_state,
                 pen_down,
@@ -399,18 +426,15 @@ impl Typewriter {
                 };
                 *pen_down = false;
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
         };
 
-        (
-            EventResult {
-                handled: true,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 
     pub(super) fn handle_pen_event_keypressed(
@@ -426,8 +450,12 @@ impl Typewriter {
         let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
         let max_width_enabled = engine_view.pens_config.typewriter_config.max_width_enabled;
 
-        let progress = match &mut self.state {
-            TypewriterState::Idle => PenProgress::Idle,
+        let event_result = match &mut self.state {
+            TypewriterState::Idle => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
             TypewriterState::Start(pos) => {
                 super::play_sound(Some(keyboard_key), engine_view.audioplayer);
 
@@ -464,11 +492,19 @@ impl Typewriter {
 
                         widget_flags.merge(engine_view.store.record(Instant::now()));
                         widget_flags.store_modified = true;
-                    }
-                    _ => {}
-                }
 
-                PenProgress::InProgress
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::InProgress,
+                        }
+                    }
+                    _ => EventResult {
+                        handled: false,
+                        propagate: EventPropagation::Proceed,
+                        progress: PenProgress::InProgress,
+                    },
+                }
             }
             TypewriterState::Modifying {
                 modify_state,
@@ -507,6 +543,8 @@ impl Typewriter {
                                     widget_flags.store_modified = true;
                                 };
 
+                            *pen_down = false;
+
                             // Handling keyboard input
                             match keyboard_key {
                                 KeyboardKey::Unicode(keychar) => {
@@ -530,6 +568,12 @@ impl Typewriter {
                                         );
                                         update_stroke(engine_view.store, keychar.is_whitespace());
                                     }
+
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
                                 KeyboardKey::BackSpace => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
@@ -538,14 +582,32 @@ impl Typewriter {
                                         textstroke.remove_grapheme_before_cursor(cursor);
                                     }
                                     update_stroke(engine_view.store, false);
+
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
                                 KeyboardKey::HorizontalTab => {
                                     textstroke.insert_text_after_cursor("\t", cursor);
                                     update_stroke(engine_view.store, false);
+
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
                                 KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
                                     textstroke.insert_text_after_cursor("\n", cursor);
                                     update_stroke(engine_view.store, true);
+
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
                                 KeyboardKey::Delete => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
@@ -554,6 +616,12 @@ impl Typewriter {
                                         textstroke.remove_grapheme_after_cursor(cursor);
                                     }
                                     update_stroke(engine_view.store, false);
+
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
                                 KeyboardKey::NavLeft => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
@@ -575,6 +643,12 @@ impl Typewriter {
                                         } else {
                                             textstroke.move_cursor_back(cursor);
                                         }
+                                    }
+
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
                                     }
                                 }
                                 KeyboardKey::NavRight => {
@@ -598,6 +672,12 @@ impl Typewriter {
                                             textstroke.move_cursor_forward(cursor);
                                         }
                                     }
+
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
                                 KeyboardKey::NavUp => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
@@ -611,6 +691,12 @@ impl Typewriter {
                                     } else {
                                         textstroke.move_cursor_line_up(cursor);
                                     }
+
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
                                 KeyboardKey::NavDown => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
@@ -623,6 +709,12 @@ impl Typewriter {
                                         };
                                     } else {
                                         textstroke.move_cursor_line_down(cursor);
+                                    }
+
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
                                     }
                                 }
                                 KeyboardKey::Home => {
@@ -646,6 +738,12 @@ impl Typewriter {
                                             textstroke.move_cursor_line_start(cursor);
                                         }
                                     }
+
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
                                 KeyboardKey::End => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
@@ -668,14 +766,26 @@ impl Typewriter {
                                             textstroke.move_cursor_line_end(cursor);
                                         }
                                     }
+
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
-                                _ => {}
-                            };
-
-                            *pen_down = false;
+                                _ => EventResult {
+                                    handled: false,
+                                    propagate: EventPropagation::Proceed,
+                                    progress: PenProgress::InProgress,
+                                },
+                            }
+                        } else {
+                            EventResult {
+                                handled: false,
+                                propagate: EventPropagation::Proceed,
+                                progress: PenProgress::InProgress,
+                            }
                         }
-
-                        PenProgress::InProgress
                     }
                     ModifyState::Selecting {
                         selection_cursor,
@@ -700,9 +810,10 @@ impl Typewriter {
                                 widget_flags.merge(store.record(Instant::now()));
                                 widget_flags.store_modified = true;
                             };
+                            let mut quit_selecting = false;
 
                             // Handle keyboard keys
-                            let quit_selecting = match keyboard_key {
+                            let event_result = match keyboard_key {
                                 KeyboardKey::Unicode(keychar) => {
                                     if keychar == 'a'
                                         && modifier_keys.contains(&ModifierKey::KeyboardCtrl)
@@ -710,7 +821,6 @@ impl Typewriter {
                                         textstroke
                                             .update_selection_entire_text(cursor, selection_cursor);
                                         *finished = true;
-                                        false
                                     } else {
                                         textstroke.replace_text_between_selection_cursors(
                                             cursor,
@@ -718,7 +828,12 @@ impl Typewriter {
                                             String::from(keychar).as_str(),
                                         );
                                         update_stroke(engine_view.store);
-                                        true
+                                        quit_selecting = true;
+                                    }
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
                                     }
                                 }
                                 KeyboardKey::NavLeft => {
@@ -728,12 +843,16 @@ impl Typewriter {
                                         } else {
                                             textstroke.move_cursor_back(cursor);
                                         }
-                                        false
                                     } else {
                                         cursor.set_cursor(
                                             cursor.cur_cursor().min(selection_cursor.cur_cursor()),
                                         );
-                                        true
+                                        quit_selecting = true;
+                                    }
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
                                     }
                                 }
                                 KeyboardKey::NavRight => {
@@ -743,21 +862,39 @@ impl Typewriter {
                                         } else {
                                             textstroke.move_cursor_forward(cursor);
                                         }
-                                        false
                                     } else {
                                         cursor.set_cursor(
                                             cursor.cur_cursor().max(selection_cursor.cur_cursor()),
                                         );
-                                        true
+                                        quit_selecting = true;
+                                    }
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
                                     }
                                 }
                                 KeyboardKey::NavUp => {
                                     textstroke.move_cursor_line_up(cursor);
-                                    !modifier_keys.contains(&ModifierKey::KeyboardShift)
+                                    if !modifier_keys.contains(&ModifierKey::KeyboardShift) {
+                                        quit_selecting = true;
+                                    }
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
                                 KeyboardKey::NavDown => {
                                     textstroke.move_cursor_line_down(cursor);
-                                    !modifier_keys.contains(&ModifierKey::KeyboardShift)
+                                    if !modifier_keys.contains(&ModifierKey::KeyboardShift) {
+                                        quit_selecting = true;
+                                    }
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
                                 KeyboardKey::Home => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
@@ -765,7 +902,14 @@ impl Typewriter {
                                     } else {
                                         textstroke.move_cursor_line_start(cursor);
                                     }
-                                    !modifier_keys.contains(&ModifierKey::KeyboardShift)
+                                    if !modifier_keys.contains(&ModifierKey::KeyboardShift) {
+                                        quit_selecting = true;
+                                    }
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
                                 KeyboardKey::End => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
@@ -773,7 +917,14 @@ impl Typewriter {
                                     } else {
                                         textstroke.move_cursor_line_end(cursor);
                                     }
-                                    !modifier_keys.contains(&ModifierKey::KeyboardShift)
+                                    if !modifier_keys.contains(&ModifierKey::KeyboardShift) {
+                                        quit_selecting = true;
+                                    }
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
                                 KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
                                     textstroke.replace_text_between_selection_cursors(
@@ -782,7 +933,12 @@ impl Typewriter {
                                         "\n",
                                     );
                                     update_stroke(engine_view.store);
-                                    true
+                                    quit_selecting = true;
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
                                 KeyboardKey::BackSpace | KeyboardKey::Delete => {
                                     textstroke.replace_text_between_selection_cursors(
@@ -791,7 +947,12 @@ impl Typewriter {
                                         "",
                                     );
                                     update_stroke(engine_view.store);
-                                    true
+                                    quit_selecting = true;
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
                                 KeyboardKey::HorizontalTab => {
                                     textstroke.replace_text_between_selection_cursors(
@@ -800,17 +961,32 @@ impl Typewriter {
                                         "\t",
                                     );
                                     update_stroke(engine_view.store);
-                                    true
+                                    quit_selecting = true;
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
                                 }
                                 KeyboardKey::CtrlLeft
                                 | KeyboardKey::CtrlRight
                                 | KeyboardKey::ShiftLeft
-                                | KeyboardKey::ShiftRight => false,
-                                _ => true,
+                                | KeyboardKey::ShiftRight => EventResult {
+                                    handled: false,
+                                    propagate: EventPropagation::Proceed,
+                                    progress: PenProgress::InProgress,
+                                },
+                                _ => {
+                                    quit_selecting = true;
+                                    EventResult {
+                                        handled: true,
+                                        propagate: EventPropagation::Stop,
+                                        progress: PenProgress::InProgress,
+                                    }
+                                }
                             };
 
                             if quit_selecting {
-                                // Back to modifying
                                 self.state = TypewriterState::Modifying {
                                     modify_state: ModifyState::Up,
                                     stroke_key: *stroke_key,
@@ -818,25 +994,28 @@ impl Typewriter {
                                     pen_down: false,
                                 };
                             }
-                        }
 
-                        PenProgress::InProgress
+                            event_result
+                        } else {
+                            EventResult {
+                                handled: false,
+                                propagate: EventPropagation::Proceed,
+                                progress: PenProgress::InProgress,
+                            }
+                        }
                     }
-                    _ => PenProgress::InProgress,
+                    _ => EventResult {
+                        handled: false,
+                        propagate: EventPropagation::Proceed,
+                        progress: PenProgress::InProgress,
+                    },
                 }
             }
         };
 
         self.reset_blink();
 
-        (
-            EventResult {
-                handled: true,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 
     pub(super) fn handle_pen_event_text(
@@ -851,8 +1030,14 @@ impl Typewriter {
         let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
         let max_width_enabled = engine_view.pens_config.typewriter_config.max_width_enabled;
 
-        let progress = match &mut self.state {
-            TypewriterState::Idle => PenProgress::Idle,
+        self.reset_blink();
+
+        let event_result = match &mut self.state {
+            TypewriterState::Idle => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
             TypewriterState::Start(pos) => {
                 super::play_sound(None, engine_view.audioplayer);
 
@@ -884,7 +1069,11 @@ impl Typewriter {
                 widget_flags.resize = true;
                 widget_flags.store_modified = true;
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
             TypewriterState::Modifying {
                 modify_state,
@@ -929,7 +1118,11 @@ impl Typewriter {
                             widget_flags.store_modified = true;
                         }
 
-                        PenProgress::InProgress
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::InProgress,
+                        }
                     }
                     ModifyState::Selecting {
                         selection_cursor,
@@ -973,23 +1166,22 @@ impl Typewriter {
                             widget_flags.store_modified = true;
                         }
 
-                        PenProgress::InProgress
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::InProgress,
+                        }
                     }
-                    _ => PenProgress::InProgress,
+                    _ => EventResult {
+                        handled: false,
+                        propagate: EventPropagation::Proceed,
+                        progress: PenProgress::InProgress,
+                    },
                 }
             }
         };
 
-        self.reset_blink();
-
-        (
-            EventResult {
-                handled: true,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 
     pub(super) fn handle_pen_event_cancel(
@@ -999,22 +1191,23 @@ impl Typewriter {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
 
-        let progress = match &mut self.state {
-            TypewriterState::Idle => PenProgress::Idle,
+        let event_result = match &mut self.state {
+            TypewriterState::Idle => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
             _ => {
                 self.state = TypewriterState::Idle;
 
-                PenProgress::Finished
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
         };
 
-        (
-            EventResult {
-                handled: true,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 }

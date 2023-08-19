@@ -65,9 +65,8 @@ impl PenBehaviour for Brush {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
-        let handled = !matches!(&event, &PenEvent::KeyPressed { .. });
 
-        let progress = match (&mut self.state, event) {
+        let event_result = match (&mut self.state, event) {
             (BrushState::Idle, PenEvent::Down { element, .. }) => {
                 if !element
                     .filter_by_bounds(engine_view.doc.bounds().loosened(Self::INPUT_OVERSHOOT))
@@ -112,12 +111,24 @@ impl PenBehaviour for Brush {
                         current_stroke_key,
                     };
 
-                    PenProgress::InProgress
+                    EventResult {
+                        handled: true,
+                        propagate: EventPropagation::Stop,
+                        progress: PenProgress::InProgress,
+                    }
                 } else {
-                    PenProgress::Idle
+                    EventResult {
+                        handled: false,
+                        propagate: EventPropagation::Proceed,
+                        progress: PenProgress::Idle,
+                    }
                 }
             }
-            (BrushState::Idle, _) => PenProgress::Idle,
+            (BrushState::Idle, _) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
             (
                 BrushState::Drawing {
                     current_stroke_key, ..
@@ -145,7 +156,11 @@ impl PenBehaviour for Brush {
                 widget_flags.merge(engine_view.store.record(Instant::now()));
                 widget_flags.store_modified = true;
 
-                PenProgress::Finished
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
             (
                 BrushState::Drawing {
@@ -156,8 +171,10 @@ impl PenBehaviour for Brush {
             ) => {
                 let builder_result =
                     path_builder.handle_event(pen_event, now, Constraints::default());
+                let handled = builder_result.handled;
+                let propagate = builder_result.propagate;
 
-                match builder_result.progress {
+                let progress = match builder_result.progress {
                     BuilderProgress::InProgress => {
                         if engine_view.pens_config.brush_config.style != BrushStyle::Marker {
                             trigger_brush_sound(engine_view);
@@ -234,18 +251,17 @@ impl PenBehaviour for Brush {
 
                         PenProgress::Finished
                     }
+                };
+
+                EventResult {
+                    handled,
+                    propagate,
+                    progress,
                 }
             }
         };
 
-        (
-            EventResult {
-                handled,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 }
 

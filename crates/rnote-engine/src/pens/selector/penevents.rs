@@ -21,7 +21,7 @@ impl Selector {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let progress = match &mut self.state {
+        let event_result = match &mut self.state {
             SelectorState::Idle => {
                 // Deselect on start
                 let selection_keys = engine_view.store.selection_keys_as_rendered();
@@ -34,7 +34,11 @@ impl Selector {
                     path: vec![element],
                 };
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
             SelectorState::Selecting { path } => {
                 Self::add_to_select_path(
@@ -43,7 +47,11 @@ impl Selector {
                     element,
                 );
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
             SelectorState::ModifySelection {
                 modify_state,
@@ -277,18 +285,15 @@ impl Selector {
 
                 widget_flags.store_modified = true;
 
-                progress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress,
+                }
             }
         };
 
-        (
-            EventResult {
-                handled: true,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 
     pub(super) fn handle_pen_event_up(
@@ -301,8 +306,12 @@ impl Selector {
         let mut widget_flags = WidgetFlags::default();
         let selector_bounds = self.bounds_on_doc(&engine_view.as_im());
 
-        let progress = match &mut self.state {
-            SelectorState::Idle => PenProgress::Idle,
+        let event_result = match &mut self.state {
+            SelectorState::Idle => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
             SelectorState::Selecting { path } => {
                 let mut progress = PenProgress::Finished;
 
@@ -372,7 +381,11 @@ impl Selector {
                     }
                 }
 
-                progress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress,
+                }
             }
             SelectorState::ModifySelection {
                 modify_state,
@@ -415,18 +428,15 @@ impl Selector {
                     ModifyState::Up
                 };
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
         };
 
-        (
-            EventResult {
-                handled: true,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 
     pub(super) fn handle_pen_event_proximity(
@@ -439,9 +449,17 @@ impl Selector {
         let widget_flags = WidgetFlags::default();
         let selector_bounds = self.bounds_on_doc(&engine_view.as_im());
 
-        let progress = match &mut self.state {
-            SelectorState::Idle => PenProgress::Idle,
-            SelectorState::Selecting { .. } => PenProgress::InProgress,
+        let event_result = match &mut self.state {
+            SelectorState::Idle => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
+            SelectorState::Selecting { .. } => EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress: PenProgress::InProgress,
+            },
             SelectorState::ModifySelection { modify_state, .. } => {
                 *modify_state = if selector_bounds
                     .map(|b| b.contains_local_point(&element.pos.into()))
@@ -451,18 +469,15 @@ impl Selector {
                 } else {
                     ModifyState::Up
                 };
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
         };
 
-        (
-            EventResult {
-                handled: true,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 
     pub(super) fn handle_pen_event_keypressed(
@@ -474,23 +489,46 @@ impl Selector {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let progress = match &mut self.state {
+        let event_result = match &mut self.state {
             SelectorState::Idle => match keyboard_key {
                 KeyboardKey::Unicode('a') => {
-                    self.select_all(modifier_keys, engine_view, &mut widget_flags)
+                    self.select_all(modifier_keys, engine_view, &mut widget_flags);
+                    EventResult {
+                        handled: true,
+                        propagate: EventPropagation::Stop,
+                        progress: PenProgress::InProgress,
+                    }
                 }
-                _ => PenProgress::InProgress,
+                _ => EventResult {
+                    handled: false,
+                    propagate: EventPropagation::Proceed,
+                    progress: PenProgress::InProgress,
+                },
             },
             SelectorState::Selecting { .. } => match keyboard_key {
                 KeyboardKey::Unicode('a') => {
-                    self.select_all(modifier_keys, engine_view, &mut widget_flags)
+                    self.select_all(modifier_keys, engine_view, &mut widget_flags);
+                    EventResult {
+                        handled: true,
+                        propagate: EventPropagation::Stop,
+                        progress: PenProgress::InProgress,
+                    }
                 }
-                _ => PenProgress::InProgress,
+                _ => EventResult {
+                    handled: false,
+                    propagate: EventPropagation::Proceed,
+                    progress: PenProgress::InProgress,
+                },
             },
             SelectorState::ModifySelection { selection, .. } => {
                 match keyboard_key {
                     KeyboardKey::Unicode('a') => {
-                        self.select_all(modifier_keys, engine_view, &mut widget_flags)
+                        self.select_all(modifier_keys, engine_view, &mut widget_flags);
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::InProgress,
+                        }
                     }
                     KeyboardKey::Unicode('d') => {
                         //Duplicate selection
@@ -508,32 +546,41 @@ impl Selector {
                             widget_flags.resize = true;
                             widget_flags.store_modified = true;
                         }
-                        PenProgress::Finished
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::Finished,
+                        }
                     }
                     KeyboardKey::Delete | KeyboardKey::BackSpace => {
                         engine_view.store.set_trashed_keys(selection, true);
                         widget_flags.merge(super::cancel_selection(selection, engine_view));
                         self.state = SelectorState::Idle;
-                        PenProgress::Finished
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::Finished,
+                        }
                     }
                     KeyboardKey::Escape => {
                         widget_flags.merge(super::cancel_selection(selection, engine_view));
                         self.state = SelectorState::Idle;
-                        PenProgress::Finished
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::Finished,
+                        }
                     }
-                    _ => PenProgress::InProgress,
+                    _ => EventResult {
+                        handled: false,
+                        propagate: EventPropagation::Proceed,
+                        progress: PenProgress::Finished,
+                    },
                 }
             }
         };
 
-        (
-            EventResult {
-                handled: true,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 
     pub(super) fn handle_pen_event_text(
@@ -544,20 +591,25 @@ impl Selector {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
 
-        let progress = match &mut self.state {
-            SelectorState::Idle => PenProgress::Idle,
-            SelectorState::Selecting { .. } => PenProgress::InProgress,
-            SelectorState::ModifySelection { .. } => PenProgress::InProgress,
+        let event_result = match &mut self.state {
+            SelectorState::Idle => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
+            SelectorState::Selecting { .. } => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
+            SelectorState::ModifySelection { .. } => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
         };
 
-        (
-            EventResult {
-                handled: true,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 
     pub(super) fn handle_pen_event_cancel(
@@ -567,26 +619,31 @@ impl Selector {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let progress = match &mut self.state {
-            SelectorState::Idle => PenProgress::Idle,
+        let event_result = match &mut self.state {
+            SelectorState::Idle => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
             SelectorState::Selecting { .. } => {
                 self.state = SelectorState::Idle;
-                PenProgress::Finished
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
             SelectorState::ModifySelection { selection, .. } => {
                 widget_flags.merge(super::cancel_selection(selection, engine_view));
                 self.state = SelectorState::Idle;
-                PenProgress::Finished
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
         };
 
-        (
-            EventResult {
-                handled: true,
-                propagate: EventPropagation::Stop,
-                progress,
-            },
-            widget_flags,
-        )
+        (event_result, widget_flags)
     }
 }

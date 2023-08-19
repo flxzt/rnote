@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-16 10:52+0200\n"
-"PO-Revision-Date: 2023-08-06 11:48+0000\n"
+"PO-Revision-Date: 2023-08-19 09:34+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -2075,10 +2075,8 @@ msgid "Ellipses"
 msgstr "Ellissi"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:372
-#, fuzzy
-#| msgid "Curves"
 msgid "Curves & Paths"
-msgstr "Curve"
+msgstr "Curve & Percorsi"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Arrow"
@@ -2122,7 +2120,7 @@ msgstr "Curva di Bézier cubica"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:397
 msgid "Polyline"
-msgstr ""
+msgstr "Polilinea"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:568
 msgid "Application restart is required"

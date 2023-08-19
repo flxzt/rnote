@@ -257,6 +257,7 @@ impl PenHolder {
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (EventPropagation, WidgetFlags) {
+        const MOVE_VIEW_FACTOR: f64 = 0.33;
         let mut widget_flags = WidgetFlags::default();
 
         let propagate = match event {
@@ -273,7 +274,7 @@ impl PenHolder {
                     let y_offset = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
                         -engine_view.camera.size()[1]
                     } else {
-                        -engine_view.camera.size()[1] * 0.5
+                        -engine_view.camera.size()[1] * MOVE_VIEW_FACTOR
                     };
                     widget_flags |= engine_view.camera.set_offset(
                         engine_view.camera.offset() + na::vector![0.0, y_offset],
@@ -286,7 +287,7 @@ impl PenHolder {
                     let y_offset = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
                         engine_view.camera.size()[1]
                     } else {
-                        engine_view.camera.size()[1] * 0.5
+                        engine_view.camera.size()[1] * MOVE_VIEW_FACTOR
                     };
                     widget_flags |= engine_view.camera.set_offset(
                         engine_view.camera.offset() + na::vector![0.0, y_offset],
@@ -299,7 +300,7 @@ impl PenHolder {
                     let x_offset = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
                         -engine_view.camera.size()[0]
                     } else {
-                        -engine_view.camera.size()[0] * 0.5
+                        -engine_view.camera.size()[0] * MOVE_VIEW_FACTOR
                     };
                     widget_flags |= engine_view.camera.set_offset(
                         engine_view.camera.offset() + na::vector![x_offset, 0.0],
@@ -312,7 +313,7 @@ impl PenHolder {
                     let x_offset = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
                         engine_view.camera.size()[0]
                     } else {
-                        engine_view.camera.size()[0] * 0.5
+                        engine_view.camera.size()[0] * MOVE_VIEW_FACTOR
                     };
                     widget_flags |= engine_view.camera.set_offset(
                         engine_view.camera.offset() + na::vector![x_offset, 0.0],

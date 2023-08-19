@@ -241,7 +241,7 @@ impl PenHolder {
 
         if !event_result.handled {
             let (propagate, wf) = self.handle_event_global(event, now, engine_view);
-            event_result.propagate = propagate;
+            event_result.propagate |= propagate;
             widget_flags |= wf;
         }
 
@@ -271,13 +271,12 @@ impl PenHolder {
             } => match keyboard_key {
                 KeyboardKey::NavUp => {
                     let y_offset = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
-                        engine_view.doc.format.height
+                        -engine_view.camera.size()[1]
                     } else {
-                        engine_view.doc.format.height * 0.5
+                        -engine_view.camera.size()[1] * 0.5
                     };
                     widget_flags |= engine_view.camera.set_offset(
-                        engine_view.camera.offset()
-                            - na::vector![0.0, y_offset / engine_view.camera.total_zoom()],
+                        engine_view.camera.offset() + na::vector![0.0, y_offset],
                         engine_view.doc,
                     );
 
@@ -285,19 +284,44 @@ impl PenHolder {
                 }
                 KeyboardKey::NavDown => {
                     let y_offset = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
-                        engine_view.doc.format.height
+                        engine_view.camera.size()[1]
                     } else {
-                        engine_view.doc.format.height * 0.5
+                        engine_view.camera.size()[1] * 0.5
                     };
                     widget_flags |= engine_view.camera.set_offset(
-                        engine_view.camera.offset()
-                            + na::vector![0.0, y_offset / engine_view.camera.total_zoom()],
+                        engine_view.camera.offset() + na::vector![0.0, y_offset],
                         engine_view.doc,
                     );
 
                     EventPropagation::Stop
                 }
-                _ => EventPropagation::Stop,
+                KeyboardKey::NavLeft => {
+                    let x_offset = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                        -engine_view.camera.size()[0]
+                    } else {
+                        -engine_view.camera.size()[0] * 0.5
+                    };
+                    widget_flags |= engine_view.camera.set_offset(
+                        engine_view.camera.offset() + na::vector![x_offset, 0.0],
+                        engine_view.doc,
+                    );
+
+                    EventPropagation::Stop
+                }
+                KeyboardKey::NavRight => {
+                    let x_offset = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                        engine_view.camera.size()[0]
+                    } else {
+                        engine_view.camera.size()[0] * 0.5
+                    };
+                    widget_flags |= engine_view.camera.set_offset(
+                        engine_view.camera.offset() + na::vector![x_offset, 0.0],
+                        engine_view.doc,
+                    );
+
+                    EventPropagation::Stop
+                }
+                _ => EventPropagation::Proceed,
             },
         };
 

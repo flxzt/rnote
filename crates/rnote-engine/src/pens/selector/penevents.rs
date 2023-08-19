@@ -572,7 +572,7 @@ impl Selector {
                     _ => EventResult {
                         handled: false,
                         propagate: EventPropagation::Proceed,
-                        progress: PenProgress::Finished,
+                        progress: PenProgress::InProgress,
                     },
                 }
             }

@@ -1,6 +1,5 @@
 // Imports
-use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuildable;
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::constraints::ConstraintRatio;
 use crate::ext::AabbExt;
 use crate::penevent::{PenEvent, PenState};
@@ -32,7 +31,7 @@ pub struct FociEllipseBuilder {
     state: FociEllipseBuilderState,
 }
 
-impl ShapeBuilderCreator for FociEllipseBuilder {
+impl BuilderCreator for FociEllipseBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             state: FociEllipseBuilderState::Start(element.pos),
@@ -40,13 +39,15 @@ impl ShapeBuilderCreator for FociEllipseBuilder {
     }
 }
 
-impl ShapeBuildable for FociEllipseBuilder {
+impl Buildable for FociEllipseBuilder {
+    type Emit = Shape;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> ShapeBuilderProgress {
+    ) -> BuilderProgress<Self::Emit> {
         match (&mut self.state, event) {
             (FociEllipseBuilderState::Start(first), PenEvent::Down { element, .. }) => {
                 *first = element.pos;
@@ -101,12 +102,12 @@ impl ShapeBuildable for FociEllipseBuilder {
             (FociEllipseBuilderState::FociAndPoint { foci, point }, PenEvent::Up { .. }) => {
                 let shape = Ellipse::from_foci_and_point(*foci, *point);
 
-                return ShapeBuilderProgress::Finished(vec![Shape::Ellipse(shape)]);
+                return BuilderProgress::Finished(vec![Shape::Ellipse(shape)]);
             }
             (FociEllipseBuilderState::FociAndPoint { .. }, _) => {}
         }
 
-        ShapeBuilderProgress::InProgress
+        BuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

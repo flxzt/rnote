@@ -1,6 +1,5 @@
 // Imports
-use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuildable;
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Ellipse;
@@ -20,7 +19,7 @@ pub struct EllipseBuilder {
     current: na::Vector2<f64>,
 }
 
-impl ShapeBuilderCreator for EllipseBuilder {
+impl BuilderCreator for EllipseBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             start: element.pos,
@@ -29,26 +28,26 @@ impl ShapeBuilderCreator for EllipseBuilder {
     }
 }
 
-impl ShapeBuildable for EllipseBuilder {
+impl Buildable for EllipseBuilder {
+    type Emit = Shape;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> ShapeBuilderProgress {
+    ) -> BuilderProgress<Self::Emit> {
         match event {
             PenEvent::Down { element, .. } => {
                 self.current = constraints.constrain(element.pos - self.start) + self.start;
             }
             PenEvent::Up { .. } => {
-                return ShapeBuilderProgress::Finished(vec![Shape::Ellipse(
-                    self.state_as_ellipse(),
-                )]);
+                return BuilderProgress::Finished(vec![Shape::Ellipse(self.state_as_ellipse())]);
             }
             _ => {}
         }
 
-        ShapeBuilderProgress::InProgress
+        BuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &crate::Style, zoom: f64) -> Option<Aabb> {

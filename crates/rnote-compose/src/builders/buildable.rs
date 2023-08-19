@@ -2,35 +2,35 @@
 use crate::penpath::Element;
 use crate::Constraints;
 use crate::PenEvent;
-use crate::{Shape, Style};
+use crate::Style;
 use p2d::bounding_volume::Aabb;
 use std::time::Instant;
 
 #[derive(Debug, Clone)]
 /// Builder progress.
-pub enum ShapeBuilderProgress {
+pub enum BuilderProgress<T> {
     /// In progress.
     InProgress,
-    /// Emit shapes, but continue.
-    EmitContinue(Vec<Shape>),
+    /// Emit but continue.
+    EmitContinue(Vec<T>),
     /// Done building.
-    Finished(Vec<Shape>),
+    Finished(Vec<T>),
 }
 
-/// Creator for a shape builder.
-///
-/// This needs to be a separate trait to ShapeBuildable, because it is used as trait object,
-/// so we can't have a method on it returning `Self`.
-pub trait ShapeBuilderCreator {
+/// Creator of a builder.
+pub trait BuilderCreator {
     /// Start the builder.
     fn start(element: Element, now: Instant) -> Self;
 }
 
-/// Types that are shape builders.
+/// Types that are builders.
 ///
-/// They receive pen events, and return built shapes.
-/// They are usually drawn while building the shape, and are finite state machines.
-pub trait ShapeBuildable: std::fmt::Debug {
+/// They receive pen events, and return the associated `Emit` type.
+/// They usually are drawn while building and are finite state machines.
+pub trait Buildable: std::fmt::Debug {
+    /// The type that is emitted by the builder.
+    type Emit;
+
     /// Handle a pen event.
     ///
     /// Returns the builder progress.
@@ -39,7 +39,7 @@ pub trait ShapeBuildable: std::fmt::Debug {
         event: PenEvent,
         now: Instant,
         constraints: Constraints,
-    ) -> ShapeBuilderProgress;
+    ) -> BuilderProgress<Self::Emit>;
 
     /// Bounds.
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb>;

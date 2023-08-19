@@ -1,6 +1,5 @@
 // Imports
-use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuildable;
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
@@ -20,7 +19,7 @@ pub struct CoordSystem2DBuilder {
     tip_x: na::Vector2<f64>,
 }
 
-impl ShapeBuilderCreator for CoordSystem2DBuilder {
+impl BuilderCreator for CoordSystem2DBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             tip_y: element.pos,
@@ -29,19 +28,21 @@ impl ShapeBuilderCreator for CoordSystem2DBuilder {
     }
 }
 
-impl ShapeBuildable for CoordSystem2DBuilder {
+impl Buildable for CoordSystem2DBuilder {
+    type Emit = Shape;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> ShapeBuilderProgress {
+    ) -> BuilderProgress<Self::Emit> {
         match event {
             PenEvent::Down { element, .. } => {
                 self.tip_x = constraints.constrain(element.pos - self.tip_y) + self.tip_y;
             }
             PenEvent::Up { .. } => {
-                return ShapeBuilderProgress::Finished(
+                return BuilderProgress::Finished(
                     self.state_as_lines()
                         .iter()
                         .map(|&line| Shape::Line(line))
@@ -51,7 +52,7 @@ impl ShapeBuildable for CoordSystem2DBuilder {
             _ => {}
         }
 
-        ShapeBuilderProgress::InProgress
+        BuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

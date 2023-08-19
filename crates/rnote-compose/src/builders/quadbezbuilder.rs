@@ -1,6 +1,5 @@
 // Imports
-use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuildable;
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::constraints::ConstraintRatio;
 use crate::ext::AabbExt;
 use crate::penevent::{PenEvent, PenState};
@@ -35,7 +34,7 @@ pub struct QuadBezBuilder {
     state: QuadBezBuilderState,
 }
 
-impl ShapeBuilderCreator for QuadBezBuilder {
+impl BuilderCreator for QuadBezBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             state: QuadBezBuilderState::Cp {
@@ -46,13 +45,15 @@ impl ShapeBuilderCreator for QuadBezBuilder {
     }
 }
 
-impl ShapeBuildable for QuadBezBuilder {
+impl Buildable for QuadBezBuilder {
+    type Emit = Shape;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> ShapeBuilderProgress {
+    ) -> BuilderProgress<Self::Emit> {
         // we always want to allow horizontal and vertical constraints while building a quadbez
         constraints.ratios.insert(ConstraintRatio::Horizontal);
         constraints.ratios.insert(ConstraintRatio::Vertical);
@@ -80,18 +81,16 @@ impl ShapeBuildable for QuadBezBuilder {
                 *end = constraints.constrain(element.pos - *cp) + *cp;
             }
             (QuadBezBuilderState::End { start, cp, end }, PenEvent::Up { .. }) => {
-                return ShapeBuilderProgress::Finished(vec![Shape::QuadraticBezier(
-                    QuadraticBezier {
-                        start: *start,
-                        cp: *cp,
-                        end: *end,
-                    },
-                )]);
+                return BuilderProgress::Finished(vec![Shape::QuadraticBezier(QuadraticBezier {
+                    start: *start,
+                    cp: *cp,
+                    end: *end,
+                })]);
             }
             (QuadBezBuilderState::End { .. }, ..) => {}
         }
 
-        ShapeBuilderProgress::InProgress
+        BuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

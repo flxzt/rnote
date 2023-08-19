@@ -1,15 +1,14 @@
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-use std::time::Instant;
-
-use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuildable;
+// Imports
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
 use crate::style::{indicators, Composer};
 use crate::Constraints;
 use crate::{Shape, Style};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use piet::RenderContext;
+use std::time::Instant;
 
 /// 2D single quadrant coordinate system builder.
 #[derive(Debug, Clone)]
@@ -20,7 +19,7 @@ pub struct QuadrantCoordSystem2DBuilder {
     tip_x: na::Vector2<f64>,
 }
 
-impl ShapeBuilderCreator for QuadrantCoordSystem2DBuilder {
+impl BuilderCreator for QuadrantCoordSystem2DBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             tip_y: element.pos,
@@ -29,19 +28,21 @@ impl ShapeBuilderCreator for QuadrantCoordSystem2DBuilder {
     }
 }
 
-impl ShapeBuildable for QuadrantCoordSystem2DBuilder {
+impl Buildable for QuadrantCoordSystem2DBuilder {
+    type Emit = Shape;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> ShapeBuilderProgress {
+    ) -> BuilderProgress<Self::Emit> {
         match event {
             PenEvent::Down { element, .. } => {
                 self.tip_x = constraints.constrain(element.pos - self.tip_y) + self.tip_y;
             }
             PenEvent::Up { .. } => {
-                return ShapeBuilderProgress::Finished(
+                return BuilderProgress::Finished(
                     self.state_as_lines()
                         .iter()
                         .map(|&line| Shape::Line(line))
@@ -51,7 +52,7 @@ impl ShapeBuildable for QuadrantCoordSystem2DBuilder {
             _ => {}
         }
 
-        ShapeBuilderProgress::InProgress
+        BuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

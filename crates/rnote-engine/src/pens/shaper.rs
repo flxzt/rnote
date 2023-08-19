@@ -7,23 +7,25 @@ use crate::strokes::Stroke;
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
+use rnote_compose::builders::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use rnote_compose::builders::{ArrowBuilder, GridBuilder, PolylineBuilder};
 use rnote_compose::builders::{
-    CoordSystem2DBuilder, CoordSystem3DBuilder, EllipseBuilder, FociEllipseBuilder, LineBuilder,
-    QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuildable,
+    CoordSystem2DBuilder, CoordSystem3DBuilder, CubBezBuilder, EllipseBuilder, FociEllipseBuilder,
+    LineBuilder, QuadBezBuilder, QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuilderType,
 };
-use rnote_compose::builders::{CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
-use rnote_compose::builders::{ShapeBuilderCreator, ShapeBuilderProgress};
 use rnote_compose::penevent::{
     EventPropagation, EventResult, KeyboardKey, ModifierKey, PenEvent, PenProgress,
 };
 use rnote_compose::penpath::Element;
+use rnote_compose::Shape;
 use std::time::Instant;
 
 #[derive(Debug)]
 enum ShaperState {
     Idle,
-    BuildShape { builder: Box<dyn ShapeBuildable> },
+    BuildShape {
+        builder: Box<dyn Buildable<Emit = Shape>>,
+    },
 }
 
 #[derive(Debug)]
@@ -105,8 +107,8 @@ impl PenBehaviour for Shaper {
                 };
 
                 let mut progress = match builder.handle_event(event.clone(), now, constraints) {
-                    ShapeBuilderProgress::InProgress => PenProgress::InProgress,
-                    ShapeBuilderProgress::EmitContinue(shapes) => {
+                    BuilderProgress::InProgress => PenProgress::InProgress,
+                    BuilderProgress::EmitContinue(shapes) => {
                         let mut style = engine_view
                             .pens_config
                             .shaper_config
@@ -132,7 +134,7 @@ impl PenBehaviour for Shaper {
                         }
                         PenProgress::InProgress
                     }
-                    ShapeBuilderProgress::Finished(shapes) => {
+                    BuilderProgress::Finished(shapes) => {
                         let mut style = engine_view
                             .pens_config
                             .shaper_config
@@ -238,7 +240,7 @@ fn new_builder(
     builder_type: ShapeBuilderType,
     element: Element,
     now: Instant,
-) -> Box<dyn ShapeBuildable> {
+) -> Box<dyn Buildable<Emit = Shape>> {
     match builder_type {
         ShapeBuilderType::Arrow => Box::new(ArrowBuilder::start(element, now)),
         ShapeBuilderType::Line => Box::new(LineBuilder::start(element, now)),

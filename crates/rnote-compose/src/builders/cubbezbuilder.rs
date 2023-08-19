@@ -1,6 +1,5 @@
 // Impoorts
-use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuildable;
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::constraints::ConstraintRatio;
 use crate::ext::AabbExt;
 use crate::penevent::{PenEvent, PenState};
@@ -46,7 +45,7 @@ pub struct CubBezBuilder {
     state: CubBezBuilderState,
 }
 
-impl ShapeBuilderCreator for CubBezBuilder {
+impl BuilderCreator for CubBezBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             state: CubBezBuilderState::Cp1 {
@@ -57,13 +56,15 @@ impl ShapeBuilderCreator for CubBezBuilder {
     }
 }
 
-impl ShapeBuildable for CubBezBuilder {
+impl Buildable for CubBezBuilder {
+    type Emit = Shape;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> ShapeBuilderProgress {
+    ) -> BuilderProgress<Self::Emit> {
         // we always want to allow horizontal and vertical constraints while building a cubbez
         constraints.ratios.insert(ConstraintRatio::Horizontal);
         constraints.ratios.insert(ConstraintRatio::Vertical);
@@ -122,7 +123,7 @@ impl ShapeBuildable for CubBezBuilder {
                 },
                 PenEvent::Up { .. },
             ) => {
-                return ShapeBuilderProgress::Finished(vec![Shape::CubicBezier(CubicBezier {
+                return BuilderProgress::Finished(vec![Shape::CubicBezier(CubicBezier {
                     start: *start,
                     cp1: *cp1,
                     cp2: *cp2,
@@ -132,7 +133,7 @@ impl ShapeBuildable for CubBezBuilder {
             (CubBezBuilderState::End { .. }, ..) => {}
         }
 
-        ShapeBuilderProgress::InProgress
+        BuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

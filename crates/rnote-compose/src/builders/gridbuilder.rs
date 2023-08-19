@@ -1,6 +1,5 @@
 // Imports
-use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuildable;
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::ext::AabbExt;
 use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
@@ -35,7 +34,7 @@ pub struct GridBuilder {
     state: GridBuilderState,
 }
 
-impl ShapeBuilderCreator for GridBuilder {
+impl BuilderCreator for GridBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             state: GridBuilderState::FirstCell {
@@ -46,13 +45,15 @@ impl ShapeBuilderCreator for GridBuilder {
     }
 }
 
-impl ShapeBuildable for GridBuilder {
+impl Buildable for GridBuilder {
+    type Emit = Shape;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> ShapeBuilderProgress {
+    ) -> BuilderProgress<Self::Emit> {
         match (&mut self.state, event) {
             (GridBuilderState::FirstCell { start, current }, PenEvent::Down { element, .. }) => {
                 *current = constraints.constrain(element.pos - *start) + *start;
@@ -63,7 +64,7 @@ impl ShapeBuildable for GridBuilder {
                 if cell_size.x.abs() < Self::FIRST_CELL_DIMENSIONS_MIN
                     || cell_size.y.abs() < Self::FIRST_CELL_DIMENSIONS_MIN
                 {
-                    return ShapeBuilderProgress::Finished(vec![]);
+                    return BuilderProgress::Finished(vec![]);
                 }
 
                 self.state = GridBuilderState::FirstCellFinished {
@@ -88,14 +89,14 @@ impl ShapeBuildable for GridBuilder {
                 *current = element.pos;
             }
             (GridBuilderState::Grids { .. }, PenEvent::Up { .. }) => {
-                return ShapeBuilderProgress::Finished(
+                return BuilderProgress::Finished(
                     self.state_as_lines().into_iter().map(Shape::Line).collect(),
                 );
             }
             (GridBuilderState::Grids { .. }, ..) => {}
         }
 
-        ShapeBuilderProgress::InProgress
+        BuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

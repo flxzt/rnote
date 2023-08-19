@@ -1,6 +1,5 @@
 // Imports
-use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuildable;
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::constraints::ConstraintRatio;
 use crate::penevent::{KeyboardKey, PenEvent, PenState};
 use crate::penpath::Element;
@@ -29,7 +28,7 @@ pub struct PolylineBuilder {
     finish: bool,
 }
 
-impl ShapeBuilderCreator for PolylineBuilder {
+impl BuilderCreator for PolylineBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             start: element.pos,
@@ -42,13 +41,15 @@ impl ShapeBuilderCreator for PolylineBuilder {
     }
 }
 
-impl ShapeBuildable for PolylineBuilder {
+impl Buildable for PolylineBuilder {
+    type Emit = Shape;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> ShapeBuilderProgress {
+    ) -> BuilderProgress<Self::Emit> {
         // we always want to allow horizontal and vertical constraints while building a polyline
         constraints.ratios.insert(ConstraintRatio::Horizontal);
         constraints.ratios.insert(ConstraintRatio::Vertical);
@@ -67,7 +68,7 @@ impl ShapeBuildable for PolylineBuilder {
             }
             PenEvent::Up { element, .. } => {
                 if self.finish {
-                    return ShapeBuilderProgress::Finished(vec![Shape::Polyline(
+                    return BuilderProgress::Finished(vec![Shape::Polyline(
                         self.state_as_polyline(),
                     )]);
                 }
@@ -83,7 +84,7 @@ impl ShapeBuildable for PolylineBuilder {
             }
             PenEvent::KeyPressed { keyboard_key, .. } => match keyboard_key {
                 KeyboardKey::Escape | KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
-                    return ShapeBuilderProgress::Finished(vec![Shape::Polyline(
+                    return BuilderProgress::Finished(vec![Shape::Polyline(
                         self.state_as_polyline(),
                     )]);
                 }
@@ -96,7 +97,7 @@ impl ShapeBuildable for PolylineBuilder {
             }
         }
 
-        ShapeBuilderProgress::InProgress
+        BuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

@@ -1,6 +1,5 @@
 // Imports
-use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuildable;
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::constraints::ConstraintRatio;
 use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
@@ -21,7 +20,7 @@ pub struct LineBuilder {
     current: na::Vector2<f64>,
 }
 
-impl ShapeBuilderCreator for LineBuilder {
+impl BuilderCreator for LineBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             start: element.pos,
@@ -30,13 +29,15 @@ impl ShapeBuilderCreator for LineBuilder {
     }
 }
 
-impl ShapeBuildable for LineBuilder {
+impl Buildable for LineBuilder {
+    type Emit = Shape;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> ShapeBuilderProgress {
+    ) -> BuilderProgress<Self::Emit> {
         // we always want to allow horizontal and vertical constraints while building a line
         constraints.ratios.insert(ConstraintRatio::Horizontal);
         constraints.ratios.insert(ConstraintRatio::Vertical);
@@ -46,12 +47,12 @@ impl ShapeBuildable for LineBuilder {
                 self.current = constraints.constrain(element.pos - self.start) + self.start;
             }
             PenEvent::Up { .. } => {
-                return ShapeBuilderProgress::Finished(vec![Shape::Line(self.state_as_line())]);
+                return BuilderProgress::Finished(vec![Shape::Line(self.state_as_line())]);
             }
             _ => {}
         }
 
-        ShapeBuilderProgress::InProgress
+        BuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

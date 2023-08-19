@@ -9,13 +9,12 @@ use crate::strokes::Stroke;
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
-use rnote_compose::builders::PenPathBuilderType;
+use rnote_compose::builders::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use rnote_compose::builders::{
-    PenPathBuildable, PenPathBuilderCreator, PenPathBuilderProgress, PenPathModeledBuilder,
+    PenPathBuilderType, PenPathCurvedBuilder, PenPathModeledBuilder, PenPathSimpleBuilder,
 };
-use rnote_compose::builders::{PenPathCurvedBuilder, PenPathSimpleBuilder};
 use rnote_compose::penevent::{EventPropagation, EventResult, PenEvent, PenProgress};
-use rnote_compose::penpath::Element;
+use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::Constraints;
 use std::time::Instant;
 
@@ -23,7 +22,7 @@ use std::time::Instant;
 enum BrushState {
     Idle,
     Drawing {
-        path_builder: Box<dyn PenPathBuildable>,
+        path_builder: Box<dyn Buildable<Emit = Segment>>,
         current_stroke_key: StrokeKey,
     },
 }
@@ -155,14 +154,14 @@ impl PenBehaviour for Brush {
                 pen_event,
             ) => {
                 match path_builder.handle_event(pen_event, now, Constraints::default()) {
-                    PenPathBuilderProgress::InProgress => {
+                    BuilderProgress::InProgress => {
                         if engine_view.pens_config.brush_config.style != BrushStyle::Marker {
                             trigger_brush_sound(engine_view);
                         }
 
                         PenProgress::InProgress
                     }
-                    PenPathBuilderProgress::EmitContinue(segments) => {
+                    BuilderProgress::EmitContinue(segments) => {
                         if engine_view.pens_config.brush_config.style != BrushStyle::Marker {
                             trigger_brush_sound(engine_view);
                         }
@@ -188,7 +187,7 @@ impl PenBehaviour for Brush {
 
                         PenProgress::InProgress
                     }
-                    PenPathBuilderProgress::Finished(segments) => {
+                    BuilderProgress::Finished(segments) => {
                         let n_segments = segments.len();
 
                         if n_segments != 0 {
@@ -311,7 +310,7 @@ fn new_builder(
     builder_type: PenPathBuilderType,
     element: Element,
     now: Instant,
-) -> Box<dyn PenPathBuildable> {
+) -> Box<dyn Buildable<Emit = Segment>> {
     match builder_type {
         PenPathBuilderType::Simple => Box::new(PenPathSimpleBuilder::start(element, now)),
         PenPathBuilderType::Curved => Box::new(PenPathCurvedBuilder::start(element, now)),

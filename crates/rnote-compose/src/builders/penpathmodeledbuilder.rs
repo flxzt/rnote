@@ -1,5 +1,5 @@
 // Imports
-use super::{PenPathBuildable, PenPathBuilderCreator, PenPathBuilderProgress};
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::penpath::{Element, Segment};
 use crate::style::Composer;
 use crate::Constraints;
@@ -39,7 +39,7 @@ impl std::fmt::Debug for PenPathModeledBuilder {
     }
 }
 
-impl PenPathBuilderCreator for PenPathModeledBuilder {
+impl BuilderCreator for PenPathModeledBuilder {
     fn start(element: Element, now: Instant) -> Self {
         let mut builder = Self {
             buffer: vec![],
@@ -57,21 +57,23 @@ impl PenPathBuilderCreator for PenPathModeledBuilder {
     }
 }
 
-impl PenPathBuildable for PenPathModeledBuilder {
+impl Buildable for PenPathModeledBuilder {
+    type Emit = Segment;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         now: Instant,
         _constraints: Constraints,
-    ) -> PenPathBuilderProgress {
+    ) -> BuilderProgress<Self::Emit> {
         match event {
             PenEvent::Down { element, .. } => {
                 // kDown is already fed into the modeler when the builder was instantiated (with start())
                 self.update_modeler_w_element(element, ModelerInputEventType::kMove, now);
 
                 match self.try_build_segments() {
-                    Some(segments) => PenPathBuilderProgress::EmitContinue(segments),
-                    None => PenPathBuilderProgress::InProgress,
+                    Some(segments) => BuilderProgress::EmitContinue(segments),
+                    None => BuilderProgress::InProgress,
                 }
             }
             PenEvent::Up { element, .. } => {
@@ -79,12 +81,12 @@ impl PenPathBuildable for PenPathModeledBuilder {
 
                 let segments = self.build_segments_end();
 
-                PenPathBuilderProgress::Finished(segments)
+                BuilderProgress::Finished(segments)
             }
             PenEvent::Proximity { .. } | PenEvent::KeyPressed { .. } | PenEvent::Text { .. } => {
-                PenPathBuilderProgress::InProgress
+                BuilderProgress::InProgress
             }
-            PenEvent::Cancel => PenPathBuilderProgress::Finished(vec![]),
+            PenEvent::Cancel => BuilderProgress::Finished(vec![]),
         }
     }
 

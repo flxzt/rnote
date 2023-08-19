@@ -1,5 +1,5 @@
 // Imports
-use super::penpathbuildable::{PenPathBuildable, PenPathBuilderCreator, PenPathBuilderProgress};
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::penpath::{Element, Segment};
 use crate::style::Composer;
 use crate::Constraints;
@@ -17,7 +17,7 @@ pub struct PenPathSimpleBuilder {
     buffer: VecDeque<Element>,
 }
 
-impl PenPathBuilderCreator for PenPathSimpleBuilder {
+impl BuilderCreator for PenPathSimpleBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         let buffer = VecDeque::from_iter([element]);
 
@@ -25,18 +25,20 @@ impl PenPathBuilderCreator for PenPathSimpleBuilder {
     }
 }
 
-impl PenPathBuildable for PenPathSimpleBuilder {
+impl Buildable for PenPathSimpleBuilder {
+    type Emit = Segment;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         _constraints: Constraints,
-    ) -> PenPathBuilderProgress {
+    ) -> BuilderProgress<Self::Emit> {
         match event {
             PenEvent::Down { element, .. } => {
                 self.buffer.push_back(element);
 
-                PenPathBuilderProgress::EmitContinue(self.build_segments())
+                BuilderProgress::EmitContinue(self.build_segments())
             }
             PenEvent::Up { element, .. } => {
                 self.buffer.push_back(element);
@@ -44,14 +46,14 @@ impl PenPathBuildable for PenPathSimpleBuilder {
                 let segments = self.build_segments();
                 self.reset();
 
-                PenPathBuilderProgress::Finished(segments)
+                BuilderProgress::Finished(segments)
             }
             PenEvent::Proximity { .. } | PenEvent::KeyPressed { .. } | PenEvent::Text { .. } => {
-                PenPathBuilderProgress::InProgress
+                BuilderProgress::InProgress
             }
             PenEvent::Cancel => {
                 self.reset();
-                PenPathBuilderProgress::Finished(vec![])
+                BuilderProgress::Finished(vec![])
             }
         }
     }

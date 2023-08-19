@@ -1,6 +1,5 @@
 // Imports
-use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuildable;
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Rectangle;
@@ -21,7 +20,7 @@ pub struct RectangleBuilder {
     current: na::Vector2<f64>,
 }
 
-impl ShapeBuilderCreator for RectangleBuilder {
+impl BuilderCreator for RectangleBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             start: element.pos,
@@ -30,26 +29,26 @@ impl ShapeBuilderCreator for RectangleBuilder {
     }
 }
 
-impl ShapeBuildable for RectangleBuilder {
+impl Buildable for RectangleBuilder {
+    type Emit = Shape;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> ShapeBuilderProgress {
+    ) -> BuilderProgress<Self::Emit> {
         match event {
             PenEvent::Down { element, .. } => {
                 self.current = constraints.constrain(element.pos - self.start) + self.start;
             }
             PenEvent::Up { .. } => {
-                return ShapeBuilderProgress::Finished(vec![Shape::Rectangle(
-                    self.state_as_rect(),
-                )]);
+                return BuilderProgress::Finished(vec![Shape::Rectangle(self.state_as_rect())]);
             }
             _ => {}
         }
 
-        ShapeBuilderProgress::InProgress
+        BuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

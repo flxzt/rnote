@@ -1,6 +1,5 @@
 // Imports
-use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuildable;
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::constraints::ConstraintRatio;
 use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
@@ -21,7 +20,7 @@ pub struct ArrowBuilder {
     tip: na::Vector2<f64>,
 }
 
-impl ShapeBuilderCreator for ArrowBuilder {
+impl BuilderCreator for ArrowBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             start: element.pos,
@@ -30,13 +29,15 @@ impl ShapeBuilderCreator for ArrowBuilder {
     }
 }
 
-impl ShapeBuildable for ArrowBuilder {
+impl Buildable for ArrowBuilder {
+    type Emit = Shape;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> ShapeBuilderProgress {
+    ) -> BuilderProgress<Self::Emit> {
         // we always want to allow horizontal and vertical constraints while building an arrow
         constraints.ratios.insert(ConstraintRatio::Horizontal);
         constraints.ratios.insert(ConstraintRatio::Vertical);
@@ -46,12 +47,12 @@ impl ShapeBuildable for ArrowBuilder {
                 self.tip = constraints.constrain(element.pos - self.start) + self.start;
             }
             PenEvent::Up { .. } => {
-                return ShapeBuilderProgress::Finished(vec![Shape::Arrow(self.state_as_arrow())]);
+                return BuilderProgress::Finished(vec![Shape::Arrow(self.state_as_arrow())]);
             }
             _ => {}
         }
 
-        ShapeBuilderProgress::InProgress
+        BuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

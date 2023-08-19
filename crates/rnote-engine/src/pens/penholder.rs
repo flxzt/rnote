@@ -147,7 +147,7 @@ impl PenHolder {
             engine_view.store.set_selected_keys(&all_strokes, false);
 
             self.pen_mode_state.set_style(new_style);
-            widget_flags.merge(self.reinstall_pen_current_style(engine_view));
+            widget_flags |= self.reinstall_pen_current_style(engine_view);
             widget_flags.refresh_ui = true;
         }
 
@@ -168,7 +168,7 @@ impl PenHolder {
             engine_view.store.set_selected_keys(&all_strokes, false);
 
             self.pen_mode_state.set_style_override(new_style_override);
-            widget_flags.merge(self.reinstall_pen_current_style(engine_view));
+            widget_flags |= self.reinstall_pen_current_style(engine_view);
             widget_flags.refresh_ui = true;
         }
 
@@ -187,7 +187,7 @@ impl PenHolder {
 
         if self.pen_mode_state.pen_mode() != new_pen_mode {
             self.pen_mode_state.set_pen_mode(new_pen_mode);
-            widget_flags.merge(self.reinstall_pen_current_style(engine_view));
+            widget_flags |= self.reinstall_pen_current_style(engine_view);
             widget_flags.refresh_ui = true;
         }
 
@@ -207,10 +207,9 @@ impl PenHolder {
 
         // then reinstall a new pen instance
         let mut new_pen = new_pen(self.current_pen_style_w_override());
-        widget_flags.merge(new_pen.init(&engine_view.as_im()));
-        widget_flags.merge(new_pen.update_state(engine_view));
+        widget_flags |= new_pen.init(&engine_view.as_im()) | new_pen.update_state(engine_view);
         self.current_pen = new_pen;
-        widget_flags.merge(self.handle_changed_pen_style());
+        widget_flags |= self.handle_changed_pen_style();
         self.progress = PenProgress::Idle;
 
         widget_flags
@@ -231,20 +230,19 @@ impl PenHolder {
         let mut widget_flags = WidgetFlags::default();
 
         if let Some(pen_mode) = pen_mode {
-            widget_flags.merge(self.change_pen_mode(pen_mode, engine_view));
+            widget_flags |= self.change_pen_mode(pen_mode, engine_view);
         }
 
         // Handle the event with the current pen
         let (mut event_result, wf) = self
             .current_pen
             .handle_event(event.clone(), now, engine_view);
-        widget_flags.merge(wf);
-        widget_flags.merge(self.handle_pen_progress(event_result.progress, engine_view));
+        widget_flags |= wf | self.handle_pen_progress(event_result.progress, engine_view);
 
         if !event_result.handled {
             let (propagate, wf) = self.handle_event_global(event, now, engine_view);
             event_result.propagate = propagate;
-            widget_flags.merge(wf);
+            widget_flags |= wf;
         }
 
         // Always redraw after handling a pen event
@@ -277,11 +275,11 @@ impl PenHolder {
                     } else {
                         engine_view.doc.format.height * 0.5
                     };
-                    widget_flags.merge(engine_view.camera.set_offset(
+                    widget_flags |= engine_view.camera.set_offset(
                         engine_view.camera.offset()
                             - na::vector![0.0, y_offset / engine_view.camera.total_zoom()],
                         engine_view.doc,
-                    ));
+                    );
 
                     EventPropagation::Stop
                 }
@@ -291,11 +289,11 @@ impl PenHolder {
                     } else {
                         engine_view.doc.format.height * 0.5
                     };
-                    widget_flags.merge(engine_view.camera.set_offset(
+                    widget_flags |= engine_view.camera.set_offset(
                         engine_view.camera.offset()
                             + na::vector![0.0, y_offset / engine_view.camera.total_zoom()],
                         engine_view.doc,
-                    ));
+                    );
 
                     EventPropagation::Stop
                 }
@@ -322,7 +320,7 @@ impl PenHolder {
                     widget_flags.refresh_ui = true;
                 }
 
-                widget_flags.merge(self.reinstall_pen_current_style(engine_view));
+                widget_flags |= self.reinstall_pen_current_style(engine_view);
             }
         }
 
@@ -365,11 +363,11 @@ impl PenHolder {
             match action {
                 ShortcutAction::ChangePenStyle { style, mode } => match mode {
                     ShortcutMode::Temporary => {
-                        widget_flags.merge(self.change_style_override(Some(style), engine_view));
+                        widget_flags |= self.change_style_override(Some(style), engine_view);
                     }
                     ShortcutMode::Permanent => {
                         self.toggle_pen_style = None;
-                        widget_flags.merge(self.change_style_int(style, engine_view));
+                        widget_flags |= self.change_style_int(style, engine_view);
                     }
                     ShortcutMode::Toggle => {
                         if let Some(toggle_pen_style) = self.toggle_pen_style {
@@ -379,15 +377,15 @@ impl PenHolder {
                                 .map(|k| k != shortcut_key)
                                 .unwrap_or(true)
                             {
-                                widget_flags.merge(self.change_style_int(style, engine_view));
+                                widget_flags |= self.change_style_int(style, engine_view);
                             } else {
                                 self.toggle_pen_style = None;
-                                widget_flags
-                                    .merge(self.change_style_int(toggle_pen_style, engine_view));
+                                widget_flags |=
+                                    self.change_style_int(toggle_pen_style, engine_view);
                             }
                         } else {
                             self.toggle_pen_style = Some(self.current_pen_style());
-                            widget_flags.merge(self.change_style_int(style, engine_view));
+                            widget_flags |= self.change_style_int(style, engine_view);
                         }
                     }
                 },

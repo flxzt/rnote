@@ -275,8 +275,8 @@ impl RnoteEngine {
         let mut widget_flags = WidgetFlags::default();
 
         self.document = snapshot.document;
-        widget_flags.merge(self.store.import_from_snapshot(&snapshot));
-        widget_flags.merge(self.current_pen_update_state());
+        widget_flags |=
+            self.store.import_from_snapshot(&snapshot) | self.current_pen_update_state();
 
         widget_flags
     }
@@ -295,9 +295,8 @@ impl RnoteEngine {
     pub fn undo(&mut self, now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        widget_flags.merge(self.store.undo(now));
-        widget_flags.merge(self.doc_resize_autoexpand());
-        widget_flags.merge(self.current_pen_update_state());
+        widget_flags |=
+            self.store.undo(now) | self.doc_resize_autoexpand() | self.current_pen_update_state();
         self.update_rendering_current_viewport();
         widget_flags.redraw = true;
 
@@ -308,9 +307,8 @@ impl RnoteEngine {
     pub fn redo(&mut self, now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        widget_flags.merge(self.store.redo(now));
-        widget_flags.merge(self.doc_resize_autoexpand());
-        widget_flags.merge(self.current_pen_update_state());
+        widget_flags |=
+            self.store.redo(now) | self.doc_resize_autoexpand() | self.current_pen_update_state();
         self.update_rendering_current_viewport();
         widget_flags.redraw = true;
 
@@ -329,8 +327,7 @@ impl RnoteEngine {
     pub fn clear(&mut self) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        widget_flags.merge(self.store.clear());
-        widget_flags.merge(self.current_pen_update_state());
+        widget_flags |= self.store.clear() | self.current_pen_update_state();
 
         widget_flags
     }
@@ -410,18 +407,17 @@ impl RnoteEngine {
                 }
             }
             EngineTask::Zoom(zoom) => {
-                widget_flags.merge(self.camera.zoom_temporarily_to(1.0));
-                widget_flags.merge(self.camera.zoom_to(zoom));
+                widget_flags |= self.camera.zoom_temporarily_to(1.0) | self.camera.zoom_to(zoom);
 
                 let all_strokes = self.store.stroke_keys_unordered();
                 self.store.set_rendering_dirty_for_strokes(&all_strokes);
-                widget_flags.merge(self.doc_resize_autoexpand());
+                widget_flags |= self.doc_resize_autoexpand();
 
                 self.background_regenerate_pattern();
                 self.update_rendering_current_viewport();
             }
             EngineTask::Quit => {
-                widget_flags.merge(self.set_active(false));
+                widget_flags |= self.set_active(false);
                 quit = true;
             }
         }
@@ -536,12 +532,12 @@ impl RnoteEngine {
     pub fn set_active(&mut self, active: bool) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         if active {
-            widget_flags.merge(self.reinstall_pen_current_style());
+            widget_flags |= self.reinstall_pen_current_style();
             self.background_regenerate_pattern();
             self.update_content_rendering_current_viewport();
         } else {
             self.clear_rendering();
-            widget_flags.merge(self.penholder.deinit_current_pen());
+            widget_flags |= self.penholder.deinit_current_pen();
         }
         widget_flags
     }

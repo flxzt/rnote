@@ -397,11 +397,9 @@ impl Selector {
                     | ModifyState::Rotate { .. }
                     | ModifyState::Resize { .. } => {
                         engine_view.store.update_geometry_for_strokes(selection);
-                        widget_flags.merge(
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera),
-                        );
+                        widget_flags |= engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
                         engine_view.store.regenerate_rendering_in_viewport_threaded(
                             engine_view.tasks_tx.clone(),
                             false,
@@ -413,7 +411,7 @@ impl Selector {
                             *selection_bounds = new_bounds;
                         }
 
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
                     }
                     _ => {}
@@ -542,7 +540,7 @@ impl Selector {
                                 engine_view.camera.image_scale(),
                             );
 
-                            widget_flags.merge(engine_view.store.record(Instant::now()));
+                            widget_flags |= engine_view.store.record(Instant::now());
                             widget_flags.resize = true;
                             widget_flags.store_modified = true;
                         }
@@ -554,7 +552,7 @@ impl Selector {
                     }
                     KeyboardKey::Delete | KeyboardKey::BackSpace => {
                         engine_view.store.set_trashed_keys(selection, true);
-                        widget_flags.merge(super::cancel_selection(selection, engine_view));
+                        widget_flags |= super::cancel_selection(selection, engine_view);
                         self.state = SelectorState::Idle;
                         EventResult {
                             handled: true,
@@ -563,7 +561,7 @@ impl Selector {
                         }
                     }
                     KeyboardKey::Escape => {
-                        widget_flags.merge(super::cancel_selection(selection, engine_view));
+                        widget_flags |= super::cancel_selection(selection, engine_view);
                         self.state = SelectorState::Idle;
                         EventResult {
                             handled: true,
@@ -634,7 +632,7 @@ impl Selector {
                 }
             }
             SelectorState::ModifySelection { selection, .. } => {
-                widget_flags.merge(super::cancel_selection(selection, engine_view));
+                widget_flags |= super::cancel_selection(selection, engine_view);
                 self.state = SelectorState::Idle;
                 EventResult {
                     handled: true,

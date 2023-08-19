@@ -89,7 +89,7 @@ pub(crate) fn handle_pointer_controller_event(
                     let (ep, wf) = canvas
                         .engine_mut()
                         .handle_pressed_shortcut_key(shortcut_key, now);
-                    widget_flags.merge(wf);
+                    widget_flags |= wf;
                     propagation = ep.into_glib();
                 }
             }
@@ -173,7 +173,7 @@ pub(crate) fn handle_pointer_controller_event(
                         pen_mode,
                         event_time,
                     );
-                    widget_flags.merge(wf);
+                    widget_flags |= wf;
                     propagation = ep.into_glib();
                 }
                 PenState::Proximity => {
@@ -187,7 +187,7 @@ pub(crate) fn handle_pointer_controller_event(
                         pen_mode,
                         event_time,
                     );
-                    widget_flags.merge(wf);
+                    widget_flags |= wf;
                     propagation = ep.into_glib();
                 }
                 PenState::Down => {
@@ -202,7 +202,7 @@ pub(crate) fn handle_pointer_controller_event(
                         pen_mode,
                         event_time,
                     );
-                    widget_flags.merge(wf);
+                    widget_flags |= wf;
                     propagation = ep.into_glib();
                 }
             }

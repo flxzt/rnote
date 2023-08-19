@@ -145,15 +145,13 @@ impl PenBehaviour for Brush {
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 );
-                widget_flags.merge(
-                    engine_view
-                        .doc
-                        .resize_autoexpand(engine_view.store, engine_view.camera),
-                );
+                widget_flags |= engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = BrushState::Idle;
 
-                widget_flags.merge(engine_view.store.record(Instant::now()));
+                widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.store_modified = true;
 
                 EventResult {
@@ -238,15 +236,13 @@ impl PenBehaviour for Brush {
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         );
-                        widget_flags.merge(
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera),
-                        );
+                        widget_flags |= engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = BrushState::Idle;
 
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
 
                         PenProgress::Finished

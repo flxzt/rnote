@@ -216,7 +216,7 @@ impl PenBehaviour for Selector {
         let stroke_content = if let SelectorState::ModifySelection { selection, .. } = &self.state {
             let c = Some(engine_view.store.cut_stroke_content(selection));
             self.state = SelectorState::Idle;
-            widget_flags.merge(engine_view.store.record(Instant::now()));
+            widget_flags |= engine_view.store.record(Instant::now());
             widget_flags.store_modified = true;
             widget_flags.redraw = true;
             c
@@ -765,11 +765,9 @@ impl Selector {
 
             if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&all_strokes) {
                 engine_view.store.set_selected_keys(&all_strokes, true);
-                widget_flags.merge(
-                    engine_view
-                        .doc
-                        .resize_autoexpand(engine_view.store, engine_view.camera),
-                );
+                *widget_flags |= engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = SelectorState::ModifySelection {
                     modify_state: ModifyState::default(),
@@ -795,7 +793,7 @@ fn cancel_selection(selection: &[StrokeKey], engine_view: &mut EngineViewMut) ->
         engine_view.camera.image_scale(),
     );
 
-    widget_flags.merge(engine_view.store.record(Instant::now()));
+    widget_flags |= engine_view.store.record(Instant::now());
     widget_flags.store_modified = true;
     widget_flags.resize = true;
     widget_flags

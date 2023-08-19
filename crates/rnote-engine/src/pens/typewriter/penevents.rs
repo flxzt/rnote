@@ -63,7 +63,7 @@ impl Typewriter {
                 // after setting new state
                 if refresh_state {
                     // Update typewriter state for the current textstroke, and indicate that the penholder has changed, to update the UI
-                    widget_flags.merge(self.update_state(engine_view));
+                    widget_flags |= self.update_state(engine_view);
                     widget_flags.refresh_ui = true;
                 }
 
@@ -335,11 +335,9 @@ impl Typewriter {
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         );
-                        widget_flags.merge(
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera),
-                        );
+                        widget_flags |= engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
                             modify_state: ModifyState::Up,
@@ -348,7 +346,7 @@ impl Typewriter {
                             pen_down: false,
                         };
 
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
                     }
                     ModifyState::AdjustTextWidth { .. } => {
@@ -360,11 +358,9 @@ impl Typewriter {
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         );
-                        widget_flags.merge(
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera),
-                        );
+                        widget_flags |= engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
                             modify_state: ModifyState::Up,
@@ -373,7 +369,7 @@ impl Typewriter {
                             pen_down: false,
                         };
 
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
                     }
                 }
@@ -472,11 +468,9 @@ impl Typewriter {
                         let stroke_key = engine_view
                             .store
                             .insert_stroke(Stroke::TextStroke(textstroke), None);
-                        widget_flags.merge(
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera),
-                        );
+                        widget_flags |= engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
                         engine_view.store.regenerate_rendering_for_stroke(
                             stroke_key,
                             engine_view.camera.viewport(),
@@ -490,7 +484,7 @@ impl Typewriter {
                             pen_down: false,
                         };
 
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
 
                         EventResult {
@@ -527,17 +521,14 @@ impl Typewriter {
                                         engine_view.camera.viewport(),
                                         engine_view.camera.image_scale(),
                                     );
-                                    widget_flags.merge(
-                                        engine_view
-                                            .doc
-                                            .resize_autoexpand(store, engine_view.camera),
-                                    );
+                                    widget_flags |= engine_view
+                                        .doc
+                                        .resize_autoexpand(store, engine_view.camera);
                                     if keychar_is_whitespace {
-                                        widget_flags.merge(store.record(Instant::now()));
+                                        widget_flags |= store.record(Instant::now());
                                     } else {
-                                        widget_flags.merge(
-                                            store.update_latest_history_entry(Instant::now()),
-                                        );
+                                        widget_flags |=
+                                            store.update_latest_history_entry(Instant::now());
                                     }
 
                                     widget_flags.store_modified = true;
@@ -803,11 +794,9 @@ impl Typewriter {
                                     engine_view.camera.viewport(),
                                     engine_view.camera.image_scale(),
                                 );
-                                widget_flags.merge(
-                                    engine_view.doc.resize_autoexpand(store, engine_view.camera),
-                                );
-
-                                widget_flags.merge(store.record(Instant::now()));
+                                widget_flags |=
+                                    engine_view.doc.resize_autoexpand(store, engine_view.camera)
+                                        | store.record(Instant::now());
                                 widget_flags.store_modified = true;
                             };
                             let mut quit_selecting = false;
@@ -1065,7 +1054,7 @@ impl Typewriter {
                     pen_down: false,
                 };
 
-                widget_flags.merge(engine_view.store.record(Instant::now()));
+                widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.resize = true;
                 widget_flags.store_modified = true;
 
@@ -1095,24 +1084,20 @@ impl Typewriter {
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
                             );
-                            widget_flags.merge(
-                                engine_view
-                                    .doc
-                                    .resize_autoexpand(engine_view.store, engine_view.camera),
-                            );
+                            widget_flags |= engine_view
+                                .doc
+                                .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             *pen_down = false;
 
                             // only record new history entry if the text contains ascii-whitespace,
                             // else only update history
                             if text.contains(char::is_whitespace) {
-                                widget_flags.merge(engine_view.store.record(Instant::now()));
+                                widget_flags |= engine_view.store.record(Instant::now());
                             } else {
-                                widget_flags.merge(
-                                    engine_view
-                                        .store
-                                        .update_latest_history_entry(Instant::now()),
-                                );
+                                widget_flags |= engine_view
+                                    .store
+                                    .update_latest_history_entry(Instant::now());
                             }
 
                             widget_flags.store_modified = true;
@@ -1144,24 +1129,20 @@ impl Typewriter {
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
                             );
-                            widget_flags.merge(
-                                engine_view
-                                    .doc
-                                    .resize_autoexpand(engine_view.store, engine_view.camera),
-                            );
+                            widget_flags |= engine_view
+                                .doc
+                                .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             *finished = true;
 
                             // only record new history entry if the text contains ascii-whitespace,
                             // else only update history
                             if text.contains(char::is_whitespace) {
-                                widget_flags.merge(engine_view.store.record(Instant::now()));
+                                widget_flags |= engine_view.store.record(Instant::now());
                             } else {
-                                widget_flags.merge(
-                                    engine_view
-                                        .store
-                                        .update_latest_history_entry(Instant::now()),
-                                );
+                                widget_flags |= engine_view
+                                    .store
+                                    .update_latest_history_entry(Instant::now());
                             }
                             widget_flags.store_modified = true;
                         }

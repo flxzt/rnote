@@ -319,11 +319,9 @@ impl PenBehaviour for Tools {
                             .coords;
                     }
                 }
-                widget_flags.merge(
-                    engine_view
-                        .doc
-                        .resize_autoexpand(engine_view.store, engine_view.camera),
-                );
+                widget_flags |= engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = ToolsState::Active;
 
@@ -370,16 +368,12 @@ impl PenBehaviour for Tools {
                                 .transform_point(&self.offsetcamera_tool.start.into())
                                 .coords;
 
-                        widget_flags.merge(
-                            engine_view
-                                .camera
-                                .set_offset(engine_view.camera.offset() - offset, engine_view.doc),
-                        );
-                        widget_flags.merge(
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera),
-                        );
+                        widget_flags |= engine_view
+                            .camera
+                            .set_offset(engine_view.camera.offset() - offset, engine_view.doc);
+                        widget_flags |= engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
                     }
                     ToolStyle::Zoom => {
                         let total_zoom = engine_view.camera.total_zoom();
@@ -396,15 +390,11 @@ impl PenBehaviour for Tools {
                             total_zoom * (1.0 - offset[1] * Camera::DRAG_ZOOM_MAGN_ZOOM_FACTOR);
 
                         if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
-                            widget_flags.merge(
-                                engine_view
-                                    .camera
-                                    .zoom_w_timeout(new_zoom, engine_view.tasks_tx.clone()),
-                            );
-                            widget_flags
-                                .merge(engine_view.camera.set_viewport_center(viewport_center));
-                            widget_flags
-                                .merge(engine_view.doc.expand_autoexpand(engine_view.camera));
+                            widget_flags |= engine_view
+                                .camera
+                                .zoom_w_timeout(new_zoom, engine_view.tasks_tx.clone());
+                            widget_flags |= engine_view.camera.set_viewport_center(viewport_center)
+                                | engine_view.doc.expand_autoexpand(engine_view.camera);
                         }
                         self.zoom_tool.current_surface_coord = new_surface_coord;
                     }
@@ -423,17 +413,15 @@ impl PenBehaviour for Tools {
                             .store
                             .update_geometry_for_strokes(&self.verticalspace_tool.strokes_below);
 
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
                     }
                     ToolStyle::OffsetCamera | ToolStyle::Zoom => {}
                 }
 
-                widget_flags.merge(
-                    engine_view
-                        .doc
-                        .resize_autoexpand(engine_view.store, engine_view.camera),
-                );
+                widget_flags |= engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
                     engine_view.tasks_tx.clone(),
                     false,
@@ -460,11 +448,9 @@ impl PenBehaviour for Tools {
                 progress: PenProgress::InProgress,
             },
             (ToolsState::Active, PenEvent::Cancel) => {
-                widget_flags.merge(
-                    engine_view
-                        .doc
-                        .resize_autoexpand(engine_view.store, engine_view.camera),
-                );
+                widget_flags |= engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
                     engine_view.tasks_tx.clone(),
                     false,

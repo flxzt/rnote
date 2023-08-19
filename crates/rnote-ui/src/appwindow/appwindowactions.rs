@@ -278,9 +278,9 @@ impl RnAppWindow {
 
                 if prev_layout != doc_layout {
                     canvas.engine_mut().document.layout = doc_layout;
-                    widget_flags.merge(canvas.engine_mut().doc_resize_to_fit_content());
+                    widget_flags |= canvas.engine_mut().doc_resize_to_fit_content();
                 } else {
-                    widget_flags.merge(canvas.engine_mut().doc_resize_autoexpand());
+                    widget_flags |= canvas.engine_mut().doc_resize_autoexpand();
                 }
                 canvas.update_rendering_current_viewport();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -330,7 +330,7 @@ impl RnAppWindow {
                 // (e.g. when switched to from the pen button, not by clicking the pen page)
                 if pen_style != canvas.engine_ref().penholder.current_pen_style_w_override() {
                     let mut widget_flags = canvas.engine_mut().change_pen_style(pen_style);
-                    widget_flags.merge(canvas.engine_mut().change_pen_style_override(None));
+                    widget_flags |= canvas.engine_mut().change_pen_style_override(None);
                     appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
             }),
@@ -404,9 +404,9 @@ impl RnAppWindow {
                 let mut widget_flags = WidgetFlags::default();
                 let selection_keys = canvas.engine_ref().store.selection_keys_as_rendered();
                 canvas.engine_mut().store.set_trashed_keys(&selection_keys, true);
-                widget_flags.merge(canvas.engine_mut().current_pen_update_state());
-                widget_flags.merge(canvas.engine_mut().doc_resize_autoexpand());
-                widget_flags.merge(canvas.engine_mut().record(Instant::now()));
+                widget_flags |= canvas.engine_mut().current_pen_update_state();
+                widget_flags |= canvas.engine_mut().doc_resize_autoexpand();
+                widget_flags |= canvas.engine_mut().record(Instant::now());
                 canvas.update_rendering_current_viewport();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -421,9 +421,9 @@ impl RnAppWindow {
                 let mut widget_flags = WidgetFlags::default();
                 let new_selected = canvas.engine_mut().store.duplicate_selection();
                 canvas.engine_mut().store.update_geometry_for_strokes(&new_selected);
-                widget_flags.merge(canvas.engine_mut().current_pen_update_state());
-                widget_flags.merge(canvas.engine_mut().doc_resize_autoexpand());
-                widget_flags.merge(canvas.engine_mut().record(Instant::now()));
+                widget_flags |= canvas.engine_mut().current_pen_update_state();
+                widget_flags |= canvas.engine_mut().doc_resize_autoexpand();
+                widget_flags |= canvas.engine_mut().record(Instant::now());
                 canvas.update_rendering_current_viewport();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -438,10 +438,10 @@ impl RnAppWindow {
                 let mut widget_flags = WidgetFlags::default();
                 let all_strokes = canvas.engine_ref().store.stroke_keys_as_rendered();
                 canvas.engine_mut().store.set_selected_keys(&all_strokes, true);
-                widget_flags.merge(canvas.engine_mut().change_pen_style(PenStyle::Selector));
-                widget_flags.merge(canvas.engine_mut().current_pen_update_state());
-                widget_flags.merge(canvas.engine_mut().doc_resize_autoexpand());
-                widget_flags.merge(canvas.engine_mut().record(Instant::now()));
+                widget_flags |= canvas.engine_mut().change_pen_style(PenStyle::Selector);
+                widget_flags |= canvas.engine_mut().current_pen_update_state();
+                widget_flags |= canvas.engine_mut().doc_resize_autoexpand();
+                widget_flags |= canvas.engine_mut().record(Instant::now());
                 canvas.update_rendering_current_viewport();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -456,10 +456,10 @@ impl RnAppWindow {
                 let mut widget_flags = WidgetFlags::default();
                 let all_strokes = canvas.engine_ref().store.selection_keys_as_rendered();
                 canvas.engine_mut().store.set_selected_keys(&all_strokes, false);
-                widget_flags.merge(canvas.engine_mut().change_pen_style(PenStyle::Selector));
-                widget_flags.merge(canvas.engine_mut().current_pen_update_state());
-                widget_flags.merge(canvas.engine_mut().doc_resize_autoexpand());
-                widget_flags.merge(canvas.engine_mut().record(Instant::now()));
+                widget_flags |= canvas.engine_mut().change_pen_style(PenStyle::Selector);
+                widget_flags |= canvas.engine_mut().current_pen_update_state();
+                widget_flags |= canvas.engine_mut().doc_resize_autoexpand();
+                widget_flags |= canvas.engine_mut().record(Instant::now());
                 canvas.update_rendering_current_viewport();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -499,7 +499,7 @@ impl RnAppWindow {
             let new_zoom = Camera::ZOOM_DEFAULT;
 
             let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-            widget_flags.merge(canvas.engine_mut().camera.set_viewport_center(viewport_center));
+            widget_flags |= canvas.engine_mut().camera.set_viewport_center(viewport_center);
             appwindow.handle_widget_flags(widget_flags, &canvas)
         }));
 
@@ -512,7 +512,7 @@ impl RnAppWindow {
                 / (canvaswrapper.canvas().engine_ref().document.format.width + 2.0 * RnCanvas::ZOOM_FIT_WIDTH_MARGIN);
 
             let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-            widget_flags.merge(canvas.engine_mut().camera.set_viewport_center(viewport_center));
+            widget_flags |= canvas.engine_mut().camera.set_viewport_center(viewport_center);
             appwindow.handle_widget_flags(widget_flags, &canvas)
         }));
 
@@ -523,7 +523,7 @@ impl RnAppWindow {
             let new_zoom = canvas.engine_ref().camera.total_zoom() * (1.0 + RnCanvas::ZOOM_SCROLL_STEP);
 
             let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-            widget_flags.merge(canvas.engine_mut().camera.set_viewport_center(viewport_center));
+            widget_flags |= canvas.engine_mut().camera.set_viewport_center(viewport_center);
             appwindow.handle_widget_flags(widget_flags, &canvas)
         }));
 
@@ -534,7 +534,7 @@ impl RnAppWindow {
             let new_zoom = canvas.engine_ref().camera.total_zoom() * (1.0 - RnCanvas::ZOOM_SCROLL_STEP);
 
             let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-            widget_flags.merge(canvas.engine_mut().camera.set_viewport_center(viewport_center));
+            widget_flags |= canvas.engine_mut().camera.set_viewport_center(viewport_center);
             appwindow.handle_widget_flags(widget_flags, &canvas)
         }));
 
@@ -556,7 +556,7 @@ impl RnAppWindow {
 
                 let mut widget_flags = WidgetFlags::default();
                 if canvas.engine_mut().doc_remove_page_fixed_size() {
-                    widget_flags.merge(canvas.engine_mut().record(Instant::now()));
+                    widget_flags |= canvas.engine_mut().record(Instant::now());
                     canvas.update_rendering_current_viewport();
                 }
                 appwindow.handle_widget_flags(widget_flags, &canvas);

@@ -60,7 +60,7 @@ impl PenBehaviour for Eraser {
 
         let event_result = match (&mut self.state, event) {
             (EraserState::Up | EraserState::Proximity { .. }, PenEvent::Down { element, .. }) => {
-                widget_flags.merge(erase(element, engine_view));
+                widget_flags |= erase(element, engine_view);
                 self.state = EraserState::Down(element);
                 EventResult {
                     handled: true,
@@ -85,7 +85,7 @@ impl PenBehaviour for Eraser {
                 progress: PenProgress::Idle,
             },
             (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
-                widget_flags.merge(erase(element, engine_view));
+                widget_flags |= erase(element, engine_view);
                 *current_element = element;
                 EventResult {
                     handled: true,
@@ -94,8 +94,8 @@ impl PenBehaviour for Eraser {
                 }
             }
             (EraserState::Down { .. }, PenEvent::Up { element, .. }) => {
-                widget_flags.merge(erase(element, engine_view));
-                widget_flags.merge(engine_view.store.record(Instant::now()));
+                widget_flags |=
+                    erase(element, engine_view) | engine_view.store.record(Instant::now());
                 self.state = EraserState::Up;
                 EventResult {
                     handled: true,
@@ -126,7 +126,7 @@ impl PenBehaviour for Eraser {
             }
             (EraserState::Proximity { .. } | EraserState::Down { .. }, PenEvent::Cancel) => {
                 self.state = EraserState::Up;
-                widget_flags.merge(engine_view.store.record(Instant::now()));
+                widget_flags |= engine_view.store.record(Instant::now());
                 EventResult {
                     handled: true,
                     propagate: EventPropagation::Stop,
@@ -223,17 +223,17 @@ fn erase(element: Element, engine_view: &mut EngineViewMut) -> WidgetFlags {
 
     match &engine_view.pens_config.eraser_config.style {
         EraserStyle::TrashCollidingStrokes => {
-            widget_flags.merge(engine_view.store.trash_colliding_strokes(
-                engine_view.pens_config.eraser_config.eraser_bounds(element),
-                engine_view.camera.viewport(),
-            ));
-        }
-        EraserStyle::SplitCollidingStrokes => {
-            let (modified_strokes, new_widget_flags) = engine_view.store.split_colliding_strokes(
+            widget_flags |= engine_view.store.trash_colliding_strokes(
                 engine_view.pens_config.eraser_config.eraser_bounds(element),
                 engine_view.camera.viewport(),
             );
-            widget_flags.merge(new_widget_flags);
+        }
+        EraserStyle::SplitCollidingStrokes => {
+            let (modified_strokes, wf) = engine_view.store.split_colliding_strokes(
+                engine_view.pens_config.eraser_config.eraser_bounds(element),
+                engine_view.camera.viewport(),
+            );
+            widget_flags |= wf;
 
             engine_view.store.regenerate_rendering_for_strokes(
                 &modified_strokes,

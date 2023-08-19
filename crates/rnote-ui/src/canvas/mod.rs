@@ -1217,7 +1217,7 @@ impl RnCanvas {
             };
 
         let mut widget_flags = self.engine_mut().camera_set_offset(new_offset);
-        widget_flags.merge(self.engine_mut().doc_expand_autoexpand());
+        widget_flags |= self.engine_mut().doc_expand_autoexpand();
         self.emit_handle_widget_flags(widget_flags);
     }
 

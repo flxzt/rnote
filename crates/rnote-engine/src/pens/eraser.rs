@@ -1,6 +1,6 @@
 // Imports
-use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::eraserconfig::EraserStyle;
+use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawableOnDoc, WidgetFlags};
@@ -8,7 +8,7 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::ext::AabbExt;
-use rnote_compose::penevents::PenEvent;
+use rnote_compose::penevents::{EventPropagation, EventResult, PenEvent, PenProgress};
 use rnote_compose::penpath::Element;
 use std::time::Instant;
 
@@ -54,10 +54,10 @@ impl PenBehaviour for Eraser {
         event: PenEvent,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let pen_progress = match (&mut self.state, event) {
+        let progress = match (&mut self.state, event) {
             (EraserState::Up | EraserState::Proximity { .. }, PenEvent::Down { element, .. }) => {
                 widget_flags.merge(erase(element, engine_view));
 
@@ -113,7 +113,14 @@ impl PenBehaviour for Eraser {
             (EraserState::Down(_), PenEvent::Text { .. }) => PenProgress::InProgress,
         };
 
-        (pen_progress, widget_flags)
+        (
+            EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 }
 

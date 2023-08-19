@@ -364,7 +364,7 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |_, _| {
                 log::debug!("drawing pad pressed button 0");
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let widget_flags = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton0, Instant::now());
+                let (_, widget_flags) = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton0, Instant::now());
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );
@@ -373,7 +373,7 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |_, _| {
                 log::debug!("drawing pad pressed button 1");
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let widget_flags = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton1, Instant::now());
+                let (_, widget_flags) = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton1, Instant::now());
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );
@@ -382,7 +382,7 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |_, _| {
                 log::debug!("drawing pad pressed button 2");
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let widget_flags = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton2, Instant::now());
+                let (_, widget_flags) = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton2, Instant::now());
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );
@@ -391,7 +391,7 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |_, _| {
                 log::debug!("drawing pad pressed button 3");
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let widget_flags = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton3, Instant::now());
+                let (_, widget_flags) = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton3, Instant::now());
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );

@@ -1,13 +1,14 @@
 // Imports
 use super::{ModifyState, ResizeCorner, Selector, SelectorState};
 use crate::engine::EngineViewMut;
-use crate::pens::penbehaviour::PenProgress;
 use crate::pens::pensconfig::selectorconfig::SelectorStyle;
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use p2d::query::PointQuery;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevents::{KeyboardKey, ModifierKey};
+use rnote_compose::penevents::{
+    EventPropagation, EventResult, KeyboardKey, ModifierKey, PenProgress,
+};
 use rnote_compose::penpath::Element;
 use std::time::Instant;
 
@@ -18,7 +19,7 @@ impl Selector {
         modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
         let progress = match &mut self.state {
@@ -50,7 +51,7 @@ impl Selector {
                 selection,
                 selection_bounds,
             } => {
-                let mut pen_progress = PenProgress::InProgress;
+                let mut progress = PenProgress::InProgress;
 
                 match modify_state {
                     ModifyState::Up | ModifyState::Hover(_) => {
@@ -152,7 +153,7 @@ impl Selector {
                             engine_view.store.set_selected_keys(selection, false);
                             self.state = SelectorState::Idle;
 
-                            pen_progress = PenProgress::Finished;
+                            progress = PenProgress::Finished;
                         }
                     }
                     ModifyState::Translate {
@@ -277,11 +278,18 @@ impl Selector {
 
                 widget_flags.store_modified = true;
 
-                pen_progress
+                progress
             }
         };
 
-        (progress, widget_flags)
+        (
+            EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 
     pub(super) fn handle_pen_event_up(
@@ -290,7 +298,7 @@ impl Selector {
         _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
         let selector_bounds = self.bounds_on_doc(&engine_view.as_im());
 
@@ -412,7 +420,14 @@ impl Selector {
             }
         };
 
-        (progress, widget_flags)
+        (
+            EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 
     pub(super) fn handle_pen_event_proximity(
@@ -421,7 +436,7 @@ impl Selector {
         _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
         let selector_bounds = self.bounds_on_doc(&engine_view.as_im());
 
@@ -441,7 +456,14 @@ impl Selector {
             }
         };
 
-        (progress, widget_flags)
+        (
+            EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 
     pub(super) fn handle_pen_event_keypressed(
@@ -450,7 +472,7 @@ impl Selector {
         modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
         let progress = match &mut self.state {
@@ -505,7 +527,14 @@ impl Selector {
             }
         };
 
-        (progress, widget_flags)
+        (
+            EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 
     pub(super) fn handle_pen_event_text(
@@ -513,7 +542,7 @@ impl Selector {
         _text: String,
         _now: Instant,
         _engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
 
         let progress = match &mut self.state {
@@ -522,14 +551,21 @@ impl Selector {
             SelectorState::ModifySelection { .. } => PenProgress::InProgress,
         };
 
-        (progress, widget_flags)
+        (
+            EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 
     pub(super) fn handle_pen_event_cancel(
         &mut self,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
         let progress = match &mut self.state {
@@ -545,6 +581,13 @@ impl Selector {
             }
         };
 
-        (progress, widget_flags)
+        (
+            EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 }

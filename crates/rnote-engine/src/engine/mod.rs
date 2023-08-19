@@ -25,7 +25,7 @@ use futures::channel::{mpsc, oneshot};
 use gtk4::gsk;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::AabbExt;
-use rnote_compose::penevents::{PenEvent, ShortcutKey};
+use rnote_compose::penevents::{EventPropagation, PenEvent, ShortcutKey};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::SplitOrder;
 use serde::{Deserialize, Serialize};
@@ -434,7 +434,7 @@ impl RnoteEngine {
         event: PenEvent,
         pen_mode: Option<PenMode>,
         now: Instant,
-    ) -> WidgetFlags {
+    ) -> (EventPropagation, WidgetFlags) {
         self.penholder.handle_pen_event(
             event,
             pen_mode,
@@ -455,7 +455,7 @@ impl RnoteEngine {
         &mut self,
         shortcut_key: ShortcutKey,
         now: Instant,
-    ) -> WidgetFlags {
+    ) -> (EventPropagation, WidgetFlags) {
         self.penholder.handle_pressed_shortcut_key(
             shortcut_key,
             now,

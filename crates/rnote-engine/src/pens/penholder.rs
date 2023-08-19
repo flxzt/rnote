@@ -1,5 +1,4 @@
 // Imports
-use super::penbehaviour::PenProgress;
 use super::penmode::PenModeState;
 use super::shortcuts::ShortcutMode;
 use super::{
@@ -13,7 +12,9 @@ use crate::DrawableOnDoc;
 use futures::channel::oneshot;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
-use rnote_compose::penevents::{PenEvent, ShortcutKey};
+use rnote_compose::penevents::{
+    EventPropagation, KeyboardKey, ModifierKey, PenEvent, PenProgress, ShortcutKey,
+};
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant};
 
@@ -39,7 +40,7 @@ pub struct PenHolder {
     #[serde(skip)]
     pub(super) current_pen: Pen,
     #[serde(skip)]
-    pen_progress: PenProgress,
+    progress: PenProgress,
     #[serde(skip)]
     toggle_pen_style: Option<PenStyle>,
     #[serde(skip)]
@@ -54,7 +55,7 @@ impl Default for PenHolder {
             backlog_policy: BacklogPolicy::NoLimit,
 
             current_pen: Pen::default(),
-            pen_progress: PenProgress::Idle,
+            progress: PenProgress::Idle,
             toggle_pen_style: None,
             prev_shortcut_key: None,
         }
@@ -109,7 +110,7 @@ impl PenHolder {
 
     /// The current pen progress.
     pub fn current_pen_progress(&self) -> PenProgress {
-        self.pen_progress
+        self.progress
     }
 
     pub fn current_pen_ref(&mut self) -> &Pen {
@@ -211,7 +212,7 @@ impl PenHolder {
         widget_flags.merge(new_pen.update_state(engine_view));
         self.current_pen = new_pen;
         widget_flags.merge(self.handle_changed_pen_style());
-        self.pen_progress = PenProgress::Idle;
+        self.progress = PenProgress::Idle;
 
         widget_flags
     }
@@ -227,7 +228,7 @@ impl PenHolder {
         pen_mode: Option<PenMode>,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> WidgetFlags {
+    ) -> (EventPropagation, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
         if let Some(pen_mode) = pen_mode {
@@ -235,26 +236,85 @@ impl PenHolder {
         }
 
         // Handle the event with the current pen
-        let (pen_progress, other_widget_flags) =
-            self.current_pen.handle_event(event, now, engine_view);
-        widget_flags.merge(other_widget_flags);
+        let (mut event_result, wf) = self
+            .current_pen
+            .handle_event(event.clone(), now, engine_view);
+        widget_flags.merge(wf);
+        widget_flags.merge(self.handle_pen_progress(event_result.progress, engine_view));
 
-        widget_flags.merge(self.handle_pen_progress(pen_progress, engine_view));
+        if !event_result.handled {
+            let (propagate, wf) = self.handle_event_global(event, now, engine_view);
+            event_result.propagate = propagate;
+            widget_flags.merge(wf);
+        }
 
         // Always redraw after handling a pen event
         widget_flags.redraw = true;
 
-        widget_flags
+        (event_result.propagate, widget_flags)
+    }
+
+    fn handle_event_global(
+        &mut self,
+        event: PenEvent,
+        _now: Instant,
+        engine_view: &mut EngineViewMut,
+    ) -> (EventPropagation, WidgetFlags) {
+        let mut widget_flags = WidgetFlags::default();
+
+        let propagate = match event {
+            PenEvent::Down { .. }
+            | PenEvent::Up { .. }
+            | PenEvent::Proximity { .. }
+            | PenEvent::Text { .. }
+            | PenEvent::Cancel => EventPropagation::Proceed,
+            PenEvent::KeyPressed {
+                keyboard_key,
+                modifier_keys,
+            } => match keyboard_key {
+                KeyboardKey::NavUp => {
+                    let y_offset = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                        engine_view.doc.format.height
+                    } else {
+                        engine_view.doc.format.height * 0.5
+                    };
+                    widget_flags.merge(engine_view.camera.set_offset(
+                        engine_view.camera.offset()
+                            - na::vector![0.0, y_offset / engine_view.camera.total_zoom()],
+                        engine_view.doc,
+                    ));
+
+                    EventPropagation::Stop
+                }
+                KeyboardKey::NavDown => {
+                    let y_offset = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                        engine_view.doc.format.height
+                    } else {
+                        engine_view.doc.format.height * 0.5
+                    };
+                    widget_flags.merge(engine_view.camera.set_offset(
+                        engine_view.camera.offset()
+                            + na::vector![0.0, y_offset / engine_view.camera.total_zoom()],
+                        engine_view.doc,
+                    ));
+
+                    EventPropagation::Stop
+                }
+                _ => EventPropagation::Stop,
+            },
+        };
+
+        (propagate, widget_flags)
     }
 
     fn handle_pen_progress(
         &mut self,
-        pen_progress: PenProgress,
+        progress: PenProgress,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        match pen_progress {
+        match progress {
             PenProgress::Idle => {}
             PenProgress::InProgress => {}
             PenProgress::Finished => {
@@ -267,7 +327,7 @@ impl PenHolder {
             }
         }
 
-        self.pen_progress = pen_progress;
+        self.progress = progress;
 
         widget_flags
     }
@@ -298,8 +358,9 @@ impl PenHolder {
         shortcut_key: ShortcutKey,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> WidgetFlags {
+    ) -> (EventPropagation, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
+        let mut propagate = EventPropagation::Proceed;
 
         if let Some(action) = self.get_shortcut_action(shortcut_key) {
             match action {
@@ -332,12 +393,14 @@ impl PenHolder {
                     }
                 },
             }
+
+            propagate = EventPropagation::Stop;
         }
 
         self.prev_shortcut_key = Some(shortcut_key);
         widget_flags.redraw = true;
 
-        widget_flags
+        (propagate, widget_flags)
     }
 
     /// Fetch clipboard content from the current pen.

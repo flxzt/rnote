@@ -2,7 +2,6 @@
 mod penevents;
 
 // Imports
-use super::penbehaviour::PenProgress;
 use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineTask, EngineView, EngineViewMut};
@@ -14,7 +13,7 @@ use futures::channel::oneshot;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevents::{KeyboardKey, PenEvent, PenState};
+use rnote_compose::penevents::{EventResult, KeyboardKey, PenEvent, PenState};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::indicators;
 use rnote_compose::{color, Transform};
@@ -351,8 +350,8 @@ impl PenBehaviour for Typewriter {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
-        let (pen_progress, widget_flags) = match event {
+    ) -> (EventResult, WidgetFlags) {
+        let (event_result, widget_flags) = match event {
             PenEvent::Down {
                 element,
                 modifier_keys,
@@ -373,7 +372,7 @@ impl PenBehaviour for Typewriter {
             PenEvent::Cancel => self.handle_pen_event_cancel(now, engine_view),
         };
 
-        (pen_progress, widget_flags)
+        (event_result, widget_flags)
     }
 
     fn fetch_clipboard_content(

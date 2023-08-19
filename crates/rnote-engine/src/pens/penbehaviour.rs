@@ -3,7 +3,7 @@ use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
-use rnote_compose::penevents::PenEvent;
+use rnote_compose::penevents::{EventResult, PenEvent};
 use std::time::Instant;
 
 /// Types that are pens.
@@ -28,7 +28,7 @@ pub trait PenBehaviour: DrawableOnDoc {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags);
+    ) -> (EventResult, WidgetFlags);
 
     /// Fetch clipboard content from the pen.
     ///
@@ -67,11 +67,4 @@ pub trait PenBehaviour: DrawableOnDoc {
         });
         receiver
     }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum PenProgress {
-    Idle,
-    InProgress,
-    Finished,
 }

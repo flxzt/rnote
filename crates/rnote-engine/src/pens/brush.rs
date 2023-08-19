@@ -1,6 +1,6 @@
 // Imports
-use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::brushconfig::BrushStyle;
+use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
@@ -14,7 +14,7 @@ use rnote_compose::builders::{
     PenPathBuildable, PenPathBuilderCreator, PenPathBuilderProgress, PenPathModeledBuilder,
 };
 use rnote_compose::builders::{PenPathCurvedBuilder, PenPathSimpleBuilder};
-use rnote_compose::penevents::PenEvent;
+use rnote_compose::penevents::{EventPropagation, EventResult, PenEvent, PenProgress};
 use rnote_compose::penpath::Element;
 use rnote_compose::Constraints;
 use std::time::Instant;
@@ -63,10 +63,11 @@ impl PenBehaviour for Brush {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
+        let handled = !matches!(&event, &PenEvent::KeyPressed { .. });
 
-        let pen_progress = match (&mut self.state, event) {
+        let progress = match (&mut self.state, event) {
             (BrushState::Idle, PenEvent::Down { element, .. }) => {
                 if !element
                     .filter_by_bounds(engine_view.doc.bounds().loosened(Self::INPUT_OVERSHOOT))
@@ -234,7 +235,14 @@ impl PenBehaviour for Brush {
             }
         };
 
-        (pen_progress, widget_flags)
+        (
+            EventResult {
+                handled,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 }
 

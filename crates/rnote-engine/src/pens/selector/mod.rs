@@ -2,8 +2,8 @@
 mod penevents;
 
 // Imports
-use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::selectorconfig::SelectorStyle;
+use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut, StrokeContent};
 use crate::render::Svg;
@@ -16,7 +16,7 @@ use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevents::{ModifierKey, PenEvent, PenState};
+use rnote_compose::penevents::{EventResult, ModifierKey, PenEvent, PenProgress, PenState};
 use rnote_compose::penpath::Element;
 use rnote_compose::style::indicators;
 use rnote_compose::{color, Color};
@@ -127,7 +127,7 @@ impl PenBehaviour for Selector {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         match event {
             PenEvent::Down {
                 element,

@@ -1,11 +1,12 @@
 // Imports
 use super::{ModifyState, Typewriter, TypewriterState};
 use crate::engine::EngineViewMut;
-use crate::pens::penbehaviour::PenProgress;
 use crate::pens::PenBehaviour;
 use crate::strokes::{Stroke, TextStroke};
 use crate::{DrawableOnDoc, StrokeStore, WidgetFlags};
-use rnote_compose::penevents::{KeyboardKey, ModifierKey};
+use rnote_compose::penevents::{
+    EventPropagation, EventResult, KeyboardKey, ModifierKey, PenProgress,
+};
 use rnote_compose::penpath::Element;
 use std::time::Instant;
 use unicode_segmentation::GraphemeCursor;
@@ -17,12 +18,12 @@ impl Typewriter {
         _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
         let text_width = engine_view.pens_config.typewriter_config.text_width;
 
-        let pen_progress = match &mut self.state {
+        let progress = match &mut self.state {
             TypewriterState::Idle | TypewriterState::Start { .. } => {
                 let mut refresh_state = false;
                 let mut new_state = TypewriterState::Start(element.pos);
@@ -257,7 +258,14 @@ impl Typewriter {
             }
         };
 
-        (pen_progress, widget_flags)
+        (
+            EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 
     pub(super) fn handle_pen_event_up(
@@ -266,11 +274,11 @@ impl Typewriter {
         _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
 
-        let pen_progress = match &mut self.state {
+        let progress = match &mut self.state {
             TypewriterState::Idle => PenProgress::Idle,
             TypewriterState::Start(_) => PenProgress::InProgress,
             TypewriterState::Modifying {
@@ -353,7 +361,14 @@ impl Typewriter {
             }
         };
 
-        (pen_progress, widget_flags)
+        (
+            EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 
     pub(super) fn handle_pen_event_proximity(
@@ -362,11 +377,11 @@ impl Typewriter {
         _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
 
-        let pen_progress = match &mut self.state {
+        let progress = match &mut self.state {
             TypewriterState::Idle => PenProgress::Idle,
             TypewriterState::Start(_) => PenProgress::InProgress,
             TypewriterState::Modifying {
@@ -389,7 +404,14 @@ impl Typewriter {
             }
         };
 
-        (pen_progress, widget_flags)
+        (
+            EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 
     pub(super) fn handle_pen_event_keypressed(
@@ -398,14 +420,14 @@ impl Typewriter {
         modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
         let text_width = engine_view.pens_config.typewriter_config.text_width;
         let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
         let max_width_enabled = engine_view.pens_config.typewriter_config.max_width_enabled;
 
-        let pen_progress = match &mut self.state {
+        let progress = match &mut self.state {
             TypewriterState::Idle => PenProgress::Idle,
             TypewriterState::Start(pos) => {
                 super::play_sound(Some(keyboard_key), engine_view.audioplayer);
@@ -808,7 +830,14 @@ impl Typewriter {
 
         self.reset_blink();
 
-        (pen_progress, widget_flags)
+        (
+            EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 
     pub(super) fn handle_pen_event_text(
@@ -816,14 +845,14 @@ impl Typewriter {
         text: String,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
         let text_width = engine_view.pens_config.typewriter_config.text_width;
         let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
         let max_width_enabled = engine_view.pens_config.typewriter_config.max_width_enabled;
 
-        let pen_progress = match &mut self.state {
+        let progress = match &mut self.state {
             TypewriterState::Idle => PenProgress::Idle,
             TypewriterState::Start(pos) => {
                 super::play_sound(None, engine_view.audioplayer);
@@ -954,17 +983,24 @@ impl Typewriter {
 
         self.reset_blink();
 
-        (pen_progress, widget_flags)
+        (
+            EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 
     pub(super) fn handle_pen_event_cancel(
         &mut self,
         _now: Instant,
         _engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
 
-        let pen_progress = match &mut self.state {
+        let progress = match &mut self.state {
             TypewriterState::Idle => PenProgress::Idle,
             _ => {
                 self.state = TypewriterState::Idle;
@@ -973,6 +1009,13 @@ impl Typewriter {
             }
         };
 
-        (pen_progress, widget_flags)
+        (
+            EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 }

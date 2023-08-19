@@ -1,6 +1,6 @@
 // Imports
-use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::toolsconfig::ToolStyle;
+use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
@@ -9,7 +9,7 @@ use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevents::PenEvent;
+use rnote_compose::penevents::{EventPropagation, EventResult, PenEvent, PenProgress};
 use std::time::Instant;
 
 #[derive(Clone, Debug)]
@@ -288,10 +288,10 @@ impl PenBehaviour for Tools {
         event: PenEvent,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let pen_progress = match (&mut self.state, event) {
+        let progress = match (&mut self.state, event) {
             (ToolsState::Idle, PenEvent::Down { element, .. }) => {
                 match engine_view.pens_config.tools_config.style {
                     ToolStyle::VerticalSpace => {
@@ -454,7 +454,14 @@ impl PenBehaviour for Tools {
             (ToolsState::Active, PenEvent::Text { .. }) => PenProgress::InProgress,
         };
 
-        (pen_progress, widget_flags)
+        (
+            EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 }
 

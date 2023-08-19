@@ -1,5 +1,5 @@
 // Imports
-use super::penbehaviour::{PenBehaviour, PenProgress};
+use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::strokes::ShapeStroke;
@@ -14,7 +14,9 @@ use rnote_compose::builders::{
 };
 use rnote_compose::builders::{CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
 use rnote_compose::builders::{ShapeBuilderCreator, ShapeBuilderProgress};
-use rnote_compose::penevents::{KeyboardKey, ModifierKey, PenEvent};
+use rnote_compose::penevents::{
+    EventPropagation, EventResult, KeyboardKey, ModifierKey, PenEvent, PenProgress,
+};
 use rnote_compose::penpath::Element;
 use std::time::Instant;
 
@@ -59,10 +61,11 @@ impl PenBehaviour for Shaper {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
+        let handled = !matches!(&event, &PenEvent::KeyPressed { .. });
 
-        let pen_progress = match (&mut self.state, event) {
+        let progress = match (&mut self.state, event) {
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
                 engine_view.pens_config.shaper_config.new_style_seeds();
 
@@ -101,7 +104,7 @@ impl PenBehaviour for Shaper {
                     PenEvent::Text { .. } | PenEvent::Cancel => false,
                 };
 
-                let mut pen_progress = match builder.handle_event(event.clone(), now, constraints) {
+                let mut progress = match builder.handle_event(event.clone(), now, constraints) {
                     ShapeBuilderProgress::InProgress => PenProgress::InProgress,
                     ShapeBuilderProgress::EmitContinue(shapes) => {
                         let mut style = engine_view
@@ -174,15 +177,22 @@ impl PenBehaviour for Shaper {
                     if keyboard_key == KeyboardKey::Escape && modifier_keys.is_empty() {
                         self.state = ShaperState::Idle;
 
-                        pen_progress = PenProgress::Finished;
+                        progress = PenProgress::Finished;
                     }
                 }
 
-                pen_progress
+                progress
             }
         };
 
-        (pen_progress, widget_flags)
+        (
+            EventResult {
+                handled,
+                propagate: EventPropagation::Stop,
+                progress,
+            },
+            widget_flags,
+        )
     }
 }
 

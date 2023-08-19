@@ -558,7 +558,7 @@ mod imp {
             {
                 // Shortcut with touch two-finger long-press.
                 self.touch_two_finger_long_press_gesture.connect_pressed(clone!(@weak obj as canvaswrapper => move |_gesture, _, _| {
-                    let widget_flags = canvaswrapper.canvas()
+                    let (_, widget_flags) = canvaswrapper.canvas()
                         .engine_mut()
                         .handle_pressed_shortcut_key(ShortcutKey::TouchTwoFingerLongPress, Instant::now());
                     canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);

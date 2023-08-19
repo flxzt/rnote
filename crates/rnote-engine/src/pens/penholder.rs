@@ -12,7 +12,7 @@ use crate::DrawableOnDoc;
 use futures::channel::oneshot;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
-use rnote_compose::penevents::{
+use rnote_compose::penevent::{
     EventPropagation, KeyboardKey, ModifierKey, PenEvent, PenProgress, ShortcutKey,
 };
 use serde::{Deserialize, Serialize};

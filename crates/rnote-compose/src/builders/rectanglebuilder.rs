@@ -1,7 +1,7 @@
 // Imports
 use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
 use super::ShapeBuildable;
-use crate::penevents::{PenEvent, PenState};
+use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Rectangle;
 use crate::style::{indicators, Composer};

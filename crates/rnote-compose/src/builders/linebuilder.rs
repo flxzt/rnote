@@ -2,7 +2,7 @@
 use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
 use super::ShapeBuildable;
 use crate::constraints::ConstraintRatio;
-use crate::penevents::{PenEvent, PenState};
+use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
 use crate::style::{indicators, Composer};

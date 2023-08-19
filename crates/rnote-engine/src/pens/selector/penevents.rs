@@ -6,7 +6,7 @@ use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use p2d::query::PointQuery;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevents::{
+use rnote_compose::penevent::{
     EventPropagation, EventResult, KeyboardKey, ModifierKey, PenProgress,
 };
 use rnote_compose::penpath::Element;

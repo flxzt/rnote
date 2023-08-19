@@ -8,7 +8,7 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::ext::AabbExt;
-use rnote_compose::penevents::{EventPropagation, EventResult, PenEvent, PenProgress};
+use rnote_compose::penevent::{EventPropagation, EventResult, PenEvent, PenProgress};
 use rnote_compose::penpath::Element;
 use std::time::Instant;
 

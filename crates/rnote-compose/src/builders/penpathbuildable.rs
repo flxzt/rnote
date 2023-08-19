@@ -1,7 +1,7 @@
 // Imports
-use crate::penevents::PenEvent;
 use crate::penpath::{Element, Segment};
 use crate::Constraints;
+use crate::PenEvent;
 use crate::Style;
 use p2d::bounding_volume::Aabb;
 use std::time::Instant;

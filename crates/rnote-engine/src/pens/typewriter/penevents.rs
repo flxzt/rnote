@@ -4,7 +4,7 @@ use crate::engine::EngineViewMut;
 use crate::pens::PenBehaviour;
 use crate::strokes::{Stroke, TextStroke};
 use crate::{DrawableOnDoc, StrokeStore, WidgetFlags};
-use rnote_compose::penevents::{
+use rnote_compose::penevent::{
     EventPropagation, EventResult, KeyboardKey, ModifierKey, PenProgress,
 };
 use rnote_compose::penpath::Element;

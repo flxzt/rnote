@@ -13,7 +13,7 @@ use futures::channel::oneshot;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevents::{EventResult, KeyboardKey, PenEvent, PenState};
+use rnote_compose::penevent::{EventResult, KeyboardKey, PenEvent, PenState};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::indicators;
 use rnote_compose::{color, Transform};

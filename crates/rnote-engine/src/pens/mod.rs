@@ -29,7 +29,7 @@ use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
 use piet_cairo::CairoRenderContext;
-use rnote_compose::penevents::{EventResult, PenEvent};
+use rnote_compose::penevent::{EventResult, PenEvent};
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
 

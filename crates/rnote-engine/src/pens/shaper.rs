@@ -14,7 +14,7 @@ use rnote_compose::builders::{
 };
 use rnote_compose::builders::{CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
 use rnote_compose::builders::{ShapeBuilderCreator, ShapeBuilderProgress};
-use rnote_compose::penevents::{
+use rnote_compose::penevent::{
     EventPropagation, EventResult, KeyboardKey, ModifierKey, PenEvent, PenProgress,
 };
 use rnote_compose::penpath::Element;

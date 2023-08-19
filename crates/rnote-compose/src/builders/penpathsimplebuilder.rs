@@ -1,9 +1,9 @@
 // Imports
 use super::penpathbuildable::{PenPathBuildable, PenPathBuilderCreator, PenPathBuilderProgress};
-use crate::penevents::PenEvent;
 use crate::penpath::{Element, Segment};
 use crate::style::Composer;
 use crate::Constraints;
+use crate::PenEvent;
 use crate::{PenPath, Style};
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;

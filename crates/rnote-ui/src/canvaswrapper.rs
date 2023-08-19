@@ -6,7 +6,7 @@ use gtk4::{
     GestureDrag, GestureLongPress, GestureZoom, PropagationPhase, ScrolledWindow, Widget,
 };
 use once_cell::sync::Lazy;
-use rnote_compose::penevents::ShortcutKey;
+use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::Camera;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;

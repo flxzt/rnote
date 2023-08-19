@@ -16,7 +16,7 @@ use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevents::{EventResult, ModifierKey, PenEvent, PenProgress, PenState};
+use rnote_compose::penevent::{EventResult, ModifierKey, PenEvent, PenProgress, PenState};
 use rnote_compose::penpath::Element;
 use rnote_compose::style::indicators;
 use rnote_compose::{color, Color};

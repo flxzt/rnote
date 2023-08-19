@@ -20,7 +20,7 @@ use gtk4::{
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
-use rnote_compose::penevents::PenState;
+use rnote_compose::penevent::PenState;
 use rnote_engine::ext::GrapheneRectExt;
 use rnote_engine::Document;
 use rnote_engine::{RnoteEngine, WidgetFlags};

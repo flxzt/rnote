@@ -1,7 +1,7 @@
 // Imports
 use gtk4::{gdk, graphene};
 use p2d::bounding_volume::Aabb;
-use rnote_compose::penevents::EventPropagation;
+use rnote_compose::penevent::EventPropagation;
 
 /// Extension trait for [gdk::RGBA].
 pub trait GdkRGBAExt

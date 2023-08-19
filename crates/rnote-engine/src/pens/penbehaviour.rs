@@ -3,7 +3,7 @@ use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
-use rnote_compose::penevents::{EventResult, PenEvent};
+use rnote_compose::penevent::{EventResult, PenEvent};
 use std::time::Instant;
 
 /// Types that are pens.

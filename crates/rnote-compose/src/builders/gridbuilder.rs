@@ -2,7 +2,7 @@
 use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
 use super::ShapeBuildable;
 use crate::ext::AabbExt;
-use crate::penevents::{PenEvent, PenState};
+use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::{Line, Rectangle};
 use crate::style::{indicators, Composer};

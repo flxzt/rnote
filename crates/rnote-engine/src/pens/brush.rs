@@ -14,7 +14,7 @@ use rnote_compose::builders::{
     PenPathBuildable, PenPathBuilderCreator, PenPathBuilderProgress, PenPathModeledBuilder,
 };
 use rnote_compose::builders::{PenPathCurvedBuilder, PenPathSimpleBuilder};
-use rnote_compose::penevents::{EventPropagation, EventResult, PenEvent, PenProgress};
+use rnote_compose::penevent::{EventPropagation, EventResult, PenEvent, PenProgress};
 use rnote_compose::penpath::Element;
 use rnote_compose::Constraints;
 use std::time::Instant;

@@ -6,7 +6,7 @@ use gtk4::{
     UriLauncher, Window,
 };
 use p2d::bounding_volume::BoundingVolume;
-use rnote_compose::penevents::ShortcutKey;
+use rnote_compose::penevent::ShortcutKey;
 use rnote_compose::SplitOrder;
 use rnote_engine::document::Layout;
 use rnote_engine::engine::StrokeContent;

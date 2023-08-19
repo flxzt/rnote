@@ -13,9 +13,8 @@ use rnote_compose::builders::{
     CoordSystem2DBuilder, CoordSystem3DBuilder, CubBezBuilder, EllipseBuilder, FociEllipseBuilder,
     LineBuilder, QuadBezBuilder, QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuilderType,
 };
-use rnote_compose::penevent::{
-    EventPropagation, EventResult, KeyboardKey, ModifierKey, PenEvent, PenProgress,
-};
+use rnote_compose::eventresult::{EventPropagation, EventResult};
+use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenProgress};
 use rnote_compose::penpath::Element;
 use rnote_compose::Shape;
 use std::time::Instant;
@@ -63,9 +62,9 @@ impl PenBehaviour for Shaper {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
-        let handled = !matches!(&event, &PenEvent::KeyPressed { .. });
+        let mut handled = !matches!(&event, &PenEvent::KeyPressed { .. });
 
         let progress = match (&mut self.state, event) {
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
@@ -105,8 +104,10 @@ impl PenBehaviour for Shaper {
                     } => constraints.enabled ^ modifier_keys.contains(&ModifierKey::KeyboardCtrl),
                     PenEvent::Text { .. } | PenEvent::Cancel => false,
                 };
+                let builder_result = builder.handle_event(event.clone(), now, constraints);
+                handled |= builder_result.handled;
 
-                let mut progress = match builder.handle_event(event.clone(), now, constraints) {
+                let mut progress = match builder_result.progress {
                     BuilderProgress::InProgress => PenProgress::InProgress,
                     BuilderProgress::EmitContinue(shapes) => {
                         let mut style = engine_view

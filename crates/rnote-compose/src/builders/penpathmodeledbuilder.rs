@@ -1,9 +1,10 @@
 // Imports
 use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
+use crate::eventresult::EventPropagation;
 use crate::penpath::{Element, Segment};
 use crate::style::Composer;
-use crate::Constraints;
 use crate::PenEvent;
+use crate::{Constraints, EventResult};
 use crate::{PenPath, Style};
 use ink_stroke_modeler_rs::{
     ModelerInput, ModelerInputEventType, ModelerParams, PredictionParams, StrokeModeler,
@@ -65,8 +66,8 @@ impl Buildable for PenPathModeledBuilder {
         event: PenEvent,
         now: Instant,
         _constraints: Constraints,
-    ) -> BuilderProgress<Self::Emit> {
-        match event {
+    ) -> EventResult<BuilderProgress<Self::Emit>> {
+        let progress = match event {
             PenEvent::Down { element, .. } => {
                 // kDown is already fed into the modeler when the builder was instantiated (with start())
                 self.update_modeler_w_element(element, ModelerInputEventType::kMove, now);
@@ -87,6 +88,12 @@ impl Buildable for PenPathModeledBuilder {
                 BuilderProgress::InProgress
             }
             PenEvent::Cancel => BuilderProgress::Finished(vec![]),
+        };
+
+        EventResult {
+            handled: true,
+            propagate: EventPropagation::Stop,
+            progress,
         }
     }
 

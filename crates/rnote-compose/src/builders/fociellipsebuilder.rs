@@ -1,12 +1,13 @@
 // Imports
 use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::constraints::ConstraintRatio;
+use crate::eventresult::EventPropagation;
 use crate::ext::AabbExt;
 use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Ellipse;
 use crate::style::{indicators, Composer};
-use crate::Constraints;
+use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
@@ -47,67 +48,73 @@ impl Buildable for FociEllipseBuilder {
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> BuilderProgress<Self::Emit> {
-        match (&mut self.state, event) {
+    ) -> EventResult<BuilderProgress<Self::Emit>> {
+        let progress = match (&mut self.state, event) {
             (FociEllipseBuilderState::Start(first), PenEvent::Down { element, .. }) => {
                 *first = element.pos;
+                BuilderProgress::InProgress
             }
             (FociEllipseBuilderState::Start(_), PenEvent::Up { element, .. }) => {
                 self.state = FociEllipseBuilderState::StartFinished(element.pos);
+                BuilderProgress::InProgress
             }
-            (FociEllipseBuilderState::Start(_), _) => {}
+            (FociEllipseBuilderState::Start(_), _) => BuilderProgress::InProgress,
             (FociEllipseBuilderState::StartFinished(first), PenEvent::Down { element, .. }) => {
                 // we want to allow horizontal and vertical constraints while setting the second foci
                 constraints.ratios.insert(ConstraintRatio::Horizontal);
                 constraints.ratios.insert(ConstraintRatio::Vertical);
-
                 self.state = FociEllipseBuilderState::Foci([
                     *first,
                     constraints.constrain(element.pos - *first) + *first,
                 ]);
+                BuilderProgress::InProgress
             }
-            (FociEllipseBuilderState::StartFinished(_), _) => {}
+            (FociEllipseBuilderState::StartFinished(_), _) => BuilderProgress::InProgress,
             (FociEllipseBuilderState::Foci(foci), PenEvent::Down { element, .. }) => {
                 constraints.ratios.insert(ConstraintRatio::Horizontal);
                 constraints.ratios.insert(ConstraintRatio::Vertical);
-
                 foci[1] = constraints.constrain(element.pos - foci[0]) + foci[0];
+                BuilderProgress::InProgress
             }
             (FociEllipseBuilderState::Foci(foci), PenEvent::Up { element, .. }) => {
                 constraints.ratios.insert(ConstraintRatio::Horizontal);
                 constraints.ratios.insert(ConstraintRatio::Vertical);
-
                 self.state = FociEllipseBuilderState::FociFinished([
                     foci[0],
                     constraints.constrain(element.pos - foci[0]) + foci[0],
                 ]);
+                BuilderProgress::InProgress
             }
-            (FociEllipseBuilderState::Foci(_), _) => {}
+            (FociEllipseBuilderState::Foci(_), _) => BuilderProgress::InProgress,
             (FociEllipseBuilderState::FociFinished(foci), PenEvent::Down { element, .. }) => {
                 constraints.ratios.insert(ConstraintRatio::Horizontal);
                 constraints.ratios.insert(ConstraintRatio::Vertical);
-
                 self.state = FociEllipseBuilderState::FociAndPoint {
                     foci: *foci,
                     point: constraints.constrain(element.pos - foci[1]) + foci[1],
                 };
+                BuilderProgress::InProgress
             }
-            (FociEllipseBuilderState::FociFinished(_), _) => {}
+            (FociEllipseBuilderState::FociFinished(_), _) => BuilderProgress::InProgress,
             (
                 FociEllipseBuilderState::FociAndPoint { foci: _, point },
                 PenEvent::Down { element, .. },
             ) => {
                 *point = element.pos;
+                BuilderProgress::InProgress
             }
             (FociEllipseBuilderState::FociAndPoint { foci, point }, PenEvent::Up { .. }) => {
                 let shape = Ellipse::from_foci_and_point(*foci, *point);
-
-                return BuilderProgress::Finished(vec![Shape::Ellipse(shape)]);
+                BuilderProgress::Finished(vec![Shape::Ellipse(shape)])
             }
-            (FociEllipseBuilderState::FociAndPoint { .. }, _) => {}
-        }
+            (FociEllipseBuilderState::FociAndPoint { .. }, _) => BuilderProgress::InProgress,
+        };
 
-        BuilderProgress::InProgress
+        EventResult {
+            handled: true,
+            propagate: EventPropagation::Stop,
+            progress,
+        }
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

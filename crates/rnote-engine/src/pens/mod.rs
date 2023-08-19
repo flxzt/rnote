@@ -29,7 +29,9 @@ use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
 use piet_cairo::CairoRenderContext;
-use rnote_compose::penevent::{EventResult, PenEvent};
+use rnote_compose::penevent::PenProgress;
+use rnote_compose::EventResult;
+use rnote_compose::PenEvent;
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
 
@@ -99,7 +101,7 @@ impl PenBehaviour for Pen {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         match self {
             Pen::Brush(brush) => brush.handle_event(event, now, engine_view),
             Pen::Shaper(shaper) => shaper.handle_event(event, now, engine_view),

@@ -1,8 +1,8 @@
 // Imports
 use crate::penpath::Element;
-use crate::Constraints;
 use crate::PenEvent;
 use crate::Style;
+use crate::{Constraints, EventResult};
 use p2d::bounding_volume::Aabb;
 use std::time::Instant;
 
@@ -29,7 +29,7 @@ pub trait BuilderCreator {
 /// They usually are drawn while building and are finite state machines.
 pub trait Buildable: std::fmt::Debug {
     /// The type that is emitted by the builder.
-    type Emit;
+    type Emit: std::fmt::Debug;
 
     /// Handle a pen event.
     ///
@@ -39,7 +39,7 @@ pub trait Buildable: std::fmt::Debug {
         event: PenEvent,
         now: Instant,
         constraints: Constraints,
-    ) -> BuilderProgress<Self::Emit>;
+    ) -> EventResult<BuilderProgress<Self::Emit>>;
 
     /// Bounds.
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb>;

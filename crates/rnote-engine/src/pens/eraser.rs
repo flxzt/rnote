@@ -7,8 +7,9 @@ use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::color;
+use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::ext::AabbExt;
-use rnote_compose::penevent::{EventPropagation, EventResult, PenEvent, PenProgress};
+use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::Element;
 use std::time::Instant;
 
@@ -54,7 +55,7 @@ impl PenBehaviour for Eraser {
         event: PenEvent,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
         let progress = match (&mut self.state, event) {

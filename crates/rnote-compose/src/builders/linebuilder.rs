@@ -1,11 +1,12 @@
 // Imports
 use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::constraints::ConstraintRatio;
+use crate::eventresult::EventPropagation;
 use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
 use crate::style::{indicators, Composer};
-use crate::Constraints;
+use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
@@ -37,22 +38,27 @@ impl Buildable for LineBuilder {
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> BuilderProgress<Self::Emit> {
+    ) -> EventResult<BuilderProgress<Self::Emit>> {
         // we always want to allow horizontal and vertical constraints while building a line
         constraints.ratios.insert(ConstraintRatio::Horizontal);
         constraints.ratios.insert(ConstraintRatio::Vertical);
 
-        match event {
+        let progress = match event {
             PenEvent::Down { element, .. } => {
                 self.current = constraints.constrain(element.pos - self.start) + self.start;
+                BuilderProgress::InProgress
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(vec![Shape::Line(self.state_as_line())]);
+                BuilderProgress::Finished(vec![Shape::Line(self.state_as_line())])
             }
-            _ => {}
-        }
+            _ => BuilderProgress::InProgress,
+        };
 
-        BuilderProgress::InProgress
+        EventResult {
+            handled: true,
+            propagate: EventPropagation::Stop,
+            progress,
+        }
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

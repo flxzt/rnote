@@ -173,15 +173,6 @@ pub enum PenState {
     Down,
 }
 
-/// Whether the event should be propagated further.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum EventPropagation {
-    /// Proceed with the propagation.
-    Proceed,
-    /// Stop the propagation.
-    Stop,
-}
-
 /// The pen progress.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum PenProgress {
@@ -191,15 +182,4 @@ pub enum PenProgress {
     InProgress,
     /// Pen is finished.
     Finished,
-}
-
-/// The event result.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub struct EventResult {
-    /// Whether the event was handled
-    pub handled: bool,
-    /// Whether the event should be propagated further.
-    pub propagate: EventPropagation,
-    /// The pen progress.
-    pub progress: PenProgress,
 }

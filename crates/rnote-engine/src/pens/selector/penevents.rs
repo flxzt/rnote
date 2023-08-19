@@ -5,10 +5,9 @@ use crate::pens::pensconfig::selectorconfig::SelectorStyle;
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use p2d::query::PointQuery;
+use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevent::{
-    EventPropagation, EventResult, KeyboardKey, ModifierKey, PenProgress,
-};
+use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenProgress};
 use rnote_compose::penpath::Element;
 use std::time::Instant;
 
@@ -19,7 +18,7 @@ impl Selector {
         modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
         let progress = match &mut self.state {
@@ -298,7 +297,7 @@ impl Selector {
         _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
         let selector_bounds = self.bounds_on_doc(&engine_view.as_im());
 
@@ -436,7 +435,7 @@ impl Selector {
         _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
         let selector_bounds = self.bounds_on_doc(&engine_view.as_im());
 
@@ -472,7 +471,7 @@ impl Selector {
         modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
         let progress = match &mut self.state {
@@ -542,7 +541,7 @@ impl Selector {
         _text: String,
         _now: Instant,
         _engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
 
         let progress = match &mut self.state {
@@ -565,7 +564,7 @@ impl Selector {
         &mut self,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
         let progress = match &mut self.state {

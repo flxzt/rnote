@@ -13,9 +13,10 @@ use futures::channel::oneshot;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevent::{EventResult, KeyboardKey, PenEvent, PenState};
+use rnote_compose::penevent::{KeyboardKey, PenEvent, PenProgress, PenState};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::indicators;
+use rnote_compose::EventResult;
 use rnote_compose::{color, Transform};
 use std::ops::Range;
 use std::time::{Duration, Instant};
@@ -350,7 +351,7 @@ impl PenBehaviour for Typewriter {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let (event_result, widget_flags) = match event {
             PenEvent::Down {
                 element,

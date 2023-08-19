@@ -4,9 +4,8 @@ use crate::engine::EngineViewMut;
 use crate::pens::PenBehaviour;
 use crate::strokes::{Stroke, TextStroke};
 use crate::{DrawableOnDoc, StrokeStore, WidgetFlags};
-use rnote_compose::penevent::{
-    EventPropagation, EventResult, KeyboardKey, ModifierKey, PenProgress,
-};
+use rnote_compose::eventresult::{EventPropagation, EventResult};
+use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenProgress};
 use rnote_compose::penpath::Element;
 use std::time::Instant;
 use unicode_segmentation::GraphemeCursor;
@@ -18,7 +17,7 @@ impl Typewriter {
         _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
         let text_width = engine_view.pens_config.typewriter_config.text_width;
@@ -274,7 +273,7 @@ impl Typewriter {
         _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
 
@@ -377,7 +376,7 @@ impl Typewriter {
         _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
 
@@ -420,7 +419,7 @@ impl Typewriter {
         modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
         let text_width = engine_view.pens_config.typewriter_config.text_width;
@@ -845,7 +844,7 @@ impl Typewriter {
         text: String,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
         let text_width = engine_view.pens_config.typewriter_config.text_width;
@@ -997,7 +996,7 @@ impl Typewriter {
         &mut self,
         _now: Instant,
         _engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
 
         let progress = match &mut self.state {

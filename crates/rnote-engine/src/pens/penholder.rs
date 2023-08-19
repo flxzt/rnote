@@ -12,9 +12,8 @@ use crate::DrawableOnDoc;
 use futures::channel::oneshot;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
-use rnote_compose::penevent::{
-    EventPropagation, KeyboardKey, ModifierKey, PenEvent, PenProgress, ShortcutKey,
-};
+use rnote_compose::eventresult::EventPropagation;
+use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenProgress, ShortcutKey};
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant};
 

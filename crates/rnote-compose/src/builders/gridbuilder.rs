@@ -1,11 +1,12 @@
 // Imports
 use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
+use crate::eventresult::EventPropagation;
 use crate::ext::AabbExt;
 use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::{Line, Rectangle};
 use crate::style::{indicators, Composer};
-use crate::Constraints;
+use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
@@ -53,10 +54,11 @@ impl Buildable for GridBuilder {
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> BuilderProgress<Self::Emit> {
-        match (&mut self.state, event) {
+    ) -> EventResult<BuilderProgress<Self::Emit>> {
+        let progress = match (&mut self.state, event) {
             (GridBuilderState::FirstCell { start, current }, PenEvent::Down { element, .. }) => {
                 *current = constraints.constrain(element.pos - *start) + *start;
+                BuilderProgress::InProgress
             }
             (GridBuilderState::FirstCell { start, .. }, PenEvent::Up { element, .. }) => {
                 let cell_size = constraints.constrain(element.pos - *start);
@@ -64,15 +66,16 @@ impl Buildable for GridBuilder {
                 if cell_size.x.abs() < Self::FIRST_CELL_DIMENSIONS_MIN
                     || cell_size.y.abs() < Self::FIRST_CELL_DIMENSIONS_MIN
                 {
-                    return BuilderProgress::Finished(vec![]);
+                    BuilderProgress::Finished(vec![])
+                } else {
+                    self.state = GridBuilderState::FirstCellFinished {
+                        start: *start,
+                        current: cell_size + *start,
+                    };
+                    BuilderProgress::InProgress
                 }
-
-                self.state = GridBuilderState::FirstCellFinished {
-                    start: *start,
-                    current: cell_size + *start,
-                };
             }
-            (GridBuilderState::FirstCell { .. }, ..) => {}
+            (GridBuilderState::FirstCell { .. }, ..) => BuilderProgress::InProgress,
             (
                 GridBuilderState::FirstCellFinished { start, current },
                 PenEvent::Down { element, .. },
@@ -82,21 +85,25 @@ impl Buildable for GridBuilder {
                     cell_size: (*current - *start),
                     current: constraints.constrain(element.pos - *start) + *start,
                 };
+                BuilderProgress::InProgress
             }
-            (GridBuilderState::FirstCellFinished { .. }, ..) => {}
+            (GridBuilderState::FirstCellFinished { .. }, ..) => BuilderProgress::InProgress,
             (GridBuilderState::Grids { current, .. }, PenEvent::Down { element, .. }) => {
                 // The grid is already constrained by the cell size
                 *current = element.pos;
+                BuilderProgress::InProgress
             }
-            (GridBuilderState::Grids { .. }, PenEvent::Up { .. }) => {
-                return BuilderProgress::Finished(
-                    self.state_as_lines().into_iter().map(Shape::Line).collect(),
-                );
-            }
-            (GridBuilderState::Grids { .. }, ..) => {}
-        }
+            (GridBuilderState::Grids { .. }, PenEvent::Up { .. }) => BuilderProgress::Finished(
+                self.state_as_lines().into_iter().map(Shape::Line).collect(),
+            ),
+            (GridBuilderState::Grids { .. }, ..) => BuilderProgress::InProgress,
+        };
 
-        BuilderProgress::InProgress
+        EventResult {
+            handled: true,
+            propagate: EventPropagation::Stop,
+            progress,
+        }
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

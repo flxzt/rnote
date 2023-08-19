@@ -1,12 +1,13 @@
 // Imports
 use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::constraints::ConstraintRatio;
+use crate::eventresult::EventPropagation;
 use crate::ext::AabbExt;
 use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::QuadraticBezier;
 use crate::style::{indicators, Composer};
-use crate::Constraints;
+use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use std::time::Instant;
@@ -53,44 +54,52 @@ impl Buildable for QuadBezBuilder {
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> BuilderProgress<Self::Emit> {
+    ) -> EventResult<BuilderProgress<Self::Emit>> {
         // we always want to allow horizontal and vertical constraints while building a quadbez
         constraints.ratios.insert(ConstraintRatio::Horizontal);
         constraints.ratios.insert(ConstraintRatio::Vertical);
 
-        match (&mut self.state, event) {
+        let progress = match (&mut self.state, event) {
             (QuadBezBuilderState::Cp { start, cp }, PenEvent::Down { element, .. }) => {
                 *cp = constraints.constrain(element.pos - *start) + *start;
+                BuilderProgress::InProgress
             }
             (QuadBezBuilderState::Cp { start, .. }, PenEvent::Up { element, .. }) => {
                 self.state = QuadBezBuilderState::CpFinished {
                     start: *start,
                     cp: constraints.constrain(element.pos - *start) + *start,
                 };
+                BuilderProgress::InProgress
             }
-            (QuadBezBuilderState::Cp { .. }, ..) => {}
+            (QuadBezBuilderState::Cp { .. }, ..) => BuilderProgress::InProgress,
             (QuadBezBuilderState::CpFinished { start, cp }, PenEvent::Down { element, .. }) => {
                 self.state = QuadBezBuilderState::End {
                     start: *start,
                     cp: *cp,
                     end: constraints.constrain(element.pos - *cp) + *cp,
                 };
+                BuilderProgress::InProgress
             }
-            (QuadBezBuilderState::CpFinished { .. }, ..) => {}
+            (QuadBezBuilderState::CpFinished { .. }, ..) => BuilderProgress::InProgress,
             (QuadBezBuilderState::End { end, cp, .. }, PenEvent::Down { element, .. }) => {
                 *end = constraints.constrain(element.pos - *cp) + *cp;
+                BuilderProgress::InProgress
             }
             (QuadBezBuilderState::End { start, cp, end }, PenEvent::Up { .. }) => {
-                return BuilderProgress::Finished(vec![Shape::QuadraticBezier(QuadraticBezier {
+                BuilderProgress::Finished(vec![Shape::QuadraticBezier(QuadraticBezier {
                     start: *start,
                     cp: *cp,
                     end: *end,
-                })]);
+                })])
             }
-            (QuadBezBuilderState::End { .. }, ..) => {}
-        }
+            (QuadBezBuilderState::End { .. }, ..) => BuilderProgress::InProgress,
+        };
 
-        BuilderProgress::InProgress
+        EventResult {
+            handled: true,
+            propagate: EventPropagation::Stop,
+            progress,
+        }
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

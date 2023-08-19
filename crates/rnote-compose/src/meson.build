@@ -44,6 +44,7 @@ rnote_compose_sources = files(
     'transform/transformable.rs',
     'color.rs',
     'constraints.rs',
+    'eventresult.rs',
     'ext.rs',
     'lib.rs',
     'penevent.rs',

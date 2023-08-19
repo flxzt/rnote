@@ -1,10 +1,11 @@
 // Imports
 use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
+use crate::eventresult::EventPropagation;
 use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Rectangle;
 use crate::style::{indicators, Composer};
-use crate::Constraints;
+use crate::{Constraints, EventResult};
 use crate::{Shape, Style, Transform};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::shape::Cuboid;
@@ -37,18 +38,23 @@ impl Buildable for RectangleBuilder {
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> BuilderProgress<Self::Emit> {
-        match event {
+    ) -> EventResult<BuilderProgress<Self::Emit>> {
+        let progress = match event {
             PenEvent::Down { element, .. } => {
                 self.current = constraints.constrain(element.pos - self.start) + self.start;
+                BuilderProgress::InProgress
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(vec![Shape::Rectangle(self.state_as_rect())]);
+                BuilderProgress::Finished(vec![Shape::Rectangle(self.state_as_rect())])
             }
-            _ => {}
-        }
+            _ => BuilderProgress::InProgress,
+        };
 
-        BuilderProgress::InProgress
+        EventResult {
+            handled: true,
+            propagate: EventPropagation::Stop,
+            progress,
+        }
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

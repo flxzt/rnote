@@ -1,9 +1,10 @@
 // Imports
 use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
+use crate::eventresult::EventPropagation;
 use crate::penpath::{Element, Segment};
 use crate::style::Composer;
-use crate::Constraints;
 use crate::PenEvent;
+use crate::{Constraints, EventResult};
 use crate::{PenPath, Style};
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
@@ -33,8 +34,8 @@ impl Buildable for PenPathSimpleBuilder {
         event: PenEvent,
         _now: Instant,
         _constraints: Constraints,
-    ) -> BuilderProgress<Self::Emit> {
-        match event {
+    ) -> EventResult<BuilderProgress<Self::Emit>> {
+        let progress = match event {
             PenEvent::Down { element, .. } => {
                 self.buffer.push_back(element);
 
@@ -55,6 +56,12 @@ impl Buildable for PenPathSimpleBuilder {
                 self.reset();
                 BuilderProgress::Finished(vec![])
             }
+        };
+
+        EventResult {
+            handled: true,
+            propagate: EventPropagation::Stop,
+            progress,
         }
     }
 

@@ -13,7 +13,8 @@ use rnote_compose::builders::buildable::{Buildable, BuilderCreator, BuilderProgr
 use rnote_compose::builders::{
     PenPathBuilderType, PenPathCurvedBuilder, PenPathModeledBuilder, PenPathSimpleBuilder,
 };
-use rnote_compose::penevent::{EventPropagation, EventResult, PenEvent, PenProgress};
+use rnote_compose::eventresult::{EventPropagation, EventResult};
+use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::Constraints;
 use std::time::Instant;
@@ -62,7 +63,7 @@ impl PenBehaviour for Brush {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventResult, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
         let handled = !matches!(&event, &PenEvent::KeyPressed { .. });
 
@@ -153,7 +154,10 @@ impl PenBehaviour for Brush {
                 },
                 pen_event,
             ) => {
-                match path_builder.handle_event(pen_event, now, Constraints::default()) {
+                let builder_result =
+                    path_builder.handle_event(pen_event, now, Constraints::default());
+
+                match builder_result.progress {
                     BuilderProgress::InProgress => {
                         if engine_view.pens_config.brush_config.style != BrushStyle::Marker {
                             trigger_brush_sound(engine_view);

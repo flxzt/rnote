@@ -1,10 +1,11 @@
 // Imports
 use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
+use crate::eventresult::EventPropagation;
 use crate::penpath::{Element, Segment};
 use crate::shapes::CubicBezier;
 use crate::style::Composer;
-use crate::Constraints;
 use crate::PenEvent;
+use crate::{Constraints, EventResult};
 use crate::{PenPath, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
@@ -44,8 +45,8 @@ impl Buildable for PenPathCurvedBuilder {
         event: PenEvent,
         _now: Instant,
         _constraints: Constraints,
-    ) -> BuilderProgress<Self::Emit> {
-        match (&mut self.state, event) {
+    ) -> EventResult<BuilderProgress<Self::Emit>> {
+        let progress = match (&mut self.state, event) {
             (PenPathCurvedBuilderState::Start, PenEvent::Down { element, .. }) => {
                 self.buffer.push(element);
 
@@ -80,6 +81,12 @@ impl Buildable for PenPathCurvedBuilder {
 
                 BuilderProgress::Finished(vec![])
             }
+        };
+
+        EventResult {
+            handled: true,
+            propagate: EventPropagation::Stop,
+            progress,
         }
     }
 

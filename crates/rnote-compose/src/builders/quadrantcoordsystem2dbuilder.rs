@@ -1,10 +1,11 @@
 // Imports
 use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
+use crate::eventresult::EventPropagation;
 use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
 use crate::style::{indicators, Composer};
-use crate::Constraints;
+use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
@@ -36,23 +37,26 @@ impl Buildable for QuadrantCoordSystem2DBuilder {
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> BuilderProgress<Self::Emit> {
-        match event {
+    ) -> EventResult<BuilderProgress<Self::Emit>> {
+        let progress = match event {
             PenEvent::Down { element, .. } => {
                 self.tip_x = constraints.constrain(element.pos - self.tip_y) + self.tip_y;
+                BuilderProgress::InProgress
             }
-            PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(
-                    self.state_as_lines()
-                        .iter()
-                        .map(|&line| Shape::Line(line))
-                        .collect::<Vec<Shape>>(),
-                );
-            }
-            _ => {}
-        }
+            PenEvent::Up { .. } => BuilderProgress::Finished(
+                self.state_as_lines()
+                    .iter()
+                    .map(|&line| Shape::Line(line))
+                    .collect::<Vec<Shape>>(),
+            ),
+            _ => BuilderProgress::InProgress,
+        };
 
-        BuilderProgress::InProgress
+        EventResult {
+            handled: true,
+            propagate: EventPropagation::Stop,
+            progress,
+        }
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

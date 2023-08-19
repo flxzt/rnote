@@ -1,12 +1,12 @@
 // Imports
-use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuildable;
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::constraints::ConstraintRatio;
-use crate::penevents::{KeyboardKey, PenEvent, PenState};
+use crate::eventresult::EventPropagation;
+use crate::penevent::{KeyboardKey, PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Polyline;
 use crate::style::{indicators, Composer};
-use crate::Constraints;
+use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
@@ -29,7 +29,7 @@ pub struct PolylineBuilder {
     finish: bool,
 }
 
-impl ShapeBuilderCreator for PolylineBuilder {
+impl BuilderCreator for PolylineBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             start: element.pos,
@@ -42,18 +42,20 @@ impl ShapeBuilderCreator for PolylineBuilder {
     }
 }
 
-impl ShapeBuildable for PolylineBuilder {
+impl Buildable for PolylineBuilder {
+    type Emit = Shape;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> ShapeBuilderProgress {
+    ) -> EventResult<BuilderProgress<Self::Emit>> {
         // we always want to allow horizontal and vertical constraints while building a polyline
         constraints.ratios.insert(ConstraintRatio::Horizontal);
         constraints.ratios.insert(ConstraintRatio::Vertical);
 
-        match event {
+        let progress = match event {
             PenEvent::Down { element, .. } => {
                 if (self.pen_state == PenState::Up || self.pen_state == PenState::Proximity)
                     && self.pos_in_finish(element.pos)
@@ -64,39 +66,44 @@ impl ShapeBuildable for PolylineBuilder {
                 self.pen_pos = element.pos;
                 let last_pos = self.path.last().copied().unwrap_or(self.start);
                 self.current = constraints.constrain(element.pos - last_pos) + last_pos;
+                BuilderProgress::InProgress
             }
             PenEvent::Up { element, .. } => {
                 if self.finish {
-                    return ShapeBuilderProgress::Finished(vec![Shape::Polyline(
-                        self.state_as_polyline(),
-                    )]);
+                    BuilderProgress::Finished(vec![Shape::Polyline(self.state_as_polyline())])
+                } else {
+                    if self.pen_state == PenState::Down {
+                        self.path.push(self.current);
+                    }
+                    self.pen_state = PenState::Up;
+                    self.pen_pos = element.pos;
+                    BuilderProgress::InProgress
                 }
-                if self.pen_state == PenState::Down {
-                    self.path.push(self.current);
-                }
-                self.pen_state = PenState::Up;
-                self.pen_pos = element.pos;
             }
             PenEvent::Proximity { element, .. } => {
                 self.pen_state = PenState::Proximity;
                 self.pen_pos = element.pos;
+                BuilderProgress::InProgress
             }
             PenEvent::KeyPressed { keyboard_key, .. } => match keyboard_key {
                 KeyboardKey::Escape | KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
-                    return ShapeBuilderProgress::Finished(vec![Shape::Polyline(
-                        self.state_as_polyline(),
-                    )]);
+                    BuilderProgress::Finished(vec![Shape::Polyline(self.state_as_polyline())])
                 }
-                _ => {}
+                _ => BuilderProgress::InProgress,
             },
-            PenEvent::Text { .. } => {}
+            PenEvent::Text { .. } => BuilderProgress::InProgress,
             PenEvent::Cancel => {
                 self.pen_state = PenState::Up;
                 self.finish = false;
+                BuilderProgress::Finished(vec![])
             }
-        }
+        };
 
-        ShapeBuilderProgress::InProgress
+        EventResult {
+            handled: true,
+            propagate: EventPropagation::Stop,
+            progress,
+        }
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

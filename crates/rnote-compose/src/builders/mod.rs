@@ -1,5 +1,7 @@
 // Modules
 mod arrowbuilder;
+/// Buildable trait.
+pub mod buildable;
 mod coordsystem2dbuilder;
 mod coordsystem3dbuilder;
 mod cubbezbuilder;
@@ -7,7 +9,6 @@ mod ellipsebuilder;
 mod fociellipsebuilder;
 mod gridbuilder;
 mod linebuilder;
-mod penpathbuildable;
 mod penpathcurvedbuilder;
 mod penpathmodeledbuilder;
 mod penpathsimplebuilder;
@@ -15,7 +16,6 @@ mod polylinebuilder;
 mod quadbezbuilder;
 mod quadrantcoordsystem2dbuilder;
 mod rectanglebuilder;
-mod shapebuildable;
 
 // Re-exports
 pub use arrowbuilder::ArrowBuilder;
@@ -26,9 +26,6 @@ pub use ellipsebuilder::EllipseBuilder;
 pub use fociellipsebuilder::FociEllipseBuilder;
 pub use gridbuilder::GridBuilder;
 pub use linebuilder::LineBuilder;
-pub use penpathbuildable::PenPathBuildable;
-pub use penpathbuildable::PenPathBuilderCreator;
-pub use penpathbuildable::PenPathBuilderProgress;
 pub use penpathcurvedbuilder::PenPathCurvedBuilder;
 pub use penpathmodeledbuilder::PenPathModeledBuilder;
 pub use penpathsimplebuilder::PenPathSimpleBuilder;
@@ -36,9 +33,6 @@ pub use polylinebuilder::PolylineBuilder;
 pub use quadbezbuilder::QuadBezBuilder;
 pub use quadrantcoordsystem2dbuilder::QuadrantCoordSystem2DBuilder;
 pub use rectanglebuilder::RectangleBuilder;
-pub use shapebuildable::ShapeBuildable;
-pub use shapebuildable::ShapeBuilderCreator;
-pub use shapebuildable::ShapeBuilderProgress;
 
 // Imports
 use anyhow::Context;

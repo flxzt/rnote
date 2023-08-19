@@ -1,9 +1,7 @@
 // Imports
 use super::RnCanvas;
 use gtk4::{gdk, glib, graphene, prelude::*, Native};
-use rnote_compose::penevents::ShortcutKey;
-use rnote_compose::penevents::{KeyboardKey, PenState};
-use rnote_compose::penevents::{ModifierKey, PenEvent};
+use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenState, ShortcutKey};
 use rnote_compose::penpath::Element;
 use rnote_engine::ext::EventPropagationExt;
 use rnote_engine::ext::GraphenePointExt;

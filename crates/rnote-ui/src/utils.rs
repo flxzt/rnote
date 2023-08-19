@@ -1,7 +1,5 @@
 // Imports
-use gtk4::{gdk, gio, glib, graphene, prelude::*, Widget};
-use p2d::bounding_volume::Aabb;
-use rnote_engine::ext::GraphenePointExt;
+use gtk4::{gdk, gio, glib, prelude::*};
 use std::cell::Ref;
 use std::slice::Iter;
 
@@ -21,24 +19,6 @@ pub(crate) fn is_goutputstream_file(file: &gio::File) -> bool {
     }
 
     false
-}
-
-/// Translate a Aabb from the the coordinate space of `widget` to `dest_widget`. None if the widgets don't have a common ancestor.
-#[allow(unused)]
-pub(crate) fn translate_aabb_to_widget(
-    aabb: Aabb,
-    widget: &impl IsA<Widget>,
-    dest_widget: &impl IsA<Widget>,
-) -> Option<Aabb> {
-    let mins = {
-        let coords = widget.translate_coordinates(dest_widget, aabb.mins[0], aabb.mins[1])?;
-        na::point![coords.0, coords.1]
-    };
-    let maxs = {
-        let coords = widget.translate_coordinates(dest_widget, aabb.maxs[0], aabb.maxs[1])?;
-        na::point![coords.0, coords.1]
-    };
-    Some(Aabb::new(mins, maxs))
 }
 
 /// Create a new file or replace if it already exists, asynchronously.

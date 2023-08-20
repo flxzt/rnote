@@ -260,12 +260,12 @@ impl RnOverlays {
                 clone!(@weak appwindow => move |colorpicker, _paramspec| {
                     let stroke_color = colorpicker.stroke_color().into_compose_color();
                     let canvas = appwindow.active_tab_wrapper().canvas();
-                    let engine = &mut *canvas.engine_mut();
+                    let current_pen_style = canvas.engine_ref().penholder.current_pen_style_w_override();
 
-                    match engine.penholder.current_pen_style_w_override() {
+                    match current_pen_style {
                         PenStyle::Typewriter => {
-                            if engine.pens_config.typewriter_config.text_style.color != stroke_color {
-                                let widget_flags = engine.text_selection_change_style(|style| {style.color = stroke_color});
+                            if canvas.engine_ref().pens_config.typewriter_config.text_style.color != stroke_color {
+                                let widget_flags = canvas.engine_mut().text_selection_change_style(|style| {style.color = stroke_color});
                                 appwindow.handle_widget_flags(widget_flags, &canvas);
                             }
                         }
@@ -277,12 +277,12 @@ impl RnOverlays {
                     }
 
                     // We have a global colorpicker, so we apply it to all styles
-                    engine.pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.typewriter_config.text_style.color = stroke_color;
+                    canvas.engine_mut().pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
+                    canvas.engine_mut().pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
+                    canvas.engine_mut().pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
+                    canvas.engine_mut().pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
+                    canvas.engine_mut().pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
+                    canvas.engine_mut().pens_config.typewriter_config.text_style.color = stroke_color;
                 }),
             );
 
@@ -292,7 +292,6 @@ impl RnOverlays {
                 let fill_color = colorpicker.fill_color().into_compose_color();
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let stroke_style = canvas.engine_ref().penholder.current_pen_style_w_override();
-                let engine = &mut *canvas.engine_mut();
 
                 match stroke_style {
                     PenStyle::Selector => {
@@ -303,10 +302,10 @@ impl RnOverlays {
                 }
 
                 // We have a global colorpicker, so we apply it to all styles
-                engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
-                engine.pens_config.brush_config.solid_options.fill_color = Some(fill_color);
-                engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
-                engine.pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
+                canvas.engine_mut().pens_config.brush_config.marker_options.fill_color = Some(fill_color);
+                canvas.engine_mut().pens_config.brush_config.solid_options.fill_color = Some(fill_color);
+                canvas.engine_mut().pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
+                canvas.engine_mut().pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
             }),
         );
     }

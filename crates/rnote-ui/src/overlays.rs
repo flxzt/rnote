@@ -350,7 +350,7 @@ impl RnOverlays {
                 }
 
                 let _ = canvaswrapper.canvas().engine_mut().set_active(false);
-                canvaswrapper.disconnect_handlers();
+                canvaswrapper.disconnect_connections();
             }),
         );
 

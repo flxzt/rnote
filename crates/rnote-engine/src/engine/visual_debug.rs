@@ -214,7 +214,7 @@ pub(crate) fn draw_stroke_debug_to_gtk_snapshot(
 
     // Draw the current pen bounds
     if let Some(bounds) = engine.penholder.bounds_on_doc(&EngineView {
-        tasks_tx: engine.tasks_tx(),
+        tasks_tx: engine.engine_tasks_tx(),
         pens_config: &engine.pens_config,
         doc: &engine.document,
         store: &engine.store,

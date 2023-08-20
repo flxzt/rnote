@@ -195,7 +195,7 @@ impl RnAppWindow {
             if let Err(e) = tab
                 .canvas()
                 .engine_ref()
-                .tasks_tx()
+                .engine_tasks_tx()
                 .unbounded_send(EngineTask::Quit)
             {
                 log::error!(

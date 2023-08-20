@@ -189,11 +189,11 @@ impl Default for Engine {
 }
 
 impl Engine {
-    pub fn tasks_tx(&self) -> EngineTaskSender {
+    pub fn engine_tasks_tx(&self) -> EngineTaskSender {
         self.tasks_tx.clone()
     }
 
-    pub fn take_tasks_rx(&mut self) -> Option<EngineTaskReceiver> {
+    pub fn take_engine_tasks_rx(&mut self) -> Option<EngineTaskReceiver> {
         self.tasks_rx.take()
     }
 
@@ -438,7 +438,7 @@ impl Engine {
             pen_mode,
             now,
             &mut EngineViewMut {
-                tasks_tx: self.tasks_tx(),
+                tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
@@ -458,7 +458,7 @@ impl Engine {
             shortcut_key,
             now,
             &mut EngineViewMut {
-                tasks_tx: self.tasks_tx(),
+                tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
@@ -473,7 +473,7 @@ impl Engine {
         self.penholder.change_style(
             new_style,
             &mut EngineViewMut {
-                tasks_tx: self.tasks_tx(),
+                tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
@@ -491,7 +491,7 @@ impl Engine {
         self.penholder.change_style_override(
             new_style_override,
             &mut EngineViewMut {
-                tasks_tx: self.tasks_tx(),
+                tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
@@ -506,7 +506,7 @@ impl Engine {
         self.penholder.change_pen_mode(
             pen_mode,
             &mut EngineViewMut {
-                tasks_tx: self.tasks_tx(),
+                tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
@@ -520,7 +520,7 @@ impl Engine {
     pub fn reinstall_pen_current_style(&mut self) -> WidgetFlags {
         self.penholder
             .reinstall_pen_current_style(&mut EngineViewMut {
-                tasks_tx: self.tasks_tx(),
+                tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
@@ -731,7 +731,7 @@ impl Engine {
         &self,
     ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
         self.penholder.fetch_clipboard_content(&EngineView {
-            tasks_tx: self.tasks_tx(),
+            tasks_tx: self.engine_tasks_tx(),
             pens_config: &self.pens_config,
             doc: &self.document,
             store: &self.store,
@@ -746,7 +746,7 @@ impl Engine {
         &mut self,
     ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
         self.penholder.cut_clipboard_content(&mut EngineViewMut {
-            tasks_tx: self.tasks_tx(),
+            tasks_tx: self.engine_tasks_tx(),
             pens_config: &mut self.pens_config,
             doc: &mut self.document,
             store: &mut self.store,

@@ -2,8 +2,8 @@
 use crate::{RnAppWindow, RnCanvasWrapper, RnStrokeWidthPicker};
 use adw::prelude::*;
 use gtk4::{
-    glib, glib::clone, subclass::prelude::*, CompositeTemplate, ListBox, MenuButton, Popover,
-    SpinButton,
+    glib, glib::clone, subclass::prelude::*, Button, CompositeTemplate, ListBox, MenuButton,
+    Popover, SpinButton,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::PenPathBuilderType;
@@ -21,6 +21,10 @@ mod imp {
         #[template_child]
         pub(crate) brushstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
+        pub(crate) brushstyle_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) brushstyle_popover_close_button: TemplateChild<Button>,
+        #[template_child]
         pub(crate) brushstyle_listbox: TemplateChild<ListBox>,
         #[template_child]
         pub(crate) brushstyle_marker_row: TemplateChild<adw::ActionRow>,
@@ -32,6 +36,8 @@ mod imp {
         pub(crate) brushconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub(crate) brushconfig_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) brushconfig_popover_close_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) brush_buildertype_listbox: TemplateChild<ListBox>,
         #[template_child]
@@ -188,6 +194,20 @@ impl RnBrushPage {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
+        let brushstyle_popover = imp.brushstyle_popover.get();
+        let brushconfig_popover = imp.brushconfig_popover.get();
+
+        // Popovers
+        imp.brushstyle_popover_close_button.connect_clicked(
+            clone!(@weak brushstyle_popover => move |_| {
+                brushstyle_popover.popdown();
+            }),
+        );
+        imp.brushconfig_popover_close_button.connect_clicked(
+            clone!(@weak brushconfig_popover => move |_| {
+                brushconfig_popover.popdown();
+            }),
+        );
 
         // Stroke width
         imp.stroke_width_picker

@@ -6,8 +6,8 @@ use crate::{
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    glib, glib::clone, CompositeTemplate, ListBox, MenuButton, Popover, SpinButton, StringList,
-    Switch,
+    glib, glib::clone, Button, CompositeTemplate, ListBox, MenuButton, Popover, SpinButton,
+    StringList, Switch,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::ShapeBuilderType;
@@ -34,8 +34,6 @@ mod imp {
         #[template_child]
         pub(crate) shapeconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub(crate) shapeconfig_popover: TemplateChild<Popover>,
-        #[template_child]
         pub(crate) roughstyle_fillstyle_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(crate) roughstyle_hachure_angle_spinbutton: TemplateChild<SpinButton>,
@@ -55,6 +53,22 @@ mod imp {
         pub(crate) constraint_three_to_two_switch: TemplateChild<Switch>,
         #[template_child]
         pub(crate) constraint_golden_switch: TemplateChild<Switch>,
+        #[template_child]
+        pub(crate) shaperstyle_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) shaperstyle_popover_close_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) shapeconfig_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) shapeconfig_popover_close_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) shapebuildertype_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) shapebuildertype_popover_close_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) constraint_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) constraint_popover_close_button: TemplateChild<Button>,
     }
 
     #[glib::object_subclass]
@@ -167,6 +181,32 @@ impl RnShaperPage {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
+        let shaperstyle_popover = imp.shaperstyle_popover.get();
+        let shapeconfig_popover = imp.shapeconfig_popover.get();
+        let shapebuildertype_popover = imp.shapebuildertype_popover.get();
+        let constraint_popover = imp.constraint_popover.get();
+
+        // Popovers
+        imp.shaperstyle_popover_close_button.connect_clicked(
+            clone!(@weak shaperstyle_popover => move |_| {
+                shaperstyle_popover.popdown();
+            }),
+        );
+        imp.shapeconfig_popover_close_button.connect_clicked(
+            clone!(@weak shapeconfig_popover => move |_| {
+                shapeconfig_popover.popdown();
+            }),
+        );
+        imp.shapebuildertype_popover_close_button.connect_clicked(
+            clone!(@weak shapebuildertype_popover => move |_| {
+                shapebuildertype_popover.popdown();
+            }),
+        );
+        imp.constraint_popover_close_button.connect_clicked(
+            clone!(@weak constraint_popover => move |_| {
+                constraint_popover.popdown();
+            }),
+        );
 
         // Stroke width
         imp.stroke_width_picker.spinbutton().set_range(

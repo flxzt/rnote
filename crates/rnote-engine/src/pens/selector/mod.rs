@@ -9,7 +9,7 @@ use crate::engine::{EngineView, EngineViewMut, StrokeContent};
 use crate::render::Svg;
 use crate::store::StrokeKey;
 use crate::strokes::Content;
-use crate::{Camera, DrawableOnDoc, RnoteEngine, WidgetFlags};
+use crate::{Camera, DrawableOnDoc, Engine, WidgetFlags};
 use futures::channel::oneshot;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
@@ -189,7 +189,7 @@ impl PenBehaviour for Selector {
 
                         // Add rendered Png
                         let image = stroke_content_svg
-                            .gen_image(RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?
+                            .gen_image(Engine::STROKE_EXPORT_IMAGE_SCALE)?
                             .into_encoded_bytes(image::ImageOutputFormat::Png)?;
                         clipboard_content.push((image, String::from("image/png")));
                     }
@@ -247,7 +247,7 @@ impl PenBehaviour for Selector {
 
                         // Add rendered Png
                         let image = stroke_content_svg
-                            .gen_image(RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?
+                            .gen_image(Engine::STROKE_EXPORT_IMAGE_SCALE)?
                             .into_encoded_bytes(image::ImageOutputFormat::Png)?;
                         clipboard_content.push((image, String::from("image/png")));
                     }

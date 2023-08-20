@@ -19,7 +19,8 @@ use crate::pens::{PenMode, PensConfig};
 use crate::store::render_comp::{self, RenderCompState};
 use crate::store::StrokeKey;
 use crate::strokes::content::GeneratedContentImages;
-use crate::{render, AudioPlayer, WidgetFlags};
+use crate::strokes::textstroke::{TextAttribute, TextStyle};
+use crate::{render, AudioPlayer, SelectionCollision, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use futures::channel::{mpsc, oneshot};
 use gtk4::gsk;
@@ -28,7 +29,7 @@ use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::{PenEvent, ShortcutKey};
 use rnote_compose::shapes::Shapeable;
-use rnote_compose::SplitOrder;
+use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -58,7 +59,7 @@ pub struct EngineViewMut<'a> {
 
 impl<'a> EngineViewMut<'a> {
     // Converts itself to the immutable view.
-    pub fn as_im<'m>(&'m self) -> EngineView<'m> {
+    pub(crate) fn as_im<'m>(&'m self) -> EngineView<'m> {
         EngineView::<'m> {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: self.pens_config,
@@ -71,7 +72,7 @@ impl<'a> EngineViewMut<'a> {
 }
 
 #[derive(Debug, Clone)]
-/// An engine task, usually coming from a spawned thread and to be processed with [RnoteEngine::handle_engine_task].
+/// An engine task, usually coming from a spawned thread and to be processed with [Engine::handle_engine_task].
 pub enum EngineTask {
     /// Replace the images for rendering of the given stroke.
     ///
@@ -129,18 +130,17 @@ pub type EngineTaskReceiver = mpsc::UnboundedReceiver<EngineTask>;
 /// The engine.
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "engine")]
-pub struct RnoteEngine {
+pub struct Engine {
     #[serde(rename = "document")]
     pub document: Document,
     #[serde(rename = "store")]
     pub store: StrokeStore,
-    #[serde(rename = "pens_config")]
-    pub pens_config: PensConfig,
     #[serde(rename = "camera")]
     pub camera: Camera,
+    #[serde(rename = "pens_config")]
+    pub pens_config: PensConfig,
     #[serde(rename = "penholder")]
     pub penholder: PenHolder,
-
     #[serde(rename = "import_prefs")]
     pub import_prefs: ImportPrefs,
     #[serde(rename = "export_prefs")]
@@ -149,32 +149,31 @@ pub struct RnoteEngine {
     pen_sounds: bool,
 
     #[serde(skip)]
-    pub audioplayer: Option<AudioPlayer>,
+    audioplayer: Option<AudioPlayer>,
     #[serde(skip)]
-    pub visual_debug: bool,
+    visual_debug: bool,
     // the task sender. Must not be modified, only cloned.
     #[serde(skip)]
-    pub tasks_tx: EngineTaskSender,
+    tasks_tx: EngineTaskSender,
     #[serde(skip)]
-    pub tasks_rx: Option<EngineTaskReceiver>,
+    tasks_rx: Option<EngineTaskReceiver>,
     // Background rendering
     #[serde(skip)]
-    pub background_tile_image: Option<render::Image>,
+    background_tile_image: Option<render::Image>,
     #[serde(skip)]
     background_rendernodes: Vec<gsk::RenderNode>,
 }
 
-impl Default for RnoteEngine {
+impl Default for Engine {
     fn default() -> Self {
         let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
 
         Self {
             document: Document::default(),
             store: StrokeStore::default(),
-            pens_config: PensConfig::default(),
             camera: Camera::default(),
+            pens_config: PensConfig::default(),
             penholder: PenHolder::default(),
-
             import_prefs: ImportPrefs::default(),
             export_prefs: ExportPrefs::default(),
             pen_sounds: false,
@@ -189,12 +188,17 @@ impl Default for RnoteEngine {
     }
 }
 
-impl RnoteEngine {
+impl Engine {
     pub fn tasks_tx(&self) -> EngineTaskSender {
         self.tasks_tx.clone()
     }
 
-    pub fn view(&self) -> EngineView {
+    pub fn take_tasks_rx(&mut self) -> Option<EngineTaskReceiver> {
+        self.tasks_rx.take()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn view(&self) -> EngineView {
         EngineView {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &self.pens_config,
@@ -205,7 +209,8 @@ impl RnoteEngine {
         }
     }
 
-    pub fn view_mut(&mut self) -> EngineViewMut {
+    #[allow(unused)]
+    pub(crate) fn view_mut(&mut self) -> EngineViewMut {
         EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &mut self.pens_config,
@@ -245,6 +250,17 @@ impl RnoteEngine {
         }
     }
 
+    pub fn visual_debug(&self) -> bool {
+        self.visual_debug
+    }
+
+    pub fn set_visual_debug(&mut self, visual_debug: bool) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        self.visual_debug = visual_debug;
+        widget_flags.redraw = true;
+        widget_flags
+    }
+
     /// Takes a snapshot of the current state.
     pub fn take_snapshot(&self) -> EngineSnapshot {
         let mut store_history_entry = self.store.create_history_entry();
@@ -269,16 +285,14 @@ impl RnoteEngine {
     }
 
     /// Imports an engine snapshot. A save file should always be loaded with this method.
-    ///
-    /// The store then needs to update its rendering.
     pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
         self.document = snapshot.document;
-        widget_flags |=
-            self.store.import_from_snapshot(&snapshot) | self.current_pen_update_state();
-
-        widget_flags
+        self.store.import_from_snapshot(&snapshot)
+            | self.current_pen_update_state()
+            | self.return_to_origin(None)
+            | self.doc_resize_autoexpand()
+            | self.background_regenerate_pattern()
+            | self.update_content_rendering_current_viewport()
     }
 
     /// Records the current store state and saves it as a history entry.
@@ -293,26 +307,18 @@ impl RnoteEngine {
 
     /// Undo the latest changes.
     pub fn undo(&mut self, now: Instant) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
-        widget_flags |=
-            self.store.undo(now) | self.doc_resize_autoexpand() | self.current_pen_update_state();
-        self.update_rendering_current_viewport();
-        widget_flags.redraw = true;
-
-        widget_flags
+        self.store.undo(now)
+            | self.doc_resize_autoexpand()
+            | self.current_pen_update_state()
+            | self.update_rendering_current_viewport()
     }
 
     /// Redo the latest changes.
     pub fn redo(&mut self, now: Instant) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
-        widget_flags |=
-            self.store.redo(now) | self.doc_resize_autoexpand() | self.current_pen_update_state();
-        self.update_rendering_current_viewport();
-        widget_flags.redraw = true;
-
-        widget_flags
+        self.store.redo(now)
+            | self.doc_resize_autoexpand()
+            | self.current_pen_update_state()
+            | self.update_rendering_current_viewport()
     }
 
     pub fn can_undo(&self) -> bool {
@@ -323,13 +329,9 @@ impl RnoteEngine {
         self.store.can_redo()
     }
 
-    // Clears the entire store.
+    // Clears the entire engine.
     pub fn clear(&mut self) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
-        widget_flags |= self.store.clear() | self.current_pen_update_state();
-
-        widget_flags
+        self.store.clear() | self.current_pen_update_state() | self.return_to_origin(None)
     }
 
     /// Handle a received task from tasks_rx.
@@ -411,10 +413,9 @@ impl RnoteEngine {
 
                 let all_strokes = self.store.stroke_keys_unordered();
                 self.store.set_rendering_dirty_for_strokes(&all_strokes);
-                widget_flags |= self.doc_resize_autoexpand();
-
-                self.background_regenerate_pattern();
-                self.update_rendering_current_viewport();
+                widget_flags |= self.doc_resize_autoexpand()
+                    | self.background_regenerate_pattern()
+                    | self.update_rendering_current_viewport();
             }
             EngineTask::Quit => {
                 widget_flags |= self.set_active(false);
@@ -532,12 +533,11 @@ impl RnoteEngine {
     pub fn set_active(&mut self, active: bool) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         if active {
-            widget_flags |= self.reinstall_pen_current_style();
-            self.background_regenerate_pattern();
-            self.update_content_rendering_current_viewport();
+            widget_flags |= self.reinstall_pen_current_style()
+                | self.background_regenerate_pattern()
+                | self.update_content_rendering_current_viewport();
         } else {
-            self.clear_rendering();
-            widget_flags |= self.penholder.deinit_current_pen();
+            widget_flags |= self.clear_rendering() | self.penholder.deinit_current_pen();
         }
         widget_flags
     }
@@ -596,12 +596,45 @@ impl RnoteEngine {
         self.camera.zoom_w_timeout(zoom, self.tasks_tx.clone())
     }
 
+    pub fn set_scale_factor(&mut self, scale_factor: f64) -> WidgetFlags {
+        self.store
+            .set_rendering_dirty_for_strokes(&self.store.stroke_keys_as_rendered());
+        self.camera.set_scale_factor(scale_factor)
+            | self.background_regenerate_pattern()
+            | self.update_content_rendering_current_viewport()
+    }
+
     /// Resizes the doc to the format and to fit all strokes.
     ///
     /// Background rendering then needs to be updated.
     pub fn doc_resize_to_fit_content(&mut self) -> WidgetFlags {
         self.document
             .resize_to_fit_content(&self.store, &self.camera)
+            | self.update_rendering_current_viewport()
+    }
+
+    pub fn return_to_origin(&mut self, parent_width: Option<f64>) -> WidgetFlags {
+        let zoom = self.camera.zoom();
+        let new_offset = if let Some(parent_width) = parent_width {
+            if self.document.format.width * zoom <= parent_width {
+                na::vector![
+                    (self.document.format.width * 0.5 * zoom) - parent_width * 0.5,
+                    -Document::SHADOW_WIDTH * zoom
+                ]
+            } else {
+                // If the zoomed format width is larger than the displayed surface, we zoom to a fixed origin
+                na::vector![
+                    -Document::SHADOW_WIDTH * zoom,
+                    -Document::SHADOW_WIDTH * zoom
+                ]
+            }
+        } else {
+            na::vector![
+                -Document::SHADOW_WIDTH * zoom,
+                -Document::SHADOW_WIDTH * zoom
+            ]
+        };
+        self.camera_set_offset_expand(new_offset)
     }
 
     /// Resize the doc when in autoexpanding layouts. called e.g. when finishing a new stroke.
@@ -609,6 +642,7 @@ impl RnoteEngine {
     /// Background rendering then needs to be updated.
     pub fn doc_resize_autoexpand(&mut self) -> WidgetFlags {
         self.document.resize_autoexpand(&self.store, &self.camera)
+            | self.update_rendering_current_viewport()
     }
 
     /// Expand the doc to the camera when in autoexpanding layouts. called e.g. when dragging with touch.
@@ -620,44 +654,30 @@ impl RnoteEngine {
 
     /// Add a page to the document when in fixed size layout.
     ///
-    /// Returns true when document is in fixed size layout and a pages was added,
-    /// else false.
-    ///
-    /// Background and strokes rendering then need to be updated.
-    pub fn doc_add_page_fixed_size(&mut self) -> bool {
-        if self.document.layout != Layout::FixedSize {
-            return false;
+    /// Document layout must be set to fixed-size.
+    pub fn doc_add_page_fixed_size(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if self.document.add_page_fixed_size() {
+            widget_flags |= self.update_rendering_current_viewport()
         }
-
-        let format_height = self.document.format.height;
-        let new_doc_height = self.document.height + format_height;
-        self.document.height = new_doc_height;
-
-        true
+        widget_flags
     }
 
     /// Remove a page from the document when in fixed size layout.
     ///
-    /// Returns true when document is in fixed size layout and a page was removed,
-    /// else false.
-    ///
-    /// Background and strokes rendering then need to be updated.
-    pub fn doc_remove_page_fixed_size(&mut self) -> bool {
-        if self.document.layout != Layout::FixedSize {
-            return false;
+    /// Document layout must be set to fixed-size.
+    pub fn doc_remove_page_fixed_size(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if self.document.remove_page_fixed_size() {
+            self.store.set_trashed_keys(
+                &self
+                    .store
+                    .keys_below_y(self.document.y + self.document.height),
+                true,
+            );
+            widget_flags |= self.record(Instant::now()) | self.update_rendering_current_viewport()
         }
-        let format_height = self.document.format.height;
-        let doc_y = self.document.y;
-        let doc_height = self.document.height;
-        let new_doc_height = doc_height - format_height;
-
-        if doc_height > format_height {
-            let remove_area_keys = self.store.keys_below_y(doc_y + new_doc_height);
-            self.store.set_trashed_keys(&remove_area_keys, true);
-            self.document.height = new_doc_height;
-        }
-
-        true
+        widget_flags
     }
 
     /// Update the viewport offset of the camera, clamped to mins and maxs values depending on the document layout.
@@ -665,6 +685,15 @@ impl RnoteEngine {
     /// Background and strokes rendering then need to be updated.
     pub fn camera_set_offset(&mut self, offset: na::Vector2<f64>) -> WidgetFlags {
         self.camera.set_offset(offset, &self.document)
+    }
+
+    /// Update the viewport offset of the camera, clamped to mins and maxs values depending on the document layout.
+    ///
+    /// Expands the document when in autoexpanding layouts.
+    ///
+    /// Background and strokes rendering then need to be updated.
+    pub fn camera_set_offset_expand(&mut self, offset: na::Vector2<f64>) -> WidgetFlags {
+        self.camera.set_offset(offset, &self.document) | self.doc_expand_autoexpand()
     }
 
     /// Update the viewport size of the camera.
@@ -724,5 +753,142 @@ impl RnoteEngine {
             camera: &mut self.camera,
             audioplayer: &mut self.audioplayer,
         })
+    }
+
+    pub fn set_doc_layout(&mut self, layout: Layout) -> WidgetFlags {
+        if self.document.layout != layout {
+            self.document.layout = layout;
+            self.doc_resize_to_fit_content()
+        } else {
+            self.doc_resize_autoexpand()
+        }
+    }
+
+    pub fn select_all_strokes(&mut self) -> WidgetFlags {
+        self.store
+            .set_selected_keys(&self.store.stroke_keys_as_rendered(), true);
+        self.change_pen_style(PenStyle::Selector)
+            | self.current_pen_update_state()
+            | self.doc_resize_autoexpand()
+            | self.record(Instant::now())
+            | self.update_rendering_current_viewport()
+    }
+
+    pub fn deselect_all_strokes(&mut self) -> WidgetFlags {
+        self.store
+            .set_selected_keys(&self.store.selection_keys_as_rendered(), false);
+        self.change_pen_style(PenStyle::Selector)
+            | self.current_pen_update_state()
+            | self.doc_resize_autoexpand()
+            | self.record(Instant::now())
+            | self.update_rendering_current_viewport()
+    }
+
+    pub fn select_with_bounds(
+        &mut self,
+        bounds: Aabb,
+        collision: SelectionCollision,
+    ) -> WidgetFlags {
+        let select = match collision {
+            SelectionCollision::Contains => self.store.stroke_keys_as_rendered_in_bounds(bounds),
+            SelectionCollision::Intersects => self
+                .store
+                .stroke_keys_as_rendered_intersecting_bounds(bounds),
+        };
+        self.store.set_selected_keys(&select, true);
+        self.doc_resize_autoexpand()
+            | self.record(Instant::now())
+            | self.update_rendering_current_viewport()
+    }
+
+    pub fn duplicate_selection(&mut self) -> WidgetFlags {
+        let new_selected = self.store.duplicate_selection();
+        self.store.update_geometry_for_strokes(&new_selected);
+        self.current_pen_update_state()
+            | self.doc_resize_autoexpand()
+            | self.record(Instant::now())
+            | self.update_rendering_current_viewport()
+    }
+
+    pub fn trash_selection(&mut self) -> WidgetFlags {
+        let selection_keys = self.store.selection_keys_as_rendered();
+        self.store.set_trashed_keys(&selection_keys, true);
+        self.current_pen_update_state()
+            | self.doc_resize_autoexpand()
+            | self.record(Instant::now())
+            | self.update_rendering_current_viewport()
+    }
+
+    pub fn nothing_selected(&self) -> bool {
+        self.store.selection_keys_unordered().is_empty()
+    }
+
+    pub fn change_selection_stroke_colors(&mut self, stroke_color: Color) -> WidgetFlags {
+        self.store
+            .change_stroke_colors(&self.store.selection_keys_as_rendered(), stroke_color)
+            | self.record(Instant::now())
+            | self.update_content_rendering_current_viewport()
+    }
+
+    pub fn change_selection_fill_colors(&mut self, fill_color: Color) -> WidgetFlags {
+        self.store
+            .change_fill_colors(&self.store.selection_keys_as_rendered(), fill_color)
+            | self.record(Instant::now())
+            | self.update_content_rendering_current_viewport()
+    }
+
+    pub fn text_selection_change_style<F>(&mut self, modify_func: F) -> WidgetFlags
+    where
+        F: FnOnce(&mut TextStyle),
+    {
+        let mut widget_flags = WidgetFlags::default();
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            widget_flags |= typewriter.change_text_style_in_modifying_stroke(
+                modify_func,
+                &mut EngineViewMut {
+                    tasks_tx: self.tasks_tx.clone(),
+                    pens_config: &mut self.pens_config,
+                    doc: &mut self.document,
+                    store: &mut self.store,
+                    camera: &mut self.camera,
+                    audioplayer: &mut self.audioplayer,
+                },
+            )
+        }
+        widget_flags
+    }
+
+    pub fn text_selection_remove_attributes(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            widget_flags |=
+                typewriter.remove_text_attributes_current_selection(&mut EngineViewMut {
+                    tasks_tx: self.tasks_tx.clone(),
+                    pens_config: &mut self.pens_config,
+                    doc: &mut self.document,
+                    store: &mut self.store,
+                    camera: &mut self.camera,
+                    audioplayer: &mut self.audioplayer,
+                })
+        }
+        widget_flags
+    }
+
+    pub fn text_selection_add_attribute(&mut self, text_attribute: TextAttribute) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            widget_flags |= typewriter.add_text_attribute_current_selection(
+                text_attribute,
+                &mut EngineViewMut {
+                    tasks_tx: self.tasks_tx.clone(),
+                    pens_config: &mut self.pens_config,
+                    doc: &mut self.document,
+                    store: &mut self.store,
+                    camera: &mut self.camera,
+                    audioplayer: &mut self.audioplayer,
+                },
+            )
+        }
+        widget_flags
     }
 }

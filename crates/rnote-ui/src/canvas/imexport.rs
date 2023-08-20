@@ -19,36 +19,39 @@ impl RnCanvas {
         P: AsRef<Path>,
     {
         let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(bytes).await?;
-
-        let mut widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
+        let widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
+        self.emit_handle_widget_flags(widget_flags);
 
         if let Some(file_path) = file_path {
             let file = gio::File::for_path(file_path);
             self.dismiss_output_file_modified_toast();
             self.set_output_file(Some(file));
         }
-
         self.set_unsaved_changes(false);
         self.set_empty(false);
-        self.return_to_origin_page();
-        self.background_regenerate_pattern();
-        widget_flags |= self.engine_mut().doc_resize_autoexpand();
-        self.update_rendering_current_viewport();
-
-        widget_flags.refresh_ui = true;
-
-        self.emit_handle_widget_flags(widget_flags);
         Ok(())
     }
 
     pub(crate) async fn reload_from_disk(&self) -> anyhow::Result<()> {
-        if let Some(output_file) = self.output_file() {
-            let (bytes, _) = output_file.load_bytes_future().await?;
+        let Some(output_file) = self.output_file() else {
+            return Ok(());
+        };
+        let (bytes, _) = output_file.load_bytes_future().await?;
+        self.load_in_rnote_bytes(bytes.to_vec(), output_file.path())
+            .await?;
+        Ok(())
+    }
 
-            self.load_in_rnote_bytes(bytes.to_vec(), output_file.path())
-                .await?;
-        }
+    pub(crate) async fn load_in_xopp_bytes(&self, bytes: Vec<u8>) -> anyhow::Result<()> {
+        let xopp_import_prefs = self.engine_ref().import_prefs.xopp_import_prefs;
+        let engine_snapshot =
+            EngineSnapshot::load_from_xopp_bytes(bytes, xopp_import_prefs).await?;
+        let widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
+        self.emit_handle_widget_flags(widget_flags);
 
+        self.set_output_file(None);
+        self.set_unsaved_changes(true);
+        self.set_empty(false);
         Ok(())
     }
 
@@ -119,28 +122,6 @@ impl RnCanvas {
         Ok(())
     }
 
-    pub(crate) async fn load_in_xopp_bytes(&self, bytes: Vec<u8>) -> anyhow::Result<()> {
-        let xopp_import_prefs = self.engine_mut().import_prefs.xopp_import_prefs;
-
-        let engine_snapshot =
-            EngineSnapshot::load_from_xopp_bytes(bytes, xopp_import_prefs).await?;
-
-        let mut widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
-
-        self.set_output_file(None);
-        self.set_unsaved_changes(true);
-        self.set_empty(false);
-        self.return_to_origin_page();
-        self.background_regenerate_pattern();
-        widget_flags |= self.engine_mut().doc_resize_autoexpand();
-        self.update_rendering_current_viewport();
-
-        widget_flags.refresh_ui = true;
-
-        self.emit_handle_widget_flags(widget_flags);
-        Ok(())
-    }
-
     /// Target position is in the coordinate space of the doc
     pub(crate) async fn load_in_pdf_bytes(
         &self,
@@ -190,9 +171,7 @@ impl RnCanvas {
                     self.engine_ref().document.y
                 ])
         });
-
-        let widget_flags = self.engine_mut().insert_text(text, pos)?;
-
+        let widget_flags = self.engine_mut().insert_text(text, Some(pos));
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
     }

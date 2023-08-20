@@ -5,7 +5,7 @@ use crate::engine::{EngineTask, EngineTaskSender};
 use crate::ext::{GdkRGBAExt, GrapheneRectExt};
 use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::Content;
-use crate::{render, Drawable, RnoteEngine};
+use crate::{render, Drawable, Engine};
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::color;
@@ -48,7 +48,7 @@ impl Default for RenderComponent {
 
 impl StrokeStore {
     /// Rebuild the slotmap with empty render components with the keys returned from the stroke components.
-    pub fn rebuild_render_components_slotmap(&mut self) {
+    pub(crate) fn rebuild_render_components_slotmap(&mut self) {
         self.render_components = slotmap::SecondaryMap::new();
         self.stroke_components.keys().for_each(|key| {
             self.render_components
@@ -57,7 +57,7 @@ impl StrokeStore {
     }
 
     /// Rebuild the render components slotmap while retaining the components for all currently stored strokes
-    pub fn rebuild_retain_valid_keys_render_components(&mut self) {
+    pub(crate) fn rebuild_retain_valid_keys_render_components(&mut self) {
         self.render_components
             .retain(|k, _| self.stroke_components.contains_key(k));
         self.stroke_components.keys().for_each(|k| {
@@ -68,66 +68,35 @@ impl StrokeStore {
     }
 
     /// Ability if rendering is supported.
-    pub fn can_render(&self, key: StrokeKey) -> bool {
+    #[allow(unused)]
+    pub(crate) fn can_render(&self, key: StrokeKey) -> bool {
         self.render_components.get(key).is_some()
     }
 
-    pub fn render_comp_state(&self, key: StrokeKey) -> Option<RenderCompState> {
+    pub(crate) fn render_comp_state(&self, key: StrokeKey) -> Option<RenderCompState> {
         self.render_components
             .get(key)
             .map(|render_comp| render_comp.state)
     }
 
-    pub fn set_rendering_dirty(&mut self, key: StrokeKey) {
+    pub(crate) fn set_rendering_dirty(&mut self, key: StrokeKey) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
             render_comp.state = RenderCompState::Dirty;
         }
     }
 
-    pub fn set_rendering_dirty_for_strokes(&mut self, keys: &[StrokeKey]) {
+    pub(crate) fn set_rendering_dirty_for_strokes(&mut self, keys: &[StrokeKey]) {
         keys.iter().for_each(|&key| self.set_rendering_dirty(key));
     }
 
-    pub fn holds_images(&self, key: StrokeKey) -> bool {
+    pub(crate) fn holds_images(&self, key: StrokeKey) -> bool {
         self.render_components
             .get(key)
             .map(|s| !s.images.is_empty())
             .unwrap_or(false)
     }
 
-    pub fn gen_bounds_for_stroke_images(&self, key: StrokeKey) -> Option<Aabb> {
-        if let Some(render_comp) = self.render_components.get(key) {
-            if render_comp.images.is_empty() {
-                return None;
-            }
-            return Some(
-                render_comp
-                    .images
-                    .iter()
-                    .map(|image| image.rect.bounds())
-                    .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x)),
-            );
-        }
-        None
-    }
-
-    pub fn gen_bounds_for_strokes_images(&self, keys: &[StrokeKey]) -> Option<Aabb> {
-        let images_bounds = keys
-            .iter()
-            .filter_map(|&key| self.gen_bounds_for_stroke_images(key))
-            .collect::<Vec<Aabb>>();
-        if images_bounds.is_empty() {
-            return None;
-        }
-
-        Some(
-            images_bounds
-                .into_iter()
-                .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x)),
-        )
-    }
-
-    pub fn regenerate_rendering_for_stroke(
+    pub(crate) fn regenerate_rendering_for_stroke(
         &mut self,
         key: StrokeKey,
         viewport: Aabb,
@@ -178,7 +147,7 @@ impl StrokeStore {
         }
     }
 
-    pub fn regenerate_rendering_for_strokes(
+    pub(crate) fn regenerate_rendering_for_strokes(
         &mut self,
         keys: &[StrokeKey],
         viewport: Aabb,
@@ -189,7 +158,7 @@ impl StrokeStore {
         }
     }
 
-    pub fn regenerate_rendering_for_stroke_threaded(
+    pub(crate) fn regenerate_rendering_for_stroke_threaded(
         &mut self,
         tasks_tx: EngineTaskSender,
         key: StrokeKey,
@@ -232,7 +201,7 @@ impl StrokeStore {
         }
     }
 
-    pub fn regenerate_rendering_for_strokes_threaded(
+    pub(crate) fn regenerate_rendering_for_strokes_threaded(
         &mut self,
         tasks_tx: EngineTaskSender,
         keys: &[StrokeKey],
@@ -250,7 +219,7 @@ impl StrokeStore {
     }
 
     /// Regenerate the rendering of all keys for the given viewport that need to be rerendered.
-    pub fn regenerate_rendering_in_viewport_threaded(
+    pub(crate) fn regenerate_rendering_in_viewport_threaded(
         &mut self,
         tasks_tx: EngineTaskSender,
         force_regenerate: bool,
@@ -330,7 +299,7 @@ impl StrokeStore {
     }
 
     /// Clear all rendering for all strokes.
-    pub fn clear_rendering(&mut self) {
+    pub(crate) fn clear_rendering(&mut self) {
         for (_key, render_comp) in self.render_components.iter_mut() {
             render_comp.rendernodes = vec![];
             render_comp.images = vec![];
@@ -341,7 +310,7 @@ impl StrokeStore {
     /// Generate images and appends them to the render component for the last segments of brushstrokes.
     ///
     /// For other strokes the rendering is regenerated completely.
-    pub fn append_rendering_last_segments(
+    pub(crate) fn append_rendering_last_segments(
         &mut self,
         tasks_tx: EngineTaskSender,
         key: StrokeKey,
@@ -394,7 +363,7 @@ impl StrokeStore {
     /// Replace the entire current rendering with the given new images.
     ///
     /// Also updates the render component state.
-    pub fn replace_rendering_with_images(
+    pub(crate) fn replace_rendering_with_images(
         &mut self,
         key: StrokeKey,
         images: GeneratedContentImages,
@@ -434,7 +403,11 @@ impl StrokeStore {
     /// Appends the images to the render component of the stroke.
     ///
     /// Not modifying the render component state, that is the responsibility of the caller.
-    pub fn append_rendering_images(&mut self, key: StrokeKey, images: GeneratedContentImages) {
+    pub(crate) fn append_rendering_images(
+        &mut self,
+        key: StrokeKey,
+        images: GeneratedContentImages,
+    ) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
             match images {
                 GeneratedContentImages::Partial {
@@ -458,7 +431,7 @@ impl StrokeStore {
     }
 
     /// Draw all strokes on the gtk snapshot.
-    pub fn draw_strokes_to_gtk_snapshot(
+    pub(crate) fn draw_strokes_to_gtk_snapshot(
         &self,
         snapshot: &Snapshot,
         doc_bounds: Aabb,
@@ -497,7 +470,8 @@ impl StrokeStore {
     /// Draw the strokes for the given keys on the [piet::RenderContext].
     ///
     /// This always draws all strokes for the given keys, even trashed ones.
-    pub fn draw_keys_immediate(
+    #[allow(unused)]
+    pub(crate) fn draw_keys_immediate(
         &self,
         keys: &[StrokeKey],
         piet_cx: &mut impl piet::RenderContext,
@@ -515,7 +489,8 @@ impl StrokeStore {
     /// Draw all strokes intersecting the viewport on the [piet::RenderContext].
     ///
     /// Immediate without any cached images.
-    pub fn draw_strokes_immediate(
+    #[allow(unused)]
+    pub(crate) fn draw_strokes_immediate(
         &self,
         piet_cx: &mut impl piet::RenderContext,
         _doc_bounds: Aabb,
@@ -534,10 +509,10 @@ impl StrokeStore {
     }
 
     /// Draw bounds, positions, etc. for all strokes for visual debugging purposes.
-    pub fn draw_debug_to_gtk_snapshot(
+    pub(crate) fn draw_debug_to_gtk_snapshot(
         &self,
         snapshot: &Snapshot,
-        engine: &RnoteEngine,
+        engine: &Engine,
         _surface_bounds: Aabb,
     ) -> anyhow::Result<()> {
         let border_widths = 1.0 / engine.camera.total_zoom();

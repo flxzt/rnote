@@ -594,7 +594,7 @@ impl Typewriter {
     }
 
     /// The range of the current selection, if available.
-    pub fn selection_range(&self) -> Option<(Range<usize>, StrokeKey)> {
+    fn selection_range(&self) -> Option<(Range<usize>, StrokeKey)> {
         if let TypewriterState::Modifying {
             modify_state:
                 ModifyState::Selecting {
@@ -617,7 +617,7 @@ impl Typewriter {
     /// Insert text either at the current cursor position or, if the state is idle, in a new textstroke.
     ///
     /// Inserts at the given position, if supplied. Else at a default offset.
-    pub fn insert_text(
+    pub(crate) fn insert_text(
         &mut self,
         text: String,
         preferred_pos: Option<na::Vector2<f64>>,
@@ -757,7 +757,7 @@ impl Typewriter {
     }
 
     // Change the text style of the text stroke that is currently being modified.
-    pub fn change_text_style_in_modifying_stroke<F>(
+    pub(crate) fn change_text_style_in_modifying_stroke<F>(
         &mut self,
         modify_func: F,
         engine_view: &mut EngineViewMut,
@@ -788,7 +788,7 @@ impl Typewriter {
         widget_flags
     }
 
-    pub fn remove_text_attributes_current_selection(
+    pub(crate) fn remove_text_attributes_current_selection(
         &mut self,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
@@ -815,7 +815,7 @@ impl Typewriter {
         widget_flags
     }
 
-    pub fn add_text_attribute_current_selection(
+    pub(crate) fn add_text_attribute_current_selection(
         &mut self,
         text_attribute: TextAttribute,
         engine_view: &mut EngineViewMut,

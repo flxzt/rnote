@@ -31,10 +31,10 @@ pub struct Camera {
     ///
     /// This value could become a non-integer value in the future, so it is stored as float.
     #[serde(rename = "scale_factor")]
-    pub scale_factor: f64,
+    scale_factor: f64,
 
     #[serde(skip)]
-    pub zoom_task_handle: Option<crate::tasks::OneOffTaskHandle>,
+    zoom_task_handle: Option<crate::tasks::OneOffTaskHandle>,
 }
 
 impl Default for Camera {
@@ -212,6 +212,13 @@ impl Camera {
     /// Takes the scale factor in account
     pub fn image_scale(&self) -> f64 {
         self.zoom * self.scale_factor
+    }
+
+    pub fn set_scale_factor(&mut self, scale_factor: f64) -> WidgetFlags {
+        self.scale_factor = scale_factor;
+        let mut widget_flags = WidgetFlags::default();
+        widget_flags.redraw = true;
+        widget_flags
     }
 
     /// The viewport in document coordinate space.

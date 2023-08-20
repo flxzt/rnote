@@ -1,18 +1,19 @@
 // Imports
 use super::{visual_debug, EngineView};
 use crate::ext::{GdkRGBAExt, GrapheneRectExt};
-use crate::{Document, DrawableOnDoc, RnoteEngine};
+use crate::{Document, DrawableOnDoc, Engine, WidgetFlags};
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::ext::{AabbExt, Affine2Ext};
 use rnote_compose::{color, SplitOrder};
 
-impl RnoteEngine {
+impl Engine {
     /// Update the background rendering for the current viewport.
     ///
     /// If the background pattern or zoom has changed, the background pattern needs to be regenerated first.
-    pub fn update_background_rendering_current_viewport(&mut self) {
+    pub fn update_background_rendering_current_viewport(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
         let viewport = self.camera.viewport();
         let mut rendernodes: Vec<gsk::RenderNode> = vec![];
 
@@ -24,7 +25,7 @@ impl RnoteEngine {
                     log::error!(
                         "failed to generate memory-texture of background tile image, {e:?}"
                     );
-                    return;
+                    return widget_flags;
                 }
             };
 
@@ -43,46 +44,56 @@ impl RnoteEngine {
         }
 
         self.background_rendernodes = rendernodes;
+
+        widget_flags.redraw = true;
+        widget_flags
     }
 
     /// Update the content rendering for the current viewport.
-    pub fn update_content_rendering_current_viewport(&mut self) {
-        let viewport = self.camera.viewport();
-        let image_scale = self.camera.image_scale();
-
+    pub fn update_content_rendering_current_viewport(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
         self.store.regenerate_rendering_in_viewport_threaded(
             self.tasks_tx(),
             false,
-            viewport,
-            image_scale,
+            self.camera.viewport(),
+            self.camera.image_scale(),
         );
+        widget_flags.redraw = true;
+        widget_flags
     }
 
     /// Update the content and background rendering for the current viewport.
     ///
     /// If the background pattern or zoom has changed, the background pattern needs to be regenerated first.
-    pub fn update_rendering_current_viewport(&mut self) {
-        self.update_background_rendering_current_viewport();
-        self.update_content_rendering_current_viewport();
+    pub fn update_rendering_current_viewport(&mut self) -> WidgetFlags {
+        let mut widget_flags = self.update_background_rendering_current_viewport();
+        widget_flags |= self.update_content_rendering_current_viewport();
+        widget_flags
     }
 
     /// Clear the rendering of the entire engine (e.g. when it becomes off-screen).
-    pub fn clear_rendering(&mut self) {
+    pub fn clear_rendering(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
         self.store.clear_rendering();
         self.background_tile_image.take();
         self.background_rendernodes.clear();
+        widget_flags.redraw = true;
+        widget_flags
     }
 
     /// Regenerate the background tile image and updates the background rendering.
-    pub fn background_regenerate_pattern(&mut self) {
+    pub fn background_regenerate_pattern(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
         let image_scale = self.camera.image_scale();
         match self.document.background.gen_tile_image(image_scale) {
             Ok(image) => {
                 self.background_tile_image = Some(image);
-                self.update_background_rendering_current_viewport();
+                widget_flags |= self.update_background_rendering_current_viewport();
             }
             Err(e) => log::error!("regenerating background tile image failed, Err: {e:?}"),
         }
+        widget_flags.redraw = true;
+        widget_flags
     }
 
     /// Draws the entire engine (doc, pens, strokes, selection, ..) to a GTK snapshot.

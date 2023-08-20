@@ -319,8 +319,7 @@ mod imp {
                         let new_camera_offset = (((camera_offset + screen_offset) / old_zoom) * new_zoom) - screen_offset;
 
                         let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-                        widget_flags |= canvas.engine_mut().camera_set_offset(new_camera_offset);
-                        widget_flags |= canvas.engine_mut().doc_expand_autoexpand();
+                        widget_flags |= canvas.engine_mut().camera_set_offset_expand(new_camera_offset);
                         canvas.emit_handle_widget_flags(widget_flags);
                     }
 
@@ -347,15 +346,14 @@ mod imp {
                     clone!(@strong touch_drag_start, @weak obj as canvaswrapper => move |_, x, y| {
                         let canvas = canvaswrapper.canvas();
                         let new_offset = touch_drag_start.get() - na::vector![x,y];
-
-                        let mut widget_flags = canvas.engine_mut().camera_set_offset(new_offset);
-                        widget_flags |= canvas.engine_mut().doc_expand_autoexpand();
+                        let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
                         canvas.emit_handle_widget_flags(widget_flags);
                     }),
                 );
                 self.canvas_drag_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        canvaswrapper.canvas().update_rendering_current_viewport();
+                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
+                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                     }),
                 );
             }
@@ -373,15 +371,14 @@ mod imp {
                     clone!(@strong mouse_drag_start, @weak obj as canvaswrapper => move |_, x, y| {
                         let canvas = canvaswrapper.canvas();
                         let new_offset = mouse_drag_start.get() - na::vector![x,y];
-
-                        let mut widget_flags = canvas.engine_mut().camera_set_offset(new_offset);
-                        widget_flags |= canvas.engine_mut().doc_expand_autoexpand();
+                        let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
                         canvas.emit_handle_widget_flags(widget_flags);
                     }),
                 );
                 self.canvas_mouse_drag_middle_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        canvaswrapper.canvas().update_rendering_current_viewport();
+                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
+                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                     }),
                 );
             }
@@ -439,9 +436,7 @@ mod imp {
                             };
                             let bbcenter_delta = bbcenter_current - bbcenter_begin * prev_scale.get();
                             let new_offset = offset_begin.get() * prev_scale.get() - bbcenter_delta;
-
-                            widget_flags |= canvas.engine_mut().camera_set_offset(new_offset);
-                            widget_flags |= canvas.engine_mut().doc_expand_autoexpand();
+                            widget_flags |= canvas.engine_mut().camera_set_offset_expand(new_offset);
                         }
 
                         canvas.emit_handle_widget_flags(widget_flags);
@@ -451,14 +446,16 @@ mod imp {
                 self.canvas_zoom_gesture.connect_end(
                     clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
-                        canvaswrapper.canvas().update_rendering_current_viewport();
+                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
+                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                     }),
                 );
 
                 self.canvas_zoom_gesture.connect_cancel(
                     clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
-                        canvaswrapper.canvas().update_rendering_current_viewport();
+                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
+                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                     }),
                 );
             }
@@ -485,16 +482,15 @@ mod imp {
                     clone!(@strong offset_start, @weak obj as canvaswrapper => move |_, offset_x, offset_y| {
                         let canvas = canvaswrapper.canvas();
                         let new_offset = offset_start.get() - na::vector![offset_x, offset_y];
-
-                        let mut widget_flags = canvas.engine_mut().camera_set_offset(new_offset);
-                        widget_flags |= canvas.engine_mut().doc_expand_autoexpand();
+                        let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
                         canvas.emit_handle_widget_flags(widget_flags);
                     })
                 );
 
                 self.canvas_alt_drag_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        canvaswrapper.canvas().update_rendering_current_viewport();
+                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
+                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                     }),
                 );
             }
@@ -550,7 +546,8 @@ mod imp {
 
                 self.canvas_alt_shift_drag_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        canvaswrapper.canvas().update_rendering_current_viewport();
+                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
+                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                     }),
                 );
             }

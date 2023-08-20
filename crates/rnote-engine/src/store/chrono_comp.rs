@@ -80,14 +80,14 @@ impl Default for ChronoComponent {
 }
 
 impl ChronoComponent {
-    pub fn new(t: u32, layer: StrokeLayer) -> Self {
+    pub(crate) fn new(t: u32, layer: StrokeLayer) -> Self {
         Self { t, layer }
     }
 }
 
 /// Systems that are related to their chronological ordering.
 impl StrokeStore {
-    pub fn update_chrono_to_last(&mut self, key: StrokeKey) {
+    pub(crate) fn update_chrono_to_last(&mut self, key: StrokeKey) {
         if let Some(chrono_comp) = Arc::make_mut(&mut self.chrono_components).get_mut(key) {
             self.chrono_counter += 1;
             Arc::make_mut(chrono_comp).t = self.chrono_counter;
@@ -100,7 +100,7 @@ impl StrokeStore {
     }
 
     /// Returns the keys in chronological order, as in first: gets drawn first, last: gets drawn last.
-    pub fn keys_sorted_chrono(&self) -> Vec<StrokeKey> {
+    pub(crate) fn keys_sorted_chrono(&self) -> Vec<StrokeKey> {
         let chrono_components = &self.chrono_components;
 
         let mut keys = self.stroke_components.keys().collect::<Vec<StrokeKey>>();
@@ -124,7 +124,7 @@ impl StrokeStore {
         keys
     }
 
-    pub fn keys_sorted_chrono_intersecting_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
+    pub(crate) fn keys_sorted_chrono_intersecting_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         let chrono_components = &self.chrono_components;
 
         let mut keys = self.key_tree.keys_intersecting_bounds(bounds);
@@ -148,7 +148,7 @@ impl StrokeStore {
         keys
     }
 
-    pub fn keys_sorted_chrono_in_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
+    pub(crate) fn keys_sorted_chrono_in_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         let chrono_components = &self.chrono_components;
 
         let mut keys = self.key_tree.keys_in_bounds(bounds);

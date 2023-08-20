@@ -222,17 +222,17 @@ impl RnBrushPage {
             clone!(@weak self as brushpage, @weak appwindow => move |picker, _| {
                 let stroke_width = picker.stroke_width();
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let engine = &mut *canvas.engine_mut();
+                let brush_style = canvas.engine_ref().pens_config.brush_config.style;
 
-                match engine.pens_config.brush_config.style {
+                match brush_style {
                     BrushStyle::Marker => {
-                        engine.pens_config.brush_config.marker_options.stroke_width = stroke_width;
+                        canvas.engine_mut().pens_config.brush_config.marker_options.stroke_width = stroke_width;
                     },
                     BrushStyle::Solid => {
-                        engine.pens_config.brush_config.solid_options.stroke_width = stroke_width;
+                        canvas.engine_mut().pens_config.brush_config.solid_options.stroke_width = stroke_width;
                     },
                     BrushStyle::Textured => {
-                        engine.pens_config.brush_config.textured_options.stroke_width = stroke_width;
+                        canvas.engine_mut().pens_config.brush_config.textured_options.stroke_width = stroke_width;
                     },
                 }
             }),

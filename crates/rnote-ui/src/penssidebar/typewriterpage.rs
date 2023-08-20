@@ -123,12 +123,11 @@ impl RnTypewriterPage {
                 match dialog.choose_family_future(Some(&appwindow), prev_picked_font_family.as_ref()).await {
                     Ok(new_font_family) => {
                         let canvas = appwindow.active_tab_wrapper().canvas();
-                        let engine = &mut *canvas.engine_mut();
                         let font_family_name = new_font_family.name().to_string();
 
                         typewriterpage.imp().prev_picked_font_family.borrow_mut().replace(new_font_family);
-                        engine.pens_config.typewriter_config.text_style.font_family = font_family_name.clone();
-                        let widget_flags = engine.text_selection_change_style(|style| {style.font_family = font_family_name});
+                        canvas.engine_mut().pens_config.typewriter_config.text_style.font_family = font_family_name.clone();
+                        let widget_flags = canvas.engine_mut().text_selection_change_style(|style| {style.font_family = font_family_name});
                         appwindow.handle_widget_flags(widget_flags, &canvas);
                     }
                     Err(e) => log::debug!("did not choose new font family (Error or dialog dismissed by user), {e:?}"),
@@ -147,10 +146,9 @@ impl RnTypewriterPage {
             clone!(@weak appwindow => move |spinbutton| {
                 let font_size = spinbutton.value();
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let engine = &mut *canvas.engine_mut();
 
-                engine.pens_config.typewriter_config.text_style.font_size = font_size;
-                let widget_flags = engine.text_selection_change_style(|style| {style.font_size = font_size});
+                canvas.engine_mut().pens_config.typewriter_config.text_style.font_size = font_size;
+                let widget_flags = canvas.engine_mut().text_selection_change_style(|style| {style.font_size = font_size});
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );

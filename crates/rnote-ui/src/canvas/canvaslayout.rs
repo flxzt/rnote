@@ -66,9 +66,8 @@ mod imp {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
             let hadj = canvas.hadjustment().unwrap();
             let vadj = canvas.vadjustment().unwrap();
-            let engine = &mut *canvas.engine_mut();
 
-            let (offset_mins, offset_maxs) = engine.camera_offset_mins_maxs();
+            let (offset_mins, offset_maxs) = canvas.engine_ref().camera_offset_mins_maxs();
             let new_size = na::vector![width as f64, height as f64];
 
             hadj.configure(
@@ -94,10 +93,10 @@ mod imp {
             let new_offset = na::vector![hadj.value(), vadj.value()];
 
             // Update the camera
-            let _ = engine.camera_set_offset(new_offset);
-            let _ = engine.camera_set_size(new_size);
+            let _ = canvas.engine_mut().camera_set_offset(new_offset);
+            let _ = canvas.engine_mut().camera_set_size(new_size);
 
-            let new_viewport = engine.camera.viewport();
+            let new_viewport = canvas.engine_ref().camera.viewport();
             let old_viewport = self.old_viewport.get();
 
             // We only extend the viewport by a (tweakable) fraction of the margin, because we want to trigger rendering
@@ -110,7 +109,9 @@ mod imp {
                 .extend_by(old_viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR * 0.8);
 
             // always update the background rendering
-            let _ = engine.update_background_rendering_current_viewport();
+            let _ = canvas
+                .engine_mut()
+                .update_background_rendering_current_viewport();
 
             // On zoom outs or viewport translations this will evaluate true, so we render the strokes that are coming
             // into view. But after zoom ins we need to update old_viewport with layout_manager.update_state()
@@ -119,7 +120,9 @@ mod imp {
 
                 // Because we don't set the rendering of strokes that are already in the view dirty, we only rerender
                 // those that may come into the view and are flagged dirty.
-                let _ = engine.update_content_rendering_current_viewport();
+                let _ = canvas
+                    .engine_mut()
+                    .update_content_rendering_current_viewport();
             }
         }
     }

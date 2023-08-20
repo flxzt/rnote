@@ -222,14 +222,14 @@ impl RnShaperPage {
             clone!(@weak self as shaperpage, @weak appwindow => move |picker, _| {
                 let stroke_width = picker.stroke_width();
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let engine = &mut *canvas.engine_mut();
+                let shaper_style = canvas.engine_ref().pens_config.shaper_config.style;
 
-                match engine.pens_config.shaper_config.style {
+                match shaper_style {
                     ShaperStyle::Smooth => {
-                        engine.pens_config.shaper_config.smooth_options.stroke_width = stroke_width;
+                        canvas.engine_mut().pens_config.shaper_config.smooth_options.stroke_width = stroke_width;
                     },
                     ShaperStyle::Rough => {
-                        engine.pens_config.shaper_config.rough_options.stroke_width = stroke_width;
+                        canvas.engine_mut().pens_config.shaper_config.rough_options.stroke_width = stroke_width;
                     },
                 }
             }),

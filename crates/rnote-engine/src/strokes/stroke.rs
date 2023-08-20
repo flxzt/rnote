@@ -7,9 +7,8 @@ use super::vectorimage::VectorImage;
 use super::{Content, TextStroke};
 use crate::fileformats::xoppformat::{self, XoppColor};
 use crate::store::chrono_comp::StrokeLayer;
-use crate::{render, RnoteEngine};
+use crate::{render, Engine};
 use crate::{utils, Drawable};
-use base64::Engine;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::Element;
@@ -329,7 +328,8 @@ impl Stroke {
         )
         .translate(offset);
 
-        let bytes = base64::engine::general_purpose::STANDARD.decode(&xopp_image.data)?;
+        let bytes =
+            base64::Engine::decode(&base64::engine::general_purpose::STANDARD, &xopp_image.data)?;
 
         let rectangle = Rectangle {
             cuboid: p2d::shape::Cuboid::new(bounds.half_extents()),
@@ -411,7 +411,7 @@ impl Stroke {
             Stroke::ShapeStroke(shapestroke) => {
                 let png_data = match shapestroke.export_to_bitmap_image_bytes(
                     image::ImageOutputFormat::Png,
-                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                    Engine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
@@ -443,7 +443,10 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::engine::general_purpose::STANDARD.encode(png_data),
+                        data: base64::Engine::encode(
+                            &base64::engine::general_purpose::STANDARD,
+                            png_data,
+                        ),
                     },
                 ))
             }
@@ -452,7 +455,7 @@ impl Stroke {
                 // The best solution for now seems to be to export them as a bitmap image.
                 let png_data = match textstroke.export_to_bitmap_image_bytes(
                     image::ImageOutputFormat::Png,
-                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                    Engine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
@@ -484,14 +487,17 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::engine::general_purpose::STANDARD.encode(png_data),
+                        data: base64::Engine::encode(
+                            &base64::engine::general_purpose::STANDARD,
+                            png_data,
+                        ),
                     },
                 ))
             }
             Stroke::VectorImage(vectorimage) => {
                 let png_data = match vectorimage.export_to_bitmap_image_bytes(
                     image::ImageOutputFormat::Png,
-                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                    Engine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
@@ -523,14 +529,17 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::engine::general_purpose::STANDARD.encode(png_data),
+                        data: base64::Engine::encode(
+                            &base64::engine::general_purpose::STANDARD,
+                            png_data,
+                        ),
                     },
                 ))
             }
             Stroke::BitmapImage(bitmapimage) => {
                 let png_data = match bitmapimage.export_to_bitmap_image_bytes(
                     image::ImageOutputFormat::Png,
-                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                    Engine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
@@ -563,7 +572,10 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::engine::general_purpose::STANDARD.encode(png_data),
+                        data: base64::Engine::encode(
+                            &base64::engine::general_purpose::STANDARD,
+                            png_data,
+                        ),
                     },
                 ))
             }

@@ -1,4 +1,4 @@
-#[derive(Clone, Debug, Default)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[cfg_attr(feature = "clap-derive", derive(clap::ValueEnum))]
 pub enum SelectionCollision {
     #[default]

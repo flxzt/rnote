@@ -14,7 +14,7 @@ mod imp {
     use super::*;
 
     #[derive(Debug, Default)]
-    pub struct StrokeContentPaintable {
+    pub(crate) struct StrokeContentPaintable {
         pub(super) paint_max_width: Cell<f64>,
         pub(super) paint_max_height: Cell<f64>,
         pub(super) paint_cache: RefCell<Option<Image>>,
@@ -276,7 +276,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct StrokeContentPaintable(ObjectSubclass<imp::StrokeContentPaintable>) @implements gdk::Paintable;
+    pub(crate) struct StrokeContentPaintable(ObjectSubclass<imp::StrokeContentPaintable>) @implements gdk::Paintable;
 }
 
 impl Default for StrokeContentPaintable {

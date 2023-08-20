@@ -123,7 +123,7 @@ impl Document {
         a: 0.35,
     };
 
-    pub fn bounds(&self) -> Aabb {
+    pub(crate) fn bounds(&self) -> Aabb {
         Aabb::new(
             na::point![self.x, self.y],
             na::point![self.x + self.width, self.y + self.height],
@@ -133,7 +133,8 @@ impl Document {
     /// Generate bounds for each page for the doc bounds, extended to fit the format.
     ///
     /// May contain many empty pages (in infinite mode)
-    pub fn pages_bounds(&self, split_order: SplitOrder) -> Vec<Aabb> {
+    #[allow(unused)]
+    pub(crate) fn pages_bounds(&self, split_order: SplitOrder) -> Vec<Aabb> {
         let doc_bounds = self.bounds();
 
         if self.format.height > 0.0 && self.format.width > 0.0 {
@@ -146,7 +147,8 @@ impl Document {
         }
     }
 
-    pub fn calc_n_pages(&self) -> u32 {
+    #[allow(unused)]
+    pub(crate) fn calc_n_pages(&self) -> u32 {
         // Avoid div by 0
         if self.format.height > 0.0 && self.format.width > 0.0 {
             (self.width / self.format.width).ceil() as u32
@@ -228,6 +230,30 @@ impl Document {
             }
         }
         widget_flags
+    }
+
+    /// Adds a page when in fixed-size layout.
+    ///
+    /// Returns false when not in fixed-size layout.
+    pub(crate) fn add_page_fixed_size(&mut self) -> bool {
+        if self.layout != Layout::FixedSize {
+            return false;
+        }
+        let format_height = self.format.height;
+        let new_doc_height = self.height + format_height;
+        self.height = new_doc_height;
+        true
+    }
+
+    /// Removes a page when in fixed-size layout and the size is not the last page.
+    ///
+    /// Returns false when not in fixed-size layout.
+    pub(crate) fn remove_page_fixed_size(&mut self) -> bool {
+        if self.layout != Layout::FixedSize || self.height <= self.format.height {
+            return false;
+        }
+        self.height -= self.format.height;
+        true
     }
 
     fn resize_doc_fixed_size_layout(&mut self, store: &StrokeStore) {

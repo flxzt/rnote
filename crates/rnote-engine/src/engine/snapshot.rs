@@ -4,7 +4,7 @@ use crate::engine::import::XoppImportPrefs;
 use crate::fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::Stroke;
-use crate::{Document, RnoteEngine};
+use crate::{Document, Engine};
 use anyhow::Context;
 use futures::channel::oneshot;
 use serde::{Deserialize, Serialize};
@@ -82,7 +82,7 @@ impl EngineSnapshot {
                     });
                 let no_pages = xopp_file.xopp_root.pages.len() as u32;
 
-                let mut engine = RnoteEngine::default();
+                let mut engine = Engine::default();
 
                 // We convert all values from the hardcoded 72 DPI of Xopp files to the preferred dpi
                 engine.document.format.dpi = xopp_import_prefs.dpi;

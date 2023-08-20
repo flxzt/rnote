@@ -301,12 +301,10 @@ impl RnAppWindow {
             .engine_ref()
             .extract_engine_config();
         let wrapper = RnCanvasWrapper::new();
-        let mut widget_flags = wrapper
+        let widget_flags = wrapper
             .canvas()
             .engine_mut()
             .load_engine_config(engine_config, crate::env::pkg_data_dir().ok());
-        widget_flags |= wrapper.canvas().engine_mut().doc_resize_to_fit_content();
-        wrapper.canvas().update_rendering_current_viewport();
         self.handle_widget_flags(widget_flags, &wrapper.canvas());
         wrapper
     }
@@ -817,10 +815,10 @@ impl RnAppWindow {
                 active_engine.change_pen_style(prev_engine.penholder.current_pen_style());
             // ensures a clean and initialized state for the current pen
             widget_flags |= active_engine.reinstall_pen_current_style();
+            active_engine.set_pen_sounds(prev_engine.pen_sounds(), crate::env::pkg_data_dir().ok());
+            widget_flags |= active_engine.set_visual_debug(prev_engine.visual_debug());
             active_engine.import_prefs = prev_engine.import_prefs;
             active_engine.export_prefs = prev_engine.export_prefs;
-            active_engine.set_pen_sounds(prev_engine.pen_sounds(), crate::env::pkg_data_dir().ok());
-            active_engine.visual_debug = prev_engine.visual_debug;
         }
 
         self.handle_widget_flags(widget_flags, &active_canvas);

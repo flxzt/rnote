@@ -1,5 +1,5 @@
 // Imports
-use super::{EngineConfig, RnoteEngine, StrokeContent};
+use super::{Engine, EngineConfig, StrokeContent};
 use crate::fileformats::rnoteformat::RnoteFile;
 use crate::fileformats::{xoppformat, FileFormatSaver};
 use anyhow::Context;
@@ -298,7 +298,7 @@ pub struct ExportPrefs {
     pub selection_export_prefs: SelectionExportPrefs,
 }
 
-impl RnoteEngine {
+impl Engine {
     /// The used image scale-factor for any strokes that are converted to bitmap images on export.
     pub const STROKE_EXPORT_IMAGE_SCALE: f64 = 1.8;
 
@@ -491,7 +491,7 @@ impl RnoteEngine {
                             doc_export_prefs.with_background,
                             doc_export_prefs.with_pattern,
                             DocExportPrefs::MARGIN,
-                            RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                            Engine::STROKE_EXPORT_IMAGE_SCALE,
                         )?;
                         cairo_cx.show_page().map_err(|e| {
                             anyhow::anyhow!(

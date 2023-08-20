@@ -57,7 +57,7 @@ const HALF_SQRT_THREE: f64 = SQRT_THREE / 2_f64;
 /// 3_f64.sqrt() / 4_f64
 const QUARTER_SQRT_THREE: f64 = SQRT_THREE / 4_f64;
 
-pub fn gen_hline_pattern(
+fn gen_hline_pattern(
     bounds: Aabb,
     spacing: f64,
     color: Color,
@@ -98,7 +98,7 @@ pub fn gen_hline_pattern(
     group.into()
 }
 
-pub fn gen_grid_pattern(
+fn gen_grid_pattern(
     bounds: Aabb,
     row_spacing: f64,
     column_spacing: f64,
@@ -149,7 +149,7 @@ pub fn gen_grid_pattern(
     group.into()
 }
 
-pub fn gen_dots_pattern(
+fn gen_dots_pattern(
     bounds: Aabb,
     row_spacing: f64,
     column_spacing: f64,
@@ -194,7 +194,7 @@ fn calc_width_iso_pattern(spacing: f64) -> f64 {
     spacing * SQRT_THREE
 }
 
-pub fn gen_iso_grid_pattern(
+fn gen_iso_grid_pattern(
     bounds: Aabb,
     spacing: f64,
     color: Color,
@@ -266,7 +266,7 @@ pub fn gen_iso_grid_pattern(
     group.into()
 }
 
-pub fn gen_iso_dots_pattern(
+fn gen_iso_dots_pattern(
     bounds: Aabb,
     spacing: f64,
     color: Color,
@@ -374,7 +374,7 @@ impl Background {
     };
 
     /// Calculates the tile size as multiple of pattern_size with max size TITLE_MAX_SIZE
-    pub fn tile_size(&self) -> na::Vector2<f64> {
+    pub(crate) fn tile_size(&self) -> na::Vector2<f64> {
         let pattern_size = match self.pattern {
             PatternStyle::None => {
                 na::vector![Self::TILE_MAX_SIZE, Self::TILE_MAX_SIZE]
@@ -409,7 +409,11 @@ impl Background {
     }
 
     /// Generate the background svg, without Xml header or Svg root.
-    pub fn gen_svg(&self, bounds: Aabb, with_pattern: bool) -> Result<render::Svg, anyhow::Error> {
+    pub(crate) fn gen_svg(
+        &self,
+        bounds: Aabb,
+        with_pattern: bool,
+    ) -> Result<render::Svg, anyhow::Error> {
         // background color
         let mut color_rect = element::Rectangle::new().set("fill", self.color.to_css_color_attr());
         color_rect.assign("x", format!("{}px", bounds.mins[0]));
@@ -474,12 +478,12 @@ impl Background {
         Ok(render::Svg { svg_data, bounds })
     }
 
-    pub fn gen_tile_image(&self, image_scale: f64) -> Result<render::Image, anyhow::Error> {
+    pub(crate) fn gen_tile_image(&self, image_scale: f64) -> Result<render::Image, anyhow::Error> {
         let tile_bounds = Aabb::new(na::point![0.0, 0.0], self.tile_size().into());
         self.gen_svg(tile_bounds, true)?.gen_image(image_scale)
     }
 
-    pub fn draw_to_cairo(
+    pub(crate) fn draw_to_cairo(
         &self,
         cx: &cairo::Context,
         bounds: Aabb,

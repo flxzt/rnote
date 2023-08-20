@@ -53,7 +53,7 @@ impl Engine {
     pub fn update_content_rendering_current_viewport(&mut self) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         self.store.regenerate_rendering_in_viewport_threaded(
-            self.tasks_tx(),
+            self.engine_tasks_tx(),
             false,
             self.camera.viewport(),
             self.camera.image_scale(),
@@ -132,7 +132,7 @@ impl Engine {
         self.penholder.draw_on_doc_to_gtk_snapshot(
             snapshot,
             &EngineView {
-                tasks_tx: self.tasks_tx(),
+                tasks_tx: self.engine_tasks_tx(),
                 pens_config: &self.pens_config,
                 doc: &self.document,
                 store: &self.store,

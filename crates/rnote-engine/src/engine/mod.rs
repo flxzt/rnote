@@ -706,7 +706,7 @@ impl Engine {
     /// Update the viewport size of the camera.
     ///
     /// Background and strokes rendering then need to be updated.
-    pub fn camera_offset_mins_maxs(&mut self) -> (na::Vector2<f64>, na::Vector2<f64>) {
+    pub fn camera_offset_mins_maxs(&self) -> (na::Vector2<f64>, na::Vector2<f64>) {
         self.camera.offset_lower_upper(&self.document)
     }
 

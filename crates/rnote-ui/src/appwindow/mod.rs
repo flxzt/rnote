@@ -809,8 +809,12 @@ impl RnAppWindow {
             let mut active_engine = active_canvas.engine_mut();
 
             active_engine.pens_config = prev_engine.pens_config.clone();
-            active_engine.penholder.shortcuts = prev_engine.penholder.shortcuts.clone();
-            active_engine.penholder.pen_mode_state = prev_engine.penholder.pen_mode_state.clone();
+            active_engine
+                .penholder
+                .set_shortcuts(prev_engine.penholder.shortcuts());
+            active_engine
+                .penholder
+                .set_pen_mode_state(prev_engine.penholder.pen_mode_state());
             widget_flags |=
                 active_engine.change_pen_style(prev_engine.penholder.current_pen_style());
             // ensures a clean and initialized state for the current pen

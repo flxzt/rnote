@@ -23,7 +23,7 @@ pub(crate) fn handle_pointer_controller_event(
     let gdk_event_type = event.event_type();
     let gdk_modifiers = event.modifier_state();
     let _gdk_device = event.device().unwrap();
-    let backlog_policy = canvas.engine_ref().penholder.backlog_policy;
+    let backlog_policy = canvas.engine_ref().penholder.backlog_policy();
     let is_stylus = event_is_stylus(event);
 
     //std::thread::sleep(std::time::Duration::from_millis(100));

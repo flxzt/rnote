@@ -29,13 +29,13 @@ pub enum BacklogPolicy {
 #[serde(default, rename = "penholder")]
 pub struct PenHolder {
     #[serde(rename = "shortcuts")]
-    pub shortcuts: Shortcuts,
+    shortcuts: Shortcuts,
     #[serde(rename = "pen_mode_state")]
-    pub pen_mode_state: PenModeState,
+    pen_mode_state: PenModeState,
+
     /// The policy for the retrieval of input event backlogs.
     #[serde(skip)]
-    pub backlog_policy: BacklogPolicy,
-
+    backlog_policy: BacklogPolicy,
     #[serde(skip)]
     current_pen: Pen,
     #[serde(skip)]
@@ -62,20 +62,27 @@ impl Default for PenHolder {
 }
 
 impl PenHolder {
+    /// Clone the PenHolder configuration.
     pub(crate) fn clone_config(&self) -> Self {
         Self {
             shortcuts: self.shortcuts.clone(),
             pen_mode_state: self.pen_mode_state.clone_config(),
-            backlog_policy: self.backlog_policy,
             ..Default::default()
         }
     }
 
+    /// Get the current registered shortcuts.
+    pub fn shortcuts(&self) -> Shortcuts {
+        self.shortcuts.clone()
+    }
+
+    /// Clear all shortcuts
     pub fn clear_shortcuts(&mut self) {
         self.shortcuts.clear();
     }
 
-    pub fn replace_shortcuts(&mut self, shortcuts: Shortcuts) {
+    /// Replace all shortcuts.
+    pub fn set_shortcuts(&mut self, shortcuts: Shortcuts) {
         self.shortcuts = shortcuts;
     }
 
@@ -100,6 +107,20 @@ impl PenHolder {
             .iter()
             .map(|(key, action)| (*key, *action))
             .collect()
+    }
+
+    /// Get the current pen mode state.
+    pub fn pen_mode_state(&self) -> PenModeState {
+        self.pen_mode_state.clone()
+    }
+
+    /// Replace the pen mode state.
+    pub fn set_pen_mode_state(&mut self, pen_mode_state: PenModeState) {
+        self.pen_mode_state = pen_mode_state;
+    }
+
+    pub fn backlog_policy(&self) -> BacklogPolicy {
+        self.backlog_policy
     }
 
     /// Get the style without the temporary override.

@@ -12,7 +12,7 @@ use rnote_engine::{
         },
         EngineSnapshot,
     },
-    RnoteEngine, SelectionCollision,
+    Engine, SelectionCollision,
 };
 use smol::{
     fs::File,
@@ -118,7 +118,7 @@ pub(crate) struct FileArgs<T: ValueEnum + 'static + Send + Sync> {
 
 pub(crate) async fn run_export(
     export_commands: ExportCommands,
-    engine: &mut RnoteEngine,
+    engine: &mut Engine,
     rnote_files: Vec<PathBuf>,
     no_background: bool,
     no_pattern: bool,
@@ -287,7 +287,7 @@ pub(crate) async fn run_export(
 }
 
 fn apply_export_prefs(
-    engine: &mut RnoteEngine,
+    engine: &mut Engine,
     export_commands: &ExportCommands,
     output_file: Option<&PathBuf>,
     no_background: bool,
@@ -343,7 +343,7 @@ fn apply_export_prefs(
     Ok(())
 }
 
-fn get_output_ext(engine: &mut RnoteEngine, export_commands: &ExportCommands) -> String {
+fn get_output_ext(engine: &mut Engine, export_commands: &ExportCommands) -> String {
     match &export_commands {
         ExportCommands::Doc { .. } => engine
             .export_prefs
@@ -605,7 +605,7 @@ pub(crate) fn file_conflict_prompt_action(
 }
 
 pub(crate) async fn export_to_file(
-    engine: &mut RnoteEngine,
+    engine: &mut Engine,
     rnote_file: impl AsRef<Path>,
     output_file: impl AsRef<Path>,
     export_commands: &ExportCommands,
@@ -628,7 +628,7 @@ pub(crate) async fn export_to_file(
             selection_collision,
             ..
         } => {
-            select_strokes_for_selection_args(engine, selection, selection_collision)?;
+            select_strokes_for_selection_args(engine, selection, *selection_collision);
             let export_bytes = engine
                 .export_selection(None)
                 .await??
@@ -699,11 +699,11 @@ pub(crate) async fn export_to_file(
 }
 
 fn select_strokes_for_selection_args(
-    engine: &mut RnoteEngine,
+    engine: &mut Engine,
     selection: &SelectionCommands,
-    selection_collision: &SelectionCollision,
-) -> anyhow::Result<()> {
-    let strokes = match selection {
+    selection_collision: SelectionCollision,
+) {
+    match selection {
         SelectionCommands::Rect {
             x,
             y,
@@ -713,40 +713,12 @@ fn select_strokes_for_selection_args(
             let v1 = Vector2::new(*x, *y);
             let v2 = v1 + Vector2::new(*width, *height);
             let bounds = Aabb::from_points(&[v1.into(), v2.into()]);
-            match selection_collision {
-                SelectionCollision::Contains => {
-                    let strokes = engine.store.stroke_keys_as_rendered_in_bounds(bounds);
-                    if strokes.is_empty() {
-                        return Err(anyhow::anyhow!(
-                            "No strokes to select inside rectangle with bounds {bounds:?}."
-                        ));
-                    }
-                    strokes
-                }
-                SelectionCollision::Intersects => {
-                    let strokes = engine
-                        .store
-                        .stroke_keys_as_rendered_intersecting_bounds(bounds);
-                    if strokes.is_empty() {
-                        return Err(anyhow::anyhow!(
-                            "No strokes to select that intersect with rectangle with bounds {bounds:?}."
-                        ));
-                    }
-                    strokes
-                }
-            }
+            let _ = engine.select_with_bounds(bounds, selection_collision);
         }
         SelectionCommands::All => {
-            let strokes = engine.store.stroke_keys_as_rendered();
-            if strokes.is_empty() {
-                return Err(anyhow::anyhow!("No strokes to select, document is empty."));
-            }
-            strokes
+            let _ = engine.select_all_strokes();
         }
     };
-
-    engine.store.set_selected_keys(&strokes, true);
-    Ok(())
 }
 
 fn doc_page_determine_output_file(

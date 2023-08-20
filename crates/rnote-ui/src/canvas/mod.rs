@@ -22,8 +22,7 @@ use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::PenState;
 use rnote_engine::ext::GrapheneRectExt;
-use rnote_engine::Document;
-use rnote_engine::{RnoteEngine, WidgetFlags};
+use rnote_engine::{Engine, WidgetFlags};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 
 #[derive(Debug, Default)]
@@ -65,7 +64,7 @@ mod imp {
         pub(crate) drop_target: DropTarget,
         pub(crate) drawing_cursor_enabled: Cell<bool>,
 
-        pub(crate) engine: RefCell<RnoteEngine>,
+        pub(crate) engine: RefCell<Engine>,
         pub(crate) engine_task_handler_handle: RefCell<Option<glib::JoinHandle<()>>>,
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
@@ -137,7 +136,7 @@ mod imp {
                 gdk::Cursor::from_name("default", None).as_ref(),
             );
 
-            let engine = RnoteEngine::default();
+            let engine = Engine::default();
 
             Self {
                 handlers: RefCell::new(Connections::default()),
@@ -211,7 +210,7 @@ mod imp {
             // receive and handle engine tasks
             let engine_task_handler_handle = glib::MainContext::default().spawn_local(
                 clone!(@weak obj as canvas => async move {
-                    let Some(mut task_rx) = canvas.engine_mut().tasks_rx.take() else {
+                    let Some(mut task_rx) = canvas.engine_mut().take_tasks_rx() else {
                         log::error!("installing the engine task handler failed, taken tasks_rx is None");
                         return;
                     };
@@ -659,12 +658,12 @@ impl RnCanvas {
     }
 
     /// Immutable borrow of the engine.
-    pub(crate) fn engine_ref(&self) -> Ref<RnoteEngine> {
+    pub(crate) fn engine_ref(&self) -> Ref<Engine> {
         self.imp().engine.borrow()
     }
 
     /// Mutable borrow of the engine.
-    pub(crate) fn engine_mut(&self) -> RefMut<RnoteEngine> {
+    pub(crate) fn engine_mut(&self) -> RefMut<Engine> {
         self.imp().engine.borrow_mut()
     }
 
@@ -933,22 +932,17 @@ impl RnCanvas {
             }),
         );
 
-        // set scalefactor initially
-        self.engine_mut().camera.scale_factor = f64::from(self.scale_factor());
+        // set scale factor initially
+        let _ = self
+            .engine_mut()
+            .set_scale_factor(self.scale_factor() as f64);
         // and connect
         let appwindow_scalefactor =
             self.connect_notify_local(Some("scale-factor"), move |canvas, _pspec| {
-                let scale_factor = f64::from(canvas.scale_factor());
-                canvas.engine_mut().camera.scale_factor = scale_factor;
-
-                let all_strokes = canvas.engine_mut().store.stroke_keys_unordered();
-                canvas
+                let widget_flags = canvas
                     .engine_mut()
-                    .store
-                    .set_rendering_dirty_for_strokes(&all_strokes);
-
-                canvas.background_regenerate_pattern();
-                canvas.update_rendering_current_viewport();
+                    .set_scale_factor(canvas.scale_factor() as f64);
+                canvas.emit_handle_widget_flags(widget_flags);
             });
 
         // Update titles when there are changes
@@ -1189,54 +1183,5 @@ impl RnCanvas {
             na::point![0.0, 0.0],
             na::point![f64::from(self.width()), f64::from(self.height())],
         )
-    }
-
-    /// Centering the view to the origin page
-    ///
-    /// engine rendering then needs to be updated.
-    pub(crate) fn return_to_origin_page(&self) {
-        let zoom = self.engine_ref().camera.zoom();
-        let Some(parent) = self.parent() else {
-            log::debug!("self.parent() is None in `return_to_origin_page()");
-            return
-        };
-
-        let new_offset =
-            if self.engine_ref().document.format.width * zoom <= f64::from(parent.width()) {
-                na::vector![
-                    (self.engine_ref().document.format.width * 0.5 * zoom)
-                        - f64::from(parent.width()) * 0.5,
-                    -Document::SHADOW_WIDTH * zoom
-                ]
-            } else {
-                // If the zoomed format width is larger than the displayed surface, we zoom to a fixed origin
-                na::vector![
-                    -Document::SHADOW_WIDTH * zoom,
-                    -Document::SHADOW_WIDTH * zoom
-                ]
-            };
-
-        let mut widget_flags = self.engine_mut().camera_set_offset(new_offset);
-        widget_flags |= self.engine_mut().doc_expand_autoexpand();
-        self.emit_handle_widget_flags(widget_flags);
-    }
-
-    /// Updates the rendering of the background and strokes that are flagged for rerendering for the current viewport.
-    /// To force the rerendering of the background pattern, call regenerate_background_pattern().
-    /// To force the rerendering for all strokes in the current viewport, first flag their rendering as dirty.
-    pub(crate) fn update_rendering_current_viewport(&self) {
-        // background rendering is updated in the layout manager
-        self.queue_resize();
-        // update content rendering
-        self.engine_mut()
-            .update_content_rendering_current_viewport();
-        self.queue_draw();
-    }
-
-    /// updates the background pattern and rendering for the current viewport.
-    /// to be called for example when changing the background pattern or zoom.
-    pub(crate) fn background_regenerate_pattern(&self) {
-        self.engine_mut().background_regenerate_pattern();
-        self.queue_draw();
     }
 }

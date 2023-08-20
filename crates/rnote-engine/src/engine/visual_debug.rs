@@ -1,7 +1,7 @@
 // Imports
 use super::EngineView;
 use crate::ext::{GdkRGBAExt, GrapheneRectExt};
-use crate::{DrawableOnDoc, RnoteEngine};
+use crate::{DrawableOnDoc, Engine};
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::{RenderContext, Text, TextLayoutBuilder};
@@ -125,7 +125,7 @@ pub(crate) fn draw_fill_to_gtk_snapshot(snapshot: &Snapshot, rect: Aabb, color: 
 /// Expects that the snapshot is untransformed in surface coordinate space.
 pub(crate) fn draw_statistics_to_gtk_snapshot(
     snapshot: &Snapshot,
-    engine: &RnoteEngine,
+    engine: &Engine,
     surface_bounds: Aabb,
 ) -> anyhow::Result<()> {
     // A statistics overlay
@@ -189,7 +189,7 @@ pub(crate) fn draw_statistics_to_gtk_snapshot(
 /// Draw stroke bounds, positions, etc. for visual debugging purposes.
 pub(crate) fn draw_stroke_debug_to_gtk_snapshot(
     snapshot: &Snapshot,
-    engine: &RnoteEngine,
+    engine: &Engine,
     surface_bounds: Aabb,
 ) -> anyhow::Result<()> {
     let viewport = engine.camera.viewport();

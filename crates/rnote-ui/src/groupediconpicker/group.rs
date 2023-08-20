@@ -20,14 +20,14 @@ mod imp {
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/groupediconpicker/groupediconpickergroup.ui")]
-    pub struct RnGroupedIconPickerGroup {
-        pub name: RefCell<String>,
-        pub icons: RefCell<StringList>,
+    pub(crate) struct RnGroupedIconPickerGroup {
+        pub(crate) name: RefCell<String>,
+        pub(crate) icons: RefCell<StringList>,
 
         #[template_child]
-        pub flowbox: TemplateChild<FlowBox>,
+        pub(crate) flowbox: TemplateChild<FlowBox>,
         #[template_child]
-        pub name_label: TemplateChild<Label>,
+        pub(crate) name_label: TemplateChild<Label>,
     }
 
     #[glib::object_subclass]
@@ -96,7 +96,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct RnGroupedIconPickerGroup(ObjectSubclass<imp::RnGroupedIconPickerGroup>)
+    pub(crate) struct RnGroupedIconPickerGroup(ObjectSubclass<imp::RnGroupedIconPickerGroup>)
         @extends Widget, Box, ListBoxRow;
 }
 
@@ -117,12 +117,12 @@ impl RnGroupedIconPickerGroup {
     }
 
     #[allow(unused)]
-    pub fn icon_list(&self) -> StringList {
+    pub(crate) fn icon_list(&self) -> StringList {
         self.property::<StringList>("icons")
     }
 
     #[allow(unused)]
-    pub fn name(&self) -> String {
+    pub(crate) fn name(&self) -> String {
         self.property::<String>("name")
     }
 

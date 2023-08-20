@@ -1,6 +1,6 @@
 use clap::{ArgAction, Parser, Subcommand, ValueEnum};
 use rnote_engine::engine::{import::XoppImportPrefs, EngineSnapshot};
-use rnote_engine::RnoteEngine;
+use rnote_engine::Engine;
 use smol::fs::File;
 use smol::io::{AsyncReadExt, AsyncWriteExt};
 use std::path::PathBuf;
@@ -100,7 +100,7 @@ impl std::fmt::Display for OnConflict {
 }
 
 pub(crate) async fn run() -> anyhow::Result<()> {
-    let mut engine = RnoteEngine::default();
+    let mut engine = Engine::default();
 
     let cli = Cli::parse();
 
@@ -202,10 +202,7 @@ pub(crate) fn new_pb(message: String) -> indicatif::ProgressBar {
     pb
 }
 
-pub(crate) async fn test_file(
-    _engine: &mut RnoteEngine,
-    rnote_file: PathBuf,
-) -> anyhow::Result<()> {
+pub(crate) async fn test_file(_engine: &mut Engine, rnote_file: PathBuf) -> anyhow::Result<()> {
     let mut rnote_bytes = vec![];
     File::open(rnote_file)
         .await?
@@ -218,7 +215,7 @@ pub(crate) async fn test_file(
 }
 
 pub(crate) async fn import_file(
-    engine: &mut RnoteEngine,
+    engine: &mut Engine,
     input_file: PathBuf,
     rnote_file: PathBuf,
 ) -> anyhow::Result<()> {

@@ -5,7 +5,7 @@ use crate::pens::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
 use crate::store::StrokeKey;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
-use crate::{RnoteEngine, WidgetFlags};
+use crate::{Engine, WidgetFlags};
 use futures::channel::oneshot;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
@@ -128,7 +128,7 @@ pub struct ImportPrefs {
     pub xopp_import_prefs: XoppImportPrefs,
 }
 
-impl RnoteEngine {
+impl Engine {
     /// Loads the engine config
     pub fn load_engine_config(
         &mut self,
@@ -147,7 +147,6 @@ impl RnoteEngine {
         // Set the pen sounds to update the audioplayer
         self.set_pen_sounds(self.pen_sounds, data_dir);
 
-        // Reinstall the pen
         widget_flags |= self
             .penholder
             .reinstall_pen_current_style(&mut EngineViewMut {
@@ -158,10 +157,9 @@ impl RnoteEngine {
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
             });
-
+        widget_flags |= self.doc_resize_to_fit_content();
         widget_flags.redraw = true;
         widget_flags.refresh_ui = true;
-
         widget_flags
     }
 
@@ -303,10 +301,7 @@ impl RnoteEngine {
         widget_flags |= self.doc_resize_to_fit_content();
         self.store.set_selected_keys(&inserted, true);
         widget_flags |= self.current_pen_update_state();
-        self.update_rendering_current_viewport();
-
         widget_flags |= self.store.record(Instant::now());
-        widget_flags.redraw = true;
         widget_flags.resize = true;
         widget_flags.store_modified = true;
         widget_flags.refresh_ui = true;
@@ -315,11 +310,7 @@ impl RnoteEngine {
     }
 
     /// Insert text.
-    pub fn insert_text(
-        &mut self,
-        text: String,
-        pos: na::Vector2<f64>,
-    ) -> anyhow::Result<WidgetFlags> {
+    pub fn insert_text(&mut self, text: String, pos: Option<na::Vector2<f64>>) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         // we need to always deselect all strokes. Even tough changing the pen style deselects too, but only when the pen is actually changed.
@@ -331,7 +322,7 @@ impl RnoteEngine {
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
             widget_flags |= typewriter.insert_text(
                 text,
-                Some(pos),
+                pos,
                 &mut EngineViewMut {
                     tasks_tx: self.tasks_tx.clone(),
                     pens_config: &mut self.pens_config,
@@ -345,8 +336,7 @@ impl RnoteEngine {
 
         widget_flags |= self.store.record(Instant::now());
         widget_flags.redraw = true;
-
-        Ok(widget_flags)
+        widget_flags
     }
 
     /// Insert the stroke content.

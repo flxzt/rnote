@@ -37,7 +37,7 @@ pub struct PenHolder {
     pub backlog_policy: BacklogPolicy,
 
     #[serde(skip)]
-    pub(super) current_pen: Pen,
+    current_pen: Pen,
     #[serde(skip)]
     progress: PenProgress,
     #[serde(skip)]
@@ -62,7 +62,7 @@ impl Default for PenHolder {
 }
 
 impl PenHolder {
-    pub fn clone_config(&self) -> Self {
+    pub(crate) fn clone_config(&self) -> Self {
         Self {
             shortcuts: self.shortcuts.clone(),
             pen_mode_state: self.pen_mode_state.clone_config(),
@@ -74,6 +74,11 @@ impl PenHolder {
     pub fn clear_shortcuts(&mut self) {
         self.shortcuts.clear();
     }
+
+    pub fn replace_shortcuts(&mut self, shortcuts: Shortcuts) {
+        self.shortcuts = shortcuts;
+    }
+
     /// Register a shortcut key and action.
     pub fn register_shortcut(&mut self, key: ShortcutKey, action: ShortcutAction) {
         self.shortcuts.insert(key, action);

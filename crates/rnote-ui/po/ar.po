@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-16 10:52+0200\n"
-"PO-Revision-Date: 2023-08-12 11:05+0000\n"
+"PO-Revision-Date: 2023-08-22 06:40+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -2073,10 +2073,8 @@ msgid "Ellipses"
 msgstr "إهليلج"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:372
-#, fuzzy
-#| msgid "Curves"
 msgid "Curves & Paths"
-msgstr "المنحنيات"
+msgstr "المنحنيات والمسارات"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Arrow"
@@ -2120,7 +2118,7 @@ msgstr "منحنى بيزير مكعَّب"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:397
 msgid "Polyline"
-msgstr ""
+msgstr "متعدد الخطوط"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:568
 msgid "Application restart is required"

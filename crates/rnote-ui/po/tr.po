@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-16 10:52+0200\n"
-"PO-Revision-Date: 2023-06-12 05:25+0000\n"
+"PO-Revision-Date: 2023-08-22 06:40+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -124,32 +124,24 @@ msgid "Close Tab"
 msgstr "Sekmeyi Kapat"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:30
-#, fuzzy
-#| msgid ""
-#| "This tab contains unsaved changes. Changes which are not saved will be "
-#| "permanently lost."
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"Bu sekme kaydedilmemiş değişiklikleri içeriyor. Kaydedilmemiş değişiklikler "
-"kalıcı olarak kaybolacak."
+"Bu sekme kaydedilmemiş değişiklikleri içeriyor.\n"
+"Kaydedilmemiş değişiklikler kalıcı olarak kaybolacak."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
 msgstr "Pencereyi Kapat"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:48
-#, fuzzy
-#| msgid ""
-#| "Some opened files contain unsaved changes. Changes which are not saved "
-#| "will be permanently lost."
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"Açılan bazı dosyalar kaydedilmemiş değişiklikler içeriyor. Kaydedilmemiş "
-"değişiklikler kalıcı olarak kaybolacak."
+"Açılan bazı dosyalar kaydedilmemiş değişiklikler içeriyor.\n"
+"Kaydedilmemiş değişiklikler kalıcı olarak kaybolacak."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
@@ -411,10 +403,8 @@ msgstr "Xopp"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:147
 #: crates/rnote-ui/data/ui/dialogs/export.ui:358
-#, fuzzy
-#| msgid "Pages Type"
 msgid "Page Order"
-msgstr "Sayfa Türü"
+msgstr "Sayfa Sırası"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:148
 #: crates/rnote-ui/data/ui/dialogs/export.ui:359
@@ -427,12 +417,12 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:154
 #: crates/rnote-ui/data/ui/dialogs/export.ui:365
 msgid "Horizontal First"
-msgstr ""
+msgstr "Önce Yatay"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:155
 #: crates/rnote-ui/data/ui/dialogs/export.ui:366
 msgid "Vertical First"
-msgstr ""
+msgstr "Önce Dikey"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:176
 #: crates/rnote-ui/src/dialogs/export.rs:516

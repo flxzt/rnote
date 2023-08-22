@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-16 10:52+0200\n"
-"PO-Revision-Date: 2023-08-22 06:40+0000\n"
+"PO-Revision-Date: 2023-08-23 09:00+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -413,6 +413,9 @@ msgid ""
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
+"Yatay ve dikey yönlerde genişleyen mizanpajlara\n"
+"sahip belgeler sayfalar halinde\n"
+"kesildiğinde sayfa sırası"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:154
 #: crates/rnote-ui/data/ui/dialogs/export.ui:365
@@ -795,10 +798,9 @@ msgid ""
 "enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
-"Bu anahtar kapalı/açık olduğunda \n"
-"kısıtlamaları geçici olarak \n"
-"etkinleştirmek/devre dışı bırakmak için \n"
-"Ctrl tuşunu basılı tutun"
+"Bu anahtar kapalı/açık olduğunda kısıtlamaları\n"
+"geçici olarak etkinleştirmek/devre dışı bırakmak\n"
+"için Ctrl tuşunu basılı tutun"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:283
 msgid "1:1"
@@ -1089,18 +1091,24 @@ msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"Sayfayı Kaldır.\n"
+"Sabit Boyutlu Belge Düzeninde kullanılabilir."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:157
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"Sayfa Ekle.\n"
+"Sabit Boyutlu Belge Düzeninde kullanılabilir."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:166
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"Belgeyi İçeriğe Sığacak Şekilde Yeniden Boyutlandır.\n"
+"Sabit Boyutlu Belge Düzeninde kullanılabilir."
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
@@ -1216,7 +1224,7 @@ msgstr "Tuval üzerindeki kaydırma çubuklarının gösterilme durumunu ayarla"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:87
 msgid "Inertial Touch Scrolling"
-msgstr ""
+msgstr "Ataletsel Dokunmatik Kaydırma"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:88
 msgid ""
@@ -1224,6 +1232,9 @@ msgid ""
 "An application restart is required when this option\n"
 "gets disabled."
 msgstr ""
+"Tuvalde dokunarak kaydırmanın ataletsel olup olmayacağını ayarlayın.\n"
+"Bu seçenek devre dışı bırakıldığında\n"
+"uygulamanın yeniden başlatılması gerekir."
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:100
 msgid "Regular Cursor"
@@ -1607,10 +1618,8 @@ msgid "Paste Clipboard"
 msgstr "Panodan Yapıştır"
 
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:74
-#, fuzzy
-#| msgid "Pages:"
 msgid "Page"
-msgstr "Sayfalar:"
+msgstr "Sayfa"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
@@ -2065,10 +2074,8 @@ msgid "Ellipses"
 msgstr "Elips"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:372
-#, fuzzy
-#| msgid "Curves"
 msgid "Curves & Paths"
-msgstr "Eğriler"
+msgstr "Eğriler ve Yollar"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Arrow"
@@ -2112,11 +2119,11 @@ msgstr "Kübik bezier eğrisi"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:397
 msgid "Polyline"
-msgstr ""
+msgstr "Çoklu çizgi"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:568
 msgid "Application restart is required"
-msgstr ""
+msgstr "Uygulamanın yeniden başlatılması gerekiyor"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:807
 msgctxt "a cursor type"

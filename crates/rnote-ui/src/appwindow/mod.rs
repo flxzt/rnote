@@ -192,17 +192,10 @@ impl RnAppWindow {
             .map(|p| p.child().downcast::<RnCanvasWrapper>().unwrap())
         {
             let _ = tab.canvas().engine_mut().set_active(false);
-            if let Err(e) = tab
-                .canvas()
+            tab.canvas()
                 .engine_ref()
                 .engine_tasks_tx()
-                .unbounded_send(EngineTask::Quit)
-            {
-                log::error!(
-                    "failed to send StateTask::Quit to tab with title `{}`, Err: {e:?}",
-                    tab.canvas().doc_title_display()
-                );
-            }
+                .send(EngineTask::Quit);
         }
 
         self.destroy();

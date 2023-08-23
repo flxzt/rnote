@@ -176,9 +176,7 @@ impl Camera {
         let widget_flags = self.zoom_temporarily_to(new_temporary_zoom);
 
         let zoom_task = move || {
-            if let Err(e) = tasks_tx.unbounded_send(EngineTask::Zoom(zoom)) {
-                log::error!("Failed to send `EngineTask::Zoom` from ZoomTask, Err: {e:?}");
-            }
+            tasks_tx.send(EngineTask::Zoom(zoom));
         };
         if let Some(handle) = self.zoom_task_handle.as_mut() {
             match handle.replace_task(zoom_task.clone()) {

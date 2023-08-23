@@ -304,46 +304,10 @@ impl StrokeStore {
                 .get_mut(key)
                 .map(Arc::make_mut)
             {
-                {
-                    match stroke {
-                        Stroke::BrushStroke(brush_stroke) => {
-                            if let Some(color) = brush_stroke.style.stroke_color() {
-                                brush_stroke
-                                    .style
-                                    .set_stroke_color(color.to_inverted_brightness_color());
-                            }
+                let stroke_modified = stroke.set_to_inverted_brightness_color();
 
-                            if let Some(color) = brush_stroke.style.fill_color() {
-                                brush_stroke
-                                    .style
-                                    .set_fill_color(color.to_inverted_brightness_color());
-                            }
-
-                            self.set_rendering_dirty(key);
-                        }
-                        Stroke::ShapeStroke(shape_stroke) => {
-                            if let Some(color) = shape_stroke.style.stroke_color() {
-                                shape_stroke
-                                    .style
-                                    .set_stroke_color(color.to_inverted_brightness_color());
-                            }
-
-                            if let Some(color) = shape_stroke.style.fill_color() {
-                                shape_stroke
-                                    .style
-                                    .set_fill_color(color.to_inverted_brightness_color());
-                            }
-
-                            self.set_rendering_dirty(key);
-                        }
-                        Stroke::TextStroke(text_stroke) => {
-                            text_stroke.text_style.color =
-                                text_stroke.text_style.color.to_inverted_brightness_color();
-
-                            self.set_rendering_dirty(key);
-                        }
-                        _ => {}
-                    }
+                if stroke_modified {
+                    self.set_rendering_dirty(key);
                 }
             }
         });

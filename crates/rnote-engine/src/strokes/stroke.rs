@@ -212,6 +212,94 @@ impl Stroke {
             Stroke::VectorImage(_) | Stroke::BitmapImage(_) => StrokeLayer::Image,
         }
     }
+
+    /// Invert the brightness of all colors of the stroke.
+    ///
+    /// Returns true if the stroke was modified and needs to update its rendering.
+    pub fn set_to_inverted_brightness_color(&mut self) -> bool {
+        match self {
+            Stroke::BrushStroke(brush_stroke) => {
+                if let Some(color) = brush_stroke.style.stroke_color() {
+                    brush_stroke
+                        .style
+                        .set_stroke_color(color.to_inverted_brightness_color());
+                }
+
+                if let Some(color) = brush_stroke.style.fill_color() {
+                    brush_stroke
+                        .style
+                        .set_fill_color(color.to_inverted_brightness_color());
+                }
+
+                true
+            }
+            Stroke::ShapeStroke(shape_stroke) => {
+                if let Some(color) = shape_stroke.style.stroke_color() {
+                    shape_stroke
+                        .style
+                        .set_stroke_color(color.to_inverted_brightness_color());
+                }
+
+                if let Some(color) = shape_stroke.style.fill_color() {
+                    shape_stroke
+                        .style
+                        .set_fill_color(color.to_inverted_brightness_color());
+                }
+
+                true
+            }
+            Stroke::TextStroke(text_stroke) => {
+                text_stroke.text_style.color =
+                    text_stroke.text_style.color.to_inverted_brightness_color();
+
+                true
+            }
+            Stroke::VectorImage(_) => false,
+            Stroke::BitmapImage(_) => false,
+        }
+    }
+
+    /// Set all colors of the stroke to their darkest variant.
+    ///
+    /// Returns true if the stroke was modified and needs to update its rendering.
+    pub fn set_to_darkest_color(&mut self) -> bool {
+        match self {
+            Stroke::BrushStroke(brush_stroke) => {
+                if let Some(color) = brush_stroke.style.stroke_color() {
+                    brush_stroke
+                        .style
+                        .set_stroke_color(color.to_darkest_color());
+                }
+
+                if let Some(color) = brush_stroke.style.fill_color() {
+                    brush_stroke.style.set_fill_color(color.to_darkest_color());
+                }
+
+                true
+            }
+            Stroke::ShapeStroke(shape_stroke) => {
+                if let Some(color) = shape_stroke.style.stroke_color() {
+                    shape_stroke
+                        .style
+                        .set_stroke_color(color.to_darkest_color());
+                }
+
+                if let Some(color) = shape_stroke.style.fill_color() {
+                    shape_stroke.style.set_fill_color(color.to_darkest_color());
+                }
+
+                true
+            }
+            Stroke::TextStroke(text_stroke) => {
+                text_stroke.text_style.color = text_stroke.text_style.color.to_darkest_color();
+
+                true
+            }
+            Stroke::VectorImage(_) => false,
+            Stroke::BitmapImage(_) => false,
+        }
+    }
+
     pub fn from_xoppstroke(
         stroke: xoppformat::XoppStroke,
         offset: na::Vector2<f64>,

@@ -259,12 +259,8 @@ impl PenBehaviour for Typewriter {
     fn init(&mut self, engine_view: &EngineView) -> WidgetFlags {
         let tasks_tx = engine_view.tasks_tx.clone();
         let blink_task = move || -> crate::tasks::PeriodicTaskResult {
-            if let Err(e) = tasks_tx.unbounded_send(EngineTask::BlinkTypewriterCursor) {
-                log::error!("Failed to send BlinkTypewriterCursor task from blink task, {e:?}");
-                crate::tasks::PeriodicTaskResult::Quit
-            } else {
-                crate::tasks::PeriodicTaskResult::Continue
-            }
+            tasks_tx.send(EngineTask::BlinkTypewriterCursor);
+            crate::tasks::PeriodicTaskResult::Continue
         };
         self.blink_task_handle = Some(crate::tasks::PeriodicTaskHandle::new(
             blink_task,

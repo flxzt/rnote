@@ -184,13 +184,11 @@ impl StrokeStore {
             rayon::spawn(
                 move || match stroke.gen_images(viewport_extended, image_scale) {
                     Ok(images) => {
-                        tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
+                        tasks_tx.send(EngineTask::UpdateStrokeWithImages {
                             key,
                             images,
                             image_scale,
                             stroke_bounds: stroke.bounds(),
-                        }).unwrap_or_else(|e| {
-                            log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?} , Err, {e:?}");
                         });
                     }
                     Err(e) => {
@@ -280,13 +278,11 @@ impl StrokeStore {
                 rayon::spawn(
                     move || match stroke.gen_images(viewport_extended, image_scale) {
                         Ok(images) => {
-                            tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
+                            tasks_tx.send(EngineTask::UpdateStrokeWithImages {
                                 key,
                                 images,
                                 image_scale,
                                 stroke_bounds: stroke.bounds(),
-                            }).unwrap_or_else(|e| {
-                                log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_in_viewport_threaded(), , Err, {e}");
                             });
                         }
                         Err(e) => {

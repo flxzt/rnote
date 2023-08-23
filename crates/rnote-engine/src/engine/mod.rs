@@ -8,6 +8,8 @@ pub mod visual_debug;
 
 // Re-exports
 pub use export::ExportPrefs;
+use futures::channel::mpsc::UnboundedReceiver;
+use futures::StreamExt;
 pub use import::ImportPrefs;
 pub use snapshot::EngineSnapshot;
 pub use strokecontent::StrokeContent;
@@ -124,8 +126,29 @@ pub struct EngineConfig {
     pen_sounds: bool,
 }
 
-pub type EngineTaskSender = mpsc::UnboundedSender<EngineTask>;
-pub type EngineTaskReceiver = mpsc::UnboundedReceiver<EngineTask>;
+#[derive(Debug, Clone)]
+pub struct EngineTaskSender(mpsc::UnboundedSender<EngineTask>);
+
+impl EngineTaskSender {
+    pub fn send(&self, task: EngineTask) {
+        if let Err(e) = self.0.unbounded_send(task) {
+            let err = format!("{e:?}");
+            log::error!(
+                "Failed to send engine task {:?}, Err: {err}",
+                e.into_inner()
+            );
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct EngineTaskReceiver(mpsc::UnboundedReceiver<EngineTask>);
+
+impl EngineTaskReceiver {
+    pub fn recv(&mut self) -> futures::stream::Next<'_, UnboundedReceiver<EngineTask>> {
+        self.0.next()
+    }
+}
 
 /// The engine.
 #[derive(Debug, Serialize, Deserialize)]
@@ -180,8 +203,8 @@ impl Default for Engine {
 
             audioplayer: None,
             visual_debug: false,
-            tasks_tx,
-            tasks_rx: Some(tasks_rx),
+            tasks_tx: EngineTaskSender(tasks_tx),
+            tasks_rx: Some(EngineTaskReceiver(tasks_rx)),
             background_tile_image: None,
             background_rendernodes: Vec::default(),
         }

@@ -10,7 +10,6 @@ pub(crate) use widgetflagsboxed::WidgetFlagsBoxed;
 
 // Imports
 use crate::{config, RnAppWindow};
-use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
@@ -215,7 +214,7 @@ mod imp {
                     };
 
                     loop {
-                        if let Some(task) = task_rx.next().await {
+                        if let Some(task) = task_rx.recv().await {
                             let (widget_flags, quit) = canvas.engine_mut().handle_engine_task(task);
                             canvas.emit_handle_widget_flags(widget_flags);
 

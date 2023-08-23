@@ -17,7 +17,7 @@ install_rustfmt() {
     fi
 }
 
-CONFIG_FILE=./rnote-ui/src/config.rs
+CONFIG_FILE=./crates/rnote-ui/src/config.rs
 
 if [ ! -f "$CONFIG_FILE" ]; then
     echo "Unable to check the project's code style, because config.rs does not exist. Please build the project in order to generate it."

@@ -67,7 +67,7 @@ os.mkdir(gschemas_dir)
 for src in glob.glob(f"{msys_path}/mingw64/share/glib-2.0/schemas/org.gtk.*"):
     shutil.copy(src, gschemas_dir)
 
-shutil.copy(f"{build_root}/rnote-ui/data/{app_id}.gschema.xml", gschemas_dir)
+shutil.copy(f"{build_root}/crates/rnote-ui/data/{app_id}.gschema.xml", gschemas_dir)
 
 # generate `gschemas.compiled` in the same directory
 run_command(
@@ -83,7 +83,7 @@ if os.path.exists(locale_dir):
     shutil.rmtree(locale_dir)
 
 # app locale
-app_mo_dir = os.path.join(build_root, 'rnote-ui/po')
+app_mo_dir = os.path.join(build_root, 'crates/rnote-ui/po')
 shutil.copytree(app_mo_dir, locale_dir)
 
 # system locale
@@ -117,4 +117,4 @@ run_command(
     "Running ISCC failed"
 )
 
-sys.exit(0)
+print("### Inno-Setup installer build script finished ###", file=sys.stderr)

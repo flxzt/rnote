@@ -577,7 +577,7 @@ impl RnAppWindow {
             // TODO: Expose these variables as options in the print dialog
             let draw_background = true;
             let draw_pattern = true;
-            let optimize_printing = true;
+            let optimize_printing = false;
             let page_order = SplitOrder::default();
             let margin = 0.0;
 

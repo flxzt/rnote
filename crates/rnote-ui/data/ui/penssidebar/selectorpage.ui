@@ -102,7 +102,7 @@
         </child>
         <child>
           <object class="GtkButton" id="selection_invert_color_button">
-            <property name="tooltip_text" translatable="yes">Invert Colors of All Selected Strokes</property>
+            <property name="tooltip_text" translatable="yes">Invert Color Brightness of All Selected Strokes</property>
             <property name="action-name">win.selection-invert-color</property>
             <property name="icon_name">selection-invert-color-symbolic</property>
             <style>

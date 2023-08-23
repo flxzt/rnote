@@ -416,7 +416,16 @@ impl Background {
         optimize_printing: bool,
     ) -> Result<render::Svg, anyhow::Error> {
         let (color, pattern_color) = if optimize_printing {
-            (Color::WHITE, self.pattern_color.to_darkest_color())
+            if self.color.luma() > 0.5 {
+                // original background color is bright, don't invert pattern color
+                (Color::WHITE, self.pattern_color)
+            } else {
+                // original background color is dark, invert pattern color
+                (
+                    Color::WHITE,
+                    self.pattern_color.to_inverted_brightness_color(),
+                )
+            }
         } else {
             (self.color, self.pattern_color)
         };

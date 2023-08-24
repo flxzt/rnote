@@ -71,6 +71,24 @@ impl Style {
         }
     }
 
+    /// Get the stroke color of the style.
+    pub fn stroke_color(&self) -> Option<Color> {
+        match self {
+            Style::Smooth(options) => options.stroke_color,
+            Style::Rough(options) => options.stroke_color,
+            Style::Textured(options) => options.stroke_color,
+        }
+    }
+
+    /// Get the fill color of the style.
+    pub fn fill_color(&self) -> Option<Color> {
+        match self {
+            Style::Smooth(options) => options.fill_color,
+            Style::Rough(options) => options.fill_color,
+            Style::Textured(_) => None,
+        }
+    }
+
     /// Set the stroke color of the style.
     pub fn set_stroke_color(&mut self, color: Color) {
         match self {

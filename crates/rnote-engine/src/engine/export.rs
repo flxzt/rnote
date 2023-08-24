@@ -75,6 +75,9 @@ pub struct DocExportPrefs {
     /// Whether the background pattern should be exported.
     #[serde(rename = "with_pattern")]
     pub with_pattern: bool,
+    /// Whether the background and stroke colors should be optimized for printing.
+    #[serde(rename = "optimize_printing")]
+    pub optimize_printing: bool,
     /// The export format.
     #[serde(rename = "export_format")]
     pub export_format: DocExportFormat,
@@ -88,6 +91,7 @@ impl Default for DocExportPrefs {
         Self {
             with_background: true,
             with_pattern: true,
+            optimize_printing: false,
             export_format: DocExportFormat::default(),
             page_order: SplitOrder::default(),
         }
@@ -162,6 +166,9 @@ pub struct DocPagesExportPrefs {
     /// Whether the background pattern should be exported.
     #[serde(rename = "with_pattern")]
     pub with_pattern: bool,
+    /// Whether the background and stroke colors should be optimized for printing.
+    #[serde(rename = "optimize_printing")]
+    pub optimize_printing: bool,
     /// Export format
     #[serde(rename = "export_format")]
     pub export_format: DocPagesExportFormat,
@@ -185,6 +192,7 @@ impl Default for DocPagesExportPrefs {
         Self {
             with_background: true,
             with_pattern: true,
+            optimize_printing: false,
             export_format: DocPagesExportFormat::default(),
             page_order: SplitOrder::default(),
             bitmap_scalefactor: 1.8,
@@ -256,6 +264,9 @@ pub struct SelectionExportPrefs {
     /// Whether the background pattern should be exported.
     #[serde(rename = "with_pattern")]
     pub with_pattern: bool,
+    /// Whether the background and stroke colors should be optimized for printing.
+    #[serde(rename = "optimize_printing")]
+    pub optimize_printing: bool,
     /// Export format.
     #[serde(rename = "export_format")]
     pub export_format: SelectionExportFormat,
@@ -275,6 +286,7 @@ impl Default for SelectionExportPrefs {
         Self {
             with_background: true,
             with_pattern: false,
+            optimize_printing: false,
             export_format: SelectionExportFormat::Svg,
             bitmap_scalefactor: 1.8,
             jpeg_quality: 85,
@@ -424,6 +436,7 @@ impl Engine {
                     .gen_svg(
                         doc_export_prefs.with_background,
                         doc_export_prefs.with_pattern,
+                        doc_export_prefs.optimize_printing,
                         DocExportPrefs::MARGIN,
                     )?
                     .ok_or(anyhow::anyhow!("Generating doc svg failed, returned None."))?;
@@ -490,6 +503,7 @@ impl Engine {
                             &cairo_cx,
                             doc_export_prefs.with_background,
                             doc_export_prefs.with_pattern,
+                            doc_export_prefs.optimize_printing,
                             DocExportPrefs::MARGIN,
                             Engine::STROKE_EXPORT_IMAGE_SCALE,
                         )?;
@@ -686,6 +700,7 @@ impl Engine {
                             .gen_svg(
                                 doc_pages_export_prefs.with_background,
                                 doc_pages_export_prefs.with_pattern,
+                                doc_pages_export_prefs.optimize_printing,
                                 DocPagesExportPrefs::MARGIN,
                             )?
                             .ok_or(anyhow::anyhow!(
@@ -742,6 +757,7 @@ impl Engine {
                             .gen_svg(
                                 doc_pages_export_prefs.with_background,
                                 doc_pages_export_prefs.with_pattern,
+                                doc_pages_export_prefs.optimize_printing,
                                 DocPagesExportPrefs::MARGIN,
                             )?
                             .ok_or(anyhow::anyhow!(
@@ -794,7 +810,7 @@ impl Engine {
                 let Some(selection_content) = selection_content else {
                     return Ok(None);
                 };
-                let Some(selection_svg) = selection_content.gen_svg(selection_export_prefs.with_background, selection_export_prefs.with_pattern, selection_export_prefs.margin)? else {
+                let Some(selection_svg) = selection_content.gen_svg(selection_export_prefs.with_background, selection_export_prefs.with_pattern, selection_export_prefs.optimize_printing, selection_export_prefs.margin)? else {
                     return Ok(None);
                 };
 
@@ -840,6 +856,7 @@ impl Engine {
                 let Some(selection_svg) = selection_content.gen_svg(
                         selection_export_prefs.with_background,
                         selection_export_prefs.with_pattern,
+                        selection_export_prefs.optimize_printing,
                         selection_export_prefs.margin,
                     )? else {
                     return Ok(None);

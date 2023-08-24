@@ -107,6 +107,8 @@ impl RnAppWindow {
         self.add_action(&action_selection_trash);
         let action_selection_duplicate = gio::SimpleAction::new("selection-duplicate", None);
         self.add_action(&action_selection_duplicate);
+        let action_selection_invert_color = gio::SimpleAction::new("selection-invert-color", None);
+        self.add_action(&action_selection_invert_color);
         let action_selection_select_all = gio::SimpleAction::new("selection-select-all", None);
         self.add_action(&action_selection_select_all);
         let action_selection_deselect_all = gio::SimpleAction::new("selection-deselect-all", None);
@@ -400,6 +402,15 @@ impl RnAppWindow {
             }),
         );
 
+        // invert color brightness of selection
+        action_selection_invert_color.connect_activate(
+            clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
+                let canvas = appwindow.active_tab_wrapper().canvas();
+                let widget_flags = canvas.engine_mut().invert_selection_colors();
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }),
+        );
+
         // select all strokes
         action_selection_select_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_select_all, _| {
@@ -566,6 +577,7 @@ impl RnAppWindow {
             // TODO: Expose these variables as options in the print dialog
             let draw_background = true;
             let draw_pattern = true;
+            let optimize_printing = false;
             let page_order = SplitOrder::default();
             let margin = 0.0;
 
@@ -591,7 +603,7 @@ impl RnAppWindow {
 
                 cairo_cx.scale(print_scale, print_scale);
                 cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
-                if let Err(e) = page_content.draw_to_cairo(&cairo_cx, draw_background, draw_pattern, margin, Engine::STROKE_EXPORT_IMAGE_SCALE) {
+                if let Err(e) = page_content.draw_to_cairo(&cairo_cx, draw_background, draw_pattern, optimize_printing, margin, Engine::STROKE_EXPORT_IMAGE_SCALE) {
                     log::error!("drawing page no: {page_no} while printing failed, Err: {e:?}");
                 }
             }));

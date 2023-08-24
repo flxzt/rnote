@@ -91,6 +91,8 @@ mod imp {
         #[template_child]
         pub(crate) doc_background_pattern_height_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
+        pub(crate) background_pattern_invert_color_button: TemplateChild<Button>,
+        #[template_child]
         pub(crate) penshortcut_stylus_button_primary_row: TemplateChild<RnPenShortcutRow>,
         #[template_child]
         pub(crate) penshortcut_stylus_button_secondary_row: TemplateChild<RnPenShortcutRow>,
@@ -692,6 +694,25 @@ impl RnSettingsPanel {
                         canvas.engine_mut().document.background.pattern_size = pattern_size;
                         let widget_flags = canvas.engine_mut().background_regenerate_pattern();
                         appwindow.handle_widget_flags(widget_flags, &canvas);
+                }),
+            );
+
+        imp.background_pattern_invert_color_button.get().connect_clicked(
+                clone!(@weak self as settings_panel, @weak appwindow => move |_| {
+                    let canvas = appwindow.active_tab_wrapper().canvas();
+
+                    let mut widget_flags = {
+                        let mut engine = canvas.engine_mut();
+
+                        engine.document.background.color = engine.document.background.color.to_inverted_brightness_color();
+                        engine.document.background.pattern_color = engine.document.background.pattern_color.to_inverted_brightness_color();
+                        engine.document.format.border_color = engine.document.format.border_color.to_inverted_brightness_color();
+
+                        engine.background_regenerate_pattern()
+                    };
+
+                    widget_flags.refresh_ui = true;
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
                 }),
             );
     }

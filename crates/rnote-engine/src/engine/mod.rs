@@ -862,6 +862,13 @@ impl Engine {
             | self.update_content_rendering_current_viewport()
     }
 
+    pub fn invert_selection_colors(&mut self) -> WidgetFlags {
+        self.store
+            .invert_color_brightness(&self.store.selection_keys_as_rendered())
+            | self.record(Instant::now())
+            | self.update_content_rendering_current_viewport()
+    }
+
     pub fn text_selection_change_style<F>(&mut self, modify_func: F) -> WidgetFlags
     where
         F: FnOnce(&mut TextStyle),

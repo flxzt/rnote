@@ -60,6 +60,7 @@ piet = "0.6"
 piet-cairo = "0.6"
 roughr = "0.6"
 rough_piet = "0.6"
+palette = "0.7.2"
 rodio = { version = "0.17", default-features=false, features = ["symphonia-wav"] }
 winresource = "0.1"
 smol = "1"
@@ -91,4 +92,4 @@ opt-level = 3
 lto = "fat"
 codegen-units = 1
 # We want to be able to debug in the release build as well
-debug = true 
+debug = true

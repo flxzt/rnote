@@ -3342,6 +3342,7 @@ dependencies = [
  "gtk4",
  "indicatif",
  "log",
+ "nalgebra",
  "open",
  "parry2d-f64",
  "rnote-compose",

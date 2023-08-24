@@ -7,5 +7,6 @@ pub(crate) mod export;
 pub(crate) mod validators;
 
 fn main() -> anyhow::Result<()> {
+    gtk4::init()?;
     smol::block_on(async { cli::run().await })
 }

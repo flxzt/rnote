@@ -788,9 +788,10 @@ impl Engine {
     }
 
     pub fn select_all_strokes(&mut self) -> WidgetFlags {
+        let widget_flags = self.change_pen_style(PenStyle::Selector);
         self.store
             .set_selected_keys(&self.store.stroke_keys_as_rendered(), true);
-        self.change_pen_style(PenStyle::Selector)
+        widget_flags
             | self.current_pen_update_state()
             | self.doc_resize_autoexpand()
             | self.record(Instant::now())
@@ -798,9 +799,10 @@ impl Engine {
     }
 
     pub fn deselect_all_strokes(&mut self) -> WidgetFlags {
+        let widget_flags = self.change_pen_style(PenStyle::Selector);
         self.store
             .set_selected_keys(&self.store.selection_keys_as_rendered(), false);
-        self.change_pen_style(PenStyle::Selector)
+        widget_flags
             | self.current_pen_update_state()
             | self.doc_resize_autoexpand()
             | self.record(Instant::now())

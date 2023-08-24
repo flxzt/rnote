@@ -20,4 +20,5 @@ indicatif = { workspace = true }
 dialoguer = { workspace = true }
 open = { workspace = true }
 parry2d-f64 = { workspace = true }
+gtk4 = { workspace = true }
 atty = { workspace = true }

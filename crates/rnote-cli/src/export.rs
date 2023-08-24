@@ -2,7 +2,7 @@
 use crate::cli::{self, OnConflict};
 use crate::validators;
 use anyhow::Context;
-use parry2d_f64::{bounding_volume::Aabb, na::Vector2};
+use p2d::bounding_volume::Aabb;
 use rnote_compose::SplitOrder;
 use rnote_engine::engine::export::{
     DocExportFormat, DocExportPrefs, DocPagesExportFormat, DocPagesExportPrefs,
@@ -110,7 +110,7 @@ pub(crate) async fn run_export(
         }
         None => {
             let exporting_doc_pages = matches!(export_command, cli::ExportCommand::DocPages { .. });
-            let output_ext = file_ext_from_export_commands(&mut engine, &export_command);
+            let output_ext = file_ext_from_export_command(&mut engine, &export_command);
             let output_files = rnote_files
                 .iter()
                 .map(|file| {
@@ -185,13 +185,13 @@ pub(crate) async fn run_export(
 
 fn apply_export_prefs(
     engine: &mut Engine,
-    export_commands: &cli::ExportCommand,
+    export_command: &cli::ExportCommand,
     output_file: Option<&PathBuf>,
     no_background: bool,
     no_pattern: bool,
     optimize_printing: bool,
 ) -> anyhow::Result<()> {
-    match &export_commands {
+    match &export_command {
         cli::ExportCommand::Doc {
             file_args,
             page_order,
@@ -244,11 +244,11 @@ fn apply_export_prefs(
     Ok(())
 }
 
-fn file_ext_from_export_commands(
+fn file_ext_from_export_command(
     engine: &mut Engine,
-    export_commands: &cli::ExportCommand,
+    export_command: &cli::ExportCommand,
 ) -> String {
-    match &export_commands {
+    match export_command {
         cli::ExportCommand::Doc { .. } => engine
             .export_prefs
             .doc_export_prefs
@@ -403,9 +403,9 @@ pub(crate) fn get_output_file_path(
     initial_output_file: &Path,
     on_conflict: OnConflict,
     on_conflict_overwrite: &mut Option<OnConflict>,
-    export_commands: &cli::ExportCommand,
+    export_command: &cli::ExportCommand,
 ) -> anyhow::Result<PathBuf> {
-    match export_commands {
+    match export_command {
         // output file will be ignored when parsing output file
         cli::ExportCommand::DocPages { .. } => Ok(initial_output_file.to_path_buf()),
         _ => Ok(file_conflict_prompt_action(
@@ -522,7 +522,7 @@ pub(crate) async fn export_to_file(
     engine: &mut Engine,
     rnote_file: impl AsRef<Path>,
     output_file: impl AsRef<Path>,
-    export_commands: &cli::ExportCommand,
+    export_command: &cli::ExportCommand,
     on_conflict: OnConflict,
     on_conflict_overwrite: &mut Option<OnConflict>,
     open: bool,
@@ -531,7 +531,7 @@ pub(crate) async fn export_to_file(
     let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(rnote_bytes).await?;
     let _ = engine.load_snapshot(engine_snapshot);
 
-    match export_commands {
+    match export_command {
         cli::ExportCommand::Selection {
             selection,
             selection_collision,
@@ -616,22 +616,22 @@ pub(crate) async fn export_to_file(
 
 fn select_strokes_for_selection_args(
     engine: &mut Engine,
-    selection: &cli::SelectionCommands,
+    selection: &cli::SelectionCommand,
     selection_collision: SelectionCollision,
 ) {
     match selection {
-        cli::SelectionCommands::Rect {
+        cli::SelectionCommand::Rect {
             x,
             y,
             width,
             height,
         } => {
-            let v1 = Vector2::new(*x, *y);
-            let v2 = v1 + Vector2::new(*width, *height);
-            let bounds = Aabb::from_points(&[v1.into(), v2.into()]);
+            let mins = na::vector![*x, *y];
+            let maxs = mins + na::vector![*width, *height];
+            let bounds = Aabb::new(mins.into(), maxs.into());
             let _ = engine.select_with_bounds(bounds, selection_collision);
         }
-        cli::SelectionCommands::All => {
+        cli::SelectionCommand::All => {
             let _ = engine.select_all_strokes();
         }
     };

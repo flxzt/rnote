@@ -15,17 +15,18 @@ use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 ///    rnote-cli{n}{n}
-///    This program is free software; you can redistribute it and/or modify it under the terms of the GPL v3 or
-///    (at your option) any later version.
-#[derive(clap::Parser)]
+///    This program is free software; you can redistribute it{n}
+///    and/or modify it under the terms of the GPL v3 or (at your option){n}
+///    any later version.
+#[derive(clap::Parser, Debug, Clone)]
 #[command(author, version, about, long_about = None, arg_required_else_help = true)]
 pub(crate) struct Cli {
     #[command(subcommand)]
-    pub(crate) command: Commands,
+    pub(crate) command: Command,
 }
 
-#[derive(clap::Subcommand)]
-pub(crate) enum Commands {
+#[derive(clap::Subcommand, Debug, Clone)]
+pub(crate) enum Command {
     /// Tests if the specified files can be opened and are valid rnote files.
     Test {
         /// The rnote files.
@@ -43,7 +44,7 @@ pub(crate) enum Commands {
         #[arg(long, default_value_t = XoppImportPrefs::default().dpi)]
         xopp_dpi: f64,
     },
-    /// Exports the Rnote file(s) and saves it in the desired format.{n}
+    /// Exports the Rnote file(s) and saves it/them in the desired format.{n}
     /// See sub-commands for usage.
     Export {
         #[command(subcommand)]
@@ -70,7 +71,7 @@ pub(crate) enum Commands {
     },
 }
 
-#[derive(clap::ValueEnum, Copy, Clone, Debug, Default)]
+#[derive(clap::ValueEnum, Debug, Clone, Copy, Default)]
 pub(crate) enum OnConflict {
     #[default]
     /// Ask before overwriting.
@@ -89,7 +90,7 @@ pub(crate) enum OnConflict {
     AlwaysSuffix,
 }
 
-#[derive(clap::Subcommand, Debug)]
+#[derive(clap::Subcommand, Debug, Clone)]
 pub(crate) enum ExportCommand {
     /// Export the entire document.{n}
     /// When using "--output-file", only a single input file can be specified.{n}
@@ -136,7 +137,7 @@ pub(crate) enum ExportCommand {
         #[command(flatten)]
         file_args: FileArgs<SelectionExportFormat>,
         #[command(subcommand)]
-        selection: SelectionCommands,
+        selection: SelectionCommand,
         #[arg(short = 'c', long, default_value_t = Default::default(), global = true)]
         /// If strokes that are contained or intersect with the given bounds are selected.{n}
         /// Ignored when using option "all".
@@ -153,8 +154,8 @@ pub(crate) enum ExportCommand {
     },
 }
 
-#[derive(clap::Subcommand, Debug)]
-pub(crate) enum SelectionCommands {
+#[derive(clap::Subcommand, Debug, Clone, Copy)]
+pub(crate) enum SelectionCommand {
     /// Export all strokes.
     #[command(alias = "a")]
     All,
@@ -172,7 +173,7 @@ pub(crate) enum SelectionCommands {
     },
 }
 
-#[derive(clap::Args, Debug)]
+#[derive(clap::Args, Debug, Clone)]
 #[group(required = true, multiple = false)]
 pub(crate) struct FileArgs<T: clap::ValueEnum + 'static + Send + Sync> {
     /// The export output file. Exclusive with "--output-format".
@@ -205,12 +206,12 @@ pub(crate) async fn run() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Test { rnote_files } => {
+        Command::Test { rnote_files } => {
             println!("Testing..");
             test::run_test(&rnote_files).await?;
             println!("Tests finished successfully!");
         }
-        Commands::Import {
+        Command::Import {
             rnote_file,
             input_file,
             xopp_dpi,
@@ -219,7 +220,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             import::run_import(&rnote_file, &input_file, xopp_dpi).await?;
             println!("Import finished!");
         }
-        Commands::Export {
+        Command::Export {
             rnote_files,
             no_background,
             no_pattern,

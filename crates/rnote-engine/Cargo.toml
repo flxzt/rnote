@@ -50,7 +50,7 @@ rough_piet = { workspace = true }
 rodio = { workspace = true }
 glib = { workspace = true }
 cairo-rs = { workspace = true }
-rsvg = { workspace = true }
+librsvg = { workspace = true }
 poppler-rs = { workspace = true }
 # the long-term plan is to remove the gtk4 dependency entirely after switching to another renderer.
 gtk4 = { workspace = true }

@@ -103,7 +103,9 @@ impl StrokeContent {
         margin: f64,
         image_scale: f64,
     ) -> anyhow::Result<()> {
-        let Some(bounds) = self.bounds() else { return Ok(()) };
+        let Some(bounds) = self.bounds() else {
+            return Ok(());
+        };
         let bounds_loosened = bounds.loosened(margin);
 
         cairo_cx.save()?;

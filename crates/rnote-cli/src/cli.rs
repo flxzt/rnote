@@ -225,7 +225,10 @@ pub(crate) async fn import_file(
     rnote_file: PathBuf,
 ) -> anyhow::Result<()> {
     let mut input_bytes = vec![];
-    let Some(rnote_file_name) = rnote_file.file_name().map(|s| s.to_string_lossy().to_string()) else {
+    let Some(rnote_file_name) = rnote_file
+        .file_name()
+        .map(|s| s.to_string_lossy().to_string())
+    else {
         return Err(anyhow::anyhow!("Failed to get filename from rnote_file"));
     };
 

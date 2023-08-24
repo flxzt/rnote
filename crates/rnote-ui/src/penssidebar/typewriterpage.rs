@@ -2,7 +2,7 @@
 use crate::{RnAppWindow, RnCanvasWrapper};
 use gtk4::{
     glib, glib::clone, pango, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
-    EmojiChooser, FontDialog, SpinButton, ToggleButton,
+    EmojiChooser, FontDialog, MenuButton, SpinButton, ToggleButton,
 };
 use rnote_engine::strokes::textstroke::{FontStyle, TextAlignment, TextAttribute, TextStyle};
 use std::cell::RefCell;
@@ -19,6 +19,8 @@ mod imp {
         pub(crate) fontdialog_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) font_size_spinbutton: TemplateChild<SpinButton>,
+        #[template_child]
+        pub(crate) emojichooser_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub(crate) emojichooser: TemplateChild<EmojiChooser>,
         #[template_child]
@@ -86,6 +88,10 @@ impl Default for RnTypewriterPage {
 impl RnTypewriterPage {
     pub(crate) fn new() -> Self {
         glib::Object::new()
+    }
+
+    pub(crate) fn emojichooser_menubutton(&self) -> MenuButton {
+        self.imp().emojichooser_menubutton.get()
     }
 
     #[allow(unused)]

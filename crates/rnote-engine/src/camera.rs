@@ -1,15 +1,13 @@
-use std::time::Duration;
-
 // Imports
-use gtk4::{graphene, gsk};
-use p2d::bounding_volume::Aabb;
-use rnote_compose::ext::AabbExt;
-use serde::{Deserialize, Serialize};
-
 use crate::document::Layout;
 use crate::engine::{EngineTask, EngineTaskSender};
 use crate::tasks::{OneOffTaskError, OneOffTaskHandle};
 use crate::{Document, WidgetFlags};
+use gtk4::{graphene, gsk};
+use p2d::bounding_volume::Aabb;
+use rnote_compose::ext::AabbExt;
+use serde::{Deserialize, Serialize};
+use std::time::Duration;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "camera")]
@@ -176,9 +174,7 @@ impl Camera {
         let widget_flags = self.zoom_temporarily_to(new_temporary_zoom);
 
         let zoom_task = move || {
-            if let Err(e) = tasks_tx.unbounded_send(EngineTask::Zoom(zoom)) {
-                log::error!("Failed to send `EngineTask::Zoom` from ZoomTask, Err: {e:?}");
-            }
+            tasks_tx.send(EngineTask::Zoom(zoom));
         };
         if let Some(handle) = self.zoom_task_handle.as_mut() {
             match handle.replace_task(zoom_task.clone()) {

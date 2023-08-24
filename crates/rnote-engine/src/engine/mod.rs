@@ -8,6 +8,8 @@ pub mod visual_debug;
 
 // Re-exports
 pub use export::ExportPrefs;
+use futures::channel::mpsc::UnboundedReceiver;
+use futures::StreamExt;
 pub use import::ImportPrefs;
 pub use snapshot::EngineSnapshot;
 pub use strokecontent::StrokeContent;
@@ -124,8 +126,29 @@ pub struct EngineConfig {
     pen_sounds: bool,
 }
 
-pub type EngineTaskSender = mpsc::UnboundedSender<EngineTask>;
-pub type EngineTaskReceiver = mpsc::UnboundedReceiver<EngineTask>;
+#[derive(Debug, Clone)]
+pub struct EngineTaskSender(mpsc::UnboundedSender<EngineTask>);
+
+impl EngineTaskSender {
+    pub fn send(&self, task: EngineTask) {
+        if let Err(e) = self.0.unbounded_send(task) {
+            let err = format!("{e:?}");
+            log::error!(
+                "Failed to send engine task {:?}, Err: {err}",
+                e.into_inner()
+            );
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct EngineTaskReceiver(mpsc::UnboundedReceiver<EngineTask>);
+
+impl EngineTaskReceiver {
+    pub fn recv(&mut self) -> futures::stream::Next<'_, UnboundedReceiver<EngineTask>> {
+        self.0.next()
+    }
+}
 
 /// The engine.
 #[derive(Debug, Serialize, Deserialize)]
@@ -180,8 +203,8 @@ impl Default for Engine {
 
             audioplayer: None,
             visual_debug: false,
-            tasks_tx,
-            tasks_rx: Some(tasks_rx),
+            tasks_tx: EngineTaskSender(tasks_tx),
+            tasks_rx: Some(EngineTaskReceiver(tasks_rx)),
             background_tile_image: None,
             background_rendernodes: Vec::default(),
         }
@@ -189,11 +212,11 @@ impl Default for Engine {
 }
 
 impl Engine {
-    pub fn tasks_tx(&self) -> EngineTaskSender {
+    pub fn engine_tasks_tx(&self) -> EngineTaskSender {
         self.tasks_tx.clone()
     }
 
-    pub fn take_tasks_rx(&mut self) -> Option<EngineTaskReceiver> {
+    pub fn take_engine_tasks_rx(&mut self) -> Option<EngineTaskReceiver> {
         self.tasks_rx.take()
     }
 
@@ -438,7 +461,7 @@ impl Engine {
             pen_mode,
             now,
             &mut EngineViewMut {
-                tasks_tx: self.tasks_tx(),
+                tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
@@ -458,7 +481,7 @@ impl Engine {
             shortcut_key,
             now,
             &mut EngineViewMut {
-                tasks_tx: self.tasks_tx(),
+                tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
@@ -473,7 +496,7 @@ impl Engine {
         self.penholder.change_style(
             new_style,
             &mut EngineViewMut {
-                tasks_tx: self.tasks_tx(),
+                tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
@@ -491,7 +514,7 @@ impl Engine {
         self.penholder.change_style_override(
             new_style_override,
             &mut EngineViewMut {
-                tasks_tx: self.tasks_tx(),
+                tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
@@ -506,7 +529,7 @@ impl Engine {
         self.penholder.change_pen_mode(
             pen_mode,
             &mut EngineViewMut {
-                tasks_tx: self.tasks_tx(),
+                tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
@@ -520,7 +543,7 @@ impl Engine {
     pub fn reinstall_pen_current_style(&mut self) -> WidgetFlags {
         self.penholder
             .reinstall_pen_current_style(&mut EngineViewMut {
-                tasks_tx: self.tasks_tx(),
+                tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
@@ -731,7 +754,7 @@ impl Engine {
         &self,
     ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
         self.penholder.fetch_clipboard_content(&EngineView {
-            tasks_tx: self.tasks_tx(),
+            tasks_tx: self.engine_tasks_tx(),
             pens_config: &self.pens_config,
             doc: &self.document,
             store: &self.store,
@@ -746,7 +769,7 @@ impl Engine {
         &mut self,
     ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
         self.penholder.cut_clipboard_content(&mut EngineViewMut {
-            tasks_tx: self.tasks_tx(),
+            tasks_tx: self.engine_tasks_tx(),
             pens_config: &mut self.pens_config,
             doc: &mut self.document,
             store: &mut self.store,
@@ -765,9 +788,10 @@ impl Engine {
     }
 
     pub fn select_all_strokes(&mut self) -> WidgetFlags {
+        let widget_flags = self.change_pen_style(PenStyle::Selector);
         self.store
             .set_selected_keys(&self.store.stroke_keys_as_rendered(), true);
-        self.change_pen_style(PenStyle::Selector)
+        widget_flags
             | self.current_pen_update_state()
             | self.doc_resize_autoexpand()
             | self.record(Instant::now())
@@ -775,9 +799,10 @@ impl Engine {
     }
 
     pub fn deselect_all_strokes(&mut self) -> WidgetFlags {
+        let widget_flags = self.change_pen_style(PenStyle::Selector);
         self.store
             .set_selected_keys(&self.store.selection_keys_as_rendered(), false);
-        self.change_pen_style(PenStyle::Selector)
+        widget_flags
             | self.current_pen_update_state()
             | self.doc_resize_autoexpand()
             | self.record(Instant::now())
@@ -833,6 +858,13 @@ impl Engine {
     pub fn change_selection_fill_colors(&mut self, fill_color: Color) -> WidgetFlags {
         self.store
             .change_fill_colors(&self.store.selection_keys_as_rendered(), fill_color)
+            | self.record(Instant::now())
+            | self.update_content_rendering_current_viewport()
+    }
+
+    pub fn invert_selection_colors(&mut self) -> WidgetFlags {
+        self.store
+            .invert_color_brightness(&self.store.selection_keys_as_rendered())
             | self.record(Instant::now())
             | self.update_content_rendering_current_viewport()
     }

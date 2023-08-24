@@ -67,13 +67,23 @@ impl StrokeContent {
         &self,
         draw_background: bool,
         draw_pattern: bool,
+        optimize_printing: bool,
         margin: f64,
     ) -> anyhow::Result<Option<Svg>> {
         let Some(bounds) = self.bounds() else {
             return Ok(None);
         };
         let mut content_svg = Svg::gen_with_cairo(
-            |cairo_cx| self.draw_to_cairo(cairo_cx, draw_background, draw_pattern, margin, 1.0),
+            |cairo_cx| {
+                self.draw_to_cairo(
+                    cairo_cx,
+                    draw_background,
+                    draw_pattern,
+                    optimize_printing,
+                    margin,
+                    1.0,
+                )
+            },
             bounds,
         )?;
         // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
@@ -89,10 +99,13 @@ impl StrokeContent {
         cairo_cx: &cairo::Context,
         draw_background: bool,
         draw_pattern: bool,
+        optimize_printing: bool,
         margin: f64,
         image_scale: f64,
     ) -> anyhow::Result<()> {
-        let Some(bounds) = self.bounds() else { return Ok(()) };
+        let Some(bounds) = self.bounds() else {
+            return Ok(());
+        };
         let bounds_loosened = bounds.loosened(margin);
 
         cairo_cx.save()?;
@@ -106,7 +119,12 @@ impl StrokeContent {
 
         if draw_background {
             if let Some(background) = &self.background {
-                background.draw_to_cairo(cairo_cx, bounds_loosened, draw_pattern)?;
+                background.draw_to_cairo(
+                    cairo_cx,
+                    bounds_loosened,
+                    draw_pattern,
+                    optimize_printing,
+                )?;
             }
         }
 
@@ -120,8 +138,34 @@ impl StrokeContent {
         );
         cairo_cx.clip();
 
+        let image_bounds = self
+            .strokes
+            .iter()
+            .filter_map(|stroke| match stroke.as_ref() {
+                Stroke::BitmapImage(image) => Some(image.rectangle.bounds()),
+                Stroke::VectorImage(image) => Some(image.rectangle.bounds()),
+                _ => None,
+            })
+            .collect::<Vec<Aabb>>();
+
         for stroke in self.strokes.iter() {
-            stroke.draw_to_cairo(cairo_cx, image_scale)?;
+            let stroke_bounds = stroke.bounds();
+
+            if optimize_printing
+                && image_bounds
+                    .iter()
+                    .all(|bounds| !bounds.contains(&stroke_bounds))
+            {
+                // Using the stroke's bounds instead of hitboxes works for inclusion.
+                // If this is changed to intersection, all hitboxes must be checked individually.
+
+                let mut darkest_color_stroke = stroke.as_ref().clone();
+                darkest_color_stroke.set_to_darkest_color();
+
+                darkest_color_stroke.draw_to_cairo(cairo_cx, image_scale)?;
+            } else {
+                stroke.draw_to_cairo(cairo_cx, image_scale)?;
+            }
         }
 
         cairo_cx.restore()?;

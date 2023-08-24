@@ -5,6 +5,7 @@ members = [
     "crates/rnote-cli",
     "crates/rnote-ui",
 ]
+resolver = "2"
 
 [workspace.package]
 version = "0.7.1"
@@ -60,6 +61,7 @@ piet = "0.6"
 piet-cairo = "0.6"
 roughr = "0.6"
 rough_piet = "0.6"
+palette = "0.7.2"
 rodio = { version = "0.17", default-features=false, features = ["symphonia-wav"] }
 winresource = "0.1"
 smol = "1"
@@ -68,7 +70,7 @@ indicatif = "0.17"
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 glib = "0.18.1"
 cairo-rs = { version = "0.18", features = ["png", "svg", "pdf"] }
-librsvg = "2.57.0-beta.2"
+librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", rev = "58c52b742d7623b9a4e94975fb65cbf4a9ff13f1" }
 # newest poppler feature ("v21_12") is causing linking errors when building in mingw for some reason.
 poppler-rs = { version = "0.22", features = ["v20_9"] }
 gtk4 = { version = "0.7.1", features = ["v4_12"] }
@@ -91,4 +93,4 @@ opt-level = 3
 lto = "fat"
 codegen-units = 1
 # We want to be able to debug in the release build as well
-debug = true 
+debug = true

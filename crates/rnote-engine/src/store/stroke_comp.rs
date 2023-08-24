@@ -177,7 +177,12 @@ impl StrokeStore {
     }
 
     pub(crate) fn set_stroke_pos(&mut self, key: StrokeKey, pos: na::Vector2<f64>) {
-        let Some(stroke) = Arc::make_mut(&mut self.stroke_components).get_mut(key).map(Arc::make_mut) else {return;};
+        let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
+            .get_mut(key)
+            .map(Arc::make_mut)
+        else {
+            return;
+        };
         stroke.set_pos(pos);
     }
 
@@ -279,6 +284,35 @@ impl StrokeStore {
                         }
                         _ => {}
                     }
+                }
+            }
+        });
+
+        widget_flags.redraw = true;
+        widget_flags.store_modified = true;
+
+        widget_flags
+    }
+
+    /// Invert the stroke, text and fill color of the given keys.
+    ///
+    /// Strokes then need to update their rendering.
+    pub fn invert_color_brightness(&mut self, keys: &[StrokeKey]) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if keys.is_empty() {
+            return widget_flags;
+        }
+
+        keys.iter().for_each(|&key| {
+            if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
+                .get_mut(key)
+                .map(Arc::make_mut)
+            {
+                let stroke_modified = stroke.set_to_inverted_brightness_color();
+
+                if stroke_modified {
+                    self.set_rendering_dirty(key);
                 }
             }
         });

@@ -22,7 +22,7 @@ pub(crate) fn handle_pointer_controller_event(
     let gdk_event_type = event.event_type();
     let gdk_modifiers = event.modifier_state();
     let _gdk_device = event.device().unwrap();
-    let backlog_policy = canvas.engine_ref().penholder.backlog_policy;
+    let backlog_policy = canvas.engine_ref().penholder.backlog_policy();
     let is_stylus = event_is_stylus(event);
 
     //std::thread::sleep(std::time::Duration::from_millis(100));
@@ -152,8 +152,8 @@ pub(crate) fn handle_pointer_controller_event(
 
     if handle_pen_event {
         let Some(elements) = retrieve_pointer_elements(canvas, now, event, backlog_policy) else {
-                    return (glib::Propagation::Proceed, state);
-                };
+            return (glib::Propagation::Proceed, state);
+        };
         let modifier_keys = retrieve_modifier_keys(event.modifier_state());
         let pen_mode = retrieve_pen_mode(event);
 
@@ -337,7 +337,9 @@ fn retrieve_pointer_elements(
             }
 
             let entry_delta = Duration::from_millis(event_time.saturating_sub(entry.time()) as u64);
-            let Some(entry_time) = now.checked_sub(entry_delta) else {continue;};
+            let Some(entry_time) = now.checked_sub(entry_delta) else {
+                continue;
+            };
 
             if let BacklogPolicy::Limit(delta_limit) = backlog_policy {
                 // We go back in time, so `entry_delta` will increase

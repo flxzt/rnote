@@ -10,7 +10,6 @@ pub(crate) use widgetflagsboxed::WidgetFlagsBoxed;
 
 // Imports
 use crate::{config, RnAppWindow};
-use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
@@ -27,20 +26,20 @@ use rnote_engine::{Engine, WidgetFlags};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 
 #[derive(Debug, Default)]
-pub(crate) struct Connections {
-    pub(crate) hadjustment: Option<glib::SignalHandlerId>,
-    pub(crate) vadjustment: Option<glib::SignalHandlerId>,
-    pub(crate) tab_page_output_file: Option<glib::Binding>,
-    pub(crate) tab_page_unsaved_changes: Option<glib::Binding>,
-    pub(crate) appwindow_output_file: Option<glib::SignalHandlerId>,
-    pub(crate) appwindow_scalefactor: Option<glib::SignalHandlerId>,
-    pub(crate) appwindow_unsaved_changes: Option<glib::SignalHandlerId>,
-    pub(crate) appwindow_touch_drawing: Option<glib::Binding>,
-    pub(crate) appwindow_show_drawing_cursor: Option<glib::Binding>,
-    pub(crate) appwindow_regular_cursor: Option<glib::Binding>,
-    pub(crate) appwindow_drawing_cursor: Option<glib::Binding>,
-    pub(crate) appwindow_drop_target: Option<glib::SignalHandlerId>,
-    pub(crate) appwindow_handle_widget_flags: Option<glib::SignalHandlerId>,
+struct Connections {
+    hadjustment: Option<glib::SignalHandlerId>,
+    vadjustment: Option<glib::SignalHandlerId>,
+    tab_page_output_file: Option<glib::Binding>,
+    tab_page_unsaved_changes: Option<glib::Binding>,
+    appwindow_output_file: Option<glib::SignalHandlerId>,
+    appwindow_scalefactor: Option<glib::SignalHandlerId>,
+    appwindow_unsaved_changes: Option<glib::SignalHandlerId>,
+    appwindow_touch_drawing: Option<glib::Binding>,
+    appwindow_show_drawing_cursor: Option<glib::Binding>,
+    appwindow_regular_cursor: Option<glib::Binding>,
+    appwindow_drawing_cursor: Option<glib::Binding>,
+    appwindow_drop_target: Option<glib::SignalHandlerId>,
+    appwindow_handle_widget_flags: Option<glib::SignalHandlerId>,
 }
 
 mod imp {
@@ -48,8 +47,7 @@ mod imp {
 
     #[derive(Debug)]
     pub(crate) struct RnCanvas {
-        pub(crate) handlers: RefCell<Connections>,
-
+        pub(super) connections: RefCell<Connections>,
         pub(crate) hadjustment: RefCell<Option<Adjustment>>,
         pub(crate) vadjustment: RefCell<Option<Adjustment>>,
         pub(crate) hscroll_policy: Cell<ScrollablePolicy>,
@@ -140,7 +138,7 @@ mod imp {
             let engine = Engine::default();
 
             Self {
-                handlers: RefCell::new(Connections::default()),
+                connections: RefCell::new(Connections::default()),
 
                 hadjustment: RefCell::new(None),
                 vadjustment: RefCell::new(None),
@@ -211,13 +209,13 @@ mod imp {
             // receive and handle engine tasks
             let engine_task_handler_handle = glib::MainContext::default().spawn_local(
                 clone!(@weak obj as canvas => async move {
-                    let Some(mut task_rx) = canvas.engine_mut().take_tasks_rx() else {
+                    let Some(mut task_rx) = canvas.engine_mut().take_engine_tasks_rx() else {
                         log::error!("installing the engine task handler failed, taken tasks_rx is None");
                         return;
                     };
 
                     loop {
-                        if let Some(task) = task_rx.next().await {
+                        if let Some(task) = task_rx.recv().await {
                             let (widget_flags, quit) = canvas.engine_mut().handle_engine_task(task);
                             canvas.emit_handle_widget_flags(widget_flags);
 
@@ -480,7 +478,7 @@ mod imp {
         fn set_hadjustment_prop(&self, hadj: Option<Adjustment>) {
             let obj = self.obj();
 
-            if let Some(signal_id) = self.handlers.borrow_mut().hadjustment.take() {
+            if let Some(signal_id) = self.connections.borrow_mut().hadjustment.take() {
                 let old_adj = self.hadjustment.borrow().as_ref().unwrap().clone();
                 old_adj.disconnect(signal_id);
             }
@@ -492,7 +490,7 @@ mod imp {
                         canvas.queue_resize();
                     }));
 
-                self.handlers.borrow_mut().hadjustment.replace(signal_id);
+                self.connections.borrow_mut().hadjustment.replace(signal_id);
             }
             self.hadjustment.replace(hadj);
         }
@@ -500,7 +498,7 @@ mod imp {
         fn set_vadjustment_prop(&self, vadj: Option<Adjustment>) {
             let obj = self.obj();
 
-            if let Some(signal_id) = self.handlers.borrow_mut().vadjustment.take() {
+            if let Some(signal_id) = self.connections.borrow_mut().vadjustment.take() {
                 let old_adj = self.vadjustment.borrow().as_ref().unwrap().clone();
                 old_adj.disconnect(signal_id);
             }
@@ -512,7 +510,7 @@ mod imp {
                         canvas.queue_resize();
                     }));
 
-                self.handlers.borrow_mut().vadjustment.replace(signal_id);
+                self.connections.borrow_mut().vadjustment.replace(signal_id);
             }
             self.vadjustment.replace(vadj);
         }
@@ -1040,7 +1038,7 @@ impl RnCanvas {
         );
 
         // Replace connections
-        let mut connections = self.imp().handlers.borrow_mut();
+        let mut connections = self.imp().connections.borrow_mut();
         if let Some(old) = connections
             .appwindow_output_file
             .replace(appwindow_output_file)
@@ -1103,7 +1101,7 @@ impl RnCanvas {
     pub(crate) fn disconnect_connections(&self) {
         self.clear_output_file_monitor();
 
-        let mut connections = self.imp().handlers.borrow_mut();
+        let mut connections = self.imp().connections.borrow_mut();
         if let Some(old) = connections.appwindow_output_file.take() {
             self.disconnect(old);
         }
@@ -1168,7 +1166,7 @@ impl RnCanvas {
             .sync_create()
             .build();
 
-        let mut connections = self.imp().handlers.borrow_mut();
+        let mut connections = self.imp().connections.borrow_mut();
         if let Some(old) = connections
             .tab_page_output_file
             .replace(tab_page_output_file)

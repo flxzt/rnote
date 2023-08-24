@@ -163,17 +163,10 @@ impl RnAppWindow {
             .map(|p| p.child().downcast::<RnCanvasWrapper>().unwrap())
         {
             let _ = tab.canvas().engine_mut().set_active(false);
-            if let Err(e) = tab
-                .canvas()
+            tab.canvas()
                 .engine_ref()
-                .tasks_tx()
-                .unbounded_send(EngineTask::Quit)
-            {
-                log::error!(
-                    "failed to send StateTask::Quit to tab with title `{}`, Err: {e:?}",
-                    tab.canvas().doc_title_display()
-                );
-            }
+                .engine_tasks_tx()
+                .send(EngineTask::Quit);
         }
 
         self.destroy();
@@ -434,7 +427,9 @@ impl RnAppWindow {
             let file_imported = match FileType::lookup_file_type(&input_file) {
                 FileType::RnoteFile => {
                     let Some(input_file_path) = input_file.path() else {
-                        return Err(anyhow::anyhow!("Could not open file: {input_file:?}, path returned None"));
+                        return Err(anyhow::anyhow!(
+                            "Could not open file: {input_file:?}, path returned None"
+                        ));
                     };
 
                     // If the file is already opened in a tab, simply switch to it
@@ -781,8 +776,12 @@ impl RnAppWindow {
             let mut active_engine = active_canvas.engine_mut();
 
             active_engine.pens_config = prev_engine.pens_config.clone();
-            active_engine.penholder.shortcuts = prev_engine.penholder.shortcuts.clone();
-            active_engine.penholder.pen_mode_state = prev_engine.penholder.pen_mode_state.clone();
+            active_engine
+                .penholder
+                .set_shortcuts(prev_engine.penholder.shortcuts());
+            active_engine
+                .penholder
+                .set_pen_mode_state(prev_engine.penholder.pen_mode_state());
             widget_flags |=
                 active_engine.change_pen_style(prev_engine.penholder.current_pen_style());
             // ensures a clean and initialized state for the current pen

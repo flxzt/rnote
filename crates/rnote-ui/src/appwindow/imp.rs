@@ -504,6 +504,11 @@ impl RnAppWindow {
                 .set_position(PositionType::Left);
             obj.overlays()
                 .penssidebar()
+                .typewriter_page()
+                .emojichooser_menubutton()
+                .set_direction(ArrowType::Right);
+            obj.overlays()
+                .penssidebar()
                 .eraser_page()
                 .stroke_width_picker()
                 .set_position(PositionType::Left);
@@ -619,6 +624,11 @@ impl RnAppWindow {
                 .shaper_page()
                 .stroke_width_picker()
                 .set_position(PositionType::Right);
+            obj.overlays()
+                .penssidebar()
+                .typewriter_page()
+                .emojichooser_menubutton()
+                .set_direction(ArrowType::Left);
             obj.overlays()
                 .penssidebar()
                 .eraser_page()

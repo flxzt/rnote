@@ -413,9 +413,25 @@ impl Background {
         &self,
         bounds: Aabb,
         with_pattern: bool,
+        optimize_printing: bool,
     ) -> Result<render::Svg, anyhow::Error> {
+        let (color, pattern_color) = if optimize_printing {
+            if self.color.luma() > 0.5 {
+                // original background color is bright, don't invert pattern color
+                (Color::WHITE, self.pattern_color)
+            } else {
+                // original background color is dark, invert pattern color
+                (
+                    Color::WHITE,
+                    self.pattern_color.to_inverted_brightness_color(),
+                )
+            }
+        } else {
+            (self.color, self.pattern_color)
+        };
+
         // background color
-        let mut color_rect = element::Rectangle::new().set("fill", self.color.to_css_color_attr());
+        let mut color_rect = element::Rectangle::new().set("fill", color.to_css_color_attr());
         color_rect.assign("x", format!("{}px", bounds.mins[0]));
         color_rect.assign("y", format!("{}px", bounds.mins[1]));
         color_rect.assign("width", format!("{}px", bounds.extents()[0]));
@@ -431,7 +447,7 @@ impl Background {
                     svg_group = svg_group.add(gen_hline_pattern(
                         bounds,
                         self.pattern_size[1],
-                        self.pattern_color,
+                        pattern_color,
                         Self::LINE_WIDTH,
                     ));
                 }
@@ -440,7 +456,7 @@ impl Background {
                         bounds,
                         self.pattern_size[1],
                         self.pattern_size[0],
-                        self.pattern_color,
+                        pattern_color,
                         Self::LINE_WIDTH,
                     ));
                 }
@@ -449,7 +465,7 @@ impl Background {
                         bounds,
                         self.pattern_size[1],
                         self.pattern_size[0],
-                        self.pattern_color,
+                        pattern_color,
                         Self::DOTS_WIDTH,
                     ));
                 }
@@ -457,7 +473,7 @@ impl Background {
                     svg_group = svg_group.add(gen_iso_grid_pattern(
                         bounds,
                         self.pattern_size[1],
-                        self.pattern_color,
+                        pattern_color,
                         Self::LINE_WIDTH,
                     ));
                 }
@@ -465,7 +481,7 @@ impl Background {
                     svg_group = svg_group.add(gen_iso_dots_pattern(
                         bounds,
                         self.pattern_size[1],
-                        self.pattern_color,
+                        pattern_color,
                         Self::HEXAGON_HEIGHT,
                     ));
                 }
@@ -480,7 +496,8 @@ impl Background {
 
     pub(crate) fn gen_tile_image(&self, image_scale: f64) -> Result<render::Image, anyhow::Error> {
         let tile_bounds = Aabb::new(na::point![0.0, 0.0], self.tile_size().into());
-        self.gen_svg(tile_bounds, true)?.gen_image(image_scale)
+        self.gen_svg(tile_bounds, true, false)?
+            .gen_image(image_scale)
     }
 
     pub(crate) fn draw_to_cairo(
@@ -488,8 +505,9 @@ impl Background {
         cx: &cairo::Context,
         bounds: Aabb,
         with_pattern: bool,
+        optimize_printing: bool,
     ) -> anyhow::Result<()> {
-        let mut background_svg = self.gen_svg(bounds, with_pattern)?;
+        let mut background_svg = self.gen_svg(bounds, with_pattern, optimize_printing)?;
         background_svg.wrap_svg_root(Some(bounds), Some(bounds), false);
         background_svg.draw_to_cairo(cx)
     }

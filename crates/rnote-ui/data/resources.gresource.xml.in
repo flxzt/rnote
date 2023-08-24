@@ -95,6 +95,7 @@
         <file compressed="true">icons/scalable/actions/doc-create-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-trash-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-duplicate-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/selection-invert-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-select-all-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-deselect-all-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-resize-lock-aspectratio-symbolic.svg</file>

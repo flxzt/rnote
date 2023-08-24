@@ -131,7 +131,7 @@ impl RnShaperPage {
     }
 
     pub(crate) fn constraint_menubutton(&self) -> MenuButton {
-        self.imp().shapebuildertype_menubutton.get()
+        self.imp().constraint_menubutton.get()
     }
 
     pub(crate) fn shaper_style(&self) -> Option<ShaperStyle> {

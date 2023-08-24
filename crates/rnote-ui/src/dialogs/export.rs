@@ -90,6 +90,9 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         builder.object("export_doc_with_background_switch").unwrap();
     let with_pattern_row: adw::ActionRow = builder.object("export_doc_with_pattern_row").unwrap();
     let with_pattern_switch: Switch = builder.object("export_doc_with_pattern_switch").unwrap();
+    let optimize_printing_switch: Switch = builder
+        .object("export_doc_optimize_printing_switch")
+        .unwrap();
     let export_format_row: adw::ComboRow = builder.object("export_doc_export_format_row").unwrap();
     let page_order_row: adw::ComboRow = builder.object("export_doc_page_order_row").unwrap();
     let export_file_label: Label = builder.object("export_doc_export_file_label").unwrap();
@@ -104,8 +107,10 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
     with_background_switch.set_active(initial_doc_export_prefs.with_background);
     with_pattern_switch.set_active(initial_doc_export_prefs.with_pattern);
+    optimize_printing_switch.set_active(initial_doc_export_prefs.optimize_printing);
     preview.set_draw_background(initial_doc_export_prefs.with_background);
     preview.set_draw_pattern(initial_doc_export_prefs.with_pattern);
+    preview.set_optimize_printing(initial_doc_export_prefs.optimize_printing);
     preview.set_contents(
         canvas
             .engine_ref()
@@ -171,6 +176,14 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
             let active = with_pattern_switch.is_active();
             canvas.engine_mut().export_prefs.doc_export_prefs.with_pattern = active;
             preview.set_draw_pattern(active);
+        }),
+    );
+
+    optimize_printing_switch.connect_active_notify(
+        clone!(@weak preview, @weak canvas, @weak appwindow => move |optimize_printing_switch| {
+            let active = optimize_printing_switch.is_active();
+            canvas.engine_mut().export_prefs.doc_export_prefs.optimize_printing = active;
+            preview.set_optimize_printing(active);
         }),
     );
 
@@ -287,6 +300,9 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
     let with_pattern_switch: Switch = builder
         .object("export_doc_pages_with_pattern_switch")
         .unwrap();
+    let optimize_printing_switch: Switch = builder
+        .object("export_doc_pages_optimize_printing_switch")
+        .unwrap();
     let export_format_row: adw::ComboRow = builder
         .object("export_doc_pages_export_format_row")
         .unwrap();
@@ -322,8 +338,10 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
     with_background_switch.set_active(initial_doc_pages_export_prefs.with_background);
     with_pattern_switch.set_active(initial_doc_pages_export_prefs.with_pattern);
+    optimize_printing_switch.set_active(initial_doc_pages_export_prefs.optimize_printing);
     preview.set_draw_background(initial_doc_pages_export_prefs.with_background);
     preview.set_draw_pattern(initial_doc_pages_export_prefs.with_pattern);
+    preview.set_optimize_printing(initial_doc_pages_export_prefs.optimize_printing);
     preview.set_contents(
         canvas
             .engine_ref()
@@ -418,6 +436,14 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
             let active = switch.is_active();
             canvas.engine_mut().export_prefs.doc_pages_export_prefs.with_pattern = active;
             preview.set_draw_pattern(active);
+        }),
+    );
+
+    optimize_printing_switch.connect_active_notify(
+        clone!(@weak preview, @weak canvas, @weak appwindow => move |optimize_printing_switch| {
+            let active = optimize_printing_switch.is_active();
+            canvas.engine_mut().export_prefs.doc_pages_export_prefs.optimize_printing = active;
+            preview.set_optimize_printing(active);
         }),
     );
 
@@ -569,6 +595,9 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
     let with_pattern_switch: Switch = builder
         .object("export_selection_with_pattern_switch")
         .unwrap();
+    let optimize_printing_switch: Switch = builder
+        .object("export_selection_optimize_printing_switch")
+        .unwrap();
     let export_format_row: adw::ComboRow = builder
         .object("export_selection_export_format_row")
         .unwrap();
@@ -601,8 +630,10 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
     with_background_switch.set_active(initial_selection_export_prefs.with_background);
     with_pattern_switch.set_active(initial_selection_export_prefs.with_pattern);
+    optimize_printing_switch.set_active(initial_selection_export_prefs.optimize_printing);
     preview.set_draw_background(initial_selection_export_prefs.with_background);
     preview.set_draw_pattern(initial_selection_export_prefs.with_pattern);
+    preview.set_optimize_printing(initial_selection_export_prefs.optimize_printing);
     preview.set_margin(initial_selection_export_prefs.margin);
     preview.set_contents(
         canvas
@@ -688,6 +719,14 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
             let active = switch.is_active();
             canvas.engine_mut().export_prefs.selection_export_prefs.with_pattern = active;
             preview.set_draw_pattern(active);
+        }),
+    );
+
+    optimize_printing_switch.connect_active_notify(
+        clone!(@weak preview, @weak canvas, @weak appwindow => move |optimize_printing_switch| {
+            let active = optimize_printing_switch.is_active();
+            canvas.engine_mut().export_prefs.selection_export_prefs.optimize_printing = active;
+            preview.set_optimize_printing(active);
         }),
     );
 

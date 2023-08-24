@@ -172,6 +172,7 @@ impl PenBehaviour for Selector {
                     let stroke_content_svg = stroke_content.gen_svg(
                         false,
                         false,
+                        false,
                         StrokeContent::CLIPBOARD_EXPORT_MARGIN,
                     )?;
 
@@ -228,6 +229,7 @@ impl PenBehaviour for Selector {
             let result = move || {
                 if let Some(stroke_content) = stroke_content {
                     let stroke_content_svg = stroke_content.gen_svg(
+                        false,
                         false,
                         false,
                         StrokeContent::CLIPBOARD_EXPORT_MARGIN,

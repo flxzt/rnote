@@ -3468,6 +3468,7 @@ dependencies = [
  "num-derive 0.4.0",
  "num-traits",
  "once_cell",
+ "palette",
  "parry2d-f64",
  "piet",
  "piet-cairo",

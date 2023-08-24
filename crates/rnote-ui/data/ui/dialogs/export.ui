@@ -128,6 +128,17 @@
                           </object>
                         </child>
                         <child>
+                          <object class="AdwActionRow" id="export_doc_optimize_printing_row">
+                            <property name="title" translatable="yes">Optimize for Printing</property>
+                            <property name="subtitle" translatable="yes">Set whether the content should be optimized for printing</property>
+                            <child type="suffix">
+                              <object class="GtkSwitch" id="export_doc_optimize_printing_switch">
+                                <property name="valign">center</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
                           <object class="AdwComboRow" id="export_doc_export_format_row">
                             <property name="title" translatable="yes">Export Format</property>
                             <property name="subtitle" translatable="yes">The export format</property>
@@ -333,6 +344,17 @@ are cut into pages</property>
                             <property name="subtitle" translatable="yes">Set whether the background pattern should be exported</property>
                             <child type="suffix">
                               <object class="GtkSwitch" id="export_doc_pages_with_pattern_switch">
+                                <property name="valign">center</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwActionRow" id="export_doc_pages_optimize_printing_row">
+                            <property name="title" translatable="yes">Optimize for Printing</property>
+                            <property name="subtitle" translatable="yes">Set whether the content should be optimized for printing</property>
+                            <child type="suffix">
+                              <object class="GtkSwitch" id="export_doc_pages_optimize_printing_switch">
                                 <property name="valign">center</property>
                               </object>
                             </child>
@@ -545,6 +567,17 @@ to the actual size on the document</property>
                             <property name="subtitle" translatable="yes">Set whether the background pattern should be exported</property>
                             <child type="suffix">
                               <object class="GtkSwitch" id="export_selection_with_pattern_switch">
+                                <property name="valign">center</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwActionRow" id="export_selection_optimize_printing_row">
+                            <property name="title" translatable="yes">Optimize for Printing</property>
+                            <property name="subtitle" translatable="yes">Set whether the content should be optimized for printing</property>
+                            <child type="suffix">
+                              <object class="GtkSwitch" id="export_selection_optimize_printing_switch">
                                 <property name="valign">center</property>
                               </object>
                             </child>

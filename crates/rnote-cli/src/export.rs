@@ -122,6 +122,7 @@ pub(crate) async fn run_export(
     rnote_files: Vec<PathBuf>,
     no_background: bool,
     no_pattern: bool,
+    optimize_printing: bool,
     on_conflict: OnConflict,
     open: bool,
 ) -> anyhow::Result<()> {
@@ -151,6 +152,7 @@ pub(crate) async fn run_export(
         output_file,
         no_background,
         no_pattern,
+        optimize_printing,
     )?;
     match output_file {
         Some(output_file) => {
@@ -292,6 +294,7 @@ fn apply_export_prefs(
     output_file: Option<&PathBuf>,
     no_background: bool,
     no_pattern: bool,
+    optimize_printing: bool,
 ) -> anyhow::Result<()> {
     match &export_commands {
         ExportCommands::Doc {
@@ -303,6 +306,7 @@ fn apply_export_prefs(
                 file_args.output_format,
                 no_background,
                 no_pattern,
+                optimize_printing,
                 *page_order,
             )?;
         }
@@ -317,6 +321,7 @@ fn apply_export_prefs(
                 *output_format,
                 no_background,
                 no_pattern,
+                optimize_printing,
                 *page_order,
                 *bitmap_scalefactor,
                 *jpeg_quality,
@@ -334,6 +339,7 @@ fn apply_export_prefs(
                 file_args.output_format,
                 no_background,
                 no_pattern,
+                optimize_printing,
                 *bitmap_scalefactor,
                 *jpeg_quality,
                 *margin,
@@ -368,6 +374,7 @@ pub(crate) fn create_doc_export_prefs_from_args(
     output_format: Option<DocExportFormat>,
     no_background: bool,
     no_pattern: bool,
+    optimize_printing: bool,
     page_order: SplitOrder,
 ) -> anyhow::Result<DocExportPrefs> {
     let format = match (output_file, output_format) {
@@ -397,6 +404,7 @@ pub(crate) fn create_doc_export_prefs_from_args(
         export_format: format,
         with_background: !no_background,
         with_pattern: !no_pattern,
+        optimize_printing,
         page_order,
     };
 
@@ -418,6 +426,7 @@ pub(crate) fn create_doc_pages_export_prefs_from_args(
     export_format: DocPagesExportFormat,
     no_background: bool,
     no_pattern: bool,
+    optimize_printing: bool,
     page_order: SplitOrder,
     bitmap_scalefactor: f64,
     jpeg_quality: u8,
@@ -426,6 +435,7 @@ pub(crate) fn create_doc_pages_export_prefs_from_args(
         export_format,
         with_background: !no_background,
         with_pattern: !no_pattern,
+        optimize_printing,
         page_order,
         bitmap_scalefactor,
         jpeg_quality,
@@ -437,6 +447,7 @@ pub(crate) fn create_selection_export_prefs_from_args(
     output_format: Option<SelectionExportFormat>,
     no_background: bool,
     no_pattern: bool,
+    optimize_printing: bool,
     bitmap_scalefactor: f64,
     jpeg_quality: u8,
     margin: f64,
@@ -469,6 +480,7 @@ pub(crate) fn create_selection_export_prefs_from_args(
         export_format: format,
         with_background: !no_background,
         with_pattern: !no_pattern,
+        optimize_printing,
         bitmap_scalefactor,
         jpeg_quality,
         margin,

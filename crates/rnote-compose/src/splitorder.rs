@@ -35,8 +35,8 @@ impl std::fmt::Display for SplitOrder {
             f,
             "{}",
             match self {
-                SplitOrder::RowMajor => "horizontal",
-                SplitOrder::ColumnMajor => "vertical",
+                SplitOrder::RowMajor => "horizontal-first",
+                SplitOrder::ColumnMajor => "vertical-first",
             }
         )
     }

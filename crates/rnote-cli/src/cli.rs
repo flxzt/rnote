@@ -55,6 +55,9 @@ pub(crate) enum Commands {
         /// Export without background pattern.
         #[arg(short = 'p', long, action = ArgAction::SetTrue, global = true)]
         no_pattern: bool,
+        /// Optimize the background and stroke colors for printing.
+        #[arg(long, action = ArgAction::SetTrue, global = true)]
+        optimize_printing: bool,
         /// Inspect the result after the export is finished.{n}
         /// Opens output folder when using "doc-pages" sub-command.
         #[arg(long, action = ArgAction::SetTrue, global = true)]
@@ -174,6 +177,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             rnote_files,
             no_background,
             no_pattern,
+            optimize_printing,
             on_conflict,
             open,
             export_command,
@@ -185,6 +189,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                 rnote_files,
                 no_background,
                 no_pattern,
+                optimize_printing,
                 on_conflict,
                 open,
             )

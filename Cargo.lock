@@ -3444,6 +3444,7 @@ dependencies = [
  "atty",
  "clap",
  "dialoguer",
+ "gtk4",
  "indicatif",
  "log",
  "open",

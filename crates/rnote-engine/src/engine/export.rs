@@ -810,7 +810,13 @@ impl Engine {
                 let Some(selection_content) = selection_content else {
                     return Ok(None);
                 };
-                let Some(selection_svg) = selection_content.gen_svg(selection_export_prefs.with_background, selection_export_prefs.with_pattern, selection_export_prefs.optimize_printing, selection_export_prefs.margin)? else {
+                let Some(selection_svg) = selection_content.gen_svg(
+                    selection_export_prefs.with_background,
+                    selection_export_prefs.with_pattern,
+                    selection_export_prefs.optimize_printing,
+                    selection_export_prefs.margin,
+                )?
+                else {
                     return Ok(None);
                 };
 
@@ -854,11 +860,12 @@ impl Engine {
                     return Ok(None);
                 };
                 let Some(selection_svg) = selection_content.gen_svg(
-                        selection_export_prefs.with_background,
-                        selection_export_prefs.with_pattern,
-                        selection_export_prefs.optimize_printing,
-                        selection_export_prefs.margin,
-                    )? else {
+                    selection_export_prefs.with_background,
+                    selection_export_prefs.with_pattern,
+                    selection_export_prefs.optimize_printing,
+                    selection_export_prefs.margin,
+                )?
+                else {
                     return Ok(None);
                 };
                 let bitmapimage_format = match selection_export_prefs.export_format {

@@ -116,6 +116,7 @@ pub(crate) struct FileArgs<T: ValueEnum + 'static + Send + Sync> {
     output_format: Option<T>,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) async fn run_export(
     export_commands: ExportCommands,
     engine: &mut Engine,
@@ -442,6 +443,7 @@ pub(crate) fn create_doc_pages_export_prefs_from_args(
     })
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn create_selection_export_prefs_from_args(
     output_file: Option<impl AsRef<Path>>,
     output_format: Option<SelectionExportFormat>,
@@ -595,7 +597,10 @@ pub(crate) fn file_conflict_prompt_action(
         OnConflict::Suffix => {
             let mut i = 0;
             let mut new_path = output_file.to_path_buf();
-            let Some(file_stem) = new_path.file_stem().map(|s| s.to_string_lossy().to_string()) else {
+            let Some(file_stem) = new_path
+                .file_stem()
+                .map(|s| s.to_string_lossy().to_string())
+            else {
                 return Err(anyhow::anyhow!("Failed to get file stem"));
             };
             let ext = new_path
@@ -651,8 +656,15 @@ pub(crate) async fn export_to_file(
             }
         }
         ExportCommands::Doc { .. } => {
-            let Some(export_file_name) = output_file.as_ref().file_name().map(|s| s.to_string_lossy().to_string()) else {
-                return Err(anyhow::anyhow!("Failed to get file name from output-file \"{}\".", output_file.as_ref().display()));
+            let Some(export_file_name) = output_file
+                .as_ref()
+                .file_name()
+                .map(|s| s.to_string_lossy().to_string())
+            else {
+                return Err(anyhow::anyhow!(
+                    "Failed to get file name from output-file \"{}\".",
+                    output_file.as_ref().display()
+                ));
             };
             let export_bytes = engine.export_doc(export_file_name, None).await??;
             create_overwrite_file_w_bytes(&output_file, &export_bytes).await?;

@@ -154,12 +154,13 @@ impl StrokeStore {
             .flat_map(|key| {
                 let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
                     .get_mut(key)
-                    .map(Arc::make_mut) else {
-                    return vec![]
+                    .map(Arc::make_mut)
+                else {
+                    return vec![];
                 };
 
                 let Some(chrono_comp) = self.chrono_components.get(key) else {
-                    return vec![]
+                    return vec![];
                 };
 
                 let mut new_strokes = vec![];

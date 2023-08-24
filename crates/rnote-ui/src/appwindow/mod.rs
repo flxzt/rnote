@@ -456,7 +456,9 @@ impl RnAppWindow {
             let file_imported = match FileType::lookup_file_type(&input_file) {
                 FileType::RnoteFile => {
                     let Some(input_file_path) = input_file.path() else {
-                        return Err(anyhow::anyhow!("Could not open file: {input_file:?}, path returned None"));
+                        return Err(anyhow::anyhow!(
+                            "Could not open file: {input_file:?}, path returned None"
+                        ));
                     };
 
                     // If the file is already opened in a tab, simply switch to it

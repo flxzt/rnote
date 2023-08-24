@@ -43,7 +43,10 @@ impl Content for BrushStroke {
         let bounds = self.bounds();
         let partial = !viewport.contains(&bounds);
         let Some(bounds) = viewport.intersection(&bounds) else {
-            return Ok(GeneratedContentImages::Partial { images: vec![], viewport });
+            return Ok(GeneratedContentImages::Partial {
+                images: vec![],
+                viewport,
+            });
         };
         let bounds_extents = bounds.extents();
 

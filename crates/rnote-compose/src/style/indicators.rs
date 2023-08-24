@@ -242,24 +242,21 @@ pub fn triangular_down_node_shape(
     zoom: f64,
 ) -> kurbo::BezPath {
     let outline_half_width = TRIANGULAR_DOWN_NODE_OUTLINE_WIDTH * 0.5 / zoom;
-    kurbo::BezPath::from_iter(
-        [
-            kurbo::PathEl::MoveTo(kurbo::Point::new(
-                center[0] - size[0] * 0.5 + outline_half_width,
-                center[1] - size[1] * 0.5 + outline_half_width,
-            )),
-            kurbo::PathEl::LineTo(kurbo::Point::new(
-                center[0] + size[0] * 0.5 - outline_half_width,
-                center[1] - size[1] * 0.5 + outline_half_width,
-            )),
-            kurbo::PathEl::LineTo(kurbo::Point::new(
-                center[0],
-                center[1] + size[1] * 0.5 - outline_half_width,
-            )),
-            kurbo::PathEl::ClosePath,
-        ]
-        .into_iter(),
-    )
+    kurbo::BezPath::from_iter([
+        kurbo::PathEl::MoveTo(kurbo::Point::new(
+            center[0] - size[0] * 0.5 + outline_half_width,
+            center[1] - size[1] * 0.5 + outline_half_width,
+        )),
+        kurbo::PathEl::LineTo(kurbo::Point::new(
+            center[0] + size[0] * 0.5 - outline_half_width,
+            center[1] - size[1] * 0.5 + outline_half_width,
+        )),
+        kurbo::PathEl::LineTo(kurbo::Point::new(
+            center[0],
+            center[1] + size[1] * 0.5 - outline_half_width,
+        )),
+        kurbo::PathEl::ClosePath,
+    ])
 }
 
 /// Draw a triangular node.

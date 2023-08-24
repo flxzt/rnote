@@ -249,9 +249,9 @@ mod imp {
         optimize_printing: bool,
         margin: f64,
     ) -> anyhow::Result<Image> {
-        let Some(bounds) = stroke_content.bounds().map(|b| b.loosened(margin))else {
-                return Ok(Image::default());
-            };
+        let Some(bounds) = stroke_content.bounds().map(|b| b.loosened(margin)) else {
+            return Ok(Image::default());
+        };
         if width <= 0. || height <= 0. {
             return Ok(Image::default());
         }

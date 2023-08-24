@@ -460,10 +460,11 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     let Some(initial_entry) = appwindow
         .workspacebrowser()
         .workspacesbar()
-        .selected_workspacelistentry() else {
-            log::warn!("tried to edit workspace entry in dialog, but no workspace is selected");
-            return;
-        };
+        .selected_workspacelistentry()
+    else {
+        log::warn!("tried to edit workspace entry in dialog, but no workspace is selected");
+        return;
+    };
 
     // set initial dialog UI on popup
     preview_row.entry().replace_data(&initial_entry);

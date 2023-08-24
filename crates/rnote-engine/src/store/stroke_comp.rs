@@ -177,7 +177,12 @@ impl StrokeStore {
     }
 
     pub(crate) fn set_stroke_pos(&mut self, key: StrokeKey, pos: na::Vector2<f64>) {
-        let Some(stroke) = Arc::make_mut(&mut self.stroke_components).get_mut(key).map(Arc::make_mut) else {return;};
+        let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
+            .get_mut(key)
+            .map(Arc::make_mut)
+        else {
+            return;
+        };
         stroke.set_pos(pos);
     }
 

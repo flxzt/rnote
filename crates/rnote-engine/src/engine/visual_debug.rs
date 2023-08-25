@@ -1,22 +1,9 @@
 // Imports
-use super::EngineView;
-use crate::ext::{GdkRGBAExt, GrapheneRectExt};
-use crate::{DrawableOnDoc, Engine};
-use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::{RenderContext, Text, TextLayoutBuilder};
-use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::Color;
 
 pub const COLOR_POS: Color = Color {
     r: 1.0,
     g: 0.0,
-    b: 0.0,
-    a: 1.0,
-};
-pub const COLOR_POS_ALT: Color = Color {
-    r: 1.0,
-    g: 1.0,
     b: 0.0,
     a: 1.0,
 };
@@ -63,12 +50,16 @@ pub const COLOR_DOC_BOUNDS: Color = Color {
     a: 1.0,
 };
 
+#[cfg(feature = "ui")]
 pub(crate) fn draw_bounds_to_gtk_snapshot(
-    bounds: Aabb,
+    bounds: p2d::bounding_volume::Aabb,
     color: Color,
-    snapshot: &Snapshot,
+    snapshot: &gtk4::Snapshot,
     width: f64,
 ) {
+    use crate::ext::GdkRGBAExt;
+    use gtk4::{gdk, graphene, gsk, prelude::*};
+
     let bounds = graphene::Rect::new(
         bounds.mins[0] as f32,
         bounds.mins[1] as f32,
@@ -96,12 +87,16 @@ pub(crate) fn draw_bounds_to_gtk_snapshot(
     )
 }
 
+#[cfg(feature = "ui")]
 pub(crate) fn draw_pos_to_gtk_snapshot(
-    snapshot: &Snapshot,
+    snapshot: &gtk4::Snapshot,
     pos: na::Vector2<f64>,
     color: Color,
     width: f64,
 ) {
+    use crate::ext::GdkRGBAExt;
+    use gtk4::{gdk, graphene, prelude::*};
+
     snapshot.append_color(
         &gdk::RGBA::from_compose_color(color),
         &graphene::Rect::new(
@@ -113,7 +108,15 @@ pub(crate) fn draw_pos_to_gtk_snapshot(
     );
 }
 
-pub(crate) fn draw_fill_to_gtk_snapshot(snapshot: &Snapshot, rect: Aabb, color: Color) {
+#[cfg(feature = "ui")]
+pub(crate) fn draw_fill_to_gtk_snapshot(
+    snapshot: &gtk4::Snapshot,
+    rect: p2d::bounding_volume::Aabb,
+    color: Color,
+) {
+    use crate::ext::{GdkRGBAExt, GrapheneRectExt};
+    use gtk4::{gdk, graphene, prelude::*};
+
     snapshot.append_color(
         &gdk::RGBA::from_compose_color(color),
         &graphene::Rect::from_p2d_aabb(rect),
@@ -123,11 +126,18 @@ pub(crate) fn draw_fill_to_gtk_snapshot(snapshot: &Snapshot, rect: Aabb, color: 
 /// Draw some engine statistics for debugging purposes.
 ///
 /// Expects that the snapshot is untransformed in surface coordinate space.
+#[cfg(feature = "ui")]
 pub(crate) fn draw_statistics_to_gtk_snapshot(
-    snapshot: &Snapshot,
-    engine: &Engine,
-    surface_bounds: Aabb,
+    snapshot: &gtk4::Snapshot,
+    engine: &crate::Engine,
+    surface_bounds: p2d::bounding_volume::Aabb,
 ) -> anyhow::Result<()> {
+    use crate::ext::GrapheneRectExt;
+    use gtk4::{graphene, prelude::*};
+    use p2d::bounding_volume::Aabb;
+    use piet::{RenderContext, Text, TextLayoutBuilder};
+    use rnote_compose::ext::{AabbExt, Vector2Ext};
+
     // A statistics overlay
     {
         let text_bounds = Aabb::new(
@@ -187,11 +197,16 @@ pub(crate) fn draw_statistics_to_gtk_snapshot(
 }
 
 /// Draw stroke bounds, positions, etc. for visual debugging purposes.
+#[cfg(feature = "ui")]
 pub(crate) fn draw_stroke_debug_to_gtk_snapshot(
-    snapshot: &Snapshot,
-    engine: &Engine,
-    surface_bounds: Aabb,
+    snapshot: &gtk4::Snapshot,
+    engine: &crate::Engine,
+    surface_bounds: p2d::bounding_volume::Aabb,
 ) -> anyhow::Result<()> {
+    use crate::drawable::DrawableOnDoc;
+    use crate::engine::EngineView;
+    use p2d::bounding_volume::BoundingVolume;
+
     let viewport = engine.camera.viewport();
     let total_zoom = engine.camera.total_zoom();
     let doc_bounds = engine.document.bounds();

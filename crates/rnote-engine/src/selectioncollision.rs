@@ -1,5 +1,5 @@
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-#[cfg_attr(feature = "clap-derive", derive(clap::ValueEnum))]
+#[cfg_attr(feature = "cli", derive(clap::ValueEnum))]
 pub enum SelectionCollision {
     #[default]
     /// All strokes completely inside the area

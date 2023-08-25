@@ -22,7 +22,6 @@ pub(crate) async fn run_export(
     open: bool,
     export_command: cli::ExportCommand,
 ) -> anyhow::Result<()> {
-    gtk4::init()?;
     if rnote_files.is_empty() {
         return Err(anyhow::anyhow!(
             "There must be at least one rnote file specified for exporting."

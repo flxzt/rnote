@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-05 16:42+0200\n"
+"POT-Creation-Date: 2023-08-24 19:43+0200\n"
 "PO-Revision-Date: 2023-05-20 12:33+0000\n"
 "Last-Translator: Mr-Spade <Mr_Spade@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -82,8 +82,8 @@ msgstr "这将清空整个文档。请确认。"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:10
 #: crates/rnote-ui/data/ui/dialogs/import.ui:211
 #: crates/rnote-ui/data/ui/dialogs/export.ui:10
-#: crates/rnote-ui/data/ui/dialogs/export.ui:179
-#: crates/rnote-ui/data/ui/dialogs/export.ui:433
+#: crates/rnote-ui/data/ui/dialogs/export.ui:190
+#: crates/rnote-ui/data/ui/dialogs/export.ui:455
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
 msgstr "取消"
@@ -95,7 +95,7 @@ msgstr "清空"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:18
 #: crates/rnote-ui/data/ui/shortcuts.ui:149
-#: crates/rnote-ui/src/canvas/mod.rs:534
+#: crates/rnote-ui/src/canvas/mod.rs:531
 msgid "New Document"
 msgstr "新建文档"
 
@@ -195,11 +195,11 @@ msgid "Change the workspace directory"
 msgstr "更改工作区目录"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:168
-#: crates/rnote-ui/data/ui/dialogs/export.ui:288
-#: crates/rnote-ui/src/dialogs/export.rs:347
-#: crates/rnote-ui/src/dialogs/export.rs:384
-#: crates/rnote-ui/src/dialogs/export.rs:392
-#: crates/rnote-ui/src/dialogs/mod.rs:525
+#: crates/rnote-ui/data/ui/dialogs/export.ui:299
+#: crates/rnote-ui/src/dialogs/export.rs:365
+#: crates/rnote-ui/src/dialogs/export.rs:402
+#: crates/rnote-ui/src/dialogs/export.rs:410
+#: crates/rnote-ui/src/dialogs/mod.rs:522
 msgid "- no directory selected -"
 msgstr "—— 没有选择目录 ——"
 
@@ -274,14 +274,14 @@ msgid "Bitmap"
 msgstr "位图"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:177
-#: crates/rnote-ui/data/ui/dialogs/export.ui:374
-#: crates/rnote-ui/data/ui/dialogs/export.ui:570
+#: crates/rnote-ui/data/ui/dialogs/export.ui:396
+#: crates/rnote-ui/data/ui/dialogs/export.ui:603
 msgid "Bitmap Scale-Factor"
 msgstr "位图缩放系数"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:178
-#: crates/rnote-ui/data/ui/dialogs/export.ui:375
-#: crates/rnote-ui/data/ui/dialogs/export.ui:571
+#: crates/rnote-ui/data/ui/dialogs/export.ui:397
+#: crates/rnote-ui/data/ui/dialogs/export.ui:604
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
@@ -306,186 +306,200 @@ msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "为Xournal++文件设置推荐的DPI"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
-#: crates/rnote-ui/src/dialogs/export.rs:237
+#: crates/rnote-ui/src/dialogs/export.rs:250
 msgid "Export Document"
 msgstr "导出文档"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
-#: crates/rnote-ui/data/ui/dialogs/export.ui:184
-#: crates/rnote-ui/data/ui/dialogs/export.ui:438
-#: crates/rnote-ui/src/dialogs/export.rs:822
-#: crates/rnote-ui/src/dialogs/export.rs:869
+#: crates/rnote-ui/data/ui/dialogs/export.ui:195
+#: crates/rnote-ui/data/ui/dialogs/export.ui:460
+#: crates/rnote-ui/src/dialogs/export.rs:861
+#: crates/rnote-ui/src/dialogs/export.rs:908
 msgid "Export"
 msgstr "导出"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:72
-#: crates/rnote-ui/data/ui/dialogs/export.ui:495
+#: crates/rnote-ui/data/ui/dialogs/export.ui:517
 msgid "Export File"
 msgstr "导出文件"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:73
-#: crates/rnote-ui/data/ui/dialogs/export.ui:496
+#: crates/rnote-ui/data/ui/dialogs/export.ui:518
 msgid "Select the export file"
 msgstr "选择导出文件"
 
 #. force the user to pick another file
 #: crates/rnote-ui/data/ui/dialogs/export.ui:82
-#: crates/rnote-ui/data/ui/dialogs/export.ui:505
-#: crates/rnote-ui/src/dialogs/export.rs:116
-#: crates/rnote-ui/src/dialogs/export.rs:138
-#: crates/rnote-ui/src/dialogs/export.rs:145
-#: crates/rnote-ui/src/dialogs/export.rs:182
-#: crates/rnote-ui/src/dialogs/export.rs:629
-#: crates/rnote-ui/src/dialogs/export.rs:655
-#: crates/rnote-ui/src/dialogs/export.rs:662
-#: crates/rnote-ui/src/dialogs/export.rs:705
+#: crates/rnote-ui/data/ui/dialogs/export.ui:527
+#: crates/rnote-ui/src/dialogs/export.rs:121
+#: crates/rnote-ui/src/dialogs/export.rs:143
+#: crates/rnote-ui/src/dialogs/export.rs:150
+#: crates/rnote-ui/src/dialogs/export.rs:195
+#: crates/rnote-ui/src/dialogs/export.rs:660
+#: crates/rnote-ui/src/dialogs/export.rs:686
+#: crates/rnote-ui/src/dialogs/export.rs:693
+#: crates/rnote-ui/src/dialogs/export.rs:744
 msgid "- no file selected -"
 msgstr "— 没有文件被选中 —"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:106
-#: crates/rnote-ui/data/ui/dialogs/export.ui:317
-#: crates/rnote-ui/data/ui/dialogs/export.ui:529
+#: crates/rnote-ui/data/ui/dialogs/export.ui:328
+#: crates/rnote-ui/data/ui/dialogs/export.ui:551
 msgid "Export Preferences"
 msgstr "导出设定"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:110
-#: crates/rnote-ui/data/ui/dialogs/export.ui:321
-#: crates/rnote-ui/data/ui/dialogs/export.ui:533
+#: crates/rnote-ui/data/ui/dialogs/export.ui:332
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 msgid "With Background"
 msgstr "包含背景"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:111
-#: crates/rnote-ui/data/ui/dialogs/export.ui:322
-#: crates/rnote-ui/data/ui/dialogs/export.ui:534
+#: crates/rnote-ui/data/ui/dialogs/export.ui:333
+#: crates/rnote-ui/data/ui/dialogs/export.ui:556
 msgid "Set whether the background should be exported"
 msgstr "设置导出时的背景颜色"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:121
-#: crates/rnote-ui/data/ui/dialogs/export.ui:332
-#: crates/rnote-ui/data/ui/dialogs/export.ui:544
+#: crates/rnote-ui/data/ui/dialogs/export.ui:343
+#: crates/rnote-ui/data/ui/dialogs/export.ui:566
 msgid "With Pattern"
 msgstr "包含纹理"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:122
-#: crates/rnote-ui/data/ui/dialogs/export.ui:333
-#: crates/rnote-ui/data/ui/dialogs/export.ui:545
+#: crates/rnote-ui/data/ui/dialogs/export.ui:344
+#: crates/rnote-ui/data/ui/dialogs/export.ui:567
 msgid "Set whether the background pattern should be exported"
 msgstr "设置导出时包含的背景图案"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:132
-#: crates/rnote-ui/data/ui/dialogs/export.ui:343
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
+#: crates/rnote-ui/data/ui/dialogs/export.ui:354
+#: crates/rnote-ui/data/ui/dialogs/export.ui:577
+msgid "Optimize for Printing"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:133
+#: crates/rnote-ui/data/ui/dialogs/export.ui:355
+#: crates/rnote-ui/data/ui/dialogs/export.ui:578
+#, fuzzy
+#| msgid "Set whether the background pattern should be exported"
+msgid "Set whether the content should be optimized for printing"
+msgstr "设置导出时包含的背景图案"
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:143
+#: crates/rnote-ui/data/ui/dialogs/export.ui:365
+#: crates/rnote-ui/data/ui/dialogs/export.ui:588
 msgid "Export Format"
 msgstr "导出格式"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:133
-#: crates/rnote-ui/data/ui/dialogs/export.ui:344
+#: crates/rnote-ui/data/ui/dialogs/export.ui:144
+#: crates/rnote-ui/data/ui/dialogs/export.ui:366
 msgid "The export format"
 msgstr "导出的格式"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:137
-#: crates/rnote-ui/data/ui/dialogs/export.ui:348
-#: crates/rnote-ui/data/ui/dialogs/export.ui:560
-#: crates/rnote-ui/src/dialogs/export.rs:247
-#: crates/rnote-ui/src/dialogs/export.rs:538
-#: crates/rnote-ui/src/dialogs/export.rs:781
+#: crates/rnote-ui/data/ui/dialogs/export.ui:148
+#: crates/rnote-ui/data/ui/dialogs/export.ui:370
+#: crates/rnote-ui/data/ui/dialogs/export.ui:593
+#: crates/rnote-ui/src/dialogs/export.rs:260
+#: crates/rnote-ui/src/dialogs/export.rs:564
+#: crates/rnote-ui/src/dialogs/export.rs:820
 msgid "Svg"
 msgstr "可缩放矢量图（SVG）"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:138
-#: crates/rnote-ui/src/dialogs/export.rs:252
+#: crates/rnote-ui/data/ui/dialogs/export.ui:149
+#: crates/rnote-ui/src/dialogs/export.rs:265
 msgid "Pdf"
 msgstr "便携式文档格式（PDF）"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:139
-#: crates/rnote-ui/src/dialogs/export.rs:257
+#: crates/rnote-ui/data/ui/dialogs/export.ui:150
+#: crates/rnote-ui/src/dialogs/export.rs:270
 msgid "Xopp"
 msgstr "Xournal++ 笔记本（Xopp）"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:147
-#: crates/rnote-ui/data/ui/dialogs/export.ui:358
+#: crates/rnote-ui/data/ui/dialogs/export.ui:158
+#: crates/rnote-ui/data/ui/dialogs/export.ui:380
 #, fuzzy
 #| msgid "Pages Type"
 msgid "Page Order"
 msgstr "页面类型"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:148
-#: crates/rnote-ui/data/ui/dialogs/export.ui:359
+#: crates/rnote-ui/data/ui/dialogs/export.ui:159
+#: crates/rnote-ui/data/ui/dialogs/export.ui:381
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:154
-#: crates/rnote-ui/data/ui/dialogs/export.ui:365
+#: crates/rnote-ui/data/ui/dialogs/export.ui:165
+#: crates/rnote-ui/data/ui/dialogs/export.ui:387
 msgid "Horizontal First"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:155
-#: crates/rnote-ui/data/ui/dialogs/export.ui:366
+#: crates/rnote-ui/data/ui/dialogs/export.ui:166
+#: crates/rnote-ui/data/ui/dialogs/export.ui:388
 msgid "Vertical First"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:176
-#: crates/rnote-ui/src/dialogs/export.rs:516
+#: crates/rnote-ui/data/ui/dialogs/export.ui:187
+#: crates/rnote-ui/src/dialogs/export.rs:542
 msgid "Export Document Pages"
 msgstr "分页导出"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:258
+#: crates/rnote-ui/data/ui/dialogs/export.ui:269
 msgid "Page Files Naming:"
 msgstr "页面文件命名："
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:278
+#: crates/rnote-ui/data/ui/dialogs/export.ui:289
 msgid "Export Directory"
 msgstr "导出目录"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:279
+#: crates/rnote-ui/data/ui/dialogs/export.ui:290
 msgid "Select the export directory"
 msgstr "选择导出文件所在目录"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:310
+#: crates/rnote-ui/data/ui/dialogs/export.ui:321
 msgid "Export Files Stem Name"
 msgstr "导出文件标题"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:349
-#: crates/rnote-ui/data/ui/dialogs/export.ui:561
-#: crates/rnote-ui/src/dialogs/export.rs:543
-#: crates/rnote-ui/src/dialogs/export.rs:786
+#: crates/rnote-ui/data/ui/dialogs/export.ui:371
+#: crates/rnote-ui/data/ui/dialogs/export.ui:594
+#: crates/rnote-ui/src/dialogs/export.rs:569
+#: crates/rnote-ui/src/dialogs/export.rs:825
 msgid "Png"
 msgstr "便携式网络图形（PNG）"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:350
-#: crates/rnote-ui/data/ui/dialogs/export.ui:562
-#: crates/rnote-ui/src/dialogs/export.rs:549
-#: crates/rnote-ui/src/dialogs/export.rs:792
+#: crates/rnote-ui/data/ui/dialogs/export.ui:372
+#: crates/rnote-ui/data/ui/dialogs/export.ui:595
+#: crates/rnote-ui/src/dialogs/export.rs:575
+#: crates/rnote-ui/src/dialogs/export.rs:831
 msgid "Jpeg"
 msgstr "联合图像标准（JPEG）"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:396
-#: crates/rnote-ui/data/ui/dialogs/export.ui:592
+#: crates/rnote-ui/data/ui/dialogs/export.ui:418
+#: crates/rnote-ui/data/ui/dialogs/export.ui:625
 msgid "Jpeg Quality"
 msgstr "Jpeg图像质量"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:397
-#: crates/rnote-ui/data/ui/dialogs/export.ui:593
+#: crates/rnote-ui/data/ui/dialogs/export.ui:419
+#: crates/rnote-ui/data/ui/dialogs/export.ui:626
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "设置Jpeg图像的质量（1-100）"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:430
-#: crates/rnote-ui/src/dialogs/export.rs:767
+#: crates/rnote-ui/data/ui/dialogs/export.ui:452
+#: crates/rnote-ui/src/dialogs/export.rs:806
 msgid "Export Selection"
 msgstr "导出所选"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:556
+#: crates/rnote-ui/data/ui/dialogs/export.ui:589
 msgid "The export image format"
 msgstr "图像导出的格式"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:613
+#: crates/rnote-ui/data/ui/dialogs/export.ui:646
 msgid "Margin"
 msgstr "边距"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:614
+#: crates/rnote-ui/data/ui/dialogs/export.ui:647
 msgid "Set the margin around the selected area"
 msgstr "设置选区周围的边距"
 
@@ -494,64 +508,64 @@ msgid "Brush Style"
 msgstr "刷子样式"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:33
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:133
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:149
 msgid "Brush Configuration"
 msgstr "刷子设置"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:64
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:66
 msgid "Brush Styles"
 msgstr "刷子样式"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:81
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:95
 msgid "Marker"
 msgstr "记号笔"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:82
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:96
 msgid "Mark underneath other strokes"
 msgstr "在其他笔画下方标记"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:93
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:173
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:107
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:201
 msgid "Solid"
 msgstr "硬笔"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:94
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:108
 msgid "Draw solid color strokes"
 msgstr "绘制纯色笔划"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:105
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:119
 msgid "Textured"
 msgstr "纹理"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:106
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:120
 msgid "Draw textured strokes"
 msgstr "绘制纹理笔划"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:142
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:170
 msgid "Path Modelling"
 msgstr "路径模式"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:159
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:187
 msgid "Simple"
 msgstr "简单"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:160
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:188
 msgid "Produces line segments from the raw input.\n"
 msgstr "按照原始输入生成线段。\n"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:166
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "Curved"
 msgstr "曲线"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:167
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Produces smooth, curved segments.\n"
 msgstr "生成光滑、弯曲的线段。\n"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:173
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:201
 msgid "Modeled"
 msgstr "建模"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:174
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:202
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
@@ -559,75 +573,75 @@ msgstr ""
 "使用模拟物理的算法生成建模后的轨迹。\n"
 "结果是所有方法中最好看的（译者注：对于中文用户不一定如此）。"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:183
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:211
 msgid "Solid Style"
 msgstr "硬笔样式"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:186
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:214
 msgid "Pressure Curve"
 msgstr "压力曲线"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:187
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:215
 msgid "Choose a pressure curve"
 msgstr "选择一种压力曲线"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:191
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:219
 msgid "Constant"
 msgstr "固定值"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:192
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:220
 msgid "Linear"
 msgstr "线性"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:193
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:221
 msgid "Square root"
 msgstr "平方根"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:194
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:222
 msgid "Cubic root"
 msgstr "立方根"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:195
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:223
 msgid "Quadratic Parabola"
 msgstr "二次抛物线"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:196
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:224
 msgid "Cubic Parabola"
 msgstr "三次抛物线"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:207
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:235
 msgid "Textured Style"
 msgstr "纹理样式"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:210
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:238
 msgid "Density"
 msgstr "密度"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:211
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:239
 msgid "The density is the amount of dots per 10x10 area"
 msgstr "密度指的是10x10区域内点的数量"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:226
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
 msgid "Stroke Dots Position Distribution"
 msgstr "笔画点位分布"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:227
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
 msgid "Choose a dots position probability distribution"
 msgstr "选择点的分布概率"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:231
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:259
 msgid "Uniform"
 msgstr "集中"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:232
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:260
 msgid "Normal"
 msgstr "一般"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:233
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:261
 msgid "Exponential"
 msgstr "指数"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:234
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:262
 msgid "Reverse Exponential"
 msgstr "对数"
 
@@ -704,11 +718,15 @@ msgid "Deselect All Strokes"
 msgstr "取消选中所有笔画"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
+msgid "Invert Color Brightness of All Selected Strokes"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 #: crates/rnote-ui/data/ui/shortcuts.ui:212
 msgid "Duplicate Selection"
 msgstr "复制所选内容"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:127
 msgid "Delete Selection"
 msgstr "删除所选内容"
 
@@ -717,82 +735,82 @@ msgid "Shaper Style"
 msgstr "形状工具样式"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:31
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:154
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
 msgid "Shape Configuration"
 msgstr "形状设置"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:61
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:225
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:255
 msgid "Shape Builders"
 msgstr "形状构建工具"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:77
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:253
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:297
 msgid "Constraints"
 msgstr "约束条件"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:99
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:101
 msgid "Shaper Styles"
 msgstr "形状工具样式"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:116
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:130
 msgid "Smooth"
 msgstr "平滑"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:127
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
 msgid "Rough"
 msgstr "粗糙"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:164
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:192
 msgid "Rough style"
 msgstr "粗糙样式"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:168
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:196
 msgid "Fill Style"
 msgstr "填充样式"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:169
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:197
 msgid "Choose a fill style"
 msgstr "选择填充样式"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:174
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:202
 msgid "Hachure"
 msgstr "阴影线"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:175
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:203
 msgid "Zig-Zag"
 msgstr "锯齿"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:176
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:204
 msgid "Zig-Zag Line"
 msgstr "锯齿线"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:177
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:205
 msgid "Crosshatch"
 msgstr "交叉阴影线"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:206
 #: crates/rnote-ui/data/ui/settingspanel.ui:343
 msgid "Dots"
 msgstr "点"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:207
 msgid "Dashed"
 msgstr "虚线"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:215
 msgid "Hachure Angle"
 msgstr "带角度的阴影线"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:188
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:216
 msgid "Set the angle of hachure fills"
 msgstr "设置阴影线的角度"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:270
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:326
 msgid "Enabled"
 msgstr "启用"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:271
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:327
 msgid ""
 "Hold Ctrl to temporarily\n"
 "enable/disable constraints\n"
@@ -802,15 +820,15 @@ msgstr ""
 "启用/禁用约束条件\n"
 "当此开关被关闭/打开时"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:283
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:339
 msgid "1:1"
 msgstr "1:1"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:293
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:349
 msgid "3:2"
 msgstr "3:2"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:303
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:359
 msgid "Golden Ratio (1:1.618)"
 msgstr "黄金比例(1:1.618)"
 
@@ -1133,7 +1151,7 @@ msgid "Duplicate"
 msgstr "重复所选内容"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:19
-#: crates/rnote-ui/src/canvas/mod.rs:536
+#: crates/rnote-ui/src/canvas/mod.rs:533
 msgid "Draft"
 msgstr "草稿"
 
@@ -1343,7 +1361,7 @@ msgstr "撤销"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:290
 #: crates/rnote-ui/data/ui/shortcuts.ui:146
-#: crates/rnote-ui/src/dialogs/mod.rs:631
+#: crates/rnote-ui/src/dialogs/mod.rs:628
 msgid "Document"
 msgstr "文档"
 
@@ -1376,7 +1394,7 @@ msgid "Lines"
 msgstr "线"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:342
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:388
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "Grid"
 msgstr "方格"
 
@@ -1412,15 +1430,31 @@ msgstr "纹理高度"
 msgid "Set the background pattern height"
 msgstr "设置背景纹理高度"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:405
+#: crates/rnote-ui/data/ui/settingspanel.ui:402
+msgid "Invert Color Brightness"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:403
+#, fuzzy
+#| msgid "Set the background pattern color"
+msgid "Invert the brightness of all background pattern colors"
+msgstr "设置背景纹理颜色"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:407
+#, fuzzy
+#| msgid "Revert"
+msgid "Invert"
+msgstr "撤销"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:417
 msgid "Button Shortcuts"
 msgstr "按键快捷键"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:408
+#: crates/rnote-ui/data/ui/settingspanel.ui:420
 msgid "Stylus Primary Button Action"
 msgstr "手写笔主按键动作"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:409
+#: crates/rnote-ui/data/ui/settingspanel.ui:421
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
@@ -1428,11 +1462,11 @@ msgstr ""
 "设置手写笔主按键\n"
 "执行的动作"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:421
+#: crates/rnote-ui/data/ui/settingspanel.ui:433
 msgid "Stylus Secondary Button Action"
 msgstr "手写笔副按键动作"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:422
+#: crates/rnote-ui/data/ui/settingspanel.ui:434
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
@@ -1440,11 +1474,11 @@ msgstr ""
 "设置手写笔副按键\n"
 "执行的动作"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:434
+#: crates/rnote-ui/data/ui/settingspanel.ui:446
 msgid "Mouse Secondary Button Action"
 msgstr "鼠标次键动作"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:435
+#: crates/rnote-ui/data/ui/settingspanel.ui:447
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
@@ -1452,11 +1486,11 @@ msgstr ""
 "设置鼠标次键\n"
 "执行的动作"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:447
+#: crates/rnote-ui/data/ui/settingspanel.ui:459
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "双指长按行为"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:448
+#: crates/rnote-ui/data/ui/settingspanel.ui:460
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
@@ -1464,11 +1498,11 @@ msgstr ""
 "设置双指长按\n"
 "手势的行为"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:460
+#: crates/rnote-ui/data/ui/settingspanel.ui:472
 msgid "Drawing Pad Button 1 Action"
 msgstr "画板按钮1行为"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:461
+#: crates/rnote-ui/data/ui/settingspanel.ui:473
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
@@ -1476,11 +1510,11 @@ msgstr ""
 "设置画板\n"
 "按钮1的行为"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:473
+#: crates/rnote-ui/data/ui/settingspanel.ui:485
 msgid "Drawing Pad Button 2 Action"
 msgstr "画板按钮2行为"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:474
+#: crates/rnote-ui/data/ui/settingspanel.ui:486
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
@@ -1488,11 +1522,11 @@ msgstr ""
 "设置画板\n"
 "按钮2的行为"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:486
+#: crates/rnote-ui/data/ui/settingspanel.ui:498
 msgid "Drawing Pad Button 3 Action"
 msgstr "画板按钮3行为"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:487
+#: crates/rnote-ui/data/ui/settingspanel.ui:499
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
@@ -1500,11 +1534,11 @@ msgstr ""
 "设置画板\n"
 "按钮3的行为"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:499
+#: crates/rnote-ui/data/ui/settingspanel.ui:511
 msgid "Drawing Pad Button 4 Action"
 msgstr "画板按钮4行为"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:500
+#: crates/rnote-ui/data/ui/settingspanel.ui:512
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
@@ -1628,16 +1662,16 @@ msgstr "工作区目录操作"
 msgid "Create new Folder"
 msgstr "创建新文件夹"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:557
+#: crates/rnote-ui/src/appwindow/mod.rs:550
 msgid "Opening file failed"
 msgstr "文件打开失败"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:282
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:613
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:556
 #: crates/rnote-ui/src/dialogs/export.rs:69
-#: crates/rnote-ui/src/dialogs/mod.rs:130
-#: crates/rnote-ui/src/dialogs/mod.rs:260
-#: crates/rnote-ui/src/dialogs/mod.rs:411
+#: crates/rnote-ui/src/dialogs/mod.rs:126
+#: crates/rnote-ui/src/dialogs/mod.rs:256
+#: crates/rnote-ui/src/dialogs/mod.rs:407
 msgid "Saving document failed"
 msgstr "文档保存失败"
 
@@ -1657,50 +1691,50 @@ msgstr "按钮3"
 msgid "Button 4"
 msgstr "按钮4"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:674
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:618
 msgid "Printing document failed"
 msgstr "打印失败"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:710
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:654
 msgid "Exporting selection failed, nothing selected"
 msgstr "导出选择内容失败，没有选择内容"
 
-#: crates/rnote-ui/src/canvas/mod.rs:772 crates/rnote-ui/src/dialogs/mod.rs:207
-#: crates/rnote-ui/src/dialogs/mod.rs:341
+#: crates/rnote-ui/src/canvas/mod.rs:769 crates/rnote-ui/src/dialogs/mod.rs:203
+#: crates/rnote-ui/src/dialogs/mod.rs:337
 msgid "- invalid file name -"
 msgstr "—— 无效文件名 ——"
 
-#: crates/rnote-ui/src/canvas/mod.rs:785
+#: crates/rnote-ui/src/canvas/mod.rs:782
 msgid "- invalid folder path -"
 msgstr "-无效的文件夹路径-"
 
-#: crates/rnote-ui/src/canvas/mod.rs:808
+#: crates/rnote-ui/src/canvas/mod.rs:805
 msgid "Opened file was modified on disk"
 msgstr "打开的文件已在磁盘上被修改过"
 
-#: crates/rnote-ui/src/canvas/mod.rs:809
+#: crates/rnote-ui/src/canvas/mod.rs:806
 msgid "Reload"
 msgstr "重新加载"
 
-#: crates/rnote-ui/src/canvas/mod.rs:815
+#: crates/rnote-ui/src/canvas/mod.rs:812
 msgid "Reloading .rnote file from disk failed"
 msgstr "从磁盘重新加载 .rnote 文件失败"
 
-#: crates/rnote-ui/src/canvas/mod.rs:864
+#: crates/rnote-ui/src/canvas/mod.rs:861
 msgid "Opened file was renamed on disk"
 msgstr "打开的文件已在磁盘上被重命名"
 
-#: crates/rnote-ui/src/canvas/mod.rs:877
+#: crates/rnote-ui/src/canvas/mod.rs:874
 msgid "Opened file was moved or deleted on disk"
 msgstr "打开的文件已在磁盘上被移动或者删除"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1011
+#: crates/rnote-ui/src/canvas/mod.rs:1003
 #, fuzzy
 #| msgid "Opening file failed"
 msgid "Inserting file failed"
 msgstr "文件打开失败"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1021
+#: crates/rnote-ui/src/canvas/mod.rs:1013
 #, fuzzy
 #| msgid "Printing document failed"
 msgid "Inserting text failed"
@@ -1715,75 +1749,75 @@ msgstr ".rnote"
 msgid "Saved document successfully"
 msgstr "文档保存成功"
 
-#: crates/rnote-ui/src/dialogs/export.rs:214
+#: crates/rnote-ui/src/dialogs/export.rs:227
 msgid "Exporting document failed"
 msgstr "导出文档失败"
 
-#: crates/rnote-ui/src/dialogs/export.rs:216
+#: crates/rnote-ui/src/dialogs/export.rs:229
 msgid "Exported document successfully"
 msgstr "导出文档成功"
 
-#: crates/rnote-ui/src/dialogs/export.rs:224
+#: crates/rnote-ui/src/dialogs/export.rs:237
 msgid "Exporting document failed, no file selected"
 msgstr "导出文件失败，没有选择文件"
 
-#: crates/rnote-ui/src/dialogs/export.rs:239
-#: crates/rnote-ui/src/dialogs/export.rs:518
-#: crates/rnote-ui/src/dialogs/export.rs:769
-#: crates/rnote-ui/src/dialogs/mod.rs:507
+#: crates/rnote-ui/src/dialogs/export.rs:252
+#: crates/rnote-ui/src/dialogs/export.rs:544
+#: crates/rnote-ui/src/dialogs/export.rs:808
+#: crates/rnote-ui/src/dialogs/mod.rs:504
 msgid "Select"
 msgstr "选择"
 
-#: crates/rnote-ui/src/dialogs/export.rs:493
+#: crates/rnote-ui/src/dialogs/export.rs:519
 msgid "Exporting document pages failed"
 msgstr "导出文档页面失败"
 
-#: crates/rnote-ui/src/dialogs/export.rs:495
+#: crates/rnote-ui/src/dialogs/export.rs:521
 msgid "Exported document pages successfully"
 msgstr "导出文档页面成功"
 
-#: crates/rnote-ui/src/dialogs/export.rs:502
+#: crates/rnote-ui/src/dialogs/export.rs:528
 msgid "Exporting document pages failed, no directory selected"
 msgstr "导出文档页面失败，没有选择目录"
 
-#: crates/rnote-ui/src/dialogs/export.rs:742
+#: crates/rnote-ui/src/dialogs/export.rs:781
 msgid "Exporting selection failed"
 msgstr "导出选择内容失败"
 
-#: crates/rnote-ui/src/dialogs/export.rs:745
+#: crates/rnote-ui/src/dialogs/export.rs:784
 msgid "Exported selection successfully"
 msgstr "导出选择内容成功"
 
-#: crates/rnote-ui/src/dialogs/export.rs:754
+#: crates/rnote-ui/src/dialogs/export.rs:793
 msgid "Exporting selection failed, no file selected"
 msgstr "导出选择内容失败，没有选择文件"
 
-#: crates/rnote-ui/src/dialogs/export.rs:812
-#: crates/rnote-ui/src/dialogs/export.rs:859
+#: crates/rnote-ui/src/dialogs/export.rs:851
+#: crates/rnote-ui/src/dialogs/export.rs:898
 msgid "Json"
 msgstr "JSON"
 
-#: crates/rnote-ui/src/dialogs/export.rs:820
+#: crates/rnote-ui/src/dialogs/export.rs:859
 msgid "Export Engine State"
 msgstr "导出引擎状态"
 
-#: crates/rnote-ui/src/dialogs/export.rs:839
+#: crates/rnote-ui/src/dialogs/export.rs:878
 msgid "Exporting engine state failed"
 msgstr "引擎状态导出失败"
 
-#: crates/rnote-ui/src/dialogs/export.rs:842
+#: crates/rnote-ui/src/dialogs/export.rs:881
 msgid "Exported engine state successfully"
 msgstr "引擎状态导出成功"
 
-#: crates/rnote-ui/src/dialogs/export.rs:867
+#: crates/rnote-ui/src/dialogs/export.rs:906
 msgid "Export Engine Config"
 msgstr "导出引擎配置"
 
-#: crates/rnote-ui/src/dialogs/export.rs:886
+#: crates/rnote-ui/src/dialogs/export.rs:925
 msgid "Exporting engine config failed"
 msgstr "引擎设置导出失败"
 
-#: crates/rnote-ui/src/dialogs/export.rs:889
+#: crates/rnote-ui/src/dialogs/export.rs:928
 msgid "Exported engine config successfully"
 msgstr "引擎设置导出成功"
 
@@ -1836,412 +1870,418 @@ msgstr "页码："
 msgid "translator-credits"
 msgstr "Mr_Spade <Mr_Spade@foxmail.com>"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:214
-#: crates/rnote-ui/src/dialogs/mod.rs:348
+#: crates/rnote-ui/src/dialogs/mod.rs:210
+#: crates/rnote-ui/src/dialogs/mod.rs:344
 #, fuzzy
 #| msgid "- invalid file name -"
 msgid "- invalid save folder name -"
 msgstr "—— 无效文件名 ——"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:230
-#: crates/rnote-ui/src/dialogs/mod.rs:363
+#: crates/rnote-ui/src/dialogs/mod.rs:226
+#: crates/rnote-ui/src/dialogs/mod.rs:359
 msgid "The changes will be saved"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:235
-#: crates/rnote-ui/src/dialogs/mod.rs:368
+#: crates/rnote-ui/src/dialogs/mod.rs:231
+#: crates/rnote-ui/src/dialogs/mod.rs:364
 #, fuzzy
 #| msgid "- no file selected -"
 msgid "A new file will be created"
 msgstr "— 没有文件被选中 —"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:505
+#: crates/rnote-ui/src/dialogs/mod.rs:502
 msgid "Change Workspace Directory"
 msgstr "更改工作区目录"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:618
+#: crates/rnote-ui/src/dialogs/mod.rs:615
 msgid "Band-Aid"
 msgstr "胶布"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:619
+#: crates/rnote-ui/src/dialogs/mod.rs:616
 msgid "Bank"
 msgstr "银行"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:620
+#: crates/rnote-ui/src/dialogs/mod.rs:617
 msgid "Bookmark"
 msgstr "书签"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:621
+#: crates/rnote-ui/src/dialogs/mod.rs:618
 msgid "Book"
 msgstr "书籍"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:622
+#: crates/rnote-ui/src/dialogs/mod.rs:619
 msgid "Bread"
 msgstr "面包"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:623
+#: crates/rnote-ui/src/dialogs/mod.rs:620
 msgid "Calendar"
 msgstr "日历"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:624
+#: crates/rnote-ui/src/dialogs/mod.rs:621
 msgid "Camera"
 msgstr "相机"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:625
+#: crates/rnote-ui/src/dialogs/mod.rs:622
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "芯片"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:626
+#: crates/rnote-ui/src/dialogs/mod.rs:623
 msgid "Clock"
 msgstr "时钟"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:627
+#: crates/rnote-ui/src/dialogs/mod.rs:624
 msgid "Code"
 msgstr "代码"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:628
+#: crates/rnote-ui/src/dialogs/mod.rs:625
 msgid "Compose"
 msgstr "作品"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:629
+#: crates/rnote-ui/src/dialogs/mod.rs:626
 msgctxt "as in plant"
 msgid "Crop"
 msgstr "作物"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:630
+#: crates/rnote-ui/src/dialogs/mod.rs:627
 msgid "Dictionary"
 msgstr "字典"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:632
+#: crates/rnote-ui/src/dialogs/mod.rs:629
 msgid "Drinks"
 msgstr "饮料"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:633
+#: crates/rnote-ui/src/dialogs/mod.rs:630
 msgid "Flag"
 msgstr "旗帜"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:634
+#: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "Folder"
 msgstr "文件夹"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:635
+#: crates/rnote-ui/src/dialogs/mod.rs:632
 msgid "Footprints"
 msgstr "足迹"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:636
+#: crates/rnote-ui/src/dialogs/mod.rs:633
 msgid "Gamepad"
 msgstr "手柄"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:637
+#: crates/rnote-ui/src/dialogs/mod.rs:634
 msgid "Gear"
 msgstr "齿轮"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:638
+#: crates/rnote-ui/src/dialogs/mod.rs:635
 msgid "Globe"
 msgstr "地球"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:639
+#: crates/rnote-ui/src/dialogs/mod.rs:636
 msgid "Hammer"
 msgstr "锤子"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:640
+#: crates/rnote-ui/src/dialogs/mod.rs:637
 msgid "Heart"
 msgstr "爱心"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:641
+#: crates/rnote-ui/src/dialogs/mod.rs:638
 msgid "Hourglass"
 msgstr "沙漏"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:642
+#: crates/rnote-ui/src/dialogs/mod.rs:639
 msgid "Key"
 msgstr "钥匙"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:643
+#: crates/rnote-ui/src/dialogs/mod.rs:640
 msgid "Language"
 msgstr "语言"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:644
+#: crates/rnote-ui/src/dialogs/mod.rs:641
 msgid "Library"
 msgstr "图书馆"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:645
+#: crates/rnote-ui/src/dialogs/mod.rs:642
 msgid "Lightbulb"
 msgstr "灯泡"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:646
+#: crates/rnote-ui/src/dialogs/mod.rs:643
 msgid "Mathematics"
 msgstr "数学"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:647
+#: crates/rnote-ui/src/dialogs/mod.rs:644
 msgid "Meeting"
 msgstr "会议"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:648
+#: crates/rnote-ui/src/dialogs/mod.rs:645
 msgid "Money"
 msgstr "钱"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:649
+#: crates/rnote-ui/src/dialogs/mod.rs:646
 msgid "Musical Note"
 msgstr "音符"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:650
+#: crates/rnote-ui/src/dialogs/mod.rs:647
 msgid "Nature"
 msgstr "自然"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:651
+#: crates/rnote-ui/src/dialogs/mod.rs:648
 msgid "Open Book"
 msgstr "打开的书籍"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:652
+#: crates/rnote-ui/src/dialogs/mod.rs:649
 msgid "Paintbrush"
 msgstr "画笔"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:653
+#: crates/rnote-ui/src/dialogs/mod.rs:650
 msgid "Pencil and Paper"
 msgstr "铅笔和纸"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:654
+#: crates/rnote-ui/src/dialogs/mod.rs:651
 msgid "People"
 msgstr "人们"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:655
+#: crates/rnote-ui/src/dialogs/mod.rs:652
 msgid "Person"
 msgstr "单人"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:656
+#: crates/rnote-ui/src/dialogs/mod.rs:653
 msgid "Projector"
 msgstr "投影仪"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:657
+#: crates/rnote-ui/src/dialogs/mod.rs:654
 msgid "Science"
 msgstr "科学"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:658
+#: crates/rnote-ui/src/dialogs/mod.rs:655
 msgid "Scratchpad"
 msgstr "便笺"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:659
+#: crates/rnote-ui/src/dialogs/mod.rs:656
 msgid "Shapes"
 msgstr "形状"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:660
+#: crates/rnote-ui/src/dialogs/mod.rs:657
 msgid "Shopping"
 msgstr "购物"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:661
+#: crates/rnote-ui/src/dialogs/mod.rs:658
 msgid "Speech Bubble"
 msgstr "会话框"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:662
+#: crates/rnote-ui/src/dialogs/mod.rs:659
 msgid "Speedometer"
 msgstr "里程计"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:663
+#: crates/rnote-ui/src/dialogs/mod.rs:660
 msgid "Star"
 msgstr "星星"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:665
+#: crates/rnote-ui/src/dialogs/mod.rs:662
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "终端"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:667
+#: crates/rnote-ui/src/dialogs/mod.rs:664
 msgid "Text"
 msgstr "文本"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:668
+#: crates/rnote-ui/src/dialogs/mod.rs:665
 msgid "Travel"
 msgstr "旅行"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:669
+#: crates/rnote-ui/src/dialogs/mod.rs:666
 msgid "Weather"
 msgstr "天气"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:670
+#: crates/rnote-ui/src/dialogs/mod.rs:667
 msgid "Weight"
 msgstr "权重"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:348
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:388
 msgid "Miscellaneous"
 msgstr "杂项"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:357
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:397
 msgid "Coordinate Systems"
 msgstr "坐标系"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:365
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:405
 msgid "Ellipses"
 msgstr "椭圆"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:372
-msgid "Curves"
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:412
+#, fuzzy
+#| msgid "Curves"
+msgid "Curves & Paths"
 msgstr "曲线"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:385
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
 msgstr "箭头"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:386
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
 msgid "Line"
 msgstr "直线"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:387
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
 msgid "Rectangle"
 msgstr "矩形"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:389
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
 msgid "2D coordinate system"
 msgstr "2维坐标系"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:390
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
 msgid "3D coordinate system"
 msgstr "3维坐标系"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:391
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
 msgid "2D single quadrant coordinate system"
 msgstr "2维单象限坐标系"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:392
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
 msgid "Ellipse"
 msgstr "椭圆"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:393
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
 msgid "Ellipse with foci"
 msgstr "焦点椭圆"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:394
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
 msgid "Quadratic bezier curve"
 msgstr "二次贝塞尔曲线"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:395
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
 msgid "Cubic bezier curve"
 msgstr "三次贝塞尔曲线"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:568
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
+msgid "Polyline"
+msgstr ""
+
+#: crates/rnote-ui/src/settingspanel/mod.rs:570
 msgid "Application restart is required"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:807
+#: crates/rnote-ui/src/settingspanel/mod.rs:823
 #, fuzzy
 #| msgid "Crosshair (Small)"
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "十字线（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:808
+#: crates/rnote-ui/src/settingspanel/mod.rs:824
 #, fuzzy
 #| msgid "Crosshair (Medium)"
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "十字线（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:809
+#: crates/rnote-ui/src/settingspanel/mod.rs:825
 #, fuzzy
 #| msgid "Crosshair (Large)"
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "十字线（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:810
+#: crates/rnote-ui/src/settingspanel/mod.rs:826
 #, fuzzy
 #| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "点（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:811
+#: crates/rnote-ui/src/settingspanel/mod.rs:827
 #, fuzzy
 #| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "点（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:812
+#: crates/rnote-ui/src/settingspanel/mod.rs:828
 #, fuzzy
 #| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "点（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:813
+#: crates/rnote-ui/src/settingspanel/mod.rs:829
 #, fuzzy
 #| msgid "Teardrop North-West (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "西北方向水滴（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:814
+#: crates/rnote-ui/src/settingspanel/mod.rs:830
 #, fuzzy
 #| msgid "Teardrop North-West (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "西北方向水滴（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:815
+#: crates/rnote-ui/src/settingspanel/mod.rs:831
 #, fuzzy
 #| msgid "Teardrop North-West (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "西北方向水滴（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:816
+#: crates/rnote-ui/src/settingspanel/mod.rs:832
 #, fuzzy
 #| msgid "Teardrop North-East (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "东北方向水滴（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:817
+#: crates/rnote-ui/src/settingspanel/mod.rs:833
 #, fuzzy
 #| msgid "Teardrop North-East (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "东北方向水滴（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:818
+#: crates/rnote-ui/src/settingspanel/mod.rs:834
 #, fuzzy
 #| msgid "Teardrop North-East (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "东北方向水滴（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:819
+#: crates/rnote-ui/src/settingspanel/mod.rs:835
 #, fuzzy
 #| msgid "Teardrop North (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "正北方向水滴（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:820
+#: crates/rnote-ui/src/settingspanel/mod.rs:836
 #, fuzzy
 #| msgid "Teardrop North (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "正北方向水滴（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:821
+#: crates/rnote-ui/src/settingspanel/mod.rs:837
 #, fuzzy
 #| msgid "Teardrop North (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "正北方向水滴（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:822
+#: crates/rnote-ui/src/settingspanel/mod.rs:838
 #, fuzzy
 #| msgid "Beam (Small)"
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "横梁（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:823
+#: crates/rnote-ui/src/settingspanel/mod.rs:839
 #, fuzzy
 #| msgid "Beam (Medium)"
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "横梁（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:824
+#: crates/rnote-ui/src/settingspanel/mod.rs:840
 #, fuzzy
 #| msgid "Beam (Large)"
 msgctxt "a cursor type"

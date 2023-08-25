@@ -3391,6 +3391,7 @@ dependencies = [
  "flate2",
  "futures",
  "geo",
+ "gio",
  "glib",
  "gtk4",
  "ijson",

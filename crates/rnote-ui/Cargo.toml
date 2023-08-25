@@ -11,7 +11,7 @@ repository.workspace = true
 
 [dependencies]
 rnote-compose = { workspace = true }
-rnote-engine = { workspace = true }
+rnote-engine = { workspace = true, default-features = false, features = ["ui"] }
 
 log = { workspace = true }
 pretty_env_logger = { workspace = true }

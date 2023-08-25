@@ -3,7 +3,7 @@ use super::render_comp::RenderCompState;
 use super::StrokeKey;
 use crate::engine::StrokeContent;
 use crate::strokes::{Content, Stroke};
-use crate::{render, StrokeStore, WidgetFlags};
+use crate::{StrokeStore, WidgetFlags};
 use geo::intersects::Intersects;
 use geo::prelude::Contains;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -52,6 +52,7 @@ impl StrokeStore {
         self.stroke_components.keys().collect()
     }
 
+    #[allow(unused)]
     pub(crate) fn keys_unordered_intersecting_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         self.key_tree.keys_intersecting_bounds(bounds)
     }
@@ -218,7 +219,8 @@ impl StrokeStore {
                     image.translate(offset);
                 }
 
-                match render::Image::images_to_rendernodes(&render_comp.images) {
+                #[cfg(feature = "ui")]
+                match crate::render::Image::images_to_rendernodes(&render_comp.images) {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
@@ -377,7 +379,8 @@ impl StrokeStore {
                     image.rotate(angle, center);
                 }
 
-                match render::Image::images_to_rendernodes(&render_comp.images) {
+                #[cfg(feature = "ui")]
+                match crate::render::Image::images_to_rendernodes(&render_comp.images) {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
@@ -419,7 +422,8 @@ impl StrokeStore {
                     image.scale(scale);
                 }
 
-                match render::Image::images_to_rendernodes(&render_comp.images) {
+                #[cfg(feature = "ui")]
+                match crate::render::Image::images_to_rendernodes(&render_comp.images) {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }

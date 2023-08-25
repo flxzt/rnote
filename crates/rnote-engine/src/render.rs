@@ -1,8 +1,6 @@
 // Imports
-use crate::ext::GrapheneRectExt;
 use crate::Drawable;
 use anyhow::Context;
-use gtk4::{gdk, gio, graphene, gsk, prelude::*};
 use image::io::Reader;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -45,11 +43,12 @@ impl Default for ImageMemoryFormat {
     }
 }
 
-impl TryFrom<gdk::MemoryFormat> for ImageMemoryFormat {
+#[cfg(feature = "ui")]
+impl TryFrom<gtk4::gdk::MemoryFormat> for ImageMemoryFormat {
     type Error = anyhow::Error;
-    fn try_from(value: gdk::MemoryFormat) -> Result<Self, Self::Error> {
+    fn try_from(value: gtk4::gdk::MemoryFormat) -> Result<Self, Self::Error> {
         match value {
-            gdk::MemoryFormat::R8g8b8a8Premultiplied => Ok(Self::R8g8b8a8Premultiplied),
+            gtk4::gdk::MemoryFormat::R8g8b8a8Premultiplied => Ok(Self::R8g8b8a8Premultiplied),
             _ => Err(anyhow::anyhow!(
                 "ImageMemoryFormat try_from() gdk::MemoryFormat failed, unsupported MemoryFormat `{:?}`",
                 value
@@ -58,10 +57,13 @@ impl TryFrom<gdk::MemoryFormat> for ImageMemoryFormat {
     }
 }
 
-impl From<ImageMemoryFormat> for gdk::MemoryFormat {
+#[cfg(feature = "ui")]
+impl From<ImageMemoryFormat> for gtk4::gdk::MemoryFormat {
     fn from(value: ImageMemoryFormat) -> Self {
         match value {
-            ImageMemoryFormat::R8g8b8a8Premultiplied => gdk::MemoryFormat::R8g8b8a8Premultiplied,
+            ImageMemoryFormat::R8g8b8a8Premultiplied => {
+                gtk4::gdk::MemoryFormat::R8g8b8a8Premultiplied
+            }
         }
     }
 }
@@ -247,10 +249,11 @@ impl Image {
         Ok(bytes_buf.into_inner())
     }
 
-    pub fn to_memtexture(&self) -> Result<gdk::MemoryTexture, anyhow::Error> {
+    #[cfg(feature = "ui")]
+    pub fn to_memtexture(&self) -> Result<gtk4::gdk::MemoryTexture, anyhow::Error> {
         self.assert_valid()?;
 
-        Ok(gdk::MemoryTexture::new(
+        Ok(gtk4::gdk::MemoryTexture::new(
             self.pixel_width as i32,
             self.pixel_height as i32,
             self.memory_format.into(),
@@ -259,7 +262,11 @@ impl Image {
         ))
     }
 
-    pub fn to_rendernode(&self) -> Result<gsk::RenderNode, anyhow::Error> {
+    #[cfg(feature = "ui")]
+    pub fn to_rendernode(&self) -> Result<gtk4::gsk::RenderNode, anyhow::Error> {
+        use crate::ext::GrapheneRectExt;
+        use gtk4::{graphene, gsk, prelude::*};
+
         self.assert_valid()?;
 
         let memtexture = self.to_memtexture()?;
@@ -277,9 +284,10 @@ impl Image {
         Ok(transform_node)
     }
 
+    #[cfg(feature = "ui")]
     pub fn images_to_rendernodes<'a>(
         images: impl IntoIterator<Item = &'a Self>,
-    ) -> Result<Vec<gsk::RenderNode>, anyhow::Error> {
+    ) -> Result<Vec<gtk4::gsk::RenderNode>, anyhow::Error> {
         images.into_iter().map(|img| img.to_rendernode()).collect()
     }
 
@@ -523,15 +531,6 @@ impl Svg {
             )
             .map_err(|e| anyhow::anyhow!("rendering rsvg document failed, Err: {e:?}"))?;
         Ok(())
-    }
-
-    #[allow(unused)]
-    pub fn gen_caironode(&self) -> Result<gsk::CairoNode, anyhow::Error> {
-        self.bounds.assert_valid()?;
-        let node = gsk::CairoNode::new(&graphene::Rect::from_p2d_aabb(self.bounds));
-        let cx = node.draw_context();
-        self.draw_to_cairo(&cx)?;
-        Ok(node)
     }
 
     /// Generate an image from an Svg.

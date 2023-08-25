@@ -1,10 +1,8 @@
 // Imports
 use crate::fileformats::xoppformat;
 use geo::line_string;
-use gtk4::{graphene, gsk};
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
-use rnote_compose::Transform;
 use std::ops::Range;
 
 pub fn color_from_xopp(xopp_color: xoppformat::XoppColor) -> Color {
@@ -45,8 +43,9 @@ pub fn convert_coord_dpi(
     (coord / current_dpi) * target_dpi
 }
 
-pub fn transform_to_gsk(transform: &Transform) -> gsk::Transform {
-    gsk::Transform::new().matrix(&graphene::Matrix::from_2d(
+#[cfg(feature = "ui")]
+pub fn transform_to_gsk(transform: &rnote_compose::Transform) -> gtk4::gsk::Transform {
+    gtk4::gsk::Transform::new().matrix(&gtk4::graphene::Matrix::from_2d(
         transform.affine[(0, 0)],
         transform.affine[(1, 0)],
         transform.affine[(0, 1)],

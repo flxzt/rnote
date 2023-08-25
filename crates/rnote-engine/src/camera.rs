@@ -3,7 +3,6 @@ use crate::document::Layout;
 use crate::engine::{EngineTask, EngineTaskSender};
 use crate::tasks::{OneOffTaskError, OneOffTaskHandle};
 use crate::{Document, WidgetFlags};
-use gtk4::{graphene, gsk};
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use serde::{Deserialize, Serialize};
@@ -272,11 +271,12 @@ impl Camera {
     /// GTKs transformations are applied on its coordinate system,
     /// so we need to reverse the transformation order (translate, then scale).
     /// To get the inverse, call .invert().
-    pub fn transform_for_gtk_snapshot(&self) -> gsk::Transform {
+    #[cfg(feature = "ui")]
+    pub fn transform_for_gtk_snapshot(&self) -> gtk4::gsk::Transform {
         let total_zoom = self.total_zoom();
 
-        gsk::Transform::new()
-            .translate(&graphene::Point::new(
+        gtk4::gsk::Transform::new()
+            .translate(&gtk4::graphene::Point::new(
                 -self.offset[0] as f32,
                 -self.offset[1] as f32,
             ))

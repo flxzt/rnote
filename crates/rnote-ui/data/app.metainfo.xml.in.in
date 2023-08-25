@@ -72,7 +72,7 @@
 
   <!-- The changelog should not be translated -->
   <releases>
-    <release version="0.8.0" date="2023-08-25">
+    <release version="0.8.1" date="2023-08-25">
       <description>
         <p>this release changes:</p>
         <ul>

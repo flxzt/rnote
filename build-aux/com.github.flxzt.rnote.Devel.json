@@ -85,7 +85,7 @@
         {
           "type": "git",
           "url": "https://gitlab.freedesktop.org/cairo/cairo.git",
-          "commit": "542bfac286a945aa584f7dc2376f1f9f33b37ac9"
+          "commit": "7645586223cea9f5313253bd8cde96a0a4007905"
         }
       ]
     },

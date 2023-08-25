@@ -32,6 +32,8 @@ mod imp {
         #[template_child]
         pub(crate) page_entry: TemplateChild<Entry>,
         #[template_child]
+        pub(crate) n_pages_button: TemplateChild<Button>,
+        #[template_child]
         pub(crate) prev_page_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) next_page_button: TemplateChild<Button>,
@@ -176,6 +178,7 @@ mod imp {
                     self.page_entry.set_text(&(current_page + 1).to_string());
                 }
             }
+            self.n_pages_button.set_label(&n_pages.to_string());
         }
     }
 

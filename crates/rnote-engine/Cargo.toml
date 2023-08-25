@@ -61,6 +61,6 @@ clap = { workspace = true, optional = true }
 approx = { workspace = true }
 
 [features]
-default = ["cli"]
+default = []
 cli = ["dep:clap"]
 ui = ["dep:gtk4"]

@@ -31,22 +31,22 @@
   <screenshots>
     <screenshot type="default">
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/overview.png</image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/overview.png</image>
       <caption>An Overview</caption>
     </screenshot>
     <screenshot>
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/lecture_note_1.png</image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/lecture_note_1.png</image>
       <caption>Lecture Note 1</caption>
     </screenshot>
     <screenshot>
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/pdf_annotation.png</image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/pdf_annotation.png</image>
       <caption>A Pdf annotation</caption>
     </screenshot>
     <screenshot>
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/lecture_note_2.png</image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/lecture_note_2.png</image>
       <caption>Lecture Note 2</caption>
     </screenshot>
   </screenshots>
@@ -72,6 +72,26 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.8.1" date="2023-08-25">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: export previews</li>
+          <li>feature: invert selection color brightness (thanks to @Kneemund)</li>
+          <li>feature: optimize for printing export option (thanks to @Kneemund)</li>
+          <li>feature: a few handwrite-y,typewriter and dyslexia fonts are now bundled with the application (check the README for a list of them)</li>
+          <li>improvement: cli export enhancements (thanks to @LeSnake04)</li>
+          <li>improvement: update outdated symbolic icons (thanks to @oscfdezdz)</li>
+          <li>improvement: behaviour when opening files in new tab</li>
+          <li>improvement: added close buttons to configuration popovers as a workaround for the Gtk4 stuck-popover bug</li>
+          <li>improvement: default view offset when opening documents</li>
+          <li>fix: orientation of some popovers when sidebar is on the left</li>
+          <li>fix: restore vectorized images (Pdf pages, Svg) export</li>
+          <li>fix: .rnote file imports that were created pre v0.5.9</li>
+          <li>fix: rendering of closed shapes from imported xopp file</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.7.1" date="2023-07-04">
       <description>
         <p>this release changes:</p>

@@ -65,16 +65,32 @@
               </object>
             </child>
             <child>
-              <object class="GtkEntry" id="page_entry">
+              <object class="GtkBox">
                 <property name="halign">end</property>
                 <property name="hexpand">false</property>
-                <property name="input-purpose">digits</property>
-                <property name="max-width-chars">4</property>
-                <property name="xalign">0.5</property>
-                <property name="placeholder-text" translatable="yes">Page</property>
                 <style>
-                  <class name="osd" />
+                  <class name="linked" />
                 </style>
+                <child>
+                  <object class="GtkEntry" id="page_entry">
+                    <property name="input-purpose">digits</property>
+                    <property name="max-width-chars">4</property>
+                    <property name="xalign">0.5</property>
+                    <property name="placeholder-text" translatable="yes">Page</property>
+                    <style>
+                      <class name="osd" />
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="n_pages_button">
+                    <property name="sensitive">false</property>
+                    <property name="label">1</property>
+                    <style>
+                      <class name="osd" />
+                    </style>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

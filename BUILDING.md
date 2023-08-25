@@ -75,7 +75,7 @@ The flatpak manifest calls the meson build system to build the application.
 If a native build on the host is wanted, meson can be called directly.
 
 ## Prerequisites
-Install all needed dependencies and build tools, e.g. for fedora 37:
+Install all needed dependencies and build tools, e.g. for fedora 38:
 ```bash
 sudo dnf install gcc gcc-c++ clang clang-devel python3 make cmake meson git kernel-devel gtk4-devel libadwaita-devel\
 poppler-glib-devel poppler-data alsa-lib-devel

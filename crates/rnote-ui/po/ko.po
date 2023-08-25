@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-05 16:42+0200\n"
+"POT-Creation-Date: 2023-08-24 19:43+0200\n"
 "PO-Revision-Date: 2023-02-09 20:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
@@ -84,8 +84,8 @@ msgstr "전체 문서를 지웁니다. 확인 부탁드립니다."
 #: crates/rnote-ui/data/ui/dialogs/import.ui:10
 #: crates/rnote-ui/data/ui/dialogs/import.ui:211
 #: crates/rnote-ui/data/ui/dialogs/export.ui:10
-#: crates/rnote-ui/data/ui/dialogs/export.ui:179
-#: crates/rnote-ui/data/ui/dialogs/export.ui:433
+#: crates/rnote-ui/data/ui/dialogs/export.ui:190
+#: crates/rnote-ui/data/ui/dialogs/export.ui:455
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
 msgstr "취소하기"
@@ -97,7 +97,7 @@ msgstr "지우기"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:18
 #: crates/rnote-ui/data/ui/shortcuts.ui:149
-#: crates/rnote-ui/src/canvas/mod.rs:534
+#: crates/rnote-ui/src/canvas/mod.rs:531
 msgid "New Document"
 msgstr "새 문서"
 
@@ -201,11 +201,11 @@ msgid "Change the workspace directory"
 msgstr "작업 공간 디렉터리 변경하기"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:168
-#: crates/rnote-ui/data/ui/dialogs/export.ui:288
-#: crates/rnote-ui/src/dialogs/export.rs:347
-#: crates/rnote-ui/src/dialogs/export.rs:384
-#: crates/rnote-ui/src/dialogs/export.rs:392
-#: crates/rnote-ui/src/dialogs/mod.rs:525
+#: crates/rnote-ui/data/ui/dialogs/export.ui:299
+#: crates/rnote-ui/src/dialogs/export.rs:365
+#: crates/rnote-ui/src/dialogs/export.rs:402
+#: crates/rnote-ui/src/dialogs/export.rs:410
+#: crates/rnote-ui/src/dialogs/mod.rs:522
 msgid "- no directory selected -"
 msgstr "- 선택된 디렉터리 없음 -"
 
@@ -290,14 +290,14 @@ msgid "Bitmap"
 msgstr "비트맵"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:177
-#: crates/rnote-ui/data/ui/dialogs/export.ui:374
-#: crates/rnote-ui/data/ui/dialogs/export.ui:570
+#: crates/rnote-ui/data/ui/dialogs/export.ui:396
+#: crates/rnote-ui/data/ui/dialogs/export.ui:603
 msgid "Bitmap Scale-Factor"
 msgstr "비트맵 배율 인수"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:178
-#: crates/rnote-ui/data/ui/dialogs/export.ui:375
-#: crates/rnote-ui/data/ui/dialogs/export.ui:571
+#: crates/rnote-ui/data/ui/dialogs/export.ui:397
+#: crates/rnote-ui/data/ui/dialogs/export.ui:604
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
@@ -322,186 +322,200 @@ msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Xournal++ 파일에 대한 선호 DPI를 설정합니다"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
-#: crates/rnote-ui/src/dialogs/export.rs:237
+#: crates/rnote-ui/src/dialogs/export.rs:250
 msgid "Export Document"
 msgstr "문서 내보내기"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
-#: crates/rnote-ui/data/ui/dialogs/export.ui:184
-#: crates/rnote-ui/data/ui/dialogs/export.ui:438
-#: crates/rnote-ui/src/dialogs/export.rs:822
-#: crates/rnote-ui/src/dialogs/export.rs:869
+#: crates/rnote-ui/data/ui/dialogs/export.ui:195
+#: crates/rnote-ui/data/ui/dialogs/export.ui:460
+#: crates/rnote-ui/src/dialogs/export.rs:861
+#: crates/rnote-ui/src/dialogs/export.rs:908
 msgid "Export"
 msgstr "내보내기"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:72
-#: crates/rnote-ui/data/ui/dialogs/export.ui:495
+#: crates/rnote-ui/data/ui/dialogs/export.ui:517
 msgid "Export File"
 msgstr "파일 내보내기"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:73
-#: crates/rnote-ui/data/ui/dialogs/export.ui:496
+#: crates/rnote-ui/data/ui/dialogs/export.ui:518
 msgid "Select the export file"
 msgstr "내보내기 파일 선택하기"
 
 #. force the user to pick another file
 #: crates/rnote-ui/data/ui/dialogs/export.ui:82
-#: crates/rnote-ui/data/ui/dialogs/export.ui:505
-#: crates/rnote-ui/src/dialogs/export.rs:116
-#: crates/rnote-ui/src/dialogs/export.rs:138
-#: crates/rnote-ui/src/dialogs/export.rs:145
-#: crates/rnote-ui/src/dialogs/export.rs:182
-#: crates/rnote-ui/src/dialogs/export.rs:629
-#: crates/rnote-ui/src/dialogs/export.rs:655
-#: crates/rnote-ui/src/dialogs/export.rs:662
-#: crates/rnote-ui/src/dialogs/export.rs:705
+#: crates/rnote-ui/data/ui/dialogs/export.ui:527
+#: crates/rnote-ui/src/dialogs/export.rs:121
+#: crates/rnote-ui/src/dialogs/export.rs:143
+#: crates/rnote-ui/src/dialogs/export.rs:150
+#: crates/rnote-ui/src/dialogs/export.rs:195
+#: crates/rnote-ui/src/dialogs/export.rs:660
+#: crates/rnote-ui/src/dialogs/export.rs:686
+#: crates/rnote-ui/src/dialogs/export.rs:693
+#: crates/rnote-ui/src/dialogs/export.rs:744
 msgid "- no file selected -"
 msgstr "- 선택된 파일 없음 -"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:106
-#: crates/rnote-ui/data/ui/dialogs/export.ui:317
-#: crates/rnote-ui/data/ui/dialogs/export.ui:529
+#: crates/rnote-ui/data/ui/dialogs/export.ui:328
+#: crates/rnote-ui/data/ui/dialogs/export.ui:551
 msgid "Export Preferences"
 msgstr "내보내기 환경설정"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:110
-#: crates/rnote-ui/data/ui/dialogs/export.ui:321
-#: crates/rnote-ui/data/ui/dialogs/export.ui:533
+#: crates/rnote-ui/data/ui/dialogs/export.ui:332
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 msgid "With Background"
 msgstr "배경 포함"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:111
-#: crates/rnote-ui/data/ui/dialogs/export.ui:322
-#: crates/rnote-ui/data/ui/dialogs/export.ui:534
+#: crates/rnote-ui/data/ui/dialogs/export.ui:333
+#: crates/rnote-ui/data/ui/dialogs/export.ui:556
 msgid "Set whether the background should be exported"
 msgstr "배경을 내보낼지 여부를 설정합니다"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:121
-#: crates/rnote-ui/data/ui/dialogs/export.ui:332
-#: crates/rnote-ui/data/ui/dialogs/export.ui:544
+#: crates/rnote-ui/data/ui/dialogs/export.ui:343
+#: crates/rnote-ui/data/ui/dialogs/export.ui:566
 msgid "With Pattern"
 msgstr "패턴 포함"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:122
-#: crates/rnote-ui/data/ui/dialogs/export.ui:333
-#: crates/rnote-ui/data/ui/dialogs/export.ui:545
+#: crates/rnote-ui/data/ui/dialogs/export.ui:344
+#: crates/rnote-ui/data/ui/dialogs/export.ui:567
 msgid "Set whether the background pattern should be exported"
 msgstr "배경 패턴을 내보낼지 여부를 설정합니다"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:132
-#: crates/rnote-ui/data/ui/dialogs/export.ui:343
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
+#: crates/rnote-ui/data/ui/dialogs/export.ui:354
+#: crates/rnote-ui/data/ui/dialogs/export.ui:577
+msgid "Optimize for Printing"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:133
+#: crates/rnote-ui/data/ui/dialogs/export.ui:355
+#: crates/rnote-ui/data/ui/dialogs/export.ui:578
+#, fuzzy
+#| msgid "Set whether the background pattern should be exported"
+msgid "Set whether the content should be optimized for printing"
+msgstr "배경 패턴을 내보낼지 여부를 설정합니다"
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:143
+#: crates/rnote-ui/data/ui/dialogs/export.ui:365
+#: crates/rnote-ui/data/ui/dialogs/export.ui:588
 msgid "Export Format"
 msgstr "내보내기 형식"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:133
-#: crates/rnote-ui/data/ui/dialogs/export.ui:344
+#: crates/rnote-ui/data/ui/dialogs/export.ui:144
+#: crates/rnote-ui/data/ui/dialogs/export.ui:366
 msgid "The export format"
 msgstr "내보내기 형식"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:137
-#: crates/rnote-ui/data/ui/dialogs/export.ui:348
-#: crates/rnote-ui/data/ui/dialogs/export.ui:560
-#: crates/rnote-ui/src/dialogs/export.rs:247
-#: crates/rnote-ui/src/dialogs/export.rs:538
-#: crates/rnote-ui/src/dialogs/export.rs:781
+#: crates/rnote-ui/data/ui/dialogs/export.ui:148
+#: crates/rnote-ui/data/ui/dialogs/export.ui:370
+#: crates/rnote-ui/data/ui/dialogs/export.ui:593
+#: crates/rnote-ui/src/dialogs/export.rs:260
+#: crates/rnote-ui/src/dialogs/export.rs:564
+#: crates/rnote-ui/src/dialogs/export.rs:820
 msgid "Svg"
 msgstr "Svg"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:138
-#: crates/rnote-ui/src/dialogs/export.rs:252
+#: crates/rnote-ui/data/ui/dialogs/export.ui:149
+#: crates/rnote-ui/src/dialogs/export.rs:265
 msgid "Pdf"
 msgstr "Pdf"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:139
-#: crates/rnote-ui/src/dialogs/export.rs:257
+#: crates/rnote-ui/data/ui/dialogs/export.ui:150
+#: crates/rnote-ui/src/dialogs/export.rs:270
 msgid "Xopp"
 msgstr "Xopp"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:147
-#: crates/rnote-ui/data/ui/dialogs/export.ui:358
+#: crates/rnote-ui/data/ui/dialogs/export.ui:158
+#: crates/rnote-ui/data/ui/dialogs/export.ui:380
 #, fuzzy
 #| msgid "Pages Type"
 msgid "Page Order"
 msgstr "페이지 유형"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:148
-#: crates/rnote-ui/data/ui/dialogs/export.ui:359
+#: crates/rnote-ui/data/ui/dialogs/export.ui:159
+#: crates/rnote-ui/data/ui/dialogs/export.ui:381
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:154
-#: crates/rnote-ui/data/ui/dialogs/export.ui:365
+#: crates/rnote-ui/data/ui/dialogs/export.ui:165
+#: crates/rnote-ui/data/ui/dialogs/export.ui:387
 msgid "Horizontal First"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:155
-#: crates/rnote-ui/data/ui/dialogs/export.ui:366
+#: crates/rnote-ui/data/ui/dialogs/export.ui:166
+#: crates/rnote-ui/data/ui/dialogs/export.ui:388
 msgid "Vertical First"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:176
-#: crates/rnote-ui/src/dialogs/export.rs:516
+#: crates/rnote-ui/data/ui/dialogs/export.ui:187
+#: crates/rnote-ui/src/dialogs/export.rs:542
 msgid "Export Document Pages"
 msgstr "문서 페이지 내보내기"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:258
+#: crates/rnote-ui/data/ui/dialogs/export.ui:269
 msgid "Page Files Naming:"
 msgstr "페이지 파일 이름 지정:"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:278
+#: crates/rnote-ui/data/ui/dialogs/export.ui:289
 msgid "Export Directory"
 msgstr "내보내기 디렉터리"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:279
+#: crates/rnote-ui/data/ui/dialogs/export.ui:290
 msgid "Select the export directory"
 msgstr "내보내기 디렉터리 선택하기"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:310
+#: crates/rnote-ui/data/ui/dialogs/export.ui:321
 msgid "Export Files Stem Name"
 msgstr "내보내기 파일 스템 이름"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:349
-#: crates/rnote-ui/data/ui/dialogs/export.ui:561
-#: crates/rnote-ui/src/dialogs/export.rs:543
-#: crates/rnote-ui/src/dialogs/export.rs:786
+#: crates/rnote-ui/data/ui/dialogs/export.ui:371
+#: crates/rnote-ui/data/ui/dialogs/export.ui:594
+#: crates/rnote-ui/src/dialogs/export.rs:569
+#: crates/rnote-ui/src/dialogs/export.rs:825
 msgid "Png"
 msgstr "Png"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:350
-#: crates/rnote-ui/data/ui/dialogs/export.ui:562
-#: crates/rnote-ui/src/dialogs/export.rs:549
-#: crates/rnote-ui/src/dialogs/export.rs:792
+#: crates/rnote-ui/data/ui/dialogs/export.ui:372
+#: crates/rnote-ui/data/ui/dialogs/export.ui:595
+#: crates/rnote-ui/src/dialogs/export.rs:575
+#: crates/rnote-ui/src/dialogs/export.rs:831
 msgid "Jpeg"
 msgstr "Jpeg"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:396
-#: crates/rnote-ui/data/ui/dialogs/export.ui:592
+#: crates/rnote-ui/data/ui/dialogs/export.ui:418
+#: crates/rnote-ui/data/ui/dialogs/export.ui:625
 msgid "Jpeg Quality"
 msgstr "Jpeg 화질"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:397
-#: crates/rnote-ui/data/ui/dialogs/export.ui:593
+#: crates/rnote-ui/data/ui/dialogs/export.ui:419
+#: crates/rnote-ui/data/ui/dialogs/export.ui:626
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "Jpeg 이미지의 화질을 설정합니다 (1~100)"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:430
-#: crates/rnote-ui/src/dialogs/export.rs:767
+#: crates/rnote-ui/data/ui/dialogs/export.ui:452
+#: crates/rnote-ui/src/dialogs/export.rs:806
 msgid "Export Selection"
 msgstr "내보내기 선택항목"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:556
+#: crates/rnote-ui/data/ui/dialogs/export.ui:589
 msgid "The export image format"
 msgstr "내보내기 이미지 형식"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:613
+#: crates/rnote-ui/data/ui/dialogs/export.ui:646
 msgid "Margin"
 msgstr "여백"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:614
+#: crates/rnote-ui/data/ui/dialogs/export.ui:647
 msgid "Set the margin around the selected area"
 msgstr "선택한 영역 주변의 여백을 설정합니다"
 
@@ -510,64 +524,64 @@ msgid "Brush Style"
 msgstr "브러시 스타일"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:33
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:133
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:149
 msgid "Brush Configuration"
 msgstr "브러시 구성"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:64
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:66
 msgid "Brush Styles"
 msgstr "브러시 스타일"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:81
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:95
 msgid "Marker"
 msgstr "매직펜"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:82
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:96
 msgid "Mark underneath other strokes"
 msgstr "다른 자획의 밑에 표시합니다"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:93
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:173
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:107
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:201
 msgid "Solid"
 msgstr "솔리드"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:94
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:108
 msgid "Draw solid color strokes"
 msgstr "솔리드 자획 그리기"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:105
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:119
 msgid "Textured"
 msgstr "텍스처"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:106
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:120
 msgid "Draw textured strokes"
 msgstr "텍스처 있는 자획 그리기"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:142
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:170
 msgid "Path Modelling"
 msgstr "경로 모델링"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:159
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:187
 msgid "Simple"
 msgstr "단순"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:160
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:188
 msgid "Produces line segments from the raw input.\n"
 msgstr "원시 입력에서 선 부분을 생성합니다.\n"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:166
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "Curved"
 msgstr "곡선"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:167
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Produces smooth, curved segments.\n"
 msgstr "부드러운 곡선 부분을 생성합니다.\n"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:173
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:201
 msgid "Modeled"
 msgstr "모델링"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:174
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:202
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
@@ -575,75 +589,75 @@ msgstr ""
 "물리 기반 알고리즘을 사용하여 모델링된 경로를 생성합니다.\n"
 "최상의 손글씨 결과를 얻을 수 있습니다."
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:183
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:211
 msgid "Solid Style"
 msgstr "솔리드 스타일"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:186
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:214
 msgid "Pressure Curve"
 msgstr "압력 곡선"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:187
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:215
 msgid "Choose a pressure curve"
 msgstr "압력 곡선 고르기"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:191
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:219
 msgid "Constant"
 msgstr "고정값"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:192
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:220
 msgid "Linear"
 msgstr "선형"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:193
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:221
 msgid "Square root"
 msgstr "제곱근"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:194
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:222
 msgid "Cubic root"
 msgstr "세제곱근"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:195
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:223
 msgid "Quadratic Parabola"
 msgstr "2차 포물선"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:196
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:224
 msgid "Cubic Parabola"
 msgstr "3차 포물선"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:207
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:235
 msgid "Textured Style"
 msgstr "텍스처 있는 스타일"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:210
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:238
 msgid "Density"
 msgstr "밀도"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:211
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:239
 msgid "The density is the amount of dots per 10x10 area"
 msgstr "밀도는 10x10 영역당 도트의 양입니다"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:226
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
 msgid "Stroke Dots Position Distribution"
 msgstr "자획 도트 위치 분포"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:227
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
 msgid "Choose a dots position probability distribution"
 msgstr "도트 위치 확률 분포 고르기"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:231
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:259
 msgid "Uniform"
 msgstr "균일"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:232
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:260
 msgid "Normal"
 msgstr "보통"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:233
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:261
 msgid "Exponential"
 msgstr "기하급수적"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:234
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:262
 msgid "Reverse Exponential"
 msgstr "기하급수적 반전하기"
 
@@ -720,11 +734,15 @@ msgid "Deselect All Strokes"
 msgstr "모든 자획 선택해제"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
+msgid "Invert Color Brightness of All Selected Strokes"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 #: crates/rnote-ui/data/ui/shortcuts.ui:212
 msgid "Duplicate Selection"
 msgstr "선택항목 복제하기"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:127
 msgid "Delete Selection"
 msgstr "선택항목 삭제하기"
 
@@ -733,82 +751,82 @@ msgid "Shaper Style"
 msgstr "모형도구 스타일"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:31
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:154
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
 msgid "Shape Configuration"
 msgstr "모형 구성"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:61
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:225
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:255
 msgid "Shape Builders"
 msgstr "모형 작성도구"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:77
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:253
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:297
 msgid "Constraints"
 msgstr "제약 조건"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:99
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:101
 msgid "Shaper Styles"
 msgstr "모형도구 스타일"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:116
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:130
 msgid "Smooth"
 msgstr "부드러운"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:127
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
 msgid "Rough"
 msgstr "거친"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:164
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:192
 msgid "Rough style"
 msgstr "거친 스타일"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:168
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:196
 msgid "Fill Style"
 msgstr "채움 스타일"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:169
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:197
 msgid "Choose a fill style"
 msgstr "채움 스타일 고르기"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:174
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:202
 msgid "Hachure"
 msgstr "그려넣기"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:175
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:203
 msgid "Zig-Zag"
 msgstr "지그재그"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:176
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:204
 msgid "Zig-Zag Line"
 msgstr "지그재그 선"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:177
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:205
 msgid "Crosshatch"
 msgstr "망상선"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:206
 #: crates/rnote-ui/data/ui/settingspanel.ui:343
 msgid "Dots"
 msgstr "점선"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:207
 msgid "Dashed"
 msgstr "파선"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:215
 msgid "Hachure Angle"
 msgstr "그려넣기 각도"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:188
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:216
 msgid "Set the angle of hachure fills"
 msgstr "그려넣기 채움의 각도를 설정합니다"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:270
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:326
 msgid "Enabled"
 msgstr "활성화됨"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:271
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:327
 msgid ""
 "Hold Ctrl to temporarily\n"
 "enable/disable constraints\n"
@@ -819,15 +837,15 @@ msgstr ""
 "제약 조건을 일시적으로\n"
 "활성화/비활성화합니다"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:283
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:339
 msgid "1:1"
 msgstr "1:1"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:293
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:349
 msgid "3:2"
 msgstr "3:2"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:303
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:359
 msgid "Golden Ratio (1:1.618)"
 msgstr "황금 비율 (1:1.618)"
 
@@ -1150,7 +1168,7 @@ msgid "Duplicate"
 msgstr "복제하기"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:19
-#: crates/rnote-ui/src/canvas/mod.rs:536
+#: crates/rnote-ui/src/canvas/mod.rs:533
 msgid "Draft"
 msgstr "초안"
 
@@ -1364,7 +1382,7 @@ msgstr "되돌리기"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:290
 #: crates/rnote-ui/data/ui/shortcuts.ui:146
-#: crates/rnote-ui/src/dialogs/mod.rs:631
+#: crates/rnote-ui/src/dialogs/mod.rs:628
 msgid "Document"
 msgstr "문서"
 
@@ -1397,7 +1415,7 @@ msgid "Lines"
 msgstr "선"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:342
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:388
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "Grid"
 msgstr "격자"
 
@@ -1433,15 +1451,31 @@ msgstr "패턴 높이"
 msgid "Set the background pattern height"
 msgstr "배경 패턴 높이를 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:405
+#: crates/rnote-ui/data/ui/settingspanel.ui:402
+msgid "Invert Color Brightness"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:403
+#, fuzzy
+#| msgid "Set the background pattern color"
+msgid "Invert the brightness of all background pattern colors"
+msgstr "배경 패턴 색상을 설정합니다"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:407
+#, fuzzy
+#| msgid "Revert"
+msgid "Invert"
+msgstr "되돌리기"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:417
 msgid "Button Shortcuts"
 msgstr "버튼 단축키"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:408
+#: crates/rnote-ui/data/ui/settingspanel.ui:420
 msgid "Stylus Primary Button Action"
 msgstr "스타일러스 기본 버튼 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:409
+#: crates/rnote-ui/data/ui/settingspanel.ui:421
 #, fuzzy
 #| msgid "Set the action for the primary stylus button"
 msgid ""
@@ -1449,11 +1483,11 @@ msgid ""
 "primary stylus button"
 msgstr "기본 스타일러스 버튼의 동작을 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:421
+#: crates/rnote-ui/data/ui/settingspanel.ui:433
 msgid "Stylus Secondary Button Action"
 msgstr "스타일러스 보조 버튼 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:422
+#: crates/rnote-ui/data/ui/settingspanel.ui:434
 #, fuzzy
 #| msgid "Set the action for the secondary stylus button"
 msgid ""
@@ -1461,11 +1495,11 @@ msgid ""
 "secondary stylus button"
 msgstr "보조 스타일러스 버튼의 동작을 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:434
+#: crates/rnote-ui/data/ui/settingspanel.ui:446
 msgid "Mouse Secondary Button Action"
 msgstr "마우스 보조 버튼 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:435
+#: crates/rnote-ui/data/ui/settingspanel.ui:447
 #, fuzzy
 #| msgid "Set the action for the secondary mouse button"
 msgid ""
@@ -1473,11 +1507,11 @@ msgid ""
 "secondary mouse button"
 msgstr "보조 마우스 버튼에 대한 동작을 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:447
+#: crates/rnote-ui/data/ui/settingspanel.ui:459
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "두 손가락 터치 길게 누르기 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:448
+#: crates/rnote-ui/data/ui/settingspanel.ui:460
 #, fuzzy
 #| msgid "Set the action for the touch two-finger long-press gesture"
 msgid ""
@@ -1485,49 +1519,49 @@ msgid ""
 "two-finger long-press gesture"
 msgstr "두 손가락 터치 길게 누르기 제스처에 대한 동작을 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:460
+#: crates/rnote-ui/data/ui/settingspanel.ui:472
 #, fuzzy
 #| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 1 Action"
 msgstr "스타일러스 기본 버튼 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:461
+#: crates/rnote-ui/data/ui/settingspanel.ui:473
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:473
+#: crates/rnote-ui/data/ui/settingspanel.ui:485
 #, fuzzy
 #| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 2 Action"
 msgstr "스타일러스 기본 버튼 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:474
+#: crates/rnote-ui/data/ui/settingspanel.ui:486
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:486
+#: crates/rnote-ui/data/ui/settingspanel.ui:498
 #, fuzzy
 #| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 3 Action"
 msgstr "스타일러스 기본 버튼 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:487
+#: crates/rnote-ui/data/ui/settingspanel.ui:499
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:499
+#: crates/rnote-ui/data/ui/settingspanel.ui:511
 #, fuzzy
 #| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 4 Action"
 msgstr "스타일러스 기본 버튼 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:500
+#: crates/rnote-ui/data/ui/settingspanel.ui:512
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
@@ -1651,16 +1685,16 @@ msgstr "작업 공간 디렉터리 작업"
 msgid "Create new Folder"
 msgstr "새 폴더 만들기"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:557
+#: crates/rnote-ui/src/appwindow/mod.rs:550
 msgid "Opening file failed"
 msgstr "파일을 열지 못했습니다"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:282
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:613
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:556
 #: crates/rnote-ui/src/dialogs/export.rs:69
-#: crates/rnote-ui/src/dialogs/mod.rs:130
-#: crates/rnote-ui/src/dialogs/mod.rs:260
-#: crates/rnote-ui/src/dialogs/mod.rs:411
+#: crates/rnote-ui/src/dialogs/mod.rs:126
+#: crates/rnote-ui/src/dialogs/mod.rs:256
+#: crates/rnote-ui/src/dialogs/mod.rs:407
 msgid "Saving document failed"
 msgstr "문서 저장에 실패했습니다"
 
@@ -1680,50 +1714,50 @@ msgstr ""
 msgid "Button 4"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:674
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:618
 msgid "Printing document failed"
 msgstr "문서 인쇄에 실패했습니다"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:710
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:654
 msgid "Exporting selection failed, nothing selected"
 msgstr "선택항목 내보내기에 실패했습니다. 선택한 항목이 없습니다"
 
-#: crates/rnote-ui/src/canvas/mod.rs:772 crates/rnote-ui/src/dialogs/mod.rs:207
-#: crates/rnote-ui/src/dialogs/mod.rs:341
+#: crates/rnote-ui/src/canvas/mod.rs:769 crates/rnote-ui/src/dialogs/mod.rs:203
+#: crates/rnote-ui/src/dialogs/mod.rs:337
 msgid "- invalid file name -"
 msgstr "- 잘못된 파일 이름 -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:785
+#: crates/rnote-ui/src/canvas/mod.rs:782
 msgid "- invalid folder path -"
 msgstr "- 잘못된 폴더 경로 -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:808
+#: crates/rnote-ui/src/canvas/mod.rs:805
 msgid "Opened file was modified on disk"
 msgstr "디스크에서 열린 파일이 수정되었습니다"
 
-#: crates/rnote-ui/src/canvas/mod.rs:809
+#: crates/rnote-ui/src/canvas/mod.rs:806
 msgid "Reload"
 msgstr "다시 불러오기"
 
-#: crates/rnote-ui/src/canvas/mod.rs:815
+#: crates/rnote-ui/src/canvas/mod.rs:812
 msgid "Reloading .rnote file from disk failed"
 msgstr "디스크에서 .rnote 파일을 다시 불러오기에 실패했습니다"
 
-#: crates/rnote-ui/src/canvas/mod.rs:864
+#: crates/rnote-ui/src/canvas/mod.rs:861
 msgid "Opened file was renamed on disk"
 msgstr "디스크에서 열린 파일의 이름이 변경되었습니다"
 
-#: crates/rnote-ui/src/canvas/mod.rs:877
+#: crates/rnote-ui/src/canvas/mod.rs:874
 msgid "Opened file was moved or deleted on disk"
 msgstr "디스크에서 열린 파일이 이동 또는 삭제되었습니다"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1011
+#: crates/rnote-ui/src/canvas/mod.rs:1003
 #, fuzzy
 #| msgid "Opening file failed"
 msgid "Inserting file failed"
 msgstr "파일을 열지 못했습니다"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1021
+#: crates/rnote-ui/src/canvas/mod.rs:1013
 #, fuzzy
 #| msgid "Printing document failed"
 msgid "Inserting text failed"
@@ -1738,75 +1772,75 @@ msgstr ".rnote"
 msgid "Saved document successfully"
 msgstr "문서를 성공적으로 저장했습니다"
 
-#: crates/rnote-ui/src/dialogs/export.rs:214
+#: crates/rnote-ui/src/dialogs/export.rs:227
 msgid "Exporting document failed"
 msgstr "문서 내보내기에 실패했습니다"
 
-#: crates/rnote-ui/src/dialogs/export.rs:216
+#: crates/rnote-ui/src/dialogs/export.rs:229
 msgid "Exported document successfully"
 msgstr "문서를 성공적으로 내보냈습니다"
 
-#: crates/rnote-ui/src/dialogs/export.rs:224
+#: crates/rnote-ui/src/dialogs/export.rs:237
 msgid "Exporting document failed, no file selected"
 msgstr "문서 내보내기에 실패했습니다. 선택한 파일이 없습니다"
 
-#: crates/rnote-ui/src/dialogs/export.rs:239
-#: crates/rnote-ui/src/dialogs/export.rs:518
-#: crates/rnote-ui/src/dialogs/export.rs:769
-#: crates/rnote-ui/src/dialogs/mod.rs:507
+#: crates/rnote-ui/src/dialogs/export.rs:252
+#: crates/rnote-ui/src/dialogs/export.rs:544
+#: crates/rnote-ui/src/dialogs/export.rs:808
+#: crates/rnote-ui/src/dialogs/mod.rs:504
 msgid "Select"
 msgstr "선택하기"
 
-#: crates/rnote-ui/src/dialogs/export.rs:493
+#: crates/rnote-ui/src/dialogs/export.rs:519
 msgid "Exporting document pages failed"
 msgstr "문서 페이지 내보내기에 실패했습니다"
 
-#: crates/rnote-ui/src/dialogs/export.rs:495
+#: crates/rnote-ui/src/dialogs/export.rs:521
 msgid "Exported document pages successfully"
 msgstr "문서 페이지를 성공적으로 내보냈습니다"
 
-#: crates/rnote-ui/src/dialogs/export.rs:502
+#: crates/rnote-ui/src/dialogs/export.rs:528
 msgid "Exporting document pages failed, no directory selected"
 msgstr "문서 페이지 내보내기에 실패했습니다. 선택한 디렉터리가 없습니다"
 
-#: crates/rnote-ui/src/dialogs/export.rs:742
+#: crates/rnote-ui/src/dialogs/export.rs:781
 msgid "Exporting selection failed"
 msgstr "선택항목 내보내기에 실패했습니다"
 
-#: crates/rnote-ui/src/dialogs/export.rs:745
+#: crates/rnote-ui/src/dialogs/export.rs:784
 msgid "Exported selection successfully"
 msgstr "선택항목을 성공적으로 내보냈습니다"
 
-#: crates/rnote-ui/src/dialogs/export.rs:754
+#: crates/rnote-ui/src/dialogs/export.rs:793
 msgid "Exporting selection failed, no file selected"
 msgstr "선택항목 내보내기에 실패했습니다. 선택한 파일이 없습니다"
 
-#: crates/rnote-ui/src/dialogs/export.rs:812
-#: crates/rnote-ui/src/dialogs/export.rs:859
+#: crates/rnote-ui/src/dialogs/export.rs:851
+#: crates/rnote-ui/src/dialogs/export.rs:898
 msgid "Json"
 msgstr "Json"
 
-#: crates/rnote-ui/src/dialogs/export.rs:820
+#: crates/rnote-ui/src/dialogs/export.rs:859
 msgid "Export Engine State"
 msgstr "엔진 상태 내보내기"
 
-#: crates/rnote-ui/src/dialogs/export.rs:839
+#: crates/rnote-ui/src/dialogs/export.rs:878
 msgid "Exporting engine state failed"
 msgstr "엔진 상태 내보내기에 실패했습니다"
 
-#: crates/rnote-ui/src/dialogs/export.rs:842
+#: crates/rnote-ui/src/dialogs/export.rs:881
 msgid "Exported engine state successfully"
 msgstr "엔진 상태를 성공적으로 내보냈습니다"
 
-#: crates/rnote-ui/src/dialogs/export.rs:867
+#: crates/rnote-ui/src/dialogs/export.rs:906
 msgid "Export Engine Config"
 msgstr "엔진 구성 내보내기"
 
-#: crates/rnote-ui/src/dialogs/export.rs:886
+#: crates/rnote-ui/src/dialogs/export.rs:925
 msgid "Exporting engine config failed"
 msgstr "엔진 구성 내보내기에 실패했습니다"
 
-#: crates/rnote-ui/src/dialogs/export.rs:889
+#: crates/rnote-ui/src/dialogs/export.rs:928
 msgid "Exported engine config successfully"
 msgstr "엔진 구성을 성공적으로 내보냈습니다"
 
@@ -1859,402 +1893,408 @@ msgstr "페이지:"
 msgid "translator-credits"
 msgstr "이정희 <daemul72@gmail.com>"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:214
-#: crates/rnote-ui/src/dialogs/mod.rs:348
+#: crates/rnote-ui/src/dialogs/mod.rs:210
+#: crates/rnote-ui/src/dialogs/mod.rs:344
 #, fuzzy
 #| msgid "- invalid file name -"
 msgid "- invalid save folder name -"
 msgstr "- 잘못된 파일 이름 -"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:230
-#: crates/rnote-ui/src/dialogs/mod.rs:363
+#: crates/rnote-ui/src/dialogs/mod.rs:226
+#: crates/rnote-ui/src/dialogs/mod.rs:359
 msgid "The changes will be saved"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:235
-#: crates/rnote-ui/src/dialogs/mod.rs:368
+#: crates/rnote-ui/src/dialogs/mod.rs:231
+#: crates/rnote-ui/src/dialogs/mod.rs:364
 #, fuzzy
 #| msgid "- no file selected -"
 msgid "A new file will be created"
 msgstr "- 선택된 파일 없음 -"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:505
+#: crates/rnote-ui/src/dialogs/mod.rs:502
 msgid "Change Workspace Directory"
 msgstr "작업 공간 디렉터리 변경하기"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:618
+#: crates/rnote-ui/src/dialogs/mod.rs:615
 msgid "Band-Aid"
 msgstr "반창고"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:619
+#: crates/rnote-ui/src/dialogs/mod.rs:616
 msgid "Bank"
 msgstr "은행"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:620
+#: crates/rnote-ui/src/dialogs/mod.rs:617
 msgid "Bookmark"
 msgstr "책갈피"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:621
+#: crates/rnote-ui/src/dialogs/mod.rs:618
 msgid "Book"
 msgstr "책"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:622
+#: crates/rnote-ui/src/dialogs/mod.rs:619
 msgid "Bread"
 msgstr "빵"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:623
+#: crates/rnote-ui/src/dialogs/mod.rs:620
 msgid "Calendar"
 msgstr "달력"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:624
+#: crates/rnote-ui/src/dialogs/mod.rs:621
 msgid "Camera"
 msgstr "카메라"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:625
+#: crates/rnote-ui/src/dialogs/mod.rs:622
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "반도체"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:626
+#: crates/rnote-ui/src/dialogs/mod.rs:623
 msgid "Clock"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:627
+#: crates/rnote-ui/src/dialogs/mod.rs:624
 msgid "Code"
 msgstr "코드"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:628
+#: crates/rnote-ui/src/dialogs/mod.rs:625
 msgid "Compose"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:629
+#: crates/rnote-ui/src/dialogs/mod.rs:626
 msgctxt "as in plant"
 msgid "Crop"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:630
+#: crates/rnote-ui/src/dialogs/mod.rs:627
 msgid "Dictionary"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:632
+#: crates/rnote-ui/src/dialogs/mod.rs:629
 msgid "Drinks"
 msgstr "음료수"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:633
+#: crates/rnote-ui/src/dialogs/mod.rs:630
 msgid "Flag"
 msgstr "깃발"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:634
+#: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "Folder"
 msgstr "서류철"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:635
+#: crates/rnote-ui/src/dialogs/mod.rs:632
 msgid "Footprints"
 msgstr "발자국"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:636
+#: crates/rnote-ui/src/dialogs/mod.rs:633
 msgid "Gamepad"
 msgstr "게임패드"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:637
+#: crates/rnote-ui/src/dialogs/mod.rs:634
 msgid "Gear"
 msgstr "기어"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:638
+#: crates/rnote-ui/src/dialogs/mod.rs:635
 msgid "Globe"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:639
+#: crates/rnote-ui/src/dialogs/mod.rs:636
 msgid "Hammer"
 msgstr "해머"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:640
+#: crates/rnote-ui/src/dialogs/mod.rs:637
 msgid "Heart"
 msgstr "하트"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:641
+#: crates/rnote-ui/src/dialogs/mod.rs:638
 msgid "Hourglass"
 msgstr "모래시계"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:642
+#: crates/rnote-ui/src/dialogs/mod.rs:639
 msgid "Key"
 msgstr "열쇠"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:643
+#: crates/rnote-ui/src/dialogs/mod.rs:640
 msgid "Language"
 msgstr "언어"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:644
+#: crates/rnote-ui/src/dialogs/mod.rs:641
 msgid "Library"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:645
+#: crates/rnote-ui/src/dialogs/mod.rs:642
 msgid "Lightbulb"
 msgstr "전구"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:646
+#: crates/rnote-ui/src/dialogs/mod.rs:643
 msgid "Mathematics"
 msgstr "수학"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:647
+#: crates/rnote-ui/src/dialogs/mod.rs:644
 msgid "Meeting"
 msgstr "회의"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:648
+#: crates/rnote-ui/src/dialogs/mod.rs:645
 msgid "Money"
 msgstr "돈"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:649
+#: crates/rnote-ui/src/dialogs/mod.rs:646
 msgid "Musical Note"
 msgstr "음표"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:650
+#: crates/rnote-ui/src/dialogs/mod.rs:647
 msgid "Nature"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:651
+#: crates/rnote-ui/src/dialogs/mod.rs:648
 #, fuzzy
 #| msgid "Open"
 msgid "Open Book"
 msgstr "열기"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:652
+#: crates/rnote-ui/src/dialogs/mod.rs:649
 msgid "Paintbrush"
 msgstr "페인트브러시"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:653
+#: crates/rnote-ui/src/dialogs/mod.rs:650
 msgid "Pencil and Paper"
 msgstr "연필과 종이"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:654
+#: crates/rnote-ui/src/dialogs/mod.rs:651
 msgid "People"
 msgstr "사람들"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:655
+#: crates/rnote-ui/src/dialogs/mod.rs:652
 msgid "Person"
 msgstr "사람"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:656
+#: crates/rnote-ui/src/dialogs/mod.rs:653
 msgid "Projector"
 msgstr "프로젝터"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:657
+#: crates/rnote-ui/src/dialogs/mod.rs:654
 msgid "Science"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:658
+#: crates/rnote-ui/src/dialogs/mod.rs:655
 msgid "Scratchpad"
 msgstr "스크래치패드"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:659
+#: crates/rnote-ui/src/dialogs/mod.rs:656
 msgid "Shapes"
 msgstr "모형들"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:660
+#: crates/rnote-ui/src/dialogs/mod.rs:657
 msgid "Shopping"
 msgstr "쇼핑"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:661
+#: crates/rnote-ui/src/dialogs/mod.rs:658
 msgid "Speech Bubble"
 msgstr "말풍선"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:662
+#: crates/rnote-ui/src/dialogs/mod.rs:659
 msgid "Speedometer"
 msgstr "속도계"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:663
+#: crates/rnote-ui/src/dialogs/mod.rs:660
 msgid "Star"
 msgstr "별"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:665
+#: crates/rnote-ui/src/dialogs/mod.rs:662
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "단말기"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:667
+#: crates/rnote-ui/src/dialogs/mod.rs:664
 msgid "Text"
 msgstr "텍스트"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:668
+#: crates/rnote-ui/src/dialogs/mod.rs:665
 msgid "Travel"
 msgstr "여행"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:669
+#: crates/rnote-ui/src/dialogs/mod.rs:666
 msgid "Weather"
 msgstr "날씨"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:670
+#: crates/rnote-ui/src/dialogs/mod.rs:667
 msgid "Weight"
 msgstr "무게"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:348
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:388
 msgid "Miscellaneous"
 msgstr "기타"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:357
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:397
 msgid "Coordinate Systems"
 msgstr "좌표계"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:365
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:405
 msgid "Ellipses"
 msgstr "타원들"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:372
-msgid "Curves"
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:412
+#, fuzzy
+#| msgid "Curves"
+msgid "Curves & Paths"
 msgstr "곡선"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:385
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:386
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
 msgid "Line"
 msgstr "선"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:387
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
 msgid "Rectangle"
 msgstr "사각형"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:389
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
 msgid "2D coordinate system"
 msgstr "2D 좌표계"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:390
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
 msgid "3D coordinate system"
 msgstr "3D 좌표계"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:391
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
 msgid "2D single quadrant coordinate system"
 msgstr "2D 단일 사분면 좌표계"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:392
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
 msgid "Ellipse"
 msgstr "타원"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:393
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
 msgid "Ellipse with foci"
 msgstr "초점이 있는 타원"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:394
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
 msgid "Quadratic bezier curve"
 msgstr "2차 베지어 곡선"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:395
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
 msgid "Cubic bezier curve"
 msgstr "3차 베지어 곡선"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:568
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
+msgid "Polyline"
+msgstr ""
+
+#: crates/rnote-ui/src/settingspanel/mod.rs:570
 msgid "Application restart is required"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:807
+#: crates/rnote-ui/src/settingspanel/mod.rs:823
 #, fuzzy
 #| msgid "Crosshair (Small)"
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "십자선 (소)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:808
+#: crates/rnote-ui/src/settingspanel/mod.rs:824
 #, fuzzy
 #| msgid "Crosshair (Medium)"
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "십자선 (중)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:809
+#: crates/rnote-ui/src/settingspanel/mod.rs:825
 #, fuzzy
 #| msgid "Crosshair (Large)"
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "십자선 (대)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:810
+#: crates/rnote-ui/src/settingspanel/mod.rs:826
 #, fuzzy
 #| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "점 (소)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:811
+#: crates/rnote-ui/src/settingspanel/mod.rs:827
 #, fuzzy
 #| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "점 (중)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:812
+#: crates/rnote-ui/src/settingspanel/mod.rs:828
 #, fuzzy
 #| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "점 (대)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:813
+#: crates/rnote-ui/src/settingspanel/mod.rs:829
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:814
+#: crates/rnote-ui/src/settingspanel/mod.rs:830
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:815
+#: crates/rnote-ui/src/settingspanel/mod.rs:831
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:816
+#: crates/rnote-ui/src/settingspanel/mod.rs:832
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:817
+#: crates/rnote-ui/src/settingspanel/mod.rs:833
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:818
+#: crates/rnote-ui/src/settingspanel/mod.rs:834
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:819
+#: crates/rnote-ui/src/settingspanel/mod.rs:835
 #, fuzzy
 #| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "점 (소)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:820
+#: crates/rnote-ui/src/settingspanel/mod.rs:836
 #, fuzzy
 #| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "점 (중)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:821
+#: crates/rnote-ui/src/settingspanel/mod.rs:837
 #, fuzzy
 #| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "점 (대)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:822
+#: crates/rnote-ui/src/settingspanel/mod.rs:838
 #, fuzzy
 #| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "점 (소)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:823
+#: crates/rnote-ui/src/settingspanel/mod.rs:839
 #, fuzzy
 #| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "점 (중)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:824
+#: crates/rnote-ui/src/settingspanel/mod.rs:840
 #, fuzzy
 #| msgid "Dot (Large)"
 msgctxt "a cursor type"

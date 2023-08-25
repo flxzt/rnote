@@ -48,6 +48,7 @@ impl GdkRGBAExt for gtk4::gdk::RGBA {
 }
 
 /// Extension trait for [graphene::Point].
+#[cfg(feature = "ui")]
 pub trait GraphenePointExt
 where
     Self: Sized,
@@ -58,6 +59,7 @@ where
     fn to_na_vec(&self) -> na::Vector2<f64>;
 }
 
+#[cfg(feature = "ui")]
 impl GraphenePointExt for graphene::Point {
     fn from_na_point(p: nalgebra::Point2<f64>) -> Self {
         Self::new(p.x as f32, p.y as f32)

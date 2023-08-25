@@ -79,7 +79,7 @@
           <li>feature: export previews</li>
           <li>feature: invert selection color brightness (thanks to @Kneemund)</li>
           <li>feature: optimize for printing export option (thanks to @Kneemund)</li>
-          <li>feature: a few handwrite-y,typewriter and dyslexic fonts are now bundled with the application (check the README for a list of them)</li>
+          <li>feature: a few handwrite-y,typewriter and dyslexia fonts are now bundled with the application (check the README for a list of them)</li>
           <li>improvement: cli export enhancements (thanks to @LeSnake04)</li>
           <li>improvement: update outdated symbolic icons (thanks to @oscfdezdz)</li>
           <li>improvement: behaviour when opening files in new tab</li>

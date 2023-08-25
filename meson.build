@@ -324,7 +324,7 @@ meson.add_install_script(
 )
 
 # meson >= 0.64 will include `update-mime-database` in the gnome module.
-# As soon as that is available on supported platforms ( fedora 37, msys2, flatpak gnome platform )
+# As soon as that is available on supported platforms ( fedora 38, msys2, flatpak gnome platform )
 # the post-install script can be replaced by:
 #gnome.post_install(
 #    glib_compile_schemas: true,

@@ -79,17 +79,6 @@
       ]
     },
     {
-      "name": "cairo",
-      "buildsystem": "meson",
-      "sources": [
-        {
-          "type": "git",
-          "url": "https://gitlab.freedesktop.org/cairo/cairo.git",
-          "commit": "7645586223cea9f5313253bd8cde96a0a4007905"
-        }
-      ]
-    },
-    {
       "name": "rnote",
       "buildsystem": "meson",
       "run-tests": true,

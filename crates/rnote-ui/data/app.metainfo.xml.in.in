@@ -31,22 +31,22 @@
   <screenshots>
     <screenshot type="default">
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/overview.png</image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/overview.png</image>
       <caption>An Overview</caption>
     </screenshot>
     <screenshot>
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/lecture_note_1.png</image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/lecture_note_1.png</image>
       <caption>Lecture Note 1</caption>
     </screenshot>
     <screenshot>
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/pdf_annotation.png</image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/pdf_annotation.png</image>
       <caption>A Pdf annotation</caption>
     </screenshot>
     <screenshot>
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/lecture_note_2.png</image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/lecture_note_2.png</image>
       <caption>Lecture Note 2</caption>
     </screenshot>
   </screenshots>

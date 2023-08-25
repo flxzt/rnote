@@ -1,14 +1,10 @@
 // Imports
 use super::{Stroke, StrokeKey, StrokeStore};
-use crate::engine::visual_debug;
 use crate::engine::{EngineTask, EngineTaskSender};
-use crate::ext::{GdkRGBAExt, GrapheneRectExt};
 use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::Content;
-use crate::{render, Drawable, Engine};
-use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
+use crate::{render, Drawable};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use rnote_compose::color;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Shapeable;
 
@@ -31,9 +27,10 @@ impl Default for RenderCompState {
 
 #[derive(Debug, Clone)]
 pub struct RenderComponent {
-    pub(super) images: Vec<render::Image>,
-    pub(super) rendernodes: Vec<gsk::RenderNode>,
     pub(super) state: RenderCompState,
+    pub(super) images: Vec<render::Image>,
+    #[cfg(feature = "ui")]
+    pub(super) rendernodes: Vec<gtk4::gsk::RenderNode>,
 }
 
 impl Default for RenderComponent {
@@ -41,6 +38,7 @@ impl Default for RenderComponent {
         Self {
             state: RenderCompState::default(),
             images: vec![],
+            #[cfg(feature = "ui")]
             rendernodes: vec![],
         }
     }
@@ -89,6 +87,7 @@ impl StrokeStore {
         keys.iter().for_each(|&key| self.set_rendering_dirty(key));
     }
 
+    #[allow(unused)]
     pub(crate) fn holds_images(&self, key: StrokeKey) -> bool {
         self.render_components
             .get(key)
@@ -115,6 +114,7 @@ impl StrokeStore {
 
             match stroke.gen_images(viewport_extended, image_scale) {
                 Ok(GeneratedContentImages::Partial { images, viewport }) => {
+                    #[cfg(feature = "ui")]
                     match render::Image::images_to_rendernodes(&images) {
                         Ok(rendernodes) => {
                             render_comp.rendernodes = rendernodes;
@@ -126,8 +126,14 @@ impl StrokeStore {
                             log::error!(" image_to_rendernode() failed in regenerate_rendering_for_stroke(), Err: {e:?}");
                         }
                     }
+                    #[cfg(not(feature = "ui"))]
+                    {
+                        render_comp.images = images;
+                        render_comp.state = RenderCompState::ForViewport(viewport);
+                    }
                 }
                 Ok(GeneratedContentImages::Full(images)) => {
+                    #[cfg(feature = "ui")]
                     match render::Image::images_to_rendernodes(&images) {
                         Ok(rendernodes) => {
                             render_comp.rendernodes = rendernodes;
@@ -139,8 +145,14 @@ impl StrokeStore {
                             log::error!(" image_to_rendernode() failed in regenerate_rendering_for_stroke(), Err: {e:?}");
                         }
                     }
+                    #[cfg(not(feature = "ui"))]
+                    {
+                        render_comp.images = images;
+                        render_comp.state = RenderCompState::Complete;
+                    }
                 }
                 Err(e) => {
+                    render_comp.state = RenderCompState::Dirty;
                     log::error!("generating images for stroke with key {key:?} failed, Err: {e:?}");
                 }
             }
@@ -238,7 +250,10 @@ impl StrokeStore {
 
                 // skip and clear image buffer if stroke is not in viewport
                 if !viewport_extended.intersects(&stroke_bounds) {
-                    render_comp.rendernodes = vec![];
+                    #[cfg(feature = "ui")]
+                    {
+                        render_comp.rendernodes = vec![];
+                    }
                     render_comp.images = vec![];
                     render_comp.state = RenderCompState::Dirty;
                     continue;
@@ -297,7 +312,10 @@ impl StrokeStore {
     /// Clear all rendering for all strokes.
     pub(crate) fn clear_rendering(&mut self) {
         for (_key, render_comp) in self.render_components.iter_mut() {
-            render_comp.rendernodes = vec![];
+            #[cfg(feature = "ui")]
+            {
+                render_comp.rendernodes = vec![];
+            }
             render_comp.images = vec![];
             render_comp.state = RenderCompState::Dirty;
         }
@@ -321,16 +339,24 @@ impl StrokeStore {
             match stroke.as_ref() {
                 Stroke::BrushStroke(brushstroke) => {
                     match brushstroke.gen_image_for_last_segments(n_last_segments, image_scale) {
-                        Ok(Some(image)) => match render::Image::images_to_rendernodes([&image]) {
-                            Ok(mut rendernodes) => {
-                                render_comp.rendernodes.append(&mut rendernodes);
+                        Ok(Some(image)) => {
+                            #[cfg(feature = "ui")]
+                            match render::Image::images_to_rendernodes([&image]) {
+                                Ok(mut rendernodes) => {
+                                    render_comp.rendernodes.append(&mut rendernodes);
+                                    render_comp.images.push(image);
+                                }
+                                Err(e) => {
+                                    render_comp.state = RenderCompState::Dirty;
+                                    log::error!("failed to generated rendernodes in append_rendering_last_segments(), Err: {e:?}");
+                                }
+                            }
+                            #[cfg(not(feature = "ui"))]
+                            {
                                 render_comp.images.push(image);
                             }
-                            Err(e) => {
-                                render_comp.state = RenderCompState::Dirty;
-                                log::error!("failed to generated rendernodes in append_rendering_last_segments(), Err: {e:?}");
-                            }
-                        },
+                        }
+
                         Ok(None) => {}
                         Err(e) => {
                             render_comp.state = RenderCompState::Dirty;
@@ -367,6 +393,7 @@ impl StrokeStore {
         if let Some(render_comp) = self.render_components.get_mut(key) {
             match images {
                 GeneratedContentImages::Partial { images, viewport } => {
+                    #[cfg(feature = "ui")]
                     match render::Image::images_to_rendernodes(&images) {
                         Ok(rendernodes) => {
                             render_comp.rendernodes = rendernodes;
@@ -378,8 +405,14 @@ impl StrokeStore {
                             render_comp.state = RenderCompState::Dirty;
                         }
                     }
+                    #[cfg(not(feature = "ui"))]
+                    {
+                        render_comp.images = images;
+                        render_comp.state = RenderCompState::ForViewport(viewport);
+                    }
                 }
                 GeneratedContentImages::Full(images) => {
+                    #[cfg(feature = "ui")]
                     match render::Image::images_to_rendernodes(&images) {
                         Ok(rendernodes) => {
                             render_comp.rendernodes = rendernodes;
@@ -390,6 +423,11 @@ impl StrokeStore {
                             log::error!("failed to generate rendernodes in replace_rendering_with_images(), Err {e:?}");
                             render_comp.state = RenderCompState::Dirty;
                         }
+                    }
+                    #[cfg(not(feature = "ui"))]
+                    {
+                        render_comp.images = images;
+                        render_comp.state = RenderCompState::Complete;
                     }
                 }
             }
@@ -411,6 +449,7 @@ impl StrokeStore {
                     viewport: _,
                 }
                 | GeneratedContentImages::Full(mut images) => {
+                    #[cfg(feature = "ui")]
                     match render::Image::images_to_rendernodes(&images) {
                         Ok(mut rendernodes) => {
                             render_comp.rendernodes.append(&mut rendernodes);
@@ -421,18 +460,27 @@ impl StrokeStore {
                             render_comp.state = RenderCompState::Dirty;
                         }
                     }
+                    #[cfg(not(feature = "ui"))]
+                    {
+                        render_comp.images.append(&mut images);
+                    }
                 }
             }
         }
     }
 
     /// Draw all strokes on the gtk snapshot.
+    #[cfg(feature = "ui")]
     pub(crate) fn draw_strokes_to_gtk_snapshot(
         &self,
-        snapshot: &Snapshot,
+        snapshot: &gtk4::Snapshot,
         doc_bounds: Aabb,
         viewport: Aabb,
     ) {
+        use crate::ext::{GdkRGBAExt, GrapheneRectExt};
+        use gtk4::{gdk, graphene, prelude::*};
+        use rnote_compose::color;
+
         snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
 
         for key in self.stroke_keys_as_rendered_intersecting_bounds(viewport) {
@@ -505,12 +553,16 @@ impl StrokeStore {
     }
 
     /// Draw bounds, positions, etc. for all strokes for visual debugging purposes.
+    #[cfg(feature = "ui")]
     pub(crate) fn draw_debug_to_gtk_snapshot(
         &self,
-        snapshot: &Snapshot,
-        engine: &Engine,
+        snapshot: &gtk4::Snapshot,
+        engine: &crate::Engine,
         _surface_bounds: Aabb,
     ) -> anyhow::Result<()> {
+        use crate::engine::visual_debug;
+        use gtk4::prelude::*;
+
         let border_widths = 1.0 / engine.camera.total_zoom();
 
         for key in self.keys_sorted_chrono() {

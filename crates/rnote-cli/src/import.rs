@@ -9,7 +9,6 @@ pub(crate) async fn run_import(
     input_file: &Path,
     xopp_dpi: f64,
 ) -> anyhow::Result<()> {
-    gtk4::init()?;
     validators::file_has_ext(rnote_file, "rnote")?;
     // Xopp files don't require file extensions
     validators::path_is_file(input_file)?;

@@ -21,5 +21,4 @@ dialoguer = { workspace = true }
 open = { workspace = true }
 nalgebra = { workspace = true }
 parry2d-f64 = { workspace = true }
-gtk4 = { workspace = true }
 atty = { workspace = true }

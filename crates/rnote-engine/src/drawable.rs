@@ -1,10 +1,7 @@
 // Imports
 use crate::engine::EngineView;
-use crate::ext::GrapheneRectExt;
-use gtk4::{graphene, prelude::*};
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
-use rnote_compose::ext::{AabbExt, Affine2Ext};
 
 /// Trait for types that can draw themselves on a [piet::RenderContext].
 pub trait Drawable {
@@ -54,11 +51,16 @@ pub trait DrawableOnDoc {
     /// Draw itself on the snapshot.
     ///
     /// The snapshot is expected to be untransformed in surface coordinate space.
+    #[cfg(feature = "ui")]
     fn draw_on_doc_to_gtk_snapshot(
         &self,
         snapshot: &gtk4::Snapshot,
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
+        use crate::ext::GrapheneRectExt;
+        use gtk4::{graphene, prelude::*};
+        use rnote_compose::ext::{AabbExt, Affine2Ext};
+
         if let Some(bounds) = self.bounds_on_doc(engine_view) {
             let viewport = engine_view.camera.viewport();
             // Restrict to viewport as maximum bounds, else cairo is very unperformant

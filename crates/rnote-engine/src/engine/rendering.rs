@@ -1,12 +1,5 @@
 // Imports
-use super::{visual_debug, EngineView};
-use crate::ext::{GdkRGBAExt, GrapheneRectExt};
-use crate::{Document, DrawableOnDoc, Engine, WidgetFlags};
-use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-use rnote_compose::ext::{AabbExt, Affine2Ext};
-use rnote_compose::{color, SplitOrder};
+use crate::{Engine, WidgetFlags};
 
 impl Engine {
     /// Update the background rendering for the current viewport.
@@ -14,36 +7,45 @@ impl Engine {
     /// If the background pattern or zoom has changed, the background pattern needs to be regenerated first.
     pub fn update_background_rendering_current_viewport(&mut self) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        let viewport = self.camera.viewport();
-        let mut rendernodes: Vec<gsk::RenderNode> = vec![];
 
-        if let Some(image) = &self.background_tile_image {
-            // Only create the texture once, it is expensive
-            let new_texture = match image.to_memtexture() {
-                Ok(t) => t,
-                Err(e) => {
-                    log::error!(
-                        "failed to generate memory-texture of background tile image, {e:?}"
+        #[cfg(feature = "ui")]
+        {
+            use crate::ext::GrapheneRectExt;
+            use gtk4::{graphene, gsk, prelude::*};
+            use rnote_compose::ext::AabbExt;
+            use rnote_compose::SplitOrder;
+
+            let viewport = self.camera.viewport();
+            let mut rendernodes: Vec<gsk::RenderNode> = vec![];
+
+            if let Some(image) = &self.background_tile_image {
+                // Only create the texture once, it is expensive
+                let new_texture = match image.to_memtexture() {
+                    Ok(t) => t,
+                    Err(e) => {
+                        log::error!(
+                            "failed to generate memory-texture of background tile image, {e:?}"
+                        );
+                        return widget_flags;
+                    }
+                };
+
+                for split_bounds in viewport.split_extended_origin_aligned(
+                    self.document.background.tile_size(),
+                    SplitOrder::default(),
+                ) {
+                    rendernodes.push(
+                        gsk::TextureNode::new(
+                            &new_texture,
+                            &graphene::Rect::from_p2d_aabb(split_bounds),
+                        )
+                        .upcast(),
                     );
-                    return widget_flags;
                 }
-            };
-
-            for split_bounds in viewport.split_extended_origin_aligned(
-                self.document.background.tile_size(),
-                SplitOrder::default(),
-            ) {
-                rendernodes.push(
-                    gsk::TextureNode::new(
-                        &new_texture,
-                        &graphene::Rect::from_p2d_aabb(split_bounds),
-                    )
-                    .upcast(),
-                );
             }
-        }
 
-        self.background_rendernodes = rendernodes;
+            self.background_rendernodes = rendernodes;
+        }
 
         widget_flags.redraw = true;
         widget_flags
@@ -76,7 +78,10 @@ impl Engine {
         let mut widget_flags = WidgetFlags::default();
         self.store.clear_rendering();
         self.background_tile_image.take();
-        self.background_rendernodes.clear();
+        #[cfg(feature = "ui")]
+        {
+            self.background_rendernodes.clear();
+        }
         widget_flags.redraw = true;
         widget_flags
     }
@@ -97,11 +102,17 @@ impl Engine {
     }
 
     /// Draws the entire engine (doc, pens, strokes, selection, ..) to a GTK snapshot.
+    #[cfg(feature = "ui")]
     pub fn draw_to_gtk_snapshot(
         &self,
-        snapshot: &Snapshot,
-        surface_bounds: Aabb,
+        snapshot: &gtk4::Snapshot,
+        surface_bounds: p2d::bounding_volume::Aabb,
     ) -> anyhow::Result<()> {
+        use crate::drawable::DrawableOnDoc;
+        use crate::engine::visual_debug;
+        use crate::engine::EngineView;
+        use gtk4::prelude::*;
+
         let doc_bounds = self.document.bounds();
         let viewport = self.camera.viewport();
         let camera_transform = self.camera.transform_for_gtk_snapshot();
@@ -153,7 +164,12 @@ impl Engine {
         Ok(())
     }
 
-    fn draw_document_shadow_to_gtk_snapshot(&self, snapshot: &Snapshot) {
+    #[cfg(feature = "ui")]
+    fn draw_document_shadow_to_gtk_snapshot(&self, snapshot: &gtk4::Snapshot) {
+        use crate::ext::{GdkRGBAExt, GrapheneRectExt};
+        use crate::Document;
+        use gtk4::{gdk, graphene, gsk, prelude::*};
+
         let shadow_width = Document::SHADOW_WIDTH;
         let shadow_offset = Document::SHADOW_OFFSET;
         let doc_bounds = self.document.bounds();
@@ -179,7 +195,11 @@ impl Engine {
         );
     }
 
-    fn draw_background_to_gtk_snapshot(&self, snapshot: &Snapshot) -> anyhow::Result<()> {
+    #[cfg(feature = "ui")]
+    fn draw_background_to_gtk_snapshot(&self, snapshot: &gtk4::Snapshot) -> anyhow::Result<()> {
+        use crate::ext::{GdkRGBAExt, GrapheneRectExt};
+        use gtk4::{gdk, graphene, gsk, prelude::*};
+
         let doc_bounds = self.document.bounds();
 
         snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
@@ -202,7 +222,14 @@ impl Engine {
         Ok(())
     }
 
-    fn draw_format_borders_to_gtk_snapshot(&self, snapshot: &Snapshot) -> anyhow::Result<()> {
+    #[cfg(feature = "ui")]
+    fn draw_format_borders_to_gtk_snapshot(&self, snapshot: &gtk4::Snapshot) -> anyhow::Result<()> {
+        use crate::ext::{GdkRGBAExt, GrapheneRectExt};
+        use gtk4::{gdk, graphene, gsk, prelude::*};
+        use p2d::bounding_volume::BoundingVolume;
+        use rnote_compose::ext::AabbExt;
+        use rnote_compose::SplitOrder;
+
         if self.document.format.show_borders {
             let total_zoom = self.camera.total_zoom();
             let border_width = 1.0 / total_zoom;
@@ -253,7 +280,18 @@ impl Engine {
     /// Draw the document origin indicator cross.
     ///
     /// Expects that the snapshot is untransformed in surface coordinate space.
-    fn draw_origin_indicator_to_gtk_snapshot(&self, snapshot: &Snapshot) -> anyhow::Result<()> {
+    #[cfg(feature = "ui")]
+    fn draw_origin_indicator_to_gtk_snapshot(
+        &self,
+        snapshot: &gtk4::Snapshot,
+    ) -> anyhow::Result<()> {
+        use crate::ext::GrapheneRectExt;
+        use gtk4::{graphene, prelude::*};
+        use p2d::bounding_volume::Aabb;
+        use piet::RenderContext;
+        use rnote_compose::color;
+        use rnote_compose::ext::{AabbExt, Affine2Ext};
+
         const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
         const PATH_WIDTH: f64 = 1.5;
         let total_zoom = self.camera.total_zoom();

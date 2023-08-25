@@ -25,7 +25,6 @@ use crate::strokes::textstroke::{TextAttribute, TextStyle};
 use crate::{render, AudioPlayer, SelectionCollision, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use futures::channel::{mpsc, oneshot};
-use gtk4::gsk;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::AabbExt;
@@ -183,8 +182,9 @@ pub struct Engine {
     // Background rendering
     #[serde(skip)]
     background_tile_image: Option<render::Image>,
+    #[cfg(feature = "ui")]
     #[serde(skip)]
-    background_rendernodes: Vec<gsk::RenderNode>,
+    background_rendernodes: Vec<gtk4::gsk::RenderNode>,
 }
 
 impl Default for Engine {
@@ -206,6 +206,7 @@ impl Default for Engine {
             tasks_tx: EngineTaskSender(tasks_tx),
             tasks_rx: Some(EngineTaskReceiver(tasks_rx)),
             background_tile_image: None,
+            #[cfg(feature = "ui")]
             background_rendernodes: Vec::default(),
         }
     }

@@ -1,4 +1,0 @@
-<!DOCTYPE fontconfig SYSTEM 'urn::fontconfig::fonts.dtd'>
-<fontconfig>
- <dir>@PKG_DATA_DIR@/fonts</dir>
-</fontconfig>

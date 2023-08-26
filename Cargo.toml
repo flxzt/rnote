@@ -8,7 +8,7 @@ members = [
 resolver = "2"
 
 [workspace.package]
-version = "0.8.1"
+version = "0.8.2"
 edition = "2021"
 rust-version = "1.70"
 authors = ["The Rnote Authors"]
@@ -17,8 +17,8 @@ homepage = "https://rnote.flxzt.net"
 repository = "https://github.com/flxzt/rnote"
 
 [workspace.dependencies]
-rnote-compose = { version="0.8.1", path = "crates/rnote-compose" }
-rnote-engine = { version="0.8.1", path = "crates/rnote-engine" }
+rnote-compose = { version="0.8.2", path = "crates/rnote-compose" }
+rnote-engine = { version="0.8.2", path = "crates/rnote-engine" }
 
 log = "0.4"
 pretty_env_logger = "0.5"

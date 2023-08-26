@@ -1,7 +1,7 @@
 // Imports
 use rnote_compose::eventresult::EventPropagation;
 
-/// Extension trait for [gdk::RGBA].
+/// Extension trait for [gtk4::gdk::RGBA].
 #[cfg(feature = "ui")]
 pub trait GdkRGBAExt
 where
@@ -47,7 +47,7 @@ impl GdkRGBAExt for gtk4::gdk::RGBA {
     }
 }
 
-/// Extension trait for [graphene::Rect].
+/// Extension trait for [gtk4::graphene::Rect].
 #[cfg(feature = "ui")]
 pub trait GrapheneRectExt
 where

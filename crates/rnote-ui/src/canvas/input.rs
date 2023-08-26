@@ -71,11 +71,13 @@ pub(crate) fn handle_pointer_controller_event(
                     || gdk_button == gdk::BUTTON_SECONDARY
                     || gdk_button == gdk::BUTTON_MIDDLE
                 {
+                    handle_pen_event = true;
                     handle_shortcut_key = true;
                 }
             } else {
                 #[allow(clippy::collapsible_else_if)]
                 if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {
+                    handle_pen_event = true;
                     handle_shortcut_key = true;
                     state = PenState::Down;
                 }

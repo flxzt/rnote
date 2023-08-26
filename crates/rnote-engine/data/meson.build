@@ -65,20 +65,4 @@ fonts_files = files(
 )
 
 # install fonts
-install_data(fonts_files, install_dir: pkgdatadir / 'fonts')
-
-# fontconfig file
-message('Configuring fontconfig file')
-
-fc_conf = configuration_data()
-fc_conf.set('APP_ID', app_id)
-fc_conf.set('APP_NAME', app_name)
-fc_conf.set('APP_NAME_CAPITALIZED', app_name_capitalized)
-fc_conf.set('PKG_DATA_DIR', pkgdatadir)
-fc_file_in = configure_file(
-    input: '09-fc.conf.in',
-    output: '09-' + app_name + '.conf',
-    configuration: fc_conf,
-    install: true,
-    install_dir: sysconfdir / 'fonts/conf.d',
-)
+install_data(fonts_files, install_dir: datadir / 'fonts' / app_name + '-fonts')

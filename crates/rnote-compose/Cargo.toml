@@ -9,7 +9,7 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "458d0247cec9d1a3d39e3922259945eec8b31625" }
+ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "b67f11b2c174a9ae4a54c22313cf8c218ff0946a" }
 
 log = { workspace = true }
 anyhow = { workspace = true }

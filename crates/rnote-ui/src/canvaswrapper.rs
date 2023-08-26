@@ -501,7 +501,7 @@ mod imp {
                 );
             }
 
-            // Zoom with alt + shift + drag
+            // Zoom with alt + ctrl + drag              I changed it for blender, lol
             {
                 let zoom_begin = Rc::new(Cell::new(1_f64));
                 let prev_offset = Rc::new(Cell::new(na::Vector2::<f64>::zeros()));
@@ -515,7 +515,7 @@ mod imp {
                         let modifiers = gesture.current_event_state();
 
                         // At the start BUTTON1_MASK is not included
-                        if modifiers == (gdk::ModifierType::SHIFT_MASK | gdk::ModifierType::ALT_MASK) {
+                        if modifiers == (gdk::ModifierType::CONTROL_MASK | gdk::ModifierType::ALT_MASK) {
                             gesture.set_state(EventSequenceState::Claimed);
                             let current_zoom = canvaswrapper.canvas().engine_ref().camera.total_zoom();
                             zoom_begin.set(current_zoom);

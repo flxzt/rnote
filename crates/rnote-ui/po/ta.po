@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-24 19:43+0200\n"
-"PO-Revision-Date: 2023-06-29 11:52+0000\n"
+"PO-Revision-Date: 2023-08-28 20:55+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18.1\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -373,15 +373,13 @@ msgstr "பின்னணி வடிவத்தை ஏற்றுமதி 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:354
 #: crates/rnote-ui/data/ui/dialogs/export.ui:577
 msgid "Optimize for Printing"
-msgstr ""
+msgstr "அச்சிடுவதற்கு உகந்ததாக்கு"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:355
 #: crates/rnote-ui/data/ui/dialogs/export.ui:578
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Set whether the content should be optimized for printing"
-msgstr "பின்னணி வடிவத்தை ஏற்றுமதி செய்ய வேண்டுமா என்பதை அமைக்கவும்"
+msgstr "அச்சிடுவதற்கு உள்ளடக்கம் மேம்படுத்தப்பட வேண்டுமா என்பதை அமைக்கவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:143
 #: crates/rnote-ui/data/ui/dialogs/export.ui:365
@@ -420,17 +418,14 @@ msgstr "பக்க வரிசை"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:159
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts that expand\n"
-#| "in horizontal and vertical directions are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
-"தளவமைப்புகளுடன் கூடிய ஆவணங்கள் விரிவடையும் போது பக்க வரிசை\n"
-"கிடைமட்ட மற்றும் செங்குத்து திசைகளில் பக்கங்களாக வெட்டப்படுகின்றன"
+"தளவமைப்புகளுடன் ஆவணங்கள் இருக்கும் போது பக்க வரிசை\n"
+"கிடைமட்ட மற்றும் செங்குத்து திசைகளில் விரிவடைகிறது\n"
+"பக்கங்களாக வெட்டப்படுகின்றன"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:165
 #: crates/rnote-ui/data/ui/dialogs/export.ui:387
@@ -721,6 +716,7 @@ msgstr "அனைத்து பக்கவாதங்களையும் �
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 msgid "Invert Color Brightness of All Selected Strokes"
 msgstr ""
+"தேர்ந்தெடுக்கப்பட்ட அனைத்து பக்கவாதங்களின் வண்ண பிரகாசத்தை தலைகீழாக மாற்றவும்"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 #: crates/rnote-ui/data/ui/shortcuts.ui:212
@@ -1110,18 +1106,24 @@ msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"பக்கத்தை அகற்று.\n"
+"நிலையான அளவு ஆவண அமைப்பில் கிடைக்கும்."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:157
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"பக்கத்தைச் சேர்.\n"
+"நிலையான அளவு ஆவண அமைப்பில் கிடைக்கும்."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:166
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"உள்ளடக்கத்தை பொருத்துவதற்கு ஆவணத்தின் அளவை மாற்றவும்.\n"
+"நிலையான அளவு ஆவண அமைப்பில் கிடைக்கும்."
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
@@ -1434,19 +1436,15 @@ msgstr "பின்னணி வடிவ உயரத்தை அமைக்
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:402
 msgid "Invert Color Brightness"
-msgstr ""
+msgstr "தலைகீழ் வண்ண பிரகாசம்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:403
-#, fuzzy
-#| msgid "Set the background pattern color"
 msgid "Invert the brightness of all background pattern colors"
-msgstr "பின்னணி மாதிரி நிறத்தை அமைக்கவும்"
+msgstr "அனைத்து பின்னணி வண்ணங்களின் பிரகாசத்தையும் மாற்றவும்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:407
-#, fuzzy
-#| msgid "Revert"
 msgid "Invert"
-msgstr "பின்செல்"
+msgstr "தலைகீழாக மாற்றவும்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:417
 msgid "Button Shortcuts"
@@ -1647,10 +1645,8 @@ msgid "Paste Clipboard"
 msgstr "கிளிப்போர்டை ஒட்டவும்"
 
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:74
-#, fuzzy
-#| msgid "Pages:"
 msgid "Page"
-msgstr "பக்கங்கள்:"
+msgstr "பக்கம்"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
@@ -2103,10 +2099,8 @@ msgid "Ellipses"
 msgstr "நீள்வட்டங்கள்"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:412
-#, fuzzy
-#| msgid "Curves"
 msgid "Curves & Paths"
-msgstr "வளைவுகள்"
+msgstr "வளைவுகள் மற்றும் பாதைகள்"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
@@ -2150,7 +2144,7 @@ msgstr "க்யூபிக் பெஜியர் வளைவு"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
-msgstr ""
+msgstr "பாலிலைன்"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:570
 msgid "Application restart is required"

@@ -295,10 +295,8 @@ impl Camera {
             .scale(total_zoom as f32, total_zoom as f32)
     }
 
-    /// Detects needed horizontal and/or vertical nudges.
-    ///
-    /// Horizontal are the first element, vertical are the second.
-    pub fn detect_nudges_needed(&self, pos: na::Vector2<f64>) -> Option<NudgeDirection> {
+    /// Detects if a nudge is needed, meaning: the position is close to an edge of the current viewport.
+    pub fn detect_nudge_needed(&self, pos: na::Vector2<f64>) -> Option<NudgeDirection> {
         const NUDGE_VIEWPORT_DIST: f64 = 10.0;
         let viewport = self.viewport();
         let nudge_north = pos[1] <= viewport.mins[1] + NUDGE_VIEWPORT_DIST;
@@ -345,7 +343,7 @@ impl Camera {
 
     pub fn nudge_w_pos(&mut self, pos: na::Vector2<f64>, doc: &Document) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        if let Some(nudge_direction) = self.detect_nudges_needed(pos) {
+        if let Some(nudge_direction) = self.detect_nudge_needed(pos) {
             widget_flags |= self.nudge(nudge_direction, doc);
         }
         widget_flags

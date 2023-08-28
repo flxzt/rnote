@@ -313,7 +313,7 @@ impl Camera {
             (_, _, true, true) => Some(NudgeDirection::SouthWest),
             (false, _, false, true) => Some(NudgeDirection::West),
             (true, _, _, true) => Some(NudgeDirection::NorthWest),
-            _ => None,
+            (false, false, false, false) => None,
         }
     }
 

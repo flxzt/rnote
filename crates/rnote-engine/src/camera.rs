@@ -330,7 +330,7 @@ impl Camera {
     }
 
     pub fn nudge(&mut self, direction: NudgeDirection, doc: &Document) -> WidgetFlags {
-        const NUDGE_AMOUNT: f64 = 10.0;
+        const NUDGE_AMOUNT: f64 = 20.0;
         self.nudge_by(NUDGE_AMOUNT, direction, doc)
     }
 

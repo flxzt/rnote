@@ -220,10 +220,14 @@ impl Typewriter {
                         if offset.magnitude()
                             > Self::TRANSLATE_MAGNITUDE_THRESHOLD / engine_view.camera.total_zoom()
                         {
+                            // move text
                             engine_view.store.translate_strokes(&[*stroke_key], offset);
                             engine_view
                                 .store
                                 .translate_strokes_images(&[*stroke_key], offset);
+                            // possibly nudge camera
+                            widget_flags |=
+                                engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
 
                             *current_pos = element.pos;
 

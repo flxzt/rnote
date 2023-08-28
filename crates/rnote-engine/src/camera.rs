@@ -8,6 +8,14 @@ use rnote_compose::ext::AabbExt;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum NudgeDirection {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "camera")]
 pub struct Camera {
@@ -281,6 +289,53 @@ impl Camera {
                 -self.offset[1] as f32,
             ))
             .scale(total_zoom as f32, total_zoom as f32)
+    }
+
+    pub fn detect_nudges_needed(&self, pos: na::Vector2<f64>) -> Vec<NudgeDirection> {
+        const NUDGE_VIEWPORT_DIST: f64 = 10.0;
+        let viewport = self.viewport();
+        let mut nudges = Vec::new();
+
+        if pos[0] <= viewport.mins[0] + NUDGE_VIEWPORT_DIST {
+            nudges.push(NudgeDirection::Left);
+        } else if pos[0] >= viewport.maxs[0] - NUDGE_VIEWPORT_DIST {
+            nudges.push(NudgeDirection::Right);
+        }
+        if pos[1] <= viewport.mins[1] + NUDGE_VIEWPORT_DIST {
+            nudges.push(NudgeDirection::Up);
+        } else if pos[1] >= viewport.maxs[1] - NUDGE_VIEWPORT_DIST {
+            nudges.push(NudgeDirection::Down);
+        }
+
+        nudges
+    }
+
+    pub fn nudge_by(
+        &mut self,
+        amount: f64,
+        direction: NudgeDirection,
+        doc: &Document,
+    ) -> WidgetFlags {
+        let nudge_offset = match direction {
+            NudgeDirection::Up => na::vector![0., -amount],
+            NudgeDirection::Down => na::vector![0., amount],
+            NudgeDirection::Left => na::vector![-amount, 0.],
+            NudgeDirection::Right => na::vector![amount, 0.],
+        };
+        self.set_offset(self.offset() + nudge_offset, doc)
+    }
+
+    pub fn nudge(&mut self, direction: NudgeDirection, doc: &Document) -> WidgetFlags {
+        const NUDGE_AMOUNT: f64 = 10.0;
+        self.nudge_by(NUDGE_AMOUNT, direction, doc)
+    }
+
+    pub fn nudge_w_pos(&mut self, pos: na::Vector2<f64>, doc: &Document) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        for nudge_direction in self.detect_nudges_needed(pos) {
+            widget_flags |= self.nudge(nudge_direction, doc);
+        }
+        widget_flags
     }
 }
 

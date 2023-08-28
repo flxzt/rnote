@@ -291,23 +291,27 @@ impl Camera {
             .scale(total_zoom as f32, total_zoom as f32)
     }
 
-    pub fn detect_nudges_needed(&self, pos: na::Vector2<f64>) -> Vec<NudgeDirection> {
+    /// Detects needed horizontal and/or vertical nudges.
+    ///
+    /// Horizontal are the first element, vertical are the second.
+    pub fn detect_nudges_needed(&self, pos: na::Vector2<f64>) -> [Option<NudgeDirection>; 2] {
         const NUDGE_VIEWPORT_DIST: f64 = 10.0;
         let viewport = self.viewport();
-        let mut nudges = Vec::new();
-
-        if pos[0] <= viewport.mins[0] + NUDGE_VIEWPORT_DIST {
-            nudges.push(NudgeDirection::Left);
+        let horizontal_nudge = if pos[0] <= viewport.mins[0] + NUDGE_VIEWPORT_DIST {
+            Some(NudgeDirection::Left)
         } else if pos[0] >= viewport.maxs[0] - NUDGE_VIEWPORT_DIST {
-            nudges.push(NudgeDirection::Right);
-        }
-        if pos[1] <= viewport.mins[1] + NUDGE_VIEWPORT_DIST {
-            nudges.push(NudgeDirection::Up);
+            Some(NudgeDirection::Right)
+        } else {
+            None
+        };
+        let vertical_nudge = if pos[1] <= viewport.mins[1] + NUDGE_VIEWPORT_DIST {
+            Some(NudgeDirection::Up)
         } else if pos[1] >= viewport.maxs[1] - NUDGE_VIEWPORT_DIST {
-            nudges.push(NudgeDirection::Down);
-        }
-
-        nudges
+            Some(NudgeDirection::Down)
+        } else {
+            None
+        };
+        [horizontal_nudge, vertical_nudge]
     }
 
     pub fn nudge_by(
@@ -332,8 +336,10 @@ impl Camera {
 
     pub fn nudge_w_pos(&mut self, pos: na::Vector2<f64>, doc: &Document) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        for nudge_direction in self.detect_nudges_needed(pos) {
-            widget_flags |= self.nudge(nudge_direction, doc);
+        for nudge in self.detect_nudges_needed(pos) {
+            if let Some(nudge_direction) = nudge {
+                widget_flags |= self.nudge(nudge_direction, doc);
+            }
         }
         widget_flags
     }

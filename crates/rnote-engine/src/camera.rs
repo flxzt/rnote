@@ -10,10 +10,14 @@ use std::time::Duration;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum NudgeDirection {
-    Up,
-    Down,
-    Left,
-    Right,
+    North,
+    NorthEast,
+    East,
+    SouthEast,
+    South,
+    SouthWest,
+    West,
+    NorthWest,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -294,24 +298,25 @@ impl Camera {
     /// Detects needed horizontal and/or vertical nudges.
     ///
     /// Horizontal are the first element, vertical are the second.
-    pub fn detect_nudges_needed(&self, pos: na::Vector2<f64>) -> [Option<NudgeDirection>; 2] {
+    pub fn detect_nudges_needed(&self, pos: na::Vector2<f64>) -> Option<NudgeDirection> {
         const NUDGE_VIEWPORT_DIST: f64 = 10.0;
         let viewport = self.viewport();
-        let horizontal_nudge = if pos[0] <= viewport.mins[0] + NUDGE_VIEWPORT_DIST {
-            Some(NudgeDirection::Left)
-        } else if pos[0] >= viewport.maxs[0] - NUDGE_VIEWPORT_DIST {
-            Some(NudgeDirection::Right)
-        } else {
-            None
-        };
-        let vertical_nudge = if pos[1] <= viewport.mins[1] + NUDGE_VIEWPORT_DIST {
-            Some(NudgeDirection::Up)
-        } else if pos[1] >= viewport.maxs[1] - NUDGE_VIEWPORT_DIST {
-            Some(NudgeDirection::Down)
-        } else {
-            None
-        };
-        [horizontal_nudge, vertical_nudge]
+        let nudge_north = pos[1] <= viewport.mins[1] + NUDGE_VIEWPORT_DIST;
+        let nudge_east = pos[0] >= viewport.maxs[0] - NUDGE_VIEWPORT_DIST;
+        let nudge_south = pos[1] >= viewport.maxs[1] - NUDGE_VIEWPORT_DIST;
+        let nudge_west = pos[0] <= viewport.mins[0] + NUDGE_VIEWPORT_DIST;
+
+        match (nudge_north, nudge_east, nudge_south, nudge_west) {
+            (true, false, _, false) => Some(NudgeDirection::North),
+            (true, true, _, _) => Some(NudgeDirection::NorthEast),
+            (false, true, false, _) => Some(NudgeDirection::East),
+            (_, true, true, _) => Some(NudgeDirection::SouthEast),
+            (_, false, true, false) => Some(NudgeDirection::South),
+            (_, _, true, true) => Some(NudgeDirection::SouthWest),
+            (false, _, false, true) => Some(NudgeDirection::West),
+            (true, _, _, true) => Some(NudgeDirection::NorthWest),
+            _ => None,
+        }
     }
 
     pub fn nudge_by(
@@ -321,10 +326,14 @@ impl Camera {
         doc: &Document,
     ) -> WidgetFlags {
         let nudge_offset = match direction {
-            NudgeDirection::Up => na::vector![0., -amount],
-            NudgeDirection::Down => na::vector![0., amount],
-            NudgeDirection::Left => na::vector![-amount, 0.],
-            NudgeDirection::Right => na::vector![amount, 0.],
+            NudgeDirection::North => na::vector![0., -amount],
+            NudgeDirection::NorthEast => na::vector![amount, -amount],
+            NudgeDirection::East => na::vector![amount, 0.],
+            NudgeDirection::SouthEast => na::vector![amount, amount],
+            NudgeDirection::South => na::vector![0., amount],
+            NudgeDirection::SouthWest => na::vector![-amount, amount],
+            NudgeDirection::West => na::vector![-amount, 0.],
+            NudgeDirection::NorthWest => na::vector![-amount, -amount],
         };
         self.set_offset(self.offset() + nudge_offset, doc)
     }
@@ -336,7 +345,7 @@ impl Camera {
 
     pub fn nudge_w_pos(&mut self, pos: na::Vector2<f64>, doc: &Document) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        for nudge_direction in self.detect_nudges_needed(pos).into_iter().flatten() {
+        if let Some(nudge_direction) = self.detect_nudges_needed(pos) {
             widget_flags |= self.nudge(nudge_direction, doc);
         }
         widget_flags

@@ -336,10 +336,8 @@ impl Camera {
 
     pub fn nudge_w_pos(&mut self, pos: na::Vector2<f64>, doc: &Document) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        for nudge in self.detect_nudges_needed(pos) {
-            if let Some(nudge_direction) = nudge {
-                widget_flags |= self.nudge(nudge_direction, doc);
-            }
+        for nudge_direction in self.detect_nudges_needed(pos).into_iter().flatten() {
+            widget_flags |= self.nudge(nudge_direction, doc);
         }
         widget_flags
     }

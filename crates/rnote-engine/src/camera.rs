@@ -8,6 +8,18 @@ use rnote_compose::ext::AabbExt;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum NudgeDirection {
+    North,
+    NorthEast,
+    East,
+    SouthEast,
+    South,
+    SouthWest,
+    West,
+    NorthWest,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "camera")]
 pub struct Camera {
@@ -281,6 +293,60 @@ impl Camera {
                 -self.offset[1] as f32,
             ))
             .scale(total_zoom as f32, total_zoom as f32)
+    }
+
+    /// Detects if a nudge is needed, meaning: the position is close to an edge of the current viewport.
+    pub fn detect_nudge_needed(&self, pos: na::Vector2<f64>) -> Option<NudgeDirection> {
+        const NUDGE_VIEWPORT_DIST: f64 = 10.0;
+        let viewport = self.viewport();
+        let nudge_north = pos[1] <= viewport.mins[1] + NUDGE_VIEWPORT_DIST;
+        let nudge_east = pos[0] >= viewport.maxs[0] - NUDGE_VIEWPORT_DIST;
+        let nudge_south = pos[1] >= viewport.maxs[1] - NUDGE_VIEWPORT_DIST;
+        let nudge_west = pos[0] <= viewport.mins[0] + NUDGE_VIEWPORT_DIST;
+
+        match (nudge_north, nudge_east, nudge_south, nudge_west) {
+            (true, false, _, false) => Some(NudgeDirection::North),
+            (true, true, _, _) => Some(NudgeDirection::NorthEast),
+            (false, true, false, _) => Some(NudgeDirection::East),
+            (_, true, true, _) => Some(NudgeDirection::SouthEast),
+            (_, false, true, false) => Some(NudgeDirection::South),
+            (_, _, true, true) => Some(NudgeDirection::SouthWest),
+            (false, _, false, true) => Some(NudgeDirection::West),
+            (true, _, _, true) => Some(NudgeDirection::NorthWest),
+            (false, false, false, false) => None,
+        }
+    }
+
+    pub fn nudge_by(
+        &mut self,
+        amount: f64,
+        direction: NudgeDirection,
+        doc: &Document,
+    ) -> WidgetFlags {
+        let nudge_offset = match direction {
+            NudgeDirection::North => na::vector![0., -amount],
+            NudgeDirection::NorthEast => na::vector![amount, -amount],
+            NudgeDirection::East => na::vector![amount, 0.],
+            NudgeDirection::SouthEast => na::vector![amount, amount],
+            NudgeDirection::South => na::vector![0., amount],
+            NudgeDirection::SouthWest => na::vector![-amount, amount],
+            NudgeDirection::West => na::vector![-amount, 0.],
+            NudgeDirection::NorthWest => na::vector![-amount, -amount],
+        };
+        self.set_offset(self.offset() + nudge_offset, doc)
+    }
+
+    pub fn nudge(&mut self, direction: NudgeDirection, doc: &Document) -> WidgetFlags {
+        const NUDGE_AMOUNT: f64 = 20.0;
+        self.nudge_by(NUDGE_AMOUNT, direction, doc)
+    }
+
+    pub fn nudge_w_pos(&mut self, pos: na::Vector2<f64>, doc: &Document) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if let Some(nudge_direction) = self.detect_nudge_needed(pos) {
+            widget_flags |= self.nudge(nudge_direction, doc);
+        }
+        widget_flags
     }
 }
 

@@ -46,6 +46,8 @@ impl Selector {
                     path,
                     element,
                 );
+                // possibly nudge camera
+                widget_flags |= engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
 
                 EventResult {
                     handled: true,
@@ -172,11 +174,15 @@ impl Selector {
                         if offset.magnitude()
                             > Self::TRANSLATE_MAGNITUDE_THRESHOLD / engine_view.camera.total_zoom()
                         {
+                            // move selection
                             engine_view.store.translate_strokes(selection, offset);
                             engine_view
                                 .store
                                 .translate_strokes_images(selection, offset);
                             *selection_bounds = selection_bounds.translate(offset);
+                            // possibly nudge camera
+                            widget_flags |=
+                                engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
 
                             // strokes that were not visible previously might come into view
                             engine_view.store.regenerate_rendering_in_viewport_threaded(
@@ -269,17 +275,20 @@ impl Selector {
                         );
                         let scale = new_extents.component_div(&selection_bounds.extents());
 
+                        // resize strokes
                         engine_view
                             .store
                             .scale_strokes_with_pivot(selection, scale, pivot);
                         engine_view
                             .store
                             .scale_strokes_images_with_pivot(selection, scale, pivot);
-
                         *selection_bounds = selection_bounds
                             .translate(-pivot)
                             .scale_non_uniform(scale)
                             .translate(pivot);
+                        // possibly nudge camera
+                        widget_flags |=
+                            engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
                     }
                 }
 

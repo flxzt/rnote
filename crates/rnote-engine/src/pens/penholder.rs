@@ -5,6 +5,7 @@ use super::{
     Brush, Eraser, Pen, PenBehaviour, PenMode, PenStyle, Selector, Shaper, Shortcuts, Tools,
     Typewriter,
 };
+use crate::camera::NudgeDirection;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::pens::shortcuts::ShortcutAction;
 use crate::widgetflags::WidgetFlags;
@@ -297,52 +298,56 @@ impl PenHolder {
                 modifier_keys,
             } => match keyboard_key {
                 KeyboardKey::NavUp => {
-                    let y_offset = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
-                        -engine_view.camera.size()[1]
+                    let nudge_amount = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                        engine_view.camera.size()[1]
                     } else {
-                        -engine_view.camera.size()[1] * MOVE_VIEW_FACTOR
+                        engine_view.camera.size()[1] * MOVE_VIEW_FACTOR
                     };
-                    widget_flags |= engine_view.camera.set_offset(
-                        engine_view.camera.offset() + na::vector![0.0, y_offset],
+                    widget_flags |= engine_view.camera.nudge_by(
+                        nudge_amount,
+                        NudgeDirection::North,
                         engine_view.doc,
                     );
 
                     EventPropagation::Stop
                 }
                 KeyboardKey::NavDown => {
-                    let y_offset = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                    let nudge_amount = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
                         engine_view.camera.size()[1]
                     } else {
                         engine_view.camera.size()[1] * MOVE_VIEW_FACTOR
                     };
-                    widget_flags |= engine_view.camera.set_offset(
-                        engine_view.camera.offset() + na::vector![0.0, y_offset],
+                    widget_flags |= engine_view.camera.nudge_by(
+                        nudge_amount,
+                        NudgeDirection::South,
                         engine_view.doc,
                     );
 
                     EventPropagation::Stop
                 }
                 KeyboardKey::NavLeft => {
-                    let x_offset = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
-                        -engine_view.camera.size()[0]
+                    let nudge_amount = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                        engine_view.camera.size()[0]
                     } else {
-                        -engine_view.camera.size()[0] * MOVE_VIEW_FACTOR
+                        engine_view.camera.size()[0] * MOVE_VIEW_FACTOR
                     };
-                    widget_flags |= engine_view.camera.set_offset(
-                        engine_view.camera.offset() + na::vector![x_offset, 0.0],
+                    widget_flags |= engine_view.camera.nudge_by(
+                        nudge_amount,
+                        NudgeDirection::West,
                         engine_view.doc,
                     );
 
                     EventPropagation::Stop
                 }
                 KeyboardKey::NavRight => {
-                    let x_offset = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                    let nudge_amount = if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
                         engine_view.camera.size()[0]
                     } else {
                         engine_view.camera.size()[0] * MOVE_VIEW_FACTOR
                     };
-                    widget_flags |= engine_view.camera.set_offset(
-                        engine_view.camera.offset() + na::vector![x_offset, 0.0],
+                    widget_flags |= engine_view.camera.nudge_by(
+                        nudge_amount,
+                        NudgeDirection::East,
                         engine_view.doc,
                     );
 

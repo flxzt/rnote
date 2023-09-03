@@ -350,7 +350,16 @@ impl PenBehaviour for Tools {
                                 &self.verticalspace_tool.strokes_below,
                                 na::vector![0.0, y_offset],
                             );
-
+                            // possibly nudge camera
+                            widget_flags |=
+                                engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
+                            // new strokes might come into view
+                            engine_view.store.regenerate_rendering_in_viewport_threaded(
+                                engine_view.tasks_tx.clone(),
+                                false,
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
+                            );
                             self.verticalspace_tool.pos_y = element.pos[1];
 
                             widget_flags.store_modified = true;

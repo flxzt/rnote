@@ -319,7 +319,7 @@ impl PenHolder {
                     };
                     widget_flags |= engine_view.camera.nudge_by(
                         nudge_amount,
-                        NudgeDirection::East,
+                        NudgeDirection::South,
                         engine_view.doc,
                     );
 
@@ -347,7 +347,7 @@ impl PenHolder {
                     };
                     widget_flags |= engine_view.camera.nudge_by(
                         nudge_amount,
-                        NudgeDirection::South,
+                        NudgeDirection::East,
                         engine_view.doc,
                     );
 

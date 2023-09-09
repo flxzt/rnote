@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-24 19:43+0200\n"
-"PO-Revision-Date: 2023-03-27 11:41+0000\n"
-"Last-Translator: gnu-ewm <gnu.ewm@protonmail.com>\n"
+"PO-Revision-Date: 2023-09-10 12:18+0000\n"
+"Last-Translator: Krzysztof Chorzempa <krzys.chorzempa@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -398,7 +398,7 @@ msgstr "Ustaw, czy wzór tła ma zostać wyeksportowany"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:354
 #: crates/rnote-ui/data/ui/dialogs/export.ui:577
 msgid "Optimize for Printing"
-msgstr ""
+msgstr "Optymalizuj dla Druku"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:355
@@ -1197,7 +1197,7 @@ msgstr "Nowa karta"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:53
 msgid "Focus Mode"
-msgstr ""
+msgstr "Tryb Skupienia"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:65
 #: crates/rnote-ui/data/ui/shortcuts.ui:161
@@ -1926,7 +1926,7 @@ msgstr "- nieprawidłowa nazwa pliku -"
 #: crates/rnote-ui/src/dialogs/mod.rs:226
 #: crates/rnote-ui/src/dialogs/mod.rs:359
 msgid "The changes will be saved"
-msgstr ""
+msgstr "Zmiany zostaną zapisane"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:231
 #: crates/rnote-ui/src/dialogs/mod.rs:364
@@ -1974,7 +1974,7 @@ msgstr "Czip"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:623
 msgid "Clock"
-msgstr ""
+msgstr "Zegar"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:624
 msgid "Code"
@@ -1987,11 +1987,11 @@ msgstr "Kompozycja"
 #: crates/rnote-ui/src/dialogs/mod.rs:626
 msgctxt "as in plant"
 msgid "Crop"
-msgstr ""
+msgstr "Przytnij"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:627
 msgid "Dictionary"
-msgstr ""
+msgstr "Słownik"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:629
 msgid "Drinks"
@@ -2045,7 +2045,7 @@ msgstr "Język"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:641
 msgid "Library"
-msgstr ""
+msgstr "Biblioteka"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:642
 msgid "Lightbulb"
@@ -2069,7 +2069,7 @@ msgstr "Nuta"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:647
 msgid "Nature"
-msgstr ""
+msgstr "Natura"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:648
 #, fuzzy
@@ -2101,7 +2101,7 @@ msgstr "Katalog"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:654
 msgid "Science"
-msgstr ""
+msgstr "Nauka"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:655
 msgid "Scratchpad"
@@ -2168,7 +2168,7 @@ msgstr "Krzywe"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
-msgstr ""
+msgstr "Strzałka"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
 msgid "Line"
@@ -2212,7 +2212,7 @@ msgstr ""
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:570
 msgid "Application restart is required"
-msgstr ""
+msgstr "Wymagany jest restart programu"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:823
 #, fuzzy

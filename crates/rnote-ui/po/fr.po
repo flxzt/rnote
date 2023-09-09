@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-24 19:43+0200\n"
-"PO-Revision-Date: 2023-08-22 06:40+0000\n"
+"PO-Revision-Date: 2023-09-10 12:18+0000\n"
 "Last-Translator: \"Mathieu B.\" <mathieu.bousquet2@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -376,15 +376,13 @@ msgstr "Définir si le motif d’arrière-plan doit être exporté"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:354
 #: crates/rnote-ui/data/ui/dialogs/export.ui:577
 msgid "Optimize for Printing"
-msgstr ""
+msgstr "Optimiser pour l’impression"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:355
 #: crates/rnote-ui/data/ui/dialogs/export.ui:578
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Set whether the content should be optimized for printing"
-msgstr "Définir si le motif d’arrière-plan doit être exporté"
+msgstr "Définir si le contenu doit être optimisé pour l’impression"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:143
 #: crates/rnote-ui/data/ui/dialogs/export.ui:365
@@ -720,7 +718,7 @@ msgstr "Désélectionner tous les traits"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 msgid "Invert Color Brightness of All Selected Strokes"
-msgstr ""
+msgstr "Inverser la luminosité des couleurs de tous les traits sélectionnés"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 #: crates/rnote-ui/data/ui/shortcuts.ui:212
@@ -1440,19 +1438,15 @@ msgstr "Définir la hauteur du motif d’arrière-plan"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:402
 msgid "Invert Color Brightness"
-msgstr ""
+msgstr "Inverser de la luminosité des couleurs"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:403
-#, fuzzy
-#| msgid "Set the background pattern color"
 msgid "Invert the brightness of all background pattern colors"
-msgstr "Définir la couleur du motif d’arrière-plan"
+msgstr "Inverser la luminosité de toutes les couleurs en arrière-plan"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:407
-#, fuzzy
-#| msgid "Revert"
 msgid "Invert"
-msgstr "Restaurer"
+msgstr "Inverser"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:417
 msgid "Button Shortcuts"

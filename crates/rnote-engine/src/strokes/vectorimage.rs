@@ -188,7 +188,7 @@ impl VectorImage {
         let doc = poppler::Document::from_bytes(&glib::Bytes::from(to_be_read), None)?;
         let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
 
-        let page_width = format.width * (pdf_import_prefs.page_width_perc / 100.0);
+        let page_width = format.width() * (pdf_import_prefs.page_width_perc / 100.0);
         // calculate the page zoom based on the width of the first page.
         let page_zoom = if let Some(first_page) = doc.page(0) {
             page_width / first_page.size().0
@@ -276,7 +276,7 @@ impl VectorImage {
                     PdfImportPageSpacing::Continuous => {
                         height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5
                     }
-                    PdfImportPageSpacing::OnePerDocumentPage => format.height,
+                    PdfImportPageSpacing::OnePerDocumentPage => format.height(),
                 };
 
                 match res() {

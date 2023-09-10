@@ -574,10 +574,7 @@ impl Engine {
         let strokes_bounds = self.store.strokes_bounds(&keys);
 
         let pages_bounds = doc_bounds
-            .split_extended_origin_aligned(
-                na::vector![self.document.format.width, self.document.format.height],
-                split_order,
-            )
+            .split_extended_origin_aligned(self.document.format.size(), split_order)
             .into_iter()
             .filter(|page_bounds| {
                 // Filter the pages out that don't intersect with any stroke
@@ -591,7 +588,7 @@ impl Engine {
             // If no page has content, return the origin page
             vec![Aabb::new(
                 na::point![0.0, 0.0],
-                na::point![self.document.format.width, self.document.format.height],
+                self.document.format.size().into(),
             )]
         } else {
             pages_bounds
@@ -640,9 +637,9 @@ impl Engine {
     pub fn return_to_origin(&mut self, parent_width: Option<f64>) -> WidgetFlags {
         let zoom = self.camera.zoom();
         let new_offset = if let Some(parent_width) = parent_width {
-            if self.document.format.width * zoom <= parent_width {
+            if self.document.format.width() * zoom <= parent_width {
                 na::vector![
-                    (self.document.format.width * 0.5 * zoom) - parent_width * 0.5,
+                    (self.document.format.width() * 0.5 * zoom) - parent_width * 0.5,
                     -Document::SHADOW_WIDTH * zoom
                 ]
             } else {

@@ -104,8 +104,8 @@ impl Default for Document {
         Self {
             x: 0.0,
             y: 0.0,
-            width: Format::default().width,
-            height: Format::default().height,
+            width: Format::default().width(),
+            height: Format::default().height(),
             format: Format::default(),
             background: Background::default(),
             layout: Layout::default(),
@@ -137,9 +137,9 @@ impl Document {
     pub(crate) fn pages_bounds(&self, split_order: SplitOrder) -> Vec<Aabb> {
         let doc_bounds = self.bounds();
 
-        if self.format.height > 0.0 && self.format.width > 0.0 {
+        if self.format.height() > 0.0 && self.format.width() > 0.0 {
             doc_bounds.split_extended_origin_aligned(
-                na::vector![self.format.width, self.format.height],
+                na::vector![self.format.width(), self.format.height()],
                 split_order,
             )
         } else {
@@ -150,9 +150,9 @@ impl Document {
     #[allow(unused)]
     pub(crate) fn calc_n_pages(&self) -> u32 {
         // Avoid div by 0
-        if self.format.height > 0.0 && self.format.width > 0.0 {
-            (self.width / self.format.width).ceil() as u32
-                * (self.height / self.format.height).ceil() as u32
+        if self.format.height() > 0.0 && self.format.width() > 0.0 {
+            (self.width / self.format.width()).ceil() as u32
+                * (self.height / self.format.height()).ceil() as u32
         } else {
             0
         }
@@ -239,7 +239,7 @@ impl Document {
         if self.layout != Layout::FixedSize {
             return false;
         }
-        let format_height = self.format.height;
+        let format_height = self.format.height();
         let new_doc_height = self.height + format_height;
         self.height = new_doc_height;
         true
@@ -249,17 +249,17 @@ impl Document {
     ///
     /// Returns false when not in fixed-size layout.
     pub(crate) fn remove_page_fixed_size(&mut self) -> bool {
-        if self.layout != Layout::FixedSize || self.height <= self.format.height {
+        if self.layout != Layout::FixedSize || self.height <= self.format.height() {
             return false;
         }
-        self.height -= self.format.height;
+        self.height -= self.format.height();
         true
     }
 
     fn resize_doc_fixed_size_layout(&mut self, store: &StrokeStore) {
-        let format_height = self.format.height;
+        let format_height = self.format.height();
 
-        let new_width = self.format.width;
+        let new_width = self.format.width();
         // max(1.0) because then 'fraction'.ceil() is at least 1
         let new_height = ((store.calc_height().max(1.0)) / format_height).ceil() * format_height;
 
@@ -270,9 +270,9 @@ impl Document {
     }
 
     fn resize_doc_continuous_vertical_layout(&mut self, store: &StrokeStore) {
-        let padding_bottom = self.format.height;
+        let padding_bottom = self.format.height();
         let new_height = store.calc_height() + padding_bottom;
-        let new_width = self.format.width;
+        let new_width = self.format.width();
 
         self.x = 0.0;
         self.y = 0.0;
@@ -281,8 +281,8 @@ impl Document {
     }
 
     fn expand_doc_semi_infinite_layout(&mut self, viewport: Aabb) {
-        let padding_horizontal = self.format.width * 2.0;
-        let padding_vertical = self.format.height * 2.0;
+        let padding_horizontal = self.format.width() * 2.0;
+        let padding_vertical = self.format.height() * 2.0;
 
         let new_bounds = self.bounds().merged(
             &viewport.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical]),
@@ -295,8 +295,8 @@ impl Document {
     }
 
     fn expand_doc_infinite_layout(&mut self, viewport: Aabb) {
-        let padding_horizontal = self.format.width * 2.0;
-        let padding_vertical = self.format.height * 2.0;
+        let padding_horizontal = self.format.width() * 2.0;
+        let padding_vertical = self.format.height() * 2.0;
 
         let new_bounds = self
             .bounds()
@@ -309,8 +309,8 @@ impl Document {
     }
 
     fn resize_doc_semi_infinite_layout_to_fit_content(&mut self, store: &StrokeStore) {
-        let padding_horizontal = self.format.width * 2.0;
-        let padding_vertical = self.format.height * 2.0;
+        let padding_horizontal = self.format.width() * 2.0;
+        let padding_vertical = self.format.height() * 2.0;
 
         let keys = store.stroke_keys_as_rendered();
 
@@ -318,11 +318,8 @@ impl Document {
             new_bounds.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
         } else {
             // If doc is empty, resize to one page with the format size
-            Aabb::new(
-                na::point![0.0, 0.0],
-                na::point![self.format.width, self.format.height],
-            )
-            .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
+            Aabb::new(na::point![0.0, 0.0], self.format.size().into())
+                .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
         };
         self.x = 0.0;
         self.y = 0.0;
@@ -331,8 +328,8 @@ impl Document {
     }
 
     fn resize_doc_infinite_layout_to_fit_content(&mut self, store: &StrokeStore) {
-        let padding_horizontal = self.format.width * 2.0;
-        let padding_vertical = self.format.height * 2.0;
+        let padding_horizontal = self.format.width() * 2.0;
+        let padding_vertical = self.format.height() * 2.0;
 
         let keys = store.stroke_keys_as_rendered();
 
@@ -340,11 +337,8 @@ impl Document {
             new_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])
         } else {
             // If doc is empty, resize to one page with the format size
-            Aabb::new(
-                na::point![0.0, 0.0],
-                na::point![self.format.width, self.format.height],
-            )
-            .extend_by(na::vector![padding_horizontal, padding_vertical])
+            Aabb::new(na::point![0.0, 0.0], self.format.size().into())
+                .extend_by(na::vector![padding_horizontal, padding_vertical])
         };
         self.x = new_bounds.mins[0];
         self.y = new_bounds.mins[1];

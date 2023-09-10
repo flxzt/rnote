@@ -466,7 +466,7 @@ impl RnAppWindow {
             let canvas = canvaswrapper.canvas();
             let viewport_center = canvas.engine_ref().camera.viewport_center();
             let new_zoom = f64::from(canvaswrapper.scroller().width())
-                / (canvaswrapper.canvas().engine_ref().document.format.width + 2.0 * RnCanvas::ZOOM_FIT_WIDTH_MARGIN);
+                / (canvaswrapper.canvas().engine_ref().document.format.width() + 2.0 * RnCanvas::ZOOM_FIT_WIDTH_MARGIN);
             let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
             widget_flags |= canvas.engine_mut().camera.set_viewport_center(viewport_center);
             appwindow.handle_widget_flags(widget_flags, &canvas)

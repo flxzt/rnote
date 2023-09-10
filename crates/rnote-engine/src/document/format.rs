@@ -53,8 +53,8 @@ impl TryFrom<u32> for PredefinedFormat {
 }
 
 impl PredefinedFormat {
-    pub fn size_portrait_mm(&self) -> Option<(f64, f64)> {
-        match self {
+    pub fn size_mm(&self, orientation: Orientation) -> Option<na::Vector2<f64>> {
+        let mut size_portrait = match self {
             PredefinedFormat::A6 => Some((105.0, 148.0)),
             PredefinedFormat::A5 => Some((148.0, 210.0)),
             PredefinedFormat::A4 => Some((210.0, 297.0)),
@@ -63,7 +63,13 @@ impl PredefinedFormat {
             PredefinedFormat::UsLetter => Some((215.9, 279.4)),
             PredefinedFormat::UsLegal => Some((215.9, 355.6)),
             PredefinedFormat::Custom => None,
+        };
+        if let Some(size_portrait) = &mut size_portrait {
+            if orientation == Orientation::Landscape {
+                std::mem::swap(&mut size_portrait.0, &mut size_portrait.1);
+            }
         }
+        size_portrait.map(|s| na::vector![s.0, s.1])
     }
 }
 
@@ -147,13 +153,13 @@ impl Default for Orientation {
 #[serde(default, rename = "format")]
 pub struct Format {
     #[serde(rename = "width", with = "rnote_compose::serialize::f64_dp3")]
-    pub width: f64,
+    width: f64,
     #[serde(rename = "height", with = "rnote_compose::serialize::f64_dp3")]
-    pub height: f64,
+    height: f64,
     #[serde(rename = "dpi", with = "rnote_compose::serialize::f64_dp3")]
-    pub dpi: f64,
+    dpi: f64,
     #[serde(rename = "orientation")]
-    pub orientation: Orientation,
+    orientation: Orientation,
     #[serde(rename = "border_color")]
     pub border_color: Color,
     #[serde(rename = "show_borders")]
@@ -187,4 +193,46 @@ impl Format {
     pub const DPI_DEFAULT: f64 = 96.0;
 
     pub const BORDER_COLOR_DEFAULT: piet::Color = color::GNOME_BRIGHTS[2];
+
+    pub fn width(&self) -> f64 {
+        self.width
+    }
+
+    pub fn set_width(&mut self, width: f64) {
+        self.width = width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX);
+        self.orientation = self.determine_orientation();
+    }
+
+    pub fn height(&self) -> f64 {
+        self.height
+    }
+
+    pub fn set_height(&mut self, height: f64) {
+        self.height = height.clamp(Self::HEIGHT_MIN, Self::HEIGHT_MAX);
+        self.orientation = self.determine_orientation();
+    }
+
+    pub fn dpi(&self) -> f64 {
+        self.dpi
+    }
+
+    pub fn set_dpi(&mut self, dpi: f64) {
+        self.dpi = dpi.clamp(Self::DPI_MIN, Self::DPI_MAX);
+    }
+
+    pub fn orientation(&self) -> Orientation {
+        self.orientation
+    }
+
+    pub fn size(&self) -> na::Vector2<f64> {
+        na::vector![self.width, self.height]
+    }
+
+    fn determine_orientation(&self) -> Orientation {
+        if self.width <= self.height {
+            Orientation::Portrait
+        } else {
+            Orientation::Landscape
+        }
+    }
 }

@@ -48,6 +48,7 @@ impl Selector {
                 );
                 // possibly nudge camera
                 widget_flags |= engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
+                widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
 
                 EventResult {
                     handled: true,
@@ -183,6 +184,7 @@ impl Selector {
                             // possibly nudge camera
                             widget_flags |=
                                 engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
+                            widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
 
                             // strokes that were not visible previously might come into view
                             engine_view.store.regenerate_rendering_in_viewport_threaded(
@@ -289,6 +291,7 @@ impl Selector {
                         // possibly nudge camera
                         widget_flags |=
                             engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
+                        widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
                     }
                 }
 

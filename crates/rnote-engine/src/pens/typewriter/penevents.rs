@@ -228,6 +228,7 @@ impl Typewriter {
                             // possibly nudge camera
                             widget_flags |=
                                 engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
+                            widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
 
                             *current_pos = element.pos;
 

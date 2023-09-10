@@ -195,8 +195,8 @@ mod imp {
 
     impl RnSettingsPanel {
         fn update_orientation_toggles(&self) {
-            let width = self.format_width_unitentry.value();
-            let height = self.format_height_unitentry.value();
+            let width = self.format_width_unitentry.value_in_px();
+            let height = self.format_height_unitentry.value_in_px();
             let orientation = if width <= height {
                 format::Orientation::Portrait
             } else {

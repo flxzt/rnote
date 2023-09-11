@@ -12,6 +12,43 @@
     <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
+        <property name="vexpand">false</property>
+        <child>
+          <object class="GtkMenuButton" id="shapebuildertype_menubutton">
+            <property name="direction">left</property>
+            <property name="tooltip_text" translatable="yes">Shape Builders</property>
+            <property name="popover">shapebuildertype_popover</property>
+            <property name="icon-name">shapebuilder-line-symbolic</property>
+            <style>
+              <class name="flat" />
+              <class name="sidebar_action_button" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="constraint_menubutton">
+            <property name="icon-name">settings-symbolic</property>
+            <property name="hexpand">true</property>
+            <property name="sensitive">true</property>
+            <property name="halign">fill</property>
+            <property name="direction">left</property>
+            <property name="tooltip_text" translatable="yes">Constraints</property>
+            <property name="popover">constraint_popover</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
         <child>
           <object class="GtkMenuButton" id="shaperstyle_menubutton">
             <property name="direction">left</property>
@@ -44,43 +81,6 @@
     </child>
     <child>
       <object class="RnStrokeWidthPicker" id="stroke_width_picker">
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <property name="vexpand">false</property>
-        <child>
-          <object class="GtkMenuButton" id="shapebuildertype_menubutton">
-            <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Shape Builders</property>
-            <property name="popover">shapebuildertype_popover</property>
-            <property name="icon-name">shapebuilder-line-symbolic</property>
-            <style>
-              <class name="flat" />
-              <class name="sidebar_action_button" />
-            </style>
-          </object>
-        </child>
-        <child>
-          <object class="GtkMenuButton" id="constraint_menubutton">
-            <property name="icon-name">settings-symbolic</property>
-            <property name="hexpand">true</property>
-            <property name="sensitive">true</property>
-            <property name="halign">fill</property>
-            <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Constraints</property>
-            <property name="popover">constraint_popover</property>
-            <style>
-              <class name="flat" />
-            </style>
-          </object>
-        </child>
       </object>
     </child>
 

@@ -687,7 +687,7 @@ msgstr "Pędzel"
 #: crates/rnote-ui/data/ui/overlays.ui:56
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:82
 msgid "Shaper"
-msgstr "Ostrzejszy"
+msgstr "Kształty"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:49
 #: crates/rnote-ui/data/ui/overlays.ui:67

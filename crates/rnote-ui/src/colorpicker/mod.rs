@@ -26,6 +26,7 @@ mod imp {
         pub(crate) stroke_color: RefCell<gdk::RGBA>,
         pub(crate) fill_color: RefCell<gdk::RGBA>,
         pub(crate) position: Cell<PositionType>,
+        pub(crate) color_dialog: glib::WeakRef<ColorDialog>,
 
         #[template_child]
         pub(crate) active_colors_box: TemplateChild<gtk4::Box>,
@@ -63,6 +64,7 @@ mod imp {
                 )),
                 fill_color: RefCell::new(gdk::RGBA::from_compose_color(*super::FILL_COLOR_DEFAULT)),
                 position: Cell::new(PositionType::Right),
+                color_dialog: glib::WeakRef::new(),
 
                 active_colors_box: TemplateChild::default(),
                 stroke_color_pad: TemplateChild::default(),
@@ -463,24 +465,31 @@ impl RnColorPicker {
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.imp().colordialog_button.connect_clicked(
             clone!(@weak self as colorpicker, @weak appwindow => move |_| {
-                glib::MainContext::default().spawn_local(clone!(@weak colorpicker, @weak appwindow => async move {
-                    let dialog = ColorDialog::builder().modal(false).with_alpha(true).build();
+                if colorpicker.imp().color_dialog.upgrade().is_some() {
+                    // Unfortunately Gtk currently does not have API to make the dialog the active window.
+                } else {
+                    glib::MainContext::default().spawn_local(clone!(@weak colorpicker, @weak appwindow => async move {
+                        let dialog = ColorDialog::builder().modal(false).with_alpha(true).build();
+                        colorpicker.imp().color_dialog.set(Some(&dialog));
 
-                    let active_color = if colorpicker.stroke_color_pad_active() {
-                        colorpicker.stroke_color()
-                    } else {
-                        colorpicker.fill_color()
-                    };
-                    match dialog.choose_rgba_future(Some(&appwindow), Some(&active_color)).await {
-                        Ok(new_color) => {
-                            colorpicker.set_color_active_pad(new_color);
-                            colorpicker.set_color_active_setter(new_color);
-                        },
-                        // this reports as error if the dialog is dismissed by the user.
-                        // The API is a bit odd, expected would be Result<Option<RGBA>>
-                        Err(e) => log::debug!("did not choose new color (Error or dialog dismissed by user), {e:?}"),
-                    }
-                }));
+                        let active_color = if colorpicker.stroke_color_pad_active() {
+                            colorpicker.stroke_color()
+                        } else {
+                            colorpicker.fill_color()
+                        };
+                        match dialog.choose_rgba_future(Some(&appwindow), Some(&active_color)).await {
+                            Ok(new_color) => {
+                                colorpicker.set_color_active_pad(new_color);
+                                colorpicker.set_color_active_setter(new_color);
+                            },
+                            // this reports as error if the dialog is dismissed by the user.
+                            // The API is a bit odd, expected would be Result<Option<RGBA>>
+                            Err(e) => log::debug!("did not choose new color (Error or dialog dismissed by user), {e:?}"),
+                        }
+
+                        colorpicker.imp().color_dialog.set(None);
+                    }));
+                }
             }),
         );
     }

@@ -679,7 +679,8 @@ impl Engine {
     pub fn doc_add_page_fixed_size(&mut self) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         if self.document.add_page_fixed_size() {
-            widget_flags |= self.update_rendering_current_viewport()
+            widget_flags |= self.update_rendering_current_viewport();
+            widget_flags.resize = true;
         }
         widget_flags
     }
@@ -696,7 +697,8 @@ impl Engine {
                     .keys_below_y(self.document.y + self.document.height),
                 true,
             );
-            widget_flags |= self.record(Instant::now()) | self.update_rendering_current_viewport()
+            widget_flags |= self.record(Instant::now()) | self.update_rendering_current_viewport();
+            widget_flags.resize = true;
         }
         widget_flags
     }

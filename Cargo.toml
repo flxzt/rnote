@@ -67,18 +67,18 @@ winresource = "0.1"
 smol = "1"
 clap = { version = "4", features = ["derive"] }
 indicatif = "0.17"
+dialoguer = "0.10.4"
+open = "5"
+atty = "0.2"
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 glib = "0.18.1"
 gio = "0.18.1"
 cairo-rs = { version = "0.18", features = ["png", "svg", "pdf"] }
-librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", rev = "58c52b742d7623b9a4e94975fb65cbf4a9ff13f1" }
+librsvg = "2.57"
 # newest poppler feature ("v21_12") is causing linking errors when building in mingw for some reason.
 poppler-rs = { version = "0.22", features = ["v20_9"] }
 gtk4 = { version = "0.7.1", features = ["v4_12"] }
 adw = { version = "0.5.2", package="libadwaita", features = ["v1_4"] }
-dialoguer = "0.10.4"
-open = "5"
-atty = "0.2"
 
 [patch.crates-io]
 # once a new piet (current v0.6.2) is released with the updated cairo, this can be removed

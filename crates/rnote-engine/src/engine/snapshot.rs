@@ -85,7 +85,7 @@ impl EngineSnapshot {
                 let mut engine = Engine::default();
 
                 // We convert all values from the hardcoded 72 DPI of Xopp files to the preferred dpi
-                engine.document.format.dpi = xopp_import_prefs.dpi;
+                engine.document.format.set_dpi(xopp_import_prefs.dpi);
 
                 engine.document.x = 0.0;
                 engine.document.y = 0.0;
@@ -100,16 +100,22 @@ impl EngineSnapshot {
                     xopp_import_prefs.dpi,
                 );
 
-                engine.document.format.width = crate::utils::convert_value_dpi(
-                    doc_width,
-                    xoppformat::XoppFile::DPI,
-                    xopp_import_prefs.dpi,
-                );
-                engine.document.format.height = crate::utils::convert_value_dpi(
-                    doc_height / (no_pages as f64),
-                    xoppformat::XoppFile::DPI,
-                    xopp_import_prefs.dpi,
-                );
+                engine
+                    .document
+                    .format
+                    .set_width(crate::utils::convert_value_dpi(
+                        doc_width,
+                        xoppformat::XoppFile::DPI,
+                        xopp_import_prefs.dpi,
+                    ));
+                engine
+                    .document
+                    .format
+                    .set_height(crate::utils::convert_value_dpi(
+                        doc_height / (no_pages as f64),
+                        xoppformat::XoppFile::DPI,
+                        xopp_import_prefs.dpi,
+                    ));
 
                 if let Some(first_page) = xopp_file.xopp_root.pages.get(0) {
                     if let xoppformat::XoppBackgroundType::Solid {

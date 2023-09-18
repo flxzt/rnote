@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-14 11:08+0200\n"
-"PO-Revision-Date: 2023-08-28 20:55+0000\n"
+"PO-Revision-Date: 2023-09-18 17:18+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.0.2\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1619,24 +1619,12 @@ msgid "Save Document As"
 msgstr "ஆவணத்தை இவ்வாறு சேமிக்கவும்"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
-#, fuzzy
-#| msgid ""
-#| "Add Page.\n"
-#| "Available in Fixed-Size Document Layout."
 msgid "Add Page (When in Fixed-Size Layout)"
-msgstr ""
-"பக்கத்தைச் சேர்.\n"
-"நிலையான அளவு ஆவண அமைப்பில் கிடைக்கும்."
+msgstr "பக்கத்தைச் சேர் (நிலையான அளவு அமைப்பில் இருக்கும்போது)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
-#, fuzzy
-#| msgid ""
-#| "Remove Page.\n"
-#| "Available in Fixed-Size Document Layout."
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr ""
-"பக்கத்தை அகற்று.\n"
-"நிலையான அளவு ஆவண அமைப்பில் கிடைக்கும்."
+msgstr "கடைசிப் பக்கத்தை அகற்று (நிலையான அளவு அமைப்பில் இருக்கும்போது)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Print Document"

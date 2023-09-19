@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-14 11:08+0200\n"
-"PO-Revision-Date: 2023-08-24 18:28+0000\n"
+"PO-Revision-Date: 2023-09-19 10:08+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0\n"
+"X-Generator: Weblate 5.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1620,24 +1620,16 @@ msgid "Save Document As"
 msgstr "Dokument speichern als"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
-#, fuzzy
-#| msgid ""
-#| "Add Page.\n"
-#| "Available in Fixed-Size Document Layout."
 msgid "Add Page (When in Fixed-Size Layout)"
 msgstr ""
-"Seite hinzufügen.\n"
-"Verfügbar im Feste-Größe Dokument-Layout."
+"Seite hinzufügen\n"
+"(im Feste-Größe Dokument-Layout)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
-#, fuzzy
-#| msgid ""
-#| "Remove Page.\n"
-#| "Available in Fixed-Size Document Layout."
 msgid "Remove Last Page (When in Fixed-Size Layout)"
 msgstr ""
-"Seite entfernen.\n"
-"Verfügbar im Feste-Größe Dokument-Layout."
+"Seite entfernen\n"
+"(im Feste-Größe Dokument-Layout)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Print Document"

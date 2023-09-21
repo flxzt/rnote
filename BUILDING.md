@@ -14,8 +14,8 @@ Make sure you have `flatpak` and `flatkpak-builder` installed on your system.
 You also need the Gnome Runtime, SDK and some extensions:
 
 ```bash
-flatpak install org.gnome.Platform//45beta org.gnome.Sdk//45beta org.freedesktop.Sdk.Extension.rust-stable//23.08beta\
-org.freedesktop.Sdk.Extension.llvm16//23.08beta
+flatpak install org.gnome.Platform//45 org.gnome.Sdk//45 org.freedesktop.Sdk.Extension.rust-stable//23.08\
+org.freedesktop.Sdk.Extension.llvm16//23.08
 ```
 
 Use Gnome Builder or VSCode with the

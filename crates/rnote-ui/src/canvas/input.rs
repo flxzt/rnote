@@ -220,14 +220,23 @@ pub(crate) fn handle_key_controller_key_pressed(
     key: gdk::Key,
     modifier: gdk::ModifierType,
 ) -> glib::Propagation {
-    //log::debug!("key pressed - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
+    //log::debug!("key pressed - key: {:?}, modifier: {:?}", key, modifier);
     canvas.grab_focus();
 
     let now = Instant::now();
+    let mut widget_flags = WidgetFlags::default();
     let keyboard_key = retrieve_keyboard_key(key);
     let modifier_keys = retrieve_modifier_keys(modifier);
+    let shortcut_key = retrieve_keyboard_shortcut_key(key, modifier);
 
-    let (propagation, widget_flags) = canvas.engine_mut().handle_pen_event(
+    if let Some(shortcut_key) = shortcut_key {
+        let (_ep, wf) = canvas
+            .engine_mut()
+            .handle_pressed_shortcut_key(shortcut_key, now);
+        widget_flags |= wf;
+    }
+
+    let (propagation, wf) = canvas.engine_mut().handle_pen_event(
         PenEvent::KeyPressed {
             keyboard_key,
             modifier_keys,
@@ -235,6 +244,7 @@ pub(crate) fn handle_key_controller_key_pressed(
         None,
         now,
     );
+    widget_flags |= wf;
     canvas.emit_handle_widget_flags(widget_flags);
 
     propagation.into_glib()
@@ -414,6 +424,18 @@ fn retrieve_pen_mode(event: &gdk::Event) -> Option<PenMode> {
     match device_tool.tool_type() {
         gdk::DeviceToolType::Pen => Some(PenMode::Pen),
         gdk::DeviceToolType::Eraser => Some(PenMode::Eraser),
+        _ => None,
+    }
+}
+
+pub(crate) fn retrieve_keyboard_shortcut_key(
+    gdk_key: gdk::Key,
+    modifier: gdk::ModifierType,
+) -> Option<ShortcutKey> {
+    match gdk_key {
+        gdk::Key::space if modifier.contains(gdk::ModifierType::CONTROL_MASK) => {
+            Some(ShortcutKey::KeyboardCtrlSpace)
+        }
         _ => None,
     }
 }

@@ -101,6 +101,8 @@ mod imp {
         #[template_child]
         pub(crate) penshortcut_touch_two_finger_long_press_row: TemplateChild<RnPenShortcutRow>,
         #[template_child]
+        pub(crate) penshortcut_keyboard_ctrl_space_row: TemplateChild<RnPenShortcutRow>,
+        #[template_child]
         pub(crate) penshortcut_drawing_pad_button_0: TemplateChild<RnPenShortcutRow>,
         #[template_child]
         pub(crate) penshortcut_drawing_pad_button_1: TemplateChild<RnPenShortcutRow>,
@@ -415,6 +417,9 @@ impl RnSettingsPanel {
                     imp.penshortcut_touch_two_finger_long_press_row
                         .set_action(action);
                 }
+                ShortcutKey::KeyboardCtrlSpace => {
+                    imp.penshortcut_keyboard_ctrl_space_row.set_action(action);
+                }
                 ShortcutKey::DrawingPadButton0 => {
                     imp.penshortcut_drawing_pad_button_0.set_action(action);
                 }
@@ -427,7 +432,6 @@ impl RnSettingsPanel {
                 ShortcutKey::DrawingPadButton3 => {
                     imp.penshortcut_drawing_pad_button_3.set_action(action);
                 }
-                _ => {}
             });
     }
 
@@ -684,6 +688,7 @@ impl RnSettingsPanel {
             imp.penshortcut_mouse_button_secondary_row.get();
         let penshortcut_touch_two_finger_long_press_row =
             imp.penshortcut_touch_two_finger_long_press_row.get();
+        let penshortcut_keyboard_ctrl_space_row = imp.penshortcut_keyboard_ctrl_space_row.get();
         let penshortcut_drawing_pad_button_0 = imp.penshortcut_drawing_pad_button_0.get();
         let penshortcut_drawing_pad_button_1 = imp.penshortcut_drawing_pad_button_1.get();
         let penshortcut_drawing_pad_button_2 = imp.penshortcut_drawing_pad_button_2.get();
@@ -710,6 +715,12 @@ impl RnSettingsPanel {
         imp.penshortcut_touch_two_finger_long_press_row.connect_local("action-changed", false, clone!(@weak penshortcut_touch_two_finger_long_press_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_touch_two_finger_long_press_row.action();
             appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::TouchTwoFingerLongPress, action);
+            None
+        }));
+
+        imp.penshortcut_keyboard_ctrl_space_row.connect_local("action-changed", false, clone!(@weak penshortcut_keyboard_ctrl_space_row, @weak appwindow => @default-return None, move |_values| {
+            let action = penshortcut_keyboard_ctrl_space_row.action();
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::KeyboardCtrlSpace, action);
             None
         }));
 

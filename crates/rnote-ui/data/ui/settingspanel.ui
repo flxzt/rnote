@@ -474,7 +474,7 @@ two-finger long-press gesture</property>
 Ctrl plus Space shortcut</property>
                         <child type="prefix">
                           <object class="GtkImage">
-                            <property name="icon_name">touch-two-finger-long-press-symbolic</property>
+                            <property name="icon_name">keyboard-ctrl-space-shortcut-symbolic</property>
                             <property name="icon-size">large</property>
                           </object>
                         </child>

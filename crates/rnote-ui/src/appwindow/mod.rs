@@ -519,6 +519,12 @@ impl RnAppWindow {
                     )
                     .await?
                 }
+                FileType::PlaintextFile => {
+                    let canvas = appwindow.active_tab_wrapper().canvas();
+                    let (bytes, _) = input_file.load_bytes_future().await?;
+                    canvas.load_in_text(String::from_utf8(bytes.to_vec())?, target_pos)?;
+                    true
+                }
                 FileType::Folder => {
                     if let Some(dir) = input_file.path() {
                         appwindow

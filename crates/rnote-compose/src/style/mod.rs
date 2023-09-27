@@ -53,6 +53,15 @@ impl Style {
         }
     }
 
+    /// Set the stroke width. Available on all styles.
+    pub fn set_stroke_width(&mut self, stroke_width: f64) {
+        match self {
+            Style::Smooth(options) => options.stroke_width = stroke_width,
+            Style::Rough(options) => options.stroke_width = stroke_width,
+            Style::Textured(options) => options.stroke_width = stroke_width,
+        }
+    }
+
     /// The margins for bounds which contain the shape.
     pub fn bounds_margin(&self) -> f64 {
         match self {
@@ -62,7 +71,7 @@ impl Style {
         }
     }
 
-    /// Advances the seed for styles that have one.
+    /// Advance the seed for styles that have one.
     pub fn advance_seed(&mut self) {
         match self {
             Style::Smooth(_) => {}

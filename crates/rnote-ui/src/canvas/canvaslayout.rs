@@ -46,7 +46,7 @@ mod imp {
         ) -> (i32, i32, i32, i32) {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
             let total_zoom = canvas.engine_ref().camera.total_zoom();
-            let document = canvas.engine_ref().document;
+            let document = canvas.engine_ref().document.clone();
 
             if orientation == Orientation::Horizontal {
                 let natural_width = (document.width * total_zoom

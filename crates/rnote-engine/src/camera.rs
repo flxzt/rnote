@@ -70,6 +70,15 @@ impl Camera {
     pub const OVERSHOOT_HORIZONTAL: f64 = 96.0;
     pub const OVERSHOOT_VERTICAL: f64 = 96.0;
 
+    pub fn clone_config(&self) -> Self {
+        Self {
+            offset: self.offset,
+            size: self.size,
+            zoom: self.zoom,
+            ..Default::default()
+        }
+    }
+
     pub fn with_zoom(mut self, zoom: f64) -> Self {
         self.zoom = zoom.clamp(Self::ZOOM_MIN, Self::ZOOM_MAX);
         self

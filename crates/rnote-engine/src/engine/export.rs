@@ -338,7 +338,7 @@ impl Engine {
     /// Extract the current engine configuration.
     pub fn extract_engine_config(&self) -> EngineConfig {
         EngineConfig {
-            document: self.document,
+            document: self.document.clone_config(),
             pens_config: self.pens_config.clone(),
             penholder: self.penholder.clone_config(),
             import_prefs: self.import_prefs,
@@ -544,7 +544,7 @@ impl Engine {
         let doc_export_prefs =
             doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
         let pages_content = self.extract_pages_content(doc_export_prefs.page_order);
-        let document = self.document;
+        let document = self.document.clone();
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {

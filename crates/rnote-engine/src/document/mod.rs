@@ -80,7 +80,7 @@ impl std::string::ToString for Layout {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "document")]
 pub struct Document {
     #[serde(rename = "x", with = "rnote_compose::serialize::f64_dp3")]
@@ -122,6 +122,10 @@ impl Document {
         b: 0.0,
         a: 0.35,
     };
+
+    pub fn clone_config(&self) -> Self {
+        self.clone()
+    }
 
     pub(crate) fn bounds(&self) -> Aabb {
         Aabb::new(

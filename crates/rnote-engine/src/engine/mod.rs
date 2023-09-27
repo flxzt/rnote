@@ -301,7 +301,8 @@ impl Engine {
         }
 
         EngineSnapshot {
-            document: self.document,
+            document: self.document.clone_config(),
+            camera: self.camera.clone_config(),
             stroke_components: Arc::clone(&store_history_entry.stroke_components),
             chrono_components: Arc::clone(&store_history_entry.chrono_components),
             chrono_counter: store_history_entry.chrono_counter,
@@ -310,7 +311,8 @@ impl Engine {
 
     /// Imports an engine snapshot. A save file should always be loaded with this method.
     pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) -> WidgetFlags {
-        self.document = snapshot.document;
+        self.document = snapshot.document.clone_config();
+        self.camera = snapshot.camera.clone_config();
         self.store.import_from_snapshot(&snapshot)
             | self.current_pen_update_state()
             | self.return_to_origin(None)

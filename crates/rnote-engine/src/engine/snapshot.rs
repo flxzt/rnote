@@ -4,7 +4,7 @@ use crate::engine::import::XoppImportPrefs;
 use crate::fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::Stroke;
-use crate::{Document, Engine};
+use crate::{Camera, Document, Engine};
 use anyhow::Context;
 use futures::channel::oneshot;
 use serde::{Deserialize, Serialize};
@@ -17,6 +17,8 @@ use std::sync::Arc;
 pub struct EngineSnapshot {
     #[serde(rename = "document")]
     pub document: Document,
+    #[serde(rename = "camera")]
+    pub camera: Camera,
     #[serde(rename = "stroke_components")]
     pub stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
     #[serde(rename = "chrono_components")]
@@ -29,6 +31,7 @@ impl Default for EngineSnapshot {
     fn default() -> Self {
         Self {
             document: Document::default(),
+            camera: Camera::default(),
             stroke_components: Arc::new(HopSlotMap::with_key()),
             chrono_components: Arc::new(SecondaryMap::new()),
             chrono_counter: 0,

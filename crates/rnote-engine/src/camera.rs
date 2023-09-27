@@ -33,13 +33,13 @@ pub struct Camera {
     #[serde(rename = "zoom")]
     zoom: f64,
     /// The temporary zoom. Is used to overlay the "permanent" zoom.
-    #[serde(rename = "temporary_zoom")]
+    #[serde(skip)]
     temporary_zoom: f64,
 
     /// The scale factor of the surface, usually 1.0 or 2.0 for high-dpi screens.
     ///
     /// This value could become a non-integer value in the future, so it is stored as float.
-    #[serde(rename = "scale_factor")]
+    #[serde(skip)]
     scale_factor: f64,
 
     #[serde(skip)]

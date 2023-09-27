@@ -468,6 +468,19 @@ two-finger long-press gesture</property>
                       </object>
                     </child>
                     <child>
+                      <object class="RnPenShortcutRow" id="penshortcut_keyboard_ctrl_space_row">
+                        <property name="title" translatable="yes">Keyboard Ctrl-Space Action</property>
+                        <property name="subtitle" translatable="yes">Set the action for the keyboard
+Ctrl plus Space shortcut</property>
+                        <child type="prefix">
+                          <object class="GtkImage">
+                            <property name="icon_name">keyboard-ctrl-space-shortcut-symbolic</property>
+                            <property name="icon-size">large</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
                       <object class="RnPenShortcutRow" id="penshortcut_drawing_pad_button_0">
                         <property name="title" translatable="yes">Drawing Pad Button 1 Action</property>
                         <property name="subtitle" translatable="yes">Set the action for button 1

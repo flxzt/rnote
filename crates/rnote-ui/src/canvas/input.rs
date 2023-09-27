@@ -224,29 +224,26 @@ pub(crate) fn handle_key_controller_key_pressed(
     canvas.grab_focus();
 
     let now = Instant::now();
-    let mut widget_flags = WidgetFlags::default();
     let keyboard_key = retrieve_keyboard_key(key);
     let modifier_keys = retrieve_modifier_keys(modifier);
     let shortcut_key = retrieve_keyboard_shortcut_key(key, modifier);
 
-    if let Some(shortcut_key) = shortcut_key {
-        let (_ep, wf) = canvas
+    let (propagation, widget_flags) = if let Some(shortcut_key) = shortcut_key {
+        canvas
             .engine_mut()
-            .handle_pressed_shortcut_key(shortcut_key, now);
-        widget_flags |= wf;
-    }
+            .handle_pressed_shortcut_key(shortcut_key, now)
+    } else {
+        canvas.engine_mut().handle_pen_event(
+            PenEvent::KeyPressed {
+                keyboard_key,
+                modifier_keys,
+            },
+            None,
+            now,
+        )
+    };
 
-    let (propagation, wf) = canvas.engine_mut().handle_pen_event(
-        PenEvent::KeyPressed {
-            keyboard_key,
-            modifier_keys,
-        },
-        None,
-        now,
-    );
-    widget_flags |= wf;
     canvas.emit_handle_widget_flags(widget_flags);
-
     propagation.into_glib()
 }
 

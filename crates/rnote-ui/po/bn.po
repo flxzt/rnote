@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-14 11:08+0200\n"
-"PO-Revision-Date: 2023-07-30 15:04+0000\n"
+"PO-Revision-Date: 2023-09-27 10:07+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -372,15 +372,13 @@ msgstr "পটভূমির প্যাটার্ন রপ্তানি 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:354
 #: crates/rnote-ui/data/ui/dialogs/export.ui:577
 msgid "Optimize for Printing"
-msgstr ""
+msgstr "প্রিন্ট করার জন্য অপ্টিমাইজ করা"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:355
 #: crates/rnote-ui/data/ui/dialogs/export.ui:578
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Set whether the content should be optimized for printing"
-msgstr "পটভূমির প্যাটার্ন রপ্তানি করা উচিত কিনা তা সেট করুন"
+msgstr "বিষয়বস্তু প্রিন্ট করার জন্য অপ্টিমাইজ করা হবে কিনা তা সেট করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:143
 #: crates/rnote-ui/data/ui/dialogs/export.ui:365
@@ -716,7 +714,7 @@ msgstr "সমস্ত স্ট্রোক নির্বাচনমুক�
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 msgid "Invert Color Brightness of All Selected Strokes"
-msgstr ""
+msgstr "সব নির্বাচিত স্ট্রোকগুলির রঙ উলটান"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 #: crates/rnote-ui/data/ui/shortcuts.ui:224
@@ -1106,18 +1104,24 @@ msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"পৃষ্ঠাটি সরান।\n"
+"নির্দিষ্ট মাপের নথি উপলব্ধ।"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:157
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"পৃষ্ঠা যোগ।\n"
+"নির্দিষ্ট মাপের নথি উপলব্ধ।"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:166
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"বিষয়বস্তু সাথে সমতুল্যভাবে নথির আকার পরিবর্তন করুন।\n"
+"নির্দিষ্ট মাপের নথিবিন্যাস উপলব্ধ।"
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
@@ -1430,19 +1434,15 @@ msgstr "পটভূমির প্যাটার্নের উচ্চত�
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:402
 msgid "Invert Color Brightness"
-msgstr ""
+msgstr "রঙের উজ্জ্বলতা উলটান"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:403
-#, fuzzy
-#| msgid "Set the background pattern color"
 msgid "Invert the brightness of all background pattern colors"
-msgstr "পটভূমির প্যাটার্নের রঙ সেট করুন"
+msgstr "পটভূমির প্যাটার্নের রঙ উলটান"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:407
-#, fuzzy
-#| msgid "Revert"
 msgid "Invert"
-msgstr "আগের অবস্থাই ফিরে যান"
+msgstr "উলটো করুন"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:417
 msgid "Button Shortcuts"
@@ -1619,11 +1619,11 @@ msgstr "এই হিসাবে নথি সংরক্ষণ করুন"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
 msgid "Add Page (When in Fixed-Size Layout)"
-msgstr ""
+msgstr "পৃষ্ঠা যোগ করুন (যখন নির্দিষ্ট মাপের বিন্যাসে রয়েছে)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr ""
+msgstr "শেষ পৃষ্ঠা সরান (যখন নির্দিষ্ট মাপের বিন্যাসে রয়েছে)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Print Document"
@@ -2105,10 +2105,8 @@ msgid "Ellipses"
 msgstr "উপবৃত্তসমূহ"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:412
-#, fuzzy
-#| msgid "Curves"
 msgid "Curves & Paths"
-msgstr "বক্ররেখা"
+msgstr "বক্ররেখা এবং পথসমূহ"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
@@ -2152,7 +2150,7 @@ msgstr "ত্রিঘাত বেজিয়ে বক্ররেখা"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
-msgstr ""
+msgstr "পলিলাইন"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:537
 msgid "Application restart is required"

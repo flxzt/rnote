@@ -313,12 +313,13 @@ impl Engine {
     pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) -> WidgetFlags {
         self.document = snapshot.document.clone_config();
         self.camera = snapshot.camera.clone_config();
-        self.store.import_from_snapshot(&snapshot)
-            | self.current_pen_update_state()
-            | self.return_to_origin(None)
+        let mut widget_flags = self.store.import_from_snapshot(&snapshot)
             | self.doc_resize_autoexpand()
+            | self.current_pen_update_state()
             | self.background_regenerate_pattern()
-            | self.update_content_rendering_current_viewport()
+            | self.update_content_rendering_current_viewport();
+        widget_flags.update_view = true;
+        widget_flags
     }
 
     /// Records the current store state and saves it as a history entry.
@@ -670,7 +671,7 @@ impl Engine {
 
     /// Expand the doc to the camera when in autoexpanding layouts. called e.g. when dragging with touch.
     ///
-    /// Background rendering then needs to be updated.
+    /// Background and content rendering then needs to be updated.
     pub fn doc_expand_autoexpand(&mut self) -> WidgetFlags {
         self.document.expand_autoexpand(&self.camera)
     }
@@ -707,7 +708,7 @@ impl Engine {
 
     /// Update the viewport offset of the camera, clamped to mins and maxs values depending on the document layout.
     ///
-    /// Background and strokes rendering then need to be updated.
+    /// Background and content rendering then need to be updated.
     pub fn camera_set_offset(&mut self, offset: na::Vector2<f64>) -> WidgetFlags {
         self.camera.set_offset(offset, &self.document)
     }
@@ -716,21 +717,21 @@ impl Engine {
     ///
     /// Expands the document when in autoexpanding layouts.
     ///
-    /// Background and strokes rendering then need to be updated.
+    /// Background and content rendering then need to be updated.
     pub fn camera_set_offset_expand(&mut self, offset: na::Vector2<f64>) -> WidgetFlags {
         self.camera.set_offset(offset, &self.document) | self.doc_expand_autoexpand()
     }
 
     /// Update the viewport size of the camera.
     ///
-    /// Background and strokes rendering then need to be updated.
+    /// Background and content rendering then need to be updated.
     pub fn camera_set_size(&mut self, size: na::Vector2<f64>) -> WidgetFlags {
         self.camera.set_size(size)
     }
 
     /// Update the viewport size of the camera.
     ///
-    /// Background and strokes rendering then need to be updated.
+    /// Background and content rendering then need to be updated.
     pub fn camera_offset_mins_maxs(&self) -> (na::Vector2<f64>, na::Vector2<f64>) {
         self.camera.offset_lower_upper(&self.document)
     }

@@ -196,7 +196,7 @@ impl Document {
         let mut widget_flags = WidgetFlags::default();
         match self.layout {
             Layout::FixedSize => {
-                // do not resize in fixed size mode, if wanted use resize_doc_to_fit_content() for it.
+                // do not resize in fixed size mode, if wanted use resize_to_fit_content() for it.
             }
             Layout::ContinuousVertical => {
                 self.resize_doc_continuous_vertical_layout(store);

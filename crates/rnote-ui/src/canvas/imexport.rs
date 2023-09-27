@@ -34,7 +34,9 @@ impl RnCanvas {
 
     pub(crate) async fn reload_from_disk(&self) -> anyhow::Result<()> {
         let Some(output_file) = self.output_file() else {
-            return Ok(());
+            return Err(anyhow::anyhow!(
+                "Failed to reload file from disk, no file path saved."
+            ));
         };
         let (bytes, _) = output_file.load_bytes_future().await?;
         self.load_in_rnote_bytes(bytes.to_vec(), output_file.path())

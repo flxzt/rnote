@@ -42,7 +42,7 @@ impl Default for EngineSnapshot {
 impl EngineSnapshot {
     /// Loads a snapshot from the bytes of a .rnote file.
     ///
-    /// To import this snapshot into the current engine, use `import_snapshot()`.
+    /// To import this snapshot into the current engine, use [`Engine::load_snapshot()`].
     pub async fn load_from_rnote_bytes(bytes: Vec<u8>) -> anyhow::Result<Self> {
         let (snapshot_sender, snapshot_receiver) = oneshot::channel::<anyhow::Result<Self>>();
 
@@ -62,7 +62,7 @@ impl EngineSnapshot {
     }
     /// Loads from the bytes of a Xournal++ .xopp file.
     ///
-    /// To import this snapshot into the current engine, use `import_snapshot()`.
+    /// To import this snapshot into the current engine, use [`Engine::load_snapshot()`].
     pub async fn load_from_xopp_bytes(
         bytes: Vec<u8>,
         xopp_import_prefs: XoppImportPrefs,

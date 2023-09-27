@@ -484,7 +484,7 @@ mod imp {
             if let Some(ref hadj) = hadj {
                 let signal_id =
                     hadj.connect_value_changed(clone!(@weak obj as canvas => move |_| {
-                        // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
+                        // this triggers a canvaslayout allocate() call, where the content rendering is updated based on some conditions
                         canvas.queue_resize();
                     }));
 
@@ -504,7 +504,7 @@ mod imp {
             if let Some(ref vadj) = vadj {
                 let signal_id =
                     vadj.connect_value_changed(clone!(@weak obj as canvas => move |_| {
-                        // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
+                        // this triggers a canvaslayout allocate() call, where the content rendering is updated based on some conditions
                         canvas.queue_resize();
                     }));
 

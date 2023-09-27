@@ -86,6 +86,13 @@ impl Default for Shortcuts {
             },
         );
         map.insert(
+            ShortcutKey::KeyboardCtrlSpace,
+            ShortcutAction::ChangePenStyle {
+                style: PenStyle::Tools,
+                mode: ShortcutMode::Temporary,
+            },
+        );
+        map.insert(
             ShortcutKey::DrawingPadButton0,
             ShortcutAction::ChangePenStyle {
                 style: PenStyle::Eraser,

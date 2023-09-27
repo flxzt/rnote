@@ -116,7 +116,6 @@ impl KeyboardKey {
     }
 }
 
-#[non_exhaustive]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 #[serde(rename = "shortcut_key")]
 /// A Shortcut key.
@@ -133,6 +132,9 @@ pub enum ShortcutKey {
     /// Touch two finger long press gesture.
     #[serde(rename = "touch_two_finger_long_press")]
     TouchTwoFingerLongPress,
+    /// Keyboard Shift plus Spacebar shortcut.
+    #[serde(rename = "keyboard_ctrl_space")]
+    KeyboardCtrlSpace,
     /// Button 0 on a drawing pad.
     #[serde(rename = "drawing_pad_button_0")]
     DrawingPadButton0,

@@ -10,6 +10,7 @@ pub(crate) enum FileType {
     BitmapImageFile,
     XoppFile,
     PdfFile,
+    PlaintextFile,
     Unsupported,
 }
 
@@ -38,6 +39,9 @@ impl FileType {
                             }
                             "application/pdf" => {
                                 return Self::PdfFile;
+                            }
+                            "text/plain" => {
+                                return Self::PlaintextFile;
                             }
                             _ => {}
                         }
@@ -73,6 +77,9 @@ impl FileType {
                     }
                     "pdf" => {
                         return Self::PdfFile;
+                    }
+                    "txt" => {
+                        return Self::PlaintextFile;
                     }
                     _ => {}
                 }

@@ -183,6 +183,7 @@ impl RnOverlays {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
+        imp.colorpicker.get().init(appwindow);
         imp.penssidebar.get().init(appwindow);
         imp.penssidebar.get().brush_page().init(appwindow);
         imp.penssidebar.get().shaper_page().init(appwindow);

@@ -6,27 +6,28 @@
       <object class="GtkBinLayout" />
     </property>
     <child>
-      <object class="GtkBox" id="main_titlebox">
-        <child>
-          <object class="GtkLabel" id="main_title_unsaved_indicator">
-            <property name="label">•</property>
-            <property name="visible">false</property>
-          </object>
-        </child>
-        <child>
-          <object class="AdwWindowTitle" id="main_title">
-            <property name="title" translatable="yes">New Document</property>
-            <property name="subtitle" translatable="yes">Draft</property>
-            <style>
-              <class name="main_title" />
-            </style>
-          </object>
-        </child>
-      </object>
       <object class="AdwHeaderBar" id="headerbar">
-        <property name="title-widget">main_titlebox</property>
         <property name="centering-policy">loose</property>
         <property name="vexpand">false</property>
+        <property name="title-widget">
+          <object class="GtkBox">
+            <child>
+              <object class="GtkLabel" id="main_title_unsaved_indicator">
+                <property name="label">•</property>
+                <property name="visible">false</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwWindowTitle" id="main_title">
+                <property name="title" translatable="yes">New Document</property>
+                <property name="subtitle" translatable="yes">Draft</property>
+                <style>
+                  <class name="main_title" />
+                </style>
+              </object>
+            </child>
+          </object>
+        </property>
         <child type="start">
           <object class="GtkBox" id="quickactions_box">
             <property name="spacing">3</property>
@@ -34,9 +35,9 @@
               <object class="GtkBox">
                 <property name="spacing">3</property>
                 <child>
-                  <object class="GtkToggleButton" id="left_flapreveal_toggle">
-                    <property name="icon_name">flap-symbolic</property>
-                    <property name="tooltip_text" translatable="yes">Reveal/Hide Flap</property>
+                  <object class="GtkToggleButton" id="left_sidebar_reveal_toggle">
+                    <property name="icon_name">sidebar-reveal-symbolic</property>
+                    <property name="tooltip_text" translatable="yes">Reveal/Hide Sidebar</property>
                   </object>
                 </child>
                 <child>
@@ -68,13 +69,13 @@
               </object>
             </child>
             <child>
-              <object class="GtkToggleButton" id="right_flapreveal_toggle">
-                <property name="icon_name">flap-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Reveal/Hide Flap</property>
+              <object class="GtkToggleButton" id="right_sidebar_reveal_toggle">
+                <property name="icon_name">sidebar-reveal-symbolic</property>
+                <property name="tooltip_text" translatable="yes">Reveal/Hide Sidebar</property>
               </object>
             </child>
             <child>
-              <object class="GtkBox" id="menus_box">
+              <object class="GtkBox">
                 <property name="spacing">3</property>
                 <child>
                   <object class="RnCanvasMenu" id="canvasmenu"></object>

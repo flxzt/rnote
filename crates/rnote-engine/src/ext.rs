@@ -47,6 +47,37 @@ impl GdkRGBAExt for gtk4::gdk::RGBA {
     }
 }
 
+/// Extension trait for [gtk4::graphene::Point].
+#[cfg(feature = "ui")]
+pub trait GraphenePointExt
+where
+    Self: Sized,
+{
+    fn from_na_point(p: na::Point2<f64>) -> Self;
+    fn to_na_point(&self) -> na::Point2<f64>;
+    fn from_na_vec(v: na::Vector2<f64>) -> Self;
+    fn to_na_vec(&self) -> na::Vector2<f64>;
+}
+
+#[cfg(feature = "ui")]
+impl GraphenePointExt for gtk4::graphene::Point {
+    fn from_na_point(p: na::Point2<f64>) -> Self {
+        Self::new(p.x as f32, p.y as f32)
+    }
+
+    fn to_na_point(&self) -> na::Point2<f64> {
+        na::point![self.x() as f64, self.y() as f64]
+    }
+
+    fn from_na_vec(v: na::Vector2<f64>) -> Self {
+        Self::new(v.x as f32, v.y as f32)
+    }
+
+    fn to_na_vec(&self) -> na::Vector2<f64> {
+        na::vector![self.x() as f64, self.y() as f64]
+    }
+}
+
 /// Extension trait for [gtk4::graphene::Rect].
 #[cfg(feature = "ui")]
 pub trait GrapheneRectExt

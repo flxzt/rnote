@@ -1,4 +1,4 @@
-// gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not yet stable
+// gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not suitable for a async flow
 #![allow(deprecated)]
 
 // Imports
@@ -38,7 +38,7 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
     if let Some(output_file) = canvas.output_file() {
         filedialog.set_initial_file(Some(&output_file));
     } else {
-        if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
+        if let Some(current_workspace_dir) = appwindow.sidebar().workspacebrowser().dirlist_dir() {
             filedialog.set_initial_folder(Some(&gio::File::for_path(current_workspace_dir)));
         }
 
@@ -279,7 +279,7 @@ fn create_filedialog_export_doc(
 
     filedialog.set_default_filter(Some(&filter));
     filedialog.set_initial_name(Some(&file_name));
-    if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
+    if let Some(current_workspace_dir) = appwindow.sidebar().workspacebrowser().dirlist_dir() {
         filedialog.set_initial_folder(Some(&gio::File::for_path(current_workspace_dir)));
     }
 
@@ -548,6 +548,7 @@ fn create_filedialog_export_doc_pages(
         Some(output_parent_dir)
     } else {
         appwindow
+            .sidebar()
             .workspacebrowser()
             .dirlist_dir()
             .map(gio::File::for_path)
@@ -808,7 +809,7 @@ fn create_filedialog_export_selection(
         .accept_label(gettext("Select"))
         .build();
 
-    if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
+    if let Some(current_workspace_dir) = appwindow.sidebar().workspacebrowser().dirlist_dir() {
         filedialog.set_initial_folder(Some(&gio::File::for_path(current_workspace_dir)));
     }
 
@@ -863,7 +864,7 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
         .initial_name(&initial_name)
         .build();
 
-    if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
+    if let Some(current_workspace_dir) = appwindow.sidebar().workspacebrowser().dirlist_dir() {
         filedialog.set_initial_folder(Some(&gio::File::for_path(current_workspace_dir)))
     }
 
@@ -910,7 +911,7 @@ pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, ca
         .initial_name(&initial_name)
         .build();
 
-    if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
+    if let Some(current_workspace_dir) = appwindow.sidebar().workspacebrowser().dirlist_dir() {
         filedialog.set_initial_folder(Some(&gio::File::for_path(current_workspace_dir)));
     }
 

@@ -81,14 +81,6 @@ impl RnAppMenu {
         self.imp().popovermenu.get()
     }
 
-    pub(crate) fn lefthanded_toggle(&self) -> ToggleButton {
-        self.imp().lefthanded_toggle.get()
-    }
-
-    pub(crate) fn righthanded_toggle(&self) -> ToggleButton {
-        self.imp().righthanded_toggle.get()
-    }
-
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.imp()
             .lefthanded_toggle

@@ -25,7 +25,7 @@
                 <property name="orientation">horizontal</property>
                 <property name="hexpand">true</property>
                 <property name="margin-top">4</property>
-                <property name="margin-bottom">4</property>
+                <property name="margin-bottom">5</property>
                 <property name="margin-start">6</property>
                 <property name="margin-end">6</property>
                 <property name="spacing">6</property>

@@ -20,6 +20,7 @@ use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::PenState;
+use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::ext::GrapheneRectExt;
 use rnote_engine::Camera;
 use rnote_engine::{Engine, WidgetFlags};
@@ -413,10 +414,11 @@ mod imp {
 
             if let Err(e) = || -> anyhow::Result<()> {
                 let clip_bounds = if let Some(parent) = obj.parent() {
-                    // unwrapping is fine, because its the parent
-                    let (clip_x, clip_y) = parent.translate_coordinates(&*obj, 0.0, 0.0).unwrap();
                     Aabb::new_positive(
-                        na::point![clip_x, clip_y],
+                        parent
+                            .compute_point(&*obj, &graphene::Point::zero())
+                            .unwrap()
+                            .to_na_point(),
                         na::point![f64::from(parent.width()), f64::from(parent.height())],
                     )
                 } else {
@@ -1042,6 +1044,7 @@ impl RnCanvas {
 
         // bind cursors
         let appwindow_regular_cursor = appwindow
+            .sidebar()
             .settings_panel()
             .general_regular_cursor_picker()
             .bind_property("picked", self, "regular-cursor")
@@ -1050,6 +1053,7 @@ impl RnCanvas {
             .build();
 
         let appwindow_drawing_cursor = appwindow
+            .sidebar()
             .settings_panel()
             .general_drawing_cursor_picker()
             .bind_property("picked", self, "drawing-cursor")
@@ -1059,6 +1063,7 @@ impl RnCanvas {
 
         // bind show-drawing-cursor
         let appwindow_show_drawing_cursor = appwindow
+            .sidebar()
             .settings_panel()
             .general_show_drawing_cursor_switch()
             .bind_property("active", self, "show-drawing-cursor")

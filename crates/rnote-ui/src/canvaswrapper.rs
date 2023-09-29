@@ -1,12 +1,14 @@
 // Imports
 use crate::{RnAppWindow, RnCanvas};
 use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, CornerType,
-    EventControllerMotion, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
-    GestureDrag, GestureLongPress, GestureZoom, PropagationPhase, ScrolledWindow, Widget,
+    gdk, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, CompositeTemplate,
+    CornerType, EventControllerMotion, EventControllerScroll, EventControllerScrollFlags,
+    EventSequenceState, GestureDrag, GestureLongPress, GestureZoom, PropagationPhase,
+    ScrolledWindow, Widget,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::penevent::ShortcutKey;
+use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::Camera;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
@@ -313,8 +315,8 @@ mod imp {
                         let camera_size = canvas.engine_ref().camera.size();
                         let screen_offset = canvaswrapper.imp().pointer_pos.get()
                             .map(|p| {
-                                let p = canvaswrapper.translate_coordinates(&canvas, p[0], p[1]).unwrap();
-                                na::vector![p.0, p.1]
+                                let p = canvaswrapper.compute_point(&canvas, &graphene::Point::from_na_vec(p)).unwrap();
+                                p.to_na_vec()
                             })
                             .unwrap_or_else(|| camera_size * 0.5);
                         let new_camera_offset = (((camera_offset + screen_offset) / old_zoom) * new_zoom) - screen_offset;
@@ -658,6 +660,7 @@ impl RnCanvasWrapper {
             .build();
 
         let appwindow_show_scrollbars_bind = appwindow
+            .sidebar()
             .settings_panel()
             .general_show_scrollbars_switch()
             .bind_property("state", self, "show-scrollbars")
@@ -665,6 +668,7 @@ impl RnCanvasWrapper {
             .build();
 
         let appwindow_inertial_scrolling_bind = appwindow
+            .sidebar()
             .settings_panel()
             .general_inertial_scrolling_switch()
             .bind_property("state", self, "inertial-scrolling")

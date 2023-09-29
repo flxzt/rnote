@@ -1,4 +1,4 @@
-// gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not yet stable
+// gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not suitable for a async flow
 #![allow(deprecated)]
 
 // Modules
@@ -172,7 +172,7 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
     {
         Some(p)
     } else {
-        appwindow.workspacebrowser().dirlist_dir()
+        appwindow.sidebar().workspacebrowser().dirlist_dir()
     };
 
     // Handle possible file collisions for new files
@@ -297,7 +297,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         {
             Some(p)
         } else {
-            appwindow.workspacebrowser().dirlist_dir()
+            appwindow.sidebar().workspacebrowser().dirlist_dir()
         };
 
         // Handle possible file collisions for new files
@@ -458,6 +458,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     );
 
     let Some(initial_entry) = appwindow
+        .sidebar()
         .workspacebrowser()
         .workspacesbar()
         .selected_workspacelistentry()
@@ -537,15 +538,18 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
         ResponseType::Apply => {
             // update the actual selected entry
             appwindow
+                .sidebar()
                 .workspacebrowser()
                 .workspacesbar()
                 .replace_selected_workspacelistentry(preview_row.entry());
             // refreshing the files list
             appwindow
+                .sidebar()
                 .workspacebrowser()
                 .refresh_dirlist_selected_workspace();
             // And save the state
             appwindow
+                .sidebar()
                 .workspacebrowser()
                 .workspacesbar()
                 .save_to_settings(&appwindow.app_settings());

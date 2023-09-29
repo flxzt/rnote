@@ -323,8 +323,7 @@ impl RnAppWindow {
             let sidebar_collapsed = split_view.is_collapsed();
             let sidebar_shown = split_view.shows_sidebar();
 
-            let sidebar_appmenu_visibility =
-                (sidebar_position == PackType::End) && !sidebar_collapsed && sidebar_shown;
+            let sidebar_appmenu_visibility = !sidebar_collapsed && sidebar_shown;
             let sidebar_left_close_button_visibility =
                 (sidebar_position == PackType::End) && sidebar_collapsed && sidebar_shown;
             let sidebar_right_close_button_visibility =

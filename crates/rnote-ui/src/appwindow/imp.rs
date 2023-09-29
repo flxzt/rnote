@@ -307,6 +307,12 @@ impl RnAppWindow {
         let right_sidebar_reveal_toggle = obj.main_header().right_sidebar_reveal_toggle();
 
         left_sidebar_reveal_toggle
+            .bind_property("active", &right_sidebar_reveal_toggle, "active")
+            .sync_create()
+            .bidirectional()
+            .build();
+
+        left_sidebar_reveal_toggle
             .bind_property("active", &split_view, "show-sidebar")
             .sync_create()
             .bidirectional()

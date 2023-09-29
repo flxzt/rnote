@@ -188,10 +188,12 @@ impl RnAppWindow {
             canvas.set_empty(false);
         }
         if widget_flags.update_view {
-            let camera_offset = canvas.engine_ref().camera.offset();
-            // Keep the adjustment values in sync
-            canvas.hadjustment().unwrap().set_value(camera_offset[0]);
-            canvas.vadjustment().unwrap().set_value(camera_offset[1]);
+            let widget_size = canvas.widget_size();
+            let offset_mins_maxs = canvas.engine_ref().camera_offset_mins_maxs();
+            let offset = canvas.engine_ref().camera.offset();
+            // Keep the adjustments configuration in sync
+            canvas.configure_adjustments(widget_size, offset_mins_maxs, offset);
+            canvas.queue_resize();
         }
         if widget_flags.zoomed_temporarily {
             let total_zoom = canvas.engine_ref().camera.total_zoom();
@@ -444,13 +446,14 @@ impl RnAppWindow {
                             appwindow.active_tab_wrapper()
                         };
                         let (bytes, _) = input_file.load_bytes_future().await?;
-                        wrapper
+                        let widget_flags = wrapper
                             .canvas()
                             .load_in_rnote_bytes(bytes.to_vec(), input_file.path())
                             .await?;
                         if rnote_file_new_tab {
                             appwindow.append_wrapper_new_tab(&wrapper);
                         }
+                        appwindow.handle_widget_flags(widget_flags, &wrapper.canvas());
                         true
                     }
                 }
@@ -489,6 +492,12 @@ impl RnAppWindow {
                         appwindow, &canvas, input_file, target_pos,
                     )
                     .await?
+                }
+                FileType::PlaintextFile => {
+                    let canvas = appwindow.active_tab_wrapper().canvas();
+                    let (bytes, _) = input_file.load_bytes_future().await?;
+                    canvas.load_in_text(String::from_utf8(bytes.to_vec())?, target_pos)?;
+                    true
                 }
                 FileType::Folder => {
                     if let Some(dir) = input_file.path() {

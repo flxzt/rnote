@@ -50,13 +50,15 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
     filter.add_mime_type("image/svg+xml");
     filter.add_mime_type("image/png");
     filter.add_mime_type("image/jpeg");
+    filter.add_mime_type("text/plain");
     filter.add_suffix("xopp");
     filter.add_suffix("pdf");
     filter.add_suffix("svg");
     filter.add_suffix("png");
     filter.add_suffix("jpg");
     filter.add_suffix("jpeg");
-    filter.set_name(Some(&gettext("Jpg, Pdf, Png, Svg, Xopp")));
+    filter.add_suffix("txt");
+    filter.set_name(Some(&gettext("Jpg, Pdf, Png, Svg, Xopp, Txt")));
 
     let dialog = FileDialog::builder()
         .title(gettext("Import File"))

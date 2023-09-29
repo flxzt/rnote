@@ -33,13 +33,13 @@ pub struct Camera {
     #[serde(rename = "zoom")]
     zoom: f64,
     /// The temporary zoom. Is used to overlay the "permanent" zoom.
-    #[serde(rename = "temporary_zoom")]
+    #[serde(skip)]
     temporary_zoom: f64,
 
     /// The scale factor of the surface, usually 1.0 or 2.0 for high-dpi screens.
     ///
     /// This value could become a non-integer value in the future, so it is stored as float.
-    #[serde(rename = "scale_factor")]
+    #[serde(skip)]
     scale_factor: f64,
 
     #[serde(skip)]
@@ -49,7 +49,7 @@ pub struct Camera {
 impl Default for Camera {
     fn default() -> Self {
         Self {
-            offset: na::vector![0.0, 0.0],
+            offset: na::vector![-Self::OVERSHOOT_HORIZONTAL, -Self::OVERSHOOT_VERTICAL],
             size: na::vector![800.0, 600.0],
             zoom: 1.0,
             temporary_zoom: 1.0,
@@ -69,6 +69,15 @@ impl Camera {
     pub const DRAG_ZOOM_MAGN_ZOOM_FACTOR: f64 = 0.005;
     pub const OVERSHOOT_HORIZONTAL: f64 = 96.0;
     pub const OVERSHOOT_VERTICAL: f64 = 96.0;
+
+    pub fn clone_config(&self) -> Self {
+        Self {
+            offset: self.offset,
+            size: self.size,
+            zoom: self.zoom,
+            ..Default::default()
+        }
+    }
 
     pub fn with_zoom(mut self, zoom: f64) -> Self {
         self.zoom = zoom.clamp(Self::ZOOM_MIN, Self::ZOOM_MAX);

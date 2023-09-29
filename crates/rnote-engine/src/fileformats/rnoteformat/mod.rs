@@ -9,11 +9,13 @@
 pub(crate) mod maj0min5patch8;
 pub(crate) mod maj0min5patch9;
 pub(crate) mod maj0min6;
+pub(crate) mod maj0min9;
 
 // Imports
 use self::maj0min5patch8::RnoteFileMaj0Min5Patch8;
 use self::maj0min5patch9::RnoteFileMaj0Min5Patch9;
 use self::maj0min6::RnoteFileMaj0Min6;
+use self::maj0min9::RnoteFileMaj0Min9;
 use super::{FileFormatLoader, FileFormatSaver};
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
@@ -51,10 +53,10 @@ struct RnotefileWrapper {
 /// The Rnote file in the newest format version.
 ///
 /// This struct exists to allow for upgrading older versions before loading the file in.
-pub type RnoteFile = RnoteFileMaj0Min6;
+pub type RnoteFile = RnoteFileMaj0Min9;
 
 impl RnoteFile {
-    pub const SEMVER: &str = "0.8.2";
+    pub const SEMVER: &str = "0.9.0";
 }
 
 impl FileFormatLoader for RnoteFile {
@@ -65,31 +67,39 @@ impl FileFormatLoader for RnoteFile {
         .context("deserializing RnotefileWrapper from bytes failed.")?;
 
         // Conversions for older file format versions happen here
-        if semver::VersionReq::parse(">=0.5.10")
+        if semver::VersionReq::parse(">=0.9.0")
+            .unwrap()
+            .matches(&wrapper.version)
+        {
+            ijson::from_value::<RnoteFileMaj0Min9>(&wrapper.data)
+                .context("deserializing RnoteFileMaj0Min9 failed.")
+        } else if semver::VersionReq::parse(">=0.5.10")
             .unwrap()
             .matches(&wrapper.version)
         {
             ijson::from_value::<RnoteFileMaj0Min6>(&wrapper.data)
                 .context("deserializing RnoteFileMaj0Min6 failed.")
+                .and_then(RnoteFileMaj0Min9::try_from)
+                .context("converting RnoteFileMaj0Min6 to newest file version failed.")
         } else if semver::VersionReq::parse(">=0.5.9")
             .unwrap()
             .matches(&wrapper.version)
         {
-            RnoteFileMaj0Min6::try_from(
-                ijson::from_value::<RnoteFileMaj0Min5Patch9>(&wrapper.data)
-                    .context("deserializing RnoteFileMaj0Min5Patch9 failed.")?,
-            )
-            .context("converting RnoteFileMaj0Min5Patch9 to newest file version failed.")
+            ijson::from_value::<RnoteFileMaj0Min5Patch9>(&wrapper.data)
+                .context("deserializing RnoteFileMaj0Min5Patch9 failed.")
+                .and_then(RnoteFileMaj0Min6::try_from)
+                .and_then(RnoteFileMaj0Min9::try_from)
+                .context("converting RnoteFileMaj0Min5Patch9 to newest file version failed.")
         } else if semver::VersionReq::parse(">=0.5.0")
             .unwrap()
             .matches(&wrapper.version)
         {
-            RnoteFileMaj0Min5Patch9::try_from(
-                ijson::from_value::<RnoteFileMaj0Min5Patch8>(&wrapper.data)
-                    .context("deserializing RnoteFileMaj0Min5Patch8 failed")?,
-            )
-            .and_then(RnoteFileMaj0Min6::try_from)
-            .context("converting RnoteFileMaj0Min5Patch8 to newest file version failed.")
+            ijson::from_value::<RnoteFileMaj0Min5Patch8>(&wrapper.data)
+                .context("deserializing RnoteFileMaj0Min5Patch8 failed")
+                .and_then(RnoteFileMaj0Min5Patch9::try_from)
+                .and_then(RnoteFileMaj0Min6::try_from)
+                .and_then(RnoteFileMaj0Min9::try_from)
+                .context("converting RnoteFileMaj0Min5Patch8 to newest file version failed.")
         } else {
             Err(anyhow::anyhow!(
                 "failed to load rnote file from bytes, unsupported version: {}.",

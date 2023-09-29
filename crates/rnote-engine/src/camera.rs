@@ -49,7 +49,7 @@ pub struct Camera {
 impl Default for Camera {
     fn default() -> Self {
         Self {
-            offset: na::vector![0.0, 0.0],
+            offset: na::vector![-Self::OVERSHOOT_HORIZONTAL, -Self::OVERSHOOT_VERTICAL],
             size: na::vector![800.0, 600.0],
             zoom: 1.0,
             temporary_zoom: 1.0,

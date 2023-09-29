@@ -563,6 +563,7 @@ impl Engine {
             widget_flags |= self.reinstall_pen_current_style()
                 | self.background_regenerate_pattern()
                 | self.update_content_rendering_current_viewport();
+            widget_flags.update_view = true;
         } else {
             widget_flags |= self.clear_rendering() | self.penholder.deinit_current_pen();
         }

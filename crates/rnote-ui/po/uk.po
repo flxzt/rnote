@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-14 11:08+0200\n"
+"POT-Creation-Date: 2023-09-29 20:43+0200\n"
 "PO-Revision-Date: 2023-08-14 20:52+0000\n"
 "Last-Translator: Dan <jonweblin2205@protonmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
@@ -11,8 +11,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 5.0-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
@@ -90,9 +90,9 @@ msgid "Clear"
 msgstr "Очистити"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
-#: crates/rnote-ui/data/ui/mainheader.ui:18
+#: crates/rnote-ui/data/ui/mainheader.ui:22
 #: crates/rnote-ui/data/ui/shortcuts.ui:149
-#: crates/rnote-ui/src/canvas/mod.rs:531
+#: crates/rnote-ui/src/canvas/mod.rs:578
 msgid "New Document"
 msgstr "Новий документ"
 
@@ -192,7 +192,7 @@ msgstr "Змінити каталог директорії"
 #: crates/rnote-ui/src/dialogs/export.rs:365
 #: crates/rnote-ui/src/dialogs/export.rs:402
 #: crates/rnote-ui/src/dialogs/export.rs:410
-#: crates/rnote-ui/src/dialogs/mod.rs:522
+#: crates/rnote-ui/src/dialogs/mod.rs:523
 msgid "- no directory selected -"
 msgstr "- каталог не вибрано -"
 
@@ -206,7 +206,7 @@ msgstr "Імпортувати Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
 #: crates/rnote-ui/data/ui/dialogs/import.ui:216
-#: crates/rnote-ui/src/dialogs/import.rs:64
+#: crates/rnote-ui/src/dialogs/import.rs:66
 msgid "Import"
 msgstr "Імпортувати"
 
@@ -307,8 +307,8 @@ msgstr "Експортувати документ"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
 #: crates/rnote-ui/data/ui/dialogs/export.ui:195
 #: crates/rnote-ui/data/ui/dialogs/export.ui:460
-#: crates/rnote-ui/src/dialogs/export.rs:861
-#: crates/rnote-ui/src/dialogs/export.rs:908
+#: crates/rnote-ui/src/dialogs/export.rs:862
+#: crates/rnote-ui/src/dialogs/export.rs:909
 msgid "Export"
 msgstr "Експортувати"
 
@@ -329,10 +329,10 @@ msgstr "Виберіть файл експорту"
 #: crates/rnote-ui/src/dialogs/export.rs:143
 #: crates/rnote-ui/src/dialogs/export.rs:150
 #: crates/rnote-ui/src/dialogs/export.rs:195
-#: crates/rnote-ui/src/dialogs/export.rs:660
-#: crates/rnote-ui/src/dialogs/export.rs:686
-#: crates/rnote-ui/src/dialogs/export.rs:693
-#: crates/rnote-ui/src/dialogs/export.rs:744
+#: crates/rnote-ui/src/dialogs/export.rs:661
+#: crates/rnote-ui/src/dialogs/export.rs:687
+#: crates/rnote-ui/src/dialogs/export.rs:694
+#: crates/rnote-ui/src/dialogs/export.rs:745
 msgid "- no file selected -"
 msgstr "- файл не вибрано -"
 
@@ -395,8 +395,8 @@ msgstr "Формат експорту"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:370
 #: crates/rnote-ui/data/ui/dialogs/export.ui:593
 #: crates/rnote-ui/src/dialogs/export.rs:260
-#: crates/rnote-ui/src/dialogs/export.rs:564
-#: crates/rnote-ui/src/dialogs/export.rs:820
+#: crates/rnote-ui/src/dialogs/export.rs:565
+#: crates/rnote-ui/src/dialogs/export.rs:821
 msgid "Svg"
 msgstr "Svg"
 
@@ -459,15 +459,15 @@ msgstr "Експортувати назву стовбура файлів"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:371
 #: crates/rnote-ui/data/ui/dialogs/export.ui:594
-#: crates/rnote-ui/src/dialogs/export.rs:569
-#: crates/rnote-ui/src/dialogs/export.rs:825
+#: crates/rnote-ui/src/dialogs/export.rs:570
+#: crates/rnote-ui/src/dialogs/export.rs:826
 msgid "Png"
 msgstr "Png"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:595
-#: crates/rnote-ui/src/dialogs/export.rs:575
-#: crates/rnote-ui/src/dialogs/export.rs:831
+#: crates/rnote-ui/src/dialogs/export.rs:576
+#: crates/rnote-ui/src/dialogs/export.rs:832
 msgid "Jpeg"
 msgstr "Jpeg"
 
@@ -482,7 +482,7 @@ msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "Встановлення якості зображення JPEG (1 - 100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:452
-#: crates/rnote-ui/src/dialogs/export.rs:806
+#: crates/rnote-ui/src/dialogs/export.rs:807
 msgid "Export Selection"
 msgstr "Експортувати вибране"
 
@@ -725,24 +725,24 @@ msgstr "Дублікат виділення"
 msgid "Delete Selection"
 msgstr "Видалити виділення"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:18
-msgid "Shaper Style"
-msgstr "Стиль фігури"
-
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:31
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
-msgid "Shape Configuration"
-msgstr "Налаштування форми"
-
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:61
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:19
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:255
 msgid "Shape Builders"
 msgstr "Конструктори фігур"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:77
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:35
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:297
 msgid "Constraints"
 msgstr "Обмеження"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:64
+msgid "Shaper Style"
+msgstr "Стиль фігури"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:77
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
+msgid "Shape Configuration"
+msgstr "Налаштування форми"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:101
 msgid "Shaper Styles"
@@ -1021,18 +1021,6 @@ msgstr "Бічна панель з правого боку"
 msgid "Toggle Fullscreen"
 msgstr "Повноекранний режим"
 
-#: crates/rnote-ui/data/ui/appwindow.ui:109
-msgid "Close the Folded Flap"
-msgstr "Закрити складену панель"
-
-#: crates/rnote-ui/data/ui/appwindow.ui:126
-msgid "Workspace"
-msgstr "Робоча область"
-
-#: crates/rnote-ui/data/ui/appwindow.ui:137
-msgid "Settings"
-msgstr "Налаштування"
-
 #: crates/rnote-ui/data/ui/canvasmenu.ui:24
 msgid "_Document Layout"
 msgstr "_Компонування документа"
@@ -1149,25 +1137,27 @@ msgstr "Перемістити в Кошик"
 msgid "Duplicate"
 msgstr "Дублювати"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:19
-#: crates/rnote-ui/src/canvas/mod.rs:533
+#: crates/rnote-ui/data/ui/mainheader.ui:23
+#: crates/rnote-ui/src/canvas/mod.rs:580
 msgid "Draft"
 msgstr "Чернетка"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:39
-#: crates/rnote-ui/data/ui/mainheader.ui:73
-msgid "Reveal/Hide Flap"
+#: crates/rnote-ui/data/ui/mainheader.ui:40
+#: crates/rnote-ui/data/ui/mainheader.ui:74
+#, fuzzy
+#| msgid "Reveal/Hide Flap"
+msgid "Reveal/Hide Sidebar"
 msgstr "Показати/приховати панель"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:46
+#: crates/rnote-ui/data/ui/mainheader.ui:47
 msgid "New Tab"
 msgstr "Нова вкладка"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:53
+#: crates/rnote-ui/data/ui/mainheader.ui:54
 msgid "Focus Mode"
 msgstr "Режим фокусування"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:65
+#: crates/rnote-ui/data/ui/mainheader.ui:66
 #: crates/rnote-ui/data/ui/shortcuts.ui:161
 msgid "Save Document"
 msgstr "Зберегти документ"
@@ -1363,7 +1353,7 @@ msgstr "Повернути"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:290
 #: crates/rnote-ui/data/ui/shortcuts.ui:146
-#: crates/rnote-ui/src/dialogs/mod.rs:628
+#: crates/rnote-ui/src/dialogs/mod.rs:632
 msgid "Document"
 msgstr "Документ"
 
@@ -1501,10 +1491,26 @@ msgstr ""
 "натискання двома пальцями"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:472
+msgid "Keyboard Ctrl-Space Action"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:473
+#, fuzzy
+#| msgid ""
+#| "Set the action for the\n"
+#| "secondary mouse button"
+msgid ""
+"Set the action for the keyboard\n"
+"Ctrl plus Space shortcut"
+msgstr ""
+"Установіть дію для\n"
+"додаткової кнопки миші"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:485
 msgid "Drawing Pad Button 1 Action"
 msgstr "Блок малювання - Кнопка дії 1"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:473
+#: crates/rnote-ui/data/ui/settingspanel.ui:486
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
@@ -1512,11 +1518,11 @@ msgstr ""
 "Встановіть дію для кнопки 1\n"
 "на планшеті для малювання"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:485
+#: crates/rnote-ui/data/ui/settingspanel.ui:498
 msgid "Drawing Pad Button 2 Action"
 msgstr "Блок малювання - Кнопка дії 2"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:486
+#: crates/rnote-ui/data/ui/settingspanel.ui:499
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
@@ -1524,11 +1530,11 @@ msgstr ""
 "Встановіть дію для кнопки 2\n"
 "на планшеті для малювання"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:498
+#: crates/rnote-ui/data/ui/settingspanel.ui:511
 msgid "Drawing Pad Button 3 Action"
 msgstr "Блок малювання - Кнопка дії 3"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:499
+#: crates/rnote-ui/data/ui/settingspanel.ui:512
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
@@ -1536,11 +1542,11 @@ msgstr ""
 "Встановіть дію для кнопки 3\n"
 "на планшеті для малювання"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:511
+#: crates/rnote-ui/data/ui/settingspanel.ui:524
 msgid "Drawing Pad Button 4 Action"
 msgstr "Блок малювання - Кнопка дії 4"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:512
+#: crates/rnote-ui/data/ui/settingspanel.ui:525
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
@@ -1646,7 +1652,7 @@ msgid "Print Document"
 msgstr "Роздрукувати документ"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:197
-#: crates/rnote-ui/src/dialogs/import.rs:62
+#: crates/rnote-ui/src/dialogs/import.rs:64
 msgid "Import File"
 msgstr "Імпортувати файл"
 
@@ -1682,12 +1688,12 @@ msgstr "Дії каталогу робочої області"
 msgid "Create new Folder"
 msgstr "Створити нову папку"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:550
+#: crates/rnote-ui/src/appwindow/mod.rs:531
 msgid "Opening file failed"
 msgstr "Не вдалося відкрити файл"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:282
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:556
+#: crates/rnote-ui/src/appwindow/imp.rs:249
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:560
 #: crates/rnote-ui/src/dialogs/export.rs:69
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:256
@@ -1695,64 +1701,64 @@ msgstr "Не вдалося відкрити файл"
 msgid "Saving document failed"
 msgstr "Не вдалося зберегти документ"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:498
+#: crates/rnote-ui/src/appwindow/imp.rs:269
 msgid "Button 1"
 msgstr "Кнопка 1"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:505
+#: crates/rnote-ui/src/appwindow/imp.rs:276
 msgid "Button 2"
 msgstr "Кнопка 2"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:512
+#: crates/rnote-ui/src/appwindow/imp.rs:283
 msgid "Button 3"
 msgstr "Кнопка 3"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:519
+#: crates/rnote-ui/src/appwindow/imp.rs:290
 msgid "Button 4"
 msgstr "Кнопка 4"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:618
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:622
 msgid "Printing document failed"
 msgstr "Не вдалося надрукувати документ"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:654
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:658
 msgid "Exporting selection failed, nothing selected"
 msgstr "Не вдалося експортувати вибране, нічого не вибрано"
 
-#: crates/rnote-ui/src/canvas/mod.rs:769 crates/rnote-ui/src/dialogs/mod.rs:203
+#: crates/rnote-ui/src/canvas/mod.rs:854 crates/rnote-ui/src/dialogs/mod.rs:203
 #: crates/rnote-ui/src/dialogs/mod.rs:337
 msgid "- invalid file name -"
 msgstr "-недійсна назва файлу-"
 
-#: crates/rnote-ui/src/canvas/mod.rs:782
+#: crates/rnote-ui/src/canvas/mod.rs:867
 msgid "- invalid folder path -"
 msgstr "- недійсний шлях до папки -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:805
+#: crates/rnote-ui/src/canvas/mod.rs:890
 msgid "Opened file was modified on disk"
 msgstr "Відкритий файл змінено на диску"
 
-#: crates/rnote-ui/src/canvas/mod.rs:806
+#: crates/rnote-ui/src/canvas/mod.rs:891
 msgid "Reload"
 msgstr "Перезавантажити"
 
-#: crates/rnote-ui/src/canvas/mod.rs:812
+#: crates/rnote-ui/src/canvas/mod.rs:897
 msgid "Reloading .rnote file from disk failed"
 msgstr "Не вдалося перезавантажити файл .rnote з диска"
 
-#: crates/rnote-ui/src/canvas/mod.rs:861
+#: crates/rnote-ui/src/canvas/mod.rs:946
 msgid "Opened file was renamed on disk"
 msgstr "Відкритий файл було перейменовано на диску"
 
-#: crates/rnote-ui/src/canvas/mod.rs:874
+#: crates/rnote-ui/src/canvas/mod.rs:959
 msgid "Opened file was moved or deleted on disk"
 msgstr "Відкритий файл було переміщено або видалено на диску"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1003
+#: crates/rnote-ui/src/canvas/mod.rs:1091
 msgid "Inserting file failed"
 msgstr "Не вдалося вставити файл"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1013
+#: crates/rnote-ui/src/canvas/mod.rs:1101
 msgid "Inserting text failed"
 msgstr "Не вдалося вставити текст"
 
@@ -1779,8 +1785,8 @@ msgstr "Не вдалося експортувати документ, файл 
 
 #: crates/rnote-ui/src/dialogs/export.rs:252
 #: crates/rnote-ui/src/dialogs/export.rs:544
-#: crates/rnote-ui/src/dialogs/export.rs:808
-#: crates/rnote-ui/src/dialogs/mod.rs:504
+#: crates/rnote-ui/src/dialogs/export.rs:809
+#: crates/rnote-ui/src/dialogs/mod.rs:505
 msgid "Select"
 msgstr "Вибрати"
 
@@ -1796,44 +1802,44 @@ msgstr "Сторінки документів успішно експортов�
 msgid "Exporting document pages failed, no directory selected"
 msgstr "Не вдалося експортувати сторінки документа, каталог не вибрано"
 
-#: crates/rnote-ui/src/dialogs/export.rs:781
+#: crates/rnote-ui/src/dialogs/export.rs:782
 msgid "Exporting selection failed"
 msgstr "Не вдалося експортувати вибране"
 
-#: crates/rnote-ui/src/dialogs/export.rs:784
+#: crates/rnote-ui/src/dialogs/export.rs:785
 msgid "Exported selection successfully"
 msgstr "Вибране успішно експортовано"
 
-#: crates/rnote-ui/src/dialogs/export.rs:793
+#: crates/rnote-ui/src/dialogs/export.rs:794
 msgid "Exporting selection failed, no file selected"
 msgstr "Не вдалося експортувати вибране, файл не вибрано"
 
-#: crates/rnote-ui/src/dialogs/export.rs:851
-#: crates/rnote-ui/src/dialogs/export.rs:898
+#: crates/rnote-ui/src/dialogs/export.rs:852
+#: crates/rnote-ui/src/dialogs/export.rs:899
 msgid "Json"
 msgstr "Json"
 
-#: crates/rnote-ui/src/dialogs/export.rs:859
+#: crates/rnote-ui/src/dialogs/export.rs:860
 msgid "Export Engine State"
 msgstr "Експортувати стан рушія"
 
-#: crates/rnote-ui/src/dialogs/export.rs:878
+#: crates/rnote-ui/src/dialogs/export.rs:879
 msgid "Exporting engine state failed"
 msgstr "Не вдалося експортувати стан рушія"
 
-#: crates/rnote-ui/src/dialogs/export.rs:881
+#: crates/rnote-ui/src/dialogs/export.rs:882
 msgid "Exported engine state successfully"
 msgstr "Стан рушія успішно експортовано"
 
-#: crates/rnote-ui/src/dialogs/export.rs:906
+#: crates/rnote-ui/src/dialogs/export.rs:907
 msgid "Export Engine Config"
 msgstr "Експорт конфігурації рушія"
 
-#: crates/rnote-ui/src/dialogs/export.rs:925
+#: crates/rnote-ui/src/dialogs/export.rs:926
 msgid "Exporting engine config failed"
 msgstr "Не вдалося експортувати конфігурацію рушія"
 
-#: crates/rnote-ui/src/dialogs/export.rs:928
+#: crates/rnote-ui/src/dialogs/export.rs:929
 msgid "Exported engine config successfully"
 msgstr "Конфігурацію рушія успішно експортовано"
 
@@ -1841,43 +1847,45 @@ msgstr "Конфігурацію рушія успішно експортова�
 msgid "Open File"
 msgstr "Відкрити файл"
 
-#: crates/rnote-ui/src/dialogs/import.rs:59
-msgid "Jpg, Pdf, Png, Svg, Xopp"
+#: crates/rnote-ui/src/dialogs/import.rs:61
+#, fuzzy
+#| msgid "Jpg, Pdf, Png, Svg, Xopp"
+msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "Jpg, Pdf, Png, Svg, Xopp"
 
-#: crates/rnote-ui/src/dialogs/import.rs:186
+#: crates/rnote-ui/src/dialogs/import.rs:188
 msgid "- no file name -"
 msgstr "- немає імені файлу -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:191
+#: crates/rnote-ui/src/dialogs/import.rs:193
 msgid "- no title -"
 msgstr "- без назви -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:194
+#: crates/rnote-ui/src/dialogs/import.rs:196
 msgid "- no author -"
 msgstr "- немає автора -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:198
+#: crates/rnote-ui/src/dialogs/import.rs:200
 msgid "- no date -"
 msgstr "- без дати -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:205
+#: crates/rnote-ui/src/dialogs/import.rs:207
 msgid "File name:"
 msgstr "Ім'я файлу:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:209
+#: crates/rnote-ui/src/dialogs/import.rs:211
 msgid "Title:"
 msgstr "Назва:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:213
+#: crates/rnote-ui/src/dialogs/import.rs:215
 msgid "Author:"
 msgstr "Автор:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:217
+#: crates/rnote-ui/src/dialogs/import.rs:219
 msgid "Modification date:"
 msgstr "Дата зміни:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:221
+#: crates/rnote-ui/src/dialogs/import.rs:223
 msgid "Pages:"
 msgstr "Сторінок:"
 
@@ -1906,210 +1914,210 @@ msgstr "Зміни будуть збережені"
 msgid "A new file will be created"
 msgstr "Буде створено новий файл"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:502
+#: crates/rnote-ui/src/dialogs/mod.rs:503
 msgid "Change Workspace Directory"
 msgstr "Змінити каталог директорії"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:615
+#: crates/rnote-ui/src/dialogs/mod.rs:619
 msgid "Band-Aid"
 msgstr "Пластир"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:616
+#: crates/rnote-ui/src/dialogs/mod.rs:620
 msgid "Bank"
 msgstr "Банк"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:617
+#: crates/rnote-ui/src/dialogs/mod.rs:621
 msgid "Bookmark"
 msgstr "Закладка"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:618
+#: crates/rnote-ui/src/dialogs/mod.rs:622
 msgid "Book"
 msgstr "Книга"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:619
+#: crates/rnote-ui/src/dialogs/mod.rs:623
 msgid "Bread"
 msgstr "Хліб"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:620
+#: crates/rnote-ui/src/dialogs/mod.rs:624
 msgid "Calendar"
 msgstr "Календар"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:621
+#: crates/rnote-ui/src/dialogs/mod.rs:625
 msgid "Camera"
 msgstr "Камера"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:622
+#: crates/rnote-ui/src/dialogs/mod.rs:626
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "Чіп"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:623
+#: crates/rnote-ui/src/dialogs/mod.rs:627
 msgid "Clock"
 msgstr "Годинник"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:624
+#: crates/rnote-ui/src/dialogs/mod.rs:628
 msgid "Code"
 msgstr "Код"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:625
+#: crates/rnote-ui/src/dialogs/mod.rs:629
 msgid "Compose"
 msgstr "Скласти"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:626
+#: crates/rnote-ui/src/dialogs/mod.rs:630
 msgctxt "as in plant"
 msgid "Crop"
 msgstr "Врожай"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:627
+#: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "Dictionary"
 msgstr "Словник"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:629
+#: crates/rnote-ui/src/dialogs/mod.rs:633
 msgid "Drinks"
 msgstr "Напої"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:630
+#: crates/rnote-ui/src/dialogs/mod.rs:634
 msgid "Flag"
 msgstr "Прапор"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:631
+#: crates/rnote-ui/src/dialogs/mod.rs:635
 msgid "Folder"
 msgstr "Папка"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:632
+#: crates/rnote-ui/src/dialogs/mod.rs:636
 msgid "Footprints"
 msgstr "Сліди"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:633
+#: crates/rnote-ui/src/dialogs/mod.rs:637
 msgid "Gamepad"
 msgstr "Ґеймпад"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:634
+#: crates/rnote-ui/src/dialogs/mod.rs:638
 msgid "Gear"
 msgstr "Передача"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:635
+#: crates/rnote-ui/src/dialogs/mod.rs:639
 msgid "Globe"
 msgstr "Глобус"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:636
+#: crates/rnote-ui/src/dialogs/mod.rs:640
 msgid "Hammer"
 msgstr "Молоток"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:637
+#: crates/rnote-ui/src/dialogs/mod.rs:641
 msgid "Heart"
 msgstr "Серце"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:638
+#: crates/rnote-ui/src/dialogs/mod.rs:642
 msgid "Hourglass"
 msgstr "Пісочний годинник"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:639
+#: crates/rnote-ui/src/dialogs/mod.rs:643
 msgid "Key"
 msgstr "Ключ"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:640
+#: crates/rnote-ui/src/dialogs/mod.rs:644
 msgid "Language"
 msgstr "Мова"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:641
+#: crates/rnote-ui/src/dialogs/mod.rs:645
 msgid "Library"
 msgstr "Бібліотека"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:642
+#: crates/rnote-ui/src/dialogs/mod.rs:646
 msgid "Lightbulb"
 msgstr "Лампочка"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:643
+#: crates/rnote-ui/src/dialogs/mod.rs:647
 msgid "Mathematics"
 msgstr "Математика"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:644
+#: crates/rnote-ui/src/dialogs/mod.rs:648
 msgid "Meeting"
 msgstr "Зустріч"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:645
+#: crates/rnote-ui/src/dialogs/mod.rs:649
 msgid "Money"
 msgstr "Гроші"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:646
+#: crates/rnote-ui/src/dialogs/mod.rs:650
 msgid "Musical Note"
 msgstr "Музична нота"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:647
+#: crates/rnote-ui/src/dialogs/mod.rs:651
 msgid "Nature"
 msgstr "Природа"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:648
+#: crates/rnote-ui/src/dialogs/mod.rs:652
 msgid "Open Book"
 msgstr "Відкрити книгу"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:649
+#: crates/rnote-ui/src/dialogs/mod.rs:653
 msgid "Paintbrush"
 msgstr "Пензлик"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:650
+#: crates/rnote-ui/src/dialogs/mod.rs:654
 msgid "Pencil and Paper"
 msgstr "Олівець і папір"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:651
+#: crates/rnote-ui/src/dialogs/mod.rs:655
 msgid "People"
 msgstr "Люди"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:652
+#: crates/rnote-ui/src/dialogs/mod.rs:656
 msgid "Person"
 msgstr "Особа"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:653
+#: crates/rnote-ui/src/dialogs/mod.rs:657
 msgid "Projector"
 msgstr "Проєктор"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:654
+#: crates/rnote-ui/src/dialogs/mod.rs:658
 msgid "Science"
 msgstr "Наука"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:655
+#: crates/rnote-ui/src/dialogs/mod.rs:659
 msgid "Scratchpad"
 msgstr "Блокнот"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:656
+#: crates/rnote-ui/src/dialogs/mod.rs:660
 msgid "Shapes"
 msgstr "Фігури"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:657
+#: crates/rnote-ui/src/dialogs/mod.rs:661
 msgid "Shopping"
 msgstr "Шопінг"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:658
+#: crates/rnote-ui/src/dialogs/mod.rs:662
 msgid "Speech Bubble"
 msgstr "Мовна бульбашка"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:659
+#: crates/rnote-ui/src/dialogs/mod.rs:663
 msgid "Speedometer"
 msgstr "Спідометр"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:660
+#: crates/rnote-ui/src/dialogs/mod.rs:664
 msgid "Star"
 msgstr "Зірка"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:662
+#: crates/rnote-ui/src/dialogs/mod.rs:666
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "Термінал"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:664
+#: crates/rnote-ui/src/dialogs/mod.rs:668
 msgid "Text"
 msgstr "Текст"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:665
+#: crates/rnote-ui/src/dialogs/mod.rs:669
 msgid "Travel"
 msgstr "Подорожі"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:666
+#: crates/rnote-ui/src/dialogs/mod.rs:670
 msgid "Weather"
 msgstr "Погода"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:667
+#: crates/rnote-ui/src/dialogs/mod.rs:671
 msgid "Weight"
 msgstr "Висота"
 
@@ -2175,96 +2183,96 @@ msgstr "Кубічна крива Безьє"
 msgid "Polyline"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:537
+#: crates/rnote-ui/src/settingspanel/mod.rs:541
 msgid "Application restart is required"
 msgstr "Потрібно перезапустити застосунок"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:796
+#: crates/rnote-ui/src/settingspanel/mod.rs:807
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "Перехрестя (Маленьке)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:797
+#: crates/rnote-ui/src/settingspanel/mod.rs:808
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "Перехрестя (Середнє)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:798
+#: crates/rnote-ui/src/settingspanel/mod.rs:809
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "Перехрестя (Велике)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:799
+#: crates/rnote-ui/src/settingspanel/mod.rs:810
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "Крапка (Маленька)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:800
+#: crates/rnote-ui/src/settingspanel/mod.rs:811
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "Крапка (Середня)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:801
+#: crates/rnote-ui/src/settingspanel/mod.rs:812
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "Крапка (Велика)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:802
+#: crates/rnote-ui/src/settingspanel/mod.rs:813
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "Каплевидний північно-західний (Малий)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:803
+#: crates/rnote-ui/src/settingspanel/mod.rs:814
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "Каплевидний північно-західний (Середній)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:804
+#: crates/rnote-ui/src/settingspanel/mod.rs:815
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "Каплевидний північно-західний (Великий)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:805
+#: crates/rnote-ui/src/settingspanel/mod.rs:816
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "Каплевидний північно-східний (Малий)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:806
+#: crates/rnote-ui/src/settingspanel/mod.rs:817
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "Крапля північно-східна (Середня)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:807
+#: crates/rnote-ui/src/settingspanel/mod.rs:818
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "Каплевидний північно-східний (Великий)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:808
+#: crates/rnote-ui/src/settingspanel/mod.rs:819
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "Каплевидна північ (Мала)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:809
+#: crates/rnote-ui/src/settingspanel/mod.rs:820
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "Каплевидна північ (Середня)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:810
+#: crates/rnote-ui/src/settingspanel/mod.rs:821
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "Каплевидний північний (Великий)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:811
+#: crates/rnote-ui/src/settingspanel/mod.rs:822
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "Промінь (Малий)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:812
+#: crates/rnote-ui/src/settingspanel/mod.rs:823
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "Промінь (Середній)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:813
+#: crates/rnote-ui/src/settingspanel/mod.rs:824
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "Промінь (Великий)"
@@ -2276,6 +2284,15 @@ msgstr "Назва папки"
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "Нова папка"
+
+#~ msgid "Close the Folded Flap"
+#~ msgstr "Закрити складену панель"
+
+#~ msgid "Workspace"
+#~ msgstr "Робоча область"
+
+#~ msgid "Settings"
+#~ msgstr "Налаштування"
 
 #~ msgid "Remove Page"
 #~ msgstr "Видалити сторінку"

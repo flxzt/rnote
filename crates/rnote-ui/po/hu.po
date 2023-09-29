@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-14 11:08+0200\n"
+"POT-Creation-Date: 2023-09-29 20:43+0200\n"
 "PO-Revision-Date: 2023-09-18 12:01+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
-"\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
+">\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -94,9 +94,9 @@ msgid "Clear"
 msgstr "Törlés"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
-#: crates/rnote-ui/data/ui/mainheader.ui:18
+#: crates/rnote-ui/data/ui/mainheader.ui:22
 #: crates/rnote-ui/data/ui/shortcuts.ui:149
-#: crates/rnote-ui/src/canvas/mod.rs:531
+#: crates/rnote-ui/src/canvas/mod.rs:578
 msgid "New Document"
 msgstr "Új dokumentum"
 
@@ -196,7 +196,7 @@ msgstr "Munkaterület könyvtárának módosítása"
 #: crates/rnote-ui/src/dialogs/export.rs:365
 #: crates/rnote-ui/src/dialogs/export.rs:402
 #: crates/rnote-ui/src/dialogs/export.rs:410
-#: crates/rnote-ui/src/dialogs/mod.rs:522
+#: crates/rnote-ui/src/dialogs/mod.rs:523
 msgid "- no directory selected -"
 msgstr "- nincs kiválasztott könyvtár -"
 
@@ -210,7 +210,7 @@ msgstr "PDF importálása"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
 #: crates/rnote-ui/data/ui/dialogs/import.ui:216
-#: crates/rnote-ui/src/dialogs/import.rs:64
+#: crates/rnote-ui/src/dialogs/import.rs:66
 msgid "Import"
 msgstr "Importálás"
 
@@ -312,8 +312,8 @@ msgstr "Dokumentum exportálása"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
 #: crates/rnote-ui/data/ui/dialogs/export.ui:195
 #: crates/rnote-ui/data/ui/dialogs/export.ui:460
-#: crates/rnote-ui/src/dialogs/export.rs:861
-#: crates/rnote-ui/src/dialogs/export.rs:908
+#: crates/rnote-ui/src/dialogs/export.rs:862
+#: crates/rnote-ui/src/dialogs/export.rs:909
 msgid "Export"
 msgstr "Exportálás"
 
@@ -334,10 +334,10 @@ msgstr "Exportfájl kijelölése"
 #: crates/rnote-ui/src/dialogs/export.rs:143
 #: crates/rnote-ui/src/dialogs/export.rs:150
 #: crates/rnote-ui/src/dialogs/export.rs:195
-#: crates/rnote-ui/src/dialogs/export.rs:660
-#: crates/rnote-ui/src/dialogs/export.rs:686
-#: crates/rnote-ui/src/dialogs/export.rs:693
-#: crates/rnote-ui/src/dialogs/export.rs:744
+#: crates/rnote-ui/src/dialogs/export.rs:661
+#: crates/rnote-ui/src/dialogs/export.rs:687
+#: crates/rnote-ui/src/dialogs/export.rs:694
+#: crates/rnote-ui/src/dialogs/export.rs:745
 msgid "- no file selected -"
 msgstr "- nincs kijelölt fájl -"
 
@@ -398,8 +398,8 @@ msgstr "Az exportálási formátum"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:370
 #: crates/rnote-ui/data/ui/dialogs/export.ui:593
 #: crates/rnote-ui/src/dialogs/export.rs:260
-#: crates/rnote-ui/src/dialogs/export.rs:564
-#: crates/rnote-ui/src/dialogs/export.rs:820
+#: crates/rnote-ui/src/dialogs/export.rs:565
+#: crates/rnote-ui/src/dialogs/export.rs:821
 msgid "Svg"
 msgstr "SVG-fájl"
 
@@ -462,15 +462,15 @@ msgstr "Fájlok exportálása szárnév"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:371
 #: crates/rnote-ui/data/ui/dialogs/export.ui:594
-#: crates/rnote-ui/src/dialogs/export.rs:569
-#: crates/rnote-ui/src/dialogs/export.rs:825
+#: crates/rnote-ui/src/dialogs/export.rs:570
+#: crates/rnote-ui/src/dialogs/export.rs:826
 msgid "Png"
 msgstr "PNG-fájl"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:595
-#: crates/rnote-ui/src/dialogs/export.rs:575
-#: crates/rnote-ui/src/dialogs/export.rs:831
+#: crates/rnote-ui/src/dialogs/export.rs:576
+#: crates/rnote-ui/src/dialogs/export.rs:832
 msgid "Jpeg"
 msgstr "JPEG-fájl"
 
@@ -485,7 +485,7 @@ msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "A JPEG-kép minőségének beállítása (1-100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:452
-#: crates/rnote-ui/src/dialogs/export.rs:806
+#: crates/rnote-ui/src/dialogs/export.rs:807
 msgid "Export Selection"
 msgstr "Kijelölés exportálása"
 
@@ -728,24 +728,24 @@ msgstr "Kijelölés megkettőzése"
 msgid "Delete Selection"
 msgstr "Kijelölés törlése"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:18
-msgid "Shaper Style"
-msgstr "Alakító stílus"
-
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:31
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
-msgid "Shape Configuration"
-msgstr "Alakbeállítás"
-
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:61
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:19
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:255
 msgid "Shape Builders"
 msgstr "Alaképítők"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:77
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:35
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:297
 msgid "Constraints"
 msgstr "Korlátok"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:64
+msgid "Shaper Style"
+msgstr "Alakító stílus"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:77
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
+msgid "Shape Configuration"
+msgstr "Alakbeállítás"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:101
 msgid "Shaper Styles"
@@ -1024,18 +1024,6 @@ msgstr "Oldalsáv a jobb oldalon"
 msgid "Toggle Fullscreen"
 msgstr "Teljes képernyős mód váltása"
 
-#: crates/rnote-ui/data/ui/appwindow.ui:109
-msgid "Close the Folded Flap"
-msgstr "Összehajtott fedél becsukása"
-
-#: crates/rnote-ui/data/ui/appwindow.ui:126
-msgid "Workspace"
-msgstr "Munkaterület"
-
-#: crates/rnote-ui/data/ui/appwindow.ui:137
-msgid "Settings"
-msgstr "Beállítások"
-
 #: crates/rnote-ui/data/ui/canvasmenu.ui:24
 msgid "_Document Layout"
 msgstr "_Dokumentum elrendezése"
@@ -1152,25 +1140,27 @@ msgstr "Áthelyezés a kukába"
 msgid "Duplicate"
 msgstr "Megkettőzés"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:19
-#: crates/rnote-ui/src/canvas/mod.rs:533
+#: crates/rnote-ui/data/ui/mainheader.ui:23
+#: crates/rnote-ui/src/canvas/mod.rs:580
 msgid "Draft"
 msgstr "Piszkozat"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:39
-#: crates/rnote-ui/data/ui/mainheader.ui:73
-msgid "Reveal/Hide Flap"
+#: crates/rnote-ui/data/ui/mainheader.ui:40
+#: crates/rnote-ui/data/ui/mainheader.ui:74
+#, fuzzy
+#| msgid "Reveal/Hide Flap"
+msgid "Reveal/Hide Sidebar"
 msgstr "Fedél megjelenítése/elrejtése"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:46
+#: crates/rnote-ui/data/ui/mainheader.ui:47
 msgid "New Tab"
 msgstr "Új lap"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:53
+#: crates/rnote-ui/data/ui/mainheader.ui:54
 msgid "Focus Mode"
 msgstr "Fókusz üzemmód"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:65
+#: crates/rnote-ui/data/ui/mainheader.ui:66
 #: crates/rnote-ui/data/ui/shortcuts.ui:161
 msgid "Save Document"
 msgstr "Dokumentum mentése"
@@ -1367,7 +1357,7 @@ msgstr "Visszaállítás"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:290
 #: crates/rnote-ui/data/ui/shortcuts.ui:146
-#: crates/rnote-ui/src/dialogs/mod.rs:628
+#: crates/rnote-ui/src/dialogs/mod.rs:632
 msgid "Document"
 msgstr "Dokumentum"
 
@@ -1497,40 +1487,54 @@ msgid ""
 msgstr "Állítsa be a kétujjas, hosszan megnyomott érintési mozdulat műveletét"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:472
+msgid "Keyboard Ctrl-Space Action"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:473
+#, fuzzy
+#| msgid ""
+#| "Set the action for the\n"
+#| "secondary mouse button"
+msgid ""
+"Set the action for the keyboard\n"
+"Ctrl plus Space shortcut"
+msgstr "A másodlagos egérgomb műveletének beállítása"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:485
 msgid "Drawing Pad Button 1 Action"
 msgstr "Rajzlap 1. gombjának művelete"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:473
+#: crates/rnote-ui/data/ui/settingspanel.ui:486
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr "Rajzlap 1. gombjának művelete beállítása"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:485
+#: crates/rnote-ui/data/ui/settingspanel.ui:498
 msgid "Drawing Pad Button 2 Action"
 msgstr "Rajzlap 2. gombjának művelete"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:486
+#: crates/rnote-ui/data/ui/settingspanel.ui:499
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr "Rajzlap 2. gombjának művelete beállítása"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:498
+#: crates/rnote-ui/data/ui/settingspanel.ui:511
 msgid "Drawing Pad Button 3 Action"
 msgstr "Rajzlap 3. gombjának művelete"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:499
+#: crates/rnote-ui/data/ui/settingspanel.ui:512
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr "Rajzlap 3. gombjának művelete beállítása"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:511
+#: crates/rnote-ui/data/ui/settingspanel.ui:524
 msgid "Drawing Pad Button 4 Action"
 msgstr "Rajzlap 4. gombjának művelete"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:512
+#: crates/rnote-ui/data/ui/settingspanel.ui:525
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
@@ -1622,7 +1626,7 @@ msgid "Print Document"
 msgstr "Dokumentum nyomtatása"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:197
-#: crates/rnote-ui/src/dialogs/import.rs:62
+#: crates/rnote-ui/src/dialogs/import.rs:64
 msgid "Import File"
 msgstr "Fájl importálása"
 
@@ -1658,12 +1662,12 @@ msgstr "Munkaterületi könyvtárműveletek"
 msgid "Create new Folder"
 msgstr "Új mappa létrehozása"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:550
+#: crates/rnote-ui/src/appwindow/mod.rs:531
 msgid "Opening file failed"
 msgstr "A fájl megnyitása sikertelen"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:282
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:556
+#: crates/rnote-ui/src/appwindow/imp.rs:249
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:560
 #: crates/rnote-ui/src/dialogs/export.rs:69
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:256
@@ -1671,64 +1675,64 @@ msgstr "A fájl megnyitása sikertelen"
 msgid "Saving document failed"
 msgstr "A dokumentum mentése sikertelen"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:498
+#: crates/rnote-ui/src/appwindow/imp.rs:269
 msgid "Button 1"
 msgstr "1. gomb"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:505
+#: crates/rnote-ui/src/appwindow/imp.rs:276
 msgid "Button 2"
 msgstr "2. gomb"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:512
+#: crates/rnote-ui/src/appwindow/imp.rs:283
 msgid "Button 3"
 msgstr "3. gomb"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:519
+#: crates/rnote-ui/src/appwindow/imp.rs:290
 msgid "Button 4"
 msgstr "4. gomb"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:618
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:622
 msgid "Printing document failed"
 msgstr "A dokumentum nyomtatása nem sikerült"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:654
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:658
 msgid "Exporting selection failed, nothing selected"
 msgstr "Kijelölés exportálása sikertelen, nincs kijelölve semmi"
 
-#: crates/rnote-ui/src/canvas/mod.rs:769 crates/rnote-ui/src/dialogs/mod.rs:203
+#: crates/rnote-ui/src/canvas/mod.rs:854 crates/rnote-ui/src/dialogs/mod.rs:203
 #: crates/rnote-ui/src/dialogs/mod.rs:337
 msgid "- invalid file name -"
 msgstr "- érvénytelen fáljnév -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:782
+#: crates/rnote-ui/src/canvas/mod.rs:867
 msgid "- invalid folder path -"
 msgstr "- érvénytelen mappa elérési út -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:805
+#: crates/rnote-ui/src/canvas/mod.rs:890
 msgid "Opened file was modified on disk"
 msgstr "A megnyitott fájl módosításra került a lemezen"
 
-#: crates/rnote-ui/src/canvas/mod.rs:806
+#: crates/rnote-ui/src/canvas/mod.rs:891
 msgid "Reload"
 msgstr "Újratöltés"
 
-#: crates/rnote-ui/src/canvas/mod.rs:812
+#: crates/rnote-ui/src/canvas/mod.rs:897
 msgid "Reloading .rnote file from disk failed"
 msgstr "Az .rnote fájl újratöltése a lemezről sikertelen"
 
-#: crates/rnote-ui/src/canvas/mod.rs:861
+#: crates/rnote-ui/src/canvas/mod.rs:946
 msgid "Opened file was renamed on disk"
 msgstr "A megnyitott fájl át lett nevezve a lemezen"
 
-#: crates/rnote-ui/src/canvas/mod.rs:874
+#: crates/rnote-ui/src/canvas/mod.rs:959
 msgid "Opened file was moved or deleted on disk"
 msgstr "A megnyitott fájl át lett helyezve vagy törölve lett a lemezről"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1003
+#: crates/rnote-ui/src/canvas/mod.rs:1091
 msgid "Inserting file failed"
 msgstr "Fájl beszúrása sikertelen"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1013
+#: crates/rnote-ui/src/canvas/mod.rs:1101
 msgid "Inserting text failed"
 msgstr "Szöveg beszúrása sikertelen"
 
@@ -1755,8 +1759,8 @@ msgstr "Dokumentum exportálása sikertelen, nincs fájl kiválasztva"
 
 #: crates/rnote-ui/src/dialogs/export.rs:252
 #: crates/rnote-ui/src/dialogs/export.rs:544
-#: crates/rnote-ui/src/dialogs/export.rs:808
-#: crates/rnote-ui/src/dialogs/mod.rs:504
+#: crates/rnote-ui/src/dialogs/export.rs:809
+#: crates/rnote-ui/src/dialogs/mod.rs:505
 msgid "Select"
 msgstr "Kijelölés"
 
@@ -1772,44 +1776,44 @@ msgstr "A dokumentumoldalak exportálása sikeres"
 msgid "Exporting document pages failed, no directory selected"
 msgstr "Dokumentumoldalak exportálása sikertelen, nincs kijelölve könyvtár"
 
-#: crates/rnote-ui/src/dialogs/export.rs:781
+#: crates/rnote-ui/src/dialogs/export.rs:782
 msgid "Exporting selection failed"
 msgstr "Kijelölés exportálása sikertelen"
 
-#: crates/rnote-ui/src/dialogs/export.rs:784
+#: crates/rnote-ui/src/dialogs/export.rs:785
 msgid "Exported selection successfully"
 msgstr "A kijelölés sikeresen exportálva"
 
-#: crates/rnote-ui/src/dialogs/export.rs:793
+#: crates/rnote-ui/src/dialogs/export.rs:794
 msgid "Exporting selection failed, no file selected"
 msgstr "Kijelölés exportálása sikertelen, nincs kijelölve fájl"
 
-#: crates/rnote-ui/src/dialogs/export.rs:851
-#: crates/rnote-ui/src/dialogs/export.rs:898
+#: crates/rnote-ui/src/dialogs/export.rs:852
+#: crates/rnote-ui/src/dialogs/export.rs:899
 msgid "Json"
 msgstr "JSON"
 
-#: crates/rnote-ui/src/dialogs/export.rs:859
+#: crates/rnote-ui/src/dialogs/export.rs:860
 msgid "Export Engine State"
 msgstr "Motor állapotának exportálása"
 
-#: crates/rnote-ui/src/dialogs/export.rs:878
+#: crates/rnote-ui/src/dialogs/export.rs:879
 msgid "Exporting engine state failed"
 msgstr "Motor állapotának exportálása sikertelen"
 
-#: crates/rnote-ui/src/dialogs/export.rs:881
+#: crates/rnote-ui/src/dialogs/export.rs:882
 msgid "Exported engine state successfully"
 msgstr "A motor állapota sikeresen exportálva"
 
-#: crates/rnote-ui/src/dialogs/export.rs:906
+#: crates/rnote-ui/src/dialogs/export.rs:907
 msgid "Export Engine Config"
 msgstr "Motor beállításainak exportálása"
 
-#: crates/rnote-ui/src/dialogs/export.rs:925
+#: crates/rnote-ui/src/dialogs/export.rs:926
 msgid "Exporting engine config failed"
 msgstr "Motorkonfiguráció exportálása sikertelen"
 
-#: crates/rnote-ui/src/dialogs/export.rs:928
+#: crates/rnote-ui/src/dialogs/export.rs:929
 msgid "Exported engine config successfully"
 msgstr "A motor konfigurációja sikeresen exportálva"
 
@@ -1817,43 +1821,45 @@ msgstr "A motor konfigurációja sikeresen exportálva"
 msgid "Open File"
 msgstr "Fájl megnyitása"
 
-#: crates/rnote-ui/src/dialogs/import.rs:59
-msgid "Jpg, Pdf, Png, Svg, Xopp"
+#: crates/rnote-ui/src/dialogs/import.rs:61
+#, fuzzy
+#| msgid "Jpg, Pdf, Png, Svg, Xopp"
+msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "JPG, PDF, PNG, SVG, Xopp"
 
-#: crates/rnote-ui/src/dialogs/import.rs:186
+#: crates/rnote-ui/src/dialogs/import.rs:188
 msgid "- no file name -"
 msgstr "- nincs fájlnév -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:191
+#: crates/rnote-ui/src/dialogs/import.rs:193
 msgid "- no title -"
 msgstr "- nincs cím -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:194
+#: crates/rnote-ui/src/dialogs/import.rs:196
 msgid "- no author -"
 msgstr "- nincs szerző -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:198
+#: crates/rnote-ui/src/dialogs/import.rs:200
 msgid "- no date -"
 msgstr "- nincs dátum -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:205
+#: crates/rnote-ui/src/dialogs/import.rs:207
 msgid "File name:"
 msgstr "Fájl név:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:209
+#: crates/rnote-ui/src/dialogs/import.rs:211
 msgid "Title:"
 msgstr "Cím:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:213
+#: crates/rnote-ui/src/dialogs/import.rs:215
 msgid "Author:"
 msgstr "Szerző:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:217
+#: crates/rnote-ui/src/dialogs/import.rs:219
 msgid "Modification date:"
 msgstr "Módosítás dátuma:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:221
+#: crates/rnote-ui/src/dialogs/import.rs:223
 msgid "Pages:"
 msgstr "Oldalak:"
 
@@ -1877,210 +1883,210 @@ msgstr "A módosítások mentésre kerülnek"
 msgid "A new file will be created"
 msgstr "Új fájl jön létre"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:502
+#: crates/rnote-ui/src/dialogs/mod.rs:503
 msgid "Change Workspace Directory"
 msgstr "Munkaterület-könyvtár módosítása"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:615
+#: crates/rnote-ui/src/dialogs/mod.rs:619
 msgid "Band-Aid"
 msgstr "Sebtapasz"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:616
+#: crates/rnote-ui/src/dialogs/mod.rs:620
 msgid "Bank"
 msgstr "Bank"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:617
+#: crates/rnote-ui/src/dialogs/mod.rs:621
 msgid "Bookmark"
 msgstr "Könyvjelző"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:618
+#: crates/rnote-ui/src/dialogs/mod.rs:622
 msgid "Book"
 msgstr "Könyv"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:619
+#: crates/rnote-ui/src/dialogs/mod.rs:623
 msgid "Bread"
 msgstr "Kenyér"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:620
+#: crates/rnote-ui/src/dialogs/mod.rs:624
 msgid "Calendar"
 msgstr "Naptár"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:621
+#: crates/rnote-ui/src/dialogs/mod.rs:625
 msgid "Camera"
 msgstr "Fényképezőgép"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:622
+#: crates/rnote-ui/src/dialogs/mod.rs:626
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "Forgács"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:623
+#: crates/rnote-ui/src/dialogs/mod.rs:627
 msgid "Clock"
 msgstr "Óra"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:624
+#: crates/rnote-ui/src/dialogs/mod.rs:628
 msgid "Code"
 msgstr "Kód"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:625
+#: crates/rnote-ui/src/dialogs/mod.rs:629
 msgid "Compose"
 msgstr "Összeállítás"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:626
+#: crates/rnote-ui/src/dialogs/mod.rs:630
 msgctxt "as in plant"
 msgid "Crop"
 msgstr "Körülvágás"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:627
+#: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "Dictionary"
 msgstr "Szótár"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:629
+#: crates/rnote-ui/src/dialogs/mod.rs:633
 msgid "Drinks"
 msgstr "Italok"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:630
+#: crates/rnote-ui/src/dialogs/mod.rs:634
 msgid "Flag"
 msgstr "Zászló"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:631
+#: crates/rnote-ui/src/dialogs/mod.rs:635
 msgid "Folder"
 msgstr "Mappa"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:632
+#: crates/rnote-ui/src/dialogs/mod.rs:636
 msgid "Footprints"
 msgstr "Lábnyomok"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:633
+#: crates/rnote-ui/src/dialogs/mod.rs:637
 msgid "Gamepad"
 msgstr "Gombkormány"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:634
+#: crates/rnote-ui/src/dialogs/mod.rs:638
 msgid "Gear"
 msgstr "Fogaskerék"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:635
+#: crates/rnote-ui/src/dialogs/mod.rs:639
 msgid "Globe"
 msgstr "Földgömb"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:636
+#: crates/rnote-ui/src/dialogs/mod.rs:640
 msgid "Hammer"
 msgstr "Kalapács"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:637
+#: crates/rnote-ui/src/dialogs/mod.rs:641
 msgid "Heart"
 msgstr "Szív"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:638
+#: crates/rnote-ui/src/dialogs/mod.rs:642
 msgid "Hourglass"
 msgstr "Homokóra"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:639
+#: crates/rnote-ui/src/dialogs/mod.rs:643
 msgid "Key"
 msgstr "Kulcs"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:640
+#: crates/rnote-ui/src/dialogs/mod.rs:644
 msgid "Language"
 msgstr "Nyelv"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:641
+#: crates/rnote-ui/src/dialogs/mod.rs:645
 msgid "Library"
 msgstr "Könyvtár"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:642
+#: crates/rnote-ui/src/dialogs/mod.rs:646
 msgid "Lightbulb"
 msgstr "Villanykörte"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:643
+#: crates/rnote-ui/src/dialogs/mod.rs:647
 msgid "Mathematics"
 msgstr "Matematika"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:644
+#: crates/rnote-ui/src/dialogs/mod.rs:648
 msgid "Meeting"
 msgstr "Értekezlet"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:645
+#: crates/rnote-ui/src/dialogs/mod.rs:649
 msgid "Money"
 msgstr "Pénz"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:646
+#: crates/rnote-ui/src/dialogs/mod.rs:650
 msgid "Musical Note"
 msgstr "Hangjegy"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:647
+#: crates/rnote-ui/src/dialogs/mod.rs:651
 msgid "Nature"
 msgstr "Természet"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:648
+#: crates/rnote-ui/src/dialogs/mod.rs:652
 msgid "Open Book"
 msgstr "Könyv megnyitása"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:649
+#: crates/rnote-ui/src/dialogs/mod.rs:653
 msgid "Paintbrush"
 msgstr "Ecset"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:650
+#: crates/rnote-ui/src/dialogs/mod.rs:654
 msgid "Pencil and Paper"
 msgstr "Ceruza és papír"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:651
+#: crates/rnote-ui/src/dialogs/mod.rs:655
 msgid "People"
 msgstr "Emberek"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:652
+#: crates/rnote-ui/src/dialogs/mod.rs:656
 msgid "Person"
 msgstr "Személy"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:653
+#: crates/rnote-ui/src/dialogs/mod.rs:657
 msgid "Projector"
 msgstr "Kivetítő"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:654
+#: crates/rnote-ui/src/dialogs/mod.rs:658
 msgid "Science"
 msgstr "Tudomány"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:655
+#: crates/rnote-ui/src/dialogs/mod.rs:659
 msgid "Scratchpad"
 msgstr "Firkálótömb"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:656
+#: crates/rnote-ui/src/dialogs/mod.rs:660
 msgid "Shapes"
 msgstr "Alakzatok"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:657
+#: crates/rnote-ui/src/dialogs/mod.rs:661
 msgid "Shopping"
 msgstr "Bevásárlás"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:658
+#: crates/rnote-ui/src/dialogs/mod.rs:662
 msgid "Speech Bubble"
 msgstr "Beszédbuborék"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:659
+#: crates/rnote-ui/src/dialogs/mod.rs:663
 msgid "Speedometer"
 msgstr "Sebességmérő"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:660
+#: crates/rnote-ui/src/dialogs/mod.rs:664
 msgid "Star"
 msgstr "Csillag"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:662
+#: crates/rnote-ui/src/dialogs/mod.rs:666
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "Terminál"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:664
+#: crates/rnote-ui/src/dialogs/mod.rs:668
 msgid "Text"
 msgstr "Szöveg"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:665
+#: crates/rnote-ui/src/dialogs/mod.rs:669
 msgid "Travel"
 msgstr "Utazás"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:666
+#: crates/rnote-ui/src/dialogs/mod.rs:670
 msgid "Weather"
 msgstr "Időjárás"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:667
+#: crates/rnote-ui/src/dialogs/mod.rs:671
 msgid "Weight"
 msgstr "Súly"
 
@@ -2144,96 +2150,96 @@ msgstr "Köbös bezier-görbe"
 msgid "Polyline"
 msgstr "Vonallánc"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:537
+#: crates/rnote-ui/src/settingspanel/mod.rs:541
 msgid "Application restart is required"
 msgstr "Szükséges az alkalmazás újraindítása"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:796
+#: crates/rnote-ui/src/settingspanel/mod.rs:807
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "Hajszálkereszt (kicsi)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:797
+#: crates/rnote-ui/src/settingspanel/mod.rs:808
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "Hajszálkereszt (közepes)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:798
+#: crates/rnote-ui/src/settingspanel/mod.rs:809
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "Hajszálkereszt (nagy)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:799
+#: crates/rnote-ui/src/settingspanel/mod.rs:810
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "Pont (kicsi)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:800
+#: crates/rnote-ui/src/settingspanel/mod.rs:811
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "Pont (közepes)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:801
+#: crates/rnote-ui/src/settingspanel/mod.rs:812
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "Pont (nagy)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:802
+#: crates/rnote-ui/src/settingspanel/mod.rs:813
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "Könnycsepp északnyugat (kicsi)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:803
+#: crates/rnote-ui/src/settingspanel/mod.rs:814
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "Könnycsepp északnyugat (közepes)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:804
+#: crates/rnote-ui/src/settingspanel/mod.rs:815
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "Könnycsepp északnyugat (nagy)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:805
+#: crates/rnote-ui/src/settingspanel/mod.rs:816
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "Könnycsepp északkeleti (kicsi)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:806
+#: crates/rnote-ui/src/settingspanel/mod.rs:817
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "Könnycsepp északkelet (közepes)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:807
+#: crates/rnote-ui/src/settingspanel/mod.rs:818
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "Könnycsepp északkeleti (nagy)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:808
+#: crates/rnote-ui/src/settingspanel/mod.rs:819
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "Könnycsepp észak (kicsi)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:809
+#: crates/rnote-ui/src/settingspanel/mod.rs:820
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "Könnycsepp észak (közepes)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:810
+#: crates/rnote-ui/src/settingspanel/mod.rs:821
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "Könnycsepp észak (nagy)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:811
+#: crates/rnote-ui/src/settingspanel/mod.rs:822
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "Gerenda (kicsi)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:812
+#: crates/rnote-ui/src/settingspanel/mod.rs:823
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "Gerenda (közepes)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:813
+#: crates/rnote-ui/src/settingspanel/mod.rs:824
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "Gerenda (nagy)"
@@ -2245,6 +2251,15 @@ msgstr "Mappanév"
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "Új mappa"
+
+#~ msgid "Close the Folded Flap"
+#~ msgstr "Összehajtott fedél becsukása"
+
+#~ msgid "Workspace"
+#~ msgstr "Munkaterület"
+
+#~ msgid "Settings"
+#~ msgstr "Beállítások"
 
 #~ msgid "Remove Page"
 #~ msgstr "Oldal eltávolítása"

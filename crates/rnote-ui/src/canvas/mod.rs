@@ -21,6 +21,7 @@ use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::PenState;
 use rnote_engine::ext::GrapheneRectExt;
+use rnote_engine::Camera;
 use rnote_engine::{Engine, WidgetFlags};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 
@@ -476,6 +477,21 @@ mod imp {
         fn set_hadjustment_prop(&self, hadj: Option<Adjustment>) {
             let obj = self.obj();
 
+            let hadj_value = self
+                .hadjustment
+                .borrow()
+                .as_ref()
+                .map(|adj| adj.value())
+                .unwrap_or(-Camera::OVERSHOOT_HORIZONTAL);
+            let vadj_value = self
+                .vadjustment
+                .borrow()
+                .as_ref()
+                .map(|adj| adj.value())
+                .unwrap_or(-Camera::OVERSHOOT_VERTICAL);
+            let widget_size = obj.widget_size();
+            let offset_mins_maxs = obj.engine_ref().camera_offset_mins_maxs();
+
             if let Some(signal_id) = self.connections.borrow_mut().hadjustment.take() {
                 let old_adj = self.hadjustment.borrow().as_ref().unwrap().clone();
                 old_adj.disconnect(signal_id);
@@ -484,17 +500,39 @@ mod imp {
             if let Some(ref hadj) = hadj {
                 let signal_id =
                     hadj.connect_value_changed(clone!(@weak obj as canvas => move |_| {
-                        // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
+                        // this triggers a canvaslayout allocate() call,
+                        // where the camera and content rendering is updated based on some conditions
                         canvas.queue_resize();
                     }));
 
                 self.connections.borrow_mut().hadjustment.replace(signal_id);
             }
             self.hadjustment.replace(hadj);
+
+            obj.configure_adjustments(
+                widget_size,
+                offset_mins_maxs,
+                na::vector![hadj_value, vadj_value],
+            );
         }
 
         fn set_vadjustment_prop(&self, vadj: Option<Adjustment>) {
             let obj = self.obj();
+
+            let hadj_value = self
+                .hadjustment
+                .borrow()
+                .as_ref()
+                .map(|adj| adj.value())
+                .unwrap_or(-Camera::OVERSHOOT_HORIZONTAL);
+            let vadj_value = self
+                .vadjustment
+                .borrow()
+                .as_ref()
+                .map(|adj| adj.value())
+                .unwrap_or(-Camera::OVERSHOOT_VERTICAL);
+            let widget_size = obj.widget_size();
+            let offset_mins_maxs = obj.engine_ref().camera_offset_mins_maxs();
 
             if let Some(signal_id) = self.connections.borrow_mut().vadjustment.take() {
                 let old_adj = self.vadjustment.borrow().as_ref().unwrap().clone();
@@ -504,13 +542,20 @@ mod imp {
             if let Some(ref vadj) = vadj {
                 let signal_id =
                     vadj.connect_value_changed(clone!(@weak obj as canvas => move |_| {
-                        // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
+                        // this triggers a canvaslayout allocate() call,
+                        // where the camera and content rendering is updated based on some conditions
                         canvas.queue_resize();
                     }));
 
                 self.connections.borrow_mut().vadjustment.replace(signal_id);
             }
             self.vadjustment.replace(vadj);
+
+            obj.configure_adjustments(
+                widget_size,
+                offset_mins_maxs,
+                na::vector![hadj_value, vadj_value],
+            );
         }
     }
 }
@@ -650,9 +695,47 @@ impl RnCanvas {
 
     pub(crate) fn canvas_layout_manager(&self) -> RnCanvasLayout {
         self.layout_manager()
+            .and_downcast::<RnCanvasLayout>()
             .unwrap()
-            .downcast::<RnCanvasLayout>()
-            .unwrap()
+    }
+
+    pub(crate) fn configure_adjustments(
+        &self,
+        widget_size: na::Vector2<f64>,
+        offset_mins_maxs: (na::Vector2<f64>, na::Vector2<f64>),
+        offset: na::Vector2<f64>,
+    ) {
+        let (offset_mins, offset_maxs) = offset_mins_maxs;
+
+        if let Some(hadj) = self.hadjustment() {
+            hadj.configure(
+                // This gets clamped to the lower and upper values
+                offset[0],
+                offset_mins[0],
+                offset_maxs[0],
+                0.1 * widget_size[0],
+                0.9 * widget_size[0],
+                widget_size[0],
+            )
+        };
+
+        if let Some(vadj) = self.vadjustment() {
+            vadj.configure(
+                // This gets clamped to the lower and upper values
+                offset[1],
+                offset_mins[1],
+                offset_maxs[1],
+                0.1 * widget_size[1],
+                0.9 * widget_size[1],
+                widget_size[1],
+            );
+        }
+
+        self.queue_resize();
+    }
+
+    pub(crate) fn widget_size(&self) -> na::Vector2<f64> {
+        na::vector![self.width() as f64, self.height() as f64]
     }
 
     /// Immutable borrow of the engine.

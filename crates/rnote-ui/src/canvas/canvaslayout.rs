@@ -46,7 +46,7 @@ mod imp {
         ) -> (i32, i32, i32, i32) {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
             let total_zoom = canvas.engine_ref().camera.total_zoom();
-            let document = canvas.engine_ref().document;
+            let document = canvas.engine_ref().document.clone();
 
             if orientation == Orientation::Horizontal {
                 let natural_width = (document.width * total_zoom
@@ -66,38 +66,19 @@ mod imp {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
             let hadj = canvas.hadjustment().unwrap();
             let vadj = canvas.vadjustment().unwrap();
-
-            let (offset_mins, offset_maxs) = canvas.engine_ref().camera_offset_mins_maxs();
+            let hadj_value = hadj.value();
+            let vadj_value = vadj.value();
             let new_size = na::vector![width as f64, height as f64];
+            let offset_mins_maxs = canvas.engine_ref().camera_offset_mins_maxs();
+            let new_offset = na::vector![hadj_value, vadj_value];
+            let old_viewport = self.old_viewport.get();
+            let new_viewport = canvas.engine_ref().camera.viewport();
 
-            hadj.configure(
-                // This gets clamped to the lower and upper values
-                hadj.value(),
-                offset_mins[0],
-                offset_maxs[0],
-                0.1 * new_size[0],
-                0.9 * new_size[0],
-                new_size[0],
-            );
-
-            vadj.configure(
-                // This gets clamped to the lower and upper values
-                vadj.value(),
-                offset_mins[1],
-                offset_maxs[1],
-                0.1 * new_size[1],
-                0.9 * new_size[1],
-                new_size[1],
-            );
-
-            let new_offset = na::vector![hadj.value(), vadj.value()];
+            canvas.configure_adjustments(new_size, offset_mins_maxs, new_offset);
 
             // Update the camera
             let _ = canvas.engine_mut().camera_set_offset(new_offset);
             let _ = canvas.engine_mut().camera_set_size(new_size);
-
-            let new_viewport = canvas.engine_ref().camera.viewport();
-            let old_viewport = self.old_viewport.get();
 
             // We only extend the viewport by a (tweakable) fraction of the margin, because we want to trigger rendering
             // before we reach it. This has two advantages: Strokes that might take longer to render have a head start

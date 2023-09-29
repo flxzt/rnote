@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-29 20:43+0200\n"
-"PO-Revision-Date: 2023-09-15 16:52+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"PO-Revision-Date: 2023-09-30 11:45+0000\n"
+"Last-Translator: Óscar Fernández Díaz <oscfdezdz@users.noreply.hosted.weblate"
+".org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -427,7 +428,7 @@ msgid ""
 "are cut into pages"
 msgstr ""
 "El orden de las páginas cuando los documentos\n"
-"con diseños que se expanden en horizontal y\n"
+"con disposiciones que se expanden en horizontal y\n"
 "vertical se dividen en páginas"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:165
@@ -718,7 +719,7 @@ msgstr "Deseleccionar todos los trazos"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 msgid "Invert Color Brightness of All Selected Strokes"
-msgstr "Invertir el brillo del color para todos los trazos seleccionados"
+msgstr "Invierte el brillo del color de todos los trazos seleccionados"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 #: crates/rnote-ui/data/ui/shortcuts.ui:224
@@ -1096,8 +1097,8 @@ msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
-"Eliminar la página.\n"
-"Disponible en el diseño de un documento de tamaño fijo."
+"Eliminar página.\n"
+"Disponible en la disposición de documento de tamaño fijo."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:157
 msgid ""
@@ -1105,15 +1106,15 @@ msgid ""
 "Available in Fixed-Size Document Layout."
 msgstr ""
 "Añadir página.\n"
-"Disponible en el diseño de un documento de tamaño fijo."
+"Disponible en la disposición de documento de tamaño fijo."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:166
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
-"Ajustar el tamaño del documento.\n"
-"Disponible en un diseño de un documento de tamaño fijo."
+"Ajustar el tamaño del documento al contenido.\n"
+"Disponible en la disposición de documento de tamaño fijo."
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
@@ -1148,10 +1149,8 @@ msgstr "Borrador"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
-#, fuzzy
-#| msgid "Reveal/Hide Flap"
 msgid "Reveal/Hide Sidebar"
-msgstr "Revelar/Ocultar solapa"
+msgstr "Mostrar/Ocultar barra lateral"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
 msgid "New Tab"
@@ -1493,19 +1492,15 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:472
 msgid "Keyboard Ctrl-Space Action"
-msgstr ""
+msgstr "Acción del teclado Ctrl-Espacio"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:473
-#, fuzzy
-#| msgid ""
-#| "Set the action for the\n"
-#| "secondary mouse button"
 msgid ""
 "Set the action for the keyboard\n"
 "Ctrl plus Space shortcut"
 msgstr ""
 "Establecer la acción para el\n"
-"botón secundario del ratón"
+"atajo del teclado Ctrl más Espacio"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:485
 msgid "Drawing Pad Button 1 Action"
@@ -1630,11 +1625,11 @@ msgstr "Guardar documento como"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
 msgid "Add Page (When in Fixed-Size Layout)"
-msgstr "Agregar una página (cuando estés en un diseño de tamaño fijo)"
+msgstr "Añadir página (en disposición de tamaño fijo)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr "Eliminar la última página (cuando estés en un diseño de tamaño fijo)"
+msgstr "Eliminar la última página (en disposición de tamaño fijo)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Print Document"
@@ -1840,10 +1835,8 @@ msgid "Open File"
 msgstr "Abrir archivo"
 
 #: crates/rnote-ui/src/dialogs/import.rs:61
-#, fuzzy
-#| msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "jpg, pdf, png, svg, xopp"
+msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:188
 msgid "- no file name -"
@@ -2122,7 +2115,7 @@ msgstr "Elipsis"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:412
 msgid "Curves & Paths"
-msgstr "Curvas y caminos"
+msgstr "Curvas y trazados"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
@@ -2166,7 +2159,7 @@ msgstr "Curva cúbica de Bézier"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
-msgstr "Cadena poligonal"
+msgstr "Polilínea"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:541
 msgid "Application restart is required"

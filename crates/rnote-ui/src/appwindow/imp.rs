@@ -387,6 +387,10 @@ impl RnAppWindow {
 
         self.split_view.connect_collapsed_notify(
             clone!(@weak obj as appwindow => move |split_view| {
+                if split_view.is_collapsed() {
+                    // Only hide sidebar when transitioning from non-collapsed to collapsed.
+                    split_view.set_show_sidebar(false);
+                }
                 update_widgets(split_view, &appwindow);
             }),
         );

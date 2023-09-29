@@ -1,4 +1,4 @@
-// gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not yet stable
+// gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not suitable for a async flow
 #![allow(deprecated)]
 
 // Modules

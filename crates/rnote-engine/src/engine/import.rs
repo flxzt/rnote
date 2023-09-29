@@ -279,7 +279,7 @@ impl Engine {
     }
 
     /// Import the generated strokes into the store.
-    pub fn import_generated_strokes(
+    pub fn import_generated_content(
         &mut self,
         strokes: Vec<(Stroke, Option<StrokeLayer>)>,
     ) -> WidgetFlags {

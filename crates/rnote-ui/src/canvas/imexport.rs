@@ -6,39 +6,51 @@ use rnote_compose::ext::Vector2Ext;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
 use rnote_engine::engine::{EngineSnapshot, StrokeContent};
 use rnote_engine::strokes::Stroke;
+use rnote_engine::WidgetFlags;
 use std::ops::Range;
 use std::path::Path;
 
 impl RnCanvas {
+    /// Load the bytes of a `.rnote` file and imports it into the engine.
+    ///
+    /// `file_path` is optional but needs to be supplied when the origin file should be tracked.
+    ///
+    /// The function returns `WidgetFlags` instead of emitting the `handle_signal_flags` signal, because a signal
+    /// handler might not yet be connected when this function is called.
     pub(crate) async fn load_in_rnote_bytes<P>(
         &self,
         bytes: Vec<u8>,
         file_path: Option<P>,
-    ) -> anyhow::Result<()>
+    ) -> anyhow::Result<WidgetFlags>
     where
         P: AsRef<Path>,
     {
         let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(bytes).await?;
         let widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
-        self.emit_handle_widget_flags(widget_flags);
 
-        if let Some(file_path) = file_path {
-            let file = gio::File::for_path(file_path);
+        if file_path.is_some() {
             self.dismiss_output_file_modified_toast();
-            self.set_output_file(Some(file));
         }
+        self.set_output_file(file_path.map(gio::File::for_path));
         self.set_unsaved_changes(false);
         self.set_empty(false);
-        Ok(())
+        Ok(widget_flags)
     }
 
+    /// Reload the engine from the file that is set as origin file.
+    ///
+    /// If the origin file is set to None, this does nothing and returns an error.
     pub(crate) async fn reload_from_disk(&self) -> anyhow::Result<()> {
         let Some(output_file) = self.output_file() else {
-            return Ok(());
+            return Err(anyhow::anyhow!(
+                "Failed to reload file from disk, no file path saved."
+            ));
         };
         let (bytes, _) = output_file.load_bytes_future().await?;
-        self.load_in_rnote_bytes(bytes.to_vec(), output_file.path())
+        let widget_flags = self
+            .load_in_rnote_bytes(bytes.to_vec(), output_file.path())
             .await?;
+        self.emit_handle_widget_flags(widget_flags);
         Ok(())
     }
 
@@ -55,10 +67,12 @@ impl RnCanvas {
         Ok(())
     }
 
+    /// Loads in bytes from a vector image and imports it.
+    ///
+    /// `target_pos` is in coordinate space of the doc.
     pub(crate) async fn load_in_vectorimage_bytes(
         &self,
         bytes: Vec<u8>,
-        // In coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let pos = target_pos.unwrap_or_else(|| {
@@ -74,26 +88,27 @@ impl RnCanvas {
                 ])
         });
 
-        // we need the split the import operation between generate_vectorimage_from_bytes() which returns a receiver and import_generated_strokes(),
-        // to avoid borrowing the entire engine refcell while awaiting the stroke
+        // we need the split the import operation between generate_vectorimage_from_bytes()
+        // which returns a receiver and import_generated_content(),
+        // to avoid borrowing the entire engine refcell while awaiting the generated stroke
         let vectorimage_receiver = self
             .engine_mut()
             .generate_vectorimage_from_bytes(pos, bytes);
         let vectorimage = vectorimage_receiver.await??;
-
         let widget_flags = self
             .engine_mut()
-            .import_generated_strokes(vec![(Stroke::VectorImage(vectorimage), None)]);
+            .import_generated_content(vec![(Stroke::VectorImage(vectorimage), None)]);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
     }
 
-    /// Target position is in the coordinate space of the doc
+    /// Loads in bytes from a bitmap image and imports it.
+    ///
+    /// `target_pos` is in coordinate space of the doc.
     pub(crate) async fn load_in_bitmapimage_bytes(
         &self,
         bytes: Vec<u8>,
-        // In the coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let pos = target_pos.unwrap_or_else(|| {
@@ -116,13 +131,15 @@ impl RnCanvas {
 
         let widget_flags = self
             .engine_mut()
-            .import_generated_strokes(vec![(Stroke::BitmapImage(bitmapimage), None)]);
+            .import_generated_content(vec![(Stroke::BitmapImage(bitmapimage), None)]);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
     }
 
-    /// Target position is in the coordinate space of the doc
+    /// Loads in bytes from a pdf and imports it.
+    ///
+    /// `target_pos` is in coordinate space of the doc.
     pub(crate) async fn load_in_pdf_bytes(
         &self,
         bytes: Vec<u8>,
@@ -147,13 +164,15 @@ impl RnCanvas {
             .generate_pdf_pages_from_bytes(bytes, pos, page_range);
         let strokes = strokes_receiver.await??;
 
-        let widget_flags = self.engine_mut().import_generated_strokes(strokes);
+        let widget_flags = self.engine_mut().import_generated_content(strokes);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
     }
 
-    /// Target position is in the coordinate space of the doc
+    /// Imports a text.
+    ///
+    /// `target_pos` is in coordinate space of the doc.
     pub(crate) fn load_in_text(
         &self,
         text: String,
@@ -176,7 +195,9 @@ impl RnCanvas {
         Ok(())
     }
 
-    /// Deserializes the stroke content and inserts it into the engine. The data is usually coming from the clipboard, drop source, etc.
+    /// Deserializes the stroke content and inserts it into the engine.
+    ///
+    /// The data is usually coming from the clipboard, drop source, etc.
     pub(crate) async fn insert_stroke_content(&self, json_string: String) -> anyhow::Result<()> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<StrokeContent>>();
@@ -210,8 +231,8 @@ impl RnCanvas {
 
     /// Saves the document to the given file.
     ///
-    /// Returns Ok(true) if saved successfully, Ok(false) when a save is already in progress and no file operatiosn were executed,
-    /// Err(e) when saving failed in any way.
+    /// Returns Ok(true) if saved successfully, Ok(false) when a save is already in progress and no file operatiosn were
+    /// executed, Err(e) when saving failed in any way.
     pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<bool> {
         // skip saving when it is already in progress
         if self.save_in_progress() {
@@ -287,8 +308,8 @@ impl RnCanvas {
     }
 
     /// Exports document pages
-    /// file_stem_name: the stem name of the created files. This is extended by an enumeration of the page number and file extension
-    /// overwrites existing files with the same name!
+    /// `file_stem_name`: the stem name of the created files. This is extended by an enumeration of the page number and
+    /// file extension overwrites existing files with the same name!
     pub(crate) async fn export_doc_pages(
         &self,
         dir: &gio::File,

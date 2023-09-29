@@ -68,9 +68,8 @@ impl Engine {
     ///
     /// If the background pattern or zoom has changed, the background pattern needs to be regenerated first.
     pub fn update_rendering_current_viewport(&mut self) -> WidgetFlags {
-        let mut widget_flags = self.update_background_rendering_current_viewport();
-        widget_flags |= self.update_content_rendering_current_viewport();
-        widget_flags
+        self.update_background_rendering_current_viewport()
+            | self.update_content_rendering_current_viewport()
     }
 
     /// Clear the rendering of the entire engine (e.g. when it becomes off-screen).

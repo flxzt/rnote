@@ -2,7 +2,7 @@ project(
     'rnote',
     ['rust', 'cpp'],
     version: '0.8.2',
-    meson_version: '>= 0.57',
+    meson_version: '>= 1.0',
 )
 # add a patch suffix for alpha or beta version, starting with a dash.
 patch = ''
@@ -69,11 +69,11 @@ cpp_compiler = meson.get_compiler('cpp')
 # TODO: How to fix this?
 #cpp_compiler.find_library('clang')
 
-dependency('glib-2.0', version: '>= 2.72')
-dependency('gio-2.0', version: '>= 2.72')
+dependency('glib-2.0', version: '>= 2.76')
+dependency('gio-2.0', version: '>= 2.76')
 dependency('cairo', version: '>= 1.17')
-dependency('gtk4', version: '>= 4.10')
-dependency('libadwaita-1', version: '>= 1.3')
+dependency('gtk4', version: '>= 4.12')
+dependency('libadwaita-1', version: '>= 1.4')
 dependency('poppler-glib', version: '>= 22.07')
 
 cargo = find_program('cargo', required: true)
@@ -323,15 +323,12 @@ meson.add_install_script(
     app_name,
 )
 
-# meson >= 0.64 will include `update-mime-database` in the gnome module.
-# As soon as that is available on supported platforms ( fedora 38, msys2, flatpak gnome platform )
-# the post-install script can be replaced by:
-#gnome.post_install(
-#    glib_compile_schemas: true,
-#    gtk_update_icon_cache: true,
-#    update_desktop_database: true,
-#    update_mime_database: true,
-#)
+gnome.post_install(
+    glib_compile_schemas: true,
+    gtk_update_icon_cache: true,
+    update_desktop_database: true,
+    update_mime_database: true,
+)
 
 # Windows installer
 

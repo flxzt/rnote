@@ -13,13 +13,9 @@
       <default>false</default>
       <summary>Default window maximized behaviour</summary>
     </key>
-    <key name="flap-reveal" type="b">
+    <key name="sidebar-show" type="b">
       <default>false</default>
-      <summary>Whether the flap is revealed or not</summary>
-    </key>
-    <key name="flap-width" type="i">
-      <default>500</default>
-      <summary>flap width</summary>
+      <summary>Whether the sidebar is shown or not</summary>
     </key>
     <key name='color-scheme' type='s'>
       <choices>

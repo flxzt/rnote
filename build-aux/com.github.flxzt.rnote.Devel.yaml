@@ -2,11 +2,11 @@ id: com.github.flxzt.rnote.Devel
 tags:
     - development
 runtime: org.gnome.Platform
-runtime-version: "44"
+runtime-version: "45"
 sdk: org.gnome.Sdk
 sdk-extensions:
     - org.freedesktop.Sdk.Extension.rust-stable
-    - org.freedesktop.Sdk.Extension.llvm15
+    - org.freedesktop.Sdk.Extension.llvm16
 command: rnote
 finish-args:
     - "--socket=wayland"
@@ -25,18 +25,18 @@ finish-args:
     - "--env=GTK_PATH=/app/lib/gtk-4.0"
     - "--env=GST_DEBUG=3"
 build-options:
-    append-path: "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm15/bin"
+    append-path: "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm16/bin"
     env:
         CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: clang
-        CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS: '-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold'
+        CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS: "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold"
         CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: clang
-        CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUSTFLAGS: '-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold'
+        CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUSTFLAGS: "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold"
     build-args:
         - "--share=network"
     test-args:
         - "--socket=x11"
         - "--share=network"
-    prepend-ld-library-path: /usr/lib/sdk/llvm15/lib
+    prepend-ld-library-path: /usr/lib/sdk/llvm16/lib
 modules:
     - name: poppler
       buildsystem: cmake-ninja
@@ -58,12 +58,6 @@ modules:
           - type: archive
             url: "https://poppler.freedesktop.org/poppler-data-0.4.12.tar.gz"
             sha256: c835b640a40ce357e1b83666aabd95edffa24ddddd49b8daff63adb851cdab74
-    - name: cairo
-      buildsystem: meson
-      sources:
-          - type: git
-            url: https://gitlab.freedesktop.org/cairo/cairo.git
-            commit: 7380d3dd7d5128db20f0be063b086519ed555327
     - name: rnote
       buildsystem: meson
       run-tests: true

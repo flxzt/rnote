@@ -1,19 +1,13 @@
 // Imports
-use crate::{
-    config, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser, {dialogs, RnMainHeader},
-};
+use crate::{config, dialogs, RnMainHeader, RnOverlays, RnSidebar};
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    gdk, gio, glib, glib::clone, Align, ArrowType, Box, Button, CompositeTemplate, CornerType,
-    CssProvider, GestureDrag, Grid, PackType, PadActionType, PadController, PositionType,
-    PropagationPhase,
+    gdk, gio, glib, glib::clone, Align, ArrowType, CompositeTemplate, CornerType, CssProvider,
+    PackType, PadActionType, PadController, PositionType,
 };
 use once_cell::sync::Lazy;
-use std::{
-    cell::{Cell, RefCell},
-    rc::Rc,
-};
+use std::cell::{Cell, RefCell};
 
 #[derive(Debug, CompositeTemplate)]
 #[template(resource = "/com/github/flxzt/rnote/ui/appwindow.ui")]
@@ -31,33 +25,15 @@ pub(crate) struct RnAppWindow {
     pub(crate) focus_mode: Cell<bool>,
 
     #[template_child]
-    pub(crate) main_grid: TemplateChild<Grid>,
+    pub(crate) main_header: TemplateChild<RnMainHeader>,
     #[template_child]
-    pub(crate) overlays: TemplateChild<RnOverlays>,
+    pub(crate) split_view: TemplateChild<adw::OverlaySplitView>,
+    #[template_child]
+    pub(crate) sidebar: TemplateChild<RnSidebar>,
     #[template_child]
     pub(crate) tabbar: TemplateChild<adw::TabBar>,
     #[template_child]
-    pub(crate) settings_panel: TemplateChild<RnSettingsPanel>,
-    #[template_child]
-    pub(crate) flap: TemplateChild<adw::Flap>,
-    #[template_child]
-    pub(crate) flap_box: TemplateChild<gtk4::Box>,
-    #[template_child]
-    pub(crate) flap_header: TemplateChild<adw::HeaderBar>,
-    #[template_child]
-    pub(crate) flap_resizer: TemplateChild<gtk4::Box>,
-    #[template_child]
-    pub(crate) flap_resizer_box: TemplateChild<gtk4::Box>,
-    #[template_child]
-    pub(crate) flap_close_button: TemplateChild<Button>,
-    #[template_child]
-    pub(crate) flap_stack: TemplateChild<adw::ViewStack>,
-    #[template_child]
-    pub(crate) workspacebrowser: TemplateChild<RnWorkspaceBrowser>,
-    #[template_child]
-    pub(crate) flap_menus_box: TemplateChild<Box>,
-    #[template_child]
-    pub(crate) mainheader: TemplateChild<RnMainHeader>,
+    pub(crate) overlays: TemplateChild<RnOverlays>,
 }
 
 impl Default for RnAppWindow {
@@ -75,20 +51,11 @@ impl Default for RnAppWindow {
             touch_drawing: Cell::new(false),
             focus_mode: Cell::new(false),
 
-            main_grid: TemplateChild::<Grid>::default(),
-            overlays: TemplateChild::<RnOverlays>::default(),
+            main_header: TemplateChild::<RnMainHeader>::default(),
+            split_view: TemplateChild::<adw::OverlaySplitView>::default(),
+            sidebar: TemplateChild::<RnSidebar>::default(),
             tabbar: TemplateChild::<adw::TabBar>::default(),
-            settings_panel: TemplateChild::<RnSettingsPanel>::default(),
-            flap: TemplateChild::<adw::Flap>::default(),
-            flap_box: TemplateChild::<gtk4::Box>::default(),
-            flap_header: TemplateChild::<adw::HeaderBar>::default(),
-            flap_resizer: TemplateChild::<gtk4::Box>::default(),
-            flap_resizer_box: TemplateChild::<gtk4::Box>::default(),
-            flap_close_button: TemplateChild::<Button>::default(),
-            flap_stack: TemplateChild::<adw::ViewStack>::default(),
-            workspacebrowser: TemplateChild::<RnWorkspaceBrowser>::default(),
-            flap_menus_box: TemplateChild::<Box>::default(),
-            mainheader: TemplateChild::<RnMainHeader>::default(),
+            overlays: TemplateChild::<RnOverlays>::default(),
         }
     }
 }
@@ -129,9 +96,9 @@ impl ObjectImpl for RnAppWindow {
             gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
         );
 
-        self.setup_tabbar();
-        self.setup_flap();
         self.setup_input();
+        self.setup_split_view();
+        self.setup_tabbar();
     }
 
     fn dispose(&self) {
@@ -291,202 +258,6 @@ impl RnAppWindow {
             }
     }
 
-    fn setup_tabbar(&self) {
-        self.tabbar.set_view(Some(&self.overlays.tabview()));
-    }
-
-    // Setting up the sidebar flap
-    fn setup_flap(&self) {
-        let obj = self.obj();
-        let flap = self.flap.get();
-        let flap_box = self.flap_box.get();
-        let flap_resizer = self.flap_resizer.get();
-        let flap_resizer_box = self.flap_resizer_box.get();
-        let workspace_headerbar = self.flap_header.get();
-        let left_flapreveal_toggle = obj.mainheader().left_flapreveal_toggle();
-        let right_flapreveal_toggle = obj.mainheader().right_flapreveal_toggle();
-
-        flap.set_locked(true);
-        flap.set_fold_policy(adw::FlapFoldPolicy::Auto);
-
-        let expanded_revealed = Rc::new(Cell::new(flap.reveals_flap()));
-
-        left_flapreveal_toggle
-            .bind_property("active", &flap, "reveal-flap")
-            .sync_create()
-            .bidirectional()
-            .build();
-        right_flapreveal_toggle
-            .bind_property("active", &flap, "reveal-flap")
-            .sync_create()
-            .bidirectional()
-            .build();
-
-        left_flapreveal_toggle.connect_toggled(
-            clone!(@weak flap, @strong expanded_revealed => move |flapreveal_toggle| {
-                flap.set_reveal_flap(flapreveal_toggle.is_active());
-                if !flap.is_folded() {
-                    expanded_revealed.set(flapreveal_toggle.is_active());
-                }
-            }),
-        );
-
-        right_flapreveal_toggle.connect_toggled(
-            clone!(@weak flap, @strong expanded_revealed => move |flapreveal_toggle| {
-                flap.set_reveal_flap(flapreveal_toggle.is_active());
-                if !flap.is_folded() {
-                    expanded_revealed.set(flapreveal_toggle.is_active());
-                }
-            }),
-        );
-
-        self.flap
-                .connect_folded_notify(clone!(@weak obj as appwindow, @strong expanded_revealed, @weak left_flapreveal_toggle, @weak right_flapreveal_toggle, @weak workspace_headerbar => move |flap| {
-                    if appwindow.mainheader().appmenu().parent().is_some() {
-                        appwindow.mainheader().appmenu().unparent();
-                    }
-
-                    if flap.reveals_flap() && !flap.is_folded() {
-                        // Set visible before appending, to avoid allocation glitch
-                        appwindow.flap_menus_box().set_visible(true);
-                        appwindow.flap_close_button().set_visible(false);
-                        appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
-                    } else {
-                        appwindow.flap_menus_box().set_visible(false);
-                        appwindow.flap_close_button().set_visible(true);
-                        appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
-                    }
-
-                    if flap.is_folded() {
-                        left_flapreveal_toggle.set_active(false);
-                        right_flapreveal_toggle.set_active(false);
-                    } else if expanded_revealed.get() || flap.reveals_flap() {
-                        expanded_revealed.set(true);
-                        left_flapreveal_toggle.set_active(true);
-                        right_flapreveal_toggle.set_active(true);
-                    }
-
-                    if flap.flap_position() == PackType::Start {
-                        workspace_headerbar.set_show_start_title_buttons(flap.reveals_flap());
-                        workspace_headerbar.set_show_end_title_buttons(false);
-                    } else if flap.flap_position() == PackType::End {
-                        workspace_headerbar.set_show_start_title_buttons(false);
-                        workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
-                    }
-                }));
-
-        self.flap.connect_reveal_flap_notify(
-            clone!(@weak workspace_headerbar, @weak obj as appwindow => move |flap| {
-                if appwindow.mainheader().appmenu().parent().is_some() {
-                    appwindow.mainheader().appmenu().unparent();
-                }
-
-                if flap.reveals_flap() && !flap.is_folded() {
-                    appwindow.flap_menus_box().set_visible(true);
-                    appwindow.flap_close_button().set_visible(false);
-                    appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
-                } else {
-                    appwindow.flap_menus_box().set_visible(false);
-                    appwindow.flap_close_button().set_visible(true);
-                    appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
-                }
-
-                if flap.flap_position() == PackType::Start {
-                    workspace_headerbar.set_show_start_title_buttons(flap.reveals_flap());
-                    workspace_headerbar.set_show_end_title_buttons(false);
-                } else if flap.flap_position() == PackType::End {
-                    workspace_headerbar.set_show_start_title_buttons(false);
-                    workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
-                }
-            }),
-        );
-
-        self.flap.connect_flap_position_notify(clone!(
-            @weak flap_resizer_box,
-            @weak flap_resizer,
-            @weak flap_box,
-            @weak workspace_headerbar,
-            @strong expanded_revealed,
-            @weak obj as appwindow => move |flap| {
-            if flap.flap_position() == PackType::Start {
-                workspace_headerbar.set_show_start_title_buttons(flap.reveals_flap());
-                workspace_headerbar.set_show_end_title_buttons(false);
-
-                flap_resizer_box.reorder_child_after(&flap_resizer, Some(&flap_box));
-
-                appwindow.flap_header().remove(&appwindow.flap_close_button());
-                appwindow.flap_header().pack_end(&appwindow.flap_close_button());
-                appwindow.flap_close_button().set_icon_name("left-symbolic");
-            } else if flap.flap_position() == PackType::End {
-                workspace_headerbar.set_show_start_title_buttons(false);
-                workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
-
-                flap_resizer_box.reorder_child_after(&flap_box, Some(&flap_resizer));
-
-                appwindow.flap_header().remove(&appwindow.flap_close_button());
-                appwindow.flap_header().pack_start(&appwindow.flap_close_button());
-                appwindow.flap_close_button().set_icon_name("right-symbolic");
-            }
-        }));
-
-        // Resizing the flap contents
-        let resizer_drag_gesture = GestureDrag::builder()
-            .name("resizer_drag_gesture")
-            .propagation_phase(PropagationPhase::Capture)
-            .build();
-        self.flap_resizer
-            .add_controller(resizer_drag_gesture.clone());
-
-        // hack to stop resizing when it is switching from non-folded to folded or vice versa (else gtk crashes)
-        let prev_folded = Rc::new(Cell::new(self.flap.get().is_folded()));
-
-        resizer_drag_gesture.connect_drag_begin(clone!(@strong prev_folded, @weak flap, @weak flap_box => move |_resizer_drag_gesture, _x , _y| {
-                    prev_folded.set(flap.is_folded());
-            }));
-
-        resizer_drag_gesture.connect_drag_update(clone!(
-            @strong prev_folded,
-            @weak flap,
-            @weak flap_box,
-            @weak left_flapreveal_toggle,
-            @weak right_flapreveal_toggle,
-            @weak obj as appwindow => move |_resizer_drag_gesture, x , _y| {
-                if flap.is_folded() == prev_folded.get() {
-                    // Set BEFORE new width request
-                    prev_folded.set(flap.is_folded());
-
-                    let new_width = if flap.flap_position() == PackType::Start {
-                        flap_box.width() + x.ceil() as i32
-                    } else {
-                        flap_box.width() - x.floor() as i32
-                    };
-
-                    if new_width > 0 && new_width < appwindow.mainheader().width() - super::RnAppWindow::FLAP_FOLDED_RESIZE_MARGIN as i32 {
-                        flap_box.set_width_request(new_width);
-                    }
-                } else if flap.is_folded() {
-                    left_flapreveal_toggle.set_active(true);
-                    right_flapreveal_toggle.set_active(true);
-                }
-            }));
-
-        self.flap_resizer.set_cursor(
-            gdk::Cursor::from_name(
-                "col-resize",
-                gdk::Cursor::from_name("default", None).as_ref(),
-            )
-            .as_ref(),
-        );
-
-        self.flap_close_button.get().connect_clicked(
-            clone!(@weak obj as appwindow => move |_flap_close_button| {
-                if appwindow.flap().reveals_flap() && appwindow.flap().is_folded() {
-                    appwindow.flap().set_reveal_flap(false);
-                }
-            }),
-        );
-    }
-
     fn setup_input(&self) {
         let obj = self.obj();
         let drawing_pad_controller = PadController::new(&*obj, None);
@@ -525,65 +296,174 @@ impl RnAppWindow {
             .replace(Some(drawing_pad_controller));
     }
 
+    fn setup_tabbar(&self) {
+        self.tabbar.set_view(Some(&self.overlays.tabview()));
+    }
+
+    fn setup_split_view(&self) {
+        let obj = self.obj();
+        let split_view = self.split_view.get();
+        let left_sidebar_reveal_toggle = obj.main_header().left_sidebar_reveal_toggle();
+        let right_sidebar_reveal_toggle = obj.main_header().right_sidebar_reveal_toggle();
+
+        left_sidebar_reveal_toggle
+            .bind_property("active", &right_sidebar_reveal_toggle, "active")
+            .sync_create()
+            .bidirectional()
+            .build();
+
+        left_sidebar_reveal_toggle
+            .bind_property("active", &split_view, "show-sidebar")
+            .sync_create()
+            .bidirectional()
+            .build();
+        right_sidebar_reveal_toggle
+            .bind_property("active", &split_view, "show-sidebar")
+            .sync_create()
+            .bidirectional()
+            .build();
+
+        let update_widgets = move |split_view: &adw::OverlaySplitView,
+                                   appwindow: &super::RnAppWindow| {
+            let sidebar_position = split_view.sidebar_position();
+            let sidebar_collapsed = split_view.is_collapsed();
+            let sidebar_shown = split_view.shows_sidebar();
+
+            let sidebar_appmenu_visibility = !sidebar_collapsed && sidebar_shown;
+            let sidebar_left_close_button_visibility =
+                (sidebar_position == PackType::End) && sidebar_collapsed && sidebar_shown;
+            let sidebar_right_close_button_visibility =
+                (sidebar_position == PackType::Start) && sidebar_collapsed && sidebar_shown;
+
+            appwindow
+                .main_header()
+                .appmenu()
+                .set_visible(!sidebar_appmenu_visibility);
+            appwindow
+                .sidebar()
+                .appmenu()
+                .set_visible(sidebar_appmenu_visibility);
+            appwindow
+                .sidebar()
+                .left_close_button()
+                .set_visible(sidebar_left_close_button_visibility);
+            appwindow
+                .sidebar()
+                .right_close_button()
+                .set_visible(sidebar_right_close_button_visibility);
+
+            if sidebar_position == PackType::End {
+                appwindow
+                    .sidebar()
+                    .left_close_button()
+                    .set_icon_name("right-symbolic");
+                appwindow
+                    .sidebar()
+                    .right_close_button()
+                    .set_icon_name("right-symbolic");
+            } else {
+                appwindow
+                    .sidebar()
+                    .left_close_button()
+                    .set_icon_name("left-symbolic");
+                appwindow
+                    .sidebar()
+                    .right_close_button()
+                    .set_icon_name("left-symbolic");
+            }
+        };
+
+        self.split_view.connect_show_sidebar_notify(
+            clone!(@weak obj as appwindow => move |split_view| {
+                update_widgets(split_view, &appwindow);
+            }),
+        );
+
+        self.split_view.connect_sidebar_position_notify(
+            clone!(@weak obj as appwindow => move |split_view| {
+                update_widgets(split_view, &appwindow);
+            }),
+        );
+
+        self.split_view.connect_collapsed_notify(
+            clone!(@weak obj as appwindow => move |split_view| {
+                if split_view.is_collapsed() {
+                    // Only hide sidebar when transitioning from non-collapsed to collapsed.
+                    split_view.set_show_sidebar(false);
+                }
+                update_widgets(split_view, &appwindow);
+            }),
+        );
+    }
+
     fn handle_righthanded_property(&self, righthanded: bool) {
         let obj = self.obj();
 
         if righthanded {
-            obj.flap().set_flap_position(PackType::Start);
-            obj.mainheader().left_flapreveal_toggle().set_visible(true);
-            obj.mainheader()
-                .right_flapreveal_toggle()
+            obj.split_view().set_sidebar_position(PackType::Start);
+            obj.main_header()
+                .left_sidebar_reveal_toggle()
+                .set_visible(true);
+            obj.main_header()
+                .right_sidebar_reveal_toggle()
                 .set_visible(false);
-            obj.mainheader()
-                .appmenu()
-                .righthanded_toggle()
-                .set_active(true);
 
-            obj.workspacebrowser()
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().workspacesbar());
-            obj.workspacebrowser()
+                .remove(&obj.sidebar().workspacebrowser().workspacesbar());
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().corner_filler());
-            obj.workspacebrowser()
+                .remove(&obj.sidebar().workspacebrowser().corner_filler());
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().dir_box());
-            obj.workspacebrowser()
+                .remove(&obj.sidebar().workspacebrowser().dir_box());
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().files_scroller());
-            obj.workspacebrowser().grid().attach(
-                &obj.workspacebrowser().corner_filler(),
+                .remove(&obj.sidebar().workspacebrowser().files_scroller());
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().corner_filler(),
                 0,
                 0,
                 1,
                 1,
             );
-            obj.workspacebrowser().grid().attach(
-                &obj.workspacebrowser().workspacesbar(),
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().workspacesbar(),
                 0,
                 1,
                 1,
                 1,
             );
-            obj.workspacebrowser()
-                .grid()
-                .attach(&obj.workspacebrowser().dir_box(), 2, 0, 1, 1);
-            obj.workspacebrowser().grid().attach(
-                &obj.workspacebrowser().files_scroller(),
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().dir_box(),
+                2,
+                0,
+                1,
+                1,
+            );
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().files_scroller(),
                 2,
                 1,
                 1,
                 1,
             );
-            obj.workspacebrowser()
+            obj.sidebar()
+                .workspacebrowser()
                 .files_scroller()
                 .set_window_placement(CornerType::TopRight);
-            obj.workspacebrowser()
+            obj.sidebar()
+                .workspacebrowser()
                 .workspacesbar()
                 .workspaces_scroller()
                 .set_window_placement(CornerType::TopRight);
 
-            obj.settings_panel()
+            obj.sidebar()
+                .settings_panel()
                 .settings_scroller()
                 .set_window_placement(CornerType::TopRight);
 
@@ -642,59 +522,70 @@ impl RnAppWindow {
                 .stroke_width_picker()
                 .set_position(PositionType::Left);
         } else {
-            obj.flap().set_flap_position(PackType::End);
-            obj.mainheader().left_flapreveal_toggle().set_visible(false);
-            obj.mainheader().right_flapreveal_toggle().set_visible(true);
-            obj.mainheader()
-                .appmenu()
-                .lefthanded_toggle()
-                .set_active(true);
+            obj.split_view().set_sidebar_position(PackType::End);
+            obj.main_header()
+                .left_sidebar_reveal_toggle()
+                .set_visible(false);
+            obj.main_header()
+                .right_sidebar_reveal_toggle()
+                .set_visible(true);
 
-            obj.workspacebrowser()
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().files_scroller());
-            obj.workspacebrowser()
+                .remove(&obj.sidebar().workspacebrowser().files_scroller());
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().dir_box());
-            obj.workspacebrowser()
+                .remove(&obj.sidebar().workspacebrowser().dir_box());
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().corner_filler());
-            obj.workspacebrowser()
+                .remove(&obj.sidebar().workspacebrowser().corner_filler());
+            obj.sidebar()
+                .workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().workspacesbar());
-            obj.workspacebrowser()
-                .grid()
-                .attach(&obj.workspacebrowser().dir_box(), 0, 0, 1, 1);
-            obj.workspacebrowser().grid().attach(
-                &obj.workspacebrowser().files_scroller(),
+                .remove(&obj.sidebar().workspacebrowser().workspacesbar());
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().dir_box(),
+                0,
+                0,
+                1,
+                1,
+            );
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().files_scroller(),
                 0,
                 1,
                 1,
                 1,
             );
-            obj.workspacebrowser().grid().attach(
-                &obj.workspacebrowser().corner_filler(),
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().corner_filler(),
                 2,
                 0,
                 1,
                 1,
             );
-            obj.workspacebrowser().grid().attach(
-                &obj.workspacebrowser().workspacesbar(),
+            obj.sidebar().workspacebrowser().grid().attach(
+                &obj.sidebar().workspacebrowser().workspacesbar(),
                 2,
                 1,
                 1,
                 1,
             );
-            obj.workspacebrowser()
+            obj.sidebar()
+                .workspacebrowser()
                 .files_scroller()
                 .set_window_placement(CornerType::TopLeft);
-            obj.workspacebrowser()
+            obj.sidebar()
+                .workspacebrowser()
                 .workspacesbar()
                 .workspaces_scroller()
                 .set_window_placement(CornerType::TopLeft);
 
-            obj.settings_panel()
+            obj.sidebar()
+                .settings_panel()
                 .settings_scroller()
                 .set_window_placement(CornerType::TopLeft);
 

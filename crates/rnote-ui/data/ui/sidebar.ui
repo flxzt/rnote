@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="RnSidebar" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBinLayout" />
+    </property>
+    <child>
+      <object class="AdwToolbarView">
+        <property name="top-bar-style">raised</property>
+        <child type="top">
+          <object class="AdwHeaderBar" id="headerbar">
+            <property name="title-widget">
+              <object class="AdwViewSwitcherTitle">
+                <property name="stack">sidebar_stack</property>
+              </object>
+            </property>
+            <child type="start">
+              <object class="GtkBox">
+                <child>
+                  <object class="GtkButton" id="left_close_button">
+                    <property name="icon-name">right-symbolic</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkBox">
+                <child>
+                  <object class="RnAppMenu" id="appmenu">
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="right_close_button">
+                    <property name="icon-name">right-symbolic</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <property name="content">
+          <object class="AdwViewStack" id="sidebar_stack">
+            <style>
+              <class name="background" />
+            </style>
+            <!-- workspace page -->
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="name">workspacebrowser_page</property>
+                <property name="title" translatable="yes">Workspace</property>
+                <property name="icon-name">workspacebrowser-symbolic</property>
+                <property name="child">
+                  <object class="RnWorkspaceBrowser" id="workspacebrowser"></object>
+                </property>
+              </object>
+            </child>
+            <!-- settings page -->
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="name">settings_page</property>
+                <property name="title" translatable="yes">Settings</property>
+                <property name="icon-name">settings-symbolic</property>
+                <property name="child">
+                  <object class="RnSettingsPanel" id="settings_panel"></object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </property>
+      </object>
+    </child>
+  </template>
+</interface>

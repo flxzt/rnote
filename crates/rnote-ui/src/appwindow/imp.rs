@@ -8,6 +8,7 @@ use gtk4::{
 };
 use once_cell::sync::Lazy;
 use std::cell::{Cell, RefCell};
+use std::rc::Rc;
 
 #[derive(Debug, CompositeTemplate)]
 #[template(resource = "/com/github/flxzt/rnote/ui/appwindow.ui")]
@@ -373,8 +374,13 @@ impl RnAppWindow {
             }
         };
 
+        let sidebar_expanded_shown = Rc::new(Cell::new(false));
+
         self.split_view.connect_show_sidebar_notify(
-            clone!(@weak obj as appwindow => move |split_view| {
+            clone!(@strong sidebar_expanded_shown, @weak obj as appwindow => move |split_view| {
+                if !split_view.is_collapsed() {
+                    sidebar_expanded_shown.set(split_view.shows_sidebar());
+                }
                 update_widgets(split_view, &appwindow);
             }),
         );
@@ -386,10 +392,17 @@ impl RnAppWindow {
         );
 
         self.split_view.connect_collapsed_notify(
-            clone!(@weak obj as appwindow => move |split_view| {
+            clone!(@strong sidebar_expanded_shown, @weak obj as appwindow => move |split_view| {
                 if split_view.is_collapsed() {
-                    // Only hide sidebar when transitioning from non-collapsed to collapsed.
+                    // Always hide sidebar when transitioning from non-collapsed to collapsed.
                     split_view.set_show_sidebar(false);
+                } else {
+                    // show sidebar again when it was shown before it was collapsed
+                    if sidebar_expanded_shown.get() {
+                        split_view.set_show_sidebar(true);
+                    }
+                    // update the shown state for when the sidebar was toggled shown in the collapsed state
+                    sidebar_expanded_shown.set(split_view.shows_sidebar());
                 }
                 update_widgets(split_view, &appwindow);
             }),

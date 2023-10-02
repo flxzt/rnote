@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-29 20:43+0200\n"
-"PO-Revision-Date: 2023-08-25 04:53+0000\n"
+"PO-Revision-Date: 2023-10-03 19:11+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0\n"
+"X-Generator: Weblate 5.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1147,10 +1147,8 @@ msgstr "Taslak"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
-#, fuzzy
-#| msgid "Reveal/Hide Flap"
 msgid "Reveal/Hide Sidebar"
-msgstr "Kapağı Göster/Gizle"
+msgstr "Kenar Çubuğunu Göster/Gizle"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
 msgid "New Tab"
@@ -1491,19 +1489,15 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:472
 msgid "Keyboard Ctrl-Space Action"
-msgstr ""
+msgstr "Klavye Ctrl-Space Eylemi"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:473
-#, fuzzy
-#| msgid ""
-#| "Set the action for the\n"
-#| "secondary mouse button"
 msgid ""
 "Set the action for the keyboard\n"
 "Ctrl plus Space shortcut"
 msgstr ""
-"Fare ikincil düğme\n"
-"eylemini ayarla"
+"Ctrl + Boşluk kısayolu için\n"
+"eylem ayarla"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:485
 msgid "Drawing Pad Button 1 Action"
@@ -1627,24 +1621,12 @@ msgid "Save Document As"
 msgstr "Belgeyi Farklı Kaydet"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
-#, fuzzy
-#| msgid ""
-#| "Add Page.\n"
-#| "Available in Fixed-Size Document Layout."
 msgid "Add Page (When in Fixed-Size Layout)"
-msgstr ""
-"Sayfa Ekle.\n"
-"Sabit Boyutlu Belge Düzeninde kullanılabilir."
+msgstr "Sayfa Ekle (Sabit Boyutlu Düzeninde kullanılabilir)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
-#, fuzzy
-#| msgid ""
-#| "Remove Page.\n"
-#| "Available in Fixed-Size Document Layout."
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr ""
-"Sayfayı Kaldır.\n"
-"Sabit Boyutlu Belge Düzeninde kullanılabilir."
+msgstr "Son Sayfayı Kaldır (Sabit Boyutlu Düzende kullanılabilir)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Print Document"
@@ -1847,10 +1829,8 @@ msgid "Open File"
 msgstr "Dosya Aç"
 
 #: crates/rnote-ui/src/dialogs/import.rs:61
-#, fuzzy
-#| msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp"
+msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:188
 msgid "- no file name -"

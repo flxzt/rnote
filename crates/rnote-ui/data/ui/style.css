@@ -44,15 +44,6 @@
     color: rgba(0, 200, 20, 255);
 }
 
-.flap_resizer {
-    transition: all 0.2s ease-out;
-}
-
-.flap_resizer:hover {
-    background-color: @accent_color;
-    box-shadow: 0 0 6px darker(@accent_color);
-}
-
 .flat-destructive-action {
     color: @destructive_color;
 }

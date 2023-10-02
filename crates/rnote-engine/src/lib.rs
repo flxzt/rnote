@@ -6,7 +6,7 @@
 
 //! The rnote-engine crate is the core of Rnote. It holds the strokes store, the pens, has methods for importing / exporting, rendering, etc.. .
 //!
-//! The main entry point is the [RnoteEngine] struct.
+//! The main entry point is the [Engine] struct.
 
 // Modules
 pub mod audioplayer;
@@ -18,6 +18,7 @@ pub mod ext;
 pub mod fileformats;
 pub mod pens;
 pub mod render;
+pub mod selectioncollision;
 pub mod store;
 pub mod strokes;
 pub mod tasks;
@@ -30,9 +31,10 @@ pub use camera::Camera;
 pub use document::Document;
 pub use drawable::Drawable;
 pub use drawable::DrawableOnDoc;
-pub use engine::RnoteEngine;
+pub use engine::Engine;
 pub use fileformats::recovery_metadata::RnRecoveryMetadata;
 pub use pens::PenHolder;
+pub use selectioncollision::SelectionCollision;
 pub use store::StrokeStore;
 pub use widgetflags::WidgetFlags;
 

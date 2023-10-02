@@ -6,11 +6,9 @@ use gtk4::{
     gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Overlay,
     ProgressBar, ScrolledWindow, ToggleButton, Widget,
 };
-use rnote_engine::engine::EngineViewMut;
 use rnote_engine::ext::GdkRGBAExt;
-use rnote_engine::pens::{Pen, PenStyle};
+use rnote_engine::pens::PenStyle;
 use std::cell::RefCell;
-use std::time::Instant;
 
 mod imp {
     use super::*;
@@ -185,6 +183,7 @@ impl RnOverlays {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
+        imp.colorpicker.get().init(appwindow);
         imp.penssidebar.get().init(appwindow);
         imp.penssidebar.get().brush_page().init(appwindow);
         imp.penssidebar.get().shaper_page().init(appwindow);
@@ -261,47 +260,29 @@ impl RnOverlays {
                 clone!(@weak appwindow => move |colorpicker, _paramspec| {
                     let stroke_color = colorpicker.stroke_color().into_compose_color();
                     let canvas = appwindow.active_tab_wrapper().canvas();
-                    let engine = &mut *canvas.engine_mut();
+                    let current_pen_style = canvas.engine_ref().penholder.current_pen_style_w_override();
 
-                    match engine.penholder.current_pen_style_w_override() {
+                    match current_pen_style {
                         PenStyle::Typewriter => {
-                            if engine.pens_config.typewriter_config.text_style.color != stroke_color {
-                                if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
-                                    let widget_flags = typewriter.change_text_style_in_modifying_stroke(
-                                        |text_style| {
-                                            text_style.color = stroke_color;
-                                        },
-                                        &mut EngineViewMut {
-                                            tasks_tx: engine.tasks_tx.clone(),
-                                            pens_config: &mut engine.pens_config,
-                                            doc: &mut engine.document,
-                                            store: &mut engine.store,
-                                            camera: &mut engine.camera,
-                                            audioplayer: &mut engine.audioplayer
-                                    });
-                                    appwindow.handle_widget_flags(widget_flags, &canvas);
-                                }
+                            if canvas.engine_ref().pens_config.typewriter_config.text_style.color != stroke_color {
+                                let widget_flags = canvas.engine_mut().text_selection_change_style(|style| {style.color = stroke_color});
+                                appwindow.handle_widget_flags(widget_flags, &canvas);
                             }
                         }
                         PenStyle::Selector => {
-                            let selection_keys = engine.store.selection_keys_unordered();
-                            if !selection_keys.is_empty() {
-                                let mut widget_flags = engine.store.change_stroke_colors(&selection_keys, stroke_color);
-                                widget_flags.merge(engine.record(Instant::now()));
-                                engine.update_content_rendering_current_viewport();
-                                appwindow.handle_widget_flags(widget_flags, &canvas);
-                            }
+                            let widget_flags = canvas.engine_mut().change_selection_stroke_colors(stroke_color);
+                            appwindow.handle_widget_flags(widget_flags, &canvas);
                         }
                         PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
                     }
 
                     // We have a global colorpicker, so we apply it to all styles
-                    engine.pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.typewriter_config.text_style.color = stroke_color;
+                    canvas.engine_mut().pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
+                    canvas.engine_mut().pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
+                    canvas.engine_mut().pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
+                    canvas.engine_mut().pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
+                    canvas.engine_mut().pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
+                    canvas.engine_mut().pens_config.typewriter_config.text_style.color = stroke_color;
                 }),
             );
 
@@ -311,26 +292,20 @@ impl RnOverlays {
                 let fill_color = colorpicker.fill_color().into_compose_color();
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let stroke_style = canvas.engine_ref().penholder.current_pen_style_w_override();
-                let engine = &mut *canvas.engine_mut();
 
                 match stroke_style {
                     PenStyle::Selector => {
-                        let selection_keys = engine.store.selection_keys_unordered();
-                        if !selection_keys.is_empty() {
-                            let mut widget_flags = engine.store.change_fill_colors(&selection_keys, fill_color);
-                            widget_flags.merge(engine.record(Instant::now()));
-                            engine.update_content_rendering_current_viewport();
-                            appwindow.handle_widget_flags(widget_flags, &canvas);
-                        }
+                        let widget_flags = canvas.engine_mut().change_selection_fill_colors(fill_color);
+                        appwindow.handle_widget_flags(widget_flags, &canvas);
                     }
                     PenStyle::Typewriter | PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
                 }
 
                 // We have a global colorpicker, so we apply it to all styles
-                engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
-                engine.pens_config.brush_config.solid_options.fill_color = Some(fill_color);
-                engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
-                engine.pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
+                canvas.engine_mut().pens_config.brush_config.marker_options.fill_color = Some(fill_color);
+                canvas.engine_mut().pens_config.brush_config.solid_options.fill_color = Some(fill_color);
+                canvas.engine_mut().pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
+                canvas.engine_mut().pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
             }),
         );
     }
@@ -376,7 +351,7 @@ impl RnOverlays {
                 }
 
                 let _ = canvaswrapper.canvas().engine_mut().set_active(false);
-                canvaswrapper.disconnect_handlers();
+                canvaswrapper.disconnect_connections();
             }),
         );
 
@@ -423,10 +398,10 @@ impl RnOverlays {
         const PULSE_INTERVAL: std::time::Duration = std::time::Duration::from_millis(300);
         if let Some(src) = self.imp().progresspulse_id.replace(Some(glib::source::timeout_add_local(
             PULSE_INTERVAL,
-            clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
+            clone!(@weak self as appwindow => @default-return glib::ControlFlow::Break, move || {
                 appwindow.progressbar().pulse();
 
-                glib::source::Continue(true)
+                glib::ControlFlow::Continue
             })),
         )) {
             src.remove();

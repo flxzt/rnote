@@ -1,96 +1,117 @@
 // Imports
-use super::{visual_debug, EngineView};
-use crate::ext::{GdkRGBAExt, GrapheneRectExt};
-use crate::{Document, DrawableOnDoc, RnoteEngine};
-use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-use rnote_compose::ext::{AabbExt, Affine2Ext};
-use rnote_compose::{color, SplitOrder};
+use crate::{Engine, WidgetFlags};
 
-impl RnoteEngine {
+impl Engine {
     /// Update the background rendering for the current viewport.
     ///
     /// If the background pattern or zoom has changed, the background pattern needs to be regenerated first.
-    pub fn update_background_rendering_current_viewport(&mut self) {
-        let viewport = self.camera.viewport();
-        let mut rendernodes: Vec<gsk::RenderNode> = vec![];
+    pub fn update_background_rendering_current_viewport(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
-        if let Some(image) = &self.background_tile_image {
-            // Only create the texture once, it is expensive
-            let new_texture = match image.to_memtexture() {
-                Ok(t) => t,
-                Err(e) => {
-                    log::error!(
-                        "failed to generate memory-texture of background tile image, {e:?}"
+        #[cfg(feature = "ui")]
+        {
+            use crate::ext::GrapheneRectExt;
+            use gtk4::{graphene, gsk, prelude::*};
+            use rnote_compose::ext::AabbExt;
+            use rnote_compose::SplitOrder;
+
+            let viewport = self.camera.viewport();
+            let mut rendernodes: Vec<gsk::RenderNode> = vec![];
+
+            if let Some(image) = &self.background_tile_image {
+                // Only create the texture once, it is expensive
+                let new_texture = match image.to_memtexture() {
+                    Ok(t) => t,
+                    Err(e) => {
+                        log::error!(
+                            "failed to generate memory-texture of background tile image, {e:?}"
+                        );
+                        return widget_flags;
+                    }
+                };
+
+                for split_bounds in viewport.split_extended_origin_aligned(
+                    self.document.background.tile_size(),
+                    SplitOrder::default(),
+                ) {
+                    rendernodes.push(
+                        gsk::TextureNode::new(
+                            &new_texture,
+                            &graphene::Rect::from_p2d_aabb(split_bounds),
+                        )
+                        .upcast(),
                     );
-                    return;
                 }
-            };
-
-            for split_bounds in viewport.split_extended_origin_aligned(
-                self.document.background.tile_size(),
-                SplitOrder::default(),
-            ) {
-                rendernodes.push(
-                    gsk::TextureNode::new(
-                        &new_texture,
-                        &graphene::Rect::from_p2d_aabb(split_bounds),
-                    )
-                    .upcast(),
-                );
             }
+
+            self.background_rendernodes = rendernodes;
         }
 
-        self.background_rendernodes = rendernodes;
+        widget_flags.redraw = true;
+        widget_flags
     }
 
     /// Update the content rendering for the current viewport.
-    pub fn update_content_rendering_current_viewport(&mut self) {
-        let viewport = self.camera.viewport();
-        let image_scale = self.camera.image_scale();
-
+    pub fn update_content_rendering_current_viewport(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
         self.store.regenerate_rendering_in_viewport_threaded(
-            self.tasks_tx(),
+            self.engine_tasks_tx(),
             false,
-            viewport,
-            image_scale,
+            self.camera.viewport(),
+            self.camera.image_scale(),
         );
+        widget_flags.redraw = true;
+        widget_flags
     }
 
     /// Update the content and background rendering for the current viewport.
     ///
     /// If the background pattern or zoom has changed, the background pattern needs to be regenerated first.
-    pub fn update_rendering_current_viewport(&mut self) {
-        self.update_background_rendering_current_viewport();
-        self.update_content_rendering_current_viewport();
+    pub fn update_rendering_current_viewport(&mut self) -> WidgetFlags {
+        self.update_background_rendering_current_viewport()
+            | self.update_content_rendering_current_viewport()
     }
 
     /// Clear the rendering of the entire engine (e.g. when it becomes off-screen).
-    pub fn clear_rendering(&mut self) {
+    pub fn clear_rendering(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
         self.store.clear_rendering();
         self.background_tile_image.take();
-        self.background_rendernodes.clear();
+        #[cfg(feature = "ui")]
+        {
+            self.background_rendernodes.clear();
+        }
+        widget_flags.redraw = true;
+        widget_flags
     }
 
     /// Regenerate the background tile image and updates the background rendering.
-    pub fn background_regenerate_pattern(&mut self) {
+    pub fn background_regenerate_pattern(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
         let image_scale = self.camera.image_scale();
         match self.document.background.gen_tile_image(image_scale) {
             Ok(image) => {
                 self.background_tile_image = Some(image);
-                self.update_background_rendering_current_viewport();
+                widget_flags |= self.update_background_rendering_current_viewport();
             }
             Err(e) => log::error!("regenerating background tile image failed, Err: {e:?}"),
         }
+        widget_flags.redraw = true;
+        widget_flags
     }
 
     /// Draws the entire engine (doc, pens, strokes, selection, ..) to a GTK snapshot.
+    #[cfg(feature = "ui")]
     pub fn draw_to_gtk_snapshot(
         &self,
-        snapshot: &Snapshot,
-        surface_bounds: Aabb,
+        snapshot: &gtk4::Snapshot,
+        surface_bounds: p2d::bounding_volume::Aabb,
     ) -> anyhow::Result<()> {
+        use crate::drawable::DrawableOnDoc;
+        use crate::engine::visual_debug;
+        use crate::engine::EngineView;
+        use gtk4::prelude::*;
+
         let doc_bounds = self.document.bounds();
         let viewport = self.camera.viewport();
         let camera_transform = self.camera.transform_for_gtk_snapshot();
@@ -121,7 +142,7 @@ impl RnoteEngine {
         self.penholder.draw_on_doc_to_gtk_snapshot(
             snapshot,
             &EngineView {
-                tasks_tx: self.tasks_tx(),
+                tasks_tx: self.engine_tasks_tx(),
                 pens_config: &self.pens_config,
                 doc: &self.document,
                 store: &self.store,
@@ -142,7 +163,12 @@ impl RnoteEngine {
         Ok(())
     }
 
-    fn draw_document_shadow_to_gtk_snapshot(&self, snapshot: &Snapshot) {
+    #[cfg(feature = "ui")]
+    fn draw_document_shadow_to_gtk_snapshot(&self, snapshot: &gtk4::Snapshot) {
+        use crate::ext::{GdkRGBAExt, GrapheneRectExt};
+        use crate::Document;
+        use gtk4::{gdk, graphene, gsk, prelude::*};
+
         let shadow_width = Document::SHADOW_WIDTH;
         let shadow_offset = Document::SHADOW_OFFSET;
         let doc_bounds = self.document.bounds();
@@ -168,7 +194,11 @@ impl RnoteEngine {
         );
     }
 
-    fn draw_background_to_gtk_snapshot(&self, snapshot: &Snapshot) -> anyhow::Result<()> {
+    #[cfg(feature = "ui")]
+    fn draw_background_to_gtk_snapshot(&self, snapshot: &gtk4::Snapshot) -> anyhow::Result<()> {
+        use crate::ext::{GdkRGBAExt, GrapheneRectExt};
+        use gtk4::{gdk, graphene, gsk, prelude::*};
+
         let doc_bounds = self.document.bounds();
 
         snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
@@ -191,7 +221,14 @@ impl RnoteEngine {
         Ok(())
     }
 
-    fn draw_format_borders_to_gtk_snapshot(&self, snapshot: &Snapshot) -> anyhow::Result<()> {
+    #[cfg(feature = "ui")]
+    fn draw_format_borders_to_gtk_snapshot(&self, snapshot: &gtk4::Snapshot) -> anyhow::Result<()> {
+        use crate::ext::{GdkRGBAExt, GrapheneRectExt};
+        use gtk4::{gdk, graphene, gsk, prelude::*};
+        use p2d::bounding_volume::BoundingVolume;
+        use rnote_compose::ext::AabbExt;
+        use rnote_compose::SplitOrder;
+
         if self.document.format.show_borders {
             let total_zoom = self.camera.total_zoom();
             let border_width = 1.0 / total_zoom;
@@ -200,10 +237,9 @@ impl RnoteEngine {
 
             snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds.loosened(2.0)));
 
-            for page_bounds in doc_bounds.split_extended_origin_aligned(
-                na::vector![self.document.format.width, self.document.format.height],
-                SplitOrder::default(),
-            ) {
+            for page_bounds in doc_bounds
+                .split_extended_origin_aligned(self.document.format.size(), SplitOrder::default())
+            {
                 if !page_bounds.intersects(&viewport) {
                     continue;
                 }
@@ -242,7 +278,18 @@ impl RnoteEngine {
     /// Draw the document origin indicator cross.
     ///
     /// Expects that the snapshot is untransformed in surface coordinate space.
-    fn draw_origin_indicator_to_gtk_snapshot(&self, snapshot: &Snapshot) -> anyhow::Result<()> {
+    #[cfg(feature = "ui")]
+    fn draw_origin_indicator_to_gtk_snapshot(
+        &self,
+        snapshot: &gtk4::Snapshot,
+    ) -> anyhow::Result<()> {
+        use crate::ext::GrapheneRectExt;
+        use gtk4::{graphene, prelude::*};
+        use p2d::bounding_volume::Aabb;
+        use piet::RenderContext;
+        use rnote_compose::color;
+        use rnote_compose::ext::{AabbExt, Affine2Ext};
+
         const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
         const PATH_WIDTH: f64 = 1.5;
         let total_zoom = self.camera.total_zoom();

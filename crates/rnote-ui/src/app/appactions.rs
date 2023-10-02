@@ -11,7 +11,7 @@ impl RnApp {
         let action_color_scheme = gio::SimpleAction::new_stateful(
             "color-scheme",
             Some(&glib::VariantType::new("s").unwrap()),
-            String::from("system").to_variant(),
+            &String::from("system").to_variant(),
         );
         self.add_action(&action_color_scheme);
 

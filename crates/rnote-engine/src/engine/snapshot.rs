@@ -4,7 +4,7 @@ use crate::engine::import::XoppImportPrefs;
 use crate::fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::Stroke;
-use crate::{Document, RnoteEngine};
+use crate::{Camera, Document, Engine};
 use anyhow::Context;
 use futures::channel::oneshot;
 use serde::{Deserialize, Serialize};
@@ -17,6 +17,8 @@ use std::sync::Arc;
 pub struct EngineSnapshot {
     #[serde(rename = "document")]
     pub document: Document,
+    #[serde(rename = "camera")]
+    pub camera: Camera,
     #[serde(rename = "stroke_components")]
     pub stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
     #[serde(rename = "chrono_components")]
@@ -29,6 +31,7 @@ impl Default for EngineSnapshot {
     fn default() -> Self {
         Self {
             document: Document::default(),
+            camera: Camera::default(),
             stroke_components: Arc::new(HopSlotMap::with_key()),
             chrono_components: Arc::new(SecondaryMap::new()),
             chrono_counter: 0,
@@ -39,7 +42,7 @@ impl Default for EngineSnapshot {
 impl EngineSnapshot {
     /// Loads a snapshot from the bytes of a .rnote file.
     ///
-    /// To import this snapshot into the current engine, use `import_snapshot()`.
+    /// To import this snapshot into the current engine, use [`Engine::load_snapshot()`].
     pub async fn load_from_rnote_bytes(bytes: Vec<u8>) -> anyhow::Result<Self> {
         let (snapshot_sender, snapshot_receiver) = oneshot::channel::<anyhow::Result<Self>>();
 
@@ -59,7 +62,7 @@ impl EngineSnapshot {
     }
     /// Loads from the bytes of a Xournal++ .xopp file.
     ///
-    /// To import this snapshot into the current engine, use `import_snapshot()`.
+    /// To import this snapshot into the current engine, use [`Engine::load_snapshot()`].
     pub async fn load_from_xopp_bytes(
         bytes: Vec<u8>,
         xopp_import_prefs: XoppImportPrefs,
@@ -82,10 +85,10 @@ impl EngineSnapshot {
                     });
                 let no_pages = xopp_file.xopp_root.pages.len() as u32;
 
-                let mut engine = RnoteEngine::default();
+                let mut engine = Engine::default();
 
                 // We convert all values from the hardcoded 72 DPI of Xopp files to the preferred dpi
-                engine.document.format.dpi = xopp_import_prefs.dpi;
+                engine.document.format.set_dpi(xopp_import_prefs.dpi);
 
                 engine.document.x = 0.0;
                 engine.document.y = 0.0;
@@ -100,16 +103,22 @@ impl EngineSnapshot {
                     xopp_import_prefs.dpi,
                 );
 
-                engine.document.format.width = crate::utils::convert_value_dpi(
-                    doc_width,
-                    xoppformat::XoppFile::DPI,
-                    xopp_import_prefs.dpi,
-                );
-                engine.document.format.height = crate::utils::convert_value_dpi(
-                    doc_height / (no_pages as f64),
-                    xoppformat::XoppFile::DPI,
-                    xopp_import_prefs.dpi,
-                );
+                engine
+                    .document
+                    .format
+                    .set_width(crate::utils::convert_value_dpi(
+                        doc_width,
+                        xoppformat::XoppFile::DPI,
+                        xopp_import_prefs.dpi,
+                    ));
+                engine
+                    .document
+                    .format
+                    .set_height(crate::utils::convert_value_dpi(
+                        doc_height / (no_pages as f64),
+                        xoppformat::XoppFile::DPI,
+                        xopp_import_prefs.dpi,
+                    ));
 
                 if let Some(first_page) = xopp_file.xopp_root.pages.get(0) {
                     if let xoppformat::XoppBackgroundType::Solid {
@@ -139,7 +148,7 @@ impl EngineSnapshot {
                                 }
                                 Err(e) => {
                                     log::error!(
-                                        "from_xoppstroke() failed in open_from_xopp_bytes() with Err {:?}",
+                                        "from_xoppstroke() failed in open_from_xopp_bytes() , Err {:?}",
                                         e
                                     );
                                 }
@@ -158,7 +167,7 @@ impl EngineSnapshot {
                                 }
                                 Err(e) => {
                                     log::error!(
-                                        "from_xoppimage() failed in open_from_xopp_bytes() with Err {:?}",
+                                        "from_xoppimage() failed in open_from_xopp_bytes() , Err {:?}",
                                         e
                                     );
                                 }

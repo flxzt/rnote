@@ -1,10 +1,8 @@
 // Imports
-use super::content::GeneratedContentImages;
 use super::Content;
-use crate::{render, strokes::content, Drawable};
+use crate::{strokes::content, Drawable};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-use rnote_compose::ext::{AabbExt, Vector2Ext};
+use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Shape;
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::Composer;
@@ -25,61 +23,30 @@ pub struct ShapeStroke {
 }
 
 impl Content for ShapeStroke {
-    fn gen_svg(&self) -> Result<crate::render::Svg, anyhow::Error> {
-        let bounds = self.bounds();
-
-        render::Svg::gen_with_piet_cairo_backend(
-            |cx| {
-                cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
-                self.draw(cx, 1.0)
-            },
-            bounds,
-        )
-    }
-
-    fn gen_images(
-        &self,
-        viewport: Aabb,
-        image_scale: f64,
-    ) -> Result<GeneratedContentImages, anyhow::Error> {
-        let bounds = self.bounds();
-
-        if viewport.contains(&bounds) {
-            Ok(GeneratedContentImages::Full(vec![
-                render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    bounds,
-                    image_scale,
-                )?,
-            ]))
-        } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
-            Ok(GeneratedContentImages::Partial {
-                images: vec![render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    intersection_bounds,
-                    image_scale,
-                )?],
-                viewport,
-            })
-        } else {
-            Ok(GeneratedContentImages::Partial {
-                images: vec![],
-                viewport,
-            })
-        }
-    }
-
     fn draw_highlight(
         &self,
         cx: &mut impl piet::RenderContext,
         total_zoom: f64,
     ) -> anyhow::Result<()> {
-        const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
-        cx.stroke(
-            self.bounds().to_kurbo_rect(),
-            &*content::STROKE_HIGHLIGHT_COLOR,
-            HIGHLIGHT_STROKE_WIDTH / total_zoom,
-        );
+        const PATH_HIGHLIGHT_MIN_STROKE_WIDTH: f64 = 5.0;
+        const DRAW_BOUNDS_THRESHOLD_AREA: f64 = 10_u32.pow(2) as f64;
+        let bounds = self.bounds();
+        let bez_path = self.shape.outline_path();
+
+        if bounds.scale(total_zoom).volume() < DRAW_BOUNDS_THRESHOLD_AREA {
+            cx.fill(bounds.to_kurbo_rect(), &content::CONTENT_HIGHLIGHT_COLOR);
+        } else {
+            cx.stroke_styled(
+                bez_path,
+                &content::CONTENT_HIGHLIGHT_COLOR,
+                (PATH_HIGHLIGHT_MIN_STROKE_WIDTH / total_zoom)
+                    .max(self.style.stroke_width() + 10.0 / total_zoom),
+                &piet::StrokeStyle::new()
+                    .line_join(piet::LineJoin::Round)
+                    .line_cap(piet::LineCap::Round),
+            );
+        }
+
         Ok(())
     }
 
@@ -111,6 +78,10 @@ impl Shapeable for ShapeStroke {
     fn hitboxes(&self) -> Vec<Aabb> {
         self.hitboxes.clone()
     }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        self.shape.outline_path()
+    }
 }
 
 impl Transformable for ShapeStroke {
@@ -122,6 +93,9 @@ impl Transformable for ShapeStroke {
     }
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.shape.scale(scale);
+        let scale_uniform = (scale[0] + scale[1]) / 2.;
+        self.style
+            .set_stroke_width(self.style.stroke_width() * scale_uniform);
     }
 }
 

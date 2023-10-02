@@ -534,7 +534,7 @@ impl XoppColor {
     }
 
     /// Parse the color from a color attribute value in a stroke.
-    pub fn from_strokecolor_attr_value(s: &str) -> Result<Self, anyhow::Error> {
+    fn from_strokecolor_attr_value(s: &str) -> Result<Self, anyhow::Error> {
         match s {
             "black" => Ok(Self {
                 red: 0x00,

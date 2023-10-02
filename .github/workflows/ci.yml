@@ -13,7 +13,7 @@ jobs:
   check:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-22.04
-    container: fedora:38
+    container: fedora:39
     steps:
       - name: Install dependencies
         run: |
@@ -62,3 +62,4 @@ jobs:
             misc/file-tests/v0-5-5-test.rnote\
             misc/file-tests/v0-5-13-test.rnote\
             misc/file-tests/v0-6-0-test.rnote\
+            misc/file-tests/v0-9-0-test.rnote\

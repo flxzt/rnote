@@ -1,10 +1,10 @@
 // Imports
 use super::RnCanvas;
-use gtk4::{gdk, prelude::*, Inhibit, Native};
-use rnote_compose::penevents::ShortcutKey;
-use rnote_compose::penevents::{KeyboardKey, PenState};
-use rnote_compose::penevents::{ModifierKey, PenEvent};
+use gtk4::{gdk, glib, graphene, prelude::*, Native};
+use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenState, ShortcutKey};
 use rnote_compose::penpath::Element;
+use rnote_engine::ext::EventPropagationExt;
+use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::pens::penholder::BacklogPolicy;
 use rnote_engine::pens::PenMode;
 use rnote_engine::WidgetFlags;
@@ -15,25 +15,25 @@ pub(crate) fn handle_pointer_controller_event(
     canvas: &RnCanvas,
     event: &gdk::Event,
     mut state: PenState,
-) -> (Inhibit, PenState) {
+) -> (glib::Propagation, PenState) {
     let now = Instant::now();
     let mut widget_flags = WidgetFlags::default();
     let touch_drawing = canvas.touch_drawing();
     let gdk_event_type = event.event_type();
     let gdk_modifiers = event.modifier_state();
     let _gdk_device = event.device().unwrap();
-    let backlog_policy = canvas.engine_ref().penholder.backlog_policy;
+    let backlog_policy = canvas.engine_ref().penholder.backlog_policy();
     let is_stylus = event_is_stylus(event);
 
     //std::thread::sleep(std::time::Duration::from_millis(100));
     //super::input::debug_gdk_event(event);
 
     if reject_pointer_input(event, touch_drawing) {
-        return (Inhibit(false), state);
+        return (glib::Propagation::Proceed, state);
     }
 
     let mut handle_pen_event = false;
-    let mut inhibit = false;
+    let mut propagation = glib::Propagation::Proceed;
 
     match gdk_event_type {
         gdk::EventType::MotionNotify => {
@@ -41,7 +41,6 @@ pub(crate) fn handle_pointer_controller_event(
 
             if is_stylus {
                 handle_pen_event = true;
-                inhibit = true;
 
                 // like in gtk4 'gesturestylus.c:120' stylus proximity is detected this way,
                 // in case ProximityIn & ProximityOut is not reported.
@@ -57,13 +56,13 @@ pub(crate) fn handle_pointer_controller_event(
                     || gdk_modifiers.contains(gdk::ModifierType::BUTTON3_MASK)
                 {
                     handle_pen_event = true;
-                    inhibit = true;
                 }
             }
         }
         gdk::EventType::ButtonPress => {
             let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
             let gdk_button = button_event.button();
+            let mut handle_shortcut_key = false;
 
             //log::debug!("ButtonPress - button: {gdk_button}, is_stylus: {is_stylus}");
 
@@ -72,24 +71,28 @@ pub(crate) fn handle_pointer_controller_event(
                     || gdk_button == gdk::BUTTON_SECONDARY
                     || gdk_button == gdk::BUTTON_MIDDLE
                 {
-                    inhibit = true;
+                    handle_pen_event = true;
+                    handle_shortcut_key = true;
                 }
             } else {
                 #[allow(clippy::collapsible_else_if)]
                 if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {
-                    inhibit = true;
+                    handle_pen_event = true;
+                    handle_shortcut_key = true;
                     state = PenState::Down;
                 }
             }
 
-            let shortcut_key = retrieve_button_shortcut_key(gdk_button, is_stylus);
+            if handle_shortcut_key {
+                let shortcut_key = retrieve_button_shortcut_key(gdk_button, is_stylus);
 
-            if let Some(shortcut_key) = shortcut_key {
-                widget_flags.merge(
-                    canvas
+                if let Some(shortcut_key) = shortcut_key {
+                    let (ep, wf) = canvas
                         .engine_mut()
-                        .handle_pressed_shortcut_key(shortcut_key, now),
-                );
+                        .handle_pressed_shortcut_key(shortcut_key, now);
+                    widget_flags |= wf;
+                    propagation = ep.into_glib();
+                }
             }
         }
         gdk::EventType::ButtonRelease => {
@@ -104,7 +107,6 @@ pub(crate) fn handle_pointer_controller_event(
                     || gdk_button == gdk::BUTTON_MIDDLE
                 {
                     handle_pen_event = true;
-                    inhibit = true;
                 }
 
                 // again, this is the method to detect proximity on stylus.
@@ -118,49 +120,42 @@ pub(crate) fn handle_pointer_controller_event(
                 if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {
                     state = PenState::Up;
                     handle_pen_event = true;
-                    inhibit = true;
                 }
             };
         }
         gdk::EventType::ProximityIn => {
             state = PenState::Proximity;
             handle_pen_event = true;
-            inhibit = true;
         }
         gdk::EventType::ProximityOut => {
             state = PenState::Up;
             handle_pen_event = true;
-            inhibit = true;
         }
         // We early-returned when detecting touch input and touch-drawing is not enabled,
         // so it is fine to always handle it here.
         gdk::EventType::TouchBegin => {
             state = PenState::Down;
             handle_pen_event = true;
-            inhibit = true;
         }
         gdk::EventType::TouchUpdate => {
             state = PenState::Down;
             handle_pen_event = true;
-            inhibit = true;
         }
         gdk::EventType::TouchEnd => {
             state = PenState::Up;
             handle_pen_event = true;
-            inhibit = true;
         }
         gdk::EventType::TouchCancel => {
             state = PenState::Up;
             handle_pen_event = true;
-            inhibit = true;
         }
         _ => {}
     };
 
     if handle_pen_event {
         let Some(elements) = retrieve_pointer_elements(canvas, now, event, backlog_policy) else {
-                    return (Inhibit(false), state);
-                };
+            return (glib::Propagation::Proceed, state);
+        };
         let modifier_keys = retrieve_modifier_keys(event.modifier_state());
         let pen_mode = retrieve_pen_mode(event);
 
@@ -171,76 +166,90 @@ pub(crate) fn handle_pointer_controller_event(
                 PenState::Up => {
                     canvas.enable_drawing_cursor(false);
 
-                    widget_flags.merge(canvas.engine_mut().handle_pen_event(
+                    let (ep, wf) = canvas.engine_mut().handle_pen_event(
                         PenEvent::Up {
                             element,
                             modifier_keys: modifier_keys.clone(),
                         },
                         pen_mode,
                         event_time,
-                    ));
+                    );
+                    widget_flags |= wf;
+                    propagation = ep.into_glib();
                 }
                 PenState::Proximity => {
                     canvas.enable_drawing_cursor(false);
 
-                    widget_flags.merge(canvas.engine_mut().handle_pen_event(
+                    let (ep, wf) = canvas.engine_mut().handle_pen_event(
                         PenEvent::Proximity {
                             element,
                             modifier_keys: modifier_keys.clone(),
                         },
                         pen_mode,
                         event_time,
-                    ));
+                    );
+                    widget_flags |= wf;
+                    propagation = ep.into_glib();
                 }
                 PenState::Down => {
                     canvas.grab_focus();
                     canvas.enable_drawing_cursor(true);
 
-                    widget_flags.merge(canvas.engine_mut().handle_pen_event(
+                    let (ep, wf) = canvas.engine_mut().handle_pen_event(
                         PenEvent::Down {
                             element,
                             modifier_keys: modifier_keys.clone(),
                         },
                         pen_mode,
                         event_time,
-                    ));
+                    );
+                    widget_flags |= wf;
+                    propagation = ep.into_glib();
                 }
             }
         }
     }
 
     canvas.emit_handle_widget_flags(widget_flags);
-    (Inhibit(inhibit), state)
+    (propagation, state)
 }
 
 pub(crate) fn handle_key_controller_key_pressed(
     canvas: &RnCanvas,
     key: gdk::Key,
     modifier: gdk::ModifierType,
-) -> Inhibit {
-    //log::debug!("key pressed - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
+) -> glib::Propagation {
+    //log::debug!("key pressed - key: {:?}, modifier: {:?}", key, modifier);
     canvas.grab_focus();
 
     let now = Instant::now();
     let keyboard_key = retrieve_keyboard_key(key);
     let modifier_keys = retrieve_modifier_keys(modifier);
+    let shortcut_key = retrieve_keyboard_shortcut_key(key, modifier);
 
-    let widget_flags = canvas.engine_mut().handle_pen_event(
-        PenEvent::KeyPressed {
-            keyboard_key,
-            modifier_keys,
-        },
-        None,
-        now,
-    );
+    let (propagation, widget_flags) = if let Some(shortcut_key) = shortcut_key {
+        canvas
+            .engine_mut()
+            .handle_pressed_shortcut_key(shortcut_key, now)
+    } else {
+        canvas.engine_mut().handle_pen_event(
+            PenEvent::KeyPressed {
+                keyboard_key,
+                modifier_keys,
+            },
+            None,
+            now,
+        )
+    };
+
     canvas.emit_handle_widget_flags(widget_flags);
-
-    Inhibit(true)
+    propagation.into_glib()
 }
 
 pub(crate) fn handle_imcontext_text_commit(canvas: &RnCanvas, text: &str) {
     let now = Instant::now();
-    let widget_flags = canvas.engine_mut().handle_pen_event(
+
+    let (_ep, widget_flags) = canvas.engine_mut().handle_pen_event(
         PenEvent::Text {
             text: text.to_string(),
         },
@@ -310,9 +319,14 @@ fn retrieve_pointer_elements(
     // Transforms the pos given in surface coordinate space to the canvas document coordinate space
     let transform_pos = |pos: na::Vector2<f64>| -> na::Vector2<f64> {
         event_native
-            .translate_coordinates(canvas, pos[0] - surface_trans_x, pos[1] - surface_trans_y)
-            .map(|(x, y)| {
-                (canvas.engine_ref().camera.transform().inverse() * na::point![x, y]).coords
+            .compute_point(
+                canvas,
+                &graphene::Point::from_na_vec(pos - na::vector![surface_trans_x, surface_trans_y]),
+            )
+            .map(|p| {
+                (canvas.engine_ref().camera.transform().inverse()
+                    * na::point![p.x() as f64, p.y() as f64])
+                .coords
             })
             .unwrap()
     };
@@ -332,7 +346,9 @@ fn retrieve_pointer_elements(
             }
 
             let entry_delta = Duration::from_millis(event_time.saturating_sub(entry.time()) as u64);
-            let Some(entry_time) = now.checked_sub(entry_delta) else {continue;};
+            let Some(entry_time) = now.checked_sub(entry_delta) else {
+                continue;
+            };
 
             if let BacklogPolicy::Limit(delta_limit) = backlog_policy {
                 // We go back in time, so `entry_delta` will increase
@@ -409,6 +425,18 @@ fn retrieve_pen_mode(event: &gdk::Event) -> Option<PenMode> {
     match device_tool.tool_type() {
         gdk::DeviceToolType::Pen => Some(PenMode::Pen),
         gdk::DeviceToolType::Eraser => Some(PenMode::Eraser),
+        _ => None,
+    }
+}
+
+pub(crate) fn retrieve_keyboard_shortcut_key(
+    gdk_key: gdk::Key,
+    modifier: gdk::ModifierType,
+) -> Option<ShortcutKey> {
+    match gdk_key {
+        gdk::Key::space if modifier.contains(gdk::ModifierType::CONTROL_MASK) => {
+            Some(ShortcutKey::KeyboardCtrlSpace)
+        }
         _ => None,
     }
 }

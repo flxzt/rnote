@@ -176,6 +176,18 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Add Page (When in Fixed-Size Layout)</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;a</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Remove Last Page (When in Fixed-Size Layout)</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;r</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes">Print Document</property>
                 <property name="accelerator">&lt;ctrl&gt;p</property>
               </object>

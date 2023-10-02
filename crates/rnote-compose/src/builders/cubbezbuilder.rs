@@ -1,13 +1,13 @@
 // Impoorts
-use super::shapebuildable::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuildable;
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use crate::constraints::ConstraintRatio;
+use crate::eventresult::EventPropagation;
 use crate::ext::AabbExt;
-use crate::penevents::{PenEvent, PenState};
+use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::CubicBezier;
 use crate::style::{indicators, Composer};
-use crate::Constraints;
+use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use std::time::Instant;
@@ -46,7 +46,7 @@ pub struct CubBezBuilder {
     state: CubBezBuilderState,
 }
 
-impl ShapeBuilderCreator for CubBezBuilder {
+impl BuilderCreator for CubBezBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             state: CubBezBuilderState::Cp1 {
@@ -57,38 +57,44 @@ impl ShapeBuilderCreator for CubBezBuilder {
     }
 }
 
-impl ShapeBuildable for CubBezBuilder {
+impl Buildable for CubBezBuilder {
+    type Emit = Shape;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> ShapeBuilderProgress {
+    ) -> EventResult<BuilderProgress<Self::Emit>> {
         // we always want to allow horizontal and vertical constraints while building a cubbez
         constraints.ratios.insert(ConstraintRatio::Horizontal);
         constraints.ratios.insert(ConstraintRatio::Vertical);
 
-        match (&mut self.state, event) {
+        let progress = match (&mut self.state, event) {
             (CubBezBuilderState::Cp1 { start, cp1, .. }, PenEvent::Down { element, .. }) => {
                 *cp1 = constraints.constrain(element.pos - *start) + *start;
+                BuilderProgress::InProgress
             }
             (CubBezBuilderState::Cp1 { start, .. }, PenEvent::Up { element, .. }) => {
                 self.state = CubBezBuilderState::Cp1Finished {
                     start: *start,
                     cp1: constraints.constrain(element.pos - *start) + *start,
                 };
+                BuilderProgress::InProgress
             }
-            (CubBezBuilderState::Cp1 { .. }, ..) => {}
+            (CubBezBuilderState::Cp1 { .. }, ..) => BuilderProgress::InProgress,
             (CubBezBuilderState::Cp1Finished { start, cp1 }, PenEvent::Down { element, .. }) => {
                 self.state = CubBezBuilderState::Cp2 {
                     start: *start,
                     cp1: *cp1,
                     cp2: constraints.constrain(element.pos - *cp1) + *cp1,
                 };
+                BuilderProgress::InProgress
             }
-            (CubBezBuilderState::Cp1Finished { .. }, ..) => {}
+            (CubBezBuilderState::Cp1Finished { .. }, ..) => BuilderProgress::InProgress,
             (CubBezBuilderState::Cp2 { cp1, cp2, .. }, PenEvent::Down { element, .. }) => {
                 *cp2 = constraints.constrain(element.pos - *cp1) + *cp1;
+                BuilderProgress::InProgress
             }
             (CubBezBuilderState::Cp2 { start, cp1, .. }, PenEvent::Up { element, .. }) => {
                 self.state = CubBezBuilderState::Cp2Finished {
@@ -96,8 +102,9 @@ impl ShapeBuildable for CubBezBuilder {
                     cp1: *cp1,
                     cp2: constraints.constrain(element.pos - *cp1) + *cp1,
                 };
+                BuilderProgress::InProgress
             }
-            (CubBezBuilderState::Cp2 { .. }, ..) => {}
+            (CubBezBuilderState::Cp2 { .. }, ..) => BuilderProgress::InProgress,
             (
                 CubBezBuilderState::Cp2Finished { start, cp1, cp2 },
                 PenEvent::Down { element, .. },
@@ -108,10 +115,12 @@ impl ShapeBuildable for CubBezBuilder {
                     cp2: *cp2,
                     end: constraints.constrain(element.pos - *cp2) + *cp2,
                 };
+                BuilderProgress::InProgress
             }
-            (CubBezBuilderState::Cp2Finished { .. }, ..) => {}
+            (CubBezBuilderState::Cp2Finished { .. }, ..) => BuilderProgress::InProgress,
             (CubBezBuilderState::End { cp2, end, .. }, PenEvent::Down { element, .. }) => {
                 *end = constraints.constrain(element.pos - *cp2) + *cp2;
+                BuilderProgress::InProgress
             }
             (
                 CubBezBuilderState::End {
@@ -121,18 +130,20 @@ impl ShapeBuildable for CubBezBuilder {
                     end,
                 },
                 PenEvent::Up { .. },
-            ) => {
-                return ShapeBuilderProgress::Finished(vec![Shape::CubicBezier(CubicBezier {
-                    start: *start,
-                    cp1: *cp1,
-                    cp2: *cp2,
-                    end: *end,
-                })]);
-            }
-            (CubBezBuilderState::End { .. }, ..) => {}
-        }
+            ) => BuilderProgress::Finished(vec![Shape::CubicBezier(CubicBezier {
+                start: *start,
+                cp1: *cp1,
+                cp2: *cp2,
+                end: *end,
+            })]),
+            (CubBezBuilderState::End { .. }, ..) => BuilderProgress::InProgress,
+        };
 
-        ShapeBuilderProgress::InProgress
+        EventResult {
+            handled: true,
+            propagate: EventPropagation::Stop,
+            progress,
+        }
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

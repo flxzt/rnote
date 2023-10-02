@@ -5,7 +5,7 @@ use crate::pens::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
 use crate::store::StrokeKey;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
-use crate::{RnoteEngine, WidgetFlags};
+use crate::{Engine, WidgetFlags};
 use futures::channel::oneshot;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
@@ -128,7 +128,7 @@ pub struct ImportPrefs {
     pub xopp_import_prefs: XoppImportPrefs,
 }
 
-impl RnoteEngine {
+impl Engine {
     /// Loads the engine config
     pub fn load_engine_config(
         &mut self,
@@ -147,22 +147,19 @@ impl RnoteEngine {
         // Set the pen sounds to update the audioplayer
         self.set_pen_sounds(self.pen_sounds, data_dir);
 
-        // Reinstall the pen
-        widget_flags.merge(
-            self.penholder
-                .reinstall_pen_current_style(&mut EngineViewMut {
-                    tasks_tx: self.tasks_tx.clone(),
-                    pens_config: &mut self.pens_config,
-                    doc: &mut self.document,
-                    store: &mut self.store,
-                    camera: &mut self.camera,
-                    audioplayer: &mut self.audioplayer,
-                }),
-        );
-
+        widget_flags |= self
+            .penholder
+            .reinstall_pen_current_style(&mut EngineViewMut {
+                tasks_tx: self.tasks_tx.clone(),
+                pens_config: &mut self.pens_config,
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            });
+        widget_flags |= self.doc_resize_to_fit_content();
         widget_flags.redraw = true;
         widget_flags.refresh_ui = true;
-
         widget_flags
     }
 
@@ -192,7 +189,7 @@ impl RnoteEngine {
             let result = || -> anyhow::Result<VectorImage> {
                 let svg_str = String::from_utf8(bytes)?;
 
-                VectorImage::import_from_svg_data(&svg_str, pos, None)
+                VectorImage::from_svg_str(&svg_str, pos, None)
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
@@ -215,7 +212,7 @@ impl RnoteEngine {
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<BitmapImage> {
-                BitmapImage::import_from_image_bytes(&bytes, pos, None)
+                BitmapImage::from_image_bytes(&bytes, pos, None)
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
@@ -245,7 +242,7 @@ impl RnoteEngine {
             let result = || -> anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>> {
                 match pdf_import_prefs.pages_type {
                     PdfImportPagesType::Bitmap => {
-                        let bitmapimages = BitmapImage::import_from_pdf_bytes(
+                        let bitmapimages = BitmapImage::from_pdf_bytes(
                             &bytes,
                             pdf_import_prefs,
                             insert_pos,
@@ -258,7 +255,7 @@ impl RnoteEngine {
                         Ok(bitmapimages)
                     }
                     PdfImportPagesType::Vector => {
-                        let vectorimages = VectorImage::import_from_pdf_bytes(
+                        let vectorimages = VectorImage::from_pdf_bytes(
                             &bytes,
                             pdf_import_prefs,
                             insert_pos,
@@ -282,7 +279,7 @@ impl RnoteEngine {
     }
 
     /// Import the generated strokes into the store.
-    pub fn import_generated_strokes(
+    pub fn import_generated_content(
         &mut self,
         strokes: Vec<(Stroke, Option<StrokeLayer>)>,
     ) -> WidgetFlags {
@@ -293,7 +290,7 @@ impl RnoteEngine {
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
 
-        widget_flags.merge(self.change_pen_style(PenStyle::Selector));
+        widget_flags |= self.change_pen_style(PenStyle::Selector);
 
         let inserted = strokes
             .into_iter()
@@ -301,13 +298,10 @@ impl RnoteEngine {
             .collect::<Vec<StrokeKey>>();
 
         // resize after the strokes are inserted, but before they are set selected
-        widget_flags.merge(self.doc_resize_to_fit_strokes());
+        widget_flags |= self.doc_resize_to_fit_content();
         self.store.set_selected_keys(&inserted, true);
-        widget_flags.merge(self.current_pen_update_state());
-        self.update_rendering_current_viewport();
-
-        widget_flags.merge(self.store.record(Instant::now()));
-        widget_flags.redraw = true;
+        widget_flags |= self.current_pen_update_state();
+        widget_flags |= self.store.record(Instant::now());
         widget_flags.resize = true;
         widget_flags.store_modified = true;
         widget_flags.refresh_ui = true;
@@ -316,23 +310,19 @@ impl RnoteEngine {
     }
 
     /// Insert text.
-    pub fn insert_text(
-        &mut self,
-        text: String,
-        pos: na::Vector2<f64>,
-    ) -> anyhow::Result<WidgetFlags> {
+    pub fn insert_text(&mut self, text: String, pos: Option<na::Vector2<f64>>) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         // we need to always deselect all strokes. Even tough changing the pen style deselects too, but only when the pen is actually changed.
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
 
-        widget_flags.merge(self.change_pen_style(PenStyle::Typewriter));
+        widget_flags |= self.change_pen_style(PenStyle::Typewriter);
 
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
-            widget_flags.merge(typewriter.insert_text(
+            widget_flags |= typewriter.insert_text(
                 text,
-                Some(pos),
+                pos,
                 &mut EngineViewMut {
                     tasks_tx: self.tasks_tx.clone(),
                     pens_config: &mut self.pens_config,
@@ -341,13 +331,12 @@ impl RnoteEngine {
                     camera: &mut self.camera,
                     audioplayer: &mut self.audioplayer,
                 },
-            ));
+            );
         }
 
-        widget_flags.merge(self.store.record(Instant::now()));
+        widget_flags |= self.store.record(Instant::now());
         widget_flags.redraw = true;
-
-        Ok(widget_flags)
+        widget_flags
     }
 
     /// Insert the stroke content.
@@ -364,7 +353,7 @@ impl RnoteEngine {
         // even though changing the pen style deselects too, but only when the pen is actually different.
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
-        widget_flags.merge(self.change_pen_style(PenStyle::Selector));
+        widget_flags |= self.change_pen_style(PenStyle::Selector);
 
         let inserted_keys = self.store.insert_stroke_content(content, pos);
         self.store.update_geometry_for_strokes(&inserted_keys);
@@ -374,16 +363,16 @@ impl RnoteEngine {
             self.camera.viewport(),
             self.camera.image_scale(),
         );
-        widget_flags.merge(self.penholder.current_pen_update_state(&mut EngineViewMut {
+        widget_flags |= self.penholder.current_pen_update_state(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &mut self.pens_config,
             doc: &mut self.document,
             store: &mut self.store,
             camera: &mut self.camera,
             audioplayer: &mut self.audioplayer,
-        }));
+        });
 
-        widget_flags.merge(self.store.record(Instant::now()));
+        widget_flags |= self.store.record(Instant::now());
         widget_flags.redraw = true;
 
         widget_flags

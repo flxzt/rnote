@@ -1,12 +1,13 @@
 // Imports
-use super::{PenPathBuildable, PenPathBuilderCreator, PenPathBuilderProgress};
-use crate::penevents::PenEvent;
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
+use crate::eventresult::EventPropagation;
 use crate::penpath::{Element, Segment};
 use crate::style::Composer;
-use crate::Constraints;
+use crate::PenEvent;
+use crate::{Constraints, EventResult};
 use crate::{PenPath, Style};
 use ink_stroke_modeler_rs::{
-    ModelerInput, ModelerInputEventType, PredictionParams, StrokeModeler, StrokeModelerParams,
+    ModelerInput, ModelerInputEventType, ModelerParams, PredictionParams, StrokeModeler,
 };
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
@@ -39,7 +40,7 @@ impl std::fmt::Debug for PenPathModeledBuilder {
     }
 }
 
-impl PenPathBuilderCreator for PenPathModeledBuilder {
+impl BuilderCreator for PenPathModeledBuilder {
     fn start(element: Element, now: Instant) -> Self {
         let mut builder = Self {
             buffer: vec![],
@@ -57,21 +58,23 @@ impl PenPathBuilderCreator for PenPathModeledBuilder {
     }
 }
 
-impl PenPathBuildable for PenPathModeledBuilder {
+impl Buildable for PenPathModeledBuilder {
+    type Emit = Segment;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         now: Instant,
         _constraints: Constraints,
-    ) -> PenPathBuilderProgress {
-        match event {
+    ) -> EventResult<BuilderProgress<Self::Emit>> {
+        let progress = match event {
             PenEvent::Down { element, .. } => {
                 // kDown is already fed into the modeler when the builder was instantiated (with start())
                 self.update_modeler_w_element(element, ModelerInputEventType::kMove, now);
 
                 match self.try_build_segments() {
-                    Some(segments) => PenPathBuilderProgress::EmitContinue(segments),
-                    None => PenPathBuilderProgress::InProgress,
+                    Some(segments) => BuilderProgress::EmitContinue(segments),
+                    None => BuilderProgress::InProgress,
                 }
             }
             PenEvent::Up { element, .. } => {
@@ -79,12 +82,18 @@ impl PenPathBuildable for PenPathModeledBuilder {
 
                 let segments = self.build_segments_end();
 
-                PenPathBuilderProgress::Finished(segments)
+                BuilderProgress::Finished(segments)
             }
             PenEvent::Proximity { .. } | PenEvent::KeyPressed { .. } | PenEvent::Text { .. } => {
-                PenPathBuilderProgress::InProgress
+                BuilderProgress::InProgress
             }
-            PenEvent::Cancel => PenPathBuilderProgress::Finished(vec![]),
+            PenEvent::Cancel => BuilderProgress::Finished(vec![]),
+        };
+
+        EventResult {
+            handled: true,
+            propagate: EventPropagation::Stop,
+            progress,
         }
     }
 
@@ -118,14 +127,14 @@ impl PenPathBuildable for PenPathModeledBuilder {
     }
 }
 
-static MODELER_PARAMS: Lazy<StrokeModelerParams> = Lazy::new(|| StrokeModelerParams {
+static MODELER_PARAMS: Lazy<ModelerParams> = Lazy::new(|| ModelerParams {
     sampling_min_output_rate: 120.0,
     sampling_end_of_stroke_stopping_distance: 0.01,
     sampling_end_of_stroke_max_iterations: 20,
     sampling_max_outputs_per_call: 200,
     stylus_state_modeler_max_input_samples: 20,
     prediction_params: PredictionParams::StrokeEnd,
-    ..StrokeModelerParams::suggested()
+    ..ModelerParams::suggested()
 });
 
 impl PenPathModeledBuilder {
@@ -158,7 +167,8 @@ impl PenPathModeledBuilder {
         if self.last_element == element
             || now.duration_since(self.last_element_time) <= Duration::ZERO
         {
-            // Can't feed modeler with duplicate elements or with same or reverse time, would results in `INVALID_ARGUMENT` errors
+            // Can't feed modeler with duplicate elements or with same or reverse time,
+            // would result in `INVALID_ARGUMENT` errors
             return;
         }
         self.last_element = element;
@@ -169,8 +179,11 @@ impl PenPathModeledBuilder {
 
         if n_steps > MODELER_PARAMS.sampling_max_outputs_per_call {
             // If the no of outputs the modeler would need to produce exceeds the configured maximum
-            // ( because the time delta between the last elements is too large ), it needs to be restarted.
-            log::debug!("penpathmodeledbuilder: update_modeler_w_element(): n_steps exceeds configured max outputs per call, restarting modeler");
+            // (because the time delta between the last elements is too large), it needs to be restarted.
+            log::debug!(
+                "PenpathModeledBuilder: updating modeler with element failed,
+n_steps exceeds configured max outputs per call."
+            );
 
             self.restart(element, now);
         }
@@ -187,12 +200,11 @@ impl PenPathModeledBuilder {
 
         match self.stroke_modeler.update(modeler_input) {
             Ok(results) => self.buffer.extend(results.into_iter().map(|r| {
-                let pos = r.get_pos();
-                let pressure = r.get_pressure();
-
+                let pos = r.pos();
+                let pressure = r.pressure();
                 Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
             })),
-            Err(e) => log::error!("stroke modeler update() failed, Err: {e:?}"),
+            Err(e) => log::error!("stroke modeler update failed, Err: {e:?}"),
         }
 
         // The prediction start is the last buffer element (which will get drained)
@@ -208,13 +220,13 @@ impl PenPathModeledBuilder {
                 Ok(results) => results
                     .into_iter()
                     .map(|r| {
-                        let pos = r.get_pos();
-                        let pressure = r.get_pressure();
+                        let pos = r.pos();
+                        let pressure = r.pressure();
                         Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
                     })
                     .collect::<Vec<Element>>(),
                 Err(e) => {
-                    log::error!("stroke modeler predict() failed, Err: {e:?}");
+                    log::error!("stroke modeler predict failed, Err: {e:?}");
                     Vec::new()
                 }
             }
@@ -228,7 +240,7 @@ impl PenPathModeledBuilder {
         self.last_element_time = now;
         self.last_element = element;
         if let Err(e) = self.stroke_modeler.reset_w_params(*MODELER_PARAMS) {
-            log::error!("stroke modeler reset_w_params() failed while restarting, Err: {e:?}");
+            log::error!("resetting stroke modeler failed while restarting, Err: {e:?}");
             return;
         }
 
@@ -242,13 +254,12 @@ impl PenPathModeledBuilder {
         )) {
             Ok(results) => {
                 self.buffer.extend(results.into_iter().map(|r| {
-                    let pos = r.get_pos();
-                    let pressure = r.get_pressure();
-
+                    let pos = r.pos();
+                    let pressure = r.pressure();
                     Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
                 }));
             }
-            Err(e) => log::error!("stroke modeler update() failed while restarting, Err: {e:?}"),
+            Err(e) => log::error!("stroke modeler update failed while restarting, Err: {e:?}"),
         }
     }
 }

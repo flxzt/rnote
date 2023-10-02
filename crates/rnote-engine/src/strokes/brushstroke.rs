@@ -7,8 +7,7 @@ use crate::{
     strokes::content,
 };
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-use rnote_compose::ext::{AabbExt, Vector2Ext};
+use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::Composer;
@@ -29,18 +28,6 @@ pub struct BrushStroke {
 }
 
 impl Content for BrushStroke {
-    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
-        let bounds = self.bounds();
-
-        render::Svg::gen_with_piet_cairo_backend(
-            |cx| {
-                cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
-                self.draw(cx, 1.0)
-            },
-            bounds,
-        )
-    }
-
     fn gen_images(
         &self,
         viewport: Aabb,
@@ -56,19 +43,21 @@ impl Content for BrushStroke {
         let bounds = self.bounds();
         let partial = !viewport.contains(&bounds);
         let Some(bounds) = viewport.intersection(&bounds) else {
-            return Ok(GeneratedContentImages::Partial { images: vec![], viewport });
+            return Ok(GeneratedContentImages::Partial {
+                images: vec![],
+                viewport,
+            });
         };
         let bounds_extents = bounds.extents();
 
         let image_size_condition = bounds_extents[0] < IMAGES_SIZE_THRESHOLD / image_scale
             && bounds_extents[1] < IMAGES_SIZE_THRESHOLD / image_scale;
 
-        //
         let stroke_width_condition = self.style.stroke_width()
             > IMAGES_STROKE_WIDTH_BOUNDS_THRESHOLD * bounds_extents[0]
             || self.style.stroke_width() > IMAGES_STROKE_WIDTH_BOUNDS_THRESHOLD * bounds_extents[1];
 
-        // if these conditions evaluate true the stroke is rendered as a single imaeg
+        // if these conditions evaluate true the stroke is rendered as a single image
         let images = if image_size_condition || stroke_width_condition {
             // generate a single image when bounds are smaller than threshold
             match &self.style {
@@ -85,7 +74,7 @@ impl Content for BrushStroke {
                     match image {
                         Ok(image) => vec![image],
                         Err(e) => {
-                            log::error!("gen_images() in brushstroke failed with Err: {e:?}");
+                            log::error!("gen_images() in brushstroke failed , Err: {e:?}");
                             vec![]
                         }
                     }
@@ -107,7 +96,7 @@ impl Content for BrushStroke {
                     match image {
                         Ok(image) => vec![image],
                         Err(e) => {
-                            log::error!("gen_images() in brushstroke failed with Err: {e:?}");
+                            log::error!("gen_images() in brushstroke failed , Err: {e:?}");
                             vec![]
                         }
                     }
@@ -132,7 +121,7 @@ impl Content for BrushStroke {
                         ) {
                             Ok(image) => images.push(image),
                             Err(e) => {
-                                log::error!("gen_images() in brushstroke failed with Err: {e:?}")
+                                log::error!("gen_images() in brushstroke failed , Err: {e:?}")
                             }
                         }
 
@@ -163,7 +152,7 @@ impl Content for BrushStroke {
                         ) {
                             Ok(image) => images.push(image),
                             Err(e) => {
-                                log::error!("gen_images() in brushstroke failed with Err: {e:?}")
+                                log::error!("gen_images() in brushstroke failed , Err: {e:?}")
                             }
                         }
 
@@ -189,19 +178,19 @@ impl Content for BrushStroke {
         cx: &mut impl piet::RenderContext,
         total_zoom: f64,
     ) -> anyhow::Result<()> {
-        const HIGHLIGHT_STROKE_WIDTH: f64 = 5.0;
+        const PATH_HIGHLIGHT_MIN_STROKE_WIDTH: f64 = 5.0;
         const DRAW_BOUNDS_THRESHOLD_AREA: f64 = 10_u32.pow(2) as f64;
 
         let bounds = self.bounds();
 
         if bounds.scale(total_zoom).volume() < DRAW_BOUNDS_THRESHOLD_AREA {
-            cx.fill(bounds.to_kurbo_rect(), &*content::STROKE_HIGHLIGHT_COLOR);
+            cx.fill(bounds.to_kurbo_rect(), &content::CONTENT_HIGHLIGHT_COLOR);
         } else {
             cx.stroke_styled(
-                self.path.to_kurbo(),
-                &*content::STROKE_HIGHLIGHT_COLOR,
-                (HIGHLIGHT_STROKE_WIDTH / total_zoom)
-                    .max(self.style.stroke_width() + 2.0 / total_zoom),
+                self.outline_path(),
+                &content::CONTENT_HIGHLIGHT_COLOR,
+                (PATH_HIGHLIGHT_MIN_STROKE_WIDTH / total_zoom)
+                    .max(self.style.stroke_width() + 3.0 / total_zoom),
                 &piet::StrokeStyle::new()
                     .line_join(piet::LineJoin::Round)
                     .line_cap(piet::LineCap::Round),
@@ -245,6 +234,10 @@ impl Shapeable for BrushStroke {
     fn hitboxes(&self) -> Vec<Aabb> {
         self.hitboxes.clone()
     }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        self.path.outline_path()
+    }
 }
 
 impl Transformable for BrushStroke {
@@ -256,6 +249,9 @@ impl Transformable for BrushStroke {
     }
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.path.scale(scale);
+        let scale_uniform = (scale[0] + scale[1]) / 2.;
+        self.style
+            .set_stroke_width(self.style.stroke_width() * scale_uniform);
     }
 }
 

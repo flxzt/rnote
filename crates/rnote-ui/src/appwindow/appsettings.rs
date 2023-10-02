@@ -25,7 +25,7 @@ impl RnAppWindow {
         );
 
         self.app_settings()
-            .bind("flap-reveal", &self.flap(), "reveal-flap")
+            .bind("sidebar-show", &self.split_view(), "show-sidebar")
             .get_no_changes()
             .build();
 
@@ -63,7 +63,10 @@ impl RnAppWindow {
         self.app_settings()
             .bind(
                 "show-scrollbars",
-                &self.settings_panel().general_show_scrollbars_switch(),
+                &self
+                    .sidebar()
+                    .settings_panel()
+                    .general_show_scrollbars_switch(),
                 "active",
             )
             .get_no_changes()
@@ -73,7 +76,10 @@ impl RnAppWindow {
         self.app_settings()
             .bind(
                 "inertial-scrolling",
-                &self.settings_panel().general_inertial_scrolling_switch(),
+                &self
+                    .sidebar()
+                    .settings_panel()
+                    .general_inertial_scrolling_switch(),
                 "active",
             )
             .get_no_changes()
@@ -83,7 +89,10 @@ impl RnAppWindow {
         self.app_settings()
             .bind(
                 "regular-cursor",
-                &self.settings_panel().general_regular_cursor_picker(),
+                &self
+                    .sidebar()
+                    .settings_panel()
+                    .general_regular_cursor_picker(),
                 "picked",
             )
             .get_no_changes()
@@ -93,7 +102,10 @@ impl RnAppWindow {
         self.app_settings()
             .bind(
                 "drawing-cursor",
-                &self.settings_panel().general_drawing_cursor_picker(),
+                &self
+                    .sidebar()
+                    .settings_panel()
+                    .general_drawing_cursor_picker(),
                 "picked",
             )
             .get_no_changes()
@@ -103,7 +115,10 @@ impl RnAppWindow {
         self.app_settings()
             .bind(
                 "show-drawing-cursor",
-                &self.settings_panel().general_show_drawing_cursor_switch(),
+                &self
+                    .sidebar()
+                    .settings_panel()
+                    .general_show_drawing_cursor_switch(),
                 "active",
             )
             .get_no_changes()
@@ -376,11 +391,6 @@ impl RnAppWindow {
             if is_maximized {
                 self.maximize();
             }
-            // flap width
-            self.flap_box()
-                .set_width_request(self.app_settings().int("flap-width"));
-
-            // color scheme
 
             // set the color-scheme through the action
             let color_scheme = self.app_settings().string("color-scheme");
@@ -390,7 +400,8 @@ impl RnAppWindow {
 
         {
             // Workspaces bar
-            self.workspacebrowser()
+            self.sidebar()
+                .workspacebrowser()
                 .workspacesbar()
                 .load_from_settings(&self.app_settings());
         }
@@ -407,8 +418,6 @@ impl RnAppWindow {
                 .set_int("window-height", self.height())?;
             self.app_settings()
                 .set_boolean("is-maximized", self.is_maximized())?;
-            self.app_settings()
-                .set_int("flap-width", self.flap_box().width())?;
         }
 
         {

@@ -46,7 +46,7 @@ mod imp {
         ) -> (i32, i32, i32, i32) {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
             let total_zoom = canvas.engine_ref().camera.total_zoom();
-            let document = canvas.engine_ref().document;
+            let document = canvas.engine_ref().document.clone();
 
             if orientation == Orientation::Horizontal {
                 let natural_width = (document.width * total_zoom
@@ -66,58 +66,44 @@ mod imp {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
             let hadj = canvas.hadjustment().unwrap();
             let vadj = canvas.vadjustment().unwrap();
-            let engine = &mut *canvas.engine_mut();
-
-            let (offset_mins, offset_maxs) = engine.camera_offset_mins_maxs();
+            let hadj_value = hadj.value();
+            let vadj_value = vadj.value();
             let new_size = na::vector![width as f64, height as f64];
+            let offset_mins_maxs = canvas.engine_ref().camera_offset_mins_maxs();
+            let new_offset = na::vector![hadj_value, vadj_value];
+            let old_viewport = self.old_viewport.get();
+            let new_viewport = canvas.engine_ref().camera.viewport();
 
-            hadj.configure(
-                // This gets clamped to the lower and upper values
-                hadj.value(),
-                offset_mins[0],
-                offset_maxs[0],
-                0.1 * new_size[0],
-                0.9 * new_size[0],
-                new_size[0],
-            );
-
-            vadj.configure(
-                // This gets clamped to the lower and upper values
-                vadj.value(),
-                offset_mins[1],
-                offset_maxs[1],
-                0.1 * new_size[1],
-                0.9 * new_size[1],
-                new_size[1],
-            );
-
-            let new_offset = na::vector![hadj.value(), vadj.value()];
+            canvas.configure_adjustments(new_size, offset_mins_maxs, new_offset);
 
             // Update the camera
-            let _ = engine.camera_set_offset(new_offset);
-            let _ = engine.camera_set_size(new_size);
+            let _ = canvas.engine_mut().camera_set_offset(new_offset);
+            let _ = canvas.engine_mut().camera_set_size(new_size);
 
-            let new_viewport = engine.camera.viewport();
-            let old_viewport = self.old_viewport.get();
-
-            // We only extend the viewport by a (tweakable) fraction of the margin, because we want to trigger rendering before we reach it.
-            // This has two advantages: Strokes that might take longer to render have a head start while still being out of view,
-            // And the rendering gets triggered more often, so not that many strokes start to get rendered. This avoids stutters,
-            // because while the rendering itself is on worker threads, we still have to `integrate` the resulted textures,
-            // which can also take up quite some time on the main UI thread.
+            // We only extend the viewport by a (tweakable) fraction of the margin, because we want to trigger rendering
+            // before we reach it. This has two advantages: Strokes that might take longer to render have a head start
+            // while still being out of view, and the rendering gets triggered more often, so not that many strokes
+            // start to get rendered. This avoids stutters, because while the rendering itself is on worker threads, we
+            // still have to `integrate` the resulted textures, which can also take up quite some time on the main UI
+            // thread.
             let old_viewport_extended = old_viewport
                 .extend_by(old_viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR * 0.8);
 
             // always update the background rendering
-            engine.update_background_rendering_current_viewport();
+            let _ = canvas
+                .engine_mut()
+                .update_background_rendering_current_viewport();
 
-            // On zoom outs or viewport translations this will evaluate true, so we render the strokes that are coming into view.
-            // But after zoom ins we need to update old_viewport with layout_manager.update_state()
+            // On zoom outs or viewport translations this will evaluate true, so we render the strokes that are coming
+            // into view. But after zoom ins we need to update old_viewport with layout_manager.update_state()
             if !old_viewport_extended.contains(&new_viewport) {
                 self.old_viewport.set(new_viewport);
 
-                // Because we don't set the rendering of strokes that are already in the view dirty, we only rerender those that may come into the view and are flagged dirty.
-                engine.update_content_rendering_current_viewport();
+                // Because we don't set the rendering of strokes that are already in the view dirty, we only rerender
+                // those that may come into the view and are flagged dirty.
+                let _ = canvas
+                    .engine_mut()
+                    .update_content_rendering_current_viewport();
             }
         }
     }

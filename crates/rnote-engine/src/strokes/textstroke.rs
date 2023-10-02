@@ -1,10 +1,8 @@
 // Imports
-use super::content::GeneratedContentImages;
 use super::Content;
-use crate::{render, strokes::content, Camera, Drawable};
+use crate::{Camera, Drawable};
 use kurbo::Shape;
-use once_cell::sync::Lazy;
-use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::bounding_volume::Aabb;
 use piet::{RenderContext, TextLayout, TextLayoutBuilder};
 use rnote_compose::ext::{AabbExt, Affine2Ext, Vector2Ext};
 use rnote_compose::shapes::Shapeable;
@@ -378,8 +376,8 @@ impl TextStyle {
         transform: &Transform,
         camera: &Camera,
     ) {
-        static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[2]);
-        static FILL_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[1].with_alpha(0.1));
+        const OUTLINE_COLOR: piet::Color = color::GNOME_BLUES[2];
+        const FILL_COLOR: piet::Color = color::GNOME_BLUES[1].with_a8(25);
         let outline_width = 1.5 / camera.total_zoom();
 
         if let Ok(selection_rects) =
@@ -388,8 +386,8 @@ impl TextStyle {
             for selection_rect in selection_rects {
                 let outline = transform.to_kurbo() * selection_rect.to_path(0.5);
 
-                cx.fill(&outline, &*FILL_COLOR);
-                cx.stroke(&outline, &*OUTLINE_COLOR, outline_width);
+                cx.fill(&outline, &FILL_COLOR);
+                cx.stroke(&outline, &OUTLINE_COLOR, outline_width);
             }
         }
     }
@@ -481,68 +479,13 @@ impl Shapeable for TextStroke {
 
         hitboxes
     }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        self.bounds().to_kurbo_rect().to_path(0.25)
+    }
 }
 
 impl Content for TextStroke {
-    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
-        let bounds = self.bounds();
-
-        // We need to generate the svg with the cairo backend, because text layout would differ with the svg backend
-        render::Svg::gen_with_piet_cairo_backend(
-            |cx| {
-                cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
-                self.draw(cx, 1.0)
-            },
-            bounds,
-        )
-    }
-
-    fn gen_images(
-        &self,
-        viewport: Aabb,
-        image_scale: f64,
-    ) -> Result<GeneratedContentImages, anyhow::Error> {
-        let bounds = self.bounds();
-
-        if viewport.contains(&bounds) {
-            Ok(GeneratedContentImages::Full(vec![
-                render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    bounds,
-                    image_scale,
-                )?,
-            ]))
-        } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
-            Ok(GeneratedContentImages::Partial {
-                images: vec![render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    intersection_bounds,
-                    image_scale,
-                )?],
-                viewport,
-            })
-        } else {
-            Ok(GeneratedContentImages::Partial {
-                images: vec![],
-                viewport,
-            })
-        }
-    }
-
-    fn draw_highlight(
-        &self,
-        cx: &mut impl piet::RenderContext,
-        total_zoom: f64,
-    ) -> anyhow::Result<()> {
-        const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
-        cx.stroke(
-            self.bounds().to_kurbo_rect(),
-            &*content::STROKE_HIGHLIGHT_COLOR,
-            HIGHLIGHT_STROKE_WIDTH / total_zoom,
-        );
-        Ok(())
-    }
-
     fn update_geometry(&mut self) {}
 }
 

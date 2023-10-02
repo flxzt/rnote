@@ -1,161 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="RnAppWindow" parent="AdwApplicationWindow">
+    <property name="width-request">500</property>
+    <property name="height-request">460</property>
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
     <child>
-      <object class="AdwFlap" id="flap">
-        <property name="flap-position">end</property>
-        <property name="transition-type">over</property>
-        <property name="reveal-flap">false</property>
-        <property name="swipe-to-open">false</property>
-        <property name="swipe-to-close">false</property>
-        <property name="fold-threshold-policy">minimum</property>
-        <child type="separator">
-          <object class="GtkSeparator">
-            <property name="orientation">vertical</property>
-            <property name="hexpand">false</property>
-            <property name="visible">false</property>
-          </object>
-        </child>
-        <child type="content">
-          <object class="GtkGrid" id="main_grid">
-            <child>
-              <object class="RnMainHeader" id="mainheader">
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">0</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="AdwTabBar" id="tabbar">
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">1</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="RnOverlays" id="overlays">
-                <property name="hexpand">true</property>
-                <property name="vexpand">true</property>
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">2</property>
-                </layout>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child type="flap">
-          <object class="GtkBox" id="flap_resizer_box">
-            <property name="orientation">horizontal</property>
-            <child>
-              <object class="GtkBox" id="flap_resizer">
-                <property name="orientation">horizontal</property>
-                <property name="width-request">3</property>
-                <style>
-                  <class name="flap_resizer" />
-                  <class name="view" />
-                </style>
-                <child type="start">
-                  <object class="GtkSeparator">
-                    <property name="orientation">vertical</property>
-                    <property name="hexpand">false</property>
-                    <property name="halign">start</property>
-                    <property name="vexpand">true</property>
-                    <property name="valign">fill</property>
-                    <property name="margin-end">1</property>
-                  </object>
-                </child>
-                <child type="end">
-                  <object class="GtkSeparator">
-                    <property name="orientation">vertical</property>
-                    <property name="hexpand">false</property>
-                    <property name="halign">end</property>
-                    <property name="vexpand">true</property>
-                    <property name="valign">fill</property>
-                    <property name="margin-start">2</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="flap_box">
-                <property name="hexpand">false</property>
-                <property name="halign">fill</property>
-                <property name="orientation">vertical</property>
-                <property name="width-request">400</property>
-                <style>
-                  <class name="flap_box" />
-                  <class name="background" />
-                </style>
-                <child>
-                  <object class="AdwHeaderBar" id="flap_header">
-                    <property name="show-end-title-buttons">false</property>
-                    <child type="title">
-                      <object class="GtkBox">
-                        <property name="hexpand">true</property>
-                        <property name="halign">center</property>
-                        <child>
-                          <object class="AdwViewSwitcherTitle" id="flap_switcher_title">
-                            <property name="stack">flap_stack</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child type="start">
-                      <object class="GtkButton" id="flap_close_button">
-                        <property name="icon_name">right-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Close the Folded Flap</property>
-                      </object>
-                    </child>
-                    <child type="end">
-                      <object class="GtkBox" id="flap_menus_box">
-                        <property name="spacing">6</property>
-                        <property name="halign">end</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="AdwViewStack" id="flap_stack">
-                    <!-- Workspace Page -->
-                    <child>
-                      <object class="AdwViewStackPage">
-                        <property name="name">workspacebrowser_page</property>
-                        <property name="title" translatable="yes">Workspace</property>
-                        <property name="icon-name">workspacebrowser-symbolic</property>
-                        <property name="child">
-                          <object class="RnWorkspaceBrowser" id="workspacebrowser"></object>
-                        </property>
-                      </object>
-                    </child>
-                    <!-- Settings Page -->
-                    <child>
-                      <object class="AdwViewStackPage">
-                        <property name="name">settings_page</property>
-                        <property name="title" translatable="yes">Settings</property>
-                        <property name="icon-name">settings-symbolic</property>
-                        <property name="child">
-                          <object class="RnSettingsPanel" id="settings_panel"></object>
-                        </property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="AdwViewSwitcherBar">
-                    <property name="stack">flap_stack</property>
-                    <binding name="reveal">
-                      <lookup name="title-visible">flap_switcher_title</lookup>
-                    </binding>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
+      <object class="AdwBreakpoint">
+        <condition>max-width: 1000sp</condition>
+        <setter object="split_view" property="collapsed">true</setter>
       </object>
     </child>
+    <property name="content">
+      <object class="AdwOverlaySplitView" id="split_view">
+        <property name="pin-sidebar">true</property>
+        <property name="min-sidebar-width">500</property>
+        <property name="max-sidebar-width">600</property>
+        <property name="sidebar-width-fraction">0.33</property>
+        <!-- sidebar -->
+        <property name="sidebar">
+          <object class="RnSidebar" id="sidebar">
+          </object>
+        </property>
+        <!-- main view -->
+        <property name="content">
+          <object class="AdwToolbarView">
+            <property name="top-bar-style">raised</property>
+            <child type="top">
+              <object class="RnMainHeader" id="main_header">
+              </object>
+            </child>
+            <property name="content">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="AdwTabBar" id="tabbar">
+                  </object>
+                </child>
+                <child>
+                  <object class="RnOverlays" id="overlays">
+                    <property name="hexpand">true</property>
+                    <property name="vexpand">true</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </property>
+      </object>
+    </property>
   </template>
 </interface>

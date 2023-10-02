@@ -1,16 +1,26 @@
 // Imports
 use crate::{RnAppWindow, RnCanvas};
 use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, CornerType,
-    EventControllerMotion, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
-    GestureDrag, GestureLongPress, GestureZoom, Inhibit, PropagationPhase, ScrolledWindow, Widget,
+    gdk, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, CompositeTemplate,
+    CornerType, EventControllerMotion, EventControllerScroll, EventControllerScrollFlags,
+    EventSequenceState, GestureDrag, GestureLongPress, GestureZoom, PropagationPhase,
+    ScrolledWindow, Widget,
 };
 use once_cell::sync::Lazy;
-use rnote_compose::penevents::ShortcutKey;
+use rnote_compose::penevent::ShortcutKey;
+use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::Camera;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::time::Instant;
+
+#[derive(Debug, Default)]
+struct Connections {
+    appwindow_block_pinch_zoom_bind: Option<glib::Binding>,
+    appwindow_show_scrollbars_bind: Option<glib::Binding>,
+    appwindow_inertial_scrolling_bind: Option<glib::Binding>,
+    appwindow_righthanded_bind: Option<glib::Binding>,
+}
 
 mod imp {
     use super::*;
@@ -18,16 +28,12 @@ mod imp {
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/canvaswrapper.ui")]
     pub(crate) struct RnCanvasWrapper {
+        pub(super) connections: RefCell<Connections>,
+        pub(crate) canvas_touch_drawing_handler: RefCell<Option<glib::SignalHandlerId>>,
         pub(crate) show_scrollbars: Cell<bool>,
         pub(crate) block_pinch_zoom: Cell<bool>,
         pub(crate) inertial_scrolling: Cell<bool>,
         pub(crate) pointer_pos: Cell<Option<na::Vector2<f64>>>,
-
-        pub(crate) appwindow_block_pinch_zoom_bind: RefCell<Option<glib::Binding>>,
-        pub(crate) appwindow_show_scrollbars_bind: RefCell<Option<glib::Binding>>,
-        pub(crate) appwindow_inertial_scrolling_bind: RefCell<Option<glib::Binding>>,
-        pub(crate) appwindow_righthanded_bind: RefCell<Option<glib::Binding>>,
-        pub(crate) canvas_touch_drawing_handler: RefCell<Option<glib::SignalHandlerId>>,
 
         pub(crate) pointer_motion_controller: EventControllerMotion,
         pub(crate) canvas_drag_gesture: GestureDrag,
@@ -104,16 +110,12 @@ mod imp {
                 .build();
 
             Self {
+                connections: RefCell::new(Connections::default()),
+                canvas_touch_drawing_handler: RefCell::new(None),
                 show_scrollbars: Cell::new(false),
                 block_pinch_zoom: Cell::new(false),
                 inertial_scrolling: Cell::new(true),
                 pointer_pos: Cell::new(None),
-
-                appwindow_block_pinch_zoom_bind: RefCell::new(None),
-                appwindow_show_scrollbars_bind: RefCell::new(None),
-                appwindow_inertial_scrolling_bind: RefCell::new(None),
-                appwindow_righthanded_bind: RefCell::new(None),
-                canvas_touch_drawing_handler: RefCell::new(None),
 
                 pointer_motion_controller,
                 canvas_drag_gesture,
@@ -188,7 +190,8 @@ mod imp {
         }
 
         fn dispose(&self) {
-            self.obj().disconnect_handlers();
+            self.obj().disconnect_connections();
+
             if let Some(handler) = self.canvas_touch_drawing_handler.take() {
                 self.canvas.disconnect(handler);
             }
@@ -299,34 +302,31 @@ mod imp {
             // zoom scrolling with <ctrl> + scroll
             {
                 self.canvas_zoom_scroll_controller.connect_scroll(
-                    clone!(@weak obj as canvaswrapper => @default-return Inhibit(false), move |controller, _, dy| {
-                    if controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                        let canvas = canvaswrapper.canvas();
-                        let old_zoom = canvas.engine_ref().camera.total_zoom();
-                        let new_zoom = old_zoom * (1.0 - dy * RnCanvas::ZOOM_SCROLL_STEP);
-
-                        if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
-                            let camera_offset = canvas.engine_ref().camera.offset();
-                            let camera_size = canvas.engine_ref().camera.size();
-                            let screen_offset = canvaswrapper.imp().pointer_pos.get()
-                                .map(|p| {
-                                    let p = canvaswrapper.translate_coordinates(&canvas, p[0], p[1]).unwrap();
-                                    na::vector![p.0, p.1]
-                                })
-                                .unwrap_or_else(|| camera_size * 0.5);
-                            let new_camera_offset = (((camera_offset + screen_offset) / old_zoom) * new_zoom) - screen_offset;
-
-                            let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-                            widget_flags.merge(canvas.engine_mut().camera_set_offset(new_camera_offset));
-                            widget_flags.merge(canvas.engine_mut().doc_expand_autoexpand());
-                            canvas.emit_handle_widget_flags(widget_flags);
-                        }
-
-                        // Stop event propagation
-                        Inhibit(true)
-                    } else {
-                        Inhibit(false)
+                    clone!(@weak obj as canvaswrapper => @default-return glib::Propagation::Proceed, move |controller, _, dy| {
+                    if controller.current_event_state() != gdk::ModifierType::CONTROL_MASK {
+                        return glib::Propagation::Proceed;
                     }
+                    let canvas = canvaswrapper.canvas();
+                    let old_zoom = canvas.engine_ref().camera.total_zoom();
+                    let new_zoom = old_zoom * (1.0 - dy * RnCanvas::ZOOM_SCROLL_STEP);
+
+                    if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
+                        let camera_offset = canvas.engine_ref().camera.offset();
+                        let camera_size = canvas.engine_ref().camera.size();
+                        let screen_offset = canvaswrapper.imp().pointer_pos.get()
+                            .map(|p| {
+                                let p = canvaswrapper.compute_point(&canvas, &graphene::Point::from_na_vec(p)).unwrap();
+                                p.to_na_vec()
+                            })
+                            .unwrap_or_else(|| camera_size * 0.5);
+                        let new_camera_offset = (((camera_offset + screen_offset) / old_zoom) * new_zoom) - screen_offset;
+
+                        let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
+                        widget_flags |= canvas.engine_mut().camera_set_offset_expand(new_camera_offset);
+                        canvas.emit_handle_widget_flags(widget_flags);
+                    }
+
+                    glib::Propagation::Stop
                 }));
             }
 
@@ -349,15 +349,14 @@ mod imp {
                     clone!(@strong touch_drag_start, @weak obj as canvaswrapper => move |_, x, y| {
                         let canvas = canvaswrapper.canvas();
                         let new_offset = touch_drag_start.get() - na::vector![x,y];
-
-                        let mut widget_flags = canvas.engine_mut().camera_set_offset(new_offset);
-                        widget_flags.merge(canvas.engine_mut().doc_expand_autoexpand());
+                        let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
                         canvas.emit_handle_widget_flags(widget_flags);
                     }),
                 );
                 self.canvas_drag_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        canvaswrapper.canvas().update_rendering_current_viewport();
+                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
+                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                     }),
                 );
             }
@@ -375,15 +374,14 @@ mod imp {
                     clone!(@strong mouse_drag_start, @weak obj as canvaswrapper => move |_, x, y| {
                         let canvas = canvaswrapper.canvas();
                         let new_offset = mouse_drag_start.get() - na::vector![x,y];
-
-                        let mut widget_flags = canvas.engine_mut().camera_set_offset(new_offset);
-                        widget_flags.merge(canvas.engine_mut().doc_expand_autoexpand());
+                        let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
                         canvas.emit_handle_widget_flags(widget_flags);
                     }),
                 );
                 self.canvas_mouse_drag_middle_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        canvaswrapper.canvas().update_rendering_current_viewport();
+                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
+                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                     }),
                 );
             }
@@ -441,9 +439,7 @@ mod imp {
                             };
                             let bbcenter_delta = bbcenter_current - bbcenter_begin * prev_scale.get();
                             let new_offset = offset_begin.get() * prev_scale.get() - bbcenter_delta;
-
-                            widget_flags.merge(canvas.engine_mut().camera_set_offset(new_offset));
-                            widget_flags.merge(canvas.engine_mut().doc_expand_autoexpand());
+                            widget_flags |= canvas.engine_mut().camera_set_offset_expand(new_offset);
                         }
 
                         canvas.emit_handle_widget_flags(widget_flags);
@@ -453,14 +449,16 @@ mod imp {
                 self.canvas_zoom_gesture.connect_end(
                     clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
-                        canvaswrapper.canvas().update_rendering_current_viewport();
+                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
+                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                     }),
                 );
 
                 self.canvas_zoom_gesture.connect_cancel(
                     clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
-                        canvaswrapper.canvas().update_rendering_current_viewport();
+                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
+                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                     }),
                 );
             }
@@ -487,16 +485,15 @@ mod imp {
                     clone!(@strong offset_start, @weak obj as canvaswrapper => move |_, offset_x, offset_y| {
                         let canvas = canvaswrapper.canvas();
                         let new_offset = offset_start.get() - na::vector![offset_x, offset_y];
-
-                        let mut widget_flags = canvas.engine_mut().camera_set_offset(new_offset);
-                        widget_flags.merge(canvas.engine_mut().doc_expand_autoexpand());
+                        let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
                         canvas.emit_handle_widget_flags(widget_flags);
                     })
                 );
 
                 self.canvas_alt_drag_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        canvaswrapper.canvas().update_rendering_current_viewport();
+                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
+                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                     }),
                 );
             }
@@ -541,8 +538,8 @@ mod imp {
                             let viewport_center = canvas.engine_ref().camera.viewport_center();
 
                             let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-                            widget_flags.merge(canvas.engine_mut().camera.set_viewport_center(viewport_center));
-                            widget_flags.merge(canvas.engine_mut().doc_expand_autoexpand());
+                            widget_flags |= canvas.engine_mut().camera.set_viewport_center(viewport_center);
+                            widget_flags |= canvas.engine_mut().doc_expand_autoexpand();
                             canvas.emit_handle_widget_flags(widget_flags);
                         }
 
@@ -552,7 +549,8 @@ mod imp {
 
                 self.canvas_alt_shift_drag_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        canvaswrapper.canvas().update_rendering_current_viewport();
+                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
+                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                     }),
                 );
             }
@@ -560,7 +558,7 @@ mod imp {
             {
                 // Shortcut with touch two-finger long-press.
                 self.touch_two_finger_long_press_gesture.connect_pressed(clone!(@weak obj as canvaswrapper => move |_gesture, _, _| {
-                    let widget_flags = canvaswrapper.canvas()
+                    let (_, widget_flags) = canvaswrapper.canvas()
                         .engine_mut()
                         .handle_pressed_shortcut_key(ShortcutKey::TouchTwoFingerLongPress, Instant::now());
                     canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
@@ -654,7 +652,6 @@ impl RnCanvasWrapper {
     ///
     /// The same method of the canvas child is chained up in here.
     pub(crate) fn init_reconnect(&self, appwindow: &RnAppWindow) {
-        let imp = self.imp();
         self.imp().canvas.init_reconnect(appwindow);
 
         let appwindow_block_pinch_zoom_bind = appwindow
@@ -663,6 +660,7 @@ impl RnCanvasWrapper {
             .build();
 
         let appwindow_show_scrollbars_bind = appwindow
+            .sidebar()
             .settings_panel()
             .general_show_scrollbars_switch()
             .bind_property("state", self, "show-scrollbars")
@@ -670,6 +668,7 @@ impl RnCanvasWrapper {
             .build();
 
         let appwindow_inertial_scrolling_bind = appwindow
+            .sidebar()
             .settings_panel()
             .general_inertial_scrolling_switch()
             .bind_property("state", self, "inertial-scrolling")
@@ -688,33 +687,27 @@ impl RnCanvasWrapper {
             .sync_create()
             .build();
 
-        if let Some(old) = imp
+        let mut connections = self.imp().connections.borrow_mut();
+        if let Some(old) = connections
             .appwindow_block_pinch_zoom_bind
-            .borrow_mut()
             .replace(appwindow_block_pinch_zoom_bind)
         {
             old.unbind()
         }
-
-        if let Some(old) = imp
+        if let Some(old) = connections
             .appwindow_show_scrollbars_bind
-            .borrow_mut()
             .replace(appwindow_show_scrollbars_bind)
         {
             old.unbind();
         }
-
-        if let Some(old) = imp
+        if let Some(old) = connections
             .appwindow_inertial_scrolling_bind
-            .borrow_mut()
             .replace(appwindow_inertial_scrolling_bind)
         {
             old.unbind();
         }
-
-        if let Some(old) = imp
+        if let Some(old) = connections
             .appwindow_righthanded_bind
-            .borrow_mut()
             .replace(appwindow_righthanded_bind)
         {
             old.unbind();
@@ -725,24 +718,20 @@ impl RnCanvasWrapper {
     /// to prepare moving the widget to another appwindow.
     ///
     /// The same method of the canvas child is chained up in here.
-    pub(crate) fn disconnect_handlers(&self) {
-        let imp = self.imp();
-
+    pub(crate) fn disconnect_connections(&self) {
         self.canvas().disconnect_connections();
 
-        if let Some(old) = imp.appwindow_block_pinch_zoom_bind.borrow_mut().take() {
+        let mut connections = self.imp().connections.borrow_mut();
+        if let Some(old) = connections.appwindow_block_pinch_zoom_bind.take() {
             old.unbind();
         }
-
-        if let Some(old) = imp.appwindow_show_scrollbars_bind.borrow_mut().take() {
+        if let Some(old) = connections.appwindow_show_scrollbars_bind.take() {
             old.unbind();
         }
-
-        if let Some(old) = imp.appwindow_inertial_scrolling_bind.borrow_mut().take() {
+        if let Some(old) = connections.appwindow_inertial_scrolling_bind.take() {
             old.unbind();
         }
-
-        if let Some(old) = imp.appwindow_righthanded_bind.borrow_mut().take() {
+        if let Some(old) = connections.appwindow_righthanded_bind.take() {
             old.unbind();
         }
     }

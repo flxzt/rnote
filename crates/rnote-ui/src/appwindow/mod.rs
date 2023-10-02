@@ -5,12 +5,12 @@ mod imp;
 
 // Imports
 use crate::{
-    config, RnApp, RnCanvas, RnCanvasWrapper, RnOverlays, RnRecoveryAction, RnSettingsPanel,
-    RnWorkspaceBrowser, {dialogs, RnMainHeader},
+    config, dialogs, FileType, RnApp, RnCanvas, RnCanvasWrapper, RnMainHeader, RnOverlays,
+    RnSidebar,
 };
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
-use gtk4::{gdk, gio, glib, glib::clone, Application, Box, Button, IconTheme};
+use gtk4::{gdk, gio, glib, glib::clone, Application, IconTheme};
 use rnote_compose::Color;
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
@@ -29,7 +29,6 @@ impl RnAppWindow {
     const AUTOSAVE_INTERVAL_DEFAULT: u32 = 30;
     const RECOVERY_INTERVAL_DEFAULT: u32 = 20;
     const PERIODIC_CONFIGSAVE_INTERVAL: u32 = 10;
-    const FLAP_FOLDED_RESIZE_MARGIN: u32 = 64;
 
     pub(crate) fn new(app: &Application) -> Self {
         glib::Object::builder().property("application", app).build()
@@ -120,57 +119,29 @@ impl RnAppWindow {
         self.imp().app_settings.clone()
     }
 
+    pub(crate) fn main_header(&self) -> RnMainHeader {
+        self.imp().main_header.get()
+    }
+
+    pub(crate) fn split_view(&self) -> adw::OverlaySplitView {
+        self.imp().split_view.get()
+    }
+
+    pub(crate) fn sidebar(&self) -> RnSidebar {
+        self.imp().sidebar.get()
+    }
+
     pub(crate) fn overlays(&self) -> RnOverlays {
         self.imp().overlays.get()
     }
 
-    pub(crate) fn settings_panel(&self) -> RnSettingsPanel {
-        self.imp().settings_panel.get()
-    }
-
-    pub(crate) fn flap_box(&self) -> gtk4::Box {
-        self.imp().flap_box.get()
-    }
-
-    pub(crate) fn flap_header(&self) -> adw::HeaderBar {
-        self.imp().flap_header.get()
-    }
-
-    pub(crate) fn workspacebrowser(&self) -> RnWorkspaceBrowser {
-        self.imp().workspacebrowser.get()
-    }
-
-    pub(crate) fn flap(&self) -> adw::Flap {
-        self.imp().flap.get()
-    }
-
-    pub(crate) fn flap_menus_box(&self) -> Box {
-        self.imp().flap_menus_box.get()
-    }
-
-    pub(crate) fn flap_close_button(&self) -> Button {
-        self.imp().flap_close_button.get()
-    }
-
-    pub(crate) fn flap_stack(&self) -> adw::ViewStack {
-        self.imp().flap_stack.get()
-    }
-
-    pub(crate) fn mainheader(&self) -> RnMainHeader {
-        self.imp().mainheader.get()
-    }
-
-    // Must be called after application is associated with it else it fails
+    /// Must be called after application is associated with the window else the init will panic
     pub(crate) fn init(&self) {
         let imp = self.imp();
 
         imp.overlays.get().init(self);
-        imp.workspacebrowser.get().init(self);
-        imp.settings_panel.get().init(self);
-        imp.mainheader.get().init(self);
-        imp.mainheader.get().canvasmenu().init(self);
-        imp.mainheader.get().appmenu().init(self);
-        imp.overlays.get().colorpicker().init(self);
+        imp.sidebar.get().init(self);
+        imp.main_header.get().init(self);
 
         // An initial tab. Must! come before setting up the settings binds and import
         self.add_initial_tab();
@@ -188,12 +159,12 @@ impl RnAppWindow {
         // Periodically save engine config
         if let Some(removed_id) = self.imp().periodic_configsave_source_id.borrow_mut().replace(
             glib::source::timeout_add_seconds_local(
-                Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
+                Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak self as appwindow => @default-return glib::ControlFlow::Break, move || {
                     if let Err(e) = appwindow.active_tab_wrapper().canvas().save_engine_config(&appwindow.app_settings()) {
-                        log::error!("saving engine config in periodic task failed with Err: {e:?}");
+                        log::error!("saving engine config in periodic task failed , Err: {e:?}");
                     }
 
-                    glib::source::Continue(true)
+                    glib::ControlFlow::Continue
         }))) {
             removed_id.remove();
         }
@@ -213,7 +184,7 @@ impl RnAppWindow {
     pub(crate) fn close_force(&self) {
         // Saving all state
         if let Err(e) = self.save_to_settings() {
-            log::error!("Failed to save appwindow to settings, with Err: {e:?}");
+            log::error!("Failed to save appwindow to settings, , Err: {e:?}");
         }
 
         // Closing the state tasks channel receiver for all tabs
@@ -223,17 +194,10 @@ impl RnAppWindow {
             .map(|p| p.child().downcast::<RnCanvasWrapper>().unwrap())
         {
             let _ = tab.canvas().engine_mut().set_active(false);
-            if let Err(e) = tab
-                .canvas()
+            tab.canvas()
                 .engine_ref()
-                .tasks_tx()
-                .unbounded_send(EngineTask::Quit)
-            {
-                log::error!(
-                    "failed to send StateTask::Quit to tab with title `{}`, Err: {e:?}",
-                    tab.canvas().doc_title_display()
-                );
-            }
+                .engine_tasks_tx()
+                .send(EngineTask::Quit);
         }
 
         self.destroy();
@@ -255,16 +219,18 @@ impl RnAppWindow {
             canvas.set_empty(false);
         }
         if widget_flags.update_view {
-            let camera_offset = canvas.engine_ref().camera.offset();
-            // Keep the adjustment values in sync
-            canvas.hadjustment().unwrap().set_value(camera_offset[0]);
-            canvas.vadjustment().unwrap().set_value(camera_offset[1]);
+            let widget_size = canvas.widget_size();
+            let offset_mins_maxs = canvas.engine_ref().camera_offset_mins_maxs();
+            let offset = canvas.engine_ref().camera.offset();
+            // Keep the adjustments configuration in sync
+            canvas.configure_adjustments(widget_size, offset_mins_maxs, offset);
+            canvas.queue_resize();
         }
         if widget_flags.zoomed_temporarily {
             let total_zoom = canvas.engine_ref().camera.total_zoom();
 
             canvas.queue_resize();
-            self.mainheader()
+            self.main_header()
                 .canvasmenu()
                 .update_zoom_reset_label(total_zoom);
         }
@@ -273,7 +239,7 @@ impl RnAppWindow {
             let viewport = canvas.engine_ref().camera.viewport();
 
             canvas.canvas_layout_manager().update_old_viewport(viewport);
-            self.mainheader()
+            self.main_header()
                 .canvasmenu()
                 .update_zoom_reset_label(total_zoom);
             canvas.queue_resize();
@@ -332,12 +298,10 @@ impl RnAppWindow {
             .engine_ref()
             .extract_engine_config();
         let wrapper = RnCanvasWrapper::new();
-        let mut widget_flags = wrapper
+        let widget_flags = wrapper
             .canvas()
             .engine_mut()
             .load_engine_config(engine_config, crate::env::pkg_data_dir().ok());
-        widget_flags.merge(wrapper.canvas().engine_mut().doc_resize_to_fit_strokes());
-        wrapper.canvas().update_rendering_current_viewport();
         self.handle_widget_flags(widget_flags, &wrapper.canvas());
         wrapper
     }
@@ -478,21 +442,21 @@ impl RnAppWindow {
             &(title.clone() + " - " + config::APP_NAME_CAPITALIZED),
         ));
 
-        self.mainheader()
+        self.main_header()
             .main_title_unsaved_indicator()
             .set_visible(canvas.unsaved_changes());
         if canvas.unsaved_changes() {
-            self.mainheader()
+            self.main_header()
                 .main_title()
                 .add_css_class("unsaved_changes");
         } else {
-            self.mainheader()
+            self.main_header()
                 .main_title()
                 .remove_css_class("unsaved_changes");
         }
 
-        self.mainheader().main_title().set_title(&title);
-        self.mainheader().main_title().set_subtitle(&subtitle);
+        self.main_header().main_title().set_title(&title);
+        self.main_header().main_title().set_subtitle(&subtitle);
     }
 
     /// Open the file, with import dialogs when appropriate.
@@ -512,10 +476,12 @@ impl RnAppWindow {
             target_pos: Option<na::Vector2<f64>>,
             rnote_file_new_tab: bool,
         ) -> anyhow::Result<bool> {
-            let file_imported = match crate::utils::FileType::lookup_file_type(&input_file) {
-                crate::utils::FileType::RnoteFile => {
+            let file_imported = match FileType::lookup_file_type(&input_file) {
+                FileType::RnoteFile => {
                     let Some(input_file_path) = input_file.path() else {
-                        return Err(anyhow::anyhow!("Could not open file: {input_file:?}, path returned None"));
+                        return Err(anyhow::anyhow!(
+                            "Could not open file: {input_file:?}, path returned None"
+                        ));
                     };
 
                     // If the file is already opened in a tab, simply switch to it
@@ -530,17 +496,18 @@ impl RnAppWindow {
                             appwindow.active_tab_wrapper()
                         };
                         let (bytes, _) = input_file.load_bytes_future().await?;
-                        wrapper
+                        let widget_flags = wrapper
                             .canvas()
                             .load_in_rnote_bytes(bytes.to_vec(), input_file.path(), None)
                             .await?;
                         if rnote_file_new_tab {
                             appwindow.append_wrapper_new_tab(&wrapper);
                         }
+                        appwindow.handle_widget_flags(widget_flags, &wrapper.canvas());
                         true
                     }
                 }
-                crate::utils::FileType::VectorImageFile => {
+                FileType::VectorImageFile => {
                     let canvas = appwindow.active_tab_wrapper().canvas();
                     let (bytes, _) = input_file.load_bytes_future().await?;
                     canvas
@@ -548,7 +515,7 @@ impl RnAppWindow {
                         .await?;
                     true
                 }
-                crate::utils::FileType::BitmapImageFile => {
+                FileType::BitmapImageFile => {
                     let canvas = appwindow.active_tab_wrapper().canvas();
                     let (bytes, _) = input_file.load_bytes_future().await?;
                     canvas
@@ -556,7 +523,7 @@ impl RnAppWindow {
                         .await?;
                     true
                 }
-                crate::utils::FileType::XoppFile => {
+                FileType::XoppFile => {
                     // a new tab for xopp file import
                     let wrapper = appwindow.new_canvas_wrapper();
                     let canvas = wrapper.canvas();
@@ -569,23 +536,30 @@ impl RnAppWindow {
                     }
                     file_imported
                 }
-                crate::utils::FileType::PdfFile => {
+                FileType::PdfFile => {
                     let canvas = appwindow.active_tab_wrapper().canvas();
                     dialogs::import::dialog_import_pdf_w_prefs(
                         appwindow, &canvas, input_file, target_pos,
                     )
                     .await?
                 }
-                crate::utils::FileType::Folder => {
+                FileType::PlaintextFile => {
+                    let canvas = appwindow.active_tab_wrapper().canvas();
+                    let (bytes, _) = input_file.load_bytes_future().await?;
+                    canvas.load_in_text(String::from_utf8(bytes.to_vec())?, target_pos)?;
+                    true
+                }
+                FileType::Folder => {
                     if let Some(dir) = input_file.path() {
                         appwindow
+                            .sidebar()
                             .workspacebrowser()
                             .workspacesbar()
                             .set_selected_workspace_dir(dir);
                     }
                     false
                 }
-                crate::utils::FileType::Unsupported => {
+                FileType::Unsupported => {
                     return Err(anyhow::anyhow!("tried to open unsupported file type"));
                 }
             };
@@ -836,7 +810,7 @@ impl RnAppWindow {
             .penssidebar()
             .tools_page()
             .refresh_ui(active_tab);
-        self.settings_panel().refresh_ui(active_tab);
+        self.sidebar().settings_panel().refresh_ui(active_tab);
         self.refresh_titles(active_tab);
     }
 
@@ -861,16 +835,20 @@ impl RnAppWindow {
             let mut active_engine = active_canvas.engine_mut();
 
             active_engine.pens_config = prev_engine.pens_config.clone();
-            active_engine.penholder.shortcuts = prev_engine.penholder.shortcuts.clone();
-            active_engine.penholder.pen_mode_state = prev_engine.penholder.pen_mode_state.clone();
-            widget_flags
-                .merge(active_engine.change_pen_style(prev_engine.penholder.current_pen_style()));
+            active_engine
+                .penholder
+                .set_shortcuts(prev_engine.penholder.shortcuts());
+            active_engine
+                .penholder
+                .set_pen_mode_state(prev_engine.penholder.pen_mode_state());
+            widget_flags |=
+                active_engine.change_pen_style(prev_engine.penholder.current_pen_style());
             // ensures a clean and initialized state for the current pen
-            widget_flags.merge(active_engine.reinstall_pen_current_style());
+            widget_flags |= active_engine.reinstall_pen_current_style();
+            active_engine.set_pen_sounds(prev_engine.pen_sounds(), crate::env::pkg_data_dir().ok());
+            widget_flags |= active_engine.set_visual_debug(prev_engine.visual_debug());
             active_engine.import_prefs = prev_engine.import_prefs;
             active_engine.export_prefs = prev_engine.export_prefs;
-            active_engine.set_pen_sounds(prev_engine.pen_sounds(), crate::env::pkg_data_dir().ok());
-            active_engine.visual_debug = prev_engine.visual_debug;
         }
 
         self.handle_widget_flags(widget_flags, &active_canvas);

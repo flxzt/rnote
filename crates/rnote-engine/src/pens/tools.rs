@@ -1,16 +1,16 @@
 // Imports
-use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::toolsconfig::ToolStyle;
+use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::{Camera, DrawableOnDoc, WidgetFlags};
-use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::color;
+use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevents::PenEvent;
+use rnote_compose::penevent::{PenEvent, PenProgress};
 use std::time::Instant;
 
 #[derive(Clone, Debug)]
@@ -30,17 +30,14 @@ impl Default for VerticalSpaceTool {
     }
 }
 
-static VERTICALSPACETOOL_FILL_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_BRIGHTS[2].with_alpha(0.090));
-static VERTICALSPACETOOL_THRESHOLD_LINE_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_GREENS[4].with_alpha(0.941));
-
 impl VerticalSpaceTool {
     const Y_OFFSET_THRESHOLD: f64 = 0.1;
     const OFFSET_LINE_COLOR: piet::Color = color::GNOME_BLUES[3];
     const THRESHOLD_LINE_WIDTH: f64 = 3.0;
     const THRESHOLD_LINE_DASH_PATTERN: [f64; 2] = [9.0, 6.0];
     const OFFSET_LINE_WIDTH: f64 = 1.5;
+    const FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(23);
+    const THRESHOLD_LINE_COLOR: piet::Color = color::GNOME_GREENS[4].with_a8(240);
 }
 
 impl DrawableOnDoc for VerticalSpaceTool {
@@ -75,13 +72,13 @@ impl DrawableOnDoc for VerticalSpaceTool {
             tool_bounds.mins.coords.to_kurbo_point(),
             tool_bounds.maxs.coords.to_kurbo_point(),
         );
-        cx.fill(tool_bounds_rect, &*VERTICALSPACETOOL_FILL_COLOR);
+        cx.fill(tool_bounds_rect, &Self::FILL_COLOR);
 
         let threshold_line =
             kurbo::Line::new(kurbo::Point::new(x, y), kurbo::Point::new(x + width, y));
         cx.stroke_styled(
             threshold_line,
-            &*VERTICALSPACETOOL_THRESHOLD_LINE_COLOR,
+            &Self::THRESHOLD_LINE_COLOR,
             Self::THRESHOLD_LINE_WIDTH / total_zoom,
             &piet::StrokeStyle::new().dash_pattern(&Self::THRESHOLD_LINE_DASH_PATTERN),
         );
@@ -114,15 +111,12 @@ impl Default for OffsetCameraTool {
     }
 }
 
-static OFFSETCAMERATOOL_DARK_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_DARKS[3].with_alpha(0.941));
-static OFFSETCAMERATOOL_LIGHT_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_BRIGHTS[1].with_alpha(0.941));
-
 impl OffsetCameraTool {
     const CURSOR_SIZE: na::Vector2<f64> = na::vector![16.0, 16.0];
     const CURSOR_STROKE_WIDTH: f64 = 2.0;
     const CURSOR_PATH: &str = "m 8 1.078125 l -3 3 h 2 v 2.929687 h -2.960938 v -2 l -3 3 l 3 3 v -2 h 2.960938 v 2.960938 h -2 l 3 3 l 3 -3 h -2 v -2.960938 h 3.054688 v 2 l 3 -3 l -3 -3 v 2 h -3.054688 v -2.929687 h 2 z m 0 0";
+    const DARK_COLOR: piet::Color = color::GNOME_DARKS[3].with_a8(240);
+    const LIGHT_COLOR: piet::Color = color::GNOME_BRIGHTS[1].with_a8(240);
 }
 
 impl DrawableOnDoc for OffsetCameraTool {
@@ -149,10 +143,10 @@ impl DrawableOnDoc for OffsetCameraTool {
 
             cx.stroke(
                 bez_path.clone(),
-                &*OFFSETCAMERATOOL_LIGHT_COLOR,
+                &Self::LIGHT_COLOR,
                 Self::CURSOR_STROKE_WIDTH,
             );
-            cx.fill(bez_path, &*OFFSETCAMERATOOL_DARK_COLOR);
+            cx.fill(bez_path, &Self::DARK_COLOR);
         }
 
         cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
@@ -175,14 +169,11 @@ impl Default for ZoomTool {
     }
 }
 
-static ZOOMTOOL_DARK_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_DARKS[3].with_alpha(0.941));
-static ZOOMTOOL_LIGHT_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_BRIGHTS[1].with_alpha(0.941));
-
 impl ZoomTool {
     const CURSOR_RADIUS: f64 = 4.0;
     const CURSOR_STROKE_WIDTH: f64 = 2.0;
+    const DARK_COLOR: piet::Color = color::GNOME_DARKS[3].with_a8(240);
+    const LIGHT_COLOR: piet::Color = color::GNOME_BRIGHTS[1].with_a8(240);
 }
 
 impl DrawableOnDoc for ZoomTool {
@@ -232,22 +223,22 @@ impl DrawableOnDoc for ZoomTool {
         // start circle
         cx.fill(
             kurbo::Circle::new(start_circle_center, Self::CURSOR_RADIUS * 0.8 / total_zoom),
-            &*ZOOMTOOL_LIGHT_COLOR,
+            &Self::LIGHT_COLOR,
         );
         cx.fill(
             kurbo::Circle::new(start_circle_center, Self::CURSOR_RADIUS * 0.6 / total_zoom),
-            &*ZOOMTOOL_DARK_COLOR,
+            &Self::DARK_COLOR,
         );
 
         // current circle
         cx.stroke(
             kurbo::Circle::new(current_circle_center, Self::CURSOR_RADIUS / total_zoom),
-            &*ZOOMTOOL_LIGHT_COLOR,
+            &Self::LIGHT_COLOR,
             Self::CURSOR_STROKE_WIDTH / total_zoom,
         );
         cx.stroke(
             kurbo::Circle::new(current_circle_center, Self::CURSOR_RADIUS / total_zoom),
-            &*ZOOMTOOL_DARK_COLOR,
+            &Self::DARK_COLOR,
             Self::CURSOR_STROKE_WIDTH * 0.7 / total_zoom,
         );
 
@@ -298,10 +289,10 @@ impl PenBehaviour for Tools {
         event: PenEvent,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let pen_progress = match (&mut self.state, event) {
+        let event_result = match (&mut self.state, event) {
             (ToolsState::Idle, PenEvent::Down { element, .. }) => {
                 match engine_view.pens_config.tools_config.style {
                     ToolStyle::VerticalSpace => {
@@ -328,17 +319,23 @@ impl PenBehaviour for Tools {
                             .coords;
                     }
                 }
-                widget_flags.merge(
-                    engine_view
-                        .doc
-                        .resize_autoexpand(engine_view.store, engine_view.camera),
-                );
+                widget_flags |= engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = ToolsState::Active;
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
-            (ToolsState::Idle, _) => PenProgress::Idle,
+            (ToolsState::Idle, _) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
             (ToolsState::Active, PenEvent::Down { element, .. }) => {
                 match engine_view.pens_config.tools_config.style {
                     ToolStyle::VerticalSpace => {
@@ -353,7 +350,18 @@ impl PenBehaviour for Tools {
                                 &self.verticalspace_tool.strokes_below,
                                 na::vector![0.0, y_offset],
                             );
+                            // possibly nudge camera
+                            widget_flags |=
+                                engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
+                            widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
 
+                            // new strokes might come into view
+                            engine_view.store.regenerate_rendering_in_viewport_threaded(
+                                engine_view.tasks_tx.clone(),
+                                false,
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
+                            );
                             self.verticalspace_tool.pos_y = element.pos[1];
 
                             widget_flags.store_modified = true;
@@ -371,16 +379,12 @@ impl PenBehaviour for Tools {
                                 .transform_point(&self.offsetcamera_tool.start.into())
                                 .coords;
 
-                        widget_flags.merge(
-                            engine_view
-                                .camera
-                                .set_offset(engine_view.camera.offset() - offset, engine_view.doc),
-                        );
-                        widget_flags.merge(
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera),
-                        );
+                        widget_flags |= engine_view
+                            .camera
+                            .set_offset(engine_view.camera.offset() - offset, engine_view.doc);
+                        widget_flags |= engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
                     }
                     ToolStyle::Zoom => {
                         let total_zoom = engine_view.camera.total_zoom();
@@ -397,21 +401,21 @@ impl PenBehaviour for Tools {
                             total_zoom * (1.0 - offset[1] * Camera::DRAG_ZOOM_MAGN_ZOOM_FACTOR);
 
                         if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
-                            widget_flags.merge(
-                                engine_view
-                                    .camera
-                                    .zoom_w_timeout(new_zoom, engine_view.tasks_tx.clone()),
-                            );
-                            widget_flags
-                                .merge(engine_view.camera.set_viewport_center(viewport_center));
-                            widget_flags
-                                .merge(engine_view.doc.expand_autoexpand(engine_view.camera));
+                            widget_flags |= engine_view
+                                .camera
+                                .zoom_w_timeout(new_zoom, engine_view.tasks_tx.clone());
+                            widget_flags |= engine_view.camera.set_viewport_center(viewport_center)
+                                | engine_view.doc.expand_autoexpand(engine_view.camera);
                         }
                         self.zoom_tool.current_surface_coord = new_surface_coord;
                     }
                 }
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
             (ToolsState::Active, PenEvent::Up { .. }) => {
                 match engine_view.pens_config.tools_config.style {
@@ -420,17 +424,15 @@ impl PenBehaviour for Tools {
                             .store
                             .update_geometry_for_strokes(&self.verticalspace_tool.strokes_below);
 
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
                     }
                     ToolStyle::OffsetCamera | ToolStyle::Zoom => {}
                 }
 
-                widget_flags.merge(
-                    engine_view
-                        .doc
-                        .resize_autoexpand(engine_view.store, engine_view.camera),
-                );
+                widget_flags |= engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
                     engine_view.tasks_tx.clone(),
                     false,
@@ -440,16 +442,26 @@ impl PenBehaviour for Tools {
 
                 self.reset(engine_view);
 
-                PenProgress::Finished
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
-            (ToolsState::Active, PenEvent::Proximity { .. }) => PenProgress::InProgress,
-            (ToolsState::Active, PenEvent::KeyPressed { .. }) => PenProgress::InProgress,
+            (ToolsState::Active, PenEvent::Proximity { .. }) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
+            (ToolsState::Active, PenEvent::KeyPressed { .. }) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
             (ToolsState::Active, PenEvent::Cancel) => {
-                widget_flags.merge(
-                    engine_view
-                        .doc
-                        .resize_autoexpand(engine_view.store, engine_view.camera),
-                );
+                widget_flags |= engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
                     engine_view.tasks_tx.clone(),
                     false,
@@ -459,12 +471,20 @@ impl PenBehaviour for Tools {
 
                 self.reset(engine_view);
 
-                PenProgress::Finished
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
-            (ToolsState::Active, PenEvent::Text { .. }) => PenProgress::InProgress,
+            (ToolsState::Active, PenEvent::Text { .. }) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
         };
 
-        (pen_progress, widget_flags)
+        (event_result, widget_flags)
     }
 }
 

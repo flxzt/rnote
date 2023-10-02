@@ -9,11 +9,16 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-rnote-compose = { workspace = true }
-rnote-engine = { workspace = true }
+rnote-compose = { workspace = true, features = ["clap-derive"] }
+rnote-engine = { workspace = true, features = ["cli"] }
 
 log = { workspace = true }
 anyhow = { workspace = true }
 smol = { workspace = true }
 clap = { workspace = true }
 indicatif = { workspace = true }
+dialoguer = { workspace = true }
+open = { workspace = true }
+nalgebra = { workspace = true }
+parry2d-f64 = { workspace = true }
+atty = { workspace = true }

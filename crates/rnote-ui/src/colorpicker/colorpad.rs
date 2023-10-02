@@ -96,7 +96,7 @@ mod imp {
             let custom_css = format!(
                 "@define-color colorpad_color {colorpad_color}; @define-color colorpad_fg_color {colorpad_fg_color};",
             );
-            css.load_from_data(&custom_css);
+            css.load_from_string(&custom_css);
 
             // adding custom css is deprecated.
             // TODO: We should refactor to drawing through snapshot().

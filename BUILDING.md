@@ -14,8 +14,8 @@ Make sure you have `flatpak` and `flatkpak-builder` installed on your system.
 You also need the Gnome Runtime, SDK and some extensions:
 
 ```bash
-flatpak install org.gnome.Platform//44 org.gnome.Sdk//44 org.freedesktop.Sdk.Extension.rust-stable//22.08\
-org.freedesktop.Sdk.Extension.llvm15//22.08
+flatpak install org.gnome.Platform//45 org.gnome.Sdk//45 org.freedesktop.Sdk.Extension.rust-stable//23.08\
+org.freedesktop.Sdk.Extension.llvm16//23.08
 ```
 
 Use Gnome Builder or VSCode with the
@@ -75,7 +75,7 @@ The flatpak manifest calls the meson build system to build the application.
 If a native build on the host is wanted, meson can be called directly.
 
 ## Prerequisites
-Install all needed dependencies and build tools, e.g. for fedora 37:
+Install all needed dependencies and build tools, e.g. for fedora 38:
 ```bash
 sudo dnf install gcc gcc-c++ clang clang-devel python3 make cmake meson git kernel-devel gtk4-devel libadwaita-devel\
 poppler-glib-devel poppler-data alsa-lib-devel

@@ -5,19 +5,20 @@ members = [
     "crates/rnote-cli",
     "crates/rnote-ui",
 ]
+resolver = "2"
 
 [workspace.package]
-version = "0.7.1"
+version = "0.8.2"
 edition = "2021"
-rust-version = "1.65"
+rust-version = "1.70"
 authors = ["The Rnote Authors"]
 license = "GPL-3.0-or-later"
 homepage = "https://rnote.flxzt.net"
 repository = "https://github.com/flxzt/rnote"
 
 [workspace.dependencies]
-rnote-compose = { version="0.7.1", path = "crates/rnote-compose" }
-rnote-engine = { version="0.7.1", path = "crates/rnote-engine" }
+rnote-compose = { version="0.8.2", path = "crates/rnote-compose" }
+rnote-engine = { version="0.8.2", path = "crates/rnote-engine" }
 
 log = "0.4"
 pretty_env_logger = "0.5"
@@ -60,26 +61,31 @@ piet = "0.6"
 piet-cairo = "0.6"
 roughr = "0.6"
 rough_piet = "0.6"
-rodio = { version = "0.17", default-features=false, features = ["symphonia-wav"] }
+palette = "0.7.2"
+rodio = { version = "0.17", default-features = false, features = ["symphonia-wav"] }
 winresource = "0.1"
 smol = "1"
 clap = { version = "4", features = ["derive"] }
 indicatif = "0.17"
-glib = "0.17"
-cairo-rs = { version = "0.17", features = ["png", "svg", "pdf"] }
-librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", tag = "2.56.3" }
-# newest poppler feature ("v21_12") is causing linking errors when building in mingw for some reason.
-poppler-rs = { version = "0.21", features = ["v20_9"] }
+dialoguer = "0.10.4"
+open = "5"
+atty = "0.2"
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
-gtk4 = { version = "0.6", features = ["v4_10"] }
-adw = { version = "0.4", package="libadwaita", features = ["v1_3"] }
+glib = "0.18.1"
+gio = "0.18.1"
+cairo-rs = { version = "0.18", features = ["png", "svg", "pdf"] }
+librsvg = "2.57"
+# newest poppler feature ("v21_12") is causing linking errors when building in mingw for some reason.
+poppler-rs = { version = "0.22", features = ["v20_9"] }
+gtk4 = { version = "0.7.1", features = ["v4_12"] }
+adw = { version = "0.5.2", package="libadwaita", features = ["v1_4"] }
 time = { version = "0.3.22", default-features = false, features = ["formatting", "local-offset"] }
 directories = "5.0.1"
 
 [patch.crates-io]
 # once a new piet (current v0.6.2) is released with the updated cairo, this can be removed
-piet = { git = "https://github.com/linebender/piet", rev = "24acaf6467bff134b7b5c7c0ec70973544020b49" }
-piet-cairo = { git = "https://github.com/linebender/piet", rev = "24acaf6467bff134b7b5c7c0ec70973544020b49" }
+piet = { git = "https://github.com/linebender/piet", rev = "88e8e6c6fe41d8c99e3bccbf3a076b3661c4472a" }
+piet-cairo = { git = "https://github.com/linebender/piet", rev = "88e8e6c6fe41d8c99e3bccbf3a076b3661c4472a" }
 
 [profile.dev]
 opt-level = 2
@@ -89,5 +95,5 @@ debug = true
 opt-level = 3
 lto = "fat"
 codegen-units = 1
-# We want to be able to debug in the release build too
-debug = true 
+# We want to be able to debug in the release build as well
+debug = true

@@ -25,7 +25,7 @@ impl Default for TrashComponent {
 /// Systems that are related to trashing.
 impl StrokeStore {
     /// Rebuild the slotmap with empty trash components with the keys returned from the stroke components.
-    pub fn rebuild_trash_components_slotmap(&mut self) {
+    pub(crate) fn rebuild_trash_components_slotmap(&mut self) {
         self.trash_components = Arc::new(slotmap::SecondaryMap::new());
         self.stroke_components.keys().for_each(|key| {
             Arc::make_mut(&mut self.trash_components)
@@ -34,11 +34,12 @@ impl StrokeStore {
     }
 
     /// Ability if trashing is supported.
-    pub fn can_trash(&self, key: StrokeKey) -> bool {
+    #[allow(unused)]
+    pub(crate) fn can_trash(&self, key: StrokeKey) -> bool {
         self.trash_components.get(key).is_some()
     }
 
-    pub fn trashed(&self, key: StrokeKey) -> Option<bool> {
+    pub(crate) fn trashed(&self, key: StrokeKey) -> Option<bool> {
         if let Some(trash_comp) = self.trash_components.get(key) {
             Some(trash_comp.trashed)
         } else {
@@ -50,7 +51,7 @@ impl StrokeStore {
         }
     }
 
-    pub fn set_trashed(&mut self, key: StrokeKey, trash: bool) {
+    pub(crate) fn set_trashed(&mut self, key: StrokeKey, trash: bool) {
         if let Some(trash_comp) = Arc::make_mut(&mut self.trash_components)
             .get_mut(key)
             .map(Arc::make_mut)
@@ -66,7 +67,7 @@ impl StrokeStore {
         }
     }
 
-    pub fn set_trashed_keys(&mut self, keys: &[StrokeKey], trash: bool) {
+    pub(crate) fn set_trashed_keys(&mut self, keys: &[StrokeKey], trash: bool) {
         keys.iter().for_each(|&key| {
             self.set_selected(key, false);
             self.set_trashed(key, trash);
@@ -74,7 +75,7 @@ impl StrokeStore {
         });
     }
 
-    pub fn trashed_keys_unordered(&self) -> Vec<StrokeKey> {
+    pub(crate) fn trashed_keys_unordered(&self) -> Vec<StrokeKey> {
         self.stroke_components
             .keys()
             .filter(|&key| self.trashed(key).unwrap_or(false))
@@ -82,7 +83,8 @@ impl StrokeStore {
     }
 
     /// Removes all trashed strokes permanently from the store.
-    pub fn remove_trashed_strokes(&mut self) -> Vec<Stroke> {
+    #[allow(unused)]
+    pub(crate) fn remove_trashed_strokes(&mut self) -> Vec<Stroke> {
         self.trashed_keys_unordered()
             .into_iter()
             .filter_map(|k| self.remove_stroke(k))
@@ -90,7 +92,11 @@ impl StrokeStore {
     }
 
     /// Trash strokes that collide with the given bounds.
-    pub fn trash_colliding_strokes(&mut self, eraser_bounds: Aabb, viewport: Aabb) -> WidgetFlags {
+    pub(crate) fn trash_colliding_strokes(
+        &mut self,
+        eraser_bounds: Aabb,
+        viewport: Aabb,
+    ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
@@ -134,7 +140,7 @@ impl StrokeStore {
     /// Returns the keys of all created or modified strokes.
     ///
     /// The returned strokes need to update their rendering.
-    pub fn split_colliding_strokes(
+    pub(crate) fn split_colliding_strokes(
         &mut self,
         eraser_bounds: Aabb,
         viewport: Aabb,
@@ -148,12 +154,13 @@ impl StrokeStore {
             .flat_map(|key| {
                 let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
                     .get_mut(key)
-                    .map(Arc::make_mut) else {
-                    return vec![]
+                    .map(Arc::make_mut)
+                else {
+                    return vec![];
                 };
 
                 let Some(chrono_comp) = self.chrono_components.get(key) else {
-                    return vec![]
+                    return vec![];
                 };
 
                 let mut new_strokes = vec![];

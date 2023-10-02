@@ -104,7 +104,9 @@ fn generate_destination_path(source: impl AsRef<Path>) -> anyhow::Result<PathBuf
     let adjusted_source_path = remove_dup_suffix(source);
 
     let Some(source_stem) = adjusted_source_path.file_stem() else {
-        return Err(anyhow::anyhow!("file of source path '{adjusted_source_path:?}' does not have a file stem."));
+        return Err(anyhow::anyhow!(
+            "file of source path '{adjusted_source_path:?}' does not have a file stem."
+        ));
     };
     loop {
         destination_path.set_file_name(generate_duplicate_filename(

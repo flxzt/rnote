@@ -2,7 +2,6 @@
 mod penevents;
 
 // Imports
-use super::penbehaviour::PenProgress;
 use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineTask, EngineView, EngineViewMut};
@@ -11,13 +10,13 @@ use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
 use crate::strokes::{Stroke, TextStroke};
 use crate::{AudioPlayer, Camera, DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
-use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevents::{KeyboardKey, PenEvent, PenState};
+use rnote_compose::penevent::{KeyboardKey, PenEvent, PenProgress, PenState};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::indicators;
+use rnote_compose::EventResult;
 use rnote_compose::{color, Transform};
 use std::ops::Range;
 use std::time::{Duration, Instant};
@@ -125,7 +124,7 @@ impl DrawableOnDoc for Typewriter {
 
             cx.stroke(
                 bounds.tightened(stroke_width * 0.5).to_kurbo_rect(),
-                &*TEXT_OUTLINE_COLOR,
+                &Self::TEXT_OUTLINE_COLOR,
                 stroke_width,
             );
         };
@@ -260,12 +259,8 @@ impl PenBehaviour for Typewriter {
     fn init(&mut self, engine_view: &EngineView) -> WidgetFlags {
         let tasks_tx = engine_view.tasks_tx.clone();
         let blink_task = move || -> crate::tasks::PeriodicTaskResult {
-            if let Err(e) = tasks_tx.unbounded_send(EngineTask::BlinkTypewriterCursor) {
-                log::error!("Failed to send BlinkTypewriterCursor task from blink task, {e:?}");
-                crate::tasks::PeriodicTaskResult::Quit
-            } else {
-                crate::tasks::PeriodicTaskResult::Continue
-            }
+            tasks_tx.send(EngineTask::BlinkTypewriterCursor);
+            crate::tasks::PeriodicTaskResult::Continue
         };
         self.blink_task_handle = Some(crate::tasks::PeriodicTaskHandle::new(
             blink_task,
@@ -352,8 +347,8 @@ impl PenBehaviour for Typewriter {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
-        let (pen_progress, widget_flags) = match event {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
+        let (event_result, widget_flags) = match event {
             PenEvent::Down {
                 element,
                 modifier_keys,
@@ -374,7 +369,7 @@ impl PenBehaviour for Typewriter {
             PenEvent::Cancel => self.handle_pen_event_cancel(now, engine_view),
         };
 
-        (pen_progress, widget_flags)
+        (event_result, widget_flags)
     }
 
     fn fetch_clipboard_content(
@@ -473,11 +468,9 @@ impl PenBehaviour for Typewriter {
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
                             );
-                            widget_flags.merge(
-                                engine_view
-                                    .doc
-                                    .resize_autoexpand(engine_view.store, engine_view.camera),
-                            );
+                            widget_flags |= engine_view
+                                .doc
+                                .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             // Back to modifying state
                             self.state = TypewriterState::Modifying {
@@ -487,7 +480,7 @@ impl PenBehaviour for Typewriter {
                                 pen_down: false,
                             };
 
-                            widget_flags.merge(engine_view.store.record(Instant::now()));
+                            widget_flags |= engine_view.store.record(Instant::now());
                             widget_flags.store_modified = true;
                             widget_flags.redraw = true;
 
@@ -531,10 +524,6 @@ fn update_cursors_for_textstroke(
     }
 }
 
-/// The outline color when drawing a text box outline
-static TEXT_OUTLINE_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_BRIGHTS[4].with_alpha(0.941));
-
 impl Typewriter {
     // The size of the translate node, located in the upper left corner.
     const TRANSLATE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
@@ -550,6 +539,8 @@ impl Typewriter {
     const TEXT_OUTLINE_STROKE_WIDTH: f64 = 2.0;
     /// The time for the cursor blink.
     const BLINK_TIME: Duration = Duration::from_millis(800);
+    /// The outline color when drawing a text box outline
+    const TEXT_OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(240);
 
     pub(crate) fn toggle_cursor_visibility(&mut self) {
         self.cursor_visible = !self.cursor_visible;
@@ -599,7 +590,7 @@ impl Typewriter {
     }
 
     /// The range of the current selection, if available.
-    pub fn selection_range(&self) -> Option<(Range<usize>, StrokeKey)> {
+    fn selection_range(&self) -> Option<(Range<usize>, StrokeKey)> {
         if let TypewriterState::Modifying {
             modify_state:
                 ModifyState::Selecting {
@@ -622,7 +613,7 @@ impl Typewriter {
     /// Insert text either at the current cursor position or, if the state is idle, in a new textstroke.
     ///
     /// Inserts at the given position, if supplied. Else at a default offset.
-    pub fn insert_text(
+    pub(crate) fn insert_text(
         &mut self,
         text: String,
         preferred_pos: Option<na::Vector2<f64>>,
@@ -662,7 +653,7 @@ impl Typewriter {
                     pen_down: false,
                 };
 
-                widget_flags.merge(engine_view.store.record(Instant::now()));
+                widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.store_modified = true;
                 widget_flags.resize = true;
             }
@@ -691,7 +682,7 @@ impl Typewriter {
                     pen_down: false,
                 };
 
-                widget_flags.merge(engine_view.store.record(Instant::now()));
+                widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.store_modified = true;
                 widget_flags.resize = true;
             }
@@ -718,11 +709,9 @@ impl Typewriter {
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         );
-                        widget_flags.merge(
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera),
-                        );
+                        widget_flags |= engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
                             modify_state: ModifyState::Up,
@@ -731,7 +720,7 @@ impl Typewriter {
                             pen_down: false,
                         };
 
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
                     }
                 }
@@ -746,13 +735,11 @@ impl Typewriter {
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         );
-                        widget_flags.merge(
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera),
-                        );
+                        widget_flags |= engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
                     }
                 }
@@ -766,7 +753,7 @@ impl Typewriter {
     }
 
     // Change the text style of the text stroke that is currently being modified.
-    pub fn change_text_style_in_modifying_stroke<F>(
+    pub(crate) fn change_text_style_in_modifying_stroke<F>(
         &mut self,
         modify_func: F,
         engine_view: &mut EngineViewMut,
@@ -788,7 +775,7 @@ impl Typewriter {
                     engine_view.camera.image_scale(),
                 );
 
-                widget_flags.merge(engine_view.store.record(Instant::now()));
+                widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.redraw = true;
                 widget_flags.store_modified = true;
             }
@@ -797,7 +784,7 @@ impl Typewriter {
         widget_flags
     }
 
-    pub fn remove_text_attributes_current_selection(
+    pub(crate) fn remove_text_attributes_current_selection(
         &mut self,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
@@ -815,7 +802,7 @@ impl Typewriter {
                     engine_view.camera.image_scale(),
                 );
 
-                widget_flags.merge(engine_view.store.record(Instant::now()));
+                widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.redraw = true;
                 widget_flags.store_modified = true;
             }
@@ -824,7 +811,7 @@ impl Typewriter {
         widget_flags
     }
 
-    pub fn add_text_attribute_current_selection(
+    pub(crate) fn add_text_attribute_current_selection(
         &mut self,
         text_attribute: TextAttribute,
         engine_view: &mut EngineViewMut,
@@ -849,7 +836,7 @@ impl Typewriter {
                     engine_view.camera.image_scale(),
                 );
 
-                widget_flags.merge(engine_view.store.record(Instant::now()));
+                widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.redraw = true;
                 widget_flags.store_modified = true;
             }

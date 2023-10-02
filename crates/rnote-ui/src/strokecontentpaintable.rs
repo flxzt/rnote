@@ -14,13 +14,14 @@ mod imp {
     use super::*;
 
     #[derive(Debug, Default)]
-    pub struct StrokeContentPaintable {
+    pub(crate) struct StrokeContentPaintable {
         pub(super) paint_max_width: Cell<f64>,
         pub(super) paint_max_height: Cell<f64>,
         pub(super) paint_cache: RefCell<Option<Image>>,
         pub(super) paint_cache_texture: RefCell<Option<gdk::MemoryTexture>>,
         pub(super) draw_background: Cell<bool>,
         pub(super) draw_pattern: Cell<bool>,
+        pub(super) optimize_printing: Cell<bool>,
         pub(super) margin: Cell<f64>,
 
         pub(super) stroke_content: RefCell<StrokeContent>,
@@ -55,6 +56,9 @@ mod imp {
                     glib::ParamSpecBoolean::builder("draw-pattern")
                         .default_value(true)
                         .build(),
+                    glib::ParamSpecBoolean::builder("optimize-printing")
+                        .default_value(false)
+                        .build(),
                     glib::ParamSpecDouble::builder("margin")
                         .default_value(0.0)
                         .build(),
@@ -69,6 +73,7 @@ mod imp {
                 "paint-max-height" => self.paint_max_height.get().to_value(),
                 "draw-background" => self.draw_background.get().to_value(),
                 "draw-pattern" => self.draw_pattern.get().to_value(),
+                "optimize-printing" => self.optimize_printing.get().to_value(),
                 "margin" => self.margin.get().to_value(),
                 _ => unimplemented!(),
             }
@@ -104,6 +109,13 @@ mod imp {
                     self.draw_pattern.replace(draw_pattern);
                     self.obj().repaint_cache_async();
                 }
+                "optimize-printing" => {
+                    let optimize_printing = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`");
+                    self.optimize_printing.replace(optimize_printing);
+                    self.obj().repaint_cache_async();
+                }
                 "margin" => {
                     let margin = value
                         .get::<f64>()
@@ -124,11 +136,12 @@ mod imp {
             // TODO: fix it
             obj.set_paint_max_width(1000.);
             obj.set_paint_max_height(1000.);
-            let (tx, rx) =
-                glib::MainContext::channel::<anyhow::Result<Image>>(glib::PRIORITY_DEFAULT);
+            let (tx, rx) = glib::MainContext::channel::<anyhow::Result<Image>>(
+                glib::source::Priority::DEFAULT,
+            );
             self.paint_task_tx.set(tx).unwrap();
 
-            let handler = rx.attach(Some(&glib::MainContext::default()), clone!(@weak obj as paintable => @default-return glib::Continue(false), move |res| {
+            let handler = rx.attach(Some(&glib::MainContext::default()), clone!(@weak obj as paintable => @default-return glib::ControlFlow::Break, move |res| {
                 paintable.imp().paint_task_handle.take();
                 match res {
                     Ok(image) => {
@@ -142,7 +155,7 @@ mod imp {
                         log::error!("StrokeContentPaintable repainting cache image in task failed, Err: {e:?}");
                     }
                 }
-                glib::Continue(true)
+                glib::ControlFlow::Continue
             }));
             self.paint_task_handler.replace(Some(handler));
         }
@@ -233,11 +246,12 @@ mod imp {
         height: f64,
         draw_background: bool,
         draw_pattern: bool,
+        optimize_printing: bool,
         margin: f64,
     ) -> anyhow::Result<Image> {
-        let Some(bounds) = stroke_content.bounds().map(|b| b.loosened(margin))else {
-                return Ok(Image::default());
-            };
+        let Some(bounds) = stroke_content.bounds().map(|b| b.loosened(margin)) else {
+            return Ok(Image::default());
+        };
         if width <= 0. || height <= 0. {
             return Ok(Image::default());
         }
@@ -258,6 +272,7 @@ mod imp {
                 &cairo_cx,
                 draw_background,
                 draw_pattern,
+                optimize_printing,
                 margin,
                 image_scale,
             )?;
@@ -275,7 +290,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct StrokeContentPaintable(ObjectSubclass<imp::StrokeContentPaintable>) @implements gdk::Paintable;
+    pub(crate) struct StrokeContentPaintable(ObjectSubclass<imp::StrokeContentPaintable>) @implements gdk::Paintable;
 }
 
 impl Default for StrokeContentPaintable {
@@ -345,6 +360,18 @@ impl StrokeContentPaintable {
     }
 
     #[allow(unused)]
+    pub(crate) fn optimize_printing(&self) -> bool {
+        self.property::<bool>("optimize-printing")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_optimize_printing(&self, optimize_printing: bool) {
+        if self.imp().optimize_printing.get() != optimize_printing {
+            self.set_property("optimize-printing", optimize_printing.to_value());
+        }
+    }
+
+    #[allow(unused)]
     pub(crate) fn margin(&self) -> f64 {
         self.property::<f64>("margin")
     }
@@ -373,12 +400,17 @@ impl StrokeContentPaintable {
         if width <= 0. && height <= 0. {
             return;
         }
+
+        // emit `repaint-in-progress` signal even for the synchronous repaint for consistency.
+        self.imp().emit_repaint_in_progress(true);
+
         match imp::paint_content(
             &self.imp().stroke_content.borrow(),
             width,
             height,
             self.imp().draw_background.get(),
             self.imp().draw_pattern.get(),
+            self.imp().optimize_printing.get(),
             self.imp().margin.get(),
         ) {
             Ok(image) => match image.to_memtexture() {
@@ -396,6 +428,8 @@ impl StrokeContentPaintable {
                 log::error!("repainting StrokeContentPaintable cache image failed: {e:?}");
             }
         }
+
+        self.imp().emit_repaint_in_progress(false);
     }
 
     /// Regenerates the paint cache asynchronously.
@@ -411,6 +445,7 @@ impl StrokeContentPaintable {
         let stroke_content = self.imp().stroke_content.borrow().clone();
         let draw_background = self.imp().draw_background.get();
         let draw_pattern = self.imp().draw_pattern.get();
+        let optimize_printing = self.imp().optimize_printing.get();
         let margin = self.imp().margin.get();
         let tx = self.imp().paint_task_tx.get().unwrap().clone();
 
@@ -426,6 +461,7 @@ impl StrokeContentPaintable {
                 height,
                 draw_background,
                 draw_pattern,
+                optimize_printing,
                 margin,
             )) {
                 log::error!("StrokeContentPaintable failed to send painted cache image through channel, Err: {e:?}");
@@ -449,6 +485,7 @@ impl StrokeContentPaintable {
         let stroke_content = self.imp().stroke_content.borrow().clone();
         let draw_background = self.imp().draw_background.get();
         let draw_pattern = self.imp().draw_pattern.get();
+        let optimize_printing = self.imp().optimize_printing.get();
         let margin = self.imp().margin.get();
         let mut reinstall_task = false;
         let tx = self.imp().paint_task_tx.get().unwrap().clone();
@@ -460,6 +497,7 @@ impl StrokeContentPaintable {
                 height,
                 draw_background,
                 draw_pattern,
+                optimize_printing,
                 margin,
             )) {
                 log::error!("StrokeContentPaintable failed to send painted cache image through channel, Err: {e:?}");

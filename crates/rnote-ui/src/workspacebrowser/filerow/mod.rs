@@ -194,8 +194,8 @@ impl RnFileRow {
         self.imp().popovermenu.connect_visible_notify(clone!(@weak self as filerow, @weak appwindow => move |w| {
             if w.get_visible() {
                 if let Some(current_file_path) = filerow.current_file().and_then(|f| f.path()) {
-                    if let Some(selected_pos) = appwindow.workspacebrowser().query_selected_file_path_pos(current_file_path) {
-                        appwindow.workspacebrowser().dirlist_set_selected(selected_pos);
+                    if let Some(selected_pos) = appwindow.sidebar().workspacebrowser().query_selected_file_path_pos(current_file_path) {
+                        appwindow.sidebar().workspacebrowser().dirlist_set_selected(selected_pos);
                     }
                 }
             }

@@ -9,7 +9,7 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "3752d28280934c21eec31b14c59cb70f9574d6e7" }
+ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "b67f11b2c174a9ae4a54c22313cf8c218ff0946a" }
 
 log = { workspace = true }
 anyhow = { workspace = true }
@@ -30,3 +30,8 @@ piet = { workspace = true }
 piet-cairo = { workspace = true }
 roughr = { workspace = true }
 rough_piet = { workspace = true }
+palette = { workspace = true }
+clap = { workspace = true, optional = true }
+
+[features]
+clap-derive = [ "dep:clap" ]

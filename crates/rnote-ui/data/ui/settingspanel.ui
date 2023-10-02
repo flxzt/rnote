@@ -429,6 +429,18 @@ gets disabled.</property>
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="AdwActionRow" id="background_pattern_invert_color_row">
+                        <property name="title" translatable="yes">Invert Color Brightness</property>
+                        <property name="subtitle" translatable="yes">Invert the brightness of all background pattern colors</property>
+                        <child type="suffix">
+                          <object class="GtkButton" id="background_pattern_invert_color_button">
+                            <property name="valign">center</property>
+                            <property name="label" translatable="yes">Invert</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <!-- Button Shortcuts Group -->
@@ -482,6 +494,19 @@ two-finger long-press gesture</property>
                         <child type="prefix">
                           <object class="GtkImage">
                             <property name="icon_name">touch-two-finger-long-press-symbolic</property>
+                            <property name="icon-size">large</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="RnPenShortcutRow" id="penshortcut_keyboard_ctrl_space_row">
+                        <property name="title" translatable="yes">Keyboard Ctrl-Space Action</property>
+                        <property name="subtitle" translatable="yes">Set the action for the keyboard
+Ctrl plus Space shortcut</property>
+                        <child type="prefix">
+                          <object class="GtkImage">
+                            <property name="icon_name">keyboard-ctrl-space-shortcut-symbolic</property>
                             <property name="icon-size">large</property>
                           </object>
                         </child>

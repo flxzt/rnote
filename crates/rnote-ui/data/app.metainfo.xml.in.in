@@ -72,6 +72,25 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.9.0" date="2023-10-06">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: added ctrl plus space as configurable shortcut</li>
+          <li>feature: added plaintext file import</li>
+          <li>feature: ability to nudge view while performing certain pen actions</li>
+          <li>improvement: port the UI to libadwaita 1.4 with an improved sidebar and adaptivity</li>
+          <li>improvement: scale widths of brush-strokes and shapes when resizing selection</li>
+          <li>improvement: added keyboard shortcuts to add/remove pages when in fixed-size layout</li>
+          <li>improvement: the current document view is saved and restored to/from rnote files</li>
+          <li>improvement: orientation toggle usable when using custom document dimensions</li>
+          <li>improvement: shape builder picker sidebar location (thanks to @PhilDevProg)</li>
+          <li>fix: when using the vertical-space tool strokes that came into view were not initially rendered</li>
+          <li>fix: color picker dialog could be opened multiple times</li>
+          <li>fix: default view offset when opening a new tab</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.8.2" date="2023-08-26">
       <description>
         <p>this release changes:</p>

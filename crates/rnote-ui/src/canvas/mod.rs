@@ -467,13 +467,11 @@ mod imp {
                 super::input::handle_key_controller_key_pressed(&canvas, key, modifier)
             }));
 
-            /*
-                       self.key_controller.connect_key_released(
-                           clone!(@weak inst as canvas => move |_key_controller, _key, _raw, _modifier| {
-                               //log::debug!("key released - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
-                           }),
-                       );
-            */
+            self.key_controller.connect_key_released(
+                clone!(@weak obj as canvas => move |_key_controller, key, _raw, modifier| {
+                    super::input::handle_key_controller_key_released(&canvas, key, modifier)
+                }),
+            );
         }
 
         fn set_hadjustment_prop(&self, hadj: Option<Adjustment>) {

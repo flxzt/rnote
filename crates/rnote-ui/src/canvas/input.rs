@@ -14,7 +14,7 @@ use std::time::{Duration, Instant};
 pub(crate) fn handle_pointer_controller_event(
     canvas: &RnCanvas,
     event: &gdk::Event,
-    mut state: PenState,
+    mut pen_state: PenState,
 ) -> (glib::Propagation, PenState) {
     let now = Instant::now();
     let mut widget_flags = WidgetFlags::default();
@@ -29,7 +29,7 @@ pub(crate) fn handle_pointer_controller_event(
     //super::input::debug_gdk_event(event);
 
     if reject_pointer_input(event, touch_drawing) {
-        return (glib::Propagation::Proceed, state);
+        return (glib::Propagation::Proceed, pen_state);
     }
 
     let mut handle_pen_event = false;
@@ -37,7 +37,9 @@ pub(crate) fn handle_pointer_controller_event(
 
     match gdk_event_type {
         gdk::EventType::MotionNotify => {
-            //log::debug!("MotionNotify - modifiers: {gdk_modifiers:?}, is_stylus: {is_stylus}");
+            log::trace!(
+                "canvas event MotionNotify - gdk_modifiers: {gdk_modifiers:?}, is_stylus: {is_stylus}"
+            );
 
             if is_stylus {
                 handle_pen_event = true;
@@ -45,9 +47,9 @@ pub(crate) fn handle_pointer_controller_event(
                 // like in gtk4 'gesturestylus.c:120' stylus proximity is detected this way,
                 // in case ProximityIn & ProximityOut is not reported.
                 if gdk_modifiers.contains(gdk::ModifierType::BUTTON1_MASK) {
-                    state = PenState::Down;
+                    pen_state = PenState::Down;
                 } else {
-                    state = PenState::Proximity;
+                    pen_state = PenState::Proximity;
                 }
             } else {
                 // only handle no pressed button, primary and secondary mouse buttons.
@@ -64,7 +66,9 @@ pub(crate) fn handle_pointer_controller_event(
             let gdk_button = button_event.button();
             let mut handle_shortcut_key = false;
 
-            //log::debug!("ButtonPress - button: {gdk_button}, is_stylus: {is_stylus}");
+            log::trace!(
+                "canvas event ButtonPress - gdk_button: {gdk_button}, is_stylus: {is_stylus}"
+            );
 
             if is_stylus {
                 if gdk_button == gdk::BUTTON_PRIMARY
@@ -79,7 +83,7 @@ pub(crate) fn handle_pointer_controller_event(
                 if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {
                     handle_pen_event = true;
                     handle_shortcut_key = true;
-                    state = PenState::Down;
+                    pen_state = PenState::Down;
                 }
             }
 
@@ -99,7 +103,9 @@ pub(crate) fn handle_pointer_controller_event(
             let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
             let gdk_button = button_event.button();
 
-            //log::debug!("ButtonRelease - button: {gdk_button}, is_stylus: {is_stylus}");
+            log::trace!(
+                "canvas event ButtonRelease - gdk_button: {gdk_button}, is_stylus: {is_stylus}"
+            );
 
             if is_stylus {
                 if gdk_button == gdk::BUTTON_PRIMARY
@@ -111,42 +117,42 @@ pub(crate) fn handle_pointer_controller_event(
 
                 // again, this is the method to detect proximity on stylus.
                 if gdk_button == gdk::BUTTON_PRIMARY {
-                    state = PenState::Up;
+                    pen_state = PenState::Up;
                 } else {
-                    state = PenState::Proximity;
+                    pen_state = PenState::Proximity;
                 }
             } else {
                 #[allow(clippy::collapsible_else_if)]
                 if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {
-                    state = PenState::Up;
+                    pen_state = PenState::Up;
                     handle_pen_event = true;
                 }
             };
         }
         gdk::EventType::ProximityIn => {
-            state = PenState::Proximity;
+            pen_state = PenState::Proximity;
             handle_pen_event = true;
         }
         gdk::EventType::ProximityOut => {
-            state = PenState::Up;
+            pen_state = PenState::Up;
             handle_pen_event = true;
         }
         // We early-returned when detecting touch input and touch-drawing is not enabled,
         // so it is fine to always handle it here.
         gdk::EventType::TouchBegin => {
-            state = PenState::Down;
+            pen_state = PenState::Down;
             handle_pen_event = true;
         }
         gdk::EventType::TouchUpdate => {
-            state = PenState::Down;
+            pen_state = PenState::Down;
             handle_pen_event = true;
         }
         gdk::EventType::TouchEnd => {
-            state = PenState::Up;
+            pen_state = PenState::Up;
             handle_pen_event = true;
         }
         gdk::EventType::TouchCancel => {
-            state = PenState::Up;
+            pen_state = PenState::Up;
             handle_pen_event = true;
         }
         _ => {}
@@ -154,15 +160,15 @@ pub(crate) fn handle_pointer_controller_event(
 
     if handle_pen_event {
         let Some(elements) = retrieve_pointer_elements(canvas, now, event, backlog_policy) else {
-            return (glib::Propagation::Proceed, state);
+            return (glib::Propagation::Proceed, pen_state);
         };
         let modifier_keys = retrieve_modifier_keys(event.modifier_state());
         let pen_mode = retrieve_pen_mode(event);
 
         for (element, event_time) in elements {
-            //log::debug!("handle pen event, state: {state:?}, event_time_d: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}", now.duration_since(event_time));
+            log::trace!("handle pen event element - element: {element:?}, pen_state: {pen_state:?}, event_time_delta: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}", now.duration_since(event_time));
 
-            match state {
+            match pen_state {
                 PenState::Up => {
                     canvas.enable_drawing_cursor(false);
 
@@ -211,21 +217,23 @@ pub(crate) fn handle_pointer_controller_event(
     }
 
     canvas.emit_handle_widget_flags(widget_flags);
-    (propagation, state)
+    (propagation, pen_state)
 }
 
 pub(crate) fn handle_key_controller_key_pressed(
     canvas: &RnCanvas,
-    key: gdk::Key,
-    modifier: gdk::ModifierType,
+    gdk_key: gdk::Key,
+    gdk_modifiers: gdk::ModifierType,
 ) -> glib::Propagation {
-    //log::debug!("key pressed - key: {:?}, modifier: {:?}", key, modifier);
+    log::trace!(
+        "canvas event key pressed - gdk_key: {gdk_key:?}, gdk_modifiers: {gdk_modifiers:?}"
+    );
     canvas.grab_focus();
 
     let now = Instant::now();
-    let keyboard_key = retrieve_keyboard_key(key);
-    let modifier_keys = retrieve_modifier_keys(modifier);
-    let shortcut_key = retrieve_keyboard_shortcut_key(key, modifier);
+    let keyboard_key = retrieve_keyboard_key(gdk_key);
+    let modifier_keys = retrieve_modifier_keys(gdk_modifiers);
+    let shortcut_key = retrieve_keyboard_shortcut_key(gdk_key, gdk_modifiers);
 
     let (propagation, widget_flags) = if let Some(shortcut_key) = shortcut_key {
         canvas
@@ -244,6 +252,16 @@ pub(crate) fn handle_key_controller_key_pressed(
 
     canvas.emit_handle_widget_flags(widget_flags);
     propagation.into_glib()
+}
+
+pub(crate) fn handle_key_controller_key_released(
+    _canvas: &RnCanvas,
+    gdk_key: gdk::Key,
+    gdk_modifiers: gdk::ModifierType,
+) {
+    log::trace!(
+        "canvas event key released - gdk_key: {gdk_key:?}, gdk_modifiers: {gdk_modifiers:?}"
+    );
 }
 
 pub(crate) fn handle_imcontext_text_commit(canvas: &RnCanvas, text: &str) {

@@ -7,16 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-14 11:08+0200\n"
-"PO-Revision-Date: 2023-09-15 16:52+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"POT-Creation-Date: 2023-09-29 20:43+0200\n"
+"PO-Revision-Date: 2023-09-30 11:45+0000\n"
+"Last-Translator: Óscar Fernández Díaz <oscfdezdz@users.noreply.hosted.weblate"
+".org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -93,9 +94,9 @@ msgid "Clear"
 msgstr "Limpiar"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
-#: crates/rnote-ui/data/ui/mainheader.ui:18
+#: crates/rnote-ui/data/ui/mainheader.ui:22
 #: crates/rnote-ui/data/ui/shortcuts.ui:149
-#: crates/rnote-ui/src/canvas/mod.rs:531
+#: crates/rnote-ui/src/canvas/mod.rs:578
 msgid "New Document"
 msgstr "Documento nuevo"
 
@@ -195,7 +196,7 @@ msgstr "Cambiar el directorio del espacio de trabajo"
 #: crates/rnote-ui/src/dialogs/export.rs:365
 #: crates/rnote-ui/src/dialogs/export.rs:402
 #: crates/rnote-ui/src/dialogs/export.rs:410
-#: crates/rnote-ui/src/dialogs/mod.rs:522
+#: crates/rnote-ui/src/dialogs/mod.rs:523
 msgid "- no directory selected -"
 msgstr "- ningún directorio seleccionado -"
 
@@ -209,7 +210,7 @@ msgstr "Importar pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
 #: crates/rnote-ui/data/ui/dialogs/import.ui:216
-#: crates/rnote-ui/src/dialogs/import.rs:64
+#: crates/rnote-ui/src/dialogs/import.rs:66
 msgid "Import"
 msgstr "Importar"
 
@@ -313,8 +314,8 @@ msgstr "Exportar documento"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
 #: crates/rnote-ui/data/ui/dialogs/export.ui:195
 #: crates/rnote-ui/data/ui/dialogs/export.ui:460
-#: crates/rnote-ui/src/dialogs/export.rs:861
-#: crates/rnote-ui/src/dialogs/export.rs:908
+#: crates/rnote-ui/src/dialogs/export.rs:862
+#: crates/rnote-ui/src/dialogs/export.rs:909
 msgid "Export"
 msgstr "Exportar"
 
@@ -335,10 +336,10 @@ msgstr "Seleccionar el archivo de exportación"
 #: crates/rnote-ui/src/dialogs/export.rs:143
 #: crates/rnote-ui/src/dialogs/export.rs:150
 #: crates/rnote-ui/src/dialogs/export.rs:195
-#: crates/rnote-ui/src/dialogs/export.rs:660
-#: crates/rnote-ui/src/dialogs/export.rs:686
-#: crates/rnote-ui/src/dialogs/export.rs:693
-#: crates/rnote-ui/src/dialogs/export.rs:744
+#: crates/rnote-ui/src/dialogs/export.rs:661
+#: crates/rnote-ui/src/dialogs/export.rs:687
+#: crates/rnote-ui/src/dialogs/export.rs:694
+#: crates/rnote-ui/src/dialogs/export.rs:745
 msgid "- no file selected -"
 msgstr "- ningún archivo seleccionado -"
 
@@ -399,8 +400,8 @@ msgstr "El formato de exportación"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:370
 #: crates/rnote-ui/data/ui/dialogs/export.ui:593
 #: crates/rnote-ui/src/dialogs/export.rs:260
-#: crates/rnote-ui/src/dialogs/export.rs:564
-#: crates/rnote-ui/src/dialogs/export.rs:820
+#: crates/rnote-ui/src/dialogs/export.rs:565
+#: crates/rnote-ui/src/dialogs/export.rs:821
 msgid "Svg"
 msgstr "Svg"
 
@@ -427,7 +428,7 @@ msgid ""
 "are cut into pages"
 msgstr ""
 "El orden de las páginas cuando los documentos\n"
-"con diseños que se expanden en horizontal y\n"
+"con disposiciones que se expanden en horizontal y\n"
 "vertical se dividen en páginas"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:165
@@ -463,15 +464,15 @@ msgstr "Exportar archivos con nombre raíz"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:371
 #: crates/rnote-ui/data/ui/dialogs/export.ui:594
-#: crates/rnote-ui/src/dialogs/export.rs:569
-#: crates/rnote-ui/src/dialogs/export.rs:825
+#: crates/rnote-ui/src/dialogs/export.rs:570
+#: crates/rnote-ui/src/dialogs/export.rs:826
 msgid "Png"
 msgstr "Png"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:595
-#: crates/rnote-ui/src/dialogs/export.rs:575
-#: crates/rnote-ui/src/dialogs/export.rs:831
+#: crates/rnote-ui/src/dialogs/export.rs:576
+#: crates/rnote-ui/src/dialogs/export.rs:832
 msgid "Jpeg"
 msgstr "Jpeg"
 
@@ -486,7 +487,7 @@ msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "Ajustar la calidad de la imagen Jpeg (1 - 100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:452
-#: crates/rnote-ui/src/dialogs/export.rs:806
+#: crates/rnote-ui/src/dialogs/export.rs:807
 msgid "Export Selection"
 msgstr "Exportar selección"
 
@@ -718,7 +719,7 @@ msgstr "Deseleccionar todos los trazos"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 msgid "Invert Color Brightness of All Selected Strokes"
-msgstr "Invertir el brillo del color para todos los trazos seleccionados"
+msgstr "Invierte el brillo del color de todos los trazos seleccionados"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 #: crates/rnote-ui/data/ui/shortcuts.ui:224
@@ -729,24 +730,24 @@ msgstr "Duplicar selección"
 msgid "Delete Selection"
 msgstr "Eliminar selección"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:18
-msgid "Shaper Style"
-msgstr "Estilo del modelador"
-
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:31
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
-msgid "Shape Configuration"
-msgstr "Configuración de forma"
-
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:61
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:19
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:255
 msgid "Shape Builders"
 msgstr "Constructores de forma"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:77
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:35
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:297
 msgid "Constraints"
 msgstr "Restricciones"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:64
+msgid "Shaper Style"
+msgstr "Estilo del modelador"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:77
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
+msgid "Shape Configuration"
+msgstr "Configuración de forma"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:101
 msgid "Shaper Styles"
@@ -1025,18 +1026,6 @@ msgstr "Barra lateral a la derecha"
 msgid "Toggle Fullscreen"
 msgstr "Conmutar la pantalla completa"
 
-#: crates/rnote-ui/data/ui/appwindow.ui:109
-msgid "Close the Folded Flap"
-msgstr "Cerrar la solapa plegada"
-
-#: crates/rnote-ui/data/ui/appwindow.ui:126
-msgid "Workspace"
-msgstr "Área de trabajo"
-
-#: crates/rnote-ui/data/ui/appwindow.ui:137
-msgid "Settings"
-msgstr "Configuración"
-
 #: crates/rnote-ui/data/ui/canvasmenu.ui:24
 msgid "_Document Layout"
 msgstr "_Disposición del documento"
@@ -1108,8 +1097,8 @@ msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
-"Eliminar la página.\n"
-"Disponible en el diseño de un documento de tamaño fijo."
+"Eliminar página.\n"
+"Disponible en la disposición de documento de tamaño fijo."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:157
 msgid ""
@@ -1117,15 +1106,15 @@ msgid ""
 "Available in Fixed-Size Document Layout."
 msgstr ""
 "Añadir página.\n"
-"Disponible en el diseño de un documento de tamaño fijo."
+"Disponible en la disposición de documento de tamaño fijo."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:166
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
-"Ajustar el tamaño del documento.\n"
-"Disponible en un diseño de un documento de tamaño fijo."
+"Ajustar el tamaño del documento al contenido.\n"
+"Disponible en la disposición de documento de tamaño fijo."
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
@@ -1153,25 +1142,25 @@ msgstr "Mover a la papelera"
 msgid "Duplicate"
 msgstr "Duplicar"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:19
-#: crates/rnote-ui/src/canvas/mod.rs:533
+#: crates/rnote-ui/data/ui/mainheader.ui:23
+#: crates/rnote-ui/src/canvas/mod.rs:580
 msgid "Draft"
 msgstr "Borrador"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:39
-#: crates/rnote-ui/data/ui/mainheader.ui:73
-msgid "Reveal/Hide Flap"
-msgstr "Revelar/Ocultar solapa"
+#: crates/rnote-ui/data/ui/mainheader.ui:40
+#: crates/rnote-ui/data/ui/mainheader.ui:74
+msgid "Reveal/Hide Sidebar"
+msgstr "Mostrar/Ocultar barra lateral"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:46
+#: crates/rnote-ui/data/ui/mainheader.ui:47
 msgid "New Tab"
 msgstr "Pestaña nueva"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:53
+#: crates/rnote-ui/data/ui/mainheader.ui:54
 msgid "Focus Mode"
 msgstr "Modo enfoque"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:65
+#: crates/rnote-ui/data/ui/mainheader.ui:66
 #: crates/rnote-ui/data/ui/shortcuts.ui:161
 msgid "Save Document"
 msgstr "Guardar documento"
@@ -1368,7 +1357,7 @@ msgstr "Revertir"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:290
 #: crates/rnote-ui/data/ui/shortcuts.ui:146
-#: crates/rnote-ui/src/dialogs/mod.rs:628
+#: crates/rnote-ui/src/dialogs/mod.rs:632
 msgid "Document"
 msgstr "Documento"
 
@@ -1502,10 +1491,22 @@ msgstr ""
 "de pulsación prolongada con dos dedos"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:472
+msgid "Keyboard Ctrl-Space Action"
+msgstr "Acción del teclado Ctrl-Espacio"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:473
+msgid ""
+"Set the action for the keyboard\n"
+"Ctrl plus Space shortcut"
+msgstr ""
+"Establecer la acción para el\n"
+"atajo del teclado Ctrl más Espacio"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:485
 msgid "Drawing Pad Button 1 Action"
 msgstr "Botón 1 del panel de dibujo Acción"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:473
+#: crates/rnote-ui/data/ui/settingspanel.ui:486
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
@@ -1513,11 +1514,11 @@ msgstr ""
 "Establecer la acción para el botón 1\n"
 "en un bloc de dibujo"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:485
+#: crates/rnote-ui/data/ui/settingspanel.ui:498
 msgid "Drawing Pad Button 2 Action"
 msgstr "Botón 2 del panel de dibujo Acción"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:486
+#: crates/rnote-ui/data/ui/settingspanel.ui:499
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
@@ -1525,11 +1526,11 @@ msgstr ""
 "Fijar la acción para el botón 2\n"
 "en un bloc de dibujo"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:498
+#: crates/rnote-ui/data/ui/settingspanel.ui:511
 msgid "Drawing Pad Button 3 Action"
 msgstr "Botón del panel de dibujo 3 Acción"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:499
+#: crates/rnote-ui/data/ui/settingspanel.ui:512
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
@@ -1537,11 +1538,11 @@ msgstr ""
 "Fijar la acción para el botón 3\n"
 "en un bloc de dibujo"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:511
+#: crates/rnote-ui/data/ui/settingspanel.ui:524
 msgid "Drawing Pad Button 4 Action"
 msgstr "Botón del panel de dibujo 4 Acción"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:512
+#: crates/rnote-ui/data/ui/settingspanel.ui:525
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
@@ -1624,18 +1625,18 @@ msgstr "Guardar documento como"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
 msgid "Add Page (When in Fixed-Size Layout)"
-msgstr "Agregar una página (cuando estés en un diseño de tamaño fijo)"
+msgstr "Añadir página (en disposición de tamaño fijo)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr "Eliminar la última página (cuando estés en un diseño de tamaño fijo)"
+msgstr "Eliminar la última página (en disposición de tamaño fijo)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Print Document"
 msgstr "Imprimir documento"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:197
-#: crates/rnote-ui/src/dialogs/import.rs:62
+#: crates/rnote-ui/src/dialogs/import.rs:64
 msgid "Import File"
 msgstr "Importar archivo"
 
@@ -1671,12 +1672,12 @@ msgstr "Acciones del directorio del espacio de trabajo"
 msgid "Create new Folder"
 msgstr "Crear carpeta nueva"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:550
+#: crates/rnote-ui/src/appwindow/mod.rs:531
 msgid "Opening file failed"
 msgstr "Error al abrir el archivo"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:282
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:556
+#: crates/rnote-ui/src/appwindow/imp.rs:249
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:560
 #: crates/rnote-ui/src/dialogs/export.rs:69
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:256
@@ -1684,64 +1685,64 @@ msgstr "Error al abrir el archivo"
 msgid "Saving document failed"
 msgstr "No se ha podido guardar el documento"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:498
+#: crates/rnote-ui/src/appwindow/imp.rs:269
 msgid "Button 1"
 msgstr "Botón 1"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:505
+#: crates/rnote-ui/src/appwindow/imp.rs:276
 msgid "Button 2"
 msgstr "Botón 2"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:512
+#: crates/rnote-ui/src/appwindow/imp.rs:283
 msgid "Button 3"
 msgstr "Botón 3"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:519
+#: crates/rnote-ui/src/appwindow/imp.rs:290
 msgid "Button 4"
 msgstr "Botón 4"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:618
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:622
 msgid "Printing document failed"
 msgstr "Fallo en la impresión del documento"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:654
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:658
 msgid "Exporting selection failed, nothing selected"
 msgstr "Error al exportar la selección, no hay nada seleccionado"
 
-#: crates/rnote-ui/src/canvas/mod.rs:769 crates/rnote-ui/src/dialogs/mod.rs:203
+#: crates/rnote-ui/src/canvas/mod.rs:854 crates/rnote-ui/src/dialogs/mod.rs:203
 #: crates/rnote-ui/src/dialogs/mod.rs:337
 msgid "- invalid file name -"
 msgstr "- Nombre de archivo inválido -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:782
+#: crates/rnote-ui/src/canvas/mod.rs:867
 msgid "- invalid folder path -"
 msgstr "- ruta de carpeta inválida -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:805
+#: crates/rnote-ui/src/canvas/mod.rs:890
 msgid "Opened file was modified on disk"
 msgstr "El archivo abierto fue modificado en el disco"
 
-#: crates/rnote-ui/src/canvas/mod.rs:806
+#: crates/rnote-ui/src/canvas/mod.rs:891
 msgid "Reload"
 msgstr "Recarga"
 
-#: crates/rnote-ui/src/canvas/mod.rs:812
+#: crates/rnote-ui/src/canvas/mod.rs:897
 msgid "Reloading .rnote file from disk failed"
 msgstr "Error al volver a cargar el archivo .rnote desde el disco"
 
-#: crates/rnote-ui/src/canvas/mod.rs:861
+#: crates/rnote-ui/src/canvas/mod.rs:946
 msgid "Opened file was renamed on disk"
 msgstr "Se cambió el nombre del archivo abierto en el disco"
 
-#: crates/rnote-ui/src/canvas/mod.rs:874
+#: crates/rnote-ui/src/canvas/mod.rs:959
 msgid "Opened file was moved or deleted on disk"
 msgstr "El archivo abierto se ha movido o borrado del disco"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1003
+#: crates/rnote-ui/src/canvas/mod.rs:1091
 msgid "Inserting file failed"
 msgstr "Error al insertar el archivo"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1013
+#: crates/rnote-ui/src/canvas/mod.rs:1101
 msgid "Inserting text failed"
 msgstr "Error al insertar texto"
 
@@ -1768,8 +1769,8 @@ msgstr "Error al exportar el documento, no se ha seleccionado ningún archivo"
 
 #: crates/rnote-ui/src/dialogs/export.rs:252
 #: crates/rnote-ui/src/dialogs/export.rs:544
-#: crates/rnote-ui/src/dialogs/export.rs:808
-#: crates/rnote-ui/src/dialogs/mod.rs:504
+#: crates/rnote-ui/src/dialogs/export.rs:809
+#: crates/rnote-ui/src/dialogs/mod.rs:505
 msgid "Select"
 msgstr "Seleccionar"
 
@@ -1787,45 +1788,45 @@ msgstr ""
 "Error al exportar las páginas del documento, no se ha seleccionado ningún "
 "directorio"
 
-#: crates/rnote-ui/src/dialogs/export.rs:781
+#: crates/rnote-ui/src/dialogs/export.rs:782
 msgid "Exporting selection failed"
 msgstr "Error en la selección de la exportación"
 
-#: crates/rnote-ui/src/dialogs/export.rs:784
+#: crates/rnote-ui/src/dialogs/export.rs:785
 msgid "Exported selection successfully"
 msgstr "Selección exportada con éxito"
 
-#: crates/rnote-ui/src/dialogs/export.rs:793
+#: crates/rnote-ui/src/dialogs/export.rs:794
 msgid "Exporting selection failed, no file selected"
 msgstr ""
 "Fallo en la exportación de la selección, no se ha seleccionado ningún archivo"
 
-#: crates/rnote-ui/src/dialogs/export.rs:851
-#: crates/rnote-ui/src/dialogs/export.rs:898
+#: crates/rnote-ui/src/dialogs/export.rs:852
+#: crates/rnote-ui/src/dialogs/export.rs:899
 msgid "Json"
 msgstr "JSON"
 
-#: crates/rnote-ui/src/dialogs/export.rs:859
+#: crates/rnote-ui/src/dialogs/export.rs:860
 msgid "Export Engine State"
 msgstr "Exportar estado del motor"
 
-#: crates/rnote-ui/src/dialogs/export.rs:878
+#: crates/rnote-ui/src/dialogs/export.rs:879
 msgid "Exporting engine state failed"
 msgstr "Error al exportar el estado del motor"
 
-#: crates/rnote-ui/src/dialogs/export.rs:881
+#: crates/rnote-ui/src/dialogs/export.rs:882
 msgid "Exported engine state successfully"
 msgstr "Exportado el estado del motor con éxito"
 
-#: crates/rnote-ui/src/dialogs/export.rs:906
+#: crates/rnote-ui/src/dialogs/export.rs:907
 msgid "Export Engine Config"
 msgstr "Exportar configuración del motor"
 
-#: crates/rnote-ui/src/dialogs/export.rs:925
+#: crates/rnote-ui/src/dialogs/export.rs:926
 msgid "Exporting engine config failed"
 msgstr "Error al exportar la configuración del motor"
 
-#: crates/rnote-ui/src/dialogs/export.rs:928
+#: crates/rnote-ui/src/dialogs/export.rs:929
 msgid "Exported engine config successfully"
 msgstr "Exportada la configuración del motor con éxito"
 
@@ -1833,43 +1834,43 @@ msgstr "Exportada la configuración del motor con éxito"
 msgid "Open File"
 msgstr "Abrir archivo"
 
-#: crates/rnote-ui/src/dialogs/import.rs:59
-msgid "Jpg, Pdf, Png, Svg, Xopp"
-msgstr "jpg, pdf, png, svg, xopp"
+#: crates/rnote-ui/src/dialogs/import.rs:61
+msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
+msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
-#: crates/rnote-ui/src/dialogs/import.rs:186
+#: crates/rnote-ui/src/dialogs/import.rs:188
 msgid "- no file name -"
 msgstr "- sin nombre de archivo -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:191
+#: crates/rnote-ui/src/dialogs/import.rs:193
 msgid "- no title -"
 msgstr "- sin título -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:194
+#: crates/rnote-ui/src/dialogs/import.rs:196
 msgid "- no author -"
 msgstr "- sin autor -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:198
+#: crates/rnote-ui/src/dialogs/import.rs:200
 msgid "- no date -"
 msgstr "- sin fecha -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:205
+#: crates/rnote-ui/src/dialogs/import.rs:207
 msgid "File name:"
 msgstr "Nombre del archivo:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:209
+#: crates/rnote-ui/src/dialogs/import.rs:211
 msgid "Title:"
 msgstr "Título:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:213
+#: crates/rnote-ui/src/dialogs/import.rs:215
 msgid "Author:"
 msgstr "Autor:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:217
+#: crates/rnote-ui/src/dialogs/import.rs:219
 msgid "Modification date:"
 msgstr "Fecha de modificación:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:221
+#: crates/rnote-ui/src/dialogs/import.rs:223
 msgid "Pages:"
 msgstr "Páginas:"
 
@@ -1893,210 +1894,210 @@ msgstr "Se guardarán los cambios"
 msgid "A new file will be created"
 msgstr "Se creará un nuevo archivo"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:502
+#: crates/rnote-ui/src/dialogs/mod.rs:503
 msgid "Change Workspace Directory"
 msgstr "Cambiar el directorio del área de trabajo"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:615
+#: crates/rnote-ui/src/dialogs/mod.rs:619
 msgid "Band-Aid"
 msgstr "Nota adhesiva"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:616
+#: crates/rnote-ui/src/dialogs/mod.rs:620
 msgid "Bank"
 msgstr "Banco"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:617
+#: crates/rnote-ui/src/dialogs/mod.rs:621
 msgid "Bookmark"
 msgstr "Marcador"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:618
+#: crates/rnote-ui/src/dialogs/mod.rs:622
 msgid "Book"
 msgstr "Libro"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:619
+#: crates/rnote-ui/src/dialogs/mod.rs:623
 msgid "Bread"
 msgstr "Pan"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:620
+#: crates/rnote-ui/src/dialogs/mod.rs:624
 msgid "Calendar"
 msgstr "Calendario"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:621
+#: crates/rnote-ui/src/dialogs/mod.rs:625
 msgid "Camera"
 msgstr "Cámara"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:622
+#: crates/rnote-ui/src/dialogs/mod.rs:626
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "Chip"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:623
+#: crates/rnote-ui/src/dialogs/mod.rs:627
 msgid "Clock"
 msgstr "Reloj"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:624
+#: crates/rnote-ui/src/dialogs/mod.rs:628
 msgid "Code"
 msgstr "Código"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:625
+#: crates/rnote-ui/src/dialogs/mod.rs:629
 msgid "Compose"
 msgstr "Redactar"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:626
+#: crates/rnote-ui/src/dialogs/mod.rs:630
 msgctxt "as in plant"
 msgid "Crop"
 msgstr "Recortar"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:627
+#: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "Dictionary"
 msgstr "Diccionario"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:629
+#: crates/rnote-ui/src/dialogs/mod.rs:633
 msgid "Drinks"
 msgstr "Bebidas"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:630
+#: crates/rnote-ui/src/dialogs/mod.rs:634
 msgid "Flag"
 msgstr "Bandera"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:631
+#: crates/rnote-ui/src/dialogs/mod.rs:635
 msgid "Folder"
 msgstr "Carpeta"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:632
+#: crates/rnote-ui/src/dialogs/mod.rs:636
 msgid "Footprints"
 msgstr "Huellas"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:633
+#: crates/rnote-ui/src/dialogs/mod.rs:637
 msgid "Gamepad"
 msgstr "Mando de juego"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:634
+#: crates/rnote-ui/src/dialogs/mod.rs:638
 msgid "Gear"
 msgstr "Engranaje"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:635
+#: crates/rnote-ui/src/dialogs/mod.rs:639
 msgid "Globe"
 msgstr "Globo"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:636
+#: crates/rnote-ui/src/dialogs/mod.rs:640
 msgid "Hammer"
 msgstr "Martillo"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:637
+#: crates/rnote-ui/src/dialogs/mod.rs:641
 msgid "Heart"
 msgstr "Corazón"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:638
+#: crates/rnote-ui/src/dialogs/mod.rs:642
 msgid "Hourglass"
 msgstr "Reloj de arena"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:639
+#: crates/rnote-ui/src/dialogs/mod.rs:643
 msgid "Key"
 msgstr "Llave"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:640
+#: crates/rnote-ui/src/dialogs/mod.rs:644
 msgid "Language"
 msgstr "Idioma"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:641
+#: crates/rnote-ui/src/dialogs/mod.rs:645
 msgid "Library"
 msgstr "Biblioteca"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:642
+#: crates/rnote-ui/src/dialogs/mod.rs:646
 msgid "Lightbulb"
 msgstr "Bombilla"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:643
+#: crates/rnote-ui/src/dialogs/mod.rs:647
 msgid "Mathematics"
 msgstr "Matemáticas"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:644
+#: crates/rnote-ui/src/dialogs/mod.rs:648
 msgid "Meeting"
 msgstr "Reunión"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:645
+#: crates/rnote-ui/src/dialogs/mod.rs:649
 msgid "Money"
 msgstr "Dinero"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:646
+#: crates/rnote-ui/src/dialogs/mod.rs:650
 msgid "Musical Note"
 msgstr "Nota musical"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:647
+#: crates/rnote-ui/src/dialogs/mod.rs:651
 msgid "Nature"
 msgstr "Naturaleza"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:648
+#: crates/rnote-ui/src/dialogs/mod.rs:652
 msgid "Open Book"
 msgstr "Abrir libro"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:649
+#: crates/rnote-ui/src/dialogs/mod.rs:653
 msgid "Paintbrush"
 msgstr "Pincel"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:650
+#: crates/rnote-ui/src/dialogs/mod.rs:654
 msgid "Pencil and Paper"
 msgstr "Lápiz y papel"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:651
+#: crates/rnote-ui/src/dialogs/mod.rs:655
 msgid "People"
 msgstr "Gente"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:652
+#: crates/rnote-ui/src/dialogs/mod.rs:656
 msgid "Person"
 msgstr "Persona"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:653
+#: crates/rnote-ui/src/dialogs/mod.rs:657
 msgid "Projector"
 msgstr "Proyector"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:654
+#: crates/rnote-ui/src/dialogs/mod.rs:658
 msgid "Science"
 msgstr "Ciencia"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:655
+#: crates/rnote-ui/src/dialogs/mod.rs:659
 msgid "Scratchpad"
 msgstr "Bloc de notas"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:656
+#: crates/rnote-ui/src/dialogs/mod.rs:660
 msgid "Shapes"
 msgstr "Formas"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:657
+#: crates/rnote-ui/src/dialogs/mod.rs:661
 msgid "Shopping"
 msgstr "Compras"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:658
+#: crates/rnote-ui/src/dialogs/mod.rs:662
 msgid "Speech Bubble"
 msgstr "Burbuja de diálogo"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:659
+#: crates/rnote-ui/src/dialogs/mod.rs:663
 msgid "Speedometer"
 msgstr "Velocímetro"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:660
+#: crates/rnote-ui/src/dialogs/mod.rs:664
 msgid "Star"
 msgstr "Estrella"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:662
+#: crates/rnote-ui/src/dialogs/mod.rs:666
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "Terminal"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:664
+#: crates/rnote-ui/src/dialogs/mod.rs:668
 msgid "Text"
 msgstr "Texto"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:665
+#: crates/rnote-ui/src/dialogs/mod.rs:669
 msgid "Travel"
 msgstr "Viaje"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:666
+#: crates/rnote-ui/src/dialogs/mod.rs:670
 msgid "Weather"
 msgstr "Tiempo"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:667
+#: crates/rnote-ui/src/dialogs/mod.rs:671
 msgid "Weight"
 msgstr "Peso"
 
@@ -2114,7 +2115,7 @@ msgstr "Elipsis"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:412
 msgid "Curves & Paths"
-msgstr "Curvas y caminos"
+msgstr "Curvas y trazados"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
@@ -2158,98 +2159,98 @@ msgstr "Curva cúbica de Bézier"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
-msgstr "Cadena poligonal"
+msgstr "Polilínea"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:537
+#: crates/rnote-ui/src/settingspanel/mod.rs:541
 msgid "Application restart is required"
 msgstr "Es necesario reiniciar la aplicación"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:796
+#: crates/rnote-ui/src/settingspanel/mod.rs:807
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "Punto de mira (pequeño)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:797
+#: crates/rnote-ui/src/settingspanel/mod.rs:808
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "Punto de mira (mediano)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:798
+#: crates/rnote-ui/src/settingspanel/mod.rs:809
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "Punto de mira (grande)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:799
+#: crates/rnote-ui/src/settingspanel/mod.rs:810
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "Punto (pequeño)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:800
+#: crates/rnote-ui/src/settingspanel/mod.rs:811
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "Punto (mediano)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:801
+#: crates/rnote-ui/src/settingspanel/mod.rs:812
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "Punto (grande)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:802
+#: crates/rnote-ui/src/settingspanel/mod.rs:813
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "Lágrima noroeste (pequeña)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:803
+#: crates/rnote-ui/src/settingspanel/mod.rs:814
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "Lágrima noroeste (media)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:804
+#: crates/rnote-ui/src/settingspanel/mod.rs:815
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "Lágrima noroeste (grande)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:805
+#: crates/rnote-ui/src/settingspanel/mod.rs:816
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "Lágrima noreste (pequeña)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:806
+#: crates/rnote-ui/src/settingspanel/mod.rs:817
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "Lágrima noreste (media)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:807
+#: crates/rnote-ui/src/settingspanel/mod.rs:818
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "Lágrima noreste (grande)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:808
+#: crates/rnote-ui/src/settingspanel/mod.rs:819
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "Lágrima norte (pequeña)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:809
+#: crates/rnote-ui/src/settingspanel/mod.rs:820
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "Lágrima norte (media)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:810
+#: crates/rnote-ui/src/settingspanel/mod.rs:821
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "Lágrima norte (grande)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:811
+#: crates/rnote-ui/src/settingspanel/mod.rs:822
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "Haz (pequeño)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:812
+#: crates/rnote-ui/src/settingspanel/mod.rs:823
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "Haz (medio)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:813
+#: crates/rnote-ui/src/settingspanel/mod.rs:824
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "Haz (grande)"
@@ -2261,6 +2262,15 @@ msgstr "Nombre de la carpeta"
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "Carpeta nueva"
+
+#~ msgid "Close the Folded Flap"
+#~ msgstr "Cerrar la solapa plegada"
+
+#~ msgid "Workspace"
+#~ msgstr "Área de trabajo"
+
+#~ msgid "Settings"
+#~ msgstr "Configuración"
 
 #~ msgid "Remove Page"
 #~ msgstr "Quitar página"

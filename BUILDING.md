@@ -11,7 +11,14 @@ git submodule update --init --recursive
 There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.yaml`.
 
 Make sure you have `flatpak` and `flatkpak-builder` installed on your system.
-You also need the Gnome Runtime, SDK and some extensions:
+
+Flathub needs to be added as remote repository:
+
+```bash
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+```
+
+The flatpak Gnome Runtime, SDK and some extensions are needed:
 
 ```bash
 flatpak install org.gnome.Platform//45 org.gnome.Sdk//45 org.freedesktop.Sdk.Extension.rust-stable//23.08\

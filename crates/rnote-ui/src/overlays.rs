@@ -273,7 +273,12 @@ impl RnOverlays {
                             let widget_flags = canvas.engine_mut().change_selection_stroke_colors(stroke_color);
                             appwindow.handle_widget_flags(widget_flags, &canvas);
                         }
-                        PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
+                        PenStyle::Brush | PenStyle::Shaper | PenStyle::Tools => {
+                        }
+                        PenStyle::Eraser => {
+                            let widget_flags =  canvas.engine_mut().change_pen_style(PenStyle::Brush);
+                            appwindow.handle_widget_flags(widget_flags, &canvas);
+                        }
                     }
 
                     // We have a global colorpicker, so we apply it to all styles
@@ -298,7 +303,11 @@ impl RnOverlays {
                         let widget_flags = canvas.engine_mut().change_selection_fill_colors(fill_color);
                         appwindow.handle_widget_flags(widget_flags, &canvas);
                     }
-                    PenStyle::Typewriter | PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
+                    PenStyle::Typewriter | PenStyle::Brush | PenStyle::Shaper | PenStyle::Tools => {}
+                    PenStyle::Eraser => {
+                        let widget_flags =  canvas.engine_mut().change_pen_style(PenStyle::Brush);
+                        appwindow.handle_widget_flags(widget_flags, &canvas);
+                    }
                 }
 
                 // We have a global colorpicker, so we apply it to all styles

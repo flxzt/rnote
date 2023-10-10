@@ -179,7 +179,7 @@ impl RnTypewriterPage {
         imp.text_bold_button
             .connect_clicked(clone!(@weak appwindow => move |_| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let widget_flags = canvas.engine_mut().text_selection_add_attribute(
+                let widget_flags = canvas.engine_mut().text_selection_toggle_attribute(
                     TextAttribute::FontWeight(piet::FontWeight::BOLD.to_raw())
                 );
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -189,7 +189,7 @@ impl RnTypewriterPage {
         imp.text_italic_button
             .connect_clicked(clone!(@weak appwindow => move |_| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let widget_flags = canvas.engine_mut().text_selection_add_attribute(
+                let widget_flags = canvas.engine_mut().text_selection_toggle_attribute(
                     TextAttribute::Style(FontStyle::Italic)
                 );
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -199,7 +199,7 @@ impl RnTypewriterPage {
         imp.text_underline_button
             .connect_clicked(clone!(@weak appwindow => move |_| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let widget_flags = canvas.engine_mut().text_selection_add_attribute(
+                let widget_flags = canvas.engine_mut().text_selection_toggle_attribute(
                     TextAttribute::Underline(true)
                 );
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -209,7 +209,7 @@ impl RnTypewriterPage {
         imp.text_strikethrough_button
             .connect_clicked(clone!(@weak appwindow => move |_| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let widget_flags = canvas.engine_mut().text_selection_add_attribute(
+                let widget_flags = canvas.engine_mut().text_selection_toggle_attribute(
                     TextAttribute::Strikethrough(true)
                 );
                 appwindow.handle_widget_flags(widget_flags, &canvas);

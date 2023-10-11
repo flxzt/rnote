@@ -211,31 +211,24 @@
                 </object>
               </child>
               <child>
-                <object class="AdwActionRow" id="roughstyle_hachure_angle_row">
+                <object class="AdwSpinRow" id="roughstyle_hachure_angle_row">
                   <property name="title" translatable="yes">Hachure Angle</property>
                   <property name="subtitle" translatable="yes">Set the angle of hachure fills</property>
-                  <child type="suffix">
-                    <object class="GtkAdjustment" id="roughstyle_hachure_angle_adj">
-                      <property name="step-increment">2</property>
-                      <property name="upper">180.0</property>
-                      <property name="lower">-180.0</property>
-                      <property name="value">90.0</property>
-                    </object>
-                    <object class="GtkSpinButton" id="roughstyle_hachure_angle_spinbutton">
-                      <property name="adjustment">roughstyle_hachure_angle_adj</property>
-                      <property name="valign">center</property>
-                      <property name="margin_start">12</property>
-                      <property name="orientation">horizontal</property>
-                      <property name="numeric">true</property>
-                      <property name="digits">0</property>
-                    </object>
-                  </child>
+                  <property name="adjustment">roughstyle_hachure_angle_adj</property>
+                  <property name="numeric">true</property>
+                  <property name="digits">0</property>
                 </object>
               </child>
             </object>
           </child>
         </object>
       </child>
+    </object>
+    <object class="GtkAdjustment" id="roughstyle_hachure_angle_adj">
+      <property name="step-increment">2</property>
+      <property name="upper">180.0</property>
+      <property name="lower">-180.0</property>
+      <property name="value">90.0</property>
     </object>
 
     <!-- Shape builder type -->

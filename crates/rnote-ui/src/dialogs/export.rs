@@ -9,7 +9,6 @@ use adw::prelude::*;
 use gettextrs::gettext;
 use gtk4::{
     gio, glib, glib::clone, Builder, Button, Dialog, FileDialog, FileFilter, Label, ResponseType,
-    SpinButton,
 };
 use num_traits::ToPrimitive;
 use rnote_compose::SplitOrder;
@@ -302,17 +301,11 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         .object("export_doc_pages_export_format_row")
         .unwrap();
     let page_order_row: adw::ComboRow = builder.object("export_doc_pages_page_order_row").unwrap();
-    let bitmap_scalefactor_row: adw::ActionRow = builder
+    let bitmap_scalefactor_row: adw::SpinRow = builder
         .object("export_doc_pages_bitmap_scalefactor_row")
         .unwrap();
-    let bitmap_scalefactor_spinbutton: SpinButton = builder
-        .object("export_doc_pages_bitmap_scalefactor_spinbutton")
-        .unwrap();
-    let jpeg_quality_row: adw::ActionRow =
+    let jpeg_quality_row: adw::SpinRow =
         builder.object("export_doc_pages_jpeg_quality_row").unwrap();
-    let jpeg_quality_spinbutton: SpinButton = builder
-        .object("export_doc_pages_jpeg_quality_spinbutton")
-        .unwrap();
     let export_dir_label: Label = builder.object("export_doc_pages_export_dir_label").unwrap();
     let export_dir_button: Button = builder
         .object("export_doc_pages_export_dir_button")
@@ -353,10 +346,10 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         initial_doc_pages_export_prefs.export_format == DocPagesExportFormat::Png
             || initial_doc_pages_export_prefs.export_format == DocPagesExportFormat::Jpeg,
     );
-    bitmap_scalefactor_spinbutton.set_value(initial_doc_pages_export_prefs.bitmap_scalefactor);
+    bitmap_scalefactor_row.set_value(initial_doc_pages_export_prefs.bitmap_scalefactor);
     jpeg_quality_row
         .set_sensitive(initial_doc_pages_export_prefs.export_format == DocPagesExportFormat::Jpeg);
-    jpeg_quality_spinbutton.set_value(initial_doc_pages_export_prefs.jpeg_quality as f64);
+    jpeg_quality_row.set_value(initial_doc_pages_export_prefs.jpeg_quality as f64);
     export_dir_label.set_label(&gettext("- no directory selected -"));
     page_order_row
         .set_sensitive(doc_layout == Layout::SemiInfinite || doc_layout == Layout::Infinite);
@@ -479,12 +472,12 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         }),
     );
 
-    bitmap_scalefactor_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |bitmap_scalefactor_spinbutton| {
-        canvas.engine_mut().export_prefs.doc_pages_export_prefs.bitmap_scalefactor = bitmap_scalefactor_spinbutton.value();
+    bitmap_scalefactor_row.connect_changed(clone!(@weak canvas, @weak appwindow => move |bitmap_scalefactor_row| {
+        canvas.engine_mut().export_prefs.doc_pages_export_prefs.bitmap_scalefactor = bitmap_scalefactor_row.value();
     }));
 
-    jpeg_quality_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |jpeg_quality_spinbutton| {
-        canvas.engine_mut().export_prefs.doc_pages_export_prefs.jpeg_quality = jpeg_quality_spinbutton.value().clamp(1.0, 100.0) as u8;
+    jpeg_quality_row.connect_changed(clone!(@weak canvas, @weak appwindow => move |jpeg_quality_row| {
+        canvas.engine_mut().export_prefs.doc_pages_export_prefs.jpeg_quality = jpeg_quality_row.value().clamp(1.0, 100.0) as u8;
     }));
 
     export_files_stemname_entryrow.connect_changed(
@@ -600,20 +593,12 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
     let export_file_button: Button = builder
         .object("export_selection_export_file_button")
         .unwrap();
-    let bitmap_scalefactor_row: adw::ActionRow = builder
+    let bitmap_scalefactor_row: adw::SpinRow = builder
         .object("export_selection_bitmap_scalefactor_row")
         .unwrap();
-    let bitmap_scalefactor_spinbutton: SpinButton = builder
-        .object("export_selection_bitmap_scalefactor_spinbutton")
-        .unwrap();
-    let jpeg_quality_row: adw::ActionRow =
+    let jpeg_quality_row: adw::SpinRow =
         builder.object("export_selection_jpeg_quality_row").unwrap();
-    let jpeg_quality_spinbutton: SpinButton = builder
-        .object("export_selection_jpeg_quality_spinbutton")
-        .unwrap();
-    let margin_spinbutton: SpinButton = builder
-        .object("export_selection_margin_spinbutton")
-        .unwrap();
+    let margin_row: adw::SpinRow = builder.object("export_selection_margin_row").unwrap();
     let preview: RnStrokeContentPreview = builder.object("export_selection_preview").unwrap();
 
     let initial_selection_export_prefs = canvas.engine_ref().export_prefs.selection_export_prefs;
@@ -645,11 +630,11 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         initial_selection_export_prefs.export_format == SelectionExportFormat::Png
             || initial_selection_export_prefs.export_format == SelectionExportFormat::Jpeg,
     );
-    bitmap_scalefactor_spinbutton.set_value(initial_selection_export_prefs.bitmap_scalefactor);
+    bitmap_scalefactor_row.set_value(initial_selection_export_prefs.bitmap_scalefactor);
     jpeg_quality_row
         .set_sensitive(initial_selection_export_prefs.export_format == SelectionExportFormat::Jpeg);
-    jpeg_quality_spinbutton.set_value(initial_selection_export_prefs.jpeg_quality as f64);
-    margin_spinbutton.set_value(initial_selection_export_prefs.margin);
+    jpeg_quality_row.set_value(initial_selection_export_prefs.jpeg_quality as f64);
+    margin_row.set_value(initial_selection_export_prefs.margin);
     export_file_label.set_label(&gettext("- no file selected -"));
     button_confirm.set_sensitive(false);
 
@@ -744,17 +729,17 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
             jpeg_quality_row.set_sensitive(export_format == SelectionExportFormat::Jpeg);
     }));
 
-    bitmap_scalefactor_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |bitmap_scalefactor_spinbutton| {
-        canvas.engine_mut().export_prefs.selection_export_prefs.bitmap_scalefactor = bitmap_scalefactor_spinbutton.value();
+    bitmap_scalefactor_row.connect_changed(clone!(@weak canvas, @weak appwindow => move |bitmap_scalefactor_row| {
+        canvas.engine_mut().export_prefs.selection_export_prefs.bitmap_scalefactor = bitmap_scalefactor_row.value();
     }));
 
-    jpeg_quality_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |jpeg_quality_spinbutton| {
-        canvas.engine_mut().export_prefs.selection_export_prefs.jpeg_quality = jpeg_quality_spinbutton.value().clamp(1.0, 100.0) as u8;
+    jpeg_quality_row.connect_changed(clone!(@weak canvas, @weak appwindow => move |jpeg_quality_row| {
+        canvas.engine_mut().export_prefs.selection_export_prefs.jpeg_quality = jpeg_quality_row.value().clamp(1.0, 100.0) as u8;
     }));
 
-    margin_spinbutton.connect_value_changed(
-        clone!(@weak preview, @weak canvas, @weak appwindow => move |margin_spinbutton| {
-            let value = margin_spinbutton.value();
+    margin_row.connect_changed(
+        clone!(@weak preview, @weak canvas, @weak appwindow => move |margin_row| {
+            let value = margin_row.value();
             canvas.engine_mut().export_prefs.selection_export_prefs.margin = value;
             preview.set_margin(value);
         }),

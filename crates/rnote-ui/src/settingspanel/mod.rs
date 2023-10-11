@@ -11,7 +11,7 @@ use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
 use gtk4::{
     gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorDialogButton,
-    CompositeTemplate, MenuButton, ScrolledWindow, SpinButton, StringList, ToggleButton, Widget,
+    CompositeTemplate, MenuButton, ScrolledWindow, StringList, ToggleButton, Widget,
 };
 use num_traits::ToPrimitive;
 use rnote_compose::penevent::ShortcutKey;
@@ -34,9 +34,7 @@ mod imp {
         #[template_child]
         pub(crate) general_autosave_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(crate) general_autosave_interval_secs_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) general_autosave_interval_secs_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) general_autosave_interval_secs_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(crate) general_show_scrollbars_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
@@ -70,7 +68,7 @@ mod imp {
         #[template_child]
         pub(crate) format_height_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
-        pub(crate) format_dpi_row: TemplateChild<adw::ActionRow>,
+        pub(crate) format_dpi_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(crate) format_dpi_adj: TemplateChild<Adjustment>,
         #[template_child]
@@ -461,7 +459,7 @@ impl RnSettingsPanel {
             .sync_create()
             .build();
 
-        imp.general_autosave_interval_secs_spinbutton
+        imp.general_autosave_interval_secs_row
             .get()
             .bind_property("value", appwindow, "autosave-interval-secs")
             .transform_to(|_, val: f64| Some((val.round() as u32).to_value()))

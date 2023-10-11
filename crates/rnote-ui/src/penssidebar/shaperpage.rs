@@ -6,8 +6,7 @@ use crate::{
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    glib, glib::clone, Button, CompositeTemplate, ListBox, MenuButton, Popover, SpinButton,
-    StringList,
+    glib, glib::clone, Button, CompositeTemplate, ListBox, MenuButton, Popover, StringList,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::ShapeBuilderType;
@@ -36,7 +35,7 @@ mod imp {
         #[template_child]
         pub(crate) roughstyle_fillstyle_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub(crate) roughstyle_hachure_angle_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) roughstyle_hachure_angle_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(crate) stroke_width_picker: TemplateChild<RnStrokeWidthPicker>,
         #[template_child]
@@ -265,8 +264,8 @@ impl RnShaperPage {
         }));
 
         // Hachure angle
-        imp.roughstyle_hachure_angle_spinbutton.get().connect_value_changed(clone!(@weak self as shaperpage, @weak appwindow => move |spinbutton| {
-            appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.rough_options.hachure_angle = spinbutton.value().round().to_radians().clamp(-std::f64::consts::PI, std::f64::consts::PI);
+        imp.roughstyle_hachure_angle_row.get().connect_changed(clone!(@weak self as shaperpage, @weak appwindow => move |row| {
+            appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.rough_options.hachure_angle = row.value().round().to_radians().clamp(-std::f64::consts::PI, std::f64::consts::PI);
         }));
 
         // shape builder type
@@ -355,7 +354,7 @@ impl RnShaperPage {
 
         // Rough style
         self.set_roughstyle_fillstyle(shaper_config.rough_options.fill_style);
-        imp.roughstyle_hachure_angle_spinbutton
+        imp.roughstyle_hachure_angle_row
             .set_value(shaper_config.rough_options.hachure_angle.to_degrees());
 
         // constraints

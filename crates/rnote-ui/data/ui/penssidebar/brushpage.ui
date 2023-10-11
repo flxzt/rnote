@@ -234,19 +234,13 @@ Results in the best looking handwriting.</property>
             <object class="AdwPreferencesGroup">
               <property name="title" translatable="yes">Textured Style</property>
               <child>
-                <object class="AdwActionRow">
+                <object class="AdwSpinRow" id="texturedstyle_density_row">
                   <property name="title" translatable="yes">Density</property>
                   <property name="subtitle" translatable="yes">The density is the amount of dots per 10x10 area</property>
-                  <child type="suffix">
-                    <object class="GtkSpinButton" id="texturedstyle_density_spinbutton">
-                      <property name="valign">center</property>
-                      <property name="margin_start">12</property>
-                      <property name="orientation">horizontal</property>
-                      <property name="numeric">true</property>
-                      <property name="digits">1</property>
-                      <property name="climb-rate">0.5</property>
-                    </object>
-                  </child>
+                  <property name="adjustment">texturedstyle_density_adj</property>
+                  <property name="numeric">true</property>
+                  <property name="digits">1</property>
+                  <property name="climb-rate">0.5</property>
                 </object>
               </child>
               <child>
@@ -269,6 +263,10 @@ Results in the best looking handwriting.</property>
           </child>
         </object>
       </child>
+    </object>
+    <object class="GtkAdjustment" id="texturedstyle_density_adj">
+      <property name="step-increment">0.1</property>
+      <property name="page-increment">2</property>
     </object>
   </template>
 </interface>

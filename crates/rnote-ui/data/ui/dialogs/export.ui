@@ -106,36 +106,21 @@
                         <property name="title" translatable="yes">Export Preferences</property>
                         <property name="halign">fill</property>
                         <child>
-                          <object class="AdwActionRow" id="export_doc_with_background_row">
+                          <object class="AdwSwitchRow" id="export_doc_with_background_row">
                             <property name="title" translatable="yes">With Background</property>
                             <property name="subtitle" translatable="yes">Set whether the background should be exported</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_doc_with_background_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_doc_with_pattern_row">
+                          <object class="AdwSwitchRow" id="export_doc_with_pattern_row">
                             <property name="title" translatable="yes">With Pattern</property>
                             <property name="subtitle" translatable="yes">Set whether the background pattern should be exported</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_doc_with_pattern_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_doc_optimize_printing_row">
+                          <object class="AdwSwitchRow" id="export_doc_optimize_printing_row">
                             <property name="title" translatable="yes">Optimize for Printing</property>
                             <property name="subtitle" translatable="yes">Set whether the content should be optimized for printing</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_doc_optimize_printing_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
@@ -328,36 +313,21 @@ are cut into pages</property>
                         <property name="title" translatable="yes">Export Preferences</property>
                         <property name="halign">fill</property>
                         <child>
-                          <object class="AdwActionRow" id="export_doc_pages_with_background_row">
+                          <object class="AdwSwitchRow" id="export_doc_pages_with_background_row">
                             <property name="title" translatable="yes">With Background</property>
                             <property name="subtitle" translatable="yes">Set whether the background should be exported</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_doc_pages_with_background_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_doc_pages_with_pattern_row">
+                          <object class="AdwSwitchRow" id="export_doc_pages_with_pattern_row">
                             <property name="title" translatable="yes">With Pattern</property>
                             <property name="subtitle" translatable="yes">Set whether the background pattern should be exported</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_doc_pages_with_pattern_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_doc_pages_optimize_printing_row">
+                          <object class="AdwSwitchRow" id="export_doc_pages_optimize_printing_row">
                             <property name="title" translatable="yes">Optimize for Printing</property>
                             <property name="subtitle" translatable="yes">Set whether the content should be optimized for printing</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_doc_pages_optimize_printing_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
@@ -551,36 +521,21 @@ to the actual size on the document</property>
                         <property name="title" translatable="yes">Export Preferences</property>
                         <property name="halign">fill</property>
                         <child>
-                          <object class="AdwActionRow" id="export_selection_with_background_row">
+                          <object class="AdwSwitchRow" id="export_selection_with_background_row">
                             <property name="title" translatable="yes">With Background</property>
                             <property name="subtitle" translatable="yes">Set whether the background should be exported</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_selection_with_background_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_selection_with_pattern_row">
+                          <object class="AdwSwitchRow" id="export_selection_with_pattern_row">
                             <property name="title" translatable="yes">With Pattern</property>
                             <property name="subtitle" translatable="yes">Set whether the background pattern should be exported</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_selection_with_pattern_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_selection_optimize_printing_row">
+                          <object class="AdwSwitchRow" id="export_selection_optimize_printing_row">
                             <property name="title" translatable="yes">Optimize for Printing</property>
                             <property name="subtitle" translatable="yes">Set whether the content should be optimized for printing</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_selection_optimize_printing_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>

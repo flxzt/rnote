@@ -662,16 +662,16 @@ impl RnCanvasWrapper {
         let appwindow_show_scrollbars_bind = appwindow
             .sidebar()
             .settings_panel()
-            .general_show_scrollbars_switch()
-            .bind_property("state", self, "show-scrollbars")
+            .general_show_scrollbars_row()
+            .bind_property("active", self, "show-scrollbars")
             .sync_create()
             .build();
 
         let appwindow_inertial_scrolling_bind = appwindow
             .sidebar()
             .settings_panel()
-            .general_inertial_scrolling_switch()
-            .bind_property("state", self, "inertial-scrolling")
+            .general_inertial_scrolling_row()
+            .bind_property("active", self, "inertial-scrolling")
             .sync_create()
             .build();
 

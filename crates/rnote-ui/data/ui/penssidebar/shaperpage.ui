@@ -322,46 +322,26 @@
                 <class name="medium" />
               </style>
               <child>
-                <object class="AdwActionRow">
+                <object class="AdwSwitchRow" id="constraint_enabled_row">
                   <property name="title" translatable="yes">Enabled</property>
                   <property name="subtitle" translatable="yes">Hold Ctrl to temporarily
 enable/disable constraints
 when this switch is off/on</property>
-                  <child type="suffix">
-                    <object class="GtkSwitch" id="constraint_enabled_switch">
-                      <property name="valign">center</property>
-                    </object>
-                  </child>
                 </object>
               </child>
               <child>
-                <object class="AdwActionRow">
+                <object class="AdwSwitchRow" id="constraint_one_to_one_row">
                   <property name="title" translatable="yes">1:1</property>
-                  <child type="suffix">
-                    <object class="GtkSwitch" id="constraint_one_to_one_switch">
-                      <property name="valign">center</property>
-                    </object>
-                  </child>
                 </object>
               </child>
               <child>
-                <object class="AdwActionRow">
+                <object class="AdwSwitchRow" id="constraint_three_to_two_row">
                   <property name="title" translatable="yes">3:2</property>
-                  <child type="suffix">
-                    <object class="GtkSwitch" id="constraint_three_to_two_switch">
-                      <property name="valign">center</property>
-                    </object>
-                  </child>
                 </object>
               </child>
               <child>
-                <object class="AdwActionRow">
+                <object class="AdwSwitchRow" id="constraint_golden_row">
                   <property name="title" translatable="yes">Golden Ratio (1:1.618)</property>
-                  <child type="suffix">
-                    <object class="GtkSwitch" id="constraint_golden_switch">
-                      <property name="valign">center</property>
-                    </object>
-                  </child>
                 </object>
               </child>
             </object>

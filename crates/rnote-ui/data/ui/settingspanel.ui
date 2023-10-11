@@ -40,14 +40,9 @@
                   <object class="AdwPreferencesGroup">
                     <property name="title" translatable="yes">General</property>
                     <child>
-                      <object class="AdwActionRow" id="general_autosave_row">
+                      <object class="AdwSwitchRow" id="general_autosave_row">
                         <property name="title" translatable="yes">Autosave</property>
                         <property name="subtitle" translatable="yes">Enable or disable autosave</property>
-                        <child type="suffix">
-                          <object class="GtkSwitch" id="general_autosave_enable_switch">
-                            <property name="valign">center</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -72,27 +67,17 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="general_show_scrollbars_row">
+                      <object class="AdwSwitchRow" id="general_show_scrollbars_row">
                         <property name="title" translatable="yes">Show Scrollbars</property>
                         <property name="subtitle" translatable="yes">Set whether the scrollbars on the canvas are shown</property>
-                        <child type="suffix">
-                          <object class="GtkSwitch" id="general_show_scrollbars_switch">
-                            <property name="valign">center</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="general_inertial_scrolling_row">
+                      <object class="AdwSwitchRow" id="general_inertial_scrolling_row">
                         <property name="title" translatable="yes">Inertial Touch Scrolling</property>
                         <property name="subtitle" translatable="yes">Set whether touch scrolling on the canvas is inertial.
 An application restart is required when this option
 gets disabled.</property>
-                        <child type="suffix">
-                          <object class="GtkSwitch" id="general_inertial_scrolling_switch">
-                            <property name="valign">center</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -119,18 +104,10 @@ gets disabled.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="general_show_drawing_cursor_row">
+                      <object class="AdwSwitchRow" id="general_show_drawing_cursor_row">
                         <property name="title" translatable="yes">Show Drawing Cursor</property>
                         <property name="subtitle" translatable="yes">Set whether the drawing cursor is visible</property>
-                        <child type="suffix">
-                          <object class="GtkSwitch" id="general_show_drawing_cursor_switch">
-                            <property name="active">true</property>
-                            <property name="hexpand">false</property>
-                            <property name="hexpand">false</property>
-                            <property name="valign">center</property>
-                            <property name="halign">end</property>
-                          </object>
-                        </child>
+                        <property name="active">true</property>
                       </object>
                     </child>
                     <child>

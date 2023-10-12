@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-29 20:43+0200\n"
-"PO-Revision-Date: 2023-09-27 10:07+0000\n"
+"PO-Revision-Date: 2023-10-12 18:03+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -1144,10 +1144,8 @@ msgstr "খসড়া"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
-#, fuzzy
-#| msgid "Reveal/Hide Flap"
 msgid "Reveal/Hide Sidebar"
-msgstr "ফ্ল্যাপ প্রকাশ / লুকান"
+msgstr "সাইডবার প্রকাশ করুন/ লুকান"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
 msgid "New Tab"
@@ -1488,19 +1486,15 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:472
 msgid "Keyboard Ctrl-Space Action"
-msgstr ""
+msgstr "কিবোর্ড Ctrl-Space ক্রিয়া"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:473
-#, fuzzy
-#| msgid ""
-#| "Set the action for the\n"
-#| "secondary mouse button"
 msgid ""
 "Set the action for the keyboard\n"
 "Ctrl plus Space shortcut"
 msgstr ""
-"ক্রিয়া সেট করুন\n"
-"গৌণ মাউস বোতামের জন্য"
+"ক্রিয়া সেট করুন কিবোর্ড\n"
+"Ctrl এবং Space শর্টকাটের জন্য"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:485
 msgid "Drawing Pad Button 1 Action"
@@ -1832,10 +1826,8 @@ msgid "Open File"
 msgstr "ফাইল খুলুন"
 
 #: crates/rnote-ui/src/dialogs/import.rs:61
-#, fuzzy
-#| msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp"
+msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:188
 msgid "- no file name -"

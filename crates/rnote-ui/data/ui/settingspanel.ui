@@ -179,6 +179,9 @@ gets disabled.</property>
                       <object class="AdwActionRow" id="format_width_row">
                         <property name="title" translatable="yes">Width</property>
                         <property name="subtitle" translatable="yes">Set the format width</property>
+                        <style>
+                          <class name="spin" />
+                        </style>
                         <child type="suffix">
                           <object class="RnUnitEntry" id="format_width_unitentry">
                             <property name="vexpand">false</property>
@@ -193,6 +196,9 @@ gets disabled.</property>
                       <object class="AdwActionRow" id="format_height_row">
                         <property name="title" translatable="yes">Height</property>
                         <property name="subtitle" translatable="yes">Set the format height</property>
+                        <style>
+                          <class name="spin" />
+                        </style>
                         <child type="suffix">
                           <object class="RnUnitEntry" id="format_height_unitentry">
                             <property name="vexpand">false</property>
@@ -324,6 +330,9 @@ gets disabled.</property>
                       <object class="AdwActionRow" id="doc_background_pattern_width_row">
                         <property name="title" translatable="yes">Pattern Width</property>
                         <property name="subtitle" translatable="yes">Set the background pattern width</property>
+                        <style>
+                          <class name="spin" />
+                        </style>
                         <child type="suffix">
                           <object class="RnUnitEntry" id="doc_background_pattern_width_unitentry">
                             <property name="vexpand">false</property>
@@ -338,6 +347,9 @@ gets disabled.</property>
                       <object class="AdwActionRow" id="doc_background_pattern_height_row">
                         <property name="title" translatable="yes">Pattern Height</property>
                         <property name="subtitle" translatable="yes">Set the background pattern height</property>
+                        <style>
+                          <class name="spin" />
+                        </style>
                         <child type="suffix">
                           <object class="RnUnitEntry" id="doc_background_pattern_height_unitentry">
                             <property name="vexpand">false</property>

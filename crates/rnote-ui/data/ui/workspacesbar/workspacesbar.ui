@@ -56,7 +56,7 @@
             </style>
             <child>
               <object class="GtkButton" id="move_selected_workspace_up_button">
-                <property name="icon_name">up-symbolic</property>
+                <property name="icon_name">dir-up-symbolic</property>
                 <property name="tooltip_text" translatable="yes">Move Selected Workspace Up</property>
                 <style>
                   <class name="flat" />
@@ -65,7 +65,7 @@
             </child>
             <child>
               <object class="GtkButton" id="move_selected_workspace_down_button">
-                <property name="icon_name">down-symbolic</property>
+                <property name="icon_name">dir-down-symbolic</property>
                 <property name="tooltip_text" translatable="yes">Move Selected Workspace Down</property>
                 <style>
                   <class name="flat" />

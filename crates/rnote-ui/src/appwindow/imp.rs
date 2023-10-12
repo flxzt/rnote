@@ -357,20 +357,20 @@ impl RnAppWindow {
                 appwindow
                     .sidebar()
                     .left_close_button()
-                    .set_icon_name("right-symbolic");
+                    .set_icon_name("dir-right-symbolic");
                 appwindow
                     .sidebar()
                     .right_close_button()
-                    .set_icon_name("right-symbolic");
+                    .set_icon_name("dir-right-symbolic");
             } else {
                 appwindow
                     .sidebar()
                     .left_close_button()
-                    .set_icon_name("left-symbolic");
+                    .set_icon_name("dir-left-symbolic");
                 appwindow
                     .sidebar()
                     .right_close_button()
-                    .set_icon_name("left-symbolic");
+                    .set_icon_name("dir-left-symbolic");
             }
         };
 

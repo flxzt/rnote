@@ -62,7 +62,7 @@
                 <child>
                   <object class="GtkButton" id="dir_controls_dir_up_button">
                     <property name="tooltip_text" translatable="yes">Move Directory up</property>
-                    <property name="icon-name">up-symbolic</property>
+                    <property name="icon-name">dir-up-symbolic</property>
                     <property name="valign">center</property>
                     <style>
                       <class name="flat" />

@@ -106,36 +106,21 @@
                         <property name="title" translatable="yes">Export Preferences</property>
                         <property name="halign">fill</property>
                         <child>
-                          <object class="AdwActionRow" id="export_doc_with_background_row">
+                          <object class="AdwSwitchRow" id="export_doc_with_background_row">
                             <property name="title" translatable="yes">With Background</property>
                             <property name="subtitle" translatable="yes">Set whether the background should be exported</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_doc_with_background_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_doc_with_pattern_row">
+                          <object class="AdwSwitchRow" id="export_doc_with_pattern_row">
                             <property name="title" translatable="yes">With Pattern</property>
                             <property name="subtitle" translatable="yes">Set whether the background pattern should be exported</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_doc_with_pattern_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_doc_optimize_printing_row">
+                          <object class="AdwSwitchRow" id="export_doc_optimize_printing_row">
                             <property name="title" translatable="yes">Optimize for Printing</property>
                             <property name="subtitle" translatable="yes">Set whether the content should be optimized for printing</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_doc_optimize_printing_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
@@ -328,36 +313,21 @@ are cut into pages</property>
                         <property name="title" translatable="yes">Export Preferences</property>
                         <property name="halign">fill</property>
                         <child>
-                          <object class="AdwActionRow" id="export_doc_pages_with_background_row">
+                          <object class="AdwSwitchRow" id="export_doc_pages_with_background_row">
                             <property name="title" translatable="yes">With Background</property>
                             <property name="subtitle" translatable="yes">Set whether the background should be exported</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_doc_pages_with_background_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_doc_pages_with_pattern_row">
+                          <object class="AdwSwitchRow" id="export_doc_pages_with_pattern_row">
                             <property name="title" translatable="yes">With Pattern</property>
                             <property name="subtitle" translatable="yes">Set whether the background pattern should be exported</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_doc_pages_with_pattern_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_doc_pages_optimize_printing_row">
+                          <object class="AdwSwitchRow" id="export_doc_pages_optimize_printing_row">
                             <property name="title" translatable="yes">Optimize for Printing</property>
                             <property name="subtitle" translatable="yes">Set whether the content should be optimized for printing</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_doc_pages_optimize_printing_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
@@ -392,46 +362,20 @@ are cut into pages</property>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_doc_pages_bitmap_scalefactor_row">
+                          <object class="AdwSpinRow" id="export_doc_pages_bitmap_scalefactor_row">
                             <property name="title" translatable="yes">Bitmap Scale-Factor</property>
                             <property name="subtitle" translatable="yes">Set the bitmap scale factor in relation
 to the actual size on the document</property>
-                            <child type="suffix">
-                              <object class="GtkAdjustment" id="export_doc_pages_bitmap_scalefactor_adj">
-                                <property name="step-increment">0.1</property>
-                                <property name="upper">10.0</property>
-                                <property name="lower">0.1</property>
-                                <property name="value">1.0</property>
-                              </object>
-                              <object class="GtkSpinButton" id="export_doc_pages_bitmap_scalefactor_spinbutton">
-                                <property name="adjustment">export_doc_pages_bitmap_scalefactor_adj</property>
-                                <property name="orientation">horizontal</property>
-                                <property name="vexpand">false</property>
-                                <property name="valign">center</property>
-                                <property name="digits">1</property>
-                              </object>
-                            </child>
+                            <property name="adjustment">export_doc_pages_bitmap_scalefactor_adj</property>
+                            <property name="digits">1</property>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_doc_pages_jpeg_quality_row">
+                          <object class="AdwSpinRow" id="export_doc_pages_jpeg_quality_row">
                             <property name="title" translatable="yes">Jpeg Quality</property>
                             <property name="subtitle" translatable="yes">Set the quality of the Jpeg image (1 - 100)</property>
-                            <child type="suffix">
-                              <object class="GtkAdjustment" id="export_doc_pages_jpeg_quality_adj">
-                                <property name="step-increment">1</property>
-                                <property name="upper">100</property>
-                                <property name="lower">1</property>
-                                <property name="value">85</property>
-                              </object>
-                              <object class="GtkSpinButton" id="export_doc_pages_jpeg_quality_spinbutton">
-                                <property name="adjustment">export_doc_pages_jpeg_quality_adj</property>
-                                <property name="orientation">horizontal</property>
-                                <property name="vexpand">false</property>
-                                <property name="valign">center</property>
-                                <property name="digits">0</property>
-                              </object>
-                            </child>
+                            <property name="adjustment">export_doc_pages_jpeg_quality_adj</property>
+                            <property name="digits">0</property>
                           </object>
                         </child>
                       </object>
@@ -444,6 +388,18 @@ to the actual size on the document</property>
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkAdjustment" id="export_doc_pages_bitmap_scalefactor_adj">
+    <property name="step-increment">0.1</property>
+    <property name="upper">10.0</property>
+    <property name="lower">0.1</property>
+    <property name="value">1.0</property>
+  </object>
+  <object class="GtkAdjustment" id="export_doc_pages_jpeg_quality_adj">
+    <property name="step-increment">1</property>
+    <property name="upper">100</property>
+    <property name="lower">1</property>
+    <property name="value">85</property>
   </object>
 
   <object class="GtkDialog" id="dialog_export_selection_w_prefs">
@@ -551,36 +507,21 @@ to the actual size on the document</property>
                         <property name="title" translatable="yes">Export Preferences</property>
                         <property name="halign">fill</property>
                         <child>
-                          <object class="AdwActionRow" id="export_selection_with_background_row">
+                          <object class="AdwSwitchRow" id="export_selection_with_background_row">
                             <property name="title" translatable="yes">With Background</property>
                             <property name="subtitle" translatable="yes">Set whether the background should be exported</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_selection_with_background_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_selection_with_pattern_row">
+                          <object class="AdwSwitchRow" id="export_selection_with_pattern_row">
                             <property name="title" translatable="yes">With Pattern</property>
                             <property name="subtitle" translatable="yes">Set whether the background pattern should be exported</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_selection_with_pattern_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_selection_optimize_printing_row">
+                          <object class="AdwSwitchRow" id="export_selection_optimize_printing_row">
                             <property name="title" translatable="yes">Optimize for Printing</property>
                             <property name="subtitle" translatable="yes">Set whether the content should be optimized for printing</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="export_selection_optimize_printing_switch">
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                         <child>
@@ -599,67 +540,28 @@ to the actual size on the document</property>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_selection_bitmap_scalefactor_row">
+                          <object class="AdwSpinRow" id="export_selection_bitmap_scalefactor_row">
                             <property name="title" translatable="yes">Bitmap Scale-Factor</property>
                             <property name="subtitle" translatable="yes">Set the bitmap scale factor in relation
 to the actual size on the document</property>
-                            <child type="suffix">
-                              <object class="GtkAdjustment" id="export_selection_bitmap_scalefactor_adj">
-                                <property name="step-increment">0.1</property>
-                                <property name="upper">10.0</property>
-                                <property name="lower">0.1</property>
-                                <property name="value">1.0</property>
-                              </object>
-                              <object class="GtkSpinButton" id="export_selection_bitmap_scalefactor_spinbutton">
-                                <property name="adjustment">export_selection_bitmap_scalefactor_adj</property>
-                                <property name="orientation">horizontal</property>
-                                <property name="vexpand">false</property>
-                                <property name="valign">center</property>
-                                <property name="digits">1</property>
-                              </object>
-                            </child>
+                            <property name="adjustment">export_selection_bitmap_scalefactor_adj</property>
+                            <property name="digits">1</property>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_selection_jpeg_quality_row">
+                          <object class="AdwSpinRow" id="export_selection_jpeg_quality_row">
                             <property name="title" translatable="yes">Jpeg Quality</property>
                             <property name="subtitle" translatable="yes">Set the quality of the Jpeg image (1 - 100)</property>
-                            <child type="suffix">
-                              <object class="GtkAdjustment" id="export_selection_jpeg_quality_adj">
-                                <property name="step-increment">1</property>
-                                <property name="upper">100</property>
-                                <property name="lower">1</property>
-                                <property name="value">85</property>
-                              </object>
-                              <object class="GtkSpinButton" id="export_selection_jpeg_quality_spinbutton">
-                                <property name="adjustment">export_selection_jpeg_quality_adj</property>
-                                <property name="orientation">horizontal</property>
-                                <property name="vexpand">false</property>
-                                <property name="valign">center</property>
-                                <property name="digits">0</property>
-                              </object>
-                            </child>
+                            <property name="adjustment">export_selection_jpeg_quality_adj</property>
+                            <property name="digits">0</property>
                           </object>
                         </child>
                         <child>
-                          <object class="AdwActionRow" id="export_selection_margin_row">
+                          <object class="AdwSpinRow" id="export_selection_margin_row">
                             <property name="title" translatable="yes">Margin</property>
                             <property name="subtitle" translatable="yes">Set the margin around the selected area</property>
-                            <child type="suffix">
-                              <object class="GtkAdjustment" id="export_selection_margin_adj">
-                                <property name="step-increment">1</property>
-                                <property name="upper">1000</property>
-                                <property name="lower">0</property>
-                                <property name="value">12</property>
-                              </object>
-                              <object class="GtkSpinButton" id="export_selection_margin_spinbutton">
-                                <property name="adjustment">export_selection_margin_adj</property>
-                                <property name="orientation">horizontal</property>
-                                <property name="vexpand">false</property>
-                                <property name="valign">center</property>
-                                <property name="digits">0</property>
-                              </object>
-                            </child>
+                            <property name="adjustment">export_selection_margin_adj</property>
+                            <property name="digits">0</property>
                           </object>
                         </child>
                       </object>
@@ -672,5 +574,23 @@ to the actual size on the document</property>
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkAdjustment" id="export_selection_bitmap_scalefactor_adj">
+    <property name="step-increment">0.1</property>
+    <property name="upper">10.0</property>
+    <property name="lower">0.1</property>
+    <property name="value">1.0</property>
+  </object>
+  <object class="GtkAdjustment" id="export_selection_jpeg_quality_adj">
+    <property name="step-increment">1</property>
+    <property name="upper">100</property>
+    <property name="lower">1</property>
+    <property name="value">85</property>
+  </object>
+  <object class="GtkAdjustment" id="export_selection_margin_adj">
+    <property name="step-increment">1</property>
+    <property name="upper">1000</property>
+    <property name="lower">0</property>
+    <property name="value">12</property>
   </object>
 </interface>

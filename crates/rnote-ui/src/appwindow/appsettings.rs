@@ -66,7 +66,7 @@ impl RnAppWindow {
                 &self
                     .sidebar()
                     .settings_panel()
-                    .general_show_scrollbars_switch(),
+                    .general_show_scrollbars_row(),
                 "active",
             )
             .get_no_changes()
@@ -79,7 +79,7 @@ impl RnAppWindow {
                 &self
                     .sidebar()
                     .settings_panel()
-                    .general_inertial_scrolling_switch(),
+                    .general_inertial_scrolling_row(),
                 "active",
             )
             .get_no_changes()
@@ -118,7 +118,7 @@ impl RnAppWindow {
                 &self
                     .sidebar()
                     .settings_panel()
-                    .general_show_drawing_cursor_switch(),
+                    .general_show_drawing_cursor_row(),
                 "active",
             )
             .get_no_changes()

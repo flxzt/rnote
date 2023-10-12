@@ -79,54 +79,29 @@
                 <property name="title" translatable="yes">Pdf Import Preferences</property>
                 <property name="halign">fill</property>
                 <child>
-                  <object class="AdwActionRow">
+                  <object class="AdwSpinRow" id="pdf_page_start_row">
                     <property name="title" translatable="yes">Start Page</property>
-                    <child type="suffix">
-                      <object class="GtkSpinButton" id="pdf_page_start_spinbutton">
-                        <property name="valign">center</property>
-                        <property name="margin_start">12</property>
-                        <property name="orientation">horizontal</property>
-                        <property name="numeric">true</property>
-                        <property name="digits">0</property>
-                        <property name="climb-rate">1</property>
-                      </object>
-                    </child>
+                    <property name="adjustment">pdf_page_start_adj</property>
+                    <property name="numeric">true</property>
+                    <property name="digits">0</property>
+                    <property name="climb-rate">1</property>
                   </object>
                 </child>
                 <child>
-                  <object class="AdwActionRow">
+                  <object class="AdwSpinRow" id="pdf_page_end_row">
                     <property name="title" translatable="yes">End Page</property>
-                    <child type="suffix">
-                      <object class="GtkSpinButton" id="pdf_page_end_spinbutton">
-                        <property name="valign">center</property>
-                        <property name="margin_start">12</property>
-                        <property name="orientation">horizontal</property>
-                        <property name="numeric">true</property>
-                        <property name="digits">0</property>
-                        <property name="climb-rate">1</property>
-                      </object>
-                    </child>
+                    <property name="adjustment">pdf_page_end_adj</property>
+                    <property name="numeric">true</property>
+                    <property name="digits">0</property>
+                    <property name="climb-rate">1</property>
                   </object>
                 </child>
                 <child>
-                  <object class="AdwActionRow" id="pdf_import_width_row">
+                  <object class="AdwSpinRow" id="pdf_import_width_row">
                     <property name="title" translatable="yes">Page Width (%)</property>
                     <property name="subtitle" translatable="yes">Set the width of imported Pdf's in percentage to the format width</property>
-                    <child type="suffix">
-                      <object class="GtkAdjustment" id="pdf_import_width_perc_adj">
-                        <property name="step-increment">1</property>
-                        <property name="upper">100</property>
-                        <property name="lower">1</property>
-                        <property name="value">50</property>
-                      </object>
-                      <object class="GtkSpinButton" id="pdf_import_width_perc_spinbutton">
-                        <property name="adjustment">pdf_import_width_perc_adj</property>
-                        <property name="orientation">horizontal</property>
-                        <property name="vexpand">false</property>
-                        <property name="valign">center</property>
-                        <property name="digits">0</property>
-                      </object>
-                    </child>
+                    <property name="adjustment">pdf_import_width_perc_adj</property>
+                    <property name="digits">0</property>
                   </object>
                 </child>
                 <child>
@@ -173,25 +148,12 @@
                   </object>
                 </child>
                 <child>
-                  <object class="AdwActionRow" id="pdf_import_bitmap_scalefactor_row">
+                  <object class="AdwSpinRow" id="pdf_import_bitmap_scalefactor_row">
                     <property name="title" translatable="yes">Bitmap Scale-Factor</property>
                     <property name="subtitle" translatable="yes">Set the bitmap scale factor in relation
 to the actual size on the document</property>
-                    <child type="suffix">
-                      <object class="GtkAdjustment" id="pdf_import_bitmap_scalefactor_adj">
-                        <property name="step-increment">0.1</property>
-                        <property name="upper">10.0</property>
-                        <property name="lower">0.1</property>
-                        <property name="value">1.0</property>
-                      </object>
-                      <object class="GtkSpinButton" id="pdf_import_bitmap_scalefactor_spinbutton">
-                        <property name="adjustment">pdf_import_bitmap_scalefactor_adj</property>
-                        <property name="orientation">horizontal</property>
-                        <property name="vexpand">false</property>
-                        <property name="valign">center</property>
-                        <property name="digits">1</property>
-                      </object>
-                    </child>
+                    <property name="adjustment">pdf_import_bitmap_scalefactor_adj</property>
+                    <property name="digits">1</property>
                   </object>
                 </child>
               </object>
@@ -200,6 +162,26 @@ to the actual size on the document</property>
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkAdjustment" id="pdf_page_start_adj">
+    <property name="step-increment">1</property>
+    <property name="page-increment">2</property>
+  </object>
+  <object class="GtkAdjustment" id="pdf_page_end_adj">
+    <property name="step-increment">1</property>
+    <property name="page-increment">2</property>
+  </object>
+  <object class="GtkAdjustment" id="pdf_import_width_perc_adj">
+    <property name="step-increment">1</property>
+    <property name="upper">100</property>
+    <property name="lower">1</property>
+    <property name="value">50</property>
+  </object>
+  <object class="GtkAdjustment" id="pdf_import_bitmap_scalefactor_adj">
+    <property name="step-increment">0.1</property>
+    <property name="upper">10.0</property>
+    <property name="lower">0.1</property>
+    <property name="value">1.0</property>
   </object>
 
   <object class="GtkDialog" id="dialog_import_xopp_w_prefs">
@@ -247,24 +229,11 @@ to the actual size on the document</property>
                 <property name="title" translatable="yes">Xournal++ File Import Preferences</property>
                 <property name="halign">fill</property>
                 <child>
-                  <object class="AdwActionRow" id="xopp_import_dpi_row">
+                  <object class="AdwSpinRow" id="xopp_import_dpi_row">
                     <property name="title" translatable="yes">DPI</property>
                     <property name="subtitle" translatable="yes">Set the preferred DPI for the Xournal++ file</property>
-                    <child type="suffix">
-                      <object class="GtkAdjustment" id="xopp_import_dpi_adj">
-                        <property name="step-increment">1</property>
-                        <property name="upper">10000</property>
-                        <property name="lower">1</property>
-                        <property name="value">96</property>
-                      </object>
-                      <object class="GtkSpinButton" id="xopp_import_dpi_spinbutton">
-                        <property name="adjustment">xopp_import_dpi_adj</property>
-                        <property name="orientation">horizontal</property>
-                        <property name="vexpand">false</property>
-                        <property name="valign">center</property>
-                        <property name="digits">0</property>
-                      </object>
-                    </child>
+                    <property name="adjustment">xopp_import_dpi_adj</property>
+                    <property name="digits">0</property>
                   </object>
                 </child>
               </object>
@@ -273,5 +242,11 @@ to the actual size on the document</property>
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkAdjustment" id="xopp_import_dpi_adj">
+    <property name="step-increment">1</property>
+    <property name="upper">10000</property>
+    <property name="lower">1</property>
+    <property name="value">96</property>
   </object>
 </interface>

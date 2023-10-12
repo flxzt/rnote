@@ -6,8 +6,7 @@ use crate::{
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    glib, glib::clone, Button, CompositeTemplate, ListBox, MenuButton, Popover, SpinButton,
-    StringList, Switch,
+    glib, glib::clone, Button, CompositeTemplate, ListBox, MenuButton, Popover, StringList,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::ShapeBuilderType;
@@ -36,7 +35,7 @@ mod imp {
         #[template_child]
         pub(crate) roughstyle_fillstyle_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub(crate) roughstyle_hachure_angle_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) roughstyle_hachure_angle_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(crate) stroke_width_picker: TemplateChild<RnStrokeWidthPicker>,
         #[template_child]
@@ -46,13 +45,13 @@ mod imp {
         #[template_child]
         pub(crate) constraint_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub(crate) constraint_enabled_switch: TemplateChild<Switch>,
+        pub(crate) constraint_enabled_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(crate) constraint_one_to_one_switch: TemplateChild<Switch>,
+        pub(crate) constraint_one_to_one_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(crate) constraint_three_to_two_switch: TemplateChild<Switch>,
+        pub(crate) constraint_three_to_two_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(crate) constraint_golden_switch: TemplateChild<Switch>,
+        pub(crate) constraint_golden_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(crate) shaperstyle_popover: TemplateChild<Popover>,
         #[template_child]
@@ -265,8 +264,8 @@ impl RnShaperPage {
         }));
 
         // Hachure angle
-        imp.roughstyle_hachure_angle_spinbutton.get().connect_value_changed(clone!(@weak self as shaperpage, @weak appwindow => move |spinbutton| {
-            appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.rough_options.hachure_angle = spinbutton.value().round().to_radians().clamp(-std::f64::consts::PI, std::f64::consts::PI);
+        imp.roughstyle_hachure_angle_row.get().connect_changed(clone!(@weak self as shaperpage, @weak appwindow => move |row| {
+            appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.rough_options.hachure_angle = row.value().round().to_radians().clamp(-std::f64::consts::PI, std::f64::consts::PI);
         }));
 
         // shape builder type
@@ -287,17 +286,17 @@ impl RnShaperPage {
 
         // Constraints
         imp
-            .constraint_enabled_switch
+            .constraint_enabled_row
             .get()
-            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.enabled = switch.state();
+            .connect_active_notify(clone!(@weak appwindow => move |row|  {
+                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.enabled = row.is_active();
             }));
 
         imp
-            .constraint_one_to_one_switch
+            .constraint_one_to_one_row
             .get()
-            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                if switch.state() {
+            .connect_active_notify(clone!(@weak appwindow => move |row|  {
+                if row.is_active() {
                     appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::OneToOne);
                 } else {
                     appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::OneToOne);
@@ -305,10 +304,10 @@ impl RnShaperPage {
             }));
 
         imp
-            .constraint_three_to_two_switch
+            .constraint_three_to_two_row
             .get()
-            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                if switch.state() {
+            .connect_active_notify(clone!(@weak appwindow => move |row|  {
+                if row.is_active() {
                     appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::ThreeToTwo);
                 } else {
                     appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::ThreeToTwo);
@@ -316,10 +315,10 @@ impl RnShaperPage {
             }));
 
         imp
-            .constraint_golden_switch
+            .constraint_golden_row
             .get()
-            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                if switch.state() {
+            .connect_active_notify(clone!(@weak appwindow => move |row|  {
+                if row.is_active() {
                     appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::Golden);
                 } else {
                     appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::Golden);
@@ -355,25 +354,25 @@ impl RnShaperPage {
 
         // Rough style
         self.set_roughstyle_fillstyle(shaper_config.rough_options.fill_style);
-        imp.roughstyle_hachure_angle_spinbutton
+        imp.roughstyle_hachure_angle_row
             .set_value(shaper_config.rough_options.hachure_angle.to_degrees());
 
         // constraints
-        imp.constraint_enabled_switch
-            .set_state(shaper_config.constraints.enabled);
-        imp.constraint_one_to_one_switch.set_state(
+        imp.constraint_enabled_row
+            .set_active(shaper_config.constraints.enabled);
+        imp.constraint_one_to_one_row.set_active(
             shaper_config
                 .constraints
                 .ratios
                 .contains(&ConstraintRatio::OneToOne),
         );
-        imp.constraint_three_to_two_switch.set_state(
+        imp.constraint_three_to_two_row.set_active(
             shaper_config
                 .constraints
                 .ratios
                 .contains(&ConstraintRatio::ThreeToTwo),
         );
-        imp.constraint_golden_switch.set_state(
+        imp.constraint_golden_row.set_active(
             shaper_config
                 .constraints
                 .ratios

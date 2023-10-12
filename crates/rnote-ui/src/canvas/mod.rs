@@ -1063,7 +1063,7 @@ impl RnCanvas {
         let appwindow_show_drawing_cursor = appwindow
             .sidebar()
             .settings_panel()
-            .general_show_drawing_cursor_switch()
+            .general_show_drawing_cursor_row()
             .bind_property("active", self, "show-drawing-cursor")
             .sync_create()
             .build();

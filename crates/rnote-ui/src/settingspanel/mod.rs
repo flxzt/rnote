@@ -11,8 +11,7 @@ use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
 use gtk4::{
     gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorDialogButton,
-    CompositeTemplate, MenuButton, ScrolledWindow, SpinButton, StringList, Switch, ToggleButton,
-    Widget,
+    CompositeTemplate, MenuButton, ScrolledWindow, StringList, ToggleButton, Widget,
 };
 use num_traits::ToPrimitive;
 use rnote_compose::penevent::ShortcutKey;
@@ -33,21 +32,19 @@ mod imp {
         #[template_child]
         pub(crate) settings_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
-        pub(crate) general_autosave_enable_switch: TemplateChild<Switch>,
+        pub(crate) general_autosave_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(crate) general_autosave_interval_secs_row: TemplateChild<adw::ActionRow>,
+        pub(crate) general_autosave_interval_secs_row: TemplateChild<adw::SpinRow>,
         #[template_child]
-        pub(crate) general_autosave_interval_secs_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) general_show_scrollbars_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(crate) general_show_scrollbars_switch: TemplateChild<Switch>,
-        #[template_child]
-        pub(crate) general_inertial_scrolling_switch: TemplateChild<Switch>,
+        pub(crate) general_inertial_scrolling_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(crate) general_regular_cursor_picker: TemplateChild<RnIconPicker>,
         #[template_child]
         pub(crate) general_regular_cursor_picker_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub(crate) general_show_drawing_cursor_switch: TemplateChild<Switch>,
+        pub(crate) general_show_drawing_cursor_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(crate) general_drawing_cursor_picker_row: TemplateChild<adw::ActionRow>,
         #[template_child]
@@ -71,7 +68,7 @@ mod imp {
         #[template_child]
         pub(crate) format_height_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
-        pub(crate) format_dpi_row: TemplateChild<adw::ActionRow>,
+        pub(crate) format_dpi_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(crate) format_dpi_adj: TemplateChild<Adjustment>,
         #[template_child]
@@ -325,20 +322,20 @@ impl RnSettingsPanel {
         self.imp().general_regular_cursor_picker.clone()
     }
 
-    pub(crate) fn general_show_drawing_cursor_switch(&self) -> Switch {
-        self.imp().general_show_drawing_cursor_switch.clone()
+    pub(crate) fn general_show_drawing_cursor_row(&self) -> adw::SwitchRow {
+        self.imp().general_show_drawing_cursor_row.clone()
     }
 
     pub(crate) fn general_drawing_cursor_picker(&self) -> RnIconPicker {
         self.imp().general_drawing_cursor_picker.clone()
     }
 
-    pub(crate) fn general_show_scrollbars_switch(&self) -> Switch {
-        self.imp().general_show_scrollbars_switch.clone()
+    pub(crate) fn general_show_scrollbars_row(&self) -> adw::SwitchRow {
+        self.imp().general_show_scrollbars_row.clone()
     }
 
-    pub(crate) fn general_inertial_scrolling_switch(&self) -> Switch {
-        self.imp().general_inertial_scrolling_switch.clone()
+    pub(crate) fn general_inertial_scrolling_row(&self) -> adw::SwitchRow {
+        self.imp().general_inertial_scrolling_row.clone()
     }
 
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
@@ -445,24 +442,24 @@ impl RnSettingsPanel {
     fn setup_general(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
-        // autosave enable switch
-        imp.general_autosave_enable_switch
-            .bind_property("state", appwindow, "autosave")
+        // autosave enable row
+        imp.general_autosave_row
+            .bind_property("active", appwindow, "autosave")
             .sync_create()
             .bidirectional()
             .build();
 
-        imp.general_autosave_enable_switch
+        imp.general_autosave_row
             .get()
             .bind_property(
-                "state",
+                "active",
                 &*imp.general_autosave_interval_secs_row,
                 "sensitive",
             )
             .sync_create()
             .build();
 
-        imp.general_autosave_interval_secs_spinbutton
+        imp.general_autosave_interval_secs_row
             .get()
             .bind_property("value", appwindow, "autosave-interval-secs")
             .transform_to(|_, val: f64| Some((val.round() as u32).to_value()))
@@ -471,8 +468,8 @@ impl RnSettingsPanel {
             .bidirectional()
             .build();
 
-        let set_overlays_margins = |appwindow: &RnAppWindow, switch_active: bool| {
-            let (m1, m2) = if switch_active { (18, 72) } else { (9, 63) };
+        let set_overlays_margins = |appwindow: &RnAppWindow, row_active: bool| {
+            let (m1, m2) = if row_active { (18, 72) } else { (9, 63) };
             appwindow.overlays().colorpicker().set_margin_top(m1);
             appwindow
                 .overlays()
@@ -484,11 +481,11 @@ impl RnSettingsPanel {
             appwindow.overlays().sidebar_box().set_margin_bottom(m2);
         };
         // set on init
-        set_overlays_margins(appwindow, imp.general_show_scrollbars_switch.is_active());
+        set_overlays_margins(appwindow, imp.general_show_scrollbars_row.is_active());
         // and on change
-        imp.general_show_scrollbars_switch.connect_active_notify(
-            clone!(@weak appwindow => move |switch| {
-                    set_overlays_margins(&appwindow, switch.is_active());
+        imp.general_show_scrollbars_row.connect_active_notify(
+            clone!(@weak appwindow => move |row| {
+                    set_overlays_margins(&appwindow, row.is_active());
             }),
         );
 
@@ -509,7 +506,7 @@ impl RnSettingsPanel {
             .build();
 
         // insensitive picker when drawing cursor is hidden
-        imp.general_show_drawing_cursor_switch
+        imp.general_show_drawing_cursor_row
             .bind_property(
                 "active",
                 &*imp.general_drawing_cursor_picker_row,
@@ -534,9 +531,9 @@ impl RnSettingsPanel {
             .sync_create()
             .build();
 
-        imp.general_inertial_scrolling_switch.connect_active_notify(
-            clone!(@weak self as settingspanel, @weak appwindow => move |switch| {
-                if !switch.is_active() {
+        imp.general_inertial_scrolling_row.connect_active_notify(
+            clone!(@weak self as settingspanel, @weak appwindow => move |row| {
+                if !row.is_active() {
                     appwindow.overlays().dispatch_toast_text_singleton(
                         &gettext("Application restart is required"),
                         0,

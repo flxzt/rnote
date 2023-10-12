@@ -3,7 +3,7 @@ use crate::{RnAppWindow, RnCanvasWrapper, RnStrokeWidthPicker};
 use adw::prelude::*;
 use gtk4::{
     glib, glib::clone, subclass::prelude::*, Button, CompositeTemplate, ListBox, MenuButton,
-    Popover, SpinButton,
+    Popover,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::PenPathBuilderType;
@@ -49,7 +49,7 @@ mod imp {
         #[template_child]
         pub(crate) solidstyle_pressure_curves_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub(crate) texturedstyle_density_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) texturedstyle_density_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(crate) texturedstyle_distribution_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -283,20 +283,17 @@ impl RnBrushPage {
 
         // Textured style
         // Density
-        imp.texturedstyle_density_spinbutton
-            .get()
-            .set_increments(0.1, 2.0);
-        imp.texturedstyle_density_spinbutton
+        imp.texturedstyle_density_row
             .get()
             .set_range(TexturedOptions::DENSITY_MIN, TexturedOptions::DENSITY_MAX);
         // set value after the range!
-        imp.texturedstyle_density_spinbutton
+        imp.texturedstyle_density_row
             .get()
             .set_value(TexturedOptions::default().density);
 
-        imp.texturedstyle_density_spinbutton.get().connect_value_changed(
-            clone!(@weak appwindow => move |spinbutton| {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.brush_config.textured_options.density = spinbutton.value();
+        imp.texturedstyle_density_row.get().connect_changed(
+            clone!(@weak appwindow => move |row| {
+                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.brush_config.textured_options.density = row.value();
             }),
         );
 
@@ -316,7 +313,7 @@ impl RnBrushPage {
             .clone();
 
         self.set_solidstyle_pressure_curve(brush_config.solid_options.pressure_curve);
-        imp.texturedstyle_density_spinbutton
+        imp.texturedstyle_density_row
             .set_value(brush_config.textured_options.density);
         self.set_texturedstyle_distribution_variant(brush_config.textured_options.distribution);
 

@@ -1,6 +1,7 @@
 // Imports
 use super::Content;
 use crate::{Camera, Drawable};
+use itertools::Itertools;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use piet::{RenderContext, TextLayout, TextLayoutBuilder};
@@ -730,7 +731,7 @@ impl TextStroke {
             .into_iter()
             .partition(|attr| Self::is_same_attribute(&attr.attribute, &text_attribute));
 
-        let (intersecting_attrs, mut retained_attrs) =
+        let (intersecting_attrs, retained_attrs) =
             Self::get_intersecting_attrs_for_range(&range, matching_attributes);
 
         let _bold_weight = piet::FontWeight::BOLD.to_raw();

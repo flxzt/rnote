@@ -15,8 +15,8 @@
       <object class="AdwOverlaySplitView" id="split_view">
         <property name="pin-sidebar">true</property>
         <property name="min-sidebar-width">500</property>
-        <property name="max-sidebar-width">600</property>
-        <property name="sidebar-width-fraction">0.33</property>
+        <property name="max-sidebar-width">550</property>
+        <property name="sidebar-width-fraction">0.3</property>
         <!-- sidebar -->
         <property name="sidebar">
           <object class="RnSidebar" id="sidebar">

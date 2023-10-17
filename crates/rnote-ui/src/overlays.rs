@@ -1,10 +1,10 @@
 // Imports
 use crate::canvaswrapper::RnCanvasWrapper;
 use crate::RnPensSideBar;
-use crate::{dialogs, RnAppWindow, RnColorPicker};
+use crate::{dialogs, RnAppWindow, RnColorPicker, RnPenPicker};
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Overlay,
-    ProgressBar, ScrolledWindow, ToggleButton, Widget,
+    gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Overlay,
+    ProgressBar, ScrolledWindow, Widget,
 };
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::PenStyle;
@@ -26,23 +26,7 @@ mod imp {
         #[template_child]
         pub(crate) progressbar: TemplateChild<ProgressBar>,
         #[template_child]
-        pub(crate) pens_toggles_box: TemplateChild<gtk4::Box>,
-        #[template_child]
-        pub(crate) brush_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) shaper_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) typewriter_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) eraser_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) selector_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) tools_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) undo_button: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) redo_button: TemplateChild<Button>,
+        pub(crate) penpicker: TemplateChild<RnPenPicker>,
         #[template_child]
         pub(crate) colorpicker: TemplateChild<RnColorPicker>,
         #[template_child]
@@ -91,7 +75,7 @@ mod imp {
             self.toolbar_overlay
                 .set_measure_overlay(&*self.colorpicker, true);
             self.toolbar_overlay
-                .set_measure_overlay(&*self.pens_toggles_box, true);
+                .set_measure_overlay(&*self.penpicker, true);
             self.toolbar_overlay
                 .set_measure_overlay(&*self.sidebar_box, true);
         }
@@ -117,40 +101,8 @@ impl RnOverlays {
         glib::Object::new()
     }
 
-    pub(crate) fn pens_toggles_box(&self) -> gtk4::Box {
-        self.imp().pens_toggles_box.get()
-    }
-
-    pub(crate) fn brush_toggle(&self) -> ToggleButton {
-        self.imp().brush_toggle.get()
-    }
-
-    pub(crate) fn shaper_toggle(&self) -> ToggleButton {
-        self.imp().shaper_toggle.get()
-    }
-
-    pub(crate) fn typewriter_toggle(&self) -> ToggleButton {
-        self.imp().typewriter_toggle.get()
-    }
-
-    pub(crate) fn eraser_toggle(&self) -> ToggleButton {
-        self.imp().eraser_toggle.get()
-    }
-
-    pub(crate) fn selector_toggle(&self) -> ToggleButton {
-        self.imp().selector_toggle.get()
-    }
-
-    pub(crate) fn tools_toggle(&self) -> ToggleButton {
-        self.imp().tools_toggle.get()
-    }
-
-    pub(crate) fn undo_button(&self) -> Button {
-        self.imp().undo_button.get()
-    }
-
-    pub(crate) fn redo_button(&self) -> Button {
-        self.imp().redo_button.get()
+    pub(crate) fn penpicker(&self) -> RnPenPicker {
+        self.imp().penpicker.get()
     }
 
     pub(crate) fn colorpicker(&self) -> RnColorPicker {
@@ -185,6 +137,7 @@ impl RnOverlays {
         let imp = self.imp();
         imp.colorpicker.get().init(appwindow);
         imp.penssidebar.get().init(appwindow);
+        imp.penpicker.get().init(appwindow);
         imp.penssidebar.get().brush_page().init(appwindow);
         imp.penssidebar.get().shaper_page().init(appwindow);
         imp.penssidebar.get().typewriter_page().init(appwindow);
@@ -192,64 +145,8 @@ impl RnOverlays {
         imp.penssidebar.get().selector_page().init(appwindow);
         imp.penssidebar.get().tools_page().init(appwindow);
 
-        self.setup_pens_toggles(appwindow);
         self.setup_colorpicker(appwindow);
         self.setup_tabview(appwindow);
-    }
-
-    fn setup_pens_toggles(&self, appwindow: &RnAppWindow) {
-        let imp = self.imp();
-
-        imp.brush_toggle
-            .connect_toggled(clone!(@weak appwindow => move |brush_toggle| {
-                if brush_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Brush.to_string().to_variant()));
-                }
-            }));
-
-        imp.shaper_toggle
-            .connect_toggled(clone!(@weak appwindow => move |shaper_toggle| {
-                if shaper_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Shaper.to_string().to_variant()));
-                }
-            }));
-
-        imp.typewriter_toggle
-            .connect_toggled(clone!(@weak appwindow => move |typewriter_toggle| {
-                if typewriter_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Typewriter.to_string().to_variant()));
-                }
-            }));
-
-        imp.eraser_toggle
-            .get()
-            .connect_toggled(clone!(@weak appwindow => move |eraser_toggle| {
-                if eraser_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Eraser.to_string().to_variant()));
-                }
-            }));
-
-        imp.selector_toggle.get().connect_toggled(
-            clone!(@weak appwindow => move |selector_toggle| {
-                if selector_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Selector.to_string().to_variant()));
-                }
-            }),
-        );
-
-        imp.tools_toggle
-            .get()
-            .connect_toggled(clone!(@weak appwindow => move |tools_toggle| {
-                if tools_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Tools.to_string().to_variant()));
-                }
-            }));
     }
 
     fn setup_colorpicker(&self, appwindow: &RnAppWindow) {

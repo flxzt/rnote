@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-29 20:43+0200\n"
-"PO-Revision-Date: 2023-05-20 12:33+0000\n"
-"Last-Translator: Mr-Spade <Mr_Spade@foxmail.com>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"rnote/repo/zh_Hans/>\n"
-"Language: zh_Hans\n"
+"PO-Revision-Date: 2023-10-21 10:01+0000\n"
+"Last-Translator: Xinglu Chen <yoctocell@disroot.org>\n"
+"Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
+"rnote/repo/zh_Hant/>\n"
+"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.1\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -124,28 +124,24 @@ msgid "Close Tab"
 msgstr "關閉標籤"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:30
-#, fuzzy
-#| msgid ""
-#| "This tab contains unsaved changes. Changes which are not saved will be "
-#| "permanently lost."
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
-msgstr "此選項包含未儲存的更改。未儲存的更改將永久丟失。"
+msgstr ""
+"此選項包含未儲存的更改。\n"
+"未儲存的更改將永久丟失。"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
 msgstr "關閉視窗"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:48
-#, fuzzy
-#| msgid ""
-#| "Some opened files contain unsaved changes. Changes which are not saved "
-#| "will be permanently lost."
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
-msgstr "某些開啟的檔案包含未儲存的更改。未儲存的更改將永久丟失。"
+msgstr ""
+"某些開啟的檔案包含未儲存的更改。\n"
+"未儲存的更改將永久丟失。"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
@@ -376,15 +372,13 @@ msgstr "設定匯出時包含的背景圖案"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:354
 #: crates/rnote-ui/data/ui/dialogs/export.ui:577
 msgid "Optimize for Printing"
-msgstr ""
+msgstr "為印刷優化"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:355
 #: crates/rnote-ui/data/ui/dialogs/export.ui:578
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Set whether the content should be optimized for printing"
-msgstr "設定匯出時包含的背景圖案"
+msgstr "設定匯出時是否為印刷優化"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:143
 #: crates/rnote-ui/data/ui/dialogs/export.ui:365
@@ -418,10 +412,8 @@ msgstr "Xournal++ 筆記本（Xopp）"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:158
 #: crates/rnote-ui/data/ui/dialogs/export.ui:380
-#, fuzzy
-#| msgid "Pages Type"
 msgid "Page Order"
-msgstr "頁面型別"
+msgstr "頁面順序"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:159
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
@@ -434,12 +426,12 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:165
 #: crates/rnote-ui/data/ui/dialogs/export.ui:387
 msgid "Horizontal First"
-msgstr ""
+msgstr "橫向優先"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:166
 #: crates/rnote-ui/data/ui/dialogs/export.ui:388
 msgid "Vertical First"
-msgstr ""
+msgstr "縱向優先"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:187
 #: crates/rnote-ui/src/dialogs/export.rs:542
@@ -1099,18 +1091,25 @@ msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"刪除頁面。\n"
+"可選用固定尺寸的文件佈局。"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:157
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"添加頁面。\n"
+"可選用固定尺寸的文件佈局。"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:166
+#, fuzzy
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"重設頁面尺寸以合於內容。\n"
+"可選用固定尺寸的文件佈局。"
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
@@ -1227,8 +1226,9 @@ msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "設定畫布上的捲軸是否顯示"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:87
+#, fuzzy
 msgid "Inertial Touch Scrolling"
-msgstr ""
+msgstr "慣性觸摸翻動"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:88
 msgid ""
@@ -1627,11 +1627,11 @@ msgstr "另存文件為"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
 msgid "Add Page (When in Fixed-Size Layout)"
-msgstr ""
+msgstr "添加頁面（僅限在固定尺寸佈局）"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr ""
+msgstr "刪除尾頁面（僅限在固定尺寸佈局）"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Print Document"
@@ -1749,10 +1749,8 @@ msgid "Inserting file failed"
 msgstr "檔案開啟失敗"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1101
-#, fuzzy
-#| msgid "Printing document failed"
 msgid "Inserting text failed"
-msgstr "列印失敗"
+msgstr "文字輸入失敗"
 
 #: crates/rnote-ui/src/dialogs/export.rs:28
 #: crates/rnote-ui/src/dialogs/import.rs:21
@@ -1840,10 +1838,8 @@ msgid "Open File"
 msgstr "開啟檔案"
 
 #: crates/rnote-ui/src/dialogs/import.rs:61
-#, fuzzy
-#| msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "JPG, PDF, PNG, SVG, Xopp"
+msgstr "JPG, PDF, PNG, SVG, Xopp, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:188
 msgid "- no file name -"
@@ -1888,22 +1884,18 @@ msgstr "Mr_Spade <Mr_Spade@foxmail.com>"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:210
 #: crates/rnote-ui/src/dialogs/mod.rs:344
-#, fuzzy
-#| msgid "- invalid file name -"
 msgid "- invalid save folder name -"
-msgstr "—— 無效檔名 ——"
+msgstr "—— 無效存儲檔名 ——"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:226
 #: crates/rnote-ui/src/dialogs/mod.rs:359
 msgid "The changes will be saved"
-msgstr ""
+msgstr "更改將被儲存"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:231
 #: crates/rnote-ui/src/dialogs/mod.rs:364
-#, fuzzy
-#| msgid "- no file selected -"
 msgid "A new file will be created"
-msgstr "— 沒有檔案被選中 —"
+msgstr "新檔案將被創造"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:503
 msgid "Change Workspace Directory"
@@ -2125,10 +2117,8 @@ msgid "Ellipses"
 msgstr "橢圓"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:412
-#, fuzzy
-#| msgid "Curves"
 msgid "Curves & Paths"
-msgstr "曲線"
+msgstr "曲線與路徑"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
@@ -2176,7 +2166,7 @@ msgstr ""
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:541
 msgid "Application restart is required"
-msgstr ""
+msgstr "程式須重啟"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:807
 #, fuzzy
@@ -2200,22 +2190,16 @@ msgid "Crosshair (Large)"
 msgstr "十字線（大）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:810
-#, fuzzy
-#| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "點（小）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:811
-#, fuzzy
-#| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "點（中等）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:812
-#, fuzzy
-#| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "點（大）"

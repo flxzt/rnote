@@ -143,7 +143,7 @@ impl Buildable for PolylineBuilder {
 }
 
 impl PolylineBuilder {
-    const FINISH_TRESHOLD_DIST: f64 = 8.0;
+    const FINISH_THRESHOLD_DIST: f64 = 8.0;
 
     /// The current state as a polyline.
     pub fn state_as_polyline(&self) -> Polyline {
@@ -155,6 +155,6 @@ impl PolylineBuilder {
 
     fn pos_in_finish(&self, pos: na::Vector2<f64>) -> bool {
         (pos - self.path.last().copied().unwrap_or(self.start)).magnitude()
-            < Self::FINISH_TRESHOLD_DIST
+            < Self::FINISH_THRESHOLD_DIST
     }
 }

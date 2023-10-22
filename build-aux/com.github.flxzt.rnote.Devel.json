@@ -20,7 +20,7 @@
     "--filesystem=xdg-documents",
     "--filesystem=xdg-pictures",
     "--filesystem=xdg-desktop",
-    "--filesystem=xdg-run/gvfs",
+    "--talk-name=org.gtk.vfs.*",
     "--filesystem=xdg-run/gvfsd",
     "--env=RUST_BACKTRACE=full",
     "--env=RUST_LOG=rnote=debug",

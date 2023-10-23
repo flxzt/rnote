@@ -7,6 +7,13 @@ cd rnote
 git submodule update --init --recursive
 ```
 
+# Building with Flatpak vs Meson
+This project can be compiled with two different build systems: flatpak or meson.
+
+Flatpak is a high level build system that allows easy building and targeting other operating systems by creating a container to build inside of, but for incremental development, this can be very slow, and meson should be used.
+
+Meson is the build system used inside of flatpak's containers. It consists of first configuring the build with meson, and then building it with ninja. Because it is building on the host machine, it may require more upfront work managing dependencies, but then compiling changes made to the codebase with ninja is very fast.
+
 # Building with Flatpak
 There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.yaml`.
 

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-29 20:43+0200\n"
-"PO-Revision-Date: 2022-11-28 13:13+0000\n"
-"Last-Translator: Nguyen Phi Truong <Nguyenairport56@gmail.com>\n"
+"PO-Revision-Date: 2023-10-24 04:15+0000\n"
+"Last-Translator: Rickey Ho <rickey.ho2020@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/rnote/repo/vi/"
 ">\n"
 "Language: vi\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 5.1.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -70,10 +70,8 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:173
-#, fuzzy
-#| msgid "Export _document"
 msgid "Clear Document"
-msgstr "Xuất tài liệu"
+msgstr "Xoá nội dung tài liệu"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
@@ -91,7 +89,7 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:455
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
-msgstr ""
+msgstr "Huỷ bỏ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
@@ -102,96 +100,98 @@ msgstr ""
 #: crates/rnote-ui/data/ui/shortcuts.ui:149
 #: crates/rnote-ui/src/canvas/mod.rs:578
 msgid "New Document"
-msgstr ""
+msgstr "Tài liệu mới"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:17
 msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
 msgstr ""
+"Tạo một tài liệu mới sẽ vứt bỏ những thay đổi chưa được lưu.\n"
+"Bạn có muốn lưu tài liệu hiện tại không?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Discard"
-msgstr ""
+msgstr "Loại bỏ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:42
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:60
 #: crates/rnote-ui/src/dialogs/export.rs:33
 msgid "Save"
-msgstr ""
+msgstr "Lưu"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:29
 msgid "Close Tab"
-msgstr ""
+msgstr "Đóng thẻ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
+"Thẻ này chứa những thay đổi chưa được lưu.\n"
+"Những thay đổi chưa được lưu sẽ bị mất vĩnh viễn."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
-#, fuzzy
-#| msgid "New Window"
 msgid "Close Window"
-msgstr "Cửa Sổ Mới"
+msgstr "Đóng cửa sổ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:48
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
+"Vài tệp đã mở chứa những thay đổi chưa được lưu.\n"
+"Những thay đổi chưa được lưu sẽ bị mất vĩnh viễn."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
-#, fuzzy
-#| msgid "Export _document"
 msgid "Unsaved Documents"
-msgstr "Xuất tài liệu"
+msgstr "Những tài liệu chưa được lưu"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:59
 msgid "Discard All"
-msgstr ""
+msgstr "Loại bỏ tất cả"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:67
 msgid "Edit Workspace"
-msgstr ""
+msgstr "Chỉnh sửa không gian làm việc"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:75
 #: crates/rnote-ui/data/ui/settingspanel.ui:277
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:39
 msgid "Apply"
-msgstr ""
+msgstr "Áp dụng"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:117
 msgid "Workspace Name"
-msgstr ""
+msgstr "Tên của không gian làm việc"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:122
 msgid "Icon"
-msgstr ""
+msgstr "Biểu tượng"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:123
 msgid "Change the workspace icon"
-msgstr ""
+msgstr "Thay đổi biểu tượng của không gian làm việc"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:143
 #: crates/rnote-ui/data/ui/settingspanel.ui:314
 msgid "Color"
-msgstr ""
+msgstr "Màu sắc"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:144
 msgid "Change the workspace color"
-msgstr ""
+msgstr "Thay đổi màu sắc của không gian làm việc"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:158
 msgid "Directory"
-msgstr ""
+msgstr "Đường dẫn"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:159
 msgid "Change the workspace directory"
-msgstr ""
+msgstr "Thay đổi đường dẫn của không gian làm việc"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: crates/rnote-ui/data/ui/dialogs/export.ui:299
@@ -200,11 +200,11 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:410
 #: crates/rnote-ui/src/dialogs/mod.rs:523
 msgid "- no directory selected -"
-msgstr ""
+msgstr "- không có đường dẫn nào được chọn -"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:183
 msgid "Change the directory"
-msgstr ""
+msgstr "Thay đổi đường dẫn"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:7
 #, fuzzy
@@ -321,14 +321,12 @@ msgstr "Xuất tài liệu"
 #: crates/rnote-ui/src/dialogs/export.rs:862
 #: crates/rnote-ui/src/dialogs/export.rs:909
 msgid "Export"
-msgstr ""
+msgstr "Xuất"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:72
 #: crates/rnote-ui/data/ui/dialogs/export.ui:517
-#, fuzzy
-#| msgid "_Import file"
 msgid "Export File"
-msgstr "Nhập tệp tin"
+msgstr "Xuất tệp tin"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:73
 #: crates/rnote-ui/data/ui/dialogs/export.ui:518
@@ -353,7 +351,7 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:328
 #: crates/rnote-ui/data/ui/dialogs/export.ui:551
 msgid "Export Preferences"
-msgstr ""
+msgstr "Cài đặt xuất"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:110
 #: crates/rnote-ui/data/ui/dialogs/export.ui:332

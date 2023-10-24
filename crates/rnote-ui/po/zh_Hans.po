@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-29 20:43+0200\n"
 "PO-Revision-Date: 2023-10-24 16:20+0000\n"
-"Last-Translator: zippermonkey <1960727314@qq.com>\n"
+"Last-Translator: detiam <dehe_tian@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
 "Language: zh_Hans\n"
@@ -1653,10 +1653,8 @@ msgid "Paste Clipboard"
 msgstr "粘贴剪切板"
 
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:79
-#, fuzzy
-#| msgid "Pages:"
 msgid "Page"
-msgstr "页码："
+msgstr "页码"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"

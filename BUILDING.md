@@ -8,7 +8,7 @@ git submodule update --init --recursive
 ```
 
 # Building with Flatpak vs Meson
-This project can be compiled two different ways depending on your need: flatpak or meson.
+This project can be compiled in two different ways depending on your needs: flatpak or meson.
 
 Flatpak is a sandboxed environment/distribution used for building and running applications in a way that is more user friendly and cross platform. When using flatpak to build an application, flatpak creates a sandboxed environment tailered to exactly what the application needs. This makes it much easier to compile and run an application without issues.
 

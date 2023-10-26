@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-29 20:43+0200\n"
-"PO-Revision-Date: 2023-09-10 12:18+0000\n"
-"Last-Translator: Integral <integral@murena.io>\n"
+"PO-Revision-Date: 2023-10-25 17:02+0000\n"
+"Last-Translator: detiam <dehe_tian@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
 "Language: zh_Hans\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.1.1\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -136,14 +136,12 @@ msgid "Close Window"
 msgstr "关闭窗口"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:48
-#, fuzzy
-#| msgid ""
-#| "Some opened files contain unsaved changes. Changes which are not saved "
-#| "will be permanently lost."
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
-msgstr "某些打开的文件包含未保存的更改。未保存的更改将永久丢失。"
+msgstr ""
+"某些打开的文件包含未保存的更改。\n"
+"未保存的更改将永久丢失。"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
@@ -379,10 +377,8 @@ msgstr "针对打印优化"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:355
 #: crates/rnote-ui/data/ui/dialogs/export.ui:578
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Set whether the content should be optimized for printing"
-msgstr "设置导出时包含的背景图案"
+msgstr "设置导出时是否需要为打印优化"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:143
 #: crates/rnote-ui/data/ui/dialogs/export.ui:365
@@ -416,10 +412,8 @@ msgstr "Xournal++ 笔记本（Xopp）"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:158
 #: crates/rnote-ui/data/ui/dialogs/export.ui:380
-#, fuzzy
-#| msgid "Pages Type"
 msgid "Page Order"
-msgstr "页面类型"
+msgstr "页面循序"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:159
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
@@ -428,16 +422,19 @@ msgid ""
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
+"文档带有布局时的页面循序\n"
+"向水平和垂直方向扩展\n"
+"被切断成页"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:165
 #: crates/rnote-ui/data/ui/dialogs/export.ui:387
 msgid "Horizontal First"
-msgstr ""
+msgstr "水平优先"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:166
 #: crates/rnote-ui/data/ui/dialogs/export.ui:388
 msgid "Vertical First"
-msgstr ""
+msgstr "垂直优先"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:187
 #: crates/rnote-ui/src/dialogs/export.rs:542
@@ -529,7 +526,7 @@ msgstr "硬笔"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:108
 msgid "Draw solid color strokes"
-msgstr "绘制纯色笔划"
+msgstr "绘制纯色笔画"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:119
 msgid "Textured"
@@ -537,7 +534,7 @@ msgstr "纹理"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:120
 msgid "Draw textured strokes"
-msgstr "绘制纹理笔划"
+msgstr "绘制纹理笔画"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:170
 msgid "Path Modelling"
@@ -645,11 +642,11 @@ msgstr "对数"
 
 #: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:21
 msgid "Trash Strokes"
-msgstr "垃圾笔画"
+msgstr "回收笔画"
 
 #: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:31
 msgid "Split Strokes"
-msgstr "分割画笔"
+msgstr "分割笔画"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:17
 #: crates/rnote-ui/data/ui/overlays.ui:46
@@ -717,7 +714,7 @@ msgstr "取消选中所有笔画"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 msgid "Invert Color Brightness of All Selected Strokes"
-msgstr ""
+msgstr "反转所有选中笔画的色彩亮度"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 #: crates/rnote-ui/data/ui/shortcuts.ui:224
@@ -840,8 +837,6 @@ msgid "Move View"
 msgstr "移动视图"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:40
-#, fuzzy
-#| msgid "Zoom in/out"
 msgid "Zoom In/Out"
 msgstr "缩放"
 
@@ -1097,18 +1092,24 @@ msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"移除页面。\n"
+"可选用固定大小的文档布局。"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:157
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"添加页面。\n"
+"可选用固定大小的文档布局。"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:166
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"调整文档大小以适应内容。\n"
+"可选用固定大小的文档布局。"
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
@@ -1143,10 +1144,8 @@ msgstr "草稿"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
-#, fuzzy
-#| msgid "Reveal/Hide Flap"
 msgid "Reveal/Hide Sidebar"
-msgstr "显示/隐藏翻页菜单"
+msgstr "显示/隐藏侧栏"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
 msgid "New Tab"
@@ -1226,7 +1225,7 @@ msgstr "设置画布上的滚动条是否显示"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:87
 msgid "Inertial Touch Scrolling"
-msgstr ""
+msgstr "惯性触摸滚动"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:88
 msgid ""
@@ -1234,6 +1233,9 @@ msgid ""
 "An application restart is required when this option\n"
 "gets disabled."
 msgstr ""
+"设置画布上的触摸滚动是否为惯性滚动。\n"
+"当这个选项被禁用时，\n"
+"应用程序需要重新启动。"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:100
 msgid "Regular Cursor"
@@ -1420,19 +1422,15 @@ msgstr "设置背景纹理高度"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:402
 msgid "Invert Color Brightness"
-msgstr ""
+msgstr "反转色彩亮度"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:403
-#, fuzzy
-#| msgid "Set the background pattern color"
 msgid "Invert the brightness of all background pattern colors"
-msgstr "设置背景纹理颜色"
+msgstr "反转所有背景纹理颜色的亮度"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:407
-#, fuzzy
-#| msgid "Revert"
 msgid "Invert"
-msgstr "撤销"
+msgstr "反转"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:417
 msgid "Button Shortcuts"
@@ -1488,19 +1486,15 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:472
 msgid "Keyboard Ctrl-Space Action"
-msgstr ""
+msgstr "键盘 Ctrl-Space 动作"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:473
-#, fuzzy
-#| msgid ""
-#| "Set the action for the\n"
-#| "secondary mouse button"
 msgid ""
 "Set the action for the keyboard\n"
 "Ctrl plus Space shortcut"
 msgstr ""
-"设置鼠标次键\n"
-"执行的动作"
+"设置键盘动作\n"
+"Ctrl + Space 快捷键"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:485
 msgid "Drawing Pad Button 1 Action"
@@ -1625,11 +1619,11 @@ msgstr "另存文档为"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
 msgid "Add Page (When in Fixed-Size Layout)"
-msgstr ""
+msgstr "添加页面（固定大小布局时）"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr ""
+msgstr "移除尾页（固定大小布局时）"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Print Document"
@@ -1657,10 +1651,8 @@ msgid "Paste Clipboard"
 msgstr "粘贴剪切板"
 
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:79
-#, fuzzy
-#| msgid "Pages:"
 msgid "Page"
-msgstr "页码："
+msgstr "页码"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
@@ -1741,16 +1733,12 @@ msgid "Opened file was moved or deleted on disk"
 msgstr "打开的文件已在磁盘上被移动或者删除"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1091
-#, fuzzy
-#| msgid "Opening file failed"
 msgid "Inserting file failed"
-msgstr "文件打开失败"
+msgstr "插入文件失败"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1101
-#, fuzzy
-#| msgid "Printing document failed"
 msgid "Inserting text failed"
-msgstr "打印失败"
+msgstr "插入文本失败"
 
 #: crates/rnote-ui/src/dialogs/export.rs:28
 #: crates/rnote-ui/src/dialogs/import.rs:21
@@ -1838,10 +1826,8 @@ msgid "Open File"
 msgstr "打开文件"
 
 #: crates/rnote-ui/src/dialogs/import.rs:61
-#, fuzzy
-#| msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "JPG, PDF, PNG, SVG, Xopp"
+msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:188
 msgid "- no file name -"
@@ -1886,22 +1872,18 @@ msgstr "Mr_Spade <Mr_Spade@foxmail.com>"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:210
 #: crates/rnote-ui/src/dialogs/mod.rs:344
-#, fuzzy
-#| msgid "- invalid file name -"
 msgid "- invalid save folder name -"
-msgstr "—— 无效文件名 ——"
+msgstr "—— 无效保存文件夹名 ——"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:226
 #: crates/rnote-ui/src/dialogs/mod.rs:359
 msgid "The changes will be saved"
-msgstr ""
+msgstr "此更改将被保存"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:231
 #: crates/rnote-ui/src/dialogs/mod.rs:364
-#, fuzzy
-#| msgid "- no file selected -"
 msgid "A new file will be created"
-msgstr "— 没有文件被选中 —"
+msgstr "新文件将被创建"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:503
 msgid "Change Workspace Directory"
@@ -2123,10 +2105,8 @@ msgid "Ellipses"
 msgstr "椭圆"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:412
-#, fuzzy
-#| msgid "Curves"
 msgid "Curves & Paths"
-msgstr "曲线"
+msgstr "曲线与路径"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
@@ -2170,137 +2150,101 @@ msgstr "三次贝塞尔曲线"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
-msgstr ""
+msgstr "多段线"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:541
 msgid "Application restart is required"
-msgstr ""
+msgstr "应用程序需要重新启动"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:807
-#, fuzzy
-#| msgid "Crosshair (Small)"
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
-msgstr "十字线（小）"
+msgstr "十字准线（小）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:808
-#, fuzzy
-#| msgid "Crosshair (Medium)"
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
-msgstr "十字线（中等）"
+msgstr "十字准线（中等）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:809
-#, fuzzy
-#| msgid "Crosshair (Large)"
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
-msgstr "十字线（大）"
+msgstr "十字准线（大）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:810
-#, fuzzy
-#| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "点（小）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:811
-#, fuzzy
-#| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "点（中等）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:812
-#, fuzzy
-#| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "点（大）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:813
-#, fuzzy
-#| msgid "Teardrop North-West (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "西北方向水滴（小）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:814
-#, fuzzy
-#| msgid "Teardrop North-West (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "西北方向水滴（中等）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:815
-#, fuzzy
-#| msgid "Teardrop North-West (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "西北方向水滴（大）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:816
-#, fuzzy
-#| msgid "Teardrop North-East (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "东北方向水滴（小）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:817
-#, fuzzy
-#| msgid "Teardrop North-East (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "东北方向水滴（中等）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:818
-#, fuzzy
-#| msgid "Teardrop North-East (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "东北方向水滴（大）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:819
-#, fuzzy
-#| msgid "Teardrop North (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "正北方向水滴（小）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:820
-#, fuzzy
-#| msgid "Teardrop North (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "正北方向水滴（中等）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:821
-#, fuzzy
-#| msgid "Teardrop North (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "正北方向水滴（大）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:822
-#, fuzzy
-#| msgid "Beam (Small)"
 msgctxt "a cursor type"
 msgid "Beam (Small)"
-msgstr "横梁（小）"
+msgstr "横（小）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:823
-#, fuzzy
-#| msgid "Beam (Medium)"
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
-msgstr "横梁（中等）"
+msgstr "横（中等）"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:824
-#, fuzzy
-#| msgid "Beam (Large)"
 msgctxt "a cursor type"
 msgid "Beam (Large)"
-msgstr "横梁（大）"
+msgstr "横（大）"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:56
 msgid "Folder Name"

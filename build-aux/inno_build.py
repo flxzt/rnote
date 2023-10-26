@@ -4,6 +4,7 @@ import sys
 import os
 import shutil
 import glob
+import itertools
 
 source_root = sys.argv[1]
 build_root = sys.argv[2]
@@ -53,6 +54,15 @@ for loader in glob.glob(f"{msys_path}/mingw64/lib/gdk-pixbuf-2.0/2.10.0/loaders/
     run_command(
         f"ldd {loader} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
         f"Collecting pixbuf-loader ({loader}) DLLs failed"
+    )
+
+for angle_dll in itertools.chain(
+    glob.glob(f"{msys_path}/mingw64/bin/libEGL*.dll"),
+    glob.glob(f"{msys_path}/mingw64/bin/libGLES*.dll"),
+):
+    run_command(
+        f"ldd {angle_dll} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+        f"Collecting angle ({angle_dll}) DLLs failed",
     )
 
 # Collect necessary GSchema Xml's and compile them into a `gschemas.compiled`

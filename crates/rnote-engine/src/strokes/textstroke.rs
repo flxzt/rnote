@@ -140,6 +140,19 @@ impl TextAttribute {
             TextAttribute::Strikethrough(strikethrough) => Ok(piet::TextAttribute::Strikethrough(strikethrough)),
         }
     }
+
+    fn is_same_attribute(&self, other: &TextAttribute) -> bool {
+        match (self, other) {
+            (TextAttribute::FontFamily(_), TextAttribute::FontFamily(_)) => true,
+            (TextAttribute::FontSize(_), TextAttribute::FontSize(_)) => true,
+            (TextAttribute::FontWeight(_), TextAttribute::FontWeight(_)) => true,
+            (TextAttribute::Strikethrough(_), TextAttribute::Strikethrough(_)) => true,
+            (TextAttribute::Underline(_), TextAttribute::Underline(_)) => true,
+            (TextAttribute::Style(_), TextAttribute::Style(_)) => true,
+            (TextAttribute::TextColor(_), TextAttribute::TextColor(_)) => true,
+            (_, _) => false,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -729,7 +742,7 @@ impl TextStroke {
             .ranged_text_attributes
             .clone()
             .into_iter()
-            .partition(|attr| Self::is_same_attribute(&attr.attribute, &text_attribute));
+            .partition(|attr| attr.attribute.is_same_attribute(&text_attribute));
 
         let (intersecting_attrs, retained_attrs) =
             Self::get_intersecting_attrs_for_range(&range, matching_attributes);
@@ -772,9 +785,9 @@ impl TextStroke {
         range: &Range<usize>,
         ranged_text_attributes: Vec<RangedTextAttribute>,
     ) -> (Vec<RangedTextAttribute>, Vec<RangedTextAttribute>) {
-        return ranged_text_attributes
+        ranged_text_attributes
             .into_iter()
-            .partition(|attr| attr.range.end > range.start && attr.range.start < range.end);
+            .partition(|attr| attr.range.end > range.start && attr.range.start < range.end)
     }
 
     fn remove_intersecting_attrs_in_range(
@@ -808,19 +821,6 @@ impl TextStroke {
             // Filter out any that became empty or are contained in the given range
             .filter(|attr| !attr.range.is_empty())
             .collect::<Vec<RangedTextAttribute>>()
-    }
-
-    fn is_same_attribute(attr1: &TextAttribute, attr2: &TextAttribute) -> bool {
-        return match (attr1, attr2) {
-            (TextAttribute::FontFamily(_), TextAttribute::FontFamily(_)) => true,
-            (TextAttribute::FontSize(_), TextAttribute::FontSize(_)) => true,
-            (TextAttribute::FontWeight(_), TextAttribute::FontWeight(_)) => true,
-            (TextAttribute::Strikethrough(_), TextAttribute::Strikethrough(_)) => true,
-            (TextAttribute::Underline(_), TextAttribute::Underline(_)) => true,
-            (TextAttribute::Style(_), TextAttribute::Style(_)) => true,
-            (TextAttribute::TextColor(_), TextAttribute::TextColor(_)) => true,
-            (_, _) => false,
-        };
     }
 
     pub fn update_selection_entire_text(

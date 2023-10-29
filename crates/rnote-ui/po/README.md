@@ -7,3 +7,4 @@
     practice this is not an issue, because meson's `rnote-gmo` target still compiles them to `.mo` files, and for
     windows the installer script includes the translations based on enumerating the files present in the `po` directory,
     not based on the locale strings present in `LINGUAS`. We just need to make sure we keep it this way.
+    (discussed in more detail in [#838](https://github.com/flxzt/rnote/pull/838))

@@ -910,6 +910,27 @@ impl Engine {
         widget_flags
     }
 
+    pub fn text_selection_toggle_attribute(
+        &mut self,
+        text_attribute: TextAttribute,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            widget_flags |= typewriter.toggle_text_attribute_current_selection(
+                text_attribute,
+                &mut EngineViewMut {
+                    tasks_tx: self.tasks_tx.clone(),
+                    pens_config: &mut self.pens_config,
+                    doc: &mut self.document,
+                    store: &mut self.store,
+                    camera: &mut self.camera,
+                    audioplayer: &mut self.audioplayer,
+                },
+            )
+        }
+        widget_flags
+    }
+
     pub fn text_selection_add_attribute(&mut self, text_attribute: TextAttribute) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {

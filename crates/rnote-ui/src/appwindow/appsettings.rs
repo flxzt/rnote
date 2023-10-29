@@ -387,9 +387,10 @@ impl RnAppWindow {
             let window_height = self.app_settings().int("window-height");
             let is_maximized = self.app_settings().boolean("is-maximized");
 
-            self.set_default_size(window_width, window_height);
             if is_maximized {
                 self.maximize();
+            } else {
+                self.set_default_size(window_width, window_height);
             }
 
             // set the color-scheme through the action

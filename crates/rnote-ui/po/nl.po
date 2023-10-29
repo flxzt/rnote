@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-29 20:43+0200\n"
-"PO-Revision-Date: 2023-10-28 15:03+0000\n"
-"Last-Translator: Samuel Coryn <samuelcoryn@gmail.com>\n"
+"PO-Revision-Date: 2023-10-29 10:40+0000\n"
+"Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -841,8 +841,6 @@ msgid "Move View"
 msgstr "Weergave verplaatsen"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:40
-#, fuzzy
-#| msgid "Zoom in/out"
 msgid "Zoom In/Out"
 msgstr "In-/uitzoomen"
 
@@ -2226,22 +2224,16 @@ msgid "Teardrop North (Large)"
 msgstr "Druppel noord (groot)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:822
-#, fuzzy
-#| msgid "Beam (Small)"
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "Balk (klein)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:823
-#, fuzzy
-#| msgid "Beam (Medium)"
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "Balk (gemiddeld)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:824
-#, fuzzy
-#| msgid "Beam (Large)"
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "Balk (groot)"

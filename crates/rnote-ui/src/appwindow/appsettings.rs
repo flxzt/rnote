@@ -390,6 +390,8 @@ impl RnAppWindow {
             if is_maximized {
                 self.maximize();
             } else {
+                // Only restore window dimensions when not maximized, avoids issues on macos.
+                // see issue 823 - https://github.com/flxzt/rnote/issues/823
                 self.set_default_size(window_width, window_height);
             }
 

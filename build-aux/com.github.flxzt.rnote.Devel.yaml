@@ -46,6 +46,8 @@ modules:
           - "-DCMAKE_INSTALL_INCLUDEDIR=/app/include"
           - "-DENABLE_BOOST=OFF"
           - "-DENABLE_LIBOPENJPEG=none"
+          - "-DENABLE_QT5=OFF"
+          - "-DENABLE_QT6=OFF"
       sources:
           - type: archive
             url: "https://poppler.freedesktop.org/poppler-23.10.0.tar.xz"

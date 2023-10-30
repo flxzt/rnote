@@ -451,7 +451,13 @@ impl RnAppWindow {
                         appwindow.overlays().tabview().set_selected_page(&page);
                         false
                     } else {
-                        let rnote_file_new_tab = if appwindow.active_tab_wrapper().canvas().empty() {
+                        let rnote_file_new_tab = if appwindow.active_tab_wrapper().canvas().empty()
+                            && appwindow
+                                .active_tab_wrapper()
+                                .canvas()
+                                .output_file()
+                                .is_none()
+                        {
                             false
                         } else {
                             rnote_file_new_tab
@@ -462,7 +468,6 @@ impl RnAppWindow {
                             appwindow.new_canvas_wrapper()
                         } else {
                             appwindow.active_tab_wrapper()
-
                         };
                         let (bytes, _) = input_file.load_bytes_future().await?;
                         let widget_flags = wrapper

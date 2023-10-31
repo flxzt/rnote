@@ -67,6 +67,9 @@ impl RnAppWindow {
         let action_format_borders =
             gio::SimpleAction::new_stateful("format-borders", None, &true.to_variant());
         self.add_action(&action_format_borders);
+        let action_toggle_origin_indicator =
+            gio::SimpleAction::new_stateful("toggle-origin-indicator", None, &true.to_variant());
+        self.add_action(&action_toggle_origin_indicator);
         let action_block_pinch_zoom =
             gio::PropertyAction::new("block-pinch-zoom", self, "block-pinch-zoom");
         self.add_action(&action_block_pinch_zoom);
@@ -300,6 +303,19 @@ impl RnAppWindow {
                 canvas.queue_draw();
 
                 action_format_borders.set_state(&format_borders.to_variant());
+            }),
+        );
+
+        // Origin indicator
+        action_toggle_origin_indicator.connect_change_state(
+            clone!(@weak self as appwindow => move |action_origin_indicator, state_request| {
+                let origin_indicator = state_request.unwrap().get::<bool>().unwrap();
+                let canvas = appwindow.active_tab_wrapper().canvas();
+
+                canvas.engine_mut().document.format.show_origin_indicator = origin_indicator;
+                canvas.queue_draw();
+
+                action_origin_indicator.set_state(&origin_indicator.to_variant());
             }),
         );
 

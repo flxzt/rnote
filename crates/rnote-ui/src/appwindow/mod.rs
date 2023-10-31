@@ -598,6 +598,11 @@ impl RnAppWindow {
         );
         adw::prelude::ActionGroupExt::change_action_state(
             self,
+            "toggle-origin-indicator",
+            &format.show_origin_indicator.to_variant(),
+        );
+        adw::prelude::ActionGroupExt::change_action_state(
+            self,
             "pen-style",
             &pen_style.to_string().to_variant(),
         );

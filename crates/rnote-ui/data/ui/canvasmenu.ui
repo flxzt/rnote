@@ -51,7 +51,7 @@
             <attribute name="action">win.format-borders</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">Show Origin Indicator</attribute>
+            <attribute name="label" translatable="yes">Show _Origin Indicator</attribute>
             <attribute name="toggle" />
             <attribute name="action">win.show-origin-indicator</attribute>
           </item>

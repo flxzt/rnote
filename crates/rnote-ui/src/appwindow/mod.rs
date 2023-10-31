@@ -451,6 +451,18 @@ impl RnAppWindow {
                         appwindow.overlays().tabview().set_selected_page(&page);
                         false
                     } else {
+                        let rnote_file_new_tab = if appwindow.active_tab_wrapper().canvas().empty()
+                            && appwindow
+                                .active_tab_wrapper()
+                                .canvas()
+                                .output_file()
+                                .is_none()
+                        {
+                            false
+                        } else {
+                            rnote_file_new_tab
+                        };
+
                         let wrapper = if rnote_file_new_tab {
                             // a new tab for rnote files
                             appwindow.new_canvas_wrapper()

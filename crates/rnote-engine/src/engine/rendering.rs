@@ -290,33 +290,37 @@ impl Engine {
         use rnote_compose::color;
         use rnote_compose::ext::{AabbExt, Affine2Ext};
 
-        const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
-        const PATH_WIDTH: f64 = 1.5;
-        let total_zoom = self.camera.total_zoom();
+        if self.document.format.show_origin_indicator {
+            const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
+            const PATH_WIDTH: f64 = 1.5;
+            let total_zoom = self.camera.total_zoom();
 
-        let bounds =
-            Aabb::from_half_extents(na::point![0.0, 0.0], na::Vector2::repeat(5.0 / total_zoom));
-        let bounds_on_surface = bounds
-            .extend_by(na::Vector2::repeat(PATH_WIDTH / total_zoom))
-            .scale(total_zoom)
-            .translate(-self.camera.offset());
+            let bounds = Aabb::from_half_extents(
+                na::point![0.0, 0.0],
+                na::Vector2::repeat(5.0 / total_zoom),
+            );
+            let bounds_on_surface = bounds
+                .extend_by(na::Vector2::repeat(PATH_WIDTH / total_zoom))
+                .scale(total_zoom)
+                .translate(-self.camera.offset());
 
-        let cairo_cx =
-            snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(bounds_on_surface.ceil()));
-        let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-        let path = kurbo::BezPath::from_iter([
-            kurbo::PathEl::MoveTo(kurbo::Point::new(bounds.mins[0], bounds.mins[1])),
-            kurbo::PathEl::LineTo(kurbo::Point::new(bounds.maxs[0], bounds.maxs[1])),
-            kurbo::PathEl::MoveTo(kurbo::Point::new(bounds.mins[0], bounds.maxs[1])),
-            kurbo::PathEl::LineTo(kurbo::Point::new(bounds.maxs[0], bounds.mins[1])),
-        ]);
-        piet_cx.transform(self.camera.transform().to_kurbo());
-        piet_cx.stroke_styled(
-            path,
-            &PATH_COLOR,
-            PATH_WIDTH / total_zoom,
-            &piet::StrokeStyle::default().line_cap(piet::LineCap::Round),
-        );
+            let cairo_cx =
+                snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(bounds_on_surface.ceil()));
+            let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+            let path = kurbo::BezPath::from_iter([
+                kurbo::PathEl::MoveTo(kurbo::Point::new(bounds.mins[0], bounds.mins[1])),
+                kurbo::PathEl::LineTo(kurbo::Point::new(bounds.maxs[0], bounds.maxs[1])),
+                kurbo::PathEl::MoveTo(kurbo::Point::new(bounds.mins[0], bounds.maxs[1])),
+                kurbo::PathEl::LineTo(kurbo::Point::new(bounds.maxs[0], bounds.mins[1])),
+            ]);
+            piet_cx.transform(self.camera.transform().to_kurbo());
+            piet_cx.stroke_styled(
+                path,
+                &PATH_COLOR,
+                PATH_WIDTH / total_zoom,
+                &piet::StrokeStyle::default().line_cap(piet::LineCap::Round),
+            );
+        }
 
         Ok(())
     }

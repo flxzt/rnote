@@ -53,7 +53,7 @@
           <item>
             <attribute name="label" translatable="yes">Show Origin Indicator</attribute>
             <attribute name="toggle" />
-            <attribute name="action">win.toggle-origin-indicator</attribute>
+            <attribute name="action">win.show-origin-indicator</attribute>
           </item>
           <item>
             <attribute name="label" translatable="yes">Draw With _Touch Input</attribute>

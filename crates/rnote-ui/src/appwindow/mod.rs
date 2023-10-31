@@ -598,7 +598,7 @@ impl RnAppWindow {
         );
         adw::prelude::ActionGroupExt::change_action_state(
             self,
-            "toggle-origin-indicator",
+            "show-origin-indicator",
             &format.show_origin_indicator.to_variant(),
         );
         adw::prelude::ActionGroupExt::change_action_state(

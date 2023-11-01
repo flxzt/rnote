@@ -9,15 +9,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-29 20:43+0200\n"
-"PO-Revision-Date: 2023-09-23 16:00+0000\n"
-"Last-Translator: Steph Ma <Stephma@pm.me>\n"
+"PO-Revision-Date: 2023-10-31 16:57+0000\n"
+"Last-Translator: rene-coty <irenee.thirion@e.email>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.1-dev\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -206,7 +206,7 @@ msgstr "Changer de répertoire"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:7
 msgid "Import Pdf"
-msgstr "Importer PDF"
+msgstr "Importer un PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
 #: crates/rnote-ui/data/ui/dialogs/import.ui:216
@@ -963,7 +963,7 @@ msgstr "Im_primer"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:90
 msgid "_Import File"
-msgstr "_Importer fichier"
+msgstr "_Importer un fichier"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:94
 msgid "_Clipboard"
@@ -1149,8 +1149,6 @@ msgstr "Brouillon"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
-#, fuzzy
-#| msgid "Reveal/Hide Flap"
 msgid "Reveal/Hide Sidebar"
 msgstr "Afficher/Masquer le volet"
 
@@ -1493,19 +1491,15 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:472
 msgid "Keyboard Ctrl-Space Action"
-msgstr ""
+msgstr "Action du raccourci clavier Ctrl-Espace"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:473
-#, fuzzy
-#| msgid ""
-#| "Set the action for the\n"
-#| "secondary mouse button"
 msgid ""
 "Set the action for the keyboard\n"
 "Ctrl plus Space shortcut"
 msgstr ""
-"Définir l’action du bouton\n"
-"secondaire de la souris"
+"Définir l’action du raccourci\n"
+"clavier Ctrl + Espace"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:485
 msgid "Drawing Pad Button 1 Action"
@@ -1644,7 +1638,7 @@ msgstr "Imprimer document"
 #: crates/rnote-ui/data/ui/shortcuts.ui:197
 #: crates/rnote-ui/src/dialogs/import.rs:64
 msgid "Import File"
-msgstr "Importer fichier"
+msgstr "Importer un fichier"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:203
 msgid "Drawing"
@@ -1840,10 +1834,8 @@ msgid "Open File"
 msgstr "Ouvrir le fichier"
 
 #: crates/rnote-ui/src/dialogs/import.rs:61
-#, fuzzy
-#| msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "JPG, PDF, PNG, SVG, Xopp"
+msgstr "JPG, PDF, PNG, SVG, Xopp, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:188
 msgid "- no file name -"

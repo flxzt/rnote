@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-29 20:43+0200\n"
-"PO-Revision-Date: 2023-05-18 09:17+0000\n"
+"PO-Revision-Date: 2023-10-29 10:40+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -72,7 +72,7 @@ msgstr "Document wissen"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
-msgstr "Hierdoor wordt het gehele werkblad leeggemaakt. Weet u het zeker?"
+msgstr "Dit zal het gehele werkblad leegmaken. Bevestig deze actie."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:22
@@ -124,32 +124,24 @@ msgid "Close Tab"
 msgstr "Tabblad sluiten"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:30
-#, fuzzy
-#| msgid ""
-#| "This tab contains unsaved changes. Changes which are not saved will be "
-#| "permanently lost."
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"Dit tabblad bevat niet-opgeslagen wijzigingen. Sla uw werk op om te "
-"voorkomen dat de wijzigingen verloren gaan."
+"Dit tabblad bevat niet-opgeslagen wijzigingen. \n"
+"Niet-opgeslagen wijzigingen zullen permanent verloren gaan."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
 msgstr "Venster sluiten"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:48
-#, fuzzy
-#| msgid ""
-#| "Some opened files contain unsaved changes. Changes which are not saved "
-#| "will be permanently lost."
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"Er zijn niet-opgeslagen wijzigingen. Sla uw werk op om te voorkomen dat de "
-"wijzigingen verloren gaan."
+"Somige geopende bestanden bevatten niet-opgeslagen wijzigingen.\n"
+"Niet-opgeslagen wijzigingen zullen permanent verloren gaan."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
@@ -307,7 +299,7 @@ msgstr "Xournal++-importvoorkeuren"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:251
 msgid "DPI"
-msgstr "DPI"
+msgstr "Dpi"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:252
 msgid "Set the preferred DPI for the Xournal++ file"
@@ -384,15 +376,13 @@ msgstr "Geef aan of het achtergrondpatroon ook dient te worden geëxporteerd"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:354
 #: crates/rnote-ui/data/ui/dialogs/export.ui:577
 msgid "Optimize for Printing"
-msgstr ""
+msgstr "Optimaliseren voor printen"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:355
 #: crates/rnote-ui/data/ui/dialogs/export.ui:578
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Set whether the content should be optimized for printing"
-msgstr "Geef aan of het achtergrondpatroon ook dient te worden geëxporteerd"
+msgstr "Geef aan of de inhoud ook dient te worden geoptimaliseerd voor printen"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:143
 #: crates/rnote-ui/data/ui/dialogs/export.ui:365
@@ -426,10 +416,8 @@ msgstr "XOPP"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:158
 #: crates/rnote-ui/data/ui/dialogs/export.ui:380
-#, fuzzy
-#| msgid "Pages Type"
 msgid "Page Order"
-msgstr "Paginatype"
+msgstr "Paginavolgorde"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:159
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
@@ -438,16 +426,19 @@ msgid ""
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
+"De paginavolgorde voor documenten met indelingen\n"
+"die horizontaal en verticaal uitgebreid zijn worden\n"
+"opgedeeld in paginas"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:165
 #: crates/rnote-ui/data/ui/dialogs/export.ui:387
 msgid "Horizontal First"
-msgstr ""
+msgstr "Horizontaal eerst"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:166
 #: crates/rnote-ui/data/ui/dialogs/export.ui:388
 msgid "Vertical First"
-msgstr ""
+msgstr "Verticaal eerst"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:187
 #: crates/rnote-ui/src/dialogs/export.rs:542
@@ -665,7 +656,7 @@ msgstr "Penseelstreken splitsen"
 #: crates/rnote-ui/data/ui/overlays.ui:46
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:81
 msgid "Brush"
-msgstr "Kwast"
+msgstr "Borstel"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:33
 #: crates/rnote-ui/data/ui/overlays.ui:56
@@ -727,7 +718,7 @@ msgstr "Alle penseelstreken deselecteren"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 msgid "Invert Color Brightness of All Selected Strokes"
-msgstr ""
+msgstr "Inverteer de kleurhelderheid van alle geselecteerde streken"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 #: crates/rnote-ui/data/ui/shortcuts.ui:224
@@ -850,8 +841,6 @@ msgid "Move View"
 msgstr "Weergave verplaatsen"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:40
-#, fuzzy
-#| msgid "Zoom in/out"
 msgid "Zoom In/Out"
 msgstr "In-/uitzoomen"
 
@@ -1107,18 +1096,24 @@ msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"Verwijder pagina.\n"
+"Beschikbaar in de Vaste-grootte documentindeling."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:157
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"Pagina toevoegen.\n"
+"Beschikbaar in de Vaste-grootte documentindeling."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:166
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"Documentgrootte passend maken aan de inhoud.\n"
+"Beschikbaar in Vaste-grootte documentindeling."
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
@@ -1153,10 +1148,8 @@ msgstr "Concept"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
-#, fuzzy
-#| msgid "Reveal/Hide Flap"
 msgid "Reveal/Hide Sidebar"
-msgstr "Omvouw tonen/verbergen"
+msgstr "Zijbalk tonen/verbergen"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
 msgid "New Tab"
@@ -1238,7 +1231,7 @@ msgstr "Geef aan of de schuifbalken op het canvas dienen te worden getoond"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:87
 msgid "Inertial Touch Scrolling"
-msgstr ""
+msgstr "Scrollen via aanraking met inertie"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:88
 msgid ""
@@ -1246,6 +1239,9 @@ msgid ""
 "An application restart is required when this option\n"
 "gets disabled."
 msgstr ""
+"Stel in of scrollen via aanraken van het canvas met inertie is.\n"
+"De applicatie moet herstart worden wanneer deze optie\n"
+"uitgeschakeld wordt."
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:100
 msgid "Regular Cursor"
@@ -1432,19 +1428,15 @@ msgstr "Stel de achtergrondpatroonhoogte in"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:402
 msgid "Invert Color Brightness"
-msgstr ""
+msgstr "Inverteer de kleurhelderheid"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:403
-#, fuzzy
-#| msgid "Set the background pattern color"
 msgid "Invert the brightness of all background pattern colors"
-msgstr "Stel de achtergrondpatroonkleur in"
+msgstr "Inverteer de helderheid van de kleuren van alle achtergrondpatronen"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:407
-#, fuzzy
-#| msgid "Revert"
 msgid "Invert"
-msgstr "Terugdraaien"
+msgstr "Inverteren"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:417
 msgid "Button Shortcuts"
@@ -1492,17 +1484,15 @@ msgstr "Stelt de actie in wanneer met 2 vingers lang wordt vastgehouden"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:472
 msgid "Keyboard Ctrl-Space Action"
-msgstr ""
+msgstr "Toetsenbord Ctrl-Spatie actie"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:473
-#, fuzzy
-#| msgid ""
-#| "Set the action for the\n"
-#| "secondary mouse button"
 msgid ""
 "Set the action for the keyboard\n"
 "Ctrl plus Space shortcut"
-msgstr "Ken een actie toe aan de secundaire muisknop"
+msgstr ""
+"Stel de actie in voor het toetsenbord\n"
+"Ctrl plus Spatie snelkoppeling"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:485
 msgid "Drawing Pad Button 1 Action"
@@ -1619,11 +1609,11 @@ msgstr "Document opslaan als"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
 msgid "Add Page (When in Fixed-Size Layout)"
-msgstr ""
+msgstr "Pagina toevoegen (wanneer in Vaste-grootte indeling)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr ""
+msgstr "Laatste pagina verwijderen (Wanneer in Vaste-grootte indeling)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Print Document"
@@ -1651,10 +1641,8 @@ msgid "Paste Clipboard"
 msgstr "Klembord plakken"
 
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:79
-#, fuzzy
-#| msgid "Pages:"
 msgid "Page"
-msgstr "Aantal pagina's:"
+msgstr "Pagina"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
@@ -1735,16 +1723,12 @@ msgid "Opened file was moved or deleted on disk"
 msgstr "Het geopende bestand is verplaatst of verwijderd"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1091
-#, fuzzy
-#| msgid "Importing file failed."
 msgid "Inserting file failed"
-msgstr "Het importeren is mislukt."
+msgstr "Het importeren van het bestand is mislukt"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1101
-#, fuzzy
-#| msgid "Importing file failed."
 msgid "Inserting text failed"
-msgstr "Het importeren is mislukt."
+msgstr "Het tekstinvoegen is mislukt"
 
 #: crates/rnote-ui/src/dialogs/export.rs:28
 #: crates/rnote-ui/src/dialogs/import.rs:21
@@ -1832,10 +1816,8 @@ msgid "Open File"
 msgstr "Bestand openen"
 
 #: crates/rnote-ui/src/dialogs/import.rs:61
-#, fuzzy
-#| msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "JPG, PDF, PNG, SVG, XOPP"
+msgstr "JPG, PDF, PNG, SVG, XOPP, TXT"
 
 #: crates/rnote-ui/src/dialogs/import.rs:188
 msgid "- no file name -"
@@ -1882,22 +1864,18 @@ msgstr ""
 
 #: crates/rnote-ui/src/dialogs/mod.rs:210
 #: crates/rnote-ui/src/dialogs/mod.rs:344
-#, fuzzy
-#| msgid "- invalid file name -"
 msgid "- invalid save folder name -"
 msgstr "- ongeldige bestandsnaam -"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:226
 #: crates/rnote-ui/src/dialogs/mod.rs:359
 msgid "The changes will be saved"
-msgstr ""
+msgstr "De wijzigingen zullen worden opgeslagen"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:231
 #: crates/rnote-ui/src/dialogs/mod.rs:364
-#, fuzzy
-#| msgid "- no file selected -"
 msgid "A new file will be created"
-msgstr "- Geen bestand gekozen -"
+msgstr "Een nieuw bestand zal worden gecreëerd"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:503
 msgid "Change Workspace Directory"
@@ -2119,10 +2097,8 @@ msgid "Ellipses"
 msgstr "Ellipsen"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:412
-#, fuzzy
-#| msgid "Curves"
 msgid "Curves & Paths"
-msgstr "Krommingen"
+msgstr "Krommingen & paden"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
@@ -2166,134 +2142,98 @@ msgstr "Kubieke bezier-kromme"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
-msgstr ""
+msgstr "Polylijn"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:541
 msgid "Application restart is required"
-msgstr ""
+msgstr "Herstarten van de applicatie is vereist"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:807
-#, fuzzy
-#| msgid "Crosshair (Small)"
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "Vizier (klein)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:808
-#, fuzzy
-#| msgid "Crosshair (Medium)"
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "Vizier (gemiddeld)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:809
-#, fuzzy
-#| msgid "Crosshair (Large)"
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "Vizier (groot)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:810
-#, fuzzy
-#| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "Stip (klein)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:811
-#, fuzzy
-#| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "Stip (gemiddeld)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:812
-#, fuzzy
-#| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "Stip (groot)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:813
-#, fuzzy
-#| msgid "Teardrop North-West (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "Druppel noordwest (klein)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:814
-#, fuzzy
-#| msgid "Teardrop North-West (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "Druppel noordwest (gemiddeld)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:815
-#, fuzzy
-#| msgid "Teardrop North-West (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "Druppel noordwest (groot)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:816
-#, fuzzy
-#| msgid "Teardrop North-East (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "Druppel noordoost (klein)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:817
-#, fuzzy
-#| msgid "Teardrop North-East (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "Druppel noordoost (gemiddeld)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:818
-#, fuzzy
-#| msgid "Teardrop North-East (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "Druppel noordoost (groot)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:819
-#, fuzzy
-#| msgid "Teardrop North (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "Druppel noord (klein)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:820
-#, fuzzy
-#| msgid "Teardrop North (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "Druppel noord (gemiddeld)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:821
-#, fuzzy
-#| msgid "Teardrop North (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "Druppel noord (groot)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:822
-#, fuzzy
-#| msgid "Beam (Small)"
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "Balk (klein)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:823
-#, fuzzy
-#| msgid "Beam (Medium)"
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "Balk (gemiddeld)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:824
-#, fuzzy
-#| msgid "Beam (Large)"
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "Balk (groot)"

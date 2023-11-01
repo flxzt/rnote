@@ -52,7 +52,7 @@ jobs:
             echo 'No commit made, skip push.'
             echo "status=false" >> $GITHUB_OUTPUT
           else
-            exit $status
+            exit $failure
           fi
       
       - name: Push changes

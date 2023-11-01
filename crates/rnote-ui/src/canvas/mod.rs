@@ -1268,6 +1268,4 @@ impl RnCanvas {
             na::point![f64::from(self.width()), f64::from(self.height())],
         )
     }
-
-    pub(crate) fn init(&self, appwindow: &RnAppWindow) {}
 }

@@ -20,6 +20,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/canvasmenu.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/canvaswrapper.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/colorpicker.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/contextmenu.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/filerow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/iconpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/mainheader.ui</file>

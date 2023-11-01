@@ -1,10 +1,10 @@
 // Imports
-use crate::{RnAppWindow, RnCanvas};
+use crate::{RnAppWindow, RnCanvas, RnContextMenu};
 use gtk4::{
-    gdk, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, CompositeTemplate,
-    CornerType, EventControllerMotion, EventControllerScroll, EventControllerScrollFlags,
-    EventSequenceState, GestureClick, GestureDrag, GestureLongPress, GestureZoom, PropagationPhase,
-    ScrolledWindow, Widget,
+    gdk, gdk::Rectangle, glib, glib::clone, graphene, prelude::*, subclass::prelude::*,
+    CompositeTemplate, CornerType, EventControllerMotion, EventControllerScroll,
+    EventControllerScrollFlags, EventSequenceState, GestureDrag, GestureLongPress, GestureZoom,
+    PropagationPhase, ScrolledWindow, Widget,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::penevent::ShortcutKey;
@@ -44,12 +44,13 @@ mod imp {
         pub(crate) canvas_alt_shift_drag_gesture: GestureDrag,
         pub(crate) touch_two_finger_long_press_gesture: GestureLongPress,
         pub(crate) touch_long_press_gesture: GestureLongPress,
-        pub(crate) canvas_secondary_click_gesture: GestureClick,
 
         #[template_child]
         pub(crate) scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
         pub(crate) canvas: TemplateChild<RnCanvas>,
+        #[template_child]
+        pub(crate) contextmenu: TemplateChild<RnContextMenu>,
     }
 
     impl Default for RnCanvasWrapper {
@@ -116,11 +117,6 @@ mod imp {
                 .touch_only(true)
                 .build();
 
-            let canvas_secondary_click_gesture = GestureClick::builder()
-                .name("canvas_secondary_click_gesture")
-                .button(gdk::BUTTON_SECONDARY)
-                .build();
-
             Self {
                 connections: RefCell::new(Connections::default()),
                 canvas_touch_drawing_handler: RefCell::new(None),
@@ -138,10 +134,10 @@ mod imp {
                 canvas_alt_shift_drag_gesture,
                 touch_two_finger_long_press_gesture,
                 touch_long_press_gesture,
-                canvas_secondary_click_gesture,
 
                 scroller: TemplateChild::<ScrolledWindow>::default(),
                 canvas: TemplateChild::<RnCanvas>::default(),
+                contextmenu: TemplateChild::<RnContextMenu>::default(),
             }
         }
     }
@@ -185,14 +181,10 @@ mod imp {
                 .add_controller(self.touch_two_finger_long_press_gesture.clone());
             self.canvas
                 .add_controller(self.touch_long_press_gesture.clone());
-            self.canvas
-                .add_controller(self.canvas_secondary_click_gesture.clone());
 
             // group
             self.touch_two_finger_long_press_gesture
                 .group_with(&self.canvas_zoom_gesture);
-            self.touch_long_press_gesture
-                .group_with(&self.canvas_secondary_click_gesture);
 
             self.setup_input();
 
@@ -613,13 +605,10 @@ mod imp {
             {
                 // Context menu
                 self.touch_long_press_gesture.connect_pressed(
-                    clone!(@weak obj as canvaswrapper => move |_gesture, _x, _y| {
-                        log::debug!("long press");
-                    }),
-                );
-                self.canvas_secondary_click_gesture.connect_pressed(
-                    clone!(@weak obj as canvaswrapper => move |_gesture, _n_press, _x, _y| {
-                        log::debug!("right click");
+                    clone!(@weak obj as canvaswrapper => move |_gesture, x, y| {
+                        let popover = canvaswrapper.contextmenu().popover();
+                        popover.set_pointing_to(Some(&Rectangle::new(x as i32, y as i32, 0, 0)));
+                        popover.popup();
                     }),
                 );
             }
@@ -678,6 +667,10 @@ impl RnCanvasWrapper {
 
     pub(crate) fn canvas(&self) -> RnCanvas {
         self.imp().canvas.get()
+    }
+
+    pub(crate) fn contextmenu(&self) -> RnContextMenu {
+        self.imp().contextmenu.get()
     }
 
     /// Initializes for the given appwindow. Usually `init()` is only called once,

@@ -25,6 +25,9 @@
           <object class="RnCanvas" id="canvas">
             <property name="halign">center</property>
             <property name="valign">start</property>
+            <child>
+              <object class="RnContextMenu" id="contextmenu"></object>
+            </child>
           </object>
         </child>
       </object>

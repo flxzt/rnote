@@ -939,14 +939,14 @@ impl RnCanvas {
                             canvas.set_output_file_expect_write(false);
                             return;
                         }
-                        if let (Some(save_modified_time), Some(time)) =
+                        if let (Some(saved_modified_time), Some(changed_modified_time)) =
                             (canvas.output_file_saved_modified_date_time(),
                             file.query_info(
                                 gio::FILE_ATTRIBUTE_TIME_MODIFIED_USEC,
                                 gio::FileQueryInfoFlags::NONE,
                                 gio::Cancellable::NONE).ok().and_then(|i| i.modification_date_time())
                             ) {
-                            if save_modified_time == time {
+                            if saved_modified_time == changed_modified_time {
                                 // The changed file has the same modified date so it should be equal to the saved one.
                                 // A changed file event can happen when saving to a gvfs directory or to a directory
                                 // synced with cloud storage providers, even though the file itself has not actually

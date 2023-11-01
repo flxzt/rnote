@@ -68,7 +68,7 @@ mod imp {
         pub(crate) engine_task_handler_handle: RefCell<Option<glib::JoinHandle<()>>>,
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
-        pub(crate) output_file_modified_date_time: RefCell<Option<glib::DateTime>>,
+        pub(crate) output_file_saved_modified_date_time: RefCell<Option<glib::DateTime>>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
         pub(crate) output_file_monitor_changed_handler: RefCell<Option<glib::SignalHandlerId>>,
         pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
@@ -162,7 +162,7 @@ mod imp {
 
                 output_file: RefCell::new(None),
                 // is automatically updated whenever the output file changes.
-                output_file_modified_date_time: RefCell::new(None),
+                output_file_saved_modified_date_time: RefCell::new(None),
                 output_file_monitor: RefCell::new(None),
                 output_file_monitor_changed_handler: RefCell::new(None),
                 output_file_modified_toast_singleton: RefCell::new(None),
@@ -303,8 +303,8 @@ mod imp {
                     let output_file = value
                         .get::<Option<gio::File>>()
                         .expect("The value needs to be of type `Option<gio::File>`");
-                    self.output_file_modified_date_time
-                        .replace(output_file.as_ref().and_then(|f| {
+                    self.output_file_saved_modified_date_time.replace(
+                        output_file.as_ref().and_then(|f| {
                             f.query_info(
                                 gio::FILE_ATTRIBUTE_TIME_MODIFIED_USEC,
                                 gio::FileQueryInfoFlags::NONE,
@@ -312,7 +312,8 @@ mod imp {
                             )
                             .ok()?
                             .modification_date_time()
-                        }));
+                        }),
+                    );
                     self.output_file.replace(output_file);
                 }
                 "unsaved-changes" => {
@@ -704,10 +705,12 @@ impl RnCanvas {
         );
     }
 
-    /// Returns the date time for the modification time of the current output file.
-    pub(crate) fn output_file_modified_date_time(&self) -> Option<glib::DateTime> {
+    /// Returns the saved date time for the modification time of the output file when it was set by the app.
+    ///
+    /// It might not be correct if the content of the output file has changed from outside the app.
+    pub(crate) fn output_file_saved_modified_date_time(&self) -> Option<glib::DateTime> {
         self.imp()
-            .output_file_modified_date_time
+            .output_file_saved_modified_date_time
             .borrow()
             .to_owned()
     }
@@ -937,7 +940,7 @@ impl RnCanvas {
                             return;
                         }
                         if let (Some(save_modified_time), Some(time)) =
-                            (canvas.output_file_modified_date_time(),
+                            (canvas.output_file_saved_modified_date_time(),
                             file.query_info(
                                 gio::FILE_ATTRIBUTE_TIME_MODIFIED_USEC,
                                 gio::FileQueryInfoFlags::NONE,

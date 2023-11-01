@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-29 20:43+0200\n"
+"POT-Creation-Date: 2023-11-01 08:41+0100\n"
 "PO-Revision-Date: 2023-04-26 22:52+0000\n"
 "Last-Translator: AmirWasHere <iamamirhe@gmail.com>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/rnote/repo/fa/>\n"
@@ -82,10 +82,10 @@ msgstr "تمام سند پاک می‌شود. لطفاً تایید کنید."
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:70
 #: crates/rnote-ui/data/ui/dialogs/import.ui:10
-#: crates/rnote-ui/data/ui/dialogs/import.ui:211
+#: crates/rnote-ui/data/ui/dialogs/import.ui:193
 #: crates/rnote-ui/data/ui/dialogs/export.ui:10
-#: crates/rnote-ui/data/ui/dialogs/export.ui:190
-#: crates/rnote-ui/data/ui/dialogs/export.ui:455
+#: crates/rnote-ui/data/ui/dialogs/export.ui:175
+#: crates/rnote-ui/data/ui/dialogs/export.ui:411
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
 msgstr "لغو"
@@ -97,7 +97,7 @@ msgstr "پاکسازی"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
 #: crates/rnote-ui/data/ui/shortcuts.ui:149
-#: crates/rnote-ui/src/canvas/mod.rs:578
+#: crates/rnote-ui/src/canvas/mod.rs:590
 msgid "New Document"
 msgstr "سند جدید"
 
@@ -117,7 +117,7 @@ msgstr "نادیده گرفتن"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:42
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:60
-#: crates/rnote-ui/src/dialogs/export.rs:33
+#: crates/rnote-ui/src/dialogs/export.rs:32
 msgid "Save"
 msgstr "ذخیره"
 
@@ -166,7 +166,7 @@ msgid "Edit Workspace"
 msgstr "تغییر فضای کار"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:75
-#: crates/rnote-ui/data/ui/settingspanel.ui:277
+#: crates/rnote-ui/data/ui/settingspanel.ui:234
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:39
 msgid "Apply"
 msgstr "اعمال"
@@ -184,7 +184,7 @@ msgid "Change the workspace icon"
 msgstr "تغییر آیکون فضای کار"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:143
-#: crates/rnote-ui/data/ui/settingspanel.ui:314
+#: crates/rnote-ui/data/ui/settingspanel.ui:271
 msgid "Color"
 msgstr "رنگ"
 
@@ -201,10 +201,10 @@ msgid "Change the workspace directory"
 msgstr "تغییر مسیر فضای کار"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:168
-#: crates/rnote-ui/data/ui/dialogs/export.ui:299
-#: crates/rnote-ui/src/dialogs/export.rs:365
-#: crates/rnote-ui/src/dialogs/export.rs:402
-#: crates/rnote-ui/src/dialogs/export.rs:410
+#: crates/rnote-ui/data/ui/dialogs/export.ui:284
+#: crates/rnote-ui/src/dialogs/export.rs:353
+#: crates/rnote-ui/src/dialogs/export.rs:390
+#: crates/rnote-ui/src/dialogs/export.rs:398
 #: crates/rnote-ui/src/dialogs/mod.rs:523
 msgid "- no directory selected -"
 msgstr "- هیچ مسیری انتخاب نشده است -"
@@ -220,7 +220,7 @@ msgid "Import Pdf"
 msgstr "وارد کردن پی‌دی‌اف"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
-#: crates/rnote-ui/data/ui/dialogs/import.ui:216
+#: crates/rnote-ui/data/ui/dialogs/import.ui:198
 #: crates/rnote-ui/src/dialogs/import.rs:66
 msgid "Import"
 msgstr "وارد کردن"
@@ -239,65 +239,65 @@ msgstr "اولویت‌های وارد کردن پی‌دی‌اف"
 msgid "Start Page"
 msgstr "صفحه‌ی آغازین"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:98
+#: crates/rnote-ui/data/ui/dialogs/import.ui:92
 msgid "End Page"
 msgstr "صفحه‌ی پایانی"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:113
+#: crates/rnote-ui/data/ui/dialogs/import.ui:101
 msgid "Page Width (%)"
 msgstr "عرض صفحه (%)"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:114
+#: crates/rnote-ui/data/ui/dialogs/import.ui:102
 #, fuzzy
 #| msgid "Set the width of imported PDF's in percentage to the format width"
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr "عرض پی‌دی‌اف‌های وارد شده را بر حسب درصد روی عرض قالب تنظیم کنید"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:134
+#: crates/rnote-ui/data/ui/dialogs/import.ui:109
 msgid "Page Spacing"
 msgstr "فاصله‌گذاری صفحه"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:135
+#: crates/rnote-ui/data/ui/dialogs/import.ui:110
 #, fuzzy
 #| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
 msgstr "صفحات پی‌دی‌اف چگونه فاصله‌گذاری می‌شوند"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:139
+#: crates/rnote-ui/data/ui/dialogs/import.ui:114
 msgid "Continuous"
 msgstr "ادامه‌دار"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:140
+#: crates/rnote-ui/data/ui/dialogs/import.ui:115
 msgid "One per Document Page"
 msgstr "یکی به ازای هر صفحه‌ی سند"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:148
+#: crates/rnote-ui/data/ui/dialogs/import.ui:123
 msgid "Pages Type"
 msgstr "نوع صفحات"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:149
+#: crates/rnote-ui/data/ui/dialogs/import.ui:124
 #, fuzzy
 #| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr "تنظیم کنید که پی‌دی‌اف‌ها باید به عنوان تصاویر برداری یا بیت‌مپ وارد شوند"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:161
+#: crates/rnote-ui/data/ui/dialogs/import.ui:136
 msgid "Vector"
 msgstr "برداری"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:168
+#: crates/rnote-ui/data/ui/dialogs/import.ui:143
 msgid "Bitmap"
 msgstr "بیت‌مپ"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:177
-#: crates/rnote-ui/data/ui/dialogs/export.ui:396
-#: crates/rnote-ui/data/ui/dialogs/export.ui:603
+#: crates/rnote-ui/data/ui/dialogs/import.ui:152
+#: crates/rnote-ui/data/ui/dialogs/export.ui:366
+#: crates/rnote-ui/data/ui/dialogs/export.ui:544
 msgid "Bitmap Scale-Factor"
 msgstr "ضریب مقیاس بیت‌مپ"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:178
-#: crates/rnote-ui/data/ui/dialogs/export.ui:397
-#: crates/rnote-ui/data/ui/dialogs/export.ui:604
+#: crates/rnote-ui/data/ui/dialogs/import.ui:153
+#: crates/rnote-ui/data/ui/dialogs/export.ui:367
+#: crates/rnote-ui/data/ui/dialogs/export.ui:545
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
@@ -305,217 +305,217 @@ msgstr ""
 "ضریب مقیاس بیت‌مپ را در رابطه با\n"
 "اندازه‌ی واقعی در سند تنظیم کنید"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:208
+#: crates/rnote-ui/data/ui/dialogs/import.ui:190
 msgid "Import Xournal++ File"
 msgstr "وارد کردن فایل Xournal++"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:247
+#: crates/rnote-ui/data/ui/dialogs/import.ui:229
 msgid "Xournal++ File Import Preferences"
 msgstr "اولویت‌های وارد کردن فایل Xournal++"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:251
+#: crates/rnote-ui/data/ui/dialogs/import.ui:233
 msgid "DPI"
 msgstr "DPI"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:252
+#: crates/rnote-ui/data/ui/dialogs/import.ui:234
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "DPI ترجیحی برای فایل Xournal++ را تنظیم کنید"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
-#: crates/rnote-ui/src/dialogs/export.rs:250
+#: crates/rnote-ui/src/dialogs/export.rs:247
 msgid "Export Document"
 msgstr "خروجی‌گیری سند"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
-#: crates/rnote-ui/data/ui/dialogs/export.ui:195
-#: crates/rnote-ui/data/ui/dialogs/export.ui:460
-#: crates/rnote-ui/src/dialogs/export.rs:862
-#: crates/rnote-ui/src/dialogs/export.rs:909
+#: crates/rnote-ui/data/ui/dialogs/export.ui:180
+#: crates/rnote-ui/data/ui/dialogs/export.ui:416
+#: crates/rnote-ui/src/dialogs/export.rs:839
+#: crates/rnote-ui/src/dialogs/export.rs:886
 msgid "Export"
 msgstr "خروجی‌گیری"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:72
-#: crates/rnote-ui/data/ui/dialogs/export.ui:517
+#: crates/rnote-ui/data/ui/dialogs/export.ui:473
 msgid "Export File"
 msgstr "خروجی‌گیری فایل"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:73
-#: crates/rnote-ui/data/ui/dialogs/export.ui:518
+#: crates/rnote-ui/data/ui/dialogs/export.ui:474
 msgid "Select the export file"
 msgstr "فایل خروجی‌گیری شده را انتخاب کنید"
 
 #. force the user to pick another file
 #: crates/rnote-ui/data/ui/dialogs/export.ui:82
-#: crates/rnote-ui/data/ui/dialogs/export.ui:527
-#: crates/rnote-ui/src/dialogs/export.rs:121
-#: crates/rnote-ui/src/dialogs/export.rs:143
-#: crates/rnote-ui/src/dialogs/export.rs:150
-#: crates/rnote-ui/src/dialogs/export.rs:195
-#: crates/rnote-ui/src/dialogs/export.rs:661
-#: crates/rnote-ui/src/dialogs/export.rs:687
-#: crates/rnote-ui/src/dialogs/export.rs:694
-#: crates/rnote-ui/src/dialogs/export.rs:745
+#: crates/rnote-ui/data/ui/dialogs/export.ui:483
+#: crates/rnote-ui/src/dialogs/export.rs:118
+#: crates/rnote-ui/src/dialogs/export.rs:140
+#: crates/rnote-ui/src/dialogs/export.rs:147
+#: crates/rnote-ui/src/dialogs/export.rs:192
+#: crates/rnote-ui/src/dialogs/export.rs:638
+#: crates/rnote-ui/src/dialogs/export.rs:664
+#: crates/rnote-ui/src/dialogs/export.rs:671
+#: crates/rnote-ui/src/dialogs/export.rs:722
 msgid "- no file selected -"
 msgstr "- هیچ فایلی انتخاب نشده است -"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:106
-#: crates/rnote-ui/data/ui/dialogs/export.ui:328
-#: crates/rnote-ui/data/ui/dialogs/export.ui:551
+#: crates/rnote-ui/data/ui/dialogs/export.ui:313
+#: crates/rnote-ui/data/ui/dialogs/export.ui:507
 msgid "Export Preferences"
 msgstr "اولویت‌های خروجی‌گیری"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:110
-#: crates/rnote-ui/data/ui/dialogs/export.ui:332
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
+#: crates/rnote-ui/data/ui/dialogs/export.ui:317
+#: crates/rnote-ui/data/ui/dialogs/export.ui:511
 msgid "With Background"
 msgstr "با پس‌زمینه"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:111
-#: crates/rnote-ui/data/ui/dialogs/export.ui:333
-#: crates/rnote-ui/data/ui/dialogs/export.ui:556
+#: crates/rnote-ui/data/ui/dialogs/export.ui:318
+#: crates/rnote-ui/data/ui/dialogs/export.ui:512
 msgid "Set whether the background should be exported"
 msgstr "تنظیم کنید که پس‌زمینه خروجی‌گیری شود یا خیر"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:121
-#: crates/rnote-ui/data/ui/dialogs/export.ui:343
-#: crates/rnote-ui/data/ui/dialogs/export.ui:566
+#: crates/rnote-ui/data/ui/dialogs/export.ui:116
+#: crates/rnote-ui/data/ui/dialogs/export.ui:323
+#: crates/rnote-ui/data/ui/dialogs/export.ui:517
 msgid "With Pattern"
 msgstr "با الگو"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:122
-#: crates/rnote-ui/data/ui/dialogs/export.ui:344
-#: crates/rnote-ui/data/ui/dialogs/export.ui:567
+#: crates/rnote-ui/data/ui/dialogs/export.ui:117
+#: crates/rnote-ui/data/ui/dialogs/export.ui:324
+#: crates/rnote-ui/data/ui/dialogs/export.ui:518
 msgid "Set whether the background pattern should be exported"
 msgstr "تنظیم کنید که الگوی پس‌زمینه خروجی‌گیری شود یا خیر"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:132
-#: crates/rnote-ui/data/ui/dialogs/export.ui:354
-#: crates/rnote-ui/data/ui/dialogs/export.ui:577
+#: crates/rnote-ui/data/ui/dialogs/export.ui:122
+#: crates/rnote-ui/data/ui/dialogs/export.ui:329
+#: crates/rnote-ui/data/ui/dialogs/export.ui:523
 msgid "Optimize for Printing"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:133
-#: crates/rnote-ui/data/ui/dialogs/export.ui:355
-#: crates/rnote-ui/data/ui/dialogs/export.ui:578
+#: crates/rnote-ui/data/ui/dialogs/export.ui:123
+#: crates/rnote-ui/data/ui/dialogs/export.ui:330
+#: crates/rnote-ui/data/ui/dialogs/export.ui:524
 #, fuzzy
 #| msgid "Set whether the background pattern should be exported"
 msgid "Set whether the content should be optimized for printing"
 msgstr "تنظیم کنید که الگوی پس‌زمینه خروجی‌گیری شود یا خیر"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:143
-#: crates/rnote-ui/data/ui/dialogs/export.ui:365
-#: crates/rnote-ui/data/ui/dialogs/export.ui:588
+#: crates/rnote-ui/data/ui/dialogs/export.ui:128
+#: crates/rnote-ui/data/ui/dialogs/export.ui:335
+#: crates/rnote-ui/data/ui/dialogs/export.ui:529
 msgid "Export Format"
 msgstr "قالب خروجی"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:144
-#: crates/rnote-ui/data/ui/dialogs/export.ui:366
+#: crates/rnote-ui/data/ui/dialogs/export.ui:129
+#: crates/rnote-ui/data/ui/dialogs/export.ui:336
 msgid "The export format"
 msgstr "قالب خروجی"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:148
-#: crates/rnote-ui/data/ui/dialogs/export.ui:370
-#: crates/rnote-ui/data/ui/dialogs/export.ui:593
-#: crates/rnote-ui/src/dialogs/export.rs:260
-#: crates/rnote-ui/src/dialogs/export.rs:565
-#: crates/rnote-ui/src/dialogs/export.rs:821
+#: crates/rnote-ui/data/ui/dialogs/export.ui:133
+#: crates/rnote-ui/data/ui/dialogs/export.ui:340
+#: crates/rnote-ui/data/ui/dialogs/export.ui:534
+#: crates/rnote-ui/src/dialogs/export.rs:257
+#: crates/rnote-ui/src/dialogs/export.rs:553
+#: crates/rnote-ui/src/dialogs/export.rs:798
 msgid "Svg"
 msgstr "Svg"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:149
-#: crates/rnote-ui/src/dialogs/export.rs:265
+#: crates/rnote-ui/data/ui/dialogs/export.ui:134
+#: crates/rnote-ui/src/dialogs/export.rs:262
 msgid "Pdf"
 msgstr "Pdf"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:150
-#: crates/rnote-ui/src/dialogs/export.rs:270
+#: crates/rnote-ui/data/ui/dialogs/export.ui:135
+#: crates/rnote-ui/src/dialogs/export.rs:267
 msgid "Xopp"
 msgstr "Xopp"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:158
-#: crates/rnote-ui/data/ui/dialogs/export.ui:380
+#: crates/rnote-ui/data/ui/dialogs/export.ui:143
+#: crates/rnote-ui/data/ui/dialogs/export.ui:350
 #, fuzzy
 #| msgid "Pages Type"
 msgid "Page Order"
 msgstr "نوع صفحات"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:159
-#: crates/rnote-ui/data/ui/dialogs/export.ui:381
+#: crates/rnote-ui/data/ui/dialogs/export.ui:144
+#: crates/rnote-ui/data/ui/dialogs/export.ui:351
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:165
-#: crates/rnote-ui/data/ui/dialogs/export.ui:387
+#: crates/rnote-ui/data/ui/dialogs/export.ui:150
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 msgid "Horizontal First"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:166
-#: crates/rnote-ui/data/ui/dialogs/export.ui:388
+#: crates/rnote-ui/data/ui/dialogs/export.ui:151
+#: crates/rnote-ui/data/ui/dialogs/export.ui:358
 msgid "Vertical First"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:187
-#: crates/rnote-ui/src/dialogs/export.rs:542
+#: crates/rnote-ui/data/ui/dialogs/export.ui:172
+#: crates/rnote-ui/src/dialogs/export.rs:530
 msgid "Export Document Pages"
 msgstr "خروجی‌گیری صفحات سند"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:269
+#: crates/rnote-ui/data/ui/dialogs/export.ui:254
 msgid "Page Files Naming:"
 msgstr "نام‌گذاری صفحات فایل:"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:289
+#: crates/rnote-ui/data/ui/dialogs/export.ui:274
 msgid "Export Directory"
 msgstr "خروجی‌گیری مسیر"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:290
+#: crates/rnote-ui/data/ui/dialogs/export.ui:275
 msgid "Select the export directory"
 msgstr "مسیر خروجی‌گیری را انتخاب کنید"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:321
+#: crates/rnote-ui/data/ui/dialogs/export.ui:306
 msgid "Export Files Stem Name"
 msgstr "خروجی‌گیری از نام فایل"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:371
-#: crates/rnote-ui/data/ui/dialogs/export.ui:594
-#: crates/rnote-ui/src/dialogs/export.rs:570
-#: crates/rnote-ui/src/dialogs/export.rs:826
+#: crates/rnote-ui/data/ui/dialogs/export.ui:341
+#: crates/rnote-ui/data/ui/dialogs/export.ui:535
+#: crates/rnote-ui/src/dialogs/export.rs:558
+#: crates/rnote-ui/src/dialogs/export.rs:803
 msgid "Png"
 msgstr "Png"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:372
-#: crates/rnote-ui/data/ui/dialogs/export.ui:595
-#: crates/rnote-ui/src/dialogs/export.rs:576
-#: crates/rnote-ui/src/dialogs/export.rs:832
+#: crates/rnote-ui/data/ui/dialogs/export.ui:342
+#: crates/rnote-ui/data/ui/dialogs/export.ui:536
+#: crates/rnote-ui/src/dialogs/export.rs:564
+#: crates/rnote-ui/src/dialogs/export.rs:809
 msgid "Jpeg"
 msgstr "Jpeg"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:418
-#: crates/rnote-ui/data/ui/dialogs/export.ui:625
+#: crates/rnote-ui/data/ui/dialogs/export.ui:375
+#: crates/rnote-ui/data/ui/dialogs/export.ui:553
 msgid "Jpeg Quality"
 msgstr "کیفیت Jpeg"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:419
-#: crates/rnote-ui/data/ui/dialogs/export.ui:626
+#: crates/rnote-ui/data/ui/dialogs/export.ui:376
+#: crates/rnote-ui/data/ui/dialogs/export.ui:554
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "کیفیت تصویر Jpeg را تنظیم کنید (1 - 100)"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:452
-#: crates/rnote-ui/src/dialogs/export.rs:807
+#: crates/rnote-ui/data/ui/dialogs/export.ui:408
+#: crates/rnote-ui/src/dialogs/export.rs:784
 msgid "Export Selection"
 msgstr "خروجی‌گیری انتخاب‌شده"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:589
+#: crates/rnote-ui/data/ui/dialogs/export.ui:530
 msgid "The export image format"
 msgstr "قالب تصویر خروجی"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:646
+#: crates/rnote-ui/data/ui/dialogs/export.ui:561
 msgid "Margin"
 msgstr "حاشیه"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:647
+#: crates/rnote-ui/data/ui/dialogs/export.ui:562
 msgid "Set the margin around the selected area"
 msgstr "حاشیه‌ی اطراف فضای انتخاب‌شده را تنظیم کنید"
 
@@ -637,27 +637,27 @@ msgstr "تراکم"
 msgid "The density is the amount of dots per 10x10 area"
 msgstr "تراکم مقدار نقاط در هر منطقه‌ی 10x10 است"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
 msgid "Stroke Dots Position Distribution"
 msgstr "توزیع موقعیت نقاط نقش"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:249
 msgid "Choose a dots position probability distribution"
 msgstr "توزیع احتمال موقعیت نقطه را انتخاب کنید"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:259
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
 msgid "Uniform"
 msgstr "یکنواخت"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:260
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
 msgid "Normal"
 msgstr "عادی"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:261
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
 msgid "Exponential"
 msgstr "نمایی"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:262
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
 msgid "Reverse Exponential"
 msgstr "نمایی معکوس"
 
@@ -670,37 +670,31 @@ msgid "Split Strokes"
 msgstr "نقش‌های تقسیم‌شده"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:17
-#: crates/rnote-ui/data/ui/overlays.ui:46
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:81
 msgid "Brush"
 msgstr "قلم‌مو"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:33
-#: crates/rnote-ui/data/ui/overlays.ui:56
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:82
 msgid "Shaper"
 msgstr "شکل‌دهنده"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:49
-#: crates/rnote-ui/data/ui/overlays.ui:67
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:83
 msgid "Typewriter"
 msgstr "ماشین تحریر"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:65
-#: crates/rnote-ui/data/ui/overlays.ui:78
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:84
 msgid "Eraser"
 msgstr "پاک‌کن"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:81
-#: crates/rnote-ui/data/ui/overlays.ui:89
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:85
 msgid "Selector"
 msgstr "انتخاب‌گر"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:97
-#: crates/rnote-ui/data/ui/overlays.ui:100
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:86
 msgid "Tools"
 msgstr "ابزارها"
@@ -747,12 +741,12 @@ msgid "Delete Selection"
 msgstr "حذف انتخاب‌شده"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:19
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:255
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:248
 msgid "Shape Builders"
 msgstr "شکل‌سازها"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:35
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:297
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:290
 msgid "Constraints"
 msgstr "محدودیت‌ها"
 
@@ -806,7 +800,7 @@ msgid "Crosshatch"
 msgstr "متقاطع"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:206
-#: crates/rnote-ui/data/ui/settingspanel.ui:343
+#: crates/rnote-ui/data/ui/settingspanel.ui:300
 msgid "Dots"
 msgstr "نقطه‌ای"
 
@@ -822,11 +816,11 @@ msgstr "زاویه‌ی هاشور"
 msgid "Set the angle of hachure fills"
 msgstr "زاویه‌ی پر کردن هاشور را تنظیم کنید"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:326
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:319
 msgid "Enabled"
 msgstr "فعال شد"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:327
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:320
 msgid ""
 "Hold Ctrl to temporarily\n"
 "enable/disable constraints\n"
@@ -836,15 +830,15 @@ msgstr ""
 "برای فعال/غیرفعال کردن محدودیت‌ها\n"
 "زمانی که سوییچ روشن/خاموش است نگه دارید"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:339
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:327
 msgid "1:1"
 msgstr "1:1"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:349
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:332
 msgid "3:2"
 msgstr "3:2"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:359
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:337
 msgid "Golden Ratio (1:1.618)"
 msgstr "نسبت طلایی (1:1.618)"
 
@@ -1067,60 +1061,64 @@ msgid "Show _Format Borders"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
-msgid "Draw With _Touch Input"
+msgid "Show _Origin Indicator"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:59
-msgid "Block Pinch to _Zoom"
+msgid "Draw With _Touch Input"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:64
+msgid "Block Pinch to _Zoom"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:69
 msgid "_Pen Sounds"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:71
+#: crates/rnote-ui/data/ui/canvasmenu.ui:76
 msgid "C_lear Document"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:75
+#: crates/rnote-ui/data/ui/canvasmenu.ui:80
 msgid "_Return to Origin Page"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:105
+#: crates/rnote-ui/data/ui/canvasmenu.ui:110
 #: crates/rnote-ui/data/ui/shortcuts.ui:120
 #: crates/rnote-ui/data/ui/shortcuts.ui:126
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
 msgid "Zoom out"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:114
+#: crates/rnote-ui/data/ui/canvasmenu.ui:119
 msgid "Reset Zoom"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:121
+#: crates/rnote-ui/data/ui/canvasmenu.ui:126
 #: crates/rnote-ui/data/ui/shortcuts.ui:102
 #: crates/rnote-ui/data/ui/shortcuts.ui:108
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
 msgid "Zoom in"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:133
+#: crates/rnote-ui/data/ui/canvasmenu.ui:138
 msgid "Zoom to Page Width"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:148
+#: crates/rnote-ui/data/ui/canvasmenu.ui:153
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:157
+#: crates/rnote-ui/data/ui/canvasmenu.ui:162
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:166
+#: crates/rnote-ui/data/ui/canvasmenu.ui:171
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
@@ -1153,7 +1151,7 @@ msgid "Duplicate"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:580
+#: crates/rnote-ui/src/canvas/mod.rs:592
 msgid "Draft"
 msgstr ""
 
@@ -1175,25 +1173,15 @@ msgstr ""
 msgid "Save Document"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/overlays.ui:123
-#: crates/rnote-ui/data/ui/shortcuts.ui:230
-msgid "Undo"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/overlays.ui:134
-#: crates/rnote-ui/data/ui/shortcuts.ui:236
-msgid "Redo"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/overlays.ui:205
+#: crates/rnote-ui/data/ui/overlays.ui:99
 msgid "Move _Left"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/overlays.ui:209
+#: crates/rnote-ui/data/ui/overlays.ui:103
 msgid "Move _Right"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/overlays.ui:215
+#: crates/rnote-ui/data/ui/overlays.ui:109
 msgid "_Close"
 msgstr ""
 
@@ -1222,319 +1210,319 @@ msgstr ""
 msgid "Enable or disable autosave"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:55
+#: crates/rnote-ui/data/ui/settingspanel.ui:50
 msgid "Autosave Interval (secs)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:56
+#: crates/rnote-ui/data/ui/settingspanel.ui:51
 msgid "Set the autosave interval in seconds"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:76
+#: crates/rnote-ui/data/ui/settingspanel.ui:58
 msgid "Show Scrollbars"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:77
+#: crates/rnote-ui/data/ui/settingspanel.ui:59
 msgid "Set whether the scrollbars on the canvas are shown"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:87
+#: crates/rnote-ui/data/ui/settingspanel.ui:64
 msgid "Inertial Touch Scrolling"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:88
+#: crates/rnote-ui/data/ui/settingspanel.ui:65
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option\n"
 "gets disabled."
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:100
+#: crates/rnote-ui/data/ui/settingspanel.ui:72
 msgid "Regular Cursor"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:101
+#: crates/rnote-ui/data/ui/settingspanel.ui:73
 msgid "Set the regular cursor"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:123
+#: crates/rnote-ui/data/ui/settingspanel.ui:95
 msgid "Show Drawing Cursor"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:124
+#: crates/rnote-ui/data/ui/settingspanel.ui:96
 msgid "Set whether the drawing cursor is visible"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:138
+#: crates/rnote-ui/data/ui/settingspanel.ui:102
 msgid "Drawing Cursor"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:139
+#: crates/rnote-ui/data/ui/settingspanel.ui:103
 msgid "Set the drawing cursor"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:164
+#: crates/rnote-ui/data/ui/settingspanel.ui:128
 msgid "Page Format"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:167
+#: crates/rnote-ui/data/ui/settingspanel.ui:131
 msgid "Format"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:168
+#: crates/rnote-ui/data/ui/settingspanel.ui:132
 msgid "Choose a format"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:172
+#: crates/rnote-ui/data/ui/settingspanel.ui:136
 msgid "A6"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:173
+#: crates/rnote-ui/data/ui/settingspanel.ui:137
 msgid "A5"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:174
+#: crates/rnote-ui/data/ui/settingspanel.ui:138
 msgid "A4"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:175
+#: crates/rnote-ui/data/ui/settingspanel.ui:139
 msgid "A3"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:176
+#: crates/rnote-ui/data/ui/settingspanel.ui:140
 msgid "A2"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:177
+#: crates/rnote-ui/data/ui/settingspanel.ui:141
 msgid "US letter"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:178
+#: crates/rnote-ui/data/ui/settingspanel.ui:142
 msgid "US legal"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:179
+#: crates/rnote-ui/data/ui/settingspanel.ui:143
 msgid "Custom"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:187
+#: crates/rnote-ui/data/ui/settingspanel.ui:151
 msgid "Orientation"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:188
+#: crates/rnote-ui/data/ui/settingspanel.ui:152
 msgid "Set the format orientation"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:200
+#: crates/rnote-ui/data/ui/settingspanel.ui:164
 msgid "Portrait"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:206
+#: crates/rnote-ui/data/ui/settingspanel.ui:170
 msgid "Landscape"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:216
+#: crates/rnote-ui/data/ui/settingspanel.ui:180
 msgid "Width"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:217
+#: crates/rnote-ui/data/ui/settingspanel.ui:181
 msgid "Set the format width"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:230
+#: crates/rnote-ui/data/ui/settingspanel.ui:197
 msgid "Height"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:231
+#: crates/rnote-ui/data/ui/settingspanel.ui:198
 msgid "Set the format height"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:244
+#: crates/rnote-ui/data/ui/settingspanel.ui:214
 msgid "Dpi"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:245
+#: crates/rnote-ui/data/ui/settingspanel.ui:215
 msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:268
+#: crates/rnote-ui/data/ui/settingspanel.ui:225
 msgid "Revert"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:290
+#: crates/rnote-ui/data/ui/settingspanel.ui:247
 #: crates/rnote-ui/data/ui/shortcuts.ui:146
 #: crates/rnote-ui/src/dialogs/mod.rs:632
 msgid "Document"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:293
+#: crates/rnote-ui/data/ui/settingspanel.ui:250
 msgid "Format Border Color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:294
+#: crates/rnote-ui/data/ui/settingspanel.ui:251
 msgid "Set the format border color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:315
+#: crates/rnote-ui/data/ui/settingspanel.ui:272
 msgid "Set the background color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:335
+#: crates/rnote-ui/data/ui/settingspanel.ui:292
 msgid "Pattern"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:336
+#: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Choose a background pattern"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:340
+#: crates/rnote-ui/data/ui/settingspanel.ui:297
 msgid "None"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:341
+#: crates/rnote-ui/data/ui/settingspanel.ui:298
 msgid "Lines"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:342
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
+#: crates/rnote-ui/data/ui/settingspanel.ui:299
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
 msgid "Grid"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:344
+#: crates/rnote-ui/data/ui/settingspanel.ui:301
 msgid "Isometric Grid"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:345
+#: crates/rnote-ui/data/ui/settingspanel.ui:302
 msgid "Isometric Dots"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:353
+#: crates/rnote-ui/data/ui/settingspanel.ui:310
 msgid "Pattern Color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:354
+#: crates/rnote-ui/data/ui/settingspanel.ui:311
 msgid "Set the background pattern color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:374
+#: crates/rnote-ui/data/ui/settingspanel.ui:331
 msgid "Pattern Width"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:375
+#: crates/rnote-ui/data/ui/settingspanel.ui:332
 msgid "Set the background pattern width"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:388
+#: crates/rnote-ui/data/ui/settingspanel.ui:348
 msgid "Pattern Height"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:389
+#: crates/rnote-ui/data/ui/settingspanel.ui:349
 msgid "Set the background pattern height"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:402
+#: crates/rnote-ui/data/ui/settingspanel.ui:365
 msgid "Invert Color Brightness"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:403
+#: crates/rnote-ui/data/ui/settingspanel.ui:366
 #, fuzzy
 #| msgid "Set whether the background pattern should be exported"
 msgid "Invert the brightness of all background pattern colors"
 msgstr "تنظیم کنید که الگوی پس‌زمینه خروجی‌گیری شود یا خیر"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:407
+#: crates/rnote-ui/data/ui/settingspanel.ui:370
 msgid "Invert"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:417
+#: crates/rnote-ui/data/ui/settingspanel.ui:380
 msgid "Button Shortcuts"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:420
+#: crates/rnote-ui/data/ui/settingspanel.ui:383
 msgid "Stylus Primary Button Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:421
+#: crates/rnote-ui/data/ui/settingspanel.ui:384
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:433
+#: crates/rnote-ui/data/ui/settingspanel.ui:396
 msgid "Stylus Secondary Button Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:434
+#: crates/rnote-ui/data/ui/settingspanel.ui:397
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:446
+#: crates/rnote-ui/data/ui/settingspanel.ui:409
 msgid "Mouse Secondary Button Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:447
+#: crates/rnote-ui/data/ui/settingspanel.ui:410
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:459
+#: crates/rnote-ui/data/ui/settingspanel.ui:422
 msgid "Touch Two-Finger Long-Press Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:460
+#: crates/rnote-ui/data/ui/settingspanel.ui:423
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:472
+#: crates/rnote-ui/data/ui/settingspanel.ui:435
 msgid "Keyboard Ctrl-Space Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:473
+#: crates/rnote-ui/data/ui/settingspanel.ui:436
 msgid ""
 "Set the action for the keyboard\n"
 "Ctrl plus Space shortcut"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:485
+#: crates/rnote-ui/data/ui/settingspanel.ui:448
 msgid "Drawing Pad Button 1 Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:486
+#: crates/rnote-ui/data/ui/settingspanel.ui:449
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:498
+#: crates/rnote-ui/data/ui/settingspanel.ui:461
 msgid "Drawing Pad Button 2 Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:499
+#: crates/rnote-ui/data/ui/settingspanel.ui:462
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:511
+#: crates/rnote-ui/data/ui/settingspanel.ui:474
 msgid "Drawing Pad Button 3 Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:512
+#: crates/rnote-ui/data/ui/settingspanel.ui:475
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:524
+#: crates/rnote-ui/data/ui/settingspanel.ui:487
 msgid "Drawing Pad Button 4 Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:525
+#: crates/rnote-ui/data/ui/settingspanel.ui:488
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
@@ -1611,7 +1599,7 @@ msgid "Open Document"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:167
-#: crates/rnote-ui/src/dialogs/export.rs:31
+#: crates/rnote-ui/src/dialogs/export.rs:30
 msgid "Save Document As"
 msgstr ""
 
@@ -1648,6 +1636,14 @@ msgstr ""
 msgid "Paste Clipboard"
 msgstr ""
 
+#: crates/rnote-ui/data/ui/shortcuts.ui:230
+msgid "Undo"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:236
+msgid "Redo"
+msgstr ""
+
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:79
 #, fuzzy
 #| msgid "End Page"
@@ -1666,158 +1662,158 @@ msgstr "اقدامات مسیر فضای کار"
 msgid "Create new Folder"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/mod.rs:531
+#: crates/rnote-ui/src/appwindow/mod.rs:555
 msgid "Opening file failed"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/imp.rs:249
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:560
-#: crates/rnote-ui/src/dialogs/export.rs:69
+#: crates/rnote-ui/src/appwindow/imp.rs:250
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:576
+#: crates/rnote-ui/src/dialogs/export.rs:68
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:256
 #: crates/rnote-ui/src/dialogs/mod.rs:407
 msgid "Saving document failed"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/imp.rs:269
+#: crates/rnote-ui/src/appwindow/imp.rs:270
 msgid "Button 1"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/imp.rs:276
+#: crates/rnote-ui/src/appwindow/imp.rs:277
 msgid "Button 2"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/imp.rs:283
+#: crates/rnote-ui/src/appwindow/imp.rs:284
 msgid "Button 3"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/imp.rs:290
+#: crates/rnote-ui/src/appwindow/imp.rs:291
 msgid "Button 4"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:622
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:638
 msgid "Printing document failed"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:658
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:674
 msgid "Exporting selection failed, nothing selected"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:854 crates/rnote-ui/src/dialogs/mod.rs:203
+#: crates/rnote-ui/src/canvas/mod.rs:856 crates/rnote-ui/src/dialogs/mod.rs:203
 #: crates/rnote-ui/src/dialogs/mod.rs:337
 msgid "- invalid file name -"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:867
+#: crates/rnote-ui/src/canvas/mod.rs:869
 msgid "- invalid folder path -"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:890
+#: crates/rnote-ui/src/canvas/mod.rs:910
 msgid "Opened file was modified on disk"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:891
+#: crates/rnote-ui/src/canvas/mod.rs:911
 msgid "Reload"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:897
+#: crates/rnote-ui/src/canvas/mod.rs:917
 msgid "Reloading .rnote file from disk failed"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:946
+#: crates/rnote-ui/src/canvas/mod.rs:981
 msgid "Opened file was renamed on disk"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:959
+#: crates/rnote-ui/src/canvas/mod.rs:994
 msgid "Opened file was moved or deleted on disk"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:1091
+#: crates/rnote-ui/src/canvas/mod.rs:1126
 msgid "Inserting file failed"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:1101
+#: crates/rnote-ui/src/canvas/mod.rs:1136
 msgid "Inserting text failed"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:28
+#: crates/rnote-ui/src/dialogs/export.rs:27
 #: crates/rnote-ui/src/dialogs/import.rs:21
 msgid ".rnote"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:56
+#: crates/rnote-ui/src/dialogs/export.rs:55
 msgid "Saved document successfully"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:227
+#: crates/rnote-ui/src/dialogs/export.rs:224
 msgid "Exporting document failed"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:229
+#: crates/rnote-ui/src/dialogs/export.rs:226
 msgid "Exported document successfully"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:237
+#: crates/rnote-ui/src/dialogs/export.rs:234
 msgid "Exporting document failed, no file selected"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:252
-#: crates/rnote-ui/src/dialogs/export.rs:544
-#: crates/rnote-ui/src/dialogs/export.rs:809
+#: crates/rnote-ui/src/dialogs/export.rs:249
+#: crates/rnote-ui/src/dialogs/export.rs:532
+#: crates/rnote-ui/src/dialogs/export.rs:786
 #: crates/rnote-ui/src/dialogs/mod.rs:505
 msgid "Select"
 msgstr "انتخاب"
 
-#: crates/rnote-ui/src/dialogs/export.rs:519
+#: crates/rnote-ui/src/dialogs/export.rs:507
 msgid "Exporting document pages failed"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:521
+#: crates/rnote-ui/src/dialogs/export.rs:509
 msgid "Exported document pages successfully"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:528
+#: crates/rnote-ui/src/dialogs/export.rs:516
 msgid "Exporting document pages failed, no directory selected"
 msgstr "خروجی‌گیری از صفحات سند ناموفق بود؛ مسیری انتخاب نشده است"
 
-#: crates/rnote-ui/src/dialogs/export.rs:782
+#: crates/rnote-ui/src/dialogs/export.rs:759
 msgid "Exporting selection failed"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:785
+#: crates/rnote-ui/src/dialogs/export.rs:762
 msgid "Exported selection successfully"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:794
+#: crates/rnote-ui/src/dialogs/export.rs:771
 msgid "Exporting selection failed, no file selected"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:852
-#: crates/rnote-ui/src/dialogs/export.rs:899
+#: crates/rnote-ui/src/dialogs/export.rs:829
+#: crates/rnote-ui/src/dialogs/export.rs:876
 msgid "Json"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:860
+#: crates/rnote-ui/src/dialogs/export.rs:837
 msgid "Export Engine State"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:879
+#: crates/rnote-ui/src/dialogs/export.rs:856
 msgid "Exporting engine state failed"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:882
+#: crates/rnote-ui/src/dialogs/export.rs:859
 msgid "Exported engine state successfully"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:907
+#: crates/rnote-ui/src/dialogs/export.rs:884
 msgid "Export Engine Config"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:926
+#: crates/rnote-ui/src/dialogs/export.rs:903
 msgid "Exporting engine config failed"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:929
+#: crates/rnote-ui/src/dialogs/export.rs:906
 msgid "Exported engine config successfully"
 msgstr ""
 
@@ -1829,39 +1825,39 @@ msgstr "بازکردن فایل"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:188
+#: crates/rnote-ui/src/dialogs/import.rs:181
 msgid "- no file name -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:193
+#: crates/rnote-ui/src/dialogs/import.rs:186
 msgid "- no title -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:196
+#: crates/rnote-ui/src/dialogs/import.rs:189
 msgid "- no author -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:200
+#: crates/rnote-ui/src/dialogs/import.rs:193
 msgid "- no date -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:207
+#: crates/rnote-ui/src/dialogs/import.rs:200
 msgid "File name:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:211
+#: crates/rnote-ui/src/dialogs/import.rs:204
 msgid "Title:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:215
+#: crates/rnote-ui/src/dialogs/import.rs:208
 msgid "Author:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:219
+#: crates/rnote-ui/src/dialogs/import.rs:212
 msgid "Modification date:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:223
+#: crates/rnote-ui/src/dialogs/import.rs:216
 msgid "Pages:"
 msgstr ""
 
@@ -2094,156 +2090,156 @@ msgstr ""
 msgid "Weight"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:388
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:387
 msgid "Miscellaneous"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:397
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:396
 msgid "Coordinate Systems"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:405
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:404
 msgid "Ellipses"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:412
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:411
 msgid "Curves & Paths"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:425
 msgid "Arrow"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Line"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
 msgid "Rectangle"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "2D coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
 msgid "3D coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
 msgid "2D single quadrant coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
 msgid "Ellipse"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
 msgid "Ellipse with foci"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
 msgid "Quadratic bezier curve"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
 msgid "Cubic bezier curve"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
 msgid "Polyline"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:541
+#: crates/rnote-ui/src/settingspanel/mod.rs:535
 msgid "Application restart is required"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:807
+#: crates/rnote-ui/src/settingspanel/mod.rs:801
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:808
+#: crates/rnote-ui/src/settingspanel/mod.rs:802
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:809
+#: crates/rnote-ui/src/settingspanel/mod.rs:803
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:810
+#: crates/rnote-ui/src/settingspanel/mod.rs:804
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:811
+#: crates/rnote-ui/src/settingspanel/mod.rs:805
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:812
+#: crates/rnote-ui/src/settingspanel/mod.rs:806
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:813
+#: crates/rnote-ui/src/settingspanel/mod.rs:807
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:814
+#: crates/rnote-ui/src/settingspanel/mod.rs:808
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:815
+#: crates/rnote-ui/src/settingspanel/mod.rs:809
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:816
+#: crates/rnote-ui/src/settingspanel/mod.rs:810
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:817
+#: crates/rnote-ui/src/settingspanel/mod.rs:811
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:818
+#: crates/rnote-ui/src/settingspanel/mod.rs:812
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:819
+#: crates/rnote-ui/src/settingspanel/mod.rs:813
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:820
+#: crates/rnote-ui/src/settingspanel/mod.rs:814
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:821
+#: crates/rnote-ui/src/settingspanel/mod.rs:815
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:822
+#: crates/rnote-ui/src/settingspanel/mod.rs:816
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:823
+#: crates/rnote-ui/src/settingspanel/mod.rs:817
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:824
+#: crates/rnote-ui/src/settingspanel/mod.rs:818
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr ""

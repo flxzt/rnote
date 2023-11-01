@@ -72,6 +72,23 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.9.1" date="2023-11-01">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: ability to toggle the visibility of the origin indicator cross (thanks to @silvasch)</li>
+          <li>improvement: port rows widgets to libadwaita spezialized variants (thanks to @oscfdezdz)</li>
+          <li>improvement: text formatting buttons now toggle text attributes (thanks to @xweskingx)</li>
+          <li>improvement: load documents into the current tab if it is a draft and empty (thanks to @silvasch)</li>
+          <li>UI: tweak sidebar width</li>
+          <li>fix: don't display reload-file dialog after saving to directories synced with cloud storage</li>
+          <li>fix: chinese translations (thanks to @detiam)</li>
+          <li>fix: single position strokes not being rendered</li>
+          <li>fix: don't restore maximized window state on macos, fixing inability to resize the window after launch</li>
+          <li>fix: windows installer not including certain dll's, possibly causing crashes when the missing ones are located elsewhere and present in PATH (thanks to @mdonoughe)</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.9.0" date="2023-10-06">
       <description>
         <p>this release changes:</p>

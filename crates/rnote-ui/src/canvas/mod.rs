@@ -68,6 +68,7 @@ mod imp {
         pub(crate) engine_task_handler_handle: RefCell<Option<glib::JoinHandle<()>>>,
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
+        pub(crate) output_file_modified_date_time: RefCell<Option<glib::DateTime>>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
         pub(crate) output_file_monitor_changed_handler: RefCell<Option<glib::SignalHandlerId>>,
         pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
@@ -160,6 +161,8 @@ mod imp {
                 engine_task_handler_handle: RefCell::new(None),
 
                 output_file: RefCell::new(None),
+                // is automatically updated whenever the output file changes.
+                output_file_modified_date_time: RefCell::new(None),
                 output_file_monitor: RefCell::new(None),
                 output_file_monitor_changed_handler: RefCell::new(None),
                 output_file_modified_toast_singleton: RefCell::new(None),
@@ -300,6 +303,16 @@ mod imp {
                     let output_file = value
                         .get::<Option<gio::File>>()
                         .expect("The value needs to be of type `Option<gio::File>`");
+                    self.output_file_modified_date_time
+                        .replace(output_file.as_ref().and_then(|f| {
+                            f.query_info(
+                                gio::FILE_ATTRIBUTE_TIME_MODIFIED_USEC,
+                                gio::FileQueryInfoFlags::NONE,
+                                gio::Cancellable::NONE,
+                            )
+                            .ok()?
+                            .modification_date_time()
+                        }));
                     self.output_file.replace(output_file);
                 }
                 "unsaved-changes" => {
@@ -611,6 +624,11 @@ impl RnCanvas {
     }
 
     #[allow(unused)]
+    pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
+        self.set_property("output-file", output_file.to_value());
+    }
+
+    #[allow(unused)]
     pub(crate) fn output_file_expect_write(&self) -> bool {
         self.imp().output_file_expect_write.get()
     }
@@ -628,11 +646,6 @@ impl RnCanvas {
     #[allow(unused)]
     pub(crate) fn set_save_in_progress(&self, save_in_progress: bool) {
         self.imp().save_in_progress.set(save_in_progress);
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
-        self.set_property("output-file", output_file.to_value());
     }
 
     #[allow(unused)]
@@ -689,6 +702,14 @@ impl RnCanvas {
             "handle-widget-flags",
             &[&WidgetFlagsBoxed::from(widget_flags)],
         );
+    }
+
+    /// Returns the date time for the modification time of the current output file.
+    pub(crate) fn output_file_modified_date_time(&self) -> Option<glib::DateTime> {
+        self.imp()
+            .output_file_modified_date_time
+            .borrow()
+            .to_owned()
     }
 
     pub(crate) fn canvas_layout_manager(&self) -> RnCanvasLayout {
@@ -803,24 +824,6 @@ impl RnCanvas {
         Ok(())
     }
 
-    pub(crate) fn clear_output_file_monitor(&self) {
-        if let Some(old_output_file_monitor) = self.imp().output_file_monitor.take() {
-            if let Some(handler) = self.imp().output_file_monitor_changed_handler.take() {
-                old_output_file_monitor.disconnect(handler);
-            }
-
-            old_output_file_monitor.cancel();
-        }
-    }
-
-    pub(crate) fn dismiss_output_file_modified_toast(&self) {
-        if let Some(output_file_modified_toast) =
-            self.imp().output_file_modified_toast_singleton.take()
-        {
-            output_file_modified_toast.dismiss();
-        }
-    }
-
     /// Switches between the regular and the drawing cursor
     pub(crate) fn enable_drawing_cursor(&self, drawing_cursor: bool) {
         if drawing_cursor == self.imp().drawing_cursor_enabled.get() {
@@ -863,6 +866,24 @@ impl RnCanvas {
                     .unwrap_or_else(|| gettext("- invalid folder path -"))
             })
             .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string())
+    }
+
+    pub(crate) fn clear_output_file_monitor(&self) {
+        if let Some(old_output_file_monitor) = self.imp().output_file_monitor.take() {
+            if let Some(handler) = self.imp().output_file_monitor_changed_handler.take() {
+                old_output_file_monitor.disconnect(handler);
+            }
+
+            old_output_file_monitor.cancel();
+        }
+    }
+
+    pub(crate) fn dismiss_output_file_modified_toast(&self) {
+        if let Some(output_file_modified_toast) =
+            self.imp().output_file_modified_toast_singleton.take()
+        {
+            output_file_modified_toast.dismiss();
+        }
     }
 
     pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnAppWindow) {
@@ -914,6 +935,21 @@ impl RnCanvas {
                             // => file has been modified due to own save, don't do anything.
                             canvas.set_output_file_expect_write(false);
                             return;
+                        }
+                        if let (Some(save_modified_time), Some(time)) =
+                            (canvas.output_file_modified_date_time(),
+                            file.query_info(
+                                gio::FILE_ATTRIBUTE_TIME_MODIFIED_USEC,
+                                gio::FileQueryInfoFlags::NONE,
+                                gio::Cancellable::NONE).ok().and_then(|i| i.modification_date_time())
+                            ) {
+                            if save_modified_time == time {
+                                // The changed file has the same modified date so it should be equal to the saved one.
+                                // A changed file event can happen when saving to a gvfs directory or to a directory
+                                // synced with cloud storage providers, even though the file itself has not actually
+                                // changed.
+                                return
+                            }
                         }
 
                         dispatch_toast_reload_modified_file();

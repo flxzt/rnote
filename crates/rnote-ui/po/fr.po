@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-01 08:41+0100\n"
-"PO-Revision-Date: 2023-10-31 16:57+0000\n"
+"PO-Revision-Date: 2023-11-03 14:08+0000\n"
 "Last-Translator: rene-coty <irenee.thirion@e.email>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
@@ -981,7 +981,7 @@ msgstr "_Exporter…"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:111
 msgid "Export _Document"
-msgstr "Exporter _document"
+msgstr "Exporter le _document"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:115
 msgid "Export Document _Pages"
@@ -1046,7 +1046,7 @@ msgstr "Afficher les bordures du _format"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
 msgid "Show _Origin Indicator"
-msgstr ""
+msgstr "Afficher l’indicateur de l’_origine"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Draw With _Touch Input"
@@ -1957,7 +1957,7 @@ msgstr "Drapeau"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:635
 msgid "Folder"
-msgstr "Répertoire"
+msgstr "Dossier"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:636
 msgid "Footprints"

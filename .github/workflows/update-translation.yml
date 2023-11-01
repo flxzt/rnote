@@ -5,6 +5,8 @@ on:
     paths:
       - 'crates/rnote-ui/po/zh_Hans.po'
       - 'crates/rnote-ui/po/zh_Hant.po'
+  workflow_dispatch:
+  workflow_call:
 
 name: Update Translation
 

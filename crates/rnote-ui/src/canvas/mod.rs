@@ -13,7 +13,7 @@ use crate::{config, RnAppWindow};
 use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
-    Adjustment, DropTarget, EventControllerKey, EventControllerLegacy, GestureClick, GestureLongPress, IMMulticontext,
+    Adjustment, DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext,
     PropagationPhase, Scrollable, ScrollablePolicy, Widget,
 };
 use once_cell::sync::Lazy;
@@ -470,30 +470,6 @@ mod imp {
             self.key_controller.connect_key_released(
                 clone!(@weak obj as canvas => move |_key_controller, key, _raw, modifier| {
                     super::input::handle_key_controller_key_released(&canvas, key, modifier)
-                }),
-            );
-
-            let rightclick_gesture = GestureClick::builder()
-                .name("rightclick_gesture")
-                .button(gdk::BUTTON_SECONDARY)
-                .build();
-            obj.add_controller(rightclick_gesture.clone());
-            rightclick_gesture.connect_pressed(
-                clone!(@weak obj as filerow => move |_rightclick_gesture, _n_press, _x, _y| {
-                    log::debug!("right click");
-                }),
-            );
-
-            let longpress_gesture = GestureLongPress::builder()
-                .name("longpress_gesture")
-                .touch_only(true)
-                .build();
-            obj.add_controller(longpress_gesture.clone());
-            longpress_gesture.group_with(&rightclick_gesture);
-
-            longpress_gesture.connect_pressed(
-                clone!(@weak obj as filerow => move |_rightclick_gesture, _x, _y| {
-                    log::debug!("longpress");
                 }),
             );
         }
@@ -1292,4 +1268,6 @@ impl RnCanvas {
             na::point![f64::from(self.width()), f64::from(self.height())],
         )
     }
+
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {}
 }

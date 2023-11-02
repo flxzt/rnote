@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-01 08:41+0100\n"
-"PO-Revision-Date: 2023-10-29 11:13+0000\n"
-"Last-Translator: Óscar Fernández Díaz <oscfdezdz@users.noreply.hosted."
-"weblate.org>\n"
+"PO-Revision-Date: 2023-11-03 14:08+0000\n"
+"Last-Translator: Óscar Fernández Díaz <oscfdezdz@users.noreply.hosted.weblate"
+".org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -220,7 +220,7 @@ msgstr "Información"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:79
 msgid "Pdf Import Preferences"
-msgstr "Configuración de la importación del Pdf"
+msgstr "Configuración de la importación del pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start Page"
@@ -237,7 +237,7 @@ msgstr "Ancho de página (%)"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr ""
-"Establezca la relación del aspecto de los archivos Pdf importados al ancho "
+"Establecer la relación del aspecto de los archivos pdf importados al ancho "
 "del formato"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
@@ -263,7 +263,7 @@ msgstr "Tipo de páginas"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:124
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr ""
-"Establezcer si los Pdf deben importarse como imágenes vectoriales o de mapa "
+"Establecer si los pdf deben importarse como imágenes vectoriales o de mapa "
 "de bits"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:136
@@ -304,7 +304,7 @@ msgstr "PPP"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:234
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr "Establecer el DPI preferido para el archivo Xournal++"
+msgstr "Establecer el PPP preferido para el archivo Xournal++"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
 #: crates/rnote-ui/src/dialogs/export.rs:247
@@ -1046,7 +1046,7 @@ msgstr "Mostrar los bordes del _formato"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
 msgid "Show _Origin Indicator"
-msgstr ""
+msgstr "Mostrar indicador de _origen"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Draw With _Touch Input"
@@ -1236,7 +1236,7 @@ msgstr "Cursor regular"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:73
 msgid "Set the regular cursor"
-msgstr "Fijar el cursor normal"
+msgstr "Establecer el cursor normal"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:95
 msgid "Show Drawing Cursor"
@@ -1252,7 +1252,7 @@ msgstr "Cursor de dibujo"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:103
 msgid "Set the drawing cursor"
-msgstr "Fijar el cursor de dibujo"
+msgstr "Establecer el cursor de dibujo"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:128
 msgid "Page Format"
@@ -1332,7 +1332,7 @@ msgstr "Establecer el alto del formato"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:214
 msgid "Dpi"
-msgstr "DPI"
+msgstr "Ppp"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:215
 msgid "Set the Dpi (dots per inch). Defaults to 96."
@@ -1492,7 +1492,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:448
 msgid "Drawing Pad Button 1 Action"
-msgstr "Botón 1 del panel de dibujo Acción"
+msgstr "Acción del botón 1 del panel de dibujo"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:449
 msgid ""
@@ -1504,38 +1504,38 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:461
 msgid "Drawing Pad Button 2 Action"
-msgstr "Botón 2 del panel de dibujo Acción"
+msgstr "Acción del botón 2 del panel de dibujo"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:462
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
-"Fijar la acción para el botón 2\n"
+"Establecer la acción para el botón 2\n"
 "en un bloc de dibujo"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:474
 msgid "Drawing Pad Button 3 Action"
-msgstr "Botón del panel de dibujo 3 Acción"
+msgstr "Acción del botón del panel de dibujo 3"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:475
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
-"Fijar la acción para el botón 3\n"
+"Establecer la acción para el botón 3\n"
 "en un bloc de dibujo"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:487
 msgid "Drawing Pad Button 4 Action"
-msgstr "Botón del panel de dibujo 4 Acción"
+msgstr "Acción del botón del panel de dibujo 4"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:488
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
 msgstr ""
-"Fijar la acción para el botón 4\n"
+"Establecer la acción para el botón 4\n"
 "en un bloc de dibujo"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:14

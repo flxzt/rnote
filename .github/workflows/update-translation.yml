@@ -3,6 +3,7 @@ on:
     branches:
       - 'main'
     paths:
+      - 'crates/rnote-ui/po/LINGUAS'
       - 'crates/rnote-ui/po/zh_Hans.po'
       - 'crates/rnote-ui/po/zh_Hant.po'
   workflow_dispatch:
@@ -34,6 +35,11 @@ jobs:
 
       - name: Generate zh_Hant from zh_Hans
         run: |
+          sed -i \
+            -e 's|zh_Hans|zh_CN\nzh_SG|' \
+            -e 's|zh_Hant|zh_HK\nzh_TW|' \
+            ./crates/rnote-ui/po/LINGUAS
+
           cat ./crates/rnote-ui/po/zh_Hans.po \
           | sed -e 's|Language: zh_Hans|Language: zh_Hant|' \
                 -e 's|Last-Translator:|Last-Translator: openCC converted|' \

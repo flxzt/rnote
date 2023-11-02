@@ -32,7 +32,7 @@ msgstr "Gnome;GTK;Office;图形;笔记;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
-msgstr "新建窗口"
+msgstr "新建口"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""

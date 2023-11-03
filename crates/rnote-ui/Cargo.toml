@@ -49,6 +49,7 @@ poppler-rs = {workspace = true }
 gettext-rs = {workspace = true }
 gtk4 = { workspace = true }
 adw = { workspace = true }
+open = { workspace = true }
 
 [build-dependencies]
 anyhow = { workspace = true }

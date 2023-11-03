@@ -215,3 +215,4 @@ impl RnFileRow {
             .add_action(&actions::duplicate(self, appwindow));
     }
 }
+

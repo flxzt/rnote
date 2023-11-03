@@ -62,6 +62,10 @@
             <attribute name="action">filerow.open-file</attribute>
           </item>
           <item>
+            <attribute name="label" translatable="yes">Open in Default App</attribute>
+            <attribute name="action">filerow.open-in-default</attribute>
+          </item>
+          <item>
             <attribute name="label" translatable="yes">Rename</attribute>
             <attribute name="action">filerow.rename-file</attribute>
           </item>

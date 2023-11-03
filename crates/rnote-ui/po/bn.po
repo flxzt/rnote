@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-01 08:41+0100\n"
-"PO-Revision-Date: 2023-11-01 04:51+0000\n"
+"PO-Revision-Date: 2023-11-03 14:08+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -1041,7 +1041,7 @@ msgstr "_বিন্যাস সীমানা প্রদর্শন ক�
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
 msgid "Show _Origin Indicator"
-msgstr ""
+msgstr "আসল _কেন্দ্র"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Draw With _Touch Input"

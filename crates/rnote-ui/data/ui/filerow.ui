@@ -63,7 +63,7 @@
           </item>
           <item>
             <attribute name="label" translatable="yes">Open in Default App</attribute>
-            <attribute name="action">filerow.open-in-default</attribute>
+            <attribute name="action">filerow.open-in-default-app</attribute>
           </item>
           <item>
             <attribute name="label" translatable="yes">Rename</attribute>

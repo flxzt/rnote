@@ -5,7 +5,10 @@ use gettextrs::gettext;
 use gtk4::{gio, gio::prelude::FileExt, glib, glib::clone};
 
 /// Create a new `open-in-default-app` action.
-pub(crate) fn open_in_default_app(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleAction {
+pub(crate) fn open_in_default_app(
+    filerow: &RnFileRow,
+    appwindow: &RnAppWindow,
+) -> gio::SimpleAction {
     let action_open_in_default = gio::SimpleAction::new("open-in-default-app", None);
     action_open_in_default.connect_activate(
         clone!(@weak filerow, @weak appwindow => move |_action_open_in_default, _| {

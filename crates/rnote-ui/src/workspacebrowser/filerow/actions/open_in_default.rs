@@ -10,8 +10,9 @@ pub(crate) fn open_in_default(filerow: &RnFileRow, appwindow: &RnAppWindow) -> g
     action_open_in_default.connect_activate(
         clone!(@weak filerow, @weak appwindow => move |_action_open_in_default, _| {
             if let Some(current_file) = filerow.current_file() {
-                if let Err(_) =  open::that(current_file.uri()) {
+                if let Err(e) =  open::that(current_file.uri()) {
                     appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the file in the default app"));
+                    log::debug!("opening file {} with default app failed: {e:?}", current_file.uri());
                 }
             }
         }),

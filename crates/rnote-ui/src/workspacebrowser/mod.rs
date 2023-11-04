@@ -323,7 +323,6 @@ impl RnWorkspaceBrowser {
         filefilter.add_mime_type("image/svg+xml");
         filefilter.add_mime_type("image/png");
         filefilter.add_mime_type("image/jpeg");
-        filefilter.add_mime_type("application/x-xopp");
         filefilter.add_mime_type("inode/directory");
         filefilter.add_suffix("rnote");
         filefilter.add_suffix("pdf");

@@ -28,7 +28,7 @@ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.f
 The flatpak Gnome Runtime, SDK and some extensions are needed:
 
 ```bash
-flatpak install org.gnome.Platform//45 org.gnome.Sdk//45 org.freedesktop.Sdk.Extension.rust-stable//23.08\
+flatpak install org.gnome.Platform//45 org.gnome.Sdk//45 org.freedesktop.Sdk.Extension.rust-stable//23.08 \
 org.freedesktop.Sdk.Extension.llvm16//23.08
 ```
 
@@ -91,7 +91,7 @@ If a native build on the host is wanted, meson can be called directly.
 ## Prerequisites
 Install all needed dependencies and build tools, e.g. for fedora 38:
 ```bash
-sudo dnf install gcc gcc-c++ clang clang-devel python3 make cmake meson git kernel-devel gtk4-devel libadwaita-devel\
+sudo dnf install gcc gcc-c++ clang clang-devel python3 make cmake meson git kernel-devel gtk4-devel libadwaita-devel \
 poppler-glib-devel poppler-data alsa-lib-devel
 ```
 

@@ -56,7 +56,9 @@
         "-DENABLE_BOOST=OFF",
         "-DENABLE_LIBOPENJPEG=none",
         "-DENABLE_QT5=OFF",
-        "-DENABLE_QT6=OFF"
+        "-DENABLE_QT6=OFF",
+        "-DENABLE_CPP=OFF",
+        "-DENABLE_UTILS=OFF"
       ],
       "sources": [
         {

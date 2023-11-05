@@ -48,6 +48,8 @@ modules:
           - "-DENABLE_LIBOPENJPEG=none"
           - "-DENABLE_QT5=OFF"
           - "-DENABLE_QT6=OFF"
+          - "-DENABLE_CPP=OFF"
+          - "-DENABLE_UTILS=OFF"
       sources:
           - type: archive
             url: "https://poppler.freedesktop.org/poppler-23.10.0.tar.xz"

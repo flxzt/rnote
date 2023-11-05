@@ -64,6 +64,10 @@
                 <attribute name="label" translatable="yes">Get _Recovery Info</attribute>
                 <attribute name="action">win.debug-recovery-info</attribute>
               </item>
+              <item>
+                <attribute name="label" translatable="yes">Crash App</attribute>
+                <attribute name="action">win.crash-app</attribute>
+              </item>
             </section>
           </submenu>
         </section>

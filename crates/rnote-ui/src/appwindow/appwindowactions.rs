@@ -57,6 +57,8 @@ impl RnAppWindow {
         let action_debug_display_recovery_info =
             gio::SimpleAction::new("debug-recovery-info", None);
         self.add_action(&action_debug_display_recovery_info);
+        let action_crash_app = gio::SimpleAction::new("crash-app", None);
+        self.add_action(&action_crash_app);
         let action_righthanded = gio::PropertyAction::new("righthanded", self, "righthanded");
         self.add_action(&action_righthanded);
         let action_touch_drawing = gio::PropertyAction::new("touch-drawing", self, "touch-drawing");
@@ -268,6 +270,11 @@ impl RnAppWindow {
                     dialogs::dialog_recovery_info(&appwindow).await;
                 }));
             }),
+        );
+
+        // Crash App
+        action_crash_app.connect_activate(
+            clone!(@weak self as appwindow => move |_, _|  panic!("Test Crash") ),
         );
 
         // Doc layout

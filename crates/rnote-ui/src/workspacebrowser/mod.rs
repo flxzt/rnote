@@ -17,6 +17,7 @@ use gtk4::{
     PropertyExpression, ScrolledWindow, Separator, SignalListItemFactory, SingleSelection,
     SortListModel, SorterChange, Widget,
 };
+use natord::compare;
 use std::cell::RefCell;
 use std::path::{Path, PathBuf};
 
@@ -396,7 +397,9 @@ impl RnWorkspaceBrowser {
             let second_display_name = second_file.basename().unwrap();
             let second_display_name = second_display_name.to_str().unwrap();
 
-            first_display_name.cmp(second_display_name).into()
+            // first_display_name.cmp(second_display_name).into()
+            // replaced by
+            natord::compare(first_display_name, second_display_name).into()
         });
 
         let multisorter = MultiSorter::new();

@@ -399,7 +399,7 @@ impl RnWorkspaceBrowser {
 
             // first_display_name.cmp(second_display_name).into()
             // replaced by
-            natord::compare(first_display_name, second_display_name).into()
+            compare(first_display_name, second_display_name).into()
         });
 
         let multisorter = MultiSorter::new();

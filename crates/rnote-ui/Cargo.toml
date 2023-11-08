@@ -50,7 +50,7 @@ gettext-rs = {workspace = true }
 gtk4 = { workspace = true }
 adw = { workspace = true }
 open = { workspace = true }
-natord = {  workspace = true }
+numeric-sort = {  workspace = true }
 
 [build-dependencies]
 anyhow = { workspace = true }

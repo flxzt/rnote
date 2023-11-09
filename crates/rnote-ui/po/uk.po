@@ -3,17 +3,17 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-01 08:41+0100\n"
-"PO-Revision-Date: 2023-08-14 20:52+0000\n"
-"Last-Translator: Dan <jonweblin2205@protonmail.com>\n"
-"Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
-">\n"
+"PO-Revision-Date: 2023-11-10 20:32+0000\n"
+"Last-Translator: volkov <d2oo1dle2x@gmail.com>\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/>"
+"\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -24,7 +24,9 @@ msgstr "Малюй та роби нотатки"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;Офіс;Графіка;Примітки;"
+msgstr ""
+"Gnome;GTK;Office;Graphics;Notes;Офіс;Графіка;Примітки;Допис;Малювати;Нотатка;"
+"Зошит;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
@@ -65,7 +67,7 @@ msgstr "Конспект лекції 2"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:173
 msgid "Clear Document"
-msgstr "Очистити Документ"
+msgstr "Очистити документ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
@@ -125,7 +127,7 @@ msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"Ця вкладка містить незбережені зміни. \n"
+"Ця вкладка містить незбережені зміни.\n"
 "Незбережені зміни буде остаточно втрачено."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
@@ -164,11 +166,11 @@ msgstr "Назва робочої області"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:122
 msgid "Icon"
-msgstr "Значок"
+msgstr "Піктограма"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:123
 msgid "Change the workspace icon"
-msgstr "Змінити значок робочої області"
+msgstr "Змінити піктограму робочої області"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:143
 #: crates/rnote-ui/data/ui/settingspanel.ui:271
@@ -181,11 +183,11 @@ msgstr "Змінити колір робочої області"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:158
 msgid "Directory"
-msgstr "Каталог"
+msgstr "Тека"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:159
 msgid "Change the workspace directory"
-msgstr "Змінити каталог директорії"
+msgstr "Змінити теку робочої області"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: crates/rnote-ui/data/ui/dialogs/export.ui:284
@@ -194,11 +196,11 @@ msgstr "Змінити каталог директорії"
 #: crates/rnote-ui/src/dialogs/export.rs:398
 #: crates/rnote-ui/src/dialogs/mod.rs:523
 msgid "- no directory selected -"
-msgstr "- каталог не вибрано -"
+msgstr "- теку не вибрано -"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:183
 msgid "Change the directory"
-msgstr "Змінити каталог"
+msgstr "Змінити теку"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:7
 msgid "Import Pdf"
@@ -370,15 +372,13 @@ msgstr "Встановити, чи потрібно експортувати ш�
 #: crates/rnote-ui/data/ui/dialogs/export.ui:329
 #: crates/rnote-ui/data/ui/dialogs/export.ui:523
 msgid "Optimize for Printing"
-msgstr ""
+msgstr "Оптимізувати для друку"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:123
 #: crates/rnote-ui/data/ui/dialogs/export.ui:330
 #: crates/rnote-ui/data/ui/dialogs/export.ui:524
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Set whether the content should be optimized for printing"
-msgstr "Встановити, чи потрібно експортувати шаблон фону"
+msgstr "Встановити, чи потрібно оптимізувати вміст для друку"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:128
 #: crates/rnote-ui/data/ui/dialogs/export.ui:335
@@ -447,11 +447,11 @@ msgstr "Назви файлів сторінок:"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:274
 msgid "Export Directory"
-msgstr "Експортувати каталог"
+msgstr "Експортувати теку"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:275
 msgid "Select the export directory"
-msgstr "Виберіть каталог експорту"
+msgstr "Виберіть теку експорту"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
 msgid "Export Files Stem Name"
@@ -708,7 +708,7 @@ msgstr "Скасувати вибір всіх штрихів"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 msgid "Invert Color Brightness of All Selected Strokes"
-msgstr ""
+msgstr "Інвертувати яскравість кольорів усіх обраних штрихів"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 #: crates/rnote-ui/data/ui/shortcuts.ui:224
@@ -896,23 +896,23 @@ msgstr "Редагувати вибрану робочу область"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:24
 msgid "Co_lor Scheme"
-msgstr "_Кольорова схема"
+msgstr "_Стиль додатку"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _System Colors"
-msgstr "Використовувати_кольори системи"
+msgstr "Використовувати с_тиль системи"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:31
 msgid "Use _Light Colors"
-msgstr "Використовувати _світлі кольори"
+msgstr "Використовувати _світлий стиль"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:36
 msgid "Use _Dark Colors"
-msgstr "Використовувати _темні кольори"
+msgstr "Використовувати _темний стиль"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:42
 msgid "De_veloper Mode"
-msgstr "Режим_розробника"
+msgstr "Режим _розробника"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _Menu"
@@ -976,7 +976,7 @@ msgstr "_Експортувати…"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:111
 msgid "Export _Document"
-msgstr "Експорт _Документу"
+msgstr "Експорт _документу"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:115
 msgid "Export Document _Pages"
@@ -992,7 +992,7 @@ msgstr "На_лаштування"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:130
 msgid "_Keyboard Shortcuts"
-msgstr "_Комбінації клавіш"
+msgstr "_Клавіатурні скорочення"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:134
 msgid "_Donate 💝"
@@ -1041,15 +1041,15 @@ msgstr "Показати межі _формату"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
 msgid "Show _Origin Indicator"
-msgstr ""
+msgstr "Показати початковий індикатор"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Draw With _Touch Input"
-msgstr "Малювання за допомогою _сенсорного введення"
+msgstr "Малювати за допомогою _сенсорного введення"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:64
 msgid "Block Pinch to _Zoom"
-msgstr "Заблокуйте зведення пальців для _зуму"
+msgstr "Заблокувати дотики сенсорної панелі для _масштабування"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:69
 msgid "_Pen Sounds"
@@ -1142,10 +1142,8 @@ msgstr "Чернетка"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
-#, fuzzy
-#| msgid "Reveal/Hide Flap"
 msgid "Reveal/Hide Sidebar"
-msgstr "Показати/приховати панель"
+msgstr "Показати/приховати бічну панель"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
 msgid "New Tab"
@@ -1207,11 +1205,11 @@ msgstr "Встановити інтервал автозбереження в с
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:58
 msgid "Show Scrollbars"
-msgstr "Показати смуги прокрутки"
+msgstr "Показуваим смужки гортання"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:59
 msgid "Set whether the scrollbars on the canvas are shown"
-msgstr "Встановити, чи відображати смуги прокрутки на полотні"
+msgstr "Встановити, чи відображати смужки гортання на полотні"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:64
 msgid "Inertial Touch Scrolling"
@@ -1285,7 +1283,7 @@ msgstr "A2"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:141
 msgid "US letter"
-msgstr "США letter"
+msgstr "Лист США"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:142
 msgid "US legal"
@@ -1412,19 +1410,15 @@ msgstr "Встановити висоту фонового шаблону"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:365
 msgid "Invert Color Brightness"
-msgstr ""
+msgstr "Інвертувати яскравість кольорів"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:366
-#, fuzzy
-#| msgid "Set the background pattern color"
 msgid "Invert the brightness of all background pattern colors"
-msgstr "Встановити колір фонового візерунка"
+msgstr "Інвертувати яскравість усіх кольорів фонового візерунка"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:370
-#, fuzzy
-#| msgid "Revert"
 msgid "Invert"
-msgstr "Повернути"
+msgstr "Інвертувати"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:380
 msgid "Button Shortcuts"
@@ -1468,7 +1462,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:422
 msgid "Touch Two-Finger Long-Press Action"
-msgstr "Тривале натискання двома пальцями на сенсорний екран"
+msgstr "Тривалий дотик двома пальцями"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:423
 msgid ""
@@ -1476,23 +1470,19 @@ msgid ""
 "two-finger long-press gesture"
 msgstr ""
 "Налаштувати дію для жесту тривалого\n"
-"натискання двома пальцями"
+"дотику двома пальцями"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:435
 msgid "Keyboard Ctrl-Space Action"
-msgstr ""
+msgstr "Дія для клавіатурного скорочення Ctrl-Пробіл"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:436
-#, fuzzy
-#| msgid ""
-#| "Set the action for the\n"
-#| "secondary mouse button"
 msgid ""
 "Set the action for the keyboard\n"
 "Ctrl plus Space shortcut"
 msgstr ""
-"Установіть дію для\n"
-"додаткової кнопки миші"
+"Встановити дію для клавіатурного скорочення\n"
+"Ctrl + Пробіл"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:448
 msgid "Drawing Pad Button 1 Action"
@@ -1552,7 +1542,7 @@ msgstr "Закрити активну вкладку"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:26
 msgid "Quit the Application"
-msgstr "Вийти зі застосунку"
+msgstr "Вийти із додатку"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:32
 msgid "Open the Canvas-Menu"
@@ -1616,28 +1606,16 @@ msgid "Save Document As"
 msgstr "Зберегти документ як"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
-#, fuzzy
-#| msgid ""
-#| "Add Page.\n"
-#| "Available in Fixed-Size Document Layout."
 msgid "Add Page (When in Fixed-Size Layout)"
-msgstr ""
-"Додати сторінку.\n"
-"Доступно в форматі документа фіксованого розміру."
+msgstr "Додати сторінку (коли у форматі фіксованого розміру)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
-#, fuzzy
-#| msgid ""
-#| "Remove Page.\n"
-#| "Available in Fixed-Size Document Layout."
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr ""
-"Видалити сторінку.\n"
-"Доступно в форматі документа фіксованого розміру."
+msgstr "Видалити останню сторінку (коли у форматі фіксованого розміру)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Print Document"
-msgstr "Роздрукувати документ"
+msgstr "Друкувати документ"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:197
 #: crates/rnote-ui/src/dialogs/import.rs:64
@@ -1658,7 +1636,7 @@ msgstr "Вирізати в буфер обміну"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:218
 msgid "Paste Clipboard"
-msgstr "Вставити буфер обміну"
+msgstr "Вставити із буферу обміну"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:230
 msgid "Undo"
@@ -1724,11 +1702,11 @@ msgstr "Не вдалося експортувати вибране, нічог�
 #: crates/rnote-ui/src/canvas/mod.rs:856 crates/rnote-ui/src/dialogs/mod.rs:203
 #: crates/rnote-ui/src/dialogs/mod.rs:337
 msgid "- invalid file name -"
-msgstr "-недійсна назва файлу-"
+msgstr "- недійсна назва файлу -"
 
 #: crates/rnote-ui/src/canvas/mod.rs:869
 msgid "- invalid folder path -"
-msgstr "- недійсний шлях до папки -"
+msgstr "- недійсний шлях до теки -"
 
 #: crates/rnote-ui/src/canvas/mod.rs:910
 msgid "Opened file was modified on disk"
@@ -1796,7 +1774,7 @@ msgstr "Сторінки документів успішно експортов�
 
 #: crates/rnote-ui/src/dialogs/export.rs:516
 msgid "Exporting document pages failed, no directory selected"
-msgstr "Не вдалося експортувати сторінки документа, каталог не вибрано"
+msgstr "Не вдалося експортувати сторінки документа, теку не вибрано"
 
 #: crates/rnote-ui/src/dialogs/export.rs:759
 msgid "Exporting selection failed"
@@ -1844,10 +1822,8 @@ msgid "Open File"
 msgstr "Відкрити файл"
 
 #: crates/rnote-ui/src/dialogs/import.rs:61
-#, fuzzy
-#| msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp"
+msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:181
 msgid "- no file name -"
@@ -1893,12 +1869,13 @@ msgstr ""
 "Kefir2105\n"
 "<jonweblin2205@protonmail.com>\n"
 "diminDDL\n"
-"dimin21590@gmail.com"
+"dimin21590@gmail.com\n"
+"volkov <volkovissocool@gmail.com>"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:210
 #: crates/rnote-ui/src/dialogs/mod.rs:344
 msgid "- invalid save folder name -"
-msgstr "- невірне ім'я папки збереження -"
+msgstr "- не правильне ім'я теки для збереження -"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:226
 #: crates/rnote-ui/src/dialogs/mod.rs:359
@@ -1912,7 +1889,7 @@ msgstr "Буде створено новий файл"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:503
 msgid "Change Workspace Directory"
-msgstr "Змінити каталог директорії"
+msgstr "Змінити робочу теку"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:619
 msgid "Band-Aid"
@@ -1986,11 +1963,11 @@ msgstr "Сліди"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:637
 msgid "Gamepad"
-msgstr "Ґеймпад"
+msgstr "Геймпад"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:638
 msgid "Gear"
-msgstr "Передача"
+msgstr "Шестірня"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:639
 msgid "Globe"
@@ -2046,7 +2023,7 @@ msgstr "Природа"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:652
 msgid "Open Book"
-msgstr "Відкрити книгу"
+msgstr "Відкрита книга"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:653
 msgid "Paintbrush"
@@ -2115,7 +2092,7 @@ msgstr "Погода"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:671
 msgid "Weight"
-msgstr "Висота"
+msgstr "Вага"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:387
 msgid "Miscellaneous"
@@ -2130,10 +2107,8 @@ msgid "Ellipses"
 msgstr "Еліпси"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:411
-#, fuzzy
-#| msgid "Curves"
 msgid "Curves & Paths"
-msgstr "Криві"
+msgstr "Криві та шляхи"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:425
 msgid "Arrow"
@@ -2177,7 +2152,7 @@ msgstr "Кубічна крива Безьє"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
 msgid "Polyline"
-msgstr ""
+msgstr "Ломана лінія"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:535
 msgid "Application restart is required"
@@ -2275,11 +2250,11 @@ msgstr "Промінь (Великий)"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:56
 msgid "Folder Name"
-msgstr "Назва папки"
+msgstr "Назва теки"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
-msgstr "Нова папка"
+msgstr "Нова теки"
 
 #~ msgid "Close the Folded Flap"
 #~ msgstr "Закрити складену панель"

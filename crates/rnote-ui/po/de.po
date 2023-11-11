@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-01 08:41+0100\n"
-"PO-Revision-Date: 2023-09-30 11:45+0000\n"
+"PO-Revision-Date: 2023-11-11 16:14+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.1-dev\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1043,7 +1043,7 @@ msgstr "Zeige _Formatränder"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
 msgid "Show _Origin Indicator"
-msgstr ""
+msgstr "Zeige _Ursprungsindikator"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Draw With _Touch Input"
@@ -1055,7 +1055,7 @@ msgstr "Ziehen zum _Zoomen blockieren"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:69
 msgid "_Pen Sounds"
-msgstr "_Stiftklänge"
+msgstr "Stift_klänge"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:76
 msgid "C_lear Document"

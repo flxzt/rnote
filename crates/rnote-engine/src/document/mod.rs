@@ -9,7 +9,7 @@ pub use format::Format;
 // Imports
 use crate::{Camera, StrokeStore, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use rnote_compose::ext::AabbExt;
+use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
 
@@ -97,6 +97,8 @@ pub struct Document {
     pub background: Background,
     #[serde(rename = "layout", alias = "expand_mode")]
     pub layout: Layout,
+    #[serde(rename = "snap_positions")]
+    pub snap_positions: bool,
 }
 
 impl Default for Document {
@@ -109,6 +111,7 @@ impl Default for Document {
             format: Format::default(),
             background: Background::default(),
             layout: Layout::default(),
+            snap_positions: false,
         }
     }
 }
@@ -348,5 +351,38 @@ impl Document {
         self.y = new_bounds.mins[1];
         self.width = new_bounds.extents()[0];
         self.height = new_bounds.extents()[1];
+    }
+
+    /// Snap the position to the document and pattern grid when `snap_positions` is enabled.
+    ///
+    /// If not, the original coordinates are returned.
+    pub(crate) fn snap_position(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
+        const DOCUMENT_SNAP_DIST: f64 = 10.;
+        let doc_format_size = self.format.size();
+        let pattern_size = self.background.pattern_size;
+
+        if !self.snap_positions {
+            return pos;
+        }
+
+        let snap_to_grid = |pos: na::Vector2<f64>, grid_size: na::Vector2<f64>| {
+            let grid_pos = pos.component_div(&grid_size);
+            grid_size.component_mul(&grid_pos.round())
+        };
+
+        let pos_snapped_pattern = snap_to_grid(pos, pattern_size);
+        let pos_snapped_document = snap_to_grid(pos, doc_format_size);
+
+        let mut pos_snapped = pos_snapped_pattern;
+
+        // If the position is close to the document edges, then it is instead snapped to them.
+        if (pos_snapped_document - pos)[0].abs() < DOCUMENT_SNAP_DIST {
+            pos_snapped[0] = pos_snapped_document[0];
+        }
+        if (pos_snapped_document - pos)[1].abs() < DOCUMENT_SNAP_DIST {
+            pos_snapped[1] = pos_snapped_document[1];
+        }
+
+        pos_snapped
     }
 }

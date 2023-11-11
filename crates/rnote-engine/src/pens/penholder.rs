@@ -308,6 +308,12 @@ impl PenHolder {
                         NudgeDirection::North,
                         engine_view.doc,
                     );
+                    engine_view.store.regenerate_rendering_in_viewport_threaded(
+                        engine_view.tasks_tx.clone(),
+                        false,
+                        engine_view.camera.viewport(),
+                        engine_view.camera.image_scale(),
+                    );
 
                     EventPropagation::Stop
                 }
@@ -321,6 +327,12 @@ impl PenHolder {
                         nudge_amount,
                         NudgeDirection::South,
                         engine_view.doc,
+                    );
+                    engine_view.store.regenerate_rendering_in_viewport_threaded(
+                        engine_view.tasks_tx.clone(),
+                        false,
+                        engine_view.camera.viewport(),
+                        engine_view.camera.image_scale(),
                     );
 
                     EventPropagation::Stop
@@ -336,6 +348,12 @@ impl PenHolder {
                         NudgeDirection::West,
                         engine_view.doc,
                     );
+                    engine_view.store.regenerate_rendering_in_viewport_threaded(
+                        engine_view.tasks_tx.clone(),
+                        false,
+                        engine_view.camera.viewport(),
+                        engine_view.camera.image_scale(),
+                    );
 
                     EventPropagation::Stop
                 }
@@ -349,6 +367,12 @@ impl PenHolder {
                         nudge_amount,
                         NudgeDirection::East,
                         engine_view.doc,
+                    );
+                    engine_view.store.regenerate_rendering_in_viewport_threaded(
+                        engine_view.tasks_tx.clone(),
+                        false,
+                        engine_view.camera.viewport(),
+                        engine_view.camera.image_scale(),
                     );
 
                     EventPropagation::Stop

@@ -32,6 +32,7 @@ impl Default for VerticalSpaceTool {
 
 impl VerticalSpaceTool {
     const Y_OFFSET_THRESHOLD: f64 = 0.1;
+    const SNAP_START_POS_DIST: f64 = 10.;
     const OFFSET_LINE_COLOR: piet::Color = color::GNOME_BLUES[3];
     const THRESHOLD_LINE_WIDTH: f64 = 3.0;
     const THRESHOLD_LINE_DASH_PATTERN: [f64; 2] = [9.0, 6.0];
@@ -339,7 +340,15 @@ impl PenBehaviour for Tools {
             (ToolsState::Active, PenEvent::Down { element, .. }) => {
                 match engine_view.pens_config.tools_config.style {
                     ToolStyle::VerticalSpace => {
-                        let y_offset = element.pos[1] - self.verticalspace_tool.pos_y;
+                        let y_offset = if (element.pos[1] - self.verticalspace_tool.start_pos_y)
+                            .abs()
+                            < VerticalSpaceTool::SNAP_START_POS_DIST
+                        {
+                            self.verticalspace_tool.start_pos_y - self.verticalspace_tool.pos_y
+                        } else {
+                            engine_view.doc.snap_position(element.pos)[1]
+                                - self.verticalspace_tool.pos_y
+                        };
 
                         if y_offset.abs() > VerticalSpaceTool::Y_OFFSET_THRESHOLD {
                             engine_view.store.translate_strokes(
@@ -362,7 +371,7 @@ impl PenBehaviour for Tools {
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
                             );
-                            self.verticalspace_tool.pos_y = element.pos[1];
+                            self.verticalspace_tool.pos_y += y_offset;
 
                             widget_flags.store_modified = true;
                         }

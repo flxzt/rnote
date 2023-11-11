@@ -78,6 +78,8 @@ mod imp {
         pub(crate) empty: Cell<bool>,
         pub(crate) touch_drawing: Cell<bool>,
         pub(crate) show_drawing_cursor: Cell<bool>,
+
+        pub(crate) last_export_dir: RefCell<Option<gio::File>>,
     }
 
     impl Default for RnCanvas {
@@ -172,6 +174,8 @@ mod imp {
                 empty: Cell::new(true),
                 touch_drawing: Cell::new(false),
                 show_drawing_cursor: Cell::new(false),
+
+                last_export_dir: RefCell::new(None),
             }
         }
     }
@@ -703,6 +707,10 @@ impl RnCanvas {
             "handle-widget-flags",
             &[&WidgetFlagsBoxed::from(widget_flags)],
         );
+    }
+
+    pub(crate) fn set_last_export_dir(&self, dir: Option<gio::File>) {
+        self.imp().last_export_dir.replace(dir);
     }
 
     /// Returns the saved date time for the modification time of the output file when it was set by the app.

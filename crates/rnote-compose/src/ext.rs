@@ -17,6 +17,8 @@ where
     fn mins_maxs(&self, other: &Self) -> (Self, Self);
     /// calculates the angle self is "ahead" of other (counter clockwise)
     fn angle_ahead(&self, other: &Self) -> f64;
+    /// Round to the next integer
+    fn round(&self) -> Self;
     /// Ceil to the next integer
     fn ceil(&self) -> Self;
     /// Floor to the next integer
@@ -72,6 +74,10 @@ impl Vector2Ext for na::Vector2<f64> {
 
     fn angle_ahead(&self, other: &Self) -> f64 {
         other[1].atan2(other[0]) - self[1].atan2(self[0])
+    }
+
+    fn round(&self) -> Self {
+        na::vector![self[0].round(), self[1].round()]
     }
 
     fn ceil(&self) -> Self {
@@ -164,6 +170,8 @@ where
     fn to_kurbo_rect(&self) -> kurbo::Rect;
     /// Converts a kurbo Rectangle to Aabb
     fn from_kurbo_rect(rect: kurbo::Rect) -> Self;
+    /// Check if the bounds intersect with a tolerance
+    fn intersects_w_tolerance(&self, other: &Self, tolerance: f64) -> bool;
 }
 
 impl AabbExt for Aabb {
@@ -427,6 +435,13 @@ impl AabbExt for Aabb {
 
     fn from_kurbo_rect(rect: kurbo::Rect) -> Self {
         Aabb::new(na::point![rect.x0, rect.y0], na::point![rect.x1, rect.y1])
+    }
+
+    fn intersects_w_tolerance(&self, other: &Self, tolerance: f64) -> bool {
+        let Some(intersection) = self.intersection(other) else {
+            return false;
+        };
+        intersection.extents()[0] > tolerance && intersection.extents()[1] > tolerance
     }
 }
 

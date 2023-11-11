@@ -565,6 +565,7 @@ impl RnAppWindow {
         let format = canvas.engine_ref().document.format;
         let doc_layout = canvas.engine_ref().document.layout;
         let pen_sounds = canvas.engine_ref().pen_sounds();
+        let snap_positions = canvas.engine_ref().document.snap_positions;
         let pen_style = canvas.engine_ref().penholder.current_pen_style_w_override();
 
         // Undo / redo
@@ -590,6 +591,11 @@ impl RnAppWindow {
             self,
             "pen-sounds",
             &pen_sounds.to_variant(),
+        );
+        adw::prelude::ActionGroupExt::change_action_state(
+            self,
+            "snap-positions",
+            &snap_positions.to_variant(),
         );
         adw::prelude::ActionGroupExt::change_action_state(
             self,

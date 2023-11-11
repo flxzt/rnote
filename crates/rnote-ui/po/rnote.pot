@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 21:27+0100\n"
+"POT-Creation-Date: 2023-11-11 21:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1015,35 +1015,35 @@ msgid "_Infinite"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:49
-msgid "C_lear Document"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:53
-msgid "_Return to Origin Page"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:57
 msgid "_Snap Positions"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:64
-msgid "Show _Format Borders"
+#: crates/rnote-ui/data/ui/canvasmenu.ui:54
+msgid "_Pen Sounds"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:59
+msgid "_Return to Origin Page"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:63
+msgid "C_lear Document"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:69
-msgid "Show _Origin Indicator"
+msgid "Show _Format Borders"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:74
-msgid "Draw With _Touch Input"
+msgid "Show _Origin Indicator"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:79
-msgid "Block Pinch to _Zoom"
+msgid "Draw With _Touch Input"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:84
-msgid "_Pen Sounds"
+msgid "Block Pinch to _Zoom"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:115

@@ -353,7 +353,7 @@ impl Document {
         self.height = new_bounds.extents()[1];
     }
 
-    /// Snap the position to the document and grid when `snap_positions` is enabled.
+    /// Snap the position to the document and pattern grid when `snap_positions` is enabled.
     ///
     /// If not, the original coordinates are returned.
     pub(crate) fn snap_position(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {

@@ -709,6 +709,10 @@ impl RnCanvas {
         );
     }
 
+    pub(crate) fn last_export_dir(&self) -> Option<gio::File> {
+        self.imp().last_export_dir.borrow().clone()
+    }
+
     pub(crate) fn set_last_export_dir(&self, dir: Option<gio::File>) {
         self.imp().last_export_dir.replace(dir);
     }

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-01 08:41+0100\n"
+"POT-Creation-Date: 2023-11-11 21:37+0100\n"
 "PO-Revision-Date: 2023-11-03 14:08+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -1036,56 +1036,60 @@ msgid "_Infinite"
 msgstr "_অসীম"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:49
-msgid "Show _Format Borders"
-msgstr "_বিন্যাস সীমানা প্রদর্শন করুন"
+msgid "_Snap Positions"
+msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
-msgid "Show _Origin Indicator"
-msgstr "আসল _কেন্দ্র"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:59
-msgid "Draw With _Touch Input"
-msgstr "_টাচ ইনপুট দিয়ে আঁকুন"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:64
-msgid "Block Pinch to _Zoom"
-msgstr "পিঞ্চ করে _জুম ব্লক করুন"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:69
 msgid "_Pen Sounds"
 msgstr "_কলমের ধ্বনি"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:76
-msgid "C_lear Document"
-msgstr "নথি প_রিষ্কার করুন"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:80
+#: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "_Return to Origin Page"
 msgstr "আসল পৃষ্ঠায় _ফিরে জান"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:110
+#: crates/rnote-ui/data/ui/canvasmenu.ui:63
+msgid "C_lear Document"
+msgstr "নথি প_রিষ্কার করুন"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:69
+msgid "Show _Format Borders"
+msgstr "_বিন্যাস সীমানা প্রদর্শন করুন"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:74
+msgid "Show _Origin Indicator"
+msgstr "আসল _কেন্দ্র"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:79
+msgid "Draw With _Touch Input"
+msgstr "_টাচ ইনপুট দিয়ে আঁকুন"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:84
+msgid "Block Pinch to _Zoom"
+msgstr "পিঞ্চ করে _জুম ব্লক করুন"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:115
 #: crates/rnote-ui/data/ui/shortcuts.ui:120
 #: crates/rnote-ui/data/ui/shortcuts.ui:126
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
 msgid "Zoom out"
 msgstr "ছোট করুন"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:119
+#: crates/rnote-ui/data/ui/canvasmenu.ui:124
 msgid "Reset Zoom"
 msgstr "জুম রিসেট করুন"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:126
+#: crates/rnote-ui/data/ui/canvasmenu.ui:131
 #: crates/rnote-ui/data/ui/shortcuts.ui:102
 #: crates/rnote-ui/data/ui/shortcuts.ui:108
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
 msgid "Zoom in"
 msgstr "প্রসারিত করো"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:138
+#: crates/rnote-ui/data/ui/canvasmenu.ui:143
 msgid "Zoom to Page Width"
 msgstr "পৃষ্ঠার প্রস্থ মাপসই করতে জুম করুন"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:153
+#: crates/rnote-ui/data/ui/canvasmenu.ui:158
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1093,7 +1097,7 @@ msgstr ""
 "পৃষ্ঠাটি সরান।\n"
 "নির্দিষ্ট মাপের নথি উপলব্ধ।"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:162
+#: crates/rnote-ui/data/ui/canvasmenu.ui:167
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1101,7 +1105,7 @@ msgstr ""
 "পৃষ্ঠা যোগ।\n"
 "নির্দিষ্ট মাপের নথি উপলব্ধ।"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:171
+#: crates/rnote-ui/data/ui/canvasmenu.ui:176
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
@@ -1123,15 +1127,19 @@ msgid "Open"
 msgstr "খুলুন"
 
 #: crates/rnote-ui/data/ui/filerow.ui:65
+msgid "Open in Default App"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/filerow.ui:69
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
 msgstr "নাম পরিবর্তন করুন"
 
-#: crates/rnote-ui/data/ui/filerow.ui:69
+#: crates/rnote-ui/data/ui/filerow.ui:73
 msgid "Move to Trash"
 msgstr "ট্র্যাশে পাঠান"
 
-#: crates/rnote-ui/data/ui/filerow.ui:73
+#: crates/rnote-ui/data/ui/filerow.ui:77
 msgid "Duplicate"
 msgstr "নকল করুন"
 
@@ -1667,7 +1675,7 @@ msgid "Opening file failed"
 msgstr "ফাইল খুলতে ব্যর্থ হয়েছে"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:250
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:576
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:586
 #: crates/rnote-ui/src/dialogs/export.rs:68
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:256
@@ -1691,11 +1699,11 @@ msgstr "বোতাম ৩"
 msgid "Button 4"
 msgstr "বোতাম ৪"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:638
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:648
 msgid "Printing document failed"
 msgstr "নথি প্রিন্ট করা ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:674
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:684
 msgid "Exporting selection failed, nothing selected"
 msgstr "নির্বাচন রপ্তানি করতে ব্যর্থ হয়েছে, কোনকিছু নির্বাচিত হয়নি"
 

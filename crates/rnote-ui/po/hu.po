@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-01 08:41+0100\n"
+"POT-Creation-Date: 2023-11-11 21:37+0100\n"
 "PO-Revision-Date: 2023-11-07 22:33+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
-"\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
+">\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1039,56 +1039,60 @@ msgid "_Infinite"
 msgstr "_Végtelen"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:49
-msgid "Show _Format Borders"
-msgstr "_Formátumszegélyek megjelenítése"
+msgid "_Snap Positions"
+msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
-msgid "Show _Origin Indicator"
-msgstr "_Eredetjelző megjelenítése"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:59
-msgid "Draw With _Touch Input"
-msgstr "Rajzolás _érintéses bemenettel"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:64
-msgid "Block Pinch to _Zoom"
-msgstr "_Nagyításhoz blokkolja az összecsípést"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:69
 msgid "_Pen Sounds"
 msgstr "_Ceruza hangok"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:76
-msgid "C_lear Document"
-msgstr "Dokumentum _törlése"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:80
+#: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "_Return to Origin Page"
 msgstr "_Vissza az eredeti oldalra"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:110
+#: crates/rnote-ui/data/ui/canvasmenu.ui:63
+msgid "C_lear Document"
+msgstr "Dokumentum _törlése"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:69
+msgid "Show _Format Borders"
+msgstr "_Formátumszegélyek megjelenítése"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:74
+msgid "Show _Origin Indicator"
+msgstr "_Eredetjelző megjelenítése"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:79
+msgid "Draw With _Touch Input"
+msgstr "Rajzolás _érintéses bemenettel"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:84
+msgid "Block Pinch to _Zoom"
+msgstr "_Nagyításhoz blokkolja az összecsípést"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:115
 #: crates/rnote-ui/data/ui/shortcuts.ui:120
 #: crates/rnote-ui/data/ui/shortcuts.ui:126
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
 msgid "Zoom out"
 msgstr "Kicsinyítés"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:119
+#: crates/rnote-ui/data/ui/canvasmenu.ui:124
 msgid "Reset Zoom"
 msgstr "Nagyítás visszaállítása"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:126
+#: crates/rnote-ui/data/ui/canvasmenu.ui:131
 #: crates/rnote-ui/data/ui/shortcuts.ui:102
 #: crates/rnote-ui/data/ui/shortcuts.ui:108
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
 msgid "Zoom in"
 msgstr "Nagyítás"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:138
+#: crates/rnote-ui/data/ui/canvasmenu.ui:143
 msgid "Zoom to Page Width"
 msgstr "Nagyítás oldalszélességre"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:153
+#: crates/rnote-ui/data/ui/canvasmenu.ui:158
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1096,7 +1100,7 @@ msgstr ""
 "Oldal eltávolítása.\n"
 "Rögzített méretű dokumentumelrendezésben érhető el."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:162
+#: crates/rnote-ui/data/ui/canvasmenu.ui:167
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1104,7 +1108,7 @@ msgstr ""
 "Oldal hozzáadása.\n"
 "Rögzített méretű dokumentumelrendezésben érhető el."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:171
+#: crates/rnote-ui/data/ui/canvasmenu.ui:176
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
@@ -1126,15 +1130,19 @@ msgid "Open"
 msgstr "Megnyitás"
 
 #: crates/rnote-ui/data/ui/filerow.ui:65
+msgid "Open in Default App"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/filerow.ui:69
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
 msgstr "Átnevezés"
 
-#: crates/rnote-ui/data/ui/filerow.ui:69
+#: crates/rnote-ui/data/ui/filerow.ui:73
 msgid "Move to Trash"
 msgstr "Áthelyezés a kukába"
 
-#: crates/rnote-ui/data/ui/filerow.ui:73
+#: crates/rnote-ui/data/ui/filerow.ui:77
 msgid "Duplicate"
 msgstr "Megkettőzés"
 
@@ -1659,7 +1667,7 @@ msgid "Opening file failed"
 msgstr "A fájl megnyitása sikertelen"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:250
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:576
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:586
 #: crates/rnote-ui/src/dialogs/export.rs:68
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:256
@@ -1683,11 +1691,11 @@ msgstr "3. gomb"
 msgid "Button 4"
 msgstr "4. gomb"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:638
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:648
 msgid "Printing document failed"
 msgstr "A dokumentum nyomtatása nem sikerült"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:674
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:684
 msgid "Exporting selection failed, nothing selected"
 msgstr "Kijelölés exportálása sikertelen, nincs kijelölve semmi"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-01 08:41+0100\n"
+"POT-Creation-Date: 2023-11-11 21:37+0100\n"
 "PO-Revision-Date: 2023-02-09 20:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
@@ -1060,68 +1060,72 @@ msgid "_Infinite"
 msgstr "무한(_I)"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:49
-msgid "Show _Format Borders"
-msgstr "형식 테두리 표시하기(_F)"
+msgid "_Snap Positions"
+msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
-msgid "Show _Origin Indicator"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:59
-msgid "Draw With _Touch Input"
-msgstr "터치 입력으로 그리기(_T)"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:64
-msgid "Block Pinch to _Zoom"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:69
 msgid "_Pen Sounds"
 msgstr "펜 소리(_P)"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:76
-msgid "C_lear Document"
-msgstr "문서 지우기(_L)"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:80
+#: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "_Return to Origin Page"
 msgstr "원본 페이지로 돌아가기(_R)"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:110
+#: crates/rnote-ui/data/ui/canvasmenu.ui:63
+msgid "C_lear Document"
+msgstr "문서 지우기(_L)"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:69
+msgid "Show _Format Borders"
+msgstr "형식 테두리 표시하기(_F)"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:74
+msgid "Show _Origin Indicator"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:79
+msgid "Draw With _Touch Input"
+msgstr "터치 입력으로 그리기(_T)"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:84
+msgid "Block Pinch to _Zoom"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:115
 #: crates/rnote-ui/data/ui/shortcuts.ui:120
 #: crates/rnote-ui/data/ui/shortcuts.ui:126
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
 msgid "Zoom out"
 msgstr "축소"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:119
+#: crates/rnote-ui/data/ui/canvasmenu.ui:124
 msgid "Reset Zoom"
 msgstr "확대/축소 재설정"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:126
+#: crates/rnote-ui/data/ui/canvasmenu.ui:131
 #: crates/rnote-ui/data/ui/shortcuts.ui:102
 #: crates/rnote-ui/data/ui/shortcuts.ui:108
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
 msgid "Zoom in"
 msgstr "확대"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:138
+#: crates/rnote-ui/data/ui/canvasmenu.ui:143
 msgid "Zoom to Page Width"
 msgstr "페이지 너비로 확대/축소"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:153
+#: crates/rnote-ui/data/ui/canvasmenu.ui:158
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:162
+#: crates/rnote-ui/data/ui/canvasmenu.ui:167
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:171
+#: crates/rnote-ui/data/ui/canvasmenu.ui:176
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
@@ -1141,15 +1145,19 @@ msgid "Open"
 msgstr "열기"
 
 #: crates/rnote-ui/data/ui/filerow.ui:65
+msgid "Open in Default App"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/filerow.ui:69
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
 msgstr "이름 바꾸기"
 
-#: crates/rnote-ui/data/ui/filerow.ui:69
+#: crates/rnote-ui/data/ui/filerow.ui:73
 msgid "Move to Trash"
 msgstr "휴지통으로 이동하기"
 
-#: crates/rnote-ui/data/ui/filerow.ui:73
+#: crates/rnote-ui/data/ui/filerow.ui:77
 msgid "Duplicate"
 msgstr "복제하기"
 
@@ -1696,7 +1704,7 @@ msgid "Opening file failed"
 msgstr "파일을 열지 못했습니다"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:250
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:576
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:586
 #: crates/rnote-ui/src/dialogs/export.rs:68
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:256
@@ -1720,11 +1728,11 @@ msgstr ""
 msgid "Button 4"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:638
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:648
 msgid "Printing document failed"
 msgstr "문서 인쇄에 실패했습니다"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:674
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:684
 msgid "Exporting selection failed, nothing selected"
 msgstr "선택항목 내보내기에 실패했습니다. 선택한 항목이 없습니다"
 

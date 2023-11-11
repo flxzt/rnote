@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-01 08:41+0100\n"
+"POT-Creation-Date: 2023-11-11 21:37+0100\n"
 "PO-Revision-Date: 2022-12-08 18:13+0000\n"
 "Last-Translator: D0V4HKIIN <jonas.bonnaudet@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/rnote/repo/sv/>\n"
@@ -1189,44 +1189,48 @@ msgid "_Infinite"
 msgstr "Oändlig"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:49
-#, fuzzy
-#| msgid "Show format borders"
-msgid "Show _Format Borders"
-msgstr "Show format borders"
+msgid "_Snap Positions"
+msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
-msgid "Show _Origin Indicator"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:59
-#, fuzzy
-#| msgid "Draw with touch input"
-msgid "Draw With _Touch Input"
-msgstr "Rita med tryckinmatning"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:64
-msgid "Block Pinch to _Zoom"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:69
 #, fuzzy
 #| msgid "Pen sounds"
 msgid "_Pen Sounds"
 msgstr "Pennljud"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:76
-#, fuzzy
-#| msgid "Clear document"
-msgid "C_lear Document"
-msgstr "Rensa dokument"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:80
+#: crates/rnote-ui/data/ui/canvasmenu.ui:59
 #, fuzzy
 #| msgid "Return to the origin page"
 msgid "_Return to Origin Page"
 msgstr "Tillbaka till ursprungssidan"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:110
+#: crates/rnote-ui/data/ui/canvasmenu.ui:63
+#, fuzzy
+#| msgid "Clear document"
+msgid "C_lear Document"
+msgstr "Rensa dokument"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:69
+#, fuzzy
+#| msgid "Show format borders"
+msgid "Show _Format Borders"
+msgstr "Show format borders"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:74
+msgid "Show _Origin Indicator"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:79
+#, fuzzy
+#| msgid "Draw with touch input"
+msgid "Draw With _Touch Input"
+msgstr "Rita med tryckinmatning"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:84
+msgid "Block Pinch to _Zoom"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:115
 #: crates/rnote-ui/data/ui/shortcuts.ui:120
 #: crates/rnote-ui/data/ui/shortcuts.ui:126
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
@@ -1234,13 +1238,13 @@ msgstr "Tillbaka till ursprungssidan"
 msgid "Zoom out"
 msgstr "Zooma ut"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:119
+#: crates/rnote-ui/data/ui/canvasmenu.ui:124
 #, fuzzy
 #| msgid "Reset the zoom"
 msgid "Reset Zoom"
 msgstr "Återställ zoomen"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:126
+#: crates/rnote-ui/data/ui/canvasmenu.ui:131
 #: crates/rnote-ui/data/ui/shortcuts.ui:102
 #: crates/rnote-ui/data/ui/shortcuts.ui:108
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
@@ -1248,24 +1252,24 @@ msgstr "Återställ zoomen"
 msgid "Zoom in"
 msgstr "Zooma in"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:138
+#: crates/rnote-ui/data/ui/canvasmenu.ui:143
 #, fuzzy
 msgid "Zoom to Page Width"
 msgstr "Zooma för att passa bladbredden"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:153
+#: crates/rnote-ui/data/ui/canvasmenu.ui:158
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:162
+#: crates/rnote-ui/data/ui/canvasmenu.ui:167
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:171
+#: crates/rnote-ui/data/ui/canvasmenu.ui:176
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
@@ -1288,17 +1292,21 @@ msgid "Open"
 msgstr "Öppna"
 
 #: crates/rnote-ui/data/ui/filerow.ui:65
+msgid "Open in Default App"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/filerow.ui:69
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
 msgstr "Ändra namn"
 
-#: crates/rnote-ui/data/ui/filerow.ui:69
+#: crates/rnote-ui/data/ui/filerow.ui:73
 #, fuzzy
 #| msgid "Move into trash"
 msgid "Move to Trash"
 msgstr "Flytta till papperskorgen"
 
-#: crates/rnote-ui/data/ui/filerow.ui:73
+#: crates/rnote-ui/data/ui/filerow.ui:77
 #, fuzzy
 msgid "Duplicate"
 msgstr "Duplicera markering"
@@ -1876,7 +1884,7 @@ msgid "Opening file failed"
 msgstr "Öppna fil"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:250
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:576
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:586
 #: crates/rnote-ui/src/dialogs/export.rs:68
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:256
@@ -1902,11 +1910,11 @@ msgstr ""
 msgid "Button 4"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:638
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:648
 msgid "Printing document failed"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:674
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:684
 #, fuzzy
 msgid "Exporting selection failed, nothing selected"
 msgstr "Exportera val som SVG"

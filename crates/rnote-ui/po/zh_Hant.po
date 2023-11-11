@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-01 08:41+0100\n"
+"POT-Creation-Date: 2023-11-11 21:37+0100\n"
 "PO-Revision-Date: 2023-10-25 17:02+0000\n"
 "Last-Translator: detiam <dehe_tian@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -1036,56 +1036,60 @@ msgid "_Infinite"
 msgstr "無限"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:49
-msgid "Show _Format Borders"
-msgstr "顯示格式邊框(F)"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:54
-msgid "Show _Origin Indicator"
+msgid "_Snap Positions"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:59
-msgid "Draw With _Touch Input"
-msgstr "使用觸控繪製"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:64
-msgid "Block Pinch to _Zoom"
-msgstr "禁用雙指縮放"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:69
+#: crates/rnote-ui/data/ui/canvasmenu.ui:54
 msgid "_Pen Sounds"
 msgstr "手寫筆音效(P)"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:76
-msgid "C_lear Document"
-msgstr "清空文件"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:80
+#: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "_Return to Origin Page"
 msgstr "返回到第一頁(R)"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:110
+#: crates/rnote-ui/data/ui/canvasmenu.ui:63
+msgid "C_lear Document"
+msgstr "清空文件"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:69
+msgid "Show _Format Borders"
+msgstr "顯示格式邊框(F)"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:74
+msgid "Show _Origin Indicator"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:79
+msgid "Draw With _Touch Input"
+msgstr "使用觸控繪製"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:84
+msgid "Block Pinch to _Zoom"
+msgstr "禁用雙指縮放"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:115
 #: crates/rnote-ui/data/ui/shortcuts.ui:120
 #: crates/rnote-ui/data/ui/shortcuts.ui:126
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
 msgid "Zoom out"
 msgstr "縮小"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:119
+#: crates/rnote-ui/data/ui/canvasmenu.ui:124
 msgid "Reset Zoom"
 msgstr "重置縮放"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:126
+#: crates/rnote-ui/data/ui/canvasmenu.ui:131
 #: crates/rnote-ui/data/ui/shortcuts.ui:102
 #: crates/rnote-ui/data/ui/shortcuts.ui:108
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
 msgid "Zoom in"
 msgstr "放大"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:138
+#: crates/rnote-ui/data/ui/canvasmenu.ui:143
 msgid "Zoom to Page Width"
 msgstr "縮放以適合頁寬"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:153
+#: crates/rnote-ui/data/ui/canvasmenu.ui:158
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1093,7 +1097,7 @@ msgstr ""
 "移除頁面。\n"
 "可選用固定大小的文件佈局。"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:162
+#: crates/rnote-ui/data/ui/canvasmenu.ui:167
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1101,7 +1105,7 @@ msgstr ""
 "新增頁面。\n"
 "可選用固定大小的文件佈局。"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:171
+#: crates/rnote-ui/data/ui/canvasmenu.ui:176
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
@@ -1123,15 +1127,19 @@ msgid "Open"
 msgstr "開啟"
 
 #: crates/rnote-ui/data/ui/filerow.ui:65
+msgid "Open in Default App"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/filerow.ui:69
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
 msgstr "重新命名"
 
-#: crates/rnote-ui/data/ui/filerow.ui:69
+#: crates/rnote-ui/data/ui/filerow.ui:73
 msgid "Move to Trash"
 msgstr "移至回收站"
 
-#: crates/rnote-ui/data/ui/filerow.ui:73
+#: crates/rnote-ui/data/ui/filerow.ui:77
 msgid "Duplicate"
 msgstr "重複所選內容"
 
@@ -1667,7 +1675,7 @@ msgid "Opening file failed"
 msgstr "檔案開啟失敗"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:250
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:576
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:586
 #: crates/rnote-ui/src/dialogs/export.rs:68
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:256
@@ -1691,11 +1699,11 @@ msgstr "按鈕3"
 msgid "Button 4"
 msgstr "按鈕4"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:638
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:648
 msgid "Printing document failed"
 msgstr "列印失敗"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:674
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:684
 msgid "Exporting selection failed, nothing selected"
 msgstr "匯出選擇內容失敗，沒有選擇內容"
 

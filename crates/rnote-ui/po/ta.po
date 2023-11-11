@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-01 08:41+0100\n"
+"POT-Creation-Date: 2023-11-11 21:37+0100\n"
 "PO-Revision-Date: 2023-09-18 17:18+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -1037,56 +1037,60 @@ msgid "_Infinite"
 msgstr "எல்லையற்ற (_I)"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:49
-msgid "Show _Format Borders"
-msgstr "காட்டு வடிவ (_F) பார்டர்களை"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:54
-msgid "Show _Origin Indicator"
+msgid "_Snap Positions"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:59
-msgid "Draw With _Touch Input"
-msgstr "தொடு (_T) உள்ளீடு மூலம் வரையவும்"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:64
-msgid "Block Pinch to _Zoom"
-msgstr "பெரிதாக்க (_Z) கிள்ளுதலைத் தடுக்கவும்"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:69
+#: crates/rnote-ui/data/ui/canvasmenu.ui:54
 msgid "_Pen Sounds"
 msgstr "பேனா ஒலிகள் (_P)"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:76
-msgid "C_lear Document"
-msgstr "தெளிவான ஆவணம் (_l)"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:80
+#: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "_Return to Origin Page"
 msgstr "மூலப் பக்கத்திற்குத் திரும்பு (_R)"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:110
+#: crates/rnote-ui/data/ui/canvasmenu.ui:63
+msgid "C_lear Document"
+msgstr "தெளிவான ஆவணம் (_l)"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:69
+msgid "Show _Format Borders"
+msgstr "காட்டு வடிவ (_F) பார்டர்களை"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:74
+msgid "Show _Origin Indicator"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:79
+msgid "Draw With _Touch Input"
+msgstr "தொடு (_T) உள்ளீடு மூலம் வரையவும்"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:84
+msgid "Block Pinch to _Zoom"
+msgstr "பெரிதாக்க (_Z) கிள்ளுதலைத் தடுக்கவும்"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:115
 #: crates/rnote-ui/data/ui/shortcuts.ui:120
 #: crates/rnote-ui/data/ui/shortcuts.ui:126
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
 msgid "Zoom out"
 msgstr "ஜூம் அவுட்"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:119
+#: crates/rnote-ui/data/ui/canvasmenu.ui:124
 msgid "Reset Zoom"
 msgstr "பெரிதாக்கு மீட்டமை"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:126
+#: crates/rnote-ui/data/ui/canvasmenu.ui:131
 #: crates/rnote-ui/data/ui/shortcuts.ui:102
 #: crates/rnote-ui/data/ui/shortcuts.ui:108
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
 msgid "Zoom in"
 msgstr "பெரிதாக்கு"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:138
+#: crates/rnote-ui/data/ui/canvasmenu.ui:143
 msgid "Zoom to Page Width"
 msgstr "பக்க அகலத்திற்கு ஏற்றவாறு பெரிதாக்கவும்"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:153
+#: crates/rnote-ui/data/ui/canvasmenu.ui:158
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1094,7 +1098,7 @@ msgstr ""
 "பக்கத்தை அகற்று.\n"
 "நிலையான அளவு ஆவண அமைப்பில் கிடைக்கும்."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:162
+#: crates/rnote-ui/data/ui/canvasmenu.ui:167
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1102,7 +1106,7 @@ msgstr ""
 "பக்கத்தைச் சேர்.\n"
 "நிலையான அளவு ஆவண அமைப்பில் கிடைக்கும்."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:171
+#: crates/rnote-ui/data/ui/canvasmenu.ui:176
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
@@ -1124,15 +1128,19 @@ msgid "Open"
 msgstr "திற"
 
 #: crates/rnote-ui/data/ui/filerow.ui:65
+msgid "Open in Default App"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/filerow.ui:69
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
 msgstr "மறுபெயர்"
 
-#: crates/rnote-ui/data/ui/filerow.ui:69
+#: crates/rnote-ui/data/ui/filerow.ui:73
 msgid "Move to Trash"
 msgstr "குப்பைக்கு நகர்த்தவும்"
 
-#: crates/rnote-ui/data/ui/filerow.ui:73
+#: crates/rnote-ui/data/ui/filerow.ui:77
 msgid "Duplicate"
 msgstr "நகல்"
 
@@ -1674,7 +1682,7 @@ msgid "Opening file failed"
 msgstr "கோப்பைத் திறப்பதில் தோல்வி"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:250
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:576
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:586
 #: crates/rnote-ui/src/dialogs/export.rs:68
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:256
@@ -1698,11 +1706,11 @@ msgstr "பொத்தான் 3"
 msgid "Button 4"
 msgstr "பொத்தான் 4"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:638
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:648
 msgid "Printing document failed"
 msgstr "ஆவணத்தை அச்சிட முடியவில்லை"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:674
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:684
 msgid "Exporting selection failed, nothing selected"
 msgstr "தேர்வை ஏற்றுமதி செய்வதில் தோல்வி, எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 

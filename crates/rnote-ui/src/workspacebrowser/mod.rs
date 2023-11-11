@@ -323,6 +323,7 @@ impl RnWorkspaceBrowser {
         filefilter.add_mime_type("image/svg+xml");
         filefilter.add_mime_type("image/png");
         filefilter.add_mime_type("image/jpeg");
+        filefilter.add_mime_type("text/plain");
         filefilter.add_mime_type("inode/directory");
         filefilter.add_suffix("rnote");
         filefilter.add_suffix("pdf");
@@ -331,6 +332,7 @@ impl RnWorkspaceBrowser {
         filefilter.add_suffix("png");
         filefilter.add_suffix("jpg");
         filefilter.add_suffix("jpeg");
+        filefilter.add_suffix("txt");
 
         let hidden_filter = CustomFilter::new(|file| {
             let fileinfo = file.downcast_ref::<gio::FileInfo>().unwrap();

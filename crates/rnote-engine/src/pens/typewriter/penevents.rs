@@ -26,7 +26,8 @@ impl Typewriter {
         let event_result = match &mut self.state {
             TypewriterState::Idle | TypewriterState::Start { .. } => {
                 let mut refresh_state = false;
-                let mut new_state = TypewriterState::Start(element.pos);
+                let mut new_state =
+                    TypewriterState::Start(engine_view.doc.snap_position(element.pos));
 
                 if let Some(&stroke_key) = engine_view
                     .store

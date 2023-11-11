@@ -7,6 +7,7 @@ use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut, StrokeContent};
 use crate::render::Svg;
+use crate::snap::SnapCorner;
 use crate::store::StrokeKey;
 use crate::strokes::Content;
 use crate::{Camera, DrawableOnDoc, Engine, WidgetFlags};
@@ -38,6 +39,7 @@ pub(super) enum ModifyState {
     Translate {
         start_pos: na::Vector2<f64>,
         current_pos: na::Vector2<f64>,
+        snap_corner: SnapCorner,
     },
     Rotate {
         rotation_center: na::Point2<f64>,

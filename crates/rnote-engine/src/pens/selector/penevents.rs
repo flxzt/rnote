@@ -2,6 +2,7 @@
 use super::{ModifyState, ResizeCorner, Selector, SelectorState};
 use crate::engine::EngineViewMut;
 use crate::pens::pensconfig::selectorconfig::SelectorStyle;
+use crate::snap::SnapCorner;
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use p2d::query::PointQuery;
@@ -153,10 +154,14 @@ impl Selector {
                                 start_pos: element.pos,
                             }
                         } else if selection_bounds.contains_local_point(&element.pos.into()) {
+                            let snap_corner =
+                                SnapCorner::determine_from_bounds(*selection_bounds, element.pos);
+
                             // clicking inside the selection bounds, triggering translation
                             *modify_state = ModifyState::Translate {
                                 start_pos: element.pos,
                                 current_pos: element.pos,
+                                snap_corner,
                             };
                         } else {
                             // when clicking outside the selection bounds, reset
@@ -169,10 +174,23 @@ impl Selector {
                     ModifyState::Translate {
                         start_pos: _,
                         current_pos,
+                        snap_corner,
                     } => {
-                        let offset = engine_view.doc.snap_position(
-                            selection_bounds.mins.coords + (element.pos - *current_pos),
-                        ) - selection_bounds.mins.coords;
+                        let corner = match snap_corner {
+                            SnapCorner::TopLeft => selection_bounds.mins.coords,
+                            SnapCorner::TopRight => {
+                                na::vector![selection_bounds.maxs[0], selection_bounds.mins[1]]
+                            }
+                            SnapCorner::BottomLeft => {
+                                na::vector![selection_bounds.mins[0], selection_bounds.maxs[1]]
+                            }
+                            SnapCorner::BottomRight => selection_bounds.maxs.coords,
+                        };
+
+                        let offset = engine_view
+                            .doc
+                            .snap_position(corner + (element.pos - *current_pos))
+                            - corner;
 
                         if offset.magnitude()
                             > Self::TRANSLATE_MAGNITUDE_THRESHOLD / engine_view.camera.total_zoom()

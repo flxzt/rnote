@@ -63,10 +63,21 @@ impl Typewriter {
 
                 // after setting new state
                 if refresh_state {
-                    // Update typewriter state for the current textstroke, and indicate that the penholder has changed, to update the UI
+                    // Update typewriter state for the current textstroke,
+                    // and flag to update the UI
                     widget_flags |= self.update_state(engine_view);
                     widget_flags.refresh_ui = true;
                 }
+
+                // possibly nudge camera
+                widget_flags |= engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
+                widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
+                engine_view.store.regenerate_rendering_in_viewport_threaded(
+                    engine_view.tasks_tx.clone(),
+                    false,
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
+                );
 
                 EventResult {
                     handled: true,
@@ -238,14 +249,19 @@ impl Typewriter {
                                     .translate_strokes_images(&[*stroke_key], offset);
                                 *current_pos += offset;
 
-                                // possibly nudge camera
-                                widget_flags |=
-                                    engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
-                                widget_flags |=
-                                    engine_view.doc.expand_autoexpand(engine_view.camera);
-
                                 widget_flags.store_modified = true;
                             }
+
+                            // possibly nudge camera
+                            widget_flags |=
+                                engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
+                            widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
+                            engine_view.store.regenerate_rendering_in_viewport_threaded(
+                                engine_view.tasks_tx.clone(),
+                                false,
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
+                            );
                         }
 
                         EventResult {

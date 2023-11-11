@@ -46,6 +46,13 @@
             </section>
           </submenu>
           <item>
+            <attribute name="label" translatable="yes">_Snap Positions</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.snap-positions</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
             <attribute name="label" translatable="yes">Show _Format Borders</attribute>
             <attribute name="toggle" />
             <attribute name="action">win.format-borders</attribute>

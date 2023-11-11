@@ -170,7 +170,9 @@ impl Selector {
                         start_pos: _,
                         current_pos,
                     } => {
-                        let offset = element.pos - *current_pos;
+                        let offset = engine_view.doc.snap_position(
+                            selection_bounds.mins.coords + (element.pos - *current_pos),
+                        ) - selection_bounds.mins.coords;
 
                         if offset.magnitude()
                             > Self::TRANSLATE_MAGNITUDE_THRESHOLD / engine_view.camera.total_zoom()
@@ -181,6 +183,8 @@ impl Selector {
                                 .store
                                 .translate_strokes_images(selection, offset);
                             *selection_bounds = selection_bounds.translate(offset);
+                            *current_pos += offset;
+
                             // possibly nudge camera
                             widget_flags |=
                                 engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
@@ -193,8 +197,6 @@ impl Selector {
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
                             );
-
-                            *current_pos = element.pos;
                         }
                     }
                     ModifyState::Rotate {

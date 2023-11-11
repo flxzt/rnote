@@ -17,6 +17,8 @@ where
     fn mins_maxs(&self, other: &Self) -> (Self, Self);
     /// calculates the angle self is "ahead" of other (counter clockwise)
     fn angle_ahead(&self, other: &Self) -> f64;
+    /// Round to the next integer
+    fn round(&self) -> Self;
     /// Ceil to the next integer
     fn ceil(&self) -> Self;
     /// Floor to the next integer
@@ -72,6 +74,10 @@ impl Vector2Ext for na::Vector2<f64> {
 
     fn angle_ahead(&self, other: &Self) -> f64 {
         other[1].atan2(other[0]) - self[1].atan2(self[0])
+    }
+
+    fn round(&self) -> Self {
+        na::vector![self[0].round(), self[1].round()]
     }
 
     fn ceil(&self) -> Self {

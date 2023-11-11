@@ -239,8 +239,7 @@ impl Typewriter {
                                 - snap_corner_pos;
 
                             if offset.magnitude()
-                                > Self::TRANSLATE_MAGNITUDE_THRESHOLD
-                                    / engine_view.camera.total_zoom()
+                                > Self::TRANSLATE_OFFSET_THRESHOLD / engine_view.camera.total_zoom()
                             {
                                 // move text
                                 engine_view.store.translate_strokes(&[*stroke_key], offset);

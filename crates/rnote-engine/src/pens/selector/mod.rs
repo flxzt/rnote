@@ -452,8 +452,8 @@ impl DrawableOnDoc for Selector {
 }
 
 impl Selector {
-    /// The threshold magnitude where above it the translation is applied. In surface coordinates.
-    const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.414;
+    /// The threshold where above it the translation is applied. In surface coordinates.
+    const TRANSLATE_OFFSET_THRESHOLD: f64 = 1.414;
     /// The threshold angle (in radians) where above it the rotation is applied.
     const ROTATE_ANGLE_THRESHOLD: f64 = ((2.0 * std::f64::consts::PI) / 360.0) * 0.2;
     /// The outline stroke width when drawing a selection.

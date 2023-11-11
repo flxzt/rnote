@@ -8,9 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-11 21:37+0100\n"
-"PO-Revision-Date: 2023-11-03 14:08+0000\n"
-"Last-Translator: Óscar Fernández Díaz <oscfdezdz@users.noreply.hosted."
-"weblate.org>\n"
+"PO-Revision-Date: 2023-11-11 21:06+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -1042,7 +1041,7 @@ msgstr "_Infinito"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:49
 msgid "_Snap Positions"
-msgstr ""
+msgstr "_Posiciones rápidas"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
 msgid "_Pen Sounds"
@@ -1133,7 +1132,7 @@ msgstr "Abrir"
 
 #: crates/rnote-ui/data/ui/filerow.ui:65
 msgid "Open in Default App"
-msgstr ""
+msgstr "Abrir por defecto en la aplicación"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56

@@ -7,6 +7,7 @@ use crate::{DrawableOnDoc, StrokeStore, WidgetFlags};
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenProgress};
 use rnote_compose::penpath::Element;
+use rnote_compose::shapes::Shapeable;
 use std::time::Instant;
 use unicode_segmentation::GraphemeCursor;
 
@@ -215,24 +216,36 @@ impl Typewriter {
                         }
                     }
                     ModifyState::Translating { current_pos, .. } => {
-                        let offset = element.pos - *current_pos;
-
-                        if offset.magnitude()
-                            > Self::TRANSLATE_MAGNITUDE_THRESHOLD / engine_view.camera.total_zoom()
+                        if let Some(textstroke_bounds) = engine_view
+                            .store
+                            .get_stroke_ref(*stroke_key)
+                            .map(|s| s.bounds())
                         {
-                            // move text
-                            engine_view.store.translate_strokes(&[*stroke_key], offset);
-                            engine_view
-                                .store
-                                .translate_strokes_images(&[*stroke_key], offset);
-                            // possibly nudge camera
-                            widget_flags |=
-                                engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
-                            widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
+                            let snap_corner_pos = textstroke_bounds.mins.coords;
+                            let offset = engine_view
+                                .doc
+                                .snap_position(snap_corner_pos + (element.pos - *current_pos))
+                                - snap_corner_pos;
 
-                            *current_pos = element.pos;
+                            if offset.magnitude()
+                                > Self::TRANSLATE_MAGNITUDE_THRESHOLD
+                                    / engine_view.camera.total_zoom()
+                            {
+                                // move text
+                                engine_view.store.translate_strokes(&[*stroke_key], offset);
+                                engine_view
+                                    .store
+                                    .translate_strokes_images(&[*stroke_key], offset);
+                                *current_pos += offset;
 
-                            widget_flags.store_modified = true;
+                                // possibly nudge camera
+                                widget_flags |=
+                                    engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
+                                widget_flags |=
+                                    engine_view.doc.expand_autoexpand(engine_view.camera);
+
+                                widget_flags.store_modified = true;
+                            }
                         }
 
                         EventResult {

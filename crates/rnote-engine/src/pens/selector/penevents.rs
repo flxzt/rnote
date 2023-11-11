@@ -176,7 +176,7 @@ impl Selector {
                         current_pos,
                         snap_corner,
                     } => {
-                        let corner = match snap_corner {
+                        let snap_corner_pos = match snap_corner {
                             SnapCorner::TopLeft => selection_bounds.mins.coords,
                             SnapCorner::TopRight => {
                                 na::vector![selection_bounds.maxs[0], selection_bounds.mins[1]]
@@ -189,8 +189,8 @@ impl Selector {
 
                         let offset = engine_view
                             .doc
-                            .snap_position(corner + (element.pos - *current_pos))
-                            - corner;
+                            .snap_position(snap_corner_pos + (element.pos - *current_pos))
+                            - snap_corner_pos;
 
                         if offset.magnitude()
                             > Self::TRANSLATE_MAGNITUDE_THRESHOLD / engine_view.camera.total_zoom()

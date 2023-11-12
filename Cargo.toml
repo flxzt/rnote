@@ -77,8 +77,8 @@ cairo-rs = { version = "0.18", features = ["png", "svg", "pdf"] }
 librsvg = "2.57"
 # newest poppler feature ("v21_12") is causing linking errors when building in mingw for some reason.
 poppler-rs = { version = "0.22", features = ["v20_9"] }
-gtk4 = { version = "0.7.1", features = ["v4_12"] }
-adw = { version = "0.5.2", package="libadwaita", features = ["v1_4"] }
+gtk4 = { version = "0.7.3", features = ["v4_12"] }
+adw = { version = "0.5.3", package="libadwaita", features = ["v1_4"] }
 numeric-sort = "0.1"
 
 [patch.crates-io]

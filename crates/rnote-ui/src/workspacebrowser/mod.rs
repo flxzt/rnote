@@ -17,7 +17,7 @@ use gtk4::{
     PropertyExpression, ScrolledWindow, Separator, SignalListItemFactory, SingleSelection,
     SortListModel, SorterChange, Widget,
 };
-use numeric_sort::cmp;
+use numeric_sort;
 use std::cell::RefCell;
 use std::path::{Path, PathBuf};
 
@@ -397,7 +397,7 @@ impl RnWorkspaceBrowser {
             let second_display_name = second_file.basename().unwrap();
             let second_display_name = second_display_name.to_str().unwrap();
 
-            cmp(first_display_name, second_display_name).into()
+            numeric_sort::cmp(first_display_name, second_display_name).into()
         });
 
         let multisorter = MultiSorter::new();

@@ -398,7 +398,7 @@ impl RnWorkspaceBrowser {
             let second_display_name = second_file.basename().unwrap();
             let second_display_name = second_display_name.to_str().unwrap();
 
-            first_display_name.cmp(second_display_name).into()
+            numeric_sort::cmp(first_display_name, second_display_name).into()
         });
 
         let multisorter = MultiSorter::new();

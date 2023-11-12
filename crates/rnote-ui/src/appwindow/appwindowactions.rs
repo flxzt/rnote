@@ -73,9 +73,9 @@ impl RnAppWindow {
         let action_snap_positions =
             gio::SimpleAction::new_stateful("snap-positions", None, &false.to_variant());
         self.add_action(&action_snap_positions);
-        let action_format_borders =
-            gio::SimpleAction::new_stateful("format-borders", None, &true.to_variant());
-        self.add_action(&action_format_borders);
+        let action_show_format_borders =
+            gio::SimpleAction::new_stateful("show-format-borders", None, &true.to_variant());
+        self.add_action(&action_show_format_borders);
         let action_show_origin_indicator =
             gio::SimpleAction::new_stateful("show-origin-indicator", None, &true.to_variant());
         self.add_action(&action_show_origin_indicator);
@@ -305,29 +305,25 @@ impl RnAppWindow {
             }),
         );
 
-        // Format borders
-        action_format_borders.connect_change_state(
+        // Show format borders
+        action_show_format_borders.connect_change_state(
             clone!(@weak self as appwindow => move |action, state_request| {
-                let format_borders = state_request.unwrap().get::<bool>().unwrap();
+                let show_format_borders = state_request.unwrap().get::<bool>().unwrap();
                 let canvas = appwindow.active_tab_wrapper().canvas();
-
-                canvas.engine_mut().document.format.show_borders = format_borders;
+                canvas.engine_mut().document.format.show_borders = show_format_borders;
                 canvas.queue_draw();
-
-                action.set_state(&format_borders.to_variant());
+                action.set_state(&show_format_borders.to_variant());
             }),
         );
 
-        // Origin indicator
+        // Show origin indicator
         action_show_origin_indicator.connect_change_state(
             clone!(@weak self as appwindow => move |action, state_request| {
-                let origin_indicator = state_request.unwrap().get::<bool>().unwrap();
+                let show_origin_indicator = state_request.unwrap().get::<bool>().unwrap();
                 let canvas = appwindow.active_tab_wrapper().canvas();
-
-                canvas.engine_mut().document.format.show_origin_indicator = origin_indicator;
+                canvas.engine_mut().document.format.show_origin_indicator = show_origin_indicator;
                 canvas.queue_draw();
-
-                action.set_state(&origin_indicator.to_variant());
+                action.set_state(&show_origin_indicator.to_variant());
             }),
         );
 
@@ -342,8 +338,6 @@ impl RnAppWindow {
                         return;
                     }
                 };
-                action.set_state(&pen_style_str.to_variant());
-
                 let canvas = appwindow.active_tab_wrapper().canvas();
 
                 // don't change the style if the current style with override is already the same
@@ -353,6 +347,8 @@ impl RnAppWindow {
                     widget_flags |= canvas.engine_mut().change_pen_style_override(None);
                     appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
+
+                action.set_state(&pen_style_str.to_variant());
             }),
         );
 

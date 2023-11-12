@@ -68,7 +68,7 @@
           <item>
             <attribute name="label" translatable="yes">Show _Format Borders</attribute>
             <attribute name="toggle" />
-            <attribute name="action">win.format-borders</attribute>
+            <attribute name="action">win.show-format-borders</attribute>
           </item>
           <item>
             <attribute name="label" translatable="yes">Show _Origin Indicator</attribute>

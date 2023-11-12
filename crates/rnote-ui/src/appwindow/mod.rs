@@ -581,7 +581,8 @@ impl RnAppWindow {
             .redo_button()
             .set_sensitive(can_redo);
 
-        // we change the state through the actions, because they themselves hold state. ( e.g. used to display tickboxes for boolean actions )
+        // we change the state through the actions, because they themselves hold state.
+        // (for example needed to display ticks in menus for boolean actions)
         adw::prelude::ActionGroupExt::activate_action(
             self,
             "doc-layout",
@@ -599,7 +600,7 @@ impl RnAppWindow {
         );
         adw::prelude::ActionGroupExt::change_action_state(
             self,
-            "format-borders",
+            "show-format-borders",
             &format.show_borders.to_variant(),
         );
         adw::prelude::ActionGroupExt::change_action_state(

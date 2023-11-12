@@ -17,7 +17,6 @@ use gtk4::{
     PropertyExpression, ScrolledWindow, Separator, SignalListItemFactory, SingleSelection,
     SortListModel, SorterChange, Widget,
 };
-use numeric_sort;
 use std::cell::RefCell;
 use std::path::{Path, PathBuf};
 

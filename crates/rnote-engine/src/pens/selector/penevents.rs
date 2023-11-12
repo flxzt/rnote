@@ -2,6 +2,7 @@
 use super::{ModifyState, ResizeCorner, Selector, SelectorState};
 use crate::engine::EngineViewMut;
 use crate::pens::pensconfig::selectorconfig::SelectorStyle;
+use crate::snap::SnapCorner;
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use p2d::query::PointQuery;
@@ -49,6 +50,12 @@ impl Selector {
                 // possibly nudge camera
                 widget_flags |= engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
                 widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
+                engine_view.store.regenerate_rendering_in_viewport_threaded(
+                    engine_view.tasks_tx.clone(),
+                    false,
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
+                );
 
                 EventResult {
                     handled: true,
@@ -153,10 +160,14 @@ impl Selector {
                                 start_pos: element.pos,
                             }
                         } else if selection_bounds.contains_local_point(&element.pos.into()) {
+                            let snap_corner =
+                                SnapCorner::determine_from_bounds(*selection_bounds, element.pos);
+
                             // clicking inside the selection bounds, triggering translation
                             *modify_state = ModifyState::Translate {
                                 start_pos: element.pos,
                                 current_pos: element.pos,
+                                snap_corner,
                             };
                         } else {
                             // when clicking outside the selection bounds, reset
@@ -169,11 +180,26 @@ impl Selector {
                     ModifyState::Translate {
                         start_pos: _,
                         current_pos,
+                        snap_corner,
                     } => {
-                        let offset = element.pos - *current_pos;
+                        let snap_corner_pos = match snap_corner {
+                            SnapCorner::TopLeft => selection_bounds.mins.coords,
+                            SnapCorner::TopRight => {
+                                na::vector![selection_bounds.maxs[0], selection_bounds.mins[1]]
+                            }
+                            SnapCorner::BottomLeft => {
+                                na::vector![selection_bounds.mins[0], selection_bounds.maxs[1]]
+                            }
+                            SnapCorner::BottomRight => selection_bounds.maxs.coords,
+                        };
+
+                        let offset = engine_view
+                            .doc
+                            .snap_position(snap_corner_pos + (element.pos - *current_pos))
+                            - snap_corner_pos;
 
                         if offset.magnitude()
-                            > Self::TRANSLATE_MAGNITUDE_THRESHOLD / engine_view.camera.total_zoom()
+                            > Self::TRANSLATE_OFFSET_THRESHOLD / engine_view.camera.total_zoom()
                         {
                             // move selection
                             engine_view.store.translate_strokes(selection, offset);
@@ -181,21 +207,19 @@ impl Selector {
                                 .store
                                 .translate_strokes_images(selection, offset);
                             *selection_bounds = selection_bounds.translate(offset);
-                            // possibly nudge camera
-                            widget_flags |=
-                                engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
-                            widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
-
-                            // strokes that were not visible previously might come into view
-                            engine_view.store.regenerate_rendering_in_viewport_threaded(
-                                engine_view.tasks_tx.clone(),
-                                false,
-                                engine_view.camera.viewport(),
-                                engine_view.camera.image_scale(),
-                            );
-
-                            *current_pos = element.pos;
+                            *current_pos += offset;
                         }
+
+                        // possibly nudge camera
+                        widget_flags |=
+                            engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
+                        widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
+                        engine_view.store.regenerate_rendering_in_viewport_threaded(
+                            engine_view.tasks_tx.clone(),
+                            false,
+                            engine_view.camera.viewport(),
+                            engine_view.camera.image_scale(),
+                        );
                     }
                     ModifyState::Rotate {
                         rotation_center,
@@ -233,49 +257,70 @@ impl Selector {
                         start_bounds,
                         start_pos,
                     } => {
-                        let (pos_offset, pivot) = {
-                            let pos_offset = element.pos - *start_pos;
-
-                            match from_corner {
-                                ResizeCorner::TopLeft => (-pos_offset, start_bounds.maxs.coords),
-                                ResizeCorner::TopRight => (
-                                    na::vector![pos_offset[0], -pos_offset[1]],
-                                    na::vector![
-                                        start_bounds.mins.coords[0],
-                                        start_bounds.maxs.coords[1]
-                                    ],
-                                ),
-                                ResizeCorner::BottomLeft => (
-                                    na::vector![-pos_offset[0], pos_offset[1]],
-                                    na::vector![
-                                        start_bounds.maxs.coords[0],
-                                        start_bounds.mins.coords[1]
-                                    ],
-                                ),
-                                ResizeCorner::BottomRight => (pos_offset, start_bounds.mins.coords),
-                            }
-                        };
-
-                        let new_extents = if engine_view
+                        let lock_aspectratio = engine_view
                             .pens_config
                             .selector_config
                             .resize_lock_aspectratio
-                            || modifier_keys.contains(&ModifierKey::KeyboardCtrl)
-                        {
-                            // Lock aspectratio
-                            rnote_compose::utils::scale_w_locked_aspectratio(
-                                start_bounds.extents(),
-                                start_bounds.extents() + pos_offset,
-                            )
+                            || modifier_keys.contains(&ModifierKey::KeyboardCtrl);
+
+                        let snap_corner_pos = match from_corner {
+                            ResizeCorner::TopLeft => start_bounds.mins.coords,
+                            ResizeCorner::TopRight => na::vector![
+                                start_bounds.maxs.coords[0],
+                                start_bounds.mins.coords[1]
+                            ],
+                            ResizeCorner::BottomLeft => na::vector![
+                                start_bounds.mins.coords[0],
+                                start_bounds.maxs.coords[1]
+                            ],
+                            ResizeCorner::BottomRight => start_bounds.maxs.coords,
+                        };
+                        let pivot = match from_corner {
+                            ResizeCorner::TopLeft => start_bounds.maxs.coords,
+                            ResizeCorner::TopRight => na::vector![
+                                start_bounds.mins.coords[0],
+                                start_bounds.maxs.coords[1]
+                            ],
+                            ResizeCorner::BottomLeft => na::vector![
+                                start_bounds.maxs.coords[0],
+                                start_bounds.mins.coords[1]
+                            ],
+                            ResizeCorner::BottomRight => start_bounds.mins.coords,
+                        };
+                        let start_offset = if !lock_aspectratio {
+                            engine_view
+                                .doc
+                                .snap_position(snap_corner_pos + (element.pos - *start_pos))
+                                - snap_corner_pos
                         } else {
-                            start_bounds.extents() + pos_offset
-                        }
-                        .maxs(
-                            &((Self::RESIZE_NODE_SIZE
-                                + na::Vector2::<f64>::from_element(Self::ROTATE_NODE_SIZE))
-                                / engine_view.camera.total_zoom()),
-                        );
-                        let scale = new_extents.component_div(&selection_bounds.extents());
+                            element.pos - *start_pos
+                        };
+                        let start_offset = match from_corner {
+                            ResizeCorner::TopLeft => -start_offset,
+                            ResizeCorner::TopRight => {
+                                na::vector![start_offset[0], -start_offset[1]]
+                            }
+                            ResizeCorner::BottomLeft => {
+                                na::vector![-start_offset[0], start_offset[1]]
+                            }
+                            ResizeCorner::BottomRight => start_offset,
+                        };
+
+                        let min_extents = (Self::RESIZE_NODE_SIZE
+                            + na::Vector2::<f64>::from_element(Self::ROTATE_NODE_SIZE))
+                            / engine_view.camera.total_zoom();
+
+                        let scale = if lock_aspectratio {
+                            let scale = (start_bounds.extents() + start_offset)
+                                .maxs(&min_extents)
+                                .component_div(&selection_bounds.extents());
+                            let scale_uniform = (scale[0] + scale[1]) * 0.5;
+                            na::Vector2::<f64>::from_element(scale_uniform)
+                        } else {
+                            (start_bounds.extents() + start_offset)
+                                .maxs(&min_extents)
+                                .component_div(&selection_bounds.extents())
+                        };
 
                         // resize strokes
                         engine_view
@@ -288,10 +333,17 @@ impl Selector {
                             .translate(-pivot)
                             .scale_non_uniform(scale)
                             .translate(pivot);
+
                         // possibly nudge camera
                         widget_flags |=
                             engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
                         widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
+                        engine_view.store.regenerate_rendering_in_viewport_threaded(
+                            engine_view.tasks_tx.clone(),
+                            false,
+                            engine_view.camera.viewport(),
+                            engine_view.camera.image_scale(),
+                        );
                     }
                 }
 

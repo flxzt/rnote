@@ -527,8 +527,8 @@ fn update_cursors_for_textstroke(
 impl Typewriter {
     // The size of the translate node, located in the upper left corner.
     const TRANSLATE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
-    /// The threshold magniuted where above it the translation is applied. In surface coordinates.
-    const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.414;
+    /// The threshold where above it a transformation is applied. In surface coordinates.
+    const TRANSLATE_OFFSET_THRESHOLD: f64 = 1.414;
     /// The threshold in x-axis direction where above it adjustments to the text width are applied. In surface coordinates.
     const ADJ_TEXT_WIDTH_THRESHOLD: f64 = 1.0;
     /// The size of the translate node, located in the upper right corner.

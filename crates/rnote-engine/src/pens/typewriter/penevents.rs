@@ -7,6 +7,7 @@ use crate::{DrawableOnDoc, StrokeStore, WidgetFlags};
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenProgress};
 use rnote_compose::penpath::Element;
+use rnote_compose::shapes::Shapeable;
 use std::time::Instant;
 use unicode_segmentation::GraphemeCursor;
 
@@ -25,7 +26,8 @@ impl Typewriter {
         let event_result = match &mut self.state {
             TypewriterState::Idle | TypewriterState::Start { .. } => {
                 let mut refresh_state = false;
-                let mut new_state = TypewriterState::Start(element.pos);
+                let mut new_state =
+                    TypewriterState::Start(engine_view.doc.snap_position(element.pos));
 
                 if let Some(&stroke_key) = engine_view
                     .store
@@ -62,10 +64,21 @@ impl Typewriter {
 
                 // after setting new state
                 if refresh_state {
-                    // Update typewriter state for the current textstroke, and indicate that the penholder has changed, to update the UI
+                    // Update typewriter state for the current textstroke,
+                    // and flag to update the UI
                     widget_flags |= self.update_state(engine_view);
                     widget_flags.refresh_ui = true;
                 }
+
+                // possibly nudge camera
+                widget_flags |= engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
+                widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
+                engine_view.store.regenerate_rendering_in_viewport_threaded(
+                    engine_view.tasks_tx.clone(),
+                    false,
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
+                );
 
                 EventResult {
                     handled: true,
@@ -215,24 +228,40 @@ impl Typewriter {
                         }
                     }
                     ModifyState::Translating { current_pos, .. } => {
-                        let offset = element.pos - *current_pos;
-
-                        if offset.magnitude()
-                            > Self::TRANSLATE_MAGNITUDE_THRESHOLD / engine_view.camera.total_zoom()
+                        if let Some(textstroke_bounds) = engine_view
+                            .store
+                            .get_stroke_ref(*stroke_key)
+                            .map(|s| s.bounds())
                         {
-                            // move text
-                            engine_view.store.translate_strokes(&[*stroke_key], offset);
-                            engine_view
-                                .store
-                                .translate_strokes_images(&[*stroke_key], offset);
+                            let snap_corner_pos = textstroke_bounds.mins.coords;
+                            let offset = engine_view
+                                .doc
+                                .snap_position(snap_corner_pos + (element.pos - *current_pos))
+                                - snap_corner_pos;
+
+                            if offset.magnitude()
+                                > Self::TRANSLATE_OFFSET_THRESHOLD / engine_view.camera.total_zoom()
+                            {
+                                // move text
+                                engine_view.store.translate_strokes(&[*stroke_key], offset);
+                                engine_view
+                                    .store
+                                    .translate_strokes_images(&[*stroke_key], offset);
+                                *current_pos += offset;
+
+                                widget_flags.store_modified = true;
+                            }
+
                             // possibly nudge camera
                             widget_flags |=
                                 engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
                             widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
-
-                            *current_pos = element.pos;
-
-                            widget_flags.store_modified = true;
+                            engine_view.store.regenerate_rendering_in_viewport_threaded(
+                                engine_view.tasks_tx.clone(),
+                                false,
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
+                            );
                         }
 
                         EventResult {

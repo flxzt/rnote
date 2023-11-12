@@ -43,10 +43,10 @@ slotmap = { version = "1", features = ["serde"] }
 rstar = "0.11"
 geo = "0.26"
 flate2 = "1"
-chrono = "0.4.26"
+chrono = "0.4.31"
 base64 = "0.21"
 semver = { version = "1", features = ["serde"]}
-regex = "1.7"
+regex = "1.10"
 url = "2"
 fs_extra = "1"
 same-file = "1"
@@ -61,7 +61,7 @@ piet = "0.6"
 piet-cairo = "0.6"
 roughr = "0.6"
 rough_piet = "0.6"
-palette = "0.7.2"
+palette = "0.7.3"
 rodio = { version = "0.17", default-features = false, features = ["symphonia-wav"] }
 winresource = "0.1"
 smol = "1"
@@ -71,8 +71,8 @@ dialoguer = "0.10.4"
 open = "5"
 atty = "0.2"
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
-glib = "0.18.1"
-gio = "0.18.1"
+glib = "0.18.3"
+gio = "0.18.3"
 cairo-rs = { version = "0.18", features = ["png", "svg", "pdf"] }
 librsvg = "2.57"
 # newest poppler feature ("v21_12") is causing linking errors when building in mingw for some reason.

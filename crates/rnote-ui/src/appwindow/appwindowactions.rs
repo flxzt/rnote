@@ -61,9 +61,18 @@ impl RnAppWindow {
         let action_focus_mode = gio::PropertyAction::new("focus-mode", self, "focus-mode");
         self.add_action(&action_focus_mode);
 
+        // Could not make it work with enums as state together with activating from menu model, so using strings instead
+        let action_doc_layout = gio::SimpleAction::new_stateful(
+            "doc-layout",
+            Some(&String::static_variant_type()),
+            &String::from("infinite").to_variant(),
+        );
         let action_pen_sounds =
             gio::SimpleAction::new_stateful("pen-sounds", None, &false.to_variant());
         self.add_action(&action_pen_sounds);
+        let action_snap_positions =
+            gio::SimpleAction::new_stateful("snap-positions", None, &false.to_variant());
+        self.add_action(&action_snap_positions);
         let action_format_borders =
             gio::SimpleAction::new_stateful("format-borders", None, &true.to_variant());
         self.add_action(&action_format_borders);
@@ -73,12 +82,6 @@ impl RnAppWindow {
         let action_block_pinch_zoom =
             gio::PropertyAction::new("block-pinch-zoom", self, "block-pinch-zoom");
         self.add_action(&action_block_pinch_zoom);
-        // Couldn't make it work with enums as state together with activating from menu model, so using strings instead
-        let action_doc_layout = gio::SimpleAction::new_stateful(
-            "doc-layout",
-            Some(&String::static_variant_type()),
-            &String::from("infinite").to_variant(),
-        );
         self.add_action(&action_doc_layout);
         let action_pen_style = gio::SimpleAction::new_stateful(
             "pen-style",
@@ -186,7 +189,7 @@ impl RnAppWindow {
 
         // Keyboard shortcuts
         action_keyboard_shortcuts_dialog.connect_activate(
-            clone!(@weak self as appwindow => move |_action_keyboard_shortcuts_dialog, _parameter| {
+            clone!(@weak self as appwindow => move |_, _| {
                 dialogs::dialog_keyboard_shortcuts(&appwindow);
             }),
         );
@@ -207,8 +210,8 @@ impl RnAppWindow {
 
         // Developer mode
         action_devel_mode.connect_activate(
-            clone!(@weak self as appwindow, @weak action_devel_menu => move |action_devel_mode, _target| {
-                let state = action_devel_mode.state().unwrap().get::<bool>().unwrap();
+            clone!(@weak self as appwindow, @weak action_devel_menu => move |action, _target| {
+                let state = action.state().unwrap().get::<bool>().unwrap();
 
                 // Enable the devel menu action to reveal it in the app menu
                 action_devel_menu.set_enabled(!state);
@@ -218,7 +221,7 @@ impl RnAppWindow {
                     log::debug!("disabling visual debugging");
                     appwindow.lookup_action("visual-debug").unwrap().change_state(&false.to_variant());
                 }
-                action_devel_mode.change_state(&(!state).to_variant());
+                action.change_state(&(!state).to_variant());
             }),
         );
 
@@ -228,12 +231,12 @@ impl RnAppWindow {
 
         // Visual debugging
         action_visual_debug.connect_change_state(
-            clone!(@weak self as appwindow => move |action_visual_debug, state_request| {
+            clone!(@weak self as appwindow => move |action, state_request| {
                 let visual_debug = state_request.unwrap().get::<bool>().unwrap();
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().set_visual_debug(visual_debug);
                 appwindow.handle_widget_flags(widget_flags, &canvas);
-                action_visual_debug.set_state(&visual_debug.to_variant());
+                action.set_state(&visual_debug.to_variant());
             }),
         );
 
@@ -263,7 +266,7 @@ impl RnAppWindow {
 
         // Doc layout
         action_doc_layout.connect_activate(
-            clone!(@weak self as appwindow => move |action_doc_layout, target| {
+            clone!(@weak self as appwindow => move |action, target| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let doc_layout_str = target.unwrap().str().unwrap();
                 let doc_layout = match Layout::from_str(doc_layout_str) {
@@ -273,7 +276,7 @@ impl RnAppWindow {
                         return;
                     }
                 };
-                action_doc_layout.set_state(&doc_layout_str.to_variant());
+                action.set_state(&doc_layout_str.to_variant());
                 appwindow
                     .main_header()
                     .canvasmenu()
@@ -286,36 +289,45 @@ impl RnAppWindow {
 
         // Pen sounds
         action_pen_sounds.connect_change_state(
-            clone!(@weak self as appwindow => move |action_pen_sounds, state_request| {
+            clone!(@weak self as appwindow => move |action, state_request| {
                 let pen_sounds = state_request.unwrap().get::<bool>().unwrap();
                 appwindow.active_tab_wrapper().canvas().engine_mut().set_pen_sounds(pen_sounds, crate::env::pkg_data_dir().ok());
-                action_pen_sounds.set_state(&pen_sounds.to_variant());
+                action.set_state(&pen_sounds.to_variant());
+            }),
+        );
+
+        // Snap positions
+        action_snap_positions.connect_change_state(
+            clone!(@weak self as appwindow => move |action, state_request| {
+                let snap_positions = state_request.unwrap().get::<bool>().unwrap();
+                appwindow.active_tab_wrapper().canvas().engine_mut().document.snap_positions = snap_positions;
+                action.set_state(&snap_positions.to_variant());
             }),
         );
 
         // Format borders
         action_format_borders.connect_change_state(
-            clone!(@weak self as appwindow => move |action_format_borders, state_request| {
+            clone!(@weak self as appwindow => move |action, state_request| {
                 let format_borders = state_request.unwrap().get::<bool>().unwrap();
                 let canvas = appwindow.active_tab_wrapper().canvas();
 
                 canvas.engine_mut().document.format.show_borders = format_borders;
                 canvas.queue_draw();
 
-                action_format_borders.set_state(&format_borders.to_variant());
+                action.set_state(&format_borders.to_variant());
             }),
         );
 
         // Origin indicator
         action_show_origin_indicator.connect_change_state(
-            clone!(@weak self as appwindow => move |action_origin_indicator, state_request| {
+            clone!(@weak self as appwindow => move |action, state_request| {
                 let origin_indicator = state_request.unwrap().get::<bool>().unwrap();
                 let canvas = appwindow.active_tab_wrapper().canvas();
 
                 canvas.engine_mut().document.format.show_origin_indicator = origin_indicator;
                 canvas.queue_draw();
 
-                action_origin_indicator.set_state(&origin_indicator.to_variant());
+                action.set_state(&origin_indicator.to_variant());
             }),
         );
 
@@ -405,17 +417,15 @@ impl RnAppWindow {
         );
 
         // Trash Selection
-        action_selection_trash.connect_activate(
-            clone!(@weak self as appwindow => move |_action_selection_trash, _| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
-                let widget_flags = canvas.engine_mut().trash_selection();
-                appwindow.handle_widget_flags(widget_flags, &canvas);
-            }),
-        );
+        action_selection_trash.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            let canvas = appwindow.active_tab_wrapper().canvas();
+            let widget_flags = canvas.engine_mut().trash_selection();
+            appwindow.handle_widget_flags(widget_flags, &canvas);
+        }));
 
         // Duplicate Selection
         action_selection_duplicate.connect_activate(
-            clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
+            clone!(@weak self as appwindow => move |_, _| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().duplicate_selection();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -424,7 +434,7 @@ impl RnAppWindow {
 
         // invert color brightness of selection
         action_selection_invert_color.connect_activate(
-            clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
+            clone!(@weak self as appwindow => move |_, _| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().invert_selection_colors();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -433,7 +443,7 @@ impl RnAppWindow {
 
         // select all strokes
         action_selection_select_all.connect_activate(
-            clone!(@weak self as appwindow => move |_action_selection_select_all, _| {
+            clone!(@weak self as appwindow => move |_, _| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().select_all_strokes();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -442,7 +452,7 @@ impl RnAppWindow {
 
         // deselect all strokes
         action_selection_deselect_all.connect_activate(
-            clone!(@weak self as appwindow => move |_action_selection_deselect_all, _| {
+            clone!(@weak self as appwindow => move |_, _| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().deselect_all_strokes();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -514,7 +524,7 @@ impl RnAppWindow {
 
         // Add page to doc in fixed size mode
         action_add_page_to_doc.connect_activate(
-            clone!(@weak self as appwindow => move |_action_add_page_to_doc, _target| {
+            clone!(@weak self as appwindow => move |_action_add_page_to_doc, _| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().doc_add_page_fixed_size();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -523,7 +533,7 @@ impl RnAppWindow {
 
         // Remove page from doc in fixed size mode
         action_remove_page_from_doc.connect_activate(
-            clone!(@weak self as appwindow => move |_action_remove_page_from_doc, _target| {
+            clone!(@weak self as appwindow => move |_, _| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().doc_remove_page_fixed_size();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -532,7 +542,7 @@ impl RnAppWindow {
 
         // Resize to fit content
         action_resize_to_fit_content.connect_activate(
-            clone!(@weak self as appwindow => move |_action_resize_to_fit_content, _target| {
+            clone!(@weak self as appwindow => move |_, _| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().doc_resize_to_fit_content();
                 appwindow.handle_widget_flags(widget_flags, &canvas);

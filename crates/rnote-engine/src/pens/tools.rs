@@ -346,8 +346,9 @@ impl PenBehaviour for Tools {
                         {
                             self.verticalspace_tool.start_pos_y - self.verticalspace_tool.pos_y
                         } else {
-                            engine_view.doc.snap_position(element.pos)[1]
-                                - self.verticalspace_tool.pos_y
+                            engine_view.doc.snap_position(
+                                element.pos - na::vector![0., self.verticalspace_tool.pos_y],
+                            )[1]
                         };
 
                         if y_offset.abs() > VerticalSpaceTool::Y_OFFSET_THRESHOLD {

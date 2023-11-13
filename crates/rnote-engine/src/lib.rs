@@ -19,6 +19,7 @@ pub mod fileformats;
 pub mod pens;
 pub mod render;
 pub mod selectioncollision;
+pub mod snap;
 pub mod store;
 pub mod strokes;
 pub mod tasks;

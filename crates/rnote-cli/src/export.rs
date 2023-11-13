@@ -502,7 +502,7 @@ pub(crate) fn file_conflict_prompt_action(
             let ext = new_path
                 .extension()
                 .map(|n| n.to_string_lossy().to_string())
-                .unwrap_or(String::new());
+                .unwrap_or_default();
             while new_path.exists() {
                 i += 1;
                 new_path.set_file_name(format!("{file_stem}_{i}.{ext}"))

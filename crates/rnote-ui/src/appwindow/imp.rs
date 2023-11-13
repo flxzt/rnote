@@ -242,7 +242,7 @@ impl ObjectImpl for RnAppWindow {
                 let focus_mode: bool = value.get().expect("The value needs to be of type `bool`");
                 self.focus_mode.replace(focus_mode);
 
-                self.overlays.pens_toggles_box().set_visible(!focus_mode);
+                self.overlays.penpicker().set_visible(!focus_mode);
                 self.overlays.colorpicker().set_visible(!focus_mode);
                 self.overlays.sidebar_box().set_visible(!focus_mode);
             }
@@ -435,20 +435,20 @@ impl RnAppWindow {
                 appwindow
                     .sidebar()
                     .left_close_button()
-                    .set_icon_name("right-symbolic");
+                    .set_icon_name("dir-right-symbolic");
                 appwindow
                     .sidebar()
                     .right_close_button()
-                    .set_icon_name("right-symbolic");
+                    .set_icon_name("dir-right-symbolic");
             } else {
                 appwindow
                     .sidebar()
                     .left_close_button()
-                    .set_icon_name("left-symbolic");
+                    .set_icon_name("dir-left-symbolic");
                 appwindow
                     .sidebar()
                     .right_close_button()
-                    .set_icon_name("left-symbolic");
+                    .set_icon_name("dir-left-symbolic");
             }
         };
 

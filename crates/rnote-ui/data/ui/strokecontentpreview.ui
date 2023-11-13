@@ -48,7 +48,7 @@
                 </style>
                 <child>
                   <object class="GtkButton" id="prev_page_button">
-                    <property name="icon-name">left-symbolic</property>
+                    <property name="icon-name">dir-left-symbolic</property>
                     <style>
                       <class name="osd" />
                     </style>
@@ -56,7 +56,7 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="next_page_button">
-                    <property name="icon-name">right-symbolic</property>
+                    <property name="icon-name">dir-right-symbolic</property>
                     <style>
                       <class name="osd" />
                     </style>

@@ -32,6 +32,7 @@ impl Default for VerticalSpaceTool {
 
 impl VerticalSpaceTool {
     const Y_OFFSET_THRESHOLD: f64 = 0.1;
+    const SNAP_START_POS_DIST: f64 = 10.;
     const OFFSET_LINE_COLOR: piet::Color = color::GNOME_BLUES[3];
     const THRESHOLD_LINE_WIDTH: f64 = 3.0;
     const THRESHOLD_LINE_DASH_PATTERN: [f64; 2] = [9.0, 6.0];
@@ -339,7 +340,16 @@ impl PenBehaviour for Tools {
             (ToolsState::Active, PenEvent::Down { element, .. }) => {
                 match engine_view.pens_config.tools_config.style {
                     ToolStyle::VerticalSpace => {
-                        let y_offset = element.pos[1] - self.verticalspace_tool.pos_y;
+                        let y_offset = if (element.pos[1] - self.verticalspace_tool.start_pos_y)
+                            .abs()
+                            < VerticalSpaceTool::SNAP_START_POS_DIST
+                        {
+                            self.verticalspace_tool.start_pos_y - self.verticalspace_tool.pos_y
+                        } else {
+                            engine_view.doc.snap_position(
+                                element.pos - na::vector![0., self.verticalspace_tool.pos_y],
+                            )[1]
+                        };
 
                         if y_offset.abs() > VerticalSpaceTool::Y_OFFSET_THRESHOLD {
                             engine_view.store.translate_strokes(
@@ -350,22 +360,21 @@ impl PenBehaviour for Tools {
                                 &self.verticalspace_tool.strokes_below,
                                 na::vector![0.0, y_offset],
                             );
-                            // possibly nudge camera
-                            widget_flags |=
-                                engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
-                            widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
-
-                            // new strokes might come into view
-                            engine_view.store.regenerate_rendering_in_viewport_threaded(
-                                engine_view.tasks_tx.clone(),
-                                false,
-                                engine_view.camera.viewport(),
-                                engine_view.camera.image_scale(),
-                            );
-                            self.verticalspace_tool.pos_y = element.pos[1];
+                            self.verticalspace_tool.pos_y += y_offset;
 
                             widget_flags.store_modified = true;
                         }
+
+                        // possibly nudge camera
+                        widget_flags |=
+                            engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
+                        widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
+                        engine_view.store.regenerate_rendering_in_viewport_threaded(
+                            engine_view.tasks_tx.clone(),
+                            false,
+                            engine_view.camera.viewport(),
+                            engine_view.camera.image_scale(),
+                        );
                     }
                     ToolStyle::OffsetCamera => {
                         let offset = engine_view

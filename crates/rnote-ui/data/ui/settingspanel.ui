@@ -40,35 +40,17 @@
                   <object class="AdwPreferencesGroup">
                     <property name="title" translatable="yes">General</property>
                     <child>
-                      <object class="AdwActionRow" id="general_autosave_row">
+                      <object class="AdwSwitchRow" id="general_autosave_row">
                         <property name="title" translatable="yes">Autosave</property>
                         <property name="subtitle" translatable="yes">Enable or disable autosave</property>
-                        <child type="suffix">
-                          <object class="GtkSwitch" id="general_autosave_enable_switch">
-                            <property name="valign">center</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="general_autosave_interval_secs_row">
+                      <object class="AdwSpinRow" id="general_autosave_interval_secs_row">
                         <property name="title" translatable="yes">Autosave Interval (secs)</property>
                         <property name="subtitle" translatable="yes">Set the autosave interval in seconds</property>
-                        <child type="suffix">
-                          <object class="GtkAdjustment" id="general_autosave_interval_secs_adj">
-                            <property name="step-increment">1</property>
-                            <property name="upper">9999</property>
-                            <property name="lower">5</property>
-                            <property name="value">120</property>
-                          </object>
-                          <object class="GtkSpinButton" id="general_autosave_interval_secs_spinbutton">
-                            <property name="adjustment">general_autosave_interval_secs_adj</property>
-                            <property name="orientation">horizontal</property>
-                            <property name="vexpand">false</property>
-                            <property name="valign">center</property>
-                            <property name="digits">0</property>
-                          </object>
-                        </child>
+                        <property name="adjustment">general_autosave_interval_secs_adj</property>
+                        <property name="digits">0</property>
                       </object>
                     </child>
                     <child>
@@ -104,27 +86,17 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="general_show_scrollbars_row">
+                      <object class="AdwSwitchRow" id="general_show_scrollbars_row">
                         <property name="title" translatable="yes">Show Scrollbars</property>
                         <property name="subtitle" translatable="yes">Set whether the scrollbars on the canvas are shown</property>
-                        <child type="suffix">
-                          <object class="GtkSwitch" id="general_show_scrollbars_switch">
-                            <property name="valign">center</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="general_inertial_scrolling_row">
+                      <object class="AdwSwitchRow" id="general_inertial_scrolling_row">
                         <property name="title" translatable="yes">Inertial Touch Scrolling</property>
                         <property name="subtitle" translatable="yes">Set whether touch scrolling on the canvas is inertial.
 An application restart is required when this option
 gets disabled.</property>
-                        <child type="suffix">
-                          <object class="GtkSwitch" id="general_inertial_scrolling_switch">
-                            <property name="valign">center</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -151,18 +123,10 @@ gets disabled.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="general_show_drawing_cursor_row">
+                      <object class="AdwSwitchRow" id="general_show_drawing_cursor_row">
                         <property name="title" translatable="yes">Show Drawing Cursor</property>
                         <property name="subtitle" translatable="yes">Set whether the drawing cursor is visible</property>
-                        <child type="suffix">
-                          <object class="GtkSwitch" id="general_show_drawing_cursor_switch">
-                            <property name="active">true</property>
-                            <property name="hexpand">false</property>
-                            <property name="hexpand">false</property>
-                            <property name="valign">center</property>
-                            <property name="halign">end</property>
-                          </object>
-                        </child>
+                        <property name="active">true</property>
                       </object>
                     </child>
                     <child>
@@ -247,6 +211,9 @@ gets disabled.</property>
                       <object class="AdwActionRow" id="format_width_row">
                         <property name="title" translatable="yes">Width</property>
                         <property name="subtitle" translatable="yes">Set the format width</property>
+                        <style>
+                          <class name="spin" />
+                        </style>
                         <child type="suffix">
                           <object class="RnUnitEntry" id="format_width_unitentry">
                             <property name="vexpand">false</property>
@@ -261,6 +228,9 @@ gets disabled.</property>
                       <object class="AdwActionRow" id="format_height_row">
                         <property name="title" translatable="yes">Height</property>
                         <property name="subtitle" translatable="yes">Set the format height</property>
+                        <style>
+                          <class name="spin" />
+                        </style>
                         <child type="suffix">
                           <object class="RnUnitEntry" id="format_height_unitentry">
                             <property name="vexpand">false</property>
@@ -272,23 +242,10 @@ gets disabled.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="format_dpi_row">
+                      <object class="AdwSpinRow" id="format_dpi_row">
                         <property name="title" translatable="yes">Dpi</property>
                         <property name="subtitle" translatable="yes">Set the Dpi (dots per inch). Defaults to 96.</property>
-                        <child type="suffix">
-                          <object class="GtkAdjustment" id="format_dpi_adj">
-                            <property name="step-increment">1</property>
-                            <property name="upper">5000</property>
-                            <property name="lower">1</property>
-                            <property name="value">96</property>
-                          </object>
-                          <object class="GtkSpinButton" id="format_dpi_spinbutton">
-                            <property name="adjustment">format_dpi_adj</property>
-                            <property name="orientation">horizontal</property>
-                            <property name="vexpand">false</property>
-                            <property name="valign">center</property>
-                          </object>
-                        </child>
+                        <property name="adjustment">format_dpi_adj</property>
                       </object>
                     </child>
                     <child>
@@ -405,6 +362,9 @@ gets disabled.</property>
                       <object class="AdwActionRow" id="doc_background_pattern_width_row">
                         <property name="title" translatable="yes">Pattern Width</property>
                         <property name="subtitle" translatable="yes">Set the background pattern width</property>
+                        <style>
+                          <class name="spin" />
+                        </style>
                         <child type="suffix">
                           <object class="RnUnitEntry" id="doc_background_pattern_width_unitentry">
                             <property name="vexpand">false</property>
@@ -419,6 +379,9 @@ gets disabled.</property>
                       <object class="AdwActionRow" id="doc_background_pattern_height_row">
                         <property name="title" translatable="yes">Pattern Height</property>
                         <property name="subtitle" translatable="yes">Set the background pattern height</property>
+                        <style>
+                          <class name="spin" />
+                        </style>
                         <child type="suffix">
                           <object class="RnUnitEntry" id="doc_background_pattern_height_unitentry">
                             <property name="vexpand">false</property>
@@ -585,6 +548,18 @@ on a drawing pad</property>
           <property name="valign">center</property>
         </object>
       </child>
+    </object>
+    <object class="GtkAdjustment" id="format_dpi_adj">
+      <property name="step-increment">1</property>
+      <property name="upper">5000</property>
+      <property name="lower">1</property>
+      <property name="value">96</property>
+    </object>
+    <object class="GtkAdjustment" id="general_autosave_interval_secs_adj">
+      <property name="step-increment">1</property>
+      <property name="upper">9999</property>
+      <property name="lower">5</property>
+      <property name="value">120</property>
     </object>
   </template>
 </interface>

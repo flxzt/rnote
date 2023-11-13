@@ -70,6 +70,7 @@ mod imp {
         pub(crate) recovery_metadata: RefCell<Option<RnRecoveryMetadata>>,
         pub(crate) recovery_paused: Cell<bool>,
         pub(crate) output_file: RefCell<Option<gio::File>>,
+        pub(crate) output_file_saved_modified_date_time: RefCell<Option<glib::DateTime>>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
         pub(crate) output_file_monitor_changed_handler: RefCell<Option<glib::SignalHandlerId>>,
         pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
@@ -166,6 +167,8 @@ mod imp {
                 recovery_metadata: RefCell::new(None),
                 recovery_paused: Cell::new(false),
                 output_file: RefCell::new(None),
+                // is automatically updated whenever the output file changes.
+                output_file_saved_modified_date_time: RefCell::new(None),
                 output_file_monitor: RefCell::new(None),
                 output_file_monitor_changed_handler: RefCell::new(None),
                 output_file_modified_toast_singleton: RefCell::new(None),
@@ -311,6 +314,17 @@ mod imp {
                     let output_file = value
                         .get::<Option<gio::File>>()
                         .expect("The value needs to be of type `Option<gio::File>`");
+                    self.output_file_saved_modified_date_time.replace(
+                        output_file.as_ref().and_then(|f| {
+                            f.query_info(
+                                gio::FILE_ATTRIBUTE_TIME_MODIFIED_USEC,
+                                gio::FileQueryInfoFlags::NONE,
+                                gio::Cancellable::NONE,
+                            )
+                            .ok()?
+                            .modification_date_time()
+                        }),
+                    );
                     self.output_file.replace(output_file);
                 }
                 "unsaved-changes" => {
@@ -484,13 +498,11 @@ mod imp {
                 super::input::handle_key_controller_key_pressed(&canvas, key, modifier)
             }));
 
-            /*
-                       self.key_controller.connect_key_released(
-                           clone!(@weak inst as canvas => move |_key_controller, _key, _raw, _modifier| {
-                               //log::debug!("key released - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
-                           }),
-                       );
-            */
+            self.key_controller.connect_key_released(
+                clone!(@weak obj as canvas => move |_key_controller, key, _raw, modifier| {
+                    super::input::handle_key_controller_key_released(&canvas, key, modifier)
+                }),
+            );
         }
 
         fn set_hadjustment_prop(&self, hadj: Option<Adjustment>) {
@@ -599,8 +611,6 @@ pub(crate) static OUTPUT_FILE_NEW_SUBTITLE: once_cell::sync::Lazy<String> =
 impl RnCanvas {
     // Sets the canvas zoom scroll step in % for one unit of the event controller delta
     pub(crate) const ZOOM_SCROLL_STEP: f64 = 0.1;
-    /// A small margin added to the document width, when zooming to fit document width
-    pub(crate) const ZOOM_FIT_WIDTH_MARGIN: f64 = 32.0;
 
     pub(crate) fn new() -> Self {
         glib::Object::new()
@@ -677,6 +687,11 @@ impl RnCanvas {
     }
 
     #[allow(unused)]
+    pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
+        self.set_property("output-file", output_file.to_value());
+    }
+
+    #[allow(unused)]
     pub(crate) fn output_file_expect_write(&self) -> bool {
         self.imp().output_file_expect_write.get()
     }
@@ -716,11 +731,6 @@ impl RnCanvas {
 
     pub(crate) fn set_recovery_metadata(&self, recovery_metadata: Option<RnRecoveryMetadata>) {
         self.imp().recovery_metadata.replace(recovery_metadata);
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
-        self.set_property("output-file", output_file.to_value());
     }
 
     #[allow(unused)]
@@ -791,6 +801,16 @@ impl RnCanvas {
             "handle-widget-flags",
             &[&WidgetFlagsBoxed::from(widget_flags)],
         );
+    }
+
+    /// Returns the saved date time for the modification time of the output file when it was set by the app.
+    ///
+    /// It might not be correct if the content of the output file has changed from outside the app.
+    pub(crate) fn output_file_saved_modified_date_time(&self) -> Option<glib::DateTime> {
+        self.imp()
+            .output_file_saved_modified_date_time
+            .borrow()
+            .to_owned()
     }
 
     pub(crate) fn canvas_layout_manager(&self) -> RnCanvasLayout {
@@ -905,24 +925,6 @@ impl RnCanvas {
         Ok(())
     }
 
-    pub(crate) fn clear_output_file_monitor(&self) {
-        if let Some(old_output_file_monitor) = self.imp().output_file_monitor.take() {
-            if let Some(handler) = self.imp().output_file_monitor_changed_handler.take() {
-                old_output_file_monitor.disconnect(handler);
-            }
-
-            old_output_file_monitor.cancel();
-        }
-    }
-
-    pub(crate) fn dismiss_output_file_modified_toast(&self) {
-        if let Some(output_file_modified_toast) =
-            self.imp().output_file_modified_toast_singleton.take()
-        {
-            output_file_modified_toast.dismiss();
-        }
-    }
-
     /// Switches between the regular and the drawing cursor
     pub(crate) fn enable_drawing_cursor(&self, drawing_cursor: bool) {
         if drawing_cursor == self.imp().drawing_cursor_enabled.get() {
@@ -965,6 +967,24 @@ impl RnCanvas {
                     .unwrap_or_else(|| gettext("- invalid folder path -"))
             })
             .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string())
+    }
+
+    pub(crate) fn clear_output_file_monitor(&self) {
+        if let Some(old_output_file_monitor) = self.imp().output_file_monitor.take() {
+            if let Some(handler) = self.imp().output_file_monitor_changed_handler.take() {
+                old_output_file_monitor.disconnect(handler);
+            }
+
+            old_output_file_monitor.cancel();
+        }
+    }
+
+    pub(crate) fn dismiss_output_file_modified_toast(&self) {
+        if let Some(output_file_modified_toast) =
+            self.imp().output_file_modified_toast_singleton.take()
+        {
+            output_file_modified_toast.dismiss();
+        }
     }
 
     pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnAppWindow) {
@@ -1016,6 +1036,21 @@ impl RnCanvas {
                             // => file has been modified due to own save, don't do anything.
                             canvas.set_output_file_expect_write(false);
                             return;
+                        }
+                        if let (Some(saved_modified_time), Some(changed_modified_time)) =
+                            (canvas.output_file_saved_modified_date_time(),
+                            file.query_info(
+                                gio::FILE_ATTRIBUTE_TIME_MODIFIED_USEC,
+                                gio::FileQueryInfoFlags::NONE,
+                                gio::Cancellable::NONE).ok().and_then(|i| i.modification_date_time())
+                            ) {
+                            if saved_modified_time == changed_modified_time {
+                                // The changed file has the same modified date so it should be equal to the saved one.
+                                // A changed file event can happen when saving to a gvfs directory or to a directory
+                                // synced with cloud storage providers, even though the file itself has not actually
+                                // changed.
+                                return
+                            }
                         }
 
                         dispatch_toast_reload_modified_file();
@@ -1163,7 +1198,7 @@ impl RnCanvas {
         let appwindow_show_drawing_cursor = appwindow
             .sidebar()
             .settings_panel()
-            .general_show_drawing_cursor_switch()
+            .general_show_drawing_cursor_row()
             .bind_property("active", self, "show-drawing-cursor")
             .sync_create()
             .build();

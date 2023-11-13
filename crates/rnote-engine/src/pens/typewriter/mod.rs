@@ -527,8 +527,8 @@ fn update_cursors_for_textstroke(
 impl Typewriter {
     // The size of the translate node, located in the upper left corner.
     const TRANSLATE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
-    /// The threshold magniuted where above it the translation is applied. In surface coordinates.
-    const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.414;
+    /// The threshold where above it a transformation is applied. In surface coordinates.
+    const TRANSLATE_OFFSET_THRESHOLD: f64 = 1.414;
     /// The threshold in x-axis direction where above it adjustments to the text width are applied. In surface coordinates.
     const ADJ_TEXT_WIDTH_THRESHOLD: f64 = 1.0;
     /// The size of the translate node, located in the upper right corner.
@@ -771,6 +771,34 @@ impl Typewriter {
                 engine_view.store.update_geometry_for_stroke(*stroke_key);
                 engine_view.store.regenerate_rendering_for_stroke(
                     *stroke_key,
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
+                );
+
+                widget_flags |= engine_view.store.record(Instant::now());
+                widget_flags.redraw = true;
+                widget_flags.store_modified = true;
+            }
+        }
+
+        widget_flags
+    }
+
+    pub(crate) fn toggle_text_attribute_current_selection(
+        &mut self,
+        text_attribute: TextAttribute,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if let Some((selection_range, stroke_key)) = self.selection_range() {
+            if let Some(Stroke::TextStroke(textstroke)) =
+                engine_view.store.get_stroke_mut(stroke_key)
+            {
+                textstroke.toggle_attrs_for_range(selection_range.clone(), text_attribute.clone());
+                engine_view.store.update_geometry_for_stroke(stroke_key);
+                engine_view.store.regenerate_rendering_for_stroke(
+                    stroke_key,
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 );

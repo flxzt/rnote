@@ -102,14 +102,13 @@ impl Composer<TexturedOptions> for PenPath {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
         let mut options = options.clone();
-        let n_segs = self.segments.len();
         let mut prev = self.start;
 
         cx.save().unwrap();
 
         for seg in self.segments.iter() {
-            if seg.end().pos == self.start.pos && n_segs <= 1 {
-                break;
+            if seg.end().pos == self.start.pos {
+                continue;
             }
 
             match seg {

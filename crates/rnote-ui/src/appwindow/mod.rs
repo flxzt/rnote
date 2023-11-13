@@ -173,8 +173,14 @@ impl RnAppWindow {
         // Anything that needs to be done right before showing the appwindow
 
         // Set undo / redo as not sensitive as default ( setting it in .ui file did not work for some reason )
-        self.overlays().undo_button().set_sensitive(false);
-        self.overlays().redo_button().set_sensitive(false);
+        self.overlays()
+            .penpicker()
+            .undo_button()
+            .set_sensitive(false);
+        self.overlays()
+            .penpicker()
+            .redo_button()
+            .set_sensitive(false);
         self.refresh_ui_from_engine(&self.active_tab_wrapper());
         glib::MainContext::default().spawn_local(clone!(@weak self as appwindow => async move {
             dialogs::dialog_recover_documents(&appwindow).await;
@@ -249,10 +255,16 @@ impl RnAppWindow {
             self.overlays().colorpicker().deselect_setters();
         }
         if let Some(hide_undo) = widget_flags.hide_undo {
-            self.overlays().undo_button().set_sensitive(!hide_undo);
+            self.overlays()
+                .penpicker()
+                .undo_button()
+                .set_sensitive(!hide_undo);
         }
         if let Some(hide_redo) = widget_flags.hide_redo {
-            self.overlays().redo_button().set_sensitive(!hide_redo);
+            self.overlays()
+                .penpicker()
+                .redo_button()
+                .set_sensitive(!hide_redo);
         }
         if let Some(enable_text_preprocessing) = widget_flags.enable_text_preprocessing {
             canvas.set_text_preprocessing(enable_text_preprocessing);
@@ -490,6 +502,18 @@ impl RnAppWindow {
                         appwindow.overlays().tabview().set_selected_page(&page);
                         false
                     } else {
+                        let rnote_file_new_tab = if appwindow.active_tab_wrapper().canvas().empty()
+                            && appwindow
+                                .active_tab_wrapper()
+                                .canvas()
+                                .output_file()
+                                .is_none()
+                        {
+                            false
+                        } else {
+                            rnote_file_new_tab
+                        };
+
                         let wrapper = if rnote_file_new_tab {
                             // a new tab for rnote files
                             appwindow.new_canvas_wrapper()
@@ -592,16 +616,24 @@ impl RnAppWindow {
         let format = canvas.engine_ref().document.format;
         let doc_layout = canvas.engine_ref().document.layout;
         let pen_sounds = canvas.engine_ref().pen_sounds();
+        let snap_positions = canvas.engine_ref().document.snap_positions;
         let pen_style = canvas.engine_ref().penholder.current_pen_style_w_override();
 
         // Undo / redo
         let can_undo = canvas.engine_ref().can_undo();
         let can_redo = canvas.engine_ref().can_redo();
 
-        self.overlays().undo_button().set_sensitive(can_undo);
-        self.overlays().redo_button().set_sensitive(can_redo);
+        self.overlays()
+            .penpicker()
+            .undo_button()
+            .set_sensitive(can_undo);
+        self.overlays()
+            .penpicker()
+            .redo_button()
+            .set_sensitive(can_redo);
 
-        // we change the state through the actions, because they themselves hold state. ( e.g. used to display tickboxes for boolean actions )
+        // we change the state through the actions, because they themselves hold state.
+        // (for example needed to display ticks in menus for boolean actions)
         adw::prelude::ActionGroupExt::activate_action(
             self,
             "doc-layout",
@@ -614,8 +646,18 @@ impl RnAppWindow {
         );
         adw::prelude::ActionGroupExt::change_action_state(
             self,
-            "format-borders",
+            "snap-positions",
+            &snap_positions.to_variant(),
+        );
+        adw::prelude::ActionGroupExt::change_action_state(
+            self,
+            "show-format-borders",
             &format.show_borders.to_variant(),
+        );
+        adw::prelude::ActionGroupExt::change_action_state(
+            self,
+            "show-origin-indicator",
+            &format.show_origin_indicator.to_variant(),
         );
         adw::prelude::ActionGroupExt::change_action_state(
             self,
@@ -626,7 +668,7 @@ impl RnAppWindow {
         // Current pen
         match pen_style {
             PenStyle::Brush => {
-                self.overlays().brush_toggle().set_active(true);
+                self.overlays().penpicker().brush_toggle().set_active(true);
                 self.overlays()
                     .penssidebar()
                     .sidebar_stack()
@@ -693,7 +735,7 @@ impl RnAppWindow {
                 }
             }
             PenStyle::Shaper => {
-                self.overlays().shaper_toggle().set_active(true);
+                self.overlays().penpicker().shaper_toggle().set_active(true);
                 self.overlays()
                     .penssidebar()
                     .sidebar_stack()
@@ -748,7 +790,10 @@ impl RnAppWindow {
                 }
             }
             PenStyle::Typewriter => {
-                self.overlays().typewriter_toggle().set_active(true);
+                self.overlays()
+                    .penpicker()
+                    .typewriter_toggle()
+                    .set_active(true);
                 self.overlays()
                     .penssidebar()
                     .sidebar_stack()
@@ -765,21 +810,24 @@ impl RnAppWindow {
                     .set_stroke_color(gdk::RGBA::from_compose_color(text_color));
             }
             PenStyle::Eraser => {
-                self.overlays().eraser_toggle().set_active(true);
+                self.overlays().penpicker().eraser_toggle().set_active(true);
                 self.overlays()
                     .penssidebar()
                     .sidebar_stack()
                     .set_visible_child_name("eraser_page");
             }
             PenStyle::Selector => {
-                self.overlays().selector_toggle().set_active(true);
+                self.overlays()
+                    .penpicker()
+                    .selector_toggle()
+                    .set_active(true);
                 self.overlays()
                     .penssidebar()
                     .sidebar_stack()
                     .set_visible_child_name("selector_page");
             }
             PenStyle::Tools => {
-                self.overlays().tools_toggle().set_active(true);
+                self.overlays().penpicker().tools_toggle().set_active(true);
                 self.overlays()
                     .penssidebar()
                     .sidebar_stack()

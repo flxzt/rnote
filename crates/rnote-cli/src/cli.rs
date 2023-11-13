@@ -96,7 +96,7 @@ pub(crate) enum ExportCommand {
     /// When using "--output-file", only a single input file can be specified.{n}
     /// The export format will be recognized from the file extension of the output file.{n}
     /// When using "--output-format", the file name and path of the rnote file is used with the extension changed.{n}
-    /// "--output-file and "--output-format" are mutually exclusive and specifiying one of them is required.
+    /// "--output-file and "--output-format" are mutually exclusive and specifying one of them is required.
     Doc {
         #[command(flatten)]
         file_args: FileArgs<DocExportFormat>,
@@ -132,7 +132,7 @@ pub(crate) enum ExportCommand {
     /// When using "--output-file", only a single input file can be specified.{n}
     /// The export format is then recognized from the file extension of the output file.{n}
     /// When using "--output-format", the file name and path of the rnote file is used with the extension changed.{n}
-    /// "--output-file and "--output-format" are mutually exclusive and specifiying one of them is required.
+    /// "--output-file and "--output-format" are mutually exclusive and specifying one of them is required.
     Selection {
         #[command(flatten)]
         file_args: FileArgs<SelectionExportFormat>,

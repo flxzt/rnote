@@ -213,6 +213,8 @@ impl Default for Engine {
 }
 
 impl Engine {
+    pub(crate) const STROKE_BOUNDS_INTERSECTION_TOL: f64 = 1e-4;
+
     pub fn engine_tasks_tx(&self) -> EngineTaskSender {
         self.tasks_tx.clone()
     }
@@ -582,9 +584,10 @@ impl Engine {
             .into_iter()
             .filter(|page_bounds| {
                 // Filter the pages out that don't intersect with any stroke
-                strokes_bounds
-                    .iter()
-                    .any(|stroke_bounds| stroke_bounds.intersects(page_bounds))
+                strokes_bounds.iter().any(|stroke_bounds| {
+                    stroke_bounds
+                        .intersects_w_tolerance(page_bounds, Self::STROKE_BOUNDS_INTERSECTION_TOL)
+                })
             })
             .collect::<Vec<Aabb>>();
 
@@ -906,6 +909,27 @@ impl Engine {
                     camera: &mut self.camera,
                     audioplayer: &mut self.audioplayer,
                 })
+        }
+        widget_flags
+    }
+
+    pub fn text_selection_toggle_attribute(
+        &mut self,
+        text_attribute: TextAttribute,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            widget_flags |= typewriter.toggle_text_attribute_current_selection(
+                text_attribute,
+                &mut EngineViewMut {
+                    tasks_tx: self.tasks_tx.clone(),
+                    pens_config: &mut self.pens_config,
+                    doc: &mut self.document,
+                    store: &mut self.store,
+                    camera: &mut self.camera,
+                    audioplayer: &mut self.audioplayer,
+                },
+            )
         }
         widget_flags
     }

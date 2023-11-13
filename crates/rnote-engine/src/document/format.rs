@@ -164,6 +164,8 @@ pub struct Format {
     pub border_color: Color,
     #[serde(rename = "show_borders")]
     pub show_borders: bool,
+    #[serde(rename = "show_origin_indicator")]
+    pub show_origin_indicator: bool,
 }
 
 impl Default for Format {
@@ -175,6 +177,7 @@ impl Default for Format {
             orientation: Orientation::default(),
             border_color: Color::from(Self::BORDER_COLOR_DEFAULT),
             show_borders: true,
+            show_origin_indicator: true,
         }
     }
 }

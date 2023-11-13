@@ -38,6 +38,7 @@ impl RnCanvas {
         }
         self.dismiss_output_file_modified_toast();
         self.set_output_file(file_path.map(gio::File::for_path));
+        self.dismiss_output_file_modified_toast();
         self.set_recovery_metadata(recovery_metadata);
 
         self.set_unsaved_changes(unsaved_changes);

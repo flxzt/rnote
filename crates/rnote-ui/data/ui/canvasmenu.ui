@@ -46,9 +46,34 @@
             </section>
           </submenu>
           <item>
+            <attribute name="label" translatable="yes">_Snap Positions</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.snap-positions</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">_Pen Sounds</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.pen-sounds</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">_Return to Origin Page</attribute>
+            <attribute name="action">win.return-origin-page</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">C_lear Document</attribute>
+            <attribute name="action">win.clear-doc</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
             <attribute name="label" translatable="yes">Show _Format Borders</attribute>
             <attribute name="toggle" />
-            <attribute name="action">win.format-borders</attribute>
+            <attribute name="action">win.show-format-borders</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Show _Origin Indicator</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.show-origin-indicator</attribute>
           </item>
           <item>
             <attribute name="label" translatable="yes">Draw With _Touch Input</attribute>
@@ -59,21 +84,6 @@
             <attribute name="label" translatable="yes">Block Pinch to _Zoom</attribute>
             <attribute name="toggle" />
             <attribute name="action">win.block-pinch-zoom</attribute>
-          </item>
-          <item>
-            <attribute name="label" translatable="yes">_Pen Sounds</attribute>
-            <attribute name="toggle" />
-            <attribute name="action">win.pen-sounds</attribute>
-          </item>
-        </section>
-        <section>
-          <item>
-            <attribute name="label" translatable="yes">C_lear Document</attribute>
-            <attribute name="action">win.clear-doc</attribute>
-          </item>
-          <item>
-            <attribute name="label" translatable="yes">_Return to Origin Page</attribute>
-            <attribute name="action">win.return-origin-page</attribute>
           </item>
         </section>
       </menu>

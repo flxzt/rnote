@@ -66,7 +66,7 @@ impl RnAppWindow {
                 &self
                     .sidebar()
                     .settings_panel()
-                    .general_show_scrollbars_switch(),
+                    .general_show_scrollbars_row(),
                 "active",
             )
             .get_no_changes()
@@ -79,7 +79,7 @@ impl RnAppWindow {
                 &self
                     .sidebar()
                     .settings_panel()
-                    .general_inertial_scrolling_switch(),
+                    .general_inertial_scrolling_row(),
                 "active",
             )
             .get_no_changes()
@@ -118,7 +118,7 @@ impl RnAppWindow {
                 &self
                     .sidebar()
                     .settings_panel()
-                    .general_show_drawing_cursor_switch(),
+                    .general_show_drawing_cursor_row(),
                 "active",
             )
             .get_no_changes()
@@ -387,9 +387,13 @@ impl RnAppWindow {
             let window_height = self.app_settings().int("window-height");
             let is_maximized = self.app_settings().boolean("is-maximized");
 
-            self.set_default_size(window_width, window_height);
             if is_maximized {
+                // don't restore maximized window state on macos, avoids issues disussed in
+                // issue 823 - https://github.com/flxzt/rnote/issues/823
+                #[cfg(not(target_os = "macos"))]
                 self.maximize();
+            } else {
+                self.set_default_size(window_width, window_height);
             }
 
             // set the color-scheme through the action

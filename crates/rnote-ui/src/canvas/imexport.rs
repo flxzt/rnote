@@ -30,18 +30,13 @@ impl RnCanvas {
         let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(bytes).await?;
         let widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
 
-        let mut widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
-
         let mut unsaved_changes = false;
         if let Some(meta) = &recovery_metadata {
             self.set_output_file(meta.document_path().map(gio::File::for_path));
             unsaved_changes = true;
-            self.dismiss_output_file_modified_toast();
             self.set_unsaved_changes_recovery(false);
-        } else if let Some(file_path) = file_path {
-            let file = gio::File::for_path(file_path);
-            self.dismiss_output_file_modified_toast();
         }
+        self.dismiss_output_file_modified_toast();
         self.set_output_file(file_path.map(gio::File::for_path));
         self.set_recovery_metadata(recovery_metadata);
 
@@ -54,6 +49,7 @@ impl RnCanvas {
     ///
     /// If the origin file is set to None, this does nothing and returns an error.
     pub(crate) async fn reload_from_disk(&self) -> anyhow::Result<()> {
+        let recovery_metadata = self.recovery_metadata();
         let Some(output_file) = self.output_file() else {
             return Err(anyhow::anyhow!(
                 "Failed to reload file from disk, no file path saved."
@@ -61,7 +57,7 @@ impl RnCanvas {
         };
         let (bytes, _) = output_file.load_bytes_future().await?;
         let widget_flags = self
-            .load_in_rnote_bytes(bytes.to_vec(), output_file.path())
+            .load_in_rnote_bytes(bytes.to_vec(), output_file.path(), recovery_metadata)
             .await?;
         self.emit_handle_widget_flags(widget_flags);
         Ok(())

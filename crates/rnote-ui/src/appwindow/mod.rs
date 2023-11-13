@@ -5,8 +5,9 @@ mod imp;
 
 // Imports
 use crate::{
-    config, dialogs, FileType, RnApp, RnCanvas, RnCanvasWrapper, RnMainHeader, RnOverlays,
-    RnSidebar,
+    config,
+    dialogs::{self, RnRecoveryAction},
+    FileType, RnApp, RnCanvas, RnCanvasWrapper, RnMainHeader, RnOverlays, RnSidebar,
 };
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;

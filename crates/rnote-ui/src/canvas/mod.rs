@@ -22,7 +22,7 @@ use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::PenState;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::ext::GrapheneRectExt;
-use rnote_engine::{Camera, RnRecoveryMetadata, Engine, WidgetFlags};
+use rnote_engine::{Camera, Engine, RnRecoveryMetadata, WidgetFlags};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 
 #[derive(Debug, Default)]
@@ -665,6 +665,10 @@ impl RnCanvas {
         if let Some(meta) = &*self.imp().recovery_metadata.borrow() {
             meta.delete()
         }
+    }
+
+    pub fn recovery_metadata(&self) -> Option<RnRecoveryMetadata> {
+        self.imp().recovery_metadata.borrow().as_ref().cloned()
     }
 
     #[allow(unused)]

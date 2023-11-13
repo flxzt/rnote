@@ -24,6 +24,7 @@ use std::path::Path;
 // Re-exports
 pub(crate) use recovery::dialog_recover_documents;
 pub(crate) use recovery::dialog_recovery_info;
+pub(crate) use recovery::RnRecoveryAction;
 
 // About Dialog
 pub(crate) fn dialog_about(appwindow: &RnAppWindow) {

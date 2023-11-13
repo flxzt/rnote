@@ -223,7 +223,7 @@ fn find_metadata() -> Vec<RnRecoveryMetadata> {
     {
         let Ok(file) = file else {
             log::error!("failed to get DirEntry");
-            continue
+            continue;
         };
         // clean up .rnote files without metadata in the recovery dir
         // they are usally a result of broken recovery metadata
@@ -278,7 +278,7 @@ pub(crate) async fn get_save_as_path(appwindow: &RnAppWindow) -> Option<PathBuf>
         .accept_label(gettext("Save"))
         .modal(true)
         .build();
-    if let Some(dir) = appwindow.workspacebrowser().dirlist_dir() {
+    if let Some(dir) = appwindow.sidebar().workspacebrowser().dirlist_dir() {
         filedialog.set_initial_folder(Some(&gio::File::for_path(dir)));
     }
     let mut initial_name: Option<String> = None;

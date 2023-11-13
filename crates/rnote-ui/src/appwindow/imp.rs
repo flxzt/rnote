@@ -1,5 +1,5 @@
 // Imports
-use crate::{config, dialogs,RnRecoveryAction, RnMainHeader, RnOverlays, RnSidebar};
+use crate::{config, dialogs, RnMainHeader, RnOverlays, RnRecoveryAction, RnSidebar};
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
@@ -293,11 +293,11 @@ impl RnAppWindow {
                                 log::error!("saving document failed, Error: `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                             }
-                        }
-                    ));
-                }
-                glib::ControlFlow::Continue(true)
-            }))) {
+                        }));
+                    }
+                    glib::ControlFlow::Continue
+                })
+        )) {
             removed_id.remove();
         }
     }
@@ -306,7 +306,7 @@ impl RnAppWindow {
         let obj = self.obj();
 
         if let Some(removed_id) = self.recovery_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.recovery_interval_secs.get(),
-            clone!(@weak obj as appwindow => @default-return glib::source::Continue(false), move || {
+            clone!(@weak obj as appwindow => @default-return glib::ControlFlow::Break, move || {
                     let canvas = appwindow.active_tab_wrapper().canvas();
                     glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
                         // Doing both recovery and autosaves of saved files serves little advatage but could lead to slowdowns or conflicts
@@ -331,10 +331,11 @@ impl RnAppWindow {
                             appwindow.overlays().progressbar_finish();
                         }
                     }));
-                glib::ControlFlow:::Continue(true)
-            }))) {
-                removed_id.remove();
-            }
+                    glib::ControlFlow::Continue
+            })
+        )) {
+            removed_id.remove();
+        }
     }
 
     fn setup_input(&self) {

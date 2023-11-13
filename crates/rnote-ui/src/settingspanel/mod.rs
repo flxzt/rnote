@@ -38,11 +38,9 @@ mod imp {
         #[template_child]
         pub(crate) general_show_scrollbars_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(crate) general_recovery_enable_switch: TemplateChild<Switch>,
+        pub(crate) general_recovery_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(crate) general_recovery_interval_secs_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) general_recovery_interval_secs_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) general_recovery_interval_secs_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(crate) general_inertial_scrolling_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
@@ -475,13 +473,13 @@ impl RnSettingsPanel {
             .build();
 
         // recovery enable switch
-        imp.general_recovery_enable_switch
+        imp.general_recovery_row
             .bind_property("state", appwindow, "recovery")
             .sync_create()
             .bidirectional()
             .build();
 
-        imp.general_recovery_enable_switch
+        imp.general_recovery_row
             .get()
             .bind_property(
                 "state",
@@ -491,7 +489,7 @@ impl RnSettingsPanel {
             .sync_create()
             .build();
 
-        imp.general_recovery_interval_secs_spinbutton
+        imp.general_autosave_interval_secs_row
             .get()
             .bind_property("value", appwindow, "recovery-interval-secs")
             .transform_to(|_, val: f64| Some((val.round() as u32).to_value()))

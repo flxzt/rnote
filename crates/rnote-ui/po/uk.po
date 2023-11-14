@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 21:37+0100\n"
+"POT-Creation-Date: 2023-11-14 17:46+0100\n"
 "PO-Revision-Date: 2023-11-10 20:32+0000\n"
 "Last-Translator: volkov <d2oo1dle2x@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
@@ -1150,7 +1150,9 @@ msgstr "Чернетка"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
-msgid "Reveal/Hide Sidebar"
+#, fuzzy
+#| msgid "Reveal/Hide Sidebar"
+msgid "Show/Hide Sidebar"
 msgstr "Показати/приховати бічну панель"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
@@ -1675,7 +1677,7 @@ msgid "Opening file failed"
 msgstr "Не вдалося відкрити файл"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:250
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:586
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
 #: crates/rnote-ui/src/dialogs/export.rs:68
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:256
@@ -1699,11 +1701,11 @@ msgstr "Кнопка 3"
 msgid "Button 4"
 msgstr "Кнопка 4"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:648
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:644
 msgid "Printing document failed"
 msgstr "Не вдалося надрукувати документ"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:684
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:680
 msgid "Exporting selection failed, nothing selected"
 msgstr "Не вдалося експортувати вибране, нічого не вибрано"
 

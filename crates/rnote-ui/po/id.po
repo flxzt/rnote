@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 21:37+0100\n"
+"POT-Creation-Date: 2023-11-14 17:46+0100\n"
 "PO-Revision-Date: 2023-03-13 09:11+0000\n"
 "Last-Translator: Reza Almanda <rezaalmanda27@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/rnote/repo/id/"
@@ -1181,7 +1181,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
-msgid "Reveal/Hide Sidebar"
+msgid "Show/Hide Sidebar"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
@@ -1701,7 +1701,7 @@ msgid "Opening file failed"
 msgstr "Pembukaan berkas .rnote gagal."
 
 #: crates/rnote-ui/src/appwindow/imp.rs:250
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:586
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
 #: crates/rnote-ui/src/dialogs/export.rs:68
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:256
@@ -1727,11 +1727,11 @@ msgstr ""
 msgid "Button 4"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:648
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:644
 msgid "Printing document failed"
 msgstr "Pencetakan dokumen gagal"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:684
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:680
 #, fuzzy
 #| msgid "Export selection failed, nothing selected."
 msgid "Exporting selection failed, nothing selected"

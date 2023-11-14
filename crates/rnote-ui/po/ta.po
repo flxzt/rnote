@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 21:37+0100\n"
+"POT-Creation-Date: 2023-11-14 17:46+0100\n"
 "PO-Revision-Date: 2023-09-18 17:18+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -1153,7 +1153,7 @@ msgstr "வரைவு"
 #: crates/rnote-ui/data/ui/mainheader.ui:74
 #, fuzzy
 #| msgid "Reveal/Hide Flap"
-msgid "Reveal/Hide Sidebar"
+msgid "Show/Hide Sidebar"
 msgstr "மடலை வெளிப்படுத்தவும் / மறைக்கவும்"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
@@ -1682,7 +1682,7 @@ msgid "Opening file failed"
 msgstr "கோப்பைத் திறப்பதில் தோல்வி"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:250
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:586
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
 #: crates/rnote-ui/src/dialogs/export.rs:68
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:256
@@ -1706,11 +1706,11 @@ msgstr "பொத்தான் 3"
 msgid "Button 4"
 msgstr "பொத்தான் 4"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:648
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:644
 msgid "Printing document failed"
 msgstr "ஆவணத்தை அச்சிட முடியவில்லை"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:684
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:680
 msgid "Exporting selection failed, nothing selected"
 msgstr "தேர்வை ஏற்றுமதி செய்வதில் தோல்வி, எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 

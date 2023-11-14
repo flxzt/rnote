@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 21:37+0100\n"
+"POT-Creation-Date: 2023-11-14 17:46+0100\n"
 "PO-Revision-Date: 2023-11-14 16:47+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
-"\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
+">\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1153,7 +1153,9 @@ msgstr "Piszkozat"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
-msgid "Reveal/Hide Sidebar"
+#, fuzzy
+#| msgid "Reveal/Hide Sidebar"
+msgid "Show/Hide Sidebar"
 msgstr "Oldalsáv megjelenítése/elrejtése"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
@@ -1667,7 +1669,7 @@ msgid "Opening file failed"
 msgstr "A fájl megnyitása sikertelen"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:250
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:586
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
 #: crates/rnote-ui/src/dialogs/export.rs:68
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:256
@@ -1691,11 +1693,11 @@ msgstr "3. gomb"
 msgid "Button 4"
 msgstr "4. gomb"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:648
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:644
 msgid "Printing document failed"
 msgstr "A dokumentum nyomtatása nem sikerült"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:684
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:680
 msgid "Exporting selection failed, nothing selected"
 msgstr "Kijelölés exportálása sikertelen, nincs kijelölve semmi"
 

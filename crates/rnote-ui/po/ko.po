@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 21:37+0100\n"
+"POT-Creation-Date: 2023-11-14 17:46+0100\n"
 "PO-Revision-Date: 2023-02-09 20:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
@@ -1170,7 +1170,7 @@ msgstr "초안"
 #: crates/rnote-ui/data/ui/mainheader.ui:74
 #, fuzzy
 #| msgid "Reveal/Hide Flap"
-msgid "Reveal/Hide Sidebar"
+msgid "Show/Hide Sidebar"
 msgstr "플랩 드러내기/숨기기"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
@@ -1704,7 +1704,7 @@ msgid "Opening file failed"
 msgstr "파일을 열지 못했습니다"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:250
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:586
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
 #: crates/rnote-ui/src/dialogs/export.rs:68
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:256
@@ -1728,11 +1728,11 @@ msgstr ""
 msgid "Button 4"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:648
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:644
 msgid "Printing document failed"
 msgstr "문서 인쇄에 실패했습니다"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:684
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:680
 msgid "Exporting selection failed, nothing selected"
 msgstr "선택항목 내보내기에 실패했습니다. 선택한 항목이 없습니다"
 

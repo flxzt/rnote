@@ -37,7 +37,7 @@
                 <child>
                   <object class="GtkToggleButton" id="left_sidebar_reveal_toggle">
                     <property name="icon_name">sidebar-reveal-symbolic</property>
-                    <property name="tooltip_text" translatable="yes">Reveal/Hide Sidebar</property>
+                    <property name="tooltip_text" translatable="yes">Show/Hide Sidebar</property>
                   </object>
                 </child>
                 <child>
@@ -71,7 +71,7 @@
             <child>
               <object class="GtkToggleButton" id="right_sidebar_reveal_toggle">
                 <property name="icon_name">sidebar-reveal-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Reveal/Hide Sidebar</property>
+                <property name="tooltip_text" translatable="yes">Show/Hide Sidebar</property>
               </object>
             </child>
             <child>

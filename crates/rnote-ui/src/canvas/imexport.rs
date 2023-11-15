@@ -26,12 +26,16 @@ impl RnCanvas {
         P: AsRef<Path>,
     {
         let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(bytes).await?;
-        let widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
+        let mut widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
+        widget_flags |= self
+            .engine_mut()
+            .set_scale_factor(self.scale_factor() as f64);
 
         self.set_output_file(file_path.map(gio::File::for_path));
         self.dismiss_output_file_modified_toast();
         self.set_unsaved_changes(false);
         self.set_empty(false);
+
         Ok(widget_flags)
     }
 

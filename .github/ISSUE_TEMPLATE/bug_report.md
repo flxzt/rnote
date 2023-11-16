@@ -27,10 +27,10 @@ Run the app in the terminal with `flatpak --env=RUST_LOG=rnote=debug --env=RUST_
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**  
- - OS: [e.g. Fedora 38,  Windows 11 22H2, ... ]
- - App Version: [e.g. rnote v0.6.0]
- - Installation Source: [e.g. Flatpak, Archlinux Community Repo, ... ]
- - Desktop Environment: [e.g. Gnome 44.0]
+ - OS: [e.g. Fedora 38,  Windows 11 22H2, ...]
+ - App Version: [e.g. Rnote v0.9.2]
+ - Installation Source: [e.g. Flatpak, Archlinux Community Repo, ...]
+ - Desktop Environment: [e.g. Gnome 44.2]
 
 **Additional context**  
 Add any other context about the problem here.

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ### UnitEntry ### -->
+<interface>
+  <template class="RnUnitEntry" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBoxLayout" />
+    </property>
+    <child>
+      <object class="GtkAdjustment" id="value_adj">
+        <property name="step-increment">1</property>
+      </object>
+      <object class="GtkSpinButton" id="value_spinner">
+        <property name="adjustment">value_adj</property>
+        <property name="vexpand">false</property>
+        <property name="valign">center</property>
+        <property name="wrap">false</property>
+        <property name="numeric">true</property>
+        <property name="width-chars">6</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkDropDown" id="unit_dropdown">
+        <property name="margin-start">6</property>
+        <property name="valign">center</property>
+        <property name="width-request">70</property>
+        <property name="model">
+          <object class="GtkStringList">
+            <items>
+              <item translatable="false">Px</item>
+              <item translatable="false">Mm</item>
+              <item translatable="false">Cm</item>
+            </items>
+          </object>
+        </property>
+      </object>
+    </child>
+  </template>
+</interface>

@@ -4,6 +4,7 @@ import sys
 import os
 import shutil
 import glob
+import itertools
 
 source_root = sys.argv[1]
 build_root = sys.argv[2]
@@ -55,6 +56,15 @@ for loader in glob.glob(f"{msys_path}/mingw64/lib/gdk-pixbuf-2.0/2.10.0/loaders/
         f"Collecting pixbuf-loader ({loader}) DLLs failed"
     )
 
+for angle_dll in itertools.chain(
+    glob.glob(f"{msys_path}/mingw64/bin/libEGL*.dll"),
+    glob.glob(f"{msys_path}/mingw64/bin/libGLES*.dll"),
+):
+    run_command(
+        f"ldd {angle_dll} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+        f"Collecting angle ({angle_dll}) DLLs failed",
+    )
+
 # Collect necessary GSchema Xml's and compile them into a `gschemas.compiled`
 print("Collecting and compiling GSchemas...", file=sys.stderr)
 gschemas_dir = os.path.join(build_root, "gschemas")
@@ -67,7 +77,7 @@ os.mkdir(gschemas_dir)
 for src in glob.glob(f"{msys_path}/mingw64/share/glib-2.0/schemas/org.gtk.*"):
     shutil.copy(src, gschemas_dir)
 
-shutil.copy(f"{build_root}/rnote-ui/data/{app_id}.gschema.xml", gschemas_dir)
+shutil.copy(f"{build_root}/crates/rnote-ui/data/{app_id}.gschema.xml", gschemas_dir)
 
 # generate `gschemas.compiled` in the same directory
 run_command(
@@ -83,7 +93,7 @@ if os.path.exists(locale_dir):
     shutil.rmtree(locale_dir)
 
 # app locale
-app_mo_dir = os.path.join(build_root, 'rnote-ui/po')
+app_mo_dir = os.path.join(build_root, 'crates/rnote-ui/po')
 shutil.copytree(app_mo_dir, locale_dir)
 
 # system locale
@@ -117,4 +127,4 @@ run_command(
     "Running ISCC failed"
 )
 
-sys.exit(0)
+print("### Inno-Setup installer build script finished ###", file=sys.stderr)

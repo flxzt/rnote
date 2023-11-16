@@ -31,7 +31,7 @@ DefaultDirName={autopf}\{#MyAppName}
 LicenseFile={#meson_source_root}\LICENSE
 OutputDir={#meson_build_root}
 OutputBaseFilename=@INSTALLER_NAME@
-SetupIconFile={#meson_source_root}\rnote-ui\data\icons\rnote.ico
+SetupIconFile={#meson_source_root}\crates\rnote-ui\data\icons\rnote.ico
 UninstallDisplayIcon = {app}\bin\{#MyAppExeName}
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
@@ -66,21 +66,27 @@ Source: "{#msys_path}\mingw64\bin\gdbus.exe"; DestDir: "{app}\bin\"; Flags: igno
 ; Icons
 Source: "{#msys_path}\mingw64\share\icons\hicolor\*"; DestDir: "{app}\share\icons\hicolor"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#msys_path}\mingw64\share\icons\Adwaita\*"; DestDir: "{app}\share\icons\Adwaita"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#meson_source_root}\rnote-ui\data\icons\rnote.ico"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#meson_source_root}\rnote-ui\data\icons\rnote-symbolic.ico"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#meson_source_root}\rnote-ui\data\icons\scalable\apps\{#app_name}.svg"; DestDir: "{app}\share\icons\hicolor\scalable\apps"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#meson_source_root}\crates\rnote-ui\data\icons\rnote.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#meson_source_root}\crates\rnote-ui\data\icons\rnote-symbolic.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#meson_source_root}\crates\rnote-ui\data\icons\application-rnote.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#meson_source_root}\crates\rnote-ui\data\icons\scalable\apps\{#app_name}.svg"; DestDir: "{app}\share\icons\hicolor\scalable\apps"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Locale
 Source: "{#meson_build_root}\locale\*"; DestDir: "{app}\share\locale"; Flags: ignoreversion recursesubdirs createallsubdirs
-; data files (that go into pkg-data-dir)
-Source: "{#meson_build_root}\rnote-ui\data\resources.gresource"; DestDir: "{app}\share\rnote"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#meson_source_root}\rnote-engine\data\sounds\*"; DestDir: "{app}\share\rnote\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Fonts
+Source: "{#meson_source_root}\crates\rnote-engine\data\fonts\GrapeNuts-Regular.ttf"; DestDir: "{autofonts}"; FontInstall: "Grape Nuts"; Flags: onlyifdoesntexist uninsneveruninstall
+Source: "{#meson_source_root}\crates\rnote-engine\data\fonts\OpenDyslexic-Regular.ttf"; DestDir: "{autofonts}"; FontInstall: "OpenDyslexic"; Flags: onlyifdoesntexist uninsneveruninstall
+Source: "{#meson_source_root}\crates\rnote-engine\data\fonts\TT2020Base-Regular.ttf"; DestDir: "{autofonts}"; FontInstall: "TT2020Base"; Flags: onlyifdoesntexist uninsneveruninstall
+Source: "{#meson_source_root}\crates\rnote-engine\data\fonts\Virgil.ttf"; DestDir: "{autofonts}"; FontInstall: "Virgil"; Flags: onlyifdoesntexist uninsneveruninstall
+; app data (that goes to pkg-data-dir)
+Source: "{#meson_build_root}\crates\rnote-ui\data\resources.gresource"; DestDir: "{app}\share\rnote"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\*"; DestDir: "{app}\share\rnote\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Binary
 Source: "{#meson_build_root}\{#MyAppExeName}"; DestDir: "{app}\bin\"; Flags: ignoreversion
 
 [Registry]
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}"; ValueType: string; ValueName: ""; ValueData: "{#MyAppAssocName}"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppAssocKey}"; ValueData: ""; Flags: uninsdeletevalue
-Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: """{app}\rnote-symbolic.ico"""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: """{app}\application-rnote.ico"""; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#MyAppExeName}"" ""%1"""
 Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".myp"; ValueData: ""
 

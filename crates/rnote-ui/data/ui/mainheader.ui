@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ### Headerbar ### -->
+<interface>
+  <template class="RnMainHeader" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBinLayout" />
+    </property>
+    <child>
+      <object class="AdwHeaderBar" id="headerbar">
+        <property name="centering-policy">loose</property>
+        <property name="vexpand">false</property>
+        <property name="title-widget">
+          <object class="GtkBox">
+            <child>
+              <object class="GtkLabel" id="main_title_unsaved_indicator">
+                <property name="label">•</property>
+                <property name="visible">false</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwWindowTitle" id="main_title">
+                <property name="title" translatable="yes">New Document</property>
+                <property name="subtitle" translatable="yes">Draft</property>
+                <style>
+                  <class name="main_title" />
+                </style>
+              </object>
+            </child>
+          </object>
+        </property>
+        <child type="start">
+          <object class="GtkBox" id="quickactions_box">
+            <property name="spacing">3</property>
+            <child>
+              <object class="GtkBox">
+                <property name="spacing">3</property>
+                <child>
+                  <object class="GtkToggleButton" id="left_sidebar_reveal_toggle">
+                    <property name="icon_name">sidebar-reveal-symbolic</property>
+                    <property name="tooltip_text" translatable="yes">Show/Hide Sidebar</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="icon-name">tab-new-symbolic</property>
+                    <property name="action-name">win.new-tab</property>
+                    <property name="tooltip-text" translatable="yes">New Tab</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkToggleButton">
+                    <property name="icon-name">focus-mode-symbolic</property>
+                    <property name="action-name">win.focus-mode</property>
+                    <property name="tooltip-text" translatable="yes">Focus Mode</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkBox">
+            <property name="spacing">3</property>
+            <child>
+              <object class="GtkButton">
+                <property name="tooltip-text" translatable="yes">Save Document</property>
+                <property name="icon-name">doc-save-symbolic</property>
+                <property name="action-name">win.save-doc</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="right_sidebar_reveal_toggle">
+                <property name="icon_name">sidebar-reveal-symbolic</property>
+                <property name="tooltip_text" translatable="yes">Show/Hide Sidebar</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="spacing">3</property>
+                <child>
+                  <object class="RnCanvasMenu" id="canvasmenu"></object>
+                </child>
+                <child>
+                  <object class="RnAppMenu" id="appmenu"></object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

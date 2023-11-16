@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="RnOverlays" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBoxLayout" />
+    </property>
+    <property name="hexpand">true</property>
+    <property name="vexpand">true</property>
+    <property name="halign">fill</property>
+    <property name="valign">fill</property>
+    <child>
+      <object class="GtkOverlay" id="toolbar_overlay">
+        <property name="overflow">hidden</property>
+        <child type="overlay">
+          <object class="GtkProgressBar" id="progressbar">
+            <property name="halign">fill</property>
+            <property name="valign">start</property>
+            <property name="pulse-step">0.33</property>
+            <style>
+              <class name="osd" />
+            </style>
+          </object>
+        </child>
+        <child type="overlay">
+          <object class="RnPenPicker" id="penpicker">
+            <property name="hexpand">false</property>
+            <property name="vexpand">false</property>
+            <property name="halign">center</property>
+            <property name="valign">end</property>
+            <property name="margin-top">6</property>
+            <property name="margin-bottom">18</property>
+            <property name="margin-start">6</property>
+            <property name="margin-end">6</property>
+            <style>
+              <class name="overlay_toolbar" />
+            </style>
+          </object>
+        </child>
+        <child type="overlay">
+          <object class="RnColorPicker" id="colorpicker">
+            <property name="hexpand">false</property>
+            <property name="vexpand">false</property>
+            <property name="halign">center</property>
+            <property name="valign">start</property>
+            <property name="margin-top">18</property>
+            <property name="margin-bottom">6</property>
+            <property name="margin-start">18</property>
+            <property name="margin-end">18</property>
+            <property name="position">top</property>
+            <style>
+              <class name="overlay_toolbar" />
+            </style>
+          </object>
+        </child>
+        <child type="overlay">
+          <object class="GtkBox" id="sidebar_box">
+            <property name="hexpand">false</property>
+            <property name="vexpand">false</property>
+            <property name="halign">end</property>
+            <property name="valign">center</property>
+            <property name="margin-top">72</property>
+            <property name="margin-bottom">72</property>
+            <property name="margin-start">18</property>
+            <property name="margin-end">18</property>
+            <style>
+              <class name="overlay_toolbar_scrollable" />
+            </style>
+            <child>
+              <object class="GtkScrolledWindow" id="sidebar_scroller">
+                <property name="propagate-natural-width">true</property>
+                <property name="propagate-natural-height">true</property>
+                <property name="overlay-scrolling">true</property>
+                <property name="hscrollbar-policy">never</property>
+                <property name="vscrollbar-policy">automatic</property>
+                <property name="hexpand">false</property>
+                <property name="halign">fill</property>
+                <property name="vexpand">true</property>
+                <property name="valign">fill</property>
+                <property name="min-content-height">240</property>
+                <property name="window-placement">top-left</property>
+                <child>
+                  <object class="RnPensSideBar" id="penssidebar">
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwToastOverlay" id="toast_overlay">
+            <property name="child">
+              <object class="AdwTabView" id="tabview">
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+                <property name="menu-model">tab_cx_menu_model</property>
+                <menu id="tab_cx_menu_model">
+                  <section>
+                    <item>
+                      <attribute name="label" translatable="yes">Move _Left</attribute>
+                      <attribute name="action">win.active-tab-move-left</attribute>
+                    </item>
+                    <item>
+                      <attribute name="label" translatable="yes">Move _Right</attribute>
+                      <attribute name="action">win.active-tab-move-right</attribute>
+                    </item>
+                  </section>
+                  <section>
+                    <item>
+                      <attribute name="label" translatable="yes">_Close</attribute>
+                      <attribute name="action">win.active-tab-close</attribute>
+                    </item>
+                  </section>
+                </menu>
+              </object>
+            </property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

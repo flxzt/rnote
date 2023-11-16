@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-14 17:46+0100\n"
-"PO-Revision-Date: 2023-11-12 15:04+0000\n"
+"PO-Revision-Date: 2023-11-15 14:58+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -1152,8 +1152,6 @@ msgstr "مسودَّة"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
-#, fuzzy
-#| msgid "Reveal/Hide Sidebar"
 msgid "Show/Hide Sidebar"
 msgstr "أظهر\\أخفِ شريط الجانب"
 

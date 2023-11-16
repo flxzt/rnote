@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-14 17:46+0100\n"
-"PO-Revision-Date: 2023-11-14 16:47+0000\n"
+"PO-Revision-Date: 2023-11-15 17:56+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -1154,10 +1154,8 @@ msgstr "Bozza"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
-#, fuzzy
-#| msgid "Reveal/Hide Sidebar"
 msgid "Show/Hide Sidebar"
-msgstr "Rivela/Nascondi barra laterale"
+msgstr "Mostra/nascondi barra laterale"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
 msgid "New Tab"

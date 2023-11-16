@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-14 17:46+0100\n"
-"PO-Revision-Date: 2023-09-18 17:18+0000\n"
+"PO-Revision-Date: 2023-11-15 17:56+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.2\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1038,7 +1038,7 @@ msgstr "எல்லையற்ற (_I)"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:49
 msgid "_Snap Positions"
-msgstr ""
+msgstr "சொடக்கு நிலைகள் (_S)"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
 msgid "_Pen Sounds"
@@ -1058,7 +1058,7 @@ msgstr "காட்டு வடிவ (_F) பார்டர்களை"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:74
 msgid "Show _Origin Indicator"
-msgstr ""
+msgstr "மூலக் குறிகாட்டியைக் காட்டு (_O)"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:79
 msgid "Draw With _Touch Input"
@@ -1129,7 +1129,7 @@ msgstr "திற"
 
 #: crates/rnote-ui/data/ui/filerow.ui:65
 msgid "Open in Default App"
-msgstr ""
+msgstr "இயல்புநிலை பயன்பாட்டில் திறக்கவும்"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
@@ -1151,8 +1151,6 @@ msgstr "வரைவு"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
-#, fuzzy
-#| msgid "Reveal/Hide Flap"
 msgid "Show/Hide Sidebar"
 msgstr "மடலை வெளிப்படுத்தவும் / மறைக்கவும்"
 
@@ -1485,19 +1483,15 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:435
 msgid "Keyboard Ctrl-Space Action"
-msgstr ""
+msgstr "விசைப்பலகை Ctrl-Space செயல்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:436
-#, fuzzy
-#| msgid ""
-#| "Set the action for the\n"
-#| "secondary mouse button"
 msgid ""
 "Set the action for the keyboard\n"
 "Ctrl plus Space shortcut"
 msgstr ""
-"இரண்டாம் நிலை சுட்டி பொத்தானின் \n"
-"செயலை அமைக்கவும்"
+"விசைப்பலகைக்கான செயலை அமைக்கவும்\n"
+"Ctrl + Space குறுக்குவழி"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:448
 msgid "Drawing Pad Button 1 Action"
@@ -1837,10 +1831,8 @@ msgid "Open File"
 msgstr "திறந்த கோப்பு"
 
 #: crates/rnote-ui/src/dialogs/import.rs:61
-#, fuzzy
-#| msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp"
+msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:181
 msgid "- no file name -"

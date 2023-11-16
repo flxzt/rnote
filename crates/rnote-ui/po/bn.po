@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-14 17:46+0100\n"
-"PO-Revision-Date: 2023-11-15 14:58+0000\n"
+"PO-Revision-Date: 2023-11-17 14:06+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.2\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1036,8 +1036,9 @@ msgid "_Infinite"
 msgstr "_অসীম"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:49
+#, fuzzy
 msgid "_Snap Positions"
-msgstr ""
+msgstr "অবস্থানে _স্ন্যাপ করুন"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
 msgid "_Pen Sounds"

@@ -1,5 +1,5 @@
 // Modules
-pub mod recoverymetadata;
+pub mod recoverymetadataformat;
 pub mod rnoteformat;
 pub mod xoppformat;
 

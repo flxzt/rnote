@@ -20,6 +20,8 @@ jobs:
     name: zh_Hans -> zh_Hant
     runs-on: ubuntu-22.04
     container: fedora:39
+    permissions:
+      contents: write # needed for pushing the changes
     steps:
       - name: Install dependencies
         run: |
@@ -35,10 +37,10 @@ jobs:
 
       - name: Generate zh_Hant from zh_Hans
         run: |
-          sed -i \
-            -e 's|zh_Hans|zh_CN\nzh_SG|' \
-            -e 's|zh_Hant|zh_HK\nzh_TW|' \
-            ./crates/rnote-ui/po/LINGUAS
+          cat ./crates/rnote-ui/po/LINGUAS \
+          | sed -e 's|zh_Hans|zh_Hans\nzh_CN\nzh_SG|' \
+                -e 's|zh_Hant|zh_Hant\nzh_HK\nzh_TW|' \
+          | sort -uo ./crates/rnote-ui/po/LINGUAS
 
           cat ./crates/rnote-ui/po/zh_Hans.po \
           | sed -e 's|Language: zh_Hans|Language: zh_Hant|' \

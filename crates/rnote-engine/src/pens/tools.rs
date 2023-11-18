@@ -115,7 +115,7 @@ impl Default for OffsetCameraTool {
 impl OffsetCameraTool {
     const CURSOR_SIZE: na::Vector2<f64> = na::vector![16.0, 16.0];
     const CURSOR_STROKE_WIDTH: f64 = 2.0;
-    const CURSOR_PATH: &str = "m 8 1.078125 l -3 3 h 2 v 2.929687 h -2.960938 v -2 l -3 3 l 3 3 v -2 h 2.960938 v 2.960938 h -2 l 3 3 l 3 -3 h -2 v -2.960938 h 3.054688 v 2 l 3 -3 l -3 -3 v 2 h -3.054688 v -2.929687 h 2 z m 0 0";
+    const CURSOR_PATH: &'static str = "m 8 1.078125 l -3 3 h 2 v 2.929687 h -2.960938 v -2 l -3 3 l 3 3 v -2 h 2.960938 v 2.960938 h -2 l 3 3 l 3 -3 h -2 v -2.960938 h 3.054688 v 2 l 3 -3 l -3 -3 v 2 h -3.054688 v -2.929687 h 2 z m 0 0";
     const DARK_COLOR: piet::Color = color::GNOME_DARKS[3].with_a8(240);
     const LIGHT_COLOR: piet::Color = color::GNOME_BRIGHTS[1].with_a8(240);
 }

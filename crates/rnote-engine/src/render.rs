@@ -376,7 +376,7 @@ pub struct Svg {
 }
 
 impl Svg {
-    pub const MIME_TYPE: &str = "image/svg+xml";
+    pub const MIME_TYPE: &'static str = "image/svg+xml";
 
     pub fn merge<T>(&mut self, other: T)
     where

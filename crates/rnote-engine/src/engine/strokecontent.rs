@@ -23,7 +23,7 @@ pub struct StrokeContent {
 }
 
 impl StrokeContent {
-    pub const MIME_TYPE: &str = "application/rnote-stroke-content";
+    pub const MIME_TYPE: &'static str = "application/rnote-stroke-content";
     pub const CLIPBOARD_EXPORT_MARGIN: f64 = 6.0;
 
     pub fn with_bounds(mut self, bounds: Option<Aabb>) -> Self {

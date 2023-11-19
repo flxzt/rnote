@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-14 17:46+0100\n"
+"POT-Creation-Date: 2023-11-19 13:37+0100\n"
 "PO-Revision-Date: 2023-10-10 03:00+0000\n"
 "Last-Translator: winpower21 <lakshyamimani2001@gmail.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/rnote/repo/hi/>\n"
@@ -68,7 +68,7 @@ msgid "Lecture Note 2"
 msgstr "लेकचर नोट २"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
-#: crates/rnote-ui/data/ui/shortcuts.ui:173
+#: crates/rnote-ui/data/ui/shortcuts.ui:179
 #, fuzzy
 msgid "Clear Document"
 msgstr "दस्तावेज़ साफ़ करें"
@@ -83,7 +83,7 @@ msgstr "इससे संपूर्ण दस्तावेज़ साफ
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:70
 #: crates/rnote-ui/data/ui/dialogs/import.ui:10
-#: crates/rnote-ui/data/ui/dialogs/import.ui:193
+#: crates/rnote-ui/data/ui/dialogs/import.ui:199
 #: crates/rnote-ui/data/ui/dialogs/export.ui:10
 #: crates/rnote-ui/data/ui/dialogs/export.ui:175
 #: crates/rnote-ui/data/ui/dialogs/export.ui:411
@@ -214,7 +214,7 @@ msgid "Import Pdf"
 msgstr "पी.दी.एफ आयात"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
-#: crates/rnote-ui/data/ui/dialogs/import.ui:198
+#: crates/rnote-ui/data/ui/dialogs/import.ui:204
 #: crates/rnote-ui/src/dialogs/import.rs:66
 msgid "Import"
 msgstr "आयात"
@@ -290,19 +290,27 @@ msgid ""
 "to the actual size on the document"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:190
+#: crates/rnote-ui/data/ui/dialogs/import.ui:161
+msgid "Page Borders"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:162
+msgid "Whether the pages have drawn borders"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:196
 msgid "Import Xournal++ File"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:229
+#: crates/rnote-ui/data/ui/dialogs/import.ui:235
 msgid "Xournal++ File Import Preferences"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:233
+#: crates/rnote-ui/data/ui/dialogs/import.ui:239
 msgid "DPI"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:234
+#: crates/rnote-ui/data/ui/dialogs/import.ui:240
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
@@ -711,7 +719,7 @@ msgid "Invert Color Brightness of All Selected Strokes"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
-#: crates/rnote-ui/data/ui/shortcuts.ui:224
+#: crates/rnote-ui/data/ui/shortcuts.ui:230
 msgid "Duplicate Selection"
 msgstr ""
 
@@ -1583,44 +1591,48 @@ msgstr ""
 msgid "Save Document As"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:179
-msgid "Add Page (When in Fixed-Size Layout)"
+#: crates/rnote-ui/data/ui/shortcuts.ui:173
+msgid "Snap Positions"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
-msgid "Remove Last Page (When in Fixed-Size Layout)"
+msgid "Add Page (When in Fixed-Size Layout)"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
-msgid "Print Document"
+msgid "Remove Last Page (When in Fixed-Size Layout)"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:197
+msgid "Print Document"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:203
 #: crates/rnote-ui/src/dialogs/import.rs:64
 msgid "Import File"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:203
+#: crates/rnote-ui/data/ui/shortcuts.ui:209
 msgid "Drawing"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:206
+#: crates/rnote-ui/data/ui/shortcuts.ui:212
 msgid "Copy to Clipboard"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:212
+#: crates/rnote-ui/data/ui/shortcuts.ui:218
 msgid "Cut to Clipboard"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:218
+#: crates/rnote-ui/data/ui/shortcuts.ui:224
 msgid "Paste Clipboard"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:230
+#: crates/rnote-ui/data/ui/shortcuts.ui:236
 msgid "Undo"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:236
+#: crates/rnote-ui/data/ui/shortcuts.ui:242
 msgid "Redo"
 msgstr ""
 
@@ -1803,39 +1815,39 @@ msgstr ""
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:181
+#: crates/rnote-ui/src/dialogs/import.rs:190
 msgid "- no file name -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:186
+#: crates/rnote-ui/src/dialogs/import.rs:195
 msgid "- no title -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:189
+#: crates/rnote-ui/src/dialogs/import.rs:198
 msgid "- no author -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:193
+#: crates/rnote-ui/src/dialogs/import.rs:202
 msgid "- no date -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:200
+#: crates/rnote-ui/src/dialogs/import.rs:209
 msgid "File name:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:204
+#: crates/rnote-ui/src/dialogs/import.rs:213
 msgid "Title:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:208
+#: crates/rnote-ui/src/dialogs/import.rs:217
 msgid "Author:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:212
+#: crates/rnote-ui/src/dialogs/import.rs:221
 msgid "Modification date:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:216
+#: crates/rnote-ui/src/dialogs/import.rs:225
 msgid "Pages:"
 msgstr ""
 

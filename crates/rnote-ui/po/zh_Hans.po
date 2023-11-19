@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-14 17:46+0100\n"
+"POT-Creation-Date: 2023-11-19 13:37+0100\n"
 "PO-Revision-Date: 2023-11-19 11:28+0000\n"
 "Last-Translator: detiam <dehe_tian@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -66,7 +66,7 @@ msgid "Lecture Note 2"
 msgstr "讲义2"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
-#: crates/rnote-ui/data/ui/shortcuts.ui:173
+#: crates/rnote-ui/data/ui/shortcuts.ui:179
 msgid "Clear Document"
 msgstr "清空文档"
 
@@ -80,7 +80,7 @@ msgstr "这将清空整个文档。请确认。"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:70
 #: crates/rnote-ui/data/ui/dialogs/import.ui:10
-#: crates/rnote-ui/data/ui/dialogs/import.ui:193
+#: crates/rnote-ui/data/ui/dialogs/import.ui:199
 #: crates/rnote-ui/data/ui/dialogs/export.ui:10
 #: crates/rnote-ui/data/ui/dialogs/export.ui:175
 #: crates/rnote-ui/data/ui/dialogs/export.ui:411
@@ -208,7 +208,7 @@ msgid "Import Pdf"
 msgstr "导入 PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
-#: crates/rnote-ui/data/ui/dialogs/import.ui:198
+#: crates/rnote-ui/data/ui/dialogs/import.ui:204
 #: crates/rnote-ui/src/dialogs/import.rs:66
 msgid "Import"
 msgstr "导入"
@@ -285,19 +285,29 @@ msgstr ""
 "根据文档的实际大小\n"
 "设置位图缩放倍数"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:190
+#: crates/rnote-ui/data/ui/dialogs/import.ui:161
+#, fuzzy
+#| msgid "Page Order"
+msgid "Page Borders"
+msgstr "页面循序"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:162
+msgid "Whether the pages have drawn borders"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:196
 msgid "Import Xournal++ File"
 msgstr "导入Xournal++文件"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:229
+#: crates/rnote-ui/data/ui/dialogs/import.ui:235
 msgid "Xournal++ File Import Preferences"
 msgstr "Xournal++文件导入设定"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:233
+#: crates/rnote-ui/data/ui/dialogs/import.ui:239
 msgid "DPI"
 msgstr "像素密度(DPI)"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:234
+#: crates/rnote-ui/data/ui/dialogs/import.ui:240
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "为Xournal++文件设置推荐的DPI"
 
@@ -711,7 +721,7 @@ msgid "Invert Color Brightness of All Selected Strokes"
 msgstr "反转所有选中笔画的色彩亮度"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
-#: crates/rnote-ui/data/ui/shortcuts.ui:224
+#: crates/rnote-ui/data/ui/shortcuts.ui:230
 msgid "Duplicate Selection"
 msgstr "复制所选内容"
 
@@ -1613,44 +1623,50 @@ msgstr "打开文档"
 msgid "Save Document As"
 msgstr "另存文档为"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:179
+#: crates/rnote-ui/data/ui/shortcuts.ui:173
+#, fuzzy
+#| msgid "_Snap Positions"
+msgid "Snap Positions"
+msgstr "捕获位置 [_S]"
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Add Page (When in Fixed-Size Layout)"
 msgstr "添加页面（固定大小布局时）"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:185
+#: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Remove Last Page (When in Fixed-Size Layout)"
 msgstr "移除尾页（固定大小布局时）"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:191
+#: crates/rnote-ui/data/ui/shortcuts.ui:197
 msgid "Print Document"
 msgstr "打印"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:197
+#: crates/rnote-ui/data/ui/shortcuts.ui:203
 #: crates/rnote-ui/src/dialogs/import.rs:64
 msgid "Import File"
 msgstr "导入文件"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:203
+#: crates/rnote-ui/data/ui/shortcuts.ui:209
 msgid "Drawing"
 msgstr "绘画"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:206
+#: crates/rnote-ui/data/ui/shortcuts.ui:212
 msgid "Copy to Clipboard"
 msgstr "复制到剪切板"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:212
+#: crates/rnote-ui/data/ui/shortcuts.ui:218
 msgid "Cut to Clipboard"
 msgstr "剪切到剪切板"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:218
+#: crates/rnote-ui/data/ui/shortcuts.ui:224
 msgid "Paste Clipboard"
 msgstr "粘贴剪切板"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:230
+#: crates/rnote-ui/data/ui/shortcuts.ui:236
 msgid "Undo"
 msgstr "撤销"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:236
+#: crates/rnote-ui/data/ui/shortcuts.ui:242
 msgid "Redo"
 msgstr "重做"
 
@@ -1833,39 +1849,39 @@ msgstr "打开文件"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
-#: crates/rnote-ui/src/dialogs/import.rs:181
+#: crates/rnote-ui/src/dialogs/import.rs:190
 msgid "- no file name -"
 msgstr "—— 没有文件名 ——"
 
-#: crates/rnote-ui/src/dialogs/import.rs:186
+#: crates/rnote-ui/src/dialogs/import.rs:195
 msgid "- no title -"
 msgstr "—— 无标题 ——"
 
-#: crates/rnote-ui/src/dialogs/import.rs:189
+#: crates/rnote-ui/src/dialogs/import.rs:198
 msgid "- no author -"
 msgstr "—— 无作者 ——"
 
-#: crates/rnote-ui/src/dialogs/import.rs:193
+#: crates/rnote-ui/src/dialogs/import.rs:202
 msgid "- no date -"
 msgstr "—— 无日期 ——"
 
-#: crates/rnote-ui/src/dialogs/import.rs:200
+#: crates/rnote-ui/src/dialogs/import.rs:209
 msgid "File name:"
 msgstr "文件名："
 
-#: crates/rnote-ui/src/dialogs/import.rs:204
+#: crates/rnote-ui/src/dialogs/import.rs:213
 msgid "Title:"
 msgstr "标题："
 
-#: crates/rnote-ui/src/dialogs/import.rs:208
+#: crates/rnote-ui/src/dialogs/import.rs:217
 msgid "Author:"
 msgstr "作者："
 
-#: crates/rnote-ui/src/dialogs/import.rs:212
+#: crates/rnote-ui/src/dialogs/import.rs:221
 msgid "Modification date:"
 msgstr "修改日期："
 
-#: crates/rnote-ui/src/dialogs/import.rs:216
+#: crates/rnote-ui/src/dialogs/import.rs:225
 msgid "Pages:"
 msgstr "页码："
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-14 17:46+0100\n"
+"POT-Creation-Date: 2023-11-19 13:37+0100\n"
 "PO-Revision-Date: 2023-11-15 14:58+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
@@ -67,7 +67,7 @@ msgid "Lecture Note 2"
 msgstr "ملاحظات المحاضرة 2"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
-#: crates/rnote-ui/data/ui/shortcuts.ui:173
+#: crates/rnote-ui/data/ui/shortcuts.ui:179
 msgid "Clear Document"
 msgstr "امحُ المستند"
 
@@ -81,7 +81,7 @@ msgstr "يمسح هذا كامل المستند، عليك التأكيد."
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:70
 #: crates/rnote-ui/data/ui/dialogs/import.ui:10
-#: crates/rnote-ui/data/ui/dialogs/import.ui:193
+#: crates/rnote-ui/data/ui/dialogs/import.ui:199
 #: crates/rnote-ui/data/ui/dialogs/export.ui:10
 #: crates/rnote-ui/data/ui/dialogs/export.ui:175
 #: crates/rnote-ui/data/ui/dialogs/export.ui:411
@@ -209,7 +209,7 @@ msgid "Import Pdf"
 msgstr "استورد PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
-#: crates/rnote-ui/data/ui/dialogs/import.ui:198
+#: crates/rnote-ui/data/ui/dialogs/import.ui:204
 #: crates/rnote-ui/src/dialogs/import.rs:66
 msgid "Import"
 msgstr "استورد"
@@ -286,19 +286,29 @@ msgstr ""
 "عيِّن معامل تحجيم النقاط بالنسبة\n"
 "للحجم الفعليِّ للمستند"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:190
+#: crates/rnote-ui/data/ui/dialogs/import.ui:161
+#, fuzzy
+#| msgid "Page Order"
+msgid "Page Borders"
+msgstr "ترتيب الصفحات"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:162
+msgid "Whether the pages have drawn borders"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:196
 msgid "Import Xournal++ File"
 msgstr "استورد ملفَّ Xournal++"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:229
+#: crates/rnote-ui/data/ui/dialogs/import.ui:235
 msgid "Xournal++ File Import Preferences"
 msgstr "تفضيلات استيراد ملفِّ Xournal++"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:233
+#: crates/rnote-ui/data/ui/dialogs/import.ui:239
 msgid "DPI"
 msgstr "نقطة في البوصة"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:234
+#: crates/rnote-ui/data/ui/dialogs/import.ui:240
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "حدِّد العدد المفضَّل للنقاط في كلِّ بوصة لملفِّ Xournal++"
 
@@ -713,7 +723,7 @@ msgid "Invert Color Brightness of All Selected Strokes"
 msgstr "اعكس سطوع ألوان كلِّ الخطوط"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
-#: crates/rnote-ui/data/ui/shortcuts.ui:224
+#: crates/rnote-ui/data/ui/shortcuts.ui:230
 msgid "Duplicate Selection"
 msgstr "كرِّر الاختيار"
 
@@ -1615,44 +1625,50 @@ msgstr "افتح مستندًا"
 msgid "Save Document As"
 msgstr "احفظ المستند باسم"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:179
+#: crates/rnote-ui/data/ui/shortcuts.ui:173
+#, fuzzy
+#| msgid "_Snap Positions"
+msgid "Snap Positions"
+msgstr "_حاذِ المواضع"
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Add Page (When in Fixed-Size Layout)"
 msgstr "أضف صفحةً (في حال كان التخطيط ثابت الحجم)"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:185
+#: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Remove Last Page (When in Fixed-Size Layout)"
 msgstr "احذف آخر صفحة (في حال كان التخطيط ثابت الحجم)"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:191
+#: crates/rnote-ui/data/ui/shortcuts.ui:197
 msgid "Print Document"
 msgstr "اطبع المستند"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:197
+#: crates/rnote-ui/data/ui/shortcuts.ui:203
 #: crates/rnote-ui/src/dialogs/import.rs:64
 msgid "Import File"
 msgstr "استورد ملفًّا"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:203
+#: crates/rnote-ui/data/ui/shortcuts.ui:209
 msgid "Drawing"
 msgstr "الرسم"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:206
+#: crates/rnote-ui/data/ui/shortcuts.ui:212
 msgid "Copy to Clipboard"
 msgstr "انسخ للحافظة"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:212
+#: crates/rnote-ui/data/ui/shortcuts.ui:218
 msgid "Cut to Clipboard"
 msgstr "قُصَّ للحافظة"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:218
+#: crates/rnote-ui/data/ui/shortcuts.ui:224
 msgid "Paste Clipboard"
 msgstr "الصق الحافظة"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:230
+#: crates/rnote-ui/data/ui/shortcuts.ui:236
 msgid "Undo"
 msgstr "تراجَع"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:236
+#: crates/rnote-ui/data/ui/shortcuts.ui:242
 msgid "Redo"
 msgstr "أعِد"
 
@@ -1835,39 +1851,39 @@ msgstr "افتح ملفًّا"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "Jpg, Pdf, Png, Svg, Xopp، txt"
 
-#: crates/rnote-ui/src/dialogs/import.rs:181
+#: crates/rnote-ui/src/dialogs/import.rs:190
 msgid "- no file name -"
 msgstr "- بلا اسم ملفٍّ -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:186
+#: crates/rnote-ui/src/dialogs/import.rs:195
 msgid "- no title -"
 msgstr "- بلا عنوان -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:189
+#: crates/rnote-ui/src/dialogs/import.rs:198
 msgid "- no author -"
 msgstr "- بلا مؤلِّف -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:193
+#: crates/rnote-ui/src/dialogs/import.rs:202
 msgid "- no date -"
 msgstr "- بلا تاريخ -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:200
+#: crates/rnote-ui/src/dialogs/import.rs:209
 msgid "File name:"
 msgstr "اسم الملف:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:204
+#: crates/rnote-ui/src/dialogs/import.rs:213
 msgid "Title:"
 msgstr "العنوان:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:208
+#: crates/rnote-ui/src/dialogs/import.rs:217
 msgid "Author:"
 msgstr "المؤلِّف:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:212
+#: crates/rnote-ui/src/dialogs/import.rs:221
 msgid "Modification date:"
 msgstr "تاريخ التعديل:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:216
+#: crates/rnote-ui/src/dialogs/import.rs:225
 msgid "Pages:"
 msgstr "الصفحات:"
 

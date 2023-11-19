@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-14 17:46+0100\n"
+"POT-Creation-Date: 2023-11-19 13:37+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -67,7 +67,7 @@ msgid "Lecture Note 2"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
-#: crates/rnote-ui/data/ui/shortcuts.ui:173
+#: crates/rnote-ui/data/ui/shortcuts.ui:179
 #, fuzzy
 #| msgid "Clear document"
 msgid "Clear Document"
@@ -83,7 +83,7 @@ msgstr "การทำสิ่งนี้ จะล้างเอกสา�
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:70
 #: crates/rnote-ui/data/ui/dialogs/import.ui:10
-#: crates/rnote-ui/data/ui/dialogs/import.ui:193
+#: crates/rnote-ui/data/ui/dialogs/import.ui:199
 #: crates/rnote-ui/data/ui/dialogs/export.ui:10
 #: crates/rnote-ui/data/ui/dialogs/export.ui:175
 #: crates/rnote-ui/data/ui/dialogs/export.ui:411
@@ -223,7 +223,7 @@ msgid "Import Pdf"
 msgstr "นำเข้า PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
-#: crates/rnote-ui/data/ui/dialogs/import.ui:198
+#: crates/rnote-ui/data/ui/dialogs/import.ui:204
 #: crates/rnote-ui/src/dialogs/import.rs:66
 msgid "Import"
 msgstr "นำเข้า"
@@ -315,23 +315,33 @@ msgid ""
 "to the actual size on the document"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:190
+#: crates/rnote-ui/data/ui/dialogs/import.ui:161
+#, fuzzy
+#| msgid "Pages type"
+msgid "Page Borders"
+msgstr "ประเภทของหน้ากระดาษ"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:162
+msgid "Whether the pages have drawn borders"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:196
 #, fuzzy
 #| msgid "Import file"
 msgid "Import Xournal++ File"
 msgstr "นำเข้าไฟล์"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:229
+#: crates/rnote-ui/data/ui/dialogs/import.ui:235
 #, fuzzy
 #| msgid "PDF import preferences"
 msgid "Xournal++ File Import Preferences"
 msgstr "ตั้งค่าการนำเข้า PDF"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:233
+#: crates/rnote-ui/data/ui/dialogs/import.ui:239
 msgid "DPI"
 msgstr "DPI"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:234
+#: crates/rnote-ui/data/ui/dialogs/import.ui:240
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
@@ -807,7 +817,7 @@ msgid "Invert Color Brightness of All Selected Strokes"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
-#: crates/rnote-ui/data/ui/shortcuts.ui:224
+#: crates/rnote-ui/data/ui/shortcuts.ui:230
 #, fuzzy
 #| msgid "Duplicate selection"
 msgid "Duplicate Selection"
@@ -1880,61 +1890,67 @@ msgstr "เปิดเอกสาร"
 msgid "Save Document As"
 msgstr "บันทึกเอกสารที่"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:179
+#: crates/rnote-ui/data/ui/shortcuts.ui:173
+#, fuzzy
+#| msgid "Shape configuration"
+msgid "Snap Positions"
+msgstr "กำหนดค่ารูปทรง"
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Add Page (When in Fixed-Size Layout)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:185
+#: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Remove Last Page (When in Fixed-Size Layout)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:191
+#: crates/rnote-ui/data/ui/shortcuts.ui:197
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Print document"
 msgid "Print Document"
 msgstr "พิมพ์เอกสาร"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:197
+#: crates/rnote-ui/data/ui/shortcuts.ui:203
 #: crates/rnote-ui/src/dialogs/import.rs:64
 #, fuzzy
 #| msgid "Import file"
 msgid "Import File"
 msgstr "นำเข้าไฟล์"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:203
+#: crates/rnote-ui/data/ui/shortcuts.ui:209
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Drawing"
 msgid "Drawing"
 msgstr "การวาด"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:206
+#: crates/rnote-ui/data/ui/shortcuts.ui:212
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Copy into clipboard"
 msgid "Copy to Clipboard"
 msgstr "คัดลอกไปยังคลิปบอร์ด"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:212
+#: crates/rnote-ui/data/ui/shortcuts.ui:218
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Copy into clipboard"
 msgid "Cut to Clipboard"
 msgstr "คัดลอกไปยังคลิปบอร์ด"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:218
+#: crates/rnote-ui/data/ui/shortcuts.ui:224
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Paste clipboard"
 msgid "Paste Clipboard"
 msgstr "วางคลิปบอร์ด"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:230
+#: crates/rnote-ui/data/ui/shortcuts.ui:236
 msgid "Undo"
 msgstr "เลิกทำ"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:236
+#: crates/rnote-ui/data/ui/shortcuts.ui:242
 msgid "Redo"
 msgstr "ทำซ้ำ"
 
@@ -2171,39 +2187,39 @@ msgstr "เปิดไฟล์"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:181
+#: crates/rnote-ui/src/dialogs/import.rs:190
 msgid "- no file name -"
 msgstr "- ไม่มีชื่อไฟล์ -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:186
+#: crates/rnote-ui/src/dialogs/import.rs:195
 msgid "- no title -"
 msgstr "- ไม่มีชื่อเรื่อง -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:189
+#: crates/rnote-ui/src/dialogs/import.rs:198
 msgid "- no author -"
 msgstr "- ไม่มีผู้เขียน -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:193
+#: crates/rnote-ui/src/dialogs/import.rs:202
 msgid "- no date -"
 msgstr "- ไม่มีวันที่ -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:200
+#: crates/rnote-ui/src/dialogs/import.rs:209
 msgid "File name:"
 msgstr "ชื่อไฟล์:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:204
+#: crates/rnote-ui/src/dialogs/import.rs:213
 msgid "Title:"
 msgstr "ชื่อเรื่อง:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:208
+#: crates/rnote-ui/src/dialogs/import.rs:217
 msgid "Author:"
 msgstr "ผู้เขียน:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:212
+#: crates/rnote-ui/src/dialogs/import.rs:221
 msgid "Modification date:"
 msgstr "วันที่แก้ไข:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:216
+#: crates/rnote-ui/src/dialogs/import.rs:225
 msgid "Pages:"
 msgstr "จำนวนหน้า:"
 

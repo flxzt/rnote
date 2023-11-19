@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-14 17:46+0100\n"
+"POT-Creation-Date: 2023-11-19 13:37+0100\n"
 "PO-Revision-Date: 2023-11-17 14:06+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -66,7 +66,7 @@ msgid "Lecture Note 2"
 msgstr "লেকচার নোট ২"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
-#: crates/rnote-ui/data/ui/shortcuts.ui:173
+#: crates/rnote-ui/data/ui/shortcuts.ui:179
 msgid "Clear Document"
 msgstr "নথি পরিষ্কার করুন"
 
@@ -80,7 +80,7 @@ msgstr "এটি সম্পূর্ণ নথি পরিষ্কার �
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:70
 #: crates/rnote-ui/data/ui/dialogs/import.ui:10
-#: crates/rnote-ui/data/ui/dialogs/import.ui:193
+#: crates/rnote-ui/data/ui/dialogs/import.ui:199
 #: crates/rnote-ui/data/ui/dialogs/export.ui:10
 #: crates/rnote-ui/data/ui/dialogs/export.ui:175
 #: crates/rnote-ui/data/ui/dialogs/export.ui:411
@@ -208,7 +208,7 @@ msgid "Import Pdf"
 msgstr "পিডিএফ আমদানি করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
-#: crates/rnote-ui/data/ui/dialogs/import.ui:198
+#: crates/rnote-ui/data/ui/dialogs/import.ui:204
 #: crates/rnote-ui/src/dialogs/import.rs:66
 msgid "Import"
 msgstr "আমদানি করুন"
@@ -285,19 +285,29 @@ msgstr ""
 "বিটম্যাপ স্কেল ফ্যাক্টর এর সাপেক্ষে সেট করুন\n"
 "নথির প্রকৃত আকার"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:190
+#: crates/rnote-ui/data/ui/dialogs/import.ui:161
+#, fuzzy
+#| msgid "Page Order"
+msgid "Page Borders"
+msgstr "পৃষ্ঠার ক্রম"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:162
+msgid "Whether the pages have drawn borders"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:196
 msgid "Import Xournal++ File"
 msgstr "Xournal++ ফাইল আমদানি করুন"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:229
+#: crates/rnote-ui/data/ui/dialogs/import.ui:235
 msgid "Xournal++ File Import Preferences"
 msgstr "Xournal++ ফাইল আমদানি পছন্দসমূহ"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:233
+#: crates/rnote-ui/data/ui/dialogs/import.ui:239
 msgid "DPI"
 msgstr "ডিপিআই"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:234
+#: crates/rnote-ui/data/ui/dialogs/import.ui:240
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Xournal++ ফাইলের জন্য পছন্দের DPI সেট করুন"
 
@@ -711,7 +721,7 @@ msgid "Invert Color Brightness of All Selected Strokes"
 msgstr "সব নির্বাচিত স্ট্রোকগুলির রঙ উলটান"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
-#: crates/rnote-ui/data/ui/shortcuts.ui:224
+#: crates/rnote-ui/data/ui/shortcuts.ui:230
 msgid "Duplicate Selection"
 msgstr "সদৃশ নির্বাচন"
 
@@ -1616,44 +1626,49 @@ msgstr "নথি খুলুন"
 msgid "Save Document As"
 msgstr "এই হিসাবে নথি সংরক্ষণ করুন"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:179
+#: crates/rnote-ui/data/ui/shortcuts.ui:173
+#, fuzzy
+msgid "Snap Positions"
+msgstr "অবস্থানে _স্ন্যাপ করুন"
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Add Page (When in Fixed-Size Layout)"
 msgstr "পৃষ্ঠা যোগ করুন (যখন নির্দিষ্ট মাপের বিন্যাসে রয়েছে)"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:185
+#: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Remove Last Page (When in Fixed-Size Layout)"
 msgstr "শেষ পৃষ্ঠা সরান (যখন নির্দিষ্ট মাপের বিন্যাসে রয়েছে)"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:191
+#: crates/rnote-ui/data/ui/shortcuts.ui:197
 msgid "Print Document"
 msgstr "নথি প্রিন্ট করুন"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:197
+#: crates/rnote-ui/data/ui/shortcuts.ui:203
 #: crates/rnote-ui/src/dialogs/import.rs:64
 msgid "Import File"
 msgstr "ফাইল আমদানি করুন"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:203
+#: crates/rnote-ui/data/ui/shortcuts.ui:209
 msgid "Drawing"
 msgstr "অঙ্কন"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:206
+#: crates/rnote-ui/data/ui/shortcuts.ui:212
 msgid "Copy to Clipboard"
 msgstr "ক্লিপবোর্ডে কপি করুন"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:212
+#: crates/rnote-ui/data/ui/shortcuts.ui:218
 msgid "Cut to Clipboard"
 msgstr "ক্লিপবোর্ডে কাট করুন"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:218
+#: crates/rnote-ui/data/ui/shortcuts.ui:224
 msgid "Paste Clipboard"
 msgstr "ক্লিপবোর্ডে পেস্ট করুন"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:230
+#: crates/rnote-ui/data/ui/shortcuts.ui:236
 msgid "Undo"
 msgstr "পূর্বাবস্থায় ফিরুন"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:236
+#: crates/rnote-ui/data/ui/shortcuts.ui:242
 msgid "Redo"
 msgstr "পুনঃকরণ"
 
@@ -1836,39 +1851,39 @@ msgstr "ফাইল খুলুন"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
-#: crates/rnote-ui/src/dialogs/import.rs:181
+#: crates/rnote-ui/src/dialogs/import.rs:190
 msgid "- no file name -"
 msgstr "- কোন ফাইলের নাম নেই -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:186
+#: crates/rnote-ui/src/dialogs/import.rs:195
 msgid "- no title -"
 msgstr "- কোনো শিরোনাম নেই -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:189
+#: crates/rnote-ui/src/dialogs/import.rs:198
 msgid "- no author -"
 msgstr "- কোন লেখক নেই -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:193
+#: crates/rnote-ui/src/dialogs/import.rs:202
 msgid "- no date -"
 msgstr "- তারিখ নেই -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:200
+#: crates/rnote-ui/src/dialogs/import.rs:209
 msgid "File name:"
 msgstr "ফাইলের নাম:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:204
+#: crates/rnote-ui/src/dialogs/import.rs:213
 msgid "Title:"
 msgstr "শিরোনাম:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:208
+#: crates/rnote-ui/src/dialogs/import.rs:217
 msgid "Author:"
 msgstr "লেখক:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:212
+#: crates/rnote-ui/src/dialogs/import.rs:221
 msgid "Modification date:"
 msgstr "পরিবর্তনের তারিখ:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:216
+#: crates/rnote-ui/src/dialogs/import.rs:225
 msgid "Pages:"
 msgstr "পৃষ্ঠা:"
 

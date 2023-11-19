@@ -108,6 +108,8 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         builder.object("pdf_import_as_vector_toggle").unwrap();
     let pdf_import_bitmap_scalefactor_row: adw::SpinRow =
         builder.object("pdf_import_bitmap_scalefactor_row").unwrap();
+    let pdf_import_page_borders_row: adw::SwitchRow =
+        builder.object("pdf_import_page_borders_row").unwrap();
 
     dialog.set_transient_for(Some(appwindow));
 
@@ -127,6 +129,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     }
     pdf_import_page_spacing_row.set_selected(pdf_import_prefs.page_spacing.to_u32().unwrap());
     pdf_import_bitmap_scalefactor_row.set_value(pdf_import_prefs.bitmap_scalefactor);
+    pdf_import_page_borders_row.set_active(pdf_import_prefs.page_borders);
 
     pdf_page_start_row
         .bind_property("value", &pdf_page_end_row.adjustment(), "lower")
@@ -173,6 +176,12 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     pdf_import_width_row.connect_changed(clone!(@weak canvas, @weak appwindow => move |row| {
             canvas.engine_mut().import_prefs.pdf_import_prefs.page_width_perc = row.value();
     }));
+
+    pdf_import_page_borders_row.connect_active_notify(
+        clone!(@weak canvas, @weak appwindow => move |row| {
+            canvas.engine_mut().import_prefs.pdf_import_prefs.page_borders = row.is_active();
+        }),
+    );
 
     if let Ok(poppler_doc) =
         poppler::Document::from_gfile(&input_file, None, None::<&gio::Cancellable>)

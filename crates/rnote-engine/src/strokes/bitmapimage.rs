@@ -166,23 +166,25 @@ impl BitmapImage {
 
                     page.render_for_printing(&cx);
 
-                    // Draw outline around page
-                    cx.set_source_rgba(
-                        color::GNOME_REDS[4].as_rgba().0,
-                        color::GNOME_REDS[4].as_rgba().1,
-                        color::GNOME_REDS[4].as_rgba().2,
-                        1.0,
-                    );
+                    if pdf_import_prefs.page_borders {
+                        // Draw outline around page
+                        cx.set_source_rgba(
+                            color::GNOME_REDS[4].as_rgba().0,
+                            color::GNOME_REDS[4].as_rgba().1,
+                            color::GNOME_REDS[4].as_rgba().2,
+                            1.0,
+                        );
 
-                    let line_width = 1.0;
-                    cx.set_line_width(line_width);
-                    cx.rectangle(
-                        line_width * 0.5,
-                        line_width * 0.5,
-                        intrinsic_size.0 - line_width,
-                        intrinsic_size.1 - line_width,
-                    );
-                    cx.stroke()?;
+                        let line_width = 1.0;
+                        cx.set_line_width(line_width);
+                        cx.rectangle(
+                            line_width * 0.5,
+                            line_width * 0.5,
+                            intrinsic_size.0 - line_width,
+                            intrinsic_size.1 - line_width,
+                        );
+                        cx.stroke()?;
+                    }
                 }
 
                 let mut png_data: Vec<u8> = Vec::new();

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-19 13:37+0100\n"
-"PO-Revision-Date: 2023-11-15 14:58+0000\n"
+"PO-Revision-Date: 2023-11-21 17:13+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.2\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -287,14 +287,12 @@ msgstr ""
 "للحجم الفعليِّ للمستند"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Page Order"
 msgid "Page Borders"
-msgstr "ترتيب الصفحات"
+msgstr "حواف الصفحة"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:162
 msgid "Whether the pages have drawn borders"
-msgstr ""
+msgstr "هل حول الصفحات حواف مرسومة"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:196
 msgid "Import Xournal++ File"
@@ -1626,10 +1624,8 @@ msgid "Save Document As"
 msgstr "احفظ المستند باسم"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:173
-#, fuzzy
-#| msgid "_Snap Positions"
 msgid "Snap Positions"
-msgstr "_حاذِ المواضع"
+msgstr "حاذِ المواضع"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Add Page (When in Fixed-Size Layout)"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-19 13:37+0100\n"
-"PO-Revision-Date: 2023-11-15 17:56+0000\n"
+"PO-Revision-Date: 2023-11-23 12:04+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.2.1-rc\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -290,14 +290,12 @@ msgstr ""
 "alle dimensioni effettive del documento"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Page Order"
 msgid "Page Borders"
-msgstr "Ordine di pagine"
+msgstr "Bordi della pagina"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:162
 msgid "Whether the pages have drawn borders"
-msgstr ""
+msgstr "Se le pagine hanno i bordi tracciati"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:196
 msgid "Import Xournal++ File"

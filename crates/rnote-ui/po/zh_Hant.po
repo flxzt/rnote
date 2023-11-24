@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-14 17:46+0100\n"
-"PO-Revision-Date: 2023-10-25 17:02+0000\n"
-"Last-Translator: detiam <dehe_tian@outlook.com>\n"
+"PO-Revision-Date: 2023-11-03 14:08+0000\n"
+"Last-Translator: openCC converted detiam <dehe_tian@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
-"Language: zh_Hans\n"
+"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.1.1\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -896,111 +896,111 @@ msgstr "編輯選定的工作區"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:24
 msgid "Co_lor Scheme"
-msgstr "配色方案"
+msgstr "配色方案 [_l]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _System Colors"
-msgstr "使用系統方案"
+msgstr "使用系統方案 [_S]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:31
 msgid "Use _Light Colors"
-msgstr "使用淺色主題"
+msgstr "使用淺色主題 [_L]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:36
 msgid "Use _Dark Colors"
-msgstr "使用暗色主題"
+msgstr "使用暗色主題 [_D]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:42
 msgid "De_veloper Mode"
-msgstr "開發者模式(V)"
+msgstr "開發者模式 [_v]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _Menu"
-msgstr "開發者選單"
+msgstr "開發者選單 [_M]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:52
 msgid "Visual _Debugging"
-msgstr "視覺化除錯(D)"
+msgstr "視覺化除錯 [_D]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:56
 msgid "Export Engine _State"
-msgstr "匯出引擎狀態"
+msgstr "匯出引擎狀態 [_S]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:60
 msgid "Export Engine _Config"
-msgstr "匯出引擎配置"
+msgstr "匯出引擎配置 [_C]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:68
 msgid "_New"
-msgstr "新建文件"
+msgstr "新建文件 [_N]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_Open"
-msgstr "開啟文件"
+msgstr "開啟文件 [_O]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:76
 msgid "_Save"
-msgstr "儲存文件"
+msgstr "儲存文件 [_S]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:80
 msgid "Save _As"
-msgstr "另存為"
+msgstr "另存為 [_A]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:86
 msgid "_Print"
-msgstr "列印文件"
+msgstr "列印文件 [_P]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:90
 msgid "_Import File"
-msgstr "匯入檔案"
+msgstr "匯入檔案 [_I]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:94
 msgid "_Clipboard"
-msgstr "剪下板(C)"
+msgstr "剪下板 [_C]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy"
-msgstr "複製"
+msgstr "複製 [_C]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:100
 msgid "C_ut"
-msgstr "剪下"
+msgstr "剪下 [_u]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste"
-msgstr "貼上"
+msgstr "貼上 [_P]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
-msgstr "匯出…"
+msgstr "匯出… [_E]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:111
 msgid "Export _Document"
-msgstr "匯出文件"
+msgstr "匯出文件 [_D]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:115
 msgid "Export Document _Pages"
-msgstr "匯出文件頁面(P)"
+msgstr "匯出文件頁面 [_P]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:119
 msgid "Export _Selection"
-msgstr "匯出所選"
+msgstr "匯出所選 [_S]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:126
 msgid "Se_ttings"
-msgstr "設定(T)"
+msgstr "設定 [_t]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:130
 msgid "_Keyboard Shortcuts"
-msgstr "快捷鍵"
+msgstr "快捷鍵 [_K]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:134
 msgid "_Donate 💝"
-msgstr "捐贈💝"
+msgstr "捐贈💝 [_D]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:138
 msgid "A_bout Rnote"
-msgstr "關於 Rnote(B)"
+msgstr "關於 Rnote [_b]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:169
 msgid "Sidebar on the Left Side"
@@ -1017,23 +1017,23 @@ msgstr "切換全屏"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:24
 msgid "_Document Layout"
-msgstr "文件佈局(L)"
+msgstr "文件佈局 [_D]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:27
 msgid "_Fixed Size"
-msgstr "固定尺寸"
+msgstr "固定尺寸 [_F]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:32
 msgid "_Continuous Vertical"
-msgstr "垂直連續的頁面"
+msgstr "垂直連續的頁面 [_C]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:37
 msgid "_Semi Infinite"
-msgstr "無限"
+msgstr "無限 [_S]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"
-msgstr "無限"
+msgstr "無限 [_I]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:49
 msgid "_Snap Positions"
@@ -1041,31 +1041,31 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
 msgid "_Pen Sounds"
-msgstr "手寫筆音效(P)"
+msgstr "手寫筆音效 [_P]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "_Return to Origin Page"
-msgstr "返回到第一頁(R)"
+msgstr "返回到第一頁 [_R]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:63
 msgid "C_lear Document"
-msgstr "清空文件"
+msgstr "清空文件 [_l]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:69
 msgid "Show _Format Borders"
-msgstr "顯示格式邊框(F)"
+msgstr "顯示格式邊框 [_F]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:74
 msgid "Show _Origin Indicator"
-msgstr ""
+msgstr "顯示原點指示器 [_O]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:79
 msgid "Draw With _Touch Input"
-msgstr "使用觸控繪製"
+msgstr "使用觸控繪製 [_T]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:84
 msgid "Block Pinch to _Zoom"
-msgstr "禁用雙指縮放"
+msgstr "禁用雙指縮放 [_Z]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:115
 #: crates/rnote-ui/data/ui/shortcuts.ui:120
@@ -1170,15 +1170,15 @@ msgstr "儲存文件"
 
 #: crates/rnote-ui/data/ui/overlays.ui:99
 msgid "Move _Left"
-msgstr "左移"
+msgstr "左移 [_L]"
 
 #: crates/rnote-ui/data/ui/overlays.ui:103
 msgid "Move _Right"
-msgstr "右移"
+msgstr "右移 [_R]"
 
 #: crates/rnote-ui/data/ui/overlays.ui:109
 msgid "_Close"
-msgstr "關閉"
+msgstr "關閉 [_C]"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
@@ -1874,7 +1874,9 @@ msgstr "頁碼："
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: crates/rnote-ui/src/dialogs/mod.rs:47
 msgid "translator-credits"
-msgstr "Mr_Spade <Mr_Spade@foxmail.com>"
+msgstr ""
+"Mr_Spade <Mr_Spade@foxmail.com>\n"
+"detiam <dehe_tian@outlook.com>"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:210
 #: crates/rnote-ui/src/dialogs/mod.rs:344

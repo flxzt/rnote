@@ -223,7 +223,9 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
                                 log::error!("exporting document failed, Error: `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
                             } else {
-                                appwindow.overlays().dispatch_toast_text(&gettext("Exported document successfully"), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
+                                appwindow.overlays().dispatch_toast_w_button_singleton(&gettext("Exported document successfully"), &gettext("View in file manager"), clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
+                                    println!("Clicked the button");
+                                }), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT, &mut None);
                             }
 
                             appwindow.overlays().progressbar_finish();
@@ -506,7 +508,9 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
                                 log::error!("exporting document pages failed, Error: `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed"));
                             } else {
-                                appwindow.overlays().dispatch_toast_text(&gettext("Exported document pages successfully"), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
+appwindow.overlays().dispatch_toast_w_button_singleton(&gettext("Exported document pages successfully"), &gettext("View in file manager"), clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
+                                    println!("Clicked the button");
+                                }), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT, &mut None);
                             }
 
                             appwindow.overlays().progressbar_finish();
@@ -758,9 +762,14 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
                         .overlays()
                         .dispatch_toast_error(&gettext("Exporting selection failed"));
                 } else {
-                    appwindow.overlays().dispatch_toast_text(
+                    appwindow.overlays().dispatch_toast_w_button_singleton(
                         &gettext("Exported selection successfully"),
+                        &gettext("View in file manager"),
+                        clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
+                            println!("Clicked the button");
+                        }),
                         crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
+                        &mut None,
                     );
                 }
 

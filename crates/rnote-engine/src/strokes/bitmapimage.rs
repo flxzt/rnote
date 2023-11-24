@@ -57,7 +57,9 @@ impl Drawable for BitmapImage {
                 &self.image.data,
                 piet_image_format,
             )
-            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
+            .map_err(|e| {
+                anyhow::anyhow!("Make piet image in BitmapImage draw impl failed, Err: {e:?}")
+            })?;
         let dest_rect = self.rectangle.cuboid.local_aabb().to_kurbo_rect();
         cx.draw_image(&piet_image, dest_rect, piet::InterpolationMode::Bilinear);
         cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
@@ -147,12 +149,13 @@ impl BitmapImage {
                 )
                 .map_err(|e| {
                     anyhow::anyhow!(
-                        "create image surface while importing bitmapimage failed, {e:?}"
+                        "Creating image surface while importing bitmapimage failed, {e:?}"
                     )
                 })?;
 
                 {
-                    let cx = cairo::Context::new(&surface).context("new cairo::Context failed")?;
+                    let cx = cairo::Context::new(&surface)
+                        .context("Creating new cairo Context failed")?;
 
                     // Scale with the bitmap scalefactor pref
                     cx.scale(

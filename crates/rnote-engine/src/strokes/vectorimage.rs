@@ -140,10 +140,13 @@ impl VectorImage {
         pos: na::Vector2<f64>,
         size: Option<na::Vector2<f64>>,
     ) -> Result<Self, anyhow::Error> {
+        const COORDINATES_PREC: u8 = 3;
+        const TRANSFORMS_PREC: u8 = 4;
+
         let xml_options = usvg::XmlOptions {
             id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
-            coordinates_precision: 3,
-            transforms_precision: 4,
+            coordinates_precision: COORDINATES_PREC,
+            transforms_precision: TRANSFORMS_PREC,
             writer_opts: xmlwriter::Options {
                 use_single_quote: false,
                 indent: xmlwriter::Indent::None,
@@ -179,13 +182,13 @@ impl VectorImage {
     }
 
     pub fn from_pdf_bytes(
-        to_be_read: &[u8],
+        bytes: &[u8],
         pdf_import_prefs: PdfImportPrefs,
         insert_pos: na::Vector2<f64>,
         page_range: Option<Range<u32>>,
         format: &Format,
     ) -> Result<Vec<Self>, anyhow::Error> {
-        let doc = poppler::Document::from_bytes(&glib::Bytes::from(to_be_read), None)?;
+        let doc = poppler::Document::from_bytes(&glib::Bytes::from(bytes), None)?;
         let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
 
         let page_width = format.width() * (pdf_import_prefs.page_width_perc / 100.0);
@@ -215,7 +218,7 @@ impl VectorImage {
                     )
                     .map_err(|e| {
                         anyhow::anyhow!(
-                            "creating SvgSurface with dimensions ({}, {}) failed, Err: {e:?}",
+                            "Creating SvgSurface with dimensions ({}, {}) failed, Err: {e:?}",
                             intrinsic_size.0,
                             intrinsic_size.1
                         )
@@ -226,7 +229,7 @@ impl VectorImage {
 
                     {
                         let cx = cairo::Context::new(&svg_surface).map_err(|e| {
-                            anyhow::anyhow!("creating new cairo context failed, Err: {e:?}")
+                            anyhow::anyhow!("Creating new cairo context failed, Err: {e:?}")
                         })?;
 
                         // Set margin to white
@@ -260,11 +263,15 @@ impl VectorImage {
                     let svg_content = String::from_utf8(
                         *svg_surface
                             .finish_output_stream()
-                            .map_err(|e| anyhow::anyhow!("{e:?}"))?
+                            .map_err(|e| {
+                                anyhow::anyhow!(
+                                    "Failed to finish Pdf page surface output stream, Err: {e:?}"
+                                )
+                            })?
                             .downcast::<Vec<u8>>()
                             .map_err(|e| {
                                 anyhow::anyhow!(
-                                    "failed to downcast svg surface content, Err: {e:?}"
+                                    "Failed to downcast Pdf page surface content, Err: {e:?}"
                                 )
                             })?,
                     )?;
@@ -284,7 +291,7 @@ impl VectorImage {
                 match res() {
                     Ok(svg_data) => Some(render::Svg { svg_data, bounds }),
                     Err(e) => {
-                        log::error!("importing page {page_i} from pdf failed, Err: {e:?}");
+                        log::error!("Importing page {page_i} from pdf failed, Err: {e:?}");
                         None
                     }
                 }

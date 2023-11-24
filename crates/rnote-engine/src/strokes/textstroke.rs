@@ -131,7 +131,7 @@ impl TextAttribute {
         match self {
             TextAttribute::FontFamily(font_family) => piet_text.font_family(font_family.as_str()).map(
                 piet::TextAttribute::FontFamily)
-                    .ok_or_else(|| anyhow::anyhow!("piet font_family() failed in textattribute try_into_piet() with font family name: {}", font_family)),
+                    .ok_or_else(|| anyhow::anyhow!("query piet font family failed in TextAttribute try_into_piet() with font family name: {}", font_family)),
             TextAttribute::FontSize(font_size) => Ok(piet::TextAttribute::FontSize(font_size)),
             TextAttribute::FontWeight(font_weight) => Ok(piet::TextAttribute::Weight(piet::FontWeight::new(font_weight))),
             TextAttribute::TextColor(color) => Ok(piet::TextAttribute::TextColor(piet::Color::from(color))),
@@ -258,7 +258,7 @@ impl TextStyle {
 
         text_layout_builder
             .build()
-            .map_err(|e| anyhow::anyhow!("{e:?}"))
+            .map_err(|e| anyhow::anyhow!("Building piet text layout failed, Err: {e:?}"))
     }
 
     pub fn untransformed_size<T>(&self, piet_text: &mut T, text: String) -> Option<na::Vector2<f64>>
@@ -323,7 +323,7 @@ impl TextStyle {
     ) -> anyhow::Result<Vec<kurbo::Rect>> {
         let text_layout = self
             .build_text_layout(&mut piet_cairo::CairoText::new(), text)
-            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
+            .map_err(|e| anyhow::anyhow!("Building text layout failed, Err: {e:?}"))?;
 
         let range = if selection_cursor.cur_cursor() >= cursor.cur_cursor() {
             cursor.cur_cursor()..selection_cursor.cur_cursor()
@@ -543,7 +543,7 @@ impl TextStroke {
         let text_layout = self
             .text_style
             .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone())
-            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
+            .map_err(|e| anyhow::anyhow!("Building text layout failed, Err: {e:?}"))?;
         let hit_test_point = text_layout.hit_test_point(
             self.transform
                 .affine

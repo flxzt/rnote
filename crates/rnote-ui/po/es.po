@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-25 12:58+0100\n"
-"PO-Revision-Date: 2023-11-20 14:02+0000\n"
+"PO-Revision-Date: 2023-11-26 13:42+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.2\n"
+"X-Generator: Weblate 5.2.1-rc\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1789,18 +1789,14 @@ msgstr "Documento exportado con éxito"
 #: crates/rnote-ui/src/dialogs/export.rs:226
 #: crates/rnote-ui/src/dialogs/export.rs:530
 #: crates/rnote-ui/src/dialogs/export.rs:800
-#, fuzzy
-#| msgid "- no file name -"
 msgid "View in file manager"
-msgstr "- sin nombre de archivo -"
+msgstr "Ver en el gestor de archivos"
 
 #: crates/rnote-ui/src/dialogs/export.rs:245
 #: crates/rnote-ui/src/dialogs/export.rs:544
 #: crates/rnote-ui/src/dialogs/export.rs:820
-#, fuzzy
-#| msgid "Failed to open file, unsupported file type"
 msgid "Failed to open the file in the file manager"
-msgstr "No se pudo abrir el archivo, tipo de archivo no admitido"
+msgstr "Error al abrir el archivo en el gestor de archivos"
 
 #: crates/rnote-ui/src/dialogs/export.rs:255
 msgid "Exporting document failed, no file selected"

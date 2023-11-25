@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-19 13:37+0100\n"
-"PO-Revision-Date: 2023-11-17 14:06+0000\n"
+"PO-Revision-Date: 2023-11-25 11:56+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.2\n"
+"X-Generator: Weblate 5.2.1-rc\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -286,14 +286,13 @@ msgstr ""
 "নথির প্রকৃত আকার"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Page Order"
 msgid "Page Borders"
-msgstr "পৃষ্ঠার ক্রম"
+msgstr "পৃষ্ঠার সীমানা"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:162
+#, fuzzy
 msgid "Whether the pages have drawn borders"
-msgstr ""
+msgstr "পৃষ্ঠাগুলির সীমানা আঁকছে কিনা"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:196
 msgid "Import Xournal++ File"
@@ -1161,10 +1160,8 @@ msgstr "খসড়া"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
-#, fuzzy
-#| msgid "Reveal/Hide Sidebar"
 msgid "Show/Hide Sidebar"
-msgstr "সাইডবার প্রকাশ করুন/ লুকান"
+msgstr "সাইডবার দেখান/ লুকান"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
 msgid "New Tab"
@@ -1629,7 +1626,7 @@ msgstr "এই হিসাবে নথি সংরক্ষণ করুন"
 #: crates/rnote-ui/data/ui/shortcuts.ui:173
 #, fuzzy
 msgid "Snap Positions"
-msgstr "অবস্থানে _স্ন্যাপ করুন"
+msgstr "অবস্থানে স্ন্যাপ করুন"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Add Page (When in Fixed-Size Layout)"

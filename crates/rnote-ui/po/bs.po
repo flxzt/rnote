@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-19 13:37+0100\n"
+"POT-Creation-Date: 2023-11-25 12:58+0100\n"
 "PO-Revision-Date: 2022-11-28 19:41+0000\n"
 "Last-Translator: Mirza <mirza.arnaut45@gmail.com>\n"
 "Language-Team: Bosnian <https://hosted.weblate.org/projects/rnote/repo/bs/>\n"
@@ -199,9 +199,9 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: crates/rnote-ui/data/ui/dialogs/export.ui:284
-#: crates/rnote-ui/src/dialogs/export.rs:353
-#: crates/rnote-ui/src/dialogs/export.rs:390
-#: crates/rnote-ui/src/dialogs/export.rs:398
+#: crates/rnote-ui/src/dialogs/export.rs:374
+#: crates/rnote-ui/src/dialogs/export.rs:411
+#: crates/rnote-ui/src/dialogs/export.rs:419
 #: crates/rnote-ui/src/dialogs/mod.rs:523
 msgid "- no directory selected -"
 msgstr ""
@@ -323,7 +323,7 @@ msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
-#: crates/rnote-ui/src/dialogs/export.rs:247
+#: crates/rnote-ui/src/dialogs/export.rs:268
 #, fuzzy
 #| msgid "Export _document"
 msgid "Export Document"
@@ -332,8 +332,8 @@ msgstr "Izvoz dokumenta"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
 #: crates/rnote-ui/data/ui/dialogs/export.ui:180
 #: crates/rnote-ui/data/ui/dialogs/export.ui:416
-#: crates/rnote-ui/src/dialogs/export.rs:839
-#: crates/rnote-ui/src/dialogs/export.rs:886
+#: crates/rnote-ui/src/dialogs/export.rs:900
+#: crates/rnote-ui/src/dialogs/export.rs:947
 msgid "Export"
 msgstr ""
 
@@ -356,10 +356,10 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:140
 #: crates/rnote-ui/src/dialogs/export.rs:147
 #: crates/rnote-ui/src/dialogs/export.rs:192
-#: crates/rnote-ui/src/dialogs/export.rs:638
-#: crates/rnote-ui/src/dialogs/export.rs:664
-#: crates/rnote-ui/src/dialogs/export.rs:671
-#: crates/rnote-ui/src/dialogs/export.rs:722
+#: crates/rnote-ui/src/dialogs/export.rs:675
+#: crates/rnote-ui/src/dialogs/export.rs:701
+#: crates/rnote-ui/src/dialogs/export.rs:708
+#: crates/rnote-ui/src/dialogs/export.rs:759
 msgid "- no file selected -"
 msgstr ""
 
@@ -421,19 +421,19 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:340
 #: crates/rnote-ui/data/ui/dialogs/export.ui:534
-#: crates/rnote-ui/src/dialogs/export.rs:257
-#: crates/rnote-ui/src/dialogs/export.rs:553
-#: crates/rnote-ui/src/dialogs/export.rs:798
+#: crates/rnote-ui/src/dialogs/export.rs:278
+#: crates/rnote-ui/src/dialogs/export.rs:590
+#: crates/rnote-ui/src/dialogs/export.rs:859
 msgid "Svg"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:134
-#: crates/rnote-ui/src/dialogs/export.rs:262
+#: crates/rnote-ui/src/dialogs/export.rs:283
 msgid "Pdf"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
-#: crates/rnote-ui/src/dialogs/export.rs:267
+#: crates/rnote-ui/src/dialogs/export.rs:288
 msgid "Xopp"
 msgstr ""
 
@@ -461,7 +461,7 @@ msgid "Vertical First"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:172
-#: crates/rnote-ui/src/dialogs/export.rs:530
+#: crates/rnote-ui/src/dialogs/export.rs:567
 #, fuzzy
 #| msgid "Export document _pages"
 msgid "Export Document Pages"
@@ -489,15 +489,15 @@ msgstr "Izvod stanja pogona"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:535
-#: crates/rnote-ui/src/dialogs/export.rs:558
-#: crates/rnote-ui/src/dialogs/export.rs:803
+#: crates/rnote-ui/src/dialogs/export.rs:595
+#: crates/rnote-ui/src/dialogs/export.rs:864
 msgid "Png"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:342
 #: crates/rnote-ui/data/ui/dialogs/export.ui:536
-#: crates/rnote-ui/src/dialogs/export.rs:564
-#: crates/rnote-ui/src/dialogs/export.rs:809
+#: crates/rnote-ui/src/dialogs/export.rs:601
+#: crates/rnote-ui/src/dialogs/export.rs:870
 msgid "Jpeg"
 msgstr ""
 
@@ -512,7 +512,7 @@ msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:408
-#: crates/rnote-ui/src/dialogs/export.rs:784
+#: crates/rnote-ui/src/dialogs/export.rs:845
 #, fuzzy
 #| msgid "Export _selection"
 msgid "Export Selection"
@@ -1862,6 +1862,14 @@ msgid "Saved document successfully"
 msgstr "Izvoz dokumenta"
 
 #: crates/rnote-ui/src/dialogs/export.rs:224
+#: crates/rnote-ui/src/dialogs/export.rs:229
+#: crates/rnote-ui/src/dialogs/export.rs:234
+#: crates/rnote-ui/src/dialogs/export.rs:239
+#: crates/rnote-ui/src/dialogs/export.rs:533
+#: crates/rnote-ui/src/dialogs/export.rs:538
+#: crates/rnote-ui/src/dialogs/export.rs:804
+#: crates/rnote-ui/src/dialogs/export.rs:809
+#: crates/rnote-ui/src/dialogs/export.rs:814
 #, fuzzy
 #| msgid "Export document _pages"
 msgid "Exporting document failed"
@@ -1873,91 +1881,103 @@ msgstr "Izvoz stranica dokumenta"
 msgid "Exported document successfully"
 msgstr "Izvoz stranica dokumenta"
 
-#: crates/rnote-ui/src/dialogs/export.rs:234
+#: crates/rnote-ui/src/dialogs/export.rs:226
+#: crates/rnote-ui/src/dialogs/export.rs:530
+#: crates/rnote-ui/src/dialogs/export.rs:800
+msgid "View in file manager"
+msgstr ""
+
+#: crates/rnote-ui/src/dialogs/export.rs:245
+#: crates/rnote-ui/src/dialogs/export.rs:544
+#: crates/rnote-ui/src/dialogs/export.rs:820
+msgid "Failed to open the file in the file manager"
+msgstr ""
+
+#: crates/rnote-ui/src/dialogs/export.rs:255
 #, fuzzy
 #| msgid "Export document _pages"
 msgid "Exporting document failed, no file selected"
 msgstr "Izvoz stranica dokumenta"
 
-#: crates/rnote-ui/src/dialogs/export.rs:249
-#: crates/rnote-ui/src/dialogs/export.rs:532
-#: crates/rnote-ui/src/dialogs/export.rs:786
+#: crates/rnote-ui/src/dialogs/export.rs:270
+#: crates/rnote-ui/src/dialogs/export.rs:569
+#: crates/rnote-ui/src/dialogs/export.rs:847
 #: crates/rnote-ui/src/dialogs/mod.rs:505
 msgid "Select"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:507
+#: crates/rnote-ui/src/dialogs/export.rs:528
 #, fuzzy
 #| msgid "Export document _pages"
 msgid "Exporting document pages failed"
 msgstr "Izvoz stranica dokumenta"
 
-#: crates/rnote-ui/src/dialogs/export.rs:509
+#: crates/rnote-ui/src/dialogs/export.rs:530
 #, fuzzy
 #| msgid "Export document _pages"
 msgid "Exported document pages successfully"
 msgstr "Izvoz stranica dokumenta"
 
-#: crates/rnote-ui/src/dialogs/export.rs:516
+#: crates/rnote-ui/src/dialogs/export.rs:553
 #, fuzzy
 #| msgid "Export document _pages"
 msgid "Exporting document pages failed, no directory selected"
 msgstr "Izvoz stranica dokumenta"
 
-#: crates/rnote-ui/src/dialogs/export.rs:759
+#: crates/rnote-ui/src/dialogs/export.rs:796
 #, fuzzy
 #| msgid "Export _selection"
 msgid "Exporting selection failed"
 msgstr "Izvoz izbora"
 
-#: crates/rnote-ui/src/dialogs/export.rs:762
+#: crates/rnote-ui/src/dialogs/export.rs:799
 #, fuzzy
 #| msgid "Export _selection"
 msgid "Exported selection successfully"
 msgstr "Izvoz izbora"
 
-#: crates/rnote-ui/src/dialogs/export.rs:771
+#: crates/rnote-ui/src/dialogs/export.rs:832
 #, fuzzy
 #| msgid "Export _selection"
 msgid "Exporting selection failed, no file selected"
 msgstr "Izvoz izbora"
 
-#: crates/rnote-ui/src/dialogs/export.rs:829
-#: crates/rnote-ui/src/dialogs/export.rs:876
+#: crates/rnote-ui/src/dialogs/export.rs:890
+#: crates/rnote-ui/src/dialogs/export.rs:937
 msgid "Json"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:837
+#: crates/rnote-ui/src/dialogs/export.rs:898
 #, fuzzy
 #| msgid "Export engine _state"
 msgid "Export Engine State"
 msgstr "Izvod stanja pogona"
 
-#: crates/rnote-ui/src/dialogs/export.rs:856
+#: crates/rnote-ui/src/dialogs/export.rs:917
 #, fuzzy
 #| msgid "Export engine _state"
 msgid "Exporting engine state failed"
 msgstr "Izvod stanja pogona"
 
-#: crates/rnote-ui/src/dialogs/export.rs:859
+#: crates/rnote-ui/src/dialogs/export.rs:920
 #, fuzzy
 #| msgid "Export engine _state"
 msgid "Exported engine state successfully"
 msgstr "Izvod stanja pogona"
 
-#: crates/rnote-ui/src/dialogs/export.rs:884
+#: crates/rnote-ui/src/dialogs/export.rs:945
 #, fuzzy
 #| msgid "Export engine _config"
 msgid "Export Engine Config"
 msgstr "Izvod konfiguracije pogona"
 
-#: crates/rnote-ui/src/dialogs/export.rs:903
+#: crates/rnote-ui/src/dialogs/export.rs:964
 #, fuzzy
 #| msgid "Export engine _config"
 msgid "Exporting engine config failed"
 msgstr "Izvod konfiguracije pogona"
 
-#: crates/rnote-ui/src/dialogs/export.rs:906
+#: crates/rnote-ui/src/dialogs/export.rs:967
 #, fuzzy
 #| msgid "Export engine _config"
 msgid "Exported engine config successfully"

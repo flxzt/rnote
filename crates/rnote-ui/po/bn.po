@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-19 13:37+0100\n"
+"POT-Creation-Date: 2023-11-25 12:58+0100\n"
 "PO-Revision-Date: 2023-11-25 11:56+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -192,9 +192,9 @@ msgstr "কর্মক্ষেত্রের ডিরেক্টরিট�
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: crates/rnote-ui/data/ui/dialogs/export.ui:284
-#: crates/rnote-ui/src/dialogs/export.rs:353
-#: crates/rnote-ui/src/dialogs/export.rs:390
-#: crates/rnote-ui/src/dialogs/export.rs:398
+#: crates/rnote-ui/src/dialogs/export.rs:374
+#: crates/rnote-ui/src/dialogs/export.rs:411
+#: crates/rnote-ui/src/dialogs/export.rs:419
 #: crates/rnote-ui/src/dialogs/mod.rs:523
 msgid "- no directory selected -"
 msgstr "- কোনও ডিরেক্টরি নির্বাচিত হয়নি -"
@@ -311,15 +311,15 @@ msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Xournal++ ফাইলের জন্য পছন্দের DPI সেট করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
-#: crates/rnote-ui/src/dialogs/export.rs:247
+#: crates/rnote-ui/src/dialogs/export.rs:268
 msgid "Export Document"
 msgstr "নথি রপ্তানি করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
 #: crates/rnote-ui/data/ui/dialogs/export.ui:180
 #: crates/rnote-ui/data/ui/dialogs/export.ui:416
-#: crates/rnote-ui/src/dialogs/export.rs:839
-#: crates/rnote-ui/src/dialogs/export.rs:886
+#: crates/rnote-ui/src/dialogs/export.rs:900
+#: crates/rnote-ui/src/dialogs/export.rs:947
 msgid "Export"
 msgstr "রপ্তানি"
 
@@ -340,10 +340,10 @@ msgstr "রপ্তানি ফাইল নির্বাচন করুন
 #: crates/rnote-ui/src/dialogs/export.rs:140
 #: crates/rnote-ui/src/dialogs/export.rs:147
 #: crates/rnote-ui/src/dialogs/export.rs:192
-#: crates/rnote-ui/src/dialogs/export.rs:638
-#: crates/rnote-ui/src/dialogs/export.rs:664
-#: crates/rnote-ui/src/dialogs/export.rs:671
-#: crates/rnote-ui/src/dialogs/export.rs:722
+#: crates/rnote-ui/src/dialogs/export.rs:675
+#: crates/rnote-ui/src/dialogs/export.rs:701
+#: crates/rnote-ui/src/dialogs/export.rs:708
+#: crates/rnote-ui/src/dialogs/export.rs:759
 msgid "- no file selected -"
 msgstr "- কোনও ফাইল নির্বাচিত হয়নি -"
 
@@ -403,19 +403,19 @@ msgstr "রপ্তানি বিন্যাস"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:340
 #: crates/rnote-ui/data/ui/dialogs/export.ui:534
-#: crates/rnote-ui/src/dialogs/export.rs:257
-#: crates/rnote-ui/src/dialogs/export.rs:553
-#: crates/rnote-ui/src/dialogs/export.rs:798
+#: crates/rnote-ui/src/dialogs/export.rs:278
+#: crates/rnote-ui/src/dialogs/export.rs:590
+#: crates/rnote-ui/src/dialogs/export.rs:859
 msgid "Svg"
 msgstr "এসভিজি"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:134
-#: crates/rnote-ui/src/dialogs/export.rs:262
+#: crates/rnote-ui/src/dialogs/export.rs:283
 msgid "Pdf"
 msgstr "পিডিএফ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
-#: crates/rnote-ui/src/dialogs/export.rs:267
+#: crates/rnote-ui/src/dialogs/export.rs:288
 msgid "Xopp"
 msgstr "Xopp"
 
@@ -446,7 +446,7 @@ msgid "Vertical First"
 msgstr "উল্লম্ব প্রথম"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:172
-#: crates/rnote-ui/src/dialogs/export.rs:530
+#: crates/rnote-ui/src/dialogs/export.rs:567
 msgid "Export Document Pages"
 msgstr "নথির পৃষ্ঠা রপ্তানী করুন"
 
@@ -468,15 +468,15 @@ msgstr "ফাইল স্টেমের নাম রপ্তানি ক�
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:535
-#: crates/rnote-ui/src/dialogs/export.rs:558
-#: crates/rnote-ui/src/dialogs/export.rs:803
+#: crates/rnote-ui/src/dialogs/export.rs:595
+#: crates/rnote-ui/src/dialogs/export.rs:864
 msgid "Png"
 msgstr "পিএনজি"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:342
 #: crates/rnote-ui/data/ui/dialogs/export.ui:536
-#: crates/rnote-ui/src/dialogs/export.rs:564
-#: crates/rnote-ui/src/dialogs/export.rs:809
+#: crates/rnote-ui/src/dialogs/export.rs:601
+#: crates/rnote-ui/src/dialogs/export.rs:870
 msgid "Jpeg"
 msgstr "জেপিজি/জেপেগ"
 
@@ -491,7 +491,7 @@ msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "জেপেগ চিত্রের গুণমান সেট করুন (১ - ১০০)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:408
-#: crates/rnote-ui/src/dialogs/export.rs:784
+#: crates/rnote-ui/src/dialogs/export.rs:845
 msgid "Export Selection"
 msgstr "নির্বাচন রপ্তানি করুন"
 
@@ -1769,6 +1769,14 @@ msgid "Saved document successfully"
 msgstr "সফলভাবে নথি সংরক্ষণ করা হয়েছে"
 
 #: crates/rnote-ui/src/dialogs/export.rs:224
+#: crates/rnote-ui/src/dialogs/export.rs:229
+#: crates/rnote-ui/src/dialogs/export.rs:234
+#: crates/rnote-ui/src/dialogs/export.rs:239
+#: crates/rnote-ui/src/dialogs/export.rs:533
+#: crates/rnote-ui/src/dialogs/export.rs:538
+#: crates/rnote-ui/src/dialogs/export.rs:804
+#: crates/rnote-ui/src/dialogs/export.rs:809
+#: crates/rnote-ui/src/dialogs/export.rs:814
 msgid "Exporting document failed"
 msgstr "নথি রপ্তানি করতে ব্যর্থ হয়েছে"
 
@@ -1776,67 +1784,83 @@ msgstr "নথি রপ্তানি করতে ব্যর্থ হয়�
 msgid "Exported document successfully"
 msgstr "সফলভাবে নথি রপ্তানি করা হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:234
+#: crates/rnote-ui/src/dialogs/export.rs:226
+#: crates/rnote-ui/src/dialogs/export.rs:530
+#: crates/rnote-ui/src/dialogs/export.rs:800
+#, fuzzy
+#| msgid "- no file name -"
+msgid "View in file manager"
+msgstr "- কোন ফাইলের নাম নেই -"
+
+#: crates/rnote-ui/src/dialogs/export.rs:245
+#: crates/rnote-ui/src/dialogs/export.rs:544
+#: crates/rnote-ui/src/dialogs/export.rs:820
+#, fuzzy
+#| msgid "Failed to open file, unsupported file type"
+msgid "Failed to open the file in the file manager"
+msgstr "ফাইল খুলতে ব্যর্থ, অসমর্থিত ফাইল প্রকার"
+
+#: crates/rnote-ui/src/dialogs/export.rs:255
 msgid "Exporting document failed, no file selected"
 msgstr "নথি রপ্তানি ব্যর্থ হয়েছে, কোন ফাইল নির্বাচিত নেই"
 
-#: crates/rnote-ui/src/dialogs/export.rs:249
-#: crates/rnote-ui/src/dialogs/export.rs:532
-#: crates/rnote-ui/src/dialogs/export.rs:786
+#: crates/rnote-ui/src/dialogs/export.rs:270
+#: crates/rnote-ui/src/dialogs/export.rs:569
+#: crates/rnote-ui/src/dialogs/export.rs:847
 #: crates/rnote-ui/src/dialogs/mod.rs:505
 msgid "Select"
 msgstr "নির্বাচন করুন"
 
-#: crates/rnote-ui/src/dialogs/export.rs:507
+#: crates/rnote-ui/src/dialogs/export.rs:528
 msgid "Exporting document pages failed"
 msgstr "নথিপত্র রপ্তানি ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:509
+#: crates/rnote-ui/src/dialogs/export.rs:530
 msgid "Exported document pages successfully"
 msgstr "সফলভাবে নথিপত্র রপ্তানি করা হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:516
+#: crates/rnote-ui/src/dialogs/export.rs:553
 msgid "Exporting document pages failed, no directory selected"
 msgstr "নথিপত্র রপ্তানি ব্যর্থ হয়েছে, কোন ডিরেক্টরি নির্বাচিত নেই"
 
-#: crates/rnote-ui/src/dialogs/export.rs:759
+#: crates/rnote-ui/src/dialogs/export.rs:796
 msgid "Exporting selection failed"
 msgstr "নির্বাচন রপ্তানি ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:762
+#: crates/rnote-ui/src/dialogs/export.rs:799
 msgid "Exported selection successfully"
 msgstr "নির্বাচন সফলভাবে রপ্তানি করা হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:771
+#: crates/rnote-ui/src/dialogs/export.rs:832
 msgid "Exporting selection failed, no file selected"
 msgstr "নির্বাচন রপ্তানি ব্যর্থ হয়েছে, কোন ফাইল নির্বাচিত নেই"
 
-#: crates/rnote-ui/src/dialogs/export.rs:829
-#: crates/rnote-ui/src/dialogs/export.rs:876
+#: crates/rnote-ui/src/dialogs/export.rs:890
+#: crates/rnote-ui/src/dialogs/export.rs:937
 msgid "Json"
 msgstr "Json"
 
-#: crates/rnote-ui/src/dialogs/export.rs:837
+#: crates/rnote-ui/src/dialogs/export.rs:898
 msgid "Export Engine State"
 msgstr "ইঞ্জিনের অবস্থা রপ্তানী করুন"
 
-#: crates/rnote-ui/src/dialogs/export.rs:856
+#: crates/rnote-ui/src/dialogs/export.rs:917
 msgid "Exporting engine state failed"
 msgstr "ইঞ্জিনের অবস্থা রপ্তানি ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:859
+#: crates/rnote-ui/src/dialogs/export.rs:920
 msgid "Exported engine state successfully"
 msgstr "ইঞ্জিনের অবস্থা সফলভাবে রপ্তানি করা হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:884
+#: crates/rnote-ui/src/dialogs/export.rs:945
 msgid "Export Engine Config"
 msgstr "ইঞ্জিন কনফিগ রপ্তানী করুন"
 
-#: crates/rnote-ui/src/dialogs/export.rs:903
+#: crates/rnote-ui/src/dialogs/export.rs:964
 msgid "Exporting engine config failed"
 msgstr "ইঞ্জিন কনফিগ রপ্তানী ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:906
+#: crates/rnote-ui/src/dialogs/export.rs:967
 msgid "Exported engine config successfully"
 msgstr "ইঞ্জিন কনফিগ সফলভাবে রপ্তানি করা হয়েছে"
 
@@ -2315,9 +2339,6 @@ msgstr "নতুন ফোল্ডার"
 
 #~ msgid "Failed to open file, tried to open folder as file"
 #~ msgstr "ফাইল খুলতে ব্যর্থ হয়েছে, ফাইল হিসাবে ফোল্ডার খোলার চেষ্টা করা হয়েছে"
-
-#~ msgid "Failed to open file, unsupported file type"
-#~ msgstr "ফাইল খুলতে ব্যর্থ, অসমর্থিত ফাইল প্রকার"
 
 #, fuzzy
 #~ msgid "The changes will be saved."

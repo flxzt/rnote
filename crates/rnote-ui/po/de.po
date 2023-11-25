@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-25 12:58+0100\n"
-"PO-Revision-Date: 2023-11-24 10:26+0000\n"
+"PO-Revision-Date: 2023-11-25 12:01+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1690,7 +1690,7 @@ msgstr "Neuen Ordner erstellen"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:555
 msgid "Opening file failed"
-msgstr "Dateiöffnung gescheitert"
+msgstr "Datei öffnen gescheitert"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:250
 #: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
@@ -1790,18 +1790,14 @@ msgstr "Dokument erfolgreich exportiert"
 #: crates/rnote-ui/src/dialogs/export.rs:226
 #: crates/rnote-ui/src/dialogs/export.rs:530
 #: crates/rnote-ui/src/dialogs/export.rs:800
-#, fuzzy
-#| msgid "- no file name -"
 msgid "View in file manager"
-msgstr "- kein Dateiname -"
+msgstr "Zeige in Dateimanager"
 
 #: crates/rnote-ui/src/dialogs/export.rs:245
 #: crates/rnote-ui/src/dialogs/export.rs:544
 #: crates/rnote-ui/src/dialogs/export.rs:820
-#, fuzzy
-#| msgid "Failed to open file, unsupported file type"
 msgid "Failed to open the file in the file manager"
-msgstr "Dateiöffnung gescheitert, Dateityp nicht unterstützt"
+msgstr "Datei im Dateimanager öffnen gescheitert"
 
 #: crates/rnote-ui/src/dialogs/export.rs:255
 msgid "Exporting document failed, no file selected"

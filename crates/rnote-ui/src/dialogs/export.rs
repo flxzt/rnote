@@ -224,10 +224,25 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
                                 appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
                             } else {
                                 appwindow.overlays().dispatch_toast_w_button_singleton(&gettext("Exported document successfully"), &gettext("View in file manager"), clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
-                                    let folder_path = file.parent().expect("the file should always have a parent directory").path().unwrap();
-                                    if let Err(e) = open::that(folder_path.to_str().unwrap()) {
+                                    let Some(folder_file) = file.parent() else {
+                                        log::error!("failed to get the parent folder of the output file");
+                                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
+                                        return;
+                                    };
+                                    let Some(folder_path) = folder_file.path() else {
+                                        log::error!("failed to get the path of the parent folder");
+                                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
+                                        return;
+                                    };
+                                    let Some(folder_path_str) = folder_path.to_str() else {
+                                        log::error!("failed to convert the path to a string");
+                                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
+                                        return;
+                                    };
+
+                                    if let Err(e) = open::that(folder_path_str) {
+                                        log::error!("opening the parent folder '{}' in the file manager failed: {e:?}", folder_path_str);
                                         appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the file in the file manager"));
-                                        log::debug!("opening the parent folder in the file manager failed: {e:?}",);
                                     }
                                 }), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT, &mut None);
                             }
@@ -512,12 +527,21 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
                                 log::error!("exporting document pages failed, Error: `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed"));
                             } else {
-appwindow.overlays().dispatch_toast_w_button_singleton(&gettext("Exported document pages successfully"), &gettext("View in file manager"), clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
-                                    let dir_path = dir.path().unwrap(); // Have to use a let binding because of 'temporary value freed'
-                                    let folder_path = dir_path.to_str().unwrap();
-                                    if let Err(e) = open::that(folder_path) {
-                                        appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the folder in the file manager"));
-                                        log::debug!("opening the folder in the file manager failed: {e:?}",);
+                                appwindow.overlays().dispatch_toast_w_button_singleton(&gettext("Exported document pages successfully"), &gettext("View in file manager"), clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
+                                    let Some(folder_path) = dir.path() else {
+                                        log::error!("failed to get the path of the parent folder");
+                                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
+                                        return;
+                                    };
+                                    let Some(folder_path_str) = folder_path.to_str() else {
+                                        log::error!("failed to convert the path to a string");
+                                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
+                                        return;
+                                    };
+
+                                    if let Err(e) = open::that(folder_path_str) {
+                                        log::error!("opening the parent folder '{}' in the file manager failed: {e:?}", folder_path_str);
+                                        appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the file in the file manager"));
                                     }
                                 }), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT, &mut None);
                             }
@@ -775,11 +799,26 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
                         &gettext("Exported selection successfully"),
                         &gettext("View in file manager"),
                         clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
-                            let folder_path = file.parent().expect("the file should always have a parent directory").path().unwrap();
-                            if let Err(e) = open::that(folder_path.to_str().unwrap()) {
-                                appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the file in the file manager"));
-                                log::debug!("opening the parent folder in the file manager failed: {e:?}",);
-                            }
+                                    let Some(folder_file) = file.parent() else {
+                                        log::error!("failed to get the parent folder of the output file");
+                                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
+                                        return;
+                                    };
+                                    let Some(folder_path) = folder_file.path() else {
+                                        log::error!("failed to get the path of the parent folder");
+                                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
+                                        return;
+                                    };
+                                    let Some(folder_path_str) = folder_path.to_str() else {
+                                        log::error!("failed to convert the path to a string");
+                                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
+                                        return;
+                                    };
+
+                                    if let Err(e) = open::that(folder_path_str) {
+                                        log::error!("opening the parent folder '{}' in the file manager failed: {e:?}", folder_path_str);
+                                        appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the file in the file manager"));
+                                    }
                         }),
                         crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
                         &mut None,

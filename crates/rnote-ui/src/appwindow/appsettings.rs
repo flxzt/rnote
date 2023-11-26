@@ -1,16 +1,18 @@
 // Imports
 use crate::appwindow::RnAppWindow;
-use adw::prelude::*;
+use adw::{prelude::*, subclass::prelude::*};
 use gtk4::{gdk, glib, glib::clone};
 
 impl RnAppWindow {
     /// Setup settings binds.
-    pub(crate) fn setup_settings_binds(&self) {
+    pub(crate) fn setup_settings_binds(&self) -> anyhow::Result<()> {
         let app = self.app();
-        let app_settings = app.app_settings();
+        let app_settings = app
+            .app_settings()
+            .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
 
         app.style_manager().connect_color_scheme_notify(
-            clone!(@weak app, @weak self as appwindow => move |style_manager| {
+            clone!(@weak app_settings, @weak app, @weak self as appwindow => move |style_manager| {
                 let color_scheme = match style_manager.color_scheme() {
                     adw::ColorScheme::Default => String::from("default"),
                     adw::ColorScheme::ForceLight => String::from("force-light"),
@@ -18,7 +20,7 @@ impl RnAppWindow {
                     _ => String::from("default"),
                 };
 
-                if let Err(e) = app.app_settings()
+                if let Err(e) = app_settings
                     .set_string("color-scheme", &color_scheme) {
                         log::error!("failed to set setting `color-scheme`, Err: {e:?}");
                     }
@@ -374,14 +376,18 @@ impl RnAppWindow {
             )
             .get_no_changes()
             .build();
+
+        Ok(())
     }
 
     /// Load settings that are not bound as binds.
     ///
     /// Settings changes through gsettings / dconf might not be applied until the app restarts.
-    pub(crate) fn load_settings(&self) {
+    pub(crate) fn load_settings(&self) -> anyhow::Result<()> {
         let app = self.app();
-        let app_settings = app.app_settings();
+        let app_settings = app
+            .app_settings()
+            .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
 
         // appwindow
         {
@@ -411,12 +417,16 @@ impl RnAppWindow {
                 .workspacesbar()
                 .load_from_settings(&app_settings);
         }
+
+        Ok(())
     }
 
     /// Save settings that are not bound as binds.
     pub(crate) fn save_to_settings(&self) -> anyhow::Result<()> {
         let app = self.app();
-        let app_settings = app.app_settings();
+        let app_settings = app
+            .app_settings()
+            .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
 
         {
             // Appwindow
@@ -426,10 +436,39 @@ impl RnAppWindow {
         }
 
         {
-            // Save engine config of the last active tab
+            // Save engine config of the current active tab
             self.active_tab_wrapper()
                 .canvas()
                 .save_engine_config(&app_settings)?;
+        }
+
+        {
+            // Workspaces list
+            self.sidebar()
+                .workspacebrowser()
+                .workspacesbar()
+                .save_to_settings(&app_settings);
+        }
+
+        Ok(())
+    }
+
+    pub(crate) fn setup_periodic_save(&self) -> anyhow::Result<()> {
+        let app = self.app();
+        let app_settings = app
+            .app_settings()
+            .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
+
+        if let Some(removed_id) = self.imp().periodic_configsave_source_id.borrow_mut().replace(
+            glib::source::timeout_add_seconds_local(
+                Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak app_settings, @weak self as appwindow => @default-return glib::ControlFlow::Break, move || {
+                    if let Err(e) = appwindow.active_tab_wrapper().canvas().save_engine_config(&app_settings) {
+                        log::error!("saving engine config in periodic save task failed , Err: {e:?}");
+                    }
+
+                    glib::ControlFlow::Continue
+        }))) {
+            removed_id.remove();
         }
 
         Ok(())

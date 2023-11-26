@@ -216,7 +216,6 @@ app_cargo_build = custom_target(
     console: true,
     install: true,
     install_dir: bindir,
-    depends: gresources,
     command: [
         cargo_build_script,
         meson.project_build_root(),

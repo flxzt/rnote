@@ -1,37 +1,3 @@
-# Resources
-message('Configuring and compiling gresource file')
-
-resource_conf = configuration_data()
-resource_conf.set('APP_IDPATH', app_idpath)
-resource_conf.set('APP_NAME', app_name)
-configure_file(
-    input: 'resources.gresource.xml.in',
-    output: 'resources.gresource.xml',
-    configuration: resource_conf,
-)
-gresources = gnome.compile_resources(
-    'resources',
-    meson.current_build_dir() + '/' + 'resources.gresource.xml',
-    gresource_bundle: true,
-    source_dir: meson.current_build_dir(),
-    install: true,
-    install_dir: pkgdatadir,
-)
-
-# # D-Bus service file
-# message('Configuring D-Bus service file')
-#
-# dbus_conf = configuration_data()
-# dbus_conf.set('APP_ID', app_id)
-# dbus_conf.set('APP_NAME', app_name)
-# configure_file(
-#   input: 'app.service.in',
-#   output: app_id + '.service',
-#   configuration: dbus_conf,
-#   install: true,
-#   install_dir: datadir / 'dbus-1' / 'services',
-# )
-
 # Desktop file
 message('Configuring desktop file')
 
@@ -169,3 +135,17 @@ configure_file(
     install: true,
     install_dir: datadir / 'mime' / 'packages',
 )
+
+# # D-Bus service file
+# message('Configuring D-Bus service file')
+#
+# dbus_conf = configuration_data()
+# dbus_conf.set('APP_ID', app_id)
+# dbus_conf.set('APP_NAME', app_name)
+# configure_file(
+#   input: 'app.service.in',
+#   output: app_id + '.service',
+#   configuration: dbus_conf,
+#   install: true,
+#   install_dir: datadir / 'dbus-1' / 'services',
+# )

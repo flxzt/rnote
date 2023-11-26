@@ -22,7 +22,8 @@ use std::path::Path;
 glib::wrapper! {
     pub(crate) struct RnAppWindow(ObjectSubclass<imp::RnAppWindow>)
         @extends gtk4::Widget, gtk4::Window, adw::Window, gtk4::ApplicationWindow, adw::ApplicationWindow,
-        @implements gio::ActionMap, gio::ActionGroup;
+        @implements gio::ActionGroup, gio::ActionMap, gtk4::Accessible, gtk4::Buildable,
+                    gtk4::ConstraintTarget, gtk4::Native, gtk4::Root, gtk4::ShortcutManager;
 }
 
 impl RnAppWindow {
@@ -119,7 +120,8 @@ impl RnAppWindow {
         self.add_initial_tab();
 
         // add icon theme resource path because automatic lookup does not work in the devel build.
-        let app_icon_theme = IconTheme::for_display(&self.display());
+        let app_icon_theme =
+            IconTheme::for_display(&<Self as gtk4::prelude::WidgetExt>::display(self));
         app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
 
         // actions and settings AFTER widget inits

@@ -356,6 +356,7 @@ rnote_ui_gresources_ui_files = files(
     'ui/sidebar.ui',
     'ui/strokecontentpreview.ui',
     'ui/strokewidthpicker.ui',
+    'ui/style.css',
     'ui/unitentry.ui',
     'ui/workspacebrowser.ui',
 )

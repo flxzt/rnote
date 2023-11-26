@@ -21,14 +21,20 @@ mod imp {
 
     #[derive(Debug)]
     pub(crate) struct RnApp {
-        pub(crate) app_settings: gio::Settings,
+        pub(crate) app_settings: Option<gio::Settings>,
     }
 
     impl Default for RnApp {
         fn default() -> Self {
-            Self {
-                app_settings: gio::Settings::new(config::APP_ID),
-            }
+            let app_settings = gio::SettingsSchemaSource::default().and_then(|schema_source| {
+                Some(gio::Settings::new_full(
+                    &schema_source.lookup(config::APP_ID, true)?,
+                    None::<&gio::SettingsBackend>,
+                    None,
+                ))
+            });
+
+            Self { app_settings }
         }
     }
 
@@ -159,7 +165,14 @@ impl RnApp {
             .build()
     }
 
-    pub(crate) fn app_settings(&self) -> gio::Settings {
+    /// Returns the app settings, if the schema is found in the compiled gschema. If not, returns None.
+    ///
+    /// Callers that query the settings should implement good default fallback accordingly
+    pub(crate) fn app_settings(&self) -> Option<gio::Settings> {
         self.imp().app_settings.clone()
+    }
+
+    pub(crate) fn settings_schema_found(&self) -> bool {
+        self.app_settings().is_some()
     }
 }

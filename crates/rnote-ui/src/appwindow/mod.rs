@@ -123,7 +123,7 @@ impl RnAppWindow {
         if !self.app().settings_schema_found() {
             // Display an error toast if settings schema could not be found
             self.overlays().dispatch_toast_error(&gettext(
-                "Settings schema not installed. Using app defaults.",
+                "Settings schema is not installed. App settings are not loaded and won't be saved.",
             ));
         } else {
             if let Err(e) = self.setup_settings_binds() {

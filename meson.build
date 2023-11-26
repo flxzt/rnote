@@ -150,13 +150,14 @@ app_sources = [
     rnote_compose_sources,
     rnote_engine_sources,
     rnote_ui_sources,
+    rnote_ui_gresources_files,
     files(
-        meson.project_source_root() + '/Cargo.toml',
-        meson.project_source_root() + '/Cargo.lock',
         meson.project_source_root() + '/crates/rnote-compose/Cargo.toml',
         meson.project_source_root() + '/crates/rnote-engine/Cargo.toml',
         meson.project_source_root() + '/crates/rnote-ui/Cargo.toml',
         meson.project_source_root() + '/crates/rnote-ui/build.rs',
+        meson.project_source_root() + '/Cargo.lock',
+        meson.project_source_root() + '/Cargo.toml',
     ),
 ]
 
@@ -252,11 +253,11 @@ if build_cli == true
         rnote_engine_sources,
         rnote_cli_sources,
         files(
-            meson.project_source_root() + '/Cargo.toml',
-            meson.project_source_root() + '/Cargo.lock',
             meson.project_source_root() + '/crates/rnote-compose/Cargo.toml',
             meson.project_source_root() + '/crates/rnote-engine/Cargo.toml',
             meson.project_source_root() + '/crates/rnote-cli/Cargo.toml',
+            meson.project_source_root() + '/Cargo.lock',
+            meson.project_source_root() + '/Cargo.toml',
         ),
     ]
 

@@ -297,8 +297,6 @@ impl RnWorkspacesBar {
             clone!(@weak self as workspacesbar, @weak appwindow => move |list, _, _, _| {
                 workspacesbar.imp().remove_selected_workspace_button.get().set_sensitive(list.n_items() > 1);
                 workspacesbar.imp().edit_selected_workspace_button.get().set_sensitive(list.n_items() > 0);
-
-                workspacesbar.save_to_settings(&appwindow.app().app_settings());
             }),
         );
 
@@ -311,8 +309,6 @@ impl RnWorkspacesBar {
                     appwindow.sidebar().workspacebrowser().active_workspace_name_label().set_label(&name);
                     appwindow.sidebar().workspacebrowser().active_workspace_dir_label().set_label(&dir);
                     appwindow.sidebar().workspacebrowser().set_dirlist_file(Some(&gio::File::for_path(dir)));
-
-                    workspacesbar.save_to_settings(&appwindow.app().app_settings());
                 }
 
             }),

@@ -290,7 +290,8 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct StrokeContentPaintable(ObjectSubclass<imp::StrokeContentPaintable>) @implements gdk::Paintable;
+    pub(crate) struct StrokeContentPaintable(ObjectSubclass<imp::StrokeContentPaintable>)
+        @implements gdk::Paintable;
 }
 
 impl Default for StrokeContentPaintable {

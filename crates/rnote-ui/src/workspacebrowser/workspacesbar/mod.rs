@@ -67,7 +67,7 @@ mod imp {
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
+            klass.bind_template();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -298,7 +298,7 @@ impl RnWorkspacesBar {
                 workspacesbar.imp().remove_selected_workspace_button.get().set_sensitive(list.n_items() > 1);
                 workspacesbar.imp().edit_selected_workspace_button.get().set_sensitive(list.n_items() > 0);
 
-                workspacesbar.save_to_settings(&appwindow.app_settings());
+                workspacesbar.save_to_settings(&appwindow.app().app_settings());
             }),
         );
 
@@ -312,7 +312,7 @@ impl RnWorkspacesBar {
                     appwindow.sidebar().workspacebrowser().active_workspace_dir_label().set_label(&dir);
                     appwindow.sidebar().workspacebrowser().set_dirlist_file(Some(&gio::File::for_path(dir)));
 
-                    workspacesbar.save_to_settings(&appwindow.app_settings());
+                    workspacesbar.save_to_settings(&appwindow.app().app_settings());
                 }
 
             }),

@@ -240,4 +240,6 @@ from https://gitlab.com/posidon_software/paper/-/blob/main/src/css/style.css
 
 toast {
     margin-bottom: 72px;
+    margin-left: 72px;
+    margin-right: 72px;
 }

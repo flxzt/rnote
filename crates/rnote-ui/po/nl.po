@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-25 12:58+0100\n"
+"POT-Creation-Date: 2023-11-26 16:17+0100\n"
 "PO-Revision-Date: 2023-10-29 10:40+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -1365,7 +1365,7 @@ msgstr "Terugdraaien"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:247
 #: crates/rnote-ui/data/ui/shortcuts.ui:146
-#: crates/rnote-ui/src/dialogs/mod.rs:632
+#: crates/rnote-ui/src/dialogs/mod.rs:626
 msgid "Document"
 msgstr "Document"
 
@@ -1678,11 +1678,17 @@ msgstr "Werkbladmapacties"
 msgid "Create new Folder"
 msgstr "Map aanmaken"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:555
+#: crates/rnote-ui/src/appwindow/mod.rs:126
+msgid ""
+"Settings schema is not installed. App settings could not be loaded and won't "
+"be saved."
+msgstr ""
+
+#: crates/rnote-ui/src/appwindow/mod.rs:564
 msgid "Opening file failed"
 msgstr "Bestand openen mislukt"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:250
+#: crates/rnote-ui/src/appwindow/imp.rs:248
 #: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
 #: crates/rnote-ui/src/dialogs/export.rs:68
 #: crates/rnote-ui/src/dialogs/mod.rs:126
@@ -1691,19 +1697,19 @@ msgstr "Bestand openen mislukt"
 msgid "Saving document failed"
 msgstr "Document opslaan mislukt"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:270
+#: crates/rnote-ui/src/appwindow/imp.rs:268
 msgid "Button 1"
 msgstr "Knop 1"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:277
+#: crates/rnote-ui/src/appwindow/imp.rs:275
 msgid "Button 2"
 msgstr "Knop 2"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:284
+#: crates/rnote-ui/src/appwindow/imp.rs:282
 msgid "Button 3"
 msgstr "Knop 3"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:291
+#: crates/rnote-ui/src/appwindow/imp.rs:289
 msgid "Button 4"
 msgstr "Knop 4"
 
@@ -1927,206 +1933,206 @@ msgstr "Een nieuw bestand zal worden gecreëerd"
 msgid "Change Workspace Directory"
 msgstr "Werkbladmap wijzigen"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:619
+#: crates/rnote-ui/src/dialogs/mod.rs:613
 msgid "Band-Aid"
 msgstr "Pleister"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:620
+#: crates/rnote-ui/src/dialogs/mod.rs:614
 msgid "Bank"
 msgstr "Bank"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:621
+#: crates/rnote-ui/src/dialogs/mod.rs:615
 msgid "Bookmark"
 msgstr "Bladwijzer"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:622
+#: crates/rnote-ui/src/dialogs/mod.rs:616
 msgid "Book"
 msgstr "Boek"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:623
+#: crates/rnote-ui/src/dialogs/mod.rs:617
 msgid "Bread"
 msgstr "Brood"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:624
+#: crates/rnote-ui/src/dialogs/mod.rs:618
 msgid "Calendar"
 msgstr "Agenda"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:625
+#: crates/rnote-ui/src/dialogs/mod.rs:619
 msgid "Camera"
 msgstr "Camera"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:626
+#: crates/rnote-ui/src/dialogs/mod.rs:620
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "Chip"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:627
+#: crates/rnote-ui/src/dialogs/mod.rs:621
 msgid "Clock"
 msgstr "Klok"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:628
+#: crates/rnote-ui/src/dialogs/mod.rs:622
 msgid "Code"
 msgstr "Code"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:629
+#: crates/rnote-ui/src/dialogs/mod.rs:623
 msgid "Compose"
 msgstr "Samenstellen"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:630
+#: crates/rnote-ui/src/dialogs/mod.rs:624
 msgctxt "as in plant"
 msgid "Crop"
 msgstr "Gewas"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:631
+#: crates/rnote-ui/src/dialogs/mod.rs:625
 msgid "Dictionary"
 msgstr "Woordenboek"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:633
+#: crates/rnote-ui/src/dialogs/mod.rs:627
 msgid "Drinks"
 msgstr "Drankjes"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:634
+#: crates/rnote-ui/src/dialogs/mod.rs:628
 msgid "Flag"
 msgstr "Vlag"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:635
+#: crates/rnote-ui/src/dialogs/mod.rs:629
 msgid "Folder"
 msgstr "Map"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:636
+#: crates/rnote-ui/src/dialogs/mod.rs:630
 msgid "Footprints"
 msgstr "Voetafdrukken"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:637
+#: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "Gamepad"
 msgstr "Controller"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:638
+#: crates/rnote-ui/src/dialogs/mod.rs:632
 msgid "Gear"
 msgstr "Tandwiel"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:639
+#: crates/rnote-ui/src/dialogs/mod.rs:633
 msgid "Globe"
 msgstr "Wereldbol"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:640
+#: crates/rnote-ui/src/dialogs/mod.rs:634
 msgid "Hammer"
 msgstr "Hamer"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:641
+#: crates/rnote-ui/src/dialogs/mod.rs:635
 msgid "Heart"
 msgstr "Hart"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:642
+#: crates/rnote-ui/src/dialogs/mod.rs:636
 msgid "Hourglass"
 msgstr "Zandloper"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:643
+#: crates/rnote-ui/src/dialogs/mod.rs:637
 msgid "Key"
 msgstr "Sleutel"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:644
+#: crates/rnote-ui/src/dialogs/mod.rs:638
 msgid "Language"
 msgstr "Taal"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:645
+#: crates/rnote-ui/src/dialogs/mod.rs:639
 msgid "Library"
 msgstr "Bibliotheek"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:646
+#: crates/rnote-ui/src/dialogs/mod.rs:640
 msgid "Lightbulb"
 msgstr "Lamp"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:647
+#: crates/rnote-ui/src/dialogs/mod.rs:641
 msgid "Mathematics"
 msgstr "Wiskunde"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:648
+#: crates/rnote-ui/src/dialogs/mod.rs:642
 msgid "Meeting"
 msgstr "Vergadering"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:649
+#: crates/rnote-ui/src/dialogs/mod.rs:643
 msgid "Money"
 msgstr "Geld"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:650
+#: crates/rnote-ui/src/dialogs/mod.rs:644
 msgid "Musical Note"
 msgstr "Muzieknoot"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:651
+#: crates/rnote-ui/src/dialogs/mod.rs:645
 msgid "Nature"
 msgstr "Natuur"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:652
+#: crates/rnote-ui/src/dialogs/mod.rs:646
 msgid "Open Book"
 msgstr "Open boek"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:653
+#: crates/rnote-ui/src/dialogs/mod.rs:647
 msgid "Paintbrush"
 msgstr "Kwast"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:654
+#: crates/rnote-ui/src/dialogs/mod.rs:648
 msgid "Pencil and Paper"
 msgstr "Potlood en papier"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:655
+#: crates/rnote-ui/src/dialogs/mod.rs:649
 msgid "People"
 msgstr "Mensen"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:656
+#: crates/rnote-ui/src/dialogs/mod.rs:650
 msgid "Person"
 msgstr "Persoon"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:657
+#: crates/rnote-ui/src/dialogs/mod.rs:651
 msgid "Projector"
 msgstr "Projector"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:658
+#: crates/rnote-ui/src/dialogs/mod.rs:652
 msgid "Science"
 msgstr "Wetenschap"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:659
+#: crates/rnote-ui/src/dialogs/mod.rs:653
 msgid "Scratchpad"
 msgstr "Kladblok"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:660
+#: crates/rnote-ui/src/dialogs/mod.rs:654
 msgid "Shapes"
 msgstr "Vormen"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:661
+#: crates/rnote-ui/src/dialogs/mod.rs:655
 msgid "Shopping"
 msgstr "Winkelen"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:662
+#: crates/rnote-ui/src/dialogs/mod.rs:656
 msgid "Speech Bubble"
 msgstr "Tekstbubbel"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:663
+#: crates/rnote-ui/src/dialogs/mod.rs:657
 msgid "Speedometer"
 msgstr "Snelheidsmeter"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:664
+#: crates/rnote-ui/src/dialogs/mod.rs:658
 msgid "Star"
 msgstr "Ster"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:666
+#: crates/rnote-ui/src/dialogs/mod.rs:660
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "Terminal"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:668
+#: crates/rnote-ui/src/dialogs/mod.rs:662
 msgid "Text"
 msgstr "Tekst"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:669
+#: crates/rnote-ui/src/dialogs/mod.rs:663
 msgid "Travel"
 msgstr "Reizen"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:670
+#: crates/rnote-ui/src/dialogs/mod.rs:664
 msgid "Weather"
 msgstr "Weer"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:671
+#: crates/rnote-ui/src/dialogs/mod.rs:665
 msgid "Weight"
 msgstr "Gewicht"
 

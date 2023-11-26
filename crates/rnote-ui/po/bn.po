@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-25 12:58+0100\n"
+"POT-Creation-Date: 2023-11-26 16:17+0100\n"
 "PO-Revision-Date: 2023-11-25 11:56+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -1357,7 +1357,7 @@ msgstr "আগের অবস্থাই ফিরে যান"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:247
 #: crates/rnote-ui/data/ui/shortcuts.ui:146
-#: crates/rnote-ui/src/dialogs/mod.rs:632
+#: crates/rnote-ui/src/dialogs/mod.rs:626
 msgid "Document"
 msgstr "নথি"
 
@@ -1685,11 +1685,17 @@ msgstr "কর্মক্ষেত্র ডিরেক্টরির ক্�
 msgid "Create new Folder"
 msgstr "নতুন ফোল্ডার তৈরি করুন"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:555
+#: crates/rnote-ui/src/appwindow/mod.rs:126
+msgid ""
+"Settings schema is not installed. App settings could not be loaded and won't "
+"be saved."
+msgstr ""
+
+#: crates/rnote-ui/src/appwindow/mod.rs:564
 msgid "Opening file failed"
 msgstr "ফাইল খুলতে ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:250
+#: crates/rnote-ui/src/appwindow/imp.rs:248
 #: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
 #: crates/rnote-ui/src/dialogs/export.rs:68
 #: crates/rnote-ui/src/dialogs/mod.rs:126
@@ -1698,19 +1704,19 @@ msgstr "ফাইল খুলতে ব্যর্থ হয়েছে"
 msgid "Saving document failed"
 msgstr "নথি সংরক্ষণ ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:270
+#: crates/rnote-ui/src/appwindow/imp.rs:268
 msgid "Button 1"
 msgstr "বোতাম ১"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:277
+#: crates/rnote-ui/src/appwindow/imp.rs:275
 msgid "Button 2"
 msgstr "বোতাম ২"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:284
+#: crates/rnote-ui/src/appwindow/imp.rs:282
 msgid "Button 3"
 msgstr "বোতাম ৩"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:291
+#: crates/rnote-ui/src/appwindow/imp.rs:289
 msgid "Button 4"
 msgstr "বোতাম ৪"
 
@@ -1932,206 +1938,206 @@ msgstr "একটি নতুন ফাইল তৈরি করা হবে"
 msgid "Change Workspace Directory"
 msgstr "কর্মক্ষেত্রের ডিরেক্টরি পরিবর্তন করুন"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:619
+#: crates/rnote-ui/src/dialogs/mod.rs:613
 msgid "Band-Aid"
 msgstr "ব্যান্ড-এইড"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:620
+#: crates/rnote-ui/src/dialogs/mod.rs:614
 msgid "Bank"
 msgstr "ব্যাংক"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:621
+#: crates/rnote-ui/src/dialogs/mod.rs:615
 msgid "Bookmark"
 msgstr "বুকমার্ক"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:622
+#: crates/rnote-ui/src/dialogs/mod.rs:616
 msgid "Book"
 msgstr "বই"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:623
+#: crates/rnote-ui/src/dialogs/mod.rs:617
 msgid "Bread"
 msgstr "রুটি"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:624
+#: crates/rnote-ui/src/dialogs/mod.rs:618
 msgid "Calendar"
 msgstr "বর্ষপঞ্জি"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:625
+#: crates/rnote-ui/src/dialogs/mod.rs:619
 msgid "Camera"
 msgstr "ক্যামেরা"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:626
+#: crates/rnote-ui/src/dialogs/mod.rs:620
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "চিপ"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:627
+#: crates/rnote-ui/src/dialogs/mod.rs:621
 msgid "Clock"
 msgstr "ঘড়ি"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:628
+#: crates/rnote-ui/src/dialogs/mod.rs:622
 msgid "Code"
 msgstr "কোড"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:629
+#: crates/rnote-ui/src/dialogs/mod.rs:623
 msgid "Compose"
 msgstr "কম্পোজ করুন"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:630
+#: crates/rnote-ui/src/dialogs/mod.rs:624
 msgctxt "as in plant"
 msgid "Crop"
 msgstr "ফসল"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:631
+#: crates/rnote-ui/src/dialogs/mod.rs:625
 msgid "Dictionary"
 msgstr "অভিধান"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:633
+#: crates/rnote-ui/src/dialogs/mod.rs:627
 msgid "Drinks"
 msgstr "পানীয়"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:634
+#: crates/rnote-ui/src/dialogs/mod.rs:628
 msgid "Flag"
 msgstr "পতাকা"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:635
+#: crates/rnote-ui/src/dialogs/mod.rs:629
 msgid "Folder"
 msgstr "ফোল্ডার"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:636
+#: crates/rnote-ui/src/dialogs/mod.rs:630
 msgid "Footprints"
 msgstr "ফুটপ্রিন্ট"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:637
+#: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "Gamepad"
 msgstr "গেমপ্যাড"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:638
+#: crates/rnote-ui/src/dialogs/mod.rs:632
 msgid "Gear"
 msgstr "গিয়ার"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:639
+#: crates/rnote-ui/src/dialogs/mod.rs:633
 msgid "Globe"
 msgstr "গ্লোব"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:640
+#: crates/rnote-ui/src/dialogs/mod.rs:634
 msgid "Hammer"
 msgstr "হাতুড়ি"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:641
+#: crates/rnote-ui/src/dialogs/mod.rs:635
 msgid "Heart"
 msgstr "হৃদয়"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:642
+#: crates/rnote-ui/src/dialogs/mod.rs:636
 msgid "Hourglass"
 msgstr "আওয়ারগ্লাস"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:643
+#: crates/rnote-ui/src/dialogs/mod.rs:637
 msgid "Key"
 msgstr "চাবি"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:644
+#: crates/rnote-ui/src/dialogs/mod.rs:638
 msgid "Language"
 msgstr "ভাষা"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:645
+#: crates/rnote-ui/src/dialogs/mod.rs:639
 msgid "Library"
 msgstr "লাইব্রেরি"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:646
+#: crates/rnote-ui/src/dialogs/mod.rs:640
 msgid "Lightbulb"
 msgstr "লাইটবাল্ব"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:647
+#: crates/rnote-ui/src/dialogs/mod.rs:641
 msgid "Mathematics"
 msgstr "গণিত"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:648
+#: crates/rnote-ui/src/dialogs/mod.rs:642
 msgid "Meeting"
 msgstr "মিটিং"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:649
+#: crates/rnote-ui/src/dialogs/mod.rs:643
 msgid "Money"
 msgstr "অর্থ"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:650
+#: crates/rnote-ui/src/dialogs/mod.rs:644
 msgid "Musical Note"
 msgstr "মিউজিক্যাল নোট"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:651
+#: crates/rnote-ui/src/dialogs/mod.rs:645
 msgid "Nature"
 msgstr "প্রকৃতি"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:652
+#: crates/rnote-ui/src/dialogs/mod.rs:646
 msgid "Open Book"
 msgstr "বই খুলুন"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:653
+#: crates/rnote-ui/src/dialogs/mod.rs:647
 msgid "Paintbrush"
 msgstr "রংতুলি"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:654
+#: crates/rnote-ui/src/dialogs/mod.rs:648
 msgid "Pencil and Paper"
 msgstr "কাগজ ও কলম"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:655
+#: crates/rnote-ui/src/dialogs/mod.rs:649
 msgid "People"
 msgstr "মানুষ"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:656
+#: crates/rnote-ui/src/dialogs/mod.rs:650
 msgid "Person"
 msgstr "ব্যক্তি"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:657
+#: crates/rnote-ui/src/dialogs/mod.rs:651
 msgid "Projector"
 msgstr "প্রজেক্টর"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:658
+#: crates/rnote-ui/src/dialogs/mod.rs:652
 msgid "Science"
 msgstr "বিজ্ঞান"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:659
+#: crates/rnote-ui/src/dialogs/mod.rs:653
 msgid "Scratchpad"
 msgstr "স্ক্র্যাচপ্যাড"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:660
+#: crates/rnote-ui/src/dialogs/mod.rs:654
 msgid "Shapes"
 msgstr "আকার"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:661
+#: crates/rnote-ui/src/dialogs/mod.rs:655
 msgid "Shopping"
 msgstr "কেনাকাটা"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:662
+#: crates/rnote-ui/src/dialogs/mod.rs:656
 msgid "Speech Bubble"
 msgstr "স্পিচ বাবল"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:663
+#: crates/rnote-ui/src/dialogs/mod.rs:657
 msgid "Speedometer"
 msgstr "স্পিডোমিটার"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:664
+#: crates/rnote-ui/src/dialogs/mod.rs:658
 msgid "Star"
 msgstr "তারা"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:666
+#: crates/rnote-ui/src/dialogs/mod.rs:660
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "টার্মিনাল"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:668
+#: crates/rnote-ui/src/dialogs/mod.rs:662
 msgid "Text"
 msgstr "পাঠ্য"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:669
+#: crates/rnote-ui/src/dialogs/mod.rs:663
 msgid "Travel"
 msgstr "ভ্রমণ"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:670
+#: crates/rnote-ui/src/dialogs/mod.rs:664
 msgid "Weather"
 msgstr "আবহাওয়া"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:671
+#: crates/rnote-ui/src/dialogs/mod.rs:665
 msgid "Weight"
 msgstr "ওজন"
 

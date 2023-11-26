@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-26 16:17+0100\n"
-"PO-Revision-Date: 2023-11-21 17:13+0000\n"
-"Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
+"PO-Revision-Date: 2023-11-27 14:49+0000\n"
+"Last-Translator: Ali-98 <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.2\n"
+"X-Generator: Weblate 5.3-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1688,7 +1688,7 @@ msgstr "أنشئ مجلَّدًا جديدًا"
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
-msgstr ""
+msgstr "لم يُثبَّت مخطَّط الإعدادات، فلن تُحفَظ الإعدادات ولن تُستخدَم."
 
 #: crates/rnote-ui/src/appwindow/mod.rs:564
 msgid "Opening file failed"
@@ -1792,18 +1792,14 @@ msgstr "صُدِّر المستند بنجاح"
 #: crates/rnote-ui/src/dialogs/export.rs:226
 #: crates/rnote-ui/src/dialogs/export.rs:530
 #: crates/rnote-ui/src/dialogs/export.rs:800
-#, fuzzy
-#| msgid "- no file name -"
 msgid "View in file manager"
-msgstr "- بلا اسم ملفٍّ -"
+msgstr "اعرضه في مدير الملفات"
 
 #: crates/rnote-ui/src/dialogs/export.rs:245
 #: crates/rnote-ui/src/dialogs/export.rs:544
 #: crates/rnote-ui/src/dialogs/export.rs:820
-#, fuzzy
-#| msgid "Failed to open file, unsupported file type"
 msgid "Failed to open the file in the file manager"
-msgstr "فشل فتح الملفِّ، نوع الملفِّ غير مدعوم"
+msgstr "فشل فتح الملفِّ في مدير الملفات"
 
 #: crates/rnote-ui/src/dialogs/export.rs:255
 msgid "Exporting document failed, no file selected"

@@ -19,8 +19,18 @@ use gtk4::{gio, glib, glib::clone, prelude::*, subclass::prelude::*};
 mod imp {
     use super::*;
 
-    #[derive(Debug, Default)]
-    pub(crate) struct RnApp {}
+    #[derive(Debug)]
+    pub(crate) struct RnApp {
+        pub(crate) app_settings: gio::Settings,
+    }
+
+    impl Default for RnApp {
+        fn default() -> Self {
+            Self {
+                app_settings: gio::Settings::new(config::APP_ID),
+            }
+        }
+    }
 
     #[glib::object_subclass]
     impl ObjectSubclass for RnApp {
@@ -147,5 +157,9 @@ impl RnApp {
             .property("flags", gio::ApplicationFlags::HANDLES_OPEN)
             .property("register-session", true)
             .build()
+    }
+
+    pub(crate) fn app_settings(&self) -> gio::Settings {
+        self.imp().app_settings.clone()
     }
 }

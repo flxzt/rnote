@@ -77,10 +77,10 @@ mod imp {
 
     impl ObjectImpl for RnWorkspacesBar {
         fn constructed(&self) {
+            let obj = self.obj();
             self.parent_constructed();
 
-            self.obj()
-                .insert_action_group("workspacesbar", Some(&self.action_group));
+            obj.insert_action_group("workspacesbar", Some(&self.action_group));
         }
 
         fn dispose(&self) {
@@ -125,9 +125,8 @@ impl RnWorkspacesBar {
         self.select_workspace_by_index(n_items.saturating_sub(1));
     }
 
-    pub(crate) fn insert_workspace(&self, i: u32, entry: RnWorkspaceListEntry) {
+    pub(crate) fn insert_workspace_entry(&self, i: u32, entry: RnWorkspaceListEntry) {
         self.imp().workspace_list.insert(i as usize, entry);
-
         self.select_workspace_by_index(i);
     }
 
@@ -153,11 +152,8 @@ impl RnWorkspacesBar {
             let i = self
                 .selected_workspace_index()
                 .unwrap_or_else(|| n_items.saturating_sub(1));
-
             let entry = self.imp().workspace_list.remove(i as usize);
-
-            self.insert_workspace(i.saturating_sub(1), entry);
-            self.select_workspace_by_index(i.saturating_sub(1));
+            self.insert_workspace_entry(i.saturating_sub(1), entry);
         }
     }
 
@@ -167,12 +163,9 @@ impl RnWorkspacesBar {
 
         if n_items > 1 {
             let i = self.selected_workspace_index().unwrap_or(i_max);
-
             let entry = self.imp().workspace_list.remove(i as usize);
-
             let insert_i = (i + 1).min(i_max);
-            self.insert_workspace(insert_i, entry);
-            self.select_workspace_by_index(insert_i);
+            self.insert_workspace_entry(insert_i, entry);
         }
     }
 
@@ -285,8 +278,8 @@ impl RnWorkspacesBar {
                 }
             }
         }
-        self.imp().workspace_list.replace_self(workspace_list);
 
+        self.imp().workspace_list.replace_self(workspace_list);
         self.select_workspace_by_index(selected_workspace_index);
     }
 
@@ -352,6 +345,9 @@ impl RnWorkspacesBar {
             clone!(@weak self as workspacesbar, @weak appwindow => move |_| {
                 adw::prelude::ActionGroupExt::activate_action(&workspacesbar.action_group(), "edit-selected-workspace", None);
             }));
+
+        // Add initial entry
+        self.insert_workspace_entry(0, RnWorkspaceListEntry::default());
     }
 
     fn setup_actions(&self, appwindow: &RnAppWindow) {

@@ -72,6 +72,7 @@ open = "5"
 atty = "0.2"
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 glib = "0.18.3"
+glib-build-tools = "0.18.0"
 gio = "0.18.3"
 cairo-rs = { version = "0.18", features = ["png", "svg", "pdf"] }
 librsvg = "2.57"

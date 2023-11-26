@@ -46,7 +46,7 @@ mod imp {
         type Interfaces = ();
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
+            klass.bind_template();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -121,7 +121,7 @@ mod imp {
 glib::wrapper! {
     pub(crate) struct RnPenShortcutRow(ObjectSubclass<imp::RnPenShortcutRow>)
         @extends adw::ComboRow, adw::ActionRow, adw::PreferencesRow, gtk4::ListBoxRow, gtk4::Widget,
-        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget, gtk4::Actionable;
+        @implements gtk4::Accessible, gtk4::Actionable, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl RnPenShortcutRow {

@@ -552,7 +552,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
                 .sidebar()
                 .workspacebrowser()
                 .workspacesbar()
-                .save_to_settings(&appwindow.app_settings());
+                .save_to_settings(&appwindow.app().app_settings());
         }
         _ => {
             // Cancel

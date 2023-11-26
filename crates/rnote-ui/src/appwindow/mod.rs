@@ -22,7 +22,8 @@ use std::path::Path;
 glib::wrapper! {
     pub(crate) struct RnAppWindow(ObjectSubclass<imp::RnAppWindow>)
         @extends gtk4::Widget, gtk4::Window, adw::Window, gtk4::ApplicationWindow, adw::ApplicationWindow,
-        @implements gio::ActionMap, gio::ActionGroup;
+        @implements gio::ActionGroup, gio::ActionMap, gtk4::Accessible, gtk4::Buildable,
+                    gtk4::ConstraintTarget, gtk4::Native, gtk4::Root, gtk4::ShortcutManager;
 }
 
 impl RnAppWindow {
@@ -87,10 +88,6 @@ impl RnAppWindow {
         self.application().unwrap().downcast::<RnApp>().unwrap()
     }
 
-    pub(crate) fn app_settings(&self) -> gio::Settings {
-        self.imp().app_settings.clone()
-    }
-
     pub(crate) fn main_header(&self) -> RnMainHeader {
         self.imp().main_header.get()
     }
@@ -119,7 +116,8 @@ impl RnAppWindow {
         self.add_initial_tab();
 
         // add icon theme resource path because automatic lookup does not work in the devel build.
-        let app_icon_theme = IconTheme::for_display(&self.display());
+        let app_icon_theme =
+            IconTheme::for_display(&<Self as gtk4::prelude::WidgetExt>::display(self));
         app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
 
         // actions and settings AFTER widget inits
@@ -132,7 +130,7 @@ impl RnAppWindow {
         if let Some(removed_id) = self.imp().periodic_configsave_source_id.borrow_mut().replace(
             glib::source::timeout_add_seconds_local(
                 Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak self as appwindow => @default-return glib::ControlFlow::Break, move || {
-                    if let Err(e) = appwindow.active_tab_wrapper().canvas().save_engine_config(&appwindow.app_settings()) {
+                    if let Err(e) = appwindow.active_tab_wrapper().canvas().save_engine_config(&appwindow.app().app_settings()) {
                         log::error!("saving engine config in periodic task failed , Err: {e:?}");
                     }
 
@@ -264,7 +262,7 @@ impl RnAppWindow {
         let wrapper = RnCanvasWrapper::new();
         if let Err(e) = wrapper
             .canvas()
-            .load_engine_config_from_settings(&self.app_settings())
+            .load_engine_config_from_settings(&self.app().app_settings())
         {
             log::error!("failed to load engine config for initial tab, Err: {e:?}");
         }

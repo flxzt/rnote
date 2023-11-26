@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-25 12:58+0100\n"
-"PO-Revision-Date: 2023-11-23 12:04+0000\n"
+"PO-Revision-Date: 2023-11-26 13:42+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -1790,18 +1790,14 @@ msgstr "Esportazione del documento avvenuta correttamente"
 #: crates/rnote-ui/src/dialogs/export.rs:226
 #: crates/rnote-ui/src/dialogs/export.rs:530
 #: crates/rnote-ui/src/dialogs/export.rs:800
-#, fuzzy
-#| msgid "- no file name -"
 msgid "View in file manager"
-msgstr "- nessun nome file -"
+msgstr "Visualizza nel file manager"
 
 #: crates/rnote-ui/src/dialogs/export.rs:245
 #: crates/rnote-ui/src/dialogs/export.rs:544
 #: crates/rnote-ui/src/dialogs/export.rs:820
-#, fuzzy
-#| msgid "Failed to open file, unsupported file type"
 msgid "Failed to open the file in the file manager"
-msgstr "Apertura del file fallita, il formato del file non è supportato"
+msgstr "Impossibile aprire il file nel file manager"
 
 #: crates/rnote-ui/src/dialogs/export.rs:255
 msgid "Exporting document failed, no file selected"

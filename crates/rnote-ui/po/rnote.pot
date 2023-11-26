@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-26 16:14+0100\n"
+"POT-Creation-Date: 2023-11-26 16:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1636,8 +1636,8 @@ msgstr ""
 
 #: crates/rnote-ui/src/appwindow/mod.rs:126
 msgid ""
-"Settings schema is not installed. App settings are not loaded and won't be "
-"saved."
+"Settings schema is not installed. App settings could not be loaded and won't "
+"be saved."
 msgstr ""
 
 #: crates/rnote-ui/src/appwindow/mod.rs:564

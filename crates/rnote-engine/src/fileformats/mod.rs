@@ -1,6 +1,7 @@
 // Modules
 pub mod recoverymetadataformat;
 pub mod rnoteformat;
+pub mod rnoterecoveryformat;
 pub mod xoppformat;
 
 // Imports

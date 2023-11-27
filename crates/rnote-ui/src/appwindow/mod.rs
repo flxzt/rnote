@@ -10,6 +10,7 @@ use crate::{
     FileType, RnApp, RnCanvas, RnCanvasWrapper, RnMainHeader, RnOverlays, RnSidebar,
 };
 use adw::{prelude::*, subclass::prelude::*};
+use cairo::glib::clone;
 use gettextrs::gettext;
 use gtk4::{gdk, gio, glib, Application, IconTheme};
 use rnote_compose::Color;

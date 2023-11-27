@@ -60,19 +60,21 @@ extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;
 
 // Imports
-use gtk4::{glib, prelude::*};
+use anyhow::Context;
+use gtk4::{gio, glib, prelude::*};
 
 fn main() -> glib::ExitCode {
     if let Err(e) = setup_logging() {
         eprintln!("failed to setup logging, Err: {e:?}");
     }
-
     if let Err(e) = env::setup_env() {
         eprintln!("failed to setup env, Err: {e:?}");
     }
-
     if let Err(e) = setup_i18n() {
         eprintln!("failed to setup i18n, Err: {e:?}");
+    }
+    if let Err(e) = setup_gresources() {
+        eprintln!("failed to setup gresources, Err: {e:?}");
     }
 
     let app = RnApp::new();
@@ -93,4 +95,9 @@ fn setup_i18n() -> anyhow::Result<()> {
     gettextrs::bind_textdomain_codeset(config::GETTEXT_PACKAGE, "UTF-8")?;
     gettextrs::textdomain(config::GETTEXT_PACKAGE)?;
     Ok(())
+}
+
+fn setup_gresources() -> anyhow::Result<()> {
+    gio::resources_register_include!("compiled.gresource")
+        .context("Failed to register and include compiled gresource.")
 }

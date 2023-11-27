@@ -72,6 +72,19 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.9.2" date="2023-11-16">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: option to snap positions in different tools to pattern and document grid</li>
+          <li>feature: option to open files with default app from workspace browser list (thanks to @silvasch)</li>
+          <li>improvement: sort workspace files and folders in a more intuitive way (thanks to @doublonmousse)</li>
+          <li>fix: initial documents opened with rnote have blurry rendering when system scale-factor is larger than 1.0</li>
+          <li>fix: selection after nudging view only included strokes in current viewport</li>
+          <li>fix: text files not appearing in workspacebrowser</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.9.1" date="2023-11-01">
       <description>
         <p>this release changes:</p>

@@ -376,7 +376,7 @@ pub struct Svg {
 }
 
 impl Svg {
-    pub const MIME_TYPE: &str = "image/svg+xml";
+    pub const MIME_TYPE: &'static str = "image/svg+xml";
 
     pub fn merge<T>(&mut self, other: T)
     where
@@ -407,10 +407,13 @@ impl Svg {
 
     /// Simplify the Svg by passing it through [usvg].
     pub fn simplify(&mut self) -> anyhow::Result<()> {
+        const COORDINATES_PREC: u8 = 3;
+        const TRANSFORMS_PREC: u8 = 4;
+
         let xml_options = usvg::XmlOptions {
             id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
-            transforms_precision: 4,
-            coordinates_precision: 3,
+            coordinates_precision: COORDINATES_PREC,
+            transforms_precision: TRANSFORMS_PREC,
             writer_opts: xmlwriter::Options {
                 use_single_quote: false,
                 indent: xmlwriter::Indent::None,

@@ -28,7 +28,10 @@ impl RnCanvas {
         P: AsRef<Path>,
     {
         let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(bytes).await?;
-        let widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
+        let mut widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
+        widget_flags |= self
+            .engine_mut()
+            .set_scale_factor(self.scale_factor() as f64);
 
         let mut unsaved_changes = false;
         if let Some(meta) = &recovery_metadata {
@@ -43,6 +46,7 @@ impl RnCanvas {
 
         self.set_unsaved_changes(unsaved_changes);
         self.set_empty(false);
+
         Ok(widget_flags)
     }
 

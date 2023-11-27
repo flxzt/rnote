@@ -88,7 +88,7 @@ mod imp {
 glib::wrapper! {
     pub(crate) struct RnStrokeWidthSetter(ObjectSubclass<imp::RnStrokeWidthSetter>)
         @extends ToggleButton, Button, Widget,
-        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
+        @implements gtk4::Accessible, gtk4::Actionable, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnStrokeWidthSetter {

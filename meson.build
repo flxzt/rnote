@@ -1,7 +1,7 @@
 project(
     'rnote',
     ['rust', 'cpp'],
-    version: '0.9.1',
+    version: '0.9.2',
     meson_version: '>= 1.0',
 )
 # add a patch suffix for alpha or beta version, starting with a dash.
@@ -150,13 +150,14 @@ app_sources = [
     rnote_compose_sources,
     rnote_engine_sources,
     rnote_ui_sources,
+    rnote_ui_gresources_files,
     files(
-        meson.project_source_root() + '/Cargo.toml',
-        meson.project_source_root() + '/Cargo.lock',
         meson.project_source_root() + '/crates/rnote-compose/Cargo.toml',
         meson.project_source_root() + '/crates/rnote-engine/Cargo.toml',
         meson.project_source_root() + '/crates/rnote-ui/Cargo.toml',
         meson.project_source_root() + '/crates/rnote-ui/build.rs',
+        meson.project_source_root() + '/Cargo.lock',
+        meson.project_source_root() + '/Cargo.toml',
     ),
 ]
 
@@ -216,7 +217,6 @@ app_cargo_build = custom_target(
     console: true,
     install: true,
     install_dir: bindir,
-    depends: gresources,
     command: [
         cargo_build_script,
         meson.project_build_root(),
@@ -253,11 +253,11 @@ if build_cli == true
         rnote_engine_sources,
         rnote_cli_sources,
         files(
-            meson.project_source_root() + '/Cargo.toml',
-            meson.project_source_root() + '/Cargo.lock',
             meson.project_source_root() + '/crates/rnote-compose/Cargo.toml',
             meson.project_source_root() + '/crates/rnote-engine/Cargo.toml',
             meson.project_source_root() + '/crates/rnote-cli/Cargo.toml',
+            meson.project_source_root() + '/Cargo.lock',
+            meson.project_source_root() + '/Cargo.toml',
         ),
     ]
 

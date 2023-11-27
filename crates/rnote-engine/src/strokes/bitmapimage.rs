@@ -57,7 +57,9 @@ impl Drawable for BitmapImage {
                 &self.image.data,
                 piet_image_format,
             )
-            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
+            .map_err(|e| {
+                anyhow::anyhow!("Make piet image in BitmapImage draw impl failed, Err: {e:?}")
+            })?;
         let dest_rect = self.rectangle.cuboid.local_aabb().to_kurbo_rect();
         cx.draw_image(&piet_image, dest_rect, piet::InterpolationMode::Bilinear);
         cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
@@ -147,12 +149,13 @@ impl BitmapImage {
                 )
                 .map_err(|e| {
                     anyhow::anyhow!(
-                        "create image surface while importing bitmapimage failed, {e:?}"
+                        "Creating image surface while importing bitmapimage failed, {e:?}"
                     )
                 })?;
 
                 {
-                    let cx = cairo::Context::new(&surface).context("new cairo::Context failed")?;
+                    let cx = cairo::Context::new(&surface)
+                        .context("Creating new cairo Context failed")?;
 
                     // Scale with the bitmap scalefactor pref
                     cx.scale(
@@ -166,23 +169,25 @@ impl BitmapImage {
 
                     page.render_for_printing(&cx);
 
-                    // Draw outline around page
-                    cx.set_source_rgba(
-                        color::GNOME_REDS[4].as_rgba().0,
-                        color::GNOME_REDS[4].as_rgba().1,
-                        color::GNOME_REDS[4].as_rgba().2,
-                        1.0,
-                    );
+                    if pdf_import_prefs.page_borders {
+                        // Draw outline around page
+                        cx.set_source_rgba(
+                            color::GNOME_REDS[4].as_rgba().0,
+                            color::GNOME_REDS[4].as_rgba().1,
+                            color::GNOME_REDS[4].as_rgba().2,
+                            1.0,
+                        );
 
-                    let line_width = 1.0;
-                    cx.set_line_width(line_width);
-                    cx.rectangle(
-                        line_width * 0.5,
-                        line_width * 0.5,
-                        intrinsic_size.0 - line_width,
-                        intrinsic_size.1 - line_width,
-                    );
-                    cx.stroke()?;
+                        let line_width = 1.0;
+                        cx.set_line_width(line_width);
+                        cx.rectangle(
+                            line_width * 0.5,
+                            line_width * 0.5,
+                            intrinsic_size.0 - line_width,
+                            intrinsic_size.1 - line_width,
+                        );
+                        cx.stroke()?;
+                    }
                 }
 
                 let mut png_data: Vec<u8> = Vec::new();

@@ -77,8 +77,7 @@ Source: "{#meson_source_root}\crates\rnote-engine\data\fonts\GrapeNuts-Regular.t
 Source: "{#meson_source_root}\crates\rnote-engine\data\fonts\OpenDyslexic-Regular.ttf"; DestDir: "{autofonts}"; FontInstall: "OpenDyslexic"; Flags: onlyifdoesntexist uninsneveruninstall
 Source: "{#meson_source_root}\crates\rnote-engine\data\fonts\TT2020Base-Regular.ttf"; DestDir: "{autofonts}"; FontInstall: "TT2020Base"; Flags: onlyifdoesntexist uninsneveruninstall
 Source: "{#meson_source_root}\crates\rnote-engine\data\fonts\Virgil.ttf"; DestDir: "{autofonts}"; FontInstall: "Virgil"; Flags: onlyifdoesntexist uninsneveruninstall
-; app data (that goes to pkg-data-dir)
-Source: "{#meson_build_root}\crates\rnote-ui\data\resources.gresource"; DestDir: "{app}\share\rnote"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Data that is installed to pkg-data-dir
 Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\*"; DestDir: "{app}\share\rnote\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Binary
 Source: "{#meson_build_root}\{#MyAppExeName}"; DestDir: "{app}\bin\"; Flags: ignoreversion

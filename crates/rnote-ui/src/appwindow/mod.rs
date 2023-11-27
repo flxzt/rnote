@@ -11,7 +11,7 @@ use crate::{
 };
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
-use gtk4::{gdk, gio, glib, glib::clone, Application, IconTheme};
+use gtk4::{gdk, gio, glib, Application, IconTheme};
 use rnote_compose::Color;
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
@@ -23,7 +23,8 @@ use std::path::Path;
 glib::wrapper! {
     pub(crate) struct RnAppWindow(ObjectSubclass<imp::RnAppWindow>)
         @extends gtk4::Widget, gtk4::Window, adw::Window, gtk4::ApplicationWindow, adw::ApplicationWindow,
-        @implements gio::ActionMap, gio::ActionGroup;
+        @implements gio::ActionGroup, gio::ActionMap, gtk4::Accessible, gtk4::Buildable,
+                    gtk4::ConstraintTarget, gtk4::Native, gtk4::Root, gtk4::ShortcutManager;
 }
 
 impl RnAppWindow {
@@ -116,10 +117,6 @@ impl RnAppWindow {
         self.application().unwrap().downcast::<RnApp>().unwrap()
     }
 
-    pub(crate) fn app_settings(&self) -> gio::Settings {
-        self.imp().app_settings.clone()
-    }
-
     pub(crate) fn main_header(&self) -> RnMainHeader {
         self.imp().main_header.get()
     }
@@ -147,32 +144,31 @@ impl RnAppWindow {
         // An initial tab. Must! come before setting up the settings binds and import
         self.add_initial_tab();
 
-        // add icon theme resource path because automatic lookup does not work in the devel build.
-        let app_icon_theme = IconTheme::for_display(&self.display());
-        app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
-
         // actions and settings AFTER widget inits
+        self.setup_icon_theme();
         self.setup_actions();
         self.setup_action_accels();
-        self.setup_settings_binds();
-        self.load_settings();
 
-        // Periodically save engine config
-        if let Some(removed_id) = self.imp().periodic_configsave_source_id.borrow_mut().replace(
-            glib::source::timeout_add_seconds_local(
-                Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak self as appwindow => @default-return glib::ControlFlow::Break, move || {
-                    if let Err(e) = appwindow.active_tab_wrapper().canvas().save_engine_config(&appwindow.app_settings()) {
-                        log::error!("saving engine config in periodic task failed , Err: {e:?}");
-                    }
-
-                    glib::ControlFlow::Continue
-        }))) {
-            removed_id.remove();
+        if !self.app().settings_schema_found() {
+            // Display an error toast if settings schema could not be found
+            self.overlays().dispatch_toast_error(&gettext(
+                "Settings schema is not installed. App settings could not be loaded and won't be saved.",
+            ));
+        } else {
+            if let Err(e) = self.setup_settings_binds() {
+                log::error!("Failed to setup settings binds, Err: {e:}");
+            }
+            if let Err(e) = self.setup_periodic_save() {
+                log::error!("Failed to setup periodic save, Err: {e:}");
+            }
+            if let Err(e) = self.load_settings() {
+                log::error!("Failed to load initial settings, Err: {e:}");
+            }
         }
 
         // Anything that needs to be done right before showing the appwindow
 
-        // Set undo / redo as not sensitive as default ( setting it in .ui file did not work for some reason )
+        // Set undo / redo as not sensitive as default - setting it in .ui file did not work for some reason
         self.overlays()
             .penpicker()
             .undo_button()
@@ -187,11 +183,20 @@ impl RnAppWindow {
         }));
     }
 
+    fn setup_icon_theme(&self) {
+        // add icon theme resource path because automatic lookup does not work in the devel build.
+        let app_icon_theme =
+            IconTheme::for_display(&<Self as gtk4::prelude::WidgetExt>::display(self));
+        app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
+    }
+
     /// Called to close the window
     pub(crate) fn close_force(&self) {
-        // Saving all state
-        if let Err(e) = self.save_to_settings() {
-            log::error!("Failed to save appwindow to settings, , Err: {e:?}");
+        if self.app().settings_schema_found() {
+            // Saving all state
+            if let Err(e) = self.save_to_settings() {
+                log::error!("Failed to save appwindow to settings, , Err: {e:?}");
+            }
         }
 
         // Closing the state tasks channel receiver for all tabs
@@ -294,11 +299,15 @@ impl RnAppWindow {
     /// adds the initial tab to the tabview
     fn add_initial_tab(&self) -> adw::TabPage {
         let wrapper = RnCanvasWrapper::new();
-        if let Err(e) = wrapper
-            .canvas()
-            .load_engine_config_from_settings(&self.app_settings())
-        {
-            log::error!("failed to load engine config for initial tab, Err: {e:?}");
+        if let Some(app_settings) = self.app().app_settings() {
+            if let Err(e) = wrapper
+                .canvas()
+                .load_engine_config_from_settings(&app_settings)
+            {
+                log::error!("failed to load engine config for initial tab, Err: {e:?}");
+            }
+        } else {
+            log::warn!("Could not load settings for initial tab. Settings schema not found.");
         }
         self.append_wrapper_new_tab(&wrapper)
     }

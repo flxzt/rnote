@@ -8,7 +8,7 @@ members = [
 resolver = "2"
 
 [workspace.package]
-version = "0.9.1"
+version = "0.9.2"
 edition = "2021"
 rust-version = "1.70"
 authors = ["The Rnote Authors"]
@@ -17,8 +17,8 @@ homepage = "https://rnote.flxzt.net"
 repository = "https://github.com/flxzt/rnote"
 
 [workspace.dependencies]
-rnote-compose = { version="0.9.1", path = "crates/rnote-compose" }
-rnote-engine = { version="0.9.1", path = "crates/rnote-engine" }
+rnote-compose = { version="0.9.2", path = "crates/rnote-compose" }
+rnote-engine = { version="0.9.2", path = "crates/rnote-engine" }
 
 log = "0.4"
 pretty_env_logger = "0.5"
@@ -72,6 +72,7 @@ open = "5"
 atty = "0.2"
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 glib = "0.18.3"
+glib-build-tools = "0.18.0"
 gio = "0.18.3"
 cairo-rs = { version = "0.18", features = ["png", "svg", "pdf"] }
 librsvg = "2.57"

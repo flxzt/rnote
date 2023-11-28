@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-26 16:17+0100\n"
-"PO-Revision-Date: 2023-11-25 11:56+0000\n"
+"PO-Revision-Date: 2023-11-28 17:53+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.2.1-rc\n"
+"X-Generator: Weblate 5.3-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -290,7 +290,6 @@ msgid "Page Borders"
 msgstr "পৃষ্ঠার সীমানা"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:162
-#, fuzzy
 msgid "Whether the pages have drawn borders"
 msgstr "পৃষ্ঠাগুলির সীমানা আঁকছে কিনা"
 
@@ -1690,6 +1689,8 @@ msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
 msgstr ""
+"সেটিংস স্কিমা ইনস্টল করা নেই। অ্যাপ সেটিংস লোড করা যায়নি এবং সংরক্ষণ করা হবে"
+" না।"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:564
 msgid "Opening file failed"
@@ -1793,18 +1794,14 @@ msgstr "সফলভাবে নথি রপ্তানি করা হয�
 #: crates/rnote-ui/src/dialogs/export.rs:226
 #: crates/rnote-ui/src/dialogs/export.rs:530
 #: crates/rnote-ui/src/dialogs/export.rs:800
-#, fuzzy
-#| msgid "- no file name -"
 msgid "View in file manager"
-msgstr "- কোন ফাইলের নাম নেই -"
+msgstr "ফাইল ম্যানেজারে দেখুন"
 
 #: crates/rnote-ui/src/dialogs/export.rs:245
 #: crates/rnote-ui/src/dialogs/export.rs:544
 #: crates/rnote-ui/src/dialogs/export.rs:820
-#, fuzzy
-#| msgid "Failed to open file, unsupported file type"
 msgid "Failed to open the file in the file manager"
-msgstr "ফাইল খুলতে ব্যর্থ, অসমর্থিত ফাইল প্রকার"
+msgstr "ফাইল ম্যানেজারে ফাইল খুলতে ব্যর্থ হয়েছে"
 
 #: crates/rnote-ui/src/dialogs/export.rs:255
 msgid "Exporting document failed, no file selected"

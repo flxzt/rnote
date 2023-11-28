@@ -213,7 +213,7 @@ impl Default for Engine {
 }
 
 impl Engine {
-    pub(crate) const STROKE_BOUNDS_INTERSECTION_TOL: f64 = 1e-4;
+    pub(crate) const STROKE_BOUNDS_INTERSECTION_TOLERANCE: f64 = 1e-3;
 
     pub fn engine_tasks_tx(&self) -> EngineTaskSender {
         self.tasks_tx.clone()
@@ -585,8 +585,10 @@ impl Engine {
             .filter(|page_bounds| {
                 // Filter the pages out that don't intersect with any stroke
                 strokes_bounds.iter().any(|stroke_bounds| {
-                    stroke_bounds
-                        .intersects_w_tolerance(page_bounds, Self::STROKE_BOUNDS_INTERSECTION_TOL)
+                    stroke_bounds.intersects_w_tolerance(
+                        page_bounds,
+                        Self::STROKE_BOUNDS_INTERSECTION_TOLERANCE,
+                    )
                 })
             })
             .collect::<Vec<Aabb>>();

@@ -31,6 +31,7 @@ If applicable, add screenshots to help explain your problem.
  - App Version: [e.g. Rnote v0.9.2]
  - Installation Source: [e.g. Flatpak, Archlinux Community Repo, ...]
  - Desktop Environment: [e.g. Gnome 44.2]
+ - Display Server: [e.g. X11 or Wayland]
 
 **Additional context**  
 Add any other context about the problem here.

@@ -12,7 +12,7 @@ If it is UX / UI related, don't post how a single aspect of the UI should be cha
 the UI is lacking or should be improved.
 
 **Is your feature request related to a problem? Please describe.**  
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+A clear and concise description of what the problem is.
 
 **Describe the solution you'd like**  
 A clear and concise description of what you want to happen.

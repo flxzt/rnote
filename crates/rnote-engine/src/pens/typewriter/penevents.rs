@@ -21,7 +21,7 @@ impl Typewriter {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
-        let text_width = engine_view.pens_config.typewriter_config.text_width;
+        let text_width = engine_view.pens_config.typewriter_config.text_width();
 
         let event_result = match &mut self.state {
             TypewriterState::Idle | TypewriterState::Start { .. } => {
@@ -283,12 +283,13 @@ impl Typewriter {
                             if x_offset.abs()
                                 > Self::ADJ_TEXT_WIDTH_THRESHOLD / engine_view.camera.total_zoom()
                             {
-                                let abs_x_offset = element.pos[0] - start_pos[0];
-                                engine_view.pens_config.typewriter_config.text_width =
-                                    (*start_text_width + abs_x_offset).max(2.0);
-                                if let Some(max_width) = &mut textstroke.text_style.max_width {
-                                    *max_width = *start_text_width + abs_x_offset;
-                                }
+                                let new_text_width =
+                                    *start_text_width + (element.pos[0] - start_pos[0]);
+                                engine_view
+                                    .pens_config
+                                    .typewriter_config
+                                    .set_text_width(new_text_width);
+                                textstroke.text_style.set_max_width(Some(new_text_width));
                                 engine_view.store.regenerate_rendering_for_stroke(
                                     *stroke_key,
                                     engine_view.camera.viewport(),
@@ -476,9 +477,8 @@ impl Typewriter {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let text_width = engine_view.pens_config.typewriter_config.text_width;
+        let text_width = engine_view.pens_config.typewriter_config.text_width();
         let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
-        let max_width_enabled = engine_view.pens_config.typewriter_config.max_width_enabled;
 
         let event_result = match &mut self.state {
             TypewriterState::Idle => EventResult {
@@ -492,9 +492,7 @@ impl Typewriter {
                 match keyboard_key {
                     KeyboardKey::Unicode(keychar) => {
                         text_style.ranged_text_attributes.clear();
-                        if max_width_enabled {
-                            text_style.max_width = Some(text_width);
-                        }
+                        text_style.set_max_width(Some(text_width));
                         let textstroke = TextStroke::new(String::from(keychar), *pos, text_style);
                         let mut cursor = GraphemeCursor::new(0, textstroke.text.len(), true);
 
@@ -1049,9 +1047,8 @@ impl Typewriter {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let text_width = engine_view.pens_config.typewriter_config.text_width;
+        let text_width = engine_view.pens_config.typewriter_config.text_width();
         let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
-        let max_width_enabled = engine_view.pens_config.typewriter_config.max_width_enabled;
 
         self.reset_blink();
 
@@ -1065,9 +1062,7 @@ impl Typewriter {
                 super::play_sound(None, engine_view.audioplayer);
 
                 text_style.ranged_text_attributes.clear();
-                if max_width_enabled {
-                    text_style.max_width = Some(text_width);
-                }
+                text_style.set_max_width(Some(text_width));
                 let text_len = text.len();
                 let textstroke = TextStroke::new(text, *pos, text_style);
                 let cursor = GraphemeCursor::new(text_len, text_len, true);

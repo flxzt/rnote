@@ -7,18 +7,27 @@ use serde::{Deserialize, Serialize};
 pub struct TypewriterConfig {
     #[serde(rename = "text_style")]
     pub text_style: TextStyle,
-    #[serde(rename = "max_width_enabled")]
-    pub max_width_enabled: bool,
     #[serde(rename = "text_width")]
-    pub text_width: f64,
+    text_width: f64,
 }
 
 impl Default for TypewriterConfig {
     fn default() -> Self {
         Self {
             text_style: TextStyle::default(),
-            max_width_enabled: true,
-            text_width: 600.0,
+            text_width: Self::TEXT_WIDTH_DEFAULT,
         }
+    }
+}
+
+impl TypewriterConfig {
+    pub const TEXT_WIDTH_DEFAULT: f64 = 600.;
+
+    pub fn text_width(&self) -> f64 {
+        self.text_width
+    }
+
+    pub fn set_text_width(&mut self, text_width: f64) {
+        self.text_width = text_width.max(0.);
     }
 }

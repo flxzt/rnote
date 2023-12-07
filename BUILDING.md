@@ -10,14 +10,26 @@ git submodule update --init --recursive
 # Building with Flatpak vs Meson
 This project can be compiled in two different ways depending on your needs: flatpak or meson.
 
-Flatpak is a sandboxed environment/distribution used for building and running applications in a way that is more user friendly and cross platform. When using flatpak to build an application, flatpak creates a sandboxed environment tailered to exactly what the application needs. This makes it much easier to compile and run an application without issues.
+Flatpak is a sandboxed environment/distribution used for building and running applications in a way that is more user
+friendly and cross platform. When using flatpak to build an application, flatpak creates a sandboxed environment
+tailored to exactly what the application needs. This makes it much easier to compile and run an application without
+issues.
 
-Meson is the build system that Rnote uses for building the application. It is called when the flatpak is built. It is also possible to use meson directly on the host. Because it is building on the host machine, it may require more upfront work managing the host environment, but then compiling changes to the codebase can be much faster since it does not require rebuilding a sandboxed environment.
+Meson is the build system that Rnote uses for building the application. It is called when the flatpak is built. It is
+also possible to use meson directly on the host. Because it is building on the host machine, it may require more upfront
+work managing the host environment, but then compiling changes to the codebase can be much faster since it does not
+require rebuilding a sandboxed environment.
 
 # Building with Flatpak
 There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.yaml`.
 
-Make sure you have `flatpak` and `flatkpak-builder` installed on your system.
+Make sure you have `flatpak` and `flatpak-builder` installed on your system.
+
+
+For Fedora:
+```bash
+sudo dnf install flatpak flatpak-builder
+```
 
 Flathub needs to be added as remote repository:
 
@@ -43,8 +55,8 @@ the application for you. **This is the easiest and recommended way.**
     `systemctl start --user xdg-document-portal` should fix it.
 - As long as the flatpak is not installed on the system, The DirectoryList in the workspace browser does not update when
     files are created, removed or changed. It will work in the released flatpak.
-- Building the flatpak aborts randomly with `status 137 out of memory`: Reset the flatpak app-id permissions by executing
-    `flatpak permission-reset com.github.flxzt.rnote`, so the build is able to run in the background.
+- Building the flatpak aborts randomly with `status 137 out of memory`: Reset the flatpak App-ID permissions by
+    executing `flatpak permission-reset com.github.flxzt.rnote`, so the build is able to run in the background.
     (see [this issue](https://github.com/flatpak/xdg-desktop-portal/issues/478))
 
 ## Manual flatpak build
@@ -71,8 +83,7 @@ flatpak-builder --user --install flatpak-app build-aux/com.github.flxzt.rnote.De
 ```
 
 ### Run
-Then it can be run.
-From the build directory:
+Then it can be run. From the build directory:
 
 ```bash
 flatpak-builder --run flatpak-app build-aux/com.github.flxzt.rnote.Devel.yaml rnote
@@ -89,7 +100,8 @@ The flatpak manifest calls the meson build system to build the application.
 If a native build on the host is wanted, meson can be called directly.
 
 ## Prerequisites
-Install all needed dependencies and build tools, e.g. for fedora 38:
+Install all needed dependencies and build tools, e.g. for Fedora:
+
 ```bash
 sudo dnf install gcc gcc-c++ clang clang-devel python3 make cmake meson git kernel-devel gtk4-devel libadwaita-devel \
 poppler-glib-devel poppler-data alsa-lib-devel

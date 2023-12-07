@@ -72,6 +72,20 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.9.3" date="2023-12-07">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>improvement: add button to export notification to open file location in file-manager after exporting (thanks to @silvasch)</li>
+          <li>improvement: more readable file row names</li>
+          <li>improvement: add keyboard shortcut for snap-positions action</li>
+          <li>improvement: pdf import option to toggle page borders</li>
+          <li>fix: don't export empty pages that are adjacent to content that is snapped to the document grid</li>
+          <li>fix: progress pulses getting out of sync when executing multiple operations in parallel</li>
+          <li>fix: typewriter width adjustment button disappearing after setting it to minimal width</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.9.2" date="2023-11-16">
       <description>
         <p>this release changes:</p>

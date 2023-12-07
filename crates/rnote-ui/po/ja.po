@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-26 16:17+0100\n"
+"POT-Creation-Date: 2023-12-07 15:59+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/"
@@ -98,7 +98,7 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
 #: crates/rnote-ui/data/ui/shortcuts.ui:149
-#: crates/rnote-ui/src/canvas/mod.rs:590
+#: crates/rnote-ui/src/canvas/mod.rs:594
 msgid "New Document"
 msgstr ""
 
@@ -197,10 +197,10 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: crates/rnote-ui/data/ui/dialogs/export.ui:284
-#: crates/rnote-ui/src/dialogs/export.rs:374
-#: crates/rnote-ui/src/dialogs/export.rs:411
-#: crates/rnote-ui/src/dialogs/export.rs:419
-#: crates/rnote-ui/src/dialogs/mod.rs:523
+#: crates/rnote-ui/src/dialogs/export.rs:371
+#: crates/rnote-ui/src/dialogs/export.rs:408
+#: crates/rnote-ui/src/dialogs/export.rs:416
+#: crates/rnote-ui/src/dialogs/mod.rs:527
 msgid "- no directory selected -"
 msgstr ""
 
@@ -326,7 +326,7 @@ msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
-#: crates/rnote-ui/src/dialogs/export.rs:268
+#: crates/rnote-ui/src/dialogs/export.rs:267
 #, fuzzy
 #| msgid "Export document as SVG"
 msgid "Export Document"
@@ -335,8 +335,8 @@ msgstr "選択範囲をSVGに保存"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
 #: crates/rnote-ui/data/ui/dialogs/export.ui:180
 #: crates/rnote-ui/data/ui/dialogs/export.ui:416
-#: crates/rnote-ui/src/dialogs/export.rs:900
-#: crates/rnote-ui/src/dialogs/export.rs:947
+#: crates/rnote-ui/src/dialogs/export.rs:917
+#: crates/rnote-ui/src/dialogs/export.rs:963
 msgid "Export"
 msgstr ""
 
@@ -355,14 +355,14 @@ msgstr ""
 #. force the user to pick another file
 #: crates/rnote-ui/data/ui/dialogs/export.ui:82
 #: crates/rnote-ui/data/ui/dialogs/export.ui:483
-#: crates/rnote-ui/src/dialogs/export.rs:118
-#: crates/rnote-ui/src/dialogs/export.rs:140
-#: crates/rnote-ui/src/dialogs/export.rs:147
-#: crates/rnote-ui/src/dialogs/export.rs:192
-#: crates/rnote-ui/src/dialogs/export.rs:675
+#: crates/rnote-ui/src/dialogs/export.rs:119
+#: crates/rnote-ui/src/dialogs/export.rs:141
+#: crates/rnote-ui/src/dialogs/export.rs:148
+#: crates/rnote-ui/src/dialogs/export.rs:193
+#: crates/rnote-ui/src/dialogs/export.rs:668
+#: crates/rnote-ui/src/dialogs/export.rs:694
 #: crates/rnote-ui/src/dialogs/export.rs:701
-#: crates/rnote-ui/src/dialogs/export.rs:708
-#: crates/rnote-ui/src/dialogs/export.rs:759
+#: crates/rnote-ui/src/dialogs/export.rs:752
 msgid "- no file selected -"
 msgstr ""
 
@@ -426,19 +426,19 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:340
 #: crates/rnote-ui/data/ui/dialogs/export.ui:534
-#: crates/rnote-ui/src/dialogs/export.rs:278
-#: crates/rnote-ui/src/dialogs/export.rs:590
-#: crates/rnote-ui/src/dialogs/export.rs:859
+#: crates/rnote-ui/src/dialogs/export.rs:277
+#: crates/rnote-ui/src/dialogs/export.rs:583
+#: crates/rnote-ui/src/dialogs/export.rs:876
 msgid "Svg"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:134
-#: crates/rnote-ui/src/dialogs/export.rs:283
+#: crates/rnote-ui/src/dialogs/export.rs:282
 msgid "Pdf"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
-#: crates/rnote-ui/src/dialogs/export.rs:288
+#: crates/rnote-ui/src/dialogs/export.rs:287
 msgid "Xopp"
 msgstr ""
 
@@ -466,7 +466,7 @@ msgid "Vertical First"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:172
-#: crates/rnote-ui/src/dialogs/export.rs:567
+#: crates/rnote-ui/src/dialogs/export.rs:569
 #, fuzzy
 #| msgid "Export document as PDF"
 msgid "Export Document Pages"
@@ -494,15 +494,15 @@ msgstr "選択"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:535
-#: crates/rnote-ui/src/dialogs/export.rs:595
-#: crates/rnote-ui/src/dialogs/export.rs:864
+#: crates/rnote-ui/src/dialogs/export.rs:588
+#: crates/rnote-ui/src/dialogs/export.rs:881
 msgid "Png"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:342
 #: crates/rnote-ui/data/ui/dialogs/export.ui:536
-#: crates/rnote-ui/src/dialogs/export.rs:601
-#: crates/rnote-ui/src/dialogs/export.rs:870
+#: crates/rnote-ui/src/dialogs/export.rs:594
+#: crates/rnote-ui/src/dialogs/export.rs:887
 msgid "Jpeg"
 msgstr ""
 
@@ -517,7 +517,7 @@ msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:408
-#: crates/rnote-ui/src/dialogs/export.rs:845
+#: crates/rnote-ui/src/dialogs/export.rs:864
 #, fuzzy
 #| msgid "Export selection as SVG"
 msgid "Export Selection"
@@ -1231,7 +1231,7 @@ msgid "Duplicate"
 msgstr "選択範囲を複製"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:592
+#: crates/rnote-ui/src/canvas/mod.rs:596
 msgid "Draft"
 msgstr ""
 
@@ -1435,7 +1435,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:247
 #: crates/rnote-ui/data/ui/shortcuts.ui:146
-#: crates/rnote-ui/src/dialogs/mod.rs:626
+#: crates/rnote-ui/src/dialogs/mod.rs:630
 #, fuzzy
 #| msgid "Export document as SVG"
 msgid "Document"
@@ -1769,18 +1769,18 @@ msgid ""
 "be saved."
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/mod.rs:564
+#: crates/rnote-ui/src/appwindow/mod.rs:563
 #, fuzzy
 #| msgid "Opening bitmap image file failed."
 msgid "Opening file failed"
 msgstr "ビットマップ画像の読み込みに失敗しました。"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:248
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
-#: crates/rnote-ui/src/dialogs/export.rs:68
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:581
+#: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:126
-#: crates/rnote-ui/src/dialogs/mod.rs:256
-#: crates/rnote-ui/src/dialogs/mod.rs:407
+#: crates/rnote-ui/src/dialogs/mod.rs:257
+#: crates/rnote-ui/src/dialogs/mod.rs:411
 #, fuzzy
 #| msgid "Exporting document as .xopp failed."
 msgid "Saving document failed"
@@ -1812,42 +1812,42 @@ msgstr ""
 msgid "Exporting selection failed, nothing selected"
 msgstr ".xoppへの保存に失敗しました。"
 
-#: crates/rnote-ui/src/canvas/mod.rs:856 crates/rnote-ui/src/dialogs/mod.rs:203
-#: crates/rnote-ui/src/dialogs/mod.rs:337
+#: crates/rnote-ui/src/canvas/mod.rs:868 crates/rnote-ui/src/dialogs/mod.rs:204
+#: crates/rnote-ui/src/dialogs/mod.rs:341
 msgid "- invalid file name -"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:869
+#: crates/rnote-ui/src/canvas/mod.rs:881
 msgid "- invalid folder path -"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:910
+#: crates/rnote-ui/src/canvas/mod.rs:922
 msgid "Opened file was modified on disk"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:911
+#: crates/rnote-ui/src/canvas/mod.rs:923
 msgid "Reload"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:917
+#: crates/rnote-ui/src/canvas/mod.rs:930
 msgid "Reloading .rnote file from disk failed"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:981
+#: crates/rnote-ui/src/canvas/mod.rs:994
 msgid "Opened file was renamed on disk"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:994
+#: crates/rnote-ui/src/canvas/mod.rs:1007
 msgid "Opened file was moved or deleted on disk"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:1126
+#: crates/rnote-ui/src/canvas/mod.rs:1139
 #, fuzzy
 #| msgid "Opening bitmap image file failed."
 msgid "Inserting file failed"
 msgstr "ビットマップ画像の読み込みに失敗しました。"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1136
+#: crates/rnote-ui/src/canvas/mod.rs:1149
 #, fuzzy
 #| msgid "Exporting document as .xopp failed."
 msgid "Inserting text failed"
@@ -1864,12 +1864,10 @@ msgstr ""
 msgid "Saved document successfully"
 msgstr ".xoppに保存しました。"
 
-#: crates/rnote-ui/src/dialogs/export.rs:224
-#: crates/rnote-ui/src/dialogs/export.rs:229
-#: crates/rnote-ui/src/dialogs/export.rs:234
+#: crates/rnote-ui/src/dialogs/export.rs:226
 #: crates/rnote-ui/src/dialogs/export.rs:239
-#: crates/rnote-ui/src/dialogs/export.rs:533
-#: crates/rnote-ui/src/dialogs/export.rs:538
+#: crates/rnote-ui/src/dialogs/export.rs:535
+#: crates/rnote-ui/src/dialogs/export.rs:540
 #: crates/rnote-ui/src/dialogs/export.rs:804
 #: crates/rnote-ui/src/dialogs/export.rs:809
 #: crates/rnote-ui/src/dialogs/export.rs:814
@@ -1878,38 +1876,38 @@ msgstr ".xoppに保存しました。"
 msgid "Exporting document failed"
 msgstr ".xoppへの保存に失敗しました。"
 
-#: crates/rnote-ui/src/dialogs/export.rs:226
+#: crates/rnote-ui/src/dialogs/export.rs:230
 #, fuzzy
 #| msgid "Exported document as .xopp successfully."
 msgid "Exported document successfully"
 msgstr ".xoppに保存しました。"
 
-#: crates/rnote-ui/src/dialogs/export.rs:226
-#: crates/rnote-ui/src/dialogs/export.rs:530
+#: crates/rnote-ui/src/dialogs/export.rs:231
+#: crates/rnote-ui/src/dialogs/export.rs:531
 #: crates/rnote-ui/src/dialogs/export.rs:800
 msgid "View in file manager"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:245
-#: crates/rnote-ui/src/dialogs/export.rs:544
+#: crates/rnote-ui/src/dialogs/export.rs:244
+#: crates/rnote-ui/src/dialogs/export.rs:546
 #: crates/rnote-ui/src/dialogs/export.rs:820
 msgid "Failed to open the file in the file manager"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:255
+#: crates/rnote-ui/src/dialogs/export.rs:254
 #, fuzzy
 #| msgid "Exporting document as .xopp failed."
 msgid "Exporting document failed, no file selected"
 msgstr ".xoppへの保存に失敗しました。"
 
-#: crates/rnote-ui/src/dialogs/export.rs:270
-#: crates/rnote-ui/src/dialogs/export.rs:569
-#: crates/rnote-ui/src/dialogs/export.rs:847
-#: crates/rnote-ui/src/dialogs/mod.rs:505
+#: crates/rnote-ui/src/dialogs/export.rs:269
+#: crates/rnote-ui/src/dialogs/export.rs:571
+#: crates/rnote-ui/src/dialogs/export.rs:866
+#: crates/rnote-ui/src/dialogs/mod.rs:509
 msgid "Select"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:528
+#: crates/rnote-ui/src/dialogs/export.rs:526
 #, fuzzy
 #| msgid "Exporting document as .xopp failed."
 msgid "Exporting document pages failed"
@@ -1921,13 +1919,19 @@ msgstr ".xoppへの保存に失敗しました。"
 msgid "Exported document pages successfully"
 msgstr ".xoppに保存しました。"
 
-#: crates/rnote-ui/src/dialogs/export.rs:553
+#: crates/rnote-ui/src/dialogs/export.rs:555
 #, fuzzy
 #| msgid "Exporting document as .xopp failed."
 msgid "Exporting document pages failed, no directory selected"
 msgstr ".xoppへの保存に失敗しました。"
 
-#: crates/rnote-ui/src/dialogs/export.rs:796
+#: crates/rnote-ui/src/dialogs/export.rs:785
+#, fuzzy
+#| msgid "Exporting document as .xopp failed."
+msgid "Exporting selection failed, no file selected"
+msgstr ".xoppへの保存に失敗しました。"
+
+#: crates/rnote-ui/src/dialogs/export.rs:795
 #, fuzzy
 #| msgid "Export selection as SVG"
 msgid "Exporting selection failed"
@@ -1939,48 +1943,42 @@ msgstr "選択範囲をSVGに保存"
 msgid "Exported selection successfully"
 msgstr ".xoppに保存しました。"
 
-#: crates/rnote-ui/src/dialogs/export.rs:832
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
-msgid "Exporting selection failed, no file selected"
-msgstr ".xoppへの保存に失敗しました。"
-
-#: crates/rnote-ui/src/dialogs/export.rs:890
-#: crates/rnote-ui/src/dialogs/export.rs:937
+#: crates/rnote-ui/src/dialogs/export.rs:907
+#: crates/rnote-ui/src/dialogs/export.rs:953
 msgid "Json"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:898
+#: crates/rnote-ui/src/dialogs/export.rs:915
 #, fuzzy
 #| msgid "Selector"
 msgid "Export Engine State"
 msgstr "選択"
 
-#: crates/rnote-ui/src/dialogs/export.rs:917
+#: crates/rnote-ui/src/dialogs/export.rs:933
 #, fuzzy
 #| msgid "Selector"
 msgid "Exporting engine state failed"
 msgstr "選択"
 
-#: crates/rnote-ui/src/dialogs/export.rs:920
+#: crates/rnote-ui/src/dialogs/export.rs:937
 #, fuzzy
 #| msgid "Exported document as .xopp successfully."
 msgid "Exported engine state successfully"
 msgstr ".xoppに保存しました。"
 
-#: crates/rnote-ui/src/dialogs/export.rs:945
+#: crates/rnote-ui/src/dialogs/export.rs:961
 #, fuzzy
 #| msgid "Export selection as SVG"
 msgid "Export Engine Config"
 msgstr "選択範囲をSVGに保存"
 
-#: crates/rnote-ui/src/dialogs/export.rs:964
+#: crates/rnote-ui/src/dialogs/export.rs:979
 #, fuzzy
 #| msgid "Export selection as SVG"
 msgid "Exporting engine config failed"
 msgstr "選択範囲をSVGに保存"
 
-#: crates/rnote-ui/src/dialogs/export.rs:967
+#: crates/rnote-ui/src/dialogs/export.rs:983
 #, fuzzy
 #| msgid "Exported document as .xopp successfully."
 msgid "Exported engine config successfully"
@@ -2035,233 +2033,233 @@ msgstr ""
 msgid "translator-credits"
 msgstr "Seio Inoue <sei0okun@gmail.com>"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:210
-#: crates/rnote-ui/src/dialogs/mod.rs:344
+#: crates/rnote-ui/src/dialogs/mod.rs:211
+#: crates/rnote-ui/src/dialogs/mod.rs:348
 msgid "- invalid save folder name -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:226
-#: crates/rnote-ui/src/dialogs/mod.rs:359
+#: crates/rnote-ui/src/dialogs/mod.rs:227
+#: crates/rnote-ui/src/dialogs/mod.rs:363
 msgid "The changes will be saved"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:231
-#: crates/rnote-ui/src/dialogs/mod.rs:364
+#: crates/rnote-ui/src/dialogs/mod.rs:232
+#: crates/rnote-ui/src/dialogs/mod.rs:368
 msgid "A new file will be created"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:503
+#: crates/rnote-ui/src/dialogs/mod.rs:507
 #, fuzzy
 #| msgid "Export selection as SVG"
 msgid "Change Workspace Directory"
 msgstr "選択範囲をSVGに保存"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:613
+#: crates/rnote-ui/src/dialogs/mod.rs:617
 msgid "Band-Aid"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:614
+#: crates/rnote-ui/src/dialogs/mod.rs:618
 msgid "Bank"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:615
+#: crates/rnote-ui/src/dialogs/mod.rs:619
 msgid "Bookmark"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:616
+#: crates/rnote-ui/src/dialogs/mod.rs:620
 msgid "Book"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:617
+#: crates/rnote-ui/src/dialogs/mod.rs:621
 msgid "Bread"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:618
+#: crates/rnote-ui/src/dialogs/mod.rs:622
 msgid "Calendar"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:619
+#: crates/rnote-ui/src/dialogs/mod.rs:623
 msgid "Camera"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:620
+#: crates/rnote-ui/src/dialogs/mod.rs:624
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:621
+#: crates/rnote-ui/src/dialogs/mod.rs:625
 msgid "Clock"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:622
+#: crates/rnote-ui/src/dialogs/mod.rs:626
 msgid "Code"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:623
+#: crates/rnote-ui/src/dialogs/mod.rs:627
 msgid "Compose"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:624
+#: crates/rnote-ui/src/dialogs/mod.rs:628
 msgctxt "as in plant"
 msgid "Crop"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:625
+#: crates/rnote-ui/src/dialogs/mod.rs:629
 msgid "Dictionary"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:627
+#: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "Drinks"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:628
+#: crates/rnote-ui/src/dialogs/mod.rs:632
 msgid "Flag"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:629
+#: crates/rnote-ui/src/dialogs/mod.rs:633
 msgid "Folder"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:630
+#: crates/rnote-ui/src/dialogs/mod.rs:634
 msgid "Footprints"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:631
+#: crates/rnote-ui/src/dialogs/mod.rs:635
 msgid "Gamepad"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:632
+#: crates/rnote-ui/src/dialogs/mod.rs:636
 msgid "Gear"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:633
+#: crates/rnote-ui/src/dialogs/mod.rs:637
 msgid "Globe"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:634
+#: crates/rnote-ui/src/dialogs/mod.rs:638
 msgid "Hammer"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:635
+#: crates/rnote-ui/src/dialogs/mod.rs:639
 msgid "Heart"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:636
+#: crates/rnote-ui/src/dialogs/mod.rs:640
 msgid "Hourglass"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:637
+#: crates/rnote-ui/src/dialogs/mod.rs:641
 msgid "Key"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:638
+#: crates/rnote-ui/src/dialogs/mod.rs:642
 msgid "Language"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:639
+#: crates/rnote-ui/src/dialogs/mod.rs:643
 msgid "Library"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:640
+#: crates/rnote-ui/src/dialogs/mod.rs:644
 msgid "Lightbulb"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:641
+#: crates/rnote-ui/src/dialogs/mod.rs:645
 msgid "Mathematics"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:642
+#: crates/rnote-ui/src/dialogs/mod.rs:646
 #, fuzzy
 #| msgid "Settings"
 msgid "Meeting"
 msgstr "設定"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:643
+#: crates/rnote-ui/src/dialogs/mod.rs:647
 msgid "Money"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:644
+#: crates/rnote-ui/src/dialogs/mod.rs:648
 msgid "Musical Note"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:645
+#: crates/rnote-ui/src/dialogs/mod.rs:649
 msgid "Nature"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:646
+#: crates/rnote-ui/src/dialogs/mod.rs:650
 msgid "Open Book"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:647
+#: crates/rnote-ui/src/dialogs/mod.rs:651
 msgid "Paintbrush"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:648
+#: crates/rnote-ui/src/dialogs/mod.rs:652
 msgid "Pencil and Paper"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:649
+#: crates/rnote-ui/src/dialogs/mod.rs:653
 msgid "People"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:650
+#: crates/rnote-ui/src/dialogs/mod.rs:654
 msgid "Person"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:651
+#: crates/rnote-ui/src/dialogs/mod.rs:655
 #, fuzzy
 #| msgid "Vector"
 msgid "Projector"
 msgstr "ベクター"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:652
+#: crates/rnote-ui/src/dialogs/mod.rs:656
 msgid "Science"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:653
+#: crates/rnote-ui/src/dialogs/mod.rs:657
 msgid "Scratchpad"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:654
+#: crates/rnote-ui/src/dialogs/mod.rs:658
 #, fuzzy
 #| msgid "Shaper"
 msgid "Shapes"
 msgstr "図形"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:655
+#: crates/rnote-ui/src/dialogs/mod.rs:659
 msgid "Shopping"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:656
+#: crates/rnote-ui/src/dialogs/mod.rs:660
 msgid "Speech Bubble"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:657
+#: crates/rnote-ui/src/dialogs/mod.rs:661
 msgid "Speedometer"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:658
+#: crates/rnote-ui/src/dialogs/mod.rs:662
 msgid "Star"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:660
+#: crates/rnote-ui/src/dialogs/mod.rs:664
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:662
+#: crates/rnote-ui/src/dialogs/mod.rs:666
 msgid "Text"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:663
+#: crates/rnote-ui/src/dialogs/mod.rs:667
 msgid "Travel"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:664
+#: crates/rnote-ui/src/dialogs/mod.rs:668
 msgid "Weather"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:665
+#: crates/rnote-ui/src/dialogs/mod.rs:669
 msgid "Weight"
 msgstr ""
 

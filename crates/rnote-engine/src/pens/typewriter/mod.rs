@@ -2,6 +2,7 @@
 mod penevents;
 
 // Imports
+use super::pensconfig::TypewriterConfig;
 use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineTask, EngineView, EngineViewMut};
@@ -95,7 +96,7 @@ impl DrawableOnDoc for Typewriter {
                     engine_view.store.get_stroke_ref(*stroke_key)
                 {
                     let text_rect = Self::text_rect_bounds(
-                        engine_view.pens_config.typewriter_config.text_width,
+                        engine_view.pens_config.typewriter_config.text_width(),
                         textstroke,
                     );
                     let typewriter_bounds = text_rect.extend_by(
@@ -163,7 +164,7 @@ impl DrawableOnDoc for Typewriter {
                 if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_ref(*stroke_key)
                 {
-                    let text_width = engine_view.pens_config.typewriter_config.text_width;
+                    let text_width = engine_view.pens_config.typewriter_config.text_width();
                     let text_bounds = Self::text_rect_bounds(text_width, textstroke);
 
                     // Draw text outline
@@ -303,9 +304,12 @@ impl PenBehaviour for Typewriter {
                             .text_style
                             .ranged_text_attributes
                             .clear();
-                        if let Some(max_width) = textstroke.text_style.max_width {
-                            engine_view.pens_config.typewriter_config.text_width = max_width;
-                        }
+                        engine_view.pens_config.typewriter_config.set_text_width(
+                            textstroke
+                                .text_style
+                                .max_width()
+                                .unwrap_or(TypewriterConfig::TEXT_WIDTH_DEFAULT),
+                        );
                         update_cursors_for_textstroke(textstroke, cursor, Some(selection_cursor));
 
                         widget_flags.refresh_ui = true;
@@ -326,9 +330,12 @@ impl PenBehaviour for Typewriter {
                             .text_style
                             .ranged_text_attributes
                             .clear();
-                        if let Some(max_width) = textstroke.text_style.max_width {
-                            engine_view.pens_config.typewriter_config.text_width = max_width;
-                        }
+                        engine_view.pens_config.typewriter_config.set_text_width(
+                            textstroke
+                                .text_style
+                                .max_width()
+                                .unwrap_or(TypewriterConfig::TEXT_WIDTH_DEFAULT),
+                        );
                         update_cursors_for_textstroke(textstroke, cursor, None);
 
                         widget_flags.refresh_ui = true;
@@ -623,17 +630,14 @@ impl Typewriter {
             engine_view.camera.viewport().mins.coords + Stroke::IMPORT_OFFSET_DEFAULT
         });
         let mut widget_flags = WidgetFlags::default();
-        let text_width = engine_view.pens_config.typewriter_config.text_width;
+        let text_width = engine_view.pens_config.typewriter_config.text_width();
         let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
-        let max_width_enabled = engine_view.pens_config.typewriter_config.max_width_enabled;
 
         match &mut self.state {
             TypewriterState::Idle => {
                 let text_len = text.len();
                 text_style.ranged_text_attributes.clear();
-                if max_width_enabled {
-                    text_style.max_width = Some(text_width);
-                }
+                text_style.set_max_width(Some(text_width));
                 let textstroke = TextStroke::new(text, pos, text_style);
                 let cursor = GraphemeCursor::new(text_len, textstroke.text.len(), true);
 
@@ -660,9 +664,7 @@ impl Typewriter {
             TypewriterState::Start(pos) => {
                 let text_len = text.len();
                 text_style.ranged_text_attributes.clear();
-                if max_width_enabled {
-                    text_style.max_width = Some(text_width);
-                }
+                text_style.set_max_width(Some(text_width));
                 let textstroke = TextStroke::new(text, *pos, text_style);
                 let cursor = GraphemeCursor::new(text_len, textstroke.text.len(), true);
 

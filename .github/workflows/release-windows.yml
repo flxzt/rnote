@@ -43,6 +43,8 @@ jobs:
         run: meson setup --prefix=C:/msys64/mingw64 -Dinstaller-name='${{ steps.set_installer_name.outputs.name }}' _mesonbuild
       - name: Generate locale files
         run: meson compile rnote-gmo -C _mesonbuild
+      - name: Compile
+        run: meson compile -v -C _mesonbuild
       - name: Build installer
         run: meson compile build-installer -C _mesonbuild
       - name: Upload installer (Workflow Artifact)

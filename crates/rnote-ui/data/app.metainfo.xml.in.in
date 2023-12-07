@@ -77,6 +77,7 @@
         <p>this release changes:</p>
         <ul>
           <li>improvement: add button to export notification to open file location in file-manager after exporting (thanks to @silvasch)</li>
+          <li>improvement: initial export file picker folder got improved, now prioritising the rnote file location and are now remembered between exports (thanks to @pobrn )</li>
           <li>improvement: more readable file row names</li>
           <li>improvement: add keyboard shortcut for snap-positions action</li>
           <li>improvement: pdf import option to toggle page borders</li>

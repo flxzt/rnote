@@ -29,7 +29,7 @@
         <property name="name">file_label</property>
         <property name="halign">start</property>
         <property name="hexpand">true</property>
-        <property name="ellipsize">end</property>
+        <property name="ellipsize">middle</property>
       </object>
     </child>
     <child>

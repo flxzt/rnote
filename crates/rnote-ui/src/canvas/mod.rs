@@ -926,11 +926,12 @@ impl RnCanvas {
                                 appwindow.overlays().progressbar_start_pulsing();
 
                                 if let Err(e) = canvas.reload_from_disk().await {
+                                    log::error!("Failed to reload current output file, Err: {e:?}");
                                     appwindow.overlays().dispatch_toast_error(&gettext("Reloading .rnote file from disk failed"));
-                                    log::error!("failed to reload current output file, {}", e);
+                                    appwindow.overlays().progressbar_abort();
+                                } else {
+                                    appwindow.overlays().progressbar_finish();
                                 }
-
-                                appwindow.overlays().progressbar_finish();
                             }));
                         }),
                         0,

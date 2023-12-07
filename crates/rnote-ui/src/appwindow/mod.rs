@@ -510,7 +510,6 @@ impl RnAppWindow {
                     // a new tab for xopp file import
                     let wrapper = appwindow.new_canvas_wrapper();
                     let canvas = wrapper.canvas();
-                    appwindow.overlays().progressbar_start_pulsing();
                     let file_imported =
                         dialogs::import::dialog_import_xopp_w_prefs(appwindow, &canvas, input_file)
                             .await?;
@@ -558,10 +557,11 @@ impl RnAppWindow {
                 self.overlays().progressbar_abort();
             }
             Err(e) => {
-                self.overlays().progressbar_abort();
                 log::error!("Opening file with dialogs failed, Err: {e:?}");
+
                 self.overlays()
                     .dispatch_toast_error(&gettext("Opening file failed"));
+                self.overlays().progressbar_abort();
             }
         }
     }

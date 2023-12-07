@@ -120,13 +120,14 @@ pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
                         appwindow.overlays().progressbar_start_pulsing();
 
                         if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                            log::error!("Saving document failed, Err: `{e:?}`");
+
                             canvas.set_output_file(None);
-
-                            log::error!("saving document failed, Error: `{e:?}`");
                             appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
+                            appwindow.overlays().progressbar_abort();
+                        } else {
+                            appwindow.overlays().progressbar_finish();
                         }
-
-                        appwindow.overlays().progressbar_finish();
                         // No success toast on saving without dialog, success is already indicated in the header title
 
                         // only create new document if saving was successful
@@ -250,10 +251,13 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
                 if let Err(e) = canvas.save_document_to_file(&save_file).await {
                     canvas.set_output_file(None);
 
-                    log::error!("saving document failed, Error: `{e:?}`");
+                    log::error!("Saving document failed, Err: `{e:?}`");
                     appwindow
                         .overlays()
                         .dispatch_toast_error(&gettext("Saving document failed"));
+                    appwindow.overlays().progressbar_abort();
+                } else {
+                    appwindow.overlays().progressbar_finish();
                 }
 
                 appwindow.overlays().progressbar_finish();
@@ -398,10 +402,10 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
                     .canvas();
 
                 if let Err(e) = canvas.save_document_to_file(&save_file).await {
-                    canvas.set_output_file(None);
-                    close = false;
+                    log::error!("Saving document failed, Err: `{e:?}`");
 
-                    log::error!("saving document failed, Error: `{e:?}`");
+                    close = false;
+                    canvas.set_output_file(None);
                     appwindow
                         .overlays()
                         .dispatch_toast_error(&gettext("Saving document failed"));

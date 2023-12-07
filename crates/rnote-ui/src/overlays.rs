@@ -334,6 +334,10 @@ impl RnOverlays {
 
     #[allow(unused)]
     pub(crate) fn progressbar_abort(&self) {
+        self.imp()
+            .progresspulses_active
+            .set(self.imp().progresspulses_active.get().saturating_sub(1));
+
         if self.imp().progresspulses_active.get() == 0 {
             if let Some(src) = self.imp().progresspulse_id.take() {
                 src.remove();

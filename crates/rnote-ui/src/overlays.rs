@@ -8,7 +8,7 @@ use gtk4::{
 };
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::PenStyle;
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 
 mod imp {
     use super::*;
@@ -16,6 +16,7 @@ mod imp {
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/overlays.ui")]
     pub(crate) struct RnOverlays {
+        pub(crate) progresspulses_active: Cell<usize>,
         pub(crate) progresspulse_id: RefCell<Option<glib::SourceId>>,
         pub(super) prev_active_tab_page: glib::WeakRef<adw::TabPage>,
 
@@ -293,6 +294,11 @@ impl RnOverlays {
 
     pub(crate) fn progressbar_start_pulsing(&self) {
         const PULSE_INTERVAL: std::time::Duration = std::time::Duration::from_millis(300);
+
+        self.imp()
+            .progresspulses_active
+            .set(self.imp().progresspulses_active.get().saturating_add(1));
+
         if let Some(src) = self.imp().progresspulse_id.replace(Some(glib::source::timeout_add_local(
             PULSE_INTERVAL,
             clone!(@weak self as appwindow => @default-return glib::ControlFlow::Break, move || {
@@ -307,24 +313,33 @@ impl RnOverlays {
 
     pub(crate) fn progressbar_finish(&self) {
         const FINISH_TIMEOUT: std::time::Duration = std::time::Duration::from_millis(300);
-        if let Some(src) = self.imp().progresspulse_id.take() {
-            src.remove();
-        }
+
         self.progressbar().set_fraction(1.);
-        glib::source::timeout_add_local_once(
-            FINISH_TIMEOUT,
-            clone!(@weak self as appwindow => move || {
-                appwindow.progressbar().set_fraction(0.);
-            }),
-        );
+        self.imp()
+            .progresspulses_active
+            .set(self.imp().progresspulses_active.get().saturating_sub(1));
+
+        if self.imp().progresspulses_active.get() == 0 {
+            if let Some(src) = self.imp().progresspulse_id.take() {
+                src.remove();
+            }
+            glib::source::timeout_add_local_once(
+                FINISH_TIMEOUT,
+                clone!(@weak self as appwindow => move || {
+                    appwindow.progressbar().set_fraction(0.);
+                }),
+            );
+        }
     }
 
     #[allow(unused)]
     pub(crate) fn progressbar_abort(&self) {
-        if let Some(src) = self.imp().progresspulse_id.take() {
-            src.remove();
+        if self.imp().progresspulses_active.get() == 0 {
+            if let Some(src) = self.imp().progresspulse_id.take() {
+                src.remove();
+            }
+            self.progressbar().set_fraction(0.);
         }
-        self.progressbar().set_fraction(0.);
     }
 
     pub(crate) fn dispatch_toast_w_button<F: Fn(&adw::Toast) + 'static>(

@@ -320,6 +320,7 @@ impl Engine {
             | self.current_pen_update_state()
             | self.background_regenerate_pattern()
             | self.update_content_rendering_current_viewport();
+        widget_flags.refresh_ui = true;
         widget_flags.update_view = true;
         widget_flags
     }

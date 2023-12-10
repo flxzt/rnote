@@ -573,6 +573,7 @@ impl RnAppWindow {
                 let canvas = appwindow.active_tab_wrapper().canvas();
 
                 if let Some(output_file) = canvas.output_file() {
+                    appwindow.overlays().progressbar_start_pulsing();
 
                     if let Err(e) = canvas.save_document_to_file(&output_file).await {
                         log::error!("Saving document failed, Err: `{e:?}`");

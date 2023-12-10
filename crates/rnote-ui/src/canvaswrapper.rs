@@ -302,7 +302,7 @@ mod imp {
             // Actions when moving view with controls provided by the scroller ScrolledWindow.
             // e.g. touch scrolling when inertial-scrolling is enabled.
             {
-                self.scroller.connect_edge_reached(
+                self.scroller.connect_edge_overshot(
                     clone!(@weak obj as canvaswrapper => move |_, _| {
                         let canvas = canvaswrapper.canvas();
                         let widget_flags = canvas.engine_mut().doc_expand_autoexpand();

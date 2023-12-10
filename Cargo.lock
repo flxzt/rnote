@@ -3483,6 +3483,7 @@ name = "rnote-compose"
 version = "0.9.3"
 dependencies = [
  "anyhow",
+ "approx",
  "base64",
  "clap",
  "ink-stroke-modeler-rs",

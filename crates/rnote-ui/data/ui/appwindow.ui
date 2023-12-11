@@ -7,7 +7,7 @@
     <property name="default-height">600</property>
     <child>
       <object class="AdwBreakpoint">
-        <condition>max-width: 1000sp</condition>
+        <condition>max-width: 1250sp</condition>
         <setter object="split_view" property="collapsed">true</setter>
       </object>
     </child>

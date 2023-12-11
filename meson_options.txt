@@ -17,15 +17,15 @@ option(
 )
 
 option(
-  'installer-name',
+  'win-installer-name',
   type: 'string',
   value: 'rnote-win-installer',
   description: 'Only relevant for builds on Windows: the name of the generated installer after executing the "build-installer" target.',
 )
 
 option(
-  'msys-path',
+  'win-build-environment-path',
   type: 'string',
-  value: 'C:\\msys64',
-  description: 'Only relevant for builds on Windows: the path of the installed msys / mingw64 distribution.',
+  value: 'C:\\msys64\\mingw64',
+  description: 'Only relevant for builds on Windows: the path of the installed msys/mingw64 environment.',
 )

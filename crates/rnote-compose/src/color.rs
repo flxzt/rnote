@@ -107,6 +107,22 @@ impl Color {
         }
     }
 
+    /// Approximate equality.
+    pub fn approx_eq(self, other: Self) -> bool {
+        approx::relative_eq!(self.r, other.r)
+            && approx::relative_eq!(self.g, other.g)
+            && approx::relative_eq!(self.b, other.b)
+            && approx::relative_eq!(self.a, other.a)
+    }
+
+    /// Approximate equality.
+    pub fn approx_eq_f32(self, other: Self) -> bool {
+        approx::relative_eq!(self.r as f32, other.r as f32)
+            && approx::relative_eq!(self.g as f32, other.g as f32)
+            && approx::relative_eq!(self.b as f32, other.b as f32)
+            && approx::relative_eq!(self.a as f32, other.a as f32)
+    }
+
     /// The luma value, ranging [0.0 - 1.0].
     ///
     /// see: <https://en.wikipedia.org/wiki/Luma_(video)>

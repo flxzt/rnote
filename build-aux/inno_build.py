@@ -8,7 +8,7 @@ import itertools
 
 source_root = sys.argv[1]
 build_root = sys.argv[2]
-# The build environment (from an msys installation - choose from https://www.msys2.org/docs/environments/)
+# The build environment (from a msys installation - choose from https://www.msys2.org/docs/environments/)
 build_environment_path = sys.argv[3]
 app_name = sys.argv[4]
 app_name_capitalized = sys.argv[5]

@@ -99,5 +99,5 @@ called `msys-path` prior to building.
 meson configure -Dmsys-path='C:\path\to\msys64' _mesonbuild
 ```
 
-Likewise, you can adjust the output name of the installer using the `installer-name` option
+Likewise, you can adjust the output name of the installer using the `win-installer-name` option
 (which defaults to `rnote_installer`).

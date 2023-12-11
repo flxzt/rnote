@@ -14,7 +14,7 @@
 #define app_id = @APP_ID@
 #define meson_source_root = @MESON_SOURCE_ROOT@
 #define meson_build_root = @MESON_BUILD_ROOT@
-#define msys_path @MSYS_PATH@
+#define build_environment_path = @BUILD_ENVIRONMENT_PATH@
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -56,16 +56,16 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "{#meson_build_root}\dlls\*.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
 
 ; gdk-pixbuf loaders
-Source: "{#msys_path}\mingw64\lib\gdk-pixbuf-2.0\*"; DestDir: "{app}\lib\gdk-pixbuf-2.0"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#build_environment_path}\lib\gdk-pixbuf-2.0\*"; DestDir: "{app}\lib\gdk-pixbuf-2.0"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; poppler-data
-Source: "{#msys_path}\mingw64\share\poppler\*"; DestDir: "{app}\share\poppler"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#build_environment_path}\share\poppler\*"; DestDir: "{app}\share\poppler"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Settings GSchema
 Source: "{#meson_build_root}\gschemas\gschemas.compiled"; DestDir: "{app}\share\glib-2.0\schemas"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; win32 session dbus
-Source: "{#msys_path}\mingw64\bin\gdbus.exe"; DestDir: "{app}\bin\"; Flags: ignoreversion
+Source: "{#build_environment_path}\bin\gdbus.exe"; DestDir: "{app}\bin\"; Flags: ignoreversion
 ; Icons
-Source: "{#msys_path}\mingw64\share\icons\hicolor\*"; DestDir: "{app}\share\icons\hicolor"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#msys_path}\mingw64\share\icons\Adwaita\*"; DestDir: "{app}\share\icons\Adwaita"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#build_environment_path}\share\icons\hicolor\*"; DestDir: "{app}\share\icons\hicolor"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#build_environment_path}\share\icons\Adwaita\*"; DestDir: "{app}\share\icons\Adwaita"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#meson_source_root}\crates\rnote-ui\data\icons\rnote.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#meson_source_root}\crates\rnote-ui\data\icons\rnote-symbolic.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#meson_source_root}\crates\rnote-ui\data\icons\application-rnote.ico"; DestDir: "{app}"; Flags: ignoreversion

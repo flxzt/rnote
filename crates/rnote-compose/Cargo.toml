@@ -15,6 +15,7 @@ log = { workspace = true }
 anyhow = { workspace = true }
 num-derive = { workspace = true }
 num-traits = { workspace = true }
+approx = { workspace = true }
 once_cell = { workspace = true }
 serde = { workspace = true }
 nalgebra = { workspace = true }

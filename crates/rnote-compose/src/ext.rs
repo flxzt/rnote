@@ -31,6 +31,8 @@ where
     fn from_kurbo_point(kurbo_point: kurbo::Point) -> Self;
     /// Converts from kurbo::Vec2
     fn from_kurbo_vec(kurbo_vec: kurbo::Vec2) -> Self;
+    /// Approximate equality
+    fn approx_eq(&self, other: &Self) -> bool;
 }
 
 impl Vector2Ext for na::Vector2<f64> {
@@ -109,6 +111,10 @@ impl Vector2Ext for na::Vector2<f64> {
     fn from_kurbo_vec(kurbo_vec: kurbo::Vec2) -> Self {
         na::vector![kurbo_vec.x, kurbo_vec.y]
     }
+
+    fn approx_eq(&self, other: &Self) -> bool {
+        approx::relative_eq!(self[0], other[0]) && approx::relative_eq!(self[1], other[1])
+    }
 }
 
 /// Extension trait for [p2d::bounding_volume::Aabb].
@@ -172,6 +178,8 @@ where
     fn from_kurbo_rect(rect: kurbo::Rect) -> Self;
     /// Check if the bounds intersect with a tolerance
     fn intersects_w_tolerance(&self, other: &Self, tolerance: f64) -> bool;
+    /// Approximate equality
+    fn approx_eq(&self, other: &Self) -> bool;
 }
 
 impl AabbExt for Aabb {
@@ -442,6 +450,11 @@ impl AabbExt for Aabb {
             return false;
         };
         intersection.extents()[0] > tolerance && intersection.extents()[1] > tolerance
+    }
+
+    fn approx_eq(&self, other: &Self) -> bool {
+        self.mins.coords.approx_eq(&other.mins.coords)
+            && self.maxs.coords.approx_eq(&other.maxs.coords)
     }
 }
 

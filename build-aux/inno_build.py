@@ -124,7 +124,7 @@ for file in os.listdir(app_mo_dir):
 print("Running ISCC...", file=sys.stderr)
 
 run_command(
-    f"{build_environment_path}/../usr/bin/bash -lc \"iscc {inno_script}\"",
+    f"bash -lc \"iscc {inno_script}\"",
     "Running ISCC failed"
 )
 

@@ -72,6 +72,18 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.9.4" date="2023-12-13">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>ux: increase window threshold width at where the sidebar becomes an overlay</li>
+          <li>fix: indicate unsaved when changing document settings (format, colors, pattern, ..)</li>
+          <li>fix: missing progress pulse when saving existing doc</li>
+          <li>fix: ui not being refreshed after loading document from file</li>
+          <li>fix: jumping view when zoomed out and reaching edges</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.9.3" date="2023-12-07">
       <description>
         <p>this release changes:</p>

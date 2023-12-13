@@ -78,6 +78,8 @@ mod imp {
         pub(crate) empty: Cell<bool>,
         pub(crate) touch_drawing: Cell<bool>,
         pub(crate) show_drawing_cursor: Cell<bool>,
+
+        pub(crate) last_export_dir: RefCell<Option<gio::File>>,
     }
 
     impl Default for RnCanvas {
@@ -172,6 +174,8 @@ mod imp {
                 empty: Cell::new(true),
                 touch_drawing: Cell::new(false),
                 show_drawing_cursor: Cell::new(false),
+
+                last_export_dir: RefCell::new(None),
             }
         }
     }
@@ -705,6 +709,14 @@ impl RnCanvas {
         );
     }
 
+    pub(crate) fn last_export_dir(&self) -> Option<gio::File> {
+        self.imp().last_export_dir.borrow().clone()
+    }
+
+    pub(crate) fn set_last_export_dir(&self, dir: Option<gio::File>) {
+        self.imp().last_export_dir.replace(dir);
+    }
+
     /// Returns the saved date time for the modification time of the output file when it was set by the app.
     ///
     /// It might not be correct if the content of the output file has changed from outside the app.
@@ -914,11 +926,12 @@ impl RnCanvas {
                                 appwindow.overlays().progressbar_start_pulsing();
 
                                 if let Err(e) = canvas.reload_from_disk().await {
+                                    log::error!("Failed to reload current output file, Err: {e:?}");
                                     appwindow.overlays().dispatch_toast_error(&gettext("Reloading .rnote file from disk failed"));
-                                    log::error!("failed to reload current output file, {}", e);
+                                    appwindow.overlays().progressbar_abort();
+                                } else {
+                                    appwindow.overlays().progressbar_finish();
                                 }
-
-                                appwindow.overlays().progressbar_finish();
                             }));
                         }),
                         0,

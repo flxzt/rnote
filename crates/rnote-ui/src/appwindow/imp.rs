@@ -3,8 +3,8 @@ use crate::{config, dialogs, RnMainHeader, RnOverlays, RnSidebar};
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    gdk, gio, glib, glib::clone, Align, ArrowType, CompositeTemplate, CornerType, CssProvider,
-    PackType, PadActionType, PadController, PositionType,
+    gdk, glib, glib::clone, Align, ArrowType, CompositeTemplate, CornerType, CssProvider, PackType,
+    PadActionType, PadController, PositionType,
 };
 use once_cell::sync::Lazy;
 use std::cell::{Cell, RefCell};
@@ -13,7 +13,6 @@ use std::rc::Rc;
 #[derive(Debug, CompositeTemplate)]
 #[template(resource = "/com/github/flxzt/rnote/ui/appwindow.ui")]
 pub(crate) struct RnAppWindow {
-    pub(crate) app_settings: gio::Settings,
     pub(crate) drawing_pad_controller: RefCell<Option<PadController>>,
     pub(crate) autosave_source_id: RefCell<Option<glib::SourceId>>,
     pub(crate) periodic_configsave_source_id: RefCell<Option<glib::SourceId>>,
@@ -40,7 +39,6 @@ pub(crate) struct RnAppWindow {
 impl Default for RnAppWindow {
     fn default() -> Self {
         Self {
-            app_settings: gio::Settings::new(config::APP_ID),
             drawing_pad_controller: RefCell::new(None),
             autosave_source_id: RefCell::new(None),
             periodic_configsave_source_id: RefCell::new(None),
@@ -68,7 +66,7 @@ impl ObjectSubclass for RnAppWindow {
     type ParentType = adw::ApplicationWindow;
 
     fn class_init(klass: &mut Self::Class) {
-        Self::bind_template(klass);
+        klass.bind_template();
     }
 
     fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -246,7 +244,7 @@ impl RnAppWindow {
                             if let Err(e) = canvas.save_document_to_file(&output_file).await {
                                 canvas.set_output_file(None);
 
-                                log::error!("saving document failed, Error: `{e:?}`");
+                                log::error!("saving document failed, Err: `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                             }
                         }

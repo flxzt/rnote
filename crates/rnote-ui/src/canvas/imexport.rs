@@ -306,6 +306,8 @@ impl RnCanvas {
 
         crate::utils::create_replace_file_future(export_bytes.await??, file).await?;
 
+        self.set_last_export_dir(file.parent());
+
         Ok(())
     }
 
@@ -347,6 +349,8 @@ impl RnCanvas {
             .await?;
         }
 
+        self.set_last_export_dir(Some(dir.clone()));
+
         Ok(())
     }
 
@@ -361,6 +365,8 @@ impl RnCanvas {
             crate::utils::create_replace_file_future(export_bytes, file).await?;
         }
 
+        self.set_last_export_dir(file.parent());
+
         Ok(())
     }
 
@@ -371,6 +377,8 @@ impl RnCanvas {
 
         crate::utils::create_replace_file_future(exported_engine_state.into_bytes(), file).await?;
 
+        self.set_last_export_dir(file.parent());
+
         Ok(())
     }
 
@@ -380,6 +388,8 @@ impl RnCanvas {
         let exported_engine_config = self.engine_ref().export_engine_config_as_json()?;
 
         crate::utils::create_replace_file_future(exported_engine_config.into_bytes(), file).await?;
+
+        self.set_last_export_dir(file.parent());
 
         Ok(())
     }

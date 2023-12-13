@@ -36,7 +36,7 @@ Written in Rust and GTK4.
 - An integrated workspace browser for quick access to related files
 - Drag & Drop, clipboard support
 - Pdf, Bitmap and Svg image import
-- Document, document pages and selection export to many formats including Svg, Pdf, Xopp
+- Documents can be exported to Svg, Pdf and Xopp. Document pages and selections to Svg, Png and Jpeg.
 - Save and load the documents in the native `.rnote` file format
 - Tabs to work on multiple documents at the same time
 - Autosave, printing

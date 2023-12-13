@@ -4,6 +4,7 @@ mod penshortcutrow;
 
 // Re-exports
 pub(crate) use penshortcutrow::RnPenShortcutRow;
+use rnote_compose::ext::Vector2Ext;
 
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
@@ -116,7 +117,7 @@ mod imp {
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
+            klass.bind_template();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -565,20 +566,31 @@ impl RnSettingsPanel {
         imp.doc_format_border_color_button.connect_rgba_notify(clone!(@weak self as settingspanel, @weak appwindow => move |button| {
             let format_border_color = button.rgba().into_compose_color();
             let canvas = appwindow.active_tab_wrapper().canvas();
-            canvas.engine_mut().document.format.border_color = format_border_color;
+
             // Because the format border color is applied immediately to the engine,
             // we need to update the temporary format too.
             settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
-            let widget_flags = canvas.engine_mut().update_rendering_current_viewport();
-            appwindow.handle_widget_flags(widget_flags, &canvas);
+            let current_color = canvas.engine_ref().document.format.border_color;
+
+            if !current_color.approx_eq_f32(format_border_color) {
+                canvas.engine_mut().document.format.border_color = format_border_color;
+                let mut widget_flags = canvas.engine_mut().update_rendering_current_viewport();
+                widget_flags.store_modified = true;
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }
         }));
 
         imp.doc_background_color_button.connect_rgba_notify(
             clone!(@weak appwindow => move |button| {
+                let background_color = button.rgba().into_compose_color();
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                canvas.engine_mut().document.background.color = button.rgba().into_compose_color();
-                let widget_flags = canvas.engine_mut().background_regenerate_pattern();
-                appwindow.handle_widget_flags(widget_flags, &canvas);
+
+                if !canvas.engine_ref().document.background.color.approx_eq_f32(background_color) {
+                    canvas.engine_mut().document.background.color = background_color;
+                    let mut widget_flags = canvas.engine_mut().background_regenerate_pattern();
+                    widget_flags.store_modified = true;
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                }
             }),
         );
 
@@ -613,17 +625,27 @@ impl RnSettingsPanel {
                 },
             }
 
-            canvas.engine_mut().document.background.pattern = pattern;
-            let widget_flags = canvas.engine_mut().background_regenerate_pattern();
-            appwindow.handle_widget_flags(widget_flags, &canvas);
+            if canvas.engine_ref().document.background.pattern != pattern {
+                canvas.engine_mut().document.background.pattern = pattern;
+                let mut widget_flags = canvas.engine_mut().background_regenerate_pattern();
+                widget_flags.store_modified = true;
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }
         }));
 
-        imp.doc_background_pattern_color_button.connect_rgba_notify(clone!(@weak appwindow => move |button| {
-            let canvas = appwindow.active_tab_wrapper().canvas();
-            canvas.engine_mut().document.background.pattern_color = button.rgba().into_compose_color();
-            let widget_flags = canvas.engine_mut().background_regenerate_pattern();
-            appwindow.handle_widget_flags(widget_flags, &canvas);
-        }));
+        imp.doc_background_pattern_color_button.connect_rgba_notify(
+            clone!(@weak appwindow => move |button| {
+                let canvas = appwindow.active_tab_wrapper().canvas();
+                let pattern_color = button.rgba().into_compose_color();
+
+                if !canvas.engine_ref().document.background.pattern_color.approx_eq_f32(pattern_color) {
+                    canvas.engine_mut().document.background.pattern_color = pattern_color;
+                    let mut widget_flags = canvas.engine_mut().background_regenerate_pattern();
+                    widget_flags.store_modified = true;
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                }
+            }),
+        );
 
         imp.doc_background_pattern_width_unitentry
             .get()
@@ -633,9 +655,13 @@ impl RnSettingsPanel {
                         let canvas = appwindow.active_tab_wrapper().canvas();
                         let mut pattern_size = canvas.engine_ref().document.background.pattern_size;
                         pattern_size[0] = unit_entry.value_in_px();
-                        canvas.engine_mut().document.background.pattern_size = pattern_size;
-                        let widget_flags = canvas.engine_mut().background_regenerate_pattern();
-                        appwindow.handle_widget_flags(widget_flags, &canvas);
+
+                        if !canvas.engine_ref().document.background.pattern_size.approx_eq(&pattern_size) {
+                            canvas.engine_mut().document.background.pattern_size = pattern_size;
+                            let mut widget_flags = canvas.engine_mut().background_regenerate_pattern();
+                            widget_flags.store_modified = true;
+                            appwindow.handle_widget_flags(widget_flags, &canvas);
+                        }
                 }),
             );
 
@@ -647,9 +673,13 @@ impl RnSettingsPanel {
                         let canvas = appwindow.active_tab_wrapper().canvas();
                         let mut pattern_size = canvas.engine_ref().document.background.pattern_size;
                         pattern_size[1] = unit_entry.value_in_px();
-                        canvas.engine_mut().document.background.pattern_size = pattern_size;
-                        let widget_flags = canvas.engine_mut().background_regenerate_pattern();
-                        appwindow.handle_widget_flags(widget_flags, &canvas);
+
+                        if !canvas.engine_ref().document.background.pattern_size.approx_eq(&pattern_size) {
+                            canvas.engine_mut().document.background.pattern_size = pattern_size;
+                            let mut widget_flags = canvas.engine_mut().background_regenerate_pattern();
+                            widget_flags.store_modified = true;
+                            appwindow.handle_widget_flags(widget_flags, &canvas);
+                        }
                 }),
             );
 
@@ -659,15 +689,14 @@ impl RnSettingsPanel {
 
                     let mut widget_flags = {
                         let mut engine = canvas.engine_mut();
-
                         engine.document.background.color = engine.document.background.color.to_inverted_brightness_color();
                         engine.document.background.pattern_color = engine.document.background.pattern_color.to_inverted_brightness_color();
                         engine.document.format.border_color = engine.document.format.border_color.to_inverted_brightness_color();
-
                         engine.background_regenerate_pattern()
                     };
 
                     widget_flags.refresh_ui = true;
+                    widget_flags.store_modified = true;
                     appwindow.handle_widget_flags(widget_flags, &canvas);
                 }),
             );
@@ -770,7 +799,8 @@ impl RnSettingsPanel {
             .set_dpi_keep_value(temporary_format.dpi());
 
         canvas.engine_mut().document.format = temporary_format;
-        let widget_flags = canvas.engine_mut().doc_resize_to_fit_content();
+        let mut widget_flags = canvas.engine_mut().doc_resize_to_fit_content();
+        widget_flags.store_modified = true;
         appwindow.handle_widget_flags(widget_flags, &canvas);
     }
 }

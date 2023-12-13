@@ -54,6 +54,7 @@ numeric-sort = {  workspace = true }
 
 [build-dependencies]
 anyhow = { workspace = true }
+glib-build-tools = { workspace = true }
 
 [target.'cfg(windows)'.build-dependencies]
 winresource = { workspace = true }

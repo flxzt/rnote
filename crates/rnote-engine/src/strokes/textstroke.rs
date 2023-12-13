@@ -178,7 +178,7 @@ pub struct TextStyle {
     #[serde(rename = "color")]
     pub color: Color,
     #[serde(rename = "max_width")]
-    pub max_width: Option<f64>,
+    max_width: Option<f64>,
     #[serde(rename = "alignment")]
     pub alignment: TextAlignment,
 
@@ -208,6 +208,14 @@ impl TextStyle {
     pub const FONT_SIZE_MAX: f64 = 512.0;
     pub const FONT_WEIGHT_DEFAULT: u16 = 500;
     pub const FONT_COLOR_DEFAULT: Color = Color::BLACK;
+
+    pub fn max_width(&self) -> Option<f64> {
+        self.max_width
+    }
+
+    pub fn set_max_width(&mut self, max_width: Option<f64>) {
+        self.max_width = max_width.map(|w| w.max(0.));
+    }
 
     pub fn build_text_layout<T>(
         &self,

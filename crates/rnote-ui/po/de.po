@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-07 15:59+0100\n"
-"PO-Revision-Date: 2023-11-26 15:53+0000\n"
+"PO-Revision-Date: 2023-12-13 07:52+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.2.1-rc\n"
+"X-Generator: Weblate 5.3-rc\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1707,7 +1707,7 @@ msgstr "Datei öffnen gescheitert"
 #: crates/rnote-ui/src/dialogs/mod.rs:257
 #: crates/rnote-ui/src/dialogs/mod.rs:411
 msgid "Saving document failed"
-msgstr "Dokumentspeicherung gescheitert"
+msgstr "Dokument speichern gescheitert"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
 msgid "Button 1"
@@ -1731,7 +1731,7 @@ msgstr "Drucken des Dokuments gescheitert"
 
 #: crates/rnote-ui/src/appwindow/appwindowactions.rs:680
 msgid "Exporting selection failed, nothing selected"
-msgstr "Auswahlexport gescheitert, nichts ausgewählt"
+msgstr "Auswahl exportieren gescheitert, nichts ausgewählt"
 
 #: crates/rnote-ui/src/canvas/mod.rs:868 crates/rnote-ui/src/dialogs/mod.rs:204
 #: crates/rnote-ui/src/dialogs/mod.rs:341
@@ -1752,7 +1752,7 @@ msgstr "Neu laden"
 
 #: crates/rnote-ui/src/canvas/mod.rs:930
 msgid "Reloading .rnote file from disk failed"
-msgstr ".rnote Erneutes Laden der Datei gescheitert"
+msgstr "Neuladen der .rnote Datei gescheitert"
 
 #: crates/rnote-ui/src/canvas/mod.rs:994
 msgid "Opened file was renamed on disk"
@@ -1764,11 +1764,11 @@ msgstr "Geöffnete Datei wurde auf dem Datenträger verschoben oder gelöscht"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1139
 msgid "Inserting file failed"
-msgstr "Dateieinfügung gescheitert"
+msgstr "Datei einfügen gescheitert"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1149
 msgid "Inserting text failed"
-msgstr "Texteinfügung gescheitert"
+msgstr "Text einfügen gescheitert"
 
 #: crates/rnote-ui/src/dialogs/export.rs:27
 #: crates/rnote-ui/src/dialogs/import.rs:21
@@ -1787,7 +1787,7 @@ msgstr "Dokument erfolgreich gespeichert"
 #: crates/rnote-ui/src/dialogs/export.rs:809
 #: crates/rnote-ui/src/dialogs/export.rs:814
 msgid "Exporting document failed"
-msgstr "Dokumentexport gescheitert"
+msgstr "Dokument exportieren gescheitert"
 
 #: crates/rnote-ui/src/dialogs/export.rs:230
 msgid "Exported document successfully"
@@ -1807,7 +1807,7 @@ msgstr "Datei im Dateimanager öffnen gescheitert"
 
 #: crates/rnote-ui/src/dialogs/export.rs:254
 msgid "Exporting document failed, no file selected"
-msgstr "Dokumentexport gescheitert, keine Datei ausgewählt"
+msgstr "Dokument exportieren gescheitert, keine Datei ausgewählt"
 
 #: crates/rnote-ui/src/dialogs/export.rs:269
 #: crates/rnote-ui/src/dialogs/export.rs:571
@@ -1818,7 +1818,7 @@ msgstr "Auswählen"
 
 #: crates/rnote-ui/src/dialogs/export.rs:526
 msgid "Exporting document pages failed"
-msgstr "Dokumentseitenexport gescheitert"
+msgstr "Dokumentseiten exportieren gescheitert"
 
 #: crates/rnote-ui/src/dialogs/export.rs:530
 msgid "Exported document pages successfully"
@@ -1826,15 +1826,15 @@ msgstr "Dokumentseiten erfolgreich exportiert"
 
 #: crates/rnote-ui/src/dialogs/export.rs:555
 msgid "Exporting document pages failed, no directory selected"
-msgstr "Dokumentseitenexport gescheitert, keine Datei ausgewählt"
+msgstr "Dokumentseiten exportieren gescheitert, keine Datei ausgewählt"
 
 #: crates/rnote-ui/src/dialogs/export.rs:785
 msgid "Exporting selection failed, no file selected"
-msgstr "Auswahlexport gescheitert, keine Datei ausgewählt"
+msgstr "Auswahl exportieren gescheitert, keine Datei ausgewählt"
 
 #: crates/rnote-ui/src/dialogs/export.rs:795
 msgid "Exporting selection failed"
-msgstr "Auswahlexport gescheitert"
+msgstr "Auswahl exportieren gescheitert"
 
 #: crates/rnote-ui/src/dialogs/export.rs:799
 msgid "Exported selection successfully"
@@ -1851,7 +1851,7 @@ msgstr "Engine Zustand exportieren"
 
 #: crates/rnote-ui/src/dialogs/export.rs:933
 msgid "Exporting engine state failed"
-msgstr "Engine-Zustandexport gescheitert"
+msgstr "Engine-Zustand exportieren gescheitert"
 
 #: crates/rnote-ui/src/dialogs/export.rs:937
 msgid "Exported engine state successfully"
@@ -1863,7 +1863,7 @@ msgstr "Engine-Konfiguration exportieren"
 
 #: crates/rnote-ui/src/dialogs/export.rs:979
 msgid "Exporting engine config failed"
-msgstr "Engine-Konfigurationsexport gescheitert"
+msgstr "Engine-Konfiguration exportieren gescheitert"
 
 #: crates/rnote-ui/src/dialogs/export.rs:983
 msgid "Exported engine config successfully"

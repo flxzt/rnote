@@ -218,7 +218,7 @@ mod imp {
             let engine_task_handler_handle = glib::MainContext::default().spawn_local(
                 clone!(@weak obj as canvas => async move {
                     let Some(mut task_rx) = canvas.engine_mut().take_engine_tasks_rx() else {
-                        log::error!("Installing the engine task handler failed, taken tasks_rx is None");
+                        log::error!("Installing the engine task handler failed, taken tasks_rx is None.");
                         return;
                     };
 

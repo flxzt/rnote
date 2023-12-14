@@ -167,7 +167,7 @@ mod imp {
                     );
                     if let Err(e) = cairo_cx.fill() {
                         log::error!(
-                            "failed to paint stroke width preview in style: `RoundedRect`, fill returned Err: {e:?}"
+                            "failed to paint stroke width preview in style `RoundedRect`, fill returned Err: {e:?}"
                         );
                     }
                 }

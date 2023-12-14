@@ -422,8 +422,10 @@ impl PenBehaviour for Typewriter {
             }
         }
 
-        if let Err(e) = sender.send(Ok((clipboard_content, widget_flags))) {
-            log::error!("Sending fetched typewriter clipboard content failed, Err: {e:?}");
+        if sender.send(Ok((clipboard_content, widget_flags))).is_err() {
+            log::error!(
+                "Sending fetched typewriter clipboard content failed, receiver already dropped."
+            );
         }
         receiver
     }
@@ -504,8 +506,10 @@ impl PenBehaviour for Typewriter {
 
         self.reset_blink();
 
-        if let Err(e) = sender.send(Ok((clipboard_content, widget_flags))) {
-            log::error!("Sending cut typewriter clipboard content failed, Err: {e:?}");
+        if sender.send(Ok((clipboard_content, widget_flags))).is_err() {
+            log::error!(
+                "Sending cut typewriter clipboard content failed, receiver already dropped."
+            );
         }
         receiver
     }

@@ -163,7 +163,7 @@ impl RnAppWindow {
         if self.app().settings_schema_found() {
             // Saving all state
             if let Err(e) = self.save_to_settings() {
-                log::error!("Failed to save appwindow to settings, , Err: {e:?}");
+                log::error!("Failed to save appwindow to settings, Err: {e:?}");
             }
         }
 

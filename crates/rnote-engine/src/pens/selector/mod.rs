@@ -199,8 +199,10 @@ impl PenBehaviour for Selector {
                 }
                 Ok((clipboard_content, widget_flags))
             };
-            if let Err(e) = sender.send(result()) {
-                log::error!("Sending fetched selector clipboard content failed, Err: {e:?}");
+            if sender.send(result()).is_err() {
+                log::error!(
+                    "Sending fetched selector clipboard content failed, receiver already dropped."
+                );
             }
         });
 
@@ -258,8 +260,10 @@ impl PenBehaviour for Selector {
                 }
                 Ok((clipboard_content, widget_flags))
             };
-            if let Err(e) = sender.send(result()) {
-                log::error!("Sending cut selector clipboard content failed, Err: {e:?}");
+            if sender.send(result()).is_err() {
+                log::error!(
+                    "Sending cut selector clipboard content failed, receiver already dropped."
+                );
             }
         });
 

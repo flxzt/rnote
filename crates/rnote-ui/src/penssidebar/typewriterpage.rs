@@ -136,7 +136,7 @@ impl RnTypewriterPage {
                         let widget_flags = canvas.engine_mut().text_selection_change_style(|style| {style.font_family = font_family_name});
                         appwindow.handle_widget_flags(widget_flags, &canvas);
                     }
-                    Err(e) => log::debug!("did not choose new font family (Error or dialog dismissed by user), {e:?}"),
+                    Err(e) => log::debug!("Did not choose new font family (Error or dialog dismissed by user), Err: {e:?}"),
                 }
             }));
         }));

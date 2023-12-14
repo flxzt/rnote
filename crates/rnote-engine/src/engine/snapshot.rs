@@ -54,7 +54,9 @@ impl EngineSnapshot {
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {
-                log::error!("Sending result to receiver in open_from_rnote_bytes() failed. Receiver was already dropped.");
+                log::error!(
+                    "Sending bytes result to receiver failed while loading rnote bytes in. Receiver already dropped."
+                );
             }
         });
 
@@ -148,8 +150,7 @@ impl EngineSnapshot {
                                 }
                                 Err(e) => {
                                     log::error!(
-                                        "from_xoppstroke() failed in open_from_xopp_bytes() , Err {:?}",
-                                        e
+                                        "Creating Stroke from XoppStroke failed while loading Xopp bytess, Err: {e:?}",
                                     );
                                 }
                             }
@@ -167,8 +168,7 @@ impl EngineSnapshot {
                                 }
                                 Err(e) => {
                                     log::error!(
-                                        "from_xoppimage() failed in open_from_xopp_bytes() , Err {:?}",
-                                        e
+                                        "Creating Stroke from XoppImage failed while loading Xopp bytes, Err: {e:?}",
                                     );
                                 }
                             }
@@ -187,7 +187,7 @@ impl EngineSnapshot {
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {
-                log::error!("sending result to receiver in open_from_xopp_bytes() failed. Receiver already dropped");
+                log::error!("Sending result to receiver while loading Xopp bytes failed. Receiver already dropped");
             }
         });
 

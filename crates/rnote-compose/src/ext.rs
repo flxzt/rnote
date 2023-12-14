@@ -206,7 +206,7 @@ impl AabbExt for Aabb {
             || self.maxs[1] < self.mins[1]
         {
             Err(anyhow::anyhow!(
-                "bounds assert_valid() failed, invalid bounds `{:?}`",
+                "Assert bounds valid failed, invalid bounds `{:?}`.",
                 self,
             ))
         } else {

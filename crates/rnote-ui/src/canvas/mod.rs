@@ -218,7 +218,7 @@ mod imp {
             let engine_task_handler_handle = glib::MainContext::default().spawn_local(
                 clone!(@weak obj as canvas => async move {
                     let Some(mut task_rx) = canvas.engine_mut().take_engine_tasks_rx() else {
-                        log::error!("installing the engine task handler failed, taken tasks_rx is None");
+                        log::error!("Installing the engine task handler failed, taken tasks_rx is None");
                         return;
                     };
 
@@ -454,7 +454,7 @@ mod imp {
                 snapshot.pop();
                 Ok(())
             }() {
-                log::error!("canvas snapshot() failed , Err: {e:?}");
+                log::error!("Snapshot canvas failed , Err: {e:?}");
             }
         }
     }
@@ -823,7 +823,7 @@ impl RnCanvas {
             Err(e) => {
                 if engine_config.is_empty() {
                     // On first app startup the engine config is empty, so we don't log an error
-                    log::debug!("did not load `engine-config` from settings, was empty");
+                    log::debug!("Did not load `engine-config` from settings, was empty");
                 } else {
                     return Err(e);
                 }
@@ -908,7 +908,7 @@ impl RnCanvas {
             Ok(output_file_monitor) => output_file_monitor,
             Err(e) => {
                 self.clear_output_file_monitor();
-                log::error!("creating a file monitor for the new output file failed , Err: {e:?}");
+                log::error!("Creating a file monitor for the new output file failed , Err: {e:?}");
                 return;
             }
         };
@@ -938,7 +938,7 @@ impl RnCanvas {
                     &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
                 };
 
-                log::debug!("canvas with title: `{}` - output-file monitor emitted `changed` - file: {:?}, other_file: {:?}, event: {event:?}, expect_write: {}",
+                log::debug!("Canvas with title: `{}` - output-file monitor emitted `changed` - file: {:?}, other_file: {:?}, event: {event:?}, expect_write: {}",
                     canvas.doc_title_display(),
                     file.path(),
                     other_file.map(|f| f.path()),
@@ -1135,7 +1135,7 @@ impl RnCanvas {
                             accept_drop = true;
                         },
                         Err(e) => {
-                            log::error!("failed to get dropped in file, Err: {e:?}");
+                            log::error!("Failed to get dropped in file, Err: {e:?}");
                             appwindow.overlays().dispatch_toast_error(&gettext("Inserting file failed"));
                         },
                     };
@@ -1145,7 +1145,7 @@ impl RnCanvas {
                             accept_drop = true;
                         },
                         Err(e) => {
-                            log::error!("failed to insert dropped in text, Err: {e:?}");
+                            log::error!("Failed to insert dropped in text, Err: {e:?}");
                             appwindow.overlays().dispatch_toast_error(&gettext("Inserting text failed"));
                         }
                     };

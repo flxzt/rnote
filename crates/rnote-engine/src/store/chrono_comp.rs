@@ -91,11 +91,6 @@ impl StrokeStore {
         if let Some(chrono_comp) = Arc::make_mut(&mut self.chrono_components).get_mut(key) {
             self.chrono_counter += 1;
             Arc::make_mut(chrono_comp).t = self.chrono_counter;
-        } else {
-            log::debug!(
-                "get chrono_comp in set_chrono_to_last() returned None for stroke with key {:?}",
-                key
-            );
         }
     }
 

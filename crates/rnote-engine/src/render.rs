@@ -224,9 +224,9 @@ impl Image {
                 image::RgbaImage::from_vec(self.pixel_width, self.pixel_height, self.data.to_vec())
                     .ok_or_else(|| {
                         anyhow::anyhow!(
-                            "RgbaImage::from_vec() failed for image with memory-format {:?}.",
-                            self.memory_format
-                        )
+                    "Creating RgbaImage from data failed for image with memory-format {:?}.",
+                    self.memory_format
+                )
                     })
             }
         }
@@ -238,13 +238,13 @@ impl Image {
     ) -> Result<Vec<u8>, anyhow::Error> {
         self.assert_valid()?;
         let mut bytes_buf: Cursor<Vec<u8>> = Cursor::new(Vec::new());
-
         let dynamic_image = image::DynamicImage::ImageRgba8(
-            self.into_imgbuf().context("image.to_imgbuf() failed.")?,
+            self.into_imgbuf()
+                .context("Converting image to image::ImageBuffer failed.")?,
         );
         dynamic_image
             .write_to(&mut bytes_buf, format)
-            .context("dynamic_image.write_to() failed.")?;
+            .context("Writing dynamic image to bytes buffer failed.")?;
 
         Ok(bytes_buf.into_inner())
     }

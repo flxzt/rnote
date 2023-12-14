@@ -50,13 +50,17 @@ impl FileType {
                 gio::FileType::Directory => {
                     return Self::Folder;
                 }
-                _ => {
-                    log::warn!("unknown file type");
+                file_type => {
+                    log::warn!(
+                        "Looking up file type failed, unsupported file type `{file_type:?}`"
+                    );
                     return Self::Unsupported;
                 }
             }
         } else {
-            log::warn!("failed to query FileInfo from file");
+            log::warn!(
+                "Looking up file type failed, failed to query FileInfo from file `{file:?}`."
+            );
         }
 
         // match on file extensions as fallback
@@ -85,7 +89,7 @@ impl FileType {
                 }
             }
         } else {
-            log::warn!("no path for file");
+            log::warn!("Looking up file type failed, no path for file `{file:?}`.");
         };
 
         Self::Unsupported

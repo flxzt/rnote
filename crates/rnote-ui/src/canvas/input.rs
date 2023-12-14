@@ -283,7 +283,7 @@ fn debug_gdk_event(event: &gdk::Event) {
         .position()
         .map(|(x, y)| format!("x: {x:.1}, y: {y:.1}"));
     log::debug!(
-        "(pos: {:?}, device: {:?}, modifier: {:?}, event_type: {:?}, tool type: {:?}, input source: {:?}",
+        "Gdk event: (pos: {:?}, device: {:?}, modifier: {:?}, event_type: {:?}, tool type: {:?}, input source: {:?}",
         pos,
         event.device(),
         event.modifier_state(),

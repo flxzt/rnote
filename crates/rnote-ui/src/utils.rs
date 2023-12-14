@@ -34,27 +34,19 @@ pub(crate) async fn create_replace_file_future(
             glib::source::Priority::HIGH,
         )
         .await
-        .map_err(|e| {
-            anyhow::anyhow!(
-                "file replace_future() failed in create_replace_file_future(), Err: {e:?}"
-            )
-        })?;
+        .map_err(|e| anyhow::anyhow!("Executing replace file `{file:?}` failed, Err: {e:?}"))?;
 
     output_stream
         .write_all_future(bytes, glib::source::Priority::HIGH)
         .await
         .map_err(|(_, e)| {
-            anyhow::anyhow!(
-                "output_stream write_all_future() failed in create_replace_file_future(), Err: {e:?}"
-            )
+            anyhow::anyhow!("Writing output stream for file `{file:?}` failed, Err: {e:?}")
         })?;
     output_stream
         .close_future(glib::source::Priority::HIGH)
         .await
         .map_err(|e| {
-            anyhow::anyhow!(
-                "output_stream close_future() failed in create_replace_file_future(), Err: {e:?}"
-            )
+            anyhow::anyhow!("Closing output stream for file `{file:?}` failed, Err: {e:?}")
         })?;
 
     Ok(())

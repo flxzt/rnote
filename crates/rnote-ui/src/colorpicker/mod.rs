@@ -484,7 +484,7 @@ impl RnColorPicker {
                             },
                             // this reports as error if the dialog is dismissed by the user.
                             // The API is a bit odd, expected would be Result<Option<RGBA>>
-                            Err(e) => log::debug!("did not choose new color (Error or dialog dismissed by user), {e:?}"),
+                            Err(e) => log::debug!("Did not choose new color (Error or dialog dismissed by user), Err: {e:?}"),
                         }
 
                         colorpicker.imp().color_dialog.set(None);

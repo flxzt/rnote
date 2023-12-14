@@ -323,9 +323,7 @@ impl Stroke {
             .collect();
 
         if widths.is_empty() {
-            return Err(anyhow::anyhow!(
-                "from_xoppstroke() failed, stroke has empty widths vector"
-            ));
+            return Err(anyhow::anyhow!("Stroke has empty widths vector."));
         }
 
         let mut smooth_options = SmoothOptions::default();
@@ -376,7 +374,7 @@ impl Stroke {
                 .zip(widths.into_iter())
                 .map(|(pos, pressure)| Element::new(pos + offset, pressure)),
         )
-        .ok_or_else(|| anyhow::anyhow!("from_xoppstroke() failed, failed to create pen path"))?;
+        .ok_or_else(|| anyhow::anyhow!("Could not generate pen path from coordinates vector"))?;
 
         let brushstroke = BrushStroke::from_penpath(penpath, Style::Smooth(smooth_options));
 
@@ -503,7 +501,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for shapestroke in stroke to_xopp() , Err: {e:?}");
+                        log::error!("Converting ShapeStroke to XoppImage failed, Err: {e:?}");
                         return None;
                     }
                 };
@@ -547,7 +545,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() , Err: {e:?}");
+                        log::error!("Converting TextStroke to XoppImage failed, Err: {e:?}");
                         return None;
                     }
                 };
@@ -589,7 +587,9 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() , Err: {e:?}");
+                        log::error!(
+                            "Exporting VectorImage to image bytes failed while converting Stroke to Xopp, Err: {e:?}"
+                        );
                         return None;
                     }
                 };
@@ -631,7 +631,9 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for bitmapimage in stroke to_xopp() , Err: {e:?}");
+                        log::error!(
+                            "Exporting BitmapImage to image bytes failed while converting Stroke to Xopp, Err: {e:?}"
+                        );
                         return None;
                     }
                 };

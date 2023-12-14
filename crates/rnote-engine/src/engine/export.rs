@@ -329,7 +329,9 @@ impl Engine {
                 rnote_file.save_as_bytes(&file_name)
             };
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("Sending result to receiver in save_as_rnote_bytes() failed. Receiver was already dropped.");
+                log::error!(
+                    "Sending result to receiver in while saving document as rnote bytes failed. Receiver already dropped."
+                );
             }
         });
         oneshot_receiver
@@ -641,7 +643,9 @@ impl Engine {
                     })
                     .collect::<Vec<xoppformat::XoppPage>>();
 
-                let xopp_title = String::from("Xournal++ document - see https://github.com/xournalpp/xournalpp (exported from Rnote - see https://github.com/flxzt/rnote)");
+                let xopp_title = String::from(
+                    "Xournal++ document - see https://github.com/xournalpp/xournalpp (exported from Rnote - see https://github.com/flxzt/rnote)"
+                );
 
                 let xopp_root = xoppformat::XoppRoot {
                     title: xopp_title,
@@ -655,7 +659,9 @@ impl Engine {
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("Sending result to receiver in export_doc_as_xopp_bytes() failed. Receiver already dropped.");
+                log::error!(
+                    "Sending result to receiver while exporting document as xopp bytes failed. Receiver already dropped."
+                );
             }
         });
 
@@ -721,7 +727,9 @@ impl Engine {
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("Sending result to receiver in export_doc_pages_as_svgs_bytes() failed. Receiver already dropped.");
+                log::error!(
+                    "Sending result to receiver while exporting document pages as Svg bytes failed. Receiver already dropped."
+                );
             }
         });
 

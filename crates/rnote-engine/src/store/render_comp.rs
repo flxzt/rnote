@@ -123,7 +123,9 @@ impl StrokeStore {
                         }
                         Err(e) => {
                             render_comp.state = RenderCompState::Dirty;
-                            log::error!(" image_to_rendernode() failed in regenerate_rendering_for_stroke(), Err: {e:?}");
+                            log::error!(
+                                "Creating rendernodes from partial images failed while regenerating stroke rendering, Err: {e:?}"
+                            );
                         }
                     }
                     #[cfg(not(feature = "ui"))]
@@ -142,7 +144,9 @@ impl StrokeStore {
                         }
                         Err(e) => {
                             render_comp.state = RenderCompState::Dirty;
-                            log::error!(" image_to_rendernode() failed in regenerate_rendering_for_stroke(), Err: {e:?}");
+                            log::error!(
+                                "Creating rendernodes from full images failed while regenerating stroke rendering, Err: {e:?}"
+                            );
                         }
                     }
                     #[cfg(not(feature = "ui"))]
@@ -153,7 +157,7 @@ impl StrokeStore {
                 }
                 Err(e) => {
                     render_comp.state = RenderCompState::Dirty;
-                    log::error!("generating images for stroke with key {key:?} failed, Err: {e:?}");
+                    log::error!("Generating images for stroke with key {key:?} failed, Err: {e:?}");
                 }
             }
         }
@@ -204,7 +208,9 @@ impl StrokeStore {
                         });
                     }
                     Err(e) => {
-                        log::debug!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?} , Err: {e:?}");
+                        log::error!(
+                            "Generating images of stroke failed while regenerating stroke rendering, stroke key {key:?} , Err: {e:?}"
+                        );
                     }
                 },
             );
@@ -301,7 +307,9 @@ impl StrokeStore {
                             });
                         }
                         Err(e) => {
-                            log::debug!("stroke.gen_image() failed in regenerate_rendering_in_viewport_threaded(), , Err: {e:?}");
+                            log::error!(
+                                "Generating stroke images failed stroke while regenerating rendering in viewport `{viewport:?}`, stroke key: {key:?}, Err: {e:?}"
+                            );
                         }
                     },
                 );
@@ -348,7 +356,7 @@ impl StrokeStore {
                                 }
                                 Err(e) => {
                                     render_comp.state = RenderCompState::Dirty;
-                                    log::error!("failed to generated rendernodes in append_rendering_last_segments(), Err: {e:?}");
+                                    log::error!("Failed to generated rendernodes while appending last segments rendering, Err: {e:?}");
                                 }
                             }
                             #[cfg(not(feature = "ui"))]
@@ -361,7 +369,7 @@ impl StrokeStore {
                         Err(e) => {
                             render_comp.state = RenderCompState::Dirty;
                             log::error!(
-                                "failed to generated image in append_rendering_last_segments(), Err: {e:?}"
+                                "Failed to generate image whiel appending last segments rendering, Err: {e:?}"
                             );
                         }
                     }
@@ -401,7 +409,7 @@ impl StrokeStore {
                             render_comp.state = RenderCompState::ForViewport(viewport);
                         }
                         Err(e) => {
-                            log::error!("failed to generate rendernodes in replace_rendering_with_images(), Err {e:?}");
+                            log::error!("Generating rendernodes failed while replacing rendering with partial images, Err {e:?}");
                             render_comp.state = RenderCompState::Dirty;
                         }
                     }
@@ -420,7 +428,7 @@ impl StrokeStore {
                             render_comp.state = RenderCompState::Complete;
                         }
                         Err(e) => {
-                            log::error!("failed to generate rendernodes in replace_rendering_with_images(), Err {e:?}");
+                            log::error!("Generating rendernodes failed while replacing rendering with full images, Err {e:?}");
                             render_comp.state = RenderCompState::Dirty;
                         }
                     }
@@ -456,7 +464,7 @@ impl StrokeStore {
                             render_comp.images.append(&mut images);
                         }
                         Err(e) => {
-                            log::error!("failed to generate rendernodes in append_rendering_images(), Err {e:?}");
+                            log::error!("Generating rendernodes failed while appending rendering full images, Err {e:?}");
                             render_comp.state = RenderCompState::Dirty;
                         }
                     }
@@ -545,7 +553,7 @@ impl StrokeStore {
             if let Some(stroke) = self.stroke_components.get(key) {
                 if let Err(e) = stroke.draw(piet_cx, image_scale) {
                     log::error!(
-                        "drawing stroke in draw_strokes_immediate_w_piet() failed , Err: {e:?}"
+                        "Drawing stroke immediate on piet RenderContext failed , Err: {e:?}"
                     );
                 }
             }

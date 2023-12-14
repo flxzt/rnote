@@ -40,9 +40,7 @@ impl StrokeStore {
     }
 
     pub(crate) fn trashed(&self, key: StrokeKey) -> Option<bool> {
-        if let Some(trash_comp) = self.trash_components.get(key) {
-            Some(trash_comp.trashed)
-        }
+        self.trash_components.get(key).map(|t| t.trashed)
     }
 
     pub(crate) fn set_trashed(&mut self, key: StrokeKey, trash: bool) {

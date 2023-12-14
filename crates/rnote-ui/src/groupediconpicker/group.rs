@@ -140,7 +140,7 @@ impl RnGroupedIconPickerGroup {
             let icon_name = object
                 .downcast_ref::<StringObject>()
                 .expect(
-                    "GroupIconPickerFlowBox bind() failed, item has to be of type `StringObject`",
+                    "Binding GroupIconPickerFlowBox model failed, item has to be of type `StringObject`",
                 )
                 .string();
 
@@ -161,9 +161,13 @@ impl RnGroupedIconPickerGroup {
 
         imp.flowbox.connect_child_activated(
             clone!(@weak grouped_icon_picker => move |_flowbox: &FlowBox, flowbox_child: &FlowBoxChild| {
-                let child = flowbox_child.child().expect("GroupIconPickerFlowBox child_activated() failed, child has to exist");
-                let icon = child.downcast_ref::<Image>().expect("GroupIconPickerFlowBox child_activated() failed, child has to be of type `Image`");
-                let icon_name = icon.icon_name().expect("GroupIconPickerFlowBox child_activated() failed, child `Image` has to have an icon name");
+                let icon_name = flowbox_child
+                    .child()
+                    .expect("GroupIconPickerFlowBox child activated signal callback failed, child has to exist")
+                    .downcast_ref::<Image>()
+                    .expect("GroupIconPickerFlowBox child activated signal callback failed, child has to be of type `Image`")
+                    .icon_name()
+                    .expect("GroupIconPickerFlowBox child activated signal callback failed, child `Image` has to have an icon name");
 
                 grouped_icon_picker.set_picked(Some(icon_name.to_string()));
             }),

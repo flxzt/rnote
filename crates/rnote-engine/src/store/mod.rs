@@ -211,7 +211,7 @@ impl StrokeStore {
                 self.live_index -= 1;
             }
         } else {
-            log::debug!("state has not changed, no need to record");
+            log::debug!("State has not changed, no need to record.");
         }
 
         widget_flags.hide_undo = Some(!self.can_undo());
@@ -236,7 +236,7 @@ impl StrokeStore {
             let current = self.create_history_entry();
             self.history[self.live_index] = current;
         } else {
-            log::debug!("state has not changed, no need to update current state to history");
+            log::debug!("State has not changed, no need to update history with current state.");
         }
 
         widget_flags.hide_undo = Some(!self.can_undo());

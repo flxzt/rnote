@@ -244,7 +244,7 @@ impl RnAppWindow {
                             if let Err(e) = canvas.save_document_to_file(&output_file).await {
                                 canvas.set_output_file(None);
 
-                                log::error!("saving document failed, Err: `{e:?}`");
+                                log::error!("Saving document failed, Err: `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                             }
                         }

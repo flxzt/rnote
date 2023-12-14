@@ -209,7 +209,9 @@ impl RnCanvas {
                 Ok(serde_json::from_str(&json_string)?)
             };
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in insert_stroke_content() failed. Receiver already dropped");
+                log::error!(
+                    "sending result to receiver while inserting stroke content failed. Receiver already dropped."
+                );
             }
         });
         let content = oneshot_receiver.await??;
@@ -238,24 +240,17 @@ impl RnCanvas {
     pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<bool> {
         // skip saving when it is already in progress
         if self.save_in_progress() {
-            log::debug!("saving file already in progress");
+            log::debug!("Saving file already in progress.");
             return Ok(false);
         }
-
-        let file_path = file.path().ok_or_else(|| {
-            anyhow::anyhow!(
-                "save_document_to_file() failed, could not get a path for file: {file:?}"
-            )
-        })?;
-
-        let basename = file.basename().ok_or_else(|| {
-            anyhow::anyhow!(
-                "save_document_to_file() failed, could not retrieve basename for file: {file:?}"
-            )
-        })?;
+        let file_path = file
+            .path()
+            .ok_or_else(|| anyhow::anyhow!("Could not get a path for file: `{file:?}`."))?;
+        let basename = file
+            .basename()
+            .ok_or_else(|| anyhow::anyhow!("Could not retrieve basename for file: `{file:?}`."))?;
 
         self.set_save_in_progress(true);
-
         let rnote_bytes_receiver = self
             .engine_ref()
             .save_as_rnote_bytes(basename.to_string_lossy().to_string());
@@ -320,24 +315,21 @@ impl RnCanvas {
         file_stem_name: String,
         export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> anyhow::Result<()> {
-        let export_prefs =
-            export_prefs_override.unwrap_or(self.engine_ref().export_prefs.doc_pages_export_prefs);
-
-        let file_ext = export_prefs.export_format.file_ext();
-
-        let export_bytes = self.engine_ref().export_doc_pages(export_prefs_override);
-
         if dir.query_file_type(gio::FileQueryInfoFlags::NONE, gio::Cancellable::NONE)
             != gio::FileType::Directory
         {
             return Err(anyhow::anyhow!(
-                "export_doc_pages() failed, target is not a directory."
+                "Supplied target file `{dir:?}` is not a directory."
             ));
         }
+        let export_prefs =
+            export_prefs_override.unwrap_or(self.engine_ref().export_prefs.doc_pages_export_prefs);
+        let file_ext = export_prefs.export_format.file_ext();
 
-        let pages_bytes = export_bytes.await??;
+        let export_bytes_recv = self.engine_ref().export_doc_pages(export_prefs_override);
+        let export_bytes = export_bytes_recv.await??;
 
-        for (i, page_bytes) in pages_bytes.into_iter().enumerate() {
+        for (i, page_bytes) in export_bytes.into_iter().enumerate() {
             crate::utils::create_replace_file_future(
                 page_bytes,
                 &dir.child(

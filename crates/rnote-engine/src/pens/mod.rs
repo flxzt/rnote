@@ -226,7 +226,7 @@ impl std::str::FromStr for PenStyle {
             "selector" => Ok(Self::Selector),
             "tools" => Ok(Self::Tools),
             s => Err(anyhow::anyhow!(
-                "PenStyle::from_str() failed, invalid name {s}"
+                "Creating PenStyle from &str failed, invalid name {s}"
             )),
         }
     }

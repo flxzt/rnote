@@ -44,7 +44,7 @@ pub trait PenBehaviour: DrawableOnDoc {
             oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
         rayon::spawn(move || {
             if let Err(e) = sender.send(Ok((vec![], WidgetFlags::default()))) {
-                log::error!("sending (empty) clipboard content in `fetch_clipboard_content()` default impl failed, Err: {e:?}")
+                log::error!("Sending (empty) clipboard content in `fetch_clipboard_content()` default impl failed, Err: {e:?}")
             }
         });
         receiver
@@ -63,7 +63,7 @@ pub trait PenBehaviour: DrawableOnDoc {
             oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
         rayon::spawn(move || {
             if let Err(e) = sender.send(Ok((vec![], WidgetFlags::default()))) {
-                log::error!("sending (empty) clipboard content in `cut_clipboard_content()` default impl failed, Err: {e:?}")
+                log::error!("Sending (empty) clipboard content in `cut_clipboard_content()` default impl failed, Err: {e:?}")
             }
         });
         receiver

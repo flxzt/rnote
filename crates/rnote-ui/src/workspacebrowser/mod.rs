@@ -204,7 +204,7 @@ impl RnWorkspaceBrowser {
                     dir = match dir.canonicalize() {
                         Ok(dir) => dir,
                         Err(e) => {
-                            log::warn!("could not canonicalize dir {dir:?} from workspacelistentry, Err: {e:?}");
+                            log::warn!("Could not canonicalize dir {dir:?} from workspacelistentry, Err: {e:?}");
                             return;
                         }
                     };
@@ -212,7 +212,7 @@ impl RnWorkspaceBrowser {
                 if let Some(parent) = dir.parent().map(|p| p.to_path_buf()) {
                     workspacebrowser.workspacesbar().set_selected_workspace_dir(parent);
                 } else {
-                    log::warn!("cant move directory up from dir {dir:?} from workspacelistentry, has no parent.");
+                    log::warn!("Can't move directory up from dir {dir:?} from workspacelistentry, has no parent.");
                 }
             }
         }));

@@ -42,12 +42,6 @@ impl StrokeStore {
     pub(crate) fn trashed(&self, key: StrokeKey) -> Option<bool> {
         if let Some(trash_comp) = self.trash_components.get(key) {
             Some(trash_comp.trashed)
-        } else {
-            log::debug!(
-                "get trash_comp in trashed() returned None for stroke with key {:?}",
-                key
-            );
-            None
         }
     }
 
@@ -57,13 +51,7 @@ impl StrokeStore {
             .map(Arc::make_mut)
         {
             trash_comp.trashed = trash;
-
             self.update_chrono_to_last(key);
-        } else {
-            log::debug!(
-                "get trash_comp in set_trashed() returned None for stroke with key {:?}",
-                key
-            );
         }
     }
 

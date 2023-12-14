@@ -426,7 +426,7 @@ impl StrokeContentPaintable {
                 }
             },
             Err(e) => {
-                log::error!("repainting StrokeContentPaintable cache image failed: {e:?}");
+                log::error!("Repainting StrokeContentPaintable cache image failed: {e:?}");
             }
         }
 

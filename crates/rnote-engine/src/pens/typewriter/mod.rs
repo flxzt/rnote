@@ -423,7 +423,7 @@ impl PenBehaviour for Typewriter {
         }
 
         if let Err(e) = sender.send(Ok((clipboard_content, widget_flags))) {
-            log::error!("sending fetched typewriter clipboard content failed, Err: {e:?}");
+            log::error!("Sending fetched typewriter clipboard content failed, Err: {e:?}");
         }
         receiver
     }
@@ -505,7 +505,7 @@ impl PenBehaviour for Typewriter {
         self.reset_blink();
 
         if let Err(e) = sender.send(Ok((clipboard_content, widget_flags))) {
-            log::error!("sending cut typewriter clipboard content failed, Err: {e:?}");
+            log::error!("Sending cut typewriter clipboard content failed, Err: {e:?}");
         }
         receiver
     }
@@ -879,7 +879,7 @@ impl Typewriter {
     fn reset_blink(&mut self) {
         if let Some(handle) = &mut self.blink_task_handle {
             if let Err(e) = handle.skip() {
-                log::error!("Skipping blink task failed, {e:?}");
+                log::error!("Skipping blink task failed, Err: {e:?}");
             }
         }
         self.cursor_visible = true;

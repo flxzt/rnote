@@ -467,7 +467,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
         .workspacesbar()
         .selected_workspacelistentry()
     else {
-        log::warn!("tried to edit workspace entry in dialog, but no workspace is selected");
+        log::warn!("Tried to edit workspace entry in dialog, but no workspace is selected.");
         return;
     };
 
@@ -528,7 +528,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
                         }
                     }
                     Err(e) => {
-                        log::debug!("did not select new folder for workspacerow (Error or dialog dismissed by user), {e:?}");
+                        log::debug!("Did not select new folder for workspacerow (Error or dialog dismissed by user), Err: {e:?}");
                     }
                 }
                 dialog.present();

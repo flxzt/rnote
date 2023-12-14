@@ -250,14 +250,14 @@ impl RnWorkspacesBar {
 
     pub(crate) fn save_to_settings(&self, settings: &gio::Settings) {
         if let Err(e) = settings.set("workspace-list", self.imp().workspace_list.to_variant()) {
-            log::error!("saving `workspace-list` to settings failed , Err: {e:?}");
+            log::error!("Saving `workspace-list` to settings failed , Err: {e:?}");
         }
 
         if let Err(e) = settings.set(
             "selected-workspace-index",
             self.selected_workspace_index().unwrap_or(0),
         ) {
-            log::error!("saving `selected-workspace-index` to settings failed , Err: {e:?}");
+            log::error!("Saving `selected-workspace-index` to settings failed , Err: {e:?}");
         }
     }
 
@@ -271,10 +271,10 @@ impl RnWorkspacesBar {
             for entry in &workspace_list.iter() {
                 if let Err(e) = entry.canonicalize_dir() {
                     log::warn!(
-                    "failed to canonicalize dir {:?} for workspacelistentry with name: {}, Err: {e:?}",
-                    entry.dir(),
-                    entry.name()
-                )
+                        "Failed to canonicalize dir {:?} for workspacelistentry with name: {}, Err: {e:?}",
+                        entry.dir(),
+                        entry.name()
+                    );
                 }
             }
         }

@@ -15,7 +15,7 @@ pub(crate) fn open_in_default_app(
             if let Some(current_file) = filerow.current_file() {
                 if let Err(e) =  open::that(current_file.uri()) {
                     appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the file in the default app"));
-                    log::debug!("opening file {} with default app failed: {e:?}", current_file.uri());
+                    log::debug!("Opening file {} with default app failed, Err: {e:?}", current_file.uri());
                 }
             }
         }),

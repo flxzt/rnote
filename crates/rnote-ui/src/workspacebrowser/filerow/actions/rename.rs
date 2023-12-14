@@ -69,7 +69,6 @@ fn connect_entry(entry: &Entry, apply_button: &Button, parent_path: PathBuf) {
         // Disable apply button to prevent overwrites when file already exists
         apply_button.set_sensitive(!new_file.query_exists(None::<&gio::Cancellable>));
     }));
-    log::debug!("Connected entry");
 }
 
 fn connect_apply_button(
@@ -85,15 +84,13 @@ fn connect_apply_button(
 
         if new_file.query_exists(None::<&gio::Cancellable>) {
             // Should have been caught earlier, but making sure
-            log::error!("file already exists");
+            log::error!("Renaming file `{new_file:?}` failed, file already exists");
         } else {
             if let Err(e) = current_file.move_(&new_file, gio::FileCopyFlags::NONE, None::<&gio::Cancellable>, None) {
-                log::error!("rename file failed , Err: {e:?}");
+                log::error!("Renaming file `{new_file:?}` failed, Err: {e:?}");
             }
 
             popover.popdown();
         }
     }));
-
-    log::debug!("Connected apply button");
 }

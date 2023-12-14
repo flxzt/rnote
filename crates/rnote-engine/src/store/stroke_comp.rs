@@ -225,7 +225,7 @@ impl StrokeStore {
                         render_comp.rendernodes = rendernodes;
                     }
                     Err(e) => log::error!(
-                        "images_to_rendernode() failed in translate_strokes_images() , Err: {e:?}"
+                        "Generating rendernodes from images failed while translating stroke images , Err: {e:?}"
                     ),
                 }
             }
@@ -385,7 +385,7 @@ impl StrokeStore {
                         render_comp.rendernodes = rendernodes;
                     }
                     Err(e) => log::error!(
-                        "images_to_rendernode() failed in rotate_strokes() , Err: {e:?}"
+                        "Generating rendernodes from iamges failed while rotating stroke images , Err: {e:?}"
                     ),
                 }
             }
@@ -428,7 +428,7 @@ impl StrokeStore {
                         render_comp.rendernodes = rendernodes;
                     }
                     Err(e) => log::error!(
-                        "images_to_rendernode() failed in rotate_strokes() , Err: {e:?}"
+                        "Generating rendernodes from images failed while scaling stroke images, Err: {e:?}"
                     ),
                 }
             }

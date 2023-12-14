@@ -265,7 +265,7 @@ impl Engine {
                     self.audioplayer = match AudioPlayer::new_init(pkg_data_dir) {
                         Ok(audioplayer) => Some(audioplayer),
                         Err(e) => {
-                            log::error!("creating a new audioplayer failed, Err: {e:?}");
+                            log::error!("Creating a new audioplayer failed, Err: {e:?}");
                             None
                         }
                     }

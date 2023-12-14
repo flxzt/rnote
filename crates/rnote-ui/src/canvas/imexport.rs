@@ -208,7 +208,7 @@ impl RnCanvas {
             let result = || -> Result<StrokeContent, anyhow::Error> {
                 Ok(serde_json::from_str(&json_string)?)
             };
-            if let Err(_data) = oneshot_sender.send(result()) {
+            if oneshot_sender.send(result()).is_err() {
                 log::error!(
                     "sending result to receiver while inserting stroke content failed. Receiver already dropped."
                 );

@@ -272,7 +272,7 @@ impl RnAppWindow {
                 let doc_layout = match Layout::from_str(doc_layout_str) {
                     Ok(s) => s,
                     Err(e) => {
-                        log::error!("doc-layout action activated with invalid target, Err: {e:}");
+                        log::error!("Activated doc-layout action with invalid target, Err: {e:}");
                         return;
                     }
                 };
@@ -334,7 +334,7 @@ impl RnAppWindow {
                 let pen_style = match PenStyle::from_str(pen_style_str) {
                     Ok(s) => s,
                     Err(e) => {
-                        log::error!("pen-style action activated with invalid target, Err: {e:}");
+                        log::error!("Activated pen-style action with invalid target, Err: {e:}");
                         return;
                     }
                 };
@@ -641,7 +641,7 @@ impl RnAppWindow {
 
             // Run the print op
             if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
-                log::error!("Running print operation failed , Err, {e:?}");
+                log::error!("Running print operation failed , Err: {e:?}");
                 appwindow.overlays().dispatch_toast_error(&gettext("Printing document failed"));
                 appwindow.overlays().progressbar_abort();
             } else {
@@ -803,16 +803,16 @@ impl RnAppWindow {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
                                     Ok(json_string) => {
                                         if let Err(e) = canvas.insert_stroke_content(json_string.to_string()).await {
-                                            log::error!("Failed to paste clipboard, Err: {e:?}");
+                                            log::error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
                                         }
                                     }
-                                    Err(e) => log::error!("Failed to read &str from clipboard data, Err: {e:?}"),
+                                    Err(e) => log::error!("Failed to read stroke content &str from clipboard data, Err: {e:?}"),
                                 }
                             }
                         }
                         Err(e) => {
                             log::error!(
-                                "Reading clipboard failed while pasting clipboard content as {}, Err: {e:?}",
+                                "Reading clipboard failed while pasting as `{}`, Err: {e:?}",
                                 StrokeContent::MIME_TYPE
                             );
                         }
@@ -834,7 +834,7 @@ impl RnAppWindow {
                                         acc.append(&mut bytes);
                                     }
                                     Err(e) => {
-                                        log::error!("failed to read clipboard input stream, Err: {e:?}");
+                                        log::error!("Failed to read clipboard input stream while pasting as Svg, Err: {e:?}");
                                         acc.clear();
                                         break;
                                     }
@@ -846,18 +846,16 @@ impl RnAppWindow {
                                     Ok(text) => {
                                         if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), None).await {
                                             log::error!(
-                                                "Loading VectorImage bytes while pasting clipboard as VectorImage failed, Err: {e:?}"
+                                                "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
                                             );
                                         };
                                     }
-                                    Err(e) => log::error!("Failed to read &str from clipboard data, Err: {e:?}"),
+                                    Err(e) => log::error!("Failed to get string from clipboard data while pasting as Svg, Err: {e:?}"),
                                 }
                             }
                         }
                         Err(e) => {
-                            log::error!(
-                                "Reading image bytes failed while pasting clipboard as VectorImage, Err: {e:?}"
-                            );
+                            log::error!("Failed to read clipboard data while pasting as Svg, Err: {e:?}");
                         }
                     };
                 }));

@@ -130,7 +130,7 @@ impl AudioPlayer {
                 sink.detach();
             }
             Err(e) => {
-                log::error!("Failed to create sink in play_random_marker_sound(), Err {e:?}",)
+                log::error!("Failed to create sink when trying to play marker sound, Err {e:?}",)
             }
         }
     }
@@ -145,7 +145,7 @@ impl AudioPlayer {
         if let Some(handle) = self.brush_sound_task_handle.as_mut() {
             if !handle.timeout_reached() {
                 if let Err(e) = handle.reset_timeout() {
-                    log::error!("Resetting timeout on brush sound stop task failed, {e:?}");
+                    log::error!("Resetting timeout on brush sound stop task failed, Err: {e:?}");
                     reinstall_task = true;
                 }
             } else {
@@ -160,7 +160,7 @@ impl AudioPlayer {
                 Ok(sink) => sink,
                 Err(e) => {
                     log::error!(
-                        "Failed to create sink in start_play_random_brush_sound(), Err {e:?}",
+                        "Failed to create sink when trying to trigger random brush sound, Err {e:?}",
                     );
                     self.brush_sound_task_handle = None;
                     return;
@@ -188,41 +188,44 @@ impl AudioPlayer {
 
     /// Play a typewriter sound that fits the given key type, or a generic sound when None.
     pub fn play_typewriter_key_sound(&self, keyboard_key: Option<KeyboardKey>) {
-        match rodio::Sink::try_new(&self.typewriter_outputstream_handle) {
-            Ok(sink) => match keyboard_key {
-                Some(KeyboardKey::CarriageReturn) | Some(KeyboardKey::Linefeed) => {
-                    sink.append(
-                        self.sounds["typewriter_bell"].clone().mix(
-                            self.sounds["typewriter_linefeed"]
-                                .clone()
-                                .delay(Duration::from_millis(200)),
-                        ),
-                    );
-                    sink.detach();
-                }
-                // control characters are already filtered out of unicode
-                Some(KeyboardKey::Unicode(_))
-                | Some(KeyboardKey::BackSpace)
-                | Some(KeyboardKey::Delete)
-                | Some(KeyboardKey::HorizontalTab)
-                | None => {
-                    let mut rng = rand::thread_rng();
-                    let typewriter_sound_index = rng.gen_range(0..Self::N_SOUND_FILES_TYPEWRITER);
+        let sink = match rodio::Sink::try_new(&self.typewriter_outputstream_handle) {
+            Ok(sink) => sink,
+            Err(e) => {
+                log::error!(
+                    "Failed to create sink when trying to play typewriter sound, Err {e:?}"
+                );
+                return;
+            }
+        };
+        match keyboard_key {
+            Some(KeyboardKey::CarriageReturn) | Some(KeyboardKey::Linefeed) => {
+                sink.append(
+                    self.sounds["typewriter_bell"].clone().mix(
+                        self.sounds["typewriter_linefeed"]
+                            .clone()
+                            .delay(Duration::from_millis(200)),
+                    ),
+                );
+                sink.detach();
+            }
+            // control characters are already filtered out of Unicode variant
+            Some(KeyboardKey::Unicode(_))
+            | Some(KeyboardKey::BackSpace)
+            | Some(KeyboardKey::Delete)
+            | Some(KeyboardKey::HorizontalTab)
+            | None => {
+                let mut rng = rand::thread_rng();
+                let typewriter_sound_index = rng.gen_range(0..Self::N_SOUND_FILES_TYPEWRITER);
 
-                    sink.append(
-                        self.sounds[&format!("typewriter_{typewriter_sound_index:02}")].clone(),
-                    );
-                    sink.detach();
-                }
-                _ => {
-                    sink.append(self.sounds["typewriter_thump"].clone());
-                    sink.detach();
-                }
-            },
-            Err(e) => log::error!(
-                "Failed to create sink while playing typewriter sound, Err {:?}",
-                e
-            ),
+                sink.append(
+                    self.sounds[&format!("typewriter_{typewriter_sound_index:02}")].clone(),
+                );
+                sink.detach();
+            }
+            _ => {
+                sink.append(self.sounds["typewriter_thump"].clone());
+                sink.detach();
+            }
         }
     }
 }
@@ -237,7 +240,7 @@ fn load_sound_from_path(
     if resource_path.exists() {
         let buffered =
             rodio::Decoder::new(File::open(resource_path.clone()).with_context(|| {
-                anyhow::anyhow!("file open() for path {:?} failed", resource_path,)
+                anyhow::anyhow!("Open file for path {:?} failed", resource_path,)
             })?)?
             .buffered();
 

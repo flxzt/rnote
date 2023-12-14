@@ -369,7 +369,7 @@ impl StrokeStore {
                         Err(e) => {
                             render_comp.state = RenderCompState::Dirty;
                             log::error!(
-                                "Failed to generate image whiel appending last segments rendering, Err: {e:?}"
+                                "Failed to generate image while appending last segments rendering, Err: {e:?}"
                             );
                         }
                     }

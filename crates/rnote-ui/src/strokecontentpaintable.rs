@@ -422,11 +422,11 @@ impl StrokeContentPaintable {
                     self.invalidate_size();
                 }
                 Err(e) => {
-                    log::error!("StrokeContentPaintable creating memory texture from repainted cache image failed: {e:?}");
+                    log::error!("StrokeContentPaintable creating memory texture from repainted cache image failed, Err: {e:?}");
                 }
             },
             Err(e) => {
-                log::error!("Repainting StrokeContentPaintable cache image failed: {e:?}");
+                log::error!("Repainting StrokeContentPaintable cache image failed, Err: {e:?}");
             }
         }
 

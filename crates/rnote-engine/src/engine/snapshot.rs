@@ -186,7 +186,7 @@ impl EngineSnapshot {
                 Ok(engine.take_snapshot())
             };
 
-            if let Err(_data) = snapshot_sender.send(result()) {
+            if snapshot_sender.send(result()).is_err() {
                 log::error!("Sending result to receiver while loading Xopp bytes failed. Receiver already dropped");
             }
         });

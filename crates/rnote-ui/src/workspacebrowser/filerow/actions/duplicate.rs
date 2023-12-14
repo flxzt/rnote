@@ -36,13 +36,13 @@ pub(crate) fn duplicate(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::Si
                 if let Some(current_path) = current_file.path() {
                     if current_path.is_file() {
                         if let Err(e) = duplicate_file(&current_path) {
-                            log::error!("Duplicating file {current_path:?} failed, Err: {e:?}");
+                            log::error!("Duplicating file for path `{current_path:?}` failed, Err: {e:?}");
                         }
                     } else if current_path.is_dir() {
                         let progress_handler = creat_dup_dir_progress_handler(appwindow.clone());
 
                         if let Err(e) = duplicate_dir(&current_path, progress_handler) {
-                            log::error!("Duplicating directory {current_path:?} failed, Err: {e:?}");
+                            log::error!("Duplicating directory for path `{current_path:?}` failed, Err: {e:?}");
                         }
                     }
                 }

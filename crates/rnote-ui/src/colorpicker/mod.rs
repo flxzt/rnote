@@ -53,6 +53,8 @@ mod imp {
         #[template_child]
         pub(crate) setter_8: TemplateChild<RnColorSetter>,
         #[template_child]
+        pub(crate) setter_9: TemplateChild<RnColorSetter>,
+        #[template_child]
         pub(crate) colordialog_button: TemplateChild<Button>,
     }
 
@@ -78,6 +80,7 @@ mod imp {
                 setter_6: TemplateChild::default(),
                 setter_7: TemplateChild::default(),
                 setter_8: TemplateChild::default(),
+                setter_9: TemplateChild::default(),
                 colordialog_button: TemplateChild::default(),
             }
         }
@@ -176,6 +179,7 @@ mod imp {
                     self.setter_6.set_position(position);
                     self.setter_7.set_position(position);
                     self.setter_8.set_position(position);
+                    self.setter_9.set_position(position);
 
                     match position {
                         PositionType::Left => {
@@ -239,14 +243,15 @@ mod imp {
         fn setup_setters(&self) {
             let obj = self.obj();
 
-            self.setter_1.set_color(Self::default_color(0, 8));
-            self.setter_2.set_color(Self::default_color(1, 8));
-            self.setter_3.set_color(Self::default_color(2, 8));
-            self.setter_4.set_color(Self::default_color(3, 8));
-            self.setter_5.set_color(Self::default_color(4, 8));
-            self.setter_6.set_color(Self::default_color(5, 8));
-            self.setter_7.set_color(Self::default_color(6, 8));
-            self.setter_8.set_color(Self::default_color(7, 8));
+            self.setter_1.set_color(Self::default_color(0, 9));
+            self.setter_2.set_color(Self::default_color(1, 9));
+            self.setter_3.set_color(Self::default_color(2, 9));
+            self.setter_4.set_color(Self::default_color(3, 9));
+            self.setter_5.set_color(Self::default_color(4, 9));
+            self.setter_6.set_color(Self::default_color(5, 9));
+            self.setter_7.set_color(Self::default_color(6, 9));
+            self.setter_8.set_color(Self::default_color(7, 9));
+            self.setter_9.set_color(Self::default_color(8, 9));
 
             self.setter_1
                 .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
@@ -258,6 +263,7 @@ mod imp {
                         colorpicker.setter_6().set_active(false);
                         colorpicker.setter_7().set_active(false);
                         colorpicker.setter_8().set_active(false);
+                        colorpicker.setter_9().set_active(false);
                         // Must come after setting the other setters inactive
                         colorpicker.set_color_active_pad(setter.color());
                     }
@@ -273,6 +279,7 @@ mod imp {
                         colorpicker.setter_6().set_active(false);
                         colorpicker.setter_7().set_active(false);
                         colorpicker.setter_8().set_active(false);
+                        colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
                 }));
@@ -287,6 +294,7 @@ mod imp {
                         colorpicker.setter_6().set_active(false);
                         colorpicker.setter_7().set_active(false);
                         colorpicker.setter_8().set_active(false);
+                        colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
                 }));
@@ -301,6 +309,7 @@ mod imp {
                         colorpicker.setter_6().set_active(false);
                         colorpicker.setter_7().set_active(false);
                         colorpicker.setter_8().set_active(false);
+                        colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
                 }));
@@ -315,6 +324,7 @@ mod imp {
                         colorpicker.setter_6().set_active(false);
                         colorpicker.setter_7().set_active(false);
                         colorpicker.setter_8().set_active(false);
+                        colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
                 }));
@@ -329,6 +339,7 @@ mod imp {
                         colorpicker.setter_5().set_active(false);
                         colorpicker.setter_7().set_active(false);
                         colorpicker.setter_8().set_active(false);
+                        colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
                 }));
@@ -357,6 +368,22 @@ mod imp {
                         colorpicker.setter_5().set_active(false);
                         colorpicker.setter_6().set_active(false);
                         colorpicker.setter_7().set_active(false);
+                        colorpicker.setter_9().set_active(false);
+                        colorpicker.set_color_active_pad(setter.color());
+                    }
+                }));
+
+            self.setter_9
+                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
+                    if setter.is_active() {
+                        colorpicker.setter_1().set_active(false);
+                        colorpicker.setter_2().set_active(false);
+                        colorpicker.setter_3().set_active(false);
+                        colorpicker.setter_4().set_active(false);
+                        colorpicker.setter_5().set_active(false);
+                        colorpicker.setter_6().set_active(false);
+                        colorpicker.setter_7().set_active(false);
+                        colorpicker.setter_8().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
                 }));
@@ -462,6 +489,10 @@ impl RnColorPicker {
         self.imp().setter_8.get()
     }
 
+    pub(crate) fn setter_9(&self) -> RnColorSetter {
+        self.imp().setter_9.get()
+    }
+
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.imp().colordialog_button.connect_clicked(
             clone!(@weak self as colorpicker, @weak appwindow => move |_| {
@@ -513,6 +544,8 @@ impl RnColorPicker {
             imp.setter_7.set_color(color);
         } else if imp.setter_8.is_active() {
             imp.setter_8.set_color(color);
+        } else if imp.setter_9.is_active() {
+            imp.setter_9.set_color(color);
         }
     }
 
@@ -545,5 +578,6 @@ impl RnColorPicker {
         imp.setter_6.set_active(false);
         imp.setter_7.set_active(false);
         imp.setter_8.set_active(false);
+        imp.setter_9.set_active(false);
     }
 }

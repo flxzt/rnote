@@ -72,6 +72,10 @@
           <object class="RnColorSetter" id="setter_8">
           </object>
         </child>
+        <child>
+          <object class="RnColorSetter" id="setter_9">
+          </object>
+        </child>
       </object>
     </child>
     <child>

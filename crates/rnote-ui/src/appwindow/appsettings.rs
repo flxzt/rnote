@@ -253,6 +253,16 @@ impl RnAppWindow {
             .set_mapping(gdk_color_set_mapping)
             .get_no_changes()
             .build();
+        app_settings
+            .bind(
+                "colorpicker-color-9",
+                &self.overlays().colorpicker().setter_9(),
+                "color",
+            )
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
+            .build();
 
         // brush stroke widths
         app_settings

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="RnAppWindow" parent="AdwApplicationWindow">
-    <property name="width-request">500</property>
+    <property name="width-request">530</property>
     <property name="height-request">460</property>
     <property name="default-width">800</property>
     <property name="default-height">600</property>

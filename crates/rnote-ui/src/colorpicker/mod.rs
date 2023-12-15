@@ -243,15 +243,15 @@ mod imp {
         fn setup_setters(&self) {
             let obj = self.obj();
 
-            self.setter_1.set_color(Self::default_color(0, 9));
-            self.setter_2.set_color(Self::default_color(1, 9));
-            self.setter_3.set_color(Self::default_color(2, 9));
-            self.setter_4.set_color(Self::default_color(3, 9));
-            self.setter_5.set_color(Self::default_color(4, 9));
-            self.setter_6.set_color(Self::default_color(5, 9));
-            self.setter_7.set_color(Self::default_color(6, 9));
-            self.setter_8.set_color(Self::default_color(7, 9));
-            self.setter_9.set_color(Self::default_color(8, 9));
+            self.setter_1.set_color(Self::default_color(0));
+            self.setter_2.set_color(Self::default_color(1));
+            self.setter_3.set_color(Self::default_color(2));
+            self.setter_4.set_color(Self::default_color(3));
+            self.setter_5.set_color(Self::default_color(4));
+            self.setter_6.set_color(Self::default_color(5));
+            self.setter_7.set_color(Self::default_color(6));
+            self.setter_8.set_color(Self::default_color(7));
+            self.setter_9.set_color(Self::default_color(8));
 
             self.setter_1
                 .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
@@ -389,18 +389,19 @@ mod imp {
                 }));
         }
 
-        fn default_color(i: usize, amount_setters: usize) -> gdk::RGBA {
-            let color_step =
-                (2.0 * std::f32::consts::PI) / ((amount_setters.saturating_sub(1)) as f32);
-            let rgb_offset = (2.0 / 3.0) * std::f32::consts::PI;
-            let color_offset = (5.0 / 4.0) * std::f32::consts::PI + 0.4;
-
-            gdk::RGBA::new(
-                0.5 * (i as f32 * color_step + 0.0 * rgb_offset + color_offset).sin() + 0.5,
-                0.5 * (i as f32 * color_step + 1.0 * rgb_offset + color_offset).sin() + 0.5,
-                0.5 * (i as f32 * color_step + 2.0 * rgb_offset + color_offset).sin() + 0.5,
-                1.0,
-            )
+        fn default_color(i: usize) -> gdk::RGBA {
+            match i {
+                0 => gdk::RGBA::new(0.0, 0.0, 0.0, 1.0),
+                1 => gdk::RGBA::new(1.0, 1.0, 1.0, 1.0),
+                2 => gdk::RGBA::new(0.0, 0.0, 0.0, 0.0),
+                3 => gdk::RGBA::new(0.597, 0.753, 0.941, 1.0),
+                4 => gdk::RGBA::new(0.101, 0.371, 0.703, 1.0),
+                5 => gdk::RGBA::new(0.148, 0.632, 0.410, 1.0),
+                6 => gdk::RGBA::new(0.957, 0.757, 0.066, 1.0),
+                7 => gdk::RGBA::new(0.898, 0.378, 0.0, 1.0),
+                8 => gdk::RGBA::new(0.644, 0.113, 0.175, 1.0),
+                _ => gdk::RGBA::new(0.0, 0.0, 0.0, 1.0),
+            }
         }
     }
 }

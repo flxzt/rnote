@@ -42,32 +42,36 @@
       <summary>the colorpicker palette color 1 (default: black)</summary>
     </key>
     <key name="colorpicker-color-2" type="(dddd)">
-      <default>(0.0, 0.0, 0.0, 0.0)</default>
-      <summary>the colorpicker palette color 2 (default: transparent)</summary>
+      <default>(1.0, 1.0, 1.0, 1.0)</default>
+      <summary>the colorpicker palette color 2 (default: white)</summary>
     </key>
     <key name="colorpicker-color-3" type="(dddd)">
-      <default>(0.597, 0.753, 0.941, 1.0)</default>
-      <summary>the colorpicker palette color 3 (default: blue 1)</summary>
+      <default>(0.0, 0.0, 0.0, 0.0)</default>
+      <summary>the colorpicker palette color 3 (default: transparent)</summary>
     </key>
     <key name="colorpicker-color-4" type="(dddd)">
-      <default>(0.101, 0.371, 0.703, 1.0)</default>
-      <summary>the colorpicker palette color 4 (default: blue 5)</summary>
+      <default>(0.597, 0.753, 0.941, 1.0)</default>
+      <summary>the colorpicker palette color 4 (default: blue 1)</summary>
     </key>
     <key name="colorpicker-color-5" type="(dddd)">
-      <default>(0.148, 0.632, 0.410, 1.0)</default>
-      <summary>the colorpicker palette color 5 (default: green 5)</summary>
+      <default>(0.101, 0.371, 0.703, 1.0)</default>
+      <summary>the colorpicker palette color 5 (default: blue 5)</summary>
     </key>
     <key name="colorpicker-color-6" type="(dddd)">
-      <default>(0.957, 0.757, 0.066, 1.0)</default>
-      <summary>the colorpicker palette color 6 (default: yellow 4)</summary>
+      <default>(0.148, 0.632, 0.410, 1.0)</default>
+      <summary>the colorpicker palette color 6 (default: green 5)</summary>
     </key>
     <key name="colorpicker-color-7" type="(dddd)">
-      <default>(0.898, 0.378, 0.0, 1.0)</default>
-      <summary>the colorpicker palette color 7 (default: orange 4)</summary>
+      <default>(0.957, 0.757, 0.066, 1.0)</default>
+      <summary>the colorpicker palette color 7 (default: yellow 4)</summary>
     </key>
     <key name="colorpicker-color-8" type="(dddd)">
+      <default>(0.898, 0.378, 0.0, 1.0)</default>
+      <summary>the colorpicker palette color 8 (default: orange 4)</summary>
+    </key>
+    <key name="colorpicker-color-9" type="(dddd)">
       <default>(0.644, 0.113, 0.175, 1.0)</default>
-      <summary>the colorpicker palette color 8 (default: red 5)</summary>
+      <summary>the colorpicker palette color 9 (default: red 5)</summary>
     </key>
     <key name="brush-width-1" type="d">
       <default>2.0</default>

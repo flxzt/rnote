@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-07 15:59+0100\n"
+"POT-Creation-Date: 2023-12-18 18:58+0100\n"
 "PO-Revision-Date: 2023-12-02 07:04+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
@@ -193,9 +193,9 @@ msgstr "Munkaterület könyvtárának módosítása"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: crates/rnote-ui/data/ui/dialogs/export.ui:284
-#: crates/rnote-ui/src/dialogs/export.rs:371
-#: crates/rnote-ui/src/dialogs/export.rs:408
-#: crates/rnote-ui/src/dialogs/export.rs:416
+#: crates/rnote-ui/src/dialogs/export.rs:372
+#: crates/rnote-ui/src/dialogs/export.rs:409
+#: crates/rnote-ui/src/dialogs/export.rs:417
 #: crates/rnote-ui/src/dialogs/mod.rs:527
 msgid "- no directory selected -"
 msgstr "- nincs kiválasztott könyvtár -"
@@ -313,15 +313,15 @@ msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Xournal++ fájl preferált DPI-jének beállítása"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
-#: crates/rnote-ui/src/dialogs/export.rs:267
+#: crates/rnote-ui/src/dialogs/export.rs:268
 msgid "Export Document"
 msgstr "Dokumentum exportálása"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
 #: crates/rnote-ui/data/ui/dialogs/export.ui:180
 #: crates/rnote-ui/data/ui/dialogs/export.ui:416
-#: crates/rnote-ui/src/dialogs/export.rs:917
-#: crates/rnote-ui/src/dialogs/export.rs:963
+#: crates/rnote-ui/src/dialogs/export.rs:907
+#: crates/rnote-ui/src/dialogs/export.rs:955
 msgid "Export"
 msgstr "Exportálás"
 
@@ -342,10 +342,10 @@ msgstr "Exportfájl kijelölése"
 #: crates/rnote-ui/src/dialogs/export.rs:141
 #: crates/rnote-ui/src/dialogs/export.rs:148
 #: crates/rnote-ui/src/dialogs/export.rs:193
-#: crates/rnote-ui/src/dialogs/export.rs:668
-#: crates/rnote-ui/src/dialogs/export.rs:694
-#: crates/rnote-ui/src/dialogs/export.rs:701
-#: crates/rnote-ui/src/dialogs/export.rs:752
+#: crates/rnote-ui/src/dialogs/export.rs:664
+#: crates/rnote-ui/src/dialogs/export.rs:690
+#: crates/rnote-ui/src/dialogs/export.rs:697
+#: crates/rnote-ui/src/dialogs/export.rs:748
 msgid "- no file selected -"
 msgstr "- nincs kijelölt fájl -"
 
@@ -405,19 +405,19 @@ msgstr "Az exportálási formátum"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:340
 #: crates/rnote-ui/data/ui/dialogs/export.ui:534
-#: crates/rnote-ui/src/dialogs/export.rs:277
-#: crates/rnote-ui/src/dialogs/export.rs:583
-#: crates/rnote-ui/src/dialogs/export.rs:876
+#: crates/rnote-ui/src/dialogs/export.rs:278
+#: crates/rnote-ui/src/dialogs/export.rs:579
+#: crates/rnote-ui/src/dialogs/export.rs:866
 msgid "Svg"
 msgstr "SVG-fájl"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:134
-#: crates/rnote-ui/src/dialogs/export.rs:282
+#: crates/rnote-ui/src/dialogs/export.rs:283
 msgid "Pdf"
 msgstr "PDF-fájl"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
-#: crates/rnote-ui/src/dialogs/export.rs:287
+#: crates/rnote-ui/src/dialogs/export.rs:288
 msgid "Xopp"
 msgstr "XOPP-fájl"
 
@@ -448,7 +448,7 @@ msgid "Vertical First"
 msgstr "Először függőleges"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:172
-#: crates/rnote-ui/src/dialogs/export.rs:569
+#: crates/rnote-ui/src/dialogs/export.rs:565
 msgid "Export Document Pages"
 msgstr "Dokumentumoldalak exportálása"
 
@@ -470,15 +470,15 @@ msgstr "Fájlok exportálása szárnév"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:535
-#: crates/rnote-ui/src/dialogs/export.rs:588
-#: crates/rnote-ui/src/dialogs/export.rs:881
+#: crates/rnote-ui/src/dialogs/export.rs:584
+#: crates/rnote-ui/src/dialogs/export.rs:871
 msgid "Png"
 msgstr "PNG-fájl"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:342
 #: crates/rnote-ui/data/ui/dialogs/export.ui:536
-#: crates/rnote-ui/src/dialogs/export.rs:594
-#: crates/rnote-ui/src/dialogs/export.rs:887
+#: crates/rnote-ui/src/dialogs/export.rs:590
+#: crates/rnote-ui/src/dialogs/export.rs:877
 msgid "Jpeg"
 msgstr "JPEG-fájl"
 
@@ -493,7 +493,7 @@ msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "A JPEG-kép minőségének beállítása (1-100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:408
-#: crates/rnote-ui/src/dialogs/export.rs:864
+#: crates/rnote-ui/src/dialogs/export.rs:854
 msgid "Export Selection"
 msgstr "Kijelölés exportálása"
 
@@ -1658,6 +1658,14 @@ msgstr "Visszavonás"
 msgid "Redo"
 msgstr "Újra"
 
+#: crates/rnote-ui/data/ui/sidebar.ui:50
+msgid "Workspace"
+msgstr "Munkaterület"
+
+#: crates/rnote-ui/data/ui/sidebar.ui:61
+msgid "Settings"
+msgstr "Beállítások"
+
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:79
 msgid "Page"
 msgstr "Oldal"
@@ -1687,7 +1695,7 @@ msgid "Opening file failed"
 msgstr "A fájl megnyitása sikertelen"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:248
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:581
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:257
@@ -1711,11 +1719,11 @@ msgstr "3. gomb"
 msgid "Button 4"
 msgstr "4. gomb"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:644
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:645
 msgid "Printing document failed"
 msgstr "A dokumentum nyomtatása nem sikerült"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:680
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:681
 msgid "Exporting selection failed, nothing selected"
 msgstr "Kijelölés exportálása sikertelen, nincs kijelölve semmi"
 
@@ -1767,11 +1775,8 @@ msgstr "A dokumentum sikeresen mentve"
 
 #: crates/rnote-ui/src/dialogs/export.rs:226
 #: crates/rnote-ui/src/dialogs/export.rs:239
-#: crates/rnote-ui/src/dialogs/export.rs:535
-#: crates/rnote-ui/src/dialogs/export.rs:540
+#: crates/rnote-ui/src/dialogs/export.rs:536
 #: crates/rnote-ui/src/dialogs/export.rs:804
-#: crates/rnote-ui/src/dialogs/export.rs:809
-#: crates/rnote-ui/src/dialogs/export.rs:814
 msgid "Exporting document failed"
 msgstr "Dokumentum exportálása sikertelen"
 
@@ -1780,78 +1785,78 @@ msgid "Exported document successfully"
 msgstr "A dokumentum sikeresen exportálva"
 
 #: crates/rnote-ui/src/dialogs/export.rs:231
-#: crates/rnote-ui/src/dialogs/export.rs:531
-#: crates/rnote-ui/src/dialogs/export.rs:800
+#: crates/rnote-ui/src/dialogs/export.rs:532
+#: crates/rnote-ui/src/dialogs/export.rs:796
 msgid "View in file manager"
 msgstr "Megtekintés a fájlkezelőben"
 
-#: crates/rnote-ui/src/dialogs/export.rs:244
-#: crates/rnote-ui/src/dialogs/export.rs:546
-#: crates/rnote-ui/src/dialogs/export.rs:820
+#: crates/rnote-ui/src/dialogs/export.rs:245
+#: crates/rnote-ui/src/dialogs/export.rs:542
+#: crates/rnote-ui/src/dialogs/export.rs:810
 msgid "Failed to open the file in the file manager"
 msgstr "Nem sikerült megnyitni a fájlt a fájlkezelőben"
 
-#: crates/rnote-ui/src/dialogs/export.rs:254
+#: crates/rnote-ui/src/dialogs/export.rs:255
 msgid "Exporting document failed, no file selected"
 msgstr "Dokumentum exportálása sikertelen, nincs fájl kiválasztva"
 
-#: crates/rnote-ui/src/dialogs/export.rs:269
-#: crates/rnote-ui/src/dialogs/export.rs:571
-#: crates/rnote-ui/src/dialogs/export.rs:866
+#: crates/rnote-ui/src/dialogs/export.rs:270
+#: crates/rnote-ui/src/dialogs/export.rs:567
+#: crates/rnote-ui/src/dialogs/export.rs:856
 #: crates/rnote-ui/src/dialogs/mod.rs:509
 msgid "Select"
 msgstr "Kijelölés"
 
-#: crates/rnote-ui/src/dialogs/export.rs:526
+#: crates/rnote-ui/src/dialogs/export.rs:527
 msgid "Exporting document pages failed"
 msgstr "Dokumentumoldalak exportálása sikertelen"
 
-#: crates/rnote-ui/src/dialogs/export.rs:530
+#: crates/rnote-ui/src/dialogs/export.rs:531
 msgid "Exported document pages successfully"
 msgstr "A dokumentumoldalak exportálása sikeres"
 
-#: crates/rnote-ui/src/dialogs/export.rs:555
+#: crates/rnote-ui/src/dialogs/export.rs:551
 msgid "Exporting document pages failed, no directory selected"
 msgstr "Dokumentumoldalak exportálása sikertelen, nincs kijelölve könyvtár"
 
-#: crates/rnote-ui/src/dialogs/export.rs:785
+#: crates/rnote-ui/src/dialogs/export.rs:781
 msgid "Exporting selection failed, no file selected"
 msgstr "Kijelölés exportálása sikertelen, nincs kijelölve fájl"
 
-#: crates/rnote-ui/src/dialogs/export.rs:795
+#: crates/rnote-ui/src/dialogs/export.rs:791
 msgid "Exporting selection failed"
 msgstr "Kijelölés exportálása sikertelen"
 
-#: crates/rnote-ui/src/dialogs/export.rs:799
+#: crates/rnote-ui/src/dialogs/export.rs:795
 msgid "Exported selection successfully"
 msgstr "A kijelölés sikeresen exportálva"
 
-#: crates/rnote-ui/src/dialogs/export.rs:907
-#: crates/rnote-ui/src/dialogs/export.rs:953
+#: crates/rnote-ui/src/dialogs/export.rs:897
+#: crates/rnote-ui/src/dialogs/export.rs:945
 msgid "Json"
 msgstr "JSON"
 
-#: crates/rnote-ui/src/dialogs/export.rs:915
+#: crates/rnote-ui/src/dialogs/export.rs:905
 msgid "Export Engine State"
 msgstr "Motor állapotának exportálása"
 
-#: crates/rnote-ui/src/dialogs/export.rs:933
+#: crates/rnote-ui/src/dialogs/export.rs:923
 msgid "Exporting engine state failed"
 msgstr "Motor állapotának exportálása sikertelen"
 
-#: crates/rnote-ui/src/dialogs/export.rs:937
+#: crates/rnote-ui/src/dialogs/export.rs:927
 msgid "Exported engine state successfully"
 msgstr "A motor állapota sikeresen exportálva"
 
-#: crates/rnote-ui/src/dialogs/export.rs:961
+#: crates/rnote-ui/src/dialogs/export.rs:953
 msgid "Export Engine Config"
 msgstr "Motor beállításainak exportálása"
 
-#: crates/rnote-ui/src/dialogs/export.rs:979
+#: crates/rnote-ui/src/dialogs/export.rs:971
 msgid "Exporting engine config failed"
 msgstr "Motorkonfiguráció exportálása sikertelen"
 
-#: crates/rnote-ui/src/dialogs/export.rs:983
+#: crates/rnote-ui/src/dialogs/export.rs:975
 msgid "Exported engine config successfully"
 msgstr "A motor konfigurációja sikeresen exportálva"
 
@@ -2186,96 +2191,96 @@ msgstr "Köbös bezier-görbe"
 msgid "Polyline"
 msgstr "Vonallánc"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:535
+#: crates/rnote-ui/src/settingspanel/mod.rs:536
 msgid "Application restart is required"
 msgstr "Szükséges az alkalmazás újraindítása"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:801
+#: crates/rnote-ui/src/settingspanel/mod.rs:831
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "Hajszálkereszt (kicsi)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:802
+#: crates/rnote-ui/src/settingspanel/mod.rs:832
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "Hajszálkereszt (közepes)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:803
+#: crates/rnote-ui/src/settingspanel/mod.rs:833
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "Hajszálkereszt (nagy)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:804
+#: crates/rnote-ui/src/settingspanel/mod.rs:834
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "Pont (kicsi)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:805
+#: crates/rnote-ui/src/settingspanel/mod.rs:835
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "Pont (közepes)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:806
+#: crates/rnote-ui/src/settingspanel/mod.rs:836
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "Pont (nagy)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:807
+#: crates/rnote-ui/src/settingspanel/mod.rs:837
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "Könnycsepp északnyugat (kicsi)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:808
+#: crates/rnote-ui/src/settingspanel/mod.rs:838
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "Könnycsepp északnyugat (közepes)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:809
+#: crates/rnote-ui/src/settingspanel/mod.rs:839
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "Könnycsepp északnyugat (nagy)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:810
+#: crates/rnote-ui/src/settingspanel/mod.rs:840
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "Könnycsepp északkeleti (kicsi)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:811
+#: crates/rnote-ui/src/settingspanel/mod.rs:841
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "Könnycsepp északkelet (közepes)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:812
+#: crates/rnote-ui/src/settingspanel/mod.rs:842
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "Könnycsepp északkeleti (nagy)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:813
+#: crates/rnote-ui/src/settingspanel/mod.rs:843
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "Könnycsepp észak (kicsi)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:814
+#: crates/rnote-ui/src/settingspanel/mod.rs:844
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "Könnycsepp észak (közepes)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:815
+#: crates/rnote-ui/src/settingspanel/mod.rs:845
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "Könnycsepp észak (nagy)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:816
+#: crates/rnote-ui/src/settingspanel/mod.rs:846
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "Gerenda (kicsi)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:817
+#: crates/rnote-ui/src/settingspanel/mod.rs:847
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "Gerenda (közepes)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:818
+#: crates/rnote-ui/src/settingspanel/mod.rs:848
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "Gerenda (nagy)"
@@ -2290,12 +2295,6 @@ msgstr "Új mappa"
 
 #~ msgid "Close the Folded Flap"
 #~ msgstr "Összehajtott fedél becsukása"
-
-#~ msgid "Workspace"
-#~ msgstr "Munkaterület"
-
-#~ msgid "Settings"
-#~ msgstr "Beállítások"
 
 #~ msgid "Remove Page"
 #~ msgstr "Oldal eltávolítása"

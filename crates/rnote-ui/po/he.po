@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-07 15:59+0100\n"
+"POT-Creation-Date: 2023-12-18 18:58+0100\n"
 "PO-Revision-Date: 2023-09-15 16:52+0000\n"
 "Last-Translator: יובל הרמן <nhajeho1@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
@@ -211,9 +211,9 @@ msgstr "החלפת תיקיית סביבת עבודה"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: crates/rnote-ui/data/ui/dialogs/export.ui:284
-#: crates/rnote-ui/src/dialogs/export.rs:371
-#: crates/rnote-ui/src/dialogs/export.rs:408
-#: crates/rnote-ui/src/dialogs/export.rs:416
+#: crates/rnote-ui/src/dialogs/export.rs:372
+#: crates/rnote-ui/src/dialogs/export.rs:409
+#: crates/rnote-ui/src/dialogs/export.rs:417
 #: crates/rnote-ui/src/dialogs/mod.rs:527
 msgid "- no directory selected -"
 msgstr "- לא נבחרה תיקייה -"
@@ -343,7 +343,7 @@ msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "הגדר DPI מועדף עבור קבצי Xournal++"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
-#: crates/rnote-ui/src/dialogs/export.rs:267
+#: crates/rnote-ui/src/dialogs/export.rs:268
 #, fuzzy
 msgid "Export Document"
 msgstr "מסמך חדש"
@@ -351,8 +351,8 @@ msgstr "מסמך חדש"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
 #: crates/rnote-ui/data/ui/dialogs/export.ui:180
 #: crates/rnote-ui/data/ui/dialogs/export.ui:416
-#: crates/rnote-ui/src/dialogs/export.rs:917
-#: crates/rnote-ui/src/dialogs/export.rs:963
+#: crates/rnote-ui/src/dialogs/export.rs:907
+#: crates/rnote-ui/src/dialogs/export.rs:955
 msgid "Export"
 msgstr "ייצוא"
 
@@ -377,10 +377,10 @@ msgstr "הגדרת רוחב התצורה"
 #: crates/rnote-ui/src/dialogs/export.rs:141
 #: crates/rnote-ui/src/dialogs/export.rs:148
 #: crates/rnote-ui/src/dialogs/export.rs:193
-#: crates/rnote-ui/src/dialogs/export.rs:668
-#: crates/rnote-ui/src/dialogs/export.rs:694
-#: crates/rnote-ui/src/dialogs/export.rs:701
-#: crates/rnote-ui/src/dialogs/export.rs:752
+#: crates/rnote-ui/src/dialogs/export.rs:664
+#: crates/rnote-ui/src/dialogs/export.rs:690
+#: crates/rnote-ui/src/dialogs/export.rs:697
+#: crates/rnote-ui/src/dialogs/export.rs:748
 msgid "- no file selected -"
 msgstr "- לא נבחרו קבצים -"
 
@@ -452,19 +452,19 @@ msgstr "מסמך חדש"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:340
 #: crates/rnote-ui/data/ui/dialogs/export.ui:534
-#: crates/rnote-ui/src/dialogs/export.rs:277
-#: crates/rnote-ui/src/dialogs/export.rs:583
-#: crates/rnote-ui/src/dialogs/export.rs:876
+#: crates/rnote-ui/src/dialogs/export.rs:278
+#: crates/rnote-ui/src/dialogs/export.rs:579
+#: crates/rnote-ui/src/dialogs/export.rs:866
 msgid "Svg"
 msgstr "גרפיקה וקטורית (SVG)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:134
-#: crates/rnote-ui/src/dialogs/export.rs:282
+#: crates/rnote-ui/src/dialogs/export.rs:283
 msgid "Pdf"
 msgstr "מסמך PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
-#: crates/rnote-ui/src/dialogs/export.rs:287
+#: crates/rnote-ui/src/dialogs/export.rs:288
 msgid "Xopp"
 msgstr "Xournal++ (Xopp)"
 
@@ -495,7 +495,7 @@ msgid "Vertical First"
 msgstr "אנכי קודם"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:172
-#: crates/rnote-ui/src/dialogs/export.rs:569
+#: crates/rnote-ui/src/dialogs/export.rs:565
 #, fuzzy
 msgid "Export Document Pages"
 msgstr "ייצוא הגיליון ל־SVG"
@@ -522,15 +522,15 @@ msgstr "ייצוא גיליון"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:535
-#: crates/rnote-ui/src/dialogs/export.rs:588
-#: crates/rnote-ui/src/dialogs/export.rs:881
+#: crates/rnote-ui/src/dialogs/export.rs:584
+#: crates/rnote-ui/src/dialogs/export.rs:871
 msgid "Png"
 msgstr "תמונה (PNG)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:342
 #: crates/rnote-ui/data/ui/dialogs/export.ui:536
-#: crates/rnote-ui/src/dialogs/export.rs:594
-#: crates/rnote-ui/src/dialogs/export.rs:887
+#: crates/rnote-ui/src/dialogs/export.rs:590
+#: crates/rnote-ui/src/dialogs/export.rs:877
 msgid "Jpeg"
 msgstr "תמונה (JPEG)"
 
@@ -545,7 +545,7 @@ msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "הגדר את איכות התמונה (1 - 100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:408
-#: crates/rnote-ui/src/dialogs/export.rs:864
+#: crates/rnote-ui/src/dialogs/export.rs:854
 msgid "Export Selection"
 msgstr "יצוא הבחירה"
 
@@ -1876,6 +1876,14 @@ msgstr ""
 msgid "Redo"
 msgstr ""
 
+#: crates/rnote-ui/data/ui/sidebar.ui:50
+msgid "Workspace"
+msgstr "סביבת עבודה"
+
+#: crates/rnote-ui/data/ui/sidebar.ui:61
+msgid "Settings"
+msgstr "הגדרות"
+
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:79
 #, fuzzy
 #| msgid "Add page"
@@ -1909,7 +1917,7 @@ msgid "Opening file failed"
 msgstr "פתיחת הגיליון נכשלה"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:248
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:581
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:257
@@ -1934,12 +1942,12 @@ msgstr ""
 msgid "Button 4"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:644
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:645
 #, fuzzy
 msgid "Printing document failed"
 msgstr "פתיחת הגיליון נכשלה"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:680
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:681
 #, fuzzy
 msgid "Exporting selection failed, nothing selected"
 msgstr "ייצוא הבחירה ל־SVG נכשל"
@@ -1998,11 +2006,8 @@ msgstr "הגיליון נשמר בהצלחה"
 
 #: crates/rnote-ui/src/dialogs/export.rs:226
 #: crates/rnote-ui/src/dialogs/export.rs:239
-#: crates/rnote-ui/src/dialogs/export.rs:535
-#: crates/rnote-ui/src/dialogs/export.rs:540
+#: crates/rnote-ui/src/dialogs/export.rs:536
 #: crates/rnote-ui/src/dialogs/export.rs:804
-#: crates/rnote-ui/src/dialogs/export.rs:809
-#: crates/rnote-ui/src/dialogs/export.rs:814
 #, fuzzy
 msgid "Exporting document failed"
 msgstr "ייצוא הגיליון ל־SVG נכשל"
@@ -2013,90 +2018,90 @@ msgid "Exported document successfully"
 msgstr "ייצוא הגיליון ל־SVG הצליח"
 
 #: crates/rnote-ui/src/dialogs/export.rs:231
-#: crates/rnote-ui/src/dialogs/export.rs:531
-#: crates/rnote-ui/src/dialogs/export.rs:800
+#: crates/rnote-ui/src/dialogs/export.rs:532
+#: crates/rnote-ui/src/dialogs/export.rs:796
 msgid "View in file manager"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:244
-#: crates/rnote-ui/src/dialogs/export.rs:546
-#: crates/rnote-ui/src/dialogs/export.rs:820
+#: crates/rnote-ui/src/dialogs/export.rs:245
+#: crates/rnote-ui/src/dialogs/export.rs:542
+#: crates/rnote-ui/src/dialogs/export.rs:810
 msgid "Failed to open the file in the file manager"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:254
+#: crates/rnote-ui/src/dialogs/export.rs:255
 #, fuzzy
 msgid "Exporting document failed, no file selected"
 msgstr "ייצוא הגיליון ל־SVG נכשל"
 
-#: crates/rnote-ui/src/dialogs/export.rs:269
-#: crates/rnote-ui/src/dialogs/export.rs:571
-#: crates/rnote-ui/src/dialogs/export.rs:866
+#: crates/rnote-ui/src/dialogs/export.rs:270
+#: crates/rnote-ui/src/dialogs/export.rs:567
+#: crates/rnote-ui/src/dialogs/export.rs:856
 #: crates/rnote-ui/src/dialogs/mod.rs:509
 msgid "Select"
 msgstr "בחירה"
 
-#: crates/rnote-ui/src/dialogs/export.rs:526
+#: crates/rnote-ui/src/dialogs/export.rs:527
 #, fuzzy
 msgid "Exporting document pages failed"
 msgstr "ייצוא הגיליון ל־SVG נכשל"
 
-#: crates/rnote-ui/src/dialogs/export.rs:530
+#: crates/rnote-ui/src/dialogs/export.rs:531
 #, fuzzy
 msgid "Exported document pages successfully"
 msgstr "ייצוא הגיליון ל־SVG הצליח"
 
-#: crates/rnote-ui/src/dialogs/export.rs:555
+#: crates/rnote-ui/src/dialogs/export.rs:551
 #, fuzzy
 msgid "Exporting document pages failed, no directory selected"
 msgstr "ייצוא הגיליון ל־SVG נכשל"
 
-#: crates/rnote-ui/src/dialogs/export.rs:785
+#: crates/rnote-ui/src/dialogs/export.rs:781
 #, fuzzy
 msgid "Exporting selection failed, no file selected"
 msgstr "ייצוא הבחירה ל־SVG נכשל"
 
-#: crates/rnote-ui/src/dialogs/export.rs:795
+#: crates/rnote-ui/src/dialogs/export.rs:791
 #, fuzzy
 msgid "Exporting selection failed"
 msgstr "ייצוא הבחירה ל־SVG נכשל"
 
-#: crates/rnote-ui/src/dialogs/export.rs:799
+#: crates/rnote-ui/src/dialogs/export.rs:795
 #, fuzzy
 msgid "Exported selection successfully"
 msgstr "ייצוא הבחירה ל־SVG הצליח"
 
-#: crates/rnote-ui/src/dialogs/export.rs:907
-#: crates/rnote-ui/src/dialogs/export.rs:953
+#: crates/rnote-ui/src/dialogs/export.rs:897
+#: crates/rnote-ui/src/dialogs/export.rs:945
 msgid "Json"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/export.rs:915
+#: crates/rnote-ui/src/dialogs/export.rs:905
 #, fuzzy
 msgid "Export Engine State"
 msgstr "ייצוא גיליון"
 
-#: crates/rnote-ui/src/dialogs/export.rs:933
+#: crates/rnote-ui/src/dialogs/export.rs:923
 #, fuzzy
 msgid "Exporting engine state failed"
 msgstr "ייצוא הגיליון ל־SVG נכשל"
 
-#: crates/rnote-ui/src/dialogs/export.rs:937
+#: crates/rnote-ui/src/dialogs/export.rs:927
 #, fuzzy
 msgid "Exported engine state successfully"
 msgstr "ייצוא הגיליון ל־SVG הצליח"
 
-#: crates/rnote-ui/src/dialogs/export.rs:961
+#: crates/rnote-ui/src/dialogs/export.rs:953
 #, fuzzy
 msgid "Export Engine Config"
 msgstr "יצוא הבחירה"
 
-#: crates/rnote-ui/src/dialogs/export.rs:979
+#: crates/rnote-ui/src/dialogs/export.rs:971
 #, fuzzy
 msgid "Exporting engine config failed"
 msgstr "ייצוא הבחירה ל־SVG נכשל"
 
-#: crates/rnote-ui/src/dialogs/export.rs:983
+#: crates/rnote-ui/src/dialogs/export.rs:975
 #, fuzzy
 msgid "Exported engine config successfully"
 msgstr "ייצוא הבחירה ל־SVG הצליח"
@@ -2450,96 +2455,96 @@ msgstr ""
 msgid "Polyline"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:535
+#: crates/rnote-ui/src/settingspanel/mod.rs:536
 msgid "Application restart is required"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:801
+#: crates/rnote-ui/src/settingspanel/mod.rs:831
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:802
+#: crates/rnote-ui/src/settingspanel/mod.rs:832
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:803
+#: crates/rnote-ui/src/settingspanel/mod.rs:833
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:804
+#: crates/rnote-ui/src/settingspanel/mod.rs:834
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:805
+#: crates/rnote-ui/src/settingspanel/mod.rs:835
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:806
+#: crates/rnote-ui/src/settingspanel/mod.rs:836
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:807
+#: crates/rnote-ui/src/settingspanel/mod.rs:837
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:808
+#: crates/rnote-ui/src/settingspanel/mod.rs:838
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:809
+#: crates/rnote-ui/src/settingspanel/mod.rs:839
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:810
+#: crates/rnote-ui/src/settingspanel/mod.rs:840
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:811
+#: crates/rnote-ui/src/settingspanel/mod.rs:841
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:812
+#: crates/rnote-ui/src/settingspanel/mod.rs:842
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:813
+#: crates/rnote-ui/src/settingspanel/mod.rs:843
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:814
+#: crates/rnote-ui/src/settingspanel/mod.rs:844
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:815
+#: crates/rnote-ui/src/settingspanel/mod.rs:845
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:816
+#: crates/rnote-ui/src/settingspanel/mod.rs:846
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:817
+#: crates/rnote-ui/src/settingspanel/mod.rs:847
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:818
+#: crates/rnote-ui/src/settingspanel/mod.rs:848
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr ""
@@ -2557,12 +2562,6 @@ msgstr ""
 #~| msgid "Close the folded flap"
 #~ msgid "Close the Folded Flap"
 #~ msgstr "סגירת הדש המקופל"
-
-#~ msgid "Workspace"
-#~ msgstr "סביבת עבודה"
-
-#~ msgid "Settings"
-#~ msgstr "הגדרות"
 
 #, fuzzy
 #~| msgid "Add page"

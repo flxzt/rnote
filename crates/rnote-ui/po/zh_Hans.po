@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-07 15:59+0100\n"
-"PO-Revision-Date: 2023-12-18 14:09+0000\n"
+"PO-Revision-Date: 2023-12-18 18:02+0000\n"
 "Last-Translator: detiam <dehe_tian@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
@@ -1037,7 +1037,7 @@ msgstr "垂直连续的页面 [_C]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:37
 msgid "_Semi Infinite"
-msgstr "无限 [_S]"
+msgstr "半无限 [_S]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"

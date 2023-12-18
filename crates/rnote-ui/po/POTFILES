@@ -27,6 +27,7 @@ crates/rnote-ui/data/ui/overlays.ui
 crates/rnote-ui/data/ui/penshortcutrow.ui
 crates/rnote-ui/data/ui/settingspanel.ui
 crates/rnote-ui/data/ui/shortcuts.ui
+crates/rnote-ui/data/ui/sidebar.ui
 crates/rnote-ui/data/ui/strokecontentpreview.ui
 crates/rnote-ui/data/ui/strokewidthpicker.ui
 crates/rnote-ui/data/ui/unitentry.ui

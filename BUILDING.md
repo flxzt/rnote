@@ -181,19 +181,19 @@ meson compile <custom target> -C _mesonbuild
 | rnote-gmo | Compile the po files. Provided by the `i18n` module. |
 | cargo-fmt-check | Check the code formatting |
 | cargo-test | Run all unit and integration tests |
-| app-cargo-check | Run cargo check for the app package |
-| app-cargo-clippy | Run clippy for the app package |
-| app-cargo-doc | Generate docs for the app package (also checks documentation formatting) |
-| app-cargo-build | Build the app |
+| ui-cargo-check | Run cargo check for the ui package |
+| ui-cargo-clippy | Run clippy for the ui package |
+| ui-cargo-doc | Generate docs for the ui package (also checks documentation formatting) |
+| ui-cargo-build | Build the ui |
 | cli-cargo-check | Run cargo check for the cli package |
 | cli-cargo-clippy | Run clippy for the cli package |
 | cli-cargo-doc | Generate docs for the cli package (also checks documentation formatting) |
 | cli-cargo-build | Build the cli |
-| build-installer | Build the installer (only functional on windows-msys2) |
+| build-installer | Build the installer (only functional on windows-msys2 and when the ui option is enabled) |
 
 # Debugging
 For a native meson build:
-Be sure to configure meson with `-Dprofile=devel` to have a build that includes debugging symbols.
+Be sure to configure meson with option `-Dprofile=devel` to have a build that includes debugging symbols.
 Then configure, compile and install the meson project as outlined above. 
 
 ## With VSCode

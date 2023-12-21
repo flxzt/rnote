@@ -47,7 +47,7 @@
     <screenshot>
       <image>
         https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/focus-mode.png</image>
-      <caption>Disable toolbars with the focus mode</caption>
+      <caption>Hide toolbars with the focus mode</caption>
     </screenshot>
     <screenshot>
       <image>

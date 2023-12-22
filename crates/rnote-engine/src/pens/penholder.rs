@@ -162,26 +162,6 @@ impl PenHolder {
         widget_flags
     }
 
-    fn change_style_int(
-        &mut self,
-        new_style: PenStyle,
-        engine_view: &mut EngineViewMut,
-    ) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
-        if self.pen_mode_state.style() != new_style {
-            // Deselecting when changing the style
-            let all_strokes = engine_view.store.selection_keys_as_rendered();
-            engine_view.store.set_selected_keys(&all_strokes, false);
-
-            self.pen_mode_state.set_style(new_style);
-            widget_flags |= self.reinstall_pen_current_style(engine_view);
-            widget_flags.refresh_ui = true;
-        }
-
-        widget_flags
-    }
-
     /// Change the style override.
     pub fn change_style_override(
         &mut self,
@@ -268,7 +248,7 @@ impl PenHolder {
         widget_flags |= wf | self.handle_pen_progress(event_result.progress, engine_view);
 
         if !event_result.handled {
-            let (propagate, wf) = self.handle_event_global(event, now, engine_view);
+            let (propagate, wf) = self.handle_pen_event_global(event, now, engine_view);
             event_result.propagate |= propagate;
             widget_flags |= wf;
         }
@@ -279,7 +259,102 @@ impl PenHolder {
         (event_result.propagate, widget_flags)
     }
 
-    fn handle_event_global(
+    /// Handle a pressed shortcut key.
+    pub fn handle_pressed_shortcut_key(
+        &mut self,
+        shortcut_key: ShortcutKey,
+        _now: Instant,
+        engine_view: &mut EngineViewMut,
+    ) -> (EventPropagation, WidgetFlags) {
+        let mut widget_flags = WidgetFlags::default();
+        let mut propagate = EventPropagation::Proceed;
+
+        if let Some(action) = self.get_shortcut_action(shortcut_key) {
+            match action {
+                ShortcutAction::ChangePenStyle { style, mode } => match mode {
+                    ShortcutMode::Temporary => {
+                        widget_flags |= self.change_style_override(Some(style), engine_view);
+                    }
+                    ShortcutMode::Permanent => {
+                        self.toggle_pen_style = None;
+                        widget_flags |= self.change_style_int(style, engine_view);
+                    }
+                    ShortcutMode::Toggle => {
+                        if let Some(toggle_pen_style) = self.toggle_pen_style {
+                            // if the previous key was different, but also in toggle mode,
+                            // we switch to the new style instead of toggling back
+                            if self
+                                .prev_shortcut_key
+                                .map(|k| k != shortcut_key)
+                                .unwrap_or(true)
+                            {
+                                widget_flags |= self.change_style_int(style, engine_view);
+                            } else {
+                                self.toggle_pen_style = None;
+                                widget_flags |=
+                                    self.change_style_int(toggle_pen_style, engine_view);
+                            }
+                        } else {
+                            self.toggle_pen_style = Some(self.current_pen_style());
+                            widget_flags |= self.change_style_int(style, engine_view);
+                        }
+                    }
+                },
+            }
+
+            propagate = EventPropagation::Stop;
+        }
+
+        self.prev_shortcut_key = Some(shortcut_key);
+        widget_flags.redraw = true;
+
+        (propagate, widget_flags)
+    }
+
+    /// Fetch clipboard content from the current pen.
+    #[allow(clippy::type_complexity)]
+    pub fn fetch_clipboard_content(
+        &self,
+        engine_view: &EngineView,
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
+        self.current_pen.fetch_clipboard_content(engine_view)
+    }
+
+    /// Cut clipboard content from the current pen.
+    #[allow(clippy::type_complexity)]
+    pub fn cut_clipboard_content(
+        &mut self,
+        engine_view: &mut EngineViewMut,
+    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
+        self.current_pen.cut_clipboard_content(engine_view)
+    }
+
+    /// Internal method for changing the pen style, without some of the side effects that are happening in the public
+    /// method.
+    fn change_style_int(
+        &mut self,
+        new_style: PenStyle,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if self.pen_mode_state.style() != new_style {
+            // Deselecting when changing the style
+            let all_strokes = engine_view.store.selection_keys_as_rendered();
+            engine_view.store.set_selected_keys(&all_strokes, false);
+
+            self.pen_mode_state.set_style(new_style);
+            widget_flags |= self.reinstall_pen_current_style(engine_view);
+            widget_flags.refresh_ui = true;
+        }
+
+        widget_flags
+    }
+
+    /// Handles the pen event in the global scope if the current pen has not handled it.
+    ///
+    /// Used to implement things like nudging the view, react to pressed buttons that weren't handled by th pen, ..
+    fn handle_pen_event_global(
         &mut self,
         event: PenEvent,
         _now: Instant,
@@ -428,75 +503,6 @@ impl PenHolder {
         widget_flags.redraw = true;
 
         widget_flags
-    }
-
-    /// Handle a pressed shortcut key.
-    pub fn handle_pressed_shortcut_key(
-        &mut self,
-        shortcut_key: ShortcutKey,
-        _now: Instant,
-        engine_view: &mut EngineViewMut,
-    ) -> (EventPropagation, WidgetFlags) {
-        let mut widget_flags = WidgetFlags::default();
-        let mut propagate = EventPropagation::Proceed;
-
-        if let Some(action) = self.get_shortcut_action(shortcut_key) {
-            match action {
-                ShortcutAction::ChangePenStyle { style, mode } => match mode {
-                    ShortcutMode::Temporary => {
-                        widget_flags |= self.change_style_override(Some(style), engine_view);
-                    }
-                    ShortcutMode::Permanent => {
-                        self.toggle_pen_style = None;
-                        widget_flags |= self.change_style_int(style, engine_view);
-                    }
-                    ShortcutMode::Toggle => {
-                        if let Some(toggle_pen_style) = self.toggle_pen_style {
-                            // if the previous key was different, but also in toggle mode, we switch to the new style instead of toggling back
-                            if self
-                                .prev_shortcut_key
-                                .map(|k| k != shortcut_key)
-                                .unwrap_or(true)
-                            {
-                                widget_flags |= self.change_style_int(style, engine_view);
-                            } else {
-                                self.toggle_pen_style = None;
-                                widget_flags |=
-                                    self.change_style_int(toggle_pen_style, engine_view);
-                            }
-                        } else {
-                            self.toggle_pen_style = Some(self.current_pen_style());
-                            widget_flags |= self.change_style_int(style, engine_view);
-                        }
-                    }
-                },
-            }
-
-            propagate = EventPropagation::Stop;
-        }
-
-        self.prev_shortcut_key = Some(shortcut_key);
-        widget_flags.redraw = true;
-
-        (propagate, widget_flags)
-    }
-
-    /// Fetch clipboard content from the current pen.
-    #[allow(clippy::type_complexity)]
-    pub fn fetch_clipboard_content(
-        &self,
-        engine_view: &EngineView,
-    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
-        self.current_pen.fetch_clipboard_content(engine_view)
-    }
-
-    /// Cut clipboard content from the current pen.
-    #[allow(clippy::type_complexity)]
-    pub fn cut_clipboard_content(
-        &mut self,
-        engine_view: &mut EngineViewMut,
-    ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
-        self.current_pen.cut_clipboard_content(engine_view)
     }
 }
 

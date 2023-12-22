@@ -210,23 +210,24 @@ impl RnAppWindow {
 
         // Developer mode
         action_devel_mode.connect_activate(
-            clone!(@weak self as appwindow, @weak action_devel_menu => move |action, _target| {
+            clone!(@weak self as appwindow, @weak action_devel_menu, @weak action_visual_debug => move |action, _| {
                 let state = action.state().unwrap().get::<bool>().unwrap();
 
                 // Enable the devel menu action to reveal it in the app menu
                 action_devel_menu.set_enabled(!state);
 
-                // If toggled to disable
+                // Always disable visual-debugging when disabling the developer mode
                 if state {
-                    log::debug!("Disabling visual debugging.");
-                    appwindow.lookup_action("visual-debug").unwrap().change_state(&false.to_variant());
+                    log::debug!("Disabling developer mode, disabling visual debugging.");
+                    action_visual_debug.change_state(&false.to_variant());
                 }
                 action.change_state(&(!state).to_variant());
             }),
         );
 
         // Developer settings
-        // Its enabled state toggles the visibility of the developer settings menu entry. Is only modified inside action_devel_mode
+        // Its enabled state toggles the visibility of the developer settings menu entry.
+        // Must only be modified inside the devel-mode action
         action_devel_menu.set_enabled(false);
 
         // Visual debugging

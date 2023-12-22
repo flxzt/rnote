@@ -440,116 +440,11 @@ impl RnAppWindow {
         target_pos: Option<na::Vector2<f64>>,
         rnote_file_new_tab: bool,
     ) {
-        // Returns Ok(true) if file was imported, else Ok(false)
-        async fn try_open_file(
-            appwindow: &RnAppWindow,
-            input_file: gio::File,
-            target_pos: Option<na::Vector2<f64>>,
-            rnote_file_new_tab: bool,
-        ) -> anyhow::Result<bool> {
-            let file_imported = match FileType::lookup_file_type(&input_file) {
-                FileType::RnoteFile => {
-                    let Some(input_file_path) = input_file.path() else {
-                        return Err(anyhow::anyhow!(
-                            "Could not open file: {input_file:?}, path returned None"
-                        ));
-                    };
-
-                    // If the file is already opened in a tab, simply switch to it
-                    if let Some(page) = appwindow.tabs_query_file_opened(input_file_path) {
-                        appwindow.overlays().tabview().set_selected_page(&page);
-                        false
-                    } else {
-                        let rnote_file_new_tab = if appwindow.active_tab_wrapper().canvas().empty()
-                            && appwindow
-                                .active_tab_wrapper()
-                                .canvas()
-                                .output_file()
-                                .is_none()
-                        {
-                            false
-                        } else {
-                            rnote_file_new_tab
-                        };
-
-                        let wrapper = if rnote_file_new_tab {
-                            // a new tab for rnote files
-                            appwindow.new_canvas_wrapper()
-                        } else {
-                            appwindow.active_tab_wrapper()
-                        };
-                        let (bytes, _) = input_file.load_bytes_future().await?;
-                        let widget_flags = wrapper
-                            .canvas()
-                            .load_in_rnote_bytes(bytes.to_vec(), input_file.path())
-                            .await?;
-                        if rnote_file_new_tab {
-                            appwindow.append_wrapper_new_tab(&wrapper);
-                        }
-                        appwindow.handle_widget_flags(widget_flags, &wrapper.canvas());
-                        true
-                    }
-                }
-                FileType::VectorImageFile => {
-                    let canvas = appwindow.active_tab_wrapper().canvas();
-                    let (bytes, _) = input_file.load_bytes_future().await?;
-                    canvas
-                        .load_in_vectorimage_bytes(bytes.to_vec(), target_pos)
-                        .await?;
-                    true
-                }
-                FileType::BitmapImageFile => {
-                    let canvas = appwindow.active_tab_wrapper().canvas();
-                    let (bytes, _) = input_file.load_bytes_future().await?;
-                    canvas
-                        .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos)
-                        .await?;
-                    true
-                }
-                FileType::XoppFile => {
-                    // a new tab for xopp file import
-                    let wrapper = appwindow.new_canvas_wrapper();
-                    let canvas = wrapper.canvas();
-                    let file_imported =
-                        dialogs::import::dialog_import_xopp_w_prefs(appwindow, &canvas, input_file)
-                            .await?;
-                    if file_imported {
-                        appwindow.append_wrapper_new_tab(&wrapper);
-                    }
-                    file_imported
-                }
-                FileType::PdfFile => {
-                    let canvas = appwindow.active_tab_wrapper().canvas();
-                    dialogs::import::dialog_import_pdf_w_prefs(
-                        appwindow, &canvas, input_file, target_pos,
-                    )
-                    .await?
-                }
-                FileType::PlaintextFile => {
-                    let canvas = appwindow.active_tab_wrapper().canvas();
-                    let (bytes, _) = input_file.load_bytes_future().await?;
-                    canvas.load_in_text(String::from_utf8(bytes.to_vec())?, target_pos)?;
-                    true
-                }
-                FileType::Folder => {
-                    if let Some(dir) = input_file.path() {
-                        appwindow
-                            .sidebar()
-                            .workspacebrowser()
-                            .workspacesbar()
-                            .set_selected_workspace_dir(dir);
-                    }
-                    false
-                }
-                FileType::Unsupported => {
-                    return Err(anyhow::anyhow!("tried to open unsupported file type"));
-                }
-            };
-            Ok(file_imported)
-        }
-
         self.overlays().progressbar_start_pulsing();
-        match try_open_file(self, input_file, target_pos, rnote_file_new_tab).await {
+        match self
+            .try_open_file(input_file, target_pos, rnote_file_new_tab)
+            .await
+        {
             Ok(true) => {
                 self.overlays().progressbar_finish();
             }
@@ -564,6 +459,107 @@ impl RnAppWindow {
                 self.overlays().progressbar_abort();
             }
         }
+    }
+
+    /// Internal method for opening/importing content from a file with a supported content type.
+    ///
+    /// Returns Ok(true) if file was imported, Ok(false) if not, Err(_) if the import failed.
+    async fn try_open_file(
+        &self,
+        input_file: gio::File,
+        target_pos: Option<na::Vector2<f64>>,
+        rnote_file_new_tab: bool,
+    ) -> anyhow::Result<bool> {
+        let file_imported = match FileType::lookup_file_type(&input_file) {
+            FileType::RnoteFile => {
+                let input_file_path = input_file.path().ok_or_else(|| {
+                    anyhow::anyhow!("Could not open file '{input_file:?}', file path is None.")
+                })?;
+
+                // If the file is already opened in a tab, simply switch to it
+                if let Some(page) = self.tabs_query_file_opened(input_file_path) {
+                    self.overlays().tabview().set_selected_page(&page);
+                    false
+                } else {
+                    let rnote_file_new_tab = if self.active_tab_wrapper().canvas().empty()
+                        && self.active_tab_wrapper().canvas().output_file().is_none()
+                    {
+                        false
+                    } else {
+                        rnote_file_new_tab
+                    };
+
+                    let wrapper = if rnote_file_new_tab {
+                        // a new tab for rnote files
+                        self.new_canvas_wrapper()
+                    } else {
+                        self.active_tab_wrapper()
+                    };
+                    let (bytes, _) = input_file.load_bytes_future().await?;
+                    let widget_flags = wrapper
+                        .canvas()
+                        .load_in_rnote_bytes(bytes.to_vec(), input_file.path())
+                        .await?;
+                    if rnote_file_new_tab {
+                        self.append_wrapper_new_tab(&wrapper);
+                    }
+                    self.handle_widget_flags(widget_flags, &wrapper.canvas());
+                    true
+                }
+            }
+            FileType::VectorImageFile => {
+                let canvas = self.active_tab_wrapper().canvas();
+                let (bytes, _) = input_file.load_bytes_future().await?;
+                canvas
+                    .load_in_vectorimage_bytes(bytes.to_vec(), target_pos)
+                    .await?;
+                true
+            }
+            FileType::BitmapImageFile => {
+                let canvas = self.active_tab_wrapper().canvas();
+                let (bytes, _) = input_file.load_bytes_future().await?;
+                canvas
+                    .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos)
+                    .await?;
+                true
+            }
+            FileType::XoppFile => {
+                // a new tab for xopp file import
+                let wrapper = self.new_canvas_wrapper();
+                let canvas = wrapper.canvas();
+                let file_imported =
+                    dialogs::import::dialog_import_xopp_w_prefs(self, &canvas, input_file).await?;
+                if file_imported {
+                    self.append_wrapper_new_tab(&wrapper);
+                }
+                file_imported
+            }
+            FileType::PdfFile => {
+                let canvas = self.active_tab_wrapper().canvas();
+                dialogs::import::dialog_import_pdf_w_prefs(self, &canvas, input_file, target_pos)
+                    .await?
+            }
+            FileType::PlaintextFile => {
+                let canvas = self.active_tab_wrapper().canvas();
+                let (bytes, _) = input_file.load_bytes_future().await?;
+                canvas.load_in_text(String::from_utf8(bytes.to_vec())?, target_pos)?;
+                true
+            }
+            FileType::Folder => {
+                if let Some(dir) = input_file.path() {
+                    self.sidebar()
+                        .workspacebrowser()
+                        .workspacesbar()
+                        .set_selected_workspace_dir(dir);
+                }
+                false
+            }
+            FileType::Unsupported => {
+                return Err(anyhow::anyhow!("Tried to open unsupported file type"));
+            }
+        };
+
+        Ok(file_imported)
     }
 
     /// Refresh the UI from the engine state from the given tab page.

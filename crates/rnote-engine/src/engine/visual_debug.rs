@@ -231,7 +231,7 @@ pub(crate) fn draw_stroke_debug_to_gtk_snapshot(
     if let Some(bounds) = engine.penholder.bounds_on_doc(&EngineView {
         tasks_tx: engine.engine_tasks_tx(),
         pens_config: &engine.pens_config,
-        doc: &engine.document,
+        document: &engine.document,
         store: &engine.store,
         camera: &engine.camera,
         audioplayer: &engine.audioplayer,

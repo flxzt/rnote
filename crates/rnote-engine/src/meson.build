@@ -54,6 +54,7 @@ rnote_engine_sources = files(
     'strokes/vectorimage.rs',
     'audioplayer.rs',
     'camera.rs',
+    'cloneconfig.rs',
     'drawable.rs',
     'ext.rs',
     'lib.rs',

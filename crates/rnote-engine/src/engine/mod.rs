@@ -22,7 +22,7 @@ use crate::store::render_comp::{self, RenderCompState};
 use crate::store::StrokeKey;
 use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::textstroke::{TextAttribute, TextStyle};
-use crate::{render, AudioPlayer, SelectionCollision, WidgetFlags};
+use crate::{render, AudioPlayer, CloneConfig, SelectionCollision, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use futures::channel::{mpsc, oneshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -41,7 +41,7 @@ use std::time::Instant;
 pub struct EngineView<'a> {
     pub tasks_tx: EngineTaskSender,
     pub pens_config: &'a PensConfig,
-    pub doc: &'a Document,
+    pub document: &'a Document,
     pub store: &'a StrokeStore,
     pub camera: &'a Camera,
     pub audioplayer: &'a Option<AudioPlayer>,
@@ -52,7 +52,7 @@ pub struct EngineView<'a> {
 pub struct EngineViewMut<'a> {
     pub tasks_tx: EngineTaskSender,
     pub pens_config: &'a mut PensConfig,
-    pub doc: &'a mut Document,
+    pub document: &'a mut Document,
     pub store: &'a mut StrokeStore,
     pub camera: &'a mut Camera,
     pub audioplayer: &'a mut Option<AudioPlayer>,
@@ -64,7 +64,7 @@ impl<'a> EngineViewMut<'a> {
         EngineView::<'m> {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: self.pens_config,
-            doc: self.doc,
+            document: self.document,
             store: self.store,
             camera: self.camera,
             audioplayer: self.audioplayer,
@@ -228,7 +228,7 @@ impl Engine {
         EngineView {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &self.pens_config,
-            doc: &self.document,
+            document: &self.document,
             store: &self.store,
             camera: &self.camera,
             audioplayer: &self.audioplayer,
@@ -240,7 +240,7 @@ impl Engine {
         EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &mut self.pens_config,
-            doc: &mut self.document,
+            document: &mut self.document,
             store: &mut self.store,
             camera: &mut self.camera,
             audioplayer: &mut self.audioplayer,
@@ -470,7 +470,7 @@ impl Engine {
             &mut EngineViewMut {
                 tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
-                doc: &mut self.document,
+                document: &mut self.document,
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
@@ -490,7 +490,7 @@ impl Engine {
             &mut EngineViewMut {
                 tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
-                doc: &mut self.document,
+                document: &mut self.document,
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
@@ -505,7 +505,7 @@ impl Engine {
             &mut EngineViewMut {
                 tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
-                doc: &mut self.document,
+                document: &mut self.document,
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
@@ -523,7 +523,7 @@ impl Engine {
             &mut EngineViewMut {
                 tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
-                doc: &mut self.document,
+                document: &mut self.document,
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
@@ -538,7 +538,7 @@ impl Engine {
             &mut EngineViewMut {
                 tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
-                doc: &mut self.document,
+                document: &mut self.document,
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
@@ -552,7 +552,7 @@ impl Engine {
             .reinstall_pen_current_style(&mut EngineViewMut {
                 tasks_tx: self.engine_tasks_tx(),
                 pens_config: &mut self.pens_config,
-                doc: &mut self.document,
+                document: &mut self.document,
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
@@ -751,7 +751,7 @@ impl Engine {
         self.penholder.current_pen_update_state(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &mut self.pens_config,
-            doc: &mut self.document,
+            document: &mut self.document,
             store: &mut self.store,
             camera: &mut self.camera,
             audioplayer: &mut self.audioplayer,
@@ -766,7 +766,7 @@ impl Engine {
         self.penholder.fetch_clipboard_content(&EngineView {
             tasks_tx: self.engine_tasks_tx(),
             pens_config: &self.pens_config,
-            doc: &self.document,
+            document: &self.document,
             store: &self.store,
             camera: &self.camera,
             audioplayer: &self.audioplayer,
@@ -781,7 +781,7 @@ impl Engine {
         self.penholder.cut_clipboard_content(&mut EngineViewMut {
             tasks_tx: self.engine_tasks_tx(),
             pens_config: &mut self.pens_config,
-            doc: &mut self.document,
+            document: &mut self.document,
             store: &mut self.store,
             camera: &mut self.camera,
             audioplayer: &mut self.audioplayer,
@@ -890,7 +890,7 @@ impl Engine {
                 &mut EngineViewMut {
                     tasks_tx: self.tasks_tx.clone(),
                     pens_config: &mut self.pens_config,
-                    doc: &mut self.document,
+                    document: &mut self.document,
                     store: &mut self.store,
                     camera: &mut self.camera,
                     audioplayer: &mut self.audioplayer,
@@ -907,7 +907,7 @@ impl Engine {
                 typewriter.remove_text_attributes_current_selection(&mut EngineViewMut {
                     tasks_tx: self.tasks_tx.clone(),
                     pens_config: &mut self.pens_config,
-                    doc: &mut self.document,
+                    document: &mut self.document,
                     store: &mut self.store,
                     camera: &mut self.camera,
                     audioplayer: &mut self.audioplayer,
@@ -927,7 +927,7 @@ impl Engine {
                 &mut EngineViewMut {
                     tasks_tx: self.tasks_tx.clone(),
                     pens_config: &mut self.pens_config,
-                    doc: &mut self.document,
+                    document: &mut self.document,
                     store: &mut self.store,
                     camera: &mut self.camera,
                     audioplayer: &mut self.audioplayer,
@@ -945,7 +945,7 @@ impl Engine {
                 &mut EngineViewMut {
                     tasks_tx: self.tasks_tx.clone(),
                     pens_config: &mut self.pens_config,
-                    doc: &mut self.document,
+                    document: &mut self.document,
                     store: &mut self.store,
                     camera: &mut self.camera,
                     audioplayer: &mut self.audioplayer,

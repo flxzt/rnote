@@ -774,7 +774,7 @@ impl Selector {
             if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&all_strokes) {
                 engine_view.store.set_selected_keys(&all_strokes, true);
                 *widget_flags |= engine_view
-                    .doc
+                    .document
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = SelectorState::ModifySelection {

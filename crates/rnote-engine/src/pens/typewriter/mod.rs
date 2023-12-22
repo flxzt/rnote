@@ -478,7 +478,7 @@ impl PenBehaviour for Typewriter {
                                 engine_view.camera.image_scale(),
                             );
                             widget_flags |= engine_view
-                                .doc
+                                .document
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             // Back to modifying state
@@ -716,7 +716,7 @@ impl Typewriter {
                             engine_view.camera.image_scale(),
                         );
                         widget_flags |= engine_view
-                            .doc
+                            .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
@@ -742,7 +742,7 @@ impl Typewriter {
                             engine_view.camera.image_scale(),
                         );
                         widget_flags |= engine_view
-                            .doc
+                            .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         widget_flags |= engine_view.store.record(Instant::now());

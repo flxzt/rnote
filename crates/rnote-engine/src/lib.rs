@@ -11,6 +11,7 @@
 // Modules
 pub mod audioplayer;
 pub mod camera;
+pub mod cloneconfig;
 pub mod document;
 pub mod drawable;
 pub mod engine;
@@ -29,6 +30,7 @@ pub mod widgetflags;
 // Re-exports
 pub use audioplayer::AudioPlayer;
 pub use camera::Camera;
+pub use cloneconfig::CloneConfig;
 pub use document::Document;
 pub use drawable::Drawable;
 pub use drawable::DrawableOnDoc;

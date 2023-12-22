@@ -321,7 +321,7 @@ impl PenBehaviour for Tools {
                     }
                 }
                 widget_flags |= engine_view
-                    .doc
+                    .document
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = ToolsState::Active;
@@ -346,7 +346,7 @@ impl PenBehaviour for Tools {
                         {
                             self.verticalspace_tool.start_pos_y - self.verticalspace_tool.pos_y
                         } else {
-                            engine_view.doc.snap_position(
+                            engine_view.document.snap_position(
                                 element.pos - na::vector![0., self.verticalspace_tool.pos_y],
                             )[1]
                         };
@@ -366,9 +366,10 @@ impl PenBehaviour for Tools {
                         }
 
                         // possibly nudge camera
-                        widget_flags |=
-                            engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
-                        widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
+                        widget_flags |= engine_view
+                            .camera
+                            .nudge_w_pos(element.pos, engine_view.document);
+                        widget_flags |= engine_view.document.expand_autoexpand(engine_view.camera);
                         engine_view.store.regenerate_rendering_in_viewport_threaded(
                             engine_view.tasks_tx.clone(),
                             false,
@@ -390,9 +391,9 @@ impl PenBehaviour for Tools {
 
                         widget_flags |= engine_view
                             .camera
-                            .set_offset(engine_view.camera.offset() - offset, engine_view.doc);
+                            .set_offset(engine_view.camera.offset() - offset, engine_view.document);
                         widget_flags |= engine_view
-                            .doc
+                            .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);
                     }
                     ToolStyle::Zoom => {
@@ -414,7 +415,7 @@ impl PenBehaviour for Tools {
                                 .camera
                                 .zoom_w_timeout(new_zoom, engine_view.tasks_tx.clone());
                             widget_flags |= engine_view.camera.set_viewport_center(viewport_center)
-                                | engine_view.doc.expand_autoexpand(engine_view.camera);
+                                | engine_view.document.expand_autoexpand(engine_view.camera);
                         }
                         self.zoom_tool.current_surface_coord = new_surface_coord;
                     }
@@ -440,7 +441,7 @@ impl PenBehaviour for Tools {
                 }
 
                 widget_flags |= engine_view
-                    .doc
+                    .document
                     .resize_autoexpand(engine_view.store, engine_view.camera);
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
                     engine_view.tasks_tx.clone(),
@@ -469,7 +470,7 @@ impl PenBehaviour for Tools {
             },
             (ToolsState::Active, PenEvent::Cancel) => {
                 widget_flags |= engine_view
-                    .doc
+                    .document
                     .resize_autoexpand(engine_view.store, engine_view.camera);
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
                     engine_view.tasks_tx.clone(),

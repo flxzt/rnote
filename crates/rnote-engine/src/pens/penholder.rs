@@ -9,7 +9,7 @@ use crate::camera::NudgeDirection;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::pens::shortcuts::ShortcutAction;
 use crate::widgetflags::WidgetFlags;
-use crate::DrawableOnDoc;
+use crate::{CloneConfig, DrawableOnDoc};
 use futures::channel::oneshot;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
@@ -62,16 +62,17 @@ impl Default for PenHolder {
     }
 }
 
-impl PenHolder {
-    /// Clone the PenHolder configuration.
-    pub(crate) fn clone_config(&self) -> Self {
+impl CloneConfig for PenHolder {
+    fn clone_config(&self) -> Self {
         Self {
             shortcuts: self.shortcuts.clone(),
             pen_mode_state: self.pen_mode_state.clone_config(),
             ..Default::default()
         }
     }
+}
 
+impl PenHolder {
     /// Get the current registered shortcuts.
     pub fn shortcuts(&self) -> Shortcuts {
         self.shortcuts.clone()
@@ -306,7 +307,7 @@ impl PenHolder {
                     widget_flags |= engine_view.camera.nudge_by(
                         nudge_amount,
                         NudgeDirection::North,
-                        engine_view.doc,
+                        engine_view.document,
                     );
                     engine_view.store.regenerate_rendering_in_viewport_threaded(
                         engine_view.tasks_tx.clone(),
@@ -326,7 +327,7 @@ impl PenHolder {
                     widget_flags |= engine_view.camera.nudge_by(
                         nudge_amount,
                         NudgeDirection::South,
-                        engine_view.doc,
+                        engine_view.document,
                     );
                     engine_view.store.regenerate_rendering_in_viewport_threaded(
                         engine_view.tasks_tx.clone(),
@@ -346,7 +347,7 @@ impl PenHolder {
                     widget_flags |= engine_view.camera.nudge_by(
                         nudge_amount,
                         NudgeDirection::West,
-                        engine_view.doc,
+                        engine_view.document,
                     );
                     engine_view.store.regenerate_rendering_in_viewport_threaded(
                         engine_view.tasks_tx.clone(),
@@ -366,7 +367,7 @@ impl PenHolder {
                     widget_flags |= engine_view.camera.nudge_by(
                         nudge_amount,
                         NudgeDirection::East,
-                        engine_view.doc,
+                        engine_view.document,
                     );
                     engine_view.store.regenerate_rendering_in_viewport_threaded(
                         engine_view.tasks_tx.clone(),

@@ -171,7 +171,7 @@ impl PenBehaviour for Shaper {
 
                         if shapes_emitted {
                             widget_flags |= engine_view
-                                .doc
+                                .document
                                 .resize_autoexpand(engine_view.store, engine_view.camera)
                                 | engine_view.store.record(Instant::now());
                             widget_flags.store_modified = true;

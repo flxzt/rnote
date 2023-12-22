@@ -5,7 +5,7 @@ use crate::pens::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
 use crate::store::StrokeKey;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
-use crate::{Engine, WidgetFlags};
+use crate::{CloneConfig, Engine, WidgetFlags};
 use futures::channel::oneshot;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
@@ -132,6 +132,12 @@ pub struct ImportPrefs {
     pub xopp_import_prefs: XoppImportPrefs,
 }
 
+impl CloneConfig for ImportPrefs {
+    fn clone_config(&self) -> Self {
+        *self
+    }
+}
+
 impl Engine {
     /// Loads the engine config
     pub fn load_engine_config(
@@ -156,7 +162,7 @@ impl Engine {
             .reinstall_pen_current_style(&mut EngineViewMut {
                 tasks_tx: self.tasks_tx.clone(),
                 pens_config: &mut self.pens_config,
-                doc: &mut self.document,
+                document: &mut self.document,
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
@@ -334,7 +340,7 @@ impl Engine {
                 &mut EngineViewMut {
                     tasks_tx: self.tasks_tx.clone(),
                     pens_config: &mut self.pens_config,
-                    doc: &mut self.document,
+                    document: &mut self.document,
                     store: &mut self.store,
                     camera: &mut self.camera,
                     audioplayer: &mut self.audioplayer,
@@ -374,7 +380,7 @@ impl Engine {
         widget_flags |= self.penholder.current_pen_update_state(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &mut self.pens_config,
-            doc: &mut self.document,
+            document: &mut self.document,
             store: &mut self.store,
             camera: &mut self.camera,
             audioplayer: &mut self.audioplayer,

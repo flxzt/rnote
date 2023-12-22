@@ -108,7 +108,7 @@ impl Camera {
             offset[1].clamp(lower[1], upper[1])
         ];
 
-        widget_flags.update_view = true;
+        widget_flags.view_modified = true;
         widget_flags.resize = true;
         widget_flags
     }
@@ -152,7 +152,7 @@ impl Camera {
         let mut widget_flags = WidgetFlags::default();
         self.size = size;
 
-        widget_flags.update_view = true;
+        widget_flags.view_modified = true;
         widget_flags.resize = true;
         widget_flags
     }
@@ -260,7 +260,7 @@ impl Camera {
     pub fn set_viewport_center(&mut self, center: na::Vector2<f64>) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         self.offset = center * self.total_zoom() - self.size * 0.5;
-        widget_flags.update_view = true;
+        widget_flags.view_modified = true;
         widget_flags.resize = true;
         widget_flags
     }

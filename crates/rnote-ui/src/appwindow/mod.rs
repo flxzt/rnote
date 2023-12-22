@@ -198,7 +198,7 @@ impl RnAppWindow {
             canvas.set_unsaved_changes(true);
             canvas.set_empty(false);
         }
-        if widget_flags.update_view {
+        if widget_flags.view_modified {
             let widget_size = canvas.widget_size();
             let offset_mins_maxs = canvas.engine_ref().camera_offset_mins_maxs();
             let offset = canvas.engine_ref().camera.offset();
@@ -209,10 +209,10 @@ impl RnAppWindow {
         if widget_flags.zoomed_temporarily {
             let total_zoom = canvas.engine_ref().camera.total_zoom();
 
-            canvas.queue_resize();
             self.main_header()
                 .canvasmenu()
-                .update_zoom_reset_label(total_zoom);
+                .refresh_zoom_reset_label(total_zoom);
+            canvas.queue_resize();
         }
         if widget_flags.zoomed {
             let total_zoom = canvas.engine_ref().camera.total_zoom();
@@ -221,7 +221,7 @@ impl RnAppWindow {
             canvas.canvas_layout_manager().update_old_viewport(viewport);
             self.main_header()
                 .canvasmenu()
-                .update_zoom_reset_label(total_zoom);
+                .refresh_zoom_reset_label(total_zoom);
             canvas.queue_resize();
         }
         if widget_flags.deselect_color_setters {
@@ -571,13 +571,12 @@ impl RnAppWindow {
         let canvas = active_tab.canvas();
 
         // Avoids already borrowed
-        let format = canvas.engine_ref().document.format;
-        let doc_layout = canvas.engine_ref().document.layout;
-        let pen_sounds = canvas.engine_ref().pen_sounds();
-        let snap_positions = canvas.engine_ref().document.snap_positions;
         let pen_style = canvas.engine_ref().penholder.current_pen_style_w_override();
-
-        // Undo / redo
+        let pen_sounds = canvas.engine_ref().pen_sounds();
+        let doc_format = canvas.engine_ref().document.format;
+        let doc_layout = canvas.engine_ref().document.layout;
+        let total_zoom = canvas.engine_ref().camera.total_zoom();
+        let snap_positions = canvas.engine_ref().document.snap_positions;
         let can_undo = canvas.engine_ref().can_undo();
         let can_redo = canvas.engine_ref().can_redo();
 
@@ -589,6 +588,9 @@ impl RnAppWindow {
             .penpicker()
             .redo_button()
             .set_sensitive(can_redo);
+        self.main_header()
+            .canvasmenu()
+            .refresh_zoom_reset_label(total_zoom);
 
         // we change the state through the actions, because they themselves hold state.
         // (for example needed to display ticks in menus for boolean actions)
@@ -596,6 +598,11 @@ impl RnAppWindow {
             self,
             "doc-layout",
             Some(&doc_layout.to_string().to_variant()),
+        );
+        adw::prelude::ActionGroupExt::change_action_state(
+            self,
+            "pen-style",
+            &pen_style.to_string().to_variant(),
         );
         adw::prelude::ActionGroupExt::change_action_state(
             self,
@@ -610,17 +617,12 @@ impl RnAppWindow {
         adw::prelude::ActionGroupExt::change_action_state(
             self,
             "show-format-borders",
-            &format.show_borders.to_variant(),
+            &doc_format.show_borders.to_variant(),
         );
         adw::prelude::ActionGroupExt::change_action_state(
             self,
             "show-origin-indicator",
-            &format.show_origin_indicator.to_variant(),
-        );
-        adw::prelude::ActionGroupExt::change_action_state(
-            self,
-            "pen-style",
-            &pen_style.to_string().to_variant(),
+            &doc_format.show_origin_indicator.to_variant(),
         );
 
         // Current pen
@@ -834,29 +836,15 @@ impl RnAppWindow {
         let prev_canvas = prev_canvas_wrapper.canvas();
         let active_canvas_wrapper = active_tab.child().downcast::<RnCanvasWrapper>().unwrap();
         let active_canvas = active_canvas_wrapper.canvas();
-        let mut widget_flags = WidgetFlags::default();
 
-        // extra scope for engine borrow
-        {
-            let prev_engine = prev_canvas.engine_ref();
-            let mut active_engine = active_canvas.engine_mut();
-
-            active_engine.pens_config = prev_engine.pens_config.clone();
-            active_engine
-                .penholder
-                .set_shortcuts(prev_engine.penholder.shortcuts());
-            active_engine
-                .penholder
-                .set_pen_mode_state(prev_engine.penholder.pen_mode_state());
-            widget_flags |=
-                active_engine.change_pen_style(prev_engine.penholder.current_pen_style());
-            // ensures a clean and initialized state for the current pen
-            widget_flags |= active_engine.reinstall_pen_current_style();
-            active_engine.set_pen_sounds(prev_engine.pen_sounds(), crate::env::pkg_data_dir().ok());
-            widget_flags |= active_engine.set_visual_debug(prev_engine.visual_debug());
-            active_engine.import_prefs = prev_engine.import_prefs;
-            active_engine.export_prefs = prev_engine.export_prefs;
-        }
+        let mut widget_flags = active_canvas.engine_mut().load_engine_config(
+            prev_canvas.engine_ref().extract_engine_config(),
+            crate::env::pkg_data_dir().ok(),
+        );
+        // The visual-debug field is not saved in the config, but we want to sync its value between tabs.
+        widget_flags |= active_canvas
+            .engine_mut()
+            .set_visual_debug(prev_canvas.engine_mut().visual_debug());
 
         self.handle_widget_flags(widget_flags, &active_canvas);
     }

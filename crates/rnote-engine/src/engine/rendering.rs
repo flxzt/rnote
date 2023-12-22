@@ -144,7 +144,7 @@ impl Engine {
             &EngineView {
                 tasks_tx: self.engine_tasks_tx(),
                 pens_config: &self.pens_config,
-                doc: &self.document,
+                document: &self.document,
                 store: &self.store,
                 camera: &self.camera,
                 audioplayer: &self.audioplayer,

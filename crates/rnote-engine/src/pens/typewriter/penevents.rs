@@ -27,7 +27,7 @@ impl Typewriter {
             TypewriterState::Idle | TypewriterState::Start { .. } => {
                 let mut refresh_state = false;
                 let mut new_state =
-                    TypewriterState::Start(engine_view.doc.snap_position(element.pos));
+                    TypewriterState::Start(engine_view.document.snap_position(element.pos));
 
                 if let Some(&stroke_key) = engine_view
                     .store
@@ -71,8 +71,10 @@ impl Typewriter {
                 }
 
                 // possibly nudge camera
-                widget_flags |= engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
-                widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
+                widget_flags |= engine_view
+                    .camera
+                    .nudge_w_pos(element.pos, engine_view.document);
+                widget_flags |= engine_view.document.expand_autoexpand(engine_view.camera);
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
                     engine_view.tasks_tx.clone(),
                     false,
@@ -235,7 +237,7 @@ impl Typewriter {
                         {
                             let snap_corner_pos = textstroke_bounds.mins.coords;
                             let offset = engine_view
-                                .doc
+                                .document
                                 .snap_position(snap_corner_pos + (element.pos - *current_pos))
                                 - snap_corner_pos;
 
@@ -253,9 +255,11 @@ impl Typewriter {
                             }
 
                             // possibly nudge camera
+                            widget_flags |= engine_view
+                                .camera
+                                .nudge_w_pos(element.pos, engine_view.document);
                             widget_flags |=
-                                engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
-                            widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
+                                engine_view.document.expand_autoexpand(engine_view.camera);
                             engine_view.store.regenerate_rendering_in_viewport_threaded(
                                 engine_view.tasks_tx.clone(),
                                 false,
@@ -371,7 +375,7 @@ impl Typewriter {
                             engine_view.camera.image_scale(),
                         );
                         widget_flags |= engine_view
-                            .doc
+                            .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
@@ -394,7 +398,7 @@ impl Typewriter {
                             engine_view.camera.image_scale(),
                         );
                         widget_flags |= engine_view
-                            .doc
+                            .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
@@ -501,7 +505,7 @@ impl Typewriter {
                             .store
                             .insert_stroke(Stroke::TextStroke(textstroke), None);
                         widget_flags |= engine_view
-                            .doc
+                            .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);
                         engine_view.store.regenerate_rendering_for_stroke(
                             stroke_key,
@@ -554,7 +558,7 @@ impl Typewriter {
                                         engine_view.camera.image_scale(),
                                     );
                                     widget_flags |= engine_view
-                                        .doc
+                                        .document
                                         .resize_autoexpand(store, engine_view.camera);
                                     if keychar_is_whitespace {
                                         widget_flags |= store.record(Instant::now());
@@ -826,9 +830,10 @@ impl Typewriter {
                                     engine_view.camera.viewport(),
                                     engine_view.camera.image_scale(),
                                 );
-                                widget_flags |=
-                                    engine_view.doc.resize_autoexpand(store, engine_view.camera)
-                                        | store.record(Instant::now());
+                                widget_flags |= engine_view
+                                    .document
+                                    .resize_autoexpand(store, engine_view.camera)
+                                    | store.record(Instant::now());
                                 widget_flags.store_modified = true;
                             };
                             let mut quit_selecting = false;
@@ -1114,7 +1119,7 @@ impl Typewriter {
                                 engine_view.camera.image_scale(),
                             );
                             widget_flags |= engine_view
-                                .doc
+                                .document
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             *pen_down = false;
@@ -1159,7 +1164,7 @@ impl Typewriter {
                                 engine_view.camera.image_scale(),
                             );
                             widget_flags |= engine_view
-                                .doc
+                                .document
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             *finished = true;

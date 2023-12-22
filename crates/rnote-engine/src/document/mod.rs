@@ -7,7 +7,7 @@ pub use background::Background;
 pub use format::Format;
 
 // Imports
-use crate::{Camera, StrokeStore, WidgetFlags};
+use crate::{Camera, CloneConfig, StrokeStore, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::{Color, SplitOrder};
@@ -116,6 +116,12 @@ impl Default for Document {
     }
 }
 
+impl CloneConfig for Document {
+    fn clone_config(&self) -> Self {
+        self.clone()
+    }
+}
+
 impl Document {
     pub const SHADOW_WIDTH: f64 = 12.0;
     pub const SHADOW_OFFSET: na::Vector2<f64> = na::vector![4.0, 4.0];
@@ -125,10 +131,6 @@ impl Document {
         b: 0.0,
         a: 0.35,
     };
-
-    pub fn clone_config(&self) -> Self {
-        self.clone()
-    }
 
     pub(crate) fn bounds(&self) -> Aabb {
         Aabb::new(

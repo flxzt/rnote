@@ -68,9 +68,12 @@ impl PenBehaviour for Brush {
 
         let event_result = match (&mut self.state, event) {
             (BrushState::Idle, PenEvent::Down { element, .. }) => {
-                if !element
-                    .filter_by_bounds(engine_view.doc.bounds().loosened(Self::INPUT_OVERSHOOT))
-                {
+                if !element.filter_by_bounds(
+                    engine_view
+                        .document
+                        .bounds()
+                        .loosened(Self::INPUT_OVERSHOOT),
+                ) {
                     if engine_view.pens_config.brush_config.style == BrushStyle::Marker {
                         play_marker_sound(engine_view);
                     } else {
@@ -146,7 +149,7 @@ impl PenBehaviour for Brush {
                     engine_view.camera.image_scale(),
                 );
                 widget_flags |= engine_view
-                    .doc
+                    .document
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = BrushState::Idle;
@@ -237,7 +240,7 @@ impl PenBehaviour for Brush {
                             engine_view.camera.image_scale(),
                         );
                         widget_flags |= engine_view
-                            .doc
+                            .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = BrushState::Idle;

@@ -12,9 +12,9 @@ pub(crate) use widgetflagsboxed::WidgetFlagsBoxed;
 use crate::{config, RnAppWindow};
 use gettextrs::gettext;
 use gtk4::{
-    gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
-    Adjustment, DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext,
-    PropagationPhase, Scrollable, ScrollablePolicy, Widget,
+    gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, Adjustment,
+    DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext, PropagationPhase,
+    Scrollable, ScrollablePolicy, Widget,
 };
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
@@ -188,7 +188,6 @@ mod imp {
         type Interfaces = (Scrollable,);
 
         fn class_init(klass: &mut Self::Class) {
-            klass.set_accessible_role(AccessibleRole::Widget);
             klass.set_layout_manager_type::<RnCanvasLayout>();
         }
 

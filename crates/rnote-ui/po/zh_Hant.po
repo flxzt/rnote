@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-18 18:58+0100\n"
-"PO-Revision-Date: 2023-11-19 11:28+0000\n"
+"PO-Revision-Date: 2023-12-18 18:02+0000\n"
 "Last-Translator: openCC converted detiam <dehe_tian@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.2\n"
+"X-Generator: Weblate 5.3\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -286,14 +286,12 @@ msgstr ""
 "設定點陣圖縮放倍數"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Page Order"
 msgid "Page Borders"
-msgstr "頁面循序"
+msgstr "頁面邊框"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:162
 msgid "Whether the pages have drawn borders"
-msgstr ""
+msgstr "頁面是否繪製了邊框"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:196
 msgid "Import Xournal++ File"
@@ -1039,7 +1037,7 @@ msgstr "垂直連續的頁面 [_C]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:37
 msgid "_Semi Infinite"
-msgstr "無限 [_S]"
+msgstr "半無限 [_S]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"
@@ -1624,10 +1622,8 @@ msgid "Save Document As"
 msgstr "另存文件為"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:173
-#, fuzzy
-#| msgid "_Snap Positions"
 msgid "Snap Positions"
-msgstr "捕獲位置 [_S]"
+msgstr "捕獲位置"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Add Page (When in Fixed-Size Layout)"
@@ -1698,7 +1694,7 @@ msgstr "建立新資料夾"
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
-msgstr ""
+msgstr "未安裝設定格式（Settings schema）。無法載入和儲存應用程式設定。"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:563
 msgid "Opening file failed"
@@ -1797,18 +1793,14 @@ msgstr "匯出文件成功"
 #: crates/rnote-ui/src/dialogs/export.rs:231
 #: crates/rnote-ui/src/dialogs/export.rs:532
 #: crates/rnote-ui/src/dialogs/export.rs:796
-#, fuzzy
-#| msgid "- no file name -"
 msgid "View in file manager"
-msgstr "—— 沒有檔名 ——"
+msgstr "在檔案管理器中檢視"
 
 #: crates/rnote-ui/src/dialogs/export.rs:245
 #: crates/rnote-ui/src/dialogs/export.rs:542
 #: crates/rnote-ui/src/dialogs/export.rs:810
-#, fuzzy
-#| msgid "Failed to open file, unsupported file type"
 msgid "Failed to open the file in the file manager"
-msgstr "無法開啟檔案，不支援的檔案型別"
+msgstr "無法開啟在檔案管理器中選擇的檔案"
 
 #: crates/rnote-ui/src/dialogs/export.rs:255
 msgid "Exporting document failed, no file selected"

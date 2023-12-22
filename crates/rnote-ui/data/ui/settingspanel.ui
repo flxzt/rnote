@@ -54,6 +54,38 @@
                       </object>
                     </child>
                     <child>
+                      <object class="AdwActionRow" id="general_recovery_row">
+                        <property name="title" translatable="yes">Recovery</property>
+                        <property name="subtitle" translatable="yes">Enable or disable document recovery</property>
+                        <child type="suffix">
+                          <object class="GtkSwitch" id="general_recovery_enable_switch">
+                            <property name="valign">center</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="general_recovery_interval_secs_row">
+                        <property name="title" translatable="yes">Recovery Interval (secs)</property>
+                        <property name="subtitle" translatable="yes">Set the recovery interval in seconds</property>
+                        <child type="suffix">
+                          <object class="GtkAdjustment" id="general_recovery_interval_secs_adj">
+                            <property name="step-increment">1</property>
+                            <property name="upper">9999</property>
+                            <property name="lower">5</property>
+                            <property name="value">120</property>
+                          </object>
+                          <object class="GtkSpinButton" id="general_recovery_interval_secs_spinbutton">
+                            <property name="adjustment">general_recovery_interval_secs_adj</property>
+                            <property name="orientation">horizontal</property>
+                            <property name="vexpand">false</property>
+                            <property name="valign">center</property>
+                            <property name="digits">0</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
                       <object class="AdwSwitchRow" id="general_show_scrollbars_row">
                         <property name="title" translatable="yes">Show Scrollbars</property>
                         <property name="subtitle" translatable="yes">Set whether the scrollbars on the canvas are shown</property>

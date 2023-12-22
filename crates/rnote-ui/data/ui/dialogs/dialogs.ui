@@ -12,6 +12,18 @@
     </responses>
   </object>
 
+  <object class="AdwMessageDialog" id="dialog_confirm_overwrite_file">
+    <property name="heading" translatable="yes">Overwrite File</property>
+    <!-- body defined when building because it contains the file name -->
+    <property name="default-response">overwrite</property>
+    <property name="close-response">cancel</property>
+    <responses>
+      <response id="cancel" translatable="yes">Cancel</response>
+      <response id="overwrite" appearance="destructive" translatable="yes">Overwrite</response>
+      <response id="selectnew" appearance="suggested" translatable="yes">Select new ..</response>
+    </responses>
+  </object>
+
   <object class="AdwMessageDialog" id="dialog_new_doc">
     <property name="heading" translatable="yes">New Document</property>
     <property name="body" translatable="yes">Creating a new document will discard any unsaved changes.

@@ -35,6 +35,7 @@ pub use document::Document;
 pub use drawable::Drawable;
 pub use drawable::DrawableOnDoc;
 pub use engine::Engine;
+pub use fileformats::recoverymetadataformat::RnRecoveryMetadata;
 pub use pens::PenHolder;
 pub use selectioncollision::SelectionCollision;
 pub use store::StrokeStore;

@@ -1,7 +1,21 @@
 // Imports
 use crate::config;
+use anyhow::Context;
 use std::ffi::OsStr;
+use std::fs::create_dir_all;
 use std::path::{Component, Path, PathBuf};
+
+pub(crate) fn recovery_dir() -> anyhow::Result<PathBuf> {
+    let mut rnote_path = directories::ProjectDirs::from("com.gthub", "flxt", "rnote")
+        .context("Failed to get ProjectDirs")?
+        .data_dir()
+        .to_path_buf();
+    rnote_path.push("recovery");
+    if !rnote_path.exists() {
+        create_dir_all(&rnote_path).context("Failed to create recovery dir")?;
+    }
+    Ok(rnote_path)
+}
 
 pub(crate) fn lib_dir() -> anyhow::Result<PathBuf> {
     if cfg!(target_os = "windows") {

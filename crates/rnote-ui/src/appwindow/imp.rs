@@ -1,5 +1,5 @@
 // Imports
-use crate::{config, dialogs, RnMainHeader, RnOverlays, RnSidebar};
+use crate::{config, dialogs, RnMainHeader, RnOverlays, RnRecoveryAction, RnSidebar};
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
@@ -15,10 +15,14 @@ use std::rc::Rc;
 pub(crate) struct RnAppWindow {
     pub(crate) drawing_pad_controller: RefCell<Option<PadController>>,
     pub(crate) autosave_source_id: RefCell<Option<glib::SourceId>>,
+    pub(crate) recovery_source_id: RefCell<Option<glib::SourceId>>,
     pub(crate) periodic_configsave_source_id: RefCell<Option<glib::SourceId>>,
 
     pub(crate) autosave: Cell<bool>,
     pub(crate) autosave_interval_secs: Cell<u32>,
+    pub(crate) recovery: Cell<bool>,
+    pub(crate) recovery_interval_secs: Cell<u32>,
+    pub(crate) recovery_actions: RefCell<Option<Vec<RnRecoveryAction>>>,
     pub(crate) righthanded: Cell<bool>,
     pub(crate) block_pinch_zoom: Cell<bool>,
     pub(crate) touch_drawing: Cell<bool>,
@@ -41,10 +45,14 @@ impl Default for RnAppWindow {
         Self {
             drawing_pad_controller: RefCell::new(None),
             autosave_source_id: RefCell::new(None),
+            recovery_source_id: RefCell::new(None),
             periodic_configsave_source_id: RefCell::new(None),
 
             autosave: Cell::new(true),
             autosave_interval_secs: Cell::new(super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
+            recovery: Cell::new(true),
+            recovery_interval_secs: Cell::new(super::RnAppWindow::RECOVERY_INTERVAL_DEFAULT),
+            recovery_actions: RefCell::new(None),
             righthanded: Cell::new(true),
             block_pinch_zoom: Cell::new(false),
             touch_drawing: Cell::new(false),
@@ -118,6 +126,14 @@ impl ObjectImpl for RnAppWindow {
                     .maximum(u32::MAX)
                     .default_value(super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT)
                     .build(),
+                glib::ParamSpecBoolean::builder("recovery")
+                    .default_value(true)
+                    .build(),
+                glib::ParamSpecUInt::builder("recovery-interval-secs")
+                    .minimum(5)
+                    .maximum(u32::MAX)
+                    .default_value(super::RnAppWindow::RECOVERY_INTERVAL_DEFAULT)
+                    .build(),
                 glib::ParamSpecBoolean::builder("righthanded")
                     .default_value(false)
                     .build(),
@@ -139,6 +155,8 @@ impl ObjectImpl for RnAppWindow {
         match pspec.name() {
             "autosave" => self.autosave.get().to_value(),
             "autosave-interval-secs" => self.autosave_interval_secs.get().to_value(),
+            "recovery" => self.recovery.get().to_value(),
+            "recovery-interval-secs" => self.recovery_interval_secs.get().to_value(),
             "righthanded" => self.righthanded.get().to_value(),
             "block-pinch-zoom" => self.block_pinch_zoom.get().to_value(),
             "touch-drawing" => self.touch_drawing.get().to_value(),
@@ -172,6 +190,31 @@ impl ObjectImpl for RnAppWindow {
 
                 if self.autosave.get() {
                     self.update_autosave_handler();
+                }
+            }
+            "recovery" => {
+                let recovery = value
+                    .get::<bool>()
+                    .expect("The value needs to be of type `bool`");
+
+                self.recovery.replace(recovery);
+
+                if recovery {
+                    self.update_recovery_handler();
+                } else if let Some(recovery_source_id) = self.recovery_source_id.borrow_mut().take()
+                {
+                    recovery_source_id.remove();
+                }
+            }
+            "recovery-interval-secs" => {
+                let recovery_interval_secs = value
+                    .get::<u32>()
+                    .expect("The value needs to be of type `u32`");
+
+                self.recovery_interval_secs.replace(recovery_interval_secs);
+
+                if self.recovery.get() {
+                    self.update_recovery_handler();
                 }
             }
             "righthanded" => {
@@ -219,6 +262,7 @@ impl WindowImpl for RnAppWindow {
                 dialogs::dialog_close_window(&obj).await;
             }));
         } else {
+            obj.tabs_recovery_metadata_delete();
             obj.close_force();
         }
 
@@ -247,14 +291,49 @@ impl RnAppWindow {
                                 log::error!("Saving document failed, Err: `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                             }
-                        }
-                    ));
-                }
+                        }));
+                    }
+                    glib::ControlFlow::Continue
+                })
+        )) {
+            removed_id.remove();
+        }
+    }
 
-                glib::ControlFlow::Continue
-            }))) {
-                removed_id.remove();
-            }
+    fn update_recovery_handler(&self) {
+        let obj = self.obj();
+
+        if let Some(removed_id) = self.recovery_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.recovery_interval_secs.get(),
+            clone!(@weak obj as appwindow => @default-return glib::ControlFlow::Break, move || {
+                    let canvas = appwindow.active_tab_wrapper().canvas();
+                    glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+                        // Doing both recovery and autosaves of saved files serves little advatage but could lead to slowdowns or conflicts
+                        if canvas.output_file().is_some() && appwindow.autosave() {
+                            // Delete recovery files from disk to avoid suggesting the user an outdated file on next boot
+                            if let Some(meta) = &*canvas.imp().recovery_metadata.borrow_mut() {
+                                meta.delete();
+                            };
+                            canvas.set_recovery_paused(true);
+                            // We keep the metadata itself in the canvas to make sure the path doesnt change when the user toggles autosave
+                            // which would lead to confusing timestamps on next launch.
+                        } else if canvas.unsaved_changes_recovery() {
+                            canvas.set_recovery_paused(false);
+                            let recovery_file = canvas.get_or_generate_recovery_file();
+                            appwindow.overlays().progressbar_start_pulsing();
+                            canvas.set_recovery_in_progress(true);
+                            if let Err(e) = canvas.save_document_to_file(&recovery_file).await {
+                                log::error!("saving document failed, Error: `{e:?}`");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
+                            }
+                            canvas.set_recovery_in_progress(false);
+                            appwindow.overlays().progressbar_finish();
+                        }
+                    }));
+                    glib::ControlFlow::Continue
+            })
+        )) {
+            removed_id.remove();
+        }
     }
 
     fn setup_input(&self) {

@@ -39,6 +39,10 @@ mod imp {
         #[template_child]
         pub(crate) general_show_scrollbars_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
+        pub(crate) general_recovery_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(crate) general_recovery_interval_secs_row: TemplateChild<adw::SpinRow>,
+        #[template_child]
         pub(crate) general_inertial_scrolling_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(crate) general_regular_cursor_picker: TemplateChild<RnIconPicker>,
@@ -469,8 +473,34 @@ impl RnSettingsPanel {
             .bidirectional()
             .build();
 
-        let set_overlays_margins = |appwindow: &RnAppWindow, row_active: bool| {
-            let (m1, m2) = if row_active { (18, 72) } else { (9, 63) };
+        // recovery enable switch
+        imp.general_recovery_row
+            .bind_property("state", appwindow, "recovery")
+            .sync_create()
+            .bidirectional()
+            .build();
+
+        imp.general_recovery_row
+            .get()
+            .bind_property(
+                "state",
+                &*imp.general_recovery_interval_secs_row,
+                "sensitive",
+            )
+            .sync_create()
+            .build();
+
+        imp.general_autosave_interval_secs_row
+            .get()
+            .bind_property("value", appwindow, "recovery-interval-secs")
+            .transform_to(|_, val: f64| Some((val.round() as u32).to_value()))
+            .transform_from(|_, val: u32| Some(f64::from(val).to_value()))
+            .sync_create()
+            .bidirectional()
+            .build();
+
+        let set_overlays_margins = |appwindow: &RnAppWindow, switch_active: bool| {
+            let (m1, m2) = if switch_active { (18, 72) } else { (9, 63) };
             appwindow.overlays().colorpicker().set_margin_top(m1);
             appwindow.overlays().penpicker().set_margin_bottom(m1);
             appwindow.overlays().sidebar_box().set_margin_start(m1);

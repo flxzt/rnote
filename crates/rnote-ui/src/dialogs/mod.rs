@@ -4,6 +4,7 @@
 // Modules
 pub(crate) mod export;
 pub(crate) mod import;
+pub(crate) mod recovery;
 
 // Imports
 use crate::appwindow::RnAppWindow;
@@ -18,6 +19,12 @@ use gtk4::{
     gio, glib, glib::clone, Builder, Button, CheckButton, ColorDialogButton, Dialog, FileDialog,
     Label, MenuButton, ResponseType, ShortcutsWindow, StringList,
 };
+use std::path::Path;
+
+// Re-exports
+pub(crate) use recovery::dialog_recover_documents;
+pub(crate) use recovery::dialog_recovery_info;
+pub(crate) use recovery::RnRecoveryAction;
 
 // About Dialog
 pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
@@ -87,6 +94,26 @@ pub(crate) async fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas)
             // Cancel
         }
     }
+}
+
+/// Display a dialog confirming a file overwrite.
+///
+/// The file needs to be supplied as Path or PathBuf.
+/// The return value is "cancel", "selectnew" or "overwrite"
+pub(crate) async fn dialog_confirm_overwrite_file(
+    appwindow: &RnAppWindow,
+    path: impl AsRef<Path>,
+) -> glib::GString {
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
+    );
+    let dialog: adw::MessageDialog = builder.object("dialog_confirm_overwrite_file").unwrap();
+    dialog.set_transient_for(Some(appwindow));
+    dialog.set_body(&format!(
+        "File {} already exits!\n Overwrite existing file?",
+        path.as_ref().display()
+    ));
+    dialog.choose_future().await
 }
 
 pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
@@ -243,7 +270,10 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
     // Returns close_finish_confirm, a boolean that indicates if the tab should actually be closed or closing
     // should be aborted.
     match dialog.choose_future().await.as_str() {
-        "discard" => true,
+        "discard" => {
+            canvas.recovery_metadata_delete();
+            true
+        }
         "save" => {
             if let Some(save_file) = save_file {
                 appwindow.overlays().progressbar_start_pulsing();
@@ -290,6 +320,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         let canvas_output_file = canvas.output_file();
 
         if !canvas.unsaved_changes() {
+            canvas.recovery_metadata_delete();
             continue;
         }
 
@@ -381,7 +412,16 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
 
     let close = match dialog.choose_future().await.as_str() {
         "discard" => {
-            // do nothing and close
+            // remove recovery artifacts and close
+            for (i, _check, _save_file) in rows {
+                let canvas = tabs[i]
+                    .child()
+                    .downcast::<RnCanvasWrapper>()
+                    .unwrap()
+                    .canvas();
+
+                canvas.recovery_metadata_delete();
+            }
             true
         }
         "save" => {

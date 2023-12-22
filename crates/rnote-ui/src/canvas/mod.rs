@@ -22,8 +22,7 @@ use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::PenState;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::ext::GrapheneRectExt;
-use rnote_engine::Camera;
-use rnote_engine::{Engine, WidgetFlags};
+use rnote_engine::{Camera, Engine, RnRecoveryMetadata, WidgetFlags};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 
 #[derive(Debug, Default)]
@@ -67,6 +66,9 @@ mod imp {
         pub(crate) engine: RefCell<Engine>,
         pub(crate) engine_task_handler_handle: RefCell<Option<glib::JoinHandle<()>>>,
 
+        pub(crate) recovery_in_progress: Cell<bool>,
+        pub(crate) recovery_metadata: RefCell<Option<RnRecoveryMetadata>>,
+        pub(crate) recovery_paused: Cell<bool>,
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_saved_modified_date_time: RefCell<Option<glib::DateTime>>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
@@ -75,6 +77,7 @@ mod imp {
         pub(crate) output_file_expect_write: Cell<bool>,
         pub(crate) save_in_progress: Cell<bool>,
         pub(crate) unsaved_changes: Cell<bool>,
+        pub(crate) unsaved_changes_recovery: Cell<bool>,
         pub(crate) empty: Cell<bool>,
         pub(crate) touch_drawing: Cell<bool>,
         pub(crate) show_drawing_cursor: Cell<bool>,
@@ -162,6 +165,9 @@ mod imp {
                 engine: RefCell::new(engine),
                 engine_task_handler_handle: RefCell::new(None),
 
+                recovery_in_progress: Cell::new(false),
+                recovery_metadata: RefCell::new(None),
+                recovery_paused: Cell::new(false),
                 output_file: RefCell::new(None),
                 // is automatically updated whenever the output file changes.
                 output_file_saved_modified_date_time: RefCell::new(None),
@@ -171,6 +177,7 @@ mod imp {
                 output_file_expect_write: Cell::new(false),
                 save_in_progress: Cell::new(false),
                 unsaved_changes: Cell::new(false),
+                unsaved_changes_recovery: Cell::new(false),
                 empty: Cell::new(true),
                 touch_drawing: Cell::new(false),
                 show_drawing_cursor: Cell::new(false),
@@ -257,6 +264,9 @@ mod imp {
                     glib::ParamSpecBoolean::builder("unsaved-changes")
                         .default_value(false)
                         .build(),
+                    glib::ParamSpecBoolean::builder("unsaved-changes-recovery")
+                        .default_value(false)
+                        .build(),
                     glib::ParamSpecBoolean::builder("empty")
                         .default_value(true)
                         .build(),
@@ -286,6 +296,7 @@ mod imp {
             match pspec.name() {
                 "output-file" => self.output_file.borrow().to_value(),
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
+                "unsaved-changes-recovery" => self.unsaved_changes.get().to_value(),
                 "empty" => self.empty.get().to_value(),
                 "hadjustment" => self.hadjustment.borrow().to_value(),
                 "vadjustment" => self.vadjustment.borrow().to_value(),
@@ -324,6 +335,12 @@ mod imp {
                     let unsaved_changes: bool =
                         value.get().expect("The value needs to be of type `bool`");
                     self.unsaved_changes.replace(unsaved_changes);
+                }
+                "unsaved-changes-recovery" => {
+                    let unsaved_changes_recovery: bool =
+                        value.get().expect("The value needs to be of type `bool`");
+                    self.unsaved_changes_recovery
+                        .replace(unsaved_changes_recovery);
                 }
                 "empty" => {
                     let empty: bool = value.get().expect("The value needs to be of type `bool`");
@@ -623,6 +640,51 @@ impl RnCanvas {
         self.set_property("drawing-cursor", drawing_cursor.to_value());
     }
 
+    pub(crate) fn get_or_generate_recovery_file(&self) -> gio::File {
+        if self.imp().recovery_metadata.borrow().is_none() {
+            let imp = self.imp();
+            let recovery_path = crate::env::recovery_dir().expect("Failed to get recovery path");
+            if !recovery_path.exists() {
+                std::fs::create_dir_all(&recovery_path).expect("Failed to create directory")
+            };
+            let time = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .expect("Failed to get unix time")
+                .as_secs();
+            let name = format!("{time}.rnote");
+            let mut recovery_file_path = recovery_path.join(&name);
+            // add incrementing suffix if nessary
+            let mut suffix = 1;
+            while recovery_file_path.exists() {
+                recovery_file_path = recovery_path.join(format!("{name}_{suffix}.rnote"));
+                suffix += 1;
+            }
+            let mut metadata_path = recovery_file_path.clone();
+            metadata_path.set_extension("json");
+            let metadata = RnRecoveryMetadata::new(time, metadata_path, recovery_file_path);
+            imp.recovery_metadata.replace(Some(metadata));
+        }
+        gio::File::for_path(
+            self.imp()
+                .recovery_metadata
+                .borrow()
+                .as_ref()
+                .unwrap()
+                .recovery_file_path(),
+        )
+    }
+
+    /// Deletes recovery save and metadate from disk
+    pub fn recovery_metadata_delete(&self) {
+        if let Some(meta) = &*self.imp().recovery_metadata.borrow() {
+            meta.delete()
+        }
+    }
+
+    pub fn recovery_metadata(&self) -> Option<RnRecoveryMetadata> {
+        self.imp().recovery_metadata.borrow().as_ref().cloned()
+    }
+
     #[allow(unused)]
     pub(crate) fn output_file(&self) -> Option<gio::File> {
         self.property::<Option<gio::File>>("output-file")
@@ -654,15 +716,51 @@ impl RnCanvas {
     }
 
     #[allow(unused)]
+    pub(crate) fn recovery_in_progress(&self) -> bool {
+        self.imp().recovery_in_progress.get()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_recovery_in_progress(&self, recovery_in_progress: bool) {
+        self.imp().recovery_in_progress.set(recovery_in_progress);
+    }
+
+    pub(crate) fn recovery_paused(&self) -> bool {
+        self.imp().recovery_paused.get()
+    }
+
+    pub(crate) fn set_recovery_paused(&self, recovery_paused: bool) {
+        self.imp().recovery_paused.replace(recovery_paused);
+    }
+
+    pub(crate) fn set_recovery_metadata(&self, recovery_metadata: Option<RnRecoveryMetadata>) {
+        self.imp().recovery_metadata.replace(recovery_metadata);
+    }
+
+    #[allow(unused)]
     pub(crate) fn unsaved_changes(&self) -> bool {
         self.property::<bool>("unsaved-changes")
     }
 
     #[allow(unused)]
     pub(crate) fn set_unsaved_changes(&self, unsaved_changes: bool) {
-        if self.imp().unsaved_changes.get() != unsaved_changes {
-            self.set_property("unsaved-changes", unsaved_changes.to_value());
+        if unsaved_changes {
+            self.set_unsaved_changes_recovery(true);
         }
+        self.set_property("unsaved-changes", unsaved_changes.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn unsaved_changes_recovery(&self) -> bool {
+        self.property::<bool>("unsaved-changes-recovery")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_unsaved_changes_recovery(&self, unsaved_changes_recovery: bool) {
+        self.set_property(
+            "unsaved-changes-recovery",
+            unsaved_changes_recovery.to_value(),
+        );
     }
 
     #[allow(unused)]
@@ -1317,5 +1415,20 @@ impl RnCanvas {
             na::point![0.0, 0.0],
             na::point![f64::from(self.width()), f64::from(self.height())],
         )
+    }
+    pub(crate) fn update_recovery_file(&self) {
+        if let Some(m) = self.imp().recovery_metadata.borrow().as_ref() {
+            m.update(
+                &self
+                    .imp()
+                    .output_file
+                    .borrow()
+                    .clone()
+                    .map(|f| f.path().unwrap()),
+            );
+            if let Err(e) = m.save() {
+                log::error!("Failed to save recovery metadata: {e}")
+            };
+        }
     }
 }

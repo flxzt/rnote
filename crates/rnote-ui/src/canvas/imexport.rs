@@ -6,6 +6,7 @@ use rnote_compose::ext::Vector2Ext;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
 use rnote_engine::engine::{EngineSnapshot, StrokeContent};
 use rnote_engine::strokes::Stroke;
+use rnote_engine::RnRecoveryMetadata;
 use rnote_engine::WidgetFlags;
 use std::ops::Range;
 use std::path::Path;
@@ -21,6 +22,7 @@ impl RnCanvas {
         &self,
         bytes: Vec<u8>,
         file_path: Option<P>,
+        recovery_metadata: Option<RnRecoveryMetadata>,
     ) -> anyhow::Result<WidgetFlags>
     where
         P: AsRef<Path>,
@@ -31,9 +33,18 @@ impl RnCanvas {
             .engine_mut()
             .set_scale_factor(self.scale_factor() as f64);
 
+        let mut unsaved_changes = false;
+        if let Some(meta) = &recovery_metadata {
+            self.set_output_file(meta.document_path().map(gio::File::for_path));
+            unsaved_changes = true;
+            self.set_unsaved_changes_recovery(false);
+        }
+        self.dismiss_output_file_modified_toast();
         self.set_output_file(file_path.map(gio::File::for_path));
         self.dismiss_output_file_modified_toast();
-        self.set_unsaved_changes(false);
+        self.set_recovery_metadata(recovery_metadata);
+
+        self.set_unsaved_changes(unsaved_changes);
         self.set_empty(false);
 
         Ok(widget_flags)
@@ -43,6 +54,7 @@ impl RnCanvas {
     ///
     /// If the origin file is set to None, this does nothing and returns an error.
     pub(crate) async fn reload_from_disk(&self) -> anyhow::Result<()> {
+        let recovery_metadata = self.recovery_metadata();
         let Some(output_file) = self.output_file() else {
             return Err(anyhow::anyhow!(
                 "Failed to reload file from disk, no file path saved."
@@ -50,7 +62,7 @@ impl RnCanvas {
         };
         let (bytes, _) = output_file.load_bytes_future().await?;
         let widget_flags = self
-            .load_in_rnote_bytes(bytes.to_vec(), output_file.path())
+            .load_in_rnote_bytes(bytes.to_vec(), output_file.path(), recovery_metadata)
             .await?;
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
@@ -264,7 +276,7 @@ impl RnCanvas {
 
         // this **must** come before actually saving the file to disk,
         // else the event might not be caught by the monitor for new or changed files
-        if !skip_set_output_file {
+        if !skip_set_output_file && !self.recovery_in_progress() {
             self.set_output_file(Some(file.to_owned()));
         }
 
@@ -278,15 +290,26 @@ impl RnCanvas {
 
         if let Err(e) = res {
             self.set_save_in_progress(false);
+            if self.recovery_in_progress() {
+                self.set_recovery_in_progress(false)
+            }
 
             // If the file operations failed in any way, we make sure to clear the expect_write flag
             // because we can't know for sure if the output_file monitor will be able to.
             self.set_output_file_expect_write(false);
             return Err(e);
         }
+        self.update_recovery_file();
 
-        self.set_unsaved_changes(false);
+        if self.recovery_in_progress() {
+            self.set_unsaved_changes_recovery(false);
+        } else {
+            self.set_unsaved_changes(false);
+        }
         self.set_save_in_progress(false);
+        if self.recovery_in_progress() {
+            self.set_recovery_in_progress(false)
+        }
 
         Ok(true)
     }

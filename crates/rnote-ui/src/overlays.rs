@@ -256,15 +256,15 @@ impl RnOverlays {
         imp.tabview.connect_close_page(
             clone!(@weak self as overlays, @weak appwindow => @default-return true, move |_, page| {
                     glib::MainContext::default().spawn_local(clone!(@weak overlays, @weak appwindow, @weak page => async move {
-                    let close_finish_confirm = if page
+                    let canvas = page
                         .child()
                         .downcast::<RnCanvasWrapper>()
                         .unwrap()
-                        .canvas()
-                        .unsaved_changes()
-                    {
+                        .canvas();
+                    let close_finish_confirm = if canvas.unsaved_changes() {
                         dialogs::dialog_close_tab(&appwindow, &page).await
                     } else {
+                        canvas.recovery_metadata_delete();
                         true
                     };
 

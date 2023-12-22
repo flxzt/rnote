@@ -5,10 +5,12 @@ mod imp;
 
 // Imports
 use crate::{
-    config, dialogs, FileType, RnApp, RnCanvas, RnCanvasWrapper, RnMainHeader, RnOverlays,
-    RnSidebar,
+    config,
+    dialogs::{self, RnRecoveryAction},
+    FileType, RnApp, RnCanvas, RnCanvasWrapper, RnMainHeader, RnOverlays, RnSidebar,
 };
 use adw::{prelude::*, subclass::prelude::*};
+use cairo::glib::clone;
 use gettextrs::gettext;
 use gtk4::{gdk, gio, glib, Application, IconTheme};
 use rnote_compose::Color;
@@ -28,10 +30,19 @@ glib::wrapper! {
 
 impl RnAppWindow {
     const AUTOSAVE_INTERVAL_DEFAULT: u32 = 30;
+    const RECOVERY_INTERVAL_DEFAULT: u32 = 20;
     const PERIODIC_CONFIGSAVE_INTERVAL: u32 = 10;
 
     pub(crate) fn new(app: &Application) -> Self {
         glib::Object::builder().property("application", app).build()
+    }
+
+    pub(crate) fn set_recovery_action(&self, i: usize, action: RnRecoveryAction) {
+        self.imp()
+            .recovery_actions
+            .borrow_mut()
+            .as_mut()
+            .expect("Recovery actions not set")[i] = action
     }
 
     #[allow(unused)]
@@ -42,6 +53,25 @@ impl RnAppWindow {
     #[allow(unused)]
     pub(crate) fn set_autosave(&self, autosave: bool) {
         self.set_property("autosave", autosave.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn recovery(&self) -> bool {
+        self.property::<bool>("recovery")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_recovery(&self, recovery: bool) {
+        self.set_property("recovery", recovery.to_value());
+    }
+    #[allow(unused)]
+    pub(crate) fn recovery_interval_secs(&self) -> u32 {
+        self.property::<u32>("recovery-interval-secs")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_recovery_interval_secs(&self, autosave_interval_secs: u32) {
+        self.set_property("recovery-interval-secs", autosave_interval_secs.to_value());
     }
 
     #[allow(unused)]
@@ -149,6 +179,9 @@ impl RnAppWindow {
             .redo_button()
             .set_sensitive(false);
         self.refresh_ui_from_engine(&self.active_tab_wrapper());
+        glib::MainContext::default().spawn_local(clone!(@weak self as appwindow => async move {
+            dialogs::dialog_recover_documents(&appwindow).await;
+        }));
     }
 
     fn setup_icon_theme(&self) {
@@ -331,6 +364,25 @@ impl RnAppWindow {
             })
             .any(|c| c.unsaved_changes())
     }
+    pub(crate) fn tabs_recovery_metadata_delete(&self) {
+        for canvas in self
+            .overlays()
+            .tabview()
+            .pages()
+            .snapshot()
+            .iter()
+            .map(|o| {
+                o.downcast_ref::<adw::TabPage>()
+                    .unwrap()
+                    .child()
+                    .downcast_ref::<RnCanvasWrapper>()
+                    .unwrap()
+                    .canvas()
+            })
+        {
+            canvas.recovery_metadata_delete();
+        }
+    }
 
     pub(crate) fn tabs_query_file_opened(
         &self,
@@ -481,7 +533,7 @@ impl RnAppWindow {
                         let (bytes, _) = input_file.load_bytes_future().await?;
                         let widget_flags = wrapper
                             .canvas()
-                            .load_in_rnote_bytes(bytes.to_vec(), input_file.path())
+                            .load_in_rnote_bytes(bytes.to_vec(), input_file.path(), None)
                             .await?;
                         if rnote_file_new_tab {
                             appwindow.append_wrapper_new_tab(&wrapper);

@@ -49,6 +49,8 @@ poppler-rs = {workspace = true }
 gettext-rs = {workspace = true }
 gtk4 = { workspace = true }
 adw = { workspace = true }
+time = { workspace = true }
+directories = { workspace = true }
 open = { workspace = true }
 numeric-sort = {  workspace = true }
 

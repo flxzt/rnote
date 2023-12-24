@@ -63,8 +63,8 @@ use anyhow::Context;
 use gtk4::{gio, glib, prelude::*};
 
 fn main() -> glib::ExitCode {
-    if let Err(e) = setup_logging() {
-        eprintln!("failed to setup logging, Err: {e:?}");
+    if let Err(e) = setup_tracing() {
+        eprintln!("failed to setup tracing, Err: {e:?}");
     }
     if let Err(e) = env::setup_env() {
         eprintln!("failed to setup env, Err: {e:?}");
@@ -80,9 +80,11 @@ fn main() -> glib::ExitCode {
     app.run()
 }
 
-fn setup_logging() -> anyhow::Result<()> {
-    pretty_env_logger::try_init_timed()?;
-    log::debug!("... env_logger initialized");
+fn setup_tracing() -> anyhow::Result<()> {
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .init();
+    tracing::debug!(".. tracing subscriber initialized.");
     Ok(())
 }
 

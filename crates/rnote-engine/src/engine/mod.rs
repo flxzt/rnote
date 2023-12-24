@@ -132,7 +132,7 @@ impl EngineTaskSender {
     pub fn send(&self, task: EngineTask) {
         if let Err(e) = self.0.unbounded_send(task) {
             let err = format!("{e:?}");
-            log::error!(
+            tracing::error!(
                 "Failed to send engine task {:?}, Err: {err}",
                 e.into_inner()
             );
@@ -265,7 +265,7 @@ impl Engine {
                     self.audioplayer = match AudioPlayer::new_init(pkg_data_dir) {
                         Ok(audioplayer) => Some(audioplayer),
                         Err(e) => {
-                            log::error!("Creating a new audioplayer failed while enabling pen sounds, Err: {e:?}");
+                            tracing::error!("Creating a new audioplayer failed while enabling pen sounds, Err: {e:?}");
                             None
                         }
                     }

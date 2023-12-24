@@ -501,7 +501,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("Converting ShapeStroke to XoppImage failed, Err: {e:?}");
+                        tracing::error!("Converting ShapeStroke to XoppImage failed, Err: {e:?}");
                         return None;
                     }
                 };
@@ -545,7 +545,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("Converting TextStroke to XoppImage failed, Err: {e:?}");
+                        tracing::error!("Converting TextStroke to XoppImage failed, Err: {e:?}");
                         return None;
                     }
                 };
@@ -587,7 +587,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!(
+                        tracing::error!(
                             "Exporting VectorImage to image bytes failed while converting Stroke to Xopp, Err: {e:?}"
                         );
                         return None;
@@ -631,7 +631,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!(
+                        tracing::error!(
                             "Exporting BitmapImage to image bytes failed while converting Stroke to Xopp, Err: {e:?}"
                         );
                         return None;

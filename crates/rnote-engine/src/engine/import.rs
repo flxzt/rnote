@@ -203,7 +203,7 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                log::error!(
+                tracing::error!(
                     "Sending result to receiver while generating VectorImage from bytes failed. Receiver already dropped."
                 );
             }
@@ -228,7 +228,7 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                log::error!(
+                tracing::error!(
                     "Sending result to receiver while generating BitmapImage from bytes failed. Receiver already dropped."
                 );
             }
@@ -285,7 +285,7 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                log::error!("Sending result to receiver while importing Pdf bytes failed. Receiver already dropped");
+                tracing::error!("Sending result to receiver while importing Pdf bytes failed. Receiver already dropped");
             }
         });
 

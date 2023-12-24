@@ -205,7 +205,7 @@ impl Camera {
                     reinstall_zoom_task = true;
                 }
                 Err(e) => {
-                    log::error!("Could not replace task for one off zoom task, Err: {e:?}");
+                    tracing::error!("Could not replace task for one off zoom task, Err: {e:?}");
                     reinstall_zoom_task = true;
                 }
             }

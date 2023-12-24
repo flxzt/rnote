@@ -26,7 +26,9 @@ pub struct PeriodicTaskHandle {
 impl Drop for PeriodicTaskHandle {
     fn drop(&mut self) {
         if let Err(e) = self.quit() {
-            log::error!("Could not quit periodic task while handle is being dropped, Err: {e:?}");
+            tracing::error!(
+                "Could not quit periodic task while handle is being dropped, Err: {e:?}"
+            );
         }
     }
 }
@@ -49,7 +51,7 @@ impl PeriodicTaskHandle {
                         break;
                     }
                     Err(e @ mpsc::RecvTimeoutError::Disconnected) => {
-                        log::error!("Periodic task channel sending half became disconnected, now quitting. Err: {e:?}");
+                        tracing::error!("Periodic task channel sending half became disconnected, now quitting. Err: {e:?}");
                         break;
                     }
                     Err(mpsc::RecvTimeoutError::Timeout) => {}
@@ -124,7 +126,9 @@ impl Drop for OneOffTaskHandle {
         match self.quit() {
             Ok(()) | Err(OneOffTaskError::TimeoutReached) => {}
             Err(e) => {
-                log::error!("Could not quit one off task while handle is being dropped, Err: {e:?}")
+                tracing::error!(
+                    "Could not quit one off task while handle is being dropped, Err: {e:?}"
+                )
             }
         }
     }
@@ -158,7 +162,7 @@ impl OneOffTaskHandle {
                         break;
                     }
                     Err(e @ mpsc::RecvTimeoutError::Disconnected) => {
-                        log::error!("One off task channel sending half became disconnected, now quitting. Err: {e:?}");
+                        tracing::error!("One off task channel sending half became disconnected, now quitting. Err: {e:?}");
                         break;
                     }
                     Err(mpsc::RecvTimeoutError::Timeout) => {}

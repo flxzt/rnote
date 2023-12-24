@@ -84,10 +84,10 @@ fn connect_apply_button(
 
         if new_file.query_exists(None::<&gio::Cancellable>) {
             // Should have been caught earlier, but making sure
-            log::error!("Renaming file `{new_file:?}` failed, file already exists");
+            tracing::error!("Renaming file `{new_file:?}` failed, file already exists");
         } else {
             if let Err(e) = current_file.move_(&new_file, gio::FileCopyFlags::NONE, None::<&gio::Cancellable>, None) {
-                log::error!("Renaming file `{new_file:?}` failed, Err: {e:?}");
+                tracing::error!("Renaming file `{new_file:?}` failed, Err: {e:?}");
             }
 
             popover.popdown();

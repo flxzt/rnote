@@ -165,7 +165,7 @@ impl RnCanvas {
                 Ok(serde_json::from_str(&json_string)?)
             };
             if oneshot_sender.send(result()).is_err() {
-                log::error!(
+                tracing::error!(
                     "Sending result to receiver while inserting stroke content failed. Receiver already dropped."
                 );
             }
@@ -184,7 +184,7 @@ impl RnCanvas {
     pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<bool> {
         // skip saving when it is already in progress
         if self.save_in_progress() {
-            log::debug!("Saving file already in progress.");
+            tracing::debug!("Saving file already in progress.");
             return Ok(false);
         }
         let file_path = file

@@ -37,7 +37,7 @@ pub(crate) fn handle_pointer_controller_event(
 
     match gdk_event_type {
         gdk::EventType::MotionNotify => {
-            log::trace!(
+            tracing::trace!(
                 "canvas event MotionNotify - gdk_modifiers: {gdk_modifiers:?}, is_stylus: {is_stylus}"
             );
 
@@ -66,7 +66,7 @@ pub(crate) fn handle_pointer_controller_event(
             let gdk_button = button_event.button();
             let mut handle_shortcut_key = false;
 
-            log::trace!(
+            tracing::trace!(
                 "canvas event ButtonPress - gdk_button: {gdk_button}, is_stylus: {is_stylus}"
             );
 
@@ -103,7 +103,7 @@ pub(crate) fn handle_pointer_controller_event(
             let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
             let gdk_button = button_event.button();
 
-            log::trace!(
+            tracing::trace!(
                 "canvas event ButtonRelease - gdk_button: {gdk_button}, is_stylus: {is_stylus}"
             );
 
@@ -166,7 +166,7 @@ pub(crate) fn handle_pointer_controller_event(
         let pen_mode = retrieve_pen_mode(event);
 
         for (element, event_time) in elements {
-            log::trace!("handle pen event element - element: {element:?}, pen_state: {pen_state:?}, event_time_delta: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}", now.duration_since(event_time));
+            tracing::trace!("handle pen event element - element: {element:?}, pen_state: {pen_state:?}, event_time_delta: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}", now.duration_since(event_time));
 
             match pen_state {
                 PenState::Up => {
@@ -225,7 +225,7 @@ pub(crate) fn handle_key_controller_key_pressed(
     gdk_key: gdk::Key,
     gdk_modifiers: gdk::ModifierType,
 ) -> glib::Propagation {
-    log::trace!(
+    tracing::trace!(
         "canvas event key pressed - gdk_key: {gdk_key:?}, gdk_modifiers: {gdk_modifiers:?}"
     );
     canvas.grab_focus();
@@ -259,7 +259,7 @@ pub(crate) fn handle_key_controller_key_released(
     gdk_key: gdk::Key,
     gdk_modifiers: gdk::ModifierType,
 ) {
-    log::trace!(
+    tracing::trace!(
         "canvas event key released - gdk_key: {gdk_key:?}, gdk_modifiers: {gdk_modifiers:?}"
     );
 }
@@ -282,7 +282,7 @@ fn debug_gdk_event(event: &gdk::Event) {
     let pos = event
         .position()
         .map(|(x, y)| format!("x: {x:.1}, y: {y:.1}"));
-    log::debug!(
+    tracing::debug!(
         "Gdk event: (pos: {:?}, device: {:?}, modifier: {:?}, event_type: {:?}, tool type: {:?}, input source: {:?}",
         pos,
         event.device(),

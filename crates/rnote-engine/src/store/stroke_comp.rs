@@ -224,7 +224,7 @@ impl StrokeStore {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
-                    Err(e) => log::error!(
+                    Err(e) => tracing::error!(
                         "Generating rendernodes from images failed while translating stroke images , Err: {e:?}"
                     ),
                 }
@@ -384,7 +384,7 @@ impl StrokeStore {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
-                    Err(e) => log::error!(
+                    Err(e) => tracing::error!(
                         "Generating rendernodes from iamges failed while rotating stroke images , Err: {e:?}"
                     ),
                 }
@@ -427,7 +427,7 @@ impl StrokeStore {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
-                    Err(e) => log::error!(
+                    Err(e) => tracing::error!(
                         "Generating rendernodes from images failed while scaling stroke images, Err: {e:?}"
                     ),
                 }

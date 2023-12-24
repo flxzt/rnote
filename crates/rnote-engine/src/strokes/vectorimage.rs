@@ -291,7 +291,7 @@ impl VectorImage {
                 match res() {
                     Ok(svg_data) => Some(render::Svg { svg_data, bounds }),
                     Err(e) => {
-                        log::error!("Importing page {page_i} from pdf failed, Err: {e:?}");
+                        tracing::error!("Importing page {page_i} from pdf failed, Err: {e:?}");
                         None
                     }
                 }

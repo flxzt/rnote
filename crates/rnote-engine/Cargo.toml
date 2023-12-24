@@ -11,7 +11,7 @@ repository.workspace = true
 [dependencies]
 rnote-compose = { workspace = true }
 
-log = { workspace = true }
+tracing = { workspace = true }
 anyhow = { workspace = true }
 thiserror = { workspace = true }
 num-derive = { workspace = true }

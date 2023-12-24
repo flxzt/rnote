@@ -74,7 +74,9 @@ impl Content for BrushStroke {
                     match image {
                         Ok(image) => vec![image],
                         Err(e) => {
-                            log::error!("Generating images for brushstroke failed , Err: {e:?}");
+                            tracing::error!(
+                                "Generating images for brushstroke failed , Err: {e:?}"
+                            );
                             vec![]
                         }
                     }
@@ -96,7 +98,9 @@ impl Content for BrushStroke {
                     match image {
                         Ok(image) => vec![image],
                         Err(e) => {
-                            log::error!("Generating images for brushstroke failed , Err: {e:?}");
+                            tracing::error!(
+                                "Generating images for brushstroke failed , Err: {e:?}"
+                            );
                             vec![]
                         }
                     }
@@ -121,7 +125,7 @@ impl Content for BrushStroke {
                         ) {
                             Ok(image) => images.push(image),
                             Err(e) => {
-                                log::error!(
+                                tracing::error!(
                                     "generating images for brushstroke failed , Err: {e:?}"
                                 );
                             }
@@ -154,7 +158,7 @@ impl Content for BrushStroke {
                         ) {
                             Ok(image) => images.push(image),
                             Err(e) => {
-                                log::error!(
+                                tracing::error!(
                                     "generating images for brushstroke failed , Err: {e:?}"
                                 );
                             }

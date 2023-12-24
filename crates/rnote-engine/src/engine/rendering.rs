@@ -23,7 +23,7 @@ impl Engine {
                 let new_texture = match image.to_memtexture() {
                     Ok(t) => t,
                     Err(e) => {
-                        log::error!(
+                        tracing::error!(
                             "failed to generate memory-texture of background tile image, {e:?}"
                         );
                         return widget_flags;
@@ -94,7 +94,7 @@ impl Engine {
                 self.background_tile_image = Some(image);
                 widget_flags |= self.update_background_rendering_current_viewport();
             }
-            Err(e) => log::error!("Regenerating background tile image failed, Err: {e:?}"),
+            Err(e) => tracing::error!("Regenerating background tile image failed, Err: {e:?}"),
         }
         widget_flags.redraw = true;
         widget_flags

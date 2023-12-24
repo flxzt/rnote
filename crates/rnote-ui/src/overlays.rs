@@ -412,7 +412,7 @@ impl RnOverlays {
             .timeout(0)
             .build();
         self.toast_overlay().add_toast(toast.clone());
-        log::error!("{error}");
+        tracing::error!("{error}");
         toast
     }
 }

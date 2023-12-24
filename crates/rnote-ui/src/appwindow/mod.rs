@@ -127,13 +127,13 @@ impl RnAppWindow {
             ));
         } else {
             if let Err(e) = self.setup_settings_binds() {
-                log::error!("Failed to setup settings binds, Err: {e:}");
+                tracing::error!("Failed to setup settings binds, Err: {e:}");
             }
             if let Err(e) = self.setup_periodic_save() {
-                log::error!("Failed to setup periodic save, Err: {e:}");
+                tracing::error!("Failed to setup periodic save, Err: {e:}");
             }
             if let Err(e) = self.load_settings() {
-                log::error!("Failed to load initial settings, Err: {e:}");
+                tracing::error!("Failed to load initial settings, Err: {e:}");
             }
         }
 
@@ -163,7 +163,7 @@ impl RnAppWindow {
         if self.app().settings_schema_found() {
             // Saving all state
             if let Err(e) = self.save_to_settings() {
-                log::error!("Failed to save appwindow to settings, Err: {e:?}");
+                tracing::error!("Failed to save appwindow to settings, Err: {e:?}");
             }
         }
 
@@ -272,10 +272,10 @@ impl RnAppWindow {
                 .canvas()
                 .load_engine_config_from_settings(&app_settings)
             {
-                log::error!("Failed to load engine config for initial tab, Err: {e:?}");
+                tracing::error!("Failed to load engine config for initial tab, Err: {e:?}");
             }
         } else {
-            log::warn!("Could not load settings for initial tab. Settings schema not found.");
+            tracing::warn!("Could not load settings for initial tab. Settings schema not found.");
         }
         self.append_wrapper_new_tab(&wrapper)
     }
@@ -452,7 +452,7 @@ impl RnAppWindow {
                 self.overlays().progressbar_abort();
             }
             Err(e) => {
-                log::error!("Opening file with dialogs failed, Err: {e:?}");
+                tracing::error!("Opening file with dialogs failed, Err: {e:?}");
 
                 self.overlays()
                     .dispatch_toast_error(&gettext("Opening file failed"));

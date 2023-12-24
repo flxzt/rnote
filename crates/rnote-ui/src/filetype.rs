@@ -51,14 +51,14 @@ impl FileType {
                     return Self::Folder;
                 }
                 file_type => {
-                    log::warn!(
+                    tracing::warn!(
                         "Looking up file type failed, unsupported file type `{file_type:?}`"
                     );
                     return Self::Unsupported;
                 }
             }
         } else {
-            log::warn!(
+            tracing::warn!(
                 "Looking up file type failed, failed to query FileInfo from file `{file:?}`."
             );
         }
@@ -89,7 +89,7 @@ impl FileType {
                 }
             }
         } else {
-            log::warn!("Looking up file type failed, no path for file `{file:?}`.");
+            tracing::warn!("Looking up file type failed, no path for file `{file:?}`.");
         };
 
         Self::Unsupported

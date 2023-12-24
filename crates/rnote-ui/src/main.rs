@@ -83,7 +83,8 @@ fn main() -> glib::ExitCode {
 fn setup_tracing() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
-        .init();
+        .try_init()
+        .map_err(|e| anyhow::anyhow!(e))?;
     tracing::debug!(".. tracing subscriber initialized.");
     Ok(())
 }

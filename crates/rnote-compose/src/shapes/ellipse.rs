@@ -1,8 +1,8 @@
 // Imports
 use super::Line;
-use crate::helpers::{Affine2Helpers, Vector2Helpers};
-use crate::shapes::ShapeBehaviour;
-use crate::transform::TransformBehaviour;
+use crate::ext::{Affine2Ext, Vector2Ext};
+use crate::shapes::Shapeable;
+use crate::transform::Transformable;
 use crate::Transform;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
@@ -29,7 +29,7 @@ impl Default for Ellipse {
     }
 }
 
-impl TransformBehaviour for Ellipse {
+impl Transformable for Ellipse {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.transform.append_translation_mut(offset);
     }
@@ -43,7 +43,7 @@ impl TransformBehaviour for Ellipse {
     }
 }
 
-impl ShapeBehaviour for Ellipse {
+impl Shapeable for Ellipse {
     fn bounds(&self) -> Aabb {
         let center = self.transform.affine * na::point![0.0, 0.0];
         // using a vector to ignore the translation
@@ -61,6 +61,12 @@ impl ShapeBehaviour for Ellipse {
             .into_iter()
             .map(|line| line.bounds())
             .collect()
+    }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        (self.transform.affine.to_kurbo()
+            * kurbo::Ellipse::new(kurbo::Point::ZERO, self.radii.to_kurbo_vec(), 0.0))
+        .to_path(0.25)
     }
 }
 
@@ -92,7 +98,7 @@ impl Ellipse {
         let mut lines = Vec::new();
         let mut prev = kurbo::Point::new(0.0, 0.0);
 
-        self.to_kurbo().to_path(0.1).flatten(0.1, |el| match el {
+        self.outline_path().flatten(0.25, |el| match el {
             kurbo::PathEl::MoveTo(point) => prev = point,
             kurbo::PathEl::LineTo(next) => {
                 lines.push(Line {
@@ -105,11 +111,5 @@ impl Ellipse {
         });
 
         lines
-    }
-
-    /// Convert to kurbo shape.
-    pub fn to_kurbo(&self) -> kurbo::Ellipse {
-        self.transform.affine.to_kurbo()
-            * kurbo::Ellipse::new(kurbo::Point::ZERO, self.radii.to_kurbo_vec(), 0.0)
     }
 }

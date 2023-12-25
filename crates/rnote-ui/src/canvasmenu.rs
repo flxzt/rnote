@@ -36,7 +36,7 @@ mod imp {
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
+            klass.bind_template();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -99,7 +99,7 @@ impl RnCanvasMenu {
             .set_label(format!("{:.0}%", (100.0 * Camera::ZOOM_DEFAULT).round()).as_str());
     }
 
-    pub(crate) fn update_zoom_reset_label(&self, zoom: f64) {
+    pub(crate) fn refresh_zoom_reset_label(&self, zoom: f64) {
         self.imp()
             .zoom_reset_button
             .set_label(format!("{:.0}%", (100.0 * zoom).round()).as_str());

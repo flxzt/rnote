@@ -1,22 +1,21 @@
 // Imports
 use super::bitmapimage::BitmapImage;
 use super::brushstroke::BrushStroke;
+use super::content::GeneratedContentImages;
 use super::shapestroke::ShapeStroke;
-use super::strokebehaviour::GeneratedStrokeImages;
 use super::vectorimage::VectorImage;
-use super::{StrokeBehaviour, TextStroke};
+use super::{Content, TextStroke};
 use crate::fileformats::xoppformat::{self, XoppColor};
 use crate::store::chrono_comp::StrokeLayer;
-use crate::{render, RnoteEngine};
-use crate::{utils, DrawBehaviour};
-use base64::Engine;
+use crate::{render, Engine};
+use crate::{utils, Drawable};
 use p2d::bounding_volume::Aabb;
-use rnote_compose::helpers::AabbHelpers;
+use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::Element;
-use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
+use rnote_compose::shapes::{Rectangle, Shapeable};
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::transform::Transform;
-use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::transform::Transformable;
 use rnote_compose::{Color, PenPath, Style};
 use serde::{Deserialize, Serialize};
 
@@ -35,7 +34,7 @@ pub enum Stroke {
     BitmapImage(BitmapImage),
 }
 
-impl StrokeBehaviour for Stroke {
+impl Content for Stroke {
     fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
         match self {
             Stroke::BrushStroke(brushstroke) => brushstroke.gen_svg(),
@@ -50,7 +49,7 @@ impl StrokeBehaviour for Stroke {
         &self,
         viewport: Aabb,
         image_scale: f64,
-    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
+    ) -> Result<GeneratedContentImages, anyhow::Error> {
         match self {
             Stroke::BrushStroke(brushstroke) => brushstroke.gen_images(viewport, image_scale),
             Stroke::ShapeStroke(shapestroke) => shapestroke.gen_images(viewport, image_scale),
@@ -85,7 +84,7 @@ impl StrokeBehaviour for Stroke {
     }
 }
 
-impl DrawBehaviour for Stroke {
+impl Drawable for Stroke {
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
         match self {
             Stroke::BrushStroke(brushstroke) => brushstroke.draw(cx, image_scale),
@@ -95,9 +94,19 @@ impl DrawBehaviour for Stroke {
             Stroke::BitmapImage(bitmapimage) => bitmapimage.draw(cx, image_scale),
         }
     }
+
+    fn draw_to_cairo(&self, cx: &cairo::Context, image_scale: f64) -> anyhow::Result<()> {
+        match self {
+            Stroke::BrushStroke(brushstroke) => brushstroke.draw_to_cairo(cx, image_scale),
+            Stroke::ShapeStroke(shapestroke) => shapestroke.draw_to_cairo(cx, image_scale),
+            Stroke::TextStroke(textstroke) => textstroke.draw_to_cairo(cx, image_scale),
+            Stroke::VectorImage(vectorimage) => vectorimage.draw_to_cairo(cx, image_scale),
+            Stroke::BitmapImage(bitmapimage) => bitmapimage.draw_to_cairo(cx, image_scale),
+        }
+    }
 }
 
-impl ShapeBehaviour for Stroke {
+impl Shapeable for Stroke {
     fn bounds(&self) -> Aabb {
         match self {
             Self::BrushStroke(brushstroke) => brushstroke.bounds(),
@@ -117,9 +126,19 @@ impl ShapeBehaviour for Stroke {
             Self::BitmapImage(bitmapimage) => bitmapimage.hitboxes(),
         }
     }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        match self {
+            Self::BrushStroke(brushstroke) => brushstroke.outline_path(),
+            Self::ShapeStroke(shapestroke) => shapestroke.outline_path(),
+            Self::TextStroke(textstroke) => textstroke.outline_path(),
+            Self::VectorImage(vectorimage) => vectorimage.outline_path(),
+            Self::BitmapImage(bitmapimage) => bitmapimage.outline_path(),
+        }
+    }
 }
 
-impl TransformBehaviour for Stroke {
+impl Transformable for Stroke {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         match self {
             Self::BrushStroke(brushstroke) => {
@@ -193,6 +212,94 @@ impl Stroke {
             Stroke::VectorImage(_) | Stroke::BitmapImage(_) => StrokeLayer::Image,
         }
     }
+
+    /// Invert the brightness of all colors of the stroke.
+    ///
+    /// Returns true if the stroke was modified and needs to update its rendering.
+    pub fn set_to_inverted_brightness_color(&mut self) -> bool {
+        match self {
+            Stroke::BrushStroke(brush_stroke) => {
+                if let Some(color) = brush_stroke.style.stroke_color() {
+                    brush_stroke
+                        .style
+                        .set_stroke_color(color.to_inverted_brightness_color());
+                }
+
+                if let Some(color) = brush_stroke.style.fill_color() {
+                    brush_stroke
+                        .style
+                        .set_fill_color(color.to_inverted_brightness_color());
+                }
+
+                true
+            }
+            Stroke::ShapeStroke(shape_stroke) => {
+                if let Some(color) = shape_stroke.style.stroke_color() {
+                    shape_stroke
+                        .style
+                        .set_stroke_color(color.to_inverted_brightness_color());
+                }
+
+                if let Some(color) = shape_stroke.style.fill_color() {
+                    shape_stroke
+                        .style
+                        .set_fill_color(color.to_inverted_brightness_color());
+                }
+
+                true
+            }
+            Stroke::TextStroke(text_stroke) => {
+                text_stroke.text_style.color =
+                    text_stroke.text_style.color.to_inverted_brightness_color();
+
+                true
+            }
+            Stroke::VectorImage(_) => false,
+            Stroke::BitmapImage(_) => false,
+        }
+    }
+
+    /// Set all colors of the stroke to their darkest variant.
+    ///
+    /// Returns true if the stroke was modified and needs to update its rendering.
+    pub fn set_to_darkest_color(&mut self) -> bool {
+        match self {
+            Stroke::BrushStroke(brush_stroke) => {
+                if let Some(color) = brush_stroke.style.stroke_color() {
+                    brush_stroke
+                        .style
+                        .set_stroke_color(color.to_darkest_color());
+                }
+
+                if let Some(color) = brush_stroke.style.fill_color() {
+                    brush_stroke.style.set_fill_color(color.to_darkest_color());
+                }
+
+                true
+            }
+            Stroke::ShapeStroke(shape_stroke) => {
+                if let Some(color) = shape_stroke.style.stroke_color() {
+                    shape_stroke
+                        .style
+                        .set_stroke_color(color.to_darkest_color());
+                }
+
+                if let Some(color) = shape_stroke.style.fill_color() {
+                    shape_stroke.style.set_fill_color(color.to_darkest_color());
+                }
+
+                true
+            }
+            Stroke::TextStroke(text_stroke) => {
+                text_stroke.text_style.color = text_stroke.text_style.color.to_darkest_color();
+
+                true
+            }
+            Stroke::VectorImage(_) => false,
+            Stroke::BitmapImage(_) => false,
+        }
+    }
+
     pub fn from_xoppstroke(
         stroke: xoppformat::XoppStroke,
         offset: na::Vector2<f64>,
@@ -216,9 +323,7 @@ impl Stroke {
             .collect();
 
         if widths.is_empty() {
-            return Err(anyhow::anyhow!(
-                "from_xoppstroke() failed, stroke has empty widths vector"
-            ));
+            return Err(anyhow::anyhow!("Stroke has empty widths vector."));
         }
 
         let mut smooth_options = SmoothOptions::default();
@@ -269,7 +374,7 @@ impl Stroke {
                 .zip(widths.into_iter())
                 .map(|(pos, pressure)| Element::new(pos + offset, pressure)),
         )
-        .ok_or_else(|| anyhow::anyhow!("from_xoppstroke() failed, failed to create pen path"))?;
+        .ok_or_else(|| anyhow::anyhow!("Could not generate pen path from coordinates vector"))?;
 
         let brushstroke = BrushStroke::from_penpath(penpath, Style::Smooth(smooth_options));
 
@@ -309,7 +414,8 @@ impl Stroke {
         )
         .translate(offset);
 
-        let bytes = base64::engine::general_purpose::STANDARD.decode(&xopp_image.data)?;
+        let bytes =
+            base64::Engine::decode(&base64::engine::general_purpose::STANDARD, &xopp_image.data)?;
 
         let rectangle = Rectangle {
             cuboid: p2d::shape::Cuboid::new(bounds.half_extents()),
@@ -389,13 +495,13 @@ impl Stroke {
                 ))
             }
             Stroke::ShapeStroke(shapestroke) => {
-                let png_data = match shapestroke.export_as_bitmapimage_bytes(
+                let png_data = match shapestroke.export_to_bitmap_image_bytes(
                     image::ImageOutputFormat::Png,
-                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                    Engine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for shapestroke in stroke to_xopp() with Err: {e:?}");
+                        tracing::error!("Converting ShapeStroke to XoppImage failed, Err: {e:?}");
                         return None;
                     }
                 };
@@ -423,20 +529,23 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::engine::general_purpose::STANDARD.encode(png_data),
+                        data: base64::Engine::encode(
+                            &base64::engine::general_purpose::STANDARD,
+                            png_data,
+                        ),
                     },
                 ))
             }
             Stroke::TextStroke(textstroke) => {
                 // Xournal++ text strokes do not support affine transformations, so we have to convert on best effort here.
                 // The best solution for now seems to be to export them as a bitmap image.
-                let png_data = match textstroke.export_as_bitmapimage_bytes(
+                let png_data = match textstroke.export_to_bitmap_image_bytes(
                     image::ImageOutputFormat::Png,
-                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                    Engine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() with Err: {e:?}");
+                        tracing::error!("Converting TextStroke to XoppImage failed, Err: {e:?}");
                         return None;
                     }
                 };
@@ -464,18 +573,23 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::engine::general_purpose::STANDARD.encode(png_data),
+                        data: base64::Engine::encode(
+                            &base64::engine::general_purpose::STANDARD,
+                            png_data,
+                        ),
                     },
                 ))
             }
             Stroke::VectorImage(vectorimage) => {
-                let png_data = match vectorimage.export_as_bitmapimage_bytes(
+                let png_data = match vectorimage.export_to_bitmap_image_bytes(
                     image::ImageOutputFormat::Png,
-                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                    Engine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() with Err: {e:?}");
+                        tracing::error!(
+                            "Exporting VectorImage to image bytes failed while converting Stroke to Xopp, Err: {e:?}"
+                        );
                         return None;
                     }
                 };
@@ -503,18 +617,23 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::engine::general_purpose::STANDARD.encode(png_data),
+                        data: base64::Engine::encode(
+                            &base64::engine::general_purpose::STANDARD,
+                            png_data,
+                        ),
                     },
                 ))
             }
             Stroke::BitmapImage(bitmapimage) => {
-                let png_data = match bitmapimage.export_as_bitmapimage_bytes(
+                let png_data = match bitmapimage.export_to_bitmap_image_bytes(
                     image::ImageOutputFormat::Png,
-                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                    Engine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for bitmapimage in stroke to_xopp() with Err: {e:?}");
+                        tracing::error!(
+                            "Exporting BitmapImage to image bytes failed while converting Stroke to Xopp, Err: {e:?}"
+                        );
                         return None;
                     }
                 };
@@ -543,7 +662,10 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::engine::general_purpose::STANDARD.encode(png_data),
+                        data: base64::Engine::encode(
+                            &base64::engine::general_purpose::STANDARD,
+                            png_data,
+                        ),
                     },
                 ))
             }

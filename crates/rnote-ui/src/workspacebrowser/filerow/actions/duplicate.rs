@@ -36,18 +36,18 @@ pub(crate) fn duplicate(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::Si
                 if let Some(current_path) = current_file.path() {
                     if current_path.is_file() {
                         if let Err(e) = duplicate_file(&current_path) {
-                            log::error!("duplicating file {current_path:?} failed, Err: {e:?}");
+                            tracing::error!("Duplicating file for path `{current_path:?}` failed, Err: {e:?}");
                         }
                     } else if current_path.is_dir() {
                         let progress_handler = creat_dup_dir_progress_handler(appwindow.clone());
 
                         if let Err(e) = duplicate_dir(&current_path, progress_handler) {
-                            log::error!("duplicating directory {current_path:?} failed, Err: {e:?}");
+                            tracing::error!("Duplicating directory for path `{current_path:?}` failed, Err: {e:?}");
                         }
                     }
                 }
             } else {
-                log::warn!("Could not duplicate file, current file is None.");
+                tracing::warn!("Could not duplicate file, current file is None.");
             }
 
             appwindow.overlays().progressbar_finish();
@@ -104,7 +104,9 @@ fn generate_destination_path(source: impl AsRef<Path>) -> anyhow::Result<PathBuf
     let adjusted_source_path = remove_dup_suffix(source);
 
     let Some(source_stem) = adjusted_source_path.file_stem() else {
-        return Err(anyhow::anyhow!("file of source path '{adjusted_source_path:?}' does not have a file stem."));
+        return Err(anyhow::anyhow!(
+            "file of source path '{adjusted_source_path:?}' does not have a file stem."
+        ));
     };
     loop {
         destination_path.set_file_name(generate_duplicate_filename(
@@ -117,7 +119,9 @@ fn generate_destination_path(source: impl AsRef<Path>) -> anyhow::Result<PathBuf
             return Ok(destination_path);
         }
 
-        log::debug!("file '{destination_path:?}' already exists. Incrementing duplication index.",);
+        tracing::debug!(
+            "File '{destination_path:?}' already exists. Incrementing duplication index.",
+        );
         duplicate_index += 1;
     }
 }

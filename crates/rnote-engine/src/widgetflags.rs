@@ -8,10 +8,10 @@ pub struct WidgetFlags {
     pub resize: bool,
     /// Refresh the UI with the engine state.
     pub refresh_ui: bool,
-    /// Whether the store was modified, i.e. new strokes inserted, modified, etc. .
+    /// Indicates that the store was modified, i.e. new strokes inserted, modified, etc. .
     pub store_modified: bool,
     /// Update the current view offsets and size.
-    pub update_view: bool,
+    pub view_modified: bool,
     /// Indicates that the camera has changed it's temporary zoom.
     pub zoomed_temporarily: bool,
     /// Indicates that the camera has changed it's permanent zoom.
@@ -35,7 +35,7 @@ impl Default for WidgetFlags {
             resize: false,
             refresh_ui: false,
             store_modified: false,
-            update_view: false,
+            view_modified: false,
             zoomed_temporarily: false,
             zoomed: false,
             deselect_color_setters: false,
@@ -46,25 +46,33 @@ impl Default for WidgetFlags {
     }
 }
 
-impl WidgetFlags {
-    /// Merge with another WidgetFlags struct, prioritizing other for conflicting values.
-    pub fn merge(&mut self, other: Self) {
-        self.redraw |= other.redraw;
-        self.resize |= other.resize;
-        self.refresh_ui |= other.refresh_ui;
-        self.store_modified |= other.store_modified;
-        self.update_view |= other.update_view;
-        self.zoomed_temporarily |= other.zoomed_temporarily;
-        self.zoomed |= other.zoomed;
-        self.deselect_color_setters |= other.deselect_color_setters;
-        if other.hide_undo.is_some() {
-            self.hide_undo = other.hide_undo
+impl std::ops::BitOr for WidgetFlags {
+    type Output = Self;
+
+    fn bitor(mut self, rhs: Self) -> Self::Output {
+        self |= rhs;
+        self
+    }
+}
+
+impl std::ops::BitOrAssign for WidgetFlags {
+    fn bitor_assign(&mut self, rhs: Self) {
+        self.redraw |= rhs.redraw;
+        self.resize |= rhs.resize;
+        self.refresh_ui |= rhs.refresh_ui;
+        self.store_modified |= rhs.store_modified;
+        self.view_modified |= rhs.view_modified;
+        self.zoomed_temporarily |= rhs.zoomed_temporarily;
+        self.zoomed |= rhs.zoomed;
+        self.deselect_color_setters |= rhs.deselect_color_setters;
+        if rhs.hide_undo.is_some() {
+            self.hide_undo = rhs.hide_undo
         }
-        if other.hide_redo.is_some() {
-            self.hide_redo = other.hide_redo;
+        if rhs.hide_redo.is_some() {
+            self.hide_redo = rhs.hide_redo;
         }
-        if other.enable_text_preprocessing.is_some() {
-            self.enable_text_preprocessing = other.enable_text_preprocessing;
+        if rhs.enable_text_preprocessing.is_some() {
+            self.enable_text_preprocessing = rhs.enable_text_preprocessing;
         }
     }
 }

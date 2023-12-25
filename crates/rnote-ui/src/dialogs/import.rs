@@ -1,4 +1,4 @@
-// gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not yet stable
+// gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not suitable for a async flow
 #![allow(deprecated)]
 
 // Imports
@@ -8,7 +8,7 @@ use adw::prelude::*;
 use gettextrs::gettext;
 use gtk4::{
     gio, glib, glib::clone, Builder, Dialog, FileDialog, FileFilter, Label, ResponseType,
-    SpinButton, ToggleButton,
+    ToggleButton,
 };
 use num_traits::ToPrimitive;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
@@ -27,7 +27,7 @@ pub(crate) async fn filedialog_open_doc(appwindow: &RnAppWindow) {
         .default_filter(&filter)
         .build();
 
-    if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
+    if let Some(current_workspace_dir) = appwindow.sidebar().workspacebrowser().dirlist_dir() {
         filedialog.set_initial_folder(Some(&gio::File::for_path(current_workspace_dir)));
     }
 
@@ -38,7 +38,9 @@ pub(crate) async fn filedialog_open_doc(appwindow: &RnAppWindow) {
                 .await;
         }
         Err(e) => {
-            log::debug!("did not open document (Error or dialog dismissed by user), {e:?}");
+            tracing::debug!(
+                "Did not open document (Error or dialog dismissed by user), Err: {e:?}"
+            );
         }
     }
 }
@@ -50,13 +52,15 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
     filter.add_mime_type("image/svg+xml");
     filter.add_mime_type("image/png");
     filter.add_mime_type("image/jpeg");
+    filter.add_mime_type("text/plain");
     filter.add_suffix("xopp");
     filter.add_suffix("pdf");
     filter.add_suffix("svg");
     filter.add_suffix("png");
     filter.add_suffix("jpg");
     filter.add_suffix("jpeg");
-    filter.set_name(Some(&gettext("Jpg, Pdf, Png, Svg, Xopp")));
+    filter.add_suffix("txt");
+    filter.set_name(Some(&gettext("Jpg, Pdf, Png, Svg, Xopp, Txt")));
 
     let dialog = FileDialog::builder()
         .title(gettext("Import File"))
@@ -65,7 +69,7 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
         .default_filter(&filter)
         .build();
 
-    if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
+    if let Some(current_workspace_dir) = appwindow.sidebar().workspacebrowser().dirlist_dir() {
         dialog.set_initial_folder(Some(&gio::File::for_path(current_workspace_dir)));
     }
 
@@ -76,7 +80,7 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
                 .await;
         }
         Err(e) => {
-            log::debug!("did not import file (Error or dialog dismissed by user),{e:?}");
+            tracing::debug!("Did not import file (Error or dialog dismissed by user), Err: {e:?}");
         }
     }
 }
@@ -94,32 +98,27 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );
     let dialog: Dialog = builder.object("dialog_import_pdf_w_prefs").unwrap();
-    let pdf_page_start_spinbutton: SpinButton =
-        builder.object("pdf_page_start_spinbutton").unwrap();
-    let pdf_page_end_spinbutton: SpinButton = builder.object("pdf_page_end_spinbutton").unwrap();
+    let pdf_page_start_row: adw::SpinRow = builder.object("pdf_page_start_row").unwrap();
+    let pdf_page_end_row: adw::SpinRow = builder.object("pdf_page_end_row").unwrap();
     let pdf_info_label: Label = builder.object("pdf_info_label").unwrap();
-    let pdf_import_width_perc_spinbutton: SpinButton =
-        builder.object("pdf_import_width_perc_spinbutton").unwrap();
+    let pdf_import_width_row: adw::SpinRow = builder.object("pdf_import_width_row").unwrap();
     let pdf_import_page_spacing_row: adw::ComboRow =
         builder.object("pdf_import_page_spacing_row").unwrap();
     let pdf_import_as_bitmap_toggle: ToggleButton =
         builder.object("pdf_import_as_bitmap_toggle").unwrap();
     let pdf_import_as_vector_toggle: ToggleButton =
         builder.object("pdf_import_as_vector_toggle").unwrap();
-    let pdf_import_bitmap_scalefactor_row: adw::ActionRow =
+    let pdf_import_bitmap_scalefactor_row: adw::SpinRow =
         builder.object("pdf_import_bitmap_scalefactor_row").unwrap();
-    let pdf_import_bitmap_scalefactor_spinbutton: SpinButton = builder
-        .object("pdf_import_bitmap_scalefactor_spinbutton")
-        .unwrap();
+    let pdf_import_page_borders_row: adw::SwitchRow =
+        builder.object("pdf_import_page_borders_row").unwrap();
 
     dialog.set_transient_for(Some(appwindow));
 
     let pdf_import_prefs = canvas.engine_ref().import_prefs.pdf_import_prefs;
 
     // Set the widget state from the pdf import prefs
-    pdf_page_start_spinbutton.set_increments(1.0, 2.0);
-    pdf_page_end_spinbutton.set_increments(1.0, 2.0);
-    pdf_import_width_perc_spinbutton.set_value(pdf_import_prefs.page_width_perc);
+    pdf_import_width_row.set_value(pdf_import_prefs.page_width_perc);
     match pdf_import_prefs.pages_type {
         PdfImportPagesType::Bitmap => {
             pdf_import_as_bitmap_toggle.set_active(true);
@@ -131,14 +130,15 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }
     }
     pdf_import_page_spacing_row.set_selected(pdf_import_prefs.page_spacing.to_u32().unwrap());
-    pdf_import_bitmap_scalefactor_spinbutton.set_value(pdf_import_prefs.bitmap_scalefactor);
+    pdf_import_bitmap_scalefactor_row.set_value(pdf_import_prefs.bitmap_scalefactor);
+    pdf_import_page_borders_row.set_active(pdf_import_prefs.page_borders);
 
-    pdf_page_start_spinbutton
-        .bind_property("value", &pdf_page_end_spinbutton.adjustment(), "lower")
+    pdf_page_start_row
+        .bind_property("value", &pdf_page_end_row.adjustment(), "lower")
         .sync_create()
         .build();
-    pdf_page_end_spinbutton
-        .bind_property("value", &pdf_page_start_spinbutton.adjustment(), "upper")
+    pdf_page_end_row
+        .bind_property("value", &pdf_page_start_row.adjustment(), "upper")
         .sync_create()
         .build();
 
@@ -161,9 +161,11 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }),
     );
 
-    pdf_import_bitmap_scalefactor_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |spinbutton| {
-        canvas.engine_mut().import_prefs.pdf_import_prefs.bitmap_scalefactor = spinbutton.value();
-    }));
+    pdf_import_bitmap_scalefactor_row.connect_changed(
+        clone!(@weak canvas, @weak appwindow => move |row| {
+            canvas.engine_mut().import_prefs.pdf_import_prefs.bitmap_scalefactor = row.value();
+        }),
+    );
 
     pdf_import_page_spacing_row.connect_selected_notify(
         clone!(@weak canvas, @weak appwindow => move |row| {
@@ -173,9 +175,13 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }),
     );
 
-    pdf_import_width_perc_spinbutton.connect_value_changed(
-        clone!(@weak canvas, @weak appwindow => move |spinbutton| {
-            canvas.engine_mut().import_prefs.pdf_import_prefs.page_width_perc = spinbutton.value();
+    pdf_import_width_row.connect_changed(clone!(@weak canvas, @weak appwindow => move |row| {
+            canvas.engine_mut().import_prefs.pdf_import_prefs.page_width_perc = row.value();
+    }));
+
+    pdf_import_page_borders_row.connect_active_notify(
+        clone!(@weak canvas, @weak appwindow => move |row| {
+            canvas.engine_mut().import_prefs.pdf_import_prefs.page_borders = row.is_active();
         }),
     );
 
@@ -225,19 +231,19 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         );
 
         // Configure pages spinners
-        pdf_page_start_spinbutton.set_range(1.into(), n_pages.into());
-        pdf_page_start_spinbutton.set_value(1.into());
+        pdf_page_start_row.set_range(1.into(), n_pages.into());
+        pdf_page_start_row.set_value(1.into());
 
-        pdf_page_end_spinbutton.set_range(1.into(), n_pages.into());
-        pdf_page_end_spinbutton.set_value(n_pages.into());
+        pdf_page_end_row.set_range(1.into(), n_pages.into());
+        pdf_page_end_row.set_value(n_pages.into());
     }
 
     let response = dialog.run_future().await;
     dialog.close();
     match response {
         ResponseType::Apply => {
-            let page_range = (pdf_page_start_spinbutton.value() as u32 - 1)
-                ..pdf_page_end_spinbutton.value() as u32;
+            let page_range =
+                (pdf_page_start_row.value() as u32 - 1)..pdf_page_end_row.value() as u32;
             let (bytes, _) = input_file.load_bytes_future().await?;
             canvas
                 .load_in_pdf_bytes(bytes.to_vec(), target_pos, Some(page_range))
@@ -263,17 +269,17 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );
     let dialog: Dialog = builder.object("dialog_import_xopp_w_prefs").unwrap();
-    let dpi_spinbutton: SpinButton = builder.object("xopp_import_dpi_spinbutton").unwrap();
+    let dpi_row: adw::SpinRow = builder.object("xopp_import_dpi_row").unwrap();
     let xopp_import_prefs = canvas.engine_ref().import_prefs.xopp_import_prefs;
 
     dialog.set_transient_for(Some(appwindow));
 
     // Set initial widget state for preference
-    dpi_spinbutton.set_value(xopp_import_prefs.dpi);
+    dpi_row.set_value(xopp_import_prefs.dpi);
 
     // Update preferences
-    dpi_spinbutton.connect_changed(clone!(@weak canvas, @weak appwindow => move |spinbutton| {
-        canvas.engine_mut().import_prefs.xopp_import_prefs.dpi = spinbutton.value();
+    dpi_row.connect_changed(clone!(@weak canvas, @weak appwindow => move |row| {
+        canvas.engine_mut().import_prefs.xopp_import_prefs.dpi = row.value();
     }));
 
     let response = dialog.run_future().await;

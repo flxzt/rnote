@@ -52,5 +52,17 @@ sounds_files = files(
     'sounds/typewriter/typewriter_thump.wav',
 )
 
-# install flat in one directory
+# install sounds flat in one directory
 install_data(sounds_files, install_dir: pkgdatadir / 'sounds')
+
+
+# fonts
+fonts_files = files(
+    'fonts/GrapeNuts-Regular.ttf',
+    'fonts/OpenDyslexic-Regular.ttf',
+    'fonts/TT2020Base-Regular.ttf',
+    'fonts/Virgil.ttf',
+)
+
+# install fonts
+install_data(fonts_files, install_dir: datadir / 'fonts' / app_name + '-fonts')

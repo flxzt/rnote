@@ -6,8 +6,7 @@ use crate::{
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    glib, glib::clone, CompositeTemplate, ListBox, MenuButton, Popover, SpinButton, StringList,
-    Switch,
+    glib, glib::clone, Button, CompositeTemplate, ListBox, MenuButton, Popover, StringList,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::ShapeBuilderType;
@@ -34,11 +33,9 @@ mod imp {
         #[template_child]
         pub(crate) shapeconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub(crate) shapeconfig_popover: TemplateChild<Popover>,
-        #[template_child]
         pub(crate) roughstyle_fillstyle_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub(crate) roughstyle_hachure_angle_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) roughstyle_hachure_angle_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(crate) stroke_width_picker: TemplateChild<RnStrokeWidthPicker>,
         #[template_child]
@@ -48,13 +45,29 @@ mod imp {
         #[template_child]
         pub(crate) constraint_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub(crate) constraint_enabled_switch: TemplateChild<Switch>,
+        pub(crate) constraint_enabled_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(crate) constraint_one_to_one_switch: TemplateChild<Switch>,
+        pub(crate) constraint_one_to_one_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(crate) constraint_three_to_two_switch: TemplateChild<Switch>,
+        pub(crate) constraint_three_to_two_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(crate) constraint_golden_switch: TemplateChild<Switch>,
+        pub(crate) constraint_golden_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(crate) shaperstyle_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) shaperstyle_popover_close_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) shapeconfig_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) shapeconfig_popover_close_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) shapebuildertype_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) shapebuildertype_popover_close_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) constraint_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) constraint_popover_close_button: TemplateChild<Button>,
     }
 
     #[glib::object_subclass]
@@ -64,7 +77,7 @@ mod imp {
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
+            klass.bind_template();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -117,7 +130,7 @@ impl RnShaperPage {
     }
 
     pub(crate) fn constraint_menubutton(&self) -> MenuButton {
-        self.imp().shapebuildertype_menubutton.get()
+        self.imp().constraint_menubutton.get()
     }
 
     pub(crate) fn shaper_style(&self) -> Option<ShaperStyle> {
@@ -167,6 +180,32 @@ impl RnShaperPage {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
+        let shaperstyle_popover = imp.shaperstyle_popover.get();
+        let shapeconfig_popover = imp.shapeconfig_popover.get();
+        let shapebuildertype_popover = imp.shapebuildertype_popover.get();
+        let constraint_popover = imp.constraint_popover.get();
+
+        // Popovers
+        imp.shaperstyle_popover_close_button.connect_clicked(
+            clone!(@weak shaperstyle_popover => move |_| {
+                shaperstyle_popover.popdown();
+            }),
+        );
+        imp.shapeconfig_popover_close_button.connect_clicked(
+            clone!(@weak shapeconfig_popover => move |_| {
+                shapeconfig_popover.popdown();
+            }),
+        );
+        imp.shapebuildertype_popover_close_button.connect_clicked(
+            clone!(@weak shapebuildertype_popover => move |_| {
+                shapebuildertype_popover.popdown();
+            }),
+        );
+        imp.constraint_popover_close_button.connect_clicked(
+            clone!(@weak constraint_popover => move |_| {
+                constraint_popover.popdown();
+            }),
+        );
 
         // Stroke width
         imp.stroke_width_picker.spinbutton().set_range(
@@ -182,14 +221,14 @@ impl RnShaperPage {
             clone!(@weak self as shaperpage, @weak appwindow => move |picker, _| {
                 let stroke_width = picker.stroke_width();
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let engine = &mut *canvas.engine_mut();
+                let shaper_style = canvas.engine_ref().pens_config.shaper_config.style;
 
-                match engine.pens_config.shaper_config.style {
+                match shaper_style {
                     ShaperStyle::Smooth => {
-                        engine.pens_config.shaper_config.smooth_options.stroke_width = stroke_width;
+                        canvas.engine_mut().pens_config.shaper_config.smooth_options.stroke_width = stroke_width;
                     },
                     ShaperStyle::Rough => {
-                        engine.pens_config.shaper_config.rough_options.stroke_width = stroke_width;
+                        canvas.engine_mut().pens_config.shaper_config.rough_options.stroke_width = stroke_width;
                     },
                 }
             }),
@@ -225,8 +264,8 @@ impl RnShaperPage {
         }));
 
         // Hachure angle
-        imp.roughstyle_hachure_angle_spinbutton.get().connect_value_changed(clone!(@weak self as shaperpage, @weak appwindow => move |spinbutton| {
-            appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.rough_options.hachure_angle = spinbutton.value().round().to_radians().clamp(-std::f64::consts::PI, std::f64::consts::PI);
+        imp.roughstyle_hachure_angle_row.get().connect_changed(clone!(@weak self as shaperpage, @weak appwindow => move |row| {
+            appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.rough_options.hachure_angle = row.value().round().to_radians().clamp(-std::f64::consts::PI, std::f64::consts::PI);
         }));
 
         // shape builder type
@@ -247,17 +286,17 @@ impl RnShaperPage {
 
         // Constraints
         imp
-            .constraint_enabled_switch
+            .constraint_enabled_row
             .get()
-            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.enabled = switch.state();
+            .connect_active_notify(clone!(@weak appwindow => move |row|  {
+                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.enabled = row.is_active();
             }));
 
         imp
-            .constraint_one_to_one_switch
+            .constraint_one_to_one_row
             .get()
-            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                if switch.state() {
+            .connect_active_notify(clone!(@weak appwindow => move |row|  {
+                if row.is_active() {
                     appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::OneToOne);
                 } else {
                     appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::OneToOne);
@@ -265,10 +304,10 @@ impl RnShaperPage {
             }));
 
         imp
-            .constraint_three_to_two_switch
+            .constraint_three_to_two_row
             .get()
-            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                if switch.state() {
+            .connect_active_notify(clone!(@weak appwindow => move |row|  {
+                if row.is_active() {
                     appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::ThreeToTwo);
                 } else {
                     appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::ThreeToTwo);
@@ -276,10 +315,10 @@ impl RnShaperPage {
             }));
 
         imp
-            .constraint_golden_switch
+            .constraint_golden_row
             .get()
-            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                if switch.state() {
+            .connect_active_notify(clone!(@weak appwindow => move |row|  {
+                if row.is_active() {
                     appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::Golden);
                 } else {
                     appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::Golden);
@@ -315,25 +354,25 @@ impl RnShaperPage {
 
         // Rough style
         self.set_roughstyle_fillstyle(shaper_config.rough_options.fill_style);
-        imp.roughstyle_hachure_angle_spinbutton
+        imp.roughstyle_hachure_angle_row
             .set_value(shaper_config.rough_options.hachure_angle.to_degrees());
 
         // constraints
-        imp.constraint_enabled_switch
-            .set_state(shaper_config.constraints.enabled);
-        imp.constraint_one_to_one_switch.set_state(
+        imp.constraint_enabled_row
+            .set_active(shaper_config.constraints.enabled);
+        imp.constraint_one_to_one_row.set_active(
             shaper_config
                 .constraints
                 .ratios
                 .contains(&ConstraintRatio::OneToOne),
         );
-        imp.constraint_three_to_two_switch.set_state(
+        imp.constraint_three_to_two_row.set_active(
             shaper_config
                 .constraints
                 .ratios
                 .contains(&ConstraintRatio::ThreeToTwo),
         );
-        imp.constraint_golden_switch.set_state(
+        imp.constraint_golden_row.set_active(
             shaper_config
                 .constraints
                 .ratios
@@ -369,10 +408,11 @@ fn shape_builder_type_icons_get_groups() -> Vec<GroupedIconPickerGroupData> {
             ]),
         },
         GroupedIconPickerGroupData {
-            name: gettext("Curves"),
+            name: gettext("Curves & Paths"),
             icons: StringList::new(&[
                 "shapebuilder-quadbez-symbolic",
                 "shapebuilder-cubbez-symbolic",
+                "shapebuilder-polyline-symbolic",
             ]),
         },
     ]
@@ -393,5 +433,6 @@ fn shape_builder_type_icons_to_display_name(icon_name: &str) -> String {
         ShapeBuilderType::FociEllipse => gettext("Ellipse with foci"),
         ShapeBuilderType::QuadBez => gettext("Quadratic bezier curve"),
         ShapeBuilderType::CubBez => gettext("Cubic bezier curve"),
+        ShapeBuilderType::Polyline => gettext("Polyline"),
     }
 }

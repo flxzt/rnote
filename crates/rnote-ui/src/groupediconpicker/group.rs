@@ -20,14 +20,14 @@ mod imp {
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/groupediconpicker/groupediconpickergroup.ui")]
-    pub struct RnGroupedIconPickerGroup {
-        pub name: RefCell<String>,
-        pub icons: RefCell<StringList>,
+    pub(crate) struct RnGroupedIconPickerGroup {
+        pub(crate) name: RefCell<String>,
+        pub(crate) icons: RefCell<StringList>,
 
         #[template_child]
-        pub flowbox: TemplateChild<FlowBox>,
+        pub(crate) flowbox: TemplateChild<FlowBox>,
         #[template_child]
-        pub name_label: TemplateChild<Label>,
+        pub(crate) name_label: TemplateChild<Label>,
     }
 
     #[glib::object_subclass]
@@ -96,7 +96,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct RnGroupedIconPickerGroup(ObjectSubclass<imp::RnGroupedIconPickerGroup>)
+    pub(crate) struct RnGroupedIconPickerGroup(ObjectSubclass<imp::RnGroupedIconPickerGroup>)
         @extends Widget, Box, ListBoxRow;
 }
 
@@ -117,12 +117,12 @@ impl RnGroupedIconPickerGroup {
     }
 
     #[allow(unused)]
-    pub fn icon_list(&self) -> StringList {
+    pub(crate) fn icon_list(&self) -> StringList {
         self.property::<StringList>("icons")
     }
 
     #[allow(unused)]
-    pub fn name(&self) -> String {
+    pub(crate) fn name(&self) -> String {
         self.property::<String>("name")
     }
 
@@ -140,7 +140,7 @@ impl RnGroupedIconPickerGroup {
             let icon_name = object
                 .downcast_ref::<StringObject>()
                 .expect(
-                    "GroupIconPickerFlowBox bind() failed, item has to be of type `StringObject`",
+                    "Binding GroupIconPickerFlowBox model failed, item has to be of type `StringObject`",
                 )
                 .string();
 
@@ -161,9 +161,13 @@ impl RnGroupedIconPickerGroup {
 
         imp.flowbox.connect_child_activated(
             clone!(@weak grouped_icon_picker => move |_flowbox: &FlowBox, flowbox_child: &FlowBoxChild| {
-                let child = flowbox_child.child().expect("GroupIconPickerFlowBox child_activated() failed, child has to exist");
-                let icon = child.downcast_ref::<Image>().expect("GroupIconPickerFlowBox child_activated() failed, child has to be of type `Image`");
-                let icon_name = icon.icon_name().expect("GroupIconPickerFlowBox child_activated() failed, child `Image` has to have an icon name");
+                let icon_name = flowbox_child
+                    .child()
+                    .expect("GroupIconPickerFlowBox child activated signal callback failed, child has to exist")
+                    .downcast_ref::<Image>()
+                    .expect("GroupIconPickerFlowBox child activated signal callback failed, child has to be of type `Image`")
+                    .icon_name()
+                    .expect("GroupIconPickerFlowBox child activated signal callback failed, child `Image` has to have an icon name");
 
                 grouped_icon_picker.set_picked(Some(icon_name.to_string()));
             }),

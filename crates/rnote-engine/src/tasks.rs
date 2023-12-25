@@ -26,7 +26,9 @@ pub struct PeriodicTaskHandle {
 impl Drop for PeriodicTaskHandle {
     fn drop(&mut self) {
         if let Err(e) = self.quit() {
-            log::error!("Could not quit periodic task while handle is being dropped, {e:?}");
+            tracing::error!(
+                "Could not quit periodic task while handle is being dropped, Err: {e:?}"
+            );
         }
     }
 }
@@ -49,7 +51,7 @@ impl PeriodicTaskHandle {
                         break;
                     }
                     Err(e @ mpsc::RecvTimeoutError::Disconnected) => {
-                        log::error!("Channel sending half has become disconnected, now quitting the periodic task. {e:?}");
+                        tracing::error!("Periodic task channel sending half became disconnected, now quitting. Err: {e:?}");
                         break;
                     }
                     Err(mpsc::RecvTimeoutError::Timeout) => {}
@@ -124,7 +126,9 @@ impl Drop for OneOffTaskHandle {
         match self.quit() {
             Ok(()) | Err(OneOffTaskError::TimeoutReached) => {}
             Err(e) => {
-                log::error!("Could not quit one off task while handle is being dropped, {e:?}")
+                tracing::error!(
+                    "Could not quit one off task while handle is being dropped, Err: {e:?}"
+                )
             }
         }
     }
@@ -158,7 +162,7 @@ impl OneOffTaskHandle {
                         break;
                     }
                     Err(e @ mpsc::RecvTimeoutError::Disconnected) => {
-                        log::error!("Channel sending half has become disconnected, now quitting the periodic task. {e:?}");
+                        tracing::error!("One off task channel sending half became disconnected, now quitting. Err: {e:?}");
                         break;
                     }
                     Err(mpsc::RecvTimeoutError::Timeout) => {}
@@ -183,7 +187,7 @@ impl OneOffTaskHandle {
             .send(OneOffTaskMsg::ChangeAndResetTimeout(timeout))
             .map_err(|e| {
                 OneOffTaskError::MsgErr(anyhow::anyhow!(
-                    "Sending `ChangeAndResetTimeout` message to one off task failed. {e:?}"
+                    "Sending `ChangeAndResetTimeout` message to one off task failed, Err: {e:?}"
                 ))
             })
     }
@@ -194,7 +198,7 @@ impl OneOffTaskHandle {
         }
         self.msg_tx.send(OneOffTaskMsg::ResetTimeout).map_err(|e| {
             OneOffTaskError::MsgErr(anyhow::anyhow!(
-                "Sending `ResetTimeout` message to one off task failed. {e:?}"
+                "Sending `ResetTimeout` message to one off task failed, Err: {e:?}"
             ))
         })
     }
@@ -211,7 +215,7 @@ impl OneOffTaskHandle {
             .send(OneOffTaskMsg::ReplaceTask(Box::new(task)))
             .map_err(|e| {
                 OneOffTaskError::MsgErr(anyhow::anyhow!(
-                    "Sending `ReplaceTask` message to one off task failed. {e:?}"
+                    "Sending `ReplaceTask` message to one off task failed, Err: {e:?}"
                 ))
             })
     }
@@ -222,7 +226,7 @@ impl OneOffTaskHandle {
         }
         self.msg_tx.send(OneOffTaskMsg::Quit).map_err(|e| {
             OneOffTaskError::MsgErr(anyhow::anyhow!(
-                "Sending `Quit` message to one off task failed. {e:?}"
+                "Sending `Quit` message to one off task failed, Err: {e:?}"
             ))
         })
     }

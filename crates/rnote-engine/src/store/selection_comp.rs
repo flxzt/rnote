@@ -1,7 +1,7 @@
 // Imports
 use super::render_comp::RenderCompState;
 use super::{StrokeKey, StrokeStore};
-use crate::strokes::strokebehaviour::GeneratedStrokeImages;
+use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::Stroke;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -20,16 +20,10 @@ impl Default for SelectionComponent {
     }
 }
 
-impl SelectionComponent {
-    pub fn new(selected: bool) -> Self {
-        Self { selected }
-    }
-}
-
 /// Systems that are related to selecting.
 impl StrokeStore {
     /// Rebuild the slotmap with empty selection components with the keys returned from the stroke components.
-    pub fn rebuild_selection_components_slotmap(&mut self) {
+    pub(crate) fn rebuild_selection_components_slotmap(&mut self) {
         self.selection_components = Arc::new(slotmap::SecondaryMap::new());
         self.stroke_components.keys().for_each(|key| {
             Arc::make_mut(&mut self.selection_components)
@@ -38,18 +32,19 @@ impl StrokeStore {
     }
 
     /// Ability if selecting is supported.
-    pub fn can_select(&self, key: StrokeKey) -> bool {
+    #[allow(unused)]
+    pub(crate) fn can_select(&self, key: StrokeKey) -> bool {
         self.selection_components.get(key).is_some()
     }
 
-    pub fn selected(&self, key: StrokeKey) -> Option<bool> {
+    pub(crate) fn selected(&self, key: StrokeKey) -> Option<bool> {
         self.selection_components
             .get(key)
             .map(|selection_comp| selection_comp.selected)
     }
 
     /// Set if the stroke is currently selected.
-    pub fn set_selected(&mut self, key: StrokeKey, selected: bool) {
+    pub(crate) fn set_selected(&mut self, key: StrokeKey, selected: bool) {
         if let Some(selection_comp) = Arc::make_mut(&mut self.selection_components)
             .get_mut(key)
             .map(Arc::make_mut)
@@ -60,13 +55,13 @@ impl StrokeStore {
         }
     }
 
-    pub fn set_selected_keys(&mut self, keys: &[StrokeKey], selected: bool) {
+    pub(crate) fn set_selected_keys(&mut self, keys: &[StrokeKey], selected: bool) {
         keys.iter().for_each(|&key| {
             self.set_selected(key, selected);
         })
     }
 
-    pub fn selection_keys_unordered(&self) -> Vec<StrokeKey> {
+    pub(crate) fn selection_keys_unordered(&self) -> Vec<StrokeKey> {
         self.stroke_components
             .keys()
             .filter(|&key| {
@@ -78,7 +73,7 @@ impl StrokeStore {
     /// Return the selection keys in the order that they should be rendered.
     ///
     /// Does not return the non-selected stroke keys.
-    pub fn selection_keys_as_rendered(&self) -> Vec<StrokeKey> {
+    pub(crate) fn selection_keys_as_rendered(&self) -> Vec<StrokeKey> {
         let keys_sorted_chrono = self.keys_sorted_chrono();
 
         keys_sorted_chrono
@@ -89,29 +84,18 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>()
     }
 
-    /// Return the selection keys in the order that they should be rendered that intersect the given bounds.
-    ///
-    /// Does not return the non-selected stroke keys.
-    pub fn selection_keys_as_rendered_intersecting_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
-        self.keys_sorted_chrono_intersecting_bounds(bounds)
-            .into_iter()
-            .filter(|&key| {
-                !(self.trashed(key).unwrap_or(false)) && (self.selected(key).unwrap_or(false))
-            })
-            .collect::<Vec<StrokeKey>>()
-    }
-
     /// Generate the bounds that include all selected strokes.
     ///
     /// None if no strokes are selected
-    pub fn selection_bounds(&self) -> Option<Aabb> {
+    #[allow(unused)]
+    pub(crate) fn selection_bounds(&self) -> Option<Aabb> {
         self.bounds_for_strokes(&self.selection_keys_unordered())
     }
 
     /// Duplicate the selected keys.
     ///
     /// The returned, duplicated strokes then need to update their geometry and rendering.
-    pub fn duplicate_selection(&mut self) -> Vec<StrokeKey> {
+    pub(crate) fn duplicate_selection(&mut self) -> Vec<StrokeKey> {
         let old_selected = self.selection_keys_as_rendered();
         self.set_selected_keys(&old_selected, false);
 
@@ -128,12 +112,12 @@ impl StrokeStore {
                     if let RenderCompState::ForViewport(viewport) = render_comp.state {
                         self.replace_rendering_with_images(
                             new_key,
-                            GeneratedStrokeImages::Partial { images, viewport },
+                            GeneratedContentImages::Partial { images, viewport },
                         );
                     } else if render_comp.state == RenderCompState::Complete {
                         self.replace_rendering_with_images(
                             new_key,
-                            GeneratedStrokeImages::Full(images),
+                            GeneratedContentImages::Full(images),
                         );
                     }
                 }

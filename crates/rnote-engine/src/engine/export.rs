@@ -1,13 +1,13 @@
 // Imports
-use super::{EngineConfig, RnoteEngine, StrokeContent};
+use super::{Engine, EngineConfig, StrokeContent};
 use crate::fileformats::rnoteformat::RnoteFile;
 use crate::fileformats::{xoppformat, FileFormatSaver};
-use crate::render;
+use crate::CloneConfig;
 use anyhow::Context;
 use futures::channel::oneshot;
 use rayon::prelude::*;
-use rnote_compose::helpers::SplitOrder;
-use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::transform::Transformable;
+use rnote_compose::SplitOrder;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
@@ -25,6 +25,7 @@ use std::sync::Arc;
     num_derive::FromPrimitive,
     num_derive::ToPrimitive,
 )]
+#[cfg_attr(feature = "cli", derive(clap::ValueEnum))]
 #[serde(rename = "doc_export_format")]
 pub enum DocExportFormat {
     #[serde(rename = "svg")]
@@ -75,6 +76,9 @@ pub struct DocExportPrefs {
     /// Whether the background pattern should be exported.
     #[serde(rename = "with_pattern")]
     pub with_pattern: bool,
+    /// Whether the background and stroke colors should be optimized for printing.
+    #[serde(rename = "optimize_printing")]
+    pub optimize_printing: bool,
     /// The export format.
     #[serde(rename = "export_format")]
     pub export_format: DocExportFormat,
@@ -88,6 +92,7 @@ impl Default for DocExportPrefs {
         Self {
             with_background: true,
             with_pattern: true,
+            optimize_printing: false,
             export_format: DocExportFormat::default(),
             page_order: SplitOrder::default(),
         }
@@ -112,6 +117,7 @@ impl DocExportPrefs {
     num_derive::FromPrimitive,
     num_derive::ToPrimitive,
 )]
+#[cfg_attr(feature = "cli", derive(clap::ValueEnum))]
 #[serde(rename = "doc_pages_export_format")]
 pub enum DocPagesExportFormat {
     #[serde(rename = "svg")]
@@ -161,6 +167,9 @@ pub struct DocPagesExportPrefs {
     /// Whether the background pattern should be exported.
     #[serde(rename = "with_pattern")]
     pub with_pattern: bool,
+    /// Whether the background and stroke colors should be optimized for printing.
+    #[serde(rename = "optimize_printing")]
+    pub optimize_printing: bool,
     /// Export format
     #[serde(rename = "export_format")]
     pub export_format: DocPagesExportFormat,
@@ -184,6 +193,7 @@ impl Default for DocPagesExportPrefs {
         Self {
             with_background: true,
             with_pattern: true,
+            optimize_printing: false,
             export_format: DocPagesExportFormat::default(),
             page_order: SplitOrder::default(),
             bitmap_scalefactor: 1.8,
@@ -206,6 +216,7 @@ impl Default for DocPagesExportPrefs {
     num_derive::FromPrimitive,
     num_derive::ToPrimitive,
 )]
+#[cfg_attr(feature = "cli", derive(clap::ValueEnum))]
 #[serde(rename = "selection_export_format")]
 pub enum SelectionExportFormat {
     #[serde(rename = "svg")]
@@ -254,6 +265,9 @@ pub struct SelectionExportPrefs {
     /// Whether the background pattern should be exported.
     #[serde(rename = "with_pattern")]
     pub with_pattern: bool,
+    /// Whether the background and stroke colors should be optimized for printing.
+    #[serde(rename = "optimize_printing")]
+    pub optimize_printing: bool,
     /// Export format.
     #[serde(rename = "export_format")]
     pub export_format: SelectionExportFormat,
@@ -273,6 +287,7 @@ impl Default for SelectionExportPrefs {
         Self {
             with_background: true,
             with_pattern: false,
+            optimize_printing: false,
             export_format: SelectionExportFormat::Svg,
             bitmap_scalefactor: 1.8,
             jpeg_quality: 85,
@@ -296,7 +311,13 @@ pub struct ExportPrefs {
     pub selection_export_prefs: SelectionExportPrefs,
 }
 
-impl RnoteEngine {
+impl CloneConfig for ExportPrefs {
+    fn clone_config(&self) -> Self {
+        *self
+    }
+}
+
+impl Engine {
     /// The used image scale-factor for any strokes that are converted to bitmap images on export.
     pub const STROKE_EXPORT_IMAGE_SCALE: f64 = 1.8;
 
@@ -314,8 +335,10 @@ impl RnoteEngine {
                 };
                 rnote_file.save_as_bytes(&file_name)
             };
-            if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("Sending result to receiver in save_as_rnote_bytes() failed. Receiver was already dropped.");
+            if oneshot_sender.send(result()).is_err() {
+                tracing::error!(
+                    "Sending result to receiver failed while saving document as rnote bytes. Receiver already dropped."
+                );
             }
         });
         oneshot_receiver
@@ -324,11 +347,11 @@ impl RnoteEngine {
     /// Extract the current engine configuration.
     pub fn extract_engine_config(&self) -> EngineConfig {
         EngineConfig {
-            document: self.document,
-            pens_config: self.pens_config.clone(),
+            document: self.document.clone_config(),
+            pens_config: self.pens_config.clone_config(),
             penholder: self.penholder.clone_config(),
-            import_prefs: self.import_prefs,
-            export_prefs: self.export_prefs,
+            import_prefs: self.import_prefs.clone_config(),
+            export_prefs: self.export_prefs.clone_config(),
             pen_sounds: self.pen_sounds(),
         }
     }
@@ -422,6 +445,7 @@ impl RnoteEngine {
                     .gen_svg(
                         doc_export_prefs.with_background,
                         doc_export_prefs.with_pattern,
+                        doc_export_prefs.optimize_printing,
                         DocExportPrefs::MARGIN,
                     )?
                     .ok_or(anyhow::anyhow!("Generating doc svg failed, returned None."))?;
@@ -437,8 +461,8 @@ impl RnoteEngine {
                 .into_bytes())
             };
 
-            if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("Sending result to receiver failed. Receiver already dropped.");
+            if oneshot_sender.send(result()).is_err() {
+                tracing::error!("Sending result to receiver failed while exporting document as Svg bytes. Receiver already dropped.");
             }
         });
 
@@ -455,7 +479,7 @@ impl RnoteEngine {
         let doc_export_prefs =
             doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
         let pages_content = self.extract_pages_content(doc_export_prefs.page_order);
-        let format_size = na::vector![self.document.format.width, self.document.format.height];
+        let format_size = self.document.format.size();
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
@@ -488,12 +512,13 @@ impl RnoteEngine {
                             &cairo_cx,
                             doc_export_prefs.with_background,
                             doc_export_prefs.with_pattern,
+                            doc_export_prefs.optimize_printing,
                             DocExportPrefs::MARGIN,
-                            RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                            Engine::STROKE_EXPORT_IMAGE_SCALE,
                         )?;
                         cairo_cx.show_page().map_err(|e| {
                             anyhow::anyhow!(
-                                "Showing page failed when exporting page {i} as pdf, Err: {e:?}"
+                                "Showing page failed while exporting page {i} as pdf, Err: {e:?}"
                             )
                         })?;
                         cairo_cx.restore()?;
@@ -501,17 +526,17 @@ impl RnoteEngine {
                 }
                 let data = *target_surface
                     .finish_output_stream()
-                    .map_err(|e| anyhow::anyhow!("Finishing outputstream failed with Err: {e:?}"))?
+                    .map_err(|e| anyhow::anyhow!("Finishing outputstream failed, Err: {e:?}"))?
                     .downcast::<Vec<u8>>()
                     .map_err(|e| {
-                        anyhow::anyhow!("Downcasting finished output stream failed with Err: {e:?}")
+                        anyhow::anyhow!("Downcasting finished output stream failed, Err: {e:?}")
                     })?;
 
                 Ok(data)
             };
 
-            if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("Sending result to receiver failed. Receiver already dropped.");
+            if oneshot_sender.send(result()).is_err() {
+                tracing::error!("Sending result to receiver failed while exporting document as Pdf bytes. Receiver already dropped.");
             }
         });
 
@@ -528,7 +553,7 @@ impl RnoteEngine {
         let doc_export_prefs =
             doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
         let pages_content = self.extract_pages_content(doc_export_prefs.page_order);
-        let document = self.document;
+        let document = self.document.clone();
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
@@ -554,7 +579,7 @@ impl RnoteEngine {
                             .filter_map(|mut stroke| {
                                 let mut stroke = Arc::make_mut(&mut stroke).clone();
                                 stroke.translate(-page_bounds.mins.coords);
-                                stroke.into_xopp(document.format.dpi)
+                                stroke.into_xopp(document.format.dpi())
                             })
                             .collect::<Vec<xoppformat::XoppStrokeType>>();
 
@@ -612,7 +637,7 @@ impl RnoteEngine {
 
                         let page_dimensions = crate::utils::convert_coord_dpi(
                             page_bounds.extents(),
-                            document.format.dpi,
+                            document.format.dpi(),
                             xoppformat::XoppFile::DPI,
                         );
 
@@ -625,7 +650,9 @@ impl RnoteEngine {
                     })
                     .collect::<Vec<xoppformat::XoppPage>>();
 
-                let xopp_title = String::from("Xournal++ document - see https://github.com/xournalpp/xournalpp (exported from Rnote - see https://github.com/flxzt/rnote)");
+                let xopp_title = String::from(
+                    "Xournal++ document - see https://github.com/xournalpp/xournalpp (exported from Rnote - see https://github.com/flxzt/rnote)"
+                );
 
                 let xopp_root = xoppformat::XoppRoot {
                     title: xopp_title,
@@ -638,8 +665,10 @@ impl RnoteEngine {
                 xopp_file.save_as_bytes(&title)
             };
 
-            if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("Sending result to receiver in export_doc_as_xopp_bytes() failed. Receiver already dropped.");
+            if oneshot_sender.send(result()).is_err() {
+                tracing::error!(
+                    "Sending result to receiver failed while exporting document as xopp bytes. Receiver already dropped."
+                );
             }
         });
 
@@ -684,6 +713,7 @@ impl RnoteEngine {
                             .gen_svg(
                                 doc_pages_export_prefs.with_background,
                                 doc_pages_export_prefs.with_pattern,
+                                doc_pages_export_prefs.optimize_printing,
                                 DocPagesExportPrefs::MARGIN,
                             )?
                             .ok_or(anyhow::anyhow!(
@@ -703,8 +733,10 @@ impl RnoteEngine {
                     .collect()
             };
 
-            if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("Sending result to receiver in export_doc_pages_as_svgs_bytes() failed. Receiver already dropped.");
+            if oneshot_sender.send(result()).is_err() {
+                tracing::error!(
+                    "Sending result to receiver failed while exporting document pages as Svg bytes. Receiver already dropped."
+                );
             }
         });
 
@@ -736,28 +768,23 @@ impl RnoteEngine {
                     .into_par_iter()
                     .enumerate()
                     .map(|(i, page_content)| {
-                        let page_svg = page_content
+                        page_content
                             .gen_svg(
                                 doc_pages_export_prefs.with_background,
                                 doc_pages_export_prefs.with_pattern,
+                                doc_pages_export_prefs.optimize_printing,
                                 DocPagesExportPrefs::MARGIN,
                             )?
                             .ok_or(anyhow::anyhow!(
                                 "Generating Svg for page {i} failed, returned None."
-                            ))?;
-                        let page_svg_bounds = page_svg.bounds;
-
-                        render::Image::gen_image_from_svg(
-                            page_svg,
-                            page_svg_bounds,
-                            doc_pages_export_prefs.bitmap_scalefactor,
-                        )?
-                        .into_encoded_bytes(bitmapimage_format.clone())
+                            ))?
+                            .gen_image(doc_pages_export_prefs.bitmap_scalefactor)?
+                            .into_encoded_bytes(bitmapimage_format.clone())
                     })
                     .collect()
             };
-            if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("Sending result to receiver failed. Receiver already dropped.");
+            if oneshot_sender.send(result()).is_err() {
+                tracing::error!("Sending result to receiver failed while exporting document pages as bitmap bytes. Receiver already dropped.");
             }
         });
 
@@ -798,7 +825,13 @@ impl RnoteEngine {
                 let Some(selection_content) = selection_content else {
                     return Ok(None);
                 };
-                let Some(selection_svg) = selection_content.gen_svg(selection_export_prefs.with_background, selection_export_prefs.with_pattern, selection_export_prefs.margin)? else {
+                let Some(selection_svg) = selection_content.gen_svg(
+                    selection_export_prefs.with_background,
+                    selection_export_prefs.with_pattern,
+                    selection_export_prefs.optimize_printing,
+                    selection_export_prefs.margin,
+                )?
+                else {
                     return Ok(None);
                 };
 
@@ -815,8 +848,8 @@ impl RnoteEngine {
                     .into_bytes(),
                 ))
             };
-            if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("Sending result to receiver failed. Receiver already dropped.");
+            if oneshot_sender.send(result()).is_err() {
+                tracing::error!("Sending result to receiver failed while exporting selection as Svg bytes. Receiver already dropped.");
             }
         });
 
@@ -841,10 +874,15 @@ impl RnoteEngine {
                 let Some(selection_content) = selection_content else {
                     return Ok(None);
                 };
-                let Some(selection_svg) = selection_content.gen_svg(selection_export_prefs.with_background, selection_export_prefs.with_pattern, selection_export_prefs.margin)? else {
+                let Some(selection_svg) = selection_content.gen_svg(
+                    selection_export_prefs.with_background,
+                    selection_export_prefs.with_pattern,
+                    selection_export_prefs.optimize_printing,
+                    selection_export_prefs.margin,
+                )?
+                else {
                     return Ok(None);
                 };
-                let selection_svg_bounds = selection_svg.bounds;
                 let bitmapimage_format = match selection_export_prefs.export_format {
                     SelectionExportFormat::Svg => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
                     SelectionExportFormat::Png => image::ImageOutputFormat::Png,
@@ -854,16 +892,13 @@ impl RnoteEngine {
                 };
 
                 Ok(Some(
-                    render::Image::gen_image_from_svg(
-                        selection_svg,
-                        selection_svg_bounds,
-                        selection_export_prefs.bitmap_scalefactor,
-                    )?
-                    .into_encoded_bytes(bitmapimage_format)?,
+                    selection_svg
+                        .gen_image(selection_export_prefs.bitmap_scalefactor)?
+                        .into_encoded_bytes(bitmapimage_format)?,
                 ))
             };
-            if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("Sending result to receiver failed. Receiver already dropped");
+            if oneshot_sender.send(result()).is_err() {
+                tracing::error!("Sending result to receiver failed while exporting selection as bitmap image bytes. Receiver already dropped");
             }
         });
 

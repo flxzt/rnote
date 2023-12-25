@@ -7,7 +7,7 @@ use gtk4::{
 };
 use once_cell::sync::Lazy;
 use rnote_compose::{color, Color};
-use rnote_engine::utils::GdkRGBAHelpers;
+use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -41,7 +41,7 @@ mod imp {
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
+            klass.bind_template();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -164,7 +164,7 @@ mod imp {
                 "@define-color workspacerow_color {workspacerow_color};@define-color workspacerow_fg_color {workspacerow_fg_color};",
             );
 
-            css.load_from_data(&custom_css);
+            css.load_from_string(&custom_css);
 
             // adding custom css is deprecated.
             // TODO: We should refactor to drawing through snapshot().

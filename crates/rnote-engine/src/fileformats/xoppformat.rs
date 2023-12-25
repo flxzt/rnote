@@ -1,6 +1,6 @@
 // Imports
 use super::FromXmlAttributeValue;
-use super::{AsXmlAttributeValue, FileFormatLoader, FileFormatSaver, XmlLoadable, XmlWritable};
+use super::{FileFormatLoader, FileFormatSaver, ToXmlAttributeValue, XmlLoadable, XmlWritable};
 use roxmltree::{Node, NodeType};
 use serde::{Deserialize, Serialize};
 use std::io::{Read, Write};
@@ -225,12 +225,12 @@ impl XmlWritable for XoppBackgroundType {
         match self {
             Self::Solid { color, style } => {
                 w.write_attribute("type", "solid");
-                w.write_attribute("color", &color.as_xml_attr_value());
-                w.write_attribute("style", &style.as_xml_attr_value());
+                w.write_attribute("color", &color.to_xml_attr_value());
+                w.write_attribute("style", &style.to_xml_attr_value());
             }
             Self::Pixmap { domain, filename } => {
                 w.write_attribute("type", "pixmap");
-                w.write_attribute("domain", &domain.as_xml_attr_value());
+                w.write_attribute("domain", &domain.to_xml_attr_value());
                 w.write_attribute("filename", filename);
             }
             Self::Pdf => {
@@ -281,8 +281,8 @@ impl Default for XoppBackgroundSolidStyle {
     }
 }
 
-impl AsXmlAttributeValue for XoppBackgroundSolidStyle {
-    fn as_xml_attr_value(&self) -> String {
+impl ToXmlAttributeValue for XoppBackgroundSolidStyle {
+    fn to_xml_attr_value(&self) -> String {
         match self {
             Self::Plain => String::from("plain"),
             Self::Lined => String::from("lined"),
@@ -329,8 +329,8 @@ pub enum XoppBackgroundPixmapDomain {
     Clone,
 }
 
-impl AsXmlAttributeValue for XoppBackgroundPixmapDomain {
-    fn as_xml_attr_value(&self) -> String {
+impl ToXmlAttributeValue for XoppBackgroundPixmapDomain {
+    fn to_xml_attr_value(&self) -> String {
         match self {
             Self::Absolute => String::from("absolute"),
             Self::Attach => String::from("attach"),
@@ -370,7 +370,7 @@ impl XmlLoadable for XoppBackground {
                 })?) {
                     Ok(s) => s,
                     Err(e) => {
-                        log::error!("failed to retrieve the XoppBackgroundSolidStyle from `style` attribute, {e:?}");
+                        tracing::error!("Failed to retrieve the XoppBackgroundSolidStyle from `style` attribute, Err: {e:?}");
                         XoppBackgroundSolidStyle::Plain
                     }
                 };
@@ -378,7 +378,7 @@ impl XmlLoadable for XoppBackground {
                 let color = XoppColor::from_backgroundcolor_attr_value(
                     node.attribute("color").ok_or_else(|| {
                         anyhow::anyhow!(
-                            "failed to parse `color` attribute in XoppBackground with id {:?}",
+                            "Failed to parse `color` attribute in XoppBackground with id {:?}",
                             node.id()
                         )
                     })?,
@@ -387,7 +387,7 @@ impl XmlLoadable for XoppBackground {
             }
             "pixmap" => {
                 let domain = match node.attribute("domain").ok_or_else(|| {
-                    anyhow::anyhow!("failed to parse `domain` attribute in XoppBackground with node id {:?}, could not find attribute", node.id())
+                    anyhow::anyhow!("Failed to parse `domain` attribute in XoppBackground with node id {:?}, could not find attribute", node.id())
                 })? {
                     "absolute" => XoppBackgroundPixmapDomain::Absolute,
                     "attach" => XoppBackgroundPixmapDomain::Attach,
@@ -399,7 +399,7 @@ impl XmlLoadable for XoppBackground {
                 let filename = node
                     .attribute("filename")
                     .ok_or_else(|| {
-                        anyhow::anyhow!("failed to parse `filename` attribute in XoppBackground with node id {:?}, could not find attribute", node.id())
+                        anyhow::anyhow!("Failed to parse `filename` attribute in XoppBackground with node id {:?}, could not find attribute", node.id())
                     })?
                     .to_string();
                 self.bg_type = XoppBackgroundType::Pixmap { domain, filename };
@@ -408,7 +408,7 @@ impl XmlLoadable for XoppBackground {
                 self.bg_type = XoppBackgroundType::Pdf;
             }
             _ => {
-                return Err(anyhow::anyhow!("Err while parsing `type` attribute of XoppBackground with node id {:?}, is not a valid value", node.id()));
+                return Err(anyhow::anyhow!("Failed to parse `type` attribute of XoppBackground with node id {:?}, is not a valid value", node.id()));
             }
         }
 
@@ -507,8 +507,8 @@ pub struct XoppColor {
     pub alpha: u8,
 }
 
-impl AsXmlAttributeValue for XoppColor {
-    fn as_xml_attr_value(&self) -> String {
+impl ToXmlAttributeValue for XoppColor {
+    fn to_xml_attr_value(&self) -> String {
         format!(
             "#{:02x}{:02x}{:02x}{:02x}",
             self.red, self.green, self.blue, self.alpha
@@ -534,7 +534,7 @@ impl XoppColor {
     }
 
     /// Parse the color from a color attribute value in a stroke.
-    pub fn from_strokecolor_attr_value(s: &str) -> Result<Self, anyhow::Error> {
+    fn from_strokecolor_attr_value(s: &str) -> Result<Self, anyhow::Error> {
         match s {
             "black" => Ok(Self {
                 red: 0x00,
@@ -769,8 +769,8 @@ impl XmlWritable for XoppStroke {
     fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
         w.set_preserve_whitespaces(true);
         w.start_element("stroke");
-        w.write_attribute("tool", &self.tool.as_xml_attr_value());
-        w.write_attribute("color", &self.color.as_xml_attr_value());
+        w.write_attribute("tool", &self.tool.to_xml_attr_value());
+        w.write_attribute("color", &self.color.to_xml_attr_value());
         if let Some(fill) = self.fill {
             w.write_attribute("fill", format!("{fill}").as_str());
         }
@@ -816,8 +816,8 @@ pub enum XoppTool {
     Eraser,
 }
 
-impl AsXmlAttributeValue for XoppTool {
-    fn as_xml_attr_value(&self) -> String {
+impl ToXmlAttributeValue for XoppTool {
+    fn to_xml_attr_value(&self) -> String {
         match self {
             Self::Pen => String::from("pen"),
             Self::Highlighter => String::from("highlighter"),
@@ -915,7 +915,7 @@ impl XmlWritable for XoppText {
         w.write_attribute("size", &format!("{:.*}", VALS_DEC_PLACES, self.size));
         w.write_attribute("x", &format!("{:.*}", VALS_DEC_PLACES, self.x));
         w.write_attribute("y", &format!("{:.*}", VALS_DEC_PLACES, self.y));
-        w.write_attribute("color", &self.color.as_xml_attr_value());
+        w.write_attribute("color", &self.color.to_xml_attr_value());
 
         w.write_text(&self.text);
         w.end_element();

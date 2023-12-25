@@ -5,7 +5,7 @@ use gtk4::{
 };
 use once_cell::sync::Lazy;
 use rnote_compose::{color, Color};
-use rnote_engine::utils::GdkRGBAHelpers;
+use rnote_engine::ext::GdkRGBAExt;
 use std::cell::Cell;
 
 mod imp {
@@ -117,7 +117,7 @@ mod imp {
             let custom_css = format!(
                 "@define-color colorsetter_color {colorsetter_color}; @define-color colorsetter_fg_color {colorsetter_fg_color};",
             );
-            css.load_from_data(&custom_css);
+            css.load_from_string(&custom_css);
 
             // adding custom css is deprecated.
             // TODO: We should refactor to drawing through snapshot().

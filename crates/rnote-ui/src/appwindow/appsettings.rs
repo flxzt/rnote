@@ -1,15 +1,18 @@
 // Imports
 use crate::appwindow::RnAppWindow;
-use adw::prelude::*;
+use adw::{prelude::*, subclass::prelude::*};
 use gtk4::{gdk, glib, glib::clone};
 
 impl RnAppWindow {
     /// Setup settings binds.
-    pub(crate) fn setup_settings_binds(&self) {
+    pub(crate) fn setup_settings_binds(&self) -> anyhow::Result<()> {
         let app = self.app();
+        let app_settings = app
+            .app_settings()
+            .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
 
         app.style_manager().connect_color_scheme_notify(
-            clone!(@weak app, @weak self as appwindow => move |style_manager| {
+            clone!(@weak app_settings, @weak app, @weak self as appwindow => move |style_manager| {
                 let color_scheme = match style_manager.color_scheme() {
                     adw::ColorScheme::Default => String::from("default"),
                     adw::ColorScheme::ForceLight => String::from("force-light"),
@@ -17,93 +20,108 @@ impl RnAppWindow {
                     _ => String::from("default"),
                 };
 
-                if let Err(e) = appwindow.app_settings()
+                if let Err(e) = app_settings
                     .set_string("color-scheme", &color_scheme) {
-                        log::error!("failed to set setting `color-scheme`, Err: {e:?}");
+                        tracing::error!("Failed to set setting `color-scheme`, Err: {e:?}");
                     }
             }),
         );
 
-        self.app_settings()
-            .bind("flap-reveal", &self.flap(), "reveal-flap")
+        app_settings
+            .bind("sidebar-show", &self.split_view(), "show-sidebar")
             .get_no_changes()
             .build();
 
         // autosave
-        self.app_settings()
+        app_settings
             .bind("autosave", self, "autosave")
             .get_no_changes()
             .build();
 
         // autosave interval secs
-        self.app_settings()
+        app_settings
             .bind("autosave-interval-secs", self, "autosave-interval-secs")
             .get_no_changes()
             .build();
 
         // righthanded
-        self.app_settings()
+        app_settings
             .bind("righthanded", self, "righthanded")
             .get_no_changes()
             .build();
 
         // block pinch zoom
-        self.app_settings()
+        app_settings
             .bind("block-pinch-zoom", self, "block-pinch-zoom")
             .get_no_changes()
             .build();
 
         // touch drawing
-        self.app_settings()
+        app_settings
             .bind("touch-drawing", self, "touch-drawing")
             .get_no_changes()
             .build();
 
         // show scrollbars
-        self.app_settings()
+        app_settings
             .bind(
                 "show-scrollbars",
-                &self.settings_panel().general_show_scrollbars_switch(),
+                &self
+                    .sidebar()
+                    .settings_panel()
+                    .general_show_scrollbars_row(),
                 "active",
             )
             .get_no_changes()
             .build();
 
         // inertial scrolling
-        self.app_settings()
+        app_settings
             .bind(
                 "inertial-scrolling",
-                &self.settings_panel().general_inertial_scrolling_switch(),
+                &self
+                    .sidebar()
+                    .settings_panel()
+                    .general_inertial_scrolling_row(),
                 "active",
             )
             .get_no_changes()
             .build();
 
         // regular cursor
-        self.app_settings()
+        app_settings
             .bind(
                 "regular-cursor",
-                &self.settings_panel().general_regular_cursor_picker(),
+                &self
+                    .sidebar()
+                    .settings_panel()
+                    .general_regular_cursor_picker(),
                 "picked",
             )
             .get_no_changes()
             .build();
 
         // drawing cursor
-        self.app_settings()
+        app_settings
             .bind(
                 "drawing-cursor",
-                &self.settings_panel().general_drawing_cursor_picker(),
+                &self
+                    .sidebar()
+                    .settings_panel()
+                    .general_drawing_cursor_picker(),
                 "picked",
             )
             .get_no_changes()
             .build();
 
         // show drawing cursor
-        self.app_settings()
+        app_settings
             .bind(
                 "show-drawing-cursor",
-                &self.settings_panel().general_show_drawing_cursor_switch(),
+                &self
+                    .sidebar()
+                    .settings_panel()
+                    .general_show_drawing_cursor_row(),
                 "active",
             )
             .get_no_changes()
@@ -135,7 +153,7 @@ impl RnAppWindow {
             )
         };
 
-        self.app_settings()
+        app_settings
             .bind(
                 "active-stroke-color",
                 &self.overlays().colorpicker(),
@@ -145,7 +163,7 @@ impl RnAppWindow {
             .set_mapping(gdk_color_set_mapping)
             .get_no_changes()
             .build();
-        self.app_settings()
+        app_settings
             .bind(
                 "active-fill-color",
                 &self.overlays().colorpicker(),
@@ -155,7 +173,7 @@ impl RnAppWindow {
             .set_mapping(gdk_color_set_mapping)
             .get_no_changes()
             .build();
-        self.app_settings()
+        app_settings
             .bind(
                 "colorpicker-color-1",
                 &self.overlays().colorpicker().setter_1(),
@@ -165,7 +183,7 @@ impl RnAppWindow {
             .set_mapping(gdk_color_set_mapping)
             .get_no_changes()
             .build();
-        self.app_settings()
+        app_settings
             .bind(
                 "colorpicker-color-2",
                 &self.overlays().colorpicker().setter_2(),
@@ -175,7 +193,7 @@ impl RnAppWindow {
             .set_mapping(gdk_color_set_mapping)
             .get_no_changes()
             .build();
-        self.app_settings()
+        app_settings
             .bind(
                 "colorpicker-color-3",
                 &self.overlays().colorpicker().setter_3(),
@@ -185,7 +203,7 @@ impl RnAppWindow {
             .set_mapping(gdk_color_set_mapping)
             .get_no_changes()
             .build();
-        self.app_settings()
+        app_settings
             .bind(
                 "colorpicker-color-4",
                 &self.overlays().colorpicker().setter_4(),
@@ -195,7 +213,7 @@ impl RnAppWindow {
             .set_mapping(gdk_color_set_mapping)
             .get_no_changes()
             .build();
-        self.app_settings()
+        app_settings
             .bind(
                 "colorpicker-color-5",
                 &self.overlays().colorpicker().setter_5(),
@@ -205,7 +223,7 @@ impl RnAppWindow {
             .set_mapping(gdk_color_set_mapping)
             .get_no_changes()
             .build();
-        self.app_settings()
+        app_settings
             .bind(
                 "colorpicker-color-6",
                 &self.overlays().colorpicker().setter_6(),
@@ -215,7 +233,7 @@ impl RnAppWindow {
             .set_mapping(gdk_color_set_mapping)
             .get_no_changes()
             .build();
-        self.app_settings()
+        app_settings
             .bind(
                 "colorpicker-color-7",
                 &self.overlays().colorpicker().setter_7(),
@@ -225,7 +243,7 @@ impl RnAppWindow {
             .set_mapping(gdk_color_set_mapping)
             .get_no_changes()
             .build();
-        self.app_settings()
+        app_settings
             .bind(
                 "colorpicker-color-8",
                 &self.overlays().colorpicker().setter_8(),
@@ -235,9 +253,19 @@ impl RnAppWindow {
             .set_mapping(gdk_color_set_mapping)
             .get_no_changes()
             .build();
+        app_settings
+            .bind(
+                "colorpicker-color-9",
+                &self.overlays().colorpicker().setter_9(),
+                "color",
+            )
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
+            .build();
 
         // brush stroke widths
-        self.app_settings()
+        app_settings
             .bind(
                 "brush-width-1",
                 &self
@@ -250,7 +278,7 @@ impl RnAppWindow {
             )
             .get_no_changes()
             .build();
-        self.app_settings()
+        app_settings
             .bind(
                 "brush-width-2",
                 &self
@@ -263,7 +291,7 @@ impl RnAppWindow {
             )
             .get_no_changes()
             .build();
-        self.app_settings()
+        app_settings
             .bind(
                 "brush-width-3",
                 &self
@@ -278,7 +306,7 @@ impl RnAppWindow {
             .build();
 
         // shaper stroke widths
-        self.app_settings()
+        app_settings
             .bind(
                 "shaper-width-1",
                 &self
@@ -291,7 +319,7 @@ impl RnAppWindow {
             )
             .get_no_changes()
             .build();
-        self.app_settings()
+        app_settings
             .bind(
                 "shaper-width-2",
                 &self
@@ -304,7 +332,7 @@ impl RnAppWindow {
             )
             .get_no_changes()
             .build();
-        self.app_settings()
+        app_settings
             .bind(
                 "shaper-width-3",
                 &self
@@ -319,7 +347,7 @@ impl RnAppWindow {
             .build();
 
         // eraser widths
-        self.app_settings()
+        app_settings
             .bind(
                 "eraser-width-1",
                 &self
@@ -332,7 +360,7 @@ impl RnAppWindow {
             )
             .get_no_changes()
             .build();
-        self.app_settings()
+        app_settings
             .bind(
                 "eraser-width-2",
                 &self
@@ -345,7 +373,7 @@ impl RnAppWindow {
             )
             .get_no_changes()
             .build();
-        self.app_settings()
+        app_settings
             .bind(
                 "eraser-width-3",
                 &self
@@ -358,64 +386,99 @@ impl RnAppWindow {
             )
             .get_no_changes()
             .build();
+
+        Ok(())
     }
 
     /// Load settings that are not bound as binds.
     ///
     /// Settings changes through gsettings / dconf might not be applied until the app restarts.
-    pub(crate) fn load_settings(&self) {
-        let _app = self.app();
+    pub(crate) fn load_settings(&self) -> anyhow::Result<()> {
+        let app = self.app();
+        let app_settings = app
+            .app_settings()
+            .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
 
         // appwindow
         {
-            let window_width = self.app_settings().int("window-width");
-            let window_height = self.app_settings().int("window-height");
-            let is_maximized = self.app_settings().boolean("is-maximized");
+            let window_width = app_settings.int("window-width");
+            let window_height = app_settings.int("window-height");
+            let is_maximized = app_settings.boolean("is-maximized");
 
-            self.set_default_size(window_width, window_height);
             if is_maximized {
+                // don't restore maximized window state on macos, avoids issues disussed in
+                // issue 823 - https://github.com/flxzt/rnote/issues/823
+                #[cfg(not(target_os = "macos"))]
                 self.maximize();
+            } else {
+                self.set_default_size(window_width, window_height);
             }
-            // flap width
-            self.flap_box()
-                .set_width_request(self.app_settings().int("flap-width"));
-
-            // color scheme
 
             // set the color-scheme through the action
-            let color_scheme = self.app_settings().string("color-scheme");
+            let color_scheme = app_settings.string("color-scheme");
             self.app()
                 .activate_action("color-scheme", Some(&color_scheme.to_variant()));
         }
 
         {
             // Workspaces bar
-            self.workspacebrowser()
+            self.sidebar()
+                .workspacebrowser()
                 .workspacesbar()
-                .load_from_settings(&self.app_settings());
+                .load_from_settings(&app_settings);
         }
+
+        Ok(())
     }
 
     /// Save settings that are not bound as binds.
     pub(crate) fn save_to_settings(&self) -> anyhow::Result<()> {
-        let _app = self.app();
+        let app = self.app();
+        let app_settings = app
+            .app_settings()
+            .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
 
         {
             // Appwindow
-            self.app_settings().set_int("window-width", self.width())?;
-            self.app_settings()
-                .set_int("window-height", self.height())?;
-            self.app_settings()
-                .set_boolean("is-maximized", self.is_maximized())?;
-            self.app_settings()
-                .set_int("flap-width", self.flap_box().width())?;
+            app_settings.set_int("window-width", self.width())?;
+            app_settings.set_int("window-height", self.height())?;
+            app_settings.set_boolean("is-maximized", self.is_maximized())?;
         }
 
         {
-            // Save engine config of the last active tab
+            // Save engine config of the current active tab
             self.active_tab_wrapper()
                 .canvas()
-                .save_engine_config(&self.app_settings())?;
+                .save_engine_config(&app_settings)?;
+        }
+
+        {
+            // Workspaces list
+            self.sidebar()
+                .workspacebrowser()
+                .workspacesbar()
+                .save_to_settings(&app_settings);
+        }
+
+        Ok(())
+    }
+
+    pub(crate) fn setup_periodic_save(&self) -> anyhow::Result<()> {
+        let app = self.app();
+        let app_settings = app
+            .app_settings()
+            .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
+
+        if let Some(removed_id) = self.imp().periodic_configsave_source_id.borrow_mut().replace(
+            glib::source::timeout_add_seconds_local(
+                Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak app_settings, @weak self as appwindow => @default-return glib::ControlFlow::Break, move || {
+                    if let Err(e) = appwindow.active_tab_wrapper().canvas().save_engine_config(&app_settings) {
+                        tracing::error!("Saving engine config in periodic save task failed , Err: {e:?}");
+                    }
+
+                    glib::ControlFlow::Continue
+        }))) {
+            removed_id.remove();
         }
 
         Ok(())

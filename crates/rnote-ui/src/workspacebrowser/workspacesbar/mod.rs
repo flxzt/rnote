@@ -67,7 +67,7 @@ mod imp {
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
+            klass.bind_template();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -77,10 +77,10 @@ mod imp {
 
     impl ObjectImpl for RnWorkspacesBar {
         fn constructed(&self) {
+            let obj = self.obj();
             self.parent_constructed();
 
-            self.obj()
-                .insert_action_group("workspacesbar", Some(&self.action_group));
+            obj.insert_action_group("workspacesbar", Some(&self.action_group));
         }
 
         fn dispose(&self) {
@@ -125,9 +125,8 @@ impl RnWorkspacesBar {
         self.select_workspace_by_index(n_items.saturating_sub(1));
     }
 
-    pub(crate) fn insert_workspace(&self, i: u32, entry: RnWorkspaceListEntry) {
+    pub(crate) fn insert_workspace_entry(&self, i: u32, entry: RnWorkspaceListEntry) {
         self.imp().workspace_list.insert(i as usize, entry);
-
         self.select_workspace_by_index(i);
     }
 
@@ -153,11 +152,8 @@ impl RnWorkspacesBar {
             let i = self
                 .selected_workspace_index()
                 .unwrap_or_else(|| n_items.saturating_sub(1));
-
             let entry = self.imp().workspace_list.remove(i as usize);
-
-            self.insert_workspace(i.saturating_sub(1), entry);
-            self.select_workspace_by_index(i.saturating_sub(1));
+            self.insert_workspace_entry(i.saturating_sub(1), entry);
         }
     }
 
@@ -167,12 +163,9 @@ impl RnWorkspacesBar {
 
         if n_items > 1 {
             let i = self.selected_workspace_index().unwrap_or(i_max);
-
             let entry = self.imp().workspace_list.remove(i as usize);
-
             let insert_i = (i + 1).min(i_max);
-            self.insert_workspace(insert_i, entry);
-            self.select_workspace_by_index(insert_i);
+            self.insert_workspace_entry(insert_i, entry);
         }
     }
 
@@ -257,14 +250,14 @@ impl RnWorkspacesBar {
 
     pub(crate) fn save_to_settings(&self, settings: &gio::Settings) {
         if let Err(e) = settings.set("workspace-list", self.imp().workspace_list.to_variant()) {
-            log::error!("saving `workspace-list` to settings failed with Err: {e:?}");
+            tracing::error!("Saving `workspace-list` to settings failed , Err: {e:?}");
         }
 
         if let Err(e) = settings.set(
             "selected-workspace-index",
             self.selected_workspace_index().unwrap_or(0),
         ) {
-            log::error!("saving `selected-workspace-index` to settings failed with Err: {e:?}");
+            tracing::error!("Saving `selected-workspace-index` to settings failed , Err: {e:?}");
         }
     }
 
@@ -277,16 +270,16 @@ impl RnWorkspacesBar {
         if !cfg!(target_os = "windows") {
             for entry in &workspace_list.iter() {
                 if let Err(e) = entry.canonicalize_dir() {
-                    log::warn!(
-                    "failed to canonicalize dir {:?} for workspacelistentry with name: {}, Err: {e:?}",
-                    entry.dir(),
-                    entry.name()
-                )
+                    tracing::warn!(
+                        "Failed to canonicalize dir {:?} for workspacelistentry with name: {}, Err: {e:?}",
+                        entry.dir(),
+                        entry.name()
+                    );
                 }
             }
         }
-        self.imp().workspace_list.replace_self(workspace_list);
 
+        self.imp().workspace_list.replace_self(workspace_list);
         self.select_workspace_by_index(selected_workspace_index);
     }
 
@@ -297,8 +290,6 @@ impl RnWorkspacesBar {
             clone!(@weak self as workspacesbar, @weak appwindow => move |list, _, _, _| {
                 workspacesbar.imp().remove_selected_workspace_button.get().set_sensitive(list.n_items() > 1);
                 workspacesbar.imp().edit_selected_workspace_button.get().set_sensitive(list.n_items() > 0);
-
-                workspacesbar.save_to_settings(&appwindow.app_settings());
             }),
         );
 
@@ -308,11 +299,9 @@ impl RnWorkspacesBar {
                 if let Some(entry) = workspacesbar.selected_workspacelistentry() {
                     let dir = entry.dir();
                     let name = entry.name();
-                    appwindow.workspacebrowser().active_workspace_name_label().set_label(&name);
-                    appwindow.workspacebrowser().active_workspace_dir_label().set_label(&dir);
-                    appwindow.workspacebrowser().set_dirlist_file(Some(&gio::File::for_path(dir)));
-
-                    workspacesbar.save_to_settings(&appwindow.app_settings());
+                    appwindow.sidebar().workspacebrowser().active_workspace_name_label().set_label(&name);
+                    appwindow.sidebar().workspacebrowser().active_workspace_dir_label().set_label(&dir);
+                    appwindow.sidebar().workspacebrowser().set_dirlist_file(Some(&gio::File::for_path(dir)));
                 }
 
             }),
@@ -356,6 +345,9 @@ impl RnWorkspacesBar {
             clone!(@weak self as workspacesbar, @weak appwindow => move |_| {
                 adw::prelude::ActionGroupExt::activate_action(&workspacesbar.action_group(), "edit-selected-workspace", None);
             }));
+
+        // Add initial entry
+        self.insert_workspace_entry(0, RnWorkspaceListEntry::default());
     }
 
     fn setup_actions(&self, appwindow: &RnAppWindow) {

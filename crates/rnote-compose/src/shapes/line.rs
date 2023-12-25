@@ -1,9 +1,10 @@
 // Imports
-use crate::helpers::{AabbHelpers, Vector2Helpers};
+use crate::ext::{AabbExt, Vector2Ext};
 use crate::shapes::Rectangle;
-use crate::shapes::ShapeBehaviour;
-use crate::transform::TransformBehaviour;
+use crate::shapes::Shapeable;
+use crate::transform::Transformable;
 use crate::Transform;
+use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -19,7 +20,7 @@ pub struct Line {
     pub end: na::Vector2<f64>,
 }
 
-impl TransformBehaviour for Line {
+impl Transformable for Line {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.start += offset;
         self.end += offset;
@@ -39,9 +40,9 @@ impl TransformBehaviour for Line {
     }
 }
 
-impl ShapeBehaviour for Line {
+impl Shapeable for Line {
     fn bounds(&self) -> Aabb {
-        AabbHelpers::new_positive(self.start.into(), self.end.into())
+        AabbExt::new_positive(self.start.into(), self.end.into())
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {
@@ -52,9 +53,18 @@ impl ShapeBehaviour for Line {
             .map(|line| line.bounds())
             .collect()
     }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        kurbo::Line::new(self.start.to_kurbo_point(), self.end.to_kurbo_point()).to_path(0.25)
+    }
 }
 
 impl Line {
+    /// A new line.
+    pub fn new(start: na::Vector2<f64>, end: na::Vector2<f64>) -> Self {
+        Self { start, end }
+    }
+
     /// Create a rectangle rotated in the direction of the line, with the given width.
     pub fn line_w_width_to_rect(&self, width: f64) -> Rectangle {
         let vec = self.end - self.start;
@@ -84,10 +94,5 @@ impl Line {
                 }
             })
             .collect::<Vec<Self>>()
-    }
-
-    /// Convert to kurbo shape.
-    pub fn to_kurbo(&self) -> kurbo::Line {
-        kurbo::Line::new(self.start.to_kurbo_point(), self.end.to_kurbo_point())
     }
 }

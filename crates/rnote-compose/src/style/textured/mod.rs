@@ -8,9 +8,9 @@ pub use texturedoptions::TexturedOptions;
 
 // Imports
 use super::Composer;
-use crate::helpers::Vector2Helpers;
+use crate::ext::Vector2Ext;
 use crate::penpath::Segment;
-use crate::shapes::{Line, ShapeBehaviour};
+use crate::shapes::{Line, Shapeable};
 use crate::PenPath;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -102,14 +102,13 @@ impl Composer<TexturedOptions> for PenPath {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
         let mut options = options.clone();
-        let n_segs = self.segments.len();
         let mut prev = self.start;
 
         cx.save().unwrap();
 
         for seg in self.segments.iter() {
-            if seg.end().pos == self.start.pos && n_segs <= 1 {
-                break;
+            if seg.end().pos == self.start.pos {
+                continue;
             }
 
             match seg {

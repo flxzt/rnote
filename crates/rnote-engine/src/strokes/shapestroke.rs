@@ -1,14 +1,12 @@
 // Imports
-use super::strokebehaviour::GeneratedStrokeImages;
-use super::StrokeBehaviour;
-use crate::{render, strokes::strokebehaviour, DrawBehaviour};
+use super::Content;
+use crate::{strokes::content, Drawable};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
+use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Shape;
-use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::Composer;
-use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::transform::Transformable;
 use rnote_compose::Style;
 use serde::{Deserialize, Serialize};
 
@@ -24,62 +22,31 @@ pub struct ShapeStroke {
     hitboxes: Vec<Aabb>,
 }
 
-impl StrokeBehaviour for ShapeStroke {
-    fn gen_svg(&self) -> Result<crate::render::Svg, anyhow::Error> {
-        let bounds = self.bounds();
-
-        render::Svg::gen_with_piet_cairo_backend(
-            |cx| {
-                cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
-                self.draw(cx, 1.0)
-            },
-            bounds,
-        )
-    }
-
-    fn gen_images(
-        &self,
-        viewport: Aabb,
-        image_scale: f64,
-    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
-        let bounds = self.bounds();
-
-        if viewport.contains(&bounds) {
-            Ok(GeneratedStrokeImages::Full(vec![
-                render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    bounds,
-                    image_scale,
-                )?,
-            ]))
-        } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
-            Ok(GeneratedStrokeImages::Partial {
-                images: vec![render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    intersection_bounds,
-                    image_scale,
-                )?],
-                viewport,
-            })
-        } else {
-            Ok(GeneratedStrokeImages::Partial {
-                images: vec![],
-                viewport,
-            })
-        }
-    }
-
+impl Content for ShapeStroke {
     fn draw_highlight(
         &self,
         cx: &mut impl piet::RenderContext,
         total_zoom: f64,
     ) -> anyhow::Result<()> {
-        const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
-        cx.stroke(
-            self.bounds().to_kurbo_rect(),
-            &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
-            HIGHLIGHT_STROKE_WIDTH / total_zoom,
-        );
+        const PATH_HIGHLIGHT_MIN_STROKE_WIDTH: f64 = 5.0;
+        const DRAW_BOUNDS_THRESHOLD_AREA: f64 = 10_u32.pow(2) as f64;
+        let bounds = self.bounds();
+        let bez_path = self.shape.outline_path();
+
+        if bounds.scale(total_zoom).volume() < DRAW_BOUNDS_THRESHOLD_AREA {
+            cx.fill(bounds.to_kurbo_rect(), &content::CONTENT_HIGHLIGHT_COLOR);
+        } else {
+            cx.stroke_styled(
+                bez_path,
+                &content::CONTENT_HIGHLIGHT_COLOR,
+                (PATH_HIGHLIGHT_MIN_STROKE_WIDTH / total_zoom)
+                    .max(self.style.stroke_width() + 10.0 / total_zoom),
+                &piet::StrokeStyle::new()
+                    .line_join(piet::LineJoin::Round)
+                    .line_cap(piet::LineCap::Round),
+            );
+        }
+
         Ok(())
     }
 
@@ -88,7 +55,7 @@ impl StrokeBehaviour for ShapeStroke {
     }
 }
 
-impl DrawBehaviour for ShapeStroke {
+impl Drawable for ShapeStroke {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
@@ -99,7 +66,7 @@ impl DrawBehaviour for ShapeStroke {
     }
 }
 
-impl ShapeBehaviour for ShapeStroke {
+impl Shapeable for ShapeStroke {
     fn bounds(&self) -> Aabb {
         match &self.style {
             Style::Smooth(options) => self.shape.composed_bounds(options),
@@ -111,9 +78,13 @@ impl ShapeBehaviour for ShapeStroke {
     fn hitboxes(&self) -> Vec<Aabb> {
         self.hitboxes.clone()
     }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        self.shape.outline_path()
+    }
 }
 
-impl TransformBehaviour for ShapeStroke {
+impl Transformable for ShapeStroke {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.shape.translate(offset);
     }
@@ -122,6 +93,9 @@ impl TransformBehaviour for ShapeStroke {
     }
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.shape.scale(scale);
+        let scale_uniform = (scale[0] + scale[1]) / 2.;
+        self.style
+            .set_stroke_width(self.style.stroke_width() * scale_uniform);
     }
 }
 

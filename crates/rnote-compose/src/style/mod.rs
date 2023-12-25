@@ -1,7 +1,7 @@
 // Modules
 /// Composer
 mod composer;
-/// Draw helpers
+/// Draw indicators
 pub mod indicators;
 /// The rough module for rough styles
 pub mod rough;
@@ -16,7 +16,7 @@ use self::smooth::SmoothOptions;
 use self::textured::TexturedOptions;
 
 // Imports
-use crate::shapes::{Arrow, CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle};
+use crate::shapes::{Arrow, CubicBezier, Ellipse, Line, Polyline, QuadraticBezier, Rectangle};
 use crate::{Color, PenPath, Shape};
 use anyhow::Context;
 pub use composer::Composer;
@@ -53,6 +53,15 @@ impl Style {
         }
     }
 
+    /// Set the stroke width. Available on all styles.
+    pub fn set_stroke_width(&mut self, stroke_width: f64) {
+        match self {
+            Style::Smooth(options) => options.stroke_width = stroke_width,
+            Style::Rough(options) => options.stroke_width = stroke_width,
+            Style::Textured(options) => options.stroke_width = stroke_width,
+        }
+    }
+
     /// The margins for bounds which contain the shape.
     pub fn bounds_margin(&self) -> f64 {
         match self {
@@ -62,12 +71,30 @@ impl Style {
         }
     }
 
-    /// Advances the seed for styles that have one.
+    /// Advance the seed for styles that have one.
     pub fn advance_seed(&mut self) {
         match self {
             Style::Smooth(_) => {}
             Style::Rough(options) => options.advance_seed(),
             Style::Textured(options) => options.advance_seed(),
+        }
+    }
+
+    /// Get the stroke color of the style.
+    pub fn stroke_color(&self) -> Option<Color> {
+        match self {
+            Style::Smooth(options) => options.stroke_color,
+            Style::Rough(options) => options.stroke_color,
+            Style::Textured(options) => options.stroke_color,
+        }
+    }
+
+    /// Get the fill color of the style.
+    pub fn fill_color(&self) -> Option<Color> {
+        match self {
+            Style::Smooth(options) => options.fill_color,
+            Style::Rough(options) => options.fill_color,
+            Style::Textured(_) => None,
         }
     }
 
@@ -198,6 +225,24 @@ impl Composer<Style> for CubicBezier {
     }
 }
 
+impl Composer<Style> for Polyline {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
+        match options {
+            Style::Smooth(options) => self.composed_bounds(options),
+            Style::Rough(options) => self.composed_bounds(options),
+            Style::Textured(_options) => unimplemented!(),
+        }
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &Style) {
+        match options {
+            Style::Smooth(options) => self.draw_composed(cx, options),
+            Style::Rough(options) => self.draw_composed(cx, options),
+            Style::Textured(_options) => unimplemented!(),
+        }
+    }
+}
+
 impl Composer<Style> for PenPath {
     fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match options {
@@ -225,6 +270,7 @@ impl Composer<Style> for Shape {
             Shape::Ellipse(ellipse) => ellipse.composed_bounds(options),
             Shape::QuadraticBezier(quadratic_bezier) => quadratic_bezier.composed_bounds(options),
             Shape::CubicBezier(cubic_bezier) => cubic_bezier.composed_bounds(options),
+            Shape::Polyline(polyline) => polyline.composed_bounds(options),
         }
     }
 
@@ -236,6 +282,7 @@ impl Composer<Style> for Shape {
             Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),
             Shape::QuadraticBezier(quadratic_bezier) => quadratic_bezier.draw_composed(cx, options),
             Shape::CubicBezier(cubic_bezier) => cubic_bezier.draw_composed(cx, options),
+            Shape::Polyline(polyline) => polyline.draw_composed(cx, options),
         }
     }
 }

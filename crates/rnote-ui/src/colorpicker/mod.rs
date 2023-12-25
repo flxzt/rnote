@@ -14,7 +14,7 @@ use gtk4::{
 };
 use once_cell::sync::Lazy;
 use rnote_compose::{color, Color};
-use rnote_engine::utils::GdkRGBAHelpers;
+use rnote_engine::ext::GdkRGBAExt;
 use std::cell::{Cell, RefCell};
 
 mod imp {
@@ -26,6 +26,7 @@ mod imp {
         pub(crate) stroke_color: RefCell<gdk::RGBA>,
         pub(crate) fill_color: RefCell<gdk::RGBA>,
         pub(crate) position: Cell<PositionType>,
+        pub(crate) color_dialog: glib::WeakRef<ColorDialog>,
 
         #[template_child]
         pub(crate) active_colors_box: TemplateChild<gtk4::Box>,
@@ -52,6 +53,8 @@ mod imp {
         #[template_child]
         pub(crate) setter_8: TemplateChild<RnColorSetter>,
         #[template_child]
+        pub(crate) setter_9: TemplateChild<RnColorSetter>,
+        #[template_child]
         pub(crate) colordialog_button: TemplateChild<Button>,
     }
 
@@ -63,6 +66,7 @@ mod imp {
                 )),
                 fill_color: RefCell::new(gdk::RGBA::from_compose_color(*super::FILL_COLOR_DEFAULT)),
                 position: Cell::new(PositionType::Right),
+                color_dialog: glib::WeakRef::new(),
 
                 active_colors_box: TemplateChild::default(),
                 stroke_color_pad: TemplateChild::default(),
@@ -76,6 +80,7 @@ mod imp {
                 setter_6: TemplateChild::default(),
                 setter_7: TemplateChild::default(),
                 setter_8: TemplateChild::default(),
+                setter_9: TemplateChild::default(),
                 colordialog_button: TemplateChild::default(),
             }
         }
@@ -88,7 +93,7 @@ mod imp {
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
+            klass.bind_template();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -174,6 +179,7 @@ mod imp {
                     self.setter_6.set_position(position);
                     self.setter_7.set_position(position);
                     self.setter_8.set_position(position);
+                    self.setter_9.set_position(position);
 
                     match position {
                         PositionType::Left => {
@@ -237,14 +243,15 @@ mod imp {
         fn setup_setters(&self) {
             let obj = self.obj();
 
-            self.setter_1.set_color(Self::default_color(0, 8));
-            self.setter_2.set_color(Self::default_color(1, 8));
-            self.setter_3.set_color(Self::default_color(2, 8));
-            self.setter_4.set_color(Self::default_color(3, 8));
-            self.setter_5.set_color(Self::default_color(4, 8));
-            self.setter_6.set_color(Self::default_color(5, 8));
-            self.setter_7.set_color(Self::default_color(6, 8));
-            self.setter_8.set_color(Self::default_color(7, 8));
+            self.setter_1.set_color(Self::default_color(0));
+            self.setter_2.set_color(Self::default_color(1));
+            self.setter_3.set_color(Self::default_color(2));
+            self.setter_4.set_color(Self::default_color(3));
+            self.setter_5.set_color(Self::default_color(4));
+            self.setter_6.set_color(Self::default_color(5));
+            self.setter_7.set_color(Self::default_color(6));
+            self.setter_8.set_color(Self::default_color(7));
+            self.setter_9.set_color(Self::default_color(8));
 
             self.setter_1
                 .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
@@ -256,6 +263,7 @@ mod imp {
                         colorpicker.setter_6().set_active(false);
                         colorpicker.setter_7().set_active(false);
                         colorpicker.setter_8().set_active(false);
+                        colorpicker.setter_9().set_active(false);
                         // Must come after setting the other setters inactive
                         colorpicker.set_color_active_pad(setter.color());
                     }
@@ -271,6 +279,7 @@ mod imp {
                         colorpicker.setter_6().set_active(false);
                         colorpicker.setter_7().set_active(false);
                         colorpicker.setter_8().set_active(false);
+                        colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
                 }));
@@ -285,6 +294,7 @@ mod imp {
                         colorpicker.setter_6().set_active(false);
                         colorpicker.setter_7().set_active(false);
                         colorpicker.setter_8().set_active(false);
+                        colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
                 }));
@@ -299,6 +309,7 @@ mod imp {
                         colorpicker.setter_6().set_active(false);
                         colorpicker.setter_7().set_active(false);
                         colorpicker.setter_8().set_active(false);
+                        colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
                 }));
@@ -313,6 +324,7 @@ mod imp {
                         colorpicker.setter_6().set_active(false);
                         colorpicker.setter_7().set_active(false);
                         colorpicker.setter_8().set_active(false);
+                        colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
                 }));
@@ -327,6 +339,7 @@ mod imp {
                         colorpicker.setter_5().set_active(false);
                         colorpicker.setter_7().set_active(false);
                         colorpicker.setter_8().set_active(false);
+                        colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
                 }));
@@ -355,23 +368,40 @@ mod imp {
                         colorpicker.setter_5().set_active(false);
                         colorpicker.setter_6().set_active(false);
                         colorpicker.setter_7().set_active(false);
+                        colorpicker.setter_9().set_active(false);
+                        colorpicker.set_color_active_pad(setter.color());
+                    }
+                }));
+
+            self.setter_9
+                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
+                    if setter.is_active() {
+                        colorpicker.setter_1().set_active(false);
+                        colorpicker.setter_2().set_active(false);
+                        colorpicker.setter_3().set_active(false);
+                        colorpicker.setter_4().set_active(false);
+                        colorpicker.setter_5().set_active(false);
+                        colorpicker.setter_6().set_active(false);
+                        colorpicker.setter_7().set_active(false);
+                        colorpicker.setter_8().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
                 }));
         }
 
-        fn default_color(i: usize, amount_setters: usize) -> gdk::RGBA {
-            let color_step =
-                (2.0 * std::f32::consts::PI) / ((amount_setters.saturating_sub(1)) as f32);
-            let rgb_offset = (2.0 / 3.0) * std::f32::consts::PI;
-            let color_offset = (5.0 / 4.0) * std::f32::consts::PI + 0.4;
-
-            gdk::RGBA::new(
-                0.5 * (i as f32 * color_step + 0.0 * rgb_offset + color_offset).sin() + 0.5,
-                0.5 * (i as f32 * color_step + 1.0 * rgb_offset + color_offset).sin() + 0.5,
-                0.5 * (i as f32 * color_step + 2.0 * rgb_offset + color_offset).sin() + 0.5,
-                1.0,
-            )
+        fn default_color(i: usize) -> gdk::RGBA {
+            match i {
+                0 => gdk::RGBA::new(0.0, 0.0, 0.0, 1.0),
+                1 => gdk::RGBA::new(1.0, 1.0, 1.0, 1.0),
+                2 => gdk::RGBA::new(0.0, 0.0, 0.0, 0.0),
+                3 => gdk::RGBA::new(0.597, 0.753, 0.941, 1.0),
+                4 => gdk::RGBA::new(0.101, 0.371, 0.703, 1.0),
+                5 => gdk::RGBA::new(0.148, 0.632, 0.410, 1.0),
+                6 => gdk::RGBA::new(0.957, 0.757, 0.066, 1.0),
+                7 => gdk::RGBA::new(0.898, 0.378, 0.0, 1.0),
+                8 => gdk::RGBA::new(0.644, 0.113, 0.175, 1.0),
+                _ => gdk::RGBA::new(0.0, 0.0, 0.0, 1.0),
+            }
         }
     }
 }
@@ -460,27 +490,38 @@ impl RnColorPicker {
         self.imp().setter_8.get()
     }
 
+    pub(crate) fn setter_9(&self) -> RnColorSetter {
+        self.imp().setter_9.get()
+    }
+
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.imp().colordialog_button.connect_clicked(
             clone!(@weak self as colorpicker, @weak appwindow => move |_| {
-                glib::MainContext::default().spawn_local(clone!(@weak colorpicker, @weak appwindow => async move {
-                    let dialog = ColorDialog::builder().modal(false).with_alpha(true).build();
+                if colorpicker.imp().color_dialog.upgrade().is_some() {
+                    // Unfortunately Gtk currently does not have API to make the dialog the active window.
+                } else {
+                    glib::MainContext::default().spawn_local(clone!(@weak colorpicker, @weak appwindow => async move {
+                        let dialog = ColorDialog::builder().modal(false).with_alpha(true).build();
+                        colorpicker.imp().color_dialog.set(Some(&dialog));
 
-                    let active_color = if colorpicker.stroke_color_pad_active() {
-                        colorpicker.stroke_color()
-                    } else {
-                        colorpicker.fill_color()
-                    };
-                    match dialog.choose_rgba_future(Some(&appwindow), Some(&active_color)).await {
-                        Ok(new_color) => {
-                            colorpicker.set_color_active_pad(new_color);
-                            colorpicker.set_color_active_setter(new_color);
-                        },
-                        // this reports as error if the dialog is dismissed by the user.
-                        // The API is a bit odd, expected would be Result<Option<RGBA>>
-                        Err(e) => log::debug!("did not choose new color (Error or dialog dismissed by user), {e:?}"),
-                    }
-                }));
+                        let active_color = if colorpicker.stroke_color_pad_active() {
+                            colorpicker.stroke_color()
+                        } else {
+                            colorpicker.fill_color()
+                        };
+                        match dialog.choose_rgba_future(Some(&appwindow), Some(&active_color)).await {
+                            Ok(new_color) => {
+                                colorpicker.set_color_active_pad(new_color);
+                                colorpicker.set_color_active_setter(new_color);
+                            },
+                            // this reports as error if the dialog is dismissed by the user.
+                            // The API is a bit odd, expected would be Result<Option<RGBA>>
+                            Err(e) => tracing::debug!("Did not choose new color (Error or dialog dismissed by user), Err: {e:?}"),
+                        }
+
+                        colorpicker.imp().color_dialog.set(None);
+                    }));
+                }
             }),
         );
     }
@@ -504,6 +545,8 @@ impl RnColorPicker {
             imp.setter_7.set_color(color);
         } else if imp.setter_8.is_active() {
             imp.setter_8.set_color(color);
+        } else if imp.setter_9.is_active() {
+            imp.setter_9.set_color(color);
         }
     }
 
@@ -536,5 +579,6 @@ impl RnColorPicker {
         imp.setter_6.set_active(false);
         imp.setter_7.set_active(false);
         imp.setter_8.set_active(false);
+        imp.setter_9.set_active(false);
     }
 }

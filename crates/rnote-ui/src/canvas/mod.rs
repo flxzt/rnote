@@ -10,37 +10,37 @@ pub(crate) use widgetflagsboxed::WidgetFlagsBoxed;
 
 // Imports
 use crate::{config, RnAppWindow};
-use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{
-    gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
-    Adjustment, DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext, Inhibit,
-    PropagationPhase, Scrollable, ScrollablePolicy, Widget,
+    gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, Adjustment,
+    DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext, PropagationPhase,
+    Scrollable, ScrollablePolicy, Widget,
 };
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
-use rnote_compose::helpers::AabbHelpers;
-use rnote_compose::penevents::PenState;
-use rnote_engine::utils::GrapheneRectHelpers;
-use rnote_engine::Document;
-use rnote_engine::{RnoteEngine, WidgetFlags};
+use rnote_compose::ext::AabbExt;
+use rnote_compose::penevent::PenState;
+use rnote_engine::ext::GraphenePointExt;
+use rnote_engine::ext::GrapheneRectExt;
+use rnote_engine::Camera;
+use rnote_engine::{Engine, WidgetFlags};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 
 #[derive(Debug, Default)]
-pub(crate) struct Connections {
-    pub(crate) hadjustment: Option<glib::SignalHandlerId>,
-    pub(crate) vadjustment: Option<glib::SignalHandlerId>,
-    pub(crate) tab_page_output_file: Option<glib::Binding>,
-    pub(crate) tab_page_unsaved_changes: Option<glib::Binding>,
-    pub(crate) appwindow_output_file: Option<glib::SignalHandlerId>,
-    pub(crate) appwindow_scalefactor: Option<glib::SignalHandlerId>,
-    pub(crate) appwindow_unsaved_changes: Option<glib::SignalHandlerId>,
-    pub(crate) appwindow_touch_drawing: Option<glib::Binding>,
-    pub(crate) appwindow_show_drawing_cursor: Option<glib::Binding>,
-    pub(crate) appwindow_regular_cursor: Option<glib::Binding>,
-    pub(crate) appwindow_drawing_cursor: Option<glib::Binding>,
-    pub(crate) appwindow_drop_target: Option<glib::SignalHandlerId>,
-    pub(crate) appwindow_handle_widget_flags: Option<glib::SignalHandlerId>,
+struct Connections {
+    hadjustment: Option<glib::SignalHandlerId>,
+    vadjustment: Option<glib::SignalHandlerId>,
+    tab_page_output_file: Option<glib::Binding>,
+    tab_page_unsaved_changes: Option<glib::Binding>,
+    appwindow_output_file: Option<glib::SignalHandlerId>,
+    appwindow_scalefactor: Option<glib::SignalHandlerId>,
+    appwindow_unsaved_changes: Option<glib::SignalHandlerId>,
+    appwindow_touch_drawing: Option<glib::Binding>,
+    appwindow_show_drawing_cursor: Option<glib::Binding>,
+    appwindow_regular_cursor: Option<glib::Binding>,
+    appwindow_drawing_cursor: Option<glib::Binding>,
+    appwindow_drop_target: Option<glib::SignalHandlerId>,
+    appwindow_handle_widget_flags: Option<glib::SignalHandlerId>,
 }
 
 mod imp {
@@ -48,8 +48,7 @@ mod imp {
 
     #[derive(Debug)]
     pub(crate) struct RnCanvas {
-        pub(crate) handlers: RefCell<Connections>,
-
+        pub(super) connections: RefCell<Connections>,
         pub(crate) hadjustment: RefCell<Option<Adjustment>>,
         pub(crate) vadjustment: RefCell<Option<Adjustment>>,
         pub(crate) hscroll_policy: Cell<ScrollablePolicy>,
@@ -65,10 +64,11 @@ mod imp {
         pub(crate) drop_target: DropTarget,
         pub(crate) drawing_cursor_enabled: Cell<bool>,
 
-        pub(crate) engine: RefCell<RnoteEngine>,
+        pub(crate) engine: RefCell<Engine>,
         pub(crate) engine_task_handler_handle: RefCell<Option<glib::JoinHandle<()>>>,
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
+        pub(crate) output_file_saved_modified_date_time: RefCell<Option<glib::DateTime>>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
         pub(crate) output_file_monitor_changed_handler: RefCell<Option<glib::SignalHandlerId>>,
         pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
@@ -78,6 +78,8 @@ mod imp {
         pub(crate) empty: Cell<bool>,
         pub(crate) touch_drawing: Cell<bool>,
         pub(crate) show_drawing_cursor: Cell<bool>,
+
+        pub(crate) last_export_dir: RefCell<Option<gio::File>>,
     }
 
     impl Default for RnCanvas {
@@ -137,10 +139,10 @@ mod imp {
                 gdk::Cursor::from_name("default", None).as_ref(),
             );
 
-            let engine = RnoteEngine::default();
+            let engine = Engine::default();
 
             Self {
-                handlers: RefCell::new(Connections::default()),
+                connections: RefCell::new(Connections::default()),
 
                 hadjustment: RefCell::new(None),
                 vadjustment: RefCell::new(None),
@@ -161,6 +163,8 @@ mod imp {
                 engine_task_handler_handle: RefCell::new(None),
 
                 output_file: RefCell::new(None),
+                // is automatically updated whenever the output file changes.
+                output_file_saved_modified_date_time: RefCell::new(None),
                 output_file_monitor: RefCell::new(None),
                 output_file_monitor_changed_handler: RefCell::new(None),
                 output_file_modified_toast_singleton: RefCell::new(None),
@@ -170,6 +174,8 @@ mod imp {
                 empty: Cell::new(true),
                 touch_drawing: Cell::new(false),
                 show_drawing_cursor: Cell::new(false),
+
+                last_export_dir: RefCell::new(None),
             }
         }
     }
@@ -182,7 +188,6 @@ mod imp {
         type Interfaces = (Scrollable,);
 
         fn class_init(klass: &mut Self::Class) {
-            klass.set_accessible_role(AccessibleRole::Widget);
             klass.set_layout_manager_type::<RnCanvasLayout>();
         }
 
@@ -211,13 +216,13 @@ mod imp {
             // receive and handle engine tasks
             let engine_task_handler_handle = glib::MainContext::default().spawn_local(
                 clone!(@weak obj as canvas => async move {
-                    let Some(mut task_rx) = canvas.engine_mut().tasks_rx.take() else {
-                        log::error!("installing the engine task handler failed, taken tasks_rx is None");
+                    let Some(mut task_rx) = canvas.engine_mut().take_engine_tasks_rx() else {
+                        tracing::error!("Installing the engine task handler failed, taken tasks_rx is None.");
                         return;
                     };
 
                     loop {
-                        if let Some(task) = task_rx.next().await {
+                        if let Some(task) = task_rx.recv().await {
                             let (widget_flags, quit) = canvas.engine_mut().handle_engine_task(task);
                             canvas.emit_handle_widget_flags(widget_flags);
 
@@ -301,6 +306,17 @@ mod imp {
                     let output_file = value
                         .get::<Option<gio::File>>()
                         .expect("The value needs to be of type `Option<gio::File>`");
+                    self.output_file_saved_modified_date_time.replace(
+                        output_file.as_ref().and_then(|f| {
+                            f.query_info(
+                                gio::FILE_ATTRIBUTE_TIME_MODIFIED_USEC,
+                                gio::FileQueryInfoFlags::NONE,
+                                gio::Cancellable::NONE,
+                            )
+                            .ok()?
+                            .modification_date_time()
+                        }),
+                    );
                     self.output_file.replace(output_file);
                 }
                 "unsaved-changes" => {
@@ -415,10 +431,11 @@ mod imp {
 
             if let Err(e) = || -> anyhow::Result<()> {
                 let clip_bounds = if let Some(parent) = obj.parent() {
-                    // unwrapping is fine, because its the parent
-                    let (clip_x, clip_y) = parent.translate_coordinates(&*obj, 0.0, 0.0).unwrap();
                     Aabb::new_positive(
-                        na::point![clip_x, clip_y],
+                        parent
+                            .compute_point(&*obj, &graphene::Point::zero())
+                            .unwrap()
+                            .to_na_point(),
                         na::point![f64::from(parent.width()), f64::from(parent.height())],
                     )
                 } else {
@@ -436,7 +453,7 @@ mod imp {
                 snapshot.pop();
                 Ok(())
             }() {
-                log::error!("canvas snapshot() failed with Err: {e:?}");
+                tracing::error!("Snapshot canvas failed , Err: {e:?}");
             }
         }
     }
@@ -449,10 +466,10 @@ mod imp {
 
             // Pointer controller
             let pen_state = Cell::new(PenState::Up);
-            self.pointer_controller.connect_event(clone!(@strong pen_state, @weak obj as canvas => @default-return Inhibit(false), move |_, event| {
-                let (inhibit, new_state) = super::input::handle_pointer_controller_event(&canvas, event, pen_state.get());
+            self.pointer_controller.connect_event(clone!(@strong pen_state, @weak obj as canvas => @default-return glib::Propagation::Proceed, move |_, event| {
+                let (propagation, new_state) = super::input::handle_pointer_controller_event(&canvas, event, pen_state.get());
                 pen_state.set(new_state);
-                inhibit
+                propagation
             }));
 
             // For unicode text the input is committed from the IM context, and won't trigger the key_pressed signal
@@ -463,23 +480,36 @@ mod imp {
             );
 
             // Key controller
-            self.key_controller.connect_key_pressed(clone!(@weak obj as canvas => @default-return Inhibit(false), move |_, key, _raw, modifier| {
+            self.key_controller.connect_key_pressed(clone!(@weak obj as canvas => @default-return glib::Propagation::Proceed, move |_, key, _raw, modifier| {
                 super::input::handle_key_controller_key_pressed(&canvas, key, modifier)
             }));
 
-            /*
-                       self.key_controller.connect_key_released(
-                           clone!(@weak inst as canvas => move |_key_controller, _key, _raw, _modifier| {
-                               //log::debug!("key released - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
-                           }),
-                       );
-            */
+            self.key_controller.connect_key_released(
+                clone!(@weak obj as canvas => move |_key_controller, key, _raw, modifier| {
+                    super::input::handle_key_controller_key_released(&canvas, key, modifier)
+                }),
+            );
         }
 
         fn set_hadjustment_prop(&self, hadj: Option<Adjustment>) {
             let obj = self.obj();
 
-            if let Some(signal_id) = self.handlers.borrow_mut().hadjustment.take() {
+            let hadj_value = self
+                .hadjustment
+                .borrow()
+                .as_ref()
+                .map(|adj| adj.value())
+                .unwrap_or(-Camera::OVERSHOOT_HORIZONTAL);
+            let vadj_value = self
+                .vadjustment
+                .borrow()
+                .as_ref()
+                .map(|adj| adj.value())
+                .unwrap_or(-Camera::OVERSHOOT_VERTICAL);
+            let widget_size = obj.widget_size();
+            let offset_mins_maxs = obj.engine_ref().camera_offset_mins_maxs();
+
+            if let Some(signal_id) = self.connections.borrow_mut().hadjustment.take() {
                 let old_adj = self.hadjustment.borrow().as_ref().unwrap().clone();
                 old_adj.disconnect(signal_id);
             }
@@ -487,19 +517,41 @@ mod imp {
             if let Some(ref hadj) = hadj {
                 let signal_id =
                     hadj.connect_value_changed(clone!(@weak obj as canvas => move |_| {
-                        // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
+                        // this triggers a canvaslayout allocate() call,
+                        // where the camera and content rendering is updated based on some conditions
                         canvas.queue_resize();
                     }));
 
-                self.handlers.borrow_mut().hadjustment.replace(signal_id);
+                self.connections.borrow_mut().hadjustment.replace(signal_id);
             }
             self.hadjustment.replace(hadj);
+
+            obj.configure_adjustments(
+                widget_size,
+                offset_mins_maxs,
+                na::vector![hadj_value, vadj_value],
+            );
         }
 
         fn set_vadjustment_prop(&self, vadj: Option<Adjustment>) {
             let obj = self.obj();
 
-            if let Some(signal_id) = self.handlers.borrow_mut().vadjustment.take() {
+            let hadj_value = self
+                .hadjustment
+                .borrow()
+                .as_ref()
+                .map(|adj| adj.value())
+                .unwrap_or(-Camera::OVERSHOOT_HORIZONTAL);
+            let vadj_value = self
+                .vadjustment
+                .borrow()
+                .as_ref()
+                .map(|adj| adj.value())
+                .unwrap_or(-Camera::OVERSHOOT_VERTICAL);
+            let widget_size = obj.widget_size();
+            let offset_mins_maxs = obj.engine_ref().camera_offset_mins_maxs();
+
+            if let Some(signal_id) = self.connections.borrow_mut().vadjustment.take() {
                 let old_adj = self.vadjustment.borrow().as_ref().unwrap().clone();
                 old_adj.disconnect(signal_id);
             }
@@ -507,13 +559,20 @@ mod imp {
             if let Some(ref vadj) = vadj {
                 let signal_id =
                     vadj.connect_value_changed(clone!(@weak obj as canvas => move |_| {
-                        // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
+                        // this triggers a canvaslayout allocate() call,
+                        // where the camera and content rendering is updated based on some conditions
                         canvas.queue_resize();
                     }));
 
-                self.handlers.borrow_mut().vadjustment.replace(signal_id);
+                self.connections.borrow_mut().vadjustment.replace(signal_id);
             }
             self.vadjustment.replace(vadj);
+
+            obj.configure_adjustments(
+                widget_size,
+                offset_mins_maxs,
+                na::vector![hadj_value, vadj_value],
+            );
         }
     }
 }
@@ -538,8 +597,6 @@ pub(crate) static OUTPUT_FILE_NEW_SUBTITLE: once_cell::sync::Lazy<String> =
 impl RnCanvas {
     // Sets the canvas zoom scroll step in % for one unit of the event controller delta
     pub(crate) const ZOOM_SCROLL_STEP: f64 = 0.1;
-    /// A small margin added to the document width, when zooming to fit document width
-    pub(crate) const ZOOM_FIT_WIDTH_MARGIN: f64 = 32.0;
 
     pub(crate) fn new() -> Self {
         glib::Object::new()
@@ -571,6 +628,11 @@ impl RnCanvas {
     }
 
     #[allow(unused)]
+    pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
+        self.set_property("output-file", output_file.to_value());
+    }
+
+    #[allow(unused)]
     pub(crate) fn output_file_expect_write(&self) -> bool {
         self.imp().output_file_expect_write.get()
     }
@@ -588,11 +650,6 @@ impl RnCanvas {
     #[allow(unused)]
     pub(crate) fn set_save_in_progress(&self, save_in_progress: bool) {
         self.imp().save_in_progress.set(save_in_progress);
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
-        self.set_property("output-file", output_file.to_value());
     }
 
     #[allow(unused)]
@@ -651,20 +708,76 @@ impl RnCanvas {
         );
     }
 
+    pub(crate) fn last_export_dir(&self) -> Option<gio::File> {
+        self.imp().last_export_dir.borrow().clone()
+    }
+
+    pub(crate) fn set_last_export_dir(&self, dir: Option<gio::File>) {
+        self.imp().last_export_dir.replace(dir);
+    }
+
+    /// Returns the saved date time for the modification time of the output file when it was set by the app.
+    ///
+    /// It might not be correct if the content of the output file has changed from outside the app.
+    pub(crate) fn output_file_saved_modified_date_time(&self) -> Option<glib::DateTime> {
+        self.imp()
+            .output_file_saved_modified_date_time
+            .borrow()
+            .to_owned()
+    }
+
     pub(crate) fn canvas_layout_manager(&self) -> RnCanvasLayout {
         self.layout_manager()
-            .unwrap()
-            .downcast::<RnCanvasLayout>()
+            .and_downcast::<RnCanvasLayout>()
             .unwrap()
     }
 
+    pub(crate) fn configure_adjustments(
+        &self,
+        widget_size: na::Vector2<f64>,
+        offset_mins_maxs: (na::Vector2<f64>, na::Vector2<f64>),
+        offset: na::Vector2<f64>,
+    ) {
+        let (offset_mins, offset_maxs) = offset_mins_maxs;
+
+        if let Some(hadj) = self.hadjustment() {
+            hadj.configure(
+                // This gets clamped to the lower and upper values
+                offset[0],
+                offset_mins[0],
+                offset_maxs[0],
+                0.1 * widget_size[0],
+                0.9 * widget_size[0],
+                widget_size[0],
+            )
+        };
+
+        if let Some(vadj) = self.vadjustment() {
+            vadj.configure(
+                // This gets clamped to the lower and upper values
+                offset[1],
+                offset_mins[1],
+                offset_maxs[1],
+                0.1 * widget_size[1],
+                0.9 * widget_size[1],
+                widget_size[1],
+            );
+        }
+
+        self.queue_resize();
+    }
+
+    pub(crate) fn widget_size(&self) -> na::Vector2<f64> {
+        na::vector![self.width() as f64, self.height() as f64]
+    }
+
     /// Immutable borrow of the engine.
-    pub(crate) fn engine_ref(&self) -> Ref<RnoteEngine> {
+    pub(crate) fn engine_ref(&self) -> Ref<Engine> {
         self.imp().engine.borrow()
     }
 
     /// Mutable borrow of the engine.
-    pub(crate) fn engine_mut(&self) -> RefMut<RnoteEngine> {
+    pub(crate) fn engine_mut(&self) -> RefMut<Engine> {
         self.imp().engine.borrow_mut()
     }
 
@@ -709,7 +822,7 @@ impl RnCanvas {
             Err(e) => {
                 if engine_config.is_empty() {
                     // On first app startup the engine config is empty, so we don't log an error
-                    log::debug!("did not load `engine-config` from settings, was empty");
+                    tracing::debug!("Did not load `engine-config` from settings, was empty");
                 } else {
                     return Err(e);
                 }
@@ -723,24 +836,6 @@ impl RnCanvas {
             self.emit_handle_widget_flags(widget_flags);
         }
         Ok(())
-    }
-
-    pub(crate) fn clear_output_file_monitor(&self) {
-        if let Some(old_output_file_monitor) = self.imp().output_file_monitor.take() {
-            if let Some(handler) = self.imp().output_file_monitor_changed_handler.take() {
-                old_output_file_monitor.disconnect(handler);
-            }
-
-            old_output_file_monitor.cancel();
-        }
-    }
-
-    pub(crate) fn dismiss_output_file_modified_toast(&self) {
-        if let Some(output_file_modified_toast) =
-            self.imp().output_file_modified_toast_singleton.take()
-        {
-            output_file_modified_toast.dismiss();
-        }
     }
 
     /// Switches between the regular and the drawing cursor
@@ -787,14 +882,32 @@ impl RnCanvas {
             .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string())
     }
 
+    pub(crate) fn clear_output_file_monitor(&self) {
+        if let Some(old_output_file_monitor) = self.imp().output_file_monitor.take() {
+            if let Some(handler) = self.imp().output_file_monitor_changed_handler.take() {
+                old_output_file_monitor.disconnect(handler);
+            }
+
+            old_output_file_monitor.cancel();
+        }
+    }
+
+    pub(crate) fn dismiss_output_file_modified_toast(&self) {
+        if let Some(output_file_modified_toast) =
+            self.imp().output_file_modified_toast_singleton.take()
+        {
+            output_file_modified_toast.dismiss();
+        }
+    }
+
     pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnAppWindow) {
         let new_monitor =
             match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
                 Ok(output_file_monitor) => output_file_monitor,
                 Err(e) => {
                     self.clear_output_file_monitor();
-                    log::error!(
-                        "creating a file monitor for the new output file failed with Err: {e:?}"
+                    tracing::error!(
+                        "Creating a file monitor for the new output file failed , Err: {e:?}"
                     );
                     return;
                 }
@@ -813,18 +926,19 @@ impl RnCanvas {
                                 appwindow.overlays().progressbar_start_pulsing();
 
                                 if let Err(e) = canvas.reload_from_disk().await {
+                                    tracing::error!("Failed to reload current output file, Err: {e:?}");
                                     appwindow.overlays().dispatch_toast_error(&gettext("Reloading .rnote file from disk failed"));
-                                    log::error!("failed to reload current output file, {}", e);
+                                    appwindow.overlays().progressbar_abort();
+                                } else {
+                                    appwindow.overlays().progressbar_finish();
                                 }
-
-                                appwindow.overlays().progressbar_finish();
                             }));
                         }),
                         0,
                     &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
                 };
 
-                log::debug!("canvas with title: `{}` - output-file monitor emitted `changed` - file: {:?}, other_file: {:?}, event: {event:?}, expect_write: {}",
+                tracing::debug!("Canvas with title: `{}` - output-file monitor emitted `changed` - file: {:?}, other_file: {:?}, event: {event:?}, expect_write: {}",
                     canvas.doc_title_display(),
                     file.path(),
                     other_file.map(|f| f.path()),
@@ -837,6 +951,21 @@ impl RnCanvas {
                             // => file has been modified due to own save, don't do anything.
                             canvas.set_output_file_expect_write(false);
                             return;
+                        }
+                        if let (Some(saved_modified_time), Some(changed_modified_time)) =
+                            (canvas.output_file_saved_modified_date_time(),
+                            file.query_info(
+                                gio::FILE_ATTRIBUTE_TIME_MODIFIED_USEC,
+                                gio::FileQueryInfoFlags::NONE,
+                                gio::Cancellable::NONE).ok().and_then(|i| i.modification_date_time())
+                            ) {
+                            if saved_modified_time == changed_modified_time {
+                                // The changed file has the same modified date so it should be equal to the saved one.
+                                // A changed file event can happen when saving to a gvfs directory or to a directory
+                                // synced with cloud storage providers, even though the file itself has not actually
+                                // changed.
+                                return
+                            }
                         }
 
                         dispatch_toast_reload_modified_file();
@@ -934,22 +1063,17 @@ impl RnCanvas {
             }),
         );
 
-        // set scalefactor initially
-        self.engine_mut().camera.scale_factor = f64::from(self.scale_factor());
+        // set scale factor initially
+        let _ = self
+            .engine_mut()
+            .set_scale_factor(self.scale_factor() as f64);
         // and connect
         let appwindow_scalefactor =
             self.connect_notify_local(Some("scale-factor"), move |canvas, _pspec| {
-                let scale_factor = f64::from(canvas.scale_factor());
-                canvas.engine_mut().camera.scale_factor = scale_factor;
-
-                let all_strokes = canvas.engine_mut().store.stroke_keys_unordered();
-                canvas
+                let widget_flags = canvas
                     .engine_mut()
-                    .store
-                    .set_rendering_dirty_for_strokes(&all_strokes);
-
-                canvas.background_regenerate_pattern();
-                canvas.update_rendering_current_viewport();
+                    .set_scale_factor(canvas.scale_factor() as f64);
+                canvas.emit_handle_widget_flags(widget_flags);
             });
 
         // Update titles when there are changes
@@ -968,6 +1092,7 @@ impl RnCanvas {
 
         // bind cursors
         let appwindow_regular_cursor = appwindow
+            .sidebar()
             .settings_panel()
             .general_regular_cursor_picker()
             .bind_property("picked", self, "regular-cursor")
@@ -976,6 +1101,7 @@ impl RnCanvas {
             .build();
 
         let appwindow_drawing_cursor = appwindow
+            .sidebar()
             .settings_panel()
             .general_drawing_cursor_picker()
             .bind_property("picked", self, "drawing-cursor")
@@ -985,8 +1111,9 @@ impl RnCanvas {
 
         // bind show-drawing-cursor
         let appwindow_show_drawing_cursor = appwindow
+            .sidebar()
             .settings_panel()
-            .general_show_drawing_cursor_switch()
+            .general_show_drawing_cursor_row()
             .bind_property("active", self, "show-drawing-cursor")
             .sync_create()
             .build();
@@ -1008,7 +1135,7 @@ impl RnCanvas {
                             accept_drop = true;
                         },
                         Err(e) => {
-                            log::error!("failed to get dropped in file, Err: {e:?}");
+                            tracing::error!("Failed to get dropped in file, Err: {e:?}");
                             appwindow.overlays().dispatch_toast_error(&gettext("Inserting file failed"));
                         },
                     };
@@ -1018,7 +1145,7 @@ impl RnCanvas {
                             accept_drop = true;
                         },
                         Err(e) => {
-                            log::error!("failed to insert dropped in text, Err: {e:?}");
+                            tracing::error!("Failed to insert dropped in text, Err: {e:?}");
                             appwindow.overlays().dispatch_toast_error(&gettext("Inserting text failed"));
                         }
                     };
@@ -1042,7 +1169,7 @@ impl RnCanvas {
         );
 
         // Replace connections
-        let mut connections = self.imp().handlers.borrow_mut();
+        let mut connections = self.imp().connections.borrow_mut();
         if let Some(old) = connections
             .appwindow_output_file
             .replace(appwindow_output_file)
@@ -1105,7 +1232,7 @@ impl RnCanvas {
     pub(crate) fn disconnect_connections(&self) {
         self.clear_output_file_monitor();
 
-        let mut connections = self.imp().handlers.borrow_mut();
+        let mut connections = self.imp().connections.borrow_mut();
         if let Some(old) = connections.appwindow_output_file.take() {
             self.disconnect(old);
         }
@@ -1170,7 +1297,7 @@ impl RnCanvas {
             .sync_create()
             .build();
 
-        let mut connections = self.imp().handlers.borrow_mut();
+        let mut connections = self.imp().connections.borrow_mut();
         if let Some(old) = connections
             .tab_page_output_file
             .replace(tab_page_output_file)
@@ -1190,54 +1317,5 @@ impl RnCanvas {
             na::point![0.0, 0.0],
             na::point![f64::from(self.width()), f64::from(self.height())],
         )
-    }
-
-    /// Centering the view to the origin page
-    ///
-    /// engine rendering then needs to be updated.
-    pub(crate) fn return_to_origin_page(&self) {
-        let zoom = self.engine_ref().camera.zoom();
-        let Some(parent) = self.parent() else {
-            log::debug!("self.parent() is None in `return_to_origin_page()");
-            return
-        };
-
-        let new_offset =
-            if self.engine_ref().document.format.width * zoom <= f64::from(parent.width()) {
-                na::vector![
-                    (self.engine_ref().document.format.width * 0.5 * zoom)
-                        - f64::from(parent.width()) * 0.5,
-                    -Document::SHADOW_WIDTH * zoom
-                ]
-            } else {
-                // If the zoomed format width is larger than the displayed surface, we zoom to a fixed origin
-                na::vector![
-                    -Document::SHADOW_WIDTH * zoom,
-                    -Document::SHADOW_WIDTH * zoom
-                ]
-            };
-
-        let mut widget_flags = self.engine_mut().camera_set_offset(new_offset);
-        widget_flags.merge(self.engine_mut().doc_expand_autoexpand());
-        self.emit_handle_widget_flags(widget_flags);
-    }
-
-    /// Updates the rendering of the background and strokes that are flagged for rerendering for the current viewport.
-    /// To force the rerendering of the background pattern, call regenerate_background_pattern().
-    /// To force the rerendering for all strokes in the current viewport, first flag their rendering as dirty.
-    pub(crate) fn update_rendering_current_viewport(&self) {
-        // background rendering is updated in the layout manager
-        self.queue_resize();
-        // update content rendering
-        self.engine_mut()
-            .update_content_rendering_current_viewport();
-        self.queue_draw();
-    }
-
-    /// updates the background pattern and rendering for the current viewport.
-    /// to be called for example when changing the background pattern or zoom.
-    pub(crate) fn background_regenerate_pattern(&self) {
-        self.engine_mut().background_regenerate_pattern();
-        self.queue_draw();
     }
 }

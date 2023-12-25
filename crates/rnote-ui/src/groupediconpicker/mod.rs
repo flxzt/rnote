@@ -45,7 +45,7 @@ mod imp {
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
+            klass.bind_template();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -139,7 +139,7 @@ impl RnGroupedIconPicker {
 
         self.imp().listbox.get().bind_model(Some(&model), clone!(@weak self as iconpicker => @default-panic, move |obj| {
             let group_name = obj.downcast_ref::<StringObject>().expect(
-                "IconPickerListFactory bind() failed, item has to be of type `StringObject`",
+                "Binding IconPickerListFactory model failed, item has to be of type `StringObject`",
             ).string();
             let icon_names = &groups.iter().find(|x| x.name.as_str() == group_name.as_str()).unwrap().icons;
             let group = RnGroupedIconPickerGroup::new(&group_name.to_string(), icon_names, &iconpicker, generate_display_name);

@@ -1,13 +1,14 @@
 // Imports
 use super::{ModifyState, ResizeCorner, Selector, SelectorState};
 use crate::engine::EngineViewMut;
-use crate::pens::penbehaviour::PenProgress;
 use crate::pens::pensconfig::selectorconfig::SelectorStyle;
-use crate::{DrawOnDocBehaviour, WidgetFlags};
+use crate::snap::SnapCorner;
+use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use p2d::query::PointQuery;
-use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
-use rnote_compose::penevents::{KeyboardKey, ModifierKey};
+use rnote_compose::eventresult::{EventPropagation, EventResult};
+use rnote_compose::ext::{AabbExt, Vector2Ext};
+use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenProgress};
 use rnote_compose::penpath::Element;
 use std::time::Instant;
 
@@ -18,10 +19,10 @@ impl Selector {
         modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let progress = match &mut self.state {
+        let event_result = match &mut self.state {
             SelectorState::Idle => {
                 // Deselect on start
                 let selection_keys = engine_view.store.selection_keys_as_rendered();
@@ -34,7 +35,11 @@ impl Selector {
                     path: vec![element],
                 };
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
             SelectorState::Selecting { path } => {
                 Self::add_to_select_path(
@@ -42,15 +47,30 @@ impl Selector {
                     path,
                     element,
                 );
+                // possibly nudge camera
+                widget_flags |= engine_view
+                    .camera
+                    .nudge_w_pos(element.pos, engine_view.document);
+                widget_flags |= engine_view.document.expand_autoexpand(engine_view.camera);
+                engine_view.store.regenerate_rendering_in_viewport_threaded(
+                    engine_view.tasks_tx.clone(),
+                    false,
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
+                );
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
             SelectorState::ModifySelection {
                 modify_state,
                 selection,
                 selection_bounds,
             } => {
-                let mut pen_progress = PenProgress::InProgress;
+                let mut progress = PenProgress::InProgress;
 
                 match modify_state {
                     ModifyState::Up | ModifyState::Hover(_) => {
@@ -142,44 +162,67 @@ impl Selector {
                                 start_pos: element.pos,
                             }
                         } else if selection_bounds.contains_local_point(&element.pos.into()) {
+                            let snap_corner =
+                                SnapCorner::determine_from_bounds(*selection_bounds, element.pos);
+
                             // clicking inside the selection bounds, triggering translation
                             *modify_state = ModifyState::Translate {
                                 start_pos: element.pos,
                                 current_pos: element.pos,
+                                snap_corner,
                             };
                         } else {
                             // when clicking outside the selection bounds, reset
                             engine_view.store.set_selected_keys(selection, false);
                             self.state = SelectorState::Idle;
 
-                            pen_progress = PenProgress::Finished;
+                            progress = PenProgress::Finished;
                         }
                     }
                     ModifyState::Translate {
                         start_pos: _,
                         current_pos,
+                        snap_corner,
                     } => {
-                        let offset = element.pos - *current_pos;
+                        let snap_corner_pos = match snap_corner {
+                            SnapCorner::TopLeft => selection_bounds.mins.coords,
+                            SnapCorner::TopRight => {
+                                na::vector![selection_bounds.maxs[0], selection_bounds.mins[1]]
+                            }
+                            SnapCorner::BottomLeft => {
+                                na::vector![selection_bounds.mins[0], selection_bounds.maxs[1]]
+                            }
+                            SnapCorner::BottomRight => selection_bounds.maxs.coords,
+                        };
+
+                        let offset = engine_view
+                            .document
+                            .snap_position(snap_corner_pos + (element.pos - *current_pos))
+                            - snap_corner_pos;
 
                         if offset.magnitude()
-                            > Self::TRANSLATE_MAGNITUDE_THRESHOLD / engine_view.camera.total_zoom()
+                            > Self::TRANSLATE_OFFSET_THRESHOLD / engine_view.camera.total_zoom()
                         {
+                            // move selection
                             engine_view.store.translate_strokes(selection, offset);
                             engine_view
                                 .store
                                 .translate_strokes_images(selection, offset);
                             *selection_bounds = selection_bounds.translate(offset);
-
-                            // strokes that were not visible previously might come into view
-                            engine_view.store.regenerate_rendering_in_viewport_threaded(
-                                engine_view.tasks_tx.clone(),
-                                false,
-                                engine_view.camera.viewport(),
-                                engine_view.camera.image_scale(),
-                            );
-
-                            *current_pos = element.pos;
+                            *current_pos += offset;
                         }
+
+                        // possibly nudge camera
+                        widget_flags |= engine_view
+                            .camera
+                            .nudge_w_pos(element.pos, engine_view.document);
+                        widget_flags |= engine_view.document.expand_autoexpand(engine_view.camera);
+                        engine_view.store.regenerate_rendering_in_viewport_threaded(
+                            engine_view.tasks_tx.clone(),
+                            false,
+                            engine_view.camera.viewport(),
+                            engine_view.camera.image_scale(),
+                        );
                     }
                     ModifyState::Rotate {
                         rotation_center,
@@ -217,71 +260,108 @@ impl Selector {
                         start_bounds,
                         start_pos,
                     } => {
-                        let (pos_offset, pivot) = {
-                            let pos_offset = element.pos - *start_pos;
-
-                            match from_corner {
-                                ResizeCorner::TopLeft => (-pos_offset, start_bounds.maxs.coords),
-                                ResizeCorner::TopRight => (
-                                    na::vector![pos_offset[0], -pos_offset[1]],
-                                    na::vector![
-                                        start_bounds.mins.coords[0],
-                                        start_bounds.maxs.coords[1]
-                                    ],
-                                ),
-                                ResizeCorner::BottomLeft => (
-                                    na::vector![-pos_offset[0], pos_offset[1]],
-                                    na::vector![
-                                        start_bounds.maxs.coords[0],
-                                        start_bounds.mins.coords[1]
-                                    ],
-                                ),
-                                ResizeCorner::BottomRight => (pos_offset, start_bounds.mins.coords),
-                            }
-                        };
-
-                        let new_extents = if engine_view
+                        let lock_aspectratio = engine_view
                             .pens_config
                             .selector_config
                             .resize_lock_aspectratio
-                            || modifier_keys.contains(&ModifierKey::KeyboardCtrl)
-                        {
-                            // Lock aspectratio
-                            rnote_compose::helpers::scale_w_locked_aspectratio(
-                                start_bounds.extents(),
-                                start_bounds.extents() + pos_offset,
-                            )
-                        } else {
-                            start_bounds.extents() + pos_offset
-                        }
-                        .maxs(
-                            &((Self::RESIZE_NODE_SIZE
-                                + na::Vector2::<f64>::from_element(Self::ROTATE_NODE_SIZE))
-                                / engine_view.camera.total_zoom()),
-                        );
-                        let scale = new_extents.component_div(&selection_bounds.extents());
+                            || modifier_keys.contains(&ModifierKey::KeyboardCtrl);
 
+                        let snap_corner_pos = match from_corner {
+                            ResizeCorner::TopLeft => start_bounds.mins.coords,
+                            ResizeCorner::TopRight => na::vector![
+                                start_bounds.maxs.coords[0],
+                                start_bounds.mins.coords[1]
+                            ],
+                            ResizeCorner::BottomLeft => na::vector![
+                                start_bounds.mins.coords[0],
+                                start_bounds.maxs.coords[1]
+                            ],
+                            ResizeCorner::BottomRight => start_bounds.maxs.coords,
+                        };
+                        let pivot = match from_corner {
+                            ResizeCorner::TopLeft => start_bounds.maxs.coords,
+                            ResizeCorner::TopRight => na::vector![
+                                start_bounds.mins.coords[0],
+                                start_bounds.maxs.coords[1]
+                            ],
+                            ResizeCorner::BottomLeft => na::vector![
+                                start_bounds.maxs.coords[0],
+                                start_bounds.mins.coords[1]
+                            ],
+                            ResizeCorner::BottomRight => start_bounds.mins.coords,
+                        };
+                        let start_offset = if !lock_aspectratio {
+                            engine_view
+                                .document
+                                .snap_position(snap_corner_pos + (element.pos - *start_pos))
+                                - snap_corner_pos
+                        } else {
+                            element.pos - *start_pos
+                        };
+                        let start_offset = match from_corner {
+                            ResizeCorner::TopLeft => -start_offset,
+                            ResizeCorner::TopRight => {
+                                na::vector![start_offset[0], -start_offset[1]]
+                            }
+                            ResizeCorner::BottomLeft => {
+                                na::vector![-start_offset[0], start_offset[1]]
+                            }
+                            ResizeCorner::BottomRight => start_offset,
+                        };
+
+                        let min_extents = (Self::RESIZE_NODE_SIZE
+                            + na::Vector2::<f64>::from_element(Self::ROTATE_NODE_SIZE))
+                            / engine_view.camera.total_zoom();
+
+                        let scale = if lock_aspectratio {
+                            let scale = (start_bounds.extents() + start_offset)
+                                .maxs(&min_extents)
+                                .component_div(&selection_bounds.extents());
+                            let scale_uniform = (scale[0] + scale[1]) * 0.5;
+                            na::Vector2::<f64>::from_element(scale_uniform)
+                        } else {
+                            (start_bounds.extents() + start_offset)
+                                .maxs(&min_extents)
+                                .component_div(&selection_bounds.extents())
+                        };
+
+                        // resize strokes
                         engine_view
                             .store
                             .scale_strokes_with_pivot(selection, scale, pivot);
                         engine_view
                             .store
                             .scale_strokes_images_with_pivot(selection, scale, pivot);
-
                         *selection_bounds = selection_bounds
                             .translate(-pivot)
                             .scale_non_uniform(scale)
                             .translate(pivot);
+
+                        // possibly nudge camera
+                        widget_flags |= engine_view
+                            .camera
+                            .nudge_w_pos(element.pos, engine_view.document);
+                        widget_flags |= engine_view.document.expand_autoexpand(engine_view.camera);
+                        engine_view.store.regenerate_rendering_in_viewport_threaded(
+                            engine_view.tasks_tx.clone(),
+                            false,
+                            engine_view.camera.viewport(),
+                            engine_view.camera.image_scale(),
+                        );
                     }
                 }
 
                 widget_flags.store_modified = true;
 
-                pen_progress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress,
+                }
             }
         };
 
-        (progress, widget_flags)
+        (event_result, widget_flags)
     }
 
     pub(super) fn handle_pen_event_up(
@@ -290,12 +370,16 @@ impl Selector {
         _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
         let selector_bounds = self.bounds_on_doc(&engine_view.as_im());
 
-        let progress = match &mut self.state {
-            SelectorState::Idle => PenProgress::Idle,
+        let event_result = match &mut self.state {
+            SelectorState::Idle => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
             SelectorState::Selecting { path } => {
                 let mut progress = PenProgress::Finished;
 
@@ -365,7 +449,11 @@ impl Selector {
                     }
                 }
 
-                progress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress,
+                }
             }
             SelectorState::ModifySelection {
                 modify_state,
@@ -377,11 +465,9 @@ impl Selector {
                     | ModifyState::Rotate { .. }
                     | ModifyState::Resize { .. } => {
                         engine_view.store.update_geometry_for_strokes(selection);
-                        widget_flags.merge(
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera),
-                        );
+                        widget_flags |= engine_view
+                            .document
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
                         engine_view.store.regenerate_rendering_in_viewport_threaded(
                             engine_view.tasks_tx.clone(),
                             false,
@@ -393,7 +479,7 @@ impl Selector {
                             *selection_bounds = new_bounds;
                         }
 
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
                     }
                     _ => {}
@@ -408,11 +494,15 @@ impl Selector {
                     ModifyState::Up
                 };
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
         };
 
-        (progress, widget_flags)
+        (event_result, widget_flags)
     }
 
     pub(super) fn handle_pen_event_proximity(
@@ -421,13 +511,21 @@ impl Selector {
         _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
         let selector_bounds = self.bounds_on_doc(&engine_view.as_im());
 
-        let progress = match &mut self.state {
-            SelectorState::Idle => PenProgress::Idle,
-            SelectorState::Selecting { .. } => PenProgress::InProgress,
+        let event_result = match &mut self.state {
+            SelectorState::Idle => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
+            SelectorState::Selecting { .. } => EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress: PenProgress::InProgress,
+            },
             SelectorState::ModifySelection { modify_state, .. } => {
                 *modify_state = if selector_bounds
                     .map(|b| b.contains_local_point(&element.pos.into()))
@@ -437,11 +535,15 @@ impl Selector {
                 } else {
                     ModifyState::Up
                 };
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
         };
 
-        (progress, widget_flags)
+        (event_result, widget_flags)
     }
 
     pub(super) fn handle_pen_event_keypressed(
@@ -450,26 +552,49 @@ impl Selector {
         modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let progress = match &mut self.state {
+        let event_result = match &mut self.state {
             SelectorState::Idle => match keyboard_key {
                 KeyboardKey::Unicode('a') => {
-                    self.select_all(modifier_keys, engine_view, &mut widget_flags)
+                    self.select_all(modifier_keys, engine_view, &mut widget_flags);
+                    EventResult {
+                        handled: true,
+                        propagate: EventPropagation::Stop,
+                        progress: PenProgress::InProgress,
+                    }
                 }
-                _ => PenProgress::InProgress,
+                _ => EventResult {
+                    handled: false,
+                    propagate: EventPropagation::Proceed,
+                    progress: PenProgress::InProgress,
+                },
             },
             SelectorState::Selecting { .. } => match keyboard_key {
                 KeyboardKey::Unicode('a') => {
-                    self.select_all(modifier_keys, engine_view, &mut widget_flags)
+                    self.select_all(modifier_keys, engine_view, &mut widget_flags);
+                    EventResult {
+                        handled: true,
+                        propagate: EventPropagation::Stop,
+                        progress: PenProgress::InProgress,
+                    }
                 }
-                _ => PenProgress::InProgress,
+                _ => EventResult {
+                    handled: false,
+                    propagate: EventPropagation::Proceed,
+                    progress: PenProgress::InProgress,
+                },
             },
             SelectorState::ModifySelection { selection, .. } => {
                 match keyboard_key {
                     KeyboardKey::Unicode('a') => {
-                        self.select_all(modifier_keys, engine_view, &mut widget_flags)
+                        self.select_all(modifier_keys, engine_view, &mut widget_flags);
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::InProgress,
+                        }
                     }
                     KeyboardKey::Unicode('d') => {
                         //Duplicate selection
@@ -483,29 +608,45 @@ impl Selector {
                                 engine_view.camera.image_scale(),
                             );
 
-                            widget_flags.merge(engine_view.store.record(Instant::now()));
+                            widget_flags |= engine_view.store.record(Instant::now());
                             widget_flags.resize = true;
                             widget_flags.store_modified = true;
                         }
-                        PenProgress::Finished
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::Finished,
+                        }
                     }
                     KeyboardKey::Delete | KeyboardKey::BackSpace => {
                         engine_view.store.set_trashed_keys(selection, true);
-                        widget_flags.merge(super::cancel_selection(selection, engine_view));
+                        widget_flags |= super::cancel_selection(selection, engine_view);
                         self.state = SelectorState::Idle;
-                        PenProgress::Finished
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::Finished,
+                        }
                     }
                     KeyboardKey::Escape => {
-                        widget_flags.merge(super::cancel_selection(selection, engine_view));
+                        widget_flags |= super::cancel_selection(selection, engine_view);
                         self.state = SelectorState::Idle;
-                        PenProgress::Finished
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::Finished,
+                        }
                     }
-                    _ => PenProgress::InProgress,
+                    _ => EventResult {
+                        handled: false,
+                        propagate: EventPropagation::Proceed,
+                        progress: PenProgress::InProgress,
+                    },
                 }
             }
         };
 
-        (progress, widget_flags)
+        (event_result, widget_flags)
     }
 
     pub(super) fn handle_pen_event_text(
@@ -513,38 +654,62 @@ impl Selector {
         _text: String,
         _now: Instant,
         _engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
 
-        let progress = match &mut self.state {
-            SelectorState::Idle => PenProgress::Idle,
-            SelectorState::Selecting { .. } => PenProgress::InProgress,
-            SelectorState::ModifySelection { .. } => PenProgress::InProgress,
+        let event_result = match &mut self.state {
+            SelectorState::Idle => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
+            SelectorState::Selecting { .. } => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
+            SelectorState::ModifySelection { .. } => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::InProgress,
+            },
         };
 
-        (progress, widget_flags)
+        (event_result, widget_flags)
     }
 
     pub(super) fn handle_pen_event_cancel(
         &mut self,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let progress = match &mut self.state {
-            SelectorState::Idle => PenProgress::Idle,
+        let event_result = match &mut self.state {
+            SelectorState::Idle => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
             SelectorState::Selecting { .. } => {
                 self.state = SelectorState::Idle;
-                PenProgress::Finished
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
             SelectorState::ModifySelection { selection, .. } => {
-                widget_flags.merge(super::cancel_selection(selection, engine_view));
+                widget_flags |= super::cancel_selection(selection, engine_view);
                 self.state = SelectorState::Idle;
-                PenProgress::Finished
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
         };
 
-        (progress, widget_flags)
+        (event_result, widget_flags)
     }
 }

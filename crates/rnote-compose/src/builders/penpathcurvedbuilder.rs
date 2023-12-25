@@ -1,11 +1,11 @@
 // Imports
-use super::penpathbuilderbehaviour::PenPathBuilderCreator;
-use super::{PenPathBuilderBehaviour, PenPathBuilderProgress};
-use crate::penevents::PenEvent;
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
+use crate::eventresult::EventPropagation;
 use crate::penpath::{Element, Segment};
 use crate::shapes::CubicBezier;
 use crate::style::Composer;
-use crate::Constraints;
+use crate::PenEvent;
+use crate::{Constraints, EventResult};
 use crate::{PenPath, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
@@ -27,7 +27,7 @@ pub struct PenPathCurvedBuilder {
     i: usize,
 }
 
-impl PenPathBuilderCreator for PenPathCurvedBuilder {
+impl BuilderCreator for PenPathCurvedBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             state: PenPathCurvedBuilderState::Start,
@@ -37,14 +37,16 @@ impl PenPathBuilderCreator for PenPathCurvedBuilder {
     }
 }
 
-impl PenPathBuilderBehaviour for PenPathCurvedBuilder {
+impl Buildable for PenPathCurvedBuilder {
+    type Emit = Segment;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         _constraints: Constraints,
-    ) -> PenPathBuilderProgress {
-        match (&mut self.state, event) {
+    ) -> EventResult<BuilderProgress<Self::Emit>> {
+        let progress = match (&mut self.state, event) {
             (PenPathCurvedBuilderState::Start, PenEvent::Down { element, .. }) => {
                 self.buffer.push(element);
 
@@ -53,32 +55,38 @@ impl PenPathBuilderBehaviour for PenPathCurvedBuilder {
                         // Here we have enough elements to switch into during state
 
                         self.state = PenPathCurvedBuilderState::During;
-                        PenPathBuilderProgress::EmitContinue(segments)
+                        BuilderProgress::EmitContinue(segments)
                     }
-                    None => PenPathBuilderProgress::InProgress,
+                    None => BuilderProgress::InProgress,
                 }
             }
             (PenPathCurvedBuilderState::During, PenEvent::Down { element, .. }) => {
                 self.buffer.push(element);
 
                 match self.try_build_segments_during() {
-                    Some(shapes) => PenPathBuilderProgress::EmitContinue(shapes),
-                    None => PenPathBuilderProgress::InProgress,
+                    Some(shapes) => BuilderProgress::EmitContinue(shapes),
+                    None => BuilderProgress::InProgress,
                 }
             }
             (_, PenEvent::Up { element, .. }) => {
                 self.buffer.push(element);
 
-                PenPathBuilderProgress::Finished(self.try_build_segments_end())
+                BuilderProgress::Finished(self.try_build_segments_end())
             }
             (_, PenEvent::Proximity { .. })
             | (_, PenEvent::KeyPressed { .. })
-            | (_, PenEvent::Text { .. }) => PenPathBuilderProgress::InProgress,
+            | (_, PenEvent::Text { .. }) => BuilderProgress::InProgress,
             (_, PenEvent::Cancel) => {
                 self.reset();
 
-                PenPathBuilderProgress::Finished(vec![])
+                BuilderProgress::Finished(vec![])
             }
+        };
+
+        EventResult {
+            handled: true,
+            propagate: EventPropagation::Stop,
+            progress,
         }
     }
 

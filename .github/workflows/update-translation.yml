@@ -1,0 +1,71 @@
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'crates/rnote-ui/po/LINGUAS'
+      - 'crates/rnote-ui/po/zh_Hans.po'
+      - 'crates/rnote-ui/po/zh_Hant.po'
+  workflow_dispatch:
+  workflow_call:
+
+name: Update Translation
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+  i18n_zh_Hans2zh_Hant:
+    name: zh_Hans -> zh_Hant
+    runs-on: ubuntu-22.04
+    container: fedora:39
+    permissions:
+      contents: write # needed for pushing the changes
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo dnf install --refresh -y git opencc-tools
+
+      - name: Setup repository
+        run: |
+          git clone -b ${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}} \
+            ${{ github.server_url }}/${{ github.repository }} .
+          git config --global --add safe.directory "$(pwd)"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Generate zh_Hant from zh_Hans
+        run: |
+          cat ./crates/rnote-ui/po/LINGUAS \
+          | sed -e 's|zh_Hans|zh_Hans\nzh_CN\nzh_SG|' \
+                -e 's|zh_Hant|zh_Hant\nzh_HK\nzh_TW|' \
+          | sort -uo ./crates/rnote-ui/po/LINGUAS
+
+          cat ./crates/rnote-ui/po/zh_Hans.po \
+          | sed -e 's|Language: zh_Hans|Language: zh_Hant|' \
+                -e 's|Last-Translator:|Last-Translator: openCC converted|' \
+          | opencc -c /usr/share/opencc/s2twp.json \
+                   -o ./crates/rnote-ui/po/zh_Hant.po
+
+      - name: Commit changes
+        id: commit-changes
+        run: |
+          echo -e "Update traditional Chinese translation\nreferenced issue: 220" \
+          | git commit -a -F - || export failure=$?
+
+          if [ -z $failure ]; then
+            echo "status=true" >> $GITHUB_OUTPUT
+          elif [ $failure = '1' ]; then
+            echo 'No commit made, skip push.'
+            echo "status=false" >> $GITHUB_OUTPUT
+          else
+            exit $failure
+          fi
+      
+      - name: Push changes
+        if: ${{ steps.commit-changes.outputs.status == 'true' }}
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}

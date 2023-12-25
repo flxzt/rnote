@@ -1,9 +1,9 @@
 // Imports
 use super::line::Line;
 use super::CubicBezier;
-use crate::helpers::{KurboHelpers, Vector2Helpers};
-use crate::shapes::ShapeBehaviour;
-use crate::transform::TransformBehaviour;
+use crate::ext::{KurboShapeExt, Vector2Ext};
+use crate::shapes::Shapeable;
+use crate::transform::Transformable;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -23,7 +23,7 @@ pub struct QuadraticBezier {
     pub end: na::Vector2<f64>,
 }
 
-impl TransformBehaviour for QuadraticBezier {
+impl Transformable for QuadraticBezier {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.start += offset;
         self.cp += offset;
@@ -46,18 +46,27 @@ impl TransformBehaviour for QuadraticBezier {
     }
 }
 
-impl ShapeBehaviour for QuadraticBezier {
+impl Shapeable for QuadraticBezier {
     fn bounds(&self) -> p2d::bounding_volume::Aabb {
-        self.to_kurbo().bounding_box().bounds_as_p2d_aabb()
+        self.outline_path().bounding_box().bounds_to_p2d_aabb()
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {
-        let n_splits = super::hitbox_elems_for_shape_len(self.to_kurbo().perimeter(0.25));
+        let n_splits = super::hitbox_elems_for_shape_len(self.outline_path().perimeter(0.25));
 
         self.approx_with_lines(n_splits)
             .into_iter()
             .map(|line| line.bounds())
             .collect()
+    }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        kurbo::QuadBez::new(
+            self.start.to_kurbo_point(),
+            self.cp.to_kurbo_point(),
+            self.end.to_kurbo_point(),
+        )
+        .to_path(0.25)
     }
 }
 
@@ -108,15 +117,6 @@ impl QuadraticBezier {
         }
 
         lines
-    }
-
-    /// Convert to kurbo shape.
-    pub fn to_kurbo(&self) -> kurbo::QuadBez {
-        kurbo::QuadBez::new(
-            self.start.to_kurbo_point(),
-            self.cp.to_kurbo_point(),
-            self.end.to_kurbo_point(),
-        )
     }
 }
 

@@ -25,12 +25,13 @@ pub use tools::Tools;
 pub use typewriter::Typewriter;
 
 // Imports
-use self::penbehaviour::PenProgress;
 use crate::engine::{EngineView, EngineViewMut};
-use crate::{DrawOnDocBehaviour, WidgetFlags};
+use crate::{DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
 use piet_cairo::CairoRenderContext;
-use rnote_compose::penevents::PenEvent;
+use rnote_compose::penevent::PenProgress;
+use rnote_compose::EventResult;
+use rnote_compose::PenEvent;
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
 
@@ -100,7 +101,7 @@ impl PenBehaviour for Pen {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         match self {
             Pen::Brush(brush) => brush.handle_event(event, now, engine_view),
             Pen::Shaper(shaper) => shaper.handle_event(event, now, engine_view),
@@ -140,7 +141,7 @@ impl PenBehaviour for Pen {
     }
 }
 
-impl DrawOnDocBehaviour for Pen {
+impl DrawableOnDoc for Pen {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<p2d::bounding_volume::Aabb> {
         match self {
             Pen::Brush(brush) => brush.bounds_on_doc(engine_view),
@@ -225,7 +226,7 @@ impl std::str::FromStr for PenStyle {
             "selector" => Ok(Self::Selector),
             "tools" => Ok(Self::Tools),
             s => Err(anyhow::anyhow!(
-                "PenStyle::from_str() failed, invalid name {s}"
+                "Creating PenStyle from &str failed, invalid name {s}"
             )),
         }
     }

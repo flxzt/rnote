@@ -3,7 +3,7 @@ use p2d::bounding_volume::Aabb;
 use rand::{Rng, SeedableRng};
 
 /// Matches when a Xml header is present
-const XML_HEADER_REGEX: &str = r#"<\?xml[^\?>]*\?>"#;
+const XML_HEADER_REGEX: &str = r"<\?xml[^\?>]*\?>";
 
 /// Check if a Xml header is present
 pub fn check_xml_header(svg: &str) -> bool {

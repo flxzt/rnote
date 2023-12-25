@@ -1,13 +1,14 @@
 // Imports
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
-use crate::{DrawOnDocBehaviour, WidgetFlags};
+use crate::{DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
-use rnote_compose::penevents::PenEvent;
+use rnote_compose::penevent::{PenEvent, PenProgress};
+use rnote_compose::EventResult;
 use std::time::Instant;
 
 /// Types that are pens.
-pub trait PenBehaviour: DrawOnDocBehaviour {
+pub trait PenBehaviour: DrawableOnDoc {
     /// Init the pen.
     ///
     /// Should be called right after creating a new pen instance.
@@ -28,7 +29,7 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags);
+    ) -> (EventResult<PenProgress>, WidgetFlags);
 
     /// Fetch clipboard content from the pen.
     ///
@@ -42,8 +43,8 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
         let (sender, receiver) =
             oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
         rayon::spawn(move || {
-            if let Err(e) = sender.send(Ok((vec![], WidgetFlags::default()))) {
-                log::error!("sending (empty) clipboard content in `fetch_clipboard_content()` default impl failed, Err: {e:?}")
+            if sender.send(Ok((vec![], WidgetFlags::default()))).is_err() {
+                tracing::error!("Sending (empty) clipboard content in `fetch_clipboard_content()` default impl failed, receiver already dropped.")
             }
         });
         receiver
@@ -61,17 +62,10 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
         let (sender, receiver) =
             oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
         rayon::spawn(move || {
-            if let Err(e) = sender.send(Ok((vec![], WidgetFlags::default()))) {
-                log::error!("sending (empty) clipboard content in `cut_clipboard_content()` default impl failed, Err: {e:?}")
+            if sender.send(Ok((vec![], WidgetFlags::default()))).is_err() {
+                tracing::error!("Sending (empty) clipboard content in `cut_clipboard_content()` default impl failed, receiver already dropped")
             }
         });
         receiver
     }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum PenProgress {
-    Idle,
-    InProgress,
-    Finished,
 }

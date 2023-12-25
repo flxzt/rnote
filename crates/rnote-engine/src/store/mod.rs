@@ -18,7 +18,7 @@ use self::chrono_comp::StrokeLayer;
 use crate::engine::EngineSnapshot;
 use crate::strokes::Stroke;
 use crate::WidgetFlags;
-use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 use std::collections::VecDeque;
@@ -66,9 +66,6 @@ impl Default for HistoryEntry {
 /// The systems are implemented as methods on StrokesStore, loosely categorized to the different components (but often modify others as well).
 /// Most systems take a key or a slice of keys, and iterate with them over the different components.
 /// There also is a different category of methods which return filtered keys.
-/// For example: [StrokeStore::keys_sorted_chrono] returns the keys in chronological ordering,
-///     [StrokeStore::selection_keys_as_rendered] filters and returns only the selection keys in the order which should be drawn/rendered).
-
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "stroke_store")]
 pub struct StrokeStore {
@@ -130,7 +127,7 @@ impl StrokeStore {
     pub(crate) fn import_from_snapshot(&mut self, snapshot: &EngineSnapshot) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        widget_flags.merge(self.clear());
+        widget_flags |= self.clear();
         self.stroke_components = Arc::clone(&snapshot.stroke_components);
         self.chrono_components = Arc::clone(&snapshot.chrono_components);
         self.chrono_counter = snapshot.chrono_counter;
@@ -140,8 +137,7 @@ impl StrokeStore {
         self.rebuild_trash_components_slotmap();
         self.rebuild_render_components_slotmap();
         self.rebuild_rtree();
-        widget_flags.merge(self.clear_history(self.create_history_entry()));
-
+        widget_flags |= self.clear_history(self.create_history_entry());
         widget_flags
     }
 
@@ -215,7 +211,7 @@ impl StrokeStore {
                 self.live_index -= 1;
             }
         } else {
-            log::debug!("state has not changed, no need to record");
+            tracing::debug!("State has not changed, no need to record.");
         }
 
         widget_flags.hide_undo = Some(!self.can_undo());
@@ -240,7 +236,7 @@ impl StrokeStore {
             let current = self.create_history_entry();
             self.history[self.live_index] = current;
         } else {
-            log::debug!("state has not changed, no need to update current state to history");
+            tracing::debug!("State has not changed, no need to update history with current state.");
         }
 
         widget_flags.hide_undo = Some(!self.can_undo());
@@ -315,7 +311,11 @@ impl StrokeStore {
     /// Optionally a desired layer can be specified, or the default stroke layer is used.
     ///
     /// The stroke then needs to update its rendering.
-    pub fn insert_stroke(&mut self, stroke: Stroke, layer: Option<StrokeLayer>) -> StrokeKey {
+    pub(crate) fn insert_stroke(
+        &mut self,
+        stroke: Stroke,
+        layer: Option<StrokeLayer>,
+    ) -> StrokeKey {
         let bounds = stroke.bounds();
         let layer = layer.unwrap_or_else(|| stroke.extract_default_layer());
 
@@ -337,7 +337,8 @@ impl StrokeStore {
     }
 
     /// Permanently remove a stroke with the given key from the store.
-    pub fn remove_stroke(&mut self, key: StrokeKey) -> Option<Stroke> {
+    #[allow(unused)]
+    pub(crate) fn remove_stroke(&mut self, key: StrokeKey) -> Option<Stroke> {
         Arc::make_mut(&mut self.trash_components).remove(key);
         Arc::make_mut(&mut self.selection_components).remove(key);
         Arc::make_mut(&mut self.chrono_components).remove(key);

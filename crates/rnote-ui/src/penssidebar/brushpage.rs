@@ -2,8 +2,8 @@
 use crate::{RnAppWindow, RnCanvasWrapper, RnStrokeWidthPicker};
 use adw::prelude::*;
 use gtk4::{
-    glib, glib::clone, subclass::prelude::*, CompositeTemplate, ListBox, MenuButton, Popover,
-    SpinButton,
+    glib, glib::clone, subclass::prelude::*, Button, CompositeTemplate, ListBox, MenuButton,
+    Popover,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::PenPathBuilderType;
@@ -21,6 +21,10 @@ mod imp {
         #[template_child]
         pub(crate) brushstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
+        pub(crate) brushstyle_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) brushstyle_popover_close_button: TemplateChild<Button>,
+        #[template_child]
         pub(crate) brushstyle_listbox: TemplateChild<ListBox>,
         #[template_child]
         pub(crate) brushstyle_marker_row: TemplateChild<adw::ActionRow>,
@@ -33,6 +37,8 @@ mod imp {
         #[template_child]
         pub(crate) brushconfig_popover: TemplateChild<Popover>,
         #[template_child]
+        pub(crate) brushconfig_popover_close_button: TemplateChild<Button>,
+        #[template_child]
         pub(crate) brush_buildertype_listbox: TemplateChild<ListBox>,
         #[template_child]
         pub(crate) brush_buildertype_simple: TemplateChild<adw::ActionRow>,
@@ -43,7 +49,7 @@ mod imp {
         #[template_child]
         pub(crate) solidstyle_pressure_curves_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub(crate) texturedstyle_density_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) texturedstyle_density_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(crate) texturedstyle_distribution_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -57,7 +63,7 @@ mod imp {
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
+            klass.bind_template();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -188,6 +194,20 @@ impl RnBrushPage {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
+        let brushstyle_popover = imp.brushstyle_popover.get();
+        let brushconfig_popover = imp.brushconfig_popover.get();
+
+        // Popovers
+        imp.brushstyle_popover_close_button.connect_clicked(
+            clone!(@weak brushstyle_popover => move |_| {
+                brushstyle_popover.popdown();
+            }),
+        );
+        imp.brushconfig_popover_close_button.connect_clicked(
+            clone!(@weak brushconfig_popover => move |_| {
+                brushconfig_popover.popdown();
+            }),
+        );
 
         // Stroke width
         imp.stroke_width_picker
@@ -202,17 +222,17 @@ impl RnBrushPage {
             clone!(@weak self as brushpage, @weak appwindow => move |picker, _| {
                 let stroke_width = picker.stroke_width();
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let engine = &mut *canvas.engine_mut();
+                let brush_style = canvas.engine_ref().pens_config.brush_config.style;
 
-                match engine.pens_config.brush_config.style {
+                match brush_style {
                     BrushStyle::Marker => {
-                        engine.pens_config.brush_config.marker_options.stroke_width = stroke_width;
+                        canvas.engine_mut().pens_config.brush_config.marker_options.stroke_width = stroke_width;
                     },
                     BrushStyle::Solid => {
-                        engine.pens_config.brush_config.solid_options.stroke_width = stroke_width;
+                        canvas.engine_mut().pens_config.brush_config.solid_options.stroke_width = stroke_width;
                     },
                     BrushStyle::Textured => {
-                        engine.pens_config.brush_config.textured_options.stroke_width = stroke_width;
+                        canvas.engine_mut().pens_config.brush_config.textured_options.stroke_width = stroke_width;
                     },
                 }
             }),
@@ -263,20 +283,17 @@ impl RnBrushPage {
 
         // Textured style
         // Density
-        imp.texturedstyle_density_spinbutton
-            .get()
-            .set_increments(0.1, 2.0);
-        imp.texturedstyle_density_spinbutton
+        imp.texturedstyle_density_row
             .get()
             .set_range(TexturedOptions::DENSITY_MIN, TexturedOptions::DENSITY_MAX);
         // set value after the range!
-        imp.texturedstyle_density_spinbutton
+        imp.texturedstyle_density_row
             .get()
             .set_value(TexturedOptions::default().density);
 
-        imp.texturedstyle_density_spinbutton.get().connect_value_changed(
-            clone!(@weak appwindow => move |spinbutton| {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.brush_config.textured_options.density = spinbutton.value();
+        imp.texturedstyle_density_row.get().connect_changed(
+            clone!(@weak appwindow => move |row| {
+                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.brush_config.textured_options.density = row.value();
             }),
         );
 
@@ -296,7 +313,7 @@ impl RnBrushPage {
             .clone();
 
         self.set_solidstyle_pressure_curve(brush_config.solid_options.pressure_curve);
-        imp.texturedstyle_density_spinbutton
+        imp.texturedstyle_density_row
             .set_value(brush_config.textured_options.density);
         self.set_texturedstyle_distribution_variant(brush_config.textured_options.distribution);
 

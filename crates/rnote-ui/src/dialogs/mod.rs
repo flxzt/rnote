@@ -1,4 +1,4 @@
-// gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not yet stable
+// gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not suitable for a async flow
 #![allow(deprecated)]
 
 // Modules
@@ -75,15 +75,13 @@ pub(crate) async fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas)
         "clear" => {
             let prev_empty = canvas.empty();
 
-            let mut widget_flags = canvas.engine_mut().clear();
-            canvas.return_to_origin_page();
-            widget_flags.merge(canvas.engine_mut().doc_resize_autoexpand());
+            let widget_flags = canvas.engine_mut().clear();
+            appwindow.handle_widget_flags(widget_flags, canvas);
+
             if !prev_empty {
                 canvas.set_unsaved_changes(true);
+                canvas.set_empty(true);
             }
-            canvas.set_empty(true);
-            canvas.update_rendering_current_viewport();
-            appwindow.handle_widget_flags(widget_flags, canvas);
         }
         _ => {
             // Cancel
@@ -99,14 +97,12 @@ pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     dialog.set_transient_for(Some(appwindow));
 
     let new_doc = |appwindow: &RnAppWindow, canvas: &RnCanvas| {
-        let mut widget_flags = canvas.engine_mut().clear();
-        canvas.return_to_origin_page();
-        widget_flags.merge(canvas.engine_mut().doc_resize_autoexpand());
-        canvas.update_rendering_current_viewport();
+        let widget_flags = canvas.engine_mut().clear();
+        appwindow.handle_widget_flags(widget_flags, canvas);
+
         canvas.set_unsaved_changes(false);
         canvas.set_empty(true);
         canvas.set_output_file(None);
-        appwindow.handle_widget_flags(widget_flags, canvas);
     };
 
     if !canvas.unsaved_changes() {
@@ -124,13 +120,14 @@ pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
                         appwindow.overlays().progressbar_start_pulsing();
 
                         if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                            tracing::error!("Saving document failed before creating new document, Err: {e:?}");
+
                             canvas.set_output_file(None);
-
-                            log::error!("saving document failed, Error: `{e:?}`");
                             appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
+                            appwindow.overlays().progressbar_abort();
+                        } else {
+                            appwindow.overlays().progressbar_finish();
                         }
-
-                        appwindow.overlays().progressbar_finish();
                         // No success toast on saving without dialog, success is already indicated in the header title
 
                         // only create new document if saving was successful
@@ -176,7 +173,7 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
     {
         Some(p)
     } else {
-        appwindow.workspacebrowser().dirlist_dir()
+        appwindow.sidebar().workspacebrowser().dirlist_dir()
     };
 
     // Handle possible file collisions for new files
@@ -254,10 +251,13 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
                 if let Err(e) = canvas.save_document_to_file(&save_file).await {
                     canvas.set_output_file(None);
 
-                    log::error!("saving document failed, Error: `{e:?}`");
+                    tracing::error!("Saving document failed before closing tab, Err: {e:?}");
                     appwindow
                         .overlays()
                         .dispatch_toast_error(&gettext("Saving document failed"));
+                    appwindow.overlays().progressbar_abort();
+                } else {
+                    appwindow.overlays().progressbar_finish();
                 }
 
                 appwindow.overlays().progressbar_finish();
@@ -301,7 +301,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         {
             Some(p)
         } else {
-            appwindow.workspacebrowser().dirlist_dir()
+            appwindow.sidebar().workspacebrowser().dirlist_dir()
         };
 
         // Handle possible file collisions for new files
@@ -402,10 +402,10 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
                     .canvas();
 
                 if let Err(e) = canvas.save_document_to_file(&save_file).await {
-                    canvas.set_output_file(None);
-                    close = false;
+                    tracing::error!("Saving document failed before closing window, Err: `{e:?}`");
 
-                    log::error!("saving document failed, Error: `{e:?}`");
+                    close = false;
+                    canvas.set_output_file(None);
                     appwindow
                         .overlays()
                         .dispatch_toast_error(&gettext("Saving document failed"));
@@ -462,12 +462,14 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     );
 
     let Some(initial_entry) = appwindow
+        .sidebar()
         .workspacebrowser()
         .workspacesbar()
-        .selected_workspacelistentry() else {
-            log::warn!("tried to edit workspace entry in dialog, but no workspace is selected");
-            return;
-        };
+        .selected_workspacelistentry()
+    else {
+        tracing::warn!("Tried to edit workspace entry in dialog, but no workspace is selected.");
+        return;
+    };
 
     // set initial dialog UI on popup
     preview_row.entry().replace_data(&initial_entry);
@@ -526,7 +528,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
                         }
                     }
                     Err(e) => {
-                        log::debug!("did not select new folder for workspacerow (Error or dialog dismissed by user), {e:?}");
+                        tracing::debug!("Did not select new folder for workspacerow (Error or dialog dismissed by user), Err: {e:?}");
                     }
                 }
                 dialog.present();
@@ -540,18 +542,15 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
         ResponseType::Apply => {
             // update the actual selected entry
             appwindow
+                .sidebar()
                 .workspacebrowser()
                 .workspacesbar()
                 .replace_selected_workspacelistentry(preview_row.entry());
             // refreshing the files list
             appwindow
+                .sidebar()
                 .workspacebrowser()
                 .refresh_dirlist_selected_workspace();
-            // And save the state
-            appwindow
-                .workspacebrowser()
-                .workspacesbar()
-                .save_to_settings(&appwindow.app_settings());
         }
         _ => {
             // Cancel

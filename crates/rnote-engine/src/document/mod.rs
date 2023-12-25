@@ -7,10 +7,10 @@ pub use background::Background;
 pub use format::Format;
 
 // Imports
-use crate::{Camera, StrokeStore, WidgetFlags};
+use crate::{Camera, CloneConfig, StrokeStore, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use rnote_compose::helpers::{AabbHelpers, SplitOrder};
-use rnote_compose::Color;
+use rnote_compose::ext::{AabbExt, Vector2Ext};
+use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
 
 #[derive(
@@ -80,7 +80,7 @@ impl std::string::ToString for Layout {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "document")]
 pub struct Document {
     #[serde(rename = "x", with = "rnote_compose::serialize::f64_dp3")]
@@ -97,6 +97,8 @@ pub struct Document {
     pub background: Background,
     #[serde(rename = "layout", alias = "expand_mode")]
     pub layout: Layout,
+    #[serde(rename = "snap_positions")]
+    pub snap_positions: bool,
 }
 
 impl Default for Document {
@@ -104,12 +106,19 @@ impl Default for Document {
         Self {
             x: 0.0,
             y: 0.0,
-            width: Format::default().width,
-            height: Format::default().height,
+            width: Format::default().width(),
+            height: Format::default().height(),
             format: Format::default(),
             background: Background::default(),
             layout: Layout::default(),
+            snap_positions: false,
         }
+    }
+}
+
+impl CloneConfig for Document {
+    fn clone_config(&self) -> Self {
+        self.clone()
     }
 }
 
@@ -123,7 +132,7 @@ impl Document {
         a: 0.35,
     };
 
-    pub fn bounds(&self) -> Aabb {
+    pub(crate) fn bounds(&self) -> Aabb {
         Aabb::new(
             na::point![self.x, self.y],
             na::point![self.x + self.width, self.y + self.height],
@@ -133,12 +142,13 @@ impl Document {
     /// Generate bounds for each page for the doc bounds, extended to fit the format.
     ///
     /// May contain many empty pages (in infinite mode)
-    pub fn pages_bounds(&self, split_order: SplitOrder) -> Vec<Aabb> {
+    #[allow(unused)]
+    pub(crate) fn pages_bounds(&self, split_order: SplitOrder) -> Vec<Aabb> {
         let doc_bounds = self.bounds();
 
-        if self.format.height > 0.0 && self.format.width > 0.0 {
+        if self.format.height() > 0.0 && self.format.width() > 0.0 {
             doc_bounds.split_extended_origin_aligned(
-                na::vector![self.format.width, self.format.height],
+                na::vector![self.format.width(), self.format.height()],
                 split_order,
             )
         } else {
@@ -146,17 +156,18 @@ impl Document {
         }
     }
 
-    pub fn calc_n_pages(&self) -> u32 {
+    #[allow(unused)]
+    pub(crate) fn calc_n_pages(&self) -> u32 {
         // Avoid div by 0
-        if self.format.height > 0.0 && self.format.width > 0.0 {
-            (self.width / self.format.width).ceil() as u32
-                * (self.height / self.format.height).ceil() as u32
+        if self.format.height() > 0.0 && self.format.width() > 0.0 {
+            (self.width / self.format.width()).ceil() as u32
+                * (self.height / self.format.height()).ceil() as u32
         } else {
             0
         }
     }
 
-    pub(crate) fn resize_to_fit_strokes(
+    pub(crate) fn resize_to_fit_content(
         &mut self,
         store: &StrokeStore,
         camera: &Camera,
@@ -170,11 +181,11 @@ impl Document {
                 self.resize_doc_continuous_vertical_layout(store);
             }
             Layout::SemiInfinite => {
-                self.resize_doc_semi_infinite_layout_to_fit_strokes(store);
+                self.resize_doc_semi_infinite_layout_to_fit_content(store);
                 self.expand_doc_semi_infinite_layout(camera.viewport());
             }
             Layout::Infinite => {
-                self.resize_doc_infinite_layout_to_fit_strokes(store);
+                self.resize_doc_infinite_layout_to_fit_content(store);
                 self.expand_doc_infinite_layout(camera.viewport());
             }
         }
@@ -190,19 +201,19 @@ impl Document {
         let mut widget_flags = WidgetFlags::default();
         match self.layout {
             Layout::FixedSize => {
-                // do not resize in fixed size mode, if wanted use resize_doc_to_fit_strokes() for it.
+                // do not resize in fixed size mode, if wanted use resize_to_fit_content() for it.
             }
             Layout::ContinuousVertical => {
                 self.resize_doc_continuous_vertical_layout(store);
                 widget_flags.resize = true;
             }
             Layout::SemiInfinite => {
-                self.resize_doc_semi_infinite_layout_to_fit_strokes(store);
+                self.resize_doc_semi_infinite_layout_to_fit_content(store);
                 self.expand_doc_semi_infinite_layout(camera.viewport());
                 widget_flags.resize = true;
             }
             Layout::Infinite => {
-                self.resize_doc_infinite_layout_to_fit_strokes(store);
+                self.resize_doc_infinite_layout_to_fit_content(store);
                 self.expand_doc_infinite_layout(camera.viewport());
                 widget_flags.resize = true;
             }
@@ -217,12 +228,12 @@ impl Document {
                 // not resizing in these modes, the size is not dependent on the camera
             }
             Layout::SemiInfinite => {
-                // only expand, don't resize to fit strokes
+                // only expand, don't resize to fit content
                 self.expand_doc_semi_infinite_layout(camera.viewport());
                 widget_flags.resize = true;
             }
             Layout::Infinite => {
-                // only expand, don't resize to fit strokes
+                // only expand, don't resize to fit content
                 self.expand_doc_infinite_layout(camera.viewport());
                 widget_flags.resize = true;
             }
@@ -230,10 +241,34 @@ impl Document {
         widget_flags
     }
 
-    fn resize_doc_fixed_size_layout(&mut self, store: &StrokeStore) {
-        let format_height = self.format.height;
+    /// Adds a page when in fixed-size layout.
+    ///
+    /// Returns false when not in fixed-size layout.
+    pub(crate) fn add_page_fixed_size(&mut self) -> bool {
+        if self.layout != Layout::FixedSize {
+            return false;
+        }
+        let format_height = self.format.height();
+        let new_doc_height = self.height + format_height;
+        self.height = new_doc_height;
+        true
+    }
 
-        let new_width = self.format.width;
+    /// Removes a page when in fixed-size layout and the size is not the last page.
+    ///
+    /// Returns false when not in fixed-size layout.
+    pub(crate) fn remove_page_fixed_size(&mut self) -> bool {
+        if self.layout != Layout::FixedSize || self.height <= self.format.height() {
+            return false;
+        }
+        self.height -= self.format.height();
+        true
+    }
+
+    fn resize_doc_fixed_size_layout(&mut self, store: &StrokeStore) {
+        let format_height = self.format.height();
+
+        let new_width = self.format.width();
         // max(1.0) because then 'fraction'.ceil() is at least 1
         let new_height = ((store.calc_height().max(1.0)) / format_height).ceil() * format_height;
 
@@ -244,9 +279,9 @@ impl Document {
     }
 
     fn resize_doc_continuous_vertical_layout(&mut self, store: &StrokeStore) {
-        let padding_bottom = self.format.height;
+        let padding_bottom = self.format.height();
         let new_height = store.calc_height() + padding_bottom;
-        let new_width = self.format.width;
+        let new_width = self.format.width();
 
         self.x = 0.0;
         self.y = 0.0;
@@ -255,8 +290,8 @@ impl Document {
     }
 
     fn expand_doc_semi_infinite_layout(&mut self, viewport: Aabb) {
-        let padding_horizontal = self.format.width * 2.0;
-        let padding_vertical = self.format.height * 2.0;
+        let padding_horizontal = self.format.width() * 2.0;
+        let padding_vertical = self.format.height() * 2.0;
 
         let new_bounds = self.bounds().merged(
             &viewport.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical]),
@@ -269,8 +304,8 @@ impl Document {
     }
 
     fn expand_doc_infinite_layout(&mut self, viewport: Aabb) {
-        let padding_horizontal = self.format.width * 2.0;
-        let padding_vertical = self.format.height * 2.0;
+        let padding_horizontal = self.format.width() * 2.0;
+        let padding_vertical = self.format.height() * 2.0;
 
         let new_bounds = self
             .bounds()
@@ -282,9 +317,9 @@ impl Document {
         self.height = new_bounds.extents()[1];
     }
 
-    fn resize_doc_semi_infinite_layout_to_fit_strokes(&mut self, store: &StrokeStore) {
-        let padding_horizontal = self.format.width * 2.0;
-        let padding_vertical = self.format.height * 2.0;
+    fn resize_doc_semi_infinite_layout_to_fit_content(&mut self, store: &StrokeStore) {
+        let padding_horizontal = self.format.width() * 2.0;
+        let padding_vertical = self.format.height() * 2.0;
 
         let keys = store.stroke_keys_as_rendered();
 
@@ -292,11 +327,8 @@ impl Document {
             new_bounds.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
         } else {
             // If doc is empty, resize to one page with the format size
-            Aabb::new(
-                na::point![0.0, 0.0],
-                na::point![self.format.width, self.format.height],
-            )
-            .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
+            Aabb::new(na::point![0.0, 0.0], self.format.size().into())
+                .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
         };
         self.x = 0.0;
         self.y = 0.0;
@@ -304,9 +336,9 @@ impl Document {
         self.height = new_bounds.extents()[1];
     }
 
-    fn resize_doc_infinite_layout_to_fit_strokes(&mut self, store: &StrokeStore) {
-        let padding_horizontal = self.format.width * 2.0;
-        let padding_vertical = self.format.height * 2.0;
+    fn resize_doc_infinite_layout_to_fit_content(&mut self, store: &StrokeStore) {
+        let padding_horizontal = self.format.width() * 2.0;
+        let padding_vertical = self.format.height() * 2.0;
 
         let keys = store.stroke_keys_as_rendered();
 
@@ -314,15 +346,45 @@ impl Document {
             new_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])
         } else {
             // If doc is empty, resize to one page with the format size
-            Aabb::new(
-                na::point![0.0, 0.0],
-                na::point![self.format.width, self.format.height],
-            )
-            .extend_by(na::vector![padding_horizontal, padding_vertical])
+            Aabb::new(na::point![0.0, 0.0], self.format.size().into())
+                .extend_by(na::vector![padding_horizontal, padding_vertical])
         };
         self.x = new_bounds.mins[0];
         self.y = new_bounds.mins[1];
         self.width = new_bounds.extents()[0];
         self.height = new_bounds.extents()[1];
+    }
+
+    /// Snap the position to the document and pattern grid when `snap_positions` is enabled.
+    ///
+    /// If not, the original coordinates are returned.
+    pub(crate) fn snap_position(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
+        const DOCUMENT_SNAP_DIST: f64 = 10.;
+        let doc_format_size = self.format.size();
+        let pattern_size = self.background.pattern_size;
+
+        if !self.snap_positions {
+            return pos;
+        }
+
+        let snap_to_grid = |pos: na::Vector2<f64>, grid_size: na::Vector2<f64>| {
+            let grid_pos = pos.component_div(&grid_size);
+            grid_size.component_mul(&grid_pos.round())
+        };
+
+        let pos_snapped_pattern = snap_to_grid(pos, pattern_size);
+        let pos_snapped_document = snap_to_grid(pos, doc_format_size);
+
+        let mut pos_snapped = pos_snapped_pattern;
+
+        // If the position is close to the document edges, then it is instead snapped to them.
+        if (pos_snapped_document - pos)[0].abs() < DOCUMENT_SNAP_DIST {
+            pos_snapped[0] = pos_snapped_document[0];
+        }
+        if (pos_snapped_document - pos)[1].abs() < DOCUMENT_SNAP_DIST {
+            pos_snapped[1] = pos_snapped_document[1];
+        }
+
+        pos_snapped
     }
 }

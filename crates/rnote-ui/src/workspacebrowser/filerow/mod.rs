@@ -59,7 +59,7 @@ mod imp {
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
+            klass.bind_template();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -194,8 +194,8 @@ impl RnFileRow {
         self.imp().popovermenu.connect_visible_notify(clone!(@weak self as filerow, @weak appwindow => move |w| {
             if w.get_visible() {
                 if let Some(current_file_path) = filerow.current_file().and_then(|f| f.path()) {
-                    if let Some(selected_pos) = appwindow.workspacebrowser().query_selected_file_path_pos(current_file_path) {
-                        appwindow.workspacebrowser().dirlist_set_selected(selected_pos);
+                    if let Some(selected_pos) = appwindow.sidebar().workspacebrowser().query_selected_file_path_pos(current_file_path) {
+                        appwindow.sidebar().workspacebrowser().dirlist_set_selected(selected_pos);
                     }
                 }
             }
@@ -208,6 +208,9 @@ impl RnFileRow {
         self.imp()
             .action_group
             .add_action(&actions::open(self, appwindow));
+        self.imp()
+            .action_group
+            .add_action(&actions::open_in_default_app(self, appwindow));
         self.imp().action_group.add_action(&actions::rename(self));
         self.imp().action_group.add_action(&actions::trash(self));
         self.imp()

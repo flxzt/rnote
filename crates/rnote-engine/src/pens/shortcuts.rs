@@ -1,6 +1,6 @@
 // Imports
 use super::PenStyle;
-use rnote_compose::penevents::ShortcutKey;
+use rnote_compose::penevent::ShortcutKey;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::ops::{Deref, DerefMut};
@@ -60,7 +60,7 @@ impl Default for Shortcuts {
         map.insert(
             ShortcutKey::StylusPrimaryButton,
             ShortcutAction::ChangePenStyle {
-                style: PenStyle::Selector,
+                style: PenStyle::Eraser,
                 mode: ShortcutMode::Temporary,
             },
         );
@@ -82,35 +82,42 @@ impl Default for Shortcuts {
             ShortcutKey::TouchTwoFingerLongPress,
             ShortcutAction::ChangePenStyle {
                 style: PenStyle::Eraser,
-                mode: ShortcutMode::Temporary,
+                mode: ShortcutMode::Toggle,
+            },
+        );
+        map.insert(
+            ShortcutKey::KeyboardCtrlSpace,
+            ShortcutAction::ChangePenStyle {
+                style: PenStyle::Tools,
+                mode: ShortcutMode::Toggle,
             },
         );
         map.insert(
             ShortcutKey::DrawingPadButton0,
             ShortcutAction::ChangePenStyle {
-                style: PenStyle::Eraser,
-                mode: ShortcutMode::Temporary,
+                style: PenStyle::Brush,
+                mode: ShortcutMode::Permanent,
             },
         );
         map.insert(
             ShortcutKey::DrawingPadButton1,
             ShortcutAction::ChangePenStyle {
-                style: PenStyle::Eraser,
-                mode: ShortcutMode::Temporary,
+                style: PenStyle::Shaper,
+                mode: ShortcutMode::Permanent,
             },
         );
         map.insert(
             ShortcutKey::DrawingPadButton2,
             ShortcutAction::ChangePenStyle {
-                style: PenStyle::Eraser,
-                mode: ShortcutMode::Temporary,
+                style: PenStyle::Typewriter,
+                mode: ShortcutMode::Permanent,
             },
         );
         map.insert(
             ShortcutKey::DrawingPadButton3,
             ShortcutAction::ChangePenStyle {
                 style: PenStyle::Eraser,
-                mode: ShortcutMode::Temporary,
+                mode: ShortcutMode::Permanent,
             },
         );
 

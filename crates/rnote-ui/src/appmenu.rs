@@ -28,7 +28,7 @@ mod imp {
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
+            klass.bind_template();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -79,14 +79,6 @@ impl RnAppMenu {
 
     pub(crate) fn popovermenu(&self) -> PopoverMenu {
         self.imp().popovermenu.get()
-    }
-
-    pub(crate) fn lefthanded_toggle(&self) -> ToggleButton {
-        self.imp().lefthanded_toggle.get()
-    }
-
-    pub(crate) fn righthanded_toggle(&self) -> ToggleButton {
-        self.imp().righthanded_toggle.get()
     }
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {

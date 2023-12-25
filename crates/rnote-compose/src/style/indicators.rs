@@ -1,10 +1,7 @@
-//! Helpers for drawing indicators, edit nodes, guides, etc.
-
 // Imports
 use crate::color;
-use crate::helpers::{AabbHelpers, Vector2Helpers};
-use crate::penevents::PenState;
-use once_cell::sync::Lazy;
+use crate::ext::{AabbExt, Vector2Ext};
+use crate::penevent::PenState;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use piet::RenderContext;
 
@@ -34,8 +31,8 @@ pub fn draw_pos_indicator(
     pos: na::Vector2<f64>,
     zoom: f64,
 ) {
-    static FILL_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_REDS[3].with_alpha(0.690));
-    static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_REDS[4]);
+    const FILL_COLOR: piet::Color = color::GNOME_REDS[3].with_a8(176);
+    const OUTLINE_COLOR: piet::Color = color::GNOME_REDS[4];
 
     let pos_indicator = pos_indicator_shape(node_state, pos, zoom);
 
@@ -43,12 +40,12 @@ pub fn draw_pos_indicator(
         PenState::Up => {}
         PenState::Proximity => {}
         PenState::Down => {
-            cx.fill(pos_indicator, &*FILL_COLOR);
+            cx.fill(pos_indicator, &FILL_COLOR);
         }
     }
     cx.stroke(
         pos_indicator,
-        &*OUTLINE_COLOR,
+        &OUTLINE_COLOR,
         POS_INDICATOR_OUTLINE_WIDTH / zoom,
     );
 }
@@ -87,6 +84,51 @@ pub fn draw_vec_indicator(
     cx.stroke(vec_indicator, &line_color, VEC_INDICATOR_LINE_WIDTH / zoom);
 }
 
+// Finish indicator
+
+/// Finish indicator radius.
+pub const FINISH_INDICATOR_RADIUS: f64 = 5.0;
+/// Finish indicator outline width.
+pub const FINISH_INDICATOR_OUTLINE_WIDTH: f64 = 5.0;
+
+/// A finish indicator shape.
+pub fn finish_indicator_shape(
+    _node_state: PenState,
+    pos: na::Vector2<f64>,
+    zoom: f64,
+) -> kurbo::Circle {
+    kurbo::Circle::new(
+        pos.to_kurbo_point(),
+        (FINISH_INDICATOR_RADIUS - FINISH_INDICATOR_OUTLINE_WIDTH * 0.5) / zoom,
+    )
+}
+
+/// Draw a finish indicator.
+pub fn draw_finish_indicator(
+    cx: &mut impl RenderContext,
+    node_state: PenState,
+    pos: na::Vector2<f64>,
+    zoom: f64,
+) {
+    const FILL_COLOR: piet::Color = color::GNOME_GREENS[3].with_a8(176);
+    const OUTLINE_COLOR: piet::Color = color::GNOME_GREENS[4];
+
+    let finish_indicator = finish_indicator_shape(node_state, pos, zoom);
+
+    match node_state {
+        PenState::Up => {}
+        PenState::Proximity => {}
+        PenState::Down => {
+            cx.fill(finish_indicator, &FILL_COLOR);
+        }
+    }
+    cx.stroke(
+        finish_indicator,
+        &OUTLINE_COLOR,
+        POS_INDICATOR_OUTLINE_WIDTH / zoom,
+    );
+}
+
 // Rectangular node
 
 /// Rectangular node outline width.
@@ -115,26 +157,25 @@ pub fn draw_rectangular_node(
     bounds: Aabb,
     zoom: f64,
 ) {
-    static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[4]);
-    static FILL_STATE_PROXIMITY: Lazy<piet::Color> =
-        Lazy::new(|| color::GNOME_BLUES[0].with_alpha(0.3));
-    static FILL_STATE_DOWN: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[2].with_alpha(0.5));
+    const OUTLINE_COLOR: piet::Color = color::GNOME_BLUES[4];
+    const FILL_STATE_PROXIMITY: piet::Color = color::GNOME_BLUES[0].with_a8(77);
+    const FILL_STATE_DOWN: piet::Color = color::GNOME_BLUES[2].with_a8(128);
 
     let rectangular_node = rectangular_node_shape(node_state, bounds, zoom);
 
     match node_state {
         PenState::Up => {}
         PenState::Proximity => {
-            cx.fill(rectangular_node, &*FILL_STATE_PROXIMITY);
+            cx.fill(rectangular_node, &FILL_STATE_PROXIMITY);
         }
         PenState::Down => {
-            cx.fill(rectangular_node, &*FILL_STATE_DOWN);
+            cx.fill(rectangular_node, &FILL_STATE_DOWN);
         }
     }
 
     cx.stroke(
         rectangular_node,
-        &*OUTLINE_COLOR,
+        &OUTLINE_COLOR,
         RECTANGULAR_NODE_OUTLINE_WIDTH / zoom,
     );
 }
@@ -165,26 +206,25 @@ pub fn draw_circular_node(
     bounding_sphere: BoundingSphere,
     zoom: f64,
 ) {
-    static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[4]);
-    static FILL_STATE_PROXIMITY: Lazy<piet::Color> =
-        Lazy::new(|| color::GNOME_BLUES[0].with_alpha(0.3));
-    static FILL_STATE_DOWN: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[2].with_alpha(0.5));
+    const OUTLINE_COLOR: piet::Color = color::GNOME_BLUES[4];
+    const FILL_STATE_PROXIMITY: piet::Color = color::GNOME_BLUES[0].with_a8(77);
+    const FILL_STATE_DOWN: piet::Color = color::GNOME_BLUES[2].with_a8(128);
 
     let circular_node = circular_node_shape(node_state, bounding_sphere, zoom);
 
     cx.stroke(
         circular_node,
-        &*OUTLINE_COLOR,
+        &OUTLINE_COLOR,
         CIRCULAR_NODE_OUTLINE_WIDTH / zoom,
     );
 
     match node_state {
         PenState::Up => {}
         PenState::Proximity => {
-            cx.fill(circular_node, &*FILL_STATE_PROXIMITY);
+            cx.fill(circular_node, &FILL_STATE_PROXIMITY);
         }
         PenState::Down => {
-            cx.fill(circular_node, &*FILL_STATE_DOWN);
+            cx.fill(circular_node, &FILL_STATE_DOWN);
         }
     }
 }
@@ -202,24 +242,21 @@ pub fn triangular_down_node_shape(
     zoom: f64,
 ) -> kurbo::BezPath {
     let outline_half_width = TRIANGULAR_DOWN_NODE_OUTLINE_WIDTH * 0.5 / zoom;
-    kurbo::BezPath::from_iter(
-        [
-            kurbo::PathEl::MoveTo(kurbo::Point::new(
-                center[0] - size[0] * 0.5 + outline_half_width,
-                center[1] - size[1] * 0.5 + outline_half_width,
-            )),
-            kurbo::PathEl::LineTo(kurbo::Point::new(
-                center[0] + size[0] * 0.5 - outline_half_width,
-                center[1] - size[1] * 0.5 + outline_half_width,
-            )),
-            kurbo::PathEl::LineTo(kurbo::Point::new(
-                center[0],
-                center[1] + size[1] * 0.5 - outline_half_width,
-            )),
-            kurbo::PathEl::ClosePath,
-        ]
-        .into_iter(),
-    )
+    kurbo::BezPath::from_iter([
+        kurbo::PathEl::MoveTo(kurbo::Point::new(
+            center[0] - size[0] * 0.5 + outline_half_width,
+            center[1] - size[1] * 0.5 + outline_half_width,
+        )),
+        kurbo::PathEl::LineTo(kurbo::Point::new(
+            center[0] + size[0] * 0.5 - outline_half_width,
+            center[1] - size[1] * 0.5 + outline_half_width,
+        )),
+        kurbo::PathEl::LineTo(kurbo::Point::new(
+            center[0],
+            center[1] + size[1] * 0.5 - outline_half_width,
+        )),
+        kurbo::PathEl::ClosePath,
+    ])
 }
 
 /// Draw a triangular node.
@@ -230,27 +267,25 @@ pub fn draw_triangular_node(
     size: na::Vector2<f64>,
     zoom: f64,
 ) {
-    static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_ORANGES[4]);
-    static FILL_STATE_PROXIMITY: Lazy<piet::Color> =
-        Lazy::new(|| color::GNOME_ORANGES[0].with_alpha(0.3));
-    static FILL_STATE_DOWN: Lazy<piet::Color> =
-        Lazy::new(|| color::GNOME_ORANGES[3].with_alpha(0.5));
+    const OUTLINE_COLOR: piet::Color = color::GNOME_ORANGES[4];
+    const FILL_STATE_PROXIMITY: piet::Color = color::GNOME_ORANGES[0].with_a8(77);
+    const FILL_STATE_DOWN: piet::Color = color::GNOME_ORANGES[3].with_a8(128);
 
     let triangular_down_node = triangular_down_node_shape(node_state, center, size, zoom);
 
     cx.stroke(
         triangular_down_node.clone(),
-        &*OUTLINE_COLOR,
+        &OUTLINE_COLOR,
         CIRCULAR_NODE_OUTLINE_WIDTH / zoom,
     );
 
     match node_state {
         PenState::Up => {}
         PenState::Proximity => {
-            cx.fill(triangular_down_node, &*FILL_STATE_PROXIMITY);
+            cx.fill(triangular_down_node, &FILL_STATE_PROXIMITY);
         }
         PenState::Down => {
-            cx.fill(triangular_down_node, &*FILL_STATE_DOWN);
+            cx.fill(triangular_down_node, &FILL_STATE_DOWN);
         }
     }
 }

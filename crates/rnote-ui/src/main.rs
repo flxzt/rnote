@@ -14,13 +14,16 @@ pub(crate) mod colorpicker;
 pub(crate) mod config;
 pub(crate) mod dialogs;
 pub(crate) mod env;
+pub(crate) mod filetype;
 pub(crate) mod globals;
 pub(crate) mod groupediconpicker;
 pub(crate) mod iconpicker;
 pub(crate) mod mainheader;
 pub(crate) mod overlays;
+pub(crate) mod penpicker;
 pub(crate) mod penssidebar;
 pub(crate) mod settingspanel;
+pub(crate) mod sidebar;
 pub(crate) mod strokecontentpaintable;
 pub(crate) mod strokecontentpreview;
 pub(crate) mod strokewidthpicker;
@@ -36,12 +39,15 @@ pub(crate) use canvas::RnCanvas;
 pub(crate) use canvasmenu::RnCanvasMenu;
 pub(crate) use canvaswrapper::RnCanvasWrapper;
 pub(crate) use colorpicker::RnColorPicker;
+pub(crate) use filetype::FileType;
 pub(crate) use groupediconpicker::RnGroupedIconPicker;
 pub(crate) use iconpicker::RnIconPicker;
 pub(crate) use mainheader::RnMainHeader;
 pub(crate) use overlays::RnOverlays;
+pub(crate) use penpicker::RnPenPicker;
 pub(crate) use penssidebar::RnPensSideBar;
 pub(crate) use settingspanel::RnSettingsPanel;
+pub(crate) use sidebar::RnSidebar;
 pub(crate) use strokecontentpaintable::StrokeContentPaintable;
 pub(crate) use strokecontentpreview::RnStrokeContentPreview;
 pub(crate) use strokewidthpicker::RnStrokeWidthPicker;
@@ -53,28 +59,33 @@ extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;
 
 // Imports
-use gtk4::{glib, prelude::*};
+use anyhow::Context;
+use gtk4::{gio, glib, prelude::*};
 
 fn main() -> glib::ExitCode {
-    if let Err(e) = setup_logging() {
-        eprintln!("failed to setup logging, Err: {e:?}");
+    if let Err(e) = setup_tracing() {
+        eprintln!("failed to setup tracing, Err: {e:?}");
     }
-
     if let Err(e) = env::setup_env() {
         eprintln!("failed to setup env, Err: {e:?}");
     }
-
     if let Err(e) = setup_i18n() {
         eprintln!("failed to setup i18n, Err: {e:?}");
+    }
+    if let Err(e) = setup_gresources() {
+        eprintln!("failed to setup gresources, Err: {e:?}");
     }
 
     let app = RnApp::new();
     app.run()
 }
 
-fn setup_logging() -> anyhow::Result<()> {
-    pretty_env_logger::try_init_timed()?;
-    log::debug!("... env_logger initialized");
+fn setup_tracing() -> anyhow::Result<()> {
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .try_init()
+        .map_err(|e| anyhow::anyhow!(e))?;
+    tracing::debug!(".. tracing subscriber initialized.");
     Ok(())
 }
 
@@ -86,4 +97,9 @@ fn setup_i18n() -> anyhow::Result<()> {
     gettextrs::bind_textdomain_codeset(config::GETTEXT_PACKAGE, "UTF-8")?;
     gettextrs::textdomain(config::GETTEXT_PACKAGE)?;
     Ok(())
+}
+
+fn setup_gresources() -> anyhow::Result<()> {
+    gio::resources_register_include!("compiled.gresource")
+        .context("Failed to register and include compiled gresource.")
 }

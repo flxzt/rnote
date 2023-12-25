@@ -4,7 +4,7 @@ use gtk4::{
 };
 use once_cell::sync::Lazy;
 use rnote_compose::{color, Color};
-use rnote_engine::utils::GdkRGBAHelpers;
+use rnote_engine::ext::GdkRGBAExt;
 use std::cell::Cell;
 
 mod imp {
@@ -96,7 +96,7 @@ mod imp {
             let custom_css = format!(
                 "@define-color colorpad_color {colorpad_color}; @define-color colorpad_fg_color {colorpad_fg_color};",
             );
-            css.load_from_data(&custom_css);
+            css.load_from_string(&custom_css);
 
             // adding custom css is deprecated.
             // TODO: We should refactor to drawing through snapshot().
@@ -114,7 +114,7 @@ mod imp {
 glib::wrapper! {
     pub(crate) struct RnColorPad(ObjectSubclass<imp::RnColorPad>)
         @extends ToggleButton, Button, Widget,
-        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
+        @implements gtk4::Accessible, gtk4::Actionable, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnColorPad {

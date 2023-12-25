@@ -7,9 +7,9 @@ pub use element::Element;
 pub use segment::Segment;
 
 // Imports
-use crate::helpers::{KurboHelpers, Vector2Helpers};
-use crate::shapes::{CubicBezier, Line, QuadraticBezier, ShapeBehaviour};
-use crate::transform::TransformBehaviour;
+use crate::ext::{KurboShapeExt, Vector2Ext};
+use crate::shapes::{CubicBezier, Line, QuadraticBezier, Shapeable};
+use crate::transform::Transformable;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
@@ -26,7 +26,7 @@ pub struct PenPath {
     pub segments: Vec<Segment>,
 }
 
-impl ShapeBehaviour for PenPath {
+impl Shapeable for PenPath {
     fn bounds(&self) -> Aabb {
         let mut bounds = Aabb::from_points(&[self.start.pos.into()]);
 
@@ -45,7 +45,7 @@ impl ShapeBehaviour for PenPath {
                         end: end.pos,
                     };
 
-                    bounds.merge(&quadbez.to_kurbo().bounding_box().bounds_as_p2d_aabb());
+                    bounds.merge(&quadbez.outline_path().bounding_box().bounds_to_p2d_aabb());
                     prev = *end;
                 }
                 Segment::CubBezTo { cp1, cp2, end } => {
@@ -56,7 +56,7 @@ impl ShapeBehaviour for PenPath {
                         end: end.pos,
                     };
 
-                    bounds.merge(&cubbez.to_kurbo().bounding_box().bounds_as_p2d_aabb());
+                    bounds.merge(&cubbez.outline_path().bounding_box().bounds_to_p2d_aabb());
                     prev = *end;
                 }
             }
@@ -71,9 +71,13 @@ impl ShapeBehaviour for PenPath {
             .flat_map(|(_, hb)| hb)
             .collect()
     }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        kurbo::BezPath::from_iter(self.to_kurbo_el_iter())
+    }
 }
 
-impl TransformBehaviour for PenPath {
+impl Transformable for PenPath {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.start.translate(offset);
         self.segments.iter_mut().for_each(|segment| {
@@ -183,7 +187,7 @@ impl PenPath {
                     };
 
                     let n_splits =
-                        no_subsegments_for_segment_len(quadbez.to_kurbo().perimeter(0.25));
+                        no_subsegments_for_segment_len(quadbez.outline_path().perimeter(0.25));
 
                     hitboxes.push((
                         i,
@@ -204,7 +208,7 @@ impl PenPath {
                     };
 
                     let n_splits =
-                        no_subsegments_for_segment_len(cubbez.to_kurbo().perimeter(0.25));
+                        no_subsegments_for_segment_len(cubbez.outline_path().perimeter(0.25));
 
                     hitboxes.push((
                         i,
@@ -220,13 +224,6 @@ impl PenPath {
         }
 
         hitboxes
-    }
-
-    /// Convert to [kurbo::BezPath].
-    pub fn to_kurbo(&self) -> kurbo::BezPath {
-        let elements = self.to_kurbo_el_iter();
-
-        kurbo::BezPath::from_iter(elements)
     }
 
     /// Convert to [kurbo::BezPath], flattened to the given precision.

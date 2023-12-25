@@ -1,15 +1,15 @@
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-use std::time::Instant;
-
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
-use crate::penevents::{PenEvent, PenState};
+// Imports
+use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
+use crate::eventresult::EventPropagation;
+use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
 use crate::style::{indicators, Composer};
-use crate::Constraints;
+use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use piet::RenderContext;
+use std::time::Instant;
 
 /// 2D single quadrant coordinate system builder.
 #[derive(Debug, Clone)]
@@ -20,7 +20,7 @@ pub struct QuadrantCoordSystem2DBuilder {
     tip_x: na::Vector2<f64>,
 }
 
-impl ShapeBuilderCreator for QuadrantCoordSystem2DBuilder {
+impl BuilderCreator for QuadrantCoordSystem2DBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             tip_y: element.pos,
@@ -29,29 +29,34 @@ impl ShapeBuilderCreator for QuadrantCoordSystem2DBuilder {
     }
 }
 
-impl ShapeBuilderBehaviour for QuadrantCoordSystem2DBuilder {
+impl Buildable for QuadrantCoordSystem2DBuilder {
+    type Emit = Shape;
+
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> ShapeBuilderProgress {
-        match event {
+    ) -> EventResult<BuilderProgress<Self::Emit>> {
+        let progress = match event {
             PenEvent::Down { element, .. } => {
                 self.tip_x = constraints.constrain(element.pos - self.tip_y) + self.tip_y;
+                BuilderProgress::InProgress
             }
-            PenEvent::Up { .. } => {
-                return ShapeBuilderProgress::Finished(
-                    self.state_as_lines()
-                        .iter()
-                        .map(|&line| Shape::Line(line))
-                        .collect::<Vec<Shape>>(),
-                );
-            }
-            _ => {}
-        }
+            PenEvent::Up { .. } => BuilderProgress::Finished(
+                self.state_as_lines()
+                    .iter()
+                    .map(|&line| Shape::Line(line))
+                    .collect::<Vec<Shape>>(),
+            ),
+            _ => BuilderProgress::InProgress,
+        };
 
-        ShapeBuilderProgress::InProgress
+        EventResult {
+            handled: true,
+            propagate: EventPropagation::Stop,
+            progress,
+        }
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {

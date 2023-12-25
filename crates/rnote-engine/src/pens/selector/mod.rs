@@ -2,24 +2,25 @@
 mod penevents;
 
 // Imports
-use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::selectorconfig::SelectorStyle;
+use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut, StrokeContent};
-use crate::render::{self, Svg};
+use crate::render::Svg;
+use crate::snap::SnapCorner;
 use crate::store::StrokeKey;
-use crate::strokes::StrokeBehaviour;
-use crate::{Camera, DrawOnDocBehaviour, RnoteEngine, WidgetFlags};
+use crate::strokes::Content;
+use crate::{Camera, DrawableOnDoc, Engine, WidgetFlags};
 use futures::channel::oneshot;
 use kurbo::Shape;
-use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use p2d::query::PointQuery;
 use piet::RenderContext;
-use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
-use rnote_compose::penevents::{ModifierKey, PenEvent, PenState};
+use rnote_compose::ext::{AabbExt, Vector2Ext};
+use rnote_compose::penevent::{ModifierKey, PenEvent, PenProgress, PenState};
 use rnote_compose::penpath::Element;
 use rnote_compose::style::indicators;
+use rnote_compose::EventResult;
 use rnote_compose::{color, Color};
 use std::time::Instant;
 
@@ -38,6 +39,7 @@ pub(super) enum ModifyState {
     Translate {
         start_pos: na::Vector2<f64>,
         current_pos: na::Vector2<f64>,
+        snap_corner: SnapCorner,
     },
     Rotate {
         rotation_center: na::Point2<f64>,
@@ -128,7 +130,7 @@ impl PenBehaviour for Selector {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         match event {
             PenEvent::Down {
                 element,
@@ -172,6 +174,7 @@ impl PenBehaviour for Selector {
                     let stroke_content_svg = stroke_content.gen_svg(
                         false,
                         false,
+                        false,
                         StrokeContent::CLIPBOARD_EXPORT_MARGIN,
                     )?;
 
@@ -181,8 +184,6 @@ impl PenBehaviour for Selector {
                         StrokeContent::MIME_TYPE.to_string(),
                     ));
                     if let Some(stroke_content_svg) = stroke_content_svg {
-                        let stroke_content_svg_bounds = stroke_content_svg.bounds;
-
                         // Add generated Svg
                         clipboard_content.push((
                             stroke_content_svg.svg_data.clone().into_bytes(),
@@ -190,19 +191,18 @@ impl PenBehaviour for Selector {
                         ));
 
                         // Add rendered Png
-                        let image = render::Image::gen_image_from_svg(
-                            stroke_content_svg,
-                            stroke_content_svg_bounds,
-                            RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
-                        )?
-                        .into_encoded_bytes(image::ImageOutputFormat::Png)?;
+                        let image = stroke_content_svg
+                            .gen_image(Engine::STROKE_EXPORT_IMAGE_SCALE)?
+                            .into_encoded_bytes(image::ImageOutputFormat::Png)?;
                         clipboard_content.push((image, String::from("image/png")));
                     }
                 }
                 Ok((clipboard_content, widget_flags))
             };
-            if let Err(e) = sender.send(result()) {
-                log::error!("sending fetched selector clipboard content failed, Err: {e:?}");
+            if sender.send(result()).is_err() {
+                tracing::error!(
+                    "Sending fetched selector clipboard content failed, receiver already dropped."
+                );
             }
         });
 
@@ -221,7 +221,7 @@ impl PenBehaviour for Selector {
         let stroke_content = if let SelectorState::ModifySelection { selection, .. } = &self.state {
             let c = Some(engine_view.store.cut_stroke_content(selection));
             self.state = SelectorState::Idle;
-            widget_flags.merge(engine_view.store.record(Instant::now()));
+            widget_flags |= engine_view.store.record(Instant::now());
             widget_flags.store_modified = true;
             widget_flags.redraw = true;
             c
@@ -235,6 +235,7 @@ impl PenBehaviour for Selector {
                     let stroke_content_svg = stroke_content.gen_svg(
                         false,
                         false,
+                        false,
                         StrokeContent::CLIPBOARD_EXPORT_MARGIN,
                     )?;
 
@@ -244,8 +245,6 @@ impl PenBehaviour for Selector {
                         StrokeContent::MIME_TYPE.to_string(),
                     ));
                     if let Some(stroke_content_svg) = stroke_content_svg {
-                        let stroke_content_svg_bounds = stroke_content_svg.bounds;
-
                         // Add generated Svg
                         clipboard_content.push((
                             stroke_content_svg.svg_data.clone().into_bytes(),
@@ -253,19 +252,18 @@ impl PenBehaviour for Selector {
                         ));
 
                         // Add rendered Png
-                        let image = render::Image::gen_image_from_svg(
-                            stroke_content_svg,
-                            stroke_content_svg_bounds,
-                            RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
-                        )?
-                        .into_encoded_bytes(image::ImageOutputFormat::Png)?;
+                        let image = stroke_content_svg
+                            .gen_image(Engine::STROKE_EXPORT_IMAGE_SCALE)?
+                            .into_encoded_bytes(image::ImageOutputFormat::Png)?;
                         clipboard_content.push((image, String::from("image/png")));
                     }
                 }
                 Ok((clipboard_content, widget_flags))
             };
-            if let Err(e) = sender.send(result()) {
-                log::error!("sending cut selector clipboard content failed, Err: {e:?}");
+            if sender.send(result()).is_err() {
+                tracing::error!(
+                    "Sending cut selector clipboard content failed, receiver already dropped."
+                );
             }
         });
 
@@ -273,7 +271,7 @@ impl PenBehaviour for Selector {
     }
 }
 
-impl DrawOnDocBehaviour for Selector {
+impl DrawableOnDoc for Selector {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let total_zoom = engine_view.camera.total_zoom();
 
@@ -340,10 +338,10 @@ impl DrawOnDocBehaviour for Selector {
                                     .collect::<Vec<f64>>(),
                             );
 
-                            cx.fill(bez_path.clone(), &*SELECTION_FILL_COLOR);
+                            cx.fill(bez_path.clone(), &Self::SELECTION_FILL_COLOR);
                             cx.stroke_styled(
                                 bez_path,
-                                &*SELECTION_OUTLINE_COLOR,
+                                &Self::SELECTION_OUTLINE_COLOR,
                                 Self::OUTLINE_STROKE_WIDTH / total_zoom,
                                 &stroke_style,
                             );
@@ -364,10 +362,10 @@ impl DrawOnDocBehaviour for Selector {
                                     .collect::<Vec<f64>>(),
                             );
 
-                            cx.fill(select_rect, &*SELECTION_FILL_COLOR);
+                            cx.fill(select_rect, &Self::SELECTION_FILL_COLOR);
                             cx.stroke_styled(
                                 select_rect,
-                                &*SELECTION_OUTLINE_COLOR,
+                                &Self::SELECTION_OUTLINE_COLOR,
                                 Self::OUTLINE_STROKE_WIDTH / total_zoom,
                                 &stroke_style,
                             );
@@ -380,7 +378,7 @@ impl DrawOnDocBehaviour for Selector {
                                     last.pos.to_kurbo_point(),
                                     Self::SELECTING_SINGLE_CIRCLE_RADIUS / total_zoom,
                                 ),
-                                &*SELECTION_OUTLINE_COLOR,
+                                &Self::SELECTION_OUTLINE_COLOR,
                                 Self::OUTLINE_STROKE_WIDTH / total_zoom,
                             );
                         }
@@ -406,7 +404,7 @@ impl DrawOnDocBehaviour for Selector {
 
                             cx.stroke_styled(
                                 bez_path,
-                                &*SELECTION_OUTLINE_COLOR,
+                                &Self::SELECTION_OUTLINE_COLOR,
                                 Self::OUTLINE_STROKE_WIDTH / total_zoom,
                                 &stroke_style,
                             );
@@ -422,7 +420,7 @@ impl DrawOnDocBehaviour for Selector {
                 // Draw the highlight for the selected strokes
                 for stroke in engine_view.store.get_strokes_ref(selection) {
                     if let Err(e) = stroke.draw_highlight(cx, engine_view.camera.total_zoom()) {
-                        log::error!("failed to draw stroke highlight, Err: {e:?}");
+                        tracing::error!("Failed to draw stroke highlight, Err: {e:?}");
                     }
                 }
 
@@ -457,16 +455,9 @@ impl DrawOnDocBehaviour for Selector {
     }
 }
 
-/// The outline color when drawing a selection
-static SELECTION_OUTLINE_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_BRIGHTS[4].with_alpha(0.941));
-/// The fill color when drawing a selection
-static SELECTION_FILL_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_BRIGHTS[2].with_alpha(0.050));
-
 impl Selector {
-    /// The threshold magnitude where above it the translation is applied. In surface coordinates.
-    const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.414;
+    /// The threshold where above it the translation is applied. In surface coordinates.
+    const TRANSLATE_OFFSET_THRESHOLD: f64 = 1.414;
     /// The threshold angle (in radians) where above it the rotation is applied.
     const ROTATE_ANGLE_THRESHOLD: f64 = ((2.0 * std::f64::consts::PI) / 360.0) * 0.2;
     /// The outline stroke width when drawing a selection.
@@ -479,6 +470,10 @@ impl Selector {
     const RESIZE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
     /// Rotate node size, in surface coordinates.
     const ROTATE_NODE_SIZE: f64 = 18.0;
+    /// The outline color when drawing a selection
+    const SELECTION_OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(240);
+    /// The fill color when drawing a selection
+    const SELECTION_FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(13);
 
     fn add_to_select_path(style: SelectorStyle, path: &mut Vec<Element>, element: Element) {
         match style {
@@ -674,11 +669,11 @@ impl Selector {
 
         piet_cx.clip(clip_path);
 
-        piet_cx.fill(selection_rect, &*SELECTION_FILL_COLOR);
+        piet_cx.fill(selection_rect, &Self::SELECTION_FILL_COLOR);
         piet_cx.stroke(
             selection_rect,
-            &*SELECTION_OUTLINE_COLOR,
-            Selector::OUTLINE_STROKE_WIDTH / total_zoom,
+            &Self::SELECTION_OUTLINE_COLOR,
+            Self::OUTLINE_STROKE_WIDTH / total_zoom,
         );
 
         piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
@@ -771,18 +766,16 @@ impl Selector {
         modifier_keys: Vec<ModifierKey>,
         engine_view: &mut EngineViewMut,
         widget_flags: &mut WidgetFlags,
-    ) -> PenProgress {
+    ) {
         if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
             // Select all keys
             let all_strokes = engine_view.store.stroke_keys_as_rendered();
 
             if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&all_strokes) {
                 engine_view.store.set_selected_keys(&all_strokes, true);
-                widget_flags.merge(
-                    engine_view
-                        .doc
-                        .resize_autoexpand(engine_view.store, engine_view.camera),
-                );
+                *widget_flags |= engine_view
+                    .document
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = SelectorState::ModifySelection {
                     modify_state: ModifyState::default(),
@@ -794,7 +787,6 @@ impl Selector {
                 widget_flags.deselect_color_setters = true;
             }
         }
-        PenProgress::InProgress
     }
 }
 
@@ -809,7 +801,7 @@ fn cancel_selection(selection: &[StrokeKey], engine_view: &mut EngineViewMut) ->
         engine_view.camera.image_scale(),
     );
 
-    widget_flags.merge(engine_view.store.record(Instant::now()));
+    widget_flags |= engine_view.store.record(Instant::now());
     widget_flags.store_modified = true;
     widget_flags.resize = true;
     widget_flags

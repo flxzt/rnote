@@ -1,3 +1,5 @@
+use crate::CloneConfig;
+
 // Imports
 use super::PenStyle;
 use serde::{Deserialize, Serialize};
@@ -45,8 +47,8 @@ impl Default for PenModeState {
     }
 }
 
-impl PenModeState {
-    pub fn clone_config(&self) -> Self {
+impl CloneConfig for PenModeState {
+    fn clone_config(&self) -> Self {
         Self {
             pen_mode: self.pen_mode,
             penmode_pen_style: self.penmode_pen_style,
@@ -54,7 +56,9 @@ impl PenModeState {
             ..Default::default()
         }
     }
+}
 
+impl PenModeState {
     pub fn current_style_w_override(&self) -> PenStyle {
         match self.pen_mode {
             PenMode::Pen => self

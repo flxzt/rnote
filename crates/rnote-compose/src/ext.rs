@@ -1,47 +1,9 @@
 // Imports
+use crate::SplitOrder;
 use p2d::bounding_volume::Aabb;
-use serde::{Deserialize, Serialize};
 
-/// Page split direction.
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Serialize,
-    Deserialize,
-    num_derive::FromPrimitive,
-    num_derive::ToPrimitive,
-)]
-#[serde(rename = "split_order")]
-pub enum SplitOrder {
-    /// Split in row-major order.
-    #[serde(rename = "row_major")]
-    RowMajor,
-    /// Split in column-major order.
-    #[serde(rename = "column_major")]
-    ColumnMajor,
-}
-
-impl Default for SplitOrder {
-    fn default() -> Self {
-        Self::RowMajor
-    }
-}
-
-impl TryFrom<u32> for SplitOrder {
-    type Error = anyhow::Error;
-
-    fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!("SplitOrder try_from::<u32>() for value {} failed", value)
-        })
-    }
-}
-
-/// Helpers that extend the Vector2 type
-pub trait Vector2Helpers
+/// Extension trait for [`na::Vector2<f64>`].
+pub trait Vector2Ext
 where
     Self: Sized,
 {
@@ -55,6 +17,8 @@ where
     fn mins_maxs(&self, other: &Self) -> (Self, Self);
     /// calculates the angle self is "ahead" of other (counter clockwise)
     fn angle_ahead(&self, other: &Self) -> f64;
+    /// Round to the next integer
+    fn round(&self) -> Self;
     /// Ceil to the next integer
     fn ceil(&self) -> Self;
     /// Floor to the next integer
@@ -67,9 +31,11 @@ where
     fn from_kurbo_point(kurbo_point: kurbo::Point) -> Self;
     /// Converts from kurbo::Vec2
     fn from_kurbo_vec(kurbo_vec: kurbo::Vec2) -> Self;
+    /// Approximate equality
+    fn approx_eq(&self, other: &Self) -> bool;
 }
 
-impl Vector2Helpers for na::Vector2<f64> {
+impl Vector2Ext for na::Vector2<f64> {
     fn orth_unit(&self) -> Self {
         let rot_90deg = na::Rotation2::new(std::f64::consts::PI * 0.5);
 
@@ -112,6 +78,10 @@ impl Vector2Helpers for na::Vector2<f64> {
         other[1].atan2(other[0]) - self[1].atan2(self[0])
     }
 
+    fn round(&self) -> Self {
+        na::vector![self[0].round(), self[1].round()]
+    }
+
     fn ceil(&self) -> Self {
         na::vector![self[0].ceil(), self[1].ceil()]
     }
@@ -141,10 +111,14 @@ impl Vector2Helpers for na::Vector2<f64> {
     fn from_kurbo_vec(kurbo_vec: kurbo::Vec2) -> Self {
         na::vector![kurbo_vec.x, kurbo_vec.y]
     }
+
+    fn approx_eq(&self, other: &Self) -> bool {
+        approx::relative_eq!(self[0], other[0]) && approx::relative_eq!(self[1], other[1])
+    }
 }
 
-/// Helpers that extend the Aabb type
-pub trait AabbHelpers
+/// Extension trait for [p2d::bounding_volume::Aabb].
+pub trait AabbExt
 where
     Self: Sized,
 {
@@ -202,9 +176,13 @@ where
     fn to_kurbo_rect(&self) -> kurbo::Rect;
     /// Converts a kurbo Rectangle to Aabb
     fn from_kurbo_rect(rect: kurbo::Rect) -> Self;
+    /// Check if the bounds intersect with a tolerance
+    fn intersects_w_tolerance(&self, other: &Self, tolerance: f64) -> bool;
+    /// Approximate equality
+    fn approx_eq(&self, other: &Self) -> bool;
 }
 
-impl AabbHelpers for Aabb {
+impl AabbExt for Aabb {
     fn new_zero() -> Self {
         Aabb::new(na::point![0.0, 0.0], na::point![0.0, 0.0])
     }
@@ -228,7 +206,7 @@ impl AabbHelpers for Aabb {
             || self.maxs[1] < self.mins[1]
         {
             Err(anyhow::anyhow!(
-                "bounds assert_valid() failed, invalid bounds `{:?}`",
+                "Assert bounds valid failed, invalid bounds `{:?}`.",
                 self,
             ))
         } else {
@@ -466,10 +444,22 @@ impl AabbHelpers for Aabb {
     fn from_kurbo_rect(rect: kurbo::Rect) -> Self {
         Aabb::new(na::point![rect.x0, rect.y0], na::point![rect.x1, rect.y1])
     }
+
+    fn intersects_w_tolerance(&self, other: &Self, tolerance: f64) -> bool {
+        let Some(intersection) = self.intersection(other) else {
+            return false;
+        };
+        intersection.extents()[0] > tolerance && intersection.extents()[1] > tolerance
+    }
+
+    fn approx_eq(&self, other: &Self) -> bool {
+        self.mins.coords.approx_eq(&other.mins.coords)
+            && self.maxs.coords.approx_eq(&other.maxs.coords)
+    }
 }
 
-/// Helpers that extend the Affine2 type
-pub trait Affine2Helpers
+/// Extension trait for [`na::Affine2<f64>`].
+pub trait Affine2Ext
 where
     Self: Sized,
 {
@@ -479,7 +469,7 @@ where
     fn from_kurbo(affine: kurbo::Affine) -> Self;
 }
 
-impl Affine2Helpers for na::Affine2<f64> {
+impl Affine2Ext for na::Affine2<f64> {
     fn to_kurbo(self) -> kurbo::Affine {
         let matrix = self.to_homogeneous();
 
@@ -502,73 +492,26 @@ impl Affine2Helpers for na::Affine2<f64> {
     }
 }
 
-/// Scale the source size with a specified max size, while keeping its aspect ratio
-pub fn scale_w_locked_aspectratio(
-    src_size: na::Vector2<f64>,
-    max_size: na::Vector2<f64>,
-) -> na::Vector2<f64> {
-    let ratio = (max_size[0] / src_size[0] + max_size[1] / src_size[1]) / 2.0;
-    src_size * ratio
-}
-
-/// Scales inner bounds in context to new outer bounds
-pub fn scale_inner_bounds_in_context_new_outer_bounds(
-    old_inner_bounds: Aabb,
-    old_outer_bounds: Aabb,
-    new_outer_bounds: Aabb,
-) -> Aabb {
-    let offset = na::vector![
-        new_outer_bounds.mins[0] - old_outer_bounds.mins[0],
-        new_outer_bounds.mins[1] - old_outer_bounds.mins[1]
-    ];
-
-    let scalevector = na::vector![
-        (new_outer_bounds.extents()[0]) / (old_outer_bounds.extents()[0]),
-        (new_outer_bounds.extents()[1]) / (old_outer_bounds.extents()[1])
-    ];
-
-    Aabb::new(
-        na::point![
-            (old_inner_bounds.mins[0] - old_outer_bounds.mins[0]) * scalevector[0]
-                + old_outer_bounds.mins[0]
-                + offset[0],
-            (old_inner_bounds.mins[1] - old_outer_bounds.mins[1]) * scalevector[1]
-                + old_outer_bounds.mins[1]
-                + offset[1]
-        ],
-        na::point![
-            (old_inner_bounds.mins[0] - old_outer_bounds.mins[0]) * scalevector[0]
-                + old_outer_bounds.mins[0]
-                + offset[0]
-                + (old_inner_bounds.extents()[0]) * scalevector[0],
-            (old_inner_bounds.mins[1] - old_outer_bounds.mins[1]) * scalevector[1]
-                + old_outer_bounds.mins[1]
-                + offset[1]
-                + (old_inner_bounds.extents()[1]) * scalevector[1]
-        ],
-    )
-}
-
-/// Helpers that extend types in kurbo that implement kurbo::Shape
-pub trait KurboHelpers
+/// Extension trait for types that implement [kurbo::Shape].
+pub trait KurboShapeExt
 where
     Self: Sized + kurbo::Shape,
 {
     /// Converting the bounds to parry2d aabb bounds
-    fn bounds_as_p2d_aabb(&self) -> Aabb {
+    fn bounds_to_p2d_aabb(&self) -> Aabb {
         let rect = self.bounding_box();
         Aabb::new(na::point![rect.x0, rect.y0], na::point![rect.x1, rect.y1])
     }
 }
 
-impl KurboHelpers for kurbo::PathSeg {}
-impl KurboHelpers for kurbo::Arc {}
-impl KurboHelpers for kurbo::BezPath {}
-impl KurboHelpers for kurbo::Circle {}
-impl KurboHelpers for kurbo::CircleSegment {}
-impl KurboHelpers for kurbo::CubicBez {}
-impl KurboHelpers for kurbo::Ellipse {}
-impl KurboHelpers for kurbo::Line {}
-impl KurboHelpers for kurbo::QuadBez {}
-impl KurboHelpers for kurbo::Rect {}
-impl KurboHelpers for kurbo::RoundedRect {}
+impl KurboShapeExt for kurbo::PathSeg {}
+impl KurboShapeExt for kurbo::Arc {}
+impl KurboShapeExt for kurbo::BezPath {}
+impl KurboShapeExt for kurbo::Circle {}
+impl KurboShapeExt for kurbo::CircleSegment {}
+impl KurboShapeExt for kurbo::CubicBez {}
+impl KurboShapeExt for kurbo::Ellipse {}
+impl KurboShapeExt for kurbo::Line {}
+impl KurboShapeExt for kurbo::QuadBez {}
+impl KurboShapeExt for kurbo::Rect {}
+impl KurboShapeExt for kurbo::RoundedRect {}

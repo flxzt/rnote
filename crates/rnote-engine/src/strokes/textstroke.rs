@@ -1,14 +1,13 @@
 // Imports
-use super::strokebehaviour::GeneratedStrokeImages;
-use super::StrokeBehaviour;
-use crate::{render, strokes::strokebehaviour, Camera, DrawBehaviour};
+use super::Content;
+use crate::{Camera, Drawable};
+use itertools::Itertools;
 use kurbo::Shape;
-use once_cell::sync::Lazy;
-use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::bounding_volume::Aabb;
 use piet::{RenderContext, TextLayout, TextLayoutBuilder};
-use rnote_compose::helpers::{AabbHelpers, Affine2Helpers, Vector2Helpers};
-use rnote_compose::shapes::ShapeBehaviour;
-use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::ext::{AabbExt, Affine2Ext, Vector2Ext};
+use rnote_compose::shapes::Shapeable;
+use rnote_compose::transform::Transformable;
 use rnote_compose::{color, Color, Transform};
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
@@ -132,13 +131,26 @@ impl TextAttribute {
         match self {
             TextAttribute::FontFamily(font_family) => piet_text.font_family(font_family.as_str()).map(
                 piet::TextAttribute::FontFamily)
-                    .ok_or_else(|| anyhow::anyhow!("piet font_family() failed in textattribute try_into_piet() with font family name: {}", font_family)),
+                    .ok_or_else(|| anyhow::anyhow!("query piet font family failed in TextAttribute try_into_piet() with font family name: {}", font_family)),
             TextAttribute::FontSize(font_size) => Ok(piet::TextAttribute::FontSize(font_size)),
             TextAttribute::FontWeight(font_weight) => Ok(piet::TextAttribute::Weight(piet::FontWeight::new(font_weight))),
             TextAttribute::TextColor(color) => Ok(piet::TextAttribute::TextColor(piet::Color::from(color))),
             TextAttribute::Style(style) => Ok(piet::TextAttribute::Style(piet::FontStyle::from(style))),
             TextAttribute::Underline(underline) => Ok(piet::TextAttribute::Underline(underline)),
             TextAttribute::Strikethrough(strikethrough) => Ok(piet::TextAttribute::Strikethrough(strikethrough)),
+        }
+    }
+
+    fn is_same_attribute(&self, other: &TextAttribute) -> bool {
+        match (self, other) {
+            (TextAttribute::FontFamily(_), TextAttribute::FontFamily(_)) => true,
+            (TextAttribute::FontSize(_), TextAttribute::FontSize(_)) => true,
+            (TextAttribute::FontWeight(_), TextAttribute::FontWeight(_)) => true,
+            (TextAttribute::Strikethrough(_), TextAttribute::Strikethrough(_)) => true,
+            (TextAttribute::Underline(_), TextAttribute::Underline(_)) => true,
+            (TextAttribute::Style(_), TextAttribute::Style(_)) => true,
+            (TextAttribute::TextColor(_), TextAttribute::TextColor(_)) => true,
+            (_, _) => false,
         }
     }
 }
@@ -166,7 +178,7 @@ pub struct TextStyle {
     #[serde(rename = "color")]
     pub color: Color,
     #[serde(rename = "max_width")]
-    pub max_width: Option<f64>,
+    max_width: Option<f64>,
     #[serde(rename = "alignment")]
     pub alignment: TextAlignment,
 
@@ -196,6 +208,14 @@ impl TextStyle {
     pub const FONT_SIZE_MAX: f64 = 512.0;
     pub const FONT_WEIGHT_DEFAULT: u16 = 500;
     pub const FONT_COLOR_DEFAULT: Color = Color::BLACK;
+
+    pub fn max_width(&self) -> Option<f64> {
+        self.max_width
+    }
+
+    pub fn set_max_width(&mut self, max_width: Option<f64>) {
+        self.max_width = max_width.map(|w| w.max(0.));
+    }
 
     pub fn build_text_layout<T>(
         &self,
@@ -246,7 +266,7 @@ impl TextStyle {
 
         text_layout_builder
             .build()
-            .map_err(|e| anyhow::anyhow!("{e:?}"))
+            .map_err(|e| anyhow::anyhow!("Building piet text layout failed, Err: {e:?}"))
     }
 
     pub fn untransformed_size<T>(&self, piet_text: &mut T, text: String) -> Option<na::Vector2<f64>>
@@ -311,7 +331,7 @@ impl TextStyle {
     ) -> anyhow::Result<Vec<kurbo::Rect>> {
         let text_layout = self
             .build_text_layout(&mut piet_cairo::CairoText::new(), text)
-            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
+            .map_err(|e| anyhow::anyhow!("Building text layout failed, Err: {e:?}"))?;
 
         let range = if selection_cursor.cur_cursor() >= cursor.cur_cursor() {
             cursor.cur_cursor()..selection_cursor.cur_cursor()
@@ -378,8 +398,8 @@ impl TextStyle {
         transform: &Transform,
         camera: &Camera,
     ) {
-        static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[2]);
-        static FILL_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[1].with_alpha(0.1));
+        const OUTLINE_COLOR: piet::Color = color::GNOME_BLUES[2];
+        const FILL_COLOR: piet::Color = color::GNOME_BLUES[1].with_a8(25);
         let outline_width = 1.5 / camera.total_zoom();
 
         if let Ok(selection_rects) =
@@ -388,8 +408,8 @@ impl TextStyle {
             for selection_rect in selection_rects {
                 let outline = transform.to_kurbo() * selection_rect.to_path(0.5);
 
-                cx.fill(&outline, &*FILL_COLOR);
-                cx.stroke(&outline, &*OUTLINE_COLOR, outline_width);
+                cx.fill(&outline, &FILL_COLOR);
+                cx.stroke(&outline, &OUTLINE_COLOR, outline_width);
             }
         }
     }
@@ -419,7 +439,7 @@ impl Default for TextStroke {
     }
 }
 
-impl TransformBehaviour for TextStroke {
+impl Transformable for TextStroke {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.transform.append_translation_mut(offset);
     }
@@ -433,7 +453,7 @@ impl TransformBehaviour for TextStroke {
     }
 }
 
-impl ShapeBehaviour for TextStroke {
+impl Shapeable for TextStroke {
     fn bounds(&self) -> Aabb {
         let untransformed_size = self
             .text_style
@@ -452,10 +472,9 @@ impl ShapeBehaviour for TextStroke {
         {
             Ok(text_layout) => text_layout,
             Err(e) => {
-                log::error!(
-                    "build_text_layout() failed while calculating the hitboxes, Err: {e:?}"
+                tracing::error!(
+                    "Building text layout failed while calculating the hitboxes, Err: {e:?}"
                 );
-
                 return vec![self.bounds()];
             }
         };
@@ -481,72 +500,17 @@ impl ShapeBehaviour for TextStroke {
 
         hitboxes
     }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        self.bounds().to_kurbo_rect().to_path(0.25)
+    }
 }
 
-impl StrokeBehaviour for TextStroke {
-    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
-        let bounds = self.bounds();
-
-        // We need to generate the svg with the cairo backend, because text layout would differ with the svg backend
-        render::Svg::gen_with_piet_cairo_backend(
-            |cx| {
-                cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
-                self.draw(cx, 1.0)
-            },
-            bounds,
-        )
-    }
-
-    fn gen_images(
-        &self,
-        viewport: Aabb,
-        image_scale: f64,
-    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
-        let bounds = self.bounds();
-
-        if viewport.contains(&bounds) {
-            Ok(GeneratedStrokeImages::Full(vec![
-                render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    bounds,
-                    image_scale,
-                )?,
-            ]))
-        } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
-            Ok(GeneratedStrokeImages::Partial {
-                images: vec![render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    intersection_bounds,
-                    image_scale,
-                )?],
-                viewport,
-            })
-        } else {
-            Ok(GeneratedStrokeImages::Partial {
-                images: vec![],
-                viewport,
-            })
-        }
-    }
-
-    fn draw_highlight(
-        &self,
-        cx: &mut impl piet::RenderContext,
-        total_zoom: f64,
-    ) -> anyhow::Result<()> {
-        const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
-        cx.stroke(
-            self.bounds().to_kurbo_rect(),
-            &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
-            HIGHLIGHT_STROKE_WIDTH / total_zoom,
-        );
-        Ok(())
-    }
-
+impl Content for TextStroke {
     fn update_geometry(&mut self) {}
 }
 
-impl DrawBehaviour for TextStroke {
+impl Drawable for TextStroke {
     fn draw(&self, cx: &mut impl RenderContext, _image_scale: f64) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
@@ -586,7 +550,7 @@ impl TextStroke {
         let text_layout = self
             .text_style
             .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone())
-            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
+            .map_err(|e| anyhow::anyhow!("Building text layout failed, Err: {e:?}"))?;
         let hit_test_point = text_layout.hit_test_point(
             self.transform
                 .affine
@@ -764,18 +728,80 @@ impl TextStroke {
     /// Remove all attributes in the given range.
     pub fn remove_attrs_for_range(&mut self, range: Range<usize>) {
         // partition into attrs that intersect the range, and those who don't and will be retained
-        let (intersecting_attrs, mut retained_attrs): (
-            Vec<RangedTextAttribute>,
-            Vec<RangedTextAttribute>,
-        ) = self
+        let (intersecting_attrs, mut retained_attrs) = Self::get_intersecting_attrs_for_range(
+            &range,
+            self.text_style.ranged_text_attributes.clone(),
+        );
+
+        // Truncate and filter the ranges of intersecting attrs
+        let truncated_attrs = Self::remove_intersecting_attrs_in_range(&range, intersecting_attrs);
+
+        // Set the updated attributes
+        self.text_style.ranged_text_attributes = {
+            retained_attrs.extend(truncated_attrs);
+            retained_attrs
+        };
+    }
+
+    pub fn toggle_attrs_for_range(&mut self, range: Range<usize>, text_attribute: TextAttribute) {
+        let (matching_attributes, mut non_matching_attrs) = self
             .text_style
             .ranged_text_attributes
             .clone()
             .into_iter()
-            .partition(|attr| attr.range.end > range.start && attr.range.start < range.end);
+            .partition(|attr| attr.attribute.is_same_attribute(&text_attribute));
 
-        // Truncate and filter the ranges of intersecting attrs
-        let truncated_attrs = intersecting_attrs
+        let (intersecting_attrs, retained_attrs) =
+            Self::get_intersecting_attrs_for_range(&range, matching_attributes);
+
+        let _bold_weight = piet::FontWeight::BOLD.to_raw();
+        let toggled_attribute = intersecting_attrs
+            .clone()
+            .into_iter()
+            .sorted_by(|a, b| (a.range.end - a.range.start).cmp(&(b.range.end - b.range.start)))
+            // Filter out any that became empty or are contained in the given range
+            .collect::<Vec<RangedTextAttribute>>()
+            .first()
+            .map(|attr| match &attr.attribute {
+                TextAttribute::Strikethrough(strike) => Some(TextAttribute::Strikethrough(!strike)),
+                TextAttribute::Underline(underline) => Some(TextAttribute::Underline(!underline)),
+                TextAttribute::Style(FontStyle::Regular) => {
+                    Some(TextAttribute::Style(FontStyle::Italic))
+                }
+                TextAttribute::Style(FontStyle::Italic) => {
+                    Some(TextAttribute::Style(FontStyle::Regular))
+                }
+                TextAttribute::FontWeight(_bold_weight) => None,
+                _ => Some(text_attribute.clone()),
+            })
+            .unwrap_or_else(|| Some(text_attribute.clone()));
+
+        let truncated_attrs = Self::remove_intersecting_attrs_in_range(&range, intersecting_attrs);
+
+        non_matching_attrs.extend(retained_attrs);
+        non_matching_attrs.extend(truncated_attrs);
+        if let Some(attribute) = toggled_attribute {
+            non_matching_attrs.extend([RangedTextAttribute { attribute, range }]);
+        }
+
+        // Set the updated attributes
+        self.text_style.ranged_text_attributes = non_matching_attrs;
+    }
+
+    fn get_intersecting_attrs_for_range(
+        range: &Range<usize>,
+        ranged_text_attributes: Vec<RangedTextAttribute>,
+    ) -> (Vec<RangedTextAttribute>, Vec<RangedTextAttribute>) {
+        ranged_text_attributes
+            .into_iter()
+            .partition(|attr| attr.range.end > range.start && attr.range.start < range.end)
+    }
+
+    fn remove_intersecting_attrs_in_range(
+        range: &Range<usize>,
+        intersecting_attrs: Vec<RangedTextAttribute>,
+    ) -> Vec<RangedTextAttribute> {
+        intersecting_attrs
             .into_iter()
             .flat_map(|mut attr| {
                 if attr.range.start <= range.start && attr.range.end >= range.end {
@@ -801,13 +827,7 @@ impl TextStroke {
             })
             // Filter out any that became empty or are contained in the given range
             .filter(|attr| !attr.range.is_empty())
-            .collect::<Vec<RangedTextAttribute>>();
-
-        // Set the updated attributes
-        self.text_style.ranged_text_attributes = {
-            retained_attrs.extend(truncated_attrs);
-            retained_attrs
-        };
+            .collect::<Vec<RangedTextAttribute>>()
     }
 
     pub fn update_selection_entire_text(

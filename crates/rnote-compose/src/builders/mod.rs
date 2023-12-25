@@ -1,5 +1,7 @@
 // Modules
 mod arrowbuilder;
+/// Buildable trait.
+pub mod buildable;
 mod coordsystem2dbuilder;
 mod coordsystem3dbuilder;
 mod cubbezbuilder;
@@ -7,14 +9,13 @@ mod ellipsebuilder;
 mod fociellipsebuilder;
 mod gridbuilder;
 mod linebuilder;
-mod penpathbuilderbehaviour;
 mod penpathcurvedbuilder;
 mod penpathmodeledbuilder;
 mod penpathsimplebuilder;
+mod polylinebuilder;
 mod quadbezbuilder;
 mod quadrantcoordsystem2dbuilder;
 mod rectanglebuilder;
-mod shapebuilderbehaviour;
 
 // Re-exports
 pub use arrowbuilder::ArrowBuilder;
@@ -25,18 +26,13 @@ pub use ellipsebuilder::EllipseBuilder;
 pub use fociellipsebuilder::FociEllipseBuilder;
 pub use gridbuilder::GridBuilder;
 pub use linebuilder::LineBuilder;
-pub use penpathbuilderbehaviour::PenPathBuilderBehaviour;
-pub use penpathbuilderbehaviour::PenPathBuilderCreator;
-pub use penpathbuilderbehaviour::PenPathBuilderProgress;
 pub use penpathcurvedbuilder::PenPathCurvedBuilder;
 pub use penpathmodeledbuilder::PenPathModeledBuilder;
 pub use penpathsimplebuilder::PenPathSimpleBuilder;
+pub use polylinebuilder::PolylineBuilder;
 pub use quadbezbuilder::QuadBezBuilder;
 pub use quadrantcoordsystem2dbuilder::QuadrantCoordSystem2DBuilder;
 pub use rectanglebuilder::RectangleBuilder;
-pub use shapebuilderbehaviour::ShapeBuilderBehaviour;
-pub use shapebuilderbehaviour::ShapeBuilderCreator;
-pub use shapebuilderbehaviour::ShapeBuilderProgress;
 
 // Imports
 use anyhow::Context;
@@ -75,12 +71,15 @@ pub enum ShapeBuilderType {
     /// A foci ellipse builder
     #[serde(rename = "foci_ellipse")]
     FociEllipse,
-    /// An quadbez builder
+    /// A quadbez builder
     #[serde(rename = "quadbez")]
     QuadBez,
-    /// An cubic bezier builder
+    /// A cubic bezier builder
     #[serde(rename = "cubbez")]
     CubBez,
+    /// A poyline builder
+    #[serde(rename = "polyline")]
+    Polyline,
 }
 
 impl ShapeBuilderType {
@@ -98,6 +97,7 @@ impl ShapeBuilderType {
             "shapebuilder-fociellipse-symbolic" => Some(Self::FociEllipse),
             "shapebuilder-quadbez-symbolic" => Some(Self::QuadBez),
             "shapebuilder-cubbez-symbolic" => Some(Self::CubBez),
+            "shapebuilder-polyline-symbolic" => Some(Self::Polyline),
             _ => None,
         }
     }
@@ -118,6 +118,7 @@ impl ShapeBuilderType {
             Self::FociEllipse => String::from("shapebuilder-fociellipse-symbolic"),
             Self::QuadBez => String::from("shapebuilder-quadbez-symbolic"),
             Self::CubBez => String::from("shapebuilder-cubbez-symbolic"),
+            Self::Polyline => String::from("shapebuilder-polyline-symbolic"),
         }
     }
 }

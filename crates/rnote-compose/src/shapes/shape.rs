@@ -1,6 +1,6 @@
 // Imports
-use super::{Arrow, CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle, ShapeBehaviour};
-use crate::transform::TransformBehaviour;
+use super::{Arrow, CubicBezier, Ellipse, Line, Polyline, QuadraticBezier, Rectangle, Shapeable};
+use crate::transform::Transformable;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -26,6 +26,9 @@ pub enum Shape {
     #[serde(rename = "cubbez")]
     /// A cubic bezier curve shape.
     CubicBezier(CubicBezier),
+    #[serde(rename = "polyline")]
+    /// A polyline shape.
+    Polyline(Polyline),
 }
 
 impl Default for Shape {
@@ -34,7 +37,7 @@ impl Default for Shape {
     }
 }
 
-impl TransformBehaviour for Shape {
+impl Transformable for Shape {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         match self {
             Self::Arrow(arrow) => {
@@ -54,6 +57,9 @@ impl TransformBehaviour for Shape {
             }
             Self::CubicBezier(cubbez) => {
                 cubbez.translate(offset);
+            }
+            Self::Polyline(polyline) => {
+                polyline.translate(offset);
             }
         }
     }
@@ -78,6 +84,9 @@ impl TransformBehaviour for Shape {
             Self::CubicBezier(cubbez) => {
                 cubbez.rotate(angle, center);
             }
+            Self::Polyline(polyline) => {
+                polyline.rotate(angle, center);
+            }
         }
     }
 
@@ -101,11 +110,14 @@ impl TransformBehaviour for Shape {
             Self::CubicBezier(cubbez) => {
                 cubbez.scale(scale);
             }
+            Self::Polyline(polyline) => {
+                polyline.scale(scale);
+            }
         }
     }
 }
 
-impl ShapeBehaviour for Shape {
+impl Shapeable for Shape {
     fn bounds(&self) -> Aabb {
         match self {
             Self::Arrow(arrow) => arrow.bounds(),
@@ -114,8 +126,10 @@ impl ShapeBehaviour for Shape {
             Self::Ellipse(ellipse) => ellipse.bounds(),
             Self::QuadraticBezier(quadbez) => quadbez.bounds(),
             Self::CubicBezier(cubbez) => cubbez.bounds(),
+            Self::Polyline(polyline) => polyline.bounds(),
         }
     }
+
     fn hitboxes(&self) -> Vec<Aabb> {
         match self {
             Self::Arrow(arrow) => arrow.hitboxes(),
@@ -124,6 +138,19 @@ impl ShapeBehaviour for Shape {
             Self::Ellipse(ellipse) => ellipse.hitboxes(),
             Self::QuadraticBezier(quadbez) => quadbez.hitboxes(),
             Self::CubicBezier(cubbez) => cubbez.hitboxes(),
+            Self::Polyline(polyline) => polyline.hitboxes(),
+        }
+    }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        match self {
+            Self::Arrow(arrow) => arrow.outline_path(),
+            Self::Line(line) => line.outline_path(),
+            Self::Rectangle(rectangle) => rectangle.outline_path(),
+            Self::Ellipse(ellipse) => ellipse.outline_path(),
+            Self::QuadraticBezier(quadbez) => quadbez.outline_path(),
+            Self::CubicBezier(cubbez) => cubbez.outline_path(),
+            Self::Polyline(polyline) => polyline.outline_path(),
         }
     }
 }

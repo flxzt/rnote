@@ -31,23 +31,38 @@
   <screenshots>
     <screenshot type="default">
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/overview.png</image>
-      <caption>An Overview</caption>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/overview.png</image>
+      <caption>An overview</caption>
     </screenshot>
     <screenshot>
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/lecture_note_1.png</image>
-      <caption>Lecture Note 1</caption>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/selection.png</image>
+      <caption>A selection</caption>
     </screenshot>
     <screenshot>
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/pdf_annotation.png</image>
-      <caption>A Pdf annotation</caption>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/typewriter.png</image>
+      <caption>Write text with the typewriter</caption>
     </screenshot>
     <screenshot>
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/lecture_note_2.png</image>
-      <caption>Lecture Note 2</caption>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/focus-mode.png</image>
+      <caption>Hide toolbars with the focus mode</caption>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/workspaces.png</image>
+      <caption>Quickly access files through workspace</caption>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/document-settings.png</image>
+      <caption>Adjust document settings</caption>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/action-shortcuts.png</image>
+      <caption>Configure action shortcuts</caption>
     </screenshot>
   </screenshots>
 
@@ -72,6 +87,114 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.9.4" date="2023-12-13">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>ux: increase window threshold width at where the sidebar becomes an overlay</li>
+          <li>fix: indicate unsaved when changing document settings (format, colors, pattern, ..)</li>
+          <li>fix: missing progress pulse when saving existing doc</li>
+          <li>fix: ui not being refreshed after loading document from file</li>
+          <li>fix: jumping view when zoomed out and reaching edges</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.9.3" date="2023-12-07">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>improvement: add button to export notification to open file location in file-manager after exporting (thanks to @silvasch)</li>
+          <li>improvement: initial export file picker folder got improved, now prioritising the rnote file location and are now remembered between exports (thanks to @pobrn )</li>
+          <li>improvement: more readable file row names</li>
+          <li>improvement: add keyboard shortcut for snap-positions action</li>
+          <li>improvement: pdf import option to toggle page borders</li>
+          <li>fix: don't export empty pages that are adjacent to content that is snapped to the document grid</li>
+          <li>fix: progress pulses getting out of sync when executing multiple operations in parallel</li>
+          <li>fix: typewriter width adjustment button disappearing after setting it to minimal width</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.9.2" date="2023-11-16">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: option to snap positions in different tools to pattern and document grid</li>
+          <li>feature: option to open files with default app from workspace browser list (thanks to @silvasch)</li>
+          <li>improvement: sort workspace files and folders in a more intuitive way (thanks to @doublonmousse)</li>
+          <li>fix: initial documents opened with rnote have blurry rendering when system scale-factor is larger than 1.0</li>
+          <li>fix: selection after nudging view only included strokes in current viewport</li>
+          <li>fix: text files not appearing in workspacebrowser</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.9.1" date="2023-11-01">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: ability to toggle the visibility of the origin indicator cross (thanks to @silvasch)</li>
+          <li>improvement: port rows widgets to libadwaita spezialized variants (thanks to @oscfdezdz)</li>
+          <li>improvement: text formatting buttons now toggle text attributes (thanks to @xweskingx)</li>
+          <li>improvement: load documents into the current tab if it is a draft and empty (thanks to @silvasch)</li>
+          <li>UI: tweak sidebar width</li>
+          <li>fix: don't display reload-file dialog after saving to directories synced with cloud storage</li>
+          <li>fix: chinese translations (thanks to @detiam)</li>
+          <li>fix: single position strokes not being rendered</li>
+          <li>fix: don't restore maximized window state on macos, fixing inability to resize the window after launch</li>
+          <li>fix: windows installer not including certain dll's, possibly causing crashes when the missing ones are located elsewhere and present in PATH (thanks to @mdonoughe)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.9.0" date="2023-10-06">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: added ctrl plus space as configurable shortcut</li>
+          <li>feature: added plaintext file import</li>
+          <li>feature: ability to nudge view while performing certain pen actions</li>
+          <li>improvement: port the UI to libadwaita 1.4 with an improved sidebar and adaptivity</li>
+          <li>improvement: scale widths of brush-strokes and shapes when resizing selection</li>
+          <li>improvement: added keyboard shortcuts to add/remove pages when in fixed-size layout</li>
+          <li>improvement: the current document view is saved and restored to/from rnote files</li>
+          <li>improvement: orientation toggle usable when using custom document dimensions</li>
+          <li>improvement: shape builder picker sidebar location (thanks to @PhilDevProg)</li>
+          <li>fix: when using the vertical-space tool strokes that came into view were not initially rendered</li>
+          <li>fix: color picker dialog could be opened multiple times</li>
+          <li>fix: default view offset when opening a new tab</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.8.2" date="2023-08-26">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: button presses not handled as pen events</li>
+          <li>fix: windows build</li>
+          <li>fix: bundled fonts not appearing in flatpak</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.8.1" date="2023-08-25">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: export previews</li>
+          <li>feature: invert selection color brightness (thanks to @Kneemund)</li>
+          <li>feature: optimize for printing export option (thanks to @Kneemund)</li>
+          <li>feature: a few handwrite-y,typewriter and dyslexia fonts are now bundled with the application (check the README for a list of them)</li>
+          <li>feature: polyline shape and builder</li>
+          <li>improvement: cli export enhancements (thanks to @LeSnake04)</li>
+          <li>improvement: update outdated symbolic icons (thanks to @oscfdezdz)</li>
+          <li>improvement: behaviour when opening files in new tab</li>
+          <li>improvement: added close buttons to configuration popovers as a workaround for the Gtk4 stuck-popover bug</li>
+          <li>improvement: default view offset when opening documents</li>
+          <li>enhancement: move view using arrow keys</li>
+          <li>fix: orientation of some popovers when sidebar is on the left</li>
+          <li>fix: restore vectorized images (Pdf pages, Svg) export</li>
+          <li>fix: .rnote file imports that were created pre v0.5.9</li>
+          <li>fix: rendering of closed shapes from imported xopp file</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.7.1" date="2023-07-04">
       <description>
         <p>this release changes:</p>

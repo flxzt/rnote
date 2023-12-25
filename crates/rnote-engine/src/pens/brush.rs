@@ -1,21 +1,21 @@
 // Imports
-use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::brushconfig::BrushStyle;
+use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
-use crate::{DrawOnDocBehaviour, WidgetFlags};
+use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
-use rnote_compose::builders::PenPathBuilderType;
+use rnote_compose::builders::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use rnote_compose::builders::{
-    PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress, PenPathModeledBuilder,
+    PenPathBuilderType, PenPathCurvedBuilder, PenPathModeledBuilder, PenPathSimpleBuilder,
 };
-use rnote_compose::builders::{PenPathCurvedBuilder, PenPathSimpleBuilder};
-use rnote_compose::penevents::PenEvent;
-use rnote_compose::penpath::Element;
+use rnote_compose::eventresult::{EventPropagation, EventResult};
+use rnote_compose::penevent::{PenEvent, PenProgress};
+use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::Constraints;
 use std::time::Instant;
 
@@ -23,7 +23,7 @@ use std::time::Instant;
 enum BrushState {
     Idle,
     Drawing {
-        path_builder: Box<dyn PenPathBuilderBehaviour>,
+        path_builder: Box<dyn Buildable<Emit = Segment>>,
         current_stroke_key: StrokeKey,
     },
 }
@@ -63,14 +63,17 @@ impl PenBehaviour for Brush {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let pen_progress = match (&mut self.state, event) {
+        let event_result = match (&mut self.state, event) {
             (BrushState::Idle, PenEvent::Down { element, .. }) => {
-                if !element
-                    .filter_by_bounds(engine_view.doc.bounds().loosened(Self::INPUT_OVERSHOOT))
-                {
+                if !element.filter_by_bounds(
+                    engine_view
+                        .document
+                        .bounds()
+                        .loosened(Self::INPUT_OVERSHOOT),
+                ) {
                     if engine_view.pens_config.brush_config.style == BrushStyle::Marker {
                         play_marker_sound(engine_view);
                     } else {
@@ -111,12 +114,24 @@ impl PenBehaviour for Brush {
                         current_stroke_key,
                     };
 
-                    PenProgress::InProgress
+                    EventResult {
+                        handled: true,
+                        propagate: EventPropagation::Stop,
+                        progress: PenProgress::InProgress,
+                    }
                 } else {
-                    PenProgress::Idle
+                    EventResult {
+                        handled: false,
+                        propagate: EventPropagation::Proceed,
+                        progress: PenProgress::Idle,
+                    }
                 }
             }
-            (BrushState::Idle, _) => PenProgress::Idle,
+            (BrushState::Idle, _) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
             (
                 BrushState::Drawing {
                     current_stroke_key, ..
@@ -133,18 +148,20 @@ impl PenBehaviour for Brush {
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 );
-                widget_flags.merge(
-                    engine_view
-                        .doc
-                        .resize_autoexpand(engine_view.store, engine_view.camera),
-                );
+                widget_flags |= engine_view
+                    .document
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = BrushState::Idle;
 
-                widget_flags.merge(engine_view.store.record(Instant::now()));
+                widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.store_modified = true;
 
-                PenProgress::Finished
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
             (
                 BrushState::Drawing {
@@ -153,15 +170,20 @@ impl PenBehaviour for Brush {
                 },
                 pen_event,
             ) => {
-                match path_builder.handle_event(pen_event, now, Constraints::default()) {
-                    PenPathBuilderProgress::InProgress => {
+                let builder_result =
+                    path_builder.handle_event(pen_event, now, Constraints::default());
+                let handled = builder_result.handled;
+                let propagate = builder_result.propagate;
+
+                let progress = match builder_result.progress {
+                    BuilderProgress::InProgress => {
                         if engine_view.pens_config.brush_config.style != BrushStyle::Marker {
                             trigger_brush_sound(engine_view);
                         }
 
                         PenProgress::InProgress
                     }
-                    PenPathBuilderProgress::EmitContinue(segments) => {
+                    BuilderProgress::EmitContinue(segments) => {
                         if engine_view.pens_config.brush_config.style != BrushStyle::Marker {
                             trigger_brush_sound(engine_view);
                         }
@@ -187,7 +209,7 @@ impl PenBehaviour for Brush {
 
                         PenProgress::InProgress
                     }
-                    PenPathBuilderProgress::Finished(segments) => {
+                    BuilderProgress::Finished(segments) => {
                         let n_segments = segments.len();
 
                         if n_segments != 0 {
@@ -217,28 +239,32 @@ impl PenBehaviour for Brush {
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         );
-                        widget_flags.merge(
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera),
-                        );
+                        widget_flags |= engine_view
+                            .document
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = BrushState::Idle;
 
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
 
                         PenProgress::Finished
                     }
+                };
+
+                EventResult {
+                    handled,
+                    propagate,
+                    progress,
                 }
             }
         };
 
-        (pen_progress, widget_flags)
+        (event_result, widget_flags)
     }
 }
 
-impl DrawOnDocBehaviour for Brush {
+impl DrawableOnDoc for Brush {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let style = engine_view
             .pens_config
@@ -303,7 +329,7 @@ fn new_builder(
     builder_type: PenPathBuilderType,
     element: Element,
     now: Instant,
-) -> Box<dyn PenPathBuilderBehaviour> {
+) -> Box<dyn Buildable<Emit = Segment>> {
     match builder_type {
         PenPathBuilderType::Simple => Box::new(PenPathSimpleBuilder::start(element, now)),
         PenPathBuilderType::Curved => Box::new(PenPathCurvedBuilder::start(element, now)),

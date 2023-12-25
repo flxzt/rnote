@@ -1,28 +1,29 @@
 // Imports
-use super::penbehaviour::{PenBehaviour, PenProgress};
+use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
-use crate::{DrawOnDocBehaviour, WidgetFlags};
+use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
-use rnote_compose::builders::{ArrowBuilder, GridBuilder};
+use rnote_compose::builders::buildable::{Buildable, BuilderCreator, BuilderProgress};
+use rnote_compose::builders::{ArrowBuilder, GridBuilder, PolylineBuilder};
 use rnote_compose::builders::{
-    CoordSystem2DBuilder, CoordSystem3DBuilder, EllipseBuilder, FociEllipseBuilder, LineBuilder,
-    QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuilderBehaviour,
+    CoordSystem2DBuilder, CoordSystem3DBuilder, CubBezBuilder, EllipseBuilder, FociEllipseBuilder,
+    LineBuilder, QuadBezBuilder, QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuilderType,
 };
-use rnote_compose::builders::{CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
-use rnote_compose::builders::{ShapeBuilderCreator, ShapeBuilderProgress};
-use rnote_compose::penevents::{KeyboardKey, ModifierKey, PenEvent};
+use rnote_compose::eventresult::{EventPropagation, EventResult};
+use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenProgress};
 use rnote_compose::penpath::Element;
+use rnote_compose::Shape;
 use std::time::Instant;
 
 #[derive(Debug)]
 enum ShaperState {
     Idle,
     BuildShape {
-        builder: Box<dyn ShapeBuilderBehaviour>,
+        builder: Box<dyn Buildable<Emit = Shape>>,
     },
 }
 
@@ -61,10 +62,10 @@ impl PenBehaviour for Shaper {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let pen_progress = match (&mut self.state, event) {
+        let event_result = match (&mut self.state, event) {
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
                 engine_view.pens_config.shaper_config.new_style_seeds();
 
@@ -76,13 +77,25 @@ impl PenBehaviour for Shaper {
                     ),
                 };
 
-                PenProgress::InProgress
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
             }
-            (ShaperState::Idle, _) => PenProgress::Idle,
+            (ShaperState::Idle, _) => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+            },
             (ShaperState::BuildShape { .. }, PenEvent::Cancel) => {
                 self.state = ShaperState::Idle;
 
-                PenProgress::Finished
+                EventResult {
+                    handled: false,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
             }
             (ShaperState::BuildShape { builder }, event) => {
                 // Use Ctrl to temporarily enable/disable constraints when the switch is off/on
@@ -102,10 +115,13 @@ impl PenBehaviour for Shaper {
                     } => constraints.enabled ^ modifier_keys.contains(&ModifierKey::KeyboardCtrl),
                     PenEvent::Text { .. } | PenEvent::Cancel => false,
                 };
+                let builder_result = builder.handle_event(event.clone(), now, constraints);
+                let handled = builder_result.handled;
+                let propagate = builder_result.propagate;
 
-                let mut pen_progress = match builder.handle_event(event.clone(), now, constraints) {
-                    ShapeBuilderProgress::InProgress => PenProgress::InProgress,
-                    ShapeBuilderProgress::EmitContinue(shapes) => {
+                let mut progress = match builder_result.progress {
+                    BuilderProgress::InProgress => PenProgress::InProgress,
+                    BuilderProgress::EmitContinue(shapes) => {
                         let mut style = engine_view
                             .pens_config
                             .shaper_config
@@ -126,12 +142,12 @@ impl PenBehaviour for Shaper {
                         }
 
                         if shapes_emitted {
-                            widget_flags.merge(engine_view.store.record(Instant::now()));
+                            widget_flags |= engine_view.store.record(Instant::now());
                             widget_flags.store_modified = true;
                         }
                         PenProgress::InProgress
                     }
-                    ShapeBuilderProgress::Finished(shapes) => {
+                    BuilderProgress::Finished(shapes) => {
                         let mut style = engine_view
                             .pens_config
                             .shaper_config
@@ -154,13 +170,10 @@ impl PenBehaviour for Shaper {
                         self.state = ShaperState::Idle;
 
                         if shapes_emitted {
-                            widget_flags.merge(
-                                engine_view
-                                    .doc
-                                    .resize_autoexpand(engine_view.store, engine_view.camera),
-                            );
-
-                            widget_flags.merge(engine_view.store.record(Instant::now()));
+                            widget_flags |= engine_view
+                                .document
+                                .resize_autoexpand(engine_view.store, engine_view.camera)
+                                | engine_view.store.record(Instant::now());
                             widget_flags.store_modified = true;
                         }
                         PenProgress::Finished
@@ -175,20 +188,23 @@ impl PenBehaviour for Shaper {
                 {
                     if keyboard_key == KeyboardKey::Escape && modifier_keys.is_empty() {
                         self.state = ShaperState::Idle;
-
-                        pen_progress = PenProgress::Finished;
+                        progress = PenProgress::Finished;
                     }
                 }
 
-                pen_progress
+                EventResult {
+                    handled,
+                    propagate,
+                    progress,
+                }
             }
         };
 
-        (pen_progress, widget_flags)
+        (event_result, widget_flags)
     }
 }
 
-impl DrawOnDocBehaviour for Shaper {
+impl DrawableOnDoc for Shaper {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let style = engine_view
             .pens_config
@@ -230,7 +246,7 @@ fn new_builder(
     builder_type: ShapeBuilderType,
     element: Element,
     now: Instant,
-) -> Box<dyn ShapeBuilderBehaviour> {
+) -> Box<dyn Buildable<Emit = Shape>> {
     match builder_type {
         ShapeBuilderType::Arrow => Box::new(ArrowBuilder::start(element, now)),
         ShapeBuilderType::Line => Box::new(LineBuilder::start(element, now)),
@@ -245,5 +261,6 @@ fn new_builder(
         ShapeBuilderType::FociEllipse => Box::new(FociEllipseBuilder::start(element, now)),
         ShapeBuilderType::QuadBez => Box::new(QuadBezBuilder::start(element, now)),
         ShapeBuilderType::CubBez => Box::new(CubBezBuilder::start(element, now)),
+        ShapeBuilderType::Polyline => Box::new(PolylineBuilder::start(element, now)),
     }
 }

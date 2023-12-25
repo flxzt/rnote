@@ -1,16 +1,14 @@
 // Imports
 use crate::canvaswrapper::RnCanvasWrapper;
 use crate::RnPensSideBar;
-use crate::{dialogs, RnAppWindow, RnColorPicker};
+use crate::{dialogs, RnAppWindow, RnColorPicker, RnPenPicker};
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Overlay,
-    ProgressBar, ScrolledWindow, ToggleButton, Widget,
+    gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Overlay,
+    ProgressBar, ScrolledWindow, Widget,
 };
-use rnote_engine::engine::EngineViewMut;
-use rnote_engine::pens::{Pen, PenStyle};
-use rnote_engine::utils::GdkRGBAHelpers;
-use std::cell::RefCell;
-use std::time::Instant;
+use rnote_engine::ext::GdkRGBAExt;
+use rnote_engine::pens::PenStyle;
+use std::cell::{Cell, RefCell};
 
 mod imp {
     use super::*;
@@ -18,6 +16,7 @@ mod imp {
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/overlays.ui")]
     pub(crate) struct RnOverlays {
+        pub(crate) progresspulses_active: Cell<usize>,
         pub(crate) progresspulse_id: RefCell<Option<glib::SourceId>>,
         pub(super) prev_active_tab_page: glib::WeakRef<adw::TabPage>,
 
@@ -28,23 +27,7 @@ mod imp {
         #[template_child]
         pub(crate) progressbar: TemplateChild<ProgressBar>,
         #[template_child]
-        pub(crate) pens_toggles_box: TemplateChild<gtk4::Box>,
-        #[template_child]
-        pub(crate) brush_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) shaper_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) typewriter_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) eraser_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) selector_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) tools_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) undo_button: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) redo_button: TemplateChild<Button>,
+        pub(crate) penpicker: TemplateChild<RnPenPicker>,
         #[template_child]
         pub(crate) colorpicker: TemplateChild<RnColorPicker>,
         #[template_child]
@@ -64,7 +47,7 @@ mod imp {
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
+            klass.bind_template();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -93,7 +76,7 @@ mod imp {
             self.toolbar_overlay
                 .set_measure_overlay(&*self.colorpicker, true);
             self.toolbar_overlay
-                .set_measure_overlay(&*self.pens_toggles_box, true);
+                .set_measure_overlay(&*self.penpicker, true);
             self.toolbar_overlay
                 .set_measure_overlay(&*self.sidebar_box, true);
         }
@@ -119,40 +102,8 @@ impl RnOverlays {
         glib::Object::new()
     }
 
-    pub(crate) fn pens_toggles_box(&self) -> gtk4::Box {
-        self.imp().pens_toggles_box.get()
-    }
-
-    pub(crate) fn brush_toggle(&self) -> ToggleButton {
-        self.imp().brush_toggle.get()
-    }
-
-    pub(crate) fn shaper_toggle(&self) -> ToggleButton {
-        self.imp().shaper_toggle.get()
-    }
-
-    pub(crate) fn typewriter_toggle(&self) -> ToggleButton {
-        self.imp().typewriter_toggle.get()
-    }
-
-    pub(crate) fn eraser_toggle(&self) -> ToggleButton {
-        self.imp().eraser_toggle.get()
-    }
-
-    pub(crate) fn selector_toggle(&self) -> ToggleButton {
-        self.imp().selector_toggle.get()
-    }
-
-    pub(crate) fn tools_toggle(&self) -> ToggleButton {
-        self.imp().tools_toggle.get()
-    }
-
-    pub(crate) fn undo_button(&self) -> Button {
-        self.imp().undo_button.get()
-    }
-
-    pub(crate) fn redo_button(&self) -> Button {
-        self.imp().redo_button.get()
+    pub(crate) fn penpicker(&self) -> RnPenPicker {
+        self.imp().penpicker.get()
     }
 
     pub(crate) fn colorpicker(&self) -> RnColorPicker {
@@ -185,7 +136,9 @@ impl RnOverlays {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
+        imp.colorpicker.get().init(appwindow);
         imp.penssidebar.get().init(appwindow);
+        imp.penpicker.get().init(appwindow);
         imp.penssidebar.get().brush_page().init(appwindow);
         imp.penssidebar.get().shaper_page().init(appwindow);
         imp.penssidebar.get().typewriter_page().init(appwindow);
@@ -193,64 +146,8 @@ impl RnOverlays {
         imp.penssidebar.get().selector_page().init(appwindow);
         imp.penssidebar.get().tools_page().init(appwindow);
 
-        self.setup_pens_toggles(appwindow);
         self.setup_colorpicker(appwindow);
         self.setup_tabview(appwindow);
-    }
-
-    fn setup_pens_toggles(&self, appwindow: &RnAppWindow) {
-        let imp = self.imp();
-
-        imp.brush_toggle
-            .connect_toggled(clone!(@weak appwindow => move |brush_toggle| {
-                if brush_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Brush.to_string().to_variant()));
-                }
-            }));
-
-        imp.shaper_toggle
-            .connect_toggled(clone!(@weak appwindow => move |shaper_toggle| {
-                if shaper_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Shaper.to_string().to_variant()));
-                }
-            }));
-
-        imp.typewriter_toggle
-            .connect_toggled(clone!(@weak appwindow => move |typewriter_toggle| {
-                if typewriter_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Typewriter.to_string().to_variant()));
-                }
-            }));
-
-        imp.eraser_toggle
-            .get()
-            .connect_toggled(clone!(@weak appwindow => move |eraser_toggle| {
-                if eraser_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Eraser.to_string().to_variant()));
-                }
-            }));
-
-        imp.selector_toggle.get().connect_toggled(
-            clone!(@weak appwindow => move |selector_toggle| {
-                if selector_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Selector.to_string().to_variant()));
-                }
-            }),
-        );
-
-        imp.tools_toggle
-            .get()
-            .connect_toggled(clone!(@weak appwindow => move |tools_toggle| {
-                if tools_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Tools.to_string().to_variant()));
-                }
-            }));
     }
 
     fn setup_colorpicker(&self, appwindow: &RnAppWindow) {
@@ -261,47 +158,29 @@ impl RnOverlays {
                 clone!(@weak appwindow => move |colorpicker, _paramspec| {
                     let stroke_color = colorpicker.stroke_color().into_compose_color();
                     let canvas = appwindow.active_tab_wrapper().canvas();
-                    let engine = &mut *canvas.engine_mut();
+                    let current_pen_style = canvas.engine_ref().penholder.current_pen_style_w_override();
 
-                    match engine.penholder.current_pen_style_w_override() {
+                    match current_pen_style {
                         PenStyle::Typewriter => {
-                            if engine.pens_config.typewriter_config.text_style.color != stroke_color {
-                                if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
-                                    let widget_flags = typewriter.change_text_style_in_modifying_stroke(
-                                        |text_style| {
-                                            text_style.color = stroke_color;
-                                        },
-                                        &mut EngineViewMut {
-                                            tasks_tx: engine.tasks_tx.clone(),
-                                            pens_config: &mut engine.pens_config,
-                                            doc: &mut engine.document,
-                                            store: &mut engine.store,
-                                            camera: &mut engine.camera,
-                                            audioplayer: &mut engine.audioplayer
-                                    });
-                                    appwindow.handle_widget_flags(widget_flags, &canvas);
-                                }
+                            if canvas.engine_ref().pens_config.typewriter_config.text_style.color != stroke_color {
+                                let widget_flags = canvas.engine_mut().text_selection_change_style(|style| {style.color = stroke_color});
+                                appwindow.handle_widget_flags(widget_flags, &canvas);
                             }
                         }
                         PenStyle::Selector => {
-                            let selection_keys = engine.store.selection_keys_unordered();
-                            if !selection_keys.is_empty() {
-                                let mut widget_flags = engine.store.change_stroke_colors(&selection_keys, stroke_color);
-                                widget_flags.merge(engine.record(Instant::now()));
-                                engine.update_content_rendering_current_viewport();
-                                appwindow.handle_widget_flags(widget_flags, &canvas);
-                            }
+                            let widget_flags = canvas.engine_mut().change_selection_stroke_colors(stroke_color);
+                            appwindow.handle_widget_flags(widget_flags, &canvas);
                         }
                         PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
                     }
 
                     // We have a global colorpicker, so we apply it to all styles
-                    engine.pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.typewriter_config.text_style.color = stroke_color;
+                    canvas.engine_mut().pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
+                    canvas.engine_mut().pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
+                    canvas.engine_mut().pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
+                    canvas.engine_mut().pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
+                    canvas.engine_mut().pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
+                    canvas.engine_mut().pens_config.typewriter_config.text_style.color = stroke_color;
                 }),
             );
 
@@ -311,26 +190,20 @@ impl RnOverlays {
                 let fill_color = colorpicker.fill_color().into_compose_color();
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let stroke_style = canvas.engine_ref().penholder.current_pen_style_w_override();
-                let engine = &mut *canvas.engine_mut();
 
                 match stroke_style {
                     PenStyle::Selector => {
-                        let selection_keys = engine.store.selection_keys_unordered();
-                        if !selection_keys.is_empty() {
-                            let mut widget_flags = engine.store.change_fill_colors(&selection_keys, fill_color);
-                            widget_flags.merge(engine.record(Instant::now()));
-                            engine.update_content_rendering_current_viewport();
-                            appwindow.handle_widget_flags(widget_flags, &canvas);
-                        }
+                        let widget_flags = canvas.engine_mut().change_selection_fill_colors(fill_color);
+                        appwindow.handle_widget_flags(widget_flags, &canvas);
                     }
                     PenStyle::Typewriter | PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
                 }
 
                 // We have a global colorpicker, so we apply it to all styles
-                engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
-                engine.pens_config.brush_config.solid_options.fill_color = Some(fill_color);
-                engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
-                engine.pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
+                canvas.engine_mut().pens_config.brush_config.marker_options.fill_color = Some(fill_color);
+                canvas.engine_mut().pens_config.brush_config.solid_options.fill_color = Some(fill_color);
+                canvas.engine_mut().pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
+                canvas.engine_mut().pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
             }),
         );
     }
@@ -376,7 +249,7 @@ impl RnOverlays {
                 }
 
                 let _ = canvaswrapper.canvas().engine_mut().set_active(false);
-                canvaswrapper.disconnect_handlers();
+                canvaswrapper.disconnect_connections();
             }),
         );
 
@@ -421,12 +294,17 @@ impl RnOverlays {
 
     pub(crate) fn progressbar_start_pulsing(&self) {
         const PULSE_INTERVAL: std::time::Duration = std::time::Duration::from_millis(300);
+
+        self.imp()
+            .progresspulses_active
+            .set(self.imp().progresspulses_active.get().saturating_add(1));
+
         if let Some(src) = self.imp().progresspulse_id.replace(Some(glib::source::timeout_add_local(
             PULSE_INTERVAL,
-            clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
+            clone!(@weak self as appwindow => @default-return glib::ControlFlow::Break, move || {
                 appwindow.progressbar().pulse();
 
-                glib::source::Continue(true)
+                glib::ControlFlow::Continue
             })),
         )) {
             src.remove();
@@ -435,24 +313,37 @@ impl RnOverlays {
 
     pub(crate) fn progressbar_finish(&self) {
         const FINISH_TIMEOUT: std::time::Duration = std::time::Duration::from_millis(300);
-        if let Some(src) = self.imp().progresspulse_id.take() {
-            src.remove();
-        }
+
         self.progressbar().set_fraction(1.);
-        glib::source::timeout_add_local_once(
-            FINISH_TIMEOUT,
-            clone!(@weak self as appwindow => move || {
-                appwindow.progressbar().set_fraction(0.);
-            }),
-        );
+        self.imp()
+            .progresspulses_active
+            .set(self.imp().progresspulses_active.get().saturating_sub(1));
+
+        if self.imp().progresspulses_active.get() == 0 {
+            if let Some(src) = self.imp().progresspulse_id.take() {
+                src.remove();
+            }
+            glib::source::timeout_add_local_once(
+                FINISH_TIMEOUT,
+                clone!(@weak self as appwindow => move || {
+                    appwindow.progressbar().set_fraction(0.);
+                }),
+            );
+        }
     }
 
     #[allow(unused)]
     pub(crate) fn progressbar_abort(&self) {
-        if let Some(src) = self.imp().progresspulse_id.take() {
-            src.remove();
+        self.imp()
+            .progresspulses_active
+            .set(self.imp().progresspulses_active.get().saturating_sub(1));
+
+        if self.imp().progresspulses_active.get() == 0 {
+            if let Some(src) = self.imp().progresspulse_id.take() {
+                src.remove();
+            }
+            self.progressbar().set_fraction(0.);
         }
-        self.progressbar().set_fraction(0.);
     }
 
     pub(crate) fn dispatch_toast_w_button<F: Fn(&adw::Toast) + 'static>(
@@ -521,7 +412,7 @@ impl RnOverlays {
             .timeout(0)
             .build();
         self.toast_overlay().add_toast(toast.clone());
-        log::error!("{error}");
+        tracing::error!("{error}");
         toast
     }
 }

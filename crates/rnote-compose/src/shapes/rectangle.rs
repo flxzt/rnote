@@ -1,8 +1,8 @@
 // Imports
 use super::Line;
-use crate::helpers::{AabbHelpers, Vector2Helpers};
-use crate::shapes::ShapeBehaviour;
-use crate::transform::TransformBehaviour;
+use crate::ext::{AabbExt, Vector2Ext};
+use crate::shapes::Shapeable;
+use crate::transform::Transformable;
 use crate::Transform;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -28,7 +28,7 @@ impl Default for Rectangle {
     }
 }
 
-impl ShapeBehaviour for Rectangle {
+impl Shapeable for Rectangle {
     fn bounds(&self) -> Aabb {
         let center = self.transform.affine * na::point![0.0, 0.0];
         // using a vector to ignore the translation
@@ -48,9 +48,28 @@ impl ShapeBehaviour for Rectangle {
             .flat_map(|line| line.hitboxes())
             .collect()
     }
+
+    fn outline_path(&self) -> kurbo::BezPath {
+        let tl = self.transform.affine
+            * na::point![-self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];
+        let tr = self.transform.affine
+            * na::point![self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];
+        let bl = self.transform.affine
+            * na::point![-self.cuboid.half_extents[0], self.cuboid.half_extents[1]];
+        let br = self.transform.affine
+            * na::point![self.cuboid.half_extents[0], self.cuboid.half_extents[1]];
+
+        kurbo::BezPath::from_vec(vec![
+            kurbo::PathEl::MoveTo(tl.coords.to_kurbo_point()),
+            kurbo::PathEl::LineTo(tr.coords.to_kurbo_point()),
+            kurbo::PathEl::LineTo(br.coords.to_kurbo_point()),
+            kurbo::PathEl::LineTo(bl.coords.to_kurbo_point()),
+            kurbo::PathEl::ClosePath,
+        ])
+    }
 }
 
-impl TransformBehaviour for Rectangle {
+impl Transformable for Rectangle {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.transform.append_translation_mut(offset);
     }
@@ -130,25 +149,5 @@ impl Rectangle {
                 end: upper_left.coords,
             },
         ]
-    }
-
-    /// Convert to kurbo shape.
-    pub fn to_kurbo(&self) -> kurbo::BezPath {
-        let tl = self.transform.affine
-            * na::point![-self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];
-        let tr = self.transform.affine
-            * na::point![self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];
-        let bl = self.transform.affine
-            * na::point![-self.cuboid.half_extents[0], self.cuboid.half_extents[1]];
-        let br = self.transform.affine
-            * na::point![self.cuboid.half_extents[0], self.cuboid.half_extents[1]];
-
-        kurbo::BezPath::from_vec(vec![
-            kurbo::PathEl::MoveTo(tl.coords.to_kurbo_point()),
-            kurbo::PathEl::LineTo(tr.coords.to_kurbo_point()),
-            kurbo::PathEl::LineTo(br.coords.to_kurbo_point()),
-            kurbo::PathEl::LineTo(bl.coords.to_kurbo_point()),
-            kurbo::PathEl::ClosePath,
-        ])
     }
 }

@@ -1,6 +1,6 @@
 // Modules
+mod actions;
 mod appsettings;
-mod appwindowactions;
 mod imp;
 
 // Imports

@@ -20,9 +20,14 @@ const CLIPBOARD_INPUT_STREAM_BUFSIZE: usize = 4096;
 
 impl RnAppWindow {
     /// Boolean actions have no target, and a boolean state. They have a default implementation for the activate signal,
-    /// which requests the state to be inverted, and the default implementation for change_state, which sets the state to the request.
-    /// We generally want to connect to the change_state signal. (but then have to set the state with action.set_state() )
-    /// We can then either toggle the state through activating the action, or set the state explicitly through `action.change_state(<request>)`
+    /// which requests the state to be inverted, and the default implementation for change_state, which sets the state
+    /// to the request.
+    ///
+    /// We generally want to connect to the change_state signal. (but then have to set the state with
+    /// `action.set_state()`)
+    ///
+    /// We can then either toggle the state through activating the action, or set the state explicitly through
+    /// `action.change_state(<request>)`
     pub(crate) fn setup_actions(&self) {
         let action_fullscreen = gio::PropertyAction::new("fullscreen", self, "fullscreened");
         self.add_action(&action_fullscreen);

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-18 18:58+0100\n"
+"POT-Creation-Date: 2023-12-27 15:53+0100\n"
 "PO-Revision-Date: 2023-10-29 10:40+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -50,20 +50,38 @@ msgstr ""
 "in zitten of dingen misgaan."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
-msgid "An Overview"
+#, fuzzy
+#| msgid "An Overview"
+msgid "An overview"
 msgstr "Een overzicht"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:40
-msgid "Lecture Note 1"
-msgstr "College-aantekeningen 1"
+msgid "A selection"
+msgstr "Een selectie"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
-msgid "A Pdf annotation"
-msgstr "Een PDF-aantekening"
+#, fuzzy
+#| msgid "Switch to the 'Typewriter'"
+msgid "Write text with the typewriter"
+msgstr "Overschakelen naar typmachine"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
-msgid "Lecture Note 2"
-msgstr "College-aantekeningen 2"
+msgid "Hide toolbars with the focus mode"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:55
+msgid "Quickly access files through workspace"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:60
+msgid "Adjust document settings"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:65
+#, fuzzy
+#| msgid "Button Shortcuts"
+msgid "Configure action shortcuts"
+msgstr "Knopsneltoetsen"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
@@ -79,11 +97,11 @@ msgstr "Dit zal het gehele werkblad leegmaken. Bevestig deze actie."
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:40
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:70
-#: crates/rnote-ui/data/ui/dialogs/import.ui:10
-#: crates/rnote-ui/data/ui/dialogs/import.ui:199
 #: crates/rnote-ui/data/ui/dialogs/export.ui:10
 #: crates/rnote-ui/data/ui/dialogs/export.ui:175
 #: crates/rnote-ui/data/ui/dialogs/export.ui:411
+#: crates/rnote-ui/data/ui/dialogs/import.ui:10
+#: crates/rnote-ui/data/ui/dialogs/import.ui:199
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
 msgstr "Annuleren"
@@ -95,7 +113,7 @@ msgstr "Leegmaken"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
 #: crates/rnote-ui/data/ui/shortcuts.ui:149
-#: crates/rnote-ui/src/canvas/mod.rs:594
+#: crates/rnote-ui/src/canvas/mod.rs:593
 msgid "New Document"
 msgstr "Nieuw document"
 
@@ -202,118 +220,6 @@ msgstr "- Geen map gekozen -"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:183
 msgid "Change the directory"
 msgstr "Wijzig de map"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:7
-msgid "Import Pdf"
-msgstr "PDF-bestand importeren"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:15
-#: crates/rnote-ui/data/ui/dialogs/import.ui:204
-#: crates/rnote-ui/src/dialogs/import.rs:66
-msgid "Import"
-msgstr "Importeren"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:61
-msgid "Info"
-msgstr "Info"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:79
-msgid "Pdf Import Preferences"
-msgstr "PDF-importvoorkeuren"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:83
-msgid "Start Page"
-msgstr "Eerste pagina"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:92
-msgid "End Page"
-msgstr "Laatste pagina"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:101
-msgid "Page Width (%)"
-msgstr "Paginabreedte (%)"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:102
-msgid "Set the width of imported Pdf's in percentage to the format width"
-msgstr ""
-"Stelt de breedte in van geïmporteerde PDF-bestanden als percentage van de "
-"formaatbreedte"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:109
-msgid "Page Spacing"
-msgstr "Pagina-opvulling"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:110
-msgid "How Pdf pages are spaced"
-msgstr "Hoe PDF-pagina's van elkaar dienen te worden gescheiden"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:114
-msgid "Continuous"
-msgstr "Doorlopend"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:115
-msgid "One per Document Page"
-msgstr "Eén per documentpagina"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:123
-msgid "Pages Type"
-msgstr "Paginatype"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:124
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
-msgstr ""
-"Geef aan of PDF-bestanden dienen te worden geïmporteerd als vector- of "
-"bitmap-afbeeldingen"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:136
-msgid "Vector"
-msgstr "Vector"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:143
-msgid "Bitmap"
-msgstr "Bitmap"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:152
-#: crates/rnote-ui/data/ui/dialogs/export.ui:366
-#: crates/rnote-ui/data/ui/dialogs/export.ui:544
-msgid "Bitmap Scale-Factor"
-msgstr "Bitmap-schaalfactor"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:153
-#: crates/rnote-ui/data/ui/dialogs/export.ui:367
-#: crates/rnote-ui/data/ui/dialogs/export.ui:545
-msgid ""
-"Set the bitmap scale factor in relation\n"
-"to the actual size on the document"
-msgstr ""
-"Stel de bitmapfactor in verhouding\n"
-"tot de ware grootte van het document in"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Page Order"
-msgid "Page Borders"
-msgstr "Paginavolgorde"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:162
-msgid "Whether the pages have drawn borders"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:196
-msgid "Import Xournal++ File"
-msgstr "Xournal++-bestand importeren"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:235
-msgid "Xournal++ File Import Preferences"
-msgstr "Xournal++-importvoorkeuren"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:239
-msgid "DPI"
-msgstr "Dpi"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:240
-msgid "Set the preferred DPI for the Xournal++ file"
-msgstr "Stel de gewenste dpi-waarde van het Xournal++-bestand in"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
 #: crates/rnote-ui/src/dialogs/export.rs:268
@@ -485,6 +391,22 @@ msgstr "PNG"
 msgid "Jpeg"
 msgstr "JPEG"
 
+#: crates/rnote-ui/data/ui/dialogs/export.ui:366
+#: crates/rnote-ui/data/ui/dialogs/export.ui:544
+#: crates/rnote-ui/data/ui/dialogs/import.ui:152
+msgid "Bitmap Scale-Factor"
+msgstr "Bitmap-schaalfactor"
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:367
+#: crates/rnote-ui/data/ui/dialogs/export.ui:545
+#: crates/rnote-ui/data/ui/dialogs/import.ui:153
+msgid ""
+"Set the bitmap scale factor in relation\n"
+"to the actual size on the document"
+msgstr ""
+"Stel de bitmapfactor in verhouding\n"
+"tot de ware grootte van het document in"
+
 #: crates/rnote-ui/data/ui/dialogs/export.ui:375
 #: crates/rnote-ui/data/ui/dialogs/export.ui:553
 msgid "Jpeg Quality"
@@ -511,6 +433,102 @@ msgstr "Marge"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:562
 msgid "Set the margin around the selected area"
 msgstr "Stel de marges rondom het selectiegebied in"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:7
+msgid "Import Pdf"
+msgstr "PDF-bestand importeren"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:15
+#: crates/rnote-ui/data/ui/dialogs/import.ui:204
+#: crates/rnote-ui/src/dialogs/import.rs:68
+msgid "Import"
+msgstr "Importeren"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:61
+msgid "Info"
+msgstr "Info"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:79
+msgid "Pdf Import Preferences"
+msgstr "PDF-importvoorkeuren"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:83
+msgid "Start Page"
+msgstr "Eerste pagina"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:92
+msgid "End Page"
+msgstr "Laatste pagina"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:101
+msgid "Page Width (%)"
+msgstr "Paginabreedte (%)"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:102
+msgid "Set the width of imported Pdf's in percentage to the format width"
+msgstr ""
+"Stelt de breedte in van geïmporteerde PDF-bestanden als percentage van de "
+"formaatbreedte"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:109
+msgid "Page Spacing"
+msgstr "Pagina-opvulling"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:110
+msgid "How Pdf pages are spaced"
+msgstr "Hoe PDF-pagina's van elkaar dienen te worden gescheiden"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:114
+msgid "Continuous"
+msgstr "Doorlopend"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:115
+msgid "One per Document Page"
+msgstr "Eén per documentpagina"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:123
+msgid "Pages Type"
+msgstr "Paginatype"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:124
+msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgstr ""
+"Geef aan of PDF-bestanden dienen te worden geïmporteerd als vector- of "
+"bitmap-afbeeldingen"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:136
+msgid "Vector"
+msgstr "Vector"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:143
+msgid "Bitmap"
+msgstr "Bitmap"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:161
+#, fuzzy
+#| msgid "Page Order"
+msgid "Page Borders"
+msgstr "Paginavolgorde"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:162
+msgid "Whether the pages have drawn borders"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:196
+msgid "Import Xournal++ File"
+msgstr "Xournal++-bestand importeren"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:235
+msgid "Xournal++ File Import Preferences"
+msgstr "Xournal++-importvoorkeuren"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:239
+msgid "DPI"
+msgstr "Dpi"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:240
+msgid "Set the preferred DPI for the Xournal++ file"
+msgstr "Stel de gewenste dpi-waarde van het Xournal++-bestand in"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
@@ -1158,7 +1176,7 @@ msgid "Duplicate"
 msgstr "Klonen"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:596
+#: crates/rnote-ui/src/canvas/mod.rs:595
 msgid "Draft"
 msgstr "Concept"
 
@@ -1634,7 +1652,7 @@ msgid "Print Document"
 msgstr "Document afdrukken"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:203
-#: crates/rnote-ui/src/dialogs/import.rs:64
+#: crates/rnote-ui/src/dialogs/import.rs:66
 msgid "Import File"
 msgstr "Bestand importeren"
 
@@ -1686,24 +1704,22 @@ msgstr "Werkbladmapacties"
 msgid "Create new Folder"
 msgstr "Map aanmaken"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:126
-msgid ""
-"Settings schema is not installed. App settings could not be loaded and won't "
-"be saved."
-msgstr ""
-
-#: crates/rnote-ui/src/appwindow/mod.rs:563
-msgid "Opening file failed"
-msgstr "Bestand openen mislukt"
-
+#: crates/rnote-ui/src/appwindow/actions.rs:588
 #: crates/rnote-ui/src/appwindow/imp.rs:248
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:257
 #: crates/rnote-ui/src/dialogs/mod.rs:411
 msgid "Saving document failed"
 msgstr "Document opslaan mislukt"
+
+#: crates/rnote-ui/src/appwindow/actions.rs:651
+msgid "Printing document failed"
+msgstr "Het afdrukken is mislukt"
+
+#: crates/rnote-ui/src/appwindow/actions.rs:687
+msgid "Exporting selection failed, nothing selected"
+msgstr "Het exporteren is mislukt omdat er geen keuze gemaakt is"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
 msgid "Button 1"
@@ -1721,20 +1737,22 @@ msgstr "Knop 3"
 msgid "Button 4"
 msgstr "Knop 4"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:645
-msgid "Printing document failed"
-msgstr "Het afdrukken is mislukt"
+#: crates/rnote-ui/src/appwindow/mod.rs:126
+msgid ""
+"Settings schema is not installed. App settings could not be loaded and won't "
+"be saved."
+msgstr ""
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:681
-msgid "Exporting selection failed, nothing selected"
-msgstr "Het exporteren is mislukt omdat er geen keuze gemaakt is"
+#: crates/rnote-ui/src/appwindow/mod.rs:458
+msgid "Opening file failed"
+msgstr "Bestand openen mislukt"
 
-#: crates/rnote-ui/src/canvas/mod.rs:868 crates/rnote-ui/src/dialogs/mod.rs:204
+#: crates/rnote-ui/src/canvas/mod.rs:867 crates/rnote-ui/src/dialogs/mod.rs:204
 #: crates/rnote-ui/src/dialogs/mod.rs:341
 msgid "- invalid file name -"
 msgstr "- ongeldige bestandsnaam -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:881
+#: crates/rnote-ui/src/canvas/mod.rs:880
 msgid "- invalid folder path -"
 msgstr "- ongeldige bestandslocatie -"
 
@@ -1870,43 +1888,43 @@ msgstr "Aandrijvingsconfiguratie succesvol geëxporteerd"
 msgid "Open File"
 msgstr "Bestand openen"
 
-#: crates/rnote-ui/src/dialogs/import.rs:61
+#: crates/rnote-ui/src/dialogs/import.rs:63
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "JPG, PDF, PNG, SVG, XOPP, TXT"
 
-#: crates/rnote-ui/src/dialogs/import.rs:190
+#: crates/rnote-ui/src/dialogs/import.rs:192
 msgid "- no file name -"
 msgstr "- geen bestandsnaam -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:195
+#: crates/rnote-ui/src/dialogs/import.rs:197
 msgid "- no title -"
 msgstr "- naamloos -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:198
+#: crates/rnote-ui/src/dialogs/import.rs:200
 msgid "- no author -"
 msgstr "- geen auteur -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:202
+#: crates/rnote-ui/src/dialogs/import.rs:204
 msgid "- no date -"
 msgstr "- geen datum -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:209
+#: crates/rnote-ui/src/dialogs/import.rs:211
 msgid "File name:"
 msgstr "Bestandsnaam:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:213
+#: crates/rnote-ui/src/dialogs/import.rs:215
 msgid "Title:"
 msgstr "Titel:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:217
+#: crates/rnote-ui/src/dialogs/import.rs:219
 msgid "Author:"
 msgstr "Auteur:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:221
+#: crates/rnote-ui/src/dialogs/import.rs:223
 msgid "Modification date:"
 msgstr "Bewerkt op:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:225
+#: crates/rnote-ui/src/dialogs/import.rs:227
 msgid "Pages:"
 msgstr "Aantal pagina's:"
 
@@ -2301,6 +2319,15 @@ msgstr "Mapnaam"
 msgid "New Folder"
 msgstr "Nieuwe map"
 
+#~ msgid "Lecture Note 1"
+#~ msgstr "College-aantekeningen 1"
+
+#~ msgid "A Pdf annotation"
+#~ msgstr "Een PDF-aantekening"
+
+#~ msgid "Lecture Note 2"
+#~ msgstr "College-aantekeningen 2"
+
 #~ msgid "Close the Folded Flap"
 #~ msgstr "Omgevouwen pagina sluiten"
 
@@ -2428,9 +2455,6 @@ msgstr "Nieuwe map"
 
 #~ msgid "Main window in dark colors"
 #~ msgstr "Hoofdvenster (donker thema)"
-
-#~ msgid "A selection"
-#~ msgstr "Een selectie"
 
 #~ msgid "Export document"
 #~ msgstr "Document exporteren"

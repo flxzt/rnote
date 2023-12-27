@@ -37,8 +37,8 @@ run_command(
 rnote_ui_sources = files(
     'app/appactions.rs',
     'app/mod.rs',
+    'appwindow/actions.rs',
     'appwindow/appsettings.rs',
-    'appwindow/appwindowactions.rs',
     'appwindow/imp.rs',
     'appwindow/mod.rs',
     'canvas/canvaslayout.rs',

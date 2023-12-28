@@ -30,8 +30,6 @@ mod imp {
     impl ObjectImpl for RnContextMenu {
         fn constructed(&self) {
             self.parent_constructed();
-            self.popover.set_has_arrow(false);
-            self.popover.set_position(PositionType::Right);
         }
 
         fn dispose(&self) {

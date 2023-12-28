@@ -736,6 +736,7 @@ impl RnAppWindow {
         action_clipboard_paste.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             let canvas = appwindow.active_tab_wrapper().canvas();
             let content_formats = appwindow.clipboard().formats();
+            let target_pos: Option<na::Vector2<f64>> = None;
 
             // Order matters here, we want to go from specific -> generic, mostly because `text/plain` is contained in other text based formats
              if content_formats.contain_mime_type("text/uri-list") {
@@ -770,7 +771,7 @@ impl RnAppWindow {
                         }
                     }
                 }));
-            } else if content_formats.contain_mime_type(StrokeContent::MIME_TYPE) {
+            } else if content_formats.contain_mime_type(StrokeContent::MIME_TYPE) { // Is strokes
                 glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
                     log::debug!("recognized clipboard content format: {}", StrokeContent::MIME_TYPE);
 
@@ -796,7 +797,7 @@ impl RnAppWindow {
                             if !acc.is_empty() {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
                                     Ok(json_string) => {
-                                        if let Err(e) = canvas.insert_stroke_content(json_string.to_string()).await {
+                                        if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), target_pos).await {
                                             log::error!("failed to paste clipboard, Err: {e:?}");
                                         }
                                     }

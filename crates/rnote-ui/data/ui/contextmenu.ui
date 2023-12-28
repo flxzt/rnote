@@ -4,6 +4,7 @@
     <child>
       <object class="GtkPopoverMenu" id="popover">
         <property name="menu-model">menu_model</property>
+        <property name="has-arrow">false</property>
         <menu id="menu_model">
           <item>
             <attribute name="label" translatable="yes">_Copy</attribute>

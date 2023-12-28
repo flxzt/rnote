@@ -7,7 +7,7 @@ pub(crate) use penshortcutrow::RnPenShortcutRow;
 use rnote_compose::ext::Vector2Ext;
 
 // Imports
-use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
+use crate::{dialogs, RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
 use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
 use gtk4::{
@@ -110,6 +110,10 @@ mod imp {
         pub(crate) penshortcut_drawing_pad_button_3: TemplateChild<RnPenShortcutRow>,
         #[template_child]
         pub(crate) developer_enable_visual_debugging: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(crate) developer_export_engine_state_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) developer_export_engine_config_button: TemplateChild<Button>,
     }
 
     #[glib::object_subclass]
@@ -787,10 +791,25 @@ impl RnSettingsPanel {
             let widget_flags = canvas.engine_mut().set_visual_debug(visual_debug);
             appwindow.handle_widget_flags(widget_flags, &canvas);
         };
-
         imp.developer_enable_visual_debugging.connect_active_notify(
             clone!(@weak appwindow => move |row| {
                 set_visual_debug(&appwindow, row.is_active());
+            }),
+        );
+
+        imp.developer_export_engine_state_button.get().connect_clicked(
+            clone!(@weak appwindow => move |_| {
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    dialogs::export::filechooser_export_engine_state(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
+                }));
+            }),
+        );
+
+        imp.developer_export_engine_config_button.get().connect_clicked(
+            clone!(@weak appwindow => move |_| {
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    dialogs::export::filechooser_export_engine_config(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
+                }));
             }),
         );
     }

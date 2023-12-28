@@ -506,6 +506,28 @@ on a drawing pad</property>
                         <property name="title" translatable="yes">Enable Visual Debugging</property>
                       </object>
                     </child>
+                    <child>
+                      <object class="AdwActionRow" id="developer_export_engine_state_row">
+                        <property name="title" translatable="yes">Export Engine State</property>
+                        <child type="suffix">
+                          <object class="GtkButton" id="developer_export_engine_state_button">
+                            <property name="valign">center</property>
+                            <property name="label" translatable="yes">Export</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="developer_export_engine_config_row">
+                        <property name="title" translatable="yes">Export Engine Config</property>
+                        <child type="suffix">
+                          <object class="GtkButton" id="developer_export_engine_config_button">
+                            <property name="valign">center</property>
+                            <property name="label" translatable="yes">Export</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-27 15:53+0100\n"
-"PO-Revision-Date: 2023-07-23 15:07+0000\n"
+"PO-Revision-Date: 2023-12-29 12:43+0000\n"
 "Last-Translator: vikdevelop <super-vik1@protonmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -50,38 +50,32 @@ msgstr ""
 "kompatibilitu mezi verzemi."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
-#, fuzzy
-#| msgid "An Overview"
 msgid "An overview"
 msgstr "Přehled"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:40
-#, fuzzy
-#| msgid "Export Selection"
 msgid "A selection"
-msgstr "Výběr exportu"
+msgstr "Výběr"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "Write text with the typewriter"
-msgstr ""
+msgstr "Psaní textu pomocí psacího stroje"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"
-msgstr ""
+msgstr "Skrýt nástrojové lišty pomocí režimu ostření"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
-msgstr ""
+msgstr "Rychlý přístup k souborům prostřednictvím pracovní plochy"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
-msgstr ""
+msgstr "Úprava nastavení dokumentu"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
-#, fuzzy
-#| msgid "Button Shortcuts"
 msgid "Configure action shortcuts"
-msgstr "Zkratky pro tlačítko"
+msgstr "Konfigurovat zkratky akcí"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
@@ -292,15 +286,13 @@ msgstr "Nastavit zda se má vzor pozadí exportovat"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:329
 #: crates/rnote-ui/data/ui/dialogs/export.ui:523
 msgid "Optimize for Printing"
-msgstr ""
+msgstr "Optimalizovat pro tisk"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:123
 #: crates/rnote-ui/data/ui/dialogs/export.ui:330
 #: crates/rnote-ui/data/ui/dialogs/export.ui:524
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Set whether the content should be optimized for printing"
-msgstr "Nastavit zda se má vzor pozadí exportovat"
+msgstr "Nastavit, zda by obsah měl být optimalizován pro tisk"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:128
 #: crates/rnote-ui/data/ui/dialogs/export.ui:335
@@ -339,17 +331,14 @@ msgstr "Objednávky"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:144
 #: crates/rnote-ui/data/ui/dialogs/export.ui:351
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts that expand\n"
-#| "in horizontal and vertical directions are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
-"Pořadí stránek u dokumentů s rozvržením, které se rozšiřuje\n"
-"ve vodorovném a svislém směru, jsou rozděleny na stránky"
+"Pořadí stránky když jsou dokumenty s rozvrženími\n"
+"které se roztahují v horizontálních a vertikálních směrech\n"
+"jsou rozděleny do stránek"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:150
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
@@ -508,14 +497,12 @@ msgid "Bitmap"
 msgstr "Bitmap"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Page Order"
 msgid "Page Borders"
-msgstr "Objednávky"
+msgstr "Okraje stránky"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:162
 msgid "Whether the pages have drawn borders"
-msgstr ""
+msgstr "Zda mají mít stránky spodní okraje"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:196
 msgid "Import Xournal++ File"
@@ -743,7 +730,7 @@ msgstr "Zrušit výběr všech tahů"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 msgid "Invert Color Brightness of All Selected Strokes"
-msgstr ""
+msgstr "Invertovat jas barvy pro všechny vybrané tahy"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 #: crates/rnote-ui/data/ui/shortcuts.ui:230
@@ -911,23 +898,23 @@ msgstr "Vyplnit"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:60
 msgid "Move Selected Workspace Up"
-msgstr ""
+msgstr "Přesunout vybraný prostor nahoru"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:69
 msgid "Move Selected Workspace Down"
-msgstr ""
+msgstr "Přesunout vybraný prostor dolů"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:80
 msgid "Add Workspace"
-msgstr ""
+msgstr "Přidat prostor"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:89
 msgid "Remove Selected Workspace"
-msgstr ""
+msgstr "Odstranit vybraný prostor"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:99
 msgid "Edit Selected Workspace"
-msgstr ""
+msgstr "Upravit vybraný prostor"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:24
 msgid "Co_lor Scheme"
@@ -1072,7 +1059,7 @@ msgstr "_Nekonečný"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:49
 msgid "_Snap Positions"
-msgstr ""
+msgstr "_Pozice snímků"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
 msgid "_Pen Sounds"
@@ -1092,7 +1079,7 @@ msgstr "Zobrazit formátované hranice"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:74
 msgid "Show _Origin Indicator"
-msgstr ""
+msgstr "Zobrazit _Původ indikátoru"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:79
 msgid "Draw With _Touch Input"
@@ -1129,18 +1116,24 @@ msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"Odstranit stránku.\n"
+"K dispozici v dokumentu s pevnou velikostí rozvržení."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:167
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"Přidat stránku.\n"
+"K dispozici v dokumentu s pevnou velikostí rozvržení."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:176
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"Změnit velikost dokument na vhodný obsah.\n"
+"K dispozici v dokumentu s pevnou velikostí rozvržení."
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
@@ -1157,7 +1150,7 @@ msgstr "Otevřít"
 
 #: crates/rnote-ui/data/ui/filerow.ui:65
 msgid "Open in Default App"
-msgstr ""
+msgstr "Otevřít ve výchozí aplikaci"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
@@ -1179,10 +1172,8 @@ msgstr "Koncept"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
-#, fuzzy
-#| msgid "Reveal/Hide Flap"
 msgid "Show/Hide Sidebar"
-msgstr "Odhalení/skrytí klapky"
+msgstr "Zobrazit/Skrýt nástrojovou lištu"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
 msgid "New Tab"
@@ -1449,19 +1440,15 @@ msgstr "Nastavit vzorovou výšku pro pozadí"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:365
 msgid "Invert Color Brightness"
-msgstr ""
+msgstr "Invertovat jas barvy"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:366
-#, fuzzy
-#| msgid "Set the background pattern color"
 msgid "Invert the brightness of all background pattern colors"
-msgstr "Nastavit barvu vzoru pro pozadí"
+msgstr "Invertovat jas všech barevných vzorů pozadí"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:370
-#, fuzzy
-#| msgid "Revert"
 msgid "Invert"
-msgstr "Vrátit zpět"
+msgstr "Invertovat"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:380
 msgid "Button Shortcuts"
@@ -1481,53 +1468,55 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:396
 msgid "Stylus Secondary Button Action"
-msgstr ""
+msgstr "Akce druhého tlačítka stylusu"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:397
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
 msgstr ""
+"Nastavit akci pro\n"
+"druhé tlačítko stylusu"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:409
 msgid "Mouse Secondary Button Action"
-msgstr ""
+msgstr "Akce druhého tlačítka myši"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:410
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
 msgstr ""
+"Nastavit akci pro\n"
+"druhé tlačítko myši"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:422
 msgid "Touch Two-Finger Long-Press Action"
-msgstr ""
+msgstr "Dotyková akce dlouhého stisknutí dvěma prsty"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:423
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
 msgstr ""
+"Nastavení akce pro dotyk\n"
+"gesto dlouhého stisknutí dvěma prsty"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:435
 msgid "Keyboard Ctrl-Space Action"
-msgstr ""
+msgstr "Akce kombinace kláves Ctrl-Mezerník"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:436
-#, fuzzy
-#| msgid ""
-#| "Set the action for the\n"
-#| "primary stylus button"
 msgid ""
 "Set the action for the keyboard\n"
 "Ctrl plus Space shortcut"
 msgstr ""
-"Nastavení akce pro\n"
-"primárního tlačítka stylusu"
+"Nastavit akci pro klávesovou\n"
+"zkratku Ctrl plus mezerník"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:448
 msgid "Drawing Pad Button 1 Action"
-msgstr ""
+msgstr "Akce kreslení tlačítka 1 na tabletu"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:449
 msgid ""

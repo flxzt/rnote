@@ -108,6 +108,8 @@ mod imp {
         pub(crate) penshortcut_drawing_pad_button_2: TemplateChild<RnPenShortcutRow>,
         #[template_child]
         pub(crate) penshortcut_drawing_pad_button_3: TemplateChild<RnPenShortcutRow>,
+        #[template_child]
+        pub(crate) developer_enable_visual_debugging: TemplateChild<adw::SwitchRow>,
     }
 
     #[glib::object_subclass]
@@ -339,6 +341,10 @@ impl RnSettingsPanel {
         self.imp().general_inertial_scrolling_row.clone()
     }
 
+    pub(crate) fn developer_enable_visual_debugging(&self) -> adw::SwitchRow {
+        self.imp().developer_enable_visual_debugging.clone()
+    }
+
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
         self.refresh_general_ui(active_tab);
         self.refresh_format_ui(active_tab);
@@ -438,6 +444,7 @@ impl RnSettingsPanel {
         self.setup_format(appwindow);
         self.setup_doc(appwindow);
         self.setup_shortcuts(appwindow);
+        self.setup_developer(appwindow);
     }
 
     fn setup_general(&self, appwindow: &RnAppWindow) {
@@ -770,6 +777,22 @@ impl RnSettingsPanel {
             appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton3, action);
             None
         }));
+    }
+
+    fn setup_developer(&self, appwindow: &RnAppWindow) {
+        let imp = self.imp();
+
+        let set_visual_debug = |appwindow: &RnAppWindow, visual_debug: bool| {
+            let canvas = appwindow.active_tab_wrapper().canvas();
+            let widget_flags = canvas.engine_mut().set_visual_debug(visual_debug);
+            appwindow.handle_widget_flags(widget_flags, &canvas);
+        };
+
+        imp.developer_enable_visual_debugging.connect_active_notify(
+            clone!(@weak appwindow => move |row| {
+                set_visual_debug(&appwindow, row.is_active());
+            }),
+        );
     }
 
     fn revert_format(&self, appwindow: &RnAppWindow) {

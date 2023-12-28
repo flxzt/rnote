@@ -497,6 +497,17 @@ on a drawing pad</property>
                     </child>
                   </object>
                 </child>
+                <!-- Developer Options Group -->
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title" translatable="yes">Developer Options</property>
+                    <child>
+                      <object class="AdwSwitchRow" id="developer_enable_visual_debugging">
+                        <property name="title" translatable="yes">Enable Visual Debugging</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </property>
           </object>

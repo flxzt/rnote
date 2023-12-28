@@ -198,7 +198,11 @@ impl RnCanvas {
     /// Deserializes the stroke content and inserts it into the engine.
     ///
     /// The data is usually coming from the clipboard, drop source, etc.
-    pub(crate) async fn insert_stroke_content(&self, json_string: String, target_pos: Option<na::Vector2<f64>>) -> anyhow::Result<()> {
+    pub(crate) async fn insert_stroke_content(
+        &self,
+        json_string: String,
+        target_pos: Option<na::Vector2<f64>>,
+    ) -> anyhow::Result<()> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<StrokeContent>>();
 
@@ -212,26 +216,36 @@ impl RnCanvas {
         });
         let content = oneshot_receiver.await??;
 
-        log::debug!("camera transform: {:?}", self.engine_ref().camera.transform());
-        log::debug!("inverse camera transform: {:?}", self.engine_ref().camera.transform().inverse());
-        log::debug!("offset: {:?}", self
-        .engine_ref()
-        .camera // Get camera
-        .transform() // Get camera position in surface coordinates
-        .inverse() // Inverse transform (?)
-        .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT)).coords);
+        log::debug!(
+            "camera transform: {:?}",
+            self.engine_ref().camera.transform()
+        );
+        log::debug!(
+            "inverse camera transform: {:?}",
+            self.engine_ref().camera.transform().inverse()
+        );
+        log::debug!(
+            "offset: {:?}",
+            self.engine_ref()
+                .camera // Get camera
+                .transform() // Get camera position in surface coordinates
+                .inverse() // Inverse transform (?)
+                .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
+                .coords
+        );
 
-        let pos = target_pos.unwrap_or_else(|| { self
-            .engine_ref()
-            .camera // Get camera
-            .transform() // Get camera position in surface coordinates
-            .inverse() // Inverse transform (?)
-            .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT)) // Apply offset
-            .coords
-            .maxs(&na::vector![ // Make sure that the position is on screen. If the calculated coords are smaller than the document position, paste it at the document position => top left corner
-                self.engine_ref().document.x,
-                self.engine_ref().document.y
-            ])
+        let pos = target_pos.unwrap_or_else(|| {
+            self.engine_ref()
+                .camera // Get camera
+                .transform() // Get camera position in surface coordinates
+                .inverse() // Inverse transform (?)
+                .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT)) // Apply offset
+                .coords
+                .maxs(&na::vector![
+                    // Make sure that the position is on screen. If the calculated coords are smaller than the document position, paste it at the document position => top left corner
+                    self.engine_ref().document.x,
+                    self.engine_ref().document.y
+                ])
         });
 
         let widget_flags = self.engine_mut().insert_stroke_content(content, pos);

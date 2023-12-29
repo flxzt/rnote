@@ -181,6 +181,7 @@ meson compile <custom target> -C _mesonbuild
 | rnote-gmo | Compile the po files. Provided by the `i18n` module. |
 | cargo-fmt-check | Check the code formatting |
 | cargo-test | Run all unit and integration tests |
+| cargo-clean | Clean artifacts that cargo has generated |
 | ui-cargo-check | Run cargo check for the ui package |
 | ui-cargo-clippy | Run clippy for the ui package |
 | ui-cargo-doc | Generate docs for the ui package (also checks documentation formatting) |

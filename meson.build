@@ -140,6 +140,20 @@ run_target(
     env: cargo_env,
 )
 
+# cargo clean
+run_target(
+    'cargo-clean',
+    command: [
+        cargo,
+        [
+            'clean',
+            '--manifest-path', cargo_manifest_path,
+            '--target-dir', cargo_target_dir,
+        ],
+    ],
+    env: cargo_env,
+)
+
 # build/install the ui
 if build_ui == true
     # ui dependencies
@@ -179,7 +193,7 @@ if build_ui == true
         ui_output = app_name
     endif
 
-    # app cargo check
+    # ui cargo check
     run_target(
         'ui-cargo-check',
         command: [
@@ -190,7 +204,7 @@ if build_ui == true
         env: cargo_env,
     )
 
-    # app cargo clippy
+    # ui cargo clippy
     run_target(
         'ui-cargo-clippy',
         command: [
@@ -201,7 +215,7 @@ if build_ui == true
         env: cargo_env,
     )
 
-    # app cargo doc
+    # ui cargo doc
     run_target(
         'ui-cargo-doc',
         command: [
@@ -212,7 +226,7 @@ if build_ui == true
         env: cargo_env,
     )
 
-    # app cargo build
+    # ui cargo build
     app_cargo_build = custom_target(
         'ui-cargo-build',
         build_by_default: true,

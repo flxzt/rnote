@@ -122,7 +122,7 @@ impl EngineSnapshot {
                         xopp_import_prefs.dpi,
                     ));
 
-                if let Some(first_page) = xopp_file.xopp_root.pages.get(0) {
+                if let Some(first_page) = xopp_file.xopp_root.pages.first() {
                     if let xoppformat::XoppBackgroundType::Solid {
                         color: _color,
                         style: _style,
@@ -136,7 +136,7 @@ impl EngineSnapshot {
                 // Offsetting as rnote has one global coordinate space
                 let mut offset = na::Vector2::<f64>::zeros();
 
-                for (_page_i, page) in xopp_file.xopp_root.pages.into_iter().enumerate() {
+                for page in xopp_file.xopp_root.pages.into_iter() {
                     for layers in page.layers.into_iter() {
                         // import strokes
                         for new_xoppstroke in layers.strokes.into_iter() {

@@ -45,7 +45,7 @@ impl Content for BitmapImage {
 
 impl Drawable for BitmapImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        let piet_image_format = piet::ImageFormat::try_from(self.image.memory_format)?;
+        let piet_image_format = piet::ImageFormat::from(self.image.memory_format);
 
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         cx.transform(self.rectangle.transform.affine.to_kurbo());

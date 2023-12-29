@@ -139,7 +139,7 @@ impl Drawable for Image {
     ///
     /// `image_scale` has no meaning here, because the bitamp is already provided.
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        let piet_image_format = piet::ImageFormat::try_from(self.memory_format)?;
+        let piet_image_format = piet::ImageFormat::from(self.memory_format);
 
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let piet_image = cx

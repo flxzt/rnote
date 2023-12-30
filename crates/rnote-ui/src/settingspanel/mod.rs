@@ -612,14 +612,15 @@ impl RnSettingsPanel {
             }),
         );
 
-        imp.doc_document_layout_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_| {
-            let document_layout = settings_panel.document_layout();
-            let canvas = appwindow.active_tab_wrapper().canvas();
-            
-            let widget_flags = canvas.engine_mut().set_doc_layout(document_layout);
-            appwindow.handle_widget_flags(widget_flags, &canvas);
-        }));
-            
+        imp.doc_document_layout_row.get().connect_activate(
+            clone!(@weak self as settings_panel, @weak appwindow => move |_| {
+                let document_layout = settings_panel.document_layout();
+                let canvas = appwindow.active_tab_wrapper().canvas();
+
+                let widget_flags = canvas.engine_mut().set_doc_layout(document_layout);
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }),
+        );
 
         imp.doc_background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_| {
             let pattern = settings_panel.background_pattern();

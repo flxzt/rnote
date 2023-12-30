@@ -48,12 +48,6 @@ impl RnAppWindow {
         let action_visual_debug =
             gio::SimpleAction::new_stateful("visual-debug", None, &false.to_variant());
         self.add_action(&action_visual_debug);
-        let action_debug_export_engine_state =
-            gio::SimpleAction::new("debug-export-engine-state", None);
-        self.add_action(&action_debug_export_engine_state);
-        let action_debug_export_engine_config =
-            gio::SimpleAction::new("debug-export-engine-config", None);
-        self.add_action(&action_debug_export_engine_config);
         let action_righthanded = gio::PropertyAction::new("righthanded", self, "righthanded");
         self.add_action(&action_righthanded);
         let action_touch_drawing = gio::PropertyAction::new("touch-drawing", self, "touch-drawing");
@@ -208,61 +202,11 @@ impl RnAppWindow {
             }
         }));
 
-        // Developer mode
-        action_devel_mode.connect_activate(
-            clone!(@weak self as appwindow, @weak action_devel_menu => move |action, _target| {
-                let state = action.state().unwrap().get::<bool>().unwrap();
-
-                // Enable the devel menu action to reveal it in the app menu
-                action_devel_menu.set_enabled(!state);
-
-                // If toggled to disable
-                if state {
-                    log::debug!("Disabling visual debugging.");
-                    appwindow.lookup_action("visual-debug").unwrap().change_state(&false.to_variant());
-                }
-                action.change_state(&(!state).to_variant());
-            }),
-        );
-
-        // Developer settings
-        // Its enabled state toggles the visibility of the developer settings menu entry. Is only modified inside action_devel_mode
-        action_devel_menu.set_enabled(false);
-
-        // Visual debugging
-        action_visual_debug.connect_change_state(
-            clone!(@weak self as appwindow => move |action, state_request| {
-                let visual_debug = state_request.unwrap().get::<bool>().unwrap();
-                let canvas = appwindow.active_tab_wrapper().canvas();
-                let widget_flags = canvas.engine_mut().set_visual_debug(visual_debug);
-                appwindow.handle_widget_flags(widget_flags, &canvas);
-                action.set_state(&visual_debug.to_variant());
-            }),
-        );
-
         // Create page
         action_new_tab.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             let wrapper = appwindow.new_canvas_wrapper();
             appwindow.append_wrapper_new_tab(&wrapper);
         }));
-
-        // Export engine state
-        action_debug_export_engine_state.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
-                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                    dialogs::export::filechooser_export_engine_state(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
-                }));
-            }),
-        );
-
-        // Export engine config
-        action_debug_export_engine_config.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
-                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                    dialogs::export::filechooser_export_engine_config(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
-                }));
-            }),
-        );
 
         // Doc layout
         action_doc_layout.connect_activate(

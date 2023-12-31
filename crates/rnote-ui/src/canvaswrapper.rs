@@ -34,6 +34,7 @@ mod imp {
         pub(crate) block_pinch_zoom: Cell<bool>,
         pub(crate) inertial_scrolling: Cell<bool>,
         pub(crate) pointer_pos: Cell<Option<na::Vector2<f64>>>,
+        pub(crate) last_contextmenu_pos: Cell<Option<na::Vector2<f64>>>,
 
         pub(crate) pointer_motion_controller: EventControllerMotion,
         pub(crate) canvas_drag_gesture: GestureDrag,
@@ -124,6 +125,7 @@ mod imp {
                 block_pinch_zoom: Cell::new(false),
                 inertial_scrolling: Cell::new(true),
                 pointer_pos: Cell::new(None),
+                last_contextmenu_pos: Cell::new(None),
 
                 pointer_motion_controller,
                 canvas_drag_gesture,
@@ -619,6 +621,7 @@ mod imp {
                 self.touch_long_press_gesture.connect_pressed(
                     clone!(@weak obj as canvaswrapper => move |_gesture, x, y| {
                         let popover = canvaswrapper.contextmenu().popover();
+                        canvaswrapper.imp().last_contextmenu_pos.set(Some(na::vector![x, y]));
                         popover.set_pointing_to(Some(&Rectangle::new(x as i32, y as i32, 0, 0)));
                         popover.popup();
                     }),
@@ -671,6 +674,10 @@ impl RnCanvasWrapper {
     #[allow(unused)]
     pub(crate) fn set_inertial_scrolling(&self, inertial_scrolling: bool) {
         self.set_property("inertial-scrolling", inertial_scrolling);
+    }
+
+    pub(crate) fn last_contextmenu_pos(&self) -> Option<na::Vector2<f64>> {
+        self.imp().last_contextmenu_pos.get()
     }
 
     pub(crate) fn scroller(&self) -> ScrolledWindow {

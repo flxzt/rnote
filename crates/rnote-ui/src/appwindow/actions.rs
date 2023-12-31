@@ -747,8 +747,11 @@ impl RnAppWindow {
 
         // Clipboard paste
         action_clipboard_paste.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            let canvas = appwindow.active_tab_wrapper().canvas();
+            let canvas_wrapper = appwindow.active_tab_wrapper();
+            let canvas = canvas_wrapper.canvas();
             let content_formats = appwindow.clipboard().formats();
+            let last_contextmenu_pos = canvas_wrapper.last_contextmenu_pos();
+            tracing::debug!("Last contextmenu pos: {:?}", last_contextmenu_pos);
 
             // Order matters here, we want to go from specific -> generic, mostly because `text/plain` is contained in other text based formats
              if content_formats.contain_mime_type("text/uri-list") {
@@ -808,7 +811,7 @@ impl RnAppWindow {
                             if !acc.is_empty() {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
                                     Ok(json_string) => {
-                                        if let Err(e) = canvas.insert_stroke_content(json_string.to_string()).await {
+                                        if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), last_contextmenu_pos).await {
                                             tracing::error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
                                         }
                                     }
@@ -850,7 +853,7 @@ impl RnAppWindow {
                             if !acc.is_empty() {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
                                     Ok(text) => {
-                                        if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), None).await {
+                                        if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), last_contextmenu_pos).await {
                                             tracing::error!(
                                                 "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
                                             );
@@ -883,7 +886,7 @@ impl RnAppWindow {
 
                         match appwindow.clipboard().read_texture_future().await {
                             Ok(Some(texture)) => {
-                                if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), None).await {
+                                if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), last_contextmenu_pos).await {
                                     tracing::error!(
                                         "Loading bitmap image bytes failed while pasting clipboard as {mime_type}, Err: {e:?}"
                                     );
@@ -904,7 +907,7 @@ impl RnAppWindow {
 
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
-                            if let Err(e) = canvas.load_in_text(text.to_string(), None) {
+                            if let Err(e) = canvas.load_in_text(text.to_string(), last_contextmenu_pos) {
                                 tracing::error!("Failed to paste clipboard text, Err: {e:?}");
                             }
                         }

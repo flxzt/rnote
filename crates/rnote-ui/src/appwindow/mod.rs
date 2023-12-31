@@ -476,6 +476,7 @@ impl RnAppWindow {
                             // a new tab for rnote files
                             appwindow.new_canvas_wrapper()
                         } else {
+                            log::debug!("Using old wrapper");
                             appwindow.active_tab_wrapper()
                         };
                         let (bytes, _) = input_file.load_bytes_future().await?;
@@ -485,6 +486,12 @@ impl RnAppWindow {
                             .await?;
                         if rnote_file_new_tab {
                             appwindow.append_wrapper_new_tab(&wrapper);
+                        } else {
+                            let document_layout = wrapper.canvas().engine_ref().document.layout;
+                            appwindow
+                                .sidebar()
+                                .settings_panel()
+                                .set_document_layout(&document_layout);
                         }
                         appwindow.handle_widget_flags(widget_flags, &wrapper.canvas());
                         true

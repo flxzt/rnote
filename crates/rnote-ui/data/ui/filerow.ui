@@ -29,7 +29,7 @@
         <property name="name">file_label</property>
         <property name="halign">start</property>
         <property name="hexpand">true</property>
-        <property name="ellipsize">end</property>
+        <property name="ellipsize">middle</property>
       </object>
     </child>
     <child>
@@ -60,6 +60,10 @@
           <item>
             <attribute name="label" translatable="yes">Open</attribute>
             <attribute name="action">filerow.open-file</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Open in Default App</attribute>
+            <attribute name="action">filerow.open-in-default-app</attribute>
           </item>
           <item>
             <attribute name="label" translatable="yes">Rename</attribute>

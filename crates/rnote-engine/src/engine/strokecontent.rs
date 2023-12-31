@@ -23,7 +23,7 @@ pub struct StrokeContent {
 }
 
 impl StrokeContent {
-    pub const MIME_TYPE: &str = "application/rnote-stroke-content";
+    pub const MIME_TYPE: &'static str = "application/rnote-stroke-content";
     pub const CLIPBOARD_EXPORT_MARGIN: f64 = 6.0;
 
     pub fn with_bounds(mut self, bounds: Option<Aabb>) -> Self {
@@ -88,7 +88,7 @@ impl StrokeContent {
         )?;
         // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
         if let Err(e) = content_svg.simplify() {
-            log::warn!("Simplifying Svg while generating StrokeContent Svg failed, Err: {e:?}");
+            tracing::warn!("Simplifying Svg while generating StrokeContent Svg failed, Err: {e:?}");
         };
 
         Ok(Some(content_svg))

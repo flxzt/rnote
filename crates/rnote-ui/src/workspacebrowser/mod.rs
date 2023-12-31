@@ -83,7 +83,7 @@ mod imp {
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
+            klass.bind_template();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -204,7 +204,7 @@ impl RnWorkspaceBrowser {
                     dir = match dir.canonicalize() {
                         Ok(dir) => dir,
                         Err(e) => {
-                            log::warn!("could not canonicalize dir {dir:?} from workspacelistentry, Err: {e:?}");
+                            tracing::warn!("Could not canonicalize dir {dir:?} from workspacelistentry, Err: {e:?}");
                             return;
                         }
                     };
@@ -212,7 +212,7 @@ impl RnWorkspaceBrowser {
                 if let Some(parent) = dir.parent().map(|p| p.to_path_buf()) {
                     workspacebrowser.workspacesbar().set_selected_workspace_dir(parent);
                 } else {
-                    log::warn!("cant move directory up from dir {dir:?} from workspacelistentry, has no parent.");
+                    tracing::warn!("Can't move directory up from dir {dir:?} from workspacelistentry, has no parent.");
                 }
             }
         }));
@@ -323,7 +323,7 @@ impl RnWorkspaceBrowser {
         filefilter.add_mime_type("image/svg+xml");
         filefilter.add_mime_type("image/png");
         filefilter.add_mime_type("image/jpeg");
-        filefilter.add_mime_type("application/x-xopp");
+        filefilter.add_mime_type("text/plain");
         filefilter.add_mime_type("inode/directory");
         filefilter.add_suffix("rnote");
         filefilter.add_suffix("pdf");
@@ -332,6 +332,7 @@ impl RnWorkspaceBrowser {
         filefilter.add_suffix("png");
         filefilter.add_suffix("jpg");
         filefilter.add_suffix("jpeg");
+        filefilter.add_suffix("txt");
 
         let hidden_filter = CustomFilter::new(|file| {
             let fileinfo = file.downcast_ref::<gio::FileInfo>().unwrap();
@@ -397,7 +398,7 @@ impl RnWorkspaceBrowser {
             let second_display_name = second_file.basename().unwrap();
             let second_display_name = second_display_name.to_str().unwrap();
 
-            first_display_name.cmp(second_display_name).into()
+            numeric_sort::cmp(first_display_name, second_display_name).into()
         });
 
         let multisorter = MultiSorter::new();

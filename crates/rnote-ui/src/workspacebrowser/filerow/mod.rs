@@ -59,7 +59,7 @@ mod imp {
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
+            klass.bind_template();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -208,6 +208,9 @@ impl RnFileRow {
         self.imp()
             .action_group
             .add_action(&actions::open(self, appwindow));
+        self.imp()
+            .action_group
+            .add_action(&actions::open_in_default_app(self, appwindow));
         self.imp().action_group.add_action(&actions::rename(self));
         self.imp().action_group.add_action(&actions::trash(self));
         self.imp()

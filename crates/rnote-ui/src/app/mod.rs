@@ -3,7 +3,7 @@ mod appactions;
 
 // Imports
 use crate::{
-    colorpicker::RnColorPad, colorpicker::RnColorSetter, config, globals, penssidebar::RnBrushPage,
+    colorpicker::RnColorPad, colorpicker::RnColorSetter, config, penssidebar::RnBrushPage,
     penssidebar::RnEraserPage, penssidebar::RnSelectorPage, penssidebar::RnShaperPage,
     penssidebar::RnToolsPage, penssidebar::RnTypewriterPage, settingspanel::RnPenShortcutRow,
     strokewidthpicker::RnStrokeWidthPreview, strokewidthpicker::RnStrokeWidthSetter,
@@ -19,8 +19,24 @@ use gtk4::{gio, glib, glib::clone, prelude::*, subclass::prelude::*};
 mod imp {
     use super::*;
 
-    #[derive(Debug, Default)]
-    pub(crate) struct RnApp {}
+    #[derive(Debug)]
+    pub(crate) struct RnApp {
+        pub(crate) app_settings: Option<gio::Settings>,
+    }
+
+    impl Default for RnApp {
+        fn default() -> Self {
+            let app_settings = gio::SettingsSchemaSource::default().and_then(|schema_source| {
+                Some(gio::Settings::new_full(
+                    &schema_source.lookup(config::APP_ID, true)?,
+                    None::<&gio::SettingsBackend>,
+                    None,
+                ))
+            });
+
+            Self { app_settings }
+        }
+    }
 
     #[glib::object_subclass]
     impl ObjectSubclass for RnApp {
@@ -33,9 +49,12 @@ mod imp {
 
     impl ApplicationImpl for RnApp {
         fn startup(&self) {
+            let obj = self.obj();
             self.parent_startup();
 
-            self.init();
+            self.setup_buildables();
+            obj.setup_actions();
+            obj.setup_action_accels();
         }
 
         fn activate(&self) {
@@ -72,30 +91,8 @@ mod imp {
     impl AdwApplicationImpl for RnApp {}
 
     impl RnApp {
-        fn init(&self) {
-            let obj = self.obj();
-
-            self.setup_gresources();
-            obj.setup_actions();
-            obj.setup_action_accels();
-        }
-
-        /// Initializes and shows a new app window
-        fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
-            let appwindow = RnAppWindow::new(self.obj().upcast_ref::<gtk4::Application>());
-            appwindow.init();
-            appwindow.present();
-
-            // Loading in input file in the first tab, if Some
-            if let Some(input_file) = input_file {
-                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                    appwindow.open_file_w_dialogs(input_file, None, false).await;
-                }));
-            }
-        }
-
-        fn setup_gresources(&self) {
-            // Custom buildable Widgets need to register
+        /// Custom buildable Widgets need to register
+        fn setup_buildables(&self) {
             RnAppWindow::static_type();
             RnOverlays::static_type();
             RnCanvasWrapper::static_type();
@@ -128,15 +125,20 @@ mod imp {
             RnStrokeContentPreview::static_type();
             RnSidebar::static_type();
             RnPenPicker::static_type();
+        }
 
-            self.obj().set_resource_base_path(Some(config::APP_IDPATH));
-            let resource = gio::Resource::load(
-                crate::env::pkg_data_dir()
-                    .expect("Could not retrieve pkg data dir")
-                    .join(globals::GRESOURCES_FILENAME),
-            )
-            .expect("Could not load gresource file");
-            gio::resources_register(&resource);
+        /// Initializes and shows a new app window
+        fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
+            let appwindow = RnAppWindow::new(self.obj().upcast_ref::<gtk4::Application>());
+            appwindow.init();
+            appwindow.present();
+
+            // Loading in input file in the first tab, if Some
+            if let Some(input_file) = input_file {
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    appwindow.open_file_w_dialogs(input_file, None, false).await;
+                }));
+            }
         }
     }
 }
@@ -157,8 +159,20 @@ impl RnApp {
     pub(crate) fn new() -> Self {
         glib::Object::builder()
             .property("application-id", config::APP_ID)
+            .property("resource-base-path", config::APP_IDPATH)
             .property("flags", gio::ApplicationFlags::HANDLES_OPEN)
             .property("register-session", true)
             .build()
+    }
+
+    /// Returns the app settings, if the schema is found in the compiled gschema. If not, returns None.
+    ///
+    /// Callers that query the settings should implement good default fallback accordingly
+    pub(crate) fn app_settings(&self) -> Option<gio::Settings> {
+        self.imp().app_settings.clone()
+    }
+
+    pub(crate) fn settings_schema_found(&self) -> bool {
+        self.app_settings().is_some()
     }
 }

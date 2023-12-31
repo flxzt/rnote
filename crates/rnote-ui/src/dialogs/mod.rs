@@ -120,13 +120,14 @@ pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
                         appwindow.overlays().progressbar_start_pulsing();
 
                         if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                            tracing::error!("Saving document failed before creating new document, Err: {e:?}");
+
                             canvas.set_output_file(None);
-
-                            log::error!("saving document failed, Error: `{e:?}`");
                             appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
+                            appwindow.overlays().progressbar_abort();
+                        } else {
+                            appwindow.overlays().progressbar_finish();
                         }
-
-                        appwindow.overlays().progressbar_finish();
                         // No success toast on saving without dialog, success is already indicated in the header title
 
                         // only create new document if saving was successful
@@ -250,10 +251,13 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
                 if let Err(e) = canvas.save_document_to_file(&save_file).await {
                     canvas.set_output_file(None);
 
-                    log::error!("saving document failed, Error: `{e:?}`");
+                    tracing::error!("Saving document failed before closing tab, Err: {e:?}");
                     appwindow
                         .overlays()
                         .dispatch_toast_error(&gettext("Saving document failed"));
+                    appwindow.overlays().progressbar_abort();
+                } else {
+                    appwindow.overlays().progressbar_finish();
                 }
 
                 appwindow.overlays().progressbar_finish();
@@ -398,10 +402,10 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
                     .canvas();
 
                 if let Err(e) = canvas.save_document_to_file(&save_file).await {
-                    canvas.set_output_file(None);
-                    close = false;
+                    tracing::error!("Saving document failed before closing window, Err: `{e:?}`");
 
-                    log::error!("saving document failed, Error: `{e:?}`");
+                    close = false;
+                    canvas.set_output_file(None);
                     appwindow
                         .overlays()
                         .dispatch_toast_error(&gettext("Saving document failed"));
@@ -463,7 +467,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
         .workspacesbar()
         .selected_workspacelistentry()
     else {
-        log::warn!("tried to edit workspace entry in dialog, but no workspace is selected");
+        tracing::warn!("Tried to edit workspace entry in dialog, but no workspace is selected.");
         return;
     };
 
@@ -524,7 +528,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
                         }
                     }
                     Err(e) => {
-                        log::debug!("did not select new folder for workspacerow (Error or dialog dismissed by user), {e:?}");
+                        tracing::debug!("Did not select new folder for workspacerow (Error or dialog dismissed by user), Err: {e:?}");
                     }
                 }
                 dialog.present();
@@ -547,12 +551,6 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
                 .sidebar()
                 .workspacebrowser()
                 .refresh_dirlist_selected_workspace();
-            // And save the state
-            appwindow
-                .sidebar()
-                .workspacebrowser()
-                .workspacesbar()
-                .save_to_settings(&appwindow.app_settings());
         }
         _ => {
             // Cancel

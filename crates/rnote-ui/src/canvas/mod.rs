@@ -12,9 +12,9 @@ pub(crate) use widgetflagsboxed::WidgetFlagsBoxed;
 use crate::{config, RnAppWindow};
 use gettextrs::gettext;
 use gtk4::{
-    gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
-    Adjustment, DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext,
-    PropagationPhase, Scrollable, ScrollablePolicy, Widget,
+    gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, Adjustment,
+    DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext, PropagationPhase,
+    Scrollable, ScrollablePolicy, Widget,
 };
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
@@ -68,6 +68,7 @@ mod imp {
         pub(crate) engine_task_handler_handle: RefCell<Option<glib::JoinHandle<()>>>,
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
+        pub(crate) output_file_saved_modified_date_time: RefCell<Option<glib::DateTime>>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
         pub(crate) output_file_monitor_changed_handler: RefCell<Option<glib::SignalHandlerId>>,
         pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
@@ -77,6 +78,8 @@ mod imp {
         pub(crate) empty: Cell<bool>,
         pub(crate) touch_drawing: Cell<bool>,
         pub(crate) show_drawing_cursor: Cell<bool>,
+
+        pub(crate) last_export_dir: RefCell<Option<gio::File>>,
     }
 
     impl Default for RnCanvas {
@@ -160,6 +163,8 @@ mod imp {
                 engine_task_handler_handle: RefCell::new(None),
 
                 output_file: RefCell::new(None),
+                // is automatically updated whenever the output file changes.
+                output_file_saved_modified_date_time: RefCell::new(None),
                 output_file_monitor: RefCell::new(None),
                 output_file_monitor_changed_handler: RefCell::new(None),
                 output_file_modified_toast_singleton: RefCell::new(None),
@@ -169,6 +174,8 @@ mod imp {
                 empty: Cell::new(true),
                 touch_drawing: Cell::new(false),
                 show_drawing_cursor: Cell::new(false),
+
+                last_export_dir: RefCell::new(None),
             }
         }
     }
@@ -181,7 +188,6 @@ mod imp {
         type Interfaces = (Scrollable,);
 
         fn class_init(klass: &mut Self::Class) {
-            klass.set_accessible_role(AccessibleRole::Widget);
             klass.set_layout_manager_type::<RnCanvasLayout>();
         }
 
@@ -211,7 +217,7 @@ mod imp {
             let engine_task_handler_handle = glib::MainContext::default().spawn_local(
                 clone!(@weak obj as canvas => async move {
                     let Some(mut task_rx) = canvas.engine_mut().take_engine_tasks_rx() else {
-                        log::error!("installing the engine task handler failed, taken tasks_rx is None");
+                        tracing::error!("Installing the engine task handler failed, taken tasks_rx is None.");
                         return;
                     };
 
@@ -300,6 +306,17 @@ mod imp {
                     let output_file = value
                         .get::<Option<gio::File>>()
                         .expect("The value needs to be of type `Option<gio::File>`");
+                    self.output_file_saved_modified_date_time.replace(
+                        output_file.as_ref().and_then(|f| {
+                            f.query_info(
+                                gio::FILE_ATTRIBUTE_TIME_MODIFIED_USEC,
+                                gio::FileQueryInfoFlags::NONE,
+                                gio::Cancellable::NONE,
+                            )
+                            .ok()?
+                            .modification_date_time()
+                        }),
+                    );
                     self.output_file.replace(output_file);
                 }
                 "unsaved-changes" => {
@@ -436,7 +453,7 @@ mod imp {
                 snapshot.pop();
                 Ok(())
             }() {
-                log::error!("canvas snapshot() failed , Err: {e:?}");
+                tracing::error!("Snapshot canvas failed , Err: {e:?}");
             }
         }
     }
@@ -580,8 +597,6 @@ pub(crate) static OUTPUT_FILE_NEW_SUBTITLE: once_cell::sync::Lazy<String> =
 impl RnCanvas {
     // Sets the canvas zoom scroll step in % for one unit of the event controller delta
     pub(crate) const ZOOM_SCROLL_STEP: f64 = 0.1;
-    /// A small margin added to the document width, when zooming to fit document width
-    pub(crate) const ZOOM_FIT_WIDTH_MARGIN: f64 = 32.0;
 
     pub(crate) fn new() -> Self {
         glib::Object::new()
@@ -613,6 +628,11 @@ impl RnCanvas {
     }
 
     #[allow(unused)]
+    pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
+        self.set_property("output-file", output_file.to_value());
+    }
+
+    #[allow(unused)]
     pub(crate) fn output_file_expect_write(&self) -> bool {
         self.imp().output_file_expect_write.get()
     }
@@ -630,11 +650,6 @@ impl RnCanvas {
     #[allow(unused)]
     pub(crate) fn set_save_in_progress(&self, save_in_progress: bool) {
         self.imp().save_in_progress.set(save_in_progress);
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
-        self.set_property("output-file", output_file.to_value());
     }
 
     #[allow(unused)]
@@ -691,6 +706,24 @@ impl RnCanvas {
             "handle-widget-flags",
             &[&WidgetFlagsBoxed::from(widget_flags)],
         );
+    }
+
+    pub(crate) fn last_export_dir(&self) -> Option<gio::File> {
+        self.imp().last_export_dir.borrow().clone()
+    }
+
+    pub(crate) fn set_last_export_dir(&self, dir: Option<gio::File>) {
+        self.imp().last_export_dir.replace(dir);
+    }
+
+    /// Returns the saved date time for the modification time of the output file when it was set by the app.
+    ///
+    /// It might not be correct if the content of the output file has changed from outside the app.
+    pub(crate) fn output_file_saved_modified_date_time(&self) -> Option<glib::DateTime> {
+        self.imp()
+            .output_file_saved_modified_date_time
+            .borrow()
+            .to_owned()
     }
 
     pub(crate) fn canvas_layout_manager(&self) -> RnCanvasLayout {
@@ -789,7 +822,7 @@ impl RnCanvas {
             Err(e) => {
                 if engine_config.is_empty() {
                     // On first app startup the engine config is empty, so we don't log an error
-                    log::debug!("did not load `engine-config` from settings, was empty");
+                    tracing::debug!("Did not load `engine-config` from settings, was empty");
                 } else {
                     return Err(e);
                 }
@@ -803,24 +836,6 @@ impl RnCanvas {
             self.emit_handle_widget_flags(widget_flags);
         }
         Ok(())
-    }
-
-    pub(crate) fn clear_output_file_monitor(&self) {
-        if let Some(old_output_file_monitor) = self.imp().output_file_monitor.take() {
-            if let Some(handler) = self.imp().output_file_monitor_changed_handler.take() {
-                old_output_file_monitor.disconnect(handler);
-            }
-
-            old_output_file_monitor.cancel();
-        }
-    }
-
-    pub(crate) fn dismiss_output_file_modified_toast(&self) {
-        if let Some(output_file_modified_toast) =
-            self.imp().output_file_modified_toast_singleton.take()
-        {
-            output_file_modified_toast.dismiss();
-        }
     }
 
     /// Switches between the regular and the drawing cursor
@@ -867,17 +882,36 @@ impl RnCanvas {
             .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string())
     }
 
-    pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnAppWindow) {
-        let new_monitor = match file
-            .monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE)
-        {
-            Ok(output_file_monitor) => output_file_monitor,
-            Err(e) => {
-                self.clear_output_file_monitor();
-                log::error!("creating a file monitor for the new output file failed , Err: {e:?}");
-                return;
+    pub(crate) fn clear_output_file_monitor(&self) {
+        if let Some(old_output_file_monitor) = self.imp().output_file_monitor.take() {
+            if let Some(handler) = self.imp().output_file_monitor_changed_handler.take() {
+                old_output_file_monitor.disconnect(handler);
             }
-        };
+
+            old_output_file_monitor.cancel();
+        }
+    }
+
+    pub(crate) fn dismiss_output_file_modified_toast(&self) {
+        if let Some(output_file_modified_toast) =
+            self.imp().output_file_modified_toast_singleton.take()
+        {
+            output_file_modified_toast.dismiss();
+        }
+    }
+
+    pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnAppWindow) {
+        let new_monitor =
+            match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
+                Ok(output_file_monitor) => output_file_monitor,
+                Err(e) => {
+                    self.clear_output_file_monitor();
+                    tracing::error!(
+                        "Creating a file monitor for the new output file failed , Err: {e:?}"
+                    );
+                    return;
+                }
+            };
 
         let new_handler = new_monitor.connect_changed(
             glib::clone!(@weak self as canvas, @weak appwindow => move |_monitor, file, other_file, event| {
@@ -892,18 +926,19 @@ impl RnCanvas {
                                 appwindow.overlays().progressbar_start_pulsing();
 
                                 if let Err(e) = canvas.reload_from_disk().await {
+                                    tracing::error!("Failed to reload current output file, Err: {e:?}");
                                     appwindow.overlays().dispatch_toast_error(&gettext("Reloading .rnote file from disk failed"));
-                                    log::error!("failed to reload current output file, {}", e);
+                                    appwindow.overlays().progressbar_abort();
+                                } else {
+                                    appwindow.overlays().progressbar_finish();
                                 }
-
-                                appwindow.overlays().progressbar_finish();
                             }));
                         }),
                         0,
                     &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
                 };
 
-                log::debug!("canvas with title: `{}` - output-file monitor emitted `changed` - file: {:?}, other_file: {:?}, event: {event:?}, expect_write: {}",
+                tracing::debug!("Canvas with title: `{}` - output-file monitor emitted `changed` - file: {:?}, other_file: {:?}, event: {event:?}, expect_write: {}",
                     canvas.doc_title_display(),
                     file.path(),
                     other_file.map(|f| f.path()),
@@ -916,6 +951,21 @@ impl RnCanvas {
                             // => file has been modified due to own save, don't do anything.
                             canvas.set_output_file_expect_write(false);
                             return;
+                        }
+                        if let (Some(saved_modified_time), Some(changed_modified_time)) =
+                            (canvas.output_file_saved_modified_date_time(),
+                            file.query_info(
+                                gio::FILE_ATTRIBUTE_TIME_MODIFIED_USEC,
+                                gio::FileQueryInfoFlags::NONE,
+                                gio::Cancellable::NONE).ok().and_then(|i| i.modification_date_time())
+                            ) {
+                            if saved_modified_time == changed_modified_time {
+                                // The changed file has the same modified date so it should be equal to the saved one.
+                                // A changed file event can happen when saving to a gvfs directory or to a directory
+                                // synced with cloud storage providers, even though the file itself has not actually
+                                // changed.
+                                return
+                            }
                         }
 
                         dispatch_toast_reload_modified_file();
@@ -1085,7 +1135,7 @@ impl RnCanvas {
                             accept_drop = true;
                         },
                         Err(e) => {
-                            log::error!("failed to get dropped in file, Err: {e:?}");
+                            tracing::error!("Failed to get dropped in file, Err: {e:?}");
                             appwindow.overlays().dispatch_toast_error(&gettext("Inserting file failed"));
                         },
                     };
@@ -1095,7 +1145,7 @@ impl RnCanvas {
                             accept_drop = true;
                         },
                         Err(e) => {
-                            log::error!("failed to insert dropped in text, Err: {e:?}");
+                            tracing::error!("Failed to insert dropped in text, Err: {e:?}");
                             appwindow.overlays().dispatch_toast_error(&gettext("Inserting text failed"));
                         }
                     };

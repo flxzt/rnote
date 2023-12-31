@@ -139,7 +139,7 @@ mod imp {
                         std::f64::consts::PI * 2.0,
                     );
                     if let Err(e) = cairo_cx.fill() {
-                        log::error!(
+                        tracing::error!(
                             "failed to paint stroke width preview in style `Circle`, fill returned Err: {e:?}"
                         );
                     }
@@ -166,8 +166,8 @@ mod imp {
                         3.0,
                     );
                     if let Err(e) = cairo_cx.fill() {
-                        log::error!(
-                            "failed to paint stroke width preview in style: `RoundedRect`, fill returned Err: {e:?}"
+                        tracing::error!(
+                            "failed to paint stroke width preview in style `RoundedRect`, fill returned Err: {e:?}"
                         );
                     }
                 }

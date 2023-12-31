@@ -139,7 +139,7 @@ impl Drawable for Image {
     ///
     /// `image_scale` has no meaning here, because the bitamp is already provided.
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        let piet_image_format = piet::ImageFormat::try_from(self.memory_format)?;
+        let piet_image_format = piet::ImageFormat::from(self.memory_format);
 
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let piet_image = cx
@@ -224,9 +224,9 @@ impl Image {
                 image::RgbaImage::from_vec(self.pixel_width, self.pixel_height, self.data.to_vec())
                     .ok_or_else(|| {
                         anyhow::anyhow!(
-                            "RgbaImage::from_vec() failed for image with memory-format {:?}.",
-                            self.memory_format
-                        )
+                    "Creating RgbaImage from data failed for image with memory-format {:?}.",
+                    self.memory_format
+                )
                     })
             }
         }
@@ -238,13 +238,13 @@ impl Image {
     ) -> Result<Vec<u8>, anyhow::Error> {
         self.assert_valid()?;
         let mut bytes_buf: Cursor<Vec<u8>> = Cursor::new(Vec::new());
-
         let dynamic_image = image::DynamicImage::ImageRgba8(
-            self.into_imgbuf().context("image.to_imgbuf() failed.")?,
+            self.into_imgbuf()
+                .context("Converting image to image::ImageBuffer failed.")?,
         );
         dynamic_image
             .write_to(&mut bytes_buf, format)
-            .context("dynamic_image.write_to() failed.")?;
+            .context("Writing dynamic image to bytes buffer failed.")?;
 
         Ok(bytes_buf.into_inner())
     }
@@ -376,7 +376,7 @@ pub struct Svg {
 }
 
 impl Svg {
-    pub const MIME_TYPE: &str = "image/svg+xml";
+    pub const MIME_TYPE: &'static str = "image/svg+xml";
 
     pub fn merge<T>(&mut self, other: T)
     where
@@ -407,10 +407,13 @@ impl Svg {
 
     /// Simplify the Svg by passing it through [usvg].
     pub fn simplify(&mut self) -> anyhow::Result<()> {
+        const COORDINATES_PREC: u8 = 3;
+        const TRANSFORMS_PREC: u8 = 4;
+
         let xml_options = usvg::XmlOptions {
             id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
-            transforms_precision: 4,
-            coordinates_precision: 3,
+            coordinates_precision: COORDINATES_PREC,
+            transforms_precision: TRANSFORMS_PREC,
             writer_opts: xmlwriter::Options {
                 use_single_quote: false,
                 indent: xmlwriter::Indent::None,

@@ -61,28 +61,33 @@ extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;
 
 // Imports
-use gtk4::{glib, prelude::*};
+use anyhow::Context;
+use gtk4::{gio, glib, prelude::*};
 
 fn main() -> glib::ExitCode {
-    if let Err(e) = setup_logging() {
-        eprintln!("failed to setup logging, Err: {e:?}");
+    if let Err(e) = setup_tracing() {
+        eprintln!("failed to setup tracing, Err: {e:?}");
     }
-
     if let Err(e) = env::setup_env() {
         eprintln!("failed to setup env, Err: {e:?}");
     }
-
     if let Err(e) = setup_i18n() {
         eprintln!("failed to setup i18n, Err: {e:?}");
+    }
+    if let Err(e) = setup_gresources() {
+        eprintln!("failed to setup gresources, Err: {e:?}");
     }
 
     let app = RnApp::new();
     app.run()
 }
 
-fn setup_logging() -> anyhow::Result<()> {
-    pretty_env_logger::try_init_timed()?;
-    log::debug!("... env_logger initialized");
+fn setup_tracing() -> anyhow::Result<()> {
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .try_init()
+        .map_err(|e| anyhow::anyhow!(e))?;
+    tracing::debug!(".. tracing subscriber initialized.");
     Ok(())
 }
 
@@ -94,4 +99,9 @@ fn setup_i18n() -> anyhow::Result<()> {
     gettextrs::bind_textdomain_codeset(config::GETTEXT_PACKAGE, "UTF-8")?;
     gettextrs::textdomain(config::GETTEXT_PACKAGE)?;
     Ok(())
+}
+
+fn setup_gresources() -> anyhow::Result<()> {
+    gio::resources_register_include!("compiled.gresource")
+        .context("Failed to register and include compiled gresource.")
 }

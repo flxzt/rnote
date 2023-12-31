@@ -7,6 +7,7 @@ use crate::{DrawableOnDoc, StrokeStore, WidgetFlags};
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenProgress};
 use rnote_compose::penpath::Element;
+use rnote_compose::shapes::Shapeable;
 use std::time::Instant;
 use unicode_segmentation::GraphemeCursor;
 
@@ -20,12 +21,13 @@ impl Typewriter {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
-        let text_width = engine_view.pens_config.typewriter_config.text_width;
+        let text_width = engine_view.pens_config.typewriter_config.text_width();
 
         let event_result = match &mut self.state {
             TypewriterState::Idle | TypewriterState::Start { .. } => {
                 let mut refresh_state = false;
-                let mut new_state = TypewriterState::Start(element.pos);
+                let mut new_state =
+                    TypewriterState::Start(engine_view.document.snap_position(element.pos));
 
                 if let Some(&stroke_key) = engine_view
                     .store
@@ -62,10 +64,23 @@ impl Typewriter {
 
                 // after setting new state
                 if refresh_state {
-                    // Update typewriter state for the current textstroke, and indicate that the penholder has changed, to update the UI
+                    // Update typewriter state for the current textstroke,
+                    // and flag to update the UI
                     widget_flags |= self.update_state(engine_view);
                     widget_flags.refresh_ui = true;
                 }
+
+                // possibly nudge camera
+                widget_flags |= engine_view
+                    .camera
+                    .nudge_w_pos(element.pos, engine_view.document);
+                widget_flags |= engine_view.document.expand_autoexpand(engine_view.camera);
+                engine_view.store.regenerate_rendering_in_viewport_threaded(
+                    engine_view.tasks_tx.clone(),
+                    false,
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
+                );
 
                 EventResult {
                     handled: true,
@@ -215,24 +230,42 @@ impl Typewriter {
                         }
                     }
                     ModifyState::Translating { current_pos, .. } => {
-                        let offset = element.pos - *current_pos;
-
-                        if offset.magnitude()
-                            > Self::TRANSLATE_MAGNITUDE_THRESHOLD / engine_view.camera.total_zoom()
+                        if let Some(textstroke_bounds) = engine_view
+                            .store
+                            .get_stroke_ref(*stroke_key)
+                            .map(|s| s.bounds())
                         {
-                            // move text
-                            engine_view.store.translate_strokes(&[*stroke_key], offset);
-                            engine_view
-                                .store
-                                .translate_strokes_images(&[*stroke_key], offset);
+                            let snap_corner_pos = textstroke_bounds.mins.coords;
+                            let offset = engine_view
+                                .document
+                                .snap_position(snap_corner_pos + (element.pos - *current_pos))
+                                - snap_corner_pos;
+
+                            if offset.magnitude()
+                                > Self::TRANSLATE_OFFSET_THRESHOLD / engine_view.camera.total_zoom()
+                            {
+                                // move text
+                                engine_view.store.translate_strokes(&[*stroke_key], offset);
+                                engine_view
+                                    .store
+                                    .translate_strokes_images(&[*stroke_key], offset);
+                                *current_pos += offset;
+
+                                widget_flags.store_modified = true;
+                            }
+
                             // possibly nudge camera
+                            widget_flags |= engine_view
+                                .camera
+                                .nudge_w_pos(element.pos, engine_view.document);
                             widget_flags |=
-                                engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
-                            widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
-
-                            *current_pos = element.pos;
-
-                            widget_flags.store_modified = true;
+                                engine_view.document.expand_autoexpand(engine_view.camera);
+                            engine_view.store.regenerate_rendering_in_viewport_threaded(
+                                engine_view.tasks_tx.clone(),
+                                false,
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
+                            );
                         }
 
                         EventResult {
@@ -254,12 +287,13 @@ impl Typewriter {
                             if x_offset.abs()
                                 > Self::ADJ_TEXT_WIDTH_THRESHOLD / engine_view.camera.total_zoom()
                             {
-                                let abs_x_offset = element.pos[0] - start_pos[0];
-                                engine_view.pens_config.typewriter_config.text_width =
-                                    (*start_text_width + abs_x_offset).max(2.0);
-                                if let Some(max_width) = &mut textstroke.text_style.max_width {
-                                    *max_width = *start_text_width + abs_x_offset;
-                                }
+                                let new_text_width =
+                                    *start_text_width + (element.pos[0] - start_pos[0]);
+                                engine_view
+                                    .pens_config
+                                    .typewriter_config
+                                    .set_text_width(new_text_width);
+                                textstroke.text_style.set_max_width(Some(new_text_width));
                                 engine_view.store.regenerate_rendering_for_stroke(
                                     *stroke_key,
                                     engine_view.camera.viewport(),
@@ -341,7 +375,7 @@ impl Typewriter {
                             engine_view.camera.image_scale(),
                         );
                         widget_flags |= engine_view
-                            .doc
+                            .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
@@ -364,7 +398,7 @@ impl Typewriter {
                             engine_view.camera.image_scale(),
                         );
                         widget_flags |= engine_view
-                            .doc
+                            .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
@@ -447,9 +481,8 @@ impl Typewriter {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let text_width = engine_view.pens_config.typewriter_config.text_width;
+        let text_width = engine_view.pens_config.typewriter_config.text_width();
         let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
-        let max_width_enabled = engine_view.pens_config.typewriter_config.max_width_enabled;
 
         let event_result = match &mut self.state {
             TypewriterState::Idle => EventResult {
@@ -463,9 +496,7 @@ impl Typewriter {
                 match keyboard_key {
                     KeyboardKey::Unicode(keychar) => {
                         text_style.ranged_text_attributes.clear();
-                        if max_width_enabled {
-                            text_style.max_width = Some(text_width);
-                        }
+                        text_style.set_max_width(Some(text_width));
                         let textstroke = TextStroke::new(String::from(keychar), *pos, text_style);
                         let mut cursor = GraphemeCursor::new(0, textstroke.text.len(), true);
 
@@ -474,7 +505,7 @@ impl Typewriter {
                             .store
                             .insert_stroke(Stroke::TextStroke(textstroke), None);
                         widget_flags |= engine_view
-                            .doc
+                            .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);
                         engine_view.store.regenerate_rendering_for_stroke(
                             stroke_key,
@@ -527,7 +558,7 @@ impl Typewriter {
                                         engine_view.camera.image_scale(),
                                     );
                                     widget_flags |= engine_view
-                                        .doc
+                                        .document
                                         .resize_autoexpand(store, engine_view.camera);
                                     if keychar_is_whitespace {
                                         widget_flags |= store.record(Instant::now());
@@ -799,9 +830,10 @@ impl Typewriter {
                                     engine_view.camera.viewport(),
                                     engine_view.camera.image_scale(),
                                 );
-                                widget_flags |=
-                                    engine_view.doc.resize_autoexpand(store, engine_view.camera)
-                                        | store.record(Instant::now());
+                                widget_flags |= engine_view
+                                    .document
+                                    .resize_autoexpand(store, engine_view.camera)
+                                    | store.record(Instant::now());
                                 widget_flags.store_modified = true;
                             };
                             let mut quit_selecting = false;
@@ -1020,9 +1052,8 @@ impl Typewriter {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let text_width = engine_view.pens_config.typewriter_config.text_width;
+        let text_width = engine_view.pens_config.typewriter_config.text_width();
         let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
-        let max_width_enabled = engine_view.pens_config.typewriter_config.max_width_enabled;
 
         self.reset_blink();
 
@@ -1036,9 +1067,7 @@ impl Typewriter {
                 super::play_sound(None, engine_view.audioplayer);
 
                 text_style.ranged_text_attributes.clear();
-                if max_width_enabled {
-                    text_style.max_width = Some(text_width);
-                }
+                text_style.set_max_width(Some(text_width));
                 let text_len = text.len();
                 let textstroke = TextStroke::new(text, *pos, text_style);
                 let cursor = GraphemeCursor::new(text_len, text_len, true);
@@ -1090,7 +1119,7 @@ impl Typewriter {
                                 engine_view.camera.image_scale(),
                             );
                             widget_flags |= engine_view
-                                .doc
+                                .document
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             *pen_down = false;
@@ -1135,7 +1164,7 @@ impl Typewriter {
                                 engine_view.camera.image_scale(),
                             );
                             widget_flags |= engine_view
-                                .doc
+                                .document
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             *finished = true;

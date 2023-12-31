@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-    <gresource prefix="@APP_IDPATH@">
+    <gresource prefix="/com/github/flxzt/rnote/">
         <file compressed="true" preprocess="xml-stripblanks">ui/dialogs/dialogs.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/dialogs/export.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/dialogs/import.ui</file>

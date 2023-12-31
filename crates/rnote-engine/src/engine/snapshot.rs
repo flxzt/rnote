@@ -54,7 +54,9 @@ impl EngineSnapshot {
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {
-                log::error!("Sending result to receiver in open_from_rnote_bytes() failed. Receiver was already dropped.");
+                tracing::error!(
+                    "Sending bytes result to receiver failed while loading rnote bytes in. Receiver already dropped."
+                );
             }
         });
 
@@ -120,7 +122,7 @@ impl EngineSnapshot {
                         xopp_import_prefs.dpi,
                     ));
 
-                if let Some(first_page) = xopp_file.xopp_root.pages.get(0) {
+                if let Some(first_page) = xopp_file.xopp_root.pages.first() {
                     if let xoppformat::XoppBackgroundType::Solid {
                         color: _color,
                         style: _style,
@@ -134,7 +136,7 @@ impl EngineSnapshot {
                 // Offsetting as rnote has one global coordinate space
                 let mut offset = na::Vector2::<f64>::zeros();
 
-                for (_page_i, page) in xopp_file.xopp_root.pages.into_iter().enumerate() {
+                for page in xopp_file.xopp_root.pages.into_iter() {
                     for layers in page.layers.into_iter() {
                         // import strokes
                         for new_xoppstroke in layers.strokes.into_iter() {
@@ -147,9 +149,8 @@ impl EngineSnapshot {
                                     engine.store.insert_stroke(new_stroke, Some(layer));
                                 }
                                 Err(e) => {
-                                    log::error!(
-                                        "from_xoppstroke() failed in open_from_xopp_bytes() , Err {:?}",
-                                        e
+                                    tracing::error!(
+                                        "Creating Stroke from XoppStroke failed while loading Xopp bytess, Err: {e:?}",
                                     );
                                 }
                             }
@@ -166,9 +167,8 @@ impl EngineSnapshot {
                                     engine.store.insert_stroke(new_image, None);
                                 }
                                 Err(e) => {
-                                    log::error!(
-                                        "from_xoppimage() failed in open_from_xopp_bytes() , Err {:?}",
-                                        e
+                                    tracing::error!(
+                                        "Creating Stroke from XoppImage failed while loading Xopp bytes, Err: {e:?}",
                                     );
                                 }
                             }
@@ -186,8 +186,8 @@ impl EngineSnapshot {
                 Ok(engine.take_snapshot())
             };
 
-            if let Err(_data) = snapshot_sender.send(result()) {
-                log::error!("sending result to receiver in open_from_xopp_bytes() failed. Receiver already dropped");
+            if snapshot_sender.send(result()).is_err() {
+                tracing::error!("Sending result to receiver while loading Xopp bytes failed. Receiver already dropped");
             }
         });
 

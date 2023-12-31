@@ -370,7 +370,7 @@ impl XmlLoadable for XoppBackground {
                 })?) {
                     Ok(s) => s,
                     Err(e) => {
-                        log::error!("failed to retrieve the XoppBackgroundSolidStyle from `style` attribute, {e:?}");
+                        tracing::error!("Failed to retrieve the XoppBackgroundSolidStyle from `style` attribute, Err: {e:?}");
                         XoppBackgroundSolidStyle::Plain
                     }
                 };
@@ -378,7 +378,7 @@ impl XmlLoadable for XoppBackground {
                 let color = XoppColor::from_backgroundcolor_attr_value(
                     node.attribute("color").ok_or_else(|| {
                         anyhow::anyhow!(
-                            "failed to parse `color` attribute in XoppBackground with id {:?}",
+                            "Failed to parse `color` attribute in XoppBackground with id {:?}",
                             node.id()
                         )
                     })?,
@@ -387,7 +387,7 @@ impl XmlLoadable for XoppBackground {
             }
             "pixmap" => {
                 let domain = match node.attribute("domain").ok_or_else(|| {
-                    anyhow::anyhow!("failed to parse `domain` attribute in XoppBackground with node id {:?}, could not find attribute", node.id())
+                    anyhow::anyhow!("Failed to parse `domain` attribute in XoppBackground with node id {:?}, could not find attribute", node.id())
                 })? {
                     "absolute" => XoppBackgroundPixmapDomain::Absolute,
                     "attach" => XoppBackgroundPixmapDomain::Attach,
@@ -399,7 +399,7 @@ impl XmlLoadable for XoppBackground {
                 let filename = node
                     .attribute("filename")
                     .ok_or_else(|| {
-                        anyhow::anyhow!("failed to parse `filename` attribute in XoppBackground with node id {:?}, could not find attribute", node.id())
+                        anyhow::anyhow!("Failed to parse `filename` attribute in XoppBackground with node id {:?}, could not find attribute", node.id())
                     })?
                     .to_string();
                 self.bg_type = XoppBackgroundType::Pixmap { domain, filename };
@@ -408,7 +408,7 @@ impl XmlLoadable for XoppBackground {
                 self.bg_type = XoppBackgroundType::Pdf;
             }
             _ => {
-                return Err(anyhow::anyhow!("Err while parsing `type` attribute of XoppBackground with node id {:?}, is not a valid value", node.id()));
+                return Err(anyhow::anyhow!("Failed to parse `type` attribute of XoppBackground with node id {:?}, is not a valid value", node.id()));
             }
         }
 

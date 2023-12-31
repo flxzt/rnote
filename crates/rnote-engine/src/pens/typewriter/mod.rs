@@ -2,6 +2,7 @@
 mod penevents;
 
 // Imports
+use super::pensconfig::TypewriterConfig;
 use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineTask, EngineView, EngineViewMut};
@@ -95,7 +96,7 @@ impl DrawableOnDoc for Typewriter {
                     engine_view.store.get_stroke_ref(*stroke_key)
                 {
                     let text_rect = Self::text_rect_bounds(
-                        engine_view.pens_config.typewriter_config.text_width,
+                        engine_view.pens_config.typewriter_config.text_width(),
                         textstroke,
                     );
                     let typewriter_bounds = text_rect.extend_by(
@@ -163,7 +164,7 @@ impl DrawableOnDoc for Typewriter {
                 if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_ref(*stroke_key)
                 {
-                    let text_width = engine_view.pens_config.typewriter_config.text_width;
+                    let text_width = engine_view.pens_config.typewriter_config.text_width();
                     let text_bounds = Self::text_rect_bounds(text_width, textstroke);
 
                     // Draw text outline
@@ -303,9 +304,12 @@ impl PenBehaviour for Typewriter {
                             .text_style
                             .ranged_text_attributes
                             .clear();
-                        if let Some(max_width) = textstroke.text_style.max_width {
-                            engine_view.pens_config.typewriter_config.text_width = max_width;
-                        }
+                        engine_view.pens_config.typewriter_config.set_text_width(
+                            textstroke
+                                .text_style
+                                .max_width()
+                                .unwrap_or(TypewriterConfig::TEXT_WIDTH_DEFAULT),
+                        );
                         update_cursors_for_textstroke(textstroke, cursor, Some(selection_cursor));
 
                         widget_flags.refresh_ui = true;
@@ -326,9 +330,12 @@ impl PenBehaviour for Typewriter {
                             .text_style
                             .ranged_text_attributes
                             .clear();
-                        if let Some(max_width) = textstroke.text_style.max_width {
-                            engine_view.pens_config.typewriter_config.text_width = max_width;
-                        }
+                        engine_view.pens_config.typewriter_config.set_text_width(
+                            textstroke
+                                .text_style
+                                .max_width()
+                                .unwrap_or(TypewriterConfig::TEXT_WIDTH_DEFAULT),
+                        );
                         update_cursors_for_textstroke(textstroke, cursor, None);
 
                         widget_flags.refresh_ui = true;
@@ -415,8 +422,10 @@ impl PenBehaviour for Typewriter {
             }
         }
 
-        if let Err(e) = sender.send(Ok((clipboard_content, widget_flags))) {
-            log::error!("sending fetched typewriter clipboard content failed, Err: {e:?}");
+        if sender.send(Ok((clipboard_content, widget_flags))).is_err() {
+            tracing::error!(
+                "Sending fetched typewriter clipboard content failed, receiver already dropped."
+            );
         }
         receiver
     }
@@ -469,7 +478,7 @@ impl PenBehaviour for Typewriter {
                                 engine_view.camera.image_scale(),
                             );
                             widget_flags |= engine_view
-                                .doc
+                                .document
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             // Back to modifying state
@@ -497,8 +506,10 @@ impl PenBehaviour for Typewriter {
 
         self.reset_blink();
 
-        if let Err(e) = sender.send(Ok((clipboard_content, widget_flags))) {
-            log::error!("sending cut typewriter clipboard content failed, Err: {e:?}");
+        if sender.send(Ok((clipboard_content, widget_flags))).is_err() {
+            tracing::error!(
+                "Sending cut typewriter clipboard content failed, receiver already dropped."
+            );
         }
         receiver
     }
@@ -527,8 +538,8 @@ fn update_cursors_for_textstroke(
 impl Typewriter {
     // The size of the translate node, located in the upper left corner.
     const TRANSLATE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
-    /// The threshold magniuted where above it the translation is applied. In surface coordinates.
-    const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.414;
+    /// The threshold where above it a transformation is applied. In surface coordinates.
+    const TRANSLATE_OFFSET_THRESHOLD: f64 = 1.414;
     /// The threshold in x-axis direction where above it adjustments to the text width are applied. In surface coordinates.
     const ADJ_TEXT_WIDTH_THRESHOLD: f64 = 1.0;
     /// The size of the translate node, located in the upper right corner.
@@ -623,17 +634,14 @@ impl Typewriter {
             engine_view.camera.viewport().mins.coords + Stroke::IMPORT_OFFSET_DEFAULT
         });
         let mut widget_flags = WidgetFlags::default();
-        let text_width = engine_view.pens_config.typewriter_config.text_width;
+        let text_width = engine_view.pens_config.typewriter_config.text_width();
         let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
-        let max_width_enabled = engine_view.pens_config.typewriter_config.max_width_enabled;
 
         match &mut self.state {
             TypewriterState::Idle => {
                 let text_len = text.len();
                 text_style.ranged_text_attributes.clear();
-                if max_width_enabled {
-                    text_style.max_width = Some(text_width);
-                }
+                text_style.set_max_width(Some(text_width));
                 let textstroke = TextStroke::new(text, pos, text_style);
                 let cursor = GraphemeCursor::new(text_len, textstroke.text.len(), true);
 
@@ -660,9 +668,7 @@ impl Typewriter {
             TypewriterState::Start(pos) => {
                 let text_len = text.len();
                 text_style.ranged_text_attributes.clear();
-                if max_width_enabled {
-                    text_style.max_width = Some(text_width);
-                }
+                text_style.set_max_width(Some(text_width));
                 let textstroke = TextStroke::new(text, *pos, text_style);
                 let cursor = GraphemeCursor::new(text_len, textstroke.text.len(), true);
 
@@ -710,7 +716,7 @@ impl Typewriter {
                             engine_view.camera.image_scale(),
                         );
                         widget_flags |= engine_view
-                            .doc
+                            .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
@@ -736,7 +742,7 @@ impl Typewriter {
                             engine_view.camera.image_scale(),
                         );
                         widget_flags |= engine_view
-                            .doc
+                            .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         widget_flags |= engine_view.store.record(Instant::now());
@@ -877,7 +883,7 @@ impl Typewriter {
     fn reset_blink(&mut self) {
         if let Some(handle) = &mut self.blink_task_handle {
             if let Err(e) = handle.skip() {
-                log::error!("Skipping blink task failed, {e:?}");
+                tracing::error!("Skipping blink task failed, Err: {e:?}");
             }
         }
         self.cursor_visible = true;

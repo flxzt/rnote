@@ -5,7 +5,7 @@ use crate::pens::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
 use crate::store::StrokeKey;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
-use crate::{Engine, WidgetFlags};
+use crate::{CloneConfig, Engine, WidgetFlags};
 use futures::channel::oneshot;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
@@ -88,6 +88,9 @@ pub struct PdfImportPrefs {
     /// The scalefactor when importing as bitmap image
     #[serde(rename = "bitmap_scalefactor")]
     pub bitmap_scalefactor: f64,
+    /// Whether the imported Pdf pages have drawn borders
+    #[serde(rename = "page_borders")]
+    pub page_borders: bool,
 }
 
 impl Default for PdfImportPrefs {
@@ -97,6 +100,7 @@ impl Default for PdfImportPrefs {
             page_width_perc: 50.0,
             page_spacing: PdfImportPageSpacing::default(),
             bitmap_scalefactor: 1.8,
+            page_borders: true,
         }
     }
 }
@@ -128,6 +132,12 @@ pub struct ImportPrefs {
     pub xopp_import_prefs: XoppImportPrefs,
 }
 
+impl CloneConfig for ImportPrefs {
+    fn clone_config(&self) -> Self {
+        *self
+    }
+}
+
 impl Engine {
     /// Loads the engine config
     pub fn load_engine_config(
@@ -152,7 +162,7 @@ impl Engine {
             .reinstall_pen_current_style(&mut EngineViewMut {
                 tasks_tx: self.tasks_tx.clone(),
                 pens_config: &mut self.pens_config,
-                doc: &mut self.document,
+                document: &mut self.document,
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
@@ -192,8 +202,10 @@ impl Engine {
                 VectorImage::from_svg_str(&svg_str, pos, None)
             };
 
-            if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in generate_vectorimage_from_bytes() failed. Receiver already dropped");
+            if oneshot_sender.send(result()).is_err() {
+                tracing::error!(
+                    "Sending result to receiver while generating VectorImage from bytes failed. Receiver already dropped."
+                );
             }
         });
 
@@ -215,8 +227,10 @@ impl Engine {
                 BitmapImage::from_image_bytes(&bytes, pos, None)
             };
 
-            if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in generate_bitmapimage_from_bytes() failed. Receiver already dropped");
+            if oneshot_sender.send(result()).is_err() {
+                tracing::error!(
+                    "Sending result to receiver while generating BitmapImage from bytes failed. Receiver already dropped."
+                );
             }
         });
 
@@ -270,8 +284,8 @@ impl Engine {
                 }
             };
 
-            if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in import_pdf_bytes() failed. Receiver already dropped");
+            if oneshot_sender.send(result()).is_err() {
+                tracing::error!("Sending result to receiver while importing Pdf bytes failed. Receiver already dropped");
             }
         });
 
@@ -326,7 +340,7 @@ impl Engine {
                 &mut EngineViewMut {
                     tasks_tx: self.tasks_tx.clone(),
                     pens_config: &mut self.pens_config,
-                    doc: &mut self.document,
+                    document: &mut self.document,
                     store: &mut self.store,
                     camera: &mut self.camera,
                     audioplayer: &mut self.audioplayer,
@@ -366,7 +380,7 @@ impl Engine {
         widget_flags |= self.penholder.current_pen_update_state(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &mut self.pens_config,
-            doc: &mut self.document,
+            document: &mut self.document,
             store: &mut self.store,
             camera: &mut self.camera,
             audioplayer: &mut self.audioplayer,

@@ -13,8 +13,8 @@ repository.workspace = true
 rnote-compose = { workspace = true }
 rnote-engine = { workspace = true, features = ["ui"] }
 
-log = { workspace = true }
-pretty_env_logger = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
 anyhow = { workspace = true }
 thiserror = { workspace = true }
 num-derive = { workspace = true }
@@ -49,9 +49,12 @@ poppler-rs = {workspace = true }
 gettext-rs = {workspace = true }
 gtk4 = { workspace = true }
 adw = { workspace = true }
+open = { workspace = true }
+numeric-sort = {  workspace = true }
 
 [build-dependencies]
 anyhow = { workspace = true }
+glib-build-tools = { workspace = true }
 
 [target.'cfg(windows)'.build-dependencies]
 winresource = { workspace = true }

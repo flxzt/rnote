@@ -7,6 +7,7 @@ use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut, StrokeContent};
 use crate::render::Svg;
+use crate::snap::SnapCorner;
 use crate::store::StrokeKey;
 use crate::strokes::Content;
 use crate::{Camera, DrawableOnDoc, Engine, WidgetFlags};
@@ -38,6 +39,7 @@ pub(super) enum ModifyState {
     Translate {
         start_pos: na::Vector2<f64>,
         current_pos: na::Vector2<f64>,
+        snap_corner: SnapCorner,
     },
     Rotate {
         rotation_center: na::Point2<f64>,
@@ -197,8 +199,10 @@ impl PenBehaviour for Selector {
                 }
                 Ok((clipboard_content, widget_flags))
             };
-            if let Err(e) = sender.send(result()) {
-                log::error!("sending fetched selector clipboard content failed, Err: {e:?}");
+            if sender.send(result()).is_err() {
+                tracing::error!(
+                    "Sending fetched selector clipboard content failed, receiver already dropped."
+                );
             }
         });
 
@@ -256,8 +260,10 @@ impl PenBehaviour for Selector {
                 }
                 Ok((clipboard_content, widget_flags))
             };
-            if let Err(e) = sender.send(result()) {
-                log::error!("sending cut selector clipboard content failed, Err: {e:?}");
+            if sender.send(result()).is_err() {
+                tracing::error!(
+                    "Sending cut selector clipboard content failed, receiver already dropped."
+                );
             }
         });
 
@@ -414,7 +420,7 @@ impl DrawableOnDoc for Selector {
                 // Draw the highlight for the selected strokes
                 for stroke in engine_view.store.get_strokes_ref(selection) {
                     if let Err(e) = stroke.draw_highlight(cx, engine_view.camera.total_zoom()) {
-                        log::error!("failed to draw stroke highlight, Err: {e:?}");
+                        tracing::error!("Failed to draw stroke highlight, Err: {e:?}");
                     }
                 }
 
@@ -450,8 +456,8 @@ impl DrawableOnDoc for Selector {
 }
 
 impl Selector {
-    /// The threshold magnitude where above it the translation is applied. In surface coordinates.
-    const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.414;
+    /// The threshold where above it the translation is applied. In surface coordinates.
+    const TRANSLATE_OFFSET_THRESHOLD: f64 = 1.414;
     /// The threshold angle (in radians) where above it the rotation is applied.
     const ROTATE_ANGLE_THRESHOLD: f64 = ((2.0 * std::f64::consts::PI) / 360.0) * 0.2;
     /// The outline stroke width when drawing a selection.
@@ -768,7 +774,7 @@ impl Selector {
             if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&all_strokes) {
                 engine_view.store.set_selected_keys(&all_strokes, true);
                 *widget_flags |= engine_view
-                    .doc
+                    .document
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = SelectorState::ModifySelection {

@@ -224,8 +224,8 @@ impl StrokeStore {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
-                    Err(e) => log::error!(
-                        "images_to_rendernode() failed in translate_strokes_images() , Err: {e:?}"
+                    Err(e) => tracing::error!(
+                        "Generating rendernodes from images failed while translating stroke images , Err: {e:?}"
                     ),
                 }
             }
@@ -384,8 +384,8 @@ impl StrokeStore {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
-                    Err(e) => log::error!(
-                        "images_to_rendernode() failed in rotate_strokes() , Err: {e:?}"
+                    Err(e) => tracing::error!(
+                        "Generating rendernodes from iamges failed while rotating stroke images , Err: {e:?}"
                     ),
                 }
             }
@@ -427,8 +427,8 @@ impl StrokeStore {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
-                    Err(e) => log::error!(
-                        "images_to_rendernode() failed in rotate_strokes() , Err: {e:?}"
+                    Err(e) => tracing::error!(
+                        "Generating rendernodes from images failed while scaling stroke images, Err: {e:?}"
                     ),
                 }
             }
@@ -469,7 +469,12 @@ impl StrokeStore {
         path: &[Element],
         viewport: Aabb,
     ) -> Vec<StrokeKey> {
-        let selector_polygon = {
+        let mut bounds = viewport;
+        for p in path {
+            bounds.take_point(p.pos.into());
+        }
+
+        let path_polygon = {
             let selector_path_points = path
                 .iter()
                 .map(|element| geo::Coord {
@@ -481,7 +486,7 @@ impl StrokeStore {
             geo::Polygon::new(selector_path_points.into(), vec![])
         };
 
-        self.keys_sorted_chrono_intersecting_bounds(viewport)
+        self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
             .filter_map(|key| {
                 // skip if stroke is trashed
@@ -492,14 +497,13 @@ impl StrokeStore {
                 let stroke = self.stroke_components.get(key)?;
                 let stroke_bounds = stroke.bounds();
 
-                if selector_polygon.contains(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
-                {
+                if path_polygon.contains(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds)) {
                     return Some(key);
-                } else if selector_polygon
+                } else if path_polygon
                     .intersects(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
                 {
                     for &hitbox_elem in stroke.hitboxes().iter() {
-                        if !selector_polygon
+                        if !path_polygon
                             .contains(&crate::utils::p2d_aabb_to_geo_polygon(hitbox_elem))
                         {
                             return None;
@@ -520,6 +524,11 @@ impl StrokeStore {
         path: &[Element],
         viewport: Aabb,
     ) -> Vec<StrokeKey> {
+        let mut bounds = viewport;
+        for p in path {
+            bounds.take_point(p.pos.into());
+        }
+
         let path_linestring = {
             let selector_path_points = path
                 .iter()
@@ -532,7 +541,7 @@ impl StrokeStore {
             geo::LineString::new(selector_path_points)
         };
 
-        self.keys_sorted_chrono_intersecting_bounds(viewport)
+        self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
             .filter_map(|key| {
                 // skip if stroke is trashed
@@ -565,7 +574,7 @@ impl StrokeStore {
         aabb: Aabb,
         viewport: Aabb,
     ) -> Vec<StrokeKey> {
-        self.keys_sorted_chrono_intersecting_bounds(viewport)
+        self.keys_sorted_chrono_intersecting_bounds(viewport.merged(&aabb))
             .into_iter()
             .filter_map(|key| {
                 // skip if stroke is trashed
@@ -599,7 +608,10 @@ impl StrokeStore {
         viewport: Aabb,
         coord: na::Vector2<f64>,
     ) -> Vec<StrokeKey> {
-        self.stroke_keys_as_rendered_intersecting_bounds(viewport)
+        let mut bounds = viewport;
+        bounds.take_point(coord.into());
+
+        self.stroke_keys_as_rendered_intersecting_bounds(bounds)
             .into_iter()
             .filter(|&key| {
                 if let Some(stroke) = self.stroke_components.get(key) {

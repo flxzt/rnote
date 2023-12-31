@@ -17,6 +17,8 @@ where
     fn mins_maxs(&self, other: &Self) -> (Self, Self);
     /// calculates the angle self is "ahead" of other (counter clockwise)
     fn angle_ahead(&self, other: &Self) -> f64;
+    /// Round to the next integer
+    fn round(&self) -> Self;
     /// Ceil to the next integer
     fn ceil(&self) -> Self;
     /// Floor to the next integer
@@ -29,6 +31,8 @@ where
     fn from_kurbo_point(kurbo_point: kurbo::Point) -> Self;
     /// Converts from kurbo::Vec2
     fn from_kurbo_vec(kurbo_vec: kurbo::Vec2) -> Self;
+    /// Approximate equality
+    fn approx_eq(&self, other: &Self) -> bool;
 }
 
 impl Vector2Ext for na::Vector2<f64> {
@@ -74,6 +78,10 @@ impl Vector2Ext for na::Vector2<f64> {
         other[1].atan2(other[0]) - self[1].atan2(self[0])
     }
 
+    fn round(&self) -> Self {
+        na::vector![self[0].round(), self[1].round()]
+    }
+
     fn ceil(&self) -> Self {
         na::vector![self[0].ceil(), self[1].ceil()]
     }
@@ -102,6 +110,10 @@ impl Vector2Ext for na::Vector2<f64> {
 
     fn from_kurbo_vec(kurbo_vec: kurbo::Vec2) -> Self {
         na::vector![kurbo_vec.x, kurbo_vec.y]
+    }
+
+    fn approx_eq(&self, other: &Self) -> bool {
+        approx::relative_eq!(self[0], other[0]) && approx::relative_eq!(self[1], other[1])
     }
 }
 
@@ -164,6 +176,10 @@ where
     fn to_kurbo_rect(&self) -> kurbo::Rect;
     /// Converts a kurbo Rectangle to Aabb
     fn from_kurbo_rect(rect: kurbo::Rect) -> Self;
+    /// Check if the bounds intersect with a tolerance
+    fn intersects_w_tolerance(&self, other: &Self, tolerance: f64) -> bool;
+    /// Approximate equality
+    fn approx_eq(&self, other: &Self) -> bool;
 }
 
 impl AabbExt for Aabb {
@@ -190,7 +206,7 @@ impl AabbExt for Aabb {
             || self.maxs[1] < self.mins[1]
         {
             Err(anyhow::anyhow!(
-                "bounds assert_valid() failed, invalid bounds `{:?}`",
+                "Assert bounds valid failed, invalid bounds `{:?}`.",
                 self,
             ))
         } else {
@@ -427,6 +443,18 @@ impl AabbExt for Aabb {
 
     fn from_kurbo_rect(rect: kurbo::Rect) -> Self {
         Aabb::new(na::point![rect.x0, rect.y0], na::point![rect.x1, rect.y1])
+    }
+
+    fn intersects_w_tolerance(&self, other: &Self, tolerance: f64) -> bool {
+        let Some(intersection) = self.intersection(other) else {
+            return false;
+        };
+        intersection.extents()[0] > tolerance && intersection.extents()[1] > tolerance
+    }
+
+    fn approx_eq(&self, other: &Self) -> bool {
+        self.mins.coords.approx_eq(&other.mins.coords)
+            && self.maxs.coords.approx_eq(&other.maxs.coords)
     }
 }
 

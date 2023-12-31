@@ -8,10 +8,10 @@ pub struct WidgetFlags {
     pub resize: bool,
     /// Refresh the UI with the engine state.
     pub refresh_ui: bool,
-    /// Whether the store was modified, i.e. new strokes inserted, modified, etc. .
+    /// Indicates that the store was modified, i.e. new strokes inserted, modified, etc. .
     pub store_modified: bool,
     /// Update the current view offsets and size.
-    pub update_view: bool,
+    pub view_modified: bool,
     /// Indicates that the camera has changed it's temporary zoom.
     pub zoomed_temporarily: bool,
     /// Indicates that the camera has changed it's permanent zoom.
@@ -35,7 +35,7 @@ impl Default for WidgetFlags {
             resize: false,
             refresh_ui: false,
             store_modified: false,
-            update_view: false,
+            view_modified: false,
             zoomed_temporarily: false,
             zoomed: false,
             deselect_color_setters: false,
@@ -61,7 +61,7 @@ impl std::ops::BitOrAssign for WidgetFlags {
         self.resize |= rhs.resize;
         self.refresh_ui |= rhs.refresh_ui;
         self.store_modified |= rhs.store_modified;
-        self.update_view |= rhs.update_view;
+        self.view_modified |= rhs.view_modified;
         self.zoomed_temporarily |= rhs.zoomed_temporarily;
         self.zoomed |= rhs.zoomed;
         self.deselect_color_setters |= rhs.deselect_color_setters;

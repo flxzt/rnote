@@ -50,8 +50,8 @@ jobs:
         run: meson install -C _mesonbuild
       - name: Run meson tests
         run: meson test -v -C _mesonbuild
-      - name: Run clippy for app
-        run: meson compile app-cargo-clippy -C _mesonbuild
+      - name: Run clippy for UI
+        run: meson compile ui-cargo-clippy -C _mesonbuild
         continue-on-error: true
       - name: Run clippy for CLI
         run: meson compile cli-cargo-clippy -C _mesonbuild

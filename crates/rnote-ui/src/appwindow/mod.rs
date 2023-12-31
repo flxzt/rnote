@@ -1,6 +1,6 @@
 // Modules
+mod actions;
 mod appsettings;
-mod appwindowactions;
 mod imp;
 
 // Imports
@@ -127,13 +127,13 @@ impl RnAppWindow {
             ));
         } else {
             if let Err(e) = self.setup_settings_binds() {
-                log::error!("Failed to setup settings binds, Err: {e:}");
+                tracing::error!("Failed to setup settings binds, Err: {e:}");
             }
             if let Err(e) = self.setup_periodic_save() {
-                log::error!("Failed to setup periodic save, Err: {e:}");
+                tracing::error!("Failed to setup periodic save, Err: {e:}");
             }
             if let Err(e) = self.load_settings() {
-                log::error!("Failed to load initial settings, Err: {e:}");
+                tracing::error!("Failed to load initial settings, Err: {e:}");
             }
         }
 
@@ -163,7 +163,7 @@ impl RnAppWindow {
         if self.app().settings_schema_found() {
             // Saving all state
             if let Err(e) = self.save_to_settings() {
-                log::error!("Failed to save appwindow to settings, Err: {e:?}");
+                tracing::error!("Failed to save appwindow to settings, Err: {e:?}");
             }
         }
 
@@ -198,7 +198,7 @@ impl RnAppWindow {
             canvas.set_unsaved_changes(true);
             canvas.set_empty(false);
         }
-        if widget_flags.update_view {
+        if widget_flags.view_modified {
             let widget_size = canvas.widget_size();
             let offset_mins_maxs = canvas.engine_ref().camera_offset_mins_maxs();
             let offset = canvas.engine_ref().camera.offset();
@@ -209,10 +209,10 @@ impl RnAppWindow {
         if widget_flags.zoomed_temporarily {
             let total_zoom = canvas.engine_ref().camera.total_zoom();
 
-            canvas.queue_resize();
             self.main_header()
                 .canvasmenu()
-                .update_zoom_reset_label(total_zoom);
+                .refresh_zoom_reset_label(total_zoom);
+            canvas.queue_resize();
         }
         if widget_flags.zoomed {
             let total_zoom = canvas.engine_ref().camera.total_zoom();
@@ -221,7 +221,7 @@ impl RnAppWindow {
             canvas.canvas_layout_manager().update_old_viewport(viewport);
             self.main_header()
                 .canvasmenu()
-                .update_zoom_reset_label(total_zoom);
+                .refresh_zoom_reset_label(total_zoom);
             canvas.queue_resize();
         }
         if widget_flags.deselect_color_setters {
@@ -272,10 +272,10 @@ impl RnAppWindow {
                 .canvas()
                 .load_engine_config_from_settings(&app_settings)
             {
-                log::error!("Failed to load engine config for initial tab, Err: {e:?}");
+                tracing::error!("Failed to load engine config for initial tab, Err: {e:?}");
             }
         } else {
-            log::warn!("Could not load settings for initial tab. Settings schema not found.");
+            tracing::warn!("Could not load settings for initial tab. Settings schema not found.");
         }
         self.append_wrapper_new_tab(&wrapper)
     }
@@ -440,123 +440,11 @@ impl RnAppWindow {
         target_pos: Option<na::Vector2<f64>>,
         rnote_file_new_tab: bool,
     ) {
-        // Returns Ok(true) if file was imported, else Ok(false)
-        async fn try_open_file(
-            appwindow: &RnAppWindow,
-            input_file: gio::File,
-            target_pos: Option<na::Vector2<f64>>,
-            rnote_file_new_tab: bool,
-        ) -> anyhow::Result<bool> {
-            let file_imported = match FileType::lookup_file_type(&input_file) {
-                FileType::RnoteFile => {
-                    let Some(input_file_path) = input_file.path() else {
-                        return Err(anyhow::anyhow!(
-                            "Could not open file: {input_file:?}, path returned None"
-                        ));
-                    };
-
-                    // If the file is already opened in a tab, simply switch to it
-                    if let Some(page) = appwindow.tabs_query_file_opened(input_file_path) {
-                        appwindow.overlays().tabview().set_selected_page(&page);
-                        false
-                    } else {
-                        let rnote_file_new_tab = if appwindow.active_tab_wrapper().canvas().empty()
-                            && appwindow
-                                .active_tab_wrapper()
-                                .canvas()
-                                .output_file()
-                                .is_none()
-                        {
-                            false
-                        } else {
-                            rnote_file_new_tab
-                        };
-
-                        let wrapper = if rnote_file_new_tab {
-                            // a new tab for rnote files
-                            appwindow.new_canvas_wrapper()
-                        } else {
-                            log::debug!("Using old wrapper");
-                            appwindow.active_tab_wrapper()
-                        };
-                        let (bytes, _) = input_file.load_bytes_future().await?;
-                        let widget_flags = wrapper
-                            .canvas()
-                            .load_in_rnote_bytes(bytes.to_vec(), input_file.path())
-                            .await?;
-                        if rnote_file_new_tab {
-                            appwindow.append_wrapper_new_tab(&wrapper);
-                        } else {
-                            let document_layout = wrapper.canvas().engine_ref().document.layout;
-                            appwindow
-                                .sidebar()
-                                .settings_panel()
-                                .set_document_layout(&document_layout);
-                        }
-                        appwindow.handle_widget_flags(widget_flags, &wrapper.canvas());
-                        true
-                    }
-                }
-                FileType::VectorImageFile => {
-                    let canvas = appwindow.active_tab_wrapper().canvas();
-                    let (bytes, _) = input_file.load_bytes_future().await?;
-                    canvas
-                        .load_in_vectorimage_bytes(bytes.to_vec(), target_pos)
-                        .await?;
-                    true
-                }
-                FileType::BitmapImageFile => {
-                    let canvas = appwindow.active_tab_wrapper().canvas();
-                    let (bytes, _) = input_file.load_bytes_future().await?;
-                    canvas
-                        .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos)
-                        .await?;
-                    true
-                }
-                FileType::XoppFile => {
-                    // a new tab for xopp file import
-                    let wrapper = appwindow.new_canvas_wrapper();
-                    let canvas = wrapper.canvas();
-                    let file_imported =
-                        dialogs::import::dialog_import_xopp_w_prefs(appwindow, &canvas, input_file)
-                            .await?;
-                    if file_imported {
-                        appwindow.append_wrapper_new_tab(&wrapper);
-                    }
-                    file_imported
-                }
-                FileType::PdfFile => {
-                    let canvas = appwindow.active_tab_wrapper().canvas();
-                    dialogs::import::dialog_import_pdf_w_prefs(
-                        appwindow, &canvas, input_file, target_pos,
-                    )
-                    .await?
-                }
-                FileType::PlaintextFile => {
-                    let canvas = appwindow.active_tab_wrapper().canvas();
-                    let (bytes, _) = input_file.load_bytes_future().await?;
-                    canvas.load_in_text(String::from_utf8(bytes.to_vec())?, target_pos)?;
-                    true
-                }
-                FileType::Folder => {
-                    if let Some(dir) = input_file.path() {
-                        appwindow
-                            .sidebar()
-                            .workspacebrowser()
-                            .workspacesbar()
-                            .set_selected_workspace_dir(dir);
-                    }
-                    false
-                }
-                FileType::Unsupported => {
-                    return Err(anyhow::anyhow!("tried to open unsupported file type"));
-                }
-            };
-            Ok(file_imported)
-        }
-
         self.overlays().progressbar_start_pulsing();
-        match try_open_file(self, input_file, target_pos, rnote_file_new_tab).await {
+        match self
+            .try_open_file(input_file, target_pos, rnote_file_new_tab)
+            .await
+        {
             Ok(true) => {
                 self.overlays().progressbar_finish();
             }
@@ -564,7 +452,7 @@ impl RnAppWindow {
                 self.overlays().progressbar_abort();
             }
             Err(e) => {
-                log::error!("Opening file with dialogs failed, Err: {e:?}");
+                tracing::error!("Opening file with dialogs failed, Err: {e:?}");
 
                 self.overlays()
                     .dispatch_toast_error(&gettext("Opening file failed"));
@@ -573,18 +461,118 @@ impl RnAppWindow {
         }
     }
 
+    /// Internal method for opening/importing content from a file with a supported content type.
+    ///
+    /// Returns Ok(true) if file was imported, Ok(false) if not, Err(_) if the import failed.
+    async fn try_open_file(
+        &self,
+        input_file: gio::File,
+        target_pos: Option<na::Vector2<f64>>,
+        rnote_file_new_tab: bool,
+    ) -> anyhow::Result<bool> {
+        let file_imported = match FileType::lookup_file_type(&input_file) {
+            FileType::RnoteFile => {
+                let input_file_path = input_file.path().ok_or_else(|| {
+                    anyhow::anyhow!("Could not open file '{input_file:?}', file path is None.")
+                })?;
+
+                // If the file is already opened in a tab, simply switch to it
+                if let Some(page) = self.tabs_query_file_opened(input_file_path) {
+                    self.overlays().tabview().set_selected_page(&page);
+                    false
+                } else {
+                    let rnote_file_new_tab = if self.active_tab_wrapper().canvas().empty()
+                        && self.active_tab_wrapper().canvas().output_file().is_none()
+                    {
+                        false
+                    } else {
+                        rnote_file_new_tab
+                    };
+
+                    let wrapper = if rnote_file_new_tab {
+                        // a new tab for rnote files
+                        self.new_canvas_wrapper()
+                    } else {
+                        self.active_tab_wrapper()
+                    };
+                    let (bytes, _) = input_file.load_bytes_future().await?;
+                    let widget_flags = wrapper
+                        .canvas()
+                        .load_in_rnote_bytes(bytes.to_vec(), input_file.path())
+                        .await?;
+                    if rnote_file_new_tab {
+                        self.append_wrapper_new_tab(&wrapper);
+                    }
+                    self.handle_widget_flags(widget_flags, &wrapper.canvas());
+                    true
+                }
+            }
+            FileType::VectorImageFile => {
+                let canvas = self.active_tab_wrapper().canvas();
+                let (bytes, _) = input_file.load_bytes_future().await?;
+                canvas
+                    .load_in_vectorimage_bytes(bytes.to_vec(), target_pos)
+                    .await?;
+                true
+            }
+            FileType::BitmapImageFile => {
+                let canvas = self.active_tab_wrapper().canvas();
+                let (bytes, _) = input_file.load_bytes_future().await?;
+                canvas
+                    .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos)
+                    .await?;
+                true
+            }
+            FileType::XoppFile => {
+                // a new tab for xopp file import
+                let wrapper = self.new_canvas_wrapper();
+                let canvas = wrapper.canvas();
+                let file_imported =
+                    dialogs::import::dialog_import_xopp_w_prefs(self, &canvas, input_file).await?;
+                if file_imported {
+                    self.append_wrapper_new_tab(&wrapper);
+                }
+                file_imported
+            }
+            FileType::PdfFile => {
+                let canvas = self.active_tab_wrapper().canvas();
+                dialogs::import::dialog_import_pdf_w_prefs(self, &canvas, input_file, target_pos)
+                    .await?
+            }
+            FileType::PlaintextFile => {
+                let canvas = self.active_tab_wrapper().canvas();
+                let (bytes, _) = input_file.load_bytes_future().await?;
+                canvas.load_in_text(String::from_utf8(bytes.to_vec())?, target_pos)?;
+                true
+            }
+            FileType::Folder => {
+                if let Some(dir) = input_file.path() {
+                    self.sidebar()
+                        .workspacebrowser()
+                        .workspacesbar()
+                        .set_selected_workspace_dir(dir);
+                }
+                false
+            }
+            FileType::Unsupported => {
+                return Err(anyhow::anyhow!("Tried to open unsupported file type"));
+            }
+        };
+
+        Ok(file_imported)
+    }
+
     /// Refresh the UI from the engine state from the given tab page.
     pub(crate) fn refresh_ui_from_engine(&self, active_tab: &RnCanvasWrapper) {
         let canvas = active_tab.canvas();
 
         // Avoids already borrowed
-        let format = canvas.engine_ref().document.format;
-        let doc_layout = canvas.engine_ref().document.layout;
-        let pen_sounds = canvas.engine_ref().pen_sounds();
-        let snap_positions = canvas.engine_ref().document.snap_positions;
         let pen_style = canvas.engine_ref().penholder.current_pen_style_w_override();
-
-        // Undo / redo
+        let pen_sounds = canvas.engine_ref().pen_sounds();
+        let doc_format = canvas.engine_ref().document.format;
+        let doc_layout = canvas.engine_ref().document.layout;
+        let total_zoom = canvas.engine_ref().camera.total_zoom();
+        let snap_positions = canvas.engine_ref().document.snap_positions;
         let can_undo = canvas.engine_ref().can_undo();
         let can_redo = canvas.engine_ref().can_redo();
 
@@ -596,6 +584,9 @@ impl RnAppWindow {
             .penpicker()
             .redo_button()
             .set_sensitive(can_redo);
+        self.main_header()
+            .canvasmenu()
+            .refresh_zoom_reset_label(total_zoom);
 
         // we change the state through the actions, because they themselves hold state.
         // (for example needed to display ticks in menus for boolean actions)
@@ -603,6 +594,11 @@ impl RnAppWindow {
             self,
             "doc-layout",
             Some(&doc_layout.to_string().to_variant()),
+        );
+        adw::prelude::ActionGroupExt::change_action_state(
+            self,
+            "pen-style",
+            &pen_style.to_string().to_variant(),
         );
         adw::prelude::ActionGroupExt::change_action_state(
             self,
@@ -617,17 +613,12 @@ impl RnAppWindow {
         adw::prelude::ActionGroupExt::change_action_state(
             self,
             "show-format-borders",
-            &format.show_borders.to_variant(),
+            &doc_format.show_borders.to_variant(),
         );
         adw::prelude::ActionGroupExt::change_action_state(
             self,
             "show-origin-indicator",
-            &format.show_origin_indicator.to_variant(),
-        );
-        adw::prelude::ActionGroupExt::change_action_state(
-            self,
-            "pen-style",
-            &pen_style.to_string().to_variant(),
+            &doc_format.show_origin_indicator.to_variant(),
         );
 
         // Current pen
@@ -841,29 +832,15 @@ impl RnAppWindow {
         let prev_canvas = prev_canvas_wrapper.canvas();
         let active_canvas_wrapper = active_tab.child().downcast::<RnCanvasWrapper>().unwrap();
         let active_canvas = active_canvas_wrapper.canvas();
-        let mut widget_flags = WidgetFlags::default();
 
-        // extra scope for engine borrow
-        {
-            let prev_engine = prev_canvas.engine_ref();
-            let mut active_engine = active_canvas.engine_mut();
-
-            active_engine.pens_config = prev_engine.pens_config.clone();
-            active_engine
-                .penholder
-                .set_shortcuts(prev_engine.penholder.shortcuts());
-            active_engine
-                .penholder
-                .set_pen_mode_state(prev_engine.penholder.pen_mode_state());
-            widget_flags |=
-                active_engine.change_pen_style(prev_engine.penholder.current_pen_style());
-            // ensures a clean and initialized state for the current pen
-            widget_flags |= active_engine.reinstall_pen_current_style();
-            active_engine.set_pen_sounds(prev_engine.pen_sounds(), crate::env::pkg_data_dir().ok());
-            widget_flags |= active_engine.set_visual_debug(prev_engine.visual_debug());
-            active_engine.import_prefs = prev_engine.import_prefs;
-            active_engine.export_prefs = prev_engine.export_prefs;
-        }
+        let mut widget_flags = active_canvas.engine_mut().load_engine_config(
+            prev_canvas.engine_ref().extract_engine_config(),
+            crate::env::pkg_data_dir().ok(),
+        );
+        // The visual-debug field is not saved in the config, but we want to sync its value between tabs.
+        widget_flags |= active_canvas
+            .engine_mut()
+            .set_visual_debug(prev_canvas.engine_mut().visual_debug());
 
         self.handle_widget_flags(widget_flags, &active_canvas);
     }

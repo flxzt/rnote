@@ -12,9 +12,9 @@ pub(crate) use widgetflagsboxed::WidgetFlagsBoxed;
 use crate::{config, RnAppWindow};
 use gettextrs::gettext;
 use gtk4::{
-    gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
-    Adjustment, DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext,
-    PropagationPhase, Scrollable, ScrollablePolicy, Widget,
+    gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, Adjustment,
+    DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext, PropagationPhase,
+    Scrollable, ScrollablePolicy, Widget,
 };
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
@@ -188,7 +188,6 @@ mod imp {
         type Interfaces = (Scrollable,);
 
         fn class_init(klass: &mut Self::Class) {
-            klass.set_accessible_role(AccessibleRole::Widget);
             klass.set_layout_manager_type::<RnCanvasLayout>();
         }
 
@@ -218,7 +217,7 @@ mod imp {
             let engine_task_handler_handle = glib::MainContext::default().spawn_local(
                 clone!(@weak obj as canvas => async move {
                     let Some(mut task_rx) = canvas.engine_mut().take_engine_tasks_rx() else {
-                        log::error!("Installing the engine task handler failed, taken tasks_rx is None.");
+                        tracing::error!("Installing the engine task handler failed, taken tasks_rx is None.");
                         return;
                     };
 
@@ -454,7 +453,7 @@ mod imp {
                 snapshot.pop();
                 Ok(())
             }() {
-                log::error!("Snapshot canvas failed , Err: {e:?}");
+                tracing::error!("Snapshot canvas failed , Err: {e:?}");
             }
         }
     }
@@ -823,7 +822,7 @@ impl RnCanvas {
             Err(e) => {
                 if engine_config.is_empty() {
                     // On first app startup the engine config is empty, so we don't log an error
-                    log::debug!("Did not load `engine-config` from settings, was empty");
+                    tracing::debug!("Did not load `engine-config` from settings, was empty");
                 } else {
                     return Err(e);
                 }
@@ -902,16 +901,17 @@ impl RnCanvas {
     }
 
     pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnAppWindow) {
-        let new_monitor = match file
-            .monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE)
-        {
-            Ok(output_file_monitor) => output_file_monitor,
-            Err(e) => {
-                self.clear_output_file_monitor();
-                log::error!("Creating a file monitor for the new output file failed , Err: {e:?}");
-                return;
-            }
-        };
+        let new_monitor =
+            match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
+                Ok(output_file_monitor) => output_file_monitor,
+                Err(e) => {
+                    self.clear_output_file_monitor();
+                    tracing::error!(
+                        "Creating a file monitor for the new output file failed , Err: {e:?}"
+                    );
+                    return;
+                }
+            };
 
         let new_handler = new_monitor.connect_changed(
             glib::clone!(@weak self as canvas, @weak appwindow => move |_monitor, file, other_file, event| {
@@ -926,7 +926,7 @@ impl RnCanvas {
                                 appwindow.overlays().progressbar_start_pulsing();
 
                                 if let Err(e) = canvas.reload_from_disk().await {
-                                    log::error!("Failed to reload current output file, Err: {e:?}");
+                                    tracing::error!("Failed to reload current output file, Err: {e:?}");
                                     appwindow.overlays().dispatch_toast_error(&gettext("Reloading .rnote file from disk failed"));
                                     appwindow.overlays().progressbar_abort();
                                 } else {
@@ -938,7 +938,7 @@ impl RnCanvas {
                     &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
                 };
 
-                log::debug!("Canvas with title: `{}` - output-file monitor emitted `changed` - file: {:?}, other_file: {:?}, event: {event:?}, expect_write: {}",
+                tracing::debug!("Canvas with title: `{}` - output-file monitor emitted `changed` - file: {:?}, other_file: {:?}, event: {event:?}, expect_write: {}",
                     canvas.doc_title_display(),
                     file.path(),
                     other_file.map(|f| f.path()),
@@ -1135,7 +1135,7 @@ impl RnCanvas {
                             accept_drop = true;
                         },
                         Err(e) => {
-                            log::error!("Failed to get dropped in file, Err: {e:?}");
+                            tracing::error!("Failed to get dropped in file, Err: {e:?}");
                             appwindow.overlays().dispatch_toast_error(&gettext("Inserting file failed"));
                         },
                     };
@@ -1145,7 +1145,7 @@ impl RnCanvas {
                             accept_drop = true;
                         },
                         Err(e) => {
-                            log::error!("Failed to insert dropped in text, Err: {e:?}");
+                            tracing::error!("Failed to insert dropped in text, Err: {e:?}");
                             appwindow.overlays().dispatch_toast_error(&gettext("Inserting text failed"));
                         }
                     };

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-07 15:59+0100\n"
-"PO-Revision-Date: 2023-11-19 11:28+0000\n"
+"POT-Creation-Date: 2023-12-18 18:58+0100\n"
+"PO-Revision-Date: 2023-12-18 18:02+0000\n"
 "Last-Translator: openCC converted detiam <dehe_tian@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.2\n"
+"X-Generator: Weblate 5.3\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -192,9 +192,9 @@ msgstr "更改工作區目錄"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: crates/rnote-ui/data/ui/dialogs/export.ui:284
-#: crates/rnote-ui/src/dialogs/export.rs:371
-#: crates/rnote-ui/src/dialogs/export.rs:408
-#: crates/rnote-ui/src/dialogs/export.rs:416
+#: crates/rnote-ui/src/dialogs/export.rs:372
+#: crates/rnote-ui/src/dialogs/export.rs:409
+#: crates/rnote-ui/src/dialogs/export.rs:417
 #: crates/rnote-ui/src/dialogs/mod.rs:527
 msgid "- no directory selected -"
 msgstr "—— 沒有選擇目錄 ——"
@@ -286,14 +286,12 @@ msgstr ""
 "設定點陣圖縮放倍數"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Page Order"
 msgid "Page Borders"
-msgstr "頁面循序"
+msgstr "頁面邊框"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:162
 msgid "Whether the pages have drawn borders"
-msgstr ""
+msgstr "頁面是否繪製了邊框"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:196
 msgid "Import Xournal++ File"
@@ -312,15 +310,15 @@ msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "為Xournal++檔案設定推薦的DPI"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
-#: crates/rnote-ui/src/dialogs/export.rs:267
+#: crates/rnote-ui/src/dialogs/export.rs:268
 msgid "Export Document"
 msgstr "匯出文件"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
 #: crates/rnote-ui/data/ui/dialogs/export.ui:180
 #: crates/rnote-ui/data/ui/dialogs/export.ui:416
-#: crates/rnote-ui/src/dialogs/export.rs:917
-#: crates/rnote-ui/src/dialogs/export.rs:963
+#: crates/rnote-ui/src/dialogs/export.rs:907
+#: crates/rnote-ui/src/dialogs/export.rs:955
 msgid "Export"
 msgstr "匯出"
 
@@ -341,10 +339,10 @@ msgstr "選擇匯出檔案"
 #: crates/rnote-ui/src/dialogs/export.rs:141
 #: crates/rnote-ui/src/dialogs/export.rs:148
 #: crates/rnote-ui/src/dialogs/export.rs:193
-#: crates/rnote-ui/src/dialogs/export.rs:668
-#: crates/rnote-ui/src/dialogs/export.rs:694
-#: crates/rnote-ui/src/dialogs/export.rs:701
-#: crates/rnote-ui/src/dialogs/export.rs:752
+#: crates/rnote-ui/src/dialogs/export.rs:664
+#: crates/rnote-ui/src/dialogs/export.rs:690
+#: crates/rnote-ui/src/dialogs/export.rs:697
+#: crates/rnote-ui/src/dialogs/export.rs:748
 msgid "- no file selected -"
 msgstr "— 沒有檔案被選中 —"
 
@@ -404,19 +402,19 @@ msgstr "匯出的格式"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:340
 #: crates/rnote-ui/data/ui/dialogs/export.ui:534
-#: crates/rnote-ui/src/dialogs/export.rs:277
-#: crates/rnote-ui/src/dialogs/export.rs:583
-#: crates/rnote-ui/src/dialogs/export.rs:876
+#: crates/rnote-ui/src/dialogs/export.rs:278
+#: crates/rnote-ui/src/dialogs/export.rs:579
+#: crates/rnote-ui/src/dialogs/export.rs:866
 msgid "Svg"
 msgstr "可縮放向量圖（SVG）"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:134
-#: crates/rnote-ui/src/dialogs/export.rs:282
+#: crates/rnote-ui/src/dialogs/export.rs:283
 msgid "Pdf"
 msgstr "行動式文件格式（PDF）"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
-#: crates/rnote-ui/src/dialogs/export.rs:287
+#: crates/rnote-ui/src/dialogs/export.rs:288
 msgid "Xopp"
 msgstr "Xournal++ 筆記本（Xopp）"
 
@@ -447,7 +445,7 @@ msgid "Vertical First"
 msgstr "垂直優先"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:172
-#: crates/rnote-ui/src/dialogs/export.rs:569
+#: crates/rnote-ui/src/dialogs/export.rs:565
 msgid "Export Document Pages"
 msgstr "分頁匯出"
 
@@ -469,15 +467,15 @@ msgstr "匯出檔案標題"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:535
-#: crates/rnote-ui/src/dialogs/export.rs:588
-#: crates/rnote-ui/src/dialogs/export.rs:881
+#: crates/rnote-ui/src/dialogs/export.rs:584
+#: crates/rnote-ui/src/dialogs/export.rs:871
 msgid "Png"
 msgstr "行動式網路圖形（PNG）"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:342
 #: crates/rnote-ui/data/ui/dialogs/export.ui:536
-#: crates/rnote-ui/src/dialogs/export.rs:594
-#: crates/rnote-ui/src/dialogs/export.rs:887
+#: crates/rnote-ui/src/dialogs/export.rs:590
+#: crates/rnote-ui/src/dialogs/export.rs:877
 msgid "Jpeg"
 msgstr "聯合影象標準（JPEG）"
 
@@ -492,7 +490,7 @@ msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "設定Jpeg影象的質量（1-100）"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:408
-#: crates/rnote-ui/src/dialogs/export.rs:864
+#: crates/rnote-ui/src/dialogs/export.rs:854
 msgid "Export Selection"
 msgstr "匯出所選"
 
@@ -1039,7 +1037,7 @@ msgstr "垂直連續的頁面 [_C]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:37
 msgid "_Semi Infinite"
-msgstr "無限 [_S]"
+msgstr "半無限 [_S]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"
@@ -1624,10 +1622,8 @@ msgid "Save Document As"
 msgstr "另存文件為"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:173
-#, fuzzy
-#| msgid "_Snap Positions"
 msgid "Snap Positions"
-msgstr "捕獲位置 [_S]"
+msgstr "捕獲位置"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Add Page (When in Fixed-Size Layout)"
@@ -1670,6 +1666,14 @@ msgstr "撤銷"
 msgid "Redo"
 msgstr "重做"
 
+#: crates/rnote-ui/data/ui/sidebar.ui:50
+msgid "Workspace"
+msgstr "工作區"
+
+#: crates/rnote-ui/data/ui/sidebar.ui:61
+msgid "Settings"
+msgstr "設定"
+
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:79
 msgid "Page"
 msgstr "頁碼"
@@ -1690,14 +1694,14 @@ msgstr "建立新資料夾"
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
-msgstr ""
+msgstr "未安裝設定格式（Settings schema）。無法載入和儲存應用程式設定。"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:563
 msgid "Opening file failed"
 msgstr "檔案開啟失敗"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:248
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:581
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:257
@@ -1721,11 +1725,11 @@ msgstr "按鈕3"
 msgid "Button 4"
 msgstr "按鈕4"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:644
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:645
 msgid "Printing document failed"
 msgstr "列印失敗"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:680
+#: crates/rnote-ui/src/appwindow/appwindowactions.rs:681
 msgid "Exporting selection failed, nothing selected"
 msgstr "匯出選擇內容失敗，沒有選擇內容"
 
@@ -1777,11 +1781,8 @@ msgstr "文件儲存成功"
 
 #: crates/rnote-ui/src/dialogs/export.rs:226
 #: crates/rnote-ui/src/dialogs/export.rs:239
-#: crates/rnote-ui/src/dialogs/export.rs:535
-#: crates/rnote-ui/src/dialogs/export.rs:540
+#: crates/rnote-ui/src/dialogs/export.rs:536
 #: crates/rnote-ui/src/dialogs/export.rs:804
-#: crates/rnote-ui/src/dialogs/export.rs:809
-#: crates/rnote-ui/src/dialogs/export.rs:814
 msgid "Exporting document failed"
 msgstr "匯出文件失敗"
 
@@ -1790,82 +1791,78 @@ msgid "Exported document successfully"
 msgstr "匯出文件成功"
 
 #: crates/rnote-ui/src/dialogs/export.rs:231
-#: crates/rnote-ui/src/dialogs/export.rs:531
-#: crates/rnote-ui/src/dialogs/export.rs:800
-#, fuzzy
-#| msgid "- no file name -"
+#: crates/rnote-ui/src/dialogs/export.rs:532
+#: crates/rnote-ui/src/dialogs/export.rs:796
 msgid "View in file manager"
-msgstr "—— 沒有檔名 ——"
+msgstr "在檔案管理器中檢視"
 
-#: crates/rnote-ui/src/dialogs/export.rs:244
-#: crates/rnote-ui/src/dialogs/export.rs:546
-#: crates/rnote-ui/src/dialogs/export.rs:820
-#, fuzzy
-#| msgid "Failed to open file, unsupported file type"
+#: crates/rnote-ui/src/dialogs/export.rs:245
+#: crates/rnote-ui/src/dialogs/export.rs:542
+#: crates/rnote-ui/src/dialogs/export.rs:810
 msgid "Failed to open the file in the file manager"
-msgstr "無法開啟檔案，不支援的檔案型別"
+msgstr "無法開啟在檔案管理器中選擇的檔案"
 
-#: crates/rnote-ui/src/dialogs/export.rs:254
+#: crates/rnote-ui/src/dialogs/export.rs:255
 msgid "Exporting document failed, no file selected"
 msgstr "匯出檔案失敗，沒有選擇檔案"
 
-#: crates/rnote-ui/src/dialogs/export.rs:269
-#: crates/rnote-ui/src/dialogs/export.rs:571
-#: crates/rnote-ui/src/dialogs/export.rs:866
+#: crates/rnote-ui/src/dialogs/export.rs:270
+#: crates/rnote-ui/src/dialogs/export.rs:567
+#: crates/rnote-ui/src/dialogs/export.rs:856
 #: crates/rnote-ui/src/dialogs/mod.rs:509
 msgid "Select"
 msgstr "選擇"
 
-#: crates/rnote-ui/src/dialogs/export.rs:526
+#: crates/rnote-ui/src/dialogs/export.rs:527
 msgid "Exporting document pages failed"
 msgstr "匯出文件頁面失敗"
 
-#: crates/rnote-ui/src/dialogs/export.rs:530
+#: crates/rnote-ui/src/dialogs/export.rs:531
 msgid "Exported document pages successfully"
 msgstr "匯出文件頁面成功"
 
-#: crates/rnote-ui/src/dialogs/export.rs:555
+#: crates/rnote-ui/src/dialogs/export.rs:551
 msgid "Exporting document pages failed, no directory selected"
 msgstr "匯出文件頁面失敗，沒有選擇目錄"
 
-#: crates/rnote-ui/src/dialogs/export.rs:785
+#: crates/rnote-ui/src/dialogs/export.rs:781
 msgid "Exporting selection failed, no file selected"
 msgstr "匯出選擇內容失敗，沒有選擇檔案"
 
-#: crates/rnote-ui/src/dialogs/export.rs:795
+#: crates/rnote-ui/src/dialogs/export.rs:791
 msgid "Exporting selection failed"
 msgstr "匯出選擇內容失敗"
 
-#: crates/rnote-ui/src/dialogs/export.rs:799
+#: crates/rnote-ui/src/dialogs/export.rs:795
 msgid "Exported selection successfully"
 msgstr "匯出選擇內容成功"
 
-#: crates/rnote-ui/src/dialogs/export.rs:907
-#: crates/rnote-ui/src/dialogs/export.rs:953
+#: crates/rnote-ui/src/dialogs/export.rs:897
+#: crates/rnote-ui/src/dialogs/export.rs:945
 msgid "Json"
 msgstr "JSON"
 
-#: crates/rnote-ui/src/dialogs/export.rs:915
+#: crates/rnote-ui/src/dialogs/export.rs:905
 msgid "Export Engine State"
 msgstr "匯出引擎狀態"
 
-#: crates/rnote-ui/src/dialogs/export.rs:933
+#: crates/rnote-ui/src/dialogs/export.rs:923
 msgid "Exporting engine state failed"
 msgstr "引擎狀態匯出失敗"
 
-#: crates/rnote-ui/src/dialogs/export.rs:937
+#: crates/rnote-ui/src/dialogs/export.rs:927
 msgid "Exported engine state successfully"
 msgstr "引擎狀態匯出成功"
 
-#: crates/rnote-ui/src/dialogs/export.rs:961
+#: crates/rnote-ui/src/dialogs/export.rs:953
 msgid "Export Engine Config"
 msgstr "匯出引擎配置"
 
-#: crates/rnote-ui/src/dialogs/export.rs:979
+#: crates/rnote-ui/src/dialogs/export.rs:971
 msgid "Exporting engine config failed"
 msgstr "引擎設定匯出失敗"
 
-#: crates/rnote-ui/src/dialogs/export.rs:983
+#: crates/rnote-ui/src/dialogs/export.rs:975
 msgid "Exported engine config successfully"
 msgstr "引擎設定匯出成功"
 
@@ -2202,96 +2199,96 @@ msgstr "三次貝塞爾曲線"
 msgid "Polyline"
 msgstr "多段線"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:535
+#: crates/rnote-ui/src/settingspanel/mod.rs:536
 msgid "Application restart is required"
 msgstr "應用程式需要重新啟動"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:801
+#: crates/rnote-ui/src/settingspanel/mod.rs:831
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "十字準線（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:802
+#: crates/rnote-ui/src/settingspanel/mod.rs:832
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "十字準線（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:803
+#: crates/rnote-ui/src/settingspanel/mod.rs:833
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "十字準線（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:804
+#: crates/rnote-ui/src/settingspanel/mod.rs:834
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "點（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:805
+#: crates/rnote-ui/src/settingspanel/mod.rs:835
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "點（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:806
+#: crates/rnote-ui/src/settingspanel/mod.rs:836
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "點（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:807
+#: crates/rnote-ui/src/settingspanel/mod.rs:837
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "西北方向水滴（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:808
+#: crates/rnote-ui/src/settingspanel/mod.rs:838
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "西北方向水滴（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:809
+#: crates/rnote-ui/src/settingspanel/mod.rs:839
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "西北方向水滴（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:810
+#: crates/rnote-ui/src/settingspanel/mod.rs:840
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "東北方向水滴（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:811
+#: crates/rnote-ui/src/settingspanel/mod.rs:841
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "東北方向水滴（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:812
+#: crates/rnote-ui/src/settingspanel/mod.rs:842
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "東北方向水滴（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:813
+#: crates/rnote-ui/src/settingspanel/mod.rs:843
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "正北方向水滴（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:814
+#: crates/rnote-ui/src/settingspanel/mod.rs:844
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "正北方向水滴（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:815
+#: crates/rnote-ui/src/settingspanel/mod.rs:845
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "正北方向水滴（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:816
+#: crates/rnote-ui/src/settingspanel/mod.rs:846
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "橫（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:817
+#: crates/rnote-ui/src/settingspanel/mod.rs:847
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "橫（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:818
+#: crates/rnote-ui/src/settingspanel/mod.rs:848
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "橫（大）"
@@ -2306,12 +2303,6 @@ msgstr "新建資料夾"
 
 #~ msgid "Close the Folded Flap"
 #~ msgstr "關閉摺疊"
-
-#~ msgid "Workspace"
-#~ msgstr "工作區"
-
-#~ msgid "Settings"
-#~ msgstr "設定"
 
 #~ msgid "Remove Page"
 #~ msgstr "刪除頁面"

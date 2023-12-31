@@ -8,7 +8,6 @@ use gtk4::{
 use p2d::bounding_volume::BoundingVolume;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_compose::SplitOrder;
-use rnote_engine::document::Layout;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::{Camera, Engine};
@@ -55,12 +54,6 @@ impl RnAppWindow {
         let action_focus_mode = gio::PropertyAction::new("focus-mode", self, "focus-mode");
         self.add_action(&action_focus_mode);
 
-        // Could not make it work with enums as state together with activating from menu model, so using strings instead
-        let action_doc_layout = gio::SimpleAction::new_stateful(
-            "doc-layout",
-            Some(&String::static_variant_type()),
-            &String::from("infinite").to_variant(),
-        );
         let action_pen_sounds =
             gio::SimpleAction::new_stateful("pen-sounds", None, &false.to_variant());
         self.add_action(&action_pen_sounds);
@@ -76,7 +69,6 @@ impl RnAppWindow {
         let action_block_pinch_zoom =
             gio::PropertyAction::new("block-pinch-zoom", self, "block-pinch-zoom");
         self.add_action(&action_block_pinch_zoom);
-        self.add_action(&action_doc_layout);
         let action_pen_style = gio::SimpleAction::new_stateful(
             "pen-style",
             Some(&String::static_variant_type()),
@@ -207,29 +199,6 @@ impl RnAppWindow {
             let wrapper = appwindow.new_canvas_wrapper();
             appwindow.append_wrapper_new_tab(&wrapper);
         }));
-
-        // Doc layout
-        action_doc_layout.connect_activate(
-            clone!(@weak self as appwindow => move |action, target| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
-                let doc_layout_str = target.unwrap().str().unwrap();
-                let doc_layout = match Layout::from_str(doc_layout_str) {
-                    Ok(s) => s,
-                    Err(e) => {
-                        log::error!("Activated doc-layout action with invalid target, Err: {e:}");
-                        return;
-                    }
-                };
-                action.set_state(&doc_layout_str.to_variant());
-                appwindow
-                    .main_header()
-                    .canvasmenu()
-                    .fixedsize_quickactions_box()
-                    .set_sensitive(doc_layout == Layout::FixedSize);
-                let widget_flags = canvas.engine_mut().set_doc_layout(doc_layout);
-                appwindow.handle_widget_flags(widget_flags, &canvas);
-            }),
-        );
 
         // Pen sounds
         action_pen_sounds.connect_change_state(

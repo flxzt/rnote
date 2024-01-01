@@ -1,7 +1,7 @@
 // Imports
 use super::RnCanvas;
 use futures::channel::oneshot;
-use gtk4::{gio, prelude::*, Native};
+use gtk4::{gio, prelude::*};
 use rnote_compose::ext::Vector2Ext;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
 use rnote_engine::engine::{EngineSnapshot, StrokeContent};
@@ -162,7 +162,7 @@ impl RnCanvas {
     ) -> anyhow::Result<()> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<StrokeContent>>();
-        let pos = self.determine_stroke_import_pos(None);
+        let pos = self.determine_stroke_import_pos(target_pos);
 
         rayon::spawn(move || {
             let result = || -> Result<StrokeContent, anyhow::Error> {

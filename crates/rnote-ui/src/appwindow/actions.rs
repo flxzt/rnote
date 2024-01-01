@@ -1,6 +1,7 @@
 // Imports
 use crate::{config, dialogs, RnAppWindow, RnCanvas};
 use gettextrs::gettext;
+use gtk4::graphene;
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit,
     UriLauncher, Window,
@@ -750,7 +751,13 @@ impl RnAppWindow {
             let canvas_wrapper = appwindow.active_tab_wrapper();
             let canvas = canvas_wrapper.canvas();
             let content_formats = appwindow.clipboard().formats();
-            let last_contextmenu_pos = canvas_wrapper.last_contextmenu_pos();
+
+            let last_contextmenu_pos = canvas_wrapper.last_contextmenu_pos().map(|vec2| {
+                let p = graphene::Point::new(vec2.x as f32, vec2.y as f32);
+                (canvas.engine_ref().camera.transform().inverse()
+                    * na::point![p.x() as f64, p.y() as f64])
+                .coords
+            });
             tracing::debug!("Last contextmenu pos: {:?}", last_contextmenu_pos);
 
             // Order matters here, we want to go from specific -> generic, mostly because `text/plain` is contained in other text based formats
@@ -775,7 +782,7 @@ impl RnAppWindow {
                             }).collect::<Vec<PathBuf>>();
 
                             for file_path in file_paths {
-                                appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), None, true).await;
+                                appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), last_contextmenu_pos, true).await;
                             }
                         }
                         Ok(None) => {}

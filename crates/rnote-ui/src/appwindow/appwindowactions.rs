@@ -196,17 +196,18 @@ impl RnAppWindow {
 
         // Open Canvas Menu
         action_open_canvasmenu.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            appwindow.split_view().set_show_sidebar(false);
+            if appwindow.split_view().shows_sidebar() && appwindow.split_view().is_collapsed() {
+                appwindow.split_view().set_show_sidebar(false);
+            }
             appwindow.main_header().canvasmenu().popovermenu().popup();
         }));
 
         // Open App Menu
         action_open_appmenu.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            if ! appwindow.split_view().shows_sidebar() {
+            if !appwindow.split_view().shows_sidebar() {
                 appwindow.main_header().appmenu().popovermenu().popup();
                 return
             }
-
             if appwindow.split_view().is_collapsed() {
                 appwindow.split_view().set_show_sidebar(false);
                 appwindow.main_header().appmenu().popovermenu().popup();

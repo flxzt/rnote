@@ -180,7 +180,7 @@ impl PenPathModeledBuilder {
         if n_steps > MODELER_PARAMS.sampling_max_outputs_per_call {
             // If the no of outputs the modeler would need to produce exceeds the configured maximum
             // (because the time delta between the last elements is too large), it needs to be restarted.
-            log::debug!(
+            tracing::debug!(
                 "PenpathModeledBuilder: updating modeler with element failed,
 n_steps exceeds configured max outputs per call."
             );
@@ -204,7 +204,7 @@ n_steps exceeds configured max outputs per call."
                 let pressure = r.pressure();
                 Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
             })),
-            Err(e) => log::error!("Updating stroke modeler with element failed, Err: {e:?}"),
+            Err(e) => tracing::error!("Updating stroke modeler with element failed, Err: {e:?}"),
         }
 
         // The prediction start is the last buffer element (which will get drained)
@@ -226,7 +226,7 @@ n_steps exceeds configured max outputs per call."
                     })
                     .collect::<Vec<Element>>(),
                 Err(e) => {
-                    log::error!("Stroke modeler predict failed, Err: {e:?}");
+                    tracing::error!("Stroke modeler predict failed, Err: {e:?}");
                     Vec::new()
                 }
             }
@@ -240,7 +240,7 @@ n_steps exceeds configured max outputs per call."
         self.last_element_time = now;
         self.last_element = element;
         if let Err(e) = self.stroke_modeler.reset_w_params(*MODELER_PARAMS) {
-            log::error!("Resetting stroke modeler failed while restarting, Err: {e:?}");
+            tracing::error!("Resetting stroke modeler failed while restarting, Err: {e:?}");
             return;
         }
 
@@ -259,7 +259,9 @@ n_steps exceeds configured max outputs per call."
                     Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
                 }));
             }
-            Err(e) => log::error!("Updating stroke modeler failed while restarting, Err: {e:?}"),
+            Err(e) => {
+                tracing::error!("Updating stroke modeler failed while restarting, Err: {e:?}")
+            }
         }
     }
 }

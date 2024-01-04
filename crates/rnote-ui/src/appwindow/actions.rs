@@ -20,9 +20,14 @@ const CLIPBOARD_INPUT_STREAM_BUFSIZE: usize = 4096;
 
 impl RnAppWindow {
     /// Boolean actions have no target, and a boolean state. They have a default implementation for the activate signal,
-    /// which requests the state to be inverted, and the default implementation for change_state, which sets the state to the request.
-    /// We generally want to connect to the change_state signal. (but then have to set the state with action.set_state() )
-    /// We can then either toggle the state through activating the action, or set the state explicitly through `action.change_state(<request>)`
+    /// which requests the state to be inverted, and the default implementation for change_state, which sets the state
+    /// to the request.
+    ///
+    /// We generally want to connect to the change_state signal. (but then have to set the state with
+    /// `action.set_state()`)
+    ///
+    /// We can then either toggle the state through activating the action, or set the state explicitly through
+    /// `action.change_state(<request>)`
     pub(crate) fn setup_actions(&self) {
         let action_fullscreen = gio::PropertyAction::new("fullscreen", self, "fullscreened");
         self.add_action(&action_fullscreen);
@@ -182,7 +187,7 @@ impl RnAppWindow {
         action_donate.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             UriLauncher::new(config::APP_DONATE_URL).launch(None::<&Window>, gio::Cancellable::NONE, |res| {
                 if let Err(e) = res {
-                    log::error!("Launching donate URL failed, Err: {e:?}");
+                    tracing::error!("Launching donate URL failed, Err: {e:?}");
                 }
             })
         }));
@@ -218,23 +223,24 @@ impl RnAppWindow {
 
         // Developer mode
         action_devel_mode.connect_activate(
-            clone!(@weak self as appwindow, @weak action_devel_menu => move |action, _target| {
+            clone!(@weak self as appwindow, @weak action_devel_menu, @weak action_visual_debug => move |action, _| {
                 let state = action.state().unwrap().get::<bool>().unwrap();
 
                 // Enable the devel menu action to reveal it in the app menu
                 action_devel_menu.set_enabled(!state);
 
-                // If toggled to disable
+                // Always disable visual-debugging when disabling the developer mode
                 if state {
-                    log::debug!("Disabling visual debugging.");
-                    appwindow.lookup_action("visual-debug").unwrap().change_state(&false.to_variant());
+                    tracing::debug!("Disabling developer mode, disabling visual debugging.");
+                    action_visual_debug.change_state(&false.to_variant());
                 }
                 action.change_state(&(!state).to_variant());
             }),
         );
 
         // Developer settings
-        // Its enabled state toggles the visibility of the developer settings menu entry. Is only modified inside action_devel_mode
+        // Its enabled state toggles the visibility of the developer settings menu entry.
+        // Must only be modified inside the devel-mode action
         action_devel_menu.set_enabled(false);
 
         // Visual debugging
@@ -280,7 +286,7 @@ impl RnAppWindow {
                 let doc_layout = match Layout::from_str(doc_layout_str) {
                     Ok(s) => s,
                     Err(e) => {
-                        log::error!("Activated doc-layout action with invalid target, Err: {e:}");
+                        tracing::error!("Activated doc-layout action with invalid target, Err: {e:}");
                         return;
                     }
                 };
@@ -342,7 +348,7 @@ impl RnAppWindow {
                 let pen_style = match PenStyle::from_str(pen_style_str) {
                     Ok(s) => s,
                     Err(e) => {
-                        log::error!("Activated pen-style action with invalid target, Err: {e:}");
+                        tracing::error!("Activated pen-style action with invalid target, Err: {e:}");
                         return;
                     }
                 };
@@ -386,7 +392,7 @@ impl RnAppWindow {
         // Drawing pad buttons
         action_drawing_pad_pressed_button_0.connect_activate(
             clone!(@weak self as appwindow => move |_, _| {
-                log::debug!("Pressed drawing pad button 0");
+                tracing::debug!("Pressed drawing pad button 0");
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let (_, widget_flags) = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton0, Instant::now());
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -395,7 +401,7 @@ impl RnAppWindow {
 
         action_drawing_pad_pressed_button_1.connect_activate(
             clone!(@weak self as appwindow => move |_, _| {
-                log::debug!("Pressed drawing pad button 1");
+                tracing::debug!("Pressed drawing pad button 1");
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let (_, widget_flags) = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton1, Instant::now());
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -404,7 +410,7 @@ impl RnAppWindow {
 
         action_drawing_pad_pressed_button_2.connect_activate(
             clone!(@weak self as appwindow => move |_, _| {
-                log::debug!("Pressed drawing pad button 2");
+                tracing::debug!("Pressed drawing pad button 2");
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let (_, widget_flags) = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton2, Instant::now());
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -413,7 +419,7 @@ impl RnAppWindow {
 
         action_drawing_pad_pressed_button_3.connect_activate(
             clone!(@weak self as appwindow => move |_, _| {
-                log::debug!("Pressed drawing pad button 3");
+                tracing::debug!("Pressed drawing pad button 3");
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let (_, widget_flags) = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton3, Instant::now());
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -584,7 +590,7 @@ impl RnAppWindow {
                     appwindow.overlays().progressbar_start_pulsing();
 
                     if let Err(e) = canvas.save_document_to_file(&output_file).await {
-                        log::error!("Saving document failed, Err: `{e:?}`");
+                        tracing::error!("Saving document failed, Err: `{e:?}`");
 
                         canvas.set_output_file(None);
                         appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
@@ -639,17 +645,17 @@ impl RnAppWindow {
                 cairo_cx.scale(print_scale, print_scale);
                 cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
                 if let Err(e) = page_content.draw_to_cairo(&cairo_cx, draw_background, draw_pattern, optimize_printing, margin, Engine::STROKE_EXPORT_IMAGE_SCALE) {
-                    log::error!("Drawing page no: {page_no} while printing failed, Err: {e:?}");
+                    tracing::error!("Drawing page no: {page_no} while printing failed, Err: {e:?}");
                 }
             }));
 
             print_op.connect_status_changed(clone!(@weak appwindow => move |print_op| {
-                log::debug!("Print operation status has changed to: {:?}", print_op.status());
+                tracing::debug!("Print operation status has changed to: {:?}", print_op.status());
             }));
 
             // Run the print op
             if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
-                log::error!("Running print operation failed , Err: {e:?}");
+                tracing::error!("Running print operation failed , Err: {e:?}");
                 appwindow.overlays().dispatch_toast_error(&gettext("Printing document failed"));
                 appwindow.overlays().progressbar_abort();
             } else {
@@ -699,11 +705,11 @@ impl RnAppWindow {
                 let (content, widget_flags) = match receiver.await {
                     Ok(Ok((content, widget_flags))) => (content,widget_flags),
                     Ok(Err(e)) => {
-                        log::error!("Fetching clipboard content failed in clipboard-copy action, Err: {e:?}");
+                        tracing::error!("Fetching clipboard content failed in clipboard-copy action, Err: {e:?}");
                         return;
                     }
                     Err(e) => {
-                        log::error!("Awaiting fetched clipboard content failed in clipboard-copy action, Err: {e:?}");
+                        tracing::error!("Awaiting fetched clipboard content failed in clipboard-copy action, Err: {e:?}");
                         return;
                     }
                 };
@@ -712,7 +718,7 @@ impl RnAppWindow {
                 }).collect::<Vec<gdk::ContentProvider>>().as_slice());
 
                 if let Err(e) = appwindow.clipboard().set_content(Some(&gdk_content_provider)) {
-                    log::error!("Set appwindow clipboard content failed in clipboard-copy action, Err: {e:?}");
+                    tracing::error!("Set appwindow clipboard content failed in clipboard-copy action, Err: {e:?}");
                 }
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -727,11 +733,11 @@ impl RnAppWindow {
                 let (content, widget_flags) = match receiver.await {
                     Ok(Ok((content, widget_flags))) => (content,widget_flags),
                     Ok(Err(e)) => {
-                        log::error!("Cutting clipboard content failed in clipboard-cut action, Err: {e:?}");
+                        tracing::error!("Cutting clipboard content failed in clipboard-cut action, Err: {e:?}");
                         return;
                     }
                     Err(e) => {
-                        log::error!("Awaiting cut clipboard content failed in clipboard-cut action, Err: {e:?}");
+                        tracing::error!("Awaiting cut clipboard content failed in clipboard-cut action, Err: {e:?}");
                         return;
                     }
                 };
@@ -740,7 +746,7 @@ impl RnAppWindow {
                 }).collect::<Vec<gdk::ContentProvider>>().as_slice());
 
                 if let Err(e) = appwindow.clipboard().set_content(Some(&gdk_content_provider)) {
-                    log::error!("Set appwindow clipboard content failed in clipboard-cut action, Err: {e:?}");
+                    tracing::error!("Set appwindow clipboard content failed in clipboard-cut action, Err: {e:?}");
                 }
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -755,7 +761,7 @@ impl RnAppWindow {
             // Order matters here, we want to go from specific -> generic, mostly because `text/plain` is contained in other text based formats
              if content_formats.contain_mime_type("text/uri-list") {
                 glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                    log::debug!("Recognized clipboard content format: files list");
+                    tracing::debug!("Recognized clipboard content format: files list");
 
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
@@ -779,14 +785,14 @@ impl RnAppWindow {
                         }
                         Ok(None) => {}
                         Err(e) => {
-                            log::error!("Reading clipboard text while pasting clipboard from path failed, Err: {e:?}");
+                            tracing::error!("Reading clipboard text while pasting clipboard from path failed, Err: {e:?}");
 
                         }
                     }
                 }));
             } else if content_formats.contain_mime_type(StrokeContent::MIME_TYPE) {
                 glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
-                    log::debug!("Recognized clipboard content format: {}", StrokeContent::MIME_TYPE);
+                    tracing::debug!("Recognized clipboard content format: {}", StrokeContent::MIME_TYPE);
 
                     match appwindow.clipboard().read_future(&[StrokeContent::MIME_TYPE], glib::source::Priority::DEFAULT).await {
                         Ok((input_stream, _)) => {
@@ -800,7 +806,7 @@ impl RnAppWindow {
                                         acc.append(&mut bytes);
                                     }
                                     Err(e) => {
-                                        log::error!("Failed to read clipboard input stream, Err: {e:?}");
+                                        tracing::error!("Failed to read clipboard input stream, Err: {e:?}");
                                         acc.clear();
                                         break;
                                     }
@@ -811,15 +817,15 @@ impl RnAppWindow {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
                                     Ok(json_string) => {
                                         if let Err(e) = canvas.insert_stroke_content(json_string.to_string()).await {
-                                            log::error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
+                                            tracing::error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
                                         }
                                     }
-                                    Err(e) => log::error!("Failed to read stroke content &str from clipboard data, Err: {e:?}"),
+                                    Err(e) => tracing::error!("Failed to read stroke content &str from clipboard data, Err: {e:?}"),
                                 }
                             }
                         }
                         Err(e) => {
-                            log::error!(
+                            tracing::error!(
                                 "Reading clipboard failed while pasting as `{}`, Err: {e:?}",
                                 StrokeContent::MIME_TYPE
                             );
@@ -828,7 +834,7 @@ impl RnAppWindow {
                 }));
             } else if content_formats.contain_mime_type("image/svg+xml") {
                 glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                    log::debug!("Recognized clipboard content: svg image");
+                    tracing::debug!("Recognized clipboard content: svg image");
 
                     match appwindow.clipboard().read_future(&["image/svg+xml"], glib::source::Priority::DEFAULT).await {
                         Ok((input_stream, _)) => {
@@ -842,7 +848,7 @@ impl RnAppWindow {
                                         acc.append(&mut bytes);
                                     }
                                     Err(e) => {
-                                        log::error!("Failed to read clipboard input stream while pasting as Svg, Err: {e:?}");
+                                        tracing::error!("Failed to read clipboard input stream while pasting as Svg, Err: {e:?}");
                                         acc.clear();
                                         break;
                                     }
@@ -853,17 +859,17 @@ impl RnAppWindow {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
                                     Ok(text) => {
                                         if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), None).await {
-                                            log::error!(
+                                            tracing::error!(
                                                 "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
                                             );
                                         };
                                     }
-                                    Err(e) => log::error!("Failed to get string from clipboard data while pasting as Svg, Err: {e:?}"),
+                                    Err(e) => tracing::error!("Failed to get string from clipboard data while pasting as Svg, Err: {e:?}"),
                                 }
                             }
                         }
                         Err(e) => {
-                            log::error!("Failed to read clipboard data while pasting as Svg, Err: {e:?}");
+                            tracing::error!("Failed to read clipboard data while pasting as Svg, Err: {e:?}");
                         }
                     };
                 }));
@@ -881,19 +887,19 @@ impl RnAppWindow {
                 ];
                 if let Some(mime_type) = MIMES.into_iter().find(|&mime| content_formats.contain_mime_type(mime)) {
                     glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
-                        log::debug!("Recognized clipboard content: bitmap image");
+                        tracing::debug!("Recognized clipboard content: bitmap image");
 
                         match appwindow.clipboard().read_texture_future().await {
                             Ok(Some(texture)) => {
                                 if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), None).await {
-                                    log::error!(
+                                    tracing::error!(
                                         "Loading bitmap image bytes failed while pasting clipboard as {mime_type}, Err: {e:?}"
                                     );
                                 };
                             }
                             Ok(None) => {}
                             Err(e) => {
-                                log::error!(
+                                tracing::error!(
                                     "Reading clipboard text failed while pasting clipboard as {mime_type}, Err: {e:?}"
                                 );
                             }
@@ -902,17 +908,17 @@ impl RnAppWindow {
                 }
             } else if content_formats.contain_mime_type("text/plain") || content_formats.contain_mime_type("text/plain;charset=utf-8"){
                 glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
-                    log::debug!("Recognized clipboard content: plain text");
+                    tracing::debug!("Recognized clipboard content: plain text");
 
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
                             if let Err(e) = canvas.load_in_text(text.to_string(), None) {
-                                log::error!("Failed to paste clipboard text, Err: {e:?}");
+                                tracing::error!("Failed to paste clipboard text, Err: {e:?}");
                             }
                         }
                         Ok(None) => {}
                         Err(e) => {
-                            log::error!(
+                            tracing::error!(
                                 "Reading clipboard text failed while pasting clipboard as plain text, Err: {e:?}"
                             );
 
@@ -920,7 +926,7 @@ impl RnAppWindow {
                     }
                 }));
             } else {
-                log::debug!("Failed to paste clipboard, unsupported MIME-type(s): {:?}", content_formats.mime_types());
+                tracing::debug!("Failed to paste clipboard, unsupported MIME-type(s): {:?}", content_formats.mime_types());
             }
         }));
     }

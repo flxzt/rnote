@@ -15,6 +15,7 @@ pub use toolsconfig::ToolsConfig;
 pub use typewriterconfig::TypewriterConfig;
 
 // Imports
+use crate::CloneConfig;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -32,4 +33,10 @@ pub struct PensConfig {
     pub selector_config: SelectorConfig,
     #[serde(default, rename = "tools_config")]
     pub tools_config: ToolsConfig,
+}
+
+impl CloneConfig for PensConfig {
+    fn clone_config(&self) -> Self {
+        self.clone()
+    }
 }

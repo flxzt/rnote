@@ -109,10 +109,13 @@ To update to the latest version again, unpin and run `flatpak update`.
 
 ## Screenshots
 
-![overview](https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/overview.png)  
-![lecture_note_1](https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/lecture_note_1.png)  
-![pdf_annotation](https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/pdf_annotation.png)  
-![lecture_note_2](https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/lecture_note_2.png)  
+![overview](./crates/rnote-ui/data/screenshots/overview.png)  
+![selection](./crates/rnote-ui/data/screenshots/selection.png)  
+![typewriter](./crates/rnote-ui/data/screenshots/typewriter.png)  
+![focus-mode](./crates/rnote-ui/data/screenshots/focus-mode.png)  
+![workspaces](./crates/rnote-ui/data/screenshots/workspaces.png)  
+![document-settings](./crates/rnote-ui/data/screenshots/document-settings.png)  
+![action-shortcuts](./crates/rnote-ui/data/screenshots/action-shortcuts.png)  
 
 ## Pitfalls & Known Issues
 

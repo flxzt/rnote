@@ -62,7 +62,7 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
                     appwindow.overlays().progressbar_finish();
                 }
                 Err(e) => {
-                    log::error!("Saving document failed, Err: {e:?}");
+                    tracing::error!("Saving document failed, Err: {e:?}");
 
                     canvas.set_output_file(None);
                     appwindow
@@ -73,7 +73,7 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
             }
         }
         Err(e) => {
-            log::debug!(
+            tracing::debug!(
                 "no file selected in save doc as dialog (Error or dialog dismissed by user), Err: {e:?}"
             )
         }
@@ -144,7 +144,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
                         }
                     }
                     Err(e) => {
-                        log::debug!("Did not export document (Error or dialog dismissed by user), Err: {e:?}");
+                        tracing::debug!("Did not export document (Error or dialog dismissed by user), Err: {e:?}");
                         export_file_label.set_label(&gettext("- no file selected -"));
                         button_confirm.set_sensitive(false);
                         selected_file.replace(None);
@@ -221,7 +221,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
                                 None,
                             );
                             if let Err(e) = canvas.export_doc(&file, file_title, None).await {
-                                log::error!("Exporting document failed, Err: `{e:?}`");
+                                tracing::error!("Exporting document failed, Err: `{e:?}`");
 
                                 appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
                                 appwindow.overlays().progressbar_abort();
@@ -235,13 +235,13 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
                                             .and_then(|p|
                                                 p.path())
                                             .and_then(|p| p.into_os_string().into_string().ok()) else {
-                                                log::error!("Failed to get the parent folder of the output file `{file:?}.");
+                                                tracing::error!("Failed to get the parent folder of the output file `{file:?}.");
                                                 appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
                                                 return;
                                         };
 
                                         if let Err(e) = open::that(&folder_path_string) {
-                                            log::error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
+                                            tracing::error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
                                             appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the file in the file manager"));
                                         }
                                     }
@@ -412,7 +412,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
                         }
                     }
                     Err(e) => {
-                        log::debug!("Did not export document pages (Error or dialog dismissed by user), Err: {e:?}");
+                        tracing::debug!("Did not export document pages (Error or dialog dismissed by user), Err: {e:?}");
 
                         export_dir_label.set_label(&gettext("- no directory selected -"));
                         button_confirm.set_sensitive(false);
@@ -522,7 +522,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
 
                     let file_stem_name = export_files_stemname_entryrow.text().to_string();
                     if let Err(e) = canvas.export_doc_pages(&dir, file_stem_name, None).await {
-                        log::error!("Exporting document pages failed, Err: {e:?}");
+                        tracing::error!("Exporting document pages failed, Err: {e:?}");
 
                         appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed"));
                         appwindow.overlays().progressbar_abort();
@@ -532,13 +532,13 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
                             &gettext("View in file manager"),
                             clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
                                 let Some(folder_path_string) = dir.path().and_then(|p| p.into_os_string().into_string().ok()) else {
-                                    log::error!("Failed to get the path of the parent folder");
+                                    tracing::error!("Failed to get the path of the parent folder");
                                     appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
                                     return;
                                 };
 
                                 if let Err(e) = open::that(&folder_path_string) {
-                                    log::error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
+                                    tracing::error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
                                     appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the file in the file manager"));
                                 }
                             }
@@ -693,7 +693,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
                         }
                     }
                     Err(e) => {
-                        log::debug!("Did not export selection (Error or dialog dismissed by user), Err: {e:?}");
+                        tracing::debug!("Did not export selection (Error or dialog dismissed by user), Err: {e:?}");
                         export_file_label.set_label(&gettext("- no file selected -"));
                         button_confirm.set_sensitive(false);
                         selected_file.replace(None);
@@ -784,7 +784,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
             appwindow.overlays().progressbar_start_pulsing();
 
             if let Err(e) = canvas.export_selection(&file, None).await {
-                log::error!("Exporting selection failed, Err: {e:?}");
+                tracing::error!("Exporting selection failed, Err: {e:?}");
 
                 appwindow
                     .overlays()
@@ -800,13 +800,13 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
                                     .and_then(|p|
                                         p.path())
                                     .and_then(|p| p.into_os_string().into_string().ok()) else {
-                                        log::error!("Failed to get the parent folder of the output file `{file:?}.");
+                                        tracing::error!("Failed to get the parent folder of the output file `{file:?}.");
                                         appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
                                         return;
                                 };
 
                                 if let Err(e) = open::that(&folder_path_string) {
-                                    log::error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
+                                    tracing::error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
                                     appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the file in the file manager"));
                                 }
                     }),
@@ -916,7 +916,7 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
             appwindow.overlays().progressbar_start_pulsing();
 
             if let Err(e) = canvas.export_engine_state(&selected_file).await {
-                log::error!("Exporting engine state failed, Err: {e:?}");
+                tracing::error!("Exporting engine state failed, Err: {e:?}");
 
                 appwindow
                     .overlays()
@@ -931,7 +931,7 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
             }
         }
         Err(e) => {
-            log::debug!(
+            tracing::debug!(
                 "Did not export engine state (Error or dialog dismissed by user), Err: {e:?}"
             );
         }
@@ -964,7 +964,7 @@ pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, ca
             appwindow.overlays().progressbar_start_pulsing();
 
             if let Err(e) = canvas.export_engine_config(&selected_file).await {
-                log::error!("Exporting engine state failed, Err: {e:?}");
+                tracing::error!("Exporting engine state failed, Err: {e:?}");
 
                 appwindow
                     .overlays()
@@ -979,7 +979,7 @@ pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, ca
             }
         }
         Err(e) => {
-            log::debug!(
+            tracing::debug!(
                 "Did not export engine config (Error or dialog dismissed by user), Err: {e:?}"
             );
         }

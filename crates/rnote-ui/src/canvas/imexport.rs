@@ -77,22 +77,10 @@ impl RnCanvas {
         bytes: Vec<u8>,
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
-        let pos = target_pos.unwrap_or_else(|| {
-            self.engine_ref()
-                .camera
-                .transform()
-                .inverse()
-                .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
-                .coords
-                .maxs(&na::vector![
-                    self.engine_ref().document.x,
-                    self.engine_ref().document.y
-                ])
-        });
+        let pos = self.determine_stroke_import_pos(target_pos);
 
-        // we need the split the import operation between generate_vectorimage_from_bytes()
-        // which returns a receiver and import_generated_content(),
-        // to avoid borrowing the entire engine refcell while awaiting the generated stroke
+        // Splitting the import operation into two parts: a receiver that gets awaited with the content, and
+        // the blocking import avoids borrowing the entire engine RefCell while awaiting the content, avoiding panics.
         let vectorimage_receiver = self
             .engine_mut()
             .generate_vectorimage_from_bytes(pos, bytes);
@@ -113,24 +101,12 @@ impl RnCanvas {
         bytes: Vec<u8>,
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
-        let pos = target_pos.unwrap_or_else(|| {
-            self.engine_ref()
-                .camera
-                .transform()
-                .inverse()
-                .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
-                .coords
-                .maxs(&na::vector![
-                    self.engine_ref().document.x,
-                    self.engine_ref().document.y
-                ])
-        });
+        let pos = self.determine_stroke_import_pos(target_pos);
 
         let bitmapimage_receiver = self
             .engine_mut()
             .generate_bitmapimage_from_bytes(pos, bytes);
         let bitmapimage = bitmapimage_receiver.await??;
-
         let widget_flags = self
             .engine_mut()
             .import_generated_content(vec![(Stroke::BitmapImage(bitmapimage), None)]);
@@ -148,24 +124,12 @@ impl RnCanvas {
         target_pos: Option<na::Vector2<f64>>,
         page_range: Option<Range<u32>>,
     ) -> anyhow::Result<()> {
-        let pos = target_pos.unwrap_or_else(|| {
-            self.engine_ref()
-                .camera
-                .transform()
-                .inverse()
-                .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
-                .coords
-                .maxs(&na::vector![
-                    self.engine_ref().document.x,
-                    self.engine_ref().document.y
-                ])
-        });
+        let pos = self.determine_stroke_import_pos(target_pos);
 
         let strokes_receiver = self
             .engine_mut()
             .generate_pdf_pages_from_bytes(bytes, pos, page_range);
         let strokes = strokes_receiver.await??;
-
         let widget_flags = self.engine_mut().import_generated_content(strokes);
 
         self.emit_handle_widget_flags(widget_flags);
@@ -180,19 +144,10 @@ impl RnCanvas {
         text: String,
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
-        let pos = target_pos.unwrap_or_else(|| {
-            self.engine_ref()
-                .camera
-                .transform()
-                .inverse()
-                .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
-                .coords
-                .maxs(&na::vector![
-                    self.engine_ref().document.x,
-                    self.engine_ref().document.y
-                ])
-        });
+        let pos = self.determine_stroke_import_pos(target_pos);
+
         let widget_flags = self.engine_mut().insert_text(text, Some(pos));
+
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
     }
@@ -203,30 +158,19 @@ impl RnCanvas {
     pub(crate) async fn insert_stroke_content(&self, json_string: String) -> anyhow::Result<()> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<StrokeContent>>();
+        let pos = self.determine_stroke_import_pos(None);
 
         rayon::spawn(move || {
             let result = || -> Result<StrokeContent, anyhow::Error> {
                 Ok(serde_json::from_str(&json_string)?)
             };
             if oneshot_sender.send(result()).is_err() {
-                log::error!(
-                    "sending result to receiver while inserting stroke content failed. Receiver already dropped."
+                tracing::error!(
+                    "Sending result to receiver while inserting stroke content failed. Receiver already dropped."
                 );
             }
         });
         let content = oneshot_receiver.await??;
-        let pos = self
-            .engine_ref()
-            .camera
-            .transform()
-            .inverse()
-            .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
-            .coords
-            .maxs(&na::vector![
-                self.engine_ref().document.x,
-                self.engine_ref().document.y
-            ]);
-
         let widget_flags = self.engine_mut().insert_stroke_content(content, pos);
 
         self.emit_handle_widget_flags(widget_flags);
@@ -240,7 +184,7 @@ impl RnCanvas {
     pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<bool> {
         // skip saving when it is already in progress
         if self.save_in_progress() {
-            log::debug!("Saving file already in progress.");
+            tracing::debug!("Saving file already in progress.");
             return Ok(false);
         }
         let file_path = file
@@ -384,5 +328,23 @@ impl RnCanvas {
         self.set_last_export_dir(file.parent());
 
         Ok(())
+    }
+
+    fn determine_stroke_import_pos(
+        &self,
+        target_pos: Option<na::Vector2<f64>>,
+    ) -> na::Vector2<f64> {
+        target_pos.unwrap_or_else(|| {
+            self.engine_ref()
+                .camera
+                .transform()
+                .inverse()
+                .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
+                .coords
+                .maxs(&na::vector![
+                    self.engine_ref().document.x,
+                    self.engine_ref().document.y
+                ])
+        })
     }
 }

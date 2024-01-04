@@ -2,7 +2,7 @@
 use crate::document::Layout;
 use crate::engine::{EngineTask, EngineTaskSender};
 use crate::tasks::{OneOffTaskError, OneOffTaskHandle};
-use crate::{Document, WidgetFlags};
+use crate::{CloneConfig, Document, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use serde::{Deserialize, Serialize};
@@ -59,6 +59,17 @@ impl Default for Camera {
     }
 }
 
+impl CloneConfig for Camera {
+    fn clone_config(&self) -> Self {
+        Self {
+            offset: self.offset,
+            size: self.size,
+            zoom: self.zoom,
+            ..Default::default()
+        }
+    }
+}
+
 impl Camera {
     pub const ZOOM_MIN: f64 = 0.2;
     pub const ZOOM_MAX: f64 = 6.0;
@@ -69,15 +80,6 @@ impl Camera {
     pub const DRAG_ZOOM_MAGN_ZOOM_FACTOR: f64 = 0.005;
     pub const OVERSHOOT_HORIZONTAL: f64 = 96.0;
     pub const OVERSHOOT_VERTICAL: f64 = 96.0;
-
-    pub fn clone_config(&self) -> Self {
-        Self {
-            offset: self.offset,
-            size: self.size,
-            zoom: self.zoom,
-            ..Default::default()
-        }
-    }
 
     pub fn with_zoom(mut self, zoom: f64) -> Self {
         self.zoom = zoom.clamp(Self::ZOOM_MIN, Self::ZOOM_MAX);
@@ -106,7 +108,7 @@ impl Camera {
             offset[1].clamp(lower[1], upper[1])
         ];
 
-        widget_flags.update_view = true;
+        widget_flags.view_modified = true;
         widget_flags.resize = true;
         widget_flags
     }
@@ -150,7 +152,7 @@ impl Camera {
         let mut widget_flags = WidgetFlags::default();
         self.size = size;
 
-        widget_flags.update_view = true;
+        widget_flags.view_modified = true;
         widget_flags.resize = true;
         widget_flags
     }
@@ -203,7 +205,7 @@ impl Camera {
                     reinstall_zoom_task = true;
                 }
                 Err(e) => {
-                    log::error!("Could not replace task for one off zoom task, Err: {e:?}");
+                    tracing::error!("Could not replace task for one off zoom task, Err: {e:?}");
                     reinstall_zoom_task = true;
                 }
             }
@@ -258,7 +260,7 @@ impl Camera {
     pub fn set_viewport_center(&mut self, center: na::Vector2<f64>) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         self.offset = center * self.total_zoom() - self.size * 0.5;
-        widget_flags.update_view = true;
+        widget_flags.view_modified = true;
         widget_flags.resize = true;
         widget_flags
     }

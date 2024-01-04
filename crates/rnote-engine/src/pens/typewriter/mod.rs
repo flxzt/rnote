@@ -423,7 +423,7 @@ impl PenBehaviour for Typewriter {
         }
 
         if sender.send(Ok((clipboard_content, widget_flags))).is_err() {
-            log::error!(
+            tracing::error!(
                 "Sending fetched typewriter clipboard content failed, receiver already dropped."
             );
         }
@@ -478,7 +478,7 @@ impl PenBehaviour for Typewriter {
                                 engine_view.camera.image_scale(),
                             );
                             widget_flags |= engine_view
-                                .doc
+                                .document
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             // Back to modifying state
@@ -507,7 +507,7 @@ impl PenBehaviour for Typewriter {
         self.reset_blink();
 
         if sender.send(Ok((clipboard_content, widget_flags))).is_err() {
-            log::error!(
+            tracing::error!(
                 "Sending cut typewriter clipboard content failed, receiver already dropped."
             );
         }
@@ -716,7 +716,7 @@ impl Typewriter {
                             engine_view.camera.image_scale(),
                         );
                         widget_flags |= engine_view
-                            .doc
+                            .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
@@ -742,7 +742,7 @@ impl Typewriter {
                             engine_view.camera.image_scale(),
                         );
                         widget_flags |= engine_view
-                            .doc
+                            .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         widget_flags |= engine_view.store.record(Instant::now());
@@ -883,7 +883,7 @@ impl Typewriter {
     fn reset_blink(&mut self) {
         if let Some(handle) = &mut self.blink_task_handle {
             if let Err(e) = handle.skip() {
-                log::error!("Skipping blink task failed, Err: {e:?}");
+                tracing::error!("Skipping blink task failed, Err: {e:?}");
             }
         }
         self.cursor_visible = true;

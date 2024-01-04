@@ -32,22 +32,37 @@
     <screenshot type="default">
       <image>
         https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/overview.png</image>
-      <caption>An Overview</caption>
+      <caption>An overview</caption>
     </screenshot>
     <screenshot>
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/lecture_note_1.png</image>
-      <caption>Lecture Note 1</caption>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/selection.png</image>
+      <caption>A selection</caption>
     </screenshot>
     <screenshot>
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/pdf_annotation.png</image>
-      <caption>A Pdf annotation</caption>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/typewriter.png</image>
+      <caption>Write text with the typewriter</caption>
     </screenshot>
     <screenshot>
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/lecture_note_2.png</image>
-      <caption>Lecture Note 2</caption>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/focus-mode.png</image>
+      <caption>Hide toolbars with the focus mode</caption>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/workspaces.png</image>
+      <caption>Quickly access files through workspace</caption>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/document-settings.png</image>
+      <caption>Adjust document settings</caption>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/action-shortcuts.png</image>
+      <caption>Configure action shortcuts</caption>
     </screenshot>
   </screenshots>
 

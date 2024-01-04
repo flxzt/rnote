@@ -48,8 +48,10 @@ impl Selector {
                     element,
                 );
                 // possibly nudge camera
-                widget_flags |= engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
-                widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
+                widget_flags |= engine_view
+                    .camera
+                    .nudge_w_pos(element.pos, engine_view.document);
+                widget_flags |= engine_view.document.expand_autoexpand(engine_view.camera);
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
                     engine_view.tasks_tx.clone(),
                     false,
@@ -194,7 +196,7 @@ impl Selector {
                         };
 
                         let offset = engine_view
-                            .doc
+                            .document
                             .snap_position(snap_corner_pos + (element.pos - *current_pos))
                             - snap_corner_pos;
 
@@ -211,9 +213,10 @@ impl Selector {
                         }
 
                         // possibly nudge camera
-                        widget_flags |=
-                            engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
-                        widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
+                        widget_flags |= engine_view
+                            .camera
+                            .nudge_w_pos(element.pos, engine_view.document);
+                        widget_flags |= engine_view.document.expand_autoexpand(engine_view.camera);
                         engine_view.store.regenerate_rendering_in_viewport_threaded(
                             engine_view.tasks_tx.clone(),
                             false,
@@ -289,7 +292,7 @@ impl Selector {
                         };
                         let start_offset = if !lock_aspectratio {
                             engine_view
-                                .doc
+                                .document
                                 .snap_position(snap_corner_pos + (element.pos - *start_pos))
                                 - snap_corner_pos
                         } else {
@@ -335,9 +338,10 @@ impl Selector {
                             .translate(pivot);
 
                         // possibly nudge camera
-                        widget_flags |=
-                            engine_view.camera.nudge_w_pos(element.pos, engine_view.doc);
-                        widget_flags |= engine_view.doc.expand_autoexpand(engine_view.camera);
+                        widget_flags |= engine_view
+                            .camera
+                            .nudge_w_pos(element.pos, engine_view.document);
+                        widget_flags |= engine_view.document.expand_autoexpand(engine_view.camera);
                         engine_view.store.regenerate_rendering_in_viewport_threaded(
                             engine_view.tasks_tx.clone(),
                             false,
@@ -462,7 +466,7 @@ impl Selector {
                     | ModifyState::Resize { .. } => {
                         engine_view.store.update_geometry_for_strokes(selection);
                         widget_flags |= engine_view
-                            .doc
+                            .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);
                         engine_view.store.regenerate_rendering_in_viewport_threaded(
                             engine_view.tasks_tx.clone(),

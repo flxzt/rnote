@@ -13,7 +13,7 @@ build_environment_path = sys.argv[3]
 app_name = sys.argv[4]
 app_name_capitalized = sys.argv[5]
 app_id = sys.argv[6]
-app_output = sys.argv[7]
+ui_output = sys.argv[7]
 inno_script = sys.argv[8]
 
 print(f"""
@@ -24,7 +24,7 @@ print(f"""
     app_name: {app_name}
     app_name_capitalized: {app_name_capitalized}
     app_id: {app_id}
-    app_output: {app_output}
+    ui_output: {ui_output}
     inno_script: {inno_script}
 """, file=sys.stderr)
 
@@ -47,7 +47,7 @@ os.mkdir(dlls_dir)
 
 # Don't use os.path.join here, because that uses the wrong separators which breaks wildcard expansion.
 run_command(
-    f"ldd {build_root}/{app_output} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+    f"ldd {build_root}/{ui_output} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
     "Collecting app DLLs failed"
 )
 

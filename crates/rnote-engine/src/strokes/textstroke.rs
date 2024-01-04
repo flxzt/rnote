@@ -472,7 +472,7 @@ impl Shapeable for TextStroke {
         {
             Ok(text_layout) => text_layout,
             Err(e) => {
-                log::error!(
+                tracing::error!(
                     "Building text layout failed while calculating the hitboxes, Err: {e:?}"
                 );
                 return vec![self.bounds()];

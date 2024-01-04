@@ -200,7 +200,7 @@ impl PenBehaviour for Selector {
                 Ok((clipboard_content, widget_flags))
             };
             if sender.send(result()).is_err() {
-                log::error!(
+                tracing::error!(
                     "Sending fetched selector clipboard content failed, receiver already dropped."
                 );
             }
@@ -261,7 +261,7 @@ impl PenBehaviour for Selector {
                 Ok((clipboard_content, widget_flags))
             };
             if sender.send(result()).is_err() {
-                log::error!(
+                tracing::error!(
                     "Sending cut selector clipboard content failed, receiver already dropped."
                 );
             }
@@ -420,7 +420,7 @@ impl DrawableOnDoc for Selector {
                 // Draw the highlight for the selected strokes
                 for stroke in engine_view.store.get_strokes_ref(selection) {
                     if let Err(e) = stroke.draw_highlight(cx, engine_view.camera.total_zoom()) {
-                        log::error!("Failed to draw stroke highlight, Err: {e:?}");
+                        tracing::error!("Failed to draw stroke highlight, Err: {e:?}");
                     }
                 }
 
@@ -774,7 +774,7 @@ impl Selector {
             if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&all_strokes) {
                 engine_view.store.set_selected_keys(&all_strokes, true);
                 *widget_flags |= engine_view
-                    .doc
+                    .document
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = SelectorState::ModifySelection {

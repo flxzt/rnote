@@ -8,34 +8,39 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-27 15:53+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-01-06 10:06+0000\n"
+"Last-Translator: tezz karki <ngr112001@gmail.com>\n"
+"Language-Team: Nepali <https://hosted.weblate.org/projects/rnote/repo/ne/>\n"
 "Language: ne\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
 #: crates/rnote-ui/src/dialogs/mod.rs:35
 msgid "Sketch and take handwritten notes"
-msgstr ""
+msgstr "चित्र र हस्तलिखित नोटहरू लिनुहोस्"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:15
+#, fuzzy
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr ""
+msgstr "गिनोम;जि टि के;कार्यालय;ग्राफिक्स;नोटहरू;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
-msgstr ""
+msgstr "नयाँ विन्डो"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
+"आरनोट भेक्टरमा आधारित रेखाचित्र एप हो, जसमा स्केचिङ, हस्तलिखित नोटहरू, र "
+"दस्तावेज र तस्वीरहरूमा टिप्पणी गर्नका लागि प्रयुक्त हुन्छ।"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""

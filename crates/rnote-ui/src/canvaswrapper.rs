@@ -1,10 +1,10 @@
 // Imports
 use crate::{RnAppWindow, RnCanvas, RnContextMenu};
 use gtk4::{
-    gdk, gdk::Rectangle, glib, glib::clone, graphene, prelude::*, subclass::prelude::*,
-    CompositeTemplate, CornerType, EventControllerMotion, EventControllerScroll,
-    EventControllerScrollFlags, EventSequenceState, GestureDrag, GestureLongPress, GestureZoom,
-    PropagationPhase, ScrolledWindow, Widget,
+    gdk, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, CompositeTemplate,
+    CornerType, EventControllerMotion, EventControllerScroll, EventControllerScrollFlags,
+    EventSequenceState, GestureDrag, GestureLongPress, GestureZoom, PropagationPhase,
+    ScrolledWindow, Widget,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::penevent::ShortcutKey;
@@ -622,7 +622,7 @@ mod imp {
                     clone!(@weak obj as canvaswrapper => move |_gesture, x, y| {
                         let popover = canvaswrapper.contextmenu().popover();
                         canvaswrapper.imp().last_contextmenu_pos.set(Some(na::vector![x, y]));
-                        popover.set_pointing_to(Some(&Rectangle::new(x as i32, y as i32, 0, 0)));
+                        popover.set_pointing_to(Some(&gdk::Rectangle::new(x as i32, y as i32, 0, 0)));
                         popover.popup();
                     }),
                 );

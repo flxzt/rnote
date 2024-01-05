@@ -16,7 +16,7 @@
           </item>
           <item>
             <attribute name="label" translatable="yes">_Paste</attribute>
-            <attribute name="action">win.clipboard-paste</attribute>
+            <attribute name="action">win.clipboard-paste-contextmenu</attribute>
           </item>
         </menu>
       </object>

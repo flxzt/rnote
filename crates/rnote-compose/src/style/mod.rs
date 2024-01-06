@@ -16,7 +16,9 @@ use self::smooth::SmoothOptions;
 use self::textured::TexturedOptions;
 
 // Imports
-use crate::shapes::{Arrow, CubicBezier, Ellipse, Line, Polyline, QuadraticBezier, Rectangle};
+use crate::shapes::{
+    Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle,
+};
 use crate::{Color, PenPath, Shape};
 use anyhow::Context;
 pub use composer::Composer;
@@ -243,6 +245,24 @@ impl Composer<Style> for Polyline {
     }
 }
 
+impl Composer<Style> for Polygon {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
+        match options {
+            Style::Smooth(options) => self.composed_bounds(options),
+            Style::Rough(options) => self.composed_bounds(options),
+            Style::Textured(_options) => unimplemented!(),
+        }
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &Style) {
+        match options {
+            Style::Smooth(options) => self.draw_composed(cx, options),
+            Style::Rough(options) => self.draw_composed(cx, options),
+            Style::Textured(_options) => unimplemented!(),
+        }
+    }
+}
+
 impl Composer<Style> for PenPath {
     fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match options {
@@ -271,6 +291,7 @@ impl Composer<Style> for Shape {
             Shape::QuadraticBezier(quadratic_bezier) => quadratic_bezier.composed_bounds(options),
             Shape::CubicBezier(cubic_bezier) => cubic_bezier.composed_bounds(options),
             Shape::Polyline(polyline) => polyline.composed_bounds(options),
+            Shape::Polygon(polygon) => polygon.composed_bounds(options),
         }
     }
 
@@ -283,6 +304,7 @@ impl Composer<Style> for Shape {
             Shape::QuadraticBezier(quadratic_bezier) => quadratic_bezier.draw_composed(cx, options),
             Shape::CubicBezier(cubic_bezier) => cubic_bezier.draw_composed(cx, options),
             Shape::Polyline(polyline) => polyline.draw_composed(cx, options),
+            Shape::Polygon(polygon) => polygon.draw_composed(cx, options),
         }
     }
 }

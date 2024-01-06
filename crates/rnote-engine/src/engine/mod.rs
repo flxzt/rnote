@@ -14,6 +14,7 @@ pub use import::ImportPrefs;
 pub use snapshot::EngineSnapshot;
 pub use strokecontent::StrokeContent;
 
+use crate::badapple::BadApplePlayer;
 // Imports
 use crate::document::Layout;
 use crate::pens::{Pen, PenStyle};
@@ -101,6 +102,8 @@ pub enum EngineTask {
     },
     /// Requests that the typewriter cursor should be blinked/toggled
     BlinkTypewriterCursor,
+    /// Advances a bad apple frame
+    AdvanceBadAppleFrame,
     /// Change the permanent zoom to the given value
     Zoom(f64),
     /// Indicates that the application is quitting. Sent to quit the handler which receives the tasks.
@@ -185,6 +188,8 @@ pub struct Engine {
     #[cfg(feature = "ui")]
     #[serde(skip)]
     background_rendernodes: Vec<gtk4::gsk::RenderNode>,
+    #[serde(skip)]
+    bad_apple_player: Option<BadApplePlayer>,
 }
 
 impl Default for Engine {
@@ -208,6 +213,7 @@ impl Default for Engine {
             background_tile_image: None,
             #[cfg(feature = "ui")]
             background_rendernodes: Vec::default(),
+            bad_apple_player: None,
         }
     }
 }
@@ -446,6 +452,28 @@ impl Engine {
                 widget_flags |= self.doc_resize_autoexpand()
                     | self.background_regenerate_pattern()
                     | self.update_rendering_current_viewport();
+            }
+            EngineTask::AdvanceBadAppleFrame => {
+                let mut take_player = false;
+                if let Some(player) = self.bad_apple_player.as_mut() {
+                    match player.advance_frame(&mut self.store) {
+                        Ok(true) => {}
+                        Ok(false) => {
+                            player.stop(&mut self.store);
+                            take_player = true;
+                        }
+                        Err(e) => tracing::error!("Advancing bad apple frame failed, Err: {e:?}"),
+                    }
+                    self.store.regenerate_rendering_for_strokes(
+                        &player.stroke_keys(),
+                        self.camera.viewport(),
+                        self.camera.image_scale(),
+                    );
+                    widget_flags.redraw = true;
+                }
+                if take_player {
+                    self.bad_apple_player.take();
+                }
             }
             EngineTask::Quit => {
                 widget_flags |= self.set_active(false);
@@ -953,5 +981,17 @@ impl Engine {
             )
         }
         widget_flags
+    }
+
+    pub fn play_bad_apple(&mut self, pkg_data_dir: PathBuf) -> anyhow::Result<()> {
+        let mut player = BadApplePlayer::new(
+            2.0,
+            self.camera.viewport().mins.coords + na::vector![100., 100.],
+            pkg_data_dir,
+            self.engine_tasks_tx(),
+        )?;
+        player.play()?;
+        self.bad_apple_player = Some(player);
+        Ok(())
     }
 }

@@ -47,6 +47,8 @@ piet = { workspace = true }
 piet-cairo = { workspace = true }
 roughr = { workspace = true }
 rough_piet = { workspace = true }
+visioncortex = { workspace = true }
+vtracer = { workspace = true }
 rodio = { workspace = true }
 glib = { workspace = true }
 gio = { workspace = true }

@@ -59,6 +59,8 @@ impl RnAppWindow {
         let action_debug_export_engine_config =
             gio::SimpleAction::new("debug-export-engine-config", None);
         self.add_action(&action_debug_export_engine_config);
+        let action_play_bad_apple = gio::SimpleAction::new("play-bad-apple", None);
+        self.add_action(&action_play_bad_apple);
         let action_righthanded = gio::PropertyAction::new("righthanded", self, "righthanded");
         self.add_action(&action_righthanded);
         let action_touch_drawing = gio::PropertyAction::new("touch-drawing", self, "touch-drawing");
@@ -277,6 +279,22 @@ impl RnAppWindow {
                 }));
             }),
         );
+
+        // Play bad apple
+        action_play_bad_apple.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            let canvas = appwindow.active_tab_wrapper().canvas();
+            let pkg_data_dir = match crate::env::pkg_data_dir() {
+                Ok(d) => d,
+                Err(e) => {
+                    tracing::error!("Failed to retrieve pkg-data-dir, Err: {e:?}");
+                    return;
+                }
+            };
+            let mut engine = canvas.engine_mut();
+            if let Err(e) = engine.play_bad_apple(pkg_data_dir) {
+                tracing::error!("Failed to start playing bad apple, Err: {e:?}");
+            }
+        }));
 
         // Doc layout
         action_doc_layout.connect_activate(

@@ -66,3 +66,6 @@ fonts_files = files(
 
 # install fonts
 install_data(fonts_files, install_dir: datadir / 'fonts' / app_name + '-fonts')
+
+# install bad apple files
+install_subdir('bad-apple', install_dir: pkgdatadir)

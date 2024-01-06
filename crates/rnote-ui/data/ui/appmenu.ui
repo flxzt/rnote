@@ -60,6 +60,10 @@
                 <attribute name="label" translatable="yes">Export Engine _Config</attribute>
                 <attribute name="action">win.debug-export-engine-config</attribute>
               </item>
+              <item>
+                <attribute name="label" translatable="yes">Play Bad Apple!!</attribute>
+                <attribute name="action">win.play-bad-apple</attribute>
+              </item>
             </section>
           </submenu>
         </section>

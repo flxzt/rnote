@@ -10,6 +10,7 @@
 
 // Modules
 pub mod audioplayer;
+pub mod badapple;
 pub mod camera;
 pub mod cloneconfig;
 pub mod document;

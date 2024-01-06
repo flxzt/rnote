@@ -53,6 +53,7 @@ rnote_engine_sources = files(
     'strokes/content.rs',
     'strokes/vectorimage.rs',
     'audioplayer.rs',
+    'badapple/mod.rs',
     'camera.rs',
     'cloneconfig.rs',
     'drawable.rs',

@@ -61,6 +61,8 @@ piet = "0.6"
 piet-cairo = "0.6"
 roughr = "0.6"
 rough_piet = "0.6"
+visioncortex = "0.8"
+vtracer = "0.6"
 palette = "0.7.3"
 rodio = { version = "0.17", default-features = false, features = ["symphonia-wav"] }
 winresource = "0.1"

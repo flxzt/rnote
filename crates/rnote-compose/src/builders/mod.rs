@@ -12,6 +12,7 @@ mod linebuilder;
 mod penpathcurvedbuilder;
 mod penpathmodeledbuilder;
 mod penpathsimplebuilder;
+mod polygonbuilder;
 mod polylinebuilder;
 mod quadbezbuilder;
 mod quadrantcoordsystem2dbuilder;
@@ -29,6 +30,7 @@ pub use linebuilder::LineBuilder;
 pub use penpathcurvedbuilder::PenPathCurvedBuilder;
 pub use penpathmodeledbuilder::PenPathModeledBuilder;
 pub use penpathsimplebuilder::PenPathSimpleBuilder;
+pub use polygonbuilder::PolygonBuilder;
 pub use polylinebuilder::PolylineBuilder;
 pub use quadbezbuilder::QuadBezBuilder;
 pub use quadrantcoordsystem2dbuilder::QuadrantCoordSystem2DBuilder;
@@ -80,6 +82,9 @@ pub enum ShapeBuilderType {
     /// A poyline builder
     #[serde(rename = "polyline")]
     Polyline,
+    /// A polygon builder
+    #[serde(rename = "polygon")]
+    Polygon,
 }
 
 impl ShapeBuilderType {
@@ -98,6 +103,7 @@ impl ShapeBuilderType {
             "shapebuilder-quadbez-symbolic" => Some(Self::QuadBez),
             "shapebuilder-cubbez-symbolic" => Some(Self::CubBez),
             "shapebuilder-polyline-symbolic" => Some(Self::Polyline),
+            "shapebuilder-polygon-symbolic" => Some(Self::Polygon),
             _ => None,
         }
     }
@@ -119,6 +125,7 @@ impl ShapeBuilderType {
             Self::QuadBez => String::from("shapebuilder-quadbez-symbolic"),
             Self::CubBez => String::from("shapebuilder-cubbez-symbolic"),
             Self::Polyline => String::from("shapebuilder-polyline-symbolic"),
+            Self::Polygon => String::from("shapebuilder-polygon-symbolic"),
         }
     }
 }

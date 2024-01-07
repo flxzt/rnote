@@ -245,15 +245,15 @@ Results in the best looking handwriting.</property>
               </child>
               <child>
                 <object class="AdwComboRow" id="texturedstyle_distribution_row">
-                  <property name="title" translatable="yes">Stroke Dots Position Distribution</property>
+                  <property name="title" translatable="yes" context="Drawing with a textured pen, how the dots of the texture are distributed">Stroke Dots Position Distribution</property>
                   <property name="subtitle" translatable="yes">Choose a dots position probability distribution</property>
                   <property name="model">
                     <object class="GtkStringList">
                       <items>
-                        <item translatable="yes">Uniform</item>
-                        <item translatable="yes">Normal</item>
-                        <item translatable="yes">Exponential</item>
-                        <item translatable="yes">Reverse Exponential</item>
+                        <item translatable="yes" context="A variant of the textured pen texture distribution">Uniform</item>
+                        <item translatable="yes" context="A variant of the textured pen texture distribution">Normal</item>
+                        <item translatable="yes" context="A variant of the textured pen texture distribution">Exponential</item>
+                        <item translatable="yes" context="A variant of the textured pen texture distribution">Reverse Exponential</item>
                       </items>
                     </object>
                   </property>

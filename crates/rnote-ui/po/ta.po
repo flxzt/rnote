@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-27 15:53+0100\n"
+"POT-Creation-Date: 2024-01-07 18:37+0100\n"
 "PO-Revision-Date: 2023-12-07 16:05+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -374,6 +374,10 @@ msgid "Select the export directory"
 msgstr "ஏற்றுமதி கோப்பகத்தைத் தேர்ந்தெடுக்கவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
+#, fuzzy
+#| msgid "Export Files Stem Name"
+msgctxt ""
+"When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
 msgstr "கோப்புகளின் தண்டு பெயரை ஏற்றுமதி செய்யவும்"
 
@@ -644,6 +648,10 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "அடர்த்தி என்பது 10x10 பகுதிக்கு உள்ள புள்ளிகளின் அளவு"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
+#, fuzzy
+#| msgid "Stroke Dots Position Distribution"
+msgctxt ""
+"Drawing with a textured pen, how the dots of the texture are distributed"
 msgid "Stroke Dots Position Distribution"
 msgstr "பக்கவாதம் புள்ளிகளின் நிலைப் பரவல்"
 
@@ -652,18 +660,30 @@ msgid "Choose a dots position probability distribution"
 msgstr "புள்ளிகளின் நிலை நிகழ்தகவுப் பரவலைத் தேர்வு செய்யவும்"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
+#, fuzzy
+#| msgid "Uniform"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
 msgstr "சீருடை"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
+#, fuzzy
+#| msgid "Normal"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
 msgstr "சாதாரண"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
+#, fuzzy
+#| msgid "Exponential"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
 msgstr "அதிவேக"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
+#, fuzzy
+#| msgid "Reverse Exponential"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
 msgstr "தலைகீழ் அதிவேக"
 
@@ -1407,7 +1427,7 @@ msgid "Lines"
 msgstr "கோடுகள்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:299
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "Grid"
 msgstr "கட்டம்"
 
@@ -1709,7 +1729,7 @@ msgstr "பணியிட அடைவு செயல்கள்"
 msgid "Create new Folder"
 msgstr "புதிய கோப்புறையை உருவாக்கவும்"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:588
+#: crates/rnote-ui/src/appwindow/actions.rs:596
 #: crates/rnote-ui/src/appwindow/imp.rs:248
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:126
@@ -1718,11 +1738,11 @@ msgstr "புதிய கோப்புறையை உருவாக்க�
 msgid "Saving document failed"
 msgstr "ஆவணத்தைச் சேமிப்பதில் தோல்வி"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:651
+#: crates/rnote-ui/src/appwindow/actions.rs:659
 msgid "Printing document failed"
 msgstr "ஆவணத்தை அச்சிட முடியவில்லை"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:687
+#: crates/rnote-ui/src/appwindow/actions.rs:695
 msgid "Exporting selection failed, nothing selected"
 msgstr "தேர்வை ஏற்றுமதி செய்வதில் தோல்வி, எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 
@@ -2174,48 +2194,54 @@ msgstr "நீள்வட்டங்கள்"
 msgid "Curves & Paths"
 msgstr "வளைவுகள் மற்றும் பாதைகள்"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:425
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
 msgstr "அம்பு"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
 msgid "Line"
 msgstr "கோடு"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
 msgid "Rectangle"
 msgstr "செவ்வகம்"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
 msgid "2D coordinate system"
 msgstr "2D (இரு பரிமாண) ஒருங்கிணைப்பு அமைப்பு"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
 msgid "3D coordinate system"
 msgstr "3D (முப்பரிமாண) ஒருங்கிணைப்பு அமைப்பு"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
 msgid "2D single quadrant coordinate system"
 msgstr "2D(இரு பரிமாண) ஒற்றை நாற்கர ஒருங்கிணைப்பு அமைப்பு"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
 msgid "Ellipse"
 msgstr "எலிப்ஸ்"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
 msgid "Ellipse with foci"
 msgstr "குவியத்துடன் கூடிய நீள்வட்டம்"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
 msgid "Quadratic bezier curve"
 msgstr "இருபடி பெஜியர் வளைவு"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
 msgid "Cubic bezier curve"
 msgstr "க்யூபிக் பெஜியர் வளைவு"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
+msgstr "பாலிலைன்"
+
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:438
+#, fuzzy
+#| msgid "Polyline"
+msgid "Polygon"
 msgstr "பாலிலைன்"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:536

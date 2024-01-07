@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-27 15:53+0100\n"
+"POT-Creation-Date: 2024-01-07 18:37+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Macedonian <https://hosted.weblate.org/projects/rnote/repo/mk/"
@@ -420,6 +420,8 @@ msgstr "Одбери ја ширината на формата"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
 #, fuzzy
 #| msgid "Export engine state"
+msgctxt ""
+"When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
 msgstr "Извади ја внатрешната состојба на програмот"
 
@@ -730,6 +732,8 @@ msgstr "Густината е бројот на точки на површина
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
 #, fuzzy
 #| msgid "Stroke dots position distribution"
+msgctxt ""
+"Drawing with a textured pen, how the dots of the texture are distributed"
 msgid "Stroke Dots Position Distribution"
 msgstr "Позиционен распоред на цртежните точки"
 
@@ -738,18 +742,30 @@ msgid "Choose a dots position probability distribution"
 msgstr "Одбери веројатносен распоред на позицијата на точките"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
+#, fuzzy
+#| msgid "Uniform"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
 msgstr "Воедначено"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
+#, fuzzy
+#| msgid "Normal"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
 msgstr "Нормално"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
+#, fuzzy
+#| msgid "Exponential"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
 msgstr "Експоненцијално"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
+#, fuzzy
+#| msgid "Reverse Exponential"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
 msgstr "Обратно експоненцијално"
 
@@ -1657,7 +1673,7 @@ msgid "Lines"
 msgstr "Линии"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:299
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "Grid"
 msgstr "Мрежа"
 
@@ -2021,7 +2037,7 @@ msgstr "Акции за работна папка"
 msgid "Create new Folder"
 msgstr "Создај папка"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:588
+#: crates/rnote-ui/src/appwindow/actions.rs:596
 #: crates/rnote-ui/src/appwindow/imp.rs:248
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:126
@@ -2032,11 +2048,11 @@ msgstr "Создај папка"
 msgid "Saving document failed"
 msgstr "Зачувувањето на документот беше неуспешно."
 
-#: crates/rnote-ui/src/appwindow/actions.rs:651
+#: crates/rnote-ui/src/appwindow/actions.rs:659
 msgid "Printing document failed"
 msgstr "Печатењето на документот беше неуспешно"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:687
+#: crates/rnote-ui/src/appwindow/actions.rs:695
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Exporting selection failed, nothing selected"
@@ -2562,48 +2578,52 @@ msgstr "Елипса"
 msgid "Curves & Paths"
 msgstr "Закривено"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:425
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
 msgid "Line"
 msgstr "Линија"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
 msgid "Rectangle"
 msgstr "Правоаголник"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
 msgid "2D coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
 msgid "3D coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
 msgid "2D single quadrant coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
 msgid "Ellipse"
 msgstr "Елипса"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
 msgid "Ellipse with foci"
 msgstr "Елипса со фокус"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
 msgid "Quadratic bezier curve"
 msgstr "Квадратна безиерна кривула"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
 msgid "Cubic bezier curve"
 msgstr "Кубна безиерна кривула"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
+msgstr ""
+
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:438
+msgid "Polygon"
 msgstr ""
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:536

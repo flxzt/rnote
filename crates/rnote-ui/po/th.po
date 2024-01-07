@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-27 15:53+0100\n"
+"POT-Creation-Date: 2024-01-07 18:37+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -413,6 +413,8 @@ msgstr "ตั้งความกว้างของหน้ากระด
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
 #, fuzzy
 #| msgid "Export engine state"
+msgctxt ""
+"When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
 msgstr "ส่งออกสภาพของเอนจิน"
 
@@ -719,6 +721,8 @@ msgstr "ความหนาแน่น คือ จำนวนจุดต�
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
 #, fuzzy
 #| msgid "Stroke dots position distribution"
+msgctxt ""
+"Drawing with a textured pen, how the dots of the texture are distributed"
 msgid "Stroke Dots Position Distribution"
 msgstr "การกระจายตำแหน่งของจุดต่าง ๆ บนเส้น"
 
@@ -727,18 +731,30 @@ msgid "Choose a dots position probability distribution"
 msgstr "เลือกการกระจายตามความน่าจะเป็นในการจัดวางตำแหน่งของจุดต่าง ๆ"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
+#, fuzzy
+#| msgid "Uniform"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
 msgstr "แบบเดียวกันทั้งหมด"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
+#, fuzzy
+#| msgid "Normal"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
 msgstr "แบบปกติ"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
+#, fuzzy
+#| msgid "Exponential"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
 msgstr "แบบก้าวหน้า"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
+#, fuzzy
+#| msgid "Reverse Exponential"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
 msgstr "แบบก้าวหน้าย้อนกลับ"
 
@@ -1634,7 +1650,7 @@ msgid "Lines"
 msgstr "เส้นบรรทัด"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:299
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "Grid"
 msgstr "ตาราง"
 
@@ -1996,7 +2012,7 @@ msgstr "เปลี่ยนไดเรกทอรีของพื้นท
 msgid "Create new Folder"
 msgstr "ไดเรกทอรี"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:588
+#: crates/rnote-ui/src/appwindow/actions.rs:596
 #: crates/rnote-ui/src/appwindow/imp.rs:248
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:126
@@ -2007,11 +2023,11 @@ msgstr "ไดเรกทอรี"
 msgid "Saving document failed"
 msgstr "การบันทึกเอกสารล้มเหลว"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:651
+#: crates/rnote-ui/src/appwindow/actions.rs:659
 msgid "Printing document failed"
 msgstr "การพิมพ์เอกสารล้มเหลว"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:687
+#: crates/rnote-ui/src/appwindow/actions.rs:695
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Exporting selection failed, nothing selected"
@@ -2535,48 +2551,52 @@ msgstr "วงรี"
 msgid "Curves & Paths"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:425
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
 msgid "Line"
 msgstr "เส้นตรง"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
 msgid "Rectangle"
 msgstr "สี่เหลี่ยม"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
 msgid "2D coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
 msgid "3D coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
 msgid "2D single quadrant coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
 msgid "Ellipse"
 msgstr "วงรี"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
 msgid "Ellipse with foci"
 msgstr "วงรีด้วยจุดโฟกัส"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
 msgid "Quadratic bezier curve"
 msgstr "เส้นโค้งเบซิเยร์สองจังหวะ"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
 msgid "Cubic bezier curve"
 msgstr "เส้นโค้งเบซิเยร์สามจังหวะ"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
+msgstr ""
+
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:438
+msgid "Polygon"
 msgstr ""
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:536

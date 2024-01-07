@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-27 15:53+0100\n"
+"POT-Creation-Date: 2024-01-07 18:37+0100\n"
 "PO-Revision-Date: 2023-09-15 16:52+0000\n"
 "Last-Translator: יובל הרמן <nhajeho1@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
@@ -412,6 +412,8 @@ msgstr "הגדרת רוחב התצורה"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
 #, fuzzy
+msgctxt ""
+"When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
 msgstr "ייצוא גיליון"
 
@@ -707,6 +709,8 @@ msgstr "צפיפות היא כמות הנקודות לשטח של 10x10"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
 #, fuzzy
+msgctxt ""
+"Drawing with a textured pen, how the dots of the texture are distributed"
 msgid "Stroke Dots Position Distribution"
 msgstr "בחירת הסתברות התפלגות של מיקומי נקודות"
 
@@ -715,22 +719,29 @@ msgid "Choose a dots position probability distribution"
 msgstr "בחירת הסתברות התפלגות של מיקומי נקודות"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
+#, fuzzy
+#| msgid "Uniform"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
 msgstr "אחיד"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
 #, fuzzy
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
 msgstr "תצורה"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
 #, fuzzy
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
 msgstr "אקספוננציאלי"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
+#, fuzzy
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
-msgstr ""
+msgstr "אקספוננציאלי"
 
 #: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:21
 #, fuzzy
@@ -1571,7 +1582,7 @@ msgid "Lines"
 msgstr "קו"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:299
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "Grid"
 msgstr ""
 
@@ -1919,7 +1930,7 @@ msgstr "החלפת תיקיית סביבת עבודה"
 msgid "Create new Folder"
 msgstr "וקטור"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:588
+#: crates/rnote-ui/src/appwindow/actions.rs:596
 #: crates/rnote-ui/src/appwindow/imp.rs:248
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:126
@@ -1929,12 +1940,12 @@ msgstr "וקטור"
 msgid "Saving document failed"
 msgstr "שמירת הגיליון נכשלה"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:651
+#: crates/rnote-ui/src/appwindow/actions.rs:659
 #, fuzzy
 msgid "Printing document failed"
 msgstr "פתיחת הגיליון נכשלה"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:687
+#: crates/rnote-ui/src/appwindow/actions.rs:695
 #, fuzzy
 msgid "Exporting selection failed, nothing selected"
 msgstr "ייצוא הבחירה ל־SVG נכשל"
@@ -2425,48 +2436,52 @@ msgstr "אליפסה"
 msgid "Curves & Paths"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:425
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
 msgid "Line"
 msgstr "קו"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
 msgid "Rectangle"
 msgstr "מרובע"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
 msgid "2D coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
 msgid "3D coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
 msgid "2D single quadrant coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
 msgid "Ellipse"
 msgstr "אליפסה"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
 msgid "Ellipse with foci"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
 msgid "Quadratic bezier curve"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
 msgid "Cubic bezier curve"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
+msgstr ""
+
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:438
+msgid "Polygon"
 msgstr ""
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:536

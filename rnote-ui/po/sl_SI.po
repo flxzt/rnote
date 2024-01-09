@@ -286,8 +286,8 @@ msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
-"Nastavi faktor bitne slike relativno\n"
-"dejanski velikosti na dokumentu"
+"Nastavi faktor bitne slike glede\n"
+"na njeno velikost v dokumentu"
 
 #: rnote-ui/data/ui/dialogs/import.ui:220
 msgid "Import Xournal++ File"

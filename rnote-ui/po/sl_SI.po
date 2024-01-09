@@ -189,7 +189,7 @@ msgstr "Spremenite pot delovnega okolja"
 #: rnote-ui/src/dialogs/export.rs:346 rnote-ui/src/dialogs/export.rs:354
 #: rnote-ui/src/dialogs/mod.rs:512
 msgid "- no directory selected -"
-msgstr "- imenik ni izbran -"
+msgstr "- pot ni izbrana -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:181
 msgid "Change the directory"

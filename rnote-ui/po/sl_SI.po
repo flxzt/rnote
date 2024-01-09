@@ -59,7 +59,7 @@ msgstr "Opomba k predavanju 1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A Pdf annotation"
-msgstr "Pdf komentar"
+msgstr "Pdf opomba"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Lecture Note 2"

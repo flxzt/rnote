@@ -393,7 +393,7 @@ msgstr "Poimenovanje strani datotek:"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export Directory"
-msgstr "Imenik izvoza"
+msgstr "Lokacija izvoza"
 
 #: rnote-ui/data/ui/dialogs/export.ui:214
 msgid "Select the export directory"

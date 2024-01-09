@@ -178,7 +178,7 @@ msgstr "Spremenite barvo delovnega okolja"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:156
 msgid "Directory"
-msgstr "Imenik"
+msgstr "Mapa"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:157
 msgid "Change the workspace directory"

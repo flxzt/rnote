@@ -345,7 +345,7 @@ msgstr "Z ozadjem"
 #: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:257
 #: rnote-ui/data/ui/dialogs/export.ui:426
 msgid "Set whether the background should be exported"
-msgstr "Izberite, ali se naj ozadje izvozi"
+msgstr "Nastavite, ali se naj ozadje izvozi"
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436

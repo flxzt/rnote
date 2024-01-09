@@ -182,7 +182,7 @@ msgstr "Mapa"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:157
 msgid "Change the workspace directory"
-msgstr "Spremenite imenik delovnega okolja"
+msgstr "Spremenite pot delovnega okolja"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:166
 #: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:307

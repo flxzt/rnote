@@ -126,8 +126,6 @@ impl RnAppWindow {
         self.add_action(&action_selection_deselect_all);
         let action_clear_doc = gio::SimpleAction::new("clear-doc", None);
         self.add_action(&action_clear_doc);
-        let action_new_doc = gio::SimpleAction::new("new-doc", None);
-        self.add_action(&action_new_doc);
         let action_save_doc = gio::SimpleAction::new("save-doc", None);
         self.add_action(&action_save_doc);
         let action_save_doc_as = gio::SimpleAction::new("save-doc-as", None);
@@ -567,13 +565,6 @@ impl RnAppWindow {
             appwindow.handle_widget_flags(widget_flags, &canvas);
         }));
 
-        // New doc
-        action_new_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                dialogs::dialog_new_doc(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
-            }));
-        }));
-
         // Open doc
         action_open_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
@@ -939,7 +930,6 @@ impl RnAppWindow {
         app.set_accels_for_action("win.keyboard-shortcuts", &["<Ctrl>question"]);
         app.set_accels_for_action("win.open-canvasmenu", &["F9"]);
         app.set_accels_for_action("win.open-appmenu", &["F10"]);
-        app.set_accels_for_action("win.new-doc", &["<Ctrl>n"]);
         app.set_accels_for_action("win.open-doc", &["<Ctrl>o"]);
         app.set_accels_for_action("win.save-doc", &["<Ctrl>s"]);
         app.set_accels_for_action("win.save-doc-as", &["<Ctrl><Shift>s"]);

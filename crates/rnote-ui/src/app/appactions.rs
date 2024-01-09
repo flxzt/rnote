@@ -1,5 +1,5 @@
 // Imports
-use crate::RnApp;
+use crate::{RnApp, RnAppWindow};
 use adw::prelude::*;
 use gtk4::{gio, glib, glib::clone};
 
@@ -14,6 +14,10 @@ impl RnApp {
             &String::from("system").to_variant(),
         );
         self.add_action(&action_color_scheme);
+
+        let action_new_window = gio::SimpleAction::new("new-window", None);
+        self.add_action(&action_new_window);
+        self.set_accels_for_action("app.new-window", &["<Ctrl>n"]);
 
         action_color_scheme
             .bind_property("state", &self.style_manager(), "color-scheme")
@@ -46,6 +50,10 @@ impl RnApp {
                 app.quit();
             }
         }));
+
+        action_new_window.connect_activate(clone!(@weak self as app => move |_, _| {
+            app.new_appwindow_init_show();
+        }));
     }
 
     // Accelerators / Keyboard Shortcuts
@@ -53,3 +61,4 @@ impl RnApp {
         self.set_accels_for_action("app.quit", &["<Ctrl>q"]);
     }
 }
+

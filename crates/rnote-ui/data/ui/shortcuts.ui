@@ -17,6 +17,12 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Create a New Tab</property>
+                <property name="accelerator">&lt;ctrl&gt;t</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes">Close the Active Tab</property>
                 <property name="accelerator">&lt;ctrl&gt;w</property>
               </object>
@@ -146,7 +152,7 @@
             <property name="title" translatable="yes">Document</property>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes">New Document</property>
+                <property name="title" translatable="yes">New Window</property>
                 <property name="accelerator">&lt;ctrl&gt;n</property>
               </object>
             </child>

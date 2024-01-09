@@ -1,5 +1,5 @@
 // Imports
-use crate::{RnApp, RnAppWindow};
+use crate::RnApp;
 use adw::prelude::*;
 use gtk4::{gio, glib, glib::clone};
 
@@ -17,7 +17,6 @@ impl RnApp {
 
         let action_new_window = gio::SimpleAction::new("new-window", None);
         self.add_action(&action_new_window);
-        self.set_accels_for_action("app.new-window", &["<Ctrl>n"]);
 
         action_color_scheme
             .bind_property("state", &self.style_manager(), "color-scheme")
@@ -59,6 +58,6 @@ impl RnApp {
     // Accelerators / Keyboard Shortcuts
     pub(crate) fn setup_action_accels(&self) {
         self.set_accels_for_action("app.quit", &["<Ctrl>q"]);
+        self.set_accels_for_action("app.new-window", &["<Ctrl>n"]);
     }
 }
-

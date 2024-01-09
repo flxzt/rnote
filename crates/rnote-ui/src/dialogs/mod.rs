@@ -89,6 +89,7 @@ pub(crate) async fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas)
     }
 }
 
+#[allow(unused)]
 pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),

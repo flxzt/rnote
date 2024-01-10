@@ -261,6 +261,7 @@ impl StrokeStore {
 
         widget_flags.hide_undo = Some(!self.can_undo());
         widget_flags.hide_redo = Some(!self.can_redo());
+        widget_flags.store_modified = true;
 
         widget_flags
     }
@@ -281,6 +282,7 @@ impl StrokeStore {
 
         widget_flags.hide_undo = Some(!self.can_undo());
         widget_flags.hide_redo = Some(!self.can_redo());
+        widget_flags.store_modified = true;
 
         widget_flags
     }

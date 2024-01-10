@@ -548,7 +548,7 @@ msgstr "Kubična parabola"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:207
 msgid "Textured Style"
-msgstr ""
+msgstr "Teksturni stil"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:210
 msgid "Density"

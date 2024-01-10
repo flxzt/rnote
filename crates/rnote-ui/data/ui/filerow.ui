@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ### FileRow ### -->
+<interface>
+  <template class="RnFileRow" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBoxLayout">
+        <property name="orientation">horizontal</property>
+      </object>
+    </property>
+    <property name="halign">fill</property>
+    <property name="valign">fill</property>
+    <property name="hexpand">true</property>
+    <property name="vexpand">true</property>
+    <property name="margin-top">1</property>
+    <property name="margin-bottom">1</property>
+    <property name="margin-start">6</property>
+    <property name="margin-end">6</property>
+    <child>
+      <object class="GtkImage" id="file_image">
+        <property name="name">file_image</property>
+        <property name="margin-end">12</property>
+        <style>
+          <class name="lowres-icon"/>
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel" id="file_label">
+        <property name="name">file_label</property>
+        <property name="halign">start</property>
+        <property name="hexpand">true</property>
+        <property name="ellipsize">middle</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox" id="menubutton_box">
+        <property name="name">menubutton_box</property>
+        <property name="orientation">horizontal</property>
+        <property name="halign">end</property>
+        <property name="hexpand">false</property>
+        <child>
+          <object class="GtkMenuButton" id="menubutton">
+            <property name="name">menubutton</property>
+            <property name="direction">down</property>
+            <property name="icon_name">misc-menu-symbolic</property>
+            <property name="popover">popovermenu</property>
+            <style>
+              <class name="flat" />
+              <class name="circular" />
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+    <object class="GtkPopoverMenu" id="popovermenu">
+      <property name="name">popovermenu</property>
+      <property name="menu-model">filerow_menu_model</property>
+      <menu id="filerow_menu_model">
+        <section>
+          <item>
+            <attribute name="label" translatable="yes">Open</attribute>
+            <attribute name="action">filerow.open-file</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Open in Default App</attribute>
+            <attribute name="action">filerow.open-in-default-app</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Rename</attribute>
+            <attribute name="action">filerow.rename-file</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Move to Trash</attribute>
+            <attribute name="action">filerow.trash-file</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Duplicate</attribute>
+            <attribute name="action">filerow.duplicate</attribute>
+          </item>
+        </section>
+      </menu>
+    </object>
+  </template>
+</interface>

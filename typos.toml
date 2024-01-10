@@ -9,5 +9,6 @@ flate2 = "flate2"
 extend-exclude = [
     "typos.toml",
     "*.pot",
+    "*.svg",
     "*LICENSE*",
 ]

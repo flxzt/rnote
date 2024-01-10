@@ -12,7 +12,7 @@ bin_output = sys.argv[6]
 output_file = sys.argv[7]
 
 print(f"""
-### executing cargo_build.py with arguments: ###
+### executing cargo build script with arguments: ###
     project_build_root: {project_build_root}
     project_src_root: {project_src_root}
     cargo_env: {cargo_env}
@@ -28,13 +28,13 @@ cp_call = f"cp {bin_output} {output_file}"
 print(cargo_call, file=sys.stderr)
 res = os.system(cargo_call)
 if res != 0:
-    print(f"cargo call failed, code {res}")
+    print(f"cargo call failed, code {res}", file=sys.stderr)
     sys.exit(1)
 
 print(cp_call, file=sys.stderr)
 res = os.system(cp_call)
 if res != 0:
-    print(f"cp call failed, code {res}")
+    print(f"cp call failed, code {res}", file=sys.stderr)
     sys.exit(1)
 
-sys.exit(0)
+print("### cargo build script finished ###", file=sys.stderr)

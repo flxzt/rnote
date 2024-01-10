@@ -13,7 +13,7 @@ jobs:
   check:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-22.04
-    container: fedora:38
+    container: fedora:39
     steps:
       - name: Install dependencies
         run: |
@@ -25,7 +25,7 @@ jobs:
         with:
           components: rustfmt, clippy
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Cache
         uses: actions/cache@v3
         env:
@@ -42,7 +42,7 @@ jobs:
       - name: Setup
         run: |
           meson setup --prefix=/usr -Dprofile=devel -Dcli=true _mesonbuild
-      - name: Run cargo fmt
+      - name: Run fmt check
         run: meson compile cargo-fmt-check -C _mesonbuild
       - name: Compile
         run: meson compile -v -C _mesonbuild
@@ -50,16 +50,16 @@ jobs:
         run: meson install -C _mesonbuild
       - name: Run meson tests
         run: meson test -v -C _mesonbuild
-      - name: Run clippy for app
-        run: meson compile app-cargo-clippy -C _mesonbuild
+      - name: Run clippy for UI
+        run: meson compile ui-cargo-clippy -C _mesonbuild
         continue-on-error: true
       - name: Run clippy for CLI
         run: meson compile cli-cargo-clippy -C _mesonbuild
         continue-on-error: true
       - name: Run file compatibility tests
         run: |
-          rnote_cli test\
-            misc/file-tests/v0-5-13-overview.rnote\
-            misc/file-tests/v0-5-13-lecture_note_1.rnote\
-            misc/file-tests/v0-6-0-overview.rnote\
-            misc/file-tests/v0-6-0-lecture_note_1.rnote
+          rnote-cli test\
+            misc/file-tests/v0-5-5-test.rnote\
+            misc/file-tests/v0-5-13-test.rnote\
+            misc/file-tests/v0-6-0-test.rnote\
+            misc/file-tests/v0-9-0-test.rnote\

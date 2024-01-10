@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/icons/scalable/apps/rnote.svg" width="300"></img>
+<img src="https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/icons/scalable/apps/rnote.svg" width="300"></img>
 </div><br><br><br>
 
 <div align="center">
@@ -36,7 +36,7 @@ Written in Rust and GTK4.
 - An integrated workspace browser for quick access to related files
 - Drag & Drop, clipboard support
 - Pdf, Bitmap and Svg image import
-- Document, document pages and selection export to many formats including Svg, Pdf, Xopp
+- Documents can be exported to Svg, Pdf and Xopp. Document pages and selections to Svg, Png and Jpeg.
 - Save and load the documents in the native `.rnote` file format
 - Tabs to work on multiple documents at the same time
 - Autosave, printing
@@ -76,10 +76,10 @@ Download the Windows installer from the latest release which can be found [here]
 <a href='https://github.com/flxzt/rnote/releases/latest'><img width="250" alt='Download Windows installer' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/windows-installer-badge.svg'/></a>
 </div><br>
 
-Install using winget:
+Install using [Winget](https://github.com/microsoft/winget-pkgs/tree/master/manifests/f/flxzt/rnote):
 
 ```
-winget install rnote
+winget install flxzt.rnote
 ```
 
 ### Downgrading
@@ -109,29 +109,13 @@ To update to the latest version again, unpin and run `flatpak update`.
 
 ## Screenshots
 
-![overview](https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/overview.png)  
-![lecture_note_1](https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/lecture_note_1.png)  
-![pdf_annotation](https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/pdf_annotation.png)  
-![lecture_note_2](https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/lecture_note_2.png)  
-
-## License
-
-Rnote is available under the GPL-3.0-or-later. See the LICENSE file for more info.
-
-    Copyright (C) 2023  The Rnote Authors
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+![overview](./crates/rnote-ui/data/screenshots/overview.png)  
+![selection](./crates/rnote-ui/data/screenshots/selection.png)  
+![typewriter](./crates/rnote-ui/data/screenshots/typewriter.png)  
+![focus-mode](./crates/rnote-ui/data/screenshots/focus-mode.png)  
+![workspaces](./crates/rnote-ui/data/screenshots/workspaces.png)  
+![document-settings](./crates/rnote-ui/data/screenshots/document-settings.png)  
+![action-shortcuts](./crates/rnote-ui/data/screenshots/action-shortcuts.png)  
 
 ## Pitfalls & Known Issues
 
@@ -154,33 +138,32 @@ On some devices one stylus button is mapped to a dedicated "Eraser" mode (which 
     * When releasing the pressed button, it should switch back to the previous pen style
     * The pen style in the "Eraser" mode should now be remembered
 
-## Credits
-
-- A huge thanks to the contributors, translators and to all that donated. You are the ones that help keep the project going!
-- [Freesound](https://freesound.org/) is the source for the pen sounds. The individual sounds are credited in `sounds/Licenses.md`
-- [Rough.js](https://roughjs.com/) provides the algorithms for implementation of Rnote's rough shapes.
-- [Pizarra](https://pizarra.categulario.xyz/en/) is an innovative drawing app with advanced shaping and featuring an infinite zoom. It is a great inspiration of the architecture of Rnote. Go check it out!
-
 ## Translations
 
 <a href="https://hosted.weblate.org/engage/rnote/">
 <img src="https://hosted.weblate.org/widgets/rnote/-/repo/multi-auto.svg" alt="Translation status" />
 </a><br><br>
 
-A great way to contribute to the project without writing code is adding a new or start maintaining an existing translation language. The translations files are located in `rnote-ui/po/`.
+A great way to contribute to the project without writing code is adding a new or start maintaining an existing translation language. The translations files are located in `crates/rnote-ui/po/`.
 
- Creating translations for new languages or updating existing ones can be done in two ways:
-- take the `rnote.pot` file and generate a new `.po` translation file from it, for example with "Poedit". Add the new translation language to `LINGUAS` and submit a PR with both changed files.
+ Creating translations for new languages or updating existing ones can be done in multiple ways:
+- take the `rnote.pot` file and generate a new `.po` translation file from it, for example with "Poedit". Add the new translation language to `LINGUAS` and submit a PR with the changed files.
 - use [weblate](https://hosted.weblate.org/projects/rnote/repo/) for an easy way to translate in the browser without having to deal with git.
 
-## Community
+## Fonts
 
-If you have any questions or want to start a general discussion, open a topic in the [Github Discussions](https://github.com/flxzt/rnote/discussions) section.  
-There is also the [#rnote:matrix.org](https://matrix.to/#/#rnote:matrix.org) chat room.  
+The following fonts are bundled with the application:
+
+- [Grape Nuts](https://fonts.google.com/specimen/Grape+Nuts): Grape Nuts is a simple handwritten casual font.
+- [OpenDyslexic-Regular](https://github.com/antijingoist/opendyslexic): OpenDyslexic is a typeface designed against some
+    common symptoms of dyslexia.
+- [TT2020Base-Regular](https://github.com/ctrlcctrlv/TT2020): TT2020 is an advanced, open source, hyperrealistic,
+    multilingual typewriter font for a new decade.
+- [Virgil](https://virgil.excalidraw.com/): The font that powers Excalidraw.
 
 ## File Format
 
-The `.rnote` file format is a gzipped json file. It is (de)compressed with the `flate2` crate and (de)serialized with the `Serde` crate.
+The `.rnote` file format is a gzipped json file.
 
 So far breaking changes in the format happened in versions:
 
@@ -191,9 +174,44 @@ So far breaking changes in the format happened in versions:
 
 To be able to open and export older files that are incompatible with the newest version, look under **Installation** /**Downgrading** to install older versions of Rnote.
 
+## License
+
+Rnote is available under the GPL-3.0-or-later. See the LICENSE file for more info.
+
+    Copyright (C) 2023  The Rnote Authors
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+## Credits
+
+- A huge thanks to the contributors, translators and to all that donated. You are the ones that help keep the project going!
+- [Freesound](https://freesound.org/) is the source for the pen sounds. The individual sounds are credited in `sounds/Licenses.md`
+- [Rough.js](https://roughjs.com/) provides the algorithms for implementation of Rnote's rough shapes.
+- [Pizarra](https://pizarra.categulario.xyz/en/) is an innovative drawing app with advanced shaping and featuring an infinite zoom. It is a great inspiration of the architecture of Rnote. Go check it out!
+
+
+## Community
+
+If you have any questions or want to start a general discussion, open a topic in the [Github Discussions](https://github.com/flxzt/rnote/discussions) section.
+
+There are also two Matrix chat rooms:
+- for users: [#rnote:matrix.org](https://matrix.to/#/#rnote:matrix.org)
+- for developers: [#rnote-dev:matrix.org](https://matrix.to/#/#rnote-dev:matrix.org)
+
 ## Drawings Created With Rnote
 
-If you have drawn something cool in Rnote and want to share it, submit a PR so it can be showcased here. :)  
+If you have drawn something cool in Rnote and want to share it, submit a PR to add it here. :)  
 
 <div align="center" spacing="20px">
         <img alt="Pikachu" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/pikachu.png" height="400">

@@ -1,0 +1,714 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Felix Zwettler 2022 <f.zwettler@posteo.de> -->
+<component type="desktop-application">
+  <id>@APP_ID@</id>
+  <metadata_license>CC0</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  <name translatable="no">@APP_NAME_CAPITALIZED@</name>
+  <launchable type="desktop-id">@APP_ID@.desktop</launchable>
+  <summary>Sketch and take handwritten notes</summary>
+
+  <categories>
+    <category>Graphics</category>
+    <category>Education</category>
+    <category>Office</category>
+    <category>VectorGraphics</category>
+    <category>GNOME</category>
+    <category>GTK</category>
+  </categories>
+
+  <description>
+    <p>
+      Rnote is a vector-based drawing app for sketching, handwritten notes and to annotate documents
+      and pictures.
+    </p>
+    <p>
+      Disclaimer: The file format is still unstable. It might change and break compatibility between
+      versions.
+    </p>
+  </description>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/overview.png</image>
+      <caption>An overview</caption>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/selection.png</image>
+      <caption>A selection</caption>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/typewriter.png</image>
+      <caption>Write text with the typewriter</caption>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/focus-mode.png</image>
+      <caption>Hide toolbars with the focus mode</caption>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/workspaces.png</image>
+      <caption>Quickly access files through workspace</caption>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/document-settings.png</image>
+      <caption>Adjust document settings</caption>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/crates/rnote-ui/data/screenshots/action-shortcuts.png</image>
+      <caption>Configure action shortcuts</caption>
+    </screenshot>
+  </screenshots>
+
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <control>touch</control>
+    <control>tablet</control>
+    <display_length compare="ge">500</display_length>
+  </recommends>
+
+  <url type="homepage">@APP_WEBSITE@</url>
+  <url type="bugtracker">@APP_ISSUES_URL@</url>
+  <url type="donation">@APP_DONATE_URL@</url>
+  <developer_name translatable="no">@APP_AUTHOR_NAME@</developer_name>
+  <update_contact>f.zwettler@posteo.de</update_contact>
+  <content_rating type="oars-1.0" />
+
+  <provides>
+    <binary>@APP_NAME@</binary>
+  </provides>
+
+  <!-- The changelog should not be translated -->
+  <releases>
+    <release version="0.9.4" date="2023-12-13">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>ux: increase window threshold width at where the sidebar becomes an overlay</li>
+          <li>fix: indicate unsaved when changing document settings (format, colors, pattern, ..)</li>
+          <li>fix: missing progress pulse when saving existing doc</li>
+          <li>fix: ui not being refreshed after loading document from file</li>
+          <li>fix: jumping view when zoomed out and reaching edges</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.9.3" date="2023-12-07">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>improvement: add button to export notification to open file location in file-manager after exporting (thanks to @silvasch)</li>
+          <li>improvement: initial export file picker folder got improved, now prioritising the rnote file location and are now remembered between exports (thanks to @pobrn )</li>
+          <li>improvement: more readable file row names</li>
+          <li>improvement: add keyboard shortcut for snap-positions action</li>
+          <li>improvement: pdf import option to toggle page borders</li>
+          <li>fix: don't export empty pages that are adjacent to content that is snapped to the document grid</li>
+          <li>fix: progress pulses getting out of sync when executing multiple operations in parallel</li>
+          <li>fix: typewriter width adjustment button disappearing after setting it to minimal width</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.9.2" date="2023-11-16">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: option to snap positions in different tools to pattern and document grid</li>
+          <li>feature: option to open files with default app from workspace browser list (thanks to @silvasch)</li>
+          <li>improvement: sort workspace files and folders in a more intuitive way (thanks to @doublonmousse)</li>
+          <li>fix: initial documents opened with rnote have blurry rendering when system scale-factor is larger than 1.0</li>
+          <li>fix: selection after nudging view only included strokes in current viewport</li>
+          <li>fix: text files not appearing in workspacebrowser</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.9.1" date="2023-11-01">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: ability to toggle the visibility of the origin indicator cross (thanks to @silvasch)</li>
+          <li>improvement: port rows widgets to libadwaita spezialized variants (thanks to @oscfdezdz)</li>
+          <li>improvement: text formatting buttons now toggle text attributes (thanks to @xweskingx)</li>
+          <li>improvement: load documents into the current tab if it is a draft and empty (thanks to @silvasch)</li>
+          <li>UI: tweak sidebar width</li>
+          <li>fix: don't display reload-file dialog after saving to directories synced with cloud storage</li>
+          <li>fix: chinese translations (thanks to @detiam)</li>
+          <li>fix: single position strokes not being rendered</li>
+          <li>fix: don't restore maximized window state on macos, fixing inability to resize the window after launch</li>
+          <li>fix: windows installer not including certain dll's, possibly causing crashes when the missing ones are located elsewhere and present in PATH (thanks to @mdonoughe)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.9.0" date="2023-10-06">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: added ctrl plus space as configurable shortcut</li>
+          <li>feature: added plaintext file import</li>
+          <li>feature: ability to nudge view while performing certain pen actions</li>
+          <li>improvement: port the UI to libadwaita 1.4 with an improved sidebar and adaptivity</li>
+          <li>improvement: scale widths of brush-strokes and shapes when resizing selection</li>
+          <li>improvement: added keyboard shortcuts to add/remove pages when in fixed-size layout</li>
+          <li>improvement: the current document view is saved and restored to/from rnote files</li>
+          <li>improvement: orientation toggle usable when using custom document dimensions</li>
+          <li>improvement: shape builder picker sidebar location (thanks to @PhilDevProg)</li>
+          <li>fix: when using the vertical-space tool strokes that came into view were not initially rendered</li>
+          <li>fix: color picker dialog could be opened multiple times</li>
+          <li>fix: default view offset when opening a new tab</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.8.2" date="2023-08-26">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: button presses not handled as pen events</li>
+          <li>fix: windows build</li>
+          <li>fix: bundled fonts not appearing in flatpak</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.8.1" date="2023-08-25">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: export previews</li>
+          <li>feature: invert selection color brightness (thanks to @Kneemund)</li>
+          <li>feature: optimize for printing export option (thanks to @Kneemund)</li>
+          <li>feature: a few handwrite-y,typewriter and dyslexia fonts are now bundled with the application (check the README for a list of them)</li>
+          <li>feature: polyline shape and builder</li>
+          <li>improvement: cli export enhancements (thanks to @LeSnake04)</li>
+          <li>improvement: update outdated symbolic icons (thanks to @oscfdezdz)</li>
+          <li>improvement: behaviour when opening files in new tab</li>
+          <li>improvement: added close buttons to configuration popovers as a workaround for the Gtk4 stuck-popover bug</li>
+          <li>improvement: default view offset when opening documents</li>
+          <li>enhancement: move view using arrow keys</li>
+          <li>fix: orientation of some popovers when sidebar is on the left</li>
+          <li>fix: restore vectorized images (Pdf pages, Svg) export</li>
+          <li>fix: .rnote file imports that were created pre v0.5.9</li>
+          <li>fix: rendering of closed shapes from imported xopp file</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.7.1" date="2023-07-04">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>improvement: more consistent duplicate file naming</li>
+          <li>UI: more compact sidebar, shape-picker, workspacebrowser</li>
+          <li>fix: import dialogs were not shown when importing files or drag-and-drop from file-managers (thanks to @Kneemund)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.7.0" date="2023-06-16">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>installation: windows users - the installer now uses 64-bit mode, and now (correctly) installs into "Program Files" by default.
+If you are upgrading from a previous version, you need to uninstall the old version in "Program Files (x86)" manually.</li>
+          <li>feature: remove page from fixed size document (thanks to @PhilDevProg)</li>
+          <li>feature: specify page order when exporting documents with layouts that expand in horizontal and vertical directions (thanks to @Kneemund)</li>
+          <li>feature: inertial touch scrolling (thanks to @Kneemund)</li>
+          <li>feature: ability to toggle drawing cursor visibility</li>
+          <li>feature: "focus mode" that hides the toolbars, improving the experience on low-resolution tablets</li>
+          <li>feature: dedicated zoom tool, making navigating while touch-drawing is enabled easier</li>
+          <li>improvement: selection highlights for brush-strokes</li>
+          <li>improvement: ctrl + scroll following the pointer</li>
+          <li>improvement: scale-ratio when resizing the selection with locked aspect-ratio</li>
+          <li>improvement: provide selection content as Svg and Png when copying/cutting to the clipboard</li>
+          <li>improvement: save file logic in close tab/window dialogs</li>
+          <li>improvement: memory consumption when loading rnote files</li>
+          <li>UI: page controls for the fixed-size layout were moved into the canvas menu dropdown</li>
+          <li>UI: undo/redo buttons were moved to the pen switcher toolbar</li>
+          <li>fix: apply pressure curves when exporting to xopp</li>
+          <li>fix: single element/position strokes were not rendered</li>
+          <li>fix: stop document autoexpanding when scrolling with scrollbars</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.6.0" date="2023-04-23">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>orga: Rnote now follows a new versioning scheme - feature updates will increment x, while patches will increment y in versions 0.x.y .
+Breakages in the file format will be explicitly announced (but we'll work as hard as possible to avoid them!) and are not reflected in the version anymore.</li>
+          <li>orga: the app is now available for Windows and MacOS! Check the installation section on the website / README, you'll find links to the installer and app bundle there.</li>
+          <li>feature: arrow shapes (thanks to @TornaxO7 )</li>
+          <li>feature: ability to recolor selected strokes (thanks to @Kneemund )</li>
+          <li>feature: isometric background patterns (thanks to @Kneemund )</li>
+          <li>feature: add option to block pinch zoom (thanks to @LeSnake04 )</li>
+          <li>improvement: typewriter keyboard navigation (thanks to @Kneemund )</li>
+          <li>improvement: exiting / closing dialogs and logic (thanks to @adih-20 )</li>
+          <li>improvement: more icons for workspace list entries</li>
+          <li>improvement: associated symbolic icon for .rnote files</li>
+          <li>improvement: added labels for name and directory of the active workspace </li>
+          <li>fix: occasional crashes when doing three-finger swipes</li>
+          <li>fix: size limits for grid builder, preventing slowdowns and crashes (thanks to @Kneemund)</li>
+          <li>fix: strokes not generating hitboxes when pen is being changed mid-stroke</li>
+          <li>fix: limit chars for dirs in edit-workspace dialog</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.18" date="2023-03-16">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: panic on app start when color scheme setting is set to "Use Light Colors" / "Use Dark Colors"</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.17" date="2023-03-16">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: some users experienced zip-zapping while using stylus</li>
+          <li>fix: sporadic jumps when view is near document edge</li>
+          <li>fix: regression where redo button stays insensitive</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.16" date="2023-03-04">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: vector export when bounds are not origin aligned</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.15" date="2023-03-04">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: configurable shortcuts for drawing pad buttons</li>
+          <li>improvement: input events for rate-limited devices (E-Paper/ low-frequency displays)</li>
+          <li>improvement: reduced Svg export size</li>
+          <li>fix: artifacts when printing</li>
+          <li>fix: Jpeg images embedded in Pdfs were not rendered</li>
+          <li>fix: select-all with "ctrl+a" included trashed strokes</li>
+          <li>fix: units in settings kept resetting to "Px"</li>
+          <li>fix: flicker when duplicating large selections</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.14" date="2023-02-22">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: toggle mode for shortcuts</li>
+          <li>feature: eraser size picker</li>
+          <li>improvement: reduce toolbar overlays margins when scrollbar is disabled</li>
+          <li>improvement: indicate hover over nodes in the selector and typewriter</li>
+          <li>improvement: reduced save and xopp export file sizes</li>
+          <li>UI: follow Gnome HIG writing style more closely and fixed string inconsistencies</li>
+          <li>fix: Pdf import with different size pages</li>
+          <li>fix: image and Pdf import offsets now take the document bounds into account</li>
+          <li>fix: broken resizing in fixed-size document layout</li>
+          <li>fix: crash when navigating up/down into non-ASCII text</li>
+          <li>fix: crash on launch when using a custom stylesheet</li>
+          <li>fix: rough style fill calculations</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.13" date="2023-02-06">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: tabs!</li>
+          <li>feature: a global colorpicker</li>
+          <li>feature: stroke width preset palette</li>
+          <li>feature: added "semi-infinite" canvas layout ( thanks @D0V4HKIIN !)</li>
+          <li>feature: added two-finger long-press touch gesture that switches the active pen (like stylus buttons)</li>
+          <li>feature: added pdf import bitmap scaling preference</li>
+          <li>UI: floating toolbars</li>
+          <li>UI: shape builder picker is now a categorized grid (thanks a lot @Kneemund !)</li>
+          <li>improvement: copy, cut and paste selections between tabs and windows</li>
+          <li>improvement: flap revealed state is now remembered across app launches</li>
+          <li>fix: svg clipboard paste</li>
+          <li>fix: lag when panning in "continuous-vertical" layout</li>
+          <li>fix: layers when erasing marker strokes in "split-stroke" mode</li>
+          <li>fix: "split-stroke" mode only eraser one segment at a time</li>
+          <li>fix: freeze when saving multiple times in succession</li>
+          <li>fix: blurry vector images after zooming in</li>
+          <li>fix: some blurry icons</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.12" date="2022-12-27">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>UI: minor sidebar tweaks</li>
+          <li>i18n: updated strings and translations</li>
+          <li>fix: remove selection bounds margins</li>
+          <li>fix: don't overwrite active palette color when start modifying existing text</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.10" date="2022-12-23">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: added a grid builder</li>
+          <li>feature: ctrl + pointer drag for panning the canvas, ctrl+shift + pointer drag for
+            zooming</li>
+          <li>improvement: added the ability to reorder workspaces</li>
+          <li>improvement: rough style now supports transparent colors</li>
+          <li>improvement: full asynchronicity for all import and exports</li>
+          <li>fix: rough style bezier curves drawing</li>
+          <li>fix: added missing association for `.xopp` files</li>
+          <li>fix: ability to select folders in export-doc-pages filechooser</li>
+          <li>fix: text input with IME's ( thanks @Mr-Spade !)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.9" date="2022-12-06">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: hatched fills for the rough shape style</li>
+          <li>improvements to the monitoring and handling of file changes to the currently opened
+            file (thanks @Kneemund !)</li>
+          <li>simplified textured brush style options</li>
+          <li>faster start up times</li>
+          <li>switch to the typewriter when dropping text</li>
+          <li>more icon improvements (thanks @bertob !)</li>
+          <li>fix: view "jumps" when quickly zooming multiple times</li>
+          <li>fix: typewriter now handles cut (Ctrl + x) properly</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.8" date="2022-11-23">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: added keyboard shortcuts "Ctrl+1..6" to switch between the different pens</li>
+          <li>feature: added coordinate system builders (thanks to @Kneemund )</li>
+          <li>feature: drop text on the canvas</li>
+          <li>improvement: export preferences, new export dialogs and options</li>
+          <li>improvement: UI following Gnome HIG more closely ( with @bertob's help )</li>
+          <li>fix: update current document state when the file was modified from the workspace
+            browser. (thanks @Kneemund )</li>
+          <li>fix: clearing text attributes for new text fields</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.7" date="2022-10-30">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>improvement: Add zoom buttons to the quick-actions overlay</li>
+          <li>improvement: By default use the workspace directory for import and export dialogs, and
+            document file for save dialogs</li>
+          <li>fix: Pdf export and print sometimes produced empty pages</li>
+          <li>fix: workspace files list not refreshing after modifying the workspace path</li>
+          <li>fix: Selector being canceled when attempting to interact with the selection when
+            "touch-drawing" was enabled</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.6" date="2022-10-25">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: a new brush option to select between different path modelers. Added a
+            physics-based modelling type (as default) which decreases jitter and improves
+            handwriting smoothness. It also includes a predictor to minimize input lag.</li>
+          <li>feature: switch between different cursors while hovering and drawing, with new
+            "teardrop", "crosshair" and "beam" cursors in different variations and sizes.</li>
+          <li>feature: a new `duplicate` file action and a new `create directory` workspace action
+            (thanks @TornaxO7 !)</li>
+          <li>improved: better palm rejection while drawing with a stylus</li>
+          <li>improved: better export filenames</li>
+          <li>improved: typewriter input now accepts letter accents, improved unicode support</li>
+          <li>fix: background pattern tile rendering size</li>
+          <li>fix: scrolling with touchpad was not possible when the "permanent hidden scrollbars"
+            option was enabled</li>
+          <li>fix: broken Svg export</li>
+          <li>fix: image layers when exporting to .xopp</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.5" date="2022-09-29">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>Port to libadwaita 1.2 with an updated about window, improved dialogs</li>
+          <li>new feature: "permanently hide scrollbars" toggle in the settings</li>
+          <li>new feature: "paste from clipboard" button in the selector page</li>
+          <li>improved window title, now shows the current document name</li>
+          <li>tweaked app icon</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.4" date="2022-07-27">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>A new app icon and symbolic! (based on @bertob's design and with his help. Thanks a
+            ton!)</li>
+          <li>long awaited: write and edit text with the typewriter</li>
+          <li>pdf import dialog with the added option to import aligned with the document pages (
+            one pdf page per document page )</li>
+          <li>import bitmap images (e.g. screenshots) from the clipboard (thanks @RickStanley!)</li>
+          <li>proportial shapes / input constraints (thanks @sei0o!)</li>
+          <li>additional selector modes: single, intersecting path</li>
+          <li>improved workspace browser, added sidebar to select between different workspaces
+            (inspired by the `Paper` app)</li>
+          <li>mark underneath other strokes with the 'Marker' brush style</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.3" date="2022-05-14">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.2" date="2022-05-13">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: paste clipboard files ( nautilus support )</li>
+          <li>stylus eraser mode improvements</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.1" date="2022-05-08">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: setting to change the format border color</li>
+          <li>UI text improvements</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.0" date="2022-05-04">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>disclaimer: breaking file format compatibility</li>
+          <li>more shape types (curves, ellipse with foci)</li>
+          <li>feature: new eraser type: split strokes</li>
+          <li>feature: autosave</li>
+          <li>reduced handwriting latency</li>
+          <li>improved selector</li>
+          <li>improved undo / redo system</li>
+          <li>Xournal++ file import: drawn shapes are now imported correctly</li>
+          <li>UI tweaks</li>
+          <li>bug fixes</li>
+          <li>a lot of code refactoring</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.4.0" date="2022-03-17">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>disclaimer: breaking file format compatibility</li>
+          <li>feature: configurable button shortcuts (stylus, mouse)</li>
+          <li>change: moved the marker into the brush pen as a style</li>
+          <li>improvement: faster Pdf export &amp; fix export with large sheet dimensions</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.3.5" date="2022-02-14">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>A new feature: infinite mode for expandable sheets in every direction</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.3.4" date="2022-02-06">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>UI improvements</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.3.3" date="2022-02-05">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>UX: Adaptive pen buttons (support smaller screens)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.3.2" date="2022-02-02">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>new feature: Export as Pdf</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.3.1" date="2022-01-31">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>`Select all` and `Deselect all` selector buttons</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.3.0" date="2022-01-29">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>file format changes. Breaking to older versions!</li>
+          <li>Stroke and image rotation</li>
+          <li>rudimentary import and export to Xournal++ files</li>
+          <li>more persistent UI state</li>
+          <li>UI improvements</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.2.5" date="2022-01-13">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>Textured brush with tweakable parameters</li>
+          <li>UI improvements</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.2.4" date="2022-01-10">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>using libadwaita 1.0!</li>
+          <li>Tools as new pen type. Expand the sheet vertically, modify stroke elements by dragging</li>
+          <li>asynchronous import, export</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.2.3" date="2022-01-04">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>Pdf import as vector images</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.2.2" date="2021-12-28">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>selecting with a rectangle</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.2.1" date="2021-12-17">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>significant rendering speed improvements</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.2.0" date="2021-12-13">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>an updated icon!</li>
+          <li>an updated file format. !!! Breaks compatibility to older versions. Please export
+            existing files before upgrading / downgrade temporarily (explained how to downgrade at
+            github.com/flxzt/rnote)</li>
+          <li>new features: Pdf import, clipboard and drag&amp;drop support</li>
+          <li>performance improvements in stroke rendering, selecting, erasing by parallelizing
+            these operations</li>
+          <li>UI improvements</li>
+          <li>internal: code refactoring into ECS pattern</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.1.6" date="2021-11-01">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>introducing dots as background pattern</li>
+          <li>added undo, redo, close app and close active window shortcuts</li>
+          <li>added current file as title, with unsaved changes indicator</li>
+          <li>improved background rendering</li>
+          <li>UI tweaks</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.1.5" date="2021-10-21">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>introducing background patterns</li>
+          <li>improved zooming</li>
+          <li>improved performance</li>
+          <li>saving and loading more settings</li>
+          <li>UI tweaks</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.1.4" date="2021-10-16">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>UI improvements: sidebar and settings</li>
+          <li>set a background color</li>
+          <li>added ellipse as a rough shape</li>
+          <li>new and improved gestures and shortcuts (zoom with "ctrl+scroll", drag the canvas with
+            the middle mouse button)</li>
+          <li>improved strokes algorithms</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.1.3" date="2021-10-08">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>Introducing rough shapes for a sketched look</li>
+          <li>fill shapes with a color</li>
+          <li>improved shape drawing (broke .rnote file backward compatibility, sorry!)</li>
+          <li>alpha checkerboard background in the colorpicker</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.1.2" date="2021-10-07">
+      <description>
+        <p>improved zooming, UI tweaks and bug fixes</p>
+      </description>
+    </release>
+    <release version="0.1.1" date="2021-10-01">
+      <description>
+        <p>using native filechooser dialogs</p>
+      </description>
+    </release>
+    <release version="0.1.0" date="2021-09-30">
+      <description>
+        <p>The initial release</p>
+      </description>
+    </release>
+  </releases>
+
+</component>

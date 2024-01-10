@@ -1,0 +1,60 @@
+[package]
+name = "rnote"
+build = "build.rs"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[dependencies]
+rnote-compose = { workspace = true }
+rnote-engine = { workspace = true, features = ["ui"] }
+
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+num-derive = { workspace = true }
+num-traits = { workspace = true }
+itertools = { workspace = true }
+once_cell = { workspace = true }
+futures = { workspace = true }
+rayon = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+ijson = { workspace = true }
+nalgebra = { workspace = true }
+parry2d-f64 = { workspace = true }
+rand = { workspace = true }
+rand_pcg = { workspace = true }
+rand_distr = { workspace = true }
+base64 = { workspace = true }
+regex = { workspace = true }
+url = { workspace = true }
+fs_extra = { workspace = true }
+same-file = { workspace = true }
+unicode-segmentation = { workspace = true }
+svg = { workspace = true }
+image = { workspace = true }
+kurbo = { workspace = true }
+piet = { workspace = true }
+piet-cairo = { workspace = true }
+roughr = { workspace = true }
+rough_piet = { workspace = true }
+cairo-rs = { workspace = true }
+poppler-rs = {workspace = true }
+gettext-rs = {workspace = true }
+gtk4 = { workspace = true }
+adw = { workspace = true }
+open = { workspace = true }
+numeric-sort = {  workspace = true }
+
+[build-dependencies]
+anyhow = { workspace = true }
+glib-build-tools = { workspace = true }
+
+[target.'cfg(windows)'.build-dependencies]
+winresource = { workspace = true }

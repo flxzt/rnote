@@ -1,0 +1,25 @@
+[package]
+name = "rnote-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[dependencies]
+rnote-compose = { workspace = true, features = ["clap-derive"] }
+rnote-engine = { workspace = true, features = ["cli"] }
+
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }
+smol = { workspace = true }
+clap = { workspace = true }
+indicatif = { workspace = true }
+dialoguer = { workspace = true }
+open = { workspace = true }
+nalgebra = { workspace = true }
+parry2d-f64 = { workspace = true }
+atty = { workspace = true }

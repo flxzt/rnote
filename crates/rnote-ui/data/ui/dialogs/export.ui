@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Export dialogs -->
+<interface>
+  <object class="GtkDialog" id="dialog_export_doc_w_prefs">
+    <property name="use-header-bar">1</property>
+    <property name="modal">true</property>
+    <property name="title" translatable="yes">Export Document</property>
+    <child type="action">
+      <object class="GtkButton" id="export_doc_button_cancel">
+        <property name="label" translatable="yes">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="export_doc_button_confirm">
+        <property name="label" translatable="yes">Export</property>
+        <property name="sensitive">false</property>
+        <style>
+          <class name="suggested-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel">export_doc_button_cancel</action-widget>
+      <action-widget response="apply" default="true">export_doc_button_confirm</action-widget>
+    </action-widgets>
+    <child>
+      <object class="AdwClamp">
+        <property name="maximum-size">1000</property>
+        <property name="tightening-threshold">900</property>
+        <property name="hexpand">true</property>
+        <property name="vexpand">false</property>
+        <property name="halign">fill</property>
+        <property name="valign">start</property>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">12</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">0</property>
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">12</property>
+            <style>
+              <class name="background" />
+            </style>
+            <child>
+              <object class="RnStrokeContentPreview" id="export_doc_preview">
+                <property name="halign">fill</property>
+                <property name="valign">fill</property>
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow">
+                <property name="hscrollbar-policy">never</property>
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+                <property name="halign">fill</property>
+                <property name="valign">fill</property>
+                <property name="propagate-natural-width">true</property>
+                <property name="propagate-natural-height">true</property>
+                <property name="window-placement">top-left</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">12</property>
+                    <property name="margin-end">18</property>
+                    <child>
+                      <object class="AdwPreferencesGroup">
+                        <child>
+                          <object class="AdwActionRow">
+                            <property name="title" translatable="yes">Export File</property>
+                            <property name="subtitle" translatable="yes">Select the export file</property>
+                            <child type="suffix">
+                              <object class="GtkBox">
+                                <property name="valign">center</property>
+                                <property name="halign">end</property>
+                                <property name="orientation">horizontal</property>
+                                <property name="spacing">6</property>
+                                <child>
+                                  <object class="GtkLabel" id="export_doc_export_file_label">
+                                    <property name="label" translatable="yes">- no file selected -</property>
+                                    <property name="ellipsize">start</property>
+                                    <style>
+                                      <class name="dim-label" />
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="export_doc_export_file_button">
+                                    <layout>
+                                      <property name="column">1</property>
+                                      <property name="row">1</property>
+                                    </layout>
+                                    <property name="icon_name">folder-open-symbolic</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwPreferencesGroup">
+                        <property name="title" translatable="yes">Export Preferences</property>
+                        <property name="halign">fill</property>
+                        <child>
+                          <object class="AdwSwitchRow" id="export_doc_with_background_row">
+                            <property name="title" translatable="yes">With Background</property>
+                            <property name="subtitle" translatable="yes">Set whether the background should be exported</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwSwitchRow" id="export_doc_with_pattern_row">
+                            <property name="title" translatable="yes">With Pattern</property>
+                            <property name="subtitle" translatable="yes">Set whether the background pattern should be exported</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwSwitchRow" id="export_doc_optimize_printing_row">
+                            <property name="title" translatable="yes">Optimize for Printing</property>
+                            <property name="subtitle" translatable="yes">Set whether the content should be optimized for printing</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwComboRow" id="export_doc_export_format_row">
+                            <property name="title" translatable="yes">Export Format</property>
+                            <property name="subtitle" translatable="yes">The export format</property>
+                            <property name="model">
+                              <object class="GtkStringList">
+                                <items>
+                                  <item translatable="yes">Svg</item>
+                                  <item translatable="yes">Pdf</item>
+                                  <item translatable="yes">Xopp</item>
+                                </items>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwComboRow" id="export_doc_page_order_row">
+                            <property name="title" translatable="yes">Page Order</property>
+                            <property name="subtitle" translatable="yes">The page order when documents with layouts
+that expand in horizontal and vertical directions
+are cut into pages</property>
+                            <property name="model">
+                              <object class="GtkStringList">
+                                <items>
+                                  <item translatable="yes">Horizontal First</item>
+                                  <item translatable="yes">Vertical First</item>
+                                </items>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+
+  <object class="GtkDialog" id="dialog_export_doc_pages_w_prefs">
+    <property name="use-header-bar">1</property>
+    <property name="modal">true</property>
+    <property name="title" translatable="yes">Export Document Pages</property>
+    <child type="action">
+      <object class="GtkButton" id="export_doc_pages_button_cancel">
+        <property name="label" translatable="yes">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="export_doc_pages_button_confirm">
+        <property name="label" translatable="yes">Export</property>
+        <property name="sensitive">false</property>
+        <style>
+          <class name="suggested-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel">export_doc_pages_button_cancel</action-widget>
+      <action-widget response="apply" default="true">export_doc_pages_button_confirm</action-widget>
+    </action-widgets>
+    <child>
+      <object class="AdwClamp">
+        <property name="maximum-size">1000</property>
+        <property name="tightening-threshold">900</property>
+        <property name="hexpand">true</property>
+        <property name="vexpand">false</property>
+        <property name="halign">fill</property>
+        <property name="valign">start</property>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">12</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">0</property>
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">12</property>
+            <style>
+              <class name="background" />
+            </style>
+            <child>
+              <object class="RnStrokeContentPreview" id="export_doc_pages_preview">
+                <property name="halign">fill</property>
+                <property name="valign">fill</property>
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow">
+                <property name="hscrollbar-policy">never</property>
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+                <property name="halign">fill</property>
+                <property name="valign">fill</property>
+                <property name="propagate-natural-width">true</property>
+                <property name="propagate-natural-height">true</property>
+                <property name="window-placement">top-left</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">12</property>
+                    <property name="margin-end">18</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">12</property>
+                        <style>
+                          <class name="card" />
+                          <class name="view" />
+                        </style>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="orientation">horizontal</property>
+                            <property name="halign">fill</property>
+                            <property name="valign">center</property>
+                            <property name="spacing">12</property>
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin-top">12</property>
+                            <property name="margin-bottom">12</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="margin-end">12</property>
+                                <property name="label" translatable="yes">Page Files Naming:</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="export_doc_pages_page_files_naming_info_label">
+                                <property name="sensitive">false</property>
+                                <property name="hexpand">true</property>
+                                <property name="halign">end</property>
+                                <property name="use-markup">true</property>
+                                <property name="ellipsize">end</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwPreferencesGroup">
+                        <child>
+                          <object class="AdwActionRow">
+                            <property name="title" translatable="yes">Export Directory</property>
+                            <property name="subtitle" translatable="yes">Select the export directory</property>
+                            <child type="suffix">
+                              <object class="GtkBox">
+                                <property name="valign">center</property>
+                                <property name="halign">end</property>
+                                <property name="orientation">horizontal</property>
+                                <property name="spacing">6</property>
+                                <child>
+                                  <object class="GtkLabel" id="export_doc_pages_export_dir_label">
+                                    <property name="label" translatable="yes">- no directory selected -</property>
+                                    <property name="ellipsize">start</property>
+                                    <style>
+                                      <class name="dim-label" />
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="export_doc_pages_export_dir_button">
+                                    <layout>
+                                      <property name="column">1</property>
+                                      <property name="row">1</property>
+                                    </layout>
+                                    <property name="icon_name">folder-open-symbolic</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwEntryRow" id="export_doc_pages_export_files_stemname_entryrow">
+                            <property name="title" translatable="yes" context="When pages are exported this is the base name, followed by: - Page 0,1,..">Export Files Stem Name</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwPreferencesGroup">
+                        <property name="title" translatable="yes">Export Preferences</property>
+                        <property name="halign">fill</property>
+                        <child>
+                          <object class="AdwSwitchRow" id="export_doc_pages_with_background_row">
+                            <property name="title" translatable="yes">With Background</property>
+                            <property name="subtitle" translatable="yes">Set whether the background should be exported</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwSwitchRow" id="export_doc_pages_with_pattern_row">
+                            <property name="title" translatable="yes">With Pattern</property>
+                            <property name="subtitle" translatable="yes">Set whether the background pattern should be exported</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwSwitchRow" id="export_doc_pages_optimize_printing_row">
+                            <property name="title" translatable="yes">Optimize for Printing</property>
+                            <property name="subtitle" translatable="yes">Set whether the content should be optimized for printing</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwComboRow" id="export_doc_pages_export_format_row">
+                            <property name="title" translatable="yes">Export Format</property>
+                            <property name="subtitle" translatable="yes">The export format</property>
+                            <property name="model">
+                              <object class="GtkStringList">
+                                <items>
+                                  <item translatable="yes">Svg</item>
+                                  <item translatable="yes">Png</item>
+                                  <item translatable="yes">Jpeg</item>
+                                </items>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwComboRow" id="export_doc_pages_page_order_row">
+                            <property name="title" translatable="yes">Page Order</property>
+                            <property name="subtitle" translatable="yes">The page order when documents with layouts
+that expand in horizontal and vertical directions
+are cut into pages</property>
+                            <property name="model">
+                              <object class="GtkStringList">
+                                <items>
+                                  <item translatable="yes">Horizontal First</item>
+                                  <item translatable="yes">Vertical First</item>
+                                </items>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwSpinRow" id="export_doc_pages_bitmap_scalefactor_row">
+                            <property name="title" translatable="yes">Bitmap Scale-Factor</property>
+                            <property name="subtitle" translatable="yes">Set the bitmap scale factor in relation
+to the actual size on the document</property>
+                            <property name="adjustment">export_doc_pages_bitmap_scalefactor_adj</property>
+                            <property name="digits">1</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwSpinRow" id="export_doc_pages_jpeg_quality_row">
+                            <property name="title" translatable="yes">Jpeg Quality</property>
+                            <property name="subtitle" translatable="yes">Set the quality of the Jpeg image (1 - 100)</property>
+                            <property name="adjustment">export_doc_pages_jpeg_quality_adj</property>
+                            <property name="digits">0</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkAdjustment" id="export_doc_pages_bitmap_scalefactor_adj">
+    <property name="step-increment">0.1</property>
+    <property name="upper">10.0</property>
+    <property name="lower">0.1</property>
+    <property name="value">1.0</property>
+  </object>
+  <object class="GtkAdjustment" id="export_doc_pages_jpeg_quality_adj">
+    <property name="step-increment">1</property>
+    <property name="upper">100</property>
+    <property name="lower">1</property>
+    <property name="value">85</property>
+  </object>
+
+  <object class="GtkDialog" id="dialog_export_selection_w_prefs">
+    <property name="use-header-bar">1</property>
+    <property name="modal">true</property>
+    <property name="title" translatable="yes">Export Selection</property>
+    <child type="action">
+      <object class="GtkButton" id="export_selection_button_cancel">
+        <property name="label" translatable="yes">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="export_selection_button_confirm">
+        <property name="label" translatable="yes">Export</property>
+        <property name="sensitive">false</property>
+        <style>
+          <class name="suggested-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel">export_selection_button_cancel</action-widget>
+      <action-widget response="apply" default="true">export_selection_button_confirm</action-widget>
+    </action-widgets>
+    <child>
+      <object class="AdwClamp">
+        <property name="maximum-size">1000</property>
+        <property name="tightening-threshold">900</property>
+        <property name="hexpand">true</property>
+        <property name="vexpand">false</property>
+        <property name="halign">fill</property>
+        <property name="valign">start</property>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">12</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">0</property>
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">12</property>
+            <style>
+              <class name="background" />
+            </style>
+            <child>
+              <object class="RnStrokeContentPreview" id="export_selection_preview">
+                <property name="halign">fill</property>
+                <property name="valign">fill</property>
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow">
+                <property name="hscrollbar-policy">never</property>
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+                <property name="halign">fill</property>
+                <property name="valign">fill</property>
+                <property name="propagate-natural-width">true</property>
+                <property name="propagate-natural-height">true</property>
+                <property name="window-placement">top-left</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">12</property>
+                    <property name="margin-end">18</property>
+                    <child>
+                      <object class="AdwPreferencesGroup">
+                        <child>
+                          <object class="AdwActionRow">
+                            <property name="title" translatable="yes">Export File</property>
+                            <property name="subtitle" translatable="yes">Select the export file</property>
+                            <child type="suffix">
+                              <object class="GtkBox">
+                                <property name="valign">center</property>
+                                <property name="halign">end</property>
+                                <property name="orientation">horizontal</property>
+                                <property name="spacing">6</property>
+                                <child>
+                                  <object class="GtkLabel" id="export_selection_export_file_label">
+                                    <property name="label" translatable="yes">- no file selected -</property>
+                                    <property name="ellipsize">start</property>
+                                    <style>
+                                      <class name="dim-label" />
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="export_selection_export_file_button">
+                                    <layout>
+                                      <property name="column">1</property>
+                                      <property name="row">1</property>
+                                    </layout>
+                                    <property name="icon_name">folder-open-symbolic</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwPreferencesGroup">
+                        <property name="title" translatable="yes">Export Preferences</property>
+                        <property name="halign">fill</property>
+                        <child>
+                          <object class="AdwSwitchRow" id="export_selection_with_background_row">
+                            <property name="title" translatable="yes">With Background</property>
+                            <property name="subtitle" translatable="yes">Set whether the background should be exported</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwSwitchRow" id="export_selection_with_pattern_row">
+                            <property name="title" translatable="yes">With Pattern</property>
+                            <property name="subtitle" translatable="yes">Set whether the background pattern should be exported</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwSwitchRow" id="export_selection_optimize_printing_row">
+                            <property name="title" translatable="yes">Optimize for Printing</property>
+                            <property name="subtitle" translatable="yes">Set whether the content should be optimized for printing</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwComboRow" id="export_selection_export_format_row">
+                            <property name="title" translatable="yes">Export Format</property>
+                            <property name="subtitle" translatable="yes">The export image format</property>
+                            <property name="model">
+                              <object class="GtkStringList">
+                                <items>
+                                  <item translatable="yes">Svg</item>
+                                  <item translatable="yes">Png</item>
+                                  <item translatable="yes">Jpeg</item>
+                                </items>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwSpinRow" id="export_selection_bitmap_scalefactor_row">
+                            <property name="title" translatable="yes">Bitmap Scale-Factor</property>
+                            <property name="subtitle" translatable="yes">Set the bitmap scale factor in relation
+to the actual size on the document</property>
+                            <property name="adjustment">export_selection_bitmap_scalefactor_adj</property>
+                            <property name="digits">1</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwSpinRow" id="export_selection_jpeg_quality_row">
+                            <property name="title" translatable="yes">Jpeg Quality</property>
+                            <property name="subtitle" translatable="yes">Set the quality of the Jpeg image (1 - 100)</property>
+                            <property name="adjustment">export_selection_jpeg_quality_adj</property>
+                            <property name="digits">0</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwSpinRow" id="export_selection_margin_row">
+                            <property name="title" translatable="yes">Margin</property>
+                            <property name="subtitle" translatable="yes">Set the margin around the selected area</property>
+                            <property name="adjustment">export_selection_margin_adj</property>
+                            <property name="digits">0</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkAdjustment" id="export_selection_bitmap_scalefactor_adj">
+    <property name="step-increment">0.1</property>
+    <property name="upper">10.0</property>
+    <property name="lower">0.1</property>
+    <property name="value">1.0</property>
+  </object>
+  <object class="GtkAdjustment" id="export_selection_jpeg_quality_adj">
+    <property name="step-increment">1</property>
+    <property name="upper">100</property>
+    <property name="lower">1</property>
+    <property name="value">85</property>
+  </object>
+  <object class="GtkAdjustment" id="export_selection_margin_adj">
+    <property name="step-increment">1</property>
+    <property name="upper">1000</property>
+    <property name="lower">0</property>
+    <property name="value">12</property>
+  </object>
+</interface>

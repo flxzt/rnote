@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
-   <mime-type type="application/rnote">
-     <comment>Rnote notes file type</comment>
-     <glob pattern="*.rnote"/>
-     <icon name="@APP_ID@-symbolic"/>
-   </mime-type>
-</mime-info>

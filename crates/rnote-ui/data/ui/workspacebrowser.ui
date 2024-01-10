@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="RnWorkspaceBrowser" parent="GtkWidget">
+    <property name="hexpand">false</property>
+    <property name="vexpand">true</property>
+    <property name="valign">fill</property>
+    <property name="halign">fill</property>
+    <property name="layout-manager">
+      <object class="GtkBinLayout" />
+    </property>
+    <child>
+      <object class="GtkGrid" id="grid">
+        <child>
+          <object class="GtkBox" id="dir_box">
+            <property name="orientation">vertical</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">0</property>
+            </layout>
+            <style>
+              <class name="background"></class>
+            </style>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <property name="hexpand">true</property>
+                <property name="margin-top">4</property>
+                <property name="margin-bottom">5</property>
+                <property name="margin-start">6</property>
+                <property name="margin-end">6</property>
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="halign">fill</property>
+                    <property name="hexpand">true</property>
+                    <property name="spacing">3</property>
+                    <property name="margin-start">3</property>
+                    <property name="margin-end">3</property>
+                    <child>
+                      <object class="GtkLabel" id="active_workspace_name_label">
+                        <property name="label">default</property>
+                        <property name="halign">fill</property>
+                        <property name="hexpand">true</property>
+                        <property name="ellipsize">end</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="active_workspace_dir_label">
+                        <property name="label">./</property>
+                        <property name="halign">fill</property>
+                        <property name="hexpand">true</property>
+                        <property name="ellipsize">start</property>
+                        <style>
+                          <class name="caption" />
+                          <class name="dim-label" />
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="dir_controls_dir_up_button">
+                    <property name="tooltip_text" translatable="yes">Move Directory up</property>
+                    <property name="icon-name">dir-up-symbolic</property>
+                    <property name="valign">center</property>
+                    <style>
+                      <class name="flat" />
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="dir_controls_actions_box">
+                    <property name="orientation">horizontal</property>
+                    <property name="valign">center</property>
+                    <child>
+                      <object class="GtkMenuButton" id="dir_controls_actions_menubutton">
+                        <property name="direction">down</property>
+                        <property name="icon_name">dir-actions-symbolic</property>
+                        <property name="popover">dir_controls_actions_popover</property>
+                        <property name="tooltip_text" translatable="yes">Workspace Directory Actions</property>
+                        <style>
+                          <class name="flat" />
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSeparator">
+                <property name="orientation">horizontal</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow" id="files_scroller">
+            <property name="propagate-natural-width">false</property>
+            <property name="propagate-natural-height">false</property>
+            <property name="hexpand">true</property>
+            <property name="vexpand">true</property>
+            <property name="valign">fill</property>
+            <property name="halign">fill</property>
+            <property name="hscrollbar-policy">never</property>
+            <style>
+              <class name="view"></class>
+            </style>
+            <child>
+              <object class="GtkListView" id="files_listview">
+                <property name="hexpand">false</property>
+                <property name="vexpand">true</property>
+                <property name="valign">fill</property>
+                <property name="halign">fill</property>
+                <property name="margin-top">5</property>
+                <property name="margin-bottom">5</property>
+                <property name="margin-start">6</property>
+                <property name="margin-end">6</property>
+                <style>
+                  <class name="files-listview"></class>
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSeparator">
+            <layout>
+              <property name="column">1</property>
+              <property name="row">0</property>
+              <property name="row-span">2</property>
+            </layout>
+            <property name="orientation">vertical</property>
+            <property name="vexpand">false</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSeparator" id="corner_filler">
+            <property name="valign">end</property>
+            <property name="orientation">horizontal</property>
+            <layout>
+              <property name="column">2</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="RnWorkspacesBar" id="workspacesbar">
+            <layout>
+              <property name="column">2</property>
+              <property name="row">1</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <object class="GtkPopoverMenu" id="dir_controls_actions_popover">
+      <property name="menu-model">workspace_dir_actions_menu_model</property>
+      <menu id="workspace_dir_actions_menu_model">
+        <section>
+          <item>
+            <attribute name="label" translatable="yes">Create new Folder</attribute>
+            <attribute name="action">workspacebrowser.create-folder</attribute>
+          </item>
+        </section>
+      </menu>
+    </object>
+  </template>
+</interface>

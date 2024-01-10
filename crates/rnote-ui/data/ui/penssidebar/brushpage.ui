@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="RnBrushPage" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBoxLayout">
+        <property name="spacing">6</property>
+        <property name="orientation">vertical</property>
+      </object>
+    </property>
+    <property name="hexpand">false</property>
+    <property name="vexpand">false</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkMenuButton" id="brushstyle_menubutton">
+            <property name="direction">left</property>
+            <property name="tooltip_text" translatable="yes">Brush Style</property>
+            <property name="popover">brushstyle_popover</property>
+            <property name="icon-name">pen-brush-style-solid-symbolic</property>
+            <style>
+              <class name="flat" />
+              <class name="sidebar_action_button" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="brushconfig_menubutton">
+            <property name="icon-name">settings-symbolic</property>
+            <property name="hexpand">true</property>
+            <property name="halign">fill</property>
+            <property name="direction">left</property>
+            <property name="tooltip_text" translatable="yes">Brush Configuration</property>
+            <property name="popover">brushconfig_popover</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="RnStrokeWidthPicker" id="stroke_width_picker">
+      </object>
+    </child>
+
+    <!-- Brush style -->
+    <object class="GtkPopover" id="brushstyle_popover">
+      <child>
+        <object class="GtkBox">
+          <property name="orientation">vertical</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
+          <property name="spacing">12</property>
+          <child>
+            <object class="GtkBox">
+              <child>
+                <object class="GtkLabel">
+                  <property name="label" translatable="yes">Brush Styles</property>
+                  <property name="hexpand">true</property>
+                  <property name="halign">center</property>
+                  <style>
+                    <class name="title-3" />
+                  </style>
+                </object>
+              </child>
+              <child>
+                <object class="GtkButton" id="brushstyle_popover_close_button">
+                  <property name="icon-name">window-close-symbolic</property>
+                  <style>
+                    <class name="flat" />
+                    <class name="circular" />
+                  </style>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
+            <object class="GtkListBox" id="brushstyle_listbox">
+              <property name="width-request">300</property>
+              <property name="selection-mode">browse</property>
+              <style>
+                <class name="content" />
+                <class name="large" />
+              </style>
+              <child>
+                <object class="AdwActionRow" id="brushstyle_marker_row">
+                  <property name="title" translatable="yes">Marker</property>
+                  <property name="subtitle" translatable="yes">Mark underneath other strokes</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">pen-brush-style-marker-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow" id="brushstyle_solid_row">
+                  <property name="title" translatable="yes">Solid</property>
+                  <property name="subtitle" translatable="yes">Draw solid color strokes</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">pen-brush-style-solid-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow" id="brushstyle_textured_row">
+                  <property name="title" translatable="yes">Textured</property>
+                  <property name="subtitle" translatable="yes">Draw textured strokes</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">pen-brush-style-textured-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+        </object>
+      </child>
+    </object>
+
+    <!-- Brush config -->
+    <object class="GtkPopover" id="brushconfig_popover">
+      <child>
+        <object class="GtkBox">
+          <property name="orientation">vertical</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
+          <property name="spacing">12</property>
+          <child>
+            <object class="GtkBox">
+              <child>
+                <object class="GtkLabel">
+                  <property name="label" translatable="yes">Brush Configuration</property>
+                  <property name="hexpand">true</property>
+                  <property name="halign">center</property>
+                  <style>
+                    <class name="title-3" />
+                  </style>
+                </object>
+              </child>
+              <child>
+                <object class="GtkButton" id="brushconfig_popover_close_button">
+                  <property name="icon-name">window-close-symbolic</property>
+                  <style>
+                    <class name="flat" />
+                    <class name="circular" />
+                  </style>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
+            <object class="GtkLabel">
+              <property name="label" translatable="yes">Path Modelling</property>
+              <property name="halign">start</property>
+              <style>
+                <class name="heading" />
+              </style>
+            </object>
+          </child>
+          <child>
+            <object class="GtkListBox" id="brush_buildertype_listbox">
+              <property name="width-request">300</property>
+              <property name="selection-mode">browse</property>
+              <style>
+                <class name="content" />
+                <class name="large" />
+              </style>
+              <child>
+                <object class="AdwActionRow" id="brush_buildertype_simple">
+                  <property name="title" translatable="yes">Simple</property>
+                  <property name="subtitle" translatable="yes">Produces line segments from the raw input.
+</property>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow" id="brush_buildertype_curved">
+                  <property name="title" translatable="yes">Curved</property>
+                  <property name="subtitle" translatable="yes">Produces smooth, curved segments.
+</property>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow" id="brush_buildertype_modeled">
+                  <property name="title" translatable="yes">Modeled</property>
+                  <property name="subtitle" translatable="yes">Produces a modeled path with physics based algorithms.
+Results in the best looking handwriting.</property>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
+            <!-- Solid options -->
+            <object class="AdwPreferencesGroup">
+              <property name="title" translatable="yes">Solid Style</property>
+              <child>
+                <object class="AdwComboRow" id="solidstyle_pressure_curves_row">
+                  <property name="title" translatable="yes">Pressure Curve</property>
+                  <property name="subtitle" translatable="yes">Choose a pressure curve</property>
+                  <property name="model">
+                    <object class="GtkStringList">
+                      <items>
+                        <item translatable="yes">Constant</item>
+                        <item translatable="yes">Linear</item>
+                        <item translatable="yes">Square root</item>
+                        <item translatable="yes">Cubic root</item>
+                        <item translatable="yes">Quadratic Parabola</item>
+                        <item translatable="yes">Cubic Parabola</item>
+                      </items>
+                    </object>
+                  </property>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
+            <!-- Textured options -->
+            <object class="AdwPreferencesGroup">
+              <property name="title" translatable="yes">Textured Style</property>
+              <child>
+                <object class="AdwSpinRow" id="texturedstyle_density_row">
+                  <property name="title" translatable="yes">Density</property>
+                  <property name="subtitle" translatable="yes">The density is the amount of dots per 10x10 area</property>
+                  <property name="adjustment">texturedstyle_density_adj</property>
+                  <property name="numeric">true</property>
+                  <property name="digits">1</property>
+                  <property name="climb-rate">0.5</property>
+                </object>
+              </child>
+              <child>
+                <object class="AdwComboRow" id="texturedstyle_distribution_row">
+                  <property name="title" translatable="yes" context="Drawing with a textured pen, how the dots of the texture are distributed">Stroke Dots Position Distribution</property>
+                  <property name="subtitle" translatable="yes">Choose a dots position probability distribution</property>
+                  <property name="model">
+                    <object class="GtkStringList">
+                      <items>
+                        <item translatable="yes" context="A variant of the textured pen texture distribution">Uniform</item>
+                        <item translatable="yes" context="A variant of the textured pen texture distribution">Normal</item>
+                        <item translatable="yes" context="A variant of the textured pen texture distribution">Exponential</item>
+                        <item translatable="yes" context="A variant of the textured pen texture distribution">Reverse Exponential</item>
+                      </items>
+                    </object>
+                  </property>
+                </object>
+              </child>
+            </object>
+          </child>
+        </object>
+      </child>
+    </object>
+    <object class="GtkAdjustment" id="texturedstyle_density_adj">
+      <property name="step-increment">0.1</property>
+      <property name="page-increment">2</property>
+    </object>
+  </template>
+</interface>

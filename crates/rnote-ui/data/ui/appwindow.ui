@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="RnAppWindow" parent="AdwApplicationWindow">
+    <property name="width-request">530</property>
+    <property name="height-request">460</property>
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
+    <child>
+      <object class="AdwBreakpoint">
+        <condition>max-width: 1250sp</condition>
+        <setter object="split_view" property="collapsed">true</setter>
+      </object>
+    </child>
+    <property name="content">
+      <object class="AdwOverlaySplitView" id="split_view">
+        <property name="pin-sidebar">true</property>
+        <property name="min-sidebar-width">500</property>
+        <property name="max-sidebar-width">550</property>
+        <property name="sidebar-width-fraction">0.3</property>
+        <!-- sidebar -->
+        <property name="sidebar">
+          <object class="RnSidebar" id="sidebar">
+          </object>
+        </property>
+        <!-- main view -->
+        <property name="content">
+          <object class="AdwToolbarView">
+            <property name="top-bar-style">raised</property>
+            <child type="top">
+              <object class="RnMainHeader" id="main_header">
+              </object>
+            </child>
+            <property name="content">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="AdwTabBar" id="tabbar">
+                  </object>
+                </child>
+                <child>
+                  <object class="RnOverlays" id="overlays">
+                    <property name="hexpand">true</property>
+                    <property name="vexpand">true</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </property>
+      </object>
+    </property>
+  </template>
+</interface>

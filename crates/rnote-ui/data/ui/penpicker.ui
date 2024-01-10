@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ### Pen Toggle ### -->
+<interface>
+  <template class="RnPenPicker" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBoxLayout">
+        <property name="spacing">6</property>
+      </object>
+    </property>
+    <child>
+      <object class="GtkBox">
+        <property name="spacing">6</property>
+        <property name="width-request">350</property>
+        <property name="homogeneous">true</property>
+        <child>
+          <object class="GtkToggleButton" id="brush_toggle">
+            <property name="icon_name">pen-brush-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Brush</property>
+            <property name="hexpand">true</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="shaper_toggle">
+            <property name="icon_name">pen-shaper-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Shaper</property>
+            <property name="hexpand">true</property>
+            <property name="group">brush_toggle</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="typewriter_toggle">
+            <property name="icon_name">pen-typewriter-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Typewriter</property>
+            <property name="hexpand">true</property>
+            <property name="group">brush_toggle</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="eraser_toggle">
+            <property name="icon_name">pen-eraser-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Eraser</property>
+            <property name="hexpand">true</property>
+            <property name="group">brush_toggle</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="selector_toggle">
+            <property name="icon_name">pen-selector-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Selector</property>
+            <property name="hexpand">true</property>
+            <property name="group">brush_toggle</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="tools_toggle">
+            <property name="icon_name">pen-tools-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Tools</property>
+            <property name="hexpand">true</property>
+            <property name="group">brush_toggle</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator"></object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="homogeneous">true</property>
+        <style>
+          <class name="linked" />
+        </style>
+        <child>
+          <object class="GtkButton" id="undo_button">
+            <property name="sensitive">false</property>
+            <property name="icon_name">edit-undo-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Undo</property>
+            <property name="action-name">win.undo</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="redo_button">
+            <property name="sensitive">false</property>
+            <property name="icon_name">edit-redo-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Redo</property>
+            <property name="action-name">win.redo</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

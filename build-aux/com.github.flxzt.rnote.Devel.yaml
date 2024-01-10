@@ -2,11 +2,11 @@ id: com.github.flxzt.rnote.Devel
 tags:
     - development
 runtime: org.gnome.Platform
-runtime-version: "44"
+runtime-version: "45"
 sdk: org.gnome.Sdk
 sdk-extensions:
     - org.freedesktop.Sdk.Extension.rust-stable
-    - org.freedesktop.Sdk.Extension.llvm15
+    - org.freedesktop.Sdk.Extension.llvm16
 command: rnote
 finish-args:
     - "--socket=wayland"
@@ -17,7 +17,7 @@ finish-args:
     - "--filesystem=xdg-documents"
     - "--filesystem=xdg-pictures"
     - "--filesystem=xdg-desktop"
-    - "--filesystem=xdg-run/gvfs"
+    - "--talk-name=org.gtk.vfs.*"
     - "--filesystem=xdg-run/gvfsd"
     - "--env=RUST_BACKTRACE=full"
     - "--env=RUST_LOG=rnote=debug"
@@ -25,18 +25,18 @@ finish-args:
     - "--env=GTK_PATH=/app/lib/gtk-4.0"
     - "--env=GST_DEBUG=3"
 build-options:
-    append-path: "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm15/bin"
+    append-path: "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm16/bin"
     env:
         CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: clang
-        CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS: '-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold'
+        CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS: "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold"
         CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: clang
-        CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUSTFLAGS: '-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold'
+        CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUSTFLAGS: "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold"
     build-args:
         - "--share=network"
     test-args:
         - "--socket=x11"
         - "--share=network"
-    prepend-ld-library-path: /usr/lib/sdk/llvm15/lib
+    prepend-ld-library-path: /usr/lib/sdk/llvm16/lib
 modules:
     - name: poppler
       buildsystem: cmake-ninja
@@ -46,10 +46,14 @@ modules:
           - "-DCMAKE_INSTALL_INCLUDEDIR=/app/include"
           - "-DENABLE_BOOST=OFF"
           - "-DENABLE_LIBOPENJPEG=none"
+          - "-DENABLE_QT5=OFF"
+          - "-DENABLE_QT6=OFF"
+          - "-DENABLE_CPP=OFF"
+          - "-DENABLE_UTILS=OFF"
       sources:
           - type: archive
-            url: "https://poppler.freedesktop.org/poppler-23.04.0.tar.xz"
-            sha256: b6d893dc7dcd4138b9e9df59a13c59695e50e80dc5c2cacee0674670693951a1
+            url: "https://poppler.freedesktop.org/poppler-23.12.0.tar.xz"
+            sha256: beba398c9d37a9b6d02486496635e08f1df3d437cfe61dab2593f47c4d14cdbb
     - name: poppler-data
       buildsystem: cmake-ninja
       config-opts:

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Sidebar -->
+<interface>
+  <template class="RnPensSideBar" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBinLayout" />
+    </property>
+    <child>
+      <object class="GtkStack" id="sidebar_stack">
+        <property name="transition_duration">300</property>
+        <property name="transition_type">GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT_RIGHT</property>
+
+        <!-- Brush Page -->
+        <child>
+          <object class="GtkStackPage" id="brush_stackpage">
+            <property name="name">brush_page</property>
+            <property name="title" translatable="yes">Brush</property>
+            <property name="child">
+              <object class="RnBrushPage" id="brush_page">
+                <property name="margin_top">6</property>
+                <property name="margin_bottom">6</property>
+                <property name="margin_start">6</property>
+                <property name="margin_end">6</property>
+              </object>
+            </property>
+          </object>
+        </child>
+
+        <!-- Shaper Page -->
+        <child>
+          <object class="GtkStackPage" id="shaper_stackpage">
+            <property name="name">shaper_page</property>
+            <property name="title" translatable="yes">Shaper</property>
+            <property name="child">
+              <object class="RnShaperPage" id="shaper_page">
+                <property name="margin_top">6</property>
+                <property name="margin_bottom">6</property>
+                <property name="margin_start">6</property>
+                <property name="margin_end">6</property>
+              </object>
+            </property>
+          </object>
+        </child>
+
+        <!-- Typewriter Page -->
+        <child>
+          <object class="GtkStackPage" id="typewriter_stackpage">
+            <property name="name">typewriter_page</property>
+            <property name="title" translatable="yes">Typewriter</property>
+            <property name="child">
+              <object class="RnTypewriterPage" id="typewriter_page">
+                <property name="margin_top">6</property>
+                <property name="margin_bottom">6</property>
+                <property name="margin_start">6</property>
+                <property name="margin_end">6</property>
+              </object>
+            </property>
+          </object>
+        </child>
+
+        <!-- Eraser Page -->
+        <child>
+          <object class="GtkStackPage" id="eraser_stackpage">
+            <property name="name">eraser_page</property>
+            <property name="title" translatable="yes">Eraser</property>
+            <property name="child">
+              <object class="RnEraserPage" id="eraser_page">
+                <property name="margin_top">6</property>
+                <property name="margin_bottom">6</property>
+                <property name="margin_start">6</property>
+                <property name="margin_end">6</property>
+              </object>
+            </property>
+          </object>
+        </child>
+
+        <!-- Selector Page -->
+        <child>
+          <object class="GtkStackPage" id="selector_stackpage">
+            <property name="name">selector_page</property>
+            <property name="title" translatable="yes">Selector</property>
+            <property name="child">
+              <object class="RnSelectorPage" id="selector_page">
+                <property name="margin_top">6</property>
+                <property name="margin_bottom">6</property>
+                <property name="margin_start">6</property>
+                <property name="margin_end">6</property>
+              </object>
+            </property>
+          </object>
+        </child>
+
+        <!-- Tools Page -->
+        <child>
+          <object class="GtkStackPage" id="tools_stackpage">
+            <property name="name">tools_page</property>
+            <property name="title" translatable="yes">Tools</property>
+            <property name="child">
+              <object class="RnToolsPage" id="tools_page">
+                <property name="margin_top">6</property>
+                <property name="margin_bottom">6</property>
+                <property name="margin_start">6</property>
+                <property name="margin_end">6</property>
+              </object>
+            </property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

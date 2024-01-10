@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="RnCanvasWrapper" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBoxLayout" />
+    </property>
+    <property name="hexpand">true</property>
+    <property name="vexpand">true</property>
+    <property name="halign">fill</property>
+    <property name="valign">fill</property>
+    <child>
+      <object class="GtkScrolledWindow" id="scroller">
+        <style>
+          <class name="canvas_scroller" />
+        </style>
+        <property name="propagate-natural-width">false</property>
+        <property name="propagate-natural-height">false</property>
+        <property name="halign">fill</property>
+        <property name="valign">fill</property>
+        <property name="vexpand">true</property>
+        <property name="hexpand">true</property>
+        <property name="window-placement">bottom-right</property>
+        <property name="overlay-scrolling">true</property>
+        <child>
+          <object class="RnCanvas" id="canvas">
+            <property name="halign">center</property>
+            <property name="valign">start</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

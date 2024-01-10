@@ -1,0 +1,245 @@
+.sidebar_action_button {
+    min-width: 42px;
+    min-height: 42px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.sidebar_action_button > image,
+.sidebar_action_button > box > image,
+.sidebar_action_button > button > box > image
+{
+    -gtk-icon-size: 32px;
+}
+
+.cursor_picker_button {
+    min-width: 42px;
+    min-height: 42px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.cursor_picker_button > image,
+.cursor_picker_button > box image,
+.cursor_picker_button > button > box > image
+{
+    -gtk-icon-size: 32px;
+}
+
+.main_title.unsaved_changes .title {
+    font-style: italic;
+    transition: font-style 0.2s;
+}
+
+.canvas_scroller {
+    background-color: rgba(120, 120, 130, 0.2);
+}
+
+.modifiernode {
+    color: rgba(0, 60, 240, 255);
+    transition: color 0.15s;
+}
+
+.modifiernode:hover {
+    color: rgba(0, 200, 20, 255);
+}
+
+.flat-destructive-action {
+    color: @destructive_color;
+}
+
+.colorpad {
+    padding: 0px;
+    margin: 0px;
+    background-blend-mode: screen;
+    background-image:
+        linear-gradient(45deg, #0f0f0f55 25%, transparent 25%, transparent 75%, #0f0f0f55 75%, #0f0f0f55),
+        linear-gradient(45deg, #0f0f0f55 25%, transparent 25%, transparent 75%, #0f0f0f55 75%, #0f0f0f55);
+    background-color: @colorpad_color;
+    color: @colorpad_fg_color;
+    background-size: 18px 18px;
+    background-position: 0px 0px, 9px 9px;
+    border: 1px solid @borders;
+    border-radius: 12px;
+    transition: all 0.15s ease-out;
+}
+
+.colorpad:hover {
+    filter: brightness(93%);
+}
+
+.colorpad:active {
+    filter: brightness(86%);
+}
+
+.colorpad:checked {
+    filter: brightness(100%);
+    border-color: alpha(@accent_color, 1.0);
+    box-shadow: 0px 0px 6px @accent_bg_color;
+}
+
+.colorsetter {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0px;
+    margin: 0px;
+    background-blend-mode: screen;
+    background-image:
+        linear-gradient(45deg, #0f0f0f55 25%, transparent 25%, transparent 75%, #0f0f0f55 75%, #0f0f0f55),
+        linear-gradient(45deg, #0f0f0f55 25%, transparent 25%, transparent 75%, #0f0f0f55 75%, #0f0f0f55);
+    background-color: @colorsetter_color;
+    color: @colorsetter_fg_color;
+    background-size: 18px 18px;
+    background-position: 0px 0px, 9px 9px;
+    border: 1px solid @borders;
+    filter: brightness(100%);
+    border-radius: 2px;
+    transition: all 0.15s ease-out;
+}
+
+.colorsetter:hover {
+    filter: brightness(93%);
+}
+
+.colorsetter:active {
+    filter: brightness(86%);
+}
+
+.colorsetter:checked {
+    filter: brightness(100%);
+    box-shadow: inset 0px -3px 0px 0px @colorsetter_fg_color;
+}
+
+.strokewidthsetter {
+    min-width: 42px;
+    min-height: 42px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.workspace-listbox {
+    transition: color 0.15s;
+}
+
+.files-listview row {
+    border-radius: 6px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+/*
+.workspaces-listbox row:selected {
+}
+*/
+
+/*
+from https://gitlab.com/posidon_software/paper/-/blob/main/src/css/style.css
+*/
+.workspacerow {
+    min-width: 30px;
+    min-height: 40px;
+    margin: 4px 3px;
+    padding: 3px;
+    transition: opacity .1s;
+    opacity: 0.75;
+    background-image:
+        linear-gradient(mix(@workspacerow_color, #fff, 0.15) 0%,
+            mix(@workspacerow_color, #fff, 0.1) 50%,
+            alpha(mix(@workspacerow_color, #fff, 0.05), 0.6) 75%,
+            alpha(@workspacerow_color, 0) 100%),
+        linear-gradient(mix(@workspacerow_color, #fff, 0.2), @workspacerow_color);
+    border-radius: 0 3px 3px 0;
+    color: @workspacerow_fg_color;
+    box-shadow:
+        inset 0 .5px 0px 0px rgba(255, 255, 255, 0.2),
+        inset 3px 0 0 0 shade(@workspacerow_color, 0.8),
+        inset 0 -2px 0px 0px #f0f3f8,
+        inset 0 -1px 0px 0px @workspacerow_color,
+        inset 1px 0 0 0 shade(@workspacerow_color, 0.8),
+        inset 0 -3px 0px 0px rgba(0, 0, 0, 0.2);
+}
+
+.workspacerow > label {
+    font-size: 11px;
+}
+.workspacerow > image {
+    -gtk-icon-size: 16px;
+}
+
+.workspacerow.preview {
+    min-width: 60px;
+    min-height: 80px;
+    margin: 6px;
+    padding: 6px;
+}
+
+.workspacerow.preview > image {
+    -gtk-icon-size: 32px;
+}
+.workspacerow.preview > label {
+    font-size: 22px;
+}
+
+.groupediconpicker_listbox {
+    padding: 6px;
+}
+
+.iconpicker_label,
+.groupediconpicker_label {
+    line-height: 1.25em; /* close to the default line height */
+    min-height: 2.5em; /* 2 lines, i.e. 1.25em * 2 */
+}
+
+.iconpicker_gridview,
+.groupediconpicker_scrolledwindow viewport {
+    border-radius: 6px;
+}
+
+.iconpicker_gridview child,
+.groupediconpickergroup_flowbox flowboxchild {
+    margin: 2px;
+}
+
+/* https://gitlab.gnome.org/GNOME/libadwaita/-/blob/main/src/stylesheet/_common.scss#L1 */
+.groupediconpickergroup_flowbox flowboxchild {
+    transition: background 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* https://gitlab.gnome.org/GNOME/libadwaita/-/blob/main/src/stylesheet/_colors.scss#L62-L66 */
+.groupediconpickergroup_flowbox flowboxchild:hover {
+    background: alpha(currentColor, 0.07);
+}
+.groupediconpickergroup_flowbox flowboxchild:active {
+    background: alpha(currentColor, 0.16);
+}
+.groupediconpickergroup_flowbox flowboxchild:selected {
+    background: alpha(currentColor, 0.1);
+}
+.groupediconpickergroup_flowbox flowboxchild:selected:hover {
+    background: alpha(currentColor, 0.13);
+}
+.groupediconpickergroup_flowbox flowboxchild:selected:active {
+    background: alpha(currentColor, 0.19);
+}
+
+.overlay_toolbar {
+    padding: 6px;
+    border-radius: 12px;
+    background-color: @window_bg_color;
+    border: 1px solid @borders;
+    box-shadow: 0px 3px 6px @shade_color;
+}
+
+.overlay_toolbar_scrollable {
+    padding: 0px;
+    border-radius: 12px;
+    background-color: @window_bg_color;
+    border: 1px solid @borders;
+    box-shadow: 0px 3px 6px @shade_color;
+}
+
+toast {
+    margin-bottom: 72px;
+    margin-left: 72px;
+    margin-right: 72px;
+}

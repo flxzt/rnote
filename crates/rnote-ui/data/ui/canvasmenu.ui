@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="RnCanvasMenu" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBinLayout" />
+    </property>
+    <child>
+      <object class="GtkMenuButton" id="menubutton">
+        <property name="icon_name">canvasmenu-symbolic</property>
+      </object>
+    </child>
+    <object class="GtkPopoverMenu" id="popovermenu">
+      <property name="menu-model">menu_model</property>
+      <property name="width-request">300</property>
+      <property name="hexpand">true</property>
+      <menu id="menu_model">
+        <section>
+          <item>
+            <attribute name="custom">canvas_quickcontrols_attr</attribute>
+          </item>
+        </section>
+        <section>
+          <submenu>
+            <attribute name="label" translatable="yes">_Document Layout</attribute>
+            <section>
+              <item>
+                <attribute name="label" translatable="yes">_Fixed Size</attribute>
+                <attribute name="action">win.doc-layout</attribute>
+                <attribute name="target">fixed-size</attribute>
+              </item>
+              <item>
+                <attribute name="label" translatable="yes">_Continuous Vertical</attribute>
+                <attribute name="action">win.doc-layout</attribute>
+                <attribute name="target">continuous-vertical</attribute>
+              </item>
+              <item>
+                <attribute name="label" translatable="yes">_Semi Infinite</attribute>
+                <attribute name="action">win.doc-layout</attribute>
+                <attribute name="target">semi-infinite</attribute>
+              </item>
+              <item>
+                <attribute name="label" translatable="yes">_Infinite</attribute>
+                <attribute name="action">win.doc-layout</attribute>
+                <attribute name="target">infinite</attribute>
+              </item>
+            </section>
+          </submenu>
+          <item>
+            <attribute name="label" translatable="yes">_Snap Positions</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.snap-positions</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">_Pen Sounds</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.pen-sounds</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">_Return to Origin Page</attribute>
+            <attribute name="action">win.return-origin-page</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">C_lear Document</attribute>
+            <attribute name="action">win.clear-doc</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="label" translatable="yes">Show _Format Borders</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.show-format-borders</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Show _Origin Indicator</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.show-origin-indicator</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Draw With _Touch Input</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.touch-drawing</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Block Pinch to _Zoom</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.block-pinch-zoom</attribute>
+          </item>
+        </section>
+      </menu>
+
+      <child type="canvas_quickcontrols_attr">
+        <object class="GtkBox">
+          <property name="orientation">vertical</property>
+          <property name="hexpand">false</property>
+          <property name="vexpand">false</property>
+          <property name="margin-top">3</property>
+          <property name="margin-bottom">3</property>
+          <property name="margin-start">3</property>
+          <property name="margin-end">3</property>
+          <property name="spacing">6</property>
+          <child>
+            <object class="GtkBox">
+              <property name="orientation">horizontal</property>
+              <property name="spacing">6</property>
+              <child>
+                <object class="GtkBox">
+                  <style>
+                    <class name="linked" />
+                  </style>
+                  <property name="orientation">horizontal</property>
+                  <property name="hexpand">true</property>
+                  <child>
+                    <object class="GtkButton" id="zoom_out_button">
+                      <property name="icon_name">zoom-out-symbolic</property>
+                      <property name="tooltip_text" translatable="yes">Zoom out</property>
+                      <property name="width-request">50</property>
+                      <property name="hexpand">false</property>
+                      <property name="action-name">win.zoom-out</property>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkButton" id="zoom_reset_button">
+                      <property name="action-name">win.zoom-reset</property>
+                      <property name="tooltip_text" translatable="yes">Reset Zoom</property>
+                      <property name="hexpand">true</property>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkButton" id="zoom_in_button">
+                      <property name="icon_name">zoom-in-symbolic</property>
+                      <property name="tooltip_text" translatable="yes">Zoom in</property>
+                      <property name="width-request">50</property>
+                      <property name="hexpand">false</property>
+                      <property name="action-name">win.zoom-in</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="GtkButton" id="zoom_fit_width_button">
+                  <property name="hexpand">false</property>
+                  <property name="icon_name">zoom-fit-width-symbolic</property>
+                  <property name="tooltip_text" translatable="yes">Zoom to Page Width</property>
+                  <property name="action-name">win.zoom-fit-width</property>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
+            <object class="GtkBox" id="fixedsize_quickactions_box">
+              <property name="orientation">horizontal</property>
+              <property name="spacing">6</property>
+              <property name="hexpand">true</property>
+              <property name="homogeneous">true</property>
+              <child>
+                <object class="GtkButton">
+                  <property name="icon_name">remove-page-symbolic</property>
+                  <property name="tooltip_text" translatable="yes">Remove Page.
+Available in Fixed-Size Document Layout.</property>
+                  <property name="action-name">win.remove-page-from-doc</property>
+                  <property name="hexpand">true</property>
+                </object>
+              </child>
+              <child>
+                <object class="GtkButton">
+                  <property name="icon_name">add-page-symbolic</property>
+                  <property name="tooltip_text" translatable="yes">Add Page.
+Available in Fixed-Size Document Layout.</property>
+                  <property name="action-name">win.add-page-to-doc</property>
+                  <property name="hexpand">true</property>
+                </object>
+              </child>
+              <child>
+                <object class="GtkButton">
+                  <property name="icon_name">resize-to-fit-content-symbolic</property>
+                  <property name="tooltip_text" translatable="yes">Resize Document to Fit Content.
+Available in Fixed-Size Document Layout.</property>
+                  <property name="action-name">win.resize-to-fit-content</property>
+                      <property name="hexpand">true</property>
+                </object>
+              </child>
+            </object>
+          </child>
+        </object>
+      </child>
+    </object>
+  </template>
+</interface>

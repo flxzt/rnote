@@ -62,7 +62,9 @@ impl StrokeContent {
 
     /// Generate a Svg from the content.
     ///
-    // Moves the bounds to mins: [0.0, 0.0], maxs: extents.
+    /// Moves the bounds to mins: [0.0, 0.0], maxs: extents.
+    ///
+    /// Returns Ok(None) if there is no content stored.
     pub fn gen_svg(
         &self,
         draw_background: bool,
@@ -70,10 +72,10 @@ impl StrokeContent {
         optimize_printing: bool,
         margin: f64,
     ) -> anyhow::Result<Option<Svg>> {
-        let Some(bounds) = self.bounds() else {
+        let Some(bounds_loosened) = self.bounds().map(|b| b.loosened(margin)) else {
             return Ok(None);
         };
-        let mut content_svg = Svg::gen_with_cairo(
+        let mut svg = Svg::gen_with_cairo(
             |cairo_cx| {
                 self.draw_to_cairo(
                     cairo_cx,
@@ -84,14 +86,13 @@ impl StrokeContent {
                     1.0,
                 )
             },
-            bounds,
+            bounds_loosened,
         )?;
         // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
-        if let Err(e) = content_svg.simplify() {
+        if let Err(e) = svg.simplify() {
             tracing::warn!("Simplifying Svg while generating StrokeContent Svg failed, Err: {e:?}");
         };
-
-        Ok(Some(content_svg))
+        Ok(Some(svg))
     }
 
     pub fn draw_to_cairo(

@@ -478,7 +478,7 @@ msgstr "S teksturo"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:106
 msgid "Draw textured strokes"
-msgstr "Riši poteze s teksturo"
+msgstr "Riši teksturne poteze"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:142
 msgid "Path Modelling"

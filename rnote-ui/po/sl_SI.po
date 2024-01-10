@@ -444,7 +444,7 @@ msgstr "Nastavite obrobni razmik okoli izbranega območja"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
-msgstr "Slog čopiča"
+msgstr "Stil čopiča"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:133

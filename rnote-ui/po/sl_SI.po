@@ -1023,7 +1023,7 @@ msgstr "Barva poteze"
 
 #: rnote-ui/data/ui/colorpicker.ui:26
 msgid "Fill Color"
-msgstr "Zapolni barvo"
+msgstr "Zapolnitvena barva"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:90
 msgid "Open"

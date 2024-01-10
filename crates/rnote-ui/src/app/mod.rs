@@ -128,7 +128,7 @@ mod imp {
         }
 
         /// Initializes and shows a new app window
-        pub fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
+        pub(crate) fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
             let appwindow = RnAppWindow::new(self.obj().upcast_ref::<gtk4::Application>());
             appwindow.init();
             appwindow.present();

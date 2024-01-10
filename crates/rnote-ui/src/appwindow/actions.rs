@@ -126,6 +126,8 @@ impl RnAppWindow {
         self.add_action(&action_selection_deselect_all);
         let action_clear_doc = gio::SimpleAction::new("clear-doc", None);
         self.add_action(&action_clear_doc);
+        let action_new_doc = gio::SimpleAction::new("new-doc", None);
+        self.add_action(&action_new_doc);
         let action_save_doc = gio::SimpleAction::new("save-doc", None);
         self.add_action(&action_save_doc);
         let action_save_doc_as = gio::SimpleAction::new("save-doc-as", None);
@@ -563,6 +565,13 @@ impl RnAppWindow {
 
             let widget_flags = canvas.engine_mut().return_to_origin(canvas.parent().map(|p| p.width() as f64));
             appwindow.handle_widget_flags(widget_flags, &canvas);
+        }));
+
+        // New doc
+        action_new_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                dialogs::dialog_new_doc(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
+            }));
         }));
 
         // Open doc

@@ -436,7 +436,7 @@ msgstr "Format izvoza slike"
 # Maby ("Zunanji rob")
 #: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
-msgstr "Rob"
+msgstr "Obrobni razmik"
 
 #: rnote-ui/data/ui/dialogs/export.ui:506
 msgid "Set the margin around the selected area"

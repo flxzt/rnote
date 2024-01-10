@@ -440,7 +440,7 @@ msgstr "Obrobni razmik"
 
 #: rnote-ui/data/ui/dialogs/export.ui:506
 msgid "Set the margin around the selected area"
-msgstr "Nastavite rob okoli izbranega območja"
+msgstr "Nastavite obrobni razmik okoli izbranega območja"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"

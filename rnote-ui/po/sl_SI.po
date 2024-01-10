@@ -418,7 +418,7 @@ msgstr "Jpeg"
 #: rnote-ui/data/ui/dialogs/export.ui:315
 #: rnote-ui/data/ui/dialogs/export.ui:484
 msgid "Jpeg Quality"
-msgstr "Jpeg kvalitetno"
+msgstr "Jpeg kvaliteta"
 
 #: rnote-ui/data/ui/dialogs/export.ui:316
 #: rnote-ui/data/ui/dialogs/export.ui:485

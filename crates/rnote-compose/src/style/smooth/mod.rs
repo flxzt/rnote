@@ -273,7 +273,7 @@ impl Composer<SmoothOptions> for PenPath {
                         let n_splits = penpath::no_subsegments_for_segment_len(
                             quadbez.outline_path().perimeter(0.25),
                         )
-                        .max(2);
+                        .max(0);
                         let lines = quadbez.approx_with_lines(n_splits);
                         let bez_path =
                             compose_lines_variable_width(&lines, width_start, width_end, options);
@@ -300,7 +300,7 @@ impl Composer<SmoothOptions> for PenPath {
                         let n_splits = penpath::no_subsegments_for_segment_len(
                             cubbez.outline_path().perimeter(0.25),
                         )
-                        .max(2);
+                        .max(0);
                         let lines = cubbez.approx_with_lines(n_splits);
                         let bez_path =
                             compose_lines_variable_width(&lines, width_start, width_end, options);

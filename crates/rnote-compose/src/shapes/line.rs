@@ -78,7 +78,7 @@ impl Line {
     }
 
     /// Split itself given the number of splits.
-    pub fn split(&self, n_splits: i32) -> Vec<Self> {
+    pub fn split(&self, n_splits: u32) -> Vec<Self> {
         (0..n_splits)
             .map(|i| {
                 let sub_start = self

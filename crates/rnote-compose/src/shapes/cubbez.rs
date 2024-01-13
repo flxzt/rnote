@@ -152,7 +152,7 @@ impl CubicBezier {
     }
 
     /// Approximate a cubic bezier with lines, given the number of splits.
-    pub fn approx_with_lines(&self, n_splits: i32) -> Vec<Line> {
+    pub fn approx_with_lines(&self, n_splits: u32) -> Vec<Line> {
         let mut lines = Vec::new();
 
         for i in 0..n_splits {
@@ -177,7 +177,7 @@ pub fn cubbez_calc(
     p3: na::Vector2<f64>,
     t: f64,
 ) -> na::Vector2<f64> {
-    let transform_matrix = na::matrix![
+    const TRANSFORM: na::Matrix4<f64> = na::matrix![
         1.0, 0.0, 0.0, 0.0;
         -3.0, 3.0, 0.0, 0.0;
         3.0, -6.0, 3.0, 0.0;
@@ -190,6 +190,5 @@ pub fn cubbez_calc(
         p3[0], p3[1]
     ];
 
-    (na::vector![1.0, t, t.powi(2), t.powi(3)].transpose() * transform_matrix * p_matrix)
-        .transpose()
+    (na::vector![1.0, t, t.powi(2), t.powi(3)].transpose() * TRANSFORM * p_matrix).transpose()
 }

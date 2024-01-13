@@ -103,7 +103,7 @@ impl QuadraticBezier {
     }
 
     /// Approximate with lines, given the number of splits.
-    pub fn approx_with_lines(&self, n_splits: i32) -> Vec<Line> {
+    pub fn approx_with_lines(&self, n_splits: u32) -> Vec<Line> {
         let mut lines = Vec::new();
 
         for i in 0..n_splits {

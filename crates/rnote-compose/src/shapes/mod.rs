@@ -33,8 +33,8 @@ pub use shape::Shape;
 pub use shapeable::Shapeable;
 
 /// Calculate the number hitbox elems for the given length ( e.g. length of a line, curve, etc.).
-fn hitbox_elems_for_shape_len(len: f64) -> i32 {
+fn hitbox_elems_for_shape_len(len: f64) -> u32 {
     const MAX_HITBOX_DIAGONAL: f64 = 15.0;
 
-    ((len / MAX_HITBOX_DIAGONAL).ceil() as i32).max(1)
+    (len / MAX_HITBOX_DIAGONAL).round().max(0.) as u32
 }

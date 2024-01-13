@@ -261,13 +261,13 @@ impl Extend<Segment> for PenPath {
 
 /// Calculates the number subsegment elements (for hitboxes/ flattening of bezier curve)
 /// for the given segment length, capped with a maximum no of hitbox elements
-pub(crate) fn no_subsegments_for_segment_len(len: f64) -> i32 {
+pub(crate) fn no_subsegments_for_segment_len(len: f64) -> u32 {
     // Maximum hitbox diagonal ( below the threshold )
     const MAX_HITBOX_DIAGONAL: f64 = 15.0;
-    const MAX_SUBSEGMENT_ELEMENTS: i32 = 5;
+    const MAX_SUBSEGMENT_ELEMENTS: u32 = 5;
 
     if len < MAX_HITBOX_DIAGONAL * f64::from(MAX_SUBSEGMENT_ELEMENTS) {
-        ((len / MAX_HITBOX_DIAGONAL).ceil() as i32).max(1)
+        (len / MAX_HITBOX_DIAGONAL).round().max(0.) as u32
     } else {
         // capping the no of elements for bigger len's,
         // avoiding huge amounts of hitboxes for large strokes that are drawn when zoomed out

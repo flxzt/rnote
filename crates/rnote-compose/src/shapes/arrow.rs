@@ -95,7 +95,7 @@ impl Arrow {
     }
 
     /// Split the stem of the arrow into the given number of lines.
-    pub fn split(&self, n_splits: i32) -> Vec<Line> {
+    pub fn split(&self, n_splits: u32) -> Vec<Line> {
         (0..n_splits)
             .map(|i| {
                 let sub_start = self

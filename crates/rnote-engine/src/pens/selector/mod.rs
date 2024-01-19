@@ -468,8 +468,8 @@ impl Selector {
     const SELECTING_SINGLE_CIRCLE_RADIUS: f64 = 4.0;
     /// Resize node size, in surface coordinates.
     const RESIZE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
-    /// Rotate node size, in surface coordinates.
-    const ROTATE_NODE_SIZE: f64 = 18.0;
+    /// Rotate node diameter, in surface coordinates.
+    const ROTATE_NODE_DIAMETER: f64 = 18.0;
     /// The outline color when drawing a selection
     const SELECTION_OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(240);
     /// The fill color when drawing a selection
@@ -519,7 +519,7 @@ impl Selector {
             selection_bounds.maxs[0],
             (selection_bounds.maxs[1] + selection_bounds.mins[1]) * 0.5
         ];
-        BoundingSphere::new(pos, Self::ROTATE_NODE_SIZE * 0.5 / total_zoom)
+        BoundingSphere::new(pos, Self::ROTATE_NODE_DIAMETER * 0.5 / total_zoom)
     }
 
     fn draw_selection_overlay(

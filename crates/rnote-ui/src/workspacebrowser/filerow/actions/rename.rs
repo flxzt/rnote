@@ -16,21 +16,24 @@ pub(crate) fn rename(filerow: &RnFileRow) -> gio::SimpleAction {
     let rename_action = gio::SimpleAction::new("rename-file", None);
 
     rename_action.connect_activate(clone!(@weak filerow => move |_action_rename_file, _| {
-        if let Some(current_file) = filerow.current_file() {
-            if let Some(current_path) = current_file.path() {
-                if let Some(parent_path) = current_path.parent().map(|parent_path| parent_path.to_path_buf()) {
-                    let entry = create_entry(&current_path);
-                    let label = create_label();
-                    let (apply_button, popover) = widgethelper::create_entry_dialog(&entry, &label);
+        let Some(current_file) = filerow.current_file() else {
+            return;
+        };
+        let Some(current_path) = current_file.path() else {
+            return;
+        };
+        if let Some(parent_path) = current_path.parent().map(|parent_path| parent_path.to_path_buf()) {
+            let entry = create_entry(&current_path);
+            let label = create_label();
+            let (apply_button, popover) = widgethelper::create_entry_dialog(&entry, &label);
 
-                    filerow.menubutton_box().append(&popover);
+            filerow.menubutton_box().append(&popover);
 
-                    connect_entry(&entry, &apply_button, parent_path.clone());
-                    connect_apply_button(&apply_button, &popover, &entry, parent_path, current_file);
+            connect_entry(&entry, &apply_button, parent_path.clone());
+            connect_apply_button(&apply_button, &popover, &entry, parent_path, current_file);
 
-                    popover.popup();
-                }
-            }
+            popover.popup();
+            entry_text_select_stem(&entry);
         }
     }));
 
@@ -38,15 +41,28 @@ pub(crate) fn rename(filerow: &RnFileRow) -> gio::SimpleAction {
 }
 
 fn create_entry(current_path: impl AsRef<Path>) -> Entry {
-    let entry_name = current_path
+    let entry_text = current_path
         .as_ref()
         .file_name()
         .map(|current_file_name| current_file_name.to_string_lossy().to_string())
         .unwrap_or_else(|| String::from(""));
 
     Entry::builder()
-        .text(glib::GString::from(entry_name))
+        .text(glib::GString::from(entry_text))
         .build()
+}
+
+fn entry_text_select_stem(entry: &Entry) {
+    let entry_text = entry.text();
+    let stem_end = entry_text.match_indices('.').map(|(i, _)| i).last();
+
+    // Select entire text first
+    entry.grab_focus();
+    if let Some(i) = stem_end {
+        // Select only the file stem
+        tracing::debug!("i: {i}");
+        entry.select_region(0, i as i32);
+    }
 }
 
 fn create_label() -> Label {

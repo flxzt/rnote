@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-01-07 18:37+0100\n"
-"PO-Revision-Date: 2024-01-21 13:50+0000\n"
+"PO-Revision-Date: 2024-01-22 13:09+0000\n"
 "Last-Translator: Ryo Nakano <ryonakaknock3@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/>"
 "\n"
@@ -1047,7 +1047,7 @@ msgstr "文書をエクスポート(_D)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:115
 msgid "Export Document _Pages"
-msgstr "文書をページごとにエクスポート(_P)"
+msgstr "文書をページ単位でエクスポート(_P)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:119
 msgid "Export _Selection"
@@ -1189,32 +1189,29 @@ msgstr ""
 #: crates/rnote-ui/data/ui/filerow.ui:61
 #: crates/rnote-ui/src/dialogs/import.rs:26
 msgid "Open"
-msgstr ""
+msgstr "開く"
 
 #: crates/rnote-ui/data/ui/filerow.ui:65
 msgid "Open in Default App"
-msgstr ""
+msgstr "デフォルトアプリで開く"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
-msgstr ""
+msgstr "名前を変更"
 
 #: crates/rnote-ui/data/ui/filerow.ui:73
-#, fuzzy
-#| msgid "Move into trash"
 msgid "Move to Trash"
-msgstr "ゴミ箱に移動する"
+msgstr "ゴミ箱に移動"
 
 #: crates/rnote-ui/data/ui/filerow.ui:77
-#, fuzzy
 msgid "Duplicate"
-msgstr "選択範囲を複製"
+msgstr "複製"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
 #: crates/rnote-ui/src/canvas/mod.rs:595
 msgid "Draft"
-msgstr ""
+msgstr "下書き"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
@@ -1643,38 +1640,32 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:93
 msgid "View"
-msgstr ""
+msgstr "表示"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:97
 msgid "Alt + Drag"
-msgstr ""
+msgstr "Alt + ドラッグ"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:138
-#, fuzzy
-#| msgid "Zoom out"
 msgid "Zoom in/out"
-msgstr "縮小"
+msgstr "拡大/縮小"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:139
 msgid "Alt + Shift + Drag"
-msgstr ""
+msgstr "Alt + Shift + ドラッグ"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:155
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Open Document"
-msgstr "選択範囲をSVGに保存"
+msgstr "文書を開く"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:167
 #: crates/rnote-ui/src/dialogs/export.rs:30
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Save Document As"
-msgstr "選択範囲をSVGに保存"
+msgstr "文書を別名で保存"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:173
 msgid "Snap Positions"
-msgstr ""
+msgstr "位置をスナップ"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Add Page (When in Fixed-Size Layout)"
@@ -1685,33 +1676,29 @@ msgid "Remove Last Page (When in Fixed-Size Layout)"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:197
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Print Document"
-msgstr "選択範囲をSVGに保存"
+msgstr "文書を印刷"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:203
 #: crates/rnote-ui/src/dialogs/import.rs:66
-#, fuzzy
-#| msgid "Selector"
 msgid "Import File"
-msgstr "選択"
+msgstr "ファイルをインポート"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:209
 msgid "Drawing"
-msgstr ""
+msgstr "描画"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:212
 msgid "Copy to Clipboard"
-msgstr ""
+msgstr "クリップボードにコピー"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:218
 msgid "Cut to Clipboard"
-msgstr ""
+msgstr "クリップボードに切り取り"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:224
 msgid "Paste Clipboard"
-msgstr ""
+msgstr "クリップボードに貼り付け"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:236
 msgid "Undo"
@@ -1730,15 +1717,12 @@ msgid "Settings"
 msgstr "設定"
 
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:79
-#, fuzzy
 msgid "Page"
-msgstr "ページを追加"
+msgstr "ページ"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Move Directory up"
-msgstr "選択範囲をSVGに保存"
+msgstr "ディレクトリを上に移動"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:81
 msgid "Workspace Directory Actions"
@@ -1746,7 +1730,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:163
 msgid "Create new Folder"
-msgstr ""
+msgstr "新しいフォルダーを作成"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:596
 #: crates/rnote-ui/src/appwindow/imp.rs:248
@@ -1754,261 +1738,220 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:257
 #: crates/rnote-ui/src/dialogs/mod.rs:411
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
 msgid "Saving document failed"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr "文書を保存できませんでした"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:659
 msgid "Printing document failed"
-msgstr ""
+msgstr "文書を印刷できませんでした"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:695
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
 msgid "Exporting selection failed, nothing selected"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr "選択範囲をエクスポートできませんでした: 選択範囲がありません"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
 msgid "Button 1"
-msgstr ""
+msgstr "ボタン 1"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:275
 msgid "Button 2"
-msgstr ""
+msgstr "ボタン 2"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:282
 msgid "Button 3"
-msgstr ""
+msgstr "ボタン 3"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:289
 msgid "Button 4"
-msgstr ""
+msgstr "ボタン 4"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:126
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
-msgstr ""
+msgstr "設定スキーマがインストールされていません。アプリの設定の読み込みと保存ができ"
+"ません。"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:458
-#, fuzzy
-#| msgid "Opening bitmap image file failed."
 msgid "Opening file failed"
-msgstr "ビットマップ画像の読み込みに失敗しました。"
+msgstr "ファイルを開けませんでした"
 
 #: crates/rnote-ui/src/canvas/mod.rs:867 crates/rnote-ui/src/dialogs/mod.rs:204
 #: crates/rnote-ui/src/dialogs/mod.rs:341
 msgid "- invalid file name -"
-msgstr ""
+msgstr "- 無効なファイル名 -"
 
 #: crates/rnote-ui/src/canvas/mod.rs:880
 msgid "- invalid folder path -"
-msgstr ""
+msgstr "- 無効なフォルダーパス -"
 
 #: crates/rnote-ui/src/canvas/mod.rs:922
 msgid "Opened file was modified on disk"
-msgstr ""
+msgstr "開いているファイルがディスク上で変更されました"
 
 #: crates/rnote-ui/src/canvas/mod.rs:923
 msgid "Reload"
-msgstr ""
+msgstr "再読み込み"
 
 #: crates/rnote-ui/src/canvas/mod.rs:930
 msgid "Reloading .rnote file from disk failed"
-msgstr ""
+msgstr "ディスクから.rnoteファイルを再読み込みできませんでした"
 
 #: crates/rnote-ui/src/canvas/mod.rs:994
 msgid "Opened file was renamed on disk"
-msgstr ""
+msgstr "開いているファイルの名前がディスク上で変更されました"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1007
 msgid "Opened file was moved or deleted on disk"
-msgstr ""
+msgstr "開いているファイルがディスク上で移動または削除されました"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1139
-#, fuzzy
-#| msgid "Opening bitmap image file failed."
 msgid "Inserting file failed"
-msgstr "ビットマップ画像の読み込みに失敗しました。"
+msgstr "ファイルを挿入できませんでした"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1149
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
 msgid "Inserting text failed"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr "テキストを挿入できませんでした"
 
 #: crates/rnote-ui/src/dialogs/export.rs:27
 #: crates/rnote-ui/src/dialogs/import.rs:21
 msgid ".rnote"
-msgstr ""
+msgstr ".rnote"
 
 #: crates/rnote-ui/src/dialogs/export.rs:55
-#, fuzzy
-#| msgid "Exported document as .xopp successfully."
 msgid "Saved document successfully"
-msgstr ".xoppに保存しました。"
+msgstr "文書を保存しました"
 
 #: crates/rnote-ui/src/dialogs/export.rs:226
 #: crates/rnote-ui/src/dialogs/export.rs:239
 #: crates/rnote-ui/src/dialogs/export.rs:536
 #: crates/rnote-ui/src/dialogs/export.rs:804
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
 msgid "Exporting document failed"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr "文書をエクスポートできませんでした"
 
 #: crates/rnote-ui/src/dialogs/export.rs:230
-#, fuzzy
-#| msgid "Exported document as .xopp successfully."
 msgid "Exported document successfully"
-msgstr ".xoppに保存しました。"
+msgstr "文書をエクスポートしました"
 
 #: crates/rnote-ui/src/dialogs/export.rs:231
 #: crates/rnote-ui/src/dialogs/export.rs:532
 #: crates/rnote-ui/src/dialogs/export.rs:796
 msgid "View in file manager"
-msgstr ""
+msgstr "ファイルマネージャーで表示"
 
 #: crates/rnote-ui/src/dialogs/export.rs:245
 #: crates/rnote-ui/src/dialogs/export.rs:542
 #: crates/rnote-ui/src/dialogs/export.rs:810
 msgid "Failed to open the file in the file manager"
-msgstr ""
+msgstr "ファイルをファイルマネージャーで表示できませんでした"
 
 #: crates/rnote-ui/src/dialogs/export.rs:255
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
 msgid "Exporting document failed, no file selected"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr "文書をエクスポートできませんでした: ファイルが未選択です"
 
 #: crates/rnote-ui/src/dialogs/export.rs:270
 #: crates/rnote-ui/src/dialogs/export.rs:567
 #: crates/rnote-ui/src/dialogs/export.rs:856
 #: crates/rnote-ui/src/dialogs/mod.rs:509
 msgid "Select"
-msgstr ""
+msgstr "選択"
 
 #: crates/rnote-ui/src/dialogs/export.rs:527
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
 msgid "Exporting document pages failed"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr "文書をページ単位でエクスポートできませんでした"
 
 #: crates/rnote-ui/src/dialogs/export.rs:531
-#, fuzzy
-#| msgid "Exported document as .xopp successfully."
 msgid "Exported document pages successfully"
-msgstr ".xoppに保存しました。"
+msgstr "文書をページ単位でエクスポートしました"
 
 #: crates/rnote-ui/src/dialogs/export.rs:551
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
 msgid "Exporting document pages failed, no directory selected"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr "文書をページ単位でエクスポートできませんでした: ディレクトリが未選択です"
 
 #: crates/rnote-ui/src/dialogs/export.rs:781
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
 msgid "Exporting selection failed, no file selected"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr "選択範囲をエクスポートできませんでした: ファイルが未選択です"
 
 #: crates/rnote-ui/src/dialogs/export.rs:791
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Exporting selection failed"
-msgstr "選択範囲をSVGに保存"
+msgstr "選択範囲をエクスポートできませんでした"
 
 #: crates/rnote-ui/src/dialogs/export.rs:795
-#, fuzzy
-#| msgid "Exported document as .xopp successfully."
 msgid "Exported selection successfully"
-msgstr ".xoppに保存しました。"
+msgstr "選択範囲をエクスポートしました"
 
 #: crates/rnote-ui/src/dialogs/export.rs:897
 #: crates/rnote-ui/src/dialogs/export.rs:945
 msgid "Json"
-msgstr ""
+msgstr "Json"
 
 #: crates/rnote-ui/src/dialogs/export.rs:905
-#, fuzzy
-#| msgid "Selector"
 msgid "Export Engine State"
-msgstr "選択"
+msgstr "エンジンの状態をエクスポート"
 
 #: crates/rnote-ui/src/dialogs/export.rs:923
-#, fuzzy
-#| msgid "Selector"
 msgid "Exporting engine state failed"
-msgstr "選択"
+msgstr "エンジンの状態をエクスポートできませんでした"
 
 #: crates/rnote-ui/src/dialogs/export.rs:927
-#, fuzzy
-#| msgid "Exported document as .xopp successfully."
 msgid "Exported engine state successfully"
-msgstr ".xoppに保存しました。"
+msgstr "エンジンの状態をエクスポートしました"
 
 #: crates/rnote-ui/src/dialogs/export.rs:953
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Export Engine Config"
-msgstr "選択範囲をSVGに保存"
+msgstr "エンジンの設定をエクスポート"
 
 #: crates/rnote-ui/src/dialogs/export.rs:971
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Exporting engine config failed"
-msgstr "選択範囲をSVGに保存"
+msgstr "エンジンの設定をエクスポートできませんでした"
 
 #: crates/rnote-ui/src/dialogs/export.rs:975
-#, fuzzy
-#| msgid "Exported document as .xopp successfully."
 msgid "Exported engine config successfully"
-msgstr ".xoppに保存しました。"
+msgstr "エンジンの設定をエクスポートしました"
 
 #: crates/rnote-ui/src/dialogs/import.rs:24
 msgid "Open File"
-msgstr ""
+msgstr "ファイルを開く"
 
 #: crates/rnote-ui/src/dialogs/import.rs:63
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr ""
+msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:192
 msgid "- no file name -"
-msgstr ""
+msgstr "- ファイル名なし -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:197
 msgid "- no title -"
-msgstr ""
+msgstr "- タイトルなし -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:200
 msgid "- no author -"
-msgstr ""
+msgstr "- 作者なし -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:204
 msgid "- no date -"
-msgstr ""
+msgstr "- 日付なし -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:211
 msgid "File name:"
-msgstr ""
+msgstr "ファイル名:"
 
 #: crates/rnote-ui/src/dialogs/import.rs:215
 msgid "Title:"
-msgstr ""
+msgstr "タイトル:"
 
 #: crates/rnote-ui/src/dialogs/import.rs:219
 msgid "Author:"
-msgstr ""
+msgstr "作者:"
 
 #: crates/rnote-ui/src/dialogs/import.rs:223
 msgid "Modification date:"
-msgstr ""
+msgstr "修正日:"
 
 #: crates/rnote-ui/src/dialogs/import.rs:227
 msgid "Pages:"
-msgstr ""
+msgstr "ページ数:"
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: crates/rnote-ui/src/dialogs/mod.rs:47
@@ -2020,7 +1963,7 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/mod.rs:211
 #: crates/rnote-ui/src/dialogs/mod.rs:348
 msgid "- invalid save folder name -"
-msgstr ""
+msgstr "- 無効な保存フォルダー名 -"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:227
 #: crates/rnote-ui/src/dialogs/mod.rs:363

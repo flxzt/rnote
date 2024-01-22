@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-01-07 18:37+0100\n"
-"PO-Revision-Date: 2023-11-27 14:49+0000\n"
+"PO-Revision-Date: 2024-01-22 13:09+0000\n"
 "Last-Translator: Ali-98 <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.3-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -51,8 +51,6 @@ msgstr ""
 "الإصدارات."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
-#, fuzzy
-#| msgid "An Overview"
 msgid "An overview"
 msgstr "نظرة عامة"
 
@@ -61,10 +59,8 @@ msgid "A selection"
 msgstr "انتقاء"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
-#| msgid "Switch to the 'Typewriter'"
 msgid "Write text with the typewriter"
-msgstr "بدِّل ل‍ ‹الآلة الكاتبة›"
+msgstr "اكتب بالآلة الكاتبة"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"

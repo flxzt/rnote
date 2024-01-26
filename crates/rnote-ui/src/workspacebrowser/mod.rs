@@ -430,24 +430,14 @@ fn create_files_list_header_factory(appwindow: &RnAppWindow) -> SignalListItemFa
     let factory = SignalListItemFactory::new();
 
     factory.connect_setup(clone!(@weak appwindow => move |_, list_header| {
-            let list_header = list_header.downcast_ref::<ListHeader>().unwrap();
-            let separator = Separator::builder().orientation(gtk4::Orientation::Horizontal).build();
-            list_header.set_child(Some(&separator));
-    /*
-            let header_label = Label::new(None);
-            list_header.set_child(Some(&header_label));
-
-            let list_header_expr = ConstantExpression::new(list_header);
-            let label_expr = list_header_expr.chain_closure::<String>(closure!(|_: Option<glib::Object>, list_header_obj: Option<glib::Object>| {
-                let Some(list_header_obj) = list_header_obj else {
-                    return String::new()
-                };
-                let list_header = list_header_obj.downcast::<ListHeader>().unwrap();
-                list_header.n_items().to_string()
-            }));
-            label_expr.bind(&header_label, "label", glib::Object::NONE);
-     */
-        }));
+        let list_header = list_header.downcast_ref::<ListHeader>().unwrap();
+        let separator = Separator::builder()
+            .orientation(gtk4::Orientation::Horizontal)
+            .margin_start(12)
+            .margin_end(12)
+            .build();
+        list_header.set_child(Some(&separator));
+    }));
     factory
 }
 
@@ -528,10 +518,9 @@ fn create_hidden_filter() -> CustomFilter {
     })
 }
 
-/// Sorts by if file is folder
-///
-/*
-fn create_folder_sorter() -> CustomSorter {
+/// Sorts by if file is a folder
+#[allow(unused)]
+fn create_sorter_order_folder() -> CustomSorter {
     CustomSorter::new(move |obj1, obj2| {
         let first_fileinfo = obj1.clone().downcast::<gio::FileInfo>().unwrap();
         let first_filetype = first_fileinfo.file_type();
@@ -550,7 +539,6 @@ fn create_folder_sorter() -> CustomSorter {
         }
     })
 }
- */
 
 fn create_human_numeric_sorter() -> CustomSorter {
     CustomSorter::new(move |obj1, obj2| {

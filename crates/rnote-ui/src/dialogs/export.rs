@@ -37,7 +37,7 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
     if let Some(output_file) = canvas.output_file() {
         filedialog.set_initial_file(Some(&output_file));
     } else {
-        if let Some(current_workspace_dir) = appwindow.sidebar().workspacebrowser().dirlist_dir() {
+        if let Some(current_workspace_dir) = appwindow.sidebar().workspacebrowser().dir_list_dir() {
             filedialog.set_initial_folder(Some(&gio::File::for_path(current_workspace_dir)));
         }
 
@@ -840,7 +840,7 @@ fn get_initial_folder_for_export(appwindow: &RnAppWindow, canvas: &RnCanvas) -> 
             appwindow
                 .sidebar()
                 .workspacebrowser()
-                .dirlist_dir()
+                .dir_list_dir()
                 .map(gio::File::for_path)
         })
 }

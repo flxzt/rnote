@@ -80,6 +80,7 @@ rnote_ui_sources = files(
     'workspacebrowser/workspacesbar/workspacelist.rs',
     'workspacebrowser/workspacesbar/workspacelistentry.rs',
     'workspacebrowser/workspacesbar/workspacerow.rs',
+    'workspacebrowser/fileslistsection.rs',
     'workspacebrowser/mod.rs',
     'workspacebrowser/widgethelper.rs',
     'appmenu.rs',

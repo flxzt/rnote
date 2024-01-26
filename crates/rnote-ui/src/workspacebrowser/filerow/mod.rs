@@ -215,7 +215,7 @@ impl RnFileRow {
         self.imp().popovermenu.connect_visible_notify(
             clone!(@weak self as filerow, @weak appwindow => move |w| {
                 if w.get_visible() {
-                    appwindow.sidebar().workspacebrowser().dirlist_set_selected(filerow.position());
+                    appwindow.sidebar().workspacebrowser().files_list_set_selected(Some(filerow.position()));
                 }
             }),
         );

@@ -58,10 +58,10 @@ fn entry_text_select_stem(entry: &Entry) {
 
     // Select entire text first
     entry.grab_focus();
-    if let Some(i) = stem_end {
+    if let Some(end) = stem_end {
         // Select only the file stem
-        tracing::debug!("i: {i}");
-        entry.select_region(0, i as i32);
+        tracing::debug!("file name select end position: {end}");
+        entry.select_region(0, end as i32);
     }
 }
 

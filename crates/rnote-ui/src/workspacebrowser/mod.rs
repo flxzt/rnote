@@ -18,7 +18,7 @@ use gtk4::{
     SortListModel, SorterChange, Widget,
 };
 use std::cell::RefCell;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 mod imp {
     use super::*;
@@ -276,38 +276,12 @@ impl RnWorkspaceBrowser {
         );
     }
 
-    /// Query the selection model to return the position of the file in the list
-    /// that matches with the given path.
-    pub(crate) fn query_selected_file_path_pos(
-        &self,
-        file_path: impl AsRef<Path>,
-    ) -> Option<usize> {
-        self.imp()
-            .files_selection_model
-            .borrow()
-            .iter::<glib::Object>()
-            .map(|o| o.unwrap().downcast::<gio::FileInfo>().unwrap())
-            .enumerate()
-            .find(move |(_, info)| {
-                let file = info
-                    .attribute_object("standard::file")
-                    .unwrap()
-                    .downcast::<gio::File>()
-                    .unwrap();
-                let Some(p) = file.path() else {
-                    return false;
-                };
-                p == file_path.as_ref()
-            })
-            .map(|(i, _)| i)
-    }
-
     /// Set the selected file in the list with its position/index.
-    pub(crate) fn dirlist_set_selected(&self, pos: usize) {
+    pub(crate) fn dirlist_set_selected(&self, position: u32) {
         self.imp()
             .files_selection_model
             .borrow()
-            .set_selected(pos as u32);
+            .set_selected(position);
     }
 }
 
@@ -324,6 +298,8 @@ fn create_files_list_factory(appwindow: &RnAppWindow) -> SignalListItemFactory {
             let list_item_expr = ConstantExpression::new(list_item);
             let fileinfo_expr =
                 PropertyExpression::new(ListItem::static_type(), Some(&list_item_expr), "item");
+            let position_expr =
+                PropertyExpression::new(ListItem::static_type(), Some(&list_item_expr), "position");
 
             let file_expr = fileinfo_expr.chain_closure::<Option<gio::File>>(closure!(
                 |_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
@@ -398,6 +374,7 @@ fn create_files_list_factory(appwindow: &RnAppWindow) -> SignalListItemFactory {
                 }));
 
             file_expr.bind(&filerow, "current-file", Widget::NONE);
+            position_expr.bind(&filerow, "position", Widget::NONE);
             basename_expr.bind(&filerow.file_label(), "label", Widget::NONE);
             icon_name_expr.bind(&filerow.file_image(), "gicon", Widget::NONE);
             content_provider_expr.bind(&filerow.drag_source(), "content", Widget::NONE);

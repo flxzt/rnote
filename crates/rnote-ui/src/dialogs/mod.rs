@@ -174,7 +174,7 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
     {
         Some(p)
     } else {
-        appwindow.sidebar().workspacebrowser().dirlist_dir()
+        appwindow.sidebar().workspacebrowser().dir_list_dir()
     };
 
     // Handle possible file collisions for new files
@@ -302,7 +302,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         {
             Some(p)
         } else {
-            appwindow.sidebar().workspacebrowser().dirlist_dir()
+            appwindow.sidebar().workspacebrowser().dir_list_dir()
         };
 
         // Handle possible file collisions for new files
@@ -551,7 +551,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
             appwindow
                 .sidebar()
                 .workspacebrowser()
-                .refresh_dirlist_selected_workspace();
+                .refresh_dir_list_selected_workspace();
         }
         _ => {
             // Cancel

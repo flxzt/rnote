@@ -27,7 +27,7 @@ pub(crate) async fn filedialog_open_doc(appwindow: &RnAppWindow) {
         .default_filter(&filter)
         .build();
 
-    if let Some(current_workspace_dir) = appwindow.sidebar().workspacebrowser().dirlist_dir() {
+    if let Some(current_workspace_dir) = appwindow.sidebar().workspacebrowser().dir_list_dir() {
         filedialog.set_initial_folder(Some(&gio::File::for_path(current_workspace_dir)));
     }
 
@@ -69,7 +69,7 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
         .default_filter(&filter)
         .build();
 
-    if let Some(current_workspace_dir) = appwindow.sidebar().workspacebrowser().dirlist_dir() {
+    if let Some(current_workspace_dir) = appwindow.sidebar().workspacebrowser().dir_list_dir() {
         dialog.set_initial_folder(Some(&gio::File::for_path(current_workspace_dir)));
     }
 

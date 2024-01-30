@@ -301,7 +301,7 @@ impl RnWorkspacesBar {
                     let name = entry.name();
                     appwindow.sidebar().workspacebrowser().active_workspace_name_label().set_label(&name);
                     appwindow.sidebar().workspacebrowser().active_workspace_dir_label().set_label(&dir);
-                    appwindow.sidebar().workspacebrowser().set_dirlist_file(Some(&gio::File::for_path(dir)));
+                    appwindow.sidebar().workspacebrowser().set_dir_list_file(Some(&gio::File::for_path(dir)));
                 }
 
             }),

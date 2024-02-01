@@ -215,7 +215,7 @@ impl WindowImpl for RnAppWindow {
 
         // Save current doc
         if obj.tabs_any_unsaved_changes() {
-            glib::MainContext::default().spawn_local(clone!(@weak obj as appwindow => async move {
+            glib::spawn_future_local(clone!(@weak obj as appwindow => async move {
                 dialogs::dialog_close_window(&obj).await;
             }));
         } else {
@@ -240,7 +240,7 @@ impl RnAppWindow {
                     let canvas = appwindow.active_tab_wrapper().canvas();
 
                     if let Some(output_file) = canvas.output_file() {
-                        glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+                        glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
                             if let Err(e) = canvas.save_document_to_file(&output_file).await {
                                 canvas.set_output_file(None);
 

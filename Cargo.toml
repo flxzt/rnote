@@ -40,10 +40,10 @@ rand = "0.8"
 rand_pcg = "0.3"
 rand_distr = "0.4"
 slotmap = { version = "1", features = ["serde"] }
-rstar = "0.11"
+rstar = "0.12"
 geo = "0.27"
 flate2 = "1"
-chrono = "0.4.31"
+chrono = "0.4.33"
 base64 = "0.21"
 semver = { version = "1", features = ["serde"]}
 regex = "1.10"
@@ -56,24 +56,24 @@ xmlwriter = "0.1"
 usvg = "0.36"
 svg = "0.14"
 image = "0.24"
-kurbo = "0.9"
+kurbo = "0.10"
 piet = "0.6"
 piet-cairo = "0.6"
 roughr = "0.6"
 rough_piet = "0.6"
-palette = "0.7.3"
+palette = "0.7.4"
 rodio = { version = "0.17", default-features = false, features = ["symphonia-wav"] }
 winresource = "0.1"
-smol = "1"
+smol = "2"
 clap = { version = "4", features = ["derive"] }
 indicatif = "0.17"
 dialoguer = "0.11"
 open = "5"
 atty = "0.2"
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
-glib = "0.18.3"
+glib = "0.18.5"
 glib-build-tools = "0.18.0"
-gio = "0.18.3"
+gio = "0.18.4"
 cairo-rs = { version = "0.18", features = ["png", "svg", "pdf"] }
 librsvg = "2.57"
 # newest poppler feature ("v21_12") is causing linking errors when building in mingw for some reason.
@@ -83,9 +83,9 @@ adw = { version = "0.5.3", package="libadwaita", features = ["v1_4"] }
 numeric-sort = "0.1"
 
 [patch.crates-io]
-# once a new piet (current v0.6.2) is released with the updated cairo, this can be removed
-piet = { git = "https://github.com/linebender/piet", rev = "88e8e6c6fe41d8c99e3bccbf3a076b3661c4472a" }
-piet-cairo = { git = "https://github.com/linebender/piet", rev = "88e8e6c6fe41d8c99e3bccbf3a076b3661c4472a" }
+# once a new piet (current v0.6.2) is released with updated cairo and kurbo deps, this can be removed
+piet = { git = "https://github.com/linebender/piet", rev = "e78a787403c08dfe7655356d4065f00eeeaed97d" }
+piet-cairo = { git = "https://github.com/linebender/piet", rev = "e78a787403c08dfe7655356d4065f00eeeaed97d" }
 
 [profile.dev]
 opt-level = 2

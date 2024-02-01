@@ -1,4 +1,5 @@
 // Imports
+use futures::StreamExt;
 use gtk4::graphene;
 use gtk4::{gdk, glib, glib::clone, gsk, prelude::*, subclass::prelude::*};
 use once_cell::sync::Lazy;
@@ -27,9 +28,10 @@ mod imp {
         pub(super) stroke_content: RefCell<StrokeContent>,
         // The handle executing the paint task when regenerating the paint cache after a timeout
         pub(super) paint_task_handle: RefCell<Option<OneOffTaskHandle>>,
-        // The handler that is spawn on the glib main context and integrates the received paint cache image
-        pub(super) paint_task_handler: RefCell<Option<glib::SourceId>>,
-        pub(super) paint_task_tx: OnceCell<glib::Sender<anyhow::Result<Image>>>,
+        // The handler that is spawned on the glib main context and integrates the received paint cache image
+        pub(super) paint_task_handler: RefCell<Option<glib::JoinHandle<()>>>,
+        pub(super) paint_task_tx:
+            OnceCell<futures::channel::mpsc::UnboundedSender<anyhow::Result<Image>>>,
         pub(super) paint_tasks_in_progress: Cell<usize>,
     }
 
@@ -136,34 +138,33 @@ mod imp {
             // TODO: fix it
             obj.set_paint_max_width(1000.);
             obj.set_paint_max_height(1000.);
-            let (tx, rx) = glib::MainContext::channel::<anyhow::Result<Image>>(
-                glib::source::Priority::DEFAULT,
-            );
+            let (tx, mut rx) = futures::channel::mpsc::unbounded::<anyhow::Result<Image>>();
             self.paint_task_tx.set(tx).unwrap();
 
-            let handler = rx.attach(Some(&glib::MainContext::default()), clone!(@weak obj as paintable => @default-return glib::ControlFlow::Break, move |res| {
-                paintable.imp().paint_task_handle.take();
-                match res {
-                    Ok(image) => {
-                        paintable.imp().replace_paint_cache(image);
-                        if paintable.imp().paint_tasks_in_progress.get() <= 1 {
-                            paintable.imp().emit_repaint_in_progress(false);
+            let handler = glib::spawn_future_local(clone!(@weak obj as paintable => async move {
+                while let Some(res) = rx.next().await {
+                    match res {
+                        Ok(image) => {
+                            paintable.imp().replace_paint_cache(image);
+                            if paintable.imp().paint_tasks_in_progress.get() <= 1 {
+                                paintable.imp().emit_repaint_in_progress(false);
+                            }
+                            paintable.imp().paint_tasks_in_progress.set(paintable.imp().paint_tasks_in_progress.get().saturating_sub(1));
                         }
-                        paintable.imp().paint_tasks_in_progress.set(paintable.imp().paint_tasks_in_progress.get().saturating_sub(1));
-                    }
-                    Err(e) => {
-                        tracing::error!("StrokeContentPaintable repainting cache image in task failed, Err: {e:?}");
+                        Err(e) => {
+                            tracing::error!("StrokeContentPaintable repainting cache image in task failed, Err: {e:?}");
+                        }
                     }
                 }
-                glib::ControlFlow::Continue
             }));
+
             self.paint_task_handler.replace(Some(handler));
         }
 
         fn dispose(&self) {
             self.paint_task_handle.take();
-            if let Some(s) = self.paint_task_handler.take() {
-                s.remove();
+            if let Some(h) = self.paint_task_handler.take() {
+                h.abort();
             }
         }
 
@@ -456,7 +457,7 @@ impl StrokeContentPaintable {
             .set(self.imp().paint_tasks_in_progress.get() + 1);
 
         rayon::spawn(move || {
-            if let Err(e) = tx.send(imp::paint_content(
+            if let Err(e) = tx.unbounded_send(imp::paint_content(
                 &stroke_content,
                 width,
                 height,
@@ -492,7 +493,7 @@ impl StrokeContentPaintable {
         let tx = self.imp().paint_task_tx.get().unwrap().clone();
 
         let paint_task = move || {
-            if let Err(e) = tx.send(imp::paint_content(
+            if let Err(e) = tx.unbounded_send(imp::paint_content(
                 &stroke_content,
                 width,
                 height,

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-07 18:37+0100\n"
+"POT-Creation-Date: 2024-02-01 12:50+0100\n"
 "PO-Revision-Date: 2023-12-07 16:05+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -30,6 +30,7 @@ msgid "Gnome;GTK;Office;Graphics;Notes;"
 msgstr "க்னோம்;ஜிடிகே;அலுவலகம்;கிராபிக்ஸ்;குறிப்புகள்;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:20
+#: crates/rnote-ui/data/ui/shortcuts.ui:20
 msgid "New Window"
 msgstr "புதிய விண்டோ"
 
@@ -84,7 +85,7 @@ msgid "Configure action shortcuts"
 msgstr "பட்டன் ஷார்ட்கட்கள்"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
-#: crates/rnote-ui/data/ui/shortcuts.ui:179
+#: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Clear Document"
 msgstr "தெளிவான ஆவணம்"
 
@@ -112,7 +113,6 @@ msgstr "தெளிவு"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
-#: crates/rnote-ui/data/ui/shortcuts.ui:149
 #: crates/rnote-ui/src/canvas/mod.rs:593
 msgid "New Document"
 msgstr "புதிய ஆவணம்"
@@ -213,7 +213,7 @@ msgstr "பணியிட கோப்பகத்தை மாற்றவு�
 #: crates/rnote-ui/src/dialogs/export.rs:372
 #: crates/rnote-ui/src/dialogs/export.rs:409
 #: crates/rnote-ui/src/dialogs/export.rs:417
-#: crates/rnote-ui/src/dialogs/mod.rs:527
+#: crates/rnote-ui/src/dialogs/mod.rs:528
 msgid "- no directory selected -"
 msgstr "- எந்த கோப்பகமும் தேர்ந்தெடுக்கப்படவில்லை -"
 
@@ -758,7 +758,7 @@ msgid "Invert Color Brightness of All Selected Strokes"
 msgstr "தேர்ந்தெடுக்கப்பட்ட அனைத்து பக்கவாதங்களின் வண்ண பிரகாசத்தை தலைகீழாக மாற்றவும்"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
-#: crates/rnote-ui/data/ui/shortcuts.ui:230
+#: crates/rnote-ui/data/ui/shortcuts.ui:236
 msgid "Duplicate Selection"
 msgstr "நகல் தேர்வு"
 
@@ -873,7 +873,7 @@ msgid "Insert Vertical Space"
 msgstr "செங்குத்து இடத்தைச் செருகவும்"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:29
-#: crates/rnote-ui/data/ui/shortcuts.ui:96
+#: crates/rnote-ui/data/ui/shortcuts.ui:108
 msgid "Move View"
 msgstr "நகர்த்து இடதுபுறம்"
 
@@ -1058,7 +1058,7 @@ msgid "Sidebar on the Right Side"
 msgstr "வலது பக்கத்தில் பக்கப்பட்டி"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:188
-#: crates/rnote-ui/data/ui/shortcuts.ui:44
+#: crates/rnote-ui/data/ui/shortcuts.ui:56
 msgid "Toggle Fullscreen"
 msgstr "முழுத்திரையை நிலைமாற்றவும்"
 
@@ -1115,9 +1115,9 @@ msgid "Block Pinch to _Zoom"
 msgstr "பெரிதாக்க (_Z) கிள்ளுதலைத் தடுக்கவும்"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:115
-#: crates/rnote-ui/data/ui/shortcuts.ui:120
-#: crates/rnote-ui/data/ui/shortcuts.ui:126
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
+#: crates/rnote-ui/data/ui/shortcuts.ui:138
+#: crates/rnote-ui/data/ui/shortcuts.ui:144
 msgid "Zoom out"
 msgstr "ஜூம் அவுட்"
 
@@ -1126,9 +1126,9 @@ msgid "Reset Zoom"
 msgstr "பெரிதாக்கு மீட்டமை"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:131
-#: crates/rnote-ui/data/ui/shortcuts.ui:102
-#: crates/rnote-ui/data/ui/shortcuts.ui:108
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
+#: crates/rnote-ui/data/ui/shortcuts.ui:120
+#: crates/rnote-ui/data/ui/shortcuts.ui:126
 msgid "Zoom in"
 msgstr "பெரிதாக்கு"
 
@@ -1178,7 +1178,7 @@ msgid "Open in Default App"
 msgstr "இயல்புநிலை பயன்பாட்டில் திறக்கவும்"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:72
 msgid "Rename"
 msgstr "மறுபெயர்"
 
@@ -1201,6 +1201,7 @@ msgid "Show/Hide Sidebar"
 msgstr "மடலை வெளிப்படுத்தவும் / மறைக்கவும்"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
+#: crates/rnote-ui/data/ui/shortcuts.ui:26
 msgid "New Tab"
 msgstr "புதிய தாவல்"
 
@@ -1209,7 +1210,7 @@ msgid "Focus Mode"
 msgstr "கவனம் பயன்முறை"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:66
-#: crates/rnote-ui/data/ui/shortcuts.ui:161
+#: crates/rnote-ui/data/ui/shortcuts.ui:167
 msgid "Save Document"
 msgstr "ஆவணத்தைச் சேமி"
 
@@ -1393,8 +1394,8 @@ msgid "Revert"
 msgstr "பின்செல்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:247
-#: crates/rnote-ui/data/ui/shortcuts.ui:146
-#: crates/rnote-ui/src/dialogs/mod.rs:630
+#: crates/rnote-ui/data/ui/shortcuts.ui:158
+#: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "Document"
 msgstr "ஆவணம்"
 
@@ -1591,117 +1592,117 @@ msgstr ""
 msgid "Show Keyboard Shortcuts"
 msgstr "விசைப்பலகை குறுக்குவழிகளைக் காட்டு"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:20
+#: crates/rnote-ui/data/ui/shortcuts.ui:32
 msgid "Close the Active Tab"
 msgstr "செயலில் உள்ள தாவலை மூடு"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:26
+#: crates/rnote-ui/data/ui/shortcuts.ui:38
 msgid "Quit the Application"
 msgstr "விண்ணப்பத்திலிருந்து வெளியேறு"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:32
+#: crates/rnote-ui/data/ui/shortcuts.ui:44
 msgid "Open the Canvas-Menu"
 msgstr "கேன்வாஸ்-பட்டியலைத் திறக்கவும்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:38
+#: crates/rnote-ui/data/ui/shortcuts.ui:50
 msgid "Open the App-Menu"
 msgstr "பயன்பாட்ட- பட்டியலைத் திறக்கவும்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:52
+#: crates/rnote-ui/data/ui/shortcuts.ui:64
 msgid "Navigation"
 msgstr "வழிசெலுத்தல்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:55
+#: crates/rnote-ui/data/ui/shortcuts.ui:67
 msgid "Switch to the 'Brush'"
 msgstr "'தூரிகை'க்கு மாறவும்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:61
+#: crates/rnote-ui/data/ui/shortcuts.ui:73
 msgid "Switch to the 'Shaper'"
 msgstr "'வடிவமைப்பவர்க்கு' மாறவும்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:67
+#: crates/rnote-ui/data/ui/shortcuts.ui:79
 msgid "Switch to the 'Typewriter'"
 msgstr "'தட்டச்சுப்பொறிக்கு' மாறவும்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:73
+#: crates/rnote-ui/data/ui/shortcuts.ui:85
 msgid "Switch to the 'Eraser'"
 msgstr "'அழிப்பி'க்கு மாறவும்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:79
+#: crates/rnote-ui/data/ui/shortcuts.ui:91
 msgid "Switch to the 'Selector'"
 msgstr "'தேர்வாளர்க்கு' மாறவும்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:85
+#: crates/rnote-ui/data/ui/shortcuts.ui:97
 msgid "Switch to the 'Tools'"
 msgstr "'கருவிகள்' க்கு மாறவும்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:93
+#: crates/rnote-ui/data/ui/shortcuts.ui:105
 msgid "View"
 msgstr "காட்சி"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:97
+#: crates/rnote-ui/data/ui/shortcuts.ui:109
 msgid "Alt + Drag"
 msgstr "Alt + இழுக்கவும்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:138
+#: crates/rnote-ui/data/ui/shortcuts.ui:150
 msgid "Zoom in/out"
 msgstr "பெரிதாக்கவும் / வெளியேறவும்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:139
+#: crates/rnote-ui/data/ui/shortcuts.ui:151
 msgid "Alt + Shift + Drag"
 msgstr "Alt + Shift + இழுக்கவும்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:155
+#: crates/rnote-ui/data/ui/shortcuts.ui:161
 msgid "Open Document"
 msgstr "ஆவணத்தைத் திற"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:167
+#: crates/rnote-ui/data/ui/shortcuts.ui:173
 #: crates/rnote-ui/src/dialogs/export.rs:30
 msgid "Save Document As"
 msgstr "ஆவணத்தை இவ்வாறு சேமிக்கவும்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:173
+#: crates/rnote-ui/data/ui/shortcuts.ui:179
 msgid "Snap Positions"
 msgstr "சொடக்கு நிலைகள்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:185
+#: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Add Page (When in Fixed-Size Layout)"
 msgstr "பக்கத்தைச் சேர் (நிலையான அளவு அமைப்பில் இருக்கும்போது)"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:191
+#: crates/rnote-ui/data/ui/shortcuts.ui:197
 msgid "Remove Last Page (When in Fixed-Size Layout)"
 msgstr "கடைசிப் பக்கத்தை அகற்று (நிலையான அளவு அமைப்பில் இருக்கும்போது)"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:197
+#: crates/rnote-ui/data/ui/shortcuts.ui:203
 msgid "Print Document"
 msgstr "ஆவணத்தை அச்சிடுங்கள்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:203
+#: crates/rnote-ui/data/ui/shortcuts.ui:209
 #: crates/rnote-ui/src/dialogs/import.rs:66
 msgid "Import File"
 msgstr "கோப்பு இறக்குமதி"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:209
+#: crates/rnote-ui/data/ui/shortcuts.ui:215
 msgid "Drawing"
 msgstr "வரைதல்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:212
+#: crates/rnote-ui/data/ui/shortcuts.ui:218
 msgid "Copy to Clipboard"
 msgstr "கிளிப்போர்டுக்கு நகலெடுக்கவும்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:218
+#: crates/rnote-ui/data/ui/shortcuts.ui:224
 msgid "Cut to Clipboard"
 msgstr "கிளிப்போர்டுக்கு வெட்டுங்கள்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:224
+#: crates/rnote-ui/data/ui/shortcuts.ui:230
 msgid "Paste Clipboard"
 msgstr "கிளிப்போர்டை ஒட்டவும்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:236
+#: crates/rnote-ui/data/ui/shortcuts.ui:242
 msgid "Undo"
 msgstr "செயல்தவிர்"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:242
+#: crates/rnote-ui/data/ui/shortcuts.ui:248
 msgid "Redo"
 msgstr "மீண்டும் செய்"
 
@@ -1732,9 +1733,9 @@ msgstr "புதிய கோப்புறையை உருவாக்க�
 #: crates/rnote-ui/src/appwindow/actions.rs:596
 #: crates/rnote-ui/src/appwindow/imp.rs:248
 #: crates/rnote-ui/src/dialogs/export.rs:70
-#: crates/rnote-ui/src/dialogs/mod.rs:126
-#: crates/rnote-ui/src/dialogs/mod.rs:257
-#: crates/rnote-ui/src/dialogs/mod.rs:411
+#: crates/rnote-ui/src/dialogs/mod.rs:127
+#: crates/rnote-ui/src/dialogs/mod.rs:258
+#: crates/rnote-ui/src/dialogs/mod.rs:412
 msgid "Saving document failed"
 msgstr "ஆவணத்தைச் சேமிப்பதில் தோல்வி"
 
@@ -1774,8 +1775,8 @@ msgstr ""
 msgid "Opening file failed"
 msgstr "கோப்பைத் திறப்பதில் தோல்வி"
 
-#: crates/rnote-ui/src/canvas/mod.rs:867 crates/rnote-ui/src/dialogs/mod.rs:204
-#: crates/rnote-ui/src/dialogs/mod.rs:341
+#: crates/rnote-ui/src/canvas/mod.rs:867 crates/rnote-ui/src/dialogs/mod.rs:205
+#: crates/rnote-ui/src/dialogs/mod.rs:342
 msgid "- invalid file name -"
 msgstr "- தவறான கோப்பு பெயர் -"
 
@@ -1850,7 +1851,7 @@ msgstr "ஆவணத்தை ஏற்றுமதி செய்வதில�
 #: crates/rnote-ui/src/dialogs/export.rs:270
 #: crates/rnote-ui/src/dialogs/export.rs:567
 #: crates/rnote-ui/src/dialogs/export.rs:856
-#: crates/rnote-ui/src/dialogs/mod.rs:509
+#: crates/rnote-ui/src/dialogs/mod.rs:510
 msgid "Select"
 msgstr "தேர்ந்தெடுக்கவும்"
 
@@ -1956,225 +1957,225 @@ msgstr "பக்கங்கள்:"
 msgid "translator-credits"
 msgstr "'K.B.Dharun Krishna <kbdharunkrishna@gmail.com>'"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:211
-#: crates/rnote-ui/src/dialogs/mod.rs:348
+#: crates/rnote-ui/src/dialogs/mod.rs:212
+#: crates/rnote-ui/src/dialogs/mod.rs:349
 msgid "- invalid save folder name -"
 msgstr "- தவறான சேமிப்பு கோப்புறை பெயர் -"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:227
-#: crates/rnote-ui/src/dialogs/mod.rs:363
+#: crates/rnote-ui/src/dialogs/mod.rs:228
+#: crates/rnote-ui/src/dialogs/mod.rs:364
 msgid "The changes will be saved"
 msgstr "மாற்றங்கள் சேமிக்கப்படும்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:232
-#: crates/rnote-ui/src/dialogs/mod.rs:368
+#: crates/rnote-ui/src/dialogs/mod.rs:233
+#: crates/rnote-ui/src/dialogs/mod.rs:369
 msgid "A new file will be created"
 msgstr "ஒரு புதிய கோப்பு உருவாக்கப்படும்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:507
+#: crates/rnote-ui/src/dialogs/mod.rs:508
 msgid "Change Workspace Directory"
 msgstr "பணியிட கோப்பகத்தை மாற்று"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:617
+#: crates/rnote-ui/src/dialogs/mod.rs:618
 msgid "Band-Aid"
 msgstr "பிளாஸ்திரி"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:618
+#: crates/rnote-ui/src/dialogs/mod.rs:619
 msgid "Bank"
 msgstr "வங்கி"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:619
+#: crates/rnote-ui/src/dialogs/mod.rs:620
 msgid "Bookmark"
 msgstr "புத்தககுறி"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:620
+#: crates/rnote-ui/src/dialogs/mod.rs:621
 msgid "Book"
 msgstr "புத்தகம்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:621
+#: crates/rnote-ui/src/dialogs/mod.rs:622
 msgid "Bread"
 msgstr "ரொட்டி"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:622
+#: crates/rnote-ui/src/dialogs/mod.rs:623
 msgid "Calendar"
 msgstr "நாட்காட்டி"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:623
+#: crates/rnote-ui/src/dialogs/mod.rs:624
 msgid "Camera"
 msgstr "புகைப்பட கருவி"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:624
+#: crates/rnote-ui/src/dialogs/mod.rs:625
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "சிம்பு"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:625
+#: crates/rnote-ui/src/dialogs/mod.rs:626
 msgid "Clock"
 msgstr "கடிகாரம்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:626
+#: crates/rnote-ui/src/dialogs/mod.rs:627
 msgid "Code"
 msgstr "குறியீடு"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:627
+#: crates/rnote-ui/src/dialogs/mod.rs:628
 msgid "Compose"
 msgstr "எழுது"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:628
+#: crates/rnote-ui/src/dialogs/mod.rs:629
 msgctxt "as in plant"
 msgid "Crop"
 msgstr "பயிர்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:629
+#: crates/rnote-ui/src/dialogs/mod.rs:630
 msgid "Dictionary"
 msgstr "அகராதி"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:631
+#: crates/rnote-ui/src/dialogs/mod.rs:632
 msgid "Drinks"
 msgstr "பானங்கள்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:632
+#: crates/rnote-ui/src/dialogs/mod.rs:633
 msgid "Flag"
 msgstr "கொடி"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:633
+#: crates/rnote-ui/src/dialogs/mod.rs:634
 msgid "Folder"
 msgstr "கோப்புறை"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:634
+#: crates/rnote-ui/src/dialogs/mod.rs:635
 msgid "Footprints"
 msgstr "கால்தடங்கள்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:635
+#: crates/rnote-ui/src/dialogs/mod.rs:636
 msgid "Gamepad"
 msgstr "விளையாட்டு திண்டு"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:636
+#: crates/rnote-ui/src/dialogs/mod.rs:637
 msgid "Gear"
 msgstr "துணைக்கருவி"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:637
+#: crates/rnote-ui/src/dialogs/mod.rs:638
 msgid "Globe"
 msgstr "பூகோளம்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:638
+#: crates/rnote-ui/src/dialogs/mod.rs:639
 msgid "Hammer"
 msgstr "சுத்தியல்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:639
+#: crates/rnote-ui/src/dialogs/mod.rs:640
 msgid "Heart"
 msgstr "இதயம்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:640
+#: crates/rnote-ui/src/dialogs/mod.rs:641
 msgid "Hourglass"
 msgstr "மணிக் கண்ணாடி"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:641
+#: crates/rnote-ui/src/dialogs/mod.rs:642
 msgid "Key"
 msgstr "சாவி"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:642
+#: crates/rnote-ui/src/dialogs/mod.rs:643
 msgid "Language"
 msgstr "மொழி"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:643
+#: crates/rnote-ui/src/dialogs/mod.rs:644
 msgid "Library"
 msgstr "நூலகம்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:644
+#: crates/rnote-ui/src/dialogs/mod.rs:645
 msgid "Lightbulb"
 msgstr "ஒளி விளக்கு"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:645
+#: crates/rnote-ui/src/dialogs/mod.rs:646
 msgid "Mathematics"
 msgstr "கணிதம்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:646
+#: crates/rnote-ui/src/dialogs/mod.rs:647
 msgid "Meeting"
 msgstr "சந்தித்தல்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:647
+#: crates/rnote-ui/src/dialogs/mod.rs:648
 msgid "Money"
 msgstr "பணம்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:648
+#: crates/rnote-ui/src/dialogs/mod.rs:649
 msgid "Musical Note"
 msgstr "இசைக் குறிப்பு"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:649
+#: crates/rnote-ui/src/dialogs/mod.rs:650
 msgid "Nature"
 msgstr "இயற்கை"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:650
+#: crates/rnote-ui/src/dialogs/mod.rs:651
 msgid "Open Book"
 msgstr "புத்தகத்தைத் திற"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:651
+#: crates/rnote-ui/src/dialogs/mod.rs:652
 msgid "Paintbrush"
 msgstr "வண்ணப்பூச்சு தூரிகை"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:652
+#: crates/rnote-ui/src/dialogs/mod.rs:653
 msgid "Pencil and Paper"
 msgstr "எழுதுகோல் மற்றும் காகிதம்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:653
+#: crates/rnote-ui/src/dialogs/mod.rs:654
 msgid "People"
 msgstr "மக்கள்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:654
+#: crates/rnote-ui/src/dialogs/mod.rs:655
 msgid "Person"
 msgstr "நபர்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:655
+#: crates/rnote-ui/src/dialogs/mod.rs:656
 msgid "Projector"
 msgstr "புரொஜெக்டர்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:656
+#: crates/rnote-ui/src/dialogs/mod.rs:657
 msgid "Science"
 msgstr "அறிவியல்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:657
+#: crates/rnote-ui/src/dialogs/mod.rs:658
 msgid "Scratchpad"
 msgstr "கீறல் திண்டு"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:658
+#: crates/rnote-ui/src/dialogs/mod.rs:659
 msgid "Shapes"
 msgstr "வடிவங்கள்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:659
+#: crates/rnote-ui/src/dialogs/mod.rs:660
 msgid "Shopping"
 msgstr "கடையில் பொருட்கள் வாங்குதல்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:660
+#: crates/rnote-ui/src/dialogs/mod.rs:661
 msgid "Speech Bubble"
 msgstr "பேச்சு குமிழ்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:661
+#: crates/rnote-ui/src/dialogs/mod.rs:662
 msgid "Speedometer"
 msgstr "வேகமானி"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:662
+#: crates/rnote-ui/src/dialogs/mod.rs:663
 msgid "Star"
 msgstr "நட்சத்திரம்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:664
+#: crates/rnote-ui/src/dialogs/mod.rs:665
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "முனையம்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:666
+#: crates/rnote-ui/src/dialogs/mod.rs:667
 msgid "Text"
 msgstr "உரை"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:667
+#: crates/rnote-ui/src/dialogs/mod.rs:668
 msgid "Travel"
 msgstr "பயணம்"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:668
+#: crates/rnote-ui/src/dialogs/mod.rs:669
 msgid "Weather"
 msgstr "வானிலை"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:669
+#: crates/rnote-ui/src/dialogs/mod.rs:670
 msgid "Weight"
 msgstr "எடை"
 

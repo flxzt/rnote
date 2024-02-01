@@ -297,7 +297,7 @@ impl RnWorkspaceBrowser {
             => move |listview, position| {
                 let file_info = listview.model().unwrap().item(position).unwrap().downcast::<gio::FileInfo>().unwrap();
                 if let Some(input_file) = file_info.attribute_object("standard::file") {
-                    glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    glib::spawn_future_local(clone!(@weak appwindow => async move {
                         appwindow.open_file_w_dialogs(input_file.downcast::<gio::File>().unwrap(), None, true).await;
                     }));
                 };

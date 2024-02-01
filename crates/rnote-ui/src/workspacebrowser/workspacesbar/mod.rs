@@ -388,7 +388,7 @@ impl RnWorkspacesBar {
         // Add workspace
         action_add_workspace.connect_activate(
             clone!(@weak self as workspacesbar, @weak appwindow => move |_, _| {
-                glib::MainContext::default().spawn_local(clone!(@weak workspacesbar, @weak appwindow => async move {
+                glib::spawn_future_local(clone!(@weak workspacesbar, @weak appwindow => async move {
                     let entry = workspacesbar.selected_workspacelistentry().unwrap_or_default();
                     workspacesbar.push_workspace(entry);
 
@@ -407,7 +407,7 @@ impl RnWorkspacesBar {
 
         // Edit selected workspace
         action_edit_selected_workspace.connect_activate(clone!(@weak appwindow => move |_, _| {
-            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+            glib::spawn_future_local(clone!(@weak appwindow => async move {
                 dialogs::dialog_edit_selected_workspace(&appwindow).await;
             }));
         }));

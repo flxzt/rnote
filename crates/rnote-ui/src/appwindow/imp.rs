@@ -280,21 +280,21 @@ impl RnAppWindow {
         let obj = self.obj();
 
         if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(),
-                clone!(@weak obj as appwindow => @default-return glib::ControlFlow::Break, move || {
-                    let canvas = appwindow.active_tab_wrapper().canvas();
+            clone!(@weak obj as appwindow => @default-return glib::ControlFlow::Break, move || {
+                let canvas = appwindow.active_tab_wrapper().canvas();
 
-                    if let Some(output_file) = canvas.output_file() {
-                        glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
-                            if let Err(e) = canvas.save_document_to_file(&output_file).await {
-                                canvas.set_output_file(None);
+                if let Some(output_file) = canvas.output_file() {
+                    glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+                        if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                            canvas.set_output_file(None);
 
-                                log::error!("saving document failed, Error: `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
-                            }
-                        }));
-                    }
-                    glib::ControlFlow::Continue
-                })
+                            log::error!("saving document failed, Error: `{e:?}`");
+                            appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
+                        }
+                    }));
+                }
+                glib::ControlFlow::Continue
+            })
         )) {
             removed_id.remove();
         }
@@ -305,31 +305,31 @@ impl RnAppWindow {
 
         if let Some(removed_id) = self.recovery_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.recovery_interval_secs.get(),
             clone!(@weak obj as appwindow => @default-return glib::ControlFlow::Break, move || {
-                    let canvas = appwindow.active_tab_wrapper().canvas();
+                let canvas = appwindow.active_tab_wrapper().canvas();
+                // Doing both recovery and autosaves of saved files serves little advantage and could lead to slowdowns or io conflicts
+                if canvas.output_file().is_some() && appwindow.autosave() {
+                    // Delete recovery files from disk to avoid suggesting the user an outdated file on next boot
+                    if let Some(meta) = &*canvas.imp().recovery_metadata.borrow_mut() {
+                        meta.delete();
+                    };
+                    canvas.set_recovery_paused(true);
+                    // We keep the metadata itself in the canvas to make sure the path doesn't change when the user toggles autosave
+                    // which would lead to wrong timestamps in the recovery menu
+                } else if dbg!(canvas.unsaved_changes_recovery()) {
                     glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
-                        // Doing both recovery and autosaves of saved files serves little advatage but could lead to slowdowns or conflicts
-                        if canvas.output_file().is_some() && appwindow.autosave() {
-                            // Delete recovery files from disk to avoid suggesting the user an outdated file on next boot
-                            if let Some(meta) = &*canvas.imp().recovery_metadata.borrow_mut() {
-                                meta.delete();
-                            };
-                            canvas.set_recovery_paused(true);
-                            // We keep the metadata itself in the canvas to make sure the path doesnt change when the user toggles autosave
-                            // which would lead to confusing timestamps on next launch.
-                        } else if canvas.unsaved_changes_recovery() {
-                            canvas.set_recovery_paused(false);
-                            let recovery_file = canvas.get_or_generate_recovery_file();
-                            appwindow.overlays().progressbar_start_pulsing();
-                            canvas.set_recovery_in_progress(true);
-                            if let Err(e) = canvas.save_document_to_file(&recovery_file).await {
-                                log::error!("saving document failed, Error: `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
-                            }
-                            canvas.set_recovery_in_progress(false);
-                            appwindow.overlays().progressbar_finish();
+                        canvas.set_recovery_paused(false);
+                        let recovery_file = canvas.get_or_generate_recovery_file();
+                        appwindow.overlays().progressbar_start_pulsing();
+                        canvas.set_recovery_in_progress(true);
+                        if let Err(e) = canvas.save_document_to_file(&recovery_file).await {
+                            log::error!("saving document failed, Error: `{e:?}`");
+                            appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                         }
+                        canvas.set_recovery_in_progress(false);
+                        appwindow.overlays().progressbar_finish();
                     }));
-                    glib::ControlFlow::Continue
+                }
+                glib::ControlFlow::Continue
             })
         )) {
             removed_id.remove();

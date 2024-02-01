@@ -1,7 +1,7 @@
 // Imports
 use crate::document::background;
 use crate::engine::import::XoppImportPrefs;
-use crate::fileformats::{rnoteformat, xoppformat, FileFormatLoader};
+use crate::fileformats::{rnoteformat, rnoterecoveryformat, xoppformat, FileFormatLoader};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::Stroke;
 use crate::{Camera, Document, Engine};
@@ -51,6 +51,25 @@ impl EngineSnapshot {
                 let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
                     .context("loading RnoteFile from bytes failed.")?;
                 Ok(ijson::from_value(&rnote_file.engine_snapshot)?)
+            };
+
+            if let Err(_data) = snapshot_sender.send(result()) {
+                log::error!("Sending result to receiver in open_from_rnote_bytes() failed. Receiver was already dropped.");
+            }
+        });
+
+        snapshot_receiver.await?
+    }
+
+    pub async fn load_from_rnote_recovery_bytes(bytes: Vec<u8>) -> anyhow::Result<Self> {
+        let (snapshot_sender, snapshot_receiver) = oneshot::channel::<anyhow::Result<Self>>();
+
+        rayon::spawn(move || {
+            let result = || -> anyhow::Result<Self> {
+                let rnote_recovery_file =
+                    rnoterecoveryformat::RnoteRecoveryFile::load_from_bytes(&bytes)
+                        .context("loading RnoteRecoveryFile failed")?;
+                Ok(rnote_recovery_file.engine_snapshot)
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {

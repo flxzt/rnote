@@ -128,7 +128,7 @@ impl RnRecoveryMetadata {
     pub fn title(&self) -> Option<String> {
         self.title.borrow().clone()
     }
-    /// Update Metadate based of the given document option
+    /// Update Metadata based of the given document option
     pub fn update(&self, document_path: &Option<PathBuf>) {
         self.update_last_changed();
         match document_path {

@@ -1,6 +1,7 @@
 // Imports
 use super::{Engine, EngineConfig, StrokeContent};
 use crate::fileformats::rnoteformat::RnoteFile;
+use crate::fileformats::rnoterecoveryformat::RnoteRecoveryFile;
 use crate::fileformats::{xoppformat, FileFormatSaver};
 use anyhow::Context;
 use futures::channel::oneshot;
@@ -326,6 +327,24 @@ impl Engine {
                 let rnote_file = RnoteFile {
                     engine_snapshot: ijson::to_value(&engine_snapshot)?,
                 };
+                rnote_file.save_as_bytes(&file_name)
+            };
+            if let Err(_data) = oneshot_sender.send(result()) {
+                log::error!("Sending result to receiver in save_as_rnote_bytes() failed. Receiver was already dropped.");
+            }
+        });
+        oneshot_receiver
+    }
+    /// Save the current document as a .rnote~ file.
+    pub fn save_as_rnote_recovery_bytes(
+        &self,
+        file_name: String,
+    ) -> oneshot::Receiver<anyhow::Result<Vec<u8>>> {
+        let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
+        let engine_snapshot = self.take_snapshot();
+        rayon::spawn(move || {
+            let result = || -> anyhow::Result<Vec<u8>> {
+                let rnote_file = RnoteRecoveryFile { engine_snapshot };
                 rnote_file.save_as_bytes(&file_name)
             };
             if let Err(_data) = oneshot_sender.send(result()) {

@@ -474,7 +474,8 @@ impl RnSettingsPanel {
 
         // recovery enable switch
         imp.general_recovery_row
-            .bind_property("state", appwindow, "recovery")
+            .get()
+            .bind_property("active", appwindow, "recovery")
             .sync_create()
             .bidirectional()
             .build();
@@ -482,7 +483,7 @@ impl RnSettingsPanel {
         imp.general_recovery_row
             .get()
             .bind_property(
-                "state",
+                "active",
                 &*imp.general_recovery_interval_secs_row,
                 "sensitive",
             )

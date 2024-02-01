@@ -27,7 +27,12 @@ impl RnCanvas {
     where
         P: AsRef<Path>,
     {
-        let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(bytes).await?;
+        dbg!(&recovery_metadata);
+        let engine_snapshot = if recovery_metadata.is_some() {
+            EngineSnapshot::load_from_rnote_recovery_bytes(bytes).await?
+        } else {
+            EngineSnapshot::load_from_rnote_bytes(bytes).await?
+        };
         let mut widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
         widget_flags |= self
             .engine_mut()
@@ -268,10 +273,13 @@ impl RnCanvas {
 
         self.set_save_in_progress(true);
 
-        let rnote_bytes_receiver = self
-            .engine_ref()
-            .save_as_rnote_bytes(basename.to_string_lossy().to_string());
-
+        let rnote_bytes_receiver = if self.recovery_in_progress() {
+            self.engine_ref()
+                .save_as_rnote_recovery_bytes(basename.to_string_lossy().to_string())
+        } else {
+            self.engine_ref()
+                .save_as_rnote_bytes(basename.to_string_lossy().to_string())
+        };
         let mut skip_set_output_file = false;
         if let Some(current_file_path) = self.output_file().and_then(|f| f.path()) {
             if same_file::is_same_file(current_file_path, file_path).unwrap_or(false) {
@@ -304,7 +312,7 @@ impl RnCanvas {
             self.set_output_file_expect_write(false);
             return Err(e);
         }
-        self.update_recovery_file();
+        self.update_recovery_metadata();
 
         if self.recovery_in_progress() {
             self.set_unsaved_changes_recovery(false);

@@ -6,6 +6,7 @@ mod widgetflagsboxed;
 
 // Re-exports
 pub(crate) use canvaslayout::RnCanvasLayout;
+use rand::Rng;
 pub(crate) use widgetflagsboxed::WidgetFlagsBoxed;
 
 // Imports
@@ -68,6 +69,7 @@ mod imp {
 
         pub(crate) recovery_in_progress: Cell<bool>,
         pub(crate) recovery_metadata: RefCell<Option<RnRecoveryMetadata>>,
+        /// Only used for recovery info dialog
         pub(crate) recovery_paused: Cell<bool>,
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_saved_modified_date_time: RefCell<Option<glib::DateTime>>,
@@ -330,13 +332,17 @@ mod imp {
                 "unsaved-changes" => {
                     let unsaved_changes: bool =
                         value.get().expect("The value needs to be of type `bool`");
+                    if unsaved_changes {
+                        dbg!("ucr!");
+                        self.unsaved_changes_recovery.replace(true);
+                    }
                     self.unsaved_changes.replace(unsaved_changes);
                 }
                 "unsaved-changes-recovery" => {
                     let unsaved_changes_recovery: bool =
                         value.get().expect("The value needs to be of type `bool`");
                     self.unsaved_changes_recovery
-                        .replace(unsaved_changes_recovery);
+                        .replace(dbg!(unsaved_changes_recovery));
                 }
                 "empty" => {
                     let empty: bool = value.get().expect("The value needs to be of type `bool`");
@@ -637,37 +643,29 @@ impl RnCanvas {
     }
 
     pub(crate) fn get_or_generate_recovery_file(&self) -> gio::File {
-        if self.imp().recovery_metadata.borrow().is_none() {
-            let imp = self.imp();
-            let recovery_path = crate::env::recovery_dir().expect("Failed to get recovery path");
-            if !recovery_path.exists() {
-                std::fs::create_dir_all(&recovery_path).expect("Failed to create directory")
-            };
-            let time = std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .expect("Failed to get unix time")
-                .as_secs();
-            let name = format!("{time}.rnote");
-            let mut recovery_file_path = recovery_path.join(&name);
-            // add incrementing suffix if nessary
-            let mut suffix = 1;
-            while recovery_file_path.exists() {
-                recovery_file_path = recovery_path.join(format!("{name}_{suffix}.rnote"));
-                suffix += 1;
-            }
-            let mut metadata_path = recovery_file_path.clone();
-            metadata_path.set_extension("json");
-            let metadata = RnRecoveryMetadata::new(time, metadata_path, recovery_file_path);
-            imp.recovery_metadata.replace(Some(metadata));
+        match self.imp().recovery_metadata.borrow().as_ref() {
+            Some(meta) => return gio::File::for_path(meta.recovery_file_path()),
+            _ => (),
         }
-        gio::File::for_path(
-            self.imp()
-                .recovery_metadata
-                .borrow()
-                .as_ref()
-                .unwrap()
-                .recovery_file_path(),
-        )
+        let recovery_path = crate::env::recovery_dir().expect("Failed to get recovery path");
+        if !recovery_path.exists() {
+            std::fs::create_dir_all(&recovery_path).expect("Failed to create directory")
+        };
+        let time = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("Failed to get unix time")
+            .as_secs();
+        // Random Suffix to avoid 2 opened documents created in the same second overwriting each others recovery saves
+        // the chance of 2 documents being created in the same second and having the same suffix is neglegable
+        let suffix: u16 = rand::thread_rng().gen_range(1000..=9999);
+        let name = format!("{time}_{suffix}.rnoterecovery");
+        let recovery_file_path = recovery_path.join(name);
+        let mut metadata_path = recovery_file_path.clone();
+        metadata_path.set_extension("json");
+        let metadata = RnRecoveryMetadata::new(time, metadata_path, recovery_file_path);
+        let recovery_file_path = metadata.recovery_file_path();
+        self.imp().recovery_metadata.borrow_mut().replace(metadata);
+        gio::File::for_path(recovery_file_path)
     }
 
     /// Deletes recovery save and metadate from disk
@@ -740,9 +738,6 @@ impl RnCanvas {
 
     #[allow(unused)]
     pub(crate) fn set_unsaved_changes(&self, unsaved_changes: bool) {
-        if unsaved_changes {
-            self.set_unsaved_changes_recovery(true);
-        }
         self.set_property("unsaved-changes", unsaved_changes.to_value());
     }
 
@@ -1403,7 +1398,7 @@ impl RnCanvas {
             na::point![f64::from(self.width()), f64::from(self.height())],
         )
     }
-    pub(crate) fn update_recovery_file(&self) {
+    pub(crate) fn update_recovery_metadata(&self) {
         if let Some(m) = self.imp().recovery_metadata.borrow().as_ref() {
             m.update(
                 &self

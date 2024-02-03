@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-01 12:50+0100\n"
-"PO-Revision-Date: 2024-01-28 02:01+0000\n"
+"PO-Revision-Date: 2024-02-03 06:04+0000\n"
 "Last-Translator: Ryo Nakano <ryonakaknock3@gmail.com>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/"
-">\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/>"
+"\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -420,48 +420,42 @@ msgstr "Jpeg画像の品質を設定します(1 - 100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:408
 #: crates/rnote-ui/src/dialogs/export.rs:854
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Export Selection"
-msgstr "選択範囲をSVGに保存"
+msgstr "選択範囲をエクスポート"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:530
 msgid "The export image format"
-msgstr ""
+msgstr "エクスポートする画像の形式"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:561
 msgid "Margin"
-msgstr ""
+msgstr "余白"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:562
 msgid "Set the margin around the selected area"
-msgstr ""
+msgstr "選択範囲の周囲に余白を設定します"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:7
-#, fuzzy
-#| msgid "Selector"
 msgid "Import Pdf"
-msgstr "選択"
+msgstr "PDFをインポート"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
 #: crates/rnote-ui/data/ui/dialogs/import.ui:204
 #: crates/rnote-ui/src/dialogs/import.rs:68
 msgid "Import"
-msgstr ""
+msgstr "インポート"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:61
 msgid "Info"
-msgstr ""
+msgstr "情報"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:79
-#, fuzzy
-#| msgid "Selector"
 msgid "Pdf Import Preferences"
-msgstr "選択"
+msgstr "PDFのインポート設定"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start Page"
-msgstr ""
+msgstr "開始ページ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:92
 #, fuzzy
@@ -470,7 +464,7 @@ msgstr "ページを追加"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
 msgid "Page Width (%)"
-msgstr ""
+msgstr "ページ幅(%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
 msgid "Set the width of imported Pdf's in percentage to the format width"
@@ -478,29 +472,27 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
 msgid "Page Spacing"
-msgstr ""
+msgstr "ページ間隔"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
 msgid "How Pdf pages are spaced"
-msgstr ""
+msgstr "PDFのページ間隔"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:114
 msgid "Continuous"
-msgstr ""
+msgstr "連続"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:115
-#, fuzzy
-#| msgid "Export document as PDF"
 msgid "One per Document Page"
-msgstr "選択範囲をPDFに保存"
+msgstr "文書1ページにつき1ページ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:123
 msgid "Pages Type"
-msgstr ""
+msgstr "ページ種類"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:124
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
-msgstr ""
+msgstr "PDFをベクター画像とビットマップ画像のどちらでインポートするか設定します"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:136
 msgid "Vector"
@@ -511,72 +503,66 @@ msgid "Bitmap"
 msgstr "ビットマップ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Shaper"
 msgid "Page Borders"
-msgstr "図形"
+msgstr "ページの枠線"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:162
 msgid "Whether the pages have drawn borders"
-msgstr ""
+msgstr "ページの枠線を描画するかどうか"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:196
-#, fuzzy
-#| msgid "Selector"
 msgid "Import Xournal++ File"
-msgstr "選択"
+msgstr "Xournal++ファイルをインポート"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:235
 msgid "Xournal++ File Import Preferences"
-msgstr ""
+msgstr "Xournal++ファイルのインポート設定"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:239
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:240
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr ""
+msgstr "Xournal++ファイルのDPIを選択します"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
-#, fuzzy
-#| msgid "Brush"
 msgid "Brush Style"
-msgstr "ブラシ"
+msgstr "ブラシのスタイル"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:149
 msgid "Brush Configuration"
-msgstr ""
+msgstr "ブラシ設定"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:66
 msgid "Brush Styles"
-msgstr ""
+msgstr "ブラシのスタイル"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:95
 msgid "Marker"
-msgstr ""
+msgstr "マーカー"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:96
 msgid "Mark underneath other strokes"
-msgstr ""
+msgstr "ほかのストロークの下にマーカーを引きます"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:107
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:201
 msgid "Solid"
-msgstr ""
+msgstr "実線"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:108
 msgid "Draw solid color strokes"
-msgstr ""
+msgstr "色付きの実線を描きます"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:119
 msgid "Textured"
-msgstr ""
+msgstr "テクスチャ"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:120
 msgid "Draw textured strokes"
-msgstr ""
+msgstr "テクスチャのストロークを描きます"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:170
 msgid "Path Modelling"
@@ -728,85 +714,75 @@ msgstr "ツール"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:22
 msgid "Select With a Polygon"
-msgstr ""
+msgstr "投げ縄選択"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:32
 msgid "Select With a Rectangle"
-msgstr ""
+msgstr "矩形選択"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:42
 msgid "Select One by One"
-msgstr ""
+msgstr "1つずつ選択"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:52
 msgid "Select Intersecting Path"
-msgstr ""
+msgstr "交差するパスを選択"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
 msgid "Lock Aspectratio While Resizing the Selection"
-msgstr ""
+msgstr "選択範囲のリサイズ中はアスペクト比をロックする"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select All Strokes"
-msgstr ""
+msgstr "すべてのストロークを選択"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:94
 msgid "Deselect All Strokes"
-msgstr ""
+msgstr "すべてのストロークを選択解除"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 msgid "Invert Color Brightness of All Selected Strokes"
-msgstr ""
+msgstr "選択したすべてのストロークの明度を反転"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 #: crates/rnote-ui/data/ui/shortcuts.ui:236
-#, fuzzy
-#| msgid "Duplicate selection"
 msgid "Duplicate Selection"
 msgstr "選択範囲を複製"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:127
-#, fuzzy
-#| msgid "Delete selection"
 msgid "Delete Selection"
 msgstr "選択範囲を削除"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:19
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:248
-#, fuzzy
-#| msgid "Shaper"
 msgid "Shape Builders"
-msgstr "図形"
+msgstr "図形を作る"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:35
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:290
 msgid "Constraints"
-msgstr ""
+msgstr "正確な図形"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:64
-#, fuzzy
-#| msgid "Shaper"
 msgid "Shaper Style"
-msgstr "図形"
+msgstr "図形のスタイル"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:77
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
 msgid "Shape Configuration"
-msgstr ""
+msgstr "図形の設定"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:101
-#, fuzzy
-#| msgid "Shaper"
 msgid "Shaper Styles"
-msgstr "図形"
+msgstr "図形のスタイル"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:130
 msgid "Smooth"
-msgstr ""
+msgstr "滑らか"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
 msgid "Rough"
-msgstr ""
+msgstr "粗い"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:192
 msgid "Rough style"
@@ -855,7 +831,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:319
 msgid "Enabled"
-msgstr ""
+msgstr "有効"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:320
 msgid ""
@@ -863,6 +839,9 @@ msgid ""
 "enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
+"Ctrlを押したままにすると、\n"
+"スイッチがオフ/オンの場合に一時的に\n"
+"正確な図形を有効/無効にできます"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:327
 msgid "1:1"
@@ -873,33 +852,29 @@ msgid "3:2"
 msgstr "3:2"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:337
-#, fuzzy
-#| msgid "Golden ratio (1:1.618)"
 msgid "Golden Ratio (1:1.618)"
 msgstr "黄金比 (1:1.618)"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:19
 msgid "Insert Vertical Space"
-msgstr ""
+msgstr "垂直方向の空白を挿入"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:29
 #: crates/rnote-ui/data/ui/shortcuts.ui:108
 msgid "Move View"
-msgstr ""
+msgstr "ビューを移動"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:40
-#, fuzzy
-#| msgid "Zoom out"
 msgid "Zoom In/Out"
-msgstr "縮小"
+msgstr "拡大/縮小"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:43
 msgid "Pick And Insert Emoji"
-msgstr ""
+msgstr "絵文字を選択して挿入"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:68
 msgid "Reset Text Attributes"
-msgstr ""
+msgstr "テキストの書式をリセット"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:77
 msgid "Bold"
@@ -918,34 +893,28 @@ msgid "Strikethrough"
 msgstr "打ち消し線"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:126
-#, fuzzy
-#| msgid "Align left"
 msgid "Align Left"
 msgstr "左寄せ"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:133
-#, fuzzy
-#| msgid "Align center"
 msgid "Align Center"
 msgstr "中央寄せ"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:140
-#, fuzzy
-#| msgid "Align right"
 msgid "Align Right"
 msgstr "右寄せ"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:147
 msgid "Fill"
-msgstr ""
+msgstr "両端揃え"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:60
 msgid "Move Selected Workspace Up"
-msgstr ""
+msgstr "選択したワークスペースを上に移動"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:69
 msgid "Move Selected Workspace Down"
-msgstr ""
+msgstr "選択したワークスペースを下に移動"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:80
 msgid "Add Workspace"
@@ -1409,10 +1378,8 @@ msgstr ""
 #: crates/rnote-ui/data/ui/settingspanel.ui:247
 #: crates/rnote-ui/data/ui/shortcuts.ui:158
 #: crates/rnote-ui/src/dialogs/mod.rs:631
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Document"
-msgstr "選択範囲をSVGに保存"
+msgstr "文書"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:250
 msgid "Format Border Color"
@@ -1586,28 +1553,24 @@ msgid ""
 msgstr ""
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:14
-#, fuzzy
-#| msgid "Keyboard shortcuts"
 msgid "Show Keyboard Shortcuts"
-msgstr "キーボードショートカット"
+msgstr "キーボードショートカットを表示する"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:32
-#, fuzzy
-#| msgid "New Window"
 msgid "Close the Active Tab"
-msgstr "新しいウィンドウ"
+msgstr "表示中のタブを閉じる"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:38
 msgid "Quit the Application"
-msgstr ""
+msgstr "アプリケーションを終了する"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:44
 msgid "Open the Canvas-Menu"
-msgstr ""
+msgstr "キャンバスメニューを開く"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:50
 msgid "Open the App-Menu"
-msgstr ""
+msgstr "アプリメニューを開く"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:64
 msgid "Navigation"
@@ -1615,27 +1578,27 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:67
 msgid "Switch to the 'Brush'"
-msgstr ""
+msgstr "'ブラシ'に切り替える"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:73
 msgid "Switch to the 'Shaper'"
-msgstr ""
+msgstr "'図形'に切り替える"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:79
 msgid "Switch to the 'Typewriter'"
-msgstr ""
+msgstr "'文字'に切り替える"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:85
 msgid "Switch to the 'Eraser'"
-msgstr ""
+msgstr "'消しゴム'に切り替える"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:91
 msgid "Switch to the 'Selector'"
-msgstr ""
+msgstr "'選択'に切り替える"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:97
 msgid "Switch to the 'Tools'"
-msgstr ""
+msgstr "'ツール'に切り替える"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:105
 msgid "View"
@@ -1725,7 +1688,7 @@ msgstr "ディレクトリを上に移動"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:81
 msgid "Workspace Directory Actions"
-msgstr ""
+msgstr "ワークスペースディレクトリのアクション"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:163
 msgid "Create new Folder"
@@ -2219,7 +2182,7 @@ msgstr ""
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
 msgid "Rectangle"
-msgstr "長方形"
+msgstr "矩形"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
 msgid "2D coordinate system"

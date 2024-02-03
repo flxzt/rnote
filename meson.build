@@ -1,6 +1,6 @@
 project(
     'rnote',
-    ['rust', 'cpp'],
+    ['cpp'],
     version: '0.9.4',
     meson_version: '>= 1.0',
 )
@@ -84,6 +84,30 @@ cargo_build_script = find_program('build-aux/cargo_build.py', required: true)
 inno_build_script = find_program('build-aux/inno_build.py', required: true)
 
 cargo_env = ['CARGO_HOME=' + meson.project_build_root() / 'cargo-home']
+cargo_target_options = []
+if meson.is_cross_build()
+    host_system = host_machine.system()
+    host_cpu_family = host_machine.cpu_family()
+
+    if host_cpu_family == 'x86_64' and host_system == 'linux'
+        cargo_target_options += ['--target', 'x86_64-pc-linux-gnu']
+        cargo_env += 'RUSTFLAGS="-C linker=/opt/zig-wrapper/zig-cc -C link-arg=x86_64-linux"'
+    elif host_cpu_family == 'x86_64' and host_system == 'windows'
+        # only mingw build is supported
+        cargo_target_options += ['--target', 'x86_64-pc-windows-gnu']
+        cargo_env += 'RUSTFLAGS="-C linker=/opt/zig-wrapper/zig-cc -C link-arg=x86_64-windows-gnu"'
+    elif host_cpu_family == 'aarch64' and host_system == 'linux'
+        cargo_target_options += ['--target', 'aarch64-unknown-linux-gnu']
+        cargo_env += 'RUSTFLAGS=-C zig c++ --target aarch64-linux'
+    elif host_cpu_family == 'aarch64' and host_system == 'windows'
+        # only mingw build is supported
+        cargo_target_options += ['--target', 'aarch64-unknown-windows-gnu']
+        cargo_env += 'RUSTFLAGS=-C zig c++ --target aarch64-windows-gnu'
+    else
+        message('Cross compilation for specified target is unsupported.')
+    endif
+endif
+
 cargo_manifest_path = meson.project_source_root() / 'Cargo.toml'
 cargo_target_dir = meson.project_build_root() / 'target'
 
@@ -183,6 +207,7 @@ if build_ui == true
     ui_cargo_options = ['--manifest-path', cargo_manifest_path]
     ui_cargo_options += ['--target-dir', cargo_target_dir]
     ui_cargo_options += ['-p', 'rnote']
+    ui_cargo_options += cargo_target_options
 
     if profile == 'default'
         ui_cargo_options += ['--release']
@@ -321,6 +346,7 @@ if build_cli == true
     cli_cargo_options = ['--manifest-path', cargo_manifest_path]
     cli_cargo_options += ['--target-dir', cargo_target_dir]
     cli_cargo_options += ['-p', 'rnote-cli']
+    cli_cargo_options += cargo_target_options
 
     if profile == 'default'
         cli_cargo_options += ['--release']

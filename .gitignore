@@ -5,9 +5,9 @@
 /vendor
 /flatpak-repo
 /flatpak-app
-/_build
-/_mesonbuild
-/_mesoninstall
+/_build*
+/_mesonbuild*
+/_mesoninstall*
 /.flatpak
 /.flatpak-builder
 /.editorconfig

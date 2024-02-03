@@ -1,0 +1,9 @@
+#! /bin/sh
+set -e
+target=$1
+shift
+
+if [ "$1" = '-Wl,--version' ] ; then
+    exec clang -fuse-ld=lld "$@"
+fi
+exec zig cc --target="$target" "$@"

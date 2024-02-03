@@ -1,0 +1,13 @@
+[binaries]
+c = ['@GLOBAL_SOURCE_ROOT@' / 'build-aux' / 'cross' / 'zig-cc', 'aarch64-linux']
+cpp = ['@GLOBAL_SOURCE_ROOT@' / 'build-aux' / 'cross' / 'zig-cpp', 'aarch64-linux']
+objcopy = 'llvm-objcopy'
+ranlib = 'llvm-ranlib'
+strip = 'llvm-strip'
+ar = 'llvm-ar'
+
+[target_machine]
+system = 'linux'
+cpu_family = 'aarch64'
+cpu = 'armhf'
+endian = 'big'

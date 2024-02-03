@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-01 12:50+0100\n"
-"PO-Revision-Date: 2024-02-03 06:04+0000\n"
+"PO-Revision-Date: 2024-02-03 20:15+0000\n"
 "Last-Translator: Ryo Nakano <ryonakaknock3@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/>"
 "\n"
@@ -533,7 +533,7 @@ msgstr "ブラシのスタイル"
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:149
 msgid "Brush Configuration"
-msgstr "ブラシ設定"
+msgstr "ブラシの設定"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:66
 msgid "Brush Styles"

@@ -138,8 +138,13 @@ meson compile -C _mesonbuild
 
 The compiled binary should now be here: `./_mesonbuild/target/release/rnote`.
 
-Note that if an older version of rnote has previously been installed, the old `gschema` file will still be used, which
-can cause problems. In this case you can install the new version of rnote to update the `gschema`.
+Note that if an older version of rnote has previously been installed, the old `gschema` file, which defines the
+applications settings, will still be used. This can cause problems, when the schema used by the development version are
+different from the ones installed locally:
+```
+Settings schema 'com.github.flxzt.rnote' does not contain a key named '...'
+```
+In this case you can install the new version of rnote to update the `gschema`.
 
 ## Install
 Installing the binary into the system can be done with:

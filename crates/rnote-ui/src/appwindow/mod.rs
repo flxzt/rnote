@@ -135,8 +135,14 @@ impl RnAppWindow {
             if let Err(e) = self.load_settings() {
                 tracing::error!("Failed to load initial settings, Err: {e:}");
             }
+            // disable restoring maximize and window size before presenting the window on mac
+            // see issue 823 - https://github.com/flxzt/rnote/issues/823
+            #[cfg(not(target_os = "macos"))]
+            if let Err(e) = self.load_window_settings() {
+                tracing::error!("Failed to restore windows settings, Err: {e:}");
+            }
         }
-
+ 
         // Anything that needs to be done right before showing the appwindow
 
         // Set undo / redo as not sensitive as default - setting it in .ui file did not work for some reason

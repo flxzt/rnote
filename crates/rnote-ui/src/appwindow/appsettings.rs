@@ -390,7 +390,8 @@ impl RnAppWindow {
         Ok(())
     }
 
-    /// Load settings that are not bound as binds.
+    /// Load settings that are not bound as binds. 
+    /// Restoring size and maximize status are separated in `load_window_settings()` 
     ///
     /// Settings changes through gsettings / dconf might not be applied until the app restarts.
     pub(crate) fn load_settings(&self) -> anyhow::Result<()> {
@@ -401,17 +402,6 @@ impl RnAppWindow {
 
         // appwindow
         {
-            let window_width = app_settings.int("window-width");
-            let window_height = app_settings.int("window-height");
-            let is_maximized = app_settings.boolean("is-maximized");
-
-            if is_maximized {
-
-                self.maximize();
-            } else {
-                self.set_default_size(window_width, window_height);
-            }
-
             // set the color-scheme through the action
             let color_scheme = app_settings.string("color-scheme");
             self.app()
@@ -426,6 +416,29 @@ impl RnAppWindow {
                 .load_from_settings(&app_settings);
         }
 
+        Ok(())
+    }
+
+    /// Load settings for the window size and maximize status
+    pub(crate) fn load_window_settings(&self) -> anyhow::Result<()> {
+        let app = self.app();
+        let app_settings = app
+            .app_settings()
+            .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
+
+        //restore windows dimensions and maximize status
+        {
+            // for now we are mocking it here
+            let window_width = app_settings.int("window-width");
+            let window_height = app_settings.int("window-height");
+            let is_maximized = app_settings.boolean("is-maximized");
+
+            if is_maximized {
+                self.maximize();
+            } else {
+                self.set_default_size(window_width, window_height);
+            }
+        }
         Ok(())
     }
 

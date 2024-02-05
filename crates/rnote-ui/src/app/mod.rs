@@ -128,8 +128,22 @@ mod imp {
         /// Initializes and shows a new app window
         pub(crate) fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
             let appwindow = RnAppWindow::new(self.obj().upcast_ref::<gtk4::Application>());
+            
+            // init the windows after presenting it on macos,
+            // to avoid issues related to the `maximize` command, see
+            // issue 823 - https://github.com/flxzt/rnote/issues/823
+            #[cfg(target_os = "macos")]
+            {
+            appwindow.present();
+            appwindow.init(); // initialize the window after presenting it
+            }
+
+            #[cfg(not(target_os = "macos"))]
+            {
             appwindow.init();
             appwindow.present();
+            }
+
 
             // Loading in input file in the first tab, if Some
             if let Some(input_file) = input_file {

@@ -390,8 +390,8 @@ impl RnAppWindow {
         Ok(())
     }
 
-    /// Load settings that are not bound as binds. 
-    /// Restoring size and maximize status are separated in `load_window_settings()` 
+    /// Load settings that are not bound as binds.
+    /// Restoring size and maximize status are separated in `load_window_settings()`
     ///
     /// Settings changes through gsettings / dconf might not be applied until the app restarts.
     pub(crate) fn load_settings(&self) -> anyhow::Result<()> {
@@ -435,9 +435,8 @@ impl RnAppWindow {
 
             if is_maximized {
                 self.maximize();
-            } else {
-                self.set_default_size(window_width, window_height);
             }
+            self.set_default_size(window_width, window_height);
         }
         Ok(())
     }

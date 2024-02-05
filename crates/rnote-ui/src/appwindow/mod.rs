@@ -142,7 +142,6 @@ impl RnAppWindow {
                 tracing::error!("Failed to restore windows settings, Err: {e:}");
             }
         }
- 
         // Anything that needs to be done right before showing the appwindow
 
         // Set undo / redo as not sensitive as default - setting it in .ui file did not work for some reason

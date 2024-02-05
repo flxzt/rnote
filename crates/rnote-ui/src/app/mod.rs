@@ -128,22 +128,20 @@ mod imp {
         /// Initializes and shows a new app window
         pub(crate) fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
             let appwindow = RnAppWindow::new(self.obj().upcast_ref::<gtk4::Application>());
-            
-            appwindow.init(); 
+
+            appwindow.init();
             appwindow.present();
             // restore the window dimension and maximize after presenting it on mac os
             // see issue 823 - https://github.com/flxzt/rnote/issues/823
             // first test with no gsettings to see + maximize forced
             #[cfg(target_os = "macos")]
-            if appwindow.app().settings_schema_found() {
-                // no need to raise the error like in the `.init()` function as that would
-                // create a double error message
-                if let Err(e) = appwindow.load_window_settings() {
+            // if appwindow.app().settings_schema_found() {
+            // no need to raise the error like in the `.init()` function as that would
+            // create a double error message
+            if let Err(e) = appwindow.load_window_settings() {
                 tracing::error!("Failed to restore windows settings, Err: {e:}");
-                }
             }
-
-
+            // }
 
             // Loading in input file in the first tab, if Some
             if let Some(input_file) = input_file {

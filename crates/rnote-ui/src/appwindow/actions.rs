@@ -956,6 +956,7 @@ impl RnAppWindow {
         app.set_accels_for_action("win.clipboard-copy", &["<Ctrl>c"]);
         app.set_accels_for_action("win.clipboard-cut", &["<Ctrl>x"]);
         app.set_accels_for_action("win.clipboard-paste", &["<Ctrl>v"]);
+        app.set_accels_for_action("win.selection-select-all", &["<Ctrl>a"]);
         app.set_accels_for_action("win.pen-style::brush", &["<Ctrl>1"]);
         app.set_accels_for_action("win.pen-style::shaper", &["<Ctrl>2"]);
         app.set_accels_for_action("win.pen-style::typewriter", &["<Ctrl>3"]);

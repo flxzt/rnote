@@ -135,7 +135,7 @@ mod imp {
             // see issue 823 - https://github.com/flxzt/rnote/issues/823
             #[cfg(target_os = "macos")]
             if let Err(e) = appwindow.load_window_settings() {
-                tracing::error!("Failed to restore windows settings, Err: {e:}");
+                tracing::error!("Failed to restore windows settings, Err: {e:?}");
             }
 
             // Loading in input file in the first tab, if Some

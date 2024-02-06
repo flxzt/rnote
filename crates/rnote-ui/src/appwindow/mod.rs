@@ -127,19 +127,19 @@ impl RnAppWindow {
             ));
         } else {
             if let Err(e) = self.setup_settings_binds() {
-                tracing::error!("Failed to setup settings binds, Err: {e:}");
+                tracing::error!("Failed to setup settings binds, Err: {e:?}");
             }
             if let Err(e) = self.setup_periodic_save() {
-                tracing::error!("Failed to setup periodic save, Err: {e:}");
+                tracing::error!("Failed to setup periodic save, Err: {e:?}");
             }
             if let Err(e) = self.load_settings() {
-                tracing::error!("Failed to load initial settings, Err: {e:}");
+                tracing::error!("Failed to load initial settings, Err: {e:?}");
             }
             // disable restoring maximize and window size before presenting the window on mac
             // see issue 823 - https://github.com/flxzt/rnote/issues/823
             #[cfg(not(target_os = "macos"))]
             if let Err(e) = self.load_window_settings() {
-                tracing::error!("Failed to restore windows settings, Err: {e:}");
+                tracing::error!("Failed to restore windows settings, Err: {e:?}");
             }
         }
         // Anything that needs to be done right before showing the appwindow

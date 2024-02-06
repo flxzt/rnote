@@ -286,7 +286,7 @@ impl RnAppWindow {
                 let doc_layout = match Layout::from_str(doc_layout_str) {
                     Ok(s) => s,
                     Err(e) => {
-                        tracing::error!("Activated doc-layout action with invalid target, Err: {e:}");
+                        tracing::error!("Activated doc-layout action with invalid target, Err: {e:?}");
                         return;
                     }
                 };
@@ -348,7 +348,7 @@ impl RnAppWindow {
                 let pen_style = match PenStyle::from_str(pen_style_str) {
                     Ok(s) => s,
                     Err(e) => {
-                        tracing::error!("Activated pen-style action with invalid target, Err: {e:}");
+                        tracing::error!("Activated pen-style action with invalid target, Err: {e:?}");
                         return;
                     }
                 };

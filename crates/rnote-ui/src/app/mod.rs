@@ -133,7 +133,6 @@ mod imp {
             appwindow.present();
             // restore the window dimension and maximize after presenting it on mac os
             // see issue 823 - https://github.com/flxzt/rnote/issues/823
-            // first test with no gsettings to see + maximize forced
             #[cfg(target_os = "macos")]
             if let Err(e) = appwindow.load_window_settings() {
                 tracing::error!("Failed to restore windows settings, Err: {e:}");

@@ -428,7 +428,6 @@ impl RnAppWindow {
 
         //restore windows dimensions and maximize status
         {
-            // for now we are mocking it here
             let window_width = app_settings.int("window-width");
             let window_height = app_settings.int("window-height");
             let is_maximized = app_settings.boolean("is-maximized");

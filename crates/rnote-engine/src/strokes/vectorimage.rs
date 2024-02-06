@@ -170,23 +170,27 @@ impl VectorImage {
             ),
         };
 
-        let intrinsic_size = na::vector![
-            svg_tree.size.width() as f64 * resize_ratio,
-            svg_tree.size.height() as f64 * resize_ratio
-        ];
+        let intrinsic_size =
+            na::vector![svg_tree.size.width() as f64, svg_tree.size.height() as f64];
         let svg_data = svg_tree.to_string(&xml_options);
+
         let rectangle = if let Some(size) = size {
+            //construct the transform
+            let mut transform = Transform::default();
+            transform.append_scale_mut(na::Vector2::new(resize_ratio, resize_ratio));
+            transform.append_translation_mut(pos + size * resize_ratio * 0.5);
             Rectangle {
                 cuboid: p2d::shape::Cuboid::new(size * 0.5),
-                transform: Transform::new_w_isometry(na::Isometry2::new(pos + size * 0.5, 0.0)),
+                transform: transform,
             }
         } else {
+            // construct the geometric transform
+            let mut transform = Transform::default();
+            transform.append_scale_mut(na::Vector2::new(resize_ratio, resize_ratio));
+            transform.append_translation_mut(pos + intrinsic_size * resize_ratio * 0.5);
             Rectangle {
                 cuboid: p2d::shape::Cuboid::new(intrinsic_size * 0.5),
-                transform: Transform::new_w_isometry(na::Isometry2::new(
-                    pos + intrinsic_size * 0.5,
-                    0.0,
-                )),
+                transform: transform,
             }
         };
 

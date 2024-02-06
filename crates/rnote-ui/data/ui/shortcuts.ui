@@ -176,6 +176,12 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Open New Tab</property>
+                <property name="accelerator">&lt;ctrl&gt;t</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes">Snap Positions</property>
                 <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;p</property>
               </object>

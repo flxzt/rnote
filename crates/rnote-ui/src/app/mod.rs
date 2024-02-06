@@ -135,13 +135,9 @@ mod imp {
             // see issue 823 - https://github.com/flxzt/rnote/issues/823
             // first test with no gsettings to see + maximize forced
             #[cfg(target_os = "macos")]
-            // if appwindow.app().settings_schema_found() {
-            // no need to raise the error like in the `.init()` function as that would
-            // create a double error message
             if let Err(e) = appwindow.load_window_settings() {
                 tracing::error!("Failed to restore windows settings, Err: {e:}");
             }
-            // }
 
             // Loading in input file in the first tab, if Some
             if let Some(input_file) = input_file {

@@ -1,6 +1,5 @@
 // Imports
 use super::{EngineConfig, EngineViewMut, StrokeContent};
-use crate::engine::Layout;
 use crate::pens::Pen;
 use crate::pens::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;

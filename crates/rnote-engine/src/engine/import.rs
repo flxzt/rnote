@@ -1,9 +1,11 @@
 // Imports
 use super::{EngineConfig, EngineViewMut, StrokeContent};
+use crate::engine::Layout;
 use crate::pens::Pen;
 use crate::pens::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
 use crate::store::StrokeKey;
+use crate::strokes::Resize;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{CloneConfig, Engine, WidgetFlags};
 use futures::channel::oneshot;
@@ -195,11 +197,24 @@ impl Engine {
     ) -> oneshot::Receiver<anyhow::Result<VectorImage>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<VectorImage>>();
 
+        let width_page = self.document.format.width().clone();
+        let is_fixed = is_fixed_layout(&self.document.layout);
+        let point_max: na::OPoint<f64, na::Const<2>> = self.camera.viewport().maxs;
+
         rayon::spawn(move || {
             let result = || -> anyhow::Result<VectorImage> {
                 let svg_str = String::from_utf8(bytes)?;
 
-                VectorImage::from_svg_str(&svg_str, pos, None)
+                VectorImage::from_svg_str(
+                    &svg_str,
+                    pos,
+                    None,
+                    Some(Resize {
+                        width: width_page,
+                        isfixed_layout: is_fixed,
+                        max_viewpoint: point_max,
+                    }),
+                )
             };
 
             if oneshot_sender.send(result()).is_err() {
@@ -222,9 +237,22 @@ impl Engine {
     ) -> oneshot::Receiver<anyhow::Result<BitmapImage>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<BitmapImage>>();
 
+        let width_page = self.document.format.width().clone();
+        let is_fixed = is_fixed_layout(&self.document.layout);
+        let point_max: na::OPoint<f64, na::Const<2>> = self.camera.viewport().maxs;
+
         rayon::spawn(move || {
             let result = || -> anyhow::Result<BitmapImage> {
-                BitmapImage::from_image_bytes(&bytes, pos, None)
+                BitmapImage::from_image_bytes(
+                    &bytes,
+                    pos,
+                    None,
+                    Some(Resize {
+                        width: width_page,
+                        isfixed_layout: is_fixed,
+                        max_viewpoint: point_max,
+                    }),
+                )
             };
 
             if oneshot_sender.send(result()).is_err() {
@@ -390,5 +418,14 @@ impl Engine {
         widget_flags.redraw = true;
 
         widget_flags
+    }
+}
+
+/// checks if the layout is constrained in the horizontal direction
+fn is_fixed_layout(layout_type: &Layout) -> bool {
+    match layout_type {
+        Layout::FixedSize => true,
+        Layout::ContinuousVertical => true,
+        _ => false,
     }
 }

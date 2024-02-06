@@ -1,8 +1,10 @@
 // Imports
+use super::Resize;
 use super::{Content, Stroke};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::render;
+use crate::strokes::resize::calculate_resize;
 use crate::Drawable;
 use anyhow::Context;
 use kurbo::Shape;
@@ -101,10 +103,26 @@ impl BitmapImage {
         bytes: &[u8],
         pos: na::Vector2<f64>,
         size: Option<na::Vector2<f64>>,
+        resize: Option<Resize>,
     ) -> Result<Self, anyhow::Error> {
         let image = render::Image::try_from_encoded_bytes(bytes)?;
+
+        // ratio to resize the image if needed
+        let resize_ratio = match resize {
+            None => 1.0,
+            Some(resize_struct) => calculate_resize(
+                resize_struct,
+                na::Vector2::new(f64::from(image.pixel_width), f64::from(image.pixel_height)),
+                pos,
+            ),
+        };
+        tracing::debug!("the resize ratio is {resize_ratio}");
+
         let size = size.unwrap_or_else(|| {
-            na::vector![f64::from(image.pixel_width), f64::from(image.pixel_height)]
+            na::vector![
+                f64::from(image.pixel_width) * resize_ratio,
+                f64::from(image.pixel_height) * resize_ratio
+            ]
         });
         let rectangle = Rectangle {
             cuboid: p2d::shape::Cuboid::new(size * 0.5),
@@ -207,7 +225,7 @@ impl BitmapImage {
             .collect::<anyhow::Result<Vec<(Vec<u8>, na::Vector2<f64>, na::Vector2<f64>)>>>()?;
 
         pngs.into_par_iter()
-            .map(|(png_data, pos, size)| Self::from_image_bytes(&png_data, pos, Some(size)))
+            .map(|(png_data, pos, size)| Self::from_image_bytes(&png_data, pos, Some(size), None))
             .collect()
     }
 }

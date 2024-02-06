@@ -1,10 +1,13 @@
 // Imports
 use super::content::GeneratedContentImages;
+use super::Resize;
 use super::{Content, Stroke};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
+use crate::strokes::resize::calculate_resize;
 use crate::{render, Drawable};
 use kurbo::Shape;
+use na;
 use p2d::bounding_volume::Aabb;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
@@ -139,6 +142,7 @@ impl VectorImage {
         svg_data: &str,
         pos: na::Vector2<f64>,
         size: Option<na::Vector2<f64>>,
+        resize: Option<Resize>,
     ) -> Result<Self, anyhow::Error> {
         const COORDINATES_PREC: u8 = 3;
         const TRANSFORMS_PREC: u8 = 4;
@@ -156,8 +160,20 @@ impl VectorImage {
         let mut svg_tree = usvg::Tree::from_str(svg_data, &usvg::Options::default())?;
         svg_tree.convert_text(&render::USVG_FONTDB);
 
-        let intrinsic_size =
-            na::vector![svg_tree.size.width() as f64, svg_tree.size.height() as f64];
+        // ratio to resize the image if needed
+        let resize_ratio = match resize {
+            None => 1.0,
+            Some(resize_struct) => calculate_resize(
+                resize_struct,
+                na::Vector2::new(svg_tree.size.width() as f64, svg_tree.size.height() as f64),
+                pos,
+            ),
+        };
+
+        let intrinsic_size = na::vector![
+            svg_tree.size.width() as f64 * resize_ratio,
+            svg_tree.size.height() as f64 * resize_ratio
+        ];
         let svg_data = svg_tree.to_string(&xml_options);
         let rectangle = if let Some(size) = size {
             Rectangle {
@@ -304,6 +320,7 @@ impl VectorImage {
                     svg.svg_data.as_str(),
                     svg.bounds.mins.coords,
                     Some(svg.bounds.extents()),
+                    None,
                 )
             })
             .collect()

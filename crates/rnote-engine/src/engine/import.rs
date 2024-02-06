@@ -198,7 +198,7 @@ impl Engine {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<VectorImage>>();
 
         let width_page = self.document.format.width().clone();
-        let is_fixed = is_fixed_layout(&self.document.layout);
+        let is_fixed = self.document.layout.is_fixed_layout();
         let point_max: na::OPoint<f64, na::Const<2>> = self.camera.viewport().maxs;
 
         rayon::spawn(move || {
@@ -238,7 +238,7 @@ impl Engine {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<BitmapImage>>();
 
         let width_page = self.document.format.width().clone();
-        let is_fixed = is_fixed_layout(&self.document.layout);
+        let is_fixed = self.document.layout.is_fixed_layout();
         let point_max: na::OPoint<f64, na::Const<2>> = self.camera.viewport().maxs;
 
         rayon::spawn(move || {
@@ -418,14 +418,5 @@ impl Engine {
         widget_flags.redraw = true;
 
         widget_flags
-    }
-}
-
-/// checks if the layout is constrained in the horizontal direction
-fn is_fixed_layout(layout_type: &Layout) -> bool {
-    match layout_type {
-        Layout::FixedSize => true,
-        Layout::ContinuousVertical => true,
-        _ => false,
     }
 }

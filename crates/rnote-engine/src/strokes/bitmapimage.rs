@@ -119,10 +119,7 @@ impl BitmapImage {
         tracing::debug!("the resize ratio is {resize_ratio}");
 
         let size = size.unwrap_or_else(|| {
-            na::vector![
-                f64::from(image.pixel_width),
-                f64::from(image.pixel_height)
-            ]
+            na::vector![f64::from(image.pixel_width), f64::from(image.pixel_height)]
         });
         let mut transform = Transform::default();
         transform.append_scale_mut(na::Vector2::new(resize_ratio, resize_ratio));

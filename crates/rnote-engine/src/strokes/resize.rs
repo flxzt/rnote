@@ -26,9 +26,9 @@ pub struct Resize {
 
 /// Calculate the `ratio` by which to resize the image such that
 /// - it stays fully in view
-/// - it does not goes over a page border when the mode has a fixed 
+/// - it does not goes over a page border when the mode has a fixed
 /// width size
-/// 
+///
 /// `pos_left_top_canvas` is the position of the top-left corner of
 /// the image in documents coordinates
 pub fn calculate_resize_ratio(

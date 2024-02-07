@@ -14,6 +14,7 @@ use crate::{
     RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
 };
 use adw::subclass::prelude::AdwApplicationImpl;
+use gettextrs::gettext;
 use gtk4::{gio, glib, glib::clone, prelude::*, subclass::prelude::*};
 
 mod imp {
@@ -134,8 +135,26 @@ mod imp {
             // restore the window dimension and maximize after presenting it on mac os
             // see issue 823 - https://github.com/flxzt/rnote/issues/823
             #[cfg(target_os = "macos")]
-            if let Err(e) = appwindow.load_window_settings() {
-                tracing::error!("Failed to restore windows settings, Err: {e:?}");
+            {
+                if !appwindow.app().settings_schema_found() {
+                    // Display an error toast if settings schema could not be found
+                    appwindow.overlays().dispatch_toast_error(&gettext(
+                "Settings schema is not installed. App settings could not be loaded and won't be saved.",
+            ));
+                } else {
+                    if let Err(e) = appwindow.setup_settings_binds() {
+                        tracing::error!("Failed to setup settings binds, Err: {e:?}");
+                    }
+                    if let Err(e) = appwindow.setup_periodic_save() {
+                        tracing::error!("Failed to setup periodic save, Err: {e:?}");
+                    }
+                    if let Err(e) = appwindow.load_settings() {
+                        tracing::error!("Failed to load initial settings, Err: {e:?}");
+                    }
+                    if let Err(e) = appwindow.load_window_settings() {
+                        tracing::error!("Failed to restore windows settings, Err: {e:?}");
+                    }
+                }
             }
 
             // Loading in input file in the first tab, if Some

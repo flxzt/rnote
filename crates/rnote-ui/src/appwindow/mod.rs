@@ -120,6 +120,9 @@ impl RnAppWindow {
         self.setup_actions();
         self.setup_action_accels();
 
+        // disable restoring maximize and window size before presenting the window on mac
+        // see issue 823 - https://github.com/flxzt/rnote/issues/823
+        #[cfg(not(target_os = "macos"))]
         if !self.app().settings_schema_found() {
             // Display an error toast if settings schema could not be found
             self.overlays().dispatch_toast_error(&gettext(
@@ -135,9 +138,7 @@ impl RnAppWindow {
             if let Err(e) = self.load_settings() {
                 tracing::error!("Failed to load initial settings, Err: {e:?}");
             }
-            // disable restoring maximize and window size before presenting the window on mac
-            // see issue 823 - https://github.com/flxzt/rnote/issues/823
-            #[cfg(not(target_os = "macos"))]
+
             if let Err(e) = self.load_window_settings() {
                 tracing::error!("Failed to restore windows settings, Err: {e:?}");
             }

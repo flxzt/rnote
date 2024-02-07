@@ -69,7 +69,7 @@ cpp_compiler = meson.get_compiler('cpp')
 #cpp_compiler.find_library('clang')
 dependency('glib-2.0', version: '>= 2.76')
 dependency('gio-2.0', version: '>= 2.76')
-dependency('cairo', version: '>= 1.17')
+dependency('cairo', version: '>= 1.18')
 
 cargo = find_program('cargo', required: true)
 # cmake is needed by the "ink-stroke-modeler-rs" bindings crate to build the C++ library
@@ -157,9 +157,10 @@ run_target(
 # build/install the ui
 if build_ui == true
     # ui dependencies
+    dependency('appstream')
+    dependency('poppler-glib', version: '>= 22.02')
     dependency('gtk4', version: '>= 4.12')
     dependency('libadwaita-1', version: '>= 1.4')
-    dependency('poppler-glib', version: '>= 22.07')
 
     # ui crate
     subdir('crates/rnote-ui')

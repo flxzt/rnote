@@ -40,7 +40,7 @@ Then, you can install the rest of the required dependencies using the
 `brew install` command.
 
 ```sh
-brew install git ninja meson glib appstream-glib gtk4 poppler desktop-file-utils libadwaita
+brew install git ninja meson glib appstream gtk4 poppler desktop-file-utils libadwaita
 ```
 
 ## Cloning the Repository

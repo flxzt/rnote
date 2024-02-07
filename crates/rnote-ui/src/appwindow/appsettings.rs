@@ -421,21 +421,27 @@ impl RnAppWindow {
 
     /// Load settings for the window size and maximize status
     pub(crate) fn load_window_settings(&self) -> anyhow::Result<()> {
-        let app = self.app();
-        let app_settings = app
-            .app_settings()
-            .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
+        // is app_setting the issue ?
+        // let app = self.app();
+        // let app_settings = app
+            // .app_settings()
+            // .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
 
         //restore windows dimensions and maximize status
         {
-            let window_width = app_settings.int("window-width");
-            let window_height = app_settings.int("window-height");
-            let is_maximized = app_settings.boolean("is-maximized");
+            // let window_width = app_settings.int("window-width");
+            // let window_height = app_settings.int("window-height");
+            // let is_maximized = app_settings.boolean("is-maximized");
 
+            // mock setttings 
+            let window_width = 500;
+            let window_height = 1500;
+            let is_maximized = true;
+
+            self.set_default_size(window_width, window_height);
             if is_maximized {
                 self.maximize();
             }
-            self.set_default_size(window_width, window_height);
         }
         Ok(())
     }

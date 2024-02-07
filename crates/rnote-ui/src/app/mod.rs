@@ -109,7 +109,7 @@ mod imp {
             RnEraserPage::static_type();
             RnSelectorPage::static_type();
             RnTypewriterPage::static_type();
-            RnToolsPage::static_type();
+            RnToolsPage::static_type(); 
             RnWorkspaceBrowser::static_type();
             RnWorkspacesBar::static_type();
             RnFileRow::static_type();

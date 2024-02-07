@@ -1,14 +1,7 @@
 // Imports
 use crate::workspacebrowser::{widgethelper, RnFileRow};
 use gettextrs::gettext;
-use gtk4::{
-    gio, glib,
-    glib::clone,
-    pango,
-    prelude::FileExt,
-    traits::{BoxExt, ButtonExt, EditableExt, PopoverExt, WidgetExt},
-    Align, Button, Entry, Label, Popover,
-};
+use gtk4::{gio, glib, glib::clone, pango, prelude::*, Align, Button, Entry, Label, Popover};
 use std::path::{Path, PathBuf};
 
 /// Create a new `rename` action.

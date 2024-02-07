@@ -62,37 +62,47 @@ if glib_compile_schemas.found()
 endif
 
 # Appdata
-message('Configuring appdata file')
+if host_machine.system() != 'windows'
+    message('Configuring appdata file')
 
-appdata_conf = configuration_data()
-appdata_conf.set('APP_ID', app_id)
-appdata_conf.set('APP_NAME', app_name)
-appdata_conf.set('APP_NAME_CAPITALIZED', app_name_capitalized)
-appdata_conf.set('APP_AUTHOR_NAME', app_author_name)
-appdata_conf.set('APP_WEBSITE', app_website)
-appdata_conf.set('APP_ISSUES_URL', app_issues_url)
-appdata_conf.set('APP_SUPPORT_URL', app_support_url)
-appdata_conf.set('APP_DONATE_URL', app_donate_url)
-appdata_file_in = configure_file(
-    input: 'app.metainfo.xml.in.in',
-    output: '@BASENAME@',
-    configuration: appdata_conf,
-)
-appdata_file = i18n.merge_file(
-    input: appdata_file_in,
-    output: app_id + '.metainfo.xml',
-    po_dir: '../po',
-    install: true,
-    install_dir: datadir / 'metainfo',
-)
-
-# Validate Appdata
-if appstream_util.found()
-    test(
-        'validate-appdata',
-        appstream_util,
-        args: ['validate', '--nonet', appdata_file],
+    appdata_conf = configuration_data()
+    appdata_conf.set('APP_ID', app_id)
+    appdata_conf.set('APP_NAME', app_name)
+    appdata_conf.set('APP_NAME_CAPITALIZED', app_name_capitalized)
+    appdata_conf.set('APP_AUTHOR_NAME', app_author_name)
+    appdata_conf.set('APP_WEBSITE', app_website)
+    appdata_conf.set('APP_ISSUES_URL', app_issues_url)
+    appdata_conf.set('APP_SUPPORT_URL', app_support_url)
+    appdata_conf.set('APP_DONATE_URL', app_donate_url)
+    appdata_file_in = configure_file(
+        input: 'app.metainfo.xml.in.in',
+        output: '@BASENAME@',
+        configuration: appdata_conf,
     )
+
+    # Currently this would fail on windows mingw with error:
+    #
+    # "C:/msys64/mingw64/bin/msgfmt.EXE: cannot locate ITS rules for crates/rnote-ui/data/app.metainfo.xml.in"
+    #
+    # Even though the appdata package is installed and the rule "metainfo.its" is present in
+    # "/mingw64/share/gettext/its". But because we don't need the appdata file, we can circumvent this error by just not
+    # processing the metainfo file, we don't need it anyway.
+    appdata_file = i18n.merge_file(
+        input: appdata_file_in,
+        output: app_id + '.metainfo.xml',
+        po_dir: '../po',
+        install: true,
+        install_dir: datadir / 'metainfo',
+    )
+
+    # Validate Appdata
+    if appstream_util.found()
+        test(
+            'validate-appdata',
+            appstream_util,
+            args: ['validate', '--nonet', appdata_file],
+        )
+    endif
 endif
 
 # App-Icon

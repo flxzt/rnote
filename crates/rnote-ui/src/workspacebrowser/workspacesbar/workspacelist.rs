@@ -132,7 +132,7 @@ impl RnWorkspaceList {
     }
 }
 
-impl glib::StaticVariantType for RnWorkspaceList {
+impl glib::variant::StaticVariantType for RnWorkspaceList {
     fn static_variant_type() -> std::borrow::Cow<'static, glib::VariantTy> {
         let ty = RnWorkspaceListEntry::static_variant_type();
         let variant_type = glib::VariantType::new(format!("a({})", ty.as_str()).as_str()).unwrap();
@@ -140,13 +140,13 @@ impl glib::StaticVariantType for RnWorkspaceList {
     }
 }
 
-impl glib::ToVariant for RnWorkspaceList {
+impl glib::variant::ToVariant for RnWorkspaceList {
     fn to_variant(&self) -> glib::Variant {
         self.to_vec().to_variant()
     }
 }
 
-impl glib::FromVariant for RnWorkspaceList {
+impl glib::variant::FromVariant for RnWorkspaceList {
     fn from_variant(variant: &glib::Variant) -> Option<Self> {
         let mut vec = Vec::new();
 

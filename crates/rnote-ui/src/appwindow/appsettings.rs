@@ -127,18 +127,6 @@ impl RnAppWindow {
             .get_no_changes()
             .build();
 
-        app_settings
-            .bind(
-                "enable-visual-debugging",
-                &self
-                    .sidebar()
-                    .settings_panel()
-                    .developer_enable_visual_debugging(),
-                "active",
-            )
-            .get_no_changes()
-            .build();
-
         // colorpicker palette
         let gdk_color_mapping = |var: &glib::Variant, _: glib::Type| {
             let color = var.get::<(f64, f64, f64, f64)>()?;

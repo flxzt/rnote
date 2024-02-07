@@ -38,6 +38,30 @@
               <attribute name="target">force-dark</attribute>
             </item>
           </submenu>
+          <item>
+            <attribute name="label" translatable="yes">De_veloper Mode</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.devel-mode</attribute>
+          </item>
+          <submenu>
+            <attribute name="label" translatable="yes">Developer _Menu</attribute>
+            <attribute name="action">win.devel-menu</attribute>
+            <attribute name="hidden-when">action-disabled</attribute>
+            <section>
+              <item>
+                <attribute name="label" translatable="yes">Visual _Debugging</attribute>
+                <attribute name="action">win.visual-debug</attribute>
+              </item>
+              <item>
+                <attribute name="label" translatable="yes">Export Engine _State</attribute>
+                <attribute name="action">win.debug-export-engine-state</attribute>
+              </item>
+              <item>
+                <attribute name="label" translatable="yes">Export Engine _Config</attribute>
+                <attribute name="action">win.debug-export-engine-config</attribute>
+              </item>
+            </section>
+          </submenu>
         </section>
         <section>
           <item>

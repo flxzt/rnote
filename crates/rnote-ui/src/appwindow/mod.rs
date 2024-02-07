@@ -570,7 +570,6 @@ impl RnAppWindow {
         let pen_style = canvas.engine_ref().penholder.current_pen_style_w_override();
         let pen_sounds = canvas.engine_ref().pen_sounds();
         let doc_format = canvas.engine_ref().document.format;
-        let doc_layout = canvas.engine_ref().document.layout;
         let total_zoom = canvas.engine_ref().camera.total_zoom();
         let snap_positions = canvas.engine_ref().document.snap_positions;
         let can_undo = canvas.engine_ref().can_undo();
@@ -590,11 +589,6 @@ impl RnAppWindow {
 
         // we change the state through the actions, because they themselves hold state.
         // (for example needed to display ticks in menus for boolean actions)
-        adw::prelude::ActionGroupExt::activate_action(
-            self,
-            "doc-layout",
-            Some(&doc_layout.to_string().to_variant()),
-        );
         adw::prelude::ActionGroupExt::change_action_state(
             self,
             "pen-style",

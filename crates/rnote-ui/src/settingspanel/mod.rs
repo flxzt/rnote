@@ -5,10 +5,9 @@ mod penshortcutrow;
 // Re-exports
 pub(crate) use penshortcutrow::RnPenShortcutRow;
 use rnote_compose::ext::Vector2Ext;
-use rnote_engine::document::Layout;
 
 // Imports
-use crate::{dialogs, RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
+use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
 use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
 use gtk4::{
@@ -19,6 +18,7 @@ use num_traits::ToPrimitive;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
+use rnote_engine::document::Layout;
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
 
@@ -111,12 +111,6 @@ mod imp {
         pub(crate) penshortcut_drawing_pad_button_2: TemplateChild<RnPenShortcutRow>,
         #[template_child]
         pub(crate) penshortcut_drawing_pad_button_3: TemplateChild<RnPenShortcutRow>,
-        #[template_child]
-        pub(crate) developer_enable_visual_debugging: TemplateChild<adw::SwitchRow>,
-        #[template_child]
-        pub(crate) developer_export_engine_state_button: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) developer_export_engine_config_button: TemplateChild<Button>,
     }
 
     #[glib::object_subclass]
@@ -358,10 +352,6 @@ impl RnSettingsPanel {
             .set_selected(layout.to_u32().unwrap());
     }
 
-    pub(crate) fn developer_enable_visual_debugging(&self) -> adw::SwitchRow {
-        self.imp().developer_enable_visual_debugging.clone()
-    }
-
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
         self.refresh_general_ui(active_tab);
         self.refresh_format_ui(active_tab);
@@ -399,6 +389,7 @@ impl RnSettingsPanel {
         let canvas = active_tab.canvas();
         let background = canvas.engine_ref().document.background;
         let format = canvas.engine_ref().document.format;
+        let document_layout = canvas.engine_ref().document.layout;
 
         imp.doc_background_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
@@ -413,6 +404,7 @@ impl RnSettingsPanel {
             .set_dpi(format.dpi());
         imp.doc_background_pattern_height_unitentry
             .set_value_in_px(background.pattern_size[1]);
+        self.set_document_layout(&document_layout);
     }
 
     fn refresh_shortcuts_ui(&self, active_tab: &RnCanvasWrapper) {
@@ -461,7 +453,6 @@ impl RnSettingsPanel {
         self.setup_format(appwindow);
         self.setup_doc(appwindow);
         self.setup_shortcuts(appwindow);
-        self.setup_developer(appwindow);
     }
 
     fn setup_general(&self, appwindow: &RnAppWindow) {
@@ -812,37 +803,6 @@ impl RnSettingsPanel {
             appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton3, action);
             None
         }));
-    }
-
-    fn setup_developer(&self, appwindow: &RnAppWindow) {
-        let imp = self.imp();
-
-        let set_visual_debug = |appwindow: &RnAppWindow, visual_debug: bool| {
-            let canvas = appwindow.active_tab_wrapper().canvas();
-            let widget_flags = canvas.engine_mut().set_visual_debug(visual_debug);
-            appwindow.handle_widget_flags(widget_flags, &canvas);
-        };
-        imp.developer_enable_visual_debugging.connect_active_notify(
-            clone!(@weak appwindow => move |row| {
-                set_visual_debug(&appwindow, row.is_active());
-            }),
-        );
-
-        imp.developer_export_engine_state_button.get().connect_clicked(
-            clone!(@weak appwindow => move |_| {
-                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                    dialogs::export::filechooser_export_engine_state(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
-                }));
-            }),
-        );
-
-        imp.developer_export_engine_config_button.get().connect_clicked(
-            clone!(@weak appwindow => move |_| {
-                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                    dialogs::export::filechooser_export_engine_config(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
-                }));
-            }),
-        );
     }
 
     fn revert_format(&self, appwindow: &RnAppWindow) {

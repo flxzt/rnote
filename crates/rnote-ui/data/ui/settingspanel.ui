@@ -512,39 +512,6 @@ on a drawing pad</property>
                     </child>
                   </object>
                 </child>
-                <!-- Developer Options Group -->
-                <child>
-                  <object class="AdwPreferencesGroup">
-                    <property name="title" translatable="yes">Developer Options</property>
-                    <child>
-                      <object class="AdwSwitchRow" id="developer_enable_visual_debugging">
-                        <property name="title" translatable="yes">Enable Visual Debugging</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwActionRow" id="developer_export_engine_state_row">
-                        <property name="title" translatable="yes">Export Engine State</property>
-                        <child type="suffix">
-                          <object class="GtkButton" id="developer_export_engine_state_button">
-                            <property name="valign">center</property>
-                            <property name="label" translatable="yes">Export</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwActionRow" id="developer_export_engine_config_row">
-                        <property name="title" translatable="yes">Export Engine Config</property>
-                        <child type="suffix">
-                          <object class="GtkButton" id="developer_export_engine_config_button">
-                            <property name="valign">center</property>
-                            <property name="label" translatable="yes">Export</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </child>
               </object>
             </property>
           </object>

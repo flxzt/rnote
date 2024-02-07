@@ -161,10 +161,6 @@
       <default>false</default>
       <summary>if the aspect ratio while resizing is locked</summary>
     </key>
-    <key name="enable-visual-debugging" type="b">
-      <default>false</default>
-      <summary>Enable visual debugging</summary>
-    </key>
     <key name="engine-config" type="s">
       <default>''</default>
       <summary>the engine configuration</summary>

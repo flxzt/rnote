@@ -224,9 +224,6 @@ impl RnOverlays {
                 }
                 overlays.imp().prev_active_tab_page.set(Some(&active_tab_page));
 
-                let document_layout = active_canvaswrapper.canvas().engine_ref().document.layout;
-                appwindow.sidebar().settings_panel().set_document_layout(&document_layout);
-
                 let widget_flags = active_canvaswrapper.canvas().engine_mut().set_active(true);
                 appwindow.handle_widget_flags(widget_flags, &active_canvaswrapper.canvas());
                 appwindow.refresh_ui_from_engine(&active_canvaswrapper);
@@ -284,7 +281,7 @@ impl RnOverlays {
                 let action_active_tab_move_right = appwindow.lookup_action("active-tab-move-right").unwrap().downcast::<gio::SimpleAction>().unwrap();
                 let action_active_tab_close = appwindow.lookup_action("active-tab-close").unwrap().downcast::<gio::SimpleAction>().unwrap();
 
-                appwindow.overlays().tabview().set_selected_page(page);
+                tabview.set_selected_page(page);
 
                 let n_pages = tabview.n_pages();
                 let pos = tabview.page_position(page);

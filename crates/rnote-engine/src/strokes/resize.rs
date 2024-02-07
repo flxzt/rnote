@@ -1,37 +1,51 @@
 use na;
 
+/// Enum that lists the different options for sizing the image
+///
+/// Either respect the original image size (in pixel or dimensions)
+/// for svg, impose a size, or resize based on the viewport/page
+#[derive(Debug)]
+pub enum ImageSizeOption {
+    /// respect the size of the original image (no resizing applied)
+    RespectOriginalSize,
+    /// Use the given size
+    ImposeSize(na::Vector2<f64>),
+    /// Resize the image to canvas/page view
+    ResizeImage(Resize),
+}
+
 #[derive(Debug)]
 pub struct Resize {
-    // size of a page
+    /// width of a page
     pub width: f64,
-    // if the layout has a fixed size vertically
+    /// if the layout has a fixed size vertically
     pub isfixed_layout: bool,
-    // viewport
+    /// viewport
     pub max_viewpoint: na::OPoint<f64, na::Const<2>>,
 }
 
-pub fn calculate_resize(
+pub fn calculate_resize_ratio(
     resize: Resize,
-    initial_size: na::Vector2<f64>,
-    pos: na::Vector2<f64>,
+    initial_size_image: na::Vector2<f64>,
+    pos_left_top_canvas: na::Vector2<f64>,
 ) -> f64 {
-    let current_width = initial_size.x;
-    let current_height = initial_size.y;
+    let current_width = initial_size_image.x;
+    let current_height = initial_size_image.y;
 
     // calculate the minimum ratio to stay in the viewport
     let ratio_viewport = (1.0f64)
         .min(
             //check in the horizontal direction
-            (resize.max_viewpoint.x - pos.index(0)) / (current_width),
+            (resize.max_viewpoint.x - pos_left_top_canvas.index(0)) / (current_width),
         )
         .min(
             //check in the vertical direction
-            (resize.max_viewpoint.y - pos.index(1)) / (current_height),
+            (resize.max_viewpoint.y - pos_left_top_canvas.index(1)) / (current_height),
         );
 
     // check if we go out of the viewport in the two directions
     match resize.isfixed_layout {
         false => ratio_viewport,
-        true => ratio_viewport.min((resize.width - pos.index(0)) / (current_width)),
+        true => ratio_viewport.min((resize.width - pos_left_top_canvas.index(0)) / (current_width)),
     }
 }

@@ -1,10 +1,10 @@
 // Imports
 use super::content::GeneratedContentImages;
-use super::Resize;
+use super::resize::ImageSizeOption;
 use super::{Content, Stroke};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
-use crate::strokes::resize::calculate_resize;
+use crate::strokes::resize::calculate_resize_ratio;
 use crate::{render, Drawable};
 use kurbo::Shape;
 use na;
@@ -141,8 +141,7 @@ impl VectorImage {
     pub fn from_svg_str(
         svg_data: &str,
         pos: na::Vector2<f64>,
-        size: Option<na::Vector2<f64>>,
-        resize: Option<Resize>,
+        size: ImageSizeOption,
     ) -> Result<Self, anyhow::Error> {
         const COORDINATES_PREC: u8 = 3;
         const TRANSFORMS_PREC: u8 = 4;
@@ -160,37 +159,36 @@ impl VectorImage {
         let mut svg_tree = usvg::Tree::from_str(svg_data, &usvg::Options::default())?;
         svg_tree.convert_text(&render::USVG_FONTDB);
 
-        // ratio to resize the image if needed
-        let resize_ratio = match resize {
-            None => 1.0,
-            Some(resize_struct) => calculate_resize(
-                resize_struct,
-                na::Vector2::new(svg_tree.size.width() as f64, svg_tree.size.height() as f64),
-                pos,
-            ),
-        };
-
+        let svg_data: String = svg_tree.to_string(&xml_options);
         let intrinsic_size =
             na::vector![svg_tree.size.width() as f64, svg_tree.size.height() as f64];
-        let svg_data = svg_tree.to_string(&xml_options);
+        let mut transform = Transform::default();
 
-        let rectangle = if let Some(size) = size {
-            //construct the transform
-            let mut transform = Transform::default();
-            transform.append_scale_mut(na::Vector2::new(resize_ratio, resize_ratio));
-            transform.append_translation_mut(pos + size * resize_ratio * 0.5);
-            Rectangle {
-                cuboid: p2d::shape::Cuboid::new(size * 0.5),
-                transform: transform,
+        let rectangle = match size {
+            ImageSizeOption::RespectOriginalSize => {
+                // Size not given : use the intrisic size
+                transform.append_translation_mut(pos + intrinsic_size * 0.5);
+                Rectangle {
+                    cuboid: p2d::shape::Cuboid::new(intrinsic_size * 0.5),
+                    transform: transform,
+                }
             }
-        } else {
-            // construct the geometric transform
-            let mut transform = Transform::default();
-            transform.append_scale_mut(na::Vector2::new(resize_ratio, resize_ratio));
-            transform.append_translation_mut(pos + intrinsic_size * resize_ratio * 0.5);
-            Rectangle {
-                cuboid: p2d::shape::Cuboid::new(intrinsic_size * 0.5),
-                transform: transform,
+            ImageSizeOption::ImposeSize(given_size) => {
+                // Size given : use the given size
+                transform.append_translation_mut(pos + given_size * 0.5);
+                Rectangle {
+                    cuboid: p2d::shape::Cuboid::new(given_size * 0.5),
+                    transform: transform,
+                }
+            }
+            ImageSizeOption::ResizeImage(resize_struct) => {
+                // Resize : calculate the ratio
+                let resize_ratio = calculate_resize_ratio(resize_struct, intrinsic_size, pos);
+                transform.append_translation_mut(pos + intrinsic_size * resize_ratio * 0.5);
+                Rectangle {
+                    cuboid: p2d::shape::Cuboid::new(intrinsic_size * resize_ratio * 0.5),
+                    transform: transform,
+                }
             }
         };
 
@@ -323,8 +321,7 @@ impl VectorImage {
                 Self::from_svg_str(
                     svg.svg_data.as_str(),
                     svg.bounds.mins.coords,
-                    Some(svg.bounds.extents()),
-                    None,
+                    ImageSizeOption::ImposeSize(svg.bounds.extents()),
                 )
             })
             .collect()

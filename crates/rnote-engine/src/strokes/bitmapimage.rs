@@ -1,10 +1,10 @@
 // Imports
-use super::Resize;
+use super::resize::ImageSizeOption;
 use super::{Content, Stroke};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::render;
-use crate::strokes::resize::calculate_resize;
+use crate::strokes::resize::calculate_resize_ratio;
 use crate::Drawable;
 use anyhow::Context;
 use kurbo::Shape;
@@ -102,29 +102,27 @@ impl BitmapImage {
     pub fn from_image_bytes(
         bytes: &[u8],
         pos: na::Vector2<f64>,
-        size: Option<na::Vector2<f64>>,
-        resize: Option<Resize>,
+        size: ImageSizeOption,
     ) -> Result<Self, anyhow::Error> {
         let image = render::Image::try_from_encoded_bytes(bytes)?;
 
-        // ratio to resize the image if needed
-        let resize_ratio = match resize {
-            None => 1.0,
-            Some(resize_struct) => calculate_resize(
-                resize_struct,
-                na::Vector2::new(f64::from(image.pixel_width), f64::from(image.pixel_height)),
-                pos,
+        let initial_size = na::vector![f64::from(image.pixel_width), f64::from(image.pixel_height)];
+
+        // pattern match on ImageSizeOption
+        let (size, resize_ratio) = match size {
+            ImageSizeOption::RespectOriginalSize => (initial_size, 1.0f64),
+            ImageSizeOption::ImposeSize(given_size) => (given_size, 1.0f64),
+            ImageSizeOption::ResizeImage(resize_struct) => (
+                initial_size,
+                calculate_resize_ratio(resize_struct, initial_size, pos),
             ),
         };
         tracing::debug!("the resize ratio is {resize_ratio}");
 
-        let size = size.unwrap_or_else(|| {
-            na::vector![f64::from(image.pixel_width), f64::from(image.pixel_height)]
-        });
+        // general transform
         let mut transform = Transform::default();
         transform.append_scale_mut(na::Vector2::new(resize_ratio, resize_ratio));
         transform.append_translation_mut(pos + size * resize_ratio * 0.5);
-
         let rectangle = Rectangle {
             cuboid: p2d::shape::Cuboid::new(size * 0.5),
             transform: transform,
@@ -226,7 +224,9 @@ impl BitmapImage {
             .collect::<anyhow::Result<Vec<(Vec<u8>, na::Vector2<f64>, na::Vector2<f64>)>>>()?;
 
         pngs.into_par_iter()
-            .map(|(png_data, pos, size)| Self::from_image_bytes(&png_data, pos, Some(size), None))
+            .map(|(png_data, pos, size)| {
+                Self::from_image_bytes(&png_data, pos, ImageSizeOption::ImposeSize(size))
+            })
             .collect()
     }
 }

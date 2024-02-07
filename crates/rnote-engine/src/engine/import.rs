@@ -4,6 +4,7 @@ use crate::pens::Pen;
 use crate::pens::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
 use crate::store::StrokeKey;
+use crate::strokes::resize::ImageSizeOption;
 use crate::strokes::Resize;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{CloneConfig, Engine, WidgetFlags};
@@ -200,6 +201,14 @@ impl Engine {
         let is_fixed = self.document.layout.is_fixed_layout();
         let point_max: na::OPoint<f64, na::Const<2>> = self.camera.viewport().maxs;
 
+        // check if .size/.total_zoom are better than the current .maxs
+        tracing::debug!(
+            "max : {:?} \n zoom {:?}\n size {:?}",
+            self.camera.viewport().maxs,
+            self.camera.total_zoom(),
+            self.camera.size(),
+        );
+
         rayon::spawn(move || {
             let result = || -> anyhow::Result<VectorImage> {
                 let svg_str = String::from_utf8(bytes)?;
@@ -207,8 +216,7 @@ impl Engine {
                 VectorImage::from_svg_str(
                     &svg_str,
                     pos,
-                    None,
-                    Some(Resize {
+                    ImageSizeOption::ResizeImage(Resize {
                         width: width_page,
                         isfixed_layout: is_fixed,
                         max_viewpoint: point_max,
@@ -236,6 +244,7 @@ impl Engine {
     ) -> oneshot::Receiver<anyhow::Result<BitmapImage>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<BitmapImage>>();
 
+        // we get these parameters to enable proper resizing of the windowsœ
         let width_page = self.document.format.width().clone();
         let is_fixed = self.document.layout.is_fixed_layout();
         let point_max: na::OPoint<f64, na::Const<2>> = self.camera.viewport().maxs;
@@ -245,8 +254,7 @@ impl Engine {
                 BitmapImage::from_image_bytes(
                     &bytes,
                     pos,
-                    None,
-                    Some(Resize {
+                    ImageSizeOption::ResizeImage(Resize {
                         width: width_page,
                         isfixed_layout: is_fixed,
                         max_viewpoint: point_max,

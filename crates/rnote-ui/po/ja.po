@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-07 10:08+0100\n"
-"PO-Revision-Date: 2024-02-03 20:15+0000\n"
+"PO-Revision-Date: 2024-02-07 14:58+0000\n"
 "Last-Translator: Ryo Nakano <ryonakaknock3@gmail.com>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/"
-">\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/>"
+"\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1052,23 +1052,19 @@ msgstr "全画面表示/解除"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:24
 msgid "_Snap Positions"
-msgstr ""
+msgstr "位置をスナップ(_S)"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:29
 msgid "_Pen Sounds"
-msgstr ""
+msgstr "ペンの音(_P)"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:34
-#, fuzzy
-#| msgid "Return to the origin page"
 msgid "_Return to Origin Page"
-msgstr "最初のページに戻る"
+msgstr "最初のページに戻る(_R)"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:38
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "C_lear Document"
-msgstr "選択範囲をSVGに保存"
+msgstr "文書を消去(_L)"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:44
 msgid "Show _Format Borders"
@@ -1076,15 +1072,15 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:49
 msgid "Show _Origin Indicator"
-msgstr ""
+msgstr "原点を表示(_O)"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
 msgid "Draw With _Touch Input"
-msgstr ""
+msgstr "タッチ入力で描く(_T)"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Block Pinch to _Zoom"
-msgstr ""
+msgstr "ピンチでの倍率変更を無効化(_Z)"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:90
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
@@ -1113,26 +1109,32 @@ msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"ページを削除します。\n"
+"固定サイズの文書レイアウトの場合に利用可能です。"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:142
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"ページを追加します。\n"
+"固定サイズの文書レイアウトの場合に利用可能です。"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:151
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"コンテンツに合わせて文書をリサイズします。\n"
+"固定サイズの文書レイアウトの場合に利用可能です。"
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
-msgstr ""
+msgstr "ストロークの色"
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:26
 msgid "Fill Color"
-msgstr ""
+msgstr "塗りつぶしの色"
 
 #: crates/rnote-ui/data/ui/filerow.ui:61
 #: crates/rnote-ui/src/dialogs/import.rs:26
@@ -1194,15 +1196,15 @@ msgstr "閉じる(_C)"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
-msgstr ""
+msgstr "一時的"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:12
 msgid "Permanent"
-msgstr ""
+msgstr "永続的"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
-msgstr ""
+msgstr "切り替え"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:41
 #: crates/rnote-ui/data/ui/shortcuts.ui:11
@@ -1227,15 +1229,15 @@ msgstr "自動保存の間隔を秒単位で設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:58
 msgid "Show Scrollbars"
-msgstr ""
+msgstr "スクロールバーを表示"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:59
 msgid "Set whether the scrollbars on the canvas are shown"
-msgstr ""
+msgstr "キャンバス上のスクロールバーを表示するかどうかを設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:64
 msgid "Inertial Touch Scrolling"
-msgstr ""
+msgstr "慣性タッチスクロール"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:65
 msgid ""
@@ -1243,30 +1245,33 @@ msgid ""
 "An application restart is required when this option\n"
 "gets disabled."
 msgstr ""
+"キャンバス上のタッチスクロールを慣性にするか\n"
+"どうかを設定します。無効化時、アプリケーションの\n"
+"再起動が必要です。"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:72
 msgid "Regular Cursor"
-msgstr ""
+msgstr "通常のカーソル"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:73
 msgid "Set the regular cursor"
-msgstr ""
+msgstr "通常のカーソルを設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:95
 msgid "Show Drawing Cursor"
-msgstr ""
+msgstr "描画カーソルを表示"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:96
 msgid "Set whether the drawing cursor is visible"
-msgstr ""
+msgstr "描画カーソルを表示するかどうかを設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:102
 msgid "Drawing Cursor"
-msgstr ""
+msgstr "描画カーソル"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:103
 msgid "Set the drawing cursor"
-msgstr ""
+msgstr "描画カーソルを設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:128
 msgid "Page Format"
@@ -1294,27 +1299,27 @@ msgstr "A4"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:139
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:140
 msgid "A2"
-msgstr ""
+msgstr "A2"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:141
 msgid "US letter"
-msgstr ""
+msgstr "レター"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:142
 msgid "US legal"
-msgstr ""
+msgstr "リーガル"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:143
 msgid "Custom"
-msgstr ""
+msgstr "カスタム"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:151
 msgid "Orientation"
-msgstr ""
+msgstr "向き"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:152
 msgid "Set the format orientation"
@@ -1322,15 +1327,15 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:164
 msgid "Portrait"
-msgstr ""
+msgstr "縦"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:170
 msgid "Landscape"
-msgstr ""
+msgstr "横"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:180
 msgid "Width"
-msgstr ""
+msgstr "幅"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:181
 msgid "Set the format width"
@@ -1338,7 +1343,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:197
 msgid "Height"
-msgstr ""
+msgstr "高さ"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:198
 msgid "Set the format height"
@@ -1346,15 +1351,15 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:214
 msgid "Dpi"
-msgstr ""
+msgstr "DPI"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:215
 msgid "Set the Dpi (dots per inch). Defaults to 96."
-msgstr ""
+msgstr "DPI (dots per inch) を設定します。デフォルトは 96 です。"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:225
 msgid "Revert"
-msgstr ""
+msgstr "元に戻す"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:247
 #: crates/rnote-ui/data/ui/shortcuts.ui:158
@@ -1363,28 +1368,24 @@ msgid "Document"
 msgstr "文書"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:250
-#, fuzzy
-#| msgid "Document"
 msgid "Document Layout"
-msgstr "文書"
+msgstr "文書レイアウト"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:254
 msgid "Fixed Size"
-msgstr ""
+msgstr "固定サイズ"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:255
-#, fuzzy
-#| msgid "Continuous"
 msgid "Continuous Vertical"
-msgstr "連続"
+msgstr "縦に連続"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:256
 msgid "Semi Infinite"
-msgstr ""
+msgstr "ほぼ無限"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:257
 msgid "Infinite"
-msgstr ""
+msgstr "無限"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:265
 msgid "Format Border Color"

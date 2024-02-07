@@ -303,7 +303,7 @@ are cut into pages</property>
                         </child>
                         <child>
                           <object class="AdwEntryRow" id="export_doc_pages_export_files_stemname_entryrow">
-                            <property name="title" translatable="yes">Export Files Stem Name</property>
+                            <property name="title" translatable="yes" context="When pages are exported this is the base name, followed by: - Page 0,1,..">Export Files Stem Name</property>
                           </object>
                         </child>
                       </object>

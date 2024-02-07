@@ -265,7 +265,6 @@ impl Selector {
                             .selector_config
                             .resize_lock_aspectratio
                             || modifier_keys.contains(&ModifierKey::KeyboardCtrl);
-
                         let snap_corner_pos = match from_corner {
                             ResizeCorner::TopLeft => start_bounds.mins.coords,
                             ResizeCorner::TopRight => na::vector![
@@ -290,40 +289,35 @@ impl Selector {
                             ],
                             ResizeCorner::BottomRight => start_bounds.mins.coords,
                         };
-                        let start_offset = if !lock_aspectratio {
-                            engine_view
+                        let mut offset_to_start = element.pos - *start_pos;
+                        if !lock_aspectratio {
+                            offset_to_start = engine_view
                                 .document
-                                .snap_position(snap_corner_pos + (element.pos - *start_pos))
-                                - snap_corner_pos
-                        } else {
-                            element.pos - *start_pos
-                        };
-                        let start_offset = match from_corner {
-                            ResizeCorner::TopLeft => -start_offset,
+                                .snap_position(snap_corner_pos + offset_to_start)
+                                - snap_corner_pos;
+                        }
+                        offset_to_start = match from_corner {
+                            ResizeCorner::TopLeft => -offset_to_start,
                             ResizeCorner::TopRight => {
-                                na::vector![start_offset[0], -start_offset[1]]
+                                na::vector![offset_to_start[0], -offset_to_start[1]]
                             }
                             ResizeCorner::BottomLeft => {
-                                na::vector![-start_offset[0], start_offset[1]]
+                                na::vector![-offset_to_start[0], offset_to_start[1]]
                             }
-                            ResizeCorner::BottomRight => start_offset,
+                            ResizeCorner::BottomRight => offset_to_start,
                         };
-
+                        if lock_aspectratio {
+                            let start_extents = start_bounds.extents();
+                            let start_mean = start_extents.mean();
+                            let offset_mean = offset_to_start.mean();
+                            offset_to_start = start_extents * (offset_mean / start_mean);
+                        }
                         let min_extents = (Self::RESIZE_NODE_SIZE
-                            + na::Vector2::<f64>::from_element(Self::ROTATE_NODE_SIZE))
+                            + na::Vector2::<f64>::from_element(Self::ROTATE_NODE_DIAMETER))
                             / engine_view.camera.total_zoom();
-
-                        let scale = if lock_aspectratio {
-                            let scale = (start_bounds.extents() + start_offset)
-                                .maxs(&min_extents)
-                                .component_div(&selection_bounds.extents());
-                            let scale_uniform = (scale[0] + scale[1]) * 0.5;
-                            na::Vector2::<f64>::from_element(scale_uniform)
-                        } else {
-                            (start_bounds.extents() + start_offset)
-                                .maxs(&min_extents)
-                                .component_div(&selection_bounds.extents())
-                        };
+                        let scale = (start_bounds.extents() + offset_to_start)
+                            .maxs(&min_extents)
+                            .component_div(&selection_bounds.extents());
 
                         // resize strokes
                         engine_view

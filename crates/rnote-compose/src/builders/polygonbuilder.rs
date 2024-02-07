@@ -4,7 +4,7 @@ use crate::constraints::ConstraintRatio;
 use crate::eventresult::EventPropagation;
 use crate::penevent::{KeyboardKey, PenEvent, PenState};
 use crate::penpath::Element;
-use crate::shapes::Polyline;
+use crate::shapes::Polygon;
 use crate::style::{indicators, Composer};
 use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
@@ -12,9 +12,9 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use std::time::Instant;
 
-/// Polyline builder.
+/// Polygon builder.
 #[derive(Debug, Clone)]
-pub struct PolylineBuilder {
+pub struct PolygonBuilder {
     /// Start position.
     start: na::Vector2<f64>,
     /// Position of the next/current path segment.
@@ -25,11 +25,11 @@ pub struct PolylineBuilder {
     pen_state: PenState,
     /// Pen position.
     pen_pos: na::Vector2<f64>,
-    /// Finish the polyline on the next `PenEvent::Up`.
+    /// Finish the polygon on the next `PenEvent::Up`.
     finish: bool,
 }
 
-impl BuilderCreator for PolylineBuilder {
+impl BuilderCreator for PolygonBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             start: element.pos,
@@ -42,7 +42,7 @@ impl BuilderCreator for PolylineBuilder {
     }
 }
 
-impl Buildable for PolylineBuilder {
+impl Buildable for PolygonBuilder {
     type Emit = Shape;
 
     fn handle_event(
@@ -51,7 +51,7 @@ impl Buildable for PolylineBuilder {
         _now: Instant,
         mut constraints: Constraints,
     ) -> EventResult<BuilderProgress<Self::Emit>> {
-        // we always want to allow horizontal and vertical constraints while building a polyline
+        // we always want to allow horizontal and vertical constraints while building a polygon
         constraints.ratios.insert(ConstraintRatio::Horizontal);
         constraints.ratios.insert(ConstraintRatio::Vertical);
 
@@ -70,7 +70,7 @@ impl Buildable for PolylineBuilder {
             }
             PenEvent::Up { element, .. } => {
                 if self.finish {
-                    BuilderProgress::Finished(vec![Shape::Polyline(self.state_as_polyline())])
+                    BuilderProgress::Finished(vec![Shape::Polygon(self.state_as_polygon())])
                 } else {
                     if self.pen_state == PenState::Down {
                         self.path.push(self.current);
@@ -87,7 +87,7 @@ impl Buildable for PolylineBuilder {
             }
             PenEvent::KeyPressed { keyboard_key, .. } => match keyboard_key {
                 KeyboardKey::Escape | KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
-                    BuilderProgress::Finished(vec![Shape::Polyline(self.state_as_polyline())])
+                    BuilderProgress::Finished(vec![Shape::Polygon(self.state_as_polygon())])
                 }
                 _ => BuilderProgress::InProgress,
             },
@@ -107,12 +107,12 @@ impl Buildable for PolylineBuilder {
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {
-        let mut polyline = self.state_as_polyline();
+        let mut polygon = self.state_as_polygon();
         if !self.finish {
-            polyline.path.push(self.current);
+            polygon.path.push(self.current);
         }
         Some(
-            polyline
+            polygon
                 .composed_bounds(style)
                 .loosened(indicators::POS_INDICATOR_RADIUS / zoom),
         )
@@ -121,12 +121,12 @@ impl Buildable for PolylineBuilder {
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
         cx.save().unwrap();
 
-        let mut polyline = self.state_as_polyline();
+        let mut polygon = self.state_as_polygon();
         if !self.finish {
-            polyline.path.push(self.current);
+            polygon.path.push(self.current);
         }
 
-        polyline.draw_composed(cx, style);
+        polygon.draw_composed(cx, style);
         indicators::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
         if !self.finish {
             if self.pos_in_finish(self.pen_pos)
@@ -142,12 +142,12 @@ impl Buildable for PolylineBuilder {
     }
 }
 
-impl PolylineBuilder {
+impl PolygonBuilder {
     const FINISH_THRESHOLD_DIST: f64 = 8.0;
 
-    /// The current state as a polyline.
-    pub fn state_as_polyline(&self) -> Polyline {
-        Polyline {
+    /// The current state as a polygon.
+    pub fn state_as_polygon(&self) -> Polygon {
+        Polygon {
             start: self.start,
             path: self.path.clone(),
         }

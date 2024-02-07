@@ -258,7 +258,7 @@ impl RnOverlays {
 
         imp.tabview.connect_close_page(
             clone!(@weak self as overlays, @weak appwindow => @default-return true, move |_, page| {
-                    glib::MainContext::default().spawn_local(clone!(@weak overlays, @weak appwindow, @weak page => async move {
+                    glib::spawn_future_local(clone!(@weak overlays, @weak appwindow, @weak page => async move {
                     let close_finish_confirm = if page
                         .child()
                         .downcast::<RnCanvasWrapper>()

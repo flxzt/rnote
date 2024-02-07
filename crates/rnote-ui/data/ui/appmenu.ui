@@ -42,7 +42,7 @@
         <section>
           <item>
             <attribute name="label" translatable="yes">_New</attribute>
-            <attribute name="action">win.new-doc</attribute>
+            <attribute name="action">win.new-tab</attribute>
           </item>
           <item>
             <attribute name="label" translatable="yes">_Open</attribute>

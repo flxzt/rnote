@@ -500,7 +500,7 @@ impl RnColorPicker {
                 if colorpicker.imp().color_dialog.upgrade().is_some() {
                     // Unfortunately Gtk currently does not have API to make the dialog the active window.
                 } else {
-                    glib::MainContext::default().spawn_local(clone!(@weak colorpicker, @weak appwindow => async move {
+                    glib::spawn_future_local(clone!(@weak colorpicker, @weak appwindow => async move {
                         let dialog = ColorDialog::builder().modal(false).with_alpha(true).build();
                         colorpicker.imp().color_dialog.set(Some(&dialog));
 

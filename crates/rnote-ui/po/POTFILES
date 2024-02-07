@@ -48,5 +48,6 @@ crates/rnote-ui/src/settingspanel/mod.rs
 crates/rnote-ui/src/settingspanel/penshortcutmodels.rs
 crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs
 crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs
+crates/rnote-ui/src/workspacebrowser/mod.rs
 crates/rnote-ui/src/workspacebrowser/widgethelper.rs
 crates/rnote-ui/src/overlays.rs

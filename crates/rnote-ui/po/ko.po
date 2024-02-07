@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-18 18:58+0100\n"
+"POT-Creation-Date: 2024-01-07 18:37+0100\n"
 "PO-Revision-Date: 2023-02-09 20:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
@@ -50,22 +50,38 @@ msgstr ""
 "될 수 있습니다."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
-msgid "An Overview"
+msgid "An overview"
 msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:40
-msgid "Lecture Note 1"
-msgstr "강의 노트 1"
+#, fuzzy
+#| msgid "Export Selection"
+msgid "A selection"
+msgstr "내보내기 선택항목"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
 #, fuzzy
-#| msgid "A PDF annotation"
-msgid "A Pdf annotation"
-msgstr "PDF 주석"
+#| msgid "Switch to the 'Typewriter'"
+msgid "Write text with the typewriter"
+msgstr "'타이프라이터'로 전환하기"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
-msgid "Lecture Note 2"
-msgstr "강의 노트 2"
+msgid "Hide toolbars with the focus mode"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:55
+msgid "Quickly access files through workspace"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:60
+msgid "Adjust document settings"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:65
+#, fuzzy
+#| msgid "Button Shortcuts"
+msgid "Configure action shortcuts"
+msgstr "버튼 단축키"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
@@ -81,11 +97,11 @@ msgstr "전체 문서를 지웁니다. 확인 부탁드립니다."
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:40
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:70
-#: crates/rnote-ui/data/ui/dialogs/import.ui:10
-#: crates/rnote-ui/data/ui/dialogs/import.ui:199
 #: crates/rnote-ui/data/ui/dialogs/export.ui:10
 #: crates/rnote-ui/data/ui/dialogs/export.ui:175
 #: crates/rnote-ui/data/ui/dialogs/export.ui:411
+#: crates/rnote-ui/data/ui/dialogs/import.ui:10
+#: crates/rnote-ui/data/ui/dialogs/import.ui:199
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
 msgstr "취소하기"
@@ -97,7 +113,7 @@ msgstr "지우기"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
 #: crates/rnote-ui/data/ui/shortcuts.ui:149
-#: crates/rnote-ui/src/canvas/mod.rs:594
+#: crates/rnote-ui/src/canvas/mod.rs:593
 msgid "New Document"
 msgstr "새 문서"
 
@@ -212,124 +228,6 @@ msgstr "- 선택된 디렉터리 없음 -"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:183
 msgid "Change the directory"
 msgstr "디렉터리 변경하기"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:7
-#, fuzzy
-#| msgid "Import PDF"
-msgid "Import Pdf"
-msgstr "PDF 가져오기"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:15
-#: crates/rnote-ui/data/ui/dialogs/import.ui:204
-#: crates/rnote-ui/src/dialogs/import.rs:66
-msgid "Import"
-msgstr "가져오기"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:61
-msgid "Info"
-msgstr "정보"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:79
-#, fuzzy
-#| msgid "PDF Import Preferences"
-msgid "Pdf Import Preferences"
-msgstr "PDF 가져오기 환경설정"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:83
-msgid "Start Page"
-msgstr "시작 페이지"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:92
-msgid "End Page"
-msgstr "끝 페이지"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:101
-msgid "Page Width (%)"
-msgstr "페이지 너비 (%)"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:102
-#, fuzzy
-#| msgid "Set the width of imported PDF's in percentage to the format width"
-msgid "Set the width of imported Pdf's in percentage to the format width"
-msgstr "가져온 PDF의 너비를 형식 너비에 대한 백분율로 설정합니다"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:109
-msgid "Page Spacing"
-msgstr "페이지 간격"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:110
-#, fuzzy
-#| msgid "How PDF pages are spaced"
-msgid "How Pdf pages are spaced"
-msgstr "PDF 페이지 간격 지정 방법"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:114
-msgid "Continuous"
-msgstr "연속"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:115
-msgid "One per Document Page"
-msgstr "문서 페이지당 하나"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:123
-msgid "Pages Type"
-msgstr "페이지 유형"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:124
-#, fuzzy
-#| msgid "Set whether PDFs should be imported as vector or bitmap images"
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
-msgstr "PDF를 벡터 이미지로 가져올지 비트맵 이미지로 가져올지 설정합니다"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:136
-msgid "Vector"
-msgstr "벡터"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:143
-msgid "Bitmap"
-msgstr "비트맵"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:152
-#: crates/rnote-ui/data/ui/dialogs/export.ui:366
-#: crates/rnote-ui/data/ui/dialogs/export.ui:544
-msgid "Bitmap Scale-Factor"
-msgstr "비트맵 배율 인수"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:153
-#: crates/rnote-ui/data/ui/dialogs/export.ui:367
-#: crates/rnote-ui/data/ui/dialogs/export.ui:545
-msgid ""
-"Set the bitmap scale factor in relation\n"
-"to the actual size on the document"
-msgstr ""
-"문서의 실제 크기를 기준으로 비트맵\n"
-"배율을 설정합니다"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Pages Type"
-msgid "Page Borders"
-msgstr "페이지 유형"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:162
-msgid "Whether the pages have drawn borders"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:196
-msgid "Import Xournal++ File"
-msgstr "Xournal++ 파일 가져오기"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:235
-msgid "Xournal++ File Import Preferences"
-msgstr "Xournal++ 파일 가져오기 환경설정"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:239
-msgid "DPI"
-msgstr "DPI"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:240
-msgid "Set the preferred DPI for the Xournal++ file"
-msgstr "Xournal++ 파일에 대한 선호 DPI를 설정합니다"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
 #: crates/rnote-ui/src/dialogs/export.rs:268
@@ -485,6 +383,10 @@ msgid "Select the export directory"
 msgstr "내보내기 디렉터리 선택하기"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
+#, fuzzy
+#| msgid "Export Files Stem Name"
+msgctxt ""
+"When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
 msgstr "내보내기 파일 스템 이름"
 
@@ -501,6 +403,22 @@ msgstr "Png"
 #: crates/rnote-ui/src/dialogs/export.rs:877
 msgid "Jpeg"
 msgstr "Jpeg"
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:366
+#: crates/rnote-ui/data/ui/dialogs/export.ui:544
+#: crates/rnote-ui/data/ui/dialogs/import.ui:152
+msgid "Bitmap Scale-Factor"
+msgstr "비트맵 배율 인수"
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:367
+#: crates/rnote-ui/data/ui/dialogs/export.ui:545
+#: crates/rnote-ui/data/ui/dialogs/import.ui:153
+msgid ""
+"Set the bitmap scale factor in relation\n"
+"to the actual size on the document"
+msgstr ""
+"문서의 실제 크기를 기준으로 비트맵\n"
+"배율을 설정합니다"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:375
 #: crates/rnote-ui/data/ui/dialogs/export.ui:553
@@ -528,6 +446,108 @@ msgstr "여백"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:562
 msgid "Set the margin around the selected area"
 msgstr "선택한 영역 주변의 여백을 설정합니다"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:7
+#, fuzzy
+#| msgid "Import PDF"
+msgid "Import Pdf"
+msgstr "PDF 가져오기"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:15
+#: crates/rnote-ui/data/ui/dialogs/import.ui:204
+#: crates/rnote-ui/src/dialogs/import.rs:68
+msgid "Import"
+msgstr "가져오기"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:61
+msgid "Info"
+msgstr "정보"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:79
+#, fuzzy
+#| msgid "PDF Import Preferences"
+msgid "Pdf Import Preferences"
+msgstr "PDF 가져오기 환경설정"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:83
+msgid "Start Page"
+msgstr "시작 페이지"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:92
+msgid "End Page"
+msgstr "끝 페이지"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:101
+msgid "Page Width (%)"
+msgstr "페이지 너비 (%)"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:102
+#, fuzzy
+#| msgid "Set the width of imported PDF's in percentage to the format width"
+msgid "Set the width of imported Pdf's in percentage to the format width"
+msgstr "가져온 PDF의 너비를 형식 너비에 대한 백분율로 설정합니다"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:109
+msgid "Page Spacing"
+msgstr "페이지 간격"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:110
+#, fuzzy
+#| msgid "How PDF pages are spaced"
+msgid "How Pdf pages are spaced"
+msgstr "PDF 페이지 간격 지정 방법"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:114
+msgid "Continuous"
+msgstr "연속"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:115
+msgid "One per Document Page"
+msgstr "문서 페이지당 하나"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:123
+msgid "Pages Type"
+msgstr "페이지 유형"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:124
+#, fuzzy
+#| msgid "Set whether PDFs should be imported as vector or bitmap images"
+msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgstr "PDF를 벡터 이미지로 가져올지 비트맵 이미지로 가져올지 설정합니다"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:136
+msgid "Vector"
+msgstr "벡터"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:143
+msgid "Bitmap"
+msgstr "비트맵"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:161
+#, fuzzy
+#| msgid "Pages Type"
+msgid "Page Borders"
+msgstr "페이지 유형"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:162
+msgid "Whether the pages have drawn borders"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:196
+msgid "Import Xournal++ File"
+msgstr "Xournal++ 파일 가져오기"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:235
+msgid "Xournal++ File Import Preferences"
+msgstr "Xournal++ 파일 가져오기 환경설정"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:239
+msgid "DPI"
+msgstr "DPI"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:240
+msgid "Set the preferred DPI for the Xournal++ file"
+msgstr "Xournal++ 파일에 대한 선호 DPI를 설정합니다"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
@@ -648,6 +668,10 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "밀도는 10x10 영역당 도트의 양입니다"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
+#, fuzzy
+#| msgid "Stroke Dots Position Distribution"
+msgctxt ""
+"Drawing with a textured pen, how the dots of the texture are distributed"
 msgid "Stroke Dots Position Distribution"
 msgstr "자획 도트 위치 분포"
 
@@ -656,18 +680,30 @@ msgid "Choose a dots position probability distribution"
 msgstr "도트 위치 확률 분포 고르기"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
+#, fuzzy
+#| msgid "Uniform"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
 msgstr "균일"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
+#, fuzzy
+#| msgid "Normal"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
 msgstr "보통"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
+#, fuzzy
+#| msgid "Exponential"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
 msgstr "기하급수적"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
+#, fuzzy
+#| msgid "Reverse Exponential"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
 msgstr "기하급수적 반전하기"
 
@@ -1172,7 +1208,7 @@ msgid "Duplicate"
 msgstr "복제하기"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:596
+#: crates/rnote-ui/src/canvas/mod.rs:595
 msgid "Draft"
 msgstr "초안"
 
@@ -1411,7 +1447,7 @@ msgid "Lines"
 msgstr "선"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:299
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "Grid"
 msgstr "격자"
 
@@ -1669,7 +1705,7 @@ msgid "Print Document"
 msgstr "문서 인쇄하기"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:203
-#: crates/rnote-ui/src/dialogs/import.rs:64
+#: crates/rnote-ui/src/dialogs/import.rs:66
 msgid "Import File"
 msgstr "파일 가져오기"
 
@@ -1723,24 +1759,22 @@ msgstr "작업 공간 디렉터리 작업"
 msgid "Create new Folder"
 msgstr "새 폴더 만들기"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:126
-msgid ""
-"Settings schema is not installed. App settings could not be loaded and won't "
-"be saved."
-msgstr ""
-
-#: crates/rnote-ui/src/appwindow/mod.rs:563
-msgid "Opening file failed"
-msgstr "파일을 열지 못했습니다"
-
+#: crates/rnote-ui/src/appwindow/actions.rs:596
 #: crates/rnote-ui/src/appwindow/imp.rs:248
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:257
 #: crates/rnote-ui/src/dialogs/mod.rs:411
 msgid "Saving document failed"
 msgstr "문서 저장에 실패했습니다"
+
+#: crates/rnote-ui/src/appwindow/actions.rs:659
+msgid "Printing document failed"
+msgstr "문서 인쇄에 실패했습니다"
+
+#: crates/rnote-ui/src/appwindow/actions.rs:695
+msgid "Exporting selection failed, nothing selected"
+msgstr "선택항목 내보내기에 실패했습니다. 선택한 항목이 없습니다"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
 msgid "Button 1"
@@ -1758,20 +1792,22 @@ msgstr ""
 msgid "Button 4"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:645
-msgid "Printing document failed"
-msgstr "문서 인쇄에 실패했습니다"
+#: crates/rnote-ui/src/appwindow/mod.rs:126
+msgid ""
+"Settings schema is not installed. App settings could not be loaded and won't "
+"be saved."
+msgstr ""
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:681
-msgid "Exporting selection failed, nothing selected"
-msgstr "선택항목 내보내기에 실패했습니다. 선택한 항목이 없습니다"
+#: crates/rnote-ui/src/appwindow/mod.rs:458
+msgid "Opening file failed"
+msgstr "파일을 열지 못했습니다"
 
-#: crates/rnote-ui/src/canvas/mod.rs:868 crates/rnote-ui/src/dialogs/mod.rs:204
+#: crates/rnote-ui/src/canvas/mod.rs:867 crates/rnote-ui/src/dialogs/mod.rs:204
 #: crates/rnote-ui/src/dialogs/mod.rs:341
 msgid "- invalid file name -"
 msgstr "- 잘못된 파일 이름 -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:881
+#: crates/rnote-ui/src/canvas/mod.rs:880
 msgid "- invalid folder path -"
 msgstr "- 잘못된 폴더 경로 -"
 
@@ -1911,45 +1947,45 @@ msgstr "엔진 구성을 성공적으로 내보냈습니다"
 msgid "Open File"
 msgstr "파일 열기"
 
-#: crates/rnote-ui/src/dialogs/import.rs:61
+#: crates/rnote-ui/src/dialogs/import.rs:63
 #, fuzzy
 #| msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "Jpg, Pdf, Png, Svg, Xopp"
 
-#: crates/rnote-ui/src/dialogs/import.rs:190
+#: crates/rnote-ui/src/dialogs/import.rs:192
 msgid "- no file name -"
 msgstr "- 파일 이름 없음 -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:195
+#: crates/rnote-ui/src/dialogs/import.rs:197
 msgid "- no title -"
 msgstr "- 제목 없음 -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:198
+#: crates/rnote-ui/src/dialogs/import.rs:200
 msgid "- no author -"
 msgstr "- 작성자 없음 -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:202
+#: crates/rnote-ui/src/dialogs/import.rs:204
 msgid "- no date -"
 msgstr "- 날짜 없음 -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:209
+#: crates/rnote-ui/src/dialogs/import.rs:211
 msgid "File name:"
 msgstr "파일 이름:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:213
+#: crates/rnote-ui/src/dialogs/import.rs:215
 msgid "Title:"
 msgstr "제목:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:217
+#: crates/rnote-ui/src/dialogs/import.rs:219
 msgid "Author:"
 msgstr "작성자:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:221
+#: crates/rnote-ui/src/dialogs/import.rs:223
 msgid "Modification date:"
 msgstr "수정 날짜:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:225
+#: crates/rnote-ui/src/dialogs/import.rs:227
 msgid "Pages:"
 msgstr "페이지:"
 
@@ -2204,48 +2240,52 @@ msgstr "타원들"
 msgid "Curves & Paths"
 msgstr "곡선"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:425
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
 msgid "Line"
 msgstr "선"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
 msgid "Rectangle"
 msgstr "사각형"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
 msgid "2D coordinate system"
 msgstr "2D 좌표계"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
 msgid "3D coordinate system"
 msgstr "3D 좌표계"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
 msgid "2D single quadrant coordinate system"
 msgstr "2D 단일 사분면 좌표계"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
 msgid "Ellipse"
 msgstr "타원"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
 msgid "Ellipse with foci"
 msgstr "초점이 있는 타원"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
 msgid "Quadratic bezier curve"
 msgstr "2차 베지어 곡선"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
 msgid "Cubic bezier curve"
 msgstr "3차 베지어 곡선"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
+msgstr ""
+
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:438
+msgid "Polygon"
 msgstr ""
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:536
@@ -2373,6 +2413,17 @@ msgstr "폴더 이름"
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "새 폴더"
+
+#~ msgid "Lecture Note 1"
+#~ msgstr "강의 노트 1"
+
+#, fuzzy
+#~| msgid "A PDF annotation"
+#~ msgid "A Pdf annotation"
+#~ msgstr "PDF 주석"
+
+#~ msgid "Lecture Note 2"
+#~ msgstr "강의 노트 2"
 
 #~ msgid "Close the Folded Flap"
 #~ msgstr "접힌 플랩 닫기"

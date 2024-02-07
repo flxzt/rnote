@@ -370,7 +370,7 @@ impl Engine {
     /// An example how to use it:
     /// ```rust, ignore
     ///
-    /// glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+    /// glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
     ///    let mut task_rx = canvas.engine_mut().regenerate_channel();
     ///
     ///    loop {

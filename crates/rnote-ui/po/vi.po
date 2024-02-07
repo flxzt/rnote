@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-18 18:58+0100\n"
+"POT-Creation-Date: 2024-01-07 18:37+0100\n"
 "PO-Revision-Date: 2023-10-24 04:15+0000\n"
 "Last-Translator: Rickey Ho <rickey.ho2020@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/rnote/repo/vi/"
@@ -51,21 +51,31 @@ msgstr ""
 "không tương thích giữa các phiên bản."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
-msgid "An Overview"
+msgid "An overview"
 msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:40
-msgid "Lecture Note 1"
-msgstr ""
+msgid "A selection"
+msgstr "Vùng chọn"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
-#| msgid "A PDF annotation"
-msgid "A Pdf annotation"
-msgstr "Chú thích PDF"
+msgid "Write text with the typewriter"
+msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
-msgid "Lecture Note 2"
+msgid "Hide toolbars with the focus mode"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:55
+msgid "Quickly access files through workspace"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:60
+msgid "Adjust document settings"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:65
+msgid "Configure action shortcuts"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
@@ -82,11 +92,11 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:40
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:70
-#: crates/rnote-ui/data/ui/dialogs/import.ui:10
-#: crates/rnote-ui/data/ui/dialogs/import.ui:199
 #: crates/rnote-ui/data/ui/dialogs/export.ui:10
 #: crates/rnote-ui/data/ui/dialogs/export.ui:175
 #: crates/rnote-ui/data/ui/dialogs/export.ui:411
+#: crates/rnote-ui/data/ui/dialogs/import.ui:10
+#: crates/rnote-ui/data/ui/dialogs/import.ui:199
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
 msgstr "Huỷ bỏ"
@@ -98,7 +108,7 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
 #: crates/rnote-ui/data/ui/shortcuts.ui:149
-#: crates/rnote-ui/src/canvas/mod.rs:594
+#: crates/rnote-ui/src/canvas/mod.rs:593
 msgid "New Document"
 msgstr "Tài liệu mới"
 
@@ -205,116 +215,6 @@ msgstr "- không có đường dẫn nào được chọn -"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:183
 msgid "Change the directory"
 msgstr "Thay đổi đường dẫn"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:7
-#, fuzzy
-#| msgid "_Import file"
-msgid "Import Pdf"
-msgstr "Nhập tệp tin"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:15
-#: crates/rnote-ui/data/ui/dialogs/import.ui:204
-#: crates/rnote-ui/src/dialogs/import.rs:66
-msgid "Import"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:61
-msgid "Info"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:79
-msgid "Pdf Import Preferences"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:83
-msgid "Start Page"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:92
-msgid "End Page"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:101
-msgid "Page Width (%)"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:102
-msgid "Set the width of imported Pdf's in percentage to the format width"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:109
-msgid "Page Spacing"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:110
-msgid "How Pdf pages are spaced"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:114
-msgid "Continuous"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:115
-#, fuzzy
-#| msgid "Export document _pages"
-msgid "One per Document Page"
-msgstr "Xuất _pages tài liệu"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:123
-msgid "Pages Type"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:124
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:136
-msgid "Vector"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:143
-msgid "Bitmap"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:152
-#: crates/rnote-ui/data/ui/dialogs/export.ui:366
-#: crates/rnote-ui/data/ui/dialogs/export.ui:544
-msgid "Bitmap Scale-Factor"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:153
-#: crates/rnote-ui/data/ui/dialogs/export.ui:367
-#: crates/rnote-ui/data/ui/dialogs/export.ui:545
-msgid ""
-"Set the bitmap scale factor in relation\n"
-"to the actual size on the document"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:161
-msgid "Page Borders"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:162
-msgid "Whether the pages have drawn borders"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:196
-#, fuzzy
-#| msgid "_Import file"
-msgid "Import Xournal++ File"
-msgstr "Nhập tệp tin"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:235
-msgid "Xournal++ File Import Preferences"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:239
-msgid "DPI"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:240
-msgid "Set the preferred DPI for the Xournal++ file"
-msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
 #: crates/rnote-ui/src/dialogs/export.rs:268
@@ -476,6 +376,8 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
 #, fuzzy
 #| msgid "Export engine _state"
+msgctxt ""
+"When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
 msgstr "Xuất trạng thái engine"
 
@@ -491,6 +393,20 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:590
 #: crates/rnote-ui/src/dialogs/export.rs:877
 msgid "Jpeg"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:366
+#: crates/rnote-ui/data/ui/dialogs/export.ui:544
+#: crates/rnote-ui/data/ui/dialogs/import.ui:152
+msgid "Bitmap Scale-Factor"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:367
+#: crates/rnote-ui/data/ui/dialogs/export.ui:545
+#: crates/rnote-ui/data/ui/dialogs/import.ui:153
+msgid ""
+"Set the bitmap scale factor in relation\n"
+"to the actual size on the document"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:375
@@ -520,6 +436,102 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:562
 msgid "Set the margin around the selected area"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:7
+#, fuzzy
+#| msgid "_Import file"
+msgid "Import Pdf"
+msgstr "Nhập tệp tin"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:15
+#: crates/rnote-ui/data/ui/dialogs/import.ui:204
+#: crates/rnote-ui/src/dialogs/import.rs:68
+msgid "Import"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:61
+msgid "Info"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:79
+msgid "Pdf Import Preferences"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:83
+msgid "Start Page"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:92
+msgid "End Page"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:101
+msgid "Page Width (%)"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:102
+msgid "Set the width of imported Pdf's in percentage to the format width"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:109
+msgid "Page Spacing"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:110
+msgid "How Pdf pages are spaced"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:114
+msgid "Continuous"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:115
+#, fuzzy
+#| msgid "Export document _pages"
+msgid "One per Document Page"
+msgstr "Xuất _pages tài liệu"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:123
+msgid "Pages Type"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:124
+msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:136
+msgid "Vector"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:143
+msgid "Bitmap"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:161
+msgid "Page Borders"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:162
+msgid "Whether the pages have drawn borders"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:196
+#, fuzzy
+#| msgid "_Import file"
+msgid "Import Xournal++ File"
+msgstr "Nhập tệp tin"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:235
+msgid "Xournal++ File Import Preferences"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:239
+msgid "DPI"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:240
+msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
@@ -641,6 +653,8 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
+msgctxt ""
+"Drawing with a textured pen, how the dots of the texture are distributed"
 msgid "Stroke Dots Position Distribution"
 msgstr ""
 
@@ -649,18 +663,24 @@ msgid "Choose a dots position probability distribution"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
+#, fuzzy
+#| msgid "Export File"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
-msgstr ""
+msgstr "Xuất tệp tin"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
 msgstr ""
 
@@ -1211,7 +1231,7 @@ msgid "Duplicate"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:596
+#: crates/rnote-ui/src/canvas/mod.rs:595
 msgid "Draft"
 msgstr ""
 
@@ -1448,7 +1468,7 @@ msgid "Lines"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:299
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "Grid"
 msgstr ""
 
@@ -1692,7 +1712,7 @@ msgid "Print Document"
 msgstr "Xuất tài liệu"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:203
-#: crates/rnote-ui/src/dialogs/import.rs:64
+#: crates/rnote-ui/src/dialogs/import.rs:66
 #, fuzzy
 #| msgid "_Import file"
 msgid "Import File"
@@ -1756,20 +1776,8 @@ msgstr ""
 msgid "Create new Folder"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/mod.rs:126
-msgid ""
-"Settings schema is not installed. App settings could not be loaded and won't "
-"be saved."
-msgstr ""
-
-#: crates/rnote-ui/src/appwindow/mod.rs:563
-#, fuzzy
-#| msgid "Export _selection"
-msgid "Opening file failed"
-msgstr "Xuất phần chọn"
-
+#: crates/rnote-ui/src/appwindow/actions.rs:596
 #: crates/rnote-ui/src/appwindow/imp.rs:248
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:257
@@ -1778,6 +1786,16 @@ msgstr "Xuất phần chọn"
 #| msgid "Export document _pages"
 msgid "Saving document failed"
 msgstr "Xuất _pages tài liệu"
+
+#: crates/rnote-ui/src/appwindow/actions.rs:659
+msgid "Printing document failed"
+msgstr ""
+
+#: crates/rnote-ui/src/appwindow/actions.rs:695
+#, fuzzy
+#| msgid "Export _selection"
+msgid "Exporting selection failed, nothing selected"
+msgstr "Xuất phần chọn"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
 msgid "Button 1"
@@ -1795,22 +1813,24 @@ msgstr ""
 msgid "Button 4"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:645
-msgid "Printing document failed"
+#: crates/rnote-ui/src/appwindow/mod.rs:126
+msgid ""
+"Settings schema is not installed. App settings could not be loaded and won't "
+"be saved."
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:681
+#: crates/rnote-ui/src/appwindow/mod.rs:458
 #, fuzzy
 #| msgid "Export _selection"
-msgid "Exporting selection failed, nothing selected"
+msgid "Opening file failed"
 msgstr "Xuất phần chọn"
 
-#: crates/rnote-ui/src/canvas/mod.rs:868 crates/rnote-ui/src/dialogs/mod.rs:204
+#: crates/rnote-ui/src/canvas/mod.rs:867 crates/rnote-ui/src/dialogs/mod.rs:204
 #: crates/rnote-ui/src/dialogs/mod.rs:341
 msgid "- invalid file name -"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:881
+#: crates/rnote-ui/src/canvas/mod.rs:880
 msgid "- invalid folder path -"
 msgstr ""
 
@@ -1978,43 +1998,43 @@ msgstr "Xuất cài đặt engine"
 msgid "Open File"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:61
+#: crates/rnote-ui/src/dialogs/import.rs:63
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:190
+#: crates/rnote-ui/src/dialogs/import.rs:192
 msgid "- no file name -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:195
+#: crates/rnote-ui/src/dialogs/import.rs:197
 msgid "- no title -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:198
+#: crates/rnote-ui/src/dialogs/import.rs:200
 msgid "- no author -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:202
+#: crates/rnote-ui/src/dialogs/import.rs:204
 msgid "- no date -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:209
+#: crates/rnote-ui/src/dialogs/import.rs:211
 msgid "File name:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:213
+#: crates/rnote-ui/src/dialogs/import.rs:215
 msgid "Title:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:217
+#: crates/rnote-ui/src/dialogs/import.rs:219
 msgid "Author:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:221
+#: crates/rnote-ui/src/dialogs/import.rs:223
 msgid "Modification date:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:225
+#: crates/rnote-ui/src/dialogs/import.rs:227
 msgid "Pages:"
 msgstr ""
 
@@ -2263,48 +2283,52 @@ msgstr ""
 msgid "Curves & Paths"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:425
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
 msgid "Line"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
 msgid "Rectangle"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
 msgid "2D coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
 msgid "3D coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
 msgid "2D single quadrant coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
 msgid "Ellipse"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
 msgid "Ellipse with foci"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
 msgid "Quadratic bezier curve"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
 msgid "Cubic bezier curve"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
+msgstr ""
+
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:438
+msgid "Polygon"
 msgstr ""
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:536
@@ -2410,6 +2434,11 @@ msgid "New Folder"
 msgstr ""
 
 #, fuzzy
+#~| msgid "A PDF annotation"
+#~ msgid "A Pdf annotation"
+#~ msgstr "Chú thích PDF"
+
+#, fuzzy
 #~| msgid "New Window"
 #~ msgid "Close the Folded Flap"
 #~ msgstr "Cửa Sổ Mới"
@@ -2486,9 +2515,6 @@ msgstr ""
 
 #~ msgid "Main window in dark colors"
 #~ msgstr "Cửa sổ chính màu tối"
-
-#~ msgid "A selection"
-#~ msgstr "Vùng chọn"
 
 #, fuzzy
 #~| msgid "New Window"

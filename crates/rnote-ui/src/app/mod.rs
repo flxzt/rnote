@@ -74,11 +74,9 @@ mod imp {
                 .map(|w| w.downcast::<RnAppWindow>().unwrap())
             {
                 if let Some(input_file) = input_file {
-                    glib::MainContext::default().spawn_local(
-                        clone!(@weak appwindow => async move {
-                            appwindow.open_file_w_dialogs(input_file, None, true).await;
-                        }),
-                    );
+                    glib::spawn_future_local(clone!(@weak appwindow => async move {
+                        appwindow.open_file_w_dialogs(input_file, None, true).await;
+                    }));
                 }
             } else {
                 self.new_appwindow_init_show(input_file);
@@ -128,14 +126,14 @@ mod imp {
         }
 
         /// Initializes and shows a new app window
-        fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
+        pub(crate) fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
             let appwindow = RnAppWindow::new(self.obj().upcast_ref::<gtk4::Application>());
             appwindow.init();
             appwindow.present();
 
             // Loading in input file in the first tab, if Some
             if let Some(input_file) = input_file {
-                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                glib::spawn_future_local(clone!(@weak appwindow => async move {
                     appwindow.open_file_w_dialogs(input_file, None, false).await;
                 }));
             }
@@ -174,5 +172,9 @@ impl RnApp {
 
     pub(crate) fn settings_schema_found(&self) -> bool {
         self.app_settings().is_some()
+    }
+
+    pub(crate) fn new_appwindow_init_show(&self) {
+        self.imp().new_appwindow_init_show(None);
     }
 }

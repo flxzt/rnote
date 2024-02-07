@@ -16,7 +16,7 @@ pub(crate) fn create_folder(workspacebrowser: &RnWorkspaceBrowser) -> gio::Simpl
     let new_folder_action = gio::SimpleAction::new("create-folder", None);
 
     new_folder_action.connect_activate(clone!(@weak workspacebrowser as workspacebrowser => move |_, _| {
-        if let Some(parent_path) = workspacebrowser.dirlist_file().and_then(|f| f.path()) {
+        if let Some(parent_path) = workspacebrowser.dir_list_file().and_then(|f| f.path()) {
             let folder_name_entry = create_folder_name_entry();
             let dialog_title_label = create_dialog_title_label();
             let (apply_button, popover) = widgethelper::create_entry_dialog(&folder_name_entry, &dialog_title_label);

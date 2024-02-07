@@ -214,7 +214,7 @@ mod imp {
             obj.add_controller(self.drop_target.clone());
 
             // receive and handle engine tasks
-            let engine_task_handler_handle = glib::MainContext::default().spawn_local(
+            let engine_task_handler_handle = glib::spawn_future_local(
                 clone!(@weak obj as canvas => async move {
                     let Some(mut task_rx) = canvas.engine_mut().take_engine_tasks_rx() else {
                         tracing::error!("Installing the engine task handler failed, taken tasks_rx is None.");
@@ -922,7 +922,7 @@ impl RnCanvas {
                         &gettext("Opened file was modified on disk"),
                         &gettext("Reload"),
                         clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
-                            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                            glib::spawn_future_local(clone!(@weak appwindow => async move {
                                 appwindow.overlays().progressbar_start_pulsing();
 
                                 if let Err(e) = canvas.reload_from_disk().await {
@@ -1129,7 +1129,7 @@ impl RnCanvas {
                     // In some scenarios, get() can fail with `UnexpectedNone` even though is() returned true, e.g. when dealing with trashed files.
                     match value.get::<gio::File>() {
                         Ok(file) => {
-                            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                            glib::spawn_future_local(clone!(@weak appwindow => async move {
                                 appwindow.open_file_w_dialogs(file, Some(pos), true).await;
                             }));
                             accept_drop = true;

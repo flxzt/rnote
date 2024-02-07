@@ -1,10 +1,15 @@
 # Desktop file
 message('Configuring desktop file')
 
+desktop_file_name_entry = app_name_capitalized
+if profile == 'devel'
+    desktop_file_name_entry += ' (Development)'
+endif
+
 desktop_conf = configuration_data()
 desktop_conf.set('APP_ID', app_id)
 desktop_conf.set('APP_NAME', app_name)
-desktop_conf.set('APP_NAME_CAPITALIZED', app_name_capitalized)
+desktop_conf.set('DESKTOP_FILE_NAME_ENTRY', desktop_file_name_entry)
 desktop_file_in = configure_file(
     input: 'app.desktop.in.in',
     output: '@BASENAME@',
@@ -242,6 +247,7 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/shapebuilder-fociellipse-symbolic.svg',
     'icons/scalable/actions/shapebuilder-grid-symbolic.svg',
     'icons/scalable/actions/shapebuilder-line-symbolic.svg',
+    'icons/scalable/actions/shapebuilder-polygon-symbolic.svg',
     'icons/scalable/actions/shapebuilder-polyline-symbolic.svg',
     'icons/scalable/actions/shapebuilder-quadbez-symbolic.svg',
     'icons/scalable/actions/shapebuilder-quadrantcoordsystem2d-symbolic.svg',

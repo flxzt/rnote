@@ -405,7 +405,17 @@ impl Svg {
         }
     }
 
+    pub fn add_xml_header(&mut self) {
+        self.svg_data = rnote_compose::utils::add_xml_header(&self.svg_data);
+    }
+
+    pub fn remove_xml_header(&mut self) {
+        self.svg_data = rnote_compose::utils::remove_xml_header(&self.svg_data);
+    }
+
     /// Simplify the Svg by passing it through [usvg].
+    ///
+    /// Also moves the bounds to mins: [0., 0.], maxs: extents
     pub fn simplify(&mut self) -> anyhow::Result<()> {
         const COORDINATES_PREC: u8 = 3;
         const TRANSFORMS_PREC: u8 = 4;
@@ -420,17 +430,18 @@ impl Svg {
                 attributes_indent: xmlwriter::Indent::None,
             },
         };
-        let simplified_bounds = Aabb::new(na::point![0.0, 0.0], self.bounds.extents().into());
-        let wrapped_svg_data = rnote_compose::utils::wrap_svg_root(
+        let bounds_simplified = Aabb::new(na::point![0.0, 0.0], self.bounds.extents().into());
+        let svg_data_wrapped = rnote_compose::utils::wrap_svg_root(
             &rnote_compose::utils::remove_xml_header(&self.svg_data),
-            Some(simplified_bounds),
+            Some(bounds_simplified),
             Some(self.bounds),
             false,
         );
-        let mut usvg_tree = usvg::Tree::from_str(&wrapped_svg_data, &usvg::Options::default())?;
+
+        let mut usvg_tree = usvg::Tree::from_str(&svg_data_wrapped, &usvg::Options::default())?;
         usvg_tree.convert_text(&USVG_FONTDB);
         self.svg_data = rnote_compose::utils::remove_xml_header(&usvg_tree.to_string(&xml_options));
-        self.bounds = simplified_bounds;
+        self.bounds = bounds_simplified;
 
         Ok(())
     }
@@ -445,11 +456,10 @@ impl Svg {
 
         let width = bounds.extents()[0];
         let height = bounds.extents()[1];
-        let svg_stream: Vec<u8> = vec![];
         let mut svg_surface =
-            cairo::SvgSurface::for_stream(width, height, svg_stream).map_err(|e| {
+            cairo::SvgSurface::for_stream(width, height, Vec::new()).map_err(|e| {
                 anyhow::anyhow!(
-                    "create svg surface with dimensions ({width}, {height}) failed, Err: {e:?}"
+                    "Creating svg surface with dimensions ({width}, {height}) failed, Err: {e:?}"
                 )
             })?;
         svg_surface.set_document_unit(cairo::SvgUnit::Px);
@@ -462,17 +472,18 @@ impl Svg {
             draw_func(&cairo_cx)?;
         }
 
-        let file_content = svg_surface
-            .finish_output_stream()
-            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-        let svg_data = rnote_compose::utils::remove_xml_header(
-            String::from_utf8(*file_content.downcast::<Vec<u8>>().map_err(|e| {
-                anyhow::anyhow!("downcasting svg surface content failed, Err: {e:?}")
-            })?)?
-            .as_str(),
-        );
-
+        let content = String::from_utf8(
+            *svg_surface
+                .finish_output_stream()
+                .map_err(|e| {
+                    anyhow::anyhow!("Finishing Svg surface output stream failed, Err: {e:?}")
+                })?
+                .downcast::<Vec<u8>>()
+                .map_err(|e| {
+                    anyhow::anyhow!("Downcasting Svg surface content failed, Err: {e:?}")
+                })?,
+        )?;
+        let svg_data = rnote_compose::utils::remove_xml_header(&content);
         let mut group = svg::node::element::Group::new().add(svg::node::Text::new(svg_data));
         // translate the content back to it's original position
         group.assign(

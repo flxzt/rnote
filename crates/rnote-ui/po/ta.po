@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-18 18:58+0100\n"
+"POT-Creation-Date: 2024-01-07 18:37+0100\n"
 "PO-Revision-Date: 2023-12-07 16:05+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -50,20 +50,38 @@ msgstr ""
 "மாற்றலாம் மற்றும் உடைக்கலாம்."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
-msgid "An Overview"
+#, fuzzy
+#| msgid "An Overview"
+msgid "An overview"
 msgstr "ஒரு மேலோட்டப் பார்வை"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:40
-msgid "Lecture Note 1"
-msgstr "விரிவுரை குறிப்பு 1"
+msgid "A selection"
+msgstr "ஒரு தேர்வு"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
-msgid "A Pdf annotation"
-msgstr "ஒரு Pdf சிறுகுறிப்பு"
+#, fuzzy
+#| msgid "Switch to the 'Typewriter'"
+msgid "Write text with the typewriter"
+msgstr "'தட்டச்சுப்பொறிக்கு' மாறவும்"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
-msgid "Lecture Note 2"
-msgstr "விரிவுரை குறிப்பு 2"
+msgid "Hide toolbars with the focus mode"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:55
+msgid "Quickly access files through workspace"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:60
+msgid "Adjust document settings"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:65
+#, fuzzy
+#| msgid "Button Shortcuts"
+msgid "Configure action shortcuts"
+msgstr "பட்டன் ஷார்ட்கட்கள்"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
@@ -79,11 +97,11 @@ msgstr "இது முழு ஆவணத்தையும் அழிக்
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:40
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:58
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:70
-#: crates/rnote-ui/data/ui/dialogs/import.ui:10
-#: crates/rnote-ui/data/ui/dialogs/import.ui:199
 #: crates/rnote-ui/data/ui/dialogs/export.ui:10
 #: crates/rnote-ui/data/ui/dialogs/export.ui:175
 #: crates/rnote-ui/data/ui/dialogs/export.ui:411
+#: crates/rnote-ui/data/ui/dialogs/import.ui:10
+#: crates/rnote-ui/data/ui/dialogs/import.ui:199
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:34
 msgid "Cancel"
 msgstr "ரத்துசெய்"
@@ -95,7 +113,7 @@ msgstr "தெளிவு"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
 #: crates/rnote-ui/data/ui/shortcuts.ui:149
-#: crates/rnote-ui/src/canvas/mod.rs:594
+#: crates/rnote-ui/src/canvas/mod.rs:593
 msgid "New Document"
 msgstr "புதிய ஆவணம்"
 
@@ -202,113 +220,6 @@ msgstr "- எந்த கோப்பகமும் தேர்ந்தெ�
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:183
 msgid "Change the directory"
 msgstr "கோப்பகத்தை மாற்றவும்"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:7
-msgid "Import Pdf"
-msgstr "Pdf ஐ இறக்குமதி செய்"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:15
-#: crates/rnote-ui/data/ui/dialogs/import.ui:204
-#: crates/rnote-ui/src/dialogs/import.rs:66
-msgid "Import"
-msgstr "இறக்குமதி"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:61
-msgid "Info"
-msgstr "தகவல்"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:79
-msgid "Pdf Import Preferences"
-msgstr "Pdf இறக்குமதி விருப்பத்தேர்வுகள்"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:83
-msgid "Start Page"
-msgstr "தொடக்க பக்கம்"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:92
-msgid "End Page"
-msgstr "முடிவுப் பக்கம்"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:101
-msgid "Page Width (%)"
-msgstr "பக்கத்தின் அகலம் (%)"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:102
-msgid "Set the width of imported Pdf's in percentage to the format width"
-msgstr "இறக்குமதி செய்யப்பட்ட Pdf இன் அகலத்தை வடிவ அகலத்திற்கு சதவீதத்தில் அமைக்கவும்"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:109
-msgid "Page Spacing"
-msgstr "பக்க இடைவெளி"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:110
-msgid "How Pdf pages are spaced"
-msgstr "Pdf பக்கங்கள் எவ்வாறு இடைவெளியில் உள்ளன"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:114
-msgid "Continuous"
-msgstr "தொடர்ச்சியான"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:115
-msgid "One per Document Page"
-msgstr "ஒரு ஆவணப் பக்கத்திற்கு ஒன்று"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:123
-msgid "Pages Type"
-msgstr "பக்கங்களின் வகை"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:124
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
-msgstr ""
-"Pdfகளை வெக்டரா அல்லது பிட்மேப் படங்களாக இறக்குமதி செய்ய வேண்டுமா என்பதை அமைக்கவும்"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:136
-msgid "Vector"
-msgstr "திசையன்"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:143
-msgid "Bitmap"
-msgstr "பிட்மேப்"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:152
-#: crates/rnote-ui/data/ui/dialogs/export.ui:366
-#: crates/rnote-ui/data/ui/dialogs/export.ui:544
-msgid "Bitmap Scale-Factor"
-msgstr "பிட்மேப் அளவிலான-காரணி"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:153
-#: crates/rnote-ui/data/ui/dialogs/export.ui:367
-#: crates/rnote-ui/data/ui/dialogs/export.ui:545
-msgid ""
-"Set the bitmap scale factor in relation\n"
-"to the actual size on the document"
-msgstr ""
-"தொடர்பில் பிட்மேப் அளவுகோலை அமைக்கவும் \n"
-"ஆவணத்தின் உண்மையான அளவிற்கு"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:161
-msgid "Page Borders"
-msgstr "பக்க எல்லைகள்"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:162
-msgid "Whether the pages have drawn borders"
-msgstr "பக்கங்கள் எல்லைகளை வரைந்துள்ளதா"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:196
-msgid "Import Xournal++ File"
-msgstr "Xournal++ கோப்பை இறக்குமதி செய்யவும்"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:235
-msgid "Xournal++ File Import Preferences"
-msgstr "Xournal++ கோப்பு இறக்குமதி விருப்பத்தேர்வுகள்"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:239
-msgid "DPI"
-msgstr "DPI"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:240
-msgid "Set the preferred DPI for the Xournal++ file"
-msgstr "Xournal++ கோப்பிற்கு விருப்பமான DPI ஐ அமைக்கவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
 #: crates/rnote-ui/src/dialogs/export.rs:268
@@ -463,6 +374,10 @@ msgid "Select the export directory"
 msgstr "ஏற்றுமதி கோப்பகத்தைத் தேர்ந்தெடுக்கவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
+#, fuzzy
+#| msgid "Export Files Stem Name"
+msgctxt ""
+"When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
 msgstr "கோப்புகளின் தண்டு பெயரை ஏற்றுமதி செய்யவும்"
 
@@ -479,6 +394,22 @@ msgstr "Png"
 #: crates/rnote-ui/src/dialogs/export.rs:877
 msgid "Jpeg"
 msgstr "Jpeg"
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:366
+#: crates/rnote-ui/data/ui/dialogs/export.ui:544
+#: crates/rnote-ui/data/ui/dialogs/import.ui:152
+msgid "Bitmap Scale-Factor"
+msgstr "பிட்மேப் அளவிலான-காரணி"
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:367
+#: crates/rnote-ui/data/ui/dialogs/export.ui:545
+#: crates/rnote-ui/data/ui/dialogs/import.ui:153
+msgid ""
+"Set the bitmap scale factor in relation\n"
+"to the actual size on the document"
+msgstr ""
+"தொடர்பில் பிட்மேப் அளவுகோலை அமைக்கவும் \n"
+"ஆவணத்தின் உண்மையான அளவிற்கு"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:375
 #: crates/rnote-ui/data/ui/dialogs/export.ui:553
@@ -506,6 +437,97 @@ msgstr "விளிம்பு"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:562
 msgid "Set the margin around the selected area"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பகுதியைச் சுற்றி விளிம்பை அமைக்கவும்"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:7
+msgid "Import Pdf"
+msgstr "Pdf ஐ இறக்குமதி செய்"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:15
+#: crates/rnote-ui/data/ui/dialogs/import.ui:204
+#: crates/rnote-ui/src/dialogs/import.rs:68
+msgid "Import"
+msgstr "இறக்குமதி"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:61
+msgid "Info"
+msgstr "தகவல்"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:79
+msgid "Pdf Import Preferences"
+msgstr "Pdf இறக்குமதி விருப்பத்தேர்வுகள்"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:83
+msgid "Start Page"
+msgstr "தொடக்க பக்கம்"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:92
+msgid "End Page"
+msgstr "முடிவுப் பக்கம்"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:101
+msgid "Page Width (%)"
+msgstr "பக்கத்தின் அகலம் (%)"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:102
+msgid "Set the width of imported Pdf's in percentage to the format width"
+msgstr "இறக்குமதி செய்யப்பட்ட Pdf இன் அகலத்தை வடிவ அகலத்திற்கு சதவீதத்தில் அமைக்கவும்"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:109
+msgid "Page Spacing"
+msgstr "பக்க இடைவெளி"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:110
+msgid "How Pdf pages are spaced"
+msgstr "Pdf பக்கங்கள் எவ்வாறு இடைவெளியில் உள்ளன"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:114
+msgid "Continuous"
+msgstr "தொடர்ச்சியான"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:115
+msgid "One per Document Page"
+msgstr "ஒரு ஆவணப் பக்கத்திற்கு ஒன்று"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:123
+msgid "Pages Type"
+msgstr "பக்கங்களின் வகை"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:124
+msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgstr ""
+"Pdfகளை வெக்டரா அல்லது பிட்மேப் படங்களாக இறக்குமதி செய்ய வேண்டுமா என்பதை அமைக்கவும்"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:136
+msgid "Vector"
+msgstr "திசையன்"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:143
+msgid "Bitmap"
+msgstr "பிட்மேப்"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:161
+msgid "Page Borders"
+msgstr "பக்க எல்லைகள்"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:162
+msgid "Whether the pages have drawn borders"
+msgstr "பக்கங்கள் எல்லைகளை வரைந்துள்ளதா"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:196
+msgid "Import Xournal++ File"
+msgstr "Xournal++ கோப்பை இறக்குமதி செய்யவும்"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:235
+msgid "Xournal++ File Import Preferences"
+msgstr "Xournal++ கோப்பு இறக்குமதி விருப்பத்தேர்வுகள்"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:239
+msgid "DPI"
+msgstr "DPI"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:240
+msgid "Set the preferred DPI for the Xournal++ file"
+msgstr "Xournal++ கோப்பிற்கு விருப்பமான DPI ஐ அமைக்கவும்"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
@@ -626,6 +648,10 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "அடர்த்தி என்பது 10x10 பகுதிக்கு உள்ள புள்ளிகளின் அளவு"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
+#, fuzzy
+#| msgid "Stroke Dots Position Distribution"
+msgctxt ""
+"Drawing with a textured pen, how the dots of the texture are distributed"
 msgid "Stroke Dots Position Distribution"
 msgstr "பக்கவாதம் புள்ளிகளின் நிலைப் பரவல்"
 
@@ -634,18 +660,30 @@ msgid "Choose a dots position probability distribution"
 msgstr "புள்ளிகளின் நிலை நிகழ்தகவுப் பரவலைத் தேர்வு செய்யவும்"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
+#, fuzzy
+#| msgid "Uniform"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
 msgstr "சீருடை"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
+#, fuzzy
+#| msgid "Normal"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
 msgstr "சாதாரண"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
+#, fuzzy
+#| msgid "Exponential"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
 msgstr "அதிவேக"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
+#, fuzzy
+#| msgid "Reverse Exponential"
+msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
 msgstr "தலைகீழ் அதிவேக"
 
@@ -1153,7 +1191,7 @@ msgid "Duplicate"
 msgstr "நகல்"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:596
+#: crates/rnote-ui/src/canvas/mod.rs:595
 msgid "Draft"
 msgstr "வரைவு"
 
@@ -1389,7 +1427,7 @@ msgid "Lines"
 msgstr "கோடுகள்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:299
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "Grid"
 msgstr "கட்டம்"
 
@@ -1639,7 +1677,7 @@ msgid "Print Document"
 msgstr "ஆவணத்தை அச்சிடுங்கள்"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:203
-#: crates/rnote-ui/src/dialogs/import.rs:64
+#: crates/rnote-ui/src/dialogs/import.rs:66
 msgid "Import File"
 msgstr "கோப்பு இறக்குமதி"
 
@@ -1691,26 +1729,22 @@ msgstr "பணியிட அடைவு செயல்கள்"
 msgid "Create new Folder"
 msgstr "புதிய கோப்புறையை உருவாக்கவும்"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:126
-msgid ""
-"Settings schema is not installed. App settings could not be loaded and won't "
-"be saved."
-msgstr ""
-"அமைப்புகள் ஸ்கீமா நிறுவப்படவில்லை. பயன்பாட்டு அமைப்புகளை ஏற்ற முடியவில்லை மற்றும் "
-"சேமிக்கப்படாது."
-
-#: crates/rnote-ui/src/appwindow/mod.rs:563
-msgid "Opening file failed"
-msgstr "கோப்பைத் திறப்பதில் தோல்வி"
-
+#: crates/rnote-ui/src/appwindow/actions.rs:596
 #: crates/rnote-ui/src/appwindow/imp.rs:248
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:582
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:126
 #: crates/rnote-ui/src/dialogs/mod.rs:257
 #: crates/rnote-ui/src/dialogs/mod.rs:411
 msgid "Saving document failed"
 msgstr "ஆவணத்தைச் சேமிப்பதில் தோல்வி"
+
+#: crates/rnote-ui/src/appwindow/actions.rs:659
+msgid "Printing document failed"
+msgstr "ஆவணத்தை அச்சிட முடியவில்லை"
+
+#: crates/rnote-ui/src/appwindow/actions.rs:695
+msgid "Exporting selection failed, nothing selected"
+msgstr "தேர்வை ஏற்றுமதி செய்வதில் தோல்வி, எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
 msgid "Button 1"
@@ -1728,20 +1762,24 @@ msgstr "பொத்தான் 3"
 msgid "Button 4"
 msgstr "பொத்தான் 4"
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:645
-msgid "Printing document failed"
-msgstr "ஆவணத்தை அச்சிட முடியவில்லை"
+#: crates/rnote-ui/src/appwindow/mod.rs:126
+msgid ""
+"Settings schema is not installed. App settings could not be loaded and won't "
+"be saved."
+msgstr ""
+"அமைப்புகள் ஸ்கீமா நிறுவப்படவில்லை. பயன்பாட்டு அமைப்புகளை ஏற்ற முடியவில்லை மற்றும் "
+"சேமிக்கப்படாது."
 
-#: crates/rnote-ui/src/appwindow/appwindowactions.rs:681
-msgid "Exporting selection failed, nothing selected"
-msgstr "தேர்வை ஏற்றுமதி செய்வதில் தோல்வி, எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
+#: crates/rnote-ui/src/appwindow/mod.rs:458
+msgid "Opening file failed"
+msgstr "கோப்பைத் திறப்பதில் தோல்வி"
 
-#: crates/rnote-ui/src/canvas/mod.rs:868 crates/rnote-ui/src/dialogs/mod.rs:204
+#: crates/rnote-ui/src/canvas/mod.rs:867 crates/rnote-ui/src/dialogs/mod.rs:204
 #: crates/rnote-ui/src/dialogs/mod.rs:341
 msgid "- invalid file name -"
 msgstr "- தவறான கோப்பு பெயர் -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:881
+#: crates/rnote-ui/src/canvas/mod.rs:880
 msgid "- invalid folder path -"
 msgstr "- தவறான கோப்புறை பாதை -"
 
@@ -1873,43 +1911,43 @@ msgstr "இயந்திர கட்டமைப்பு வெற்றி�
 msgid "Open File"
 msgstr "திறந்த கோப்பு"
 
-#: crates/rnote-ui/src/dialogs/import.rs:61
+#: crates/rnote-ui/src/dialogs/import.rs:63
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
-#: crates/rnote-ui/src/dialogs/import.rs:190
+#: crates/rnote-ui/src/dialogs/import.rs:192
 msgid "- no file name -"
 msgstr "- கோப்பு பெயர் இல்லை -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:195
+#: crates/rnote-ui/src/dialogs/import.rs:197
 msgid "- no title -"
 msgstr "- தலைப்பு இல்லை -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:198
+#: crates/rnote-ui/src/dialogs/import.rs:200
 msgid "- no author -"
 msgstr "- ஆசிரியர் இல்லை -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:202
+#: crates/rnote-ui/src/dialogs/import.rs:204
 msgid "- no date -"
 msgstr "- தேதி இல்லை -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:209
+#: crates/rnote-ui/src/dialogs/import.rs:211
 msgid "File name:"
 msgstr "கோப்பு பெயர்:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:213
+#: crates/rnote-ui/src/dialogs/import.rs:215
 msgid "Title:"
 msgstr "தலைப்பு:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:217
+#: crates/rnote-ui/src/dialogs/import.rs:219
 msgid "Author:"
 msgstr "ஆசிரியர்:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:221
+#: crates/rnote-ui/src/dialogs/import.rs:223
 msgid "Modification date:"
 msgstr "மாற்றியமைத்தல் தேதி:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:225
+#: crates/rnote-ui/src/dialogs/import.rs:227
 msgid "Pages:"
 msgstr "பக்கங்கள்:"
 
@@ -2156,48 +2194,54 @@ msgstr "நீள்வட்டங்கள்"
 msgid "Curves & Paths"
 msgstr "வளைவுகள் மற்றும் பாதைகள்"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:425
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
 msgstr "அம்பு"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
 msgid "Line"
 msgstr "கோடு"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
 msgid "Rectangle"
 msgstr "செவ்வகம்"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
 msgid "2D coordinate system"
 msgstr "2D (இரு பரிமாண) ஒருங்கிணைப்பு அமைப்பு"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
 msgid "3D coordinate system"
 msgstr "3D (முப்பரிமாண) ஒருங்கிணைப்பு அமைப்பு"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
 msgid "2D single quadrant coordinate system"
 msgstr "2D(இரு பரிமாண) ஒற்றை நாற்கர ஒருங்கிணைப்பு அமைப்பு"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
 msgid "Ellipse"
 msgstr "எலிப்ஸ்"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
 msgid "Ellipse with foci"
 msgstr "குவியத்துடன் கூடிய நீள்வட்டம்"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
 msgid "Quadratic bezier curve"
 msgstr "இருபடி பெஜியர் வளைவு"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
 msgid "Cubic bezier curve"
 msgstr "க்யூபிக் பெஜியர் வளைவு"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:436
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
+msgstr "பாலிலைன்"
+
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:438
+#, fuzzy
+#| msgid "Polyline"
+msgid "Polygon"
 msgstr "பாலிலைன்"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:536
@@ -2301,6 +2345,15 @@ msgstr "கோப்புறை பெயர்"
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
 msgstr "புதிய அடைவு"
+
+#~ msgid "Lecture Note 1"
+#~ msgstr "விரிவுரை குறிப்பு 1"
+
+#~ msgid "A Pdf annotation"
+#~ msgstr "ஒரு Pdf சிறுகுறிப்பு"
+
+#~ msgid "Lecture Note 2"
+#~ msgstr "விரிவுரை குறிப்பு 2"
 
 #~ msgid "Close the Folded Flap"
 #~ msgstr "மடிந்த மடலை மூடு"
@@ -2431,9 +2484,6 @@ msgstr "புதிய அடைவு"
 
 #~ msgid "Main window in dark colors"
 #~ msgstr "அடர் வண்ணங்களில் பிரதான சாளரம்"
-
-#~ msgid "A selection"
-#~ msgstr "ஒரு தேர்வு"
 
 #~ msgid "Export document"
 #~ msgstr "ஏற்றுமதி ஆவணம்"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-01 12:50+0100\n"
+"POT-Creation-Date: 2024-02-07 10:08+0100\n"
 "PO-Revision-Date: 2024-01-22 13:09+0000\n"
 "Last-Translator: Ali-98 <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
@@ -189,7 +189,7 @@ msgid "Change the workspace icon"
 msgstr "غيِّر أيقونة مساحة العمل"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:143
-#: crates/rnote-ui/data/ui/settingspanel.ui:271
+#: crates/rnote-ui/data/ui/settingspanel.ui:286
 msgid "Color"
 msgstr "اللون"
 
@@ -823,7 +823,7 @@ msgid "Crosshatch"
 msgstr "الترقين التعارضيّ"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:206
-#: crates/rnote-ui/data/ui/settingspanel.ui:300
+#: crates/rnote-ui/data/ui/settingspanel.ui:315
 msgid "Dots"
 msgstr "نقط"
 
@@ -1060,80 +1060,60 @@ msgid "Toggle Fullscreen"
 msgstr "بدِّل وضع ملء الشاشة"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:24
-msgid "_Document Layout"
-msgstr "_مخطَّط المستند"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:27
-msgid "_Fixed Size"
-msgstr "_حجم ثابت"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:32
-msgid "_Continuous Vertical"
-msgstr "عرض عمودي مستمرّ"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:37
-msgid "_Semi Infinite"
-msgstr "_شبه لا نهائيّ"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:42
-msgid "_Infinite"
-msgstr "_لا نهائيّ"
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:49
 msgid "_Snap Positions"
 msgstr "_حاذِ المواضع"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:54
+#: crates/rnote-ui/data/ui/canvasmenu.ui:29
 msgid "_Pen Sounds"
 msgstr "_أصوات القلم"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:59
+#: crates/rnote-ui/data/ui/canvasmenu.ui:34
 msgid "_Return to Origin Page"
 msgstr "عُد للصفحة الأصل"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:63
+#: crates/rnote-ui/data/ui/canvasmenu.ui:38
 msgid "C_lear Document"
 msgstr "امسح المستند"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:69
+#: crates/rnote-ui/data/ui/canvasmenu.ui:44
 msgid "Show _Format Borders"
 msgstr "أظهر حدود _التنسيق"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:74
+#: crates/rnote-ui/data/ui/canvasmenu.ui:49
 msgid "Show _Origin Indicator"
 msgstr "أظهر علامة نقطة الأصل"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:79
+#: crates/rnote-ui/data/ui/canvasmenu.ui:54
 msgid "Draw With _Touch Input"
 msgstr "ارسم باللمس"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:84
+#: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Block Pinch to _Zoom"
 msgstr "امنع الت_كبير والتصغير بإصبعين"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:115
+#: crates/rnote-ui/data/ui/canvasmenu.ui:90
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
 #: crates/rnote-ui/data/ui/shortcuts.ui:138
 #: crates/rnote-ui/data/ui/shortcuts.ui:144
 msgid "Zoom out"
 msgstr "صغِّر"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:124
+#: crates/rnote-ui/data/ui/canvasmenu.ui:99
 msgid "Reset Zoom"
 msgstr "صفِّر التقريب"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:131
+#: crates/rnote-ui/data/ui/canvasmenu.ui:106
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
 #: crates/rnote-ui/data/ui/shortcuts.ui:120
 #: crates/rnote-ui/data/ui/shortcuts.ui:126
 msgid "Zoom in"
 msgstr "كبِّر"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:143
+#: crates/rnote-ui/data/ui/canvasmenu.ui:118
 msgid "Zoom to Page Width"
 msgstr "كبِّر حتَّى عرض الصفحة"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:158
+#: crates/rnote-ui/data/ui/canvasmenu.ui:133
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1141,7 +1121,7 @@ msgstr ""
 "أزل الصفحة.\n"
 "متاح في تخطيط المستندات ذات الحجم الثابت."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:167
+#: crates/rnote-ui/data/ui/canvasmenu.ui:142
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1149,7 +1129,7 @@ msgstr ""
 "أضف صفحةً.\n"
 "متاح في تخطيط المستندات ذات الحجم الثابت."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:176
+#: crates/rnote-ui/data/ui/canvasmenu.ui:151
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
@@ -1397,91 +1377,121 @@ msgid "Document"
 msgstr "المستند"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:250
+#, fuzzy
+#| msgid "_Document Layout"
+msgid "Document Layout"
+msgstr "_مخطَّط المستند"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:254
+#, fuzzy
+#| msgid "_Fixed Size"
+msgid "Fixed Size"
+msgstr "_حجم ثابت"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:255
+#, fuzzy
+#| msgid "_Continuous Vertical"
+msgid "Continuous Vertical"
+msgstr "عرض عمودي مستمرّ"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:256
+#, fuzzy
+#| msgid "_Semi Infinite"
+msgid "Semi Infinite"
+msgstr "_شبه لا نهائيّ"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:257
+#, fuzzy
+#| msgid "_Infinite"
+msgid "Infinite"
+msgstr "_لا نهائيّ"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:265
 msgid "Format Border Color"
 msgstr "نسِّق لون الحدود"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:251
+#: crates/rnote-ui/data/ui/settingspanel.ui:266
 msgid "Set the format border color"
 msgstr "عيِّن لون حدود التنسيق"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:272
+#: crates/rnote-ui/data/ui/settingspanel.ui:287
 msgid "Set the background color"
 msgstr "عيِّن لون الخلفيَّة"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:292
+#: crates/rnote-ui/data/ui/settingspanel.ui:307
 msgid "Pattern"
 msgstr "النمط"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:293
+#: crates/rnote-ui/data/ui/settingspanel.ui:308
 msgid "Choose a background pattern"
 msgstr "اختر نمط خلفيَّة"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:297
+#: crates/rnote-ui/data/ui/settingspanel.ui:312
 msgid "None"
 msgstr "لا شيء"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:298
+#: crates/rnote-ui/data/ui/settingspanel.ui:313
 msgid "Lines"
 msgstr "خطوط"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:299
+#: crates/rnote-ui/data/ui/settingspanel.ui:314
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "Grid"
 msgstr "شبكة"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:301
+#: crates/rnote-ui/data/ui/settingspanel.ui:316
 msgid "Isometric Grid"
 msgstr "شبكة متساوية"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:302
+#: crates/rnote-ui/data/ui/settingspanel.ui:317
 msgid "Isometric Dots"
 msgstr "نقاط متساوية"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:310
+#: crates/rnote-ui/data/ui/settingspanel.ui:325
 msgid "Pattern Color"
 msgstr "لون النمط"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:311
+#: crates/rnote-ui/data/ui/settingspanel.ui:326
 msgid "Set the background pattern color"
 msgstr "عيِّن لون نمط الخلفيَّة"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:331
+#: crates/rnote-ui/data/ui/settingspanel.ui:346
 msgid "Pattern Width"
 msgstr "عرض النمط"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:332
+#: crates/rnote-ui/data/ui/settingspanel.ui:347
 msgid "Set the background pattern width"
 msgstr "عيِّن عرض نمط الخلفيَّة"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:348
+#: crates/rnote-ui/data/ui/settingspanel.ui:363
 msgid "Pattern Height"
 msgstr "ارتفاع النمط"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:349
+#: crates/rnote-ui/data/ui/settingspanel.ui:364
 msgid "Set the background pattern height"
 msgstr "عيِّن ارتفاع نمط الخلفيَّة"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:365
+#: crates/rnote-ui/data/ui/settingspanel.ui:380
 msgid "Invert Color Brightness"
 msgstr "اعكس سطوع الألوان"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:366
+#: crates/rnote-ui/data/ui/settingspanel.ui:381
 msgid "Invert the brightness of all background pattern colors"
 msgstr "اعكس سطوع كل ألوان نمط الخلفية"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:370
+#: crates/rnote-ui/data/ui/settingspanel.ui:385
 msgid "Invert"
 msgstr "اعكس"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:380
+#: crates/rnote-ui/data/ui/settingspanel.ui:395
 msgid "Button Shortcuts"
 msgstr "اختصارات المفاتيح"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:383
+#: crates/rnote-ui/data/ui/settingspanel.ui:398
 msgid "Stylus Primary Button Action"
 msgstr "إجراء الزرِّ الرئيس للقلم"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:384
+#: crates/rnote-ui/data/ui/settingspanel.ui:399
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
@@ -1489,11 +1499,11 @@ msgstr ""
 "عيِّن إجراء الزرِّ\n"
 "الرئيس للقلم"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:396
+#: crates/rnote-ui/data/ui/settingspanel.ui:411
 msgid "Stylus Secondary Button Action"
 msgstr "إجراء الزرِّ الثانويِّ للقلم"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:397
+#: crates/rnote-ui/data/ui/settingspanel.ui:412
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
@@ -1501,11 +1511,11 @@ msgstr ""
 "عيِّن إجراء الزرِّ\n"
 "الثانويِّ للقلم"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:409
+#: crates/rnote-ui/data/ui/settingspanel.ui:424
 msgid "Mouse Secondary Button Action"
 msgstr "إجراء الزرِّ الثانويِّ للفأرة"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:410
+#: crates/rnote-ui/data/ui/settingspanel.ui:425
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
@@ -1513,11 +1523,11 @@ msgstr ""
 "عيِّن إجراء الزرِّ\n"
 "الثانويِّ للفأرة"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:422
+#: crates/rnote-ui/data/ui/settingspanel.ui:437
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "إجراء اللمس بإصبعين طويلًا"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:423
+#: crates/rnote-ui/data/ui/settingspanel.ui:438
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
@@ -1525,11 +1535,11 @@ msgstr ""
 "عيِّن إجراء اللمس\n"
 "بإصبعين طويلًا"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:435
+#: crates/rnote-ui/data/ui/settingspanel.ui:450
 msgid "Keyboard Ctrl-Space Action"
 msgstr "إجراء ضغط Ctrl - مسافة"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:436
+#: crates/rnote-ui/data/ui/settingspanel.ui:451
 msgid ""
 "Set the action for the keyboard\n"
 "Ctrl plus Space shortcut"
@@ -1537,11 +1547,11 @@ msgstr ""
 "عيِّن إجراء الاختصار\n"
 "مسافة + Ctrl"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:448
+#: crates/rnote-ui/data/ui/settingspanel.ui:463
 msgid "Drawing Pad Button 1 Action"
 msgstr "إجراء الزرِّ الأوَّل في لوح الرسم"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:449
+#: crates/rnote-ui/data/ui/settingspanel.ui:464
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
@@ -1549,11 +1559,11 @@ msgstr ""
 "عيِّن إجراء الزرِّ الأوَّل\n"
 "في لوح رسم"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:461
+#: crates/rnote-ui/data/ui/settingspanel.ui:476
 msgid "Drawing Pad Button 2 Action"
 msgstr "إجراء الزرِّ الثاني في لوح الرسم"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:462
+#: crates/rnote-ui/data/ui/settingspanel.ui:477
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
@@ -1561,11 +1571,11 @@ msgstr ""
 "عيِّن إجراء الزرِّ الثاني\n"
 "في لوح رسم"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:474
+#: crates/rnote-ui/data/ui/settingspanel.ui:489
 msgid "Drawing Pad Button 3 Action"
 msgstr "إجراء الزرِّ الثالث في لوح الرسم"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:475
+#: crates/rnote-ui/data/ui/settingspanel.ui:490
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
@@ -1573,11 +1583,11 @@ msgstr ""
 "عيِّن إجراء الزرِّ الثالث\n"
 "في لوح رسم"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:487
+#: crates/rnote-ui/data/ui/settingspanel.ui:502
 msgid "Drawing Pad Button 4 Action"
 msgstr "إجراء الزرِّ الرابع في لوح الرسم"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:488
+#: crates/rnote-ui/data/ui/settingspanel.ui:503
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
@@ -1727,7 +1737,7 @@ msgstr "إجراءات مجلَّد مساحة العمل"
 msgid "Create new Folder"
 msgstr "أنشئ مجلَّدًا جديدًا"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:596
+#: crates/rnote-ui/src/appwindow/actions.rs:565
 #: crates/rnote-ui/src/appwindow/imp.rs:248
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:127
@@ -1736,11 +1746,11 @@ msgstr "أنشئ مجلَّدًا جديدًا"
 msgid "Saving document failed"
 msgstr "فشل حفظ المستند"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:659
+#: crates/rnote-ui/src/appwindow/actions.rs:628
 msgid "Printing document failed"
 msgstr "فشلت طباعة المستند"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:695
+#: crates/rnote-ui/src/appwindow/actions.rs:664
 msgid "Exporting selection failed, nothing selected"
 msgstr "فشل تصدير المحدَّد، لم يحدَّد أيُّ شيء"
 
@@ -2242,96 +2252,96 @@ msgstr "متعدد الخطوط"
 msgid "Polygon"
 msgstr "متعدد الخطوط"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:536
+#: crates/rnote-ui/src/settingspanel/mod.rs:551
 msgid "Application restart is required"
 msgstr "تجب إعادة تشغيل التطبيق"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:831
+#: crates/rnote-ui/src/settingspanel/mod.rs:864
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "خطَّان متقاطعان (صغيران)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:832
+#: crates/rnote-ui/src/settingspanel/mod.rs:865
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "خطَّان متقاطعان (متوسِّطا الحجم)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:833
+#: crates/rnote-ui/src/settingspanel/mod.rs:866
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "خطَّان متقاطعان (كبيران)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:834
+#: crates/rnote-ui/src/settingspanel/mod.rs:867
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "نقطة (صغيرة)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:835
+#: crates/rnote-ui/src/settingspanel/mod.rs:868
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "نقطة (متوسِّطة)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:836
+#: crates/rnote-ui/src/settingspanel/mod.rs:869
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "نقطة (كبيرة)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:837
+#: crates/rnote-ui/src/settingspanel/mod.rs:870
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "دمعة شمال-غرب (صغيرة)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:838
+#: crates/rnote-ui/src/settingspanel/mod.rs:871
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "دمعة شمال-غرب (متوسِّطة)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:839
+#: crates/rnote-ui/src/settingspanel/mod.rs:872
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "دمعة شمال-غرب (كبيرة)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:840
+#: crates/rnote-ui/src/settingspanel/mod.rs:873
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "دمعة شمال-شرق (صغيرة)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:841
+#: crates/rnote-ui/src/settingspanel/mod.rs:874
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "دمعة شمال-شرق (متوسِّطة)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:842
+#: crates/rnote-ui/src/settingspanel/mod.rs:875
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "دمعة شمال-شرق (كبيرة)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:843
+#: crates/rnote-ui/src/settingspanel/mod.rs:876
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "دمعة شمال (صغيرة)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:844
+#: crates/rnote-ui/src/settingspanel/mod.rs:877
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "دمعة شمال (متوسِّطة)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:845
+#: crates/rnote-ui/src/settingspanel/mod.rs:878
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "دمعة شمال (كبيرة)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:846
+#: crates/rnote-ui/src/settingspanel/mod.rs:879
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "شعاع (صغير)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:847
+#: crates/rnote-ui/src/settingspanel/mod.rs:880
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "شعاع (متوسِّط)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:848
+#: crates/rnote-ui/src/settingspanel/mod.rs:881
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "شعاع (كبير)"

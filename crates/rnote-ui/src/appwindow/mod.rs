@@ -113,7 +113,9 @@ impl RnAppWindow {
         imp.main_header.get().init(self);
 
         // An initial tab. Must! come before setting up the settings binds and import
-        self.add_initial_tab();
+        // does fail on my local compile with a could not load settings
+        // we remove this call for now
+        // self.add_initial_tab();
 
         // actions and settings AFTER widget inits
         self.setup_icon_theme();

@@ -201,14 +201,6 @@ impl Engine {
         let is_fixed = self.document.layout.is_fixed_layout();
         let point_max: na::OPoint<f64, na::Const<2>> = self.camera.viewport().maxs;
 
-        // check if .size/.total_zoom are better than the current .maxs
-        tracing::debug!(
-            "max : {:?} \n zoom {:?}\n size {:?}",
-            self.camera.viewport().maxs,
-            self.camera.total_zoom(),
-            self.camera.size(),
-        );
-
         rayon::spawn(move || {
             let result = || -> anyhow::Result<VectorImage> {
                 let svg_str = String::from_utf8(bytes)?;

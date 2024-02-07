@@ -24,6 +24,13 @@ pub struct Resize {
     pub max_viewpoint: na::OPoint<f64, na::Const<2>>,
 }
 
+/// Calculate the `ratio` by which to resize the image such that
+/// - it stays fully in view
+/// - it does not goes over a page border when the mode has a fixed 
+/// width size
+/// 
+/// `pos_left_top_canvas` is the position of the top-left corner of
+/// the image in documents coordinates
 pub fn calculate_resize_ratio(
     resize: Resize,
     initial_size_image: na::Vector2<f64>,
@@ -32,7 +39,7 @@ pub fn calculate_resize_ratio(
     let current_width = initial_size_image.x;
     let current_height = initial_size_image.y;
 
-    // calculate the minimum ratio to stay in the viewport
+    // calculate the minimum ratio to stay in view
     let ratio_viewport = (1.0f64)
         .min(
             //check in the horizontal direction
@@ -43,7 +50,8 @@ pub fn calculate_resize_ratio(
             (resize.max_viewpoint.y - pos_left_top_canvas.index(1)) / (current_height),
         );
 
-    // check if we go out of the viewport in the two directions
+    // check if we go out of the page on the right
+    // we don't want to go out of the page
     match resize.isfixed_layout {
         false => ratio_viewport,
         true => ratio_viewport.min((resize.width - pos_left_top_canvas.index(0)) / (current_width)),

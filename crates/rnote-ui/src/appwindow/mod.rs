@@ -115,7 +115,7 @@ impl RnAppWindow {
         // An initial tab. Must! come before setting up the settings binds and import
         // does fail on my local compile with a could not load settings
         // we remove this call for now
-        // self.add_initial_tab();
+        self.add_initial_tab();
 
         // actions and settings AFTER widget inits
         self.setup_icon_theme();
@@ -275,16 +275,16 @@ impl RnAppWindow {
     /// adds the initial tab to the tabview
     fn add_initial_tab(&self) -> adw::TabPage {
         let wrapper = RnCanvasWrapper::new();
-        if let Some(app_settings) = self.app().app_settings() {
-            if let Err(e) = wrapper
-                .canvas()
-                .load_engine_config_from_settings(&app_settings)
-            {
-                tracing::error!("Failed to load engine config for initial tab, Err: {e:?}");
-            }
-        } else {
-            tracing::warn!("Could not load settings for initial tab. Settings schema not found.");
-        }
+        // if let Some(app_settings) = self.app().app_settings() {
+        //     if let Err(e) = wrapper
+        //         .canvas()
+        //         .load_engine_config_from_settings(&app_settings)
+        //     {
+        //         tracing::error!("Failed to load engine config for initial tab, Err: {e:?}");
+        //     }
+        // } else {
+        //     tracing::warn!("Could not load settings for initial tab. Settings schema not found.");
+        // }
         self.append_wrapper_new_tab(&wrapper)
     }
 

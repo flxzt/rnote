@@ -424,8 +424,8 @@ impl RnAppWindow {
         // is app_setting the issue ?
         // let app = self.app();
         // let app_settings = app
-            // .app_settings()
-            // .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
+        // .app_settings()
+        // .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
 
         //restore windows dimensions and maximize status
         {
@@ -433,11 +433,11 @@ impl RnAppWindow {
             // let window_height = app_settings.int("window-height");
             // let is_maximized = app_settings.boolean("is-maximized");
 
-            // simulate settings 
-            // there seems to be a default size in the packaging step of size 440 x 350 + an offset 
-            let window_width = 440;
-            let window_height = 350;
-            let is_maximized = false;
+            // simulate settings
+            // there seems to be a default size in the packaging step of size 440 x 350 + an offset
+            let window_width = 800;
+            let window_height = 550;
+            let is_maximized = true;
 
             self.set_default_size(window_width, window_height);
             if is_maximized {

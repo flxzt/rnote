@@ -1,0 +1,59 @@
+The Meson build system
+Version: 1.3.1
+Source dir: /Volumes/temp/GitHub/rnote_mac_FGITHUB/mac-os-temp-fix
+Build dir: /Volumes/temp/GitHub/rnote_mac_FGITHUB/mac-os-temp-fix/_mesonbuild
+Build type: native build
+Project name: rnote
+Project version: 0.9.4
+C++ compiler for the host machine: c++ (clang 15.0.0 "Apple clang version 15.0.0 (clang-1500.1.0.2.5)")
+C++ linker for the host machine: c++ ld64 1022.1
+Rust compiler for the host machine: rustc -C linker=cc (rustc 1.75.0)
+Rust linker for the host machine: rustc -C linker=cc ld64 1022.1
+Host machine cpu family: aarch64
+Host machine cpu: aarch64
+Found pkg-config: YES (/opt/homebrew/bin/pkg-config) 0.29.2
+Run-time dependency glib-2.0 found: YES 2.78.4
+Run-time dependency gio-2.0 found: YES 2.78.4
+Run-time dependency cairo found: YES 1.18.0
+Program cargo found: YES (/opt/homebrew/bin/cargo)
+Program cmake found: YES (/opt/homebrew/bin/cmake)
+Program glib-compile-resources found: YES (/opt/homebrew/bin/glib-compile-resources)
+Program glib-compile-schemas found: YES (/opt/homebrew/bin/glib-compile-schemas)
+Program desktop-file-validate found: YES (/opt/homebrew/bin/desktop-file-validate)
+Program appstream-util found: YES (/opt/homebrew/bin/appstream-util)
+Program fc-cache found: YES (/opt/homebrew/bin/fc-cache)
+Program update-mime-database found: YES (/opt/homebrew/bin/update-mime-database)
+Program build-aux/cargo_build.py found: YES (/opt/homebrew/opt/python@3.12/bin/python3.12 /Volumes/temp/GitHub/rnote_mac_FGITHUB/mac-os-temp-fix/build-aux/cargo_build.py)
+Program build-aux/inno_build.py found: YES (/opt/homebrew/opt/python@3.12/bin/python3.12 /Volumes/temp/GitHub/rnote_mac_FGITHUB/mac-os-temp-fix/build-aux/inno_build.py)
+Run-time dependency gtk4 found: YES 4.12.5
+Run-time dependency libadwaita-1 found: YES 1.4.2
+Run-time dependency poppler-glib found: YES 24.02.0
+Message: Configuring config.rs file
+Configuring config.rs using configuration
+Message: Configuring desktop file
+Configuring app.desktop.in using configuration
+Program msgfmt found: YES (/opt/homebrew/bin/msgfmt)
+Message: Configuring settings GSchema file
+Configuring com.github.flxzt.rnote.gschema.xml using configuration
+Message: Configuring appdata file
+Configuring app.metainfo.xml.in using configuration
+Message: Configuring MIME-type file
+Configuring com.github.flxzt.rnote.xml using configuration
+Program msginit found: YES (/opt/homebrew/bin/msginit)
+Program msgmerge found: YES (/opt/homebrew/bin/msgmerge)
+Program xgettext found: YES (/opt/homebrew/bin/xgettext)
+Dependency gio-2.0 found: YES 2.78.4 (cached)
+Program /opt/homebrew/Cellar/glib/2.78.4/bin/glib-compile-schemas found: YES (/opt/homebrew/Cellar/glib/2.78.4/bin/glib-compile-schemas)
+Program gtk4-update-icon-cache found: YES (/opt/homebrew/bin/gtk4-update-icon-cache)
+Program update-desktop-database found: YES (/opt/homebrew/bin/update-desktop-database)
+Program update-mime-database found: YES (/opt/homebrew/bin/update-mime-database)
+Message: Configuring Inno-Setup installer script file
+Configuring rnote_inno.iss using configuration
+Build targets in project: 48
+
+rnote 0.9.4
+
+  User defined options
+    prefix: /usr/local
+
+Found ninja-1.11.1 at /opt/homebrew/bin/ninja

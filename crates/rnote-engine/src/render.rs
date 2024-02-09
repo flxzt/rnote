@@ -11,7 +11,6 @@ use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::io::{self, Cursor};
 use svg::Node;
-use usvg::{TreeParsing, TreeTextToPath, TreeWriting};
 
 /// Usvg font database
 pub static USVG_FONTDB: Lazy<usvg::fontdb::Database> = Lazy::new(|| {
@@ -420,15 +419,14 @@ impl Svg {
         const COORDINATES_PREC: u8 = 3;
         const TRANSFORMS_PREC: u8 = 4;
 
-        let xml_options = usvg::XmlOptions {
+        let xml_options = usvg::WriteOptions {
             id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
+            preserve_text: true,
             coordinates_precision: COORDINATES_PREC,
             transforms_precision: TRANSFORMS_PREC,
-            writer_opts: xmlwriter::Options {
-                use_single_quote: false,
-                indent: xmlwriter::Indent::None,
-                attributes_indent: xmlwriter::Indent::None,
-            },
+            use_single_quote: false,
+            indent: xmlwriter::Indent::None,
+            attributes_indent: xmlwriter::Indent::None,
         };
         let bounds_simplified = Aabb::new(na::point![0.0, 0.0], self.bounds.extents().into());
         let svg_data_wrapped = rnote_compose::utils::wrap_svg_root(
@@ -438,9 +436,10 @@ impl Svg {
             false,
         );
 
-        let mut usvg_tree = usvg::Tree::from_str(&svg_data_wrapped, &usvg::Options::default())?;
-        usvg_tree.convert_text(&USVG_FONTDB);
-        self.svg_data = rnote_compose::utils::remove_xml_header(&usvg_tree.to_string(&xml_options));
+        let usvg_tree =
+            usvg::Tree::from_str(&svg_data_wrapped, &usvg::Options::default(), &USVG_FONTDB)?;
+
+        self.svg_data = usvg_tree.to_string(&xml_options);
         self.bounds = bounds_simplified;
 
         Ok(())

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-07 10:08+0100\n"
-"PO-Revision-Date: 2024-02-07 14:58+0000\n"
+"PO-Revision-Date: 2024-02-12 06:02+0000\n"
 "Last-Translator: Ryo Nakano <ryonakaknock3@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/>"
 "\n"
@@ -1637,11 +1637,11 @@ msgstr "位置をスナップ"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Add Page (When in Fixed-Size Layout)"
-msgstr ""
+msgstr "ページを追加(固定サイズのレイアウトの場合)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:197
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr ""
+msgstr "最後のページを削除(固定サイズのレイアウトの場合)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:203
 msgid "Print Document"
@@ -1938,18 +1938,16 @@ msgstr "- 無効な保存フォルダー名 -"
 #: crates/rnote-ui/src/dialogs/mod.rs:228
 #: crates/rnote-ui/src/dialogs/mod.rs:364
 msgid "The changes will be saved"
-msgstr ""
+msgstr "変更が保存されます"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:233
 #: crates/rnote-ui/src/dialogs/mod.rs:369
 msgid "A new file will be created"
-msgstr ""
+msgstr "新しいファイルが作成されます"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:508
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Change Workspace Directory"
-msgstr "選択範囲をSVGに保存"
+msgstr "ワークスペースディレクトリを変更"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:618
 msgid "Band-Aid"
@@ -2162,29 +2160,27 @@ msgstr ""
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:387
 msgid "Miscellaneous"
-msgstr ""
+msgstr "その他"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:396
 msgid "Coordinate Systems"
-msgstr ""
+msgstr "座標"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:404
-#, fuzzy
-#| msgid "Ellipse"
 msgid "Ellipses"
 msgstr "楕円"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:411
 msgid "Curves & Paths"
-msgstr ""
+msgstr "曲線とパス"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
-msgstr ""
+msgstr "矢印"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
 msgid "Line"
-msgstr ""
+msgstr "線"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
 msgid "Rectangle"
@@ -2192,15 +2188,15 @@ msgstr "矩形"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
 msgid "2D coordinate system"
-msgstr ""
+msgstr "2次元の座標"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
 msgid "3D coordinate system"
-msgstr ""
+msgstr "3次元の座標"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
 msgid "2D single quadrant coordinate system"
-msgstr ""
+msgstr "2次元の座標(第一象限のみ)"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
 msgid "Ellipse"
@@ -2208,7 +2204,7 @@ msgstr "楕円"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:434
 msgid "Ellipse with foci"
-msgstr ""
+msgstr "焦点を持つ楕円"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:435
 msgid "Quadratic bezier curve"
@@ -2220,15 +2216,15 @@ msgstr "3次ベジェ曲線"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
-msgstr ""
+msgstr "折れ線"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:438
 msgid "Polygon"
-msgstr ""
+msgstr "多角形"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:551
 msgid "Application restart is required"
-msgstr ""
+msgstr "アプリケーションの再起動が必要"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:864
 msgctxt "a cursor type"

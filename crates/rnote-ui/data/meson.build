@@ -260,6 +260,7 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/shapebuilder-polygon-symbolic.svg',
     'icons/scalable/actions/shapebuilder-polyline-symbolic.svg',
     'icons/scalable/actions/shapebuilder-quadbez-symbolic.svg',
+    'icons/scalable/actions/shapebuilder-parabola-symbolic.svg',
     'icons/scalable/actions/shapebuilder-quadrantcoordsystem2d-symbolic.svg',
     'icons/scalable/actions/shapebuilder-rectangle-symbolic.svg',
     'icons/scalable/actions/sidebar-reveal-symbolic.svg',

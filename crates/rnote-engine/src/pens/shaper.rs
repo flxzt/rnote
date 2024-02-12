@@ -8,6 +8,7 @@ use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::builders::buildable::{Buildable, BuilderCreator, BuilderProgress};
+use rnote_compose::builders::ParabolaBuilder;
 use rnote_compose::builders::{ArrowBuilder, GridBuilder, PolygonBuilder, PolylineBuilder};
 use rnote_compose::builders::{
     CoordSystem2DBuilder, CoordSystem3DBuilder, CubBezBuilder, EllipseBuilder, FociEllipseBuilder,
@@ -263,5 +264,6 @@ fn new_builder(
         ShapeBuilderType::CubBez => Box::new(CubBezBuilder::start(element, now)),
         ShapeBuilderType::Polyline => Box::new(PolylineBuilder::start(element, now)),
         ShapeBuilderType::Polygon => Box::new(PolygonBuilder::start(element, now)),
+        ShapeBuilderType::Parabola => Box::new(ParabolaBuilder::start(element, now)),
     }
 }

@@ -414,6 +414,7 @@ fn shape_builder_type_icons_get_groups() -> Vec<GroupedIconPickerGroupData> {
                 "shapebuilder-cubbez-symbolic",
                 "shapebuilder-polyline-symbolic",
                 "shapebuilder-polygon-symbolic",
+                "shapebuilder-parabola-symbolic",
             ]),
         },
     ]
@@ -436,5 +437,6 @@ fn shape_builder_type_icons_to_display_name(icon_name: &str) -> String {
         ShapeBuilderType::CubBez => gettext("Cubic bezier curve"),
         ShapeBuilderType::Polyline => gettext("Polyline"),
         ShapeBuilderType::Polygon => gettext("Polygon"),
+        ShapeBuilderType::Parabola => gettext("Parabola"),
     }
 }

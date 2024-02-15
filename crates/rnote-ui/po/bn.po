@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-07 10:08+0100\n"
-"PO-Revision-Date: 2024-01-23 14:52+0000\n"
+"PO-Revision-Date: 2024-02-15 17:02+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -75,10 +75,8 @@ msgid "Adjust document settings"
 msgstr "নথির সেটিংস্‌ সামঞ্জস্য করুন"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
-#, fuzzy
-#| msgid "Button Shortcuts"
 msgid "Configure action shortcuts"
-msgstr "বোতাম শর্টকাট"
+msgstr "ক্রিয়া পরিবর্তন শর্টকাট"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
@@ -370,8 +368,6 @@ msgid "Select the export directory"
 msgstr "রপ্তানির ডাইরেক্টরি নির্বাচন করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
-#, fuzzy
-#| msgid "Export Files Stem Name"
 msgctxt ""
 "When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
@@ -658,8 +654,6 @@ msgid "Uniform"
 msgstr "সমান্তর"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
-#, fuzzy
-#| msgid "Normal"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
 msgstr "সাধারন"
@@ -1052,7 +1046,6 @@ msgid "Toggle Fullscreen"
 msgstr "পূর্ণস্ক্রীন টগল করুন"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
 msgid "_Snap Positions"
 msgstr "অবস্থানে _স্ন্যাপ করুন"
 
@@ -1370,34 +1363,24 @@ msgid "Document"
 msgstr "নথি"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:250
-#, fuzzy
-#| msgid "_Document Layout"
 msgid "Document Layout"
-msgstr "_নথির বিন্যাস"
+msgstr "নথির বিন্যাস"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:254
-#, fuzzy
-#| msgid "_Fixed Size"
 msgid "Fixed Size"
-msgstr "_নির্দিষ্ট আকার"
+msgstr "নির্দিষ্ট আকার"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:255
-#, fuzzy
-#| msgid "_Continuous Vertical"
 msgid "Continuous Vertical"
-msgstr "_ক্রমাগতভাবে উল্লম্ব"
+msgstr "ক্রমাগতভাবে উল্লম্ব"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:256
-#, fuzzy
-#| msgid "_Semi Infinite"
 msgid "Semi Infinite"
-msgstr "_অর্ধ অসীম"
+msgstr "অর্ধ অসীম"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:257
-#, fuzzy
-#| msgid "_Infinite"
 msgid "Infinite"
-msgstr "_অসীম"
+msgstr "অসীম"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:265
 msgid "Format Border Color"
@@ -1662,7 +1645,6 @@ msgid "Save Document As"
 msgstr "এই হিসাবে নথি সংরক্ষণ করুন"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
-#, fuzzy
 msgid "Snap Positions"
 msgstr "অবস্থানে স্ন্যাপ করুন"
 

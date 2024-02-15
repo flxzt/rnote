@@ -1,0 +1,4 @@
+- Get the `com.github.flxzt.rnote.Devel.gschema.xml` (we build with the dev version) file back from the `/usr/local/share/glib-2.0/schemas` folder
+- copy that in a separate folder
+- call `glib-compile-schemas .` in that folder
+- launch rnote with the commmand `RUST_LOG=rnote=debug GSETTINGS_SCHEMA_DIR=(path to the folder with the xml file) rnote`

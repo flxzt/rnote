@@ -14,7 +14,6 @@ use crate::{
     RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
 };
 use adw::subclass::prelude::AdwApplicationImpl;
-use gettextrs::gettext;
 use gtk4::{gio, glib, glib::clone, prelude::*, subclass::prelude::*};
 
 mod imp {
@@ -28,6 +27,9 @@ mod imp {
     impl Default for RnApp {
         fn default() -> Self {
             let app_settings = gio::SettingsSchemaSource::default().and_then(|schema_source| {
+                // test that we are actually loading the thing from the correct folder
+                tracing::debug!("found settings default source");
+                tracing::debug!("{:?}", &schema_source.list_schemas(true));
                 Some(gio::Settings::new_full(
                     &schema_source.lookup(config::APP_ID, true)?,
                     None::<&gio::SettingsBackend>,
@@ -136,28 +138,10 @@ mod imp {
             // see issue 823 - https://github.com/flxzt/rnote/issues/823
             #[cfg(target_os = "macos")]
             {
-                if !appwindow.app().settings_schema_found() {
-                    // Display an error toast if settings schema could not be found
-                    appwindow.overlays().dispatch_toast_error(&gettext(
-                "Settings schema is not installed. App settings could not be loaded and won't be saved.",
-            ));
-                }
-                // } else {
-                // if let Err(e) = appwindow.setup_settings_binds() {
-                //     tracing::error!("Failed to setup settings binds, Err: {e:?}");
-                // }
-                // if let Err(e) = appwindow.setup_periodic_save() {
-                //     tracing::error!("Failed to setup periodic save, Err: {e:?}");
-                // }
-                // if let Err(e) = appwindow.load_settings() {
-                //     tracing::error!("Failed to load initial settings, Err: {e:?}");
-                // }
-                // try JUST this to see
                 if let Err(e) = appwindow.load_window_settings() {
                     tracing::error!("Failed to restore windows settings, Err: {e:?}");
                 }
             }
-            // }
 
             // Loading in input file in the first tab, if Some
             if let Some(input_file) = input_file {

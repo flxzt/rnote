@@ -1,0 +1,37 @@
+
+Testing the branch : 
+https://gitlab.gnome.org/amolenaar/gtk/-/tree/macos-maximized-window
+
+To compile : 
+- clone the git
+- follow the compile guide from homebrew : https://github.com/Homebrew/homebrew-core/blob/8e83c974094cbcc52c8a8e5154de9191eac28bab/Formula/g/gtk4.rb#L74
+
+We need to set correctly the flags as well before meson : 
+
+We also need to find where it is installed : `/opt/homebrew/include/gtk-4.0`
+
+```
+CPPFLAGS="-I/opt/homebrew/include/gtk-4.0"
+export CPPFLAGS
+```
+
+
+
+
+```
+meson build -Dgtk_doc=false -Dman-pages=false -Dintrospection=enabled -Dbuild-examples=false -Dbuild-tests=false -Dmedia-gstreamer=disabled
+meson compile -C build -v
+meson install -C build
+```
+
+
+
+To build libadwaita : 
+- get the archive and untar/zip it
+- in the folder, following the guide from homebrew : https://github.com/Homebrew/homebrew-core/blob/bb5f92d8d25d9d04c6a7791220d0bb8a5b2410a2/Formula/lib/libadwaita.rb
+
+```
+meson setup build -Dtests=false
+meson compile -C build --verbose
+meson install -C build
+```

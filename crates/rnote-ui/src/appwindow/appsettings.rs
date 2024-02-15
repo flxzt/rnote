@@ -421,23 +421,22 @@ impl RnAppWindow {
 
     /// Load settings for the window size and maximize status
     pub(crate) fn load_window_settings(&self) -> anyhow::Result<()> {
-        // is app_setting the issue ?
-        // let app = self.app();
-        // let app_settings = app
-        // .app_settings()
-        // .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
+        let app = self.app();
+        let app_settings = app
+            .app_settings()
+            .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
 
         //restore windows dimensions and maximize status
         {
-            // let window_width = app_settings.int("window-width");
-            // let window_height = app_settings.int("window-height");
-            // let is_maximized = app_settings.boolean("is-maximized");
+            let window_width = app_settings.int("window-width");
+            let window_height = app_settings.int("window-height");
+            let is_maximized = app_settings.boolean("is-maximized");
 
             // simulate settings
             // there seems to be a default size in the packaging step of size 440 x 350 + an offset
-            let window_width = 800;
-            let window_height = 550;
-            let is_maximized = true;
+            // let window_width = 800;
+            // let window_height = 550;
+            // let is_maximized = true;
 
             self.set_default_size(window_width, window_height);
             if is_maximized {
@@ -456,9 +455,18 @@ impl RnAppWindow {
 
         {
             // Appwindow
-            app_settings.set_int("window-width", self.width())?;
-            app_settings.set_int("window-height", self.height())?;
-            app_settings.set_boolean("is-maximized", self.is_maximized())?;
+            // DON'T save the window width and height if the window is maximized
+            match self.is_maximized() {
+                false => {
+                    app_settings.set_int("window-width", self.width())?;
+                    app_settings.set_int("window-height", self.height())?;
+                    app_settings.set_boolean("is-maximized", self.is_maximized())?;
+                }
+                true => {
+                    // in all cases we save the maximized value but not the size
+                    app_settings.set_boolean("is-maximized", self.is_maximized())?;
+                }
+            }
         }
 
         {

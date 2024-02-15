@@ -124,7 +124,6 @@ impl RnAppWindow {
 
         // disable restoring maximize and window size before presenting the window on mac
         // see issue 823 - https://github.com/flxzt/rnote/issues/823
-        #[cfg(not(target_os = "macos"))]
         if !self.app().settings_schema_found() {
             // Display an error toast if settings schema could not be found
             self.overlays().dispatch_toast_error(&gettext(
@@ -140,7 +139,7 @@ impl RnAppWindow {
             if let Err(e) = self.load_settings() {
                 tracing::error!("Failed to load initial settings, Err: {e:?}");
             }
-
+            #[cfg(not(target_os = "macos"))]
             if let Err(e) = self.load_window_settings() {
                 tracing::error!("Failed to restore windows settings, Err: {e:?}");
             }
@@ -275,16 +274,16 @@ impl RnAppWindow {
     /// adds the initial tab to the tabview
     fn add_initial_tab(&self) -> adw::TabPage {
         let wrapper = RnCanvasWrapper::new();
-        // if let Some(app_settings) = self.app().app_settings() {
-        //     if let Err(e) = wrapper
-        //         .canvas()
-        //         .load_engine_config_from_settings(&app_settings)
-        //     {
-        //         tracing::error!("Failed to load engine config for initial tab, Err: {e:?}");
-        //     }
-        // } else {
-        //     tracing::warn!("Could not load settings for initial tab. Settings schema not found.");
-        // }
+        if let Some(app_settings) = self.app().app_settings() {
+            if let Err(e) = wrapper
+                .canvas()
+                .load_engine_config_from_settings(&app_settings)
+            {
+                tracing::error!("Failed to load engine config for initial tab, Err: {e:?}");
+            }
+        } else {
+            tracing::warn!("Could not load settings for initial tab. Settings schema not found.");
+        }
         self.append_wrapper_new_tab(&wrapper)
     }
 

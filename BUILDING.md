@@ -112,7 +112,7 @@ For debian based distros:
 ```bash
 sudo apt install build-essential clang libclang-dev python3 make cmake meson git appstream-util gettext libgtk-4-dev \
 libadwaita-1-dev libpoppler-glib-dev libasound2-dev
-``
+```
 
 Also make sure `rustc` and `cargo` are installed ( see [https://www.rust-lang.org/](https://www.rust-lang.org/) ).
 Then run:

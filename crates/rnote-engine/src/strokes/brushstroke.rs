@@ -114,15 +114,15 @@ impl Content for BrushStroke {
                     let mut prev = self.path.start;
                     for seg in self.path.segments.iter() {
                         let seg_path = PenPath::new_w_segments(prev, [*seg]);
-
-                        match render::Image::gen_with_piet(
+                        let image = render::Image::gen_with_piet(
                             |piet_cx| {
                                 seg_path.draw_composed(piet_cx, options);
                                 Ok(())
                             },
                             seg_path.composed_bounds(options),
                             image_scale,
-                        ) {
+                        );
+                        match image {
                             Ok(image) => images.push(image),
                             Err(e) => {
                                 tracing::error!(
@@ -147,15 +147,15 @@ impl Content for BrushStroke {
                     let mut prev = self.path.start;
                     for seg in self.path.segments.iter() {
                         let seg_path = PenPath::new_w_segments(prev, [*seg]);
-
-                        match render::Image::gen_with_piet(
+                        let image = render::Image::gen_with_piet(
                             |piet_cx| {
                                 seg_path.draw_composed(piet_cx, &options);
                                 Ok(())
                             },
                             seg_path.composed_bounds(&options),
                             image_scale,
-                        ) {
+                        );
+                        match image {
                             Ok(image) => images.push(image),
                             Err(e) => {
                                 tracing::error!(

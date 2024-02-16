@@ -77,7 +77,7 @@ pub fn wrap_svg_root(
         .set("height", height.as_str())
         .set("viewBox", viewbox.as_str())
         .set("preserveAspectRatio", preserve_aspectratio.as_str())
-        .add(svg::node::Text::new(svg_data));
+        .add(svg::node::Blob::new(svg_data));
 
     // unwrapping because we know its a valid Svg
     svg_node_to_string(&svg_root).unwrap()

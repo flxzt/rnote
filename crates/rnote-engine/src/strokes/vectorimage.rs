@@ -56,7 +56,7 @@ impl Content for VectorImage {
                 ),
             )
             .set("preserveAspectRatio", "none")
-            .add(svg::node::Text::new(self.svg_data.clone()));
+            .add(svg::node::Blob::new(self.svg_data.clone()));
         let group = svg::node::element::Group::new()
             .set(
                 "transform",

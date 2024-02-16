@@ -484,7 +484,7 @@ impl Svg {
                 })?,
         )?;
         let svg_data = rnote_compose::utils::remove_xml_header(&content);
-        let mut group = svg::node::element::Group::new().add(svg::node::Text::new(svg_data));
+        let mut group = svg::node::element::Group::new().add(svg::node::Blob::new(svg_data));
         // translate the content back to it's original position
         group.assign(
             "transform",

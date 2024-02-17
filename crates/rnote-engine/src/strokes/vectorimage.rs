@@ -18,7 +18,6 @@ use rnote_compose::transform::Transform;
 use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
-use usvg::{TreeParsing, TreeTextToPath, TreeWriting};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "vectorimage")]
@@ -59,7 +58,7 @@ impl Content for VectorImage {
                 ),
             )
             .set("preserveAspectRatio", "none")
-            .add(svg::node::Text::new(self.svg_data.clone()));
+            .add(svg::node::Blob::new(self.svg_data.clone()));
         let group = svg::node::element::Group::new()
             .set(
                 "transform",
@@ -146,24 +145,25 @@ impl VectorImage {
         const COORDINATES_PREC: u8 = 3;
         const TRANSFORMS_PREC: u8 = 4;
 
-        let xml_options = usvg::XmlOptions {
+        let xml_options = usvg::WriteOptions {
             id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
+            preserve_text: true,
             coordinates_precision: COORDINATES_PREC,
             transforms_precision: TRANSFORMS_PREC,
-            writer_opts: xmlwriter::Options {
-                use_single_quote: false,
-                indent: xmlwriter::Indent::None,
-                attributes_indent: xmlwriter::Indent::None,
-            },
+            use_single_quote: false,
+            indent: xmlwriter::Indent::None,
+            attributes_indent: xmlwriter::Indent::None,
         };
-        let mut svg_tree = usvg::Tree::from_str(svg_data, &usvg::Options::default())?;
-        svg_tree.convert_text(&render::USVG_FONTDB);
+        let svg_tree =
+            usvg::Tree::from_str(svg_data, &usvg::Options::default(), &render::USVG_FONTDB)?;
 
-        let svg_data: String = svg_tree.to_string(&xml_options);
-        let intrinsic_size =
-            na::vector![svg_tree.size.width() as f64, svg_tree.size.height() as f64];
+        let intrinsic_size = na::vector![
+            svg_tree.size().width() as f64,
+            svg_tree.size().height() as f64
+        ];
+        let svg_data = svg_tree.to_string(&xml_options);
+        
         let mut transform = Transform::default();
-
         let rectangle = match size {
             ImageSizeOption::RespectOriginalSize => {
                 // Size not given : use the intrisic size
@@ -193,7 +193,7 @@ impl VectorImage {
         };
 
         Ok(Self {
-            svg_data: svg_data.to_string(),
+            svg_data,
             intrinsic_size,
             rectangle,
         })

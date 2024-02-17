@@ -7,30 +7,31 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-07 18:37+0100\n"
-"PO-Revision-Date: 2022-11-02 18:07+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/"
-">\n"
+"POT-Creation-Date: 2024-02-07 10:08+0100\n"
+"PO-Revision-Date: 2024-02-07 14:58+0000\n"
+"Last-Translator: Ryo Nakano <ryonakaknock3@gmail.com>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/>"
+"\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
 #: crates/rnote-ui/src/dialogs/mod.rs:35
 msgid "Sketch and take handwritten notes"
-msgstr ""
+msgstr "スケッチや手書きのノートを作成します"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;オフィス;グラフィック;メモ;ノート;"
+msgstr "Gnome;GTK;Office;Graphics;Notes;オフィス;グラフィック;メモ;ノート;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:20
+#: crates/rnote-ui/data/ui/shortcuts.ui:20
 msgid "New Window"
 msgstr "新しいウィンドウ"
 
@@ -52,44 +53,40 @@ msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An overview"
-msgstr ""
+msgstr "全体像"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:40
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "A selection"
-msgstr "選択範囲をSVGに保存"
+msgstr "選択範囲"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "Write text with the typewriter"
-msgstr ""
+msgstr "キーボードでテキスト入力"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"
-msgstr ""
+msgstr "集中モードでツールバーを非表示にする"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
-msgstr ""
+msgstr "ファイルにすぐアクセスできるワークスペース機能"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
-msgstr ""
+msgstr "文書の設定を調整"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
 msgid "Configure action shortcuts"
-msgstr ""
+msgstr "アクションショートカットを設定"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
-#: crates/rnote-ui/data/ui/shortcuts.ui:179
-#, fuzzy
-#| msgid "Export document as SVG"
+#: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Clear Document"
-msgstr "選択範囲をSVGに保存"
+msgstr "文書を消去"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
-msgstr ""
+msgstr "文書全体を消去します。よろしいですか。"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:22
@@ -107,129 +104,122 @@ msgstr "キャンセル"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
-msgstr ""
+msgstr "消去"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
-#: crates/rnote-ui/data/ui/shortcuts.ui:149
 #: crates/rnote-ui/src/canvas/mod.rs:593
 msgid "New Document"
-msgstr ""
+msgstr "新しい文書"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:17
-#, fuzzy
 msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
-msgstr "保存していない編集内容はすべて削除されます。それでも終了しますか？"
+msgstr ""
+"新しい文書を作成すると、未保存の変更は破棄されます。\n"
+"現在の文書を保存しますか?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Discard"
-msgstr ""
+msgstr "破棄"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:42
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:60
 #: crates/rnote-ui/src/dialogs/export.rs:32
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:29
 msgid "Close Tab"
-msgstr ""
+msgstr "タブを閉じる"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
+"このタブには未保存の変更内容が含まれています。\n"
+"保存しないと変更内容が完全に失われます。"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
-#, fuzzy
-#| msgid "New Window"
 msgid "Close Window"
-msgstr "新しいウィンドウ"
+msgstr "ウィンドウを閉じる"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:48
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
+"一部の開いているファイルに未保存の変更内容が含まれています。\n"
+"保存しないと変更内容が完全に失われます。"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Unsaved Documents"
-msgstr "選択範囲をSVGに保存"
+msgstr "未保存の文書"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:59
 msgid "Discard All"
-msgstr ""
+msgstr "すべて破棄"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:67
-#, fuzzy
-#| msgid "Workspace"
 msgid "Edit Workspace"
-msgstr "ワークスペース"
+msgstr "ワークスペースを編集"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:75
 #: crates/rnote-ui/data/ui/settingspanel.ui:234
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:39
 msgid "Apply"
-msgstr ""
+msgstr "適用"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:117
-#, fuzzy
 msgid "Workspace Name"
-msgstr "ワークスペース"
+msgstr "ワークスペース名"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:122
 msgid "Icon"
-msgstr ""
+msgstr "アイコン"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:123
 msgid "Change the workspace icon"
-msgstr ""
+msgstr "ワークスペースアイコンを変更します"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:143
-#: crates/rnote-ui/data/ui/settingspanel.ui:271
+#: crates/rnote-ui/data/ui/settingspanel.ui:286
 msgid "Color"
-msgstr ""
+msgstr "色"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:144
 msgid "Change the workspace color"
-msgstr ""
+msgstr "ワークスペースの色を変更します"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:158
 msgid "Directory"
-msgstr ""
+msgstr "ディレクトリ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:159
 msgid "Change the workspace directory"
-msgstr ""
+msgstr "ワークスペースのディレクトリを変更します"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: crates/rnote-ui/data/ui/dialogs/export.ui:284
 #: crates/rnote-ui/src/dialogs/export.rs:372
 #: crates/rnote-ui/src/dialogs/export.rs:409
 #: crates/rnote-ui/src/dialogs/export.rs:417
-#: crates/rnote-ui/src/dialogs/mod.rs:527
+#: crates/rnote-ui/src/dialogs/mod.rs:528
 msgid "- no directory selected -"
-msgstr ""
+msgstr "- ディレクトリ未選択 -"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:183
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Change the directory"
-msgstr "選択範囲をSVGに保存"
+msgstr "ディレクトリを変更"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
 #: crates/rnote-ui/src/dialogs/export.rs:268
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export Document"
-msgstr "選択範囲をSVGに保存"
+msgstr "文書をエクスポート"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
 #: crates/rnote-ui/data/ui/dialogs/export.ui:180
@@ -237,19 +227,17 @@ msgstr "選択範囲をSVGに保存"
 #: crates/rnote-ui/src/dialogs/export.rs:907
 #: crates/rnote-ui/src/dialogs/export.rs:955
 msgid "Export"
-msgstr ""
+msgstr "エクスポート"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:72
 #: crates/rnote-ui/data/ui/dialogs/export.ui:473
-#, fuzzy
-#| msgid "Selector"
 msgid "Export File"
-msgstr "選択"
+msgstr "エクスポート先ファイル"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:73
 #: crates/rnote-ui/data/ui/dialogs/export.ui:474
 msgid "Select the export file"
-msgstr ""
+msgstr "エクスポート先のファイルを選択します"
 
 #. force the user to pick another file
 #: crates/rnote-ui/data/ui/dialogs/export.ui:82
@@ -263,27 +251,25 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:697
 #: crates/rnote-ui/src/dialogs/export.rs:748
 msgid "- no file selected -"
-msgstr ""
+msgstr "- ファイル未選択 -"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:106
 #: crates/rnote-ui/data/ui/dialogs/export.ui:313
 #: crates/rnote-ui/data/ui/dialogs/export.ui:507
-#, fuzzy
-#| msgid "Selector"
 msgid "Export Preferences"
-msgstr "選択"
+msgstr "エクスポートの設定"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:110
 #: crates/rnote-ui/data/ui/dialogs/export.ui:317
 #: crates/rnote-ui/data/ui/dialogs/export.ui:511
 msgid "With Background"
-msgstr ""
+msgstr "背景を含める"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:111
 #: crates/rnote-ui/data/ui/dialogs/export.ui:318
 #: crates/rnote-ui/data/ui/dialogs/export.ui:512
 msgid "Set whether the background should be exported"
-msgstr ""
+msgstr "背景もエクスポートするかどうかを設定します"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:116
 #: crates/rnote-ui/data/ui/dialogs/export.ui:323
@@ -301,26 +287,24 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:329
 #: crates/rnote-ui/data/ui/dialogs/export.ui:523
 msgid "Optimize for Printing"
-msgstr ""
+msgstr "印刷用に最適化"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:123
 #: crates/rnote-ui/data/ui/dialogs/export.ui:330
 #: crates/rnote-ui/data/ui/dialogs/export.ui:524
 msgid "Set whether the content should be optimized for printing"
-msgstr ""
+msgstr "内容を印刷用に最適化するかどうかを設定します"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:128
 #: crates/rnote-ui/data/ui/dialogs/export.ui:335
 #: crates/rnote-ui/data/ui/dialogs/export.ui:529
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export Format"
-msgstr "選択範囲をSVGに保存"
+msgstr "エクスポートの形式"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:129
 #: crates/rnote-ui/data/ui/dialogs/export.ui:336
 msgid "The export format"
-msgstr ""
+msgstr "エクスポートの形式"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:340
@@ -329,22 +313,22 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:579
 #: crates/rnote-ui/src/dialogs/export.rs:866
 msgid "Svg"
-msgstr ""
+msgstr "Svg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:134
 #: crates/rnote-ui/src/dialogs/export.rs:283
 msgid "Pdf"
-msgstr ""
+msgstr "Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
 #: crates/rnote-ui/src/dialogs/export.rs:288
 msgid "Xopp"
-msgstr ""
+msgstr "Xopp"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:143
 #: crates/rnote-ui/data/ui/dialogs/export.ui:350
 msgid "Page Order"
-msgstr ""
+msgstr "ページ順"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:144
 #: crates/rnote-ui/data/ui/dialogs/export.ui:351
@@ -353,16 +337,19 @@ msgid ""
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
+"水平方向や垂直方向に広がるレイアウトの\n"
+"文書が、ページ単位で分割された時の\n"
+"ページの順番"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:150
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
 msgid "Horizontal First"
-msgstr ""
+msgstr "水平方向順"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:151
 #: crates/rnote-ui/data/ui/dialogs/export.ui:358
 msgid "Vertical First"
-msgstr ""
+msgstr "垂直方向順"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:172
 #: crates/rnote-ui/src/dialogs/export.rs:565
@@ -383,7 +370,7 @@ msgstr "選択範囲をSVGに保存"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:275
 msgid "Select the export directory"
-msgstr ""
+msgstr "エクスポート先のディレクトリを選択します"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
 #, fuzzy
@@ -398,14 +385,14 @@ msgstr "選択"
 #: crates/rnote-ui/src/dialogs/export.rs:584
 #: crates/rnote-ui/src/dialogs/export.rs:871
 msgid "Png"
-msgstr ""
+msgstr "Png"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:342
 #: crates/rnote-ui/data/ui/dialogs/export.ui:536
 #: crates/rnote-ui/src/dialogs/export.rs:590
 #: crates/rnote-ui/src/dialogs/export.rs:877
 msgid "Jpeg"
-msgstr ""
+msgstr "Jpeg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:366
 #: crates/rnote-ui/data/ui/dialogs/export.ui:544
@@ -424,57 +411,51 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:375
 #: crates/rnote-ui/data/ui/dialogs/export.ui:553
 msgid "Jpeg Quality"
-msgstr ""
+msgstr "Jpegの品質"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:376
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr ""
+msgstr "Jpeg画像の品質を設定します(1 - 100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:408
 #: crates/rnote-ui/src/dialogs/export.rs:854
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Export Selection"
-msgstr "選択範囲をSVGに保存"
+msgstr "選択範囲をエクスポート"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:530
 msgid "The export image format"
-msgstr ""
+msgstr "エクスポートする画像の形式"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:561
 msgid "Margin"
-msgstr ""
+msgstr "余白"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:562
 msgid "Set the margin around the selected area"
-msgstr ""
+msgstr "選択範囲の周囲に余白を設定します"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:7
-#, fuzzy
-#| msgid "Selector"
 msgid "Import Pdf"
-msgstr "選択"
+msgstr "PDFをインポート"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
 #: crates/rnote-ui/data/ui/dialogs/import.ui:204
 #: crates/rnote-ui/src/dialogs/import.rs:68
 msgid "Import"
-msgstr ""
+msgstr "インポート"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:61
 msgid "Info"
-msgstr ""
+msgstr "情報"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:79
-#, fuzzy
-#| msgid "Selector"
 msgid "Pdf Import Preferences"
-msgstr "選択"
+msgstr "PDFのインポート設定"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start Page"
-msgstr ""
+msgstr "開始ページ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:92
 #, fuzzy
@@ -483,7 +464,7 @@ msgstr "ページを追加"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
 msgid "Page Width (%)"
-msgstr ""
+msgstr "ページ幅(%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
 msgid "Set the width of imported Pdf's in percentage to the format width"
@@ -491,29 +472,28 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
 msgid "Page Spacing"
-msgstr ""
+msgstr "ページ間隔"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
 msgid "How Pdf pages are spaced"
-msgstr ""
+msgstr "PDFのページ間隔"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:114
 msgid "Continuous"
-msgstr ""
+msgstr "連続"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:115
-#, fuzzy
-#| msgid "Export document as PDF"
 msgid "One per Document Page"
-msgstr "選択範囲をPDFに保存"
+msgstr "文書1ページにつき1ページ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:123
 msgid "Pages Type"
-msgstr ""
+msgstr "ページ種類"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:124
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr ""
+"PDFをベクター画像とビットマップ画像のどちらでインポートするか設定します"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:136
 msgid "Vector"
@@ -524,72 +504,66 @@ msgid "Bitmap"
 msgstr "ビットマップ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Shaper"
 msgid "Page Borders"
-msgstr "図形"
+msgstr "ページの枠線"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:162
 msgid "Whether the pages have drawn borders"
-msgstr ""
+msgstr "ページの枠線を描画するかどうか"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:196
-#, fuzzy
-#| msgid "Selector"
 msgid "Import Xournal++ File"
-msgstr "選択"
+msgstr "Xournal++ファイルをインポート"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:235
 msgid "Xournal++ File Import Preferences"
-msgstr ""
+msgstr "Xournal++ファイルのインポート設定"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:239
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:240
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr ""
+msgstr "Xournal++ファイルのDPIを選択します"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
-#, fuzzy
-#| msgid "Brush"
 msgid "Brush Style"
-msgstr "ブラシ"
+msgstr "ブラシのスタイル"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:149
 msgid "Brush Configuration"
-msgstr ""
+msgstr "ブラシの設定"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:66
 msgid "Brush Styles"
-msgstr ""
+msgstr "ブラシのスタイル"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:95
 msgid "Marker"
-msgstr ""
+msgstr "マーカー"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:96
 msgid "Mark underneath other strokes"
-msgstr ""
+msgstr "ほかのストロークの下にマーカーを引きます"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:107
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:201
 msgid "Solid"
-msgstr ""
+msgstr "実線"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:108
 msgid "Draw solid color strokes"
-msgstr ""
+msgstr "色付きの実線を描きます"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:119
 msgid "Textured"
-msgstr ""
+msgstr "テクスチャ"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:120
 msgid "Draw textured strokes"
-msgstr ""
+msgstr "テクスチャのストロークを描きます"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:170
 msgid "Path Modelling"
@@ -741,85 +715,75 @@ msgstr "ツール"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:22
 msgid "Select With a Polygon"
-msgstr ""
+msgstr "投げ縄選択"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:32
 msgid "Select With a Rectangle"
-msgstr ""
+msgstr "矩形選択"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:42
 msgid "Select One by One"
-msgstr ""
+msgstr "1つずつ選択"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:52
 msgid "Select Intersecting Path"
-msgstr ""
+msgstr "交差するパスを選択"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
 msgid "Lock Aspectratio While Resizing the Selection"
-msgstr ""
+msgstr "選択範囲のリサイズ中はアスペクト比をロックする"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select All Strokes"
-msgstr ""
+msgstr "すべてのストロークを選択"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:94
 msgid "Deselect All Strokes"
-msgstr ""
+msgstr "すべてのストロークを選択解除"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 msgid "Invert Color Brightness of All Selected Strokes"
-msgstr ""
+msgstr "選択したすべてのストロークの明度を反転"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
-#: crates/rnote-ui/data/ui/shortcuts.ui:230
-#, fuzzy
-#| msgid "Duplicate selection"
+#: crates/rnote-ui/data/ui/shortcuts.ui:236
 msgid "Duplicate Selection"
 msgstr "選択範囲を複製"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:127
-#, fuzzy
-#| msgid "Delete selection"
 msgid "Delete Selection"
 msgstr "選択範囲を削除"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:19
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:248
-#, fuzzy
-#| msgid "Shaper"
 msgid "Shape Builders"
-msgstr "図形"
+msgstr "図形を作る"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:35
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:290
 msgid "Constraints"
-msgstr ""
+msgstr "正確な図形"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:64
-#, fuzzy
-#| msgid "Shaper"
 msgid "Shaper Style"
-msgstr "図形"
+msgstr "図形のスタイル"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:77
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
 msgid "Shape Configuration"
-msgstr ""
+msgstr "図形の設定"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:101
-#, fuzzy
-#| msgid "Shaper"
 msgid "Shaper Styles"
-msgstr "図形"
+msgstr "図形のスタイル"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:130
 msgid "Smooth"
-msgstr ""
+msgstr "滑らか"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
 msgid "Rough"
-msgstr ""
+msgstr "粗い"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:192
 msgid "Rough style"
@@ -850,7 +814,7 @@ msgid "Crosshatch"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:206
-#: crates/rnote-ui/data/ui/settingspanel.ui:300
+#: crates/rnote-ui/data/ui/settingspanel.ui:315
 msgid "Dots"
 msgstr ""
 
@@ -868,7 +832,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:319
 msgid "Enabled"
-msgstr ""
+msgstr "有効"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:320
 msgid ""
@@ -876,6 +840,9 @@ msgid ""
 "enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
+"Ctrlを押したままにすると、\n"
+"スイッチがオフ/オンの場合に一時的に\n"
+"正確な図形を有効/無効にできます"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:327
 msgid "1:1"
@@ -886,33 +853,29 @@ msgid "3:2"
 msgstr "3:2"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:337
-#, fuzzy
-#| msgid "Golden ratio (1:1.618)"
 msgid "Golden Ratio (1:1.618)"
 msgstr "黄金比 (1:1.618)"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:19
 msgid "Insert Vertical Space"
-msgstr ""
+msgstr "垂直方向の空白を挿入"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:29
-#: crates/rnote-ui/data/ui/shortcuts.ui:96
+#: crates/rnote-ui/data/ui/shortcuts.ui:108
 msgid "Move View"
-msgstr ""
+msgstr "ビューを移動"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:40
-#, fuzzy
-#| msgid "Zoom out"
 msgid "Zoom In/Out"
-msgstr "縮小"
+msgstr "拡大/縮小"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:43
 msgid "Pick And Insert Emoji"
-msgstr ""
+msgstr "絵文字を選択して挿入"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:68
 msgid "Reset Text Attributes"
-msgstr ""
+msgstr "テキストの書式をリセット"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:77
 msgid "Bold"
@@ -931,382 +894,322 @@ msgid "Strikethrough"
 msgstr "打ち消し線"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:126
-#, fuzzy
-#| msgid "Align left"
 msgid "Align Left"
 msgstr "左寄せ"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:133
-#, fuzzy
-#| msgid "Align center"
 msgid "Align Center"
 msgstr "中央寄せ"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:140
-#, fuzzy
-#| msgid "Align right"
 msgid "Align Right"
 msgstr "右寄せ"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:147
 msgid "Fill"
-msgstr ""
+msgstr "両端揃え"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:60
 msgid "Move Selected Workspace Up"
-msgstr ""
+msgstr "選択したワークスペースを上に移動"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:69
 msgid "Move Selected Workspace Down"
-msgstr ""
+msgstr "選択したワークスペースを下に移動"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:80
-#, fuzzy
-#| msgid "Workspace"
 msgid "Add Workspace"
-msgstr "ワークスペース"
+msgstr "ワークスペースを追加"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:89
 msgid "Remove Selected Workspace"
-msgstr ""
+msgstr "選択したワークスペースを削除"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:99
 msgid "Edit Selected Workspace"
-msgstr ""
+msgstr "選択したワークスペースを編集"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:24
 msgid "Co_lor Scheme"
-msgstr ""
+msgstr "カラースキーム(_L)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _System Colors"
-msgstr ""
+msgstr "システムの色を使う(_S)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:31
 msgid "Use _Light Colors"
-msgstr ""
+msgstr "明るい色を使う(_L)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:36
 msgid "Use _Dark Colors"
-msgstr ""
+msgstr "暗い色を使う(_D)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "Developer mode"
 msgid "De_veloper Mode"
-msgstr "開発者モード"
+msgstr "開発者モード(_V)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:47
-#, fuzzy
-#| msgid "Developer menu"
 msgid "Developer _Menu"
-msgstr "開発者メニュー"
+msgstr "開発者メニュー(_M)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:52
 msgid "Visual _Debugging"
-msgstr ""
+msgstr "ビジュアルデバッグ(_D)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:56
-#, fuzzy
-#| msgid "Selector"
 msgid "Export Engine _State"
-msgstr "選択"
+msgstr "エンジンの状態をエクスポート(_S)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:60
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Export Engine _Config"
-msgstr "選択範囲をSVGに保存"
+msgstr "エンジンの設定をエクスポート(_C)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:68
 msgid "_New"
-msgstr ""
+msgstr "新規(_N)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_Open"
-msgstr ""
+msgstr "開く(_O)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:76
-#, fuzzy
-#| msgid "Save as"
 msgid "_Save"
-msgstr "名前をつけて保存"
+msgstr "保存(_S)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:80
-#, fuzzy
-#| msgid "Save as"
 msgid "Save _As"
-msgstr "名前をつけて保存"
+msgstr "名前を付けて保存(_A)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:86
-#, fuzzy
-#| msgid "Print"
 msgid "_Print"
-msgstr "印刷"
+msgstr "印刷(_P)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgid "Selector"
 msgid "_Import File"
-msgstr "選択"
+msgstr "ファイルをインポート(_I)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:94
 msgid "_Clipboard"
-msgstr ""
+msgstr "クリップボード(_C)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy"
-msgstr ""
+msgstr "コピー(_C)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:100
 msgid "C_ut"
-msgstr ""
+msgstr "切り取り(_U)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste"
-msgstr ""
+msgstr "貼り付け(_P)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
-msgstr ""
+msgstr "エクスポート(_E)…"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:111
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export _Document"
-msgstr "選択範囲をSVGに保存"
+msgstr "文書をエクスポート(_D)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:115
-#, fuzzy
-#| msgid "Export document as PDF"
 msgid "Export Document _Pages"
-msgstr "選択範囲をPDFに保存"
+msgstr "文書をページ単位でエクスポート(_P)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:119
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Export _Selection"
-msgstr "選択範囲をSVGに保存"
+msgstr "選択範囲をエクスポート(_S)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:126
-#, fuzzy
-#| msgid "Settings"
 msgid "Se_ttings"
-msgstr "設定"
+msgstr "設定(_T)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:130
-#, fuzzy
-#| msgid "Keyboard shortcuts"
 msgid "_Keyboard Shortcuts"
-msgstr "キーボードショートカット"
+msgstr "キーボードショートカット(_K)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:134
 msgid "_Donate 💝"
-msgstr ""
+msgstr "寄付(_D) 💝"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:138
-#, fuzzy
-#| msgid "About Rnote"
 msgid "A_bout Rnote"
-msgstr "Rnoteについて"
+msgstr "Rnoteについて(_B)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:169
 msgid "Sidebar on the Left Side"
-msgstr ""
+msgstr "サイドバーを左側に配置"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:178
 msgid "Sidebar on the Right Side"
-msgstr ""
+msgstr "サイドバーを右側に配置"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:188
-#: crates/rnote-ui/data/ui/shortcuts.ui:44
+#: crates/rnote-ui/data/ui/shortcuts.ui:56
 msgid "Toggle Fullscreen"
-msgstr ""
+msgstr "全画面表示/解除"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:24
-msgid "_Document Layout"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:27
-msgid "_Fixed Size"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:32
-msgid "_Continuous Vertical"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:37
-msgid "_Semi Infinite"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:42
-msgid "_Infinite"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/canvasmenu.ui:49
 msgid "_Snap Positions"
-msgstr ""
+msgstr "位置をスナップ(_S)"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:54
+#: crates/rnote-ui/data/ui/canvasmenu.ui:29
 msgid "_Pen Sounds"
-msgstr ""
+msgstr "ペンの音(_P)"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:59
-#, fuzzy
-#| msgid "Return to the origin page"
+#: crates/rnote-ui/data/ui/canvasmenu.ui:34
 msgid "_Return to Origin Page"
-msgstr "最初のページに戻る"
+msgstr "最初のページに戻る(_R)"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:63
-#, fuzzy
-#| msgid "Export document as SVG"
+#: crates/rnote-ui/data/ui/canvasmenu.ui:38
 msgid "C_lear Document"
-msgstr "選択範囲をSVGに保存"
+msgstr "文書を消去(_L)"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:69
+#: crates/rnote-ui/data/ui/canvasmenu.ui:44
 msgid "Show _Format Borders"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:74
+#: crates/rnote-ui/data/ui/canvasmenu.ui:49
 msgid "Show _Origin Indicator"
-msgstr ""
+msgstr "原点を表示(_O)"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:79
+#: crates/rnote-ui/data/ui/canvasmenu.ui:54
 msgid "Draw With _Touch Input"
-msgstr ""
+msgstr "タッチ入力で描く(_T)"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:84
+#: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Block Pinch to _Zoom"
-msgstr ""
+msgstr "ピンチでの倍率変更を無効化(_Z)"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:115
-#: crates/rnote-ui/data/ui/shortcuts.ui:120
-#: crates/rnote-ui/data/ui/shortcuts.ui:126
+#: crates/rnote-ui/data/ui/canvasmenu.ui:90
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
+#: crates/rnote-ui/data/ui/shortcuts.ui:138
+#: crates/rnote-ui/data/ui/shortcuts.ui:144
 msgid "Zoom out"
 msgstr "縮小"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:124
-#, fuzzy
-#| msgid "Reset the zoom"
+#: crates/rnote-ui/data/ui/canvasmenu.ui:99
 msgid "Reset Zoom"
 msgstr "倍率をリセット"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:131
-#: crates/rnote-ui/data/ui/shortcuts.ui:102
-#: crates/rnote-ui/data/ui/shortcuts.ui:108
+#: crates/rnote-ui/data/ui/canvasmenu.ui:106
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
+#: crates/rnote-ui/data/ui/shortcuts.ui:120
+#: crates/rnote-ui/data/ui/shortcuts.ui:126
 msgid "Zoom in"
 msgstr "拡大"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:143
+#: crates/rnote-ui/data/ui/canvasmenu.ui:118
 msgid "Zoom to Page Width"
-msgstr ""
+msgstr "ページ幅に合わせる"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:158
+#: crates/rnote-ui/data/ui/canvasmenu.ui:133
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"ページを削除します。\n"
+"固定サイズの文書レイアウトの場合に利用可能です。"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:167
+#: crates/rnote-ui/data/ui/canvasmenu.ui:142
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"ページを追加します。\n"
+"固定サイズの文書レイアウトの場合に利用可能です。"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:176
+#: crates/rnote-ui/data/ui/canvasmenu.ui:151
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"コンテンツに合わせて文書をリサイズします。\n"
+"固定サイズの文書レイアウトの場合に利用可能です。"
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
-msgstr ""
+msgstr "ストロークの色"
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:26
 msgid "Fill Color"
-msgstr ""
+msgstr "塗りつぶしの色"
 
 #: crates/rnote-ui/data/ui/filerow.ui:61
 #: crates/rnote-ui/src/dialogs/import.rs:26
 msgid "Open"
-msgstr ""
+msgstr "開く"
 
 #: crates/rnote-ui/data/ui/filerow.ui:65
 msgid "Open in Default App"
-msgstr ""
+msgstr "デフォルトアプリで開く"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:72
 msgid "Rename"
-msgstr ""
+msgstr "名前を変更"
 
 #: crates/rnote-ui/data/ui/filerow.ui:73
-#, fuzzy
-#| msgid "Move into trash"
 msgid "Move to Trash"
-msgstr "ゴミ箱に移動する"
+msgstr "ゴミ箱に移動"
 
 #: crates/rnote-ui/data/ui/filerow.ui:77
-#, fuzzy
 msgid "Duplicate"
-msgstr "選択範囲を複製"
+msgstr "複製"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
 #: crates/rnote-ui/src/canvas/mod.rs:595
 msgid "Draft"
-msgstr ""
+msgstr "下書き"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
 msgid "Show/Hide Sidebar"
-msgstr ""
+msgstr "サイドバーを表示/非表示"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
+#: crates/rnote-ui/data/ui/shortcuts.ui:26
 msgid "New Tab"
-msgstr ""
+msgstr "新しいタブ"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:54
 msgid "Focus Mode"
-msgstr ""
+msgstr "集中モード"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:66
-#: crates/rnote-ui/data/ui/shortcuts.ui:161
-#, fuzzy
-#| msgid "Export document as SVG"
+#: crates/rnote-ui/data/ui/shortcuts.ui:167
 msgid "Save Document"
-msgstr "選択範囲をSVGに保存"
+msgstr "文書を保存"
 
 #: crates/rnote-ui/data/ui/overlays.ui:99
 msgid "Move _Left"
-msgstr ""
+msgstr "左に移動(_L)"
 
 #: crates/rnote-ui/data/ui/overlays.ui:103
 msgid "Move _Right"
-msgstr ""
+msgstr "右に移動(_R)"
 
 #: crates/rnote-ui/data/ui/overlays.ui:109
 msgid "_Close"
-msgstr ""
+msgstr "閉じる(_C)"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
-msgstr ""
+msgstr "一時的"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:12
 msgid "Permanent"
-msgstr ""
+msgstr "永続的"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
-msgstr ""
+msgstr "切り替え"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:41
 #: crates/rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
-msgstr ""
+msgstr "一般"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:44
 msgid "Autosave"
@@ -1314,29 +1217,27 @@ msgstr "自動保存"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:45
 msgid "Enable or disable autosave"
-msgstr ""
+msgstr "自動保存を有効/無効にします"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:50
-#, fuzzy
-#| msgid "Autosave interval (secs)"
 msgid "Autosave Interval (secs)"
 msgstr "自動保存の間隔 (秒)"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:51
 msgid "Set the autosave interval in seconds"
-msgstr ""
+msgstr "自動保存の間隔を秒単位で設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:58
 msgid "Show Scrollbars"
-msgstr ""
+msgstr "スクロールバーを表示"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:59
 msgid "Set whether the scrollbars on the canvas are shown"
-msgstr ""
+msgstr "キャンバス上のスクロールバーを表示するかどうかを設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:64
 msgid "Inertial Touch Scrolling"
-msgstr ""
+msgstr "慣性タッチスクロール"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:65
 msgid ""
@@ -1344,30 +1245,33 @@ msgid ""
 "An application restart is required when this option\n"
 "gets disabled."
 msgstr ""
+"キャンバス上のタッチスクロールを慣性にするか\n"
+"どうかを設定します。無効化時、アプリケーションの\n"
+"再起動が必要です。"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:72
 msgid "Regular Cursor"
-msgstr ""
+msgstr "通常のカーソル"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:73
 msgid "Set the regular cursor"
-msgstr ""
+msgstr "通常のカーソルを設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:95
 msgid "Show Drawing Cursor"
-msgstr ""
+msgstr "描画カーソルを表示"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:96
 msgid "Set whether the drawing cursor is visible"
-msgstr ""
+msgstr "描画カーソルを表示するかどうかを設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:102
 msgid "Drawing Cursor"
-msgstr ""
+msgstr "描画カーソル"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:103
 msgid "Set the drawing cursor"
-msgstr ""
+msgstr "描画カーソルを設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:128
 msgid "Page Format"
@@ -1395,27 +1299,27 @@ msgstr "A4"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:139
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:140
 msgid "A2"
-msgstr ""
+msgstr "A2"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:141
 msgid "US letter"
-msgstr ""
+msgstr "レター"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:142
 msgid "US legal"
-msgstr ""
+msgstr "リーガル"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:143
 msgid "Custom"
-msgstr ""
+msgstr "カスタム"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:151
 msgid "Orientation"
-msgstr ""
+msgstr "向き"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:152
 msgid "Set the format orientation"
@@ -1423,15 +1327,15 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:164
 msgid "Portrait"
-msgstr ""
+msgstr "縦"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:170
 msgid "Landscape"
-msgstr ""
+msgstr "横"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:180
 msgid "Width"
-msgstr ""
+msgstr "幅"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:181
 msgid "Set the format width"
@@ -1439,7 +1343,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:197
 msgid "Height"
-msgstr ""
+msgstr "高さ"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:198
 msgid "Set the format height"
@@ -1447,324 +1351,328 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:214
 msgid "Dpi"
-msgstr ""
+msgstr "DPI"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:215
 msgid "Set the Dpi (dots per inch). Defaults to 96."
-msgstr ""
+msgstr "DPI (dots per inch) を設定します。デフォルトは 96 です。"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:225
 msgid "Revert"
-msgstr ""
+msgstr "元に戻す"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:247
-#: crates/rnote-ui/data/ui/shortcuts.ui:146
-#: crates/rnote-ui/src/dialogs/mod.rs:630
-#, fuzzy
-#| msgid "Export document as SVG"
+#: crates/rnote-ui/data/ui/shortcuts.ui:158
+#: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "Document"
-msgstr "選択範囲をSVGに保存"
+msgstr "文書"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:250
+msgid "Document Layout"
+msgstr "文書レイアウト"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:254
+msgid "Fixed Size"
+msgstr "固定サイズ"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:255
+msgid "Continuous Vertical"
+msgstr "縦に連続"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:256
+msgid "Semi Infinite"
+msgstr "ほぼ無限"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:257
+msgid "Infinite"
+msgstr "無限"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:265
 msgid "Format Border Color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:251
+#: crates/rnote-ui/data/ui/settingspanel.ui:266
 msgid "Set the format border color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:272
+#: crates/rnote-ui/data/ui/settingspanel.ui:287
 msgid "Set the background color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:292
+#: crates/rnote-ui/data/ui/settingspanel.ui:307
 msgid "Pattern"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:293
+#: crates/rnote-ui/data/ui/settingspanel.ui:308
 msgid "Choose a background pattern"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:297
+#: crates/rnote-ui/data/ui/settingspanel.ui:312
 msgid "None"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:298
+#: crates/rnote-ui/data/ui/settingspanel.ui:313
 msgid "Lines"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:299
+#: crates/rnote-ui/data/ui/settingspanel.ui:314
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "Grid"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:301
+#: crates/rnote-ui/data/ui/settingspanel.ui:316
 msgid "Isometric Grid"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:302
+#: crates/rnote-ui/data/ui/settingspanel.ui:317
 msgid "Isometric Dots"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:310
+#: crates/rnote-ui/data/ui/settingspanel.ui:325
 msgid "Pattern Color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:311
+#: crates/rnote-ui/data/ui/settingspanel.ui:326
 msgid "Set the background pattern color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:331
+#: crates/rnote-ui/data/ui/settingspanel.ui:346
 msgid "Pattern Width"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:332
+#: crates/rnote-ui/data/ui/settingspanel.ui:347
 msgid "Set the background pattern width"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:348
+#: crates/rnote-ui/data/ui/settingspanel.ui:363
 msgid "Pattern Height"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:349
+#: crates/rnote-ui/data/ui/settingspanel.ui:364
 msgid "Set the background pattern height"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:365
+#: crates/rnote-ui/data/ui/settingspanel.ui:380
 msgid "Invert Color Brightness"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:366
+#: crates/rnote-ui/data/ui/settingspanel.ui:381
 msgid "Invert the brightness of all background pattern colors"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:370
+#: crates/rnote-ui/data/ui/settingspanel.ui:385
 msgid "Invert"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:380
+#: crates/rnote-ui/data/ui/settingspanel.ui:395
 msgid "Button Shortcuts"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:383
+#: crates/rnote-ui/data/ui/settingspanel.ui:398
 msgid "Stylus Primary Button Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:384
+#: crates/rnote-ui/data/ui/settingspanel.ui:399
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:396
+#: crates/rnote-ui/data/ui/settingspanel.ui:411
 msgid "Stylus Secondary Button Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:397
+#: crates/rnote-ui/data/ui/settingspanel.ui:412
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:409
+#: crates/rnote-ui/data/ui/settingspanel.ui:424
 msgid "Mouse Secondary Button Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:410
+#: crates/rnote-ui/data/ui/settingspanel.ui:425
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:422
+#: crates/rnote-ui/data/ui/settingspanel.ui:437
 msgid "Touch Two-Finger Long-Press Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:423
+#: crates/rnote-ui/data/ui/settingspanel.ui:438
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:435
+#: crates/rnote-ui/data/ui/settingspanel.ui:450
 msgid "Keyboard Ctrl-Space Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:436
+#: crates/rnote-ui/data/ui/settingspanel.ui:451
 msgid ""
 "Set the action for the keyboard\n"
 "Ctrl plus Space shortcut"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:448
+#: crates/rnote-ui/data/ui/settingspanel.ui:463
 msgid "Drawing Pad Button 1 Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:449
+#: crates/rnote-ui/data/ui/settingspanel.ui:464
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:461
+#: crates/rnote-ui/data/ui/settingspanel.ui:476
 msgid "Drawing Pad Button 2 Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:462
+#: crates/rnote-ui/data/ui/settingspanel.ui:477
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:474
+#: crates/rnote-ui/data/ui/settingspanel.ui:489
 msgid "Drawing Pad Button 3 Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:475
+#: crates/rnote-ui/data/ui/settingspanel.ui:490
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:487
+#: crates/rnote-ui/data/ui/settingspanel.ui:502
 msgid "Drawing Pad Button 4 Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:488
+#: crates/rnote-ui/data/ui/settingspanel.ui:503
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:14
-#, fuzzy
-#| msgid "Keyboard shortcuts"
 msgid "Show Keyboard Shortcuts"
-msgstr "キーボードショートカット"
-
-#: crates/rnote-ui/data/ui/shortcuts.ui:20
-#, fuzzy
-#| msgid "New Window"
-msgid "Close the Active Tab"
-msgstr "新しいウィンドウ"
-
-#: crates/rnote-ui/data/ui/shortcuts.ui:26
-msgid "Quit the Application"
-msgstr ""
+msgstr "キーボードショートカットを表示する"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:32
-msgid "Open the Canvas-Menu"
-msgstr ""
+msgid "Close the Active Tab"
+msgstr "表示中のタブを閉じる"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:38
-msgid "Open the App-Menu"
-msgstr ""
+msgid "Quit the Application"
+msgstr "アプリケーションを終了する"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:52
+#: crates/rnote-ui/data/ui/shortcuts.ui:44
+msgid "Open the Canvas-Menu"
+msgstr "キャンバスメニューを開く"
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:50
+msgid "Open the App-Menu"
+msgstr "アプリメニューを開く"
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:64
 msgid "Navigation"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:55
-msgid "Switch to the 'Brush'"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/shortcuts.ui:61
-msgid "Switch to the 'Shaper'"
-msgstr ""
-
 #: crates/rnote-ui/data/ui/shortcuts.ui:67
-msgid "Switch to the 'Typewriter'"
-msgstr ""
+msgid "Switch to the 'Brush'"
+msgstr "'ブラシ'に切り替える"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:73
-msgid "Switch to the 'Eraser'"
-msgstr ""
+msgid "Switch to the 'Shaper'"
+msgstr "'図形'に切り替える"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:79
-msgid "Switch to the 'Selector'"
-msgstr ""
+msgid "Switch to the 'Typewriter'"
+msgstr "'文字'に切り替える"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:85
-msgid "Switch to the 'Tools'"
-msgstr ""
+msgid "Switch to the 'Eraser'"
+msgstr "'消しゴム'に切り替える"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:93
-msgid "View"
-msgstr ""
+#: crates/rnote-ui/data/ui/shortcuts.ui:91
+msgid "Switch to the 'Selector'"
+msgstr "'選択'に切り替える"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:97
+msgid "Switch to the 'Tools'"
+msgstr "'ツール'に切り替える"
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:105
+msgid "View"
+msgstr "表示"
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:109
 msgid "Alt + Drag"
-msgstr ""
+msgstr "Alt + ドラッグ"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:138
-#, fuzzy
-#| msgid "Zoom out"
+#: crates/rnote-ui/data/ui/shortcuts.ui:150
 msgid "Zoom in/out"
-msgstr "縮小"
+msgstr "拡大/縮小"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:139
+#: crates/rnote-ui/data/ui/shortcuts.ui:151
 msgid "Alt + Shift + Drag"
-msgstr ""
+msgstr "Alt + Shift + ドラッグ"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:155
-#, fuzzy
-#| msgid "Export document as SVG"
+#: crates/rnote-ui/data/ui/shortcuts.ui:161
 msgid "Open Document"
-msgstr "選択範囲をSVGに保存"
-
-#: crates/rnote-ui/data/ui/shortcuts.ui:167
-#: crates/rnote-ui/src/dialogs/export.rs:30
-#, fuzzy
-#| msgid "Export document as SVG"
-msgid "Save Document As"
-msgstr "選択範囲をSVGに保存"
+msgstr "文書を開く"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:173
-msgid "Snap Positions"
-msgstr ""
+#: crates/rnote-ui/src/dialogs/export.rs:30
+msgid "Save Document As"
+msgstr "文書を別名で保存"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:185
+#: crates/rnote-ui/data/ui/shortcuts.ui:179
+msgid "Snap Positions"
+msgstr "位置をスナップ"
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Add Page (When in Fixed-Size Layout)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:191
+#: crates/rnote-ui/data/ui/shortcuts.ui:197
 msgid "Remove Last Page (When in Fixed-Size Layout)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:197
-#, fuzzy
-#| msgid "Export document as SVG"
-msgid "Print Document"
-msgstr "選択範囲をSVGに保存"
-
 #: crates/rnote-ui/data/ui/shortcuts.ui:203
-#: crates/rnote-ui/src/dialogs/import.rs:66
-#, fuzzy
-#| msgid "Selector"
-msgid "Import File"
-msgstr "選択"
+msgid "Print Document"
+msgstr "文書を印刷"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:209
-msgid "Drawing"
-msgstr ""
+#: crates/rnote-ui/src/dialogs/import.rs:66
+msgid "Import File"
+msgstr "ファイルをインポート"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:212
-msgid "Copy to Clipboard"
-msgstr ""
+#: crates/rnote-ui/data/ui/shortcuts.ui:215
+msgid "Drawing"
+msgstr "描画"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:218
-msgid "Cut to Clipboard"
-msgstr ""
+msgid "Copy to Clipboard"
+msgstr "クリップボードにコピー"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:224
-msgid "Paste Clipboard"
-msgstr ""
+msgid "Cut to Clipboard"
+msgstr "クリップボードに切り取り"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:236
+#: crates/rnote-ui/data/ui/shortcuts.ui:230
+msgid "Paste Clipboard"
+msgstr "クリップボードに貼り付け"
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:242
 msgid "Undo"
 msgstr "元に戻す"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:242
+#: crates/rnote-ui/data/ui/shortcuts.ui:248
 msgid "Redo"
 msgstr "やり直す"
 
@@ -1777,518 +1685,478 @@ msgid "Settings"
 msgstr "設定"
 
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:79
-#, fuzzy
 msgid "Page"
-msgstr "ページを追加"
+msgstr "ページ"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Move Directory up"
-msgstr "選択範囲をSVGに保存"
+msgstr "ディレクトリを上に移動"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:81
 msgid "Workspace Directory Actions"
-msgstr ""
+msgstr "ワークスペースディレクトリのアクション"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:163
 msgid "Create new Folder"
-msgstr ""
+msgstr "新しいフォルダーを作成"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:596
+#: crates/rnote-ui/src/appwindow/actions.rs:565
 #: crates/rnote-ui/src/appwindow/imp.rs:248
 #: crates/rnote-ui/src/dialogs/export.rs:70
-#: crates/rnote-ui/src/dialogs/mod.rs:126
-#: crates/rnote-ui/src/dialogs/mod.rs:257
-#: crates/rnote-ui/src/dialogs/mod.rs:411
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
+#: crates/rnote-ui/src/dialogs/mod.rs:127
+#: crates/rnote-ui/src/dialogs/mod.rs:258
+#: crates/rnote-ui/src/dialogs/mod.rs:412
 msgid "Saving document failed"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr "文書を保存できませんでした"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:659
+#: crates/rnote-ui/src/appwindow/actions.rs:628
 msgid "Printing document failed"
-msgstr ""
+msgstr "文書を印刷できませんでした"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:695
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
+#: crates/rnote-ui/src/appwindow/actions.rs:664
 msgid "Exporting selection failed, nothing selected"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr "選択範囲をエクスポートできませんでした: 選択範囲がありません"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
 msgid "Button 1"
-msgstr ""
+msgstr "ボタン 1"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:275
 msgid "Button 2"
-msgstr ""
+msgstr "ボタン 2"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:282
 msgid "Button 3"
-msgstr ""
+msgstr "ボタン 3"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:289
 msgid "Button 4"
-msgstr ""
+msgstr "ボタン 4"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:126
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
 msgstr ""
+"設定スキーマがインストールされていません。アプリの設定の読み込みと保存ができ"
+"ません。"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:458
-#, fuzzy
-#| msgid "Opening bitmap image file failed."
 msgid "Opening file failed"
-msgstr "ビットマップ画像の読み込みに失敗しました。"
+msgstr "ファイルを開けませんでした"
 
-#: crates/rnote-ui/src/canvas/mod.rs:867 crates/rnote-ui/src/dialogs/mod.rs:204
-#: crates/rnote-ui/src/dialogs/mod.rs:341
+#: crates/rnote-ui/src/canvas/mod.rs:867 crates/rnote-ui/src/dialogs/mod.rs:205
+#: crates/rnote-ui/src/dialogs/mod.rs:342
 msgid "- invalid file name -"
-msgstr ""
+msgstr "- 無効なファイル名 -"
 
 #: crates/rnote-ui/src/canvas/mod.rs:880
 msgid "- invalid folder path -"
-msgstr ""
+msgstr "- 無効なフォルダーパス -"
 
 #: crates/rnote-ui/src/canvas/mod.rs:922
 msgid "Opened file was modified on disk"
-msgstr ""
+msgstr "開いているファイルがディスク上で変更されました"
 
 #: crates/rnote-ui/src/canvas/mod.rs:923
 msgid "Reload"
-msgstr ""
+msgstr "再読み込み"
 
 #: crates/rnote-ui/src/canvas/mod.rs:930
 msgid "Reloading .rnote file from disk failed"
-msgstr ""
+msgstr "ディスクから.rnoteファイルを再読み込みできませんでした"
 
 #: crates/rnote-ui/src/canvas/mod.rs:994
 msgid "Opened file was renamed on disk"
-msgstr ""
+msgstr "開いているファイルの名前がディスク上で変更されました"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1007
 msgid "Opened file was moved or deleted on disk"
-msgstr ""
+msgstr "開いているファイルがディスク上で移動または削除されました"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1139
-#, fuzzy
-#| msgid "Opening bitmap image file failed."
 msgid "Inserting file failed"
-msgstr "ビットマップ画像の読み込みに失敗しました。"
+msgstr "ファイルを挿入できませんでした"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1149
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
 msgid "Inserting text failed"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr "テキストを挿入できませんでした"
 
 #: crates/rnote-ui/src/dialogs/export.rs:27
 #: crates/rnote-ui/src/dialogs/import.rs:21
 msgid ".rnote"
-msgstr ""
+msgstr ".rnote"
 
 #: crates/rnote-ui/src/dialogs/export.rs:55
-#, fuzzy
-#| msgid "Exported document as .xopp successfully."
 msgid "Saved document successfully"
-msgstr ".xoppに保存しました。"
+msgstr "文書を保存しました"
 
 #: crates/rnote-ui/src/dialogs/export.rs:226
 #: crates/rnote-ui/src/dialogs/export.rs:239
 #: crates/rnote-ui/src/dialogs/export.rs:536
 #: crates/rnote-ui/src/dialogs/export.rs:804
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
 msgid "Exporting document failed"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr "文書をエクスポートできませんでした"
 
 #: crates/rnote-ui/src/dialogs/export.rs:230
-#, fuzzy
-#| msgid "Exported document as .xopp successfully."
 msgid "Exported document successfully"
-msgstr ".xoppに保存しました。"
+msgstr "文書をエクスポートしました"
 
 #: crates/rnote-ui/src/dialogs/export.rs:231
 #: crates/rnote-ui/src/dialogs/export.rs:532
 #: crates/rnote-ui/src/dialogs/export.rs:796
 msgid "View in file manager"
-msgstr ""
+msgstr "ファイルマネージャーで表示"
 
 #: crates/rnote-ui/src/dialogs/export.rs:245
 #: crates/rnote-ui/src/dialogs/export.rs:542
 #: crates/rnote-ui/src/dialogs/export.rs:810
 msgid "Failed to open the file in the file manager"
-msgstr ""
+msgstr "ファイルをファイルマネージャーで表示できませんでした"
 
 #: crates/rnote-ui/src/dialogs/export.rs:255
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
 msgid "Exporting document failed, no file selected"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr "文書をエクスポートできませんでした: ファイルが未選択です"
 
 #: crates/rnote-ui/src/dialogs/export.rs:270
 #: crates/rnote-ui/src/dialogs/export.rs:567
 #: crates/rnote-ui/src/dialogs/export.rs:856
-#: crates/rnote-ui/src/dialogs/mod.rs:509
+#: crates/rnote-ui/src/dialogs/mod.rs:510
 msgid "Select"
-msgstr ""
+msgstr "選択"
 
 #: crates/rnote-ui/src/dialogs/export.rs:527
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
 msgid "Exporting document pages failed"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr "文書をページ単位でエクスポートできませんでした"
 
 #: crates/rnote-ui/src/dialogs/export.rs:531
-#, fuzzy
-#| msgid "Exported document as .xopp successfully."
 msgid "Exported document pages successfully"
-msgstr ".xoppに保存しました。"
+msgstr "文書をページ単位でエクスポートしました"
 
 #: crates/rnote-ui/src/dialogs/export.rs:551
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
 msgid "Exporting document pages failed, no directory selected"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr ""
+"文書をページ単位でエクスポートできませんでした: ディレクトリが未選択です"
 
 #: crates/rnote-ui/src/dialogs/export.rs:781
-#, fuzzy
-#| msgid "Exporting document as .xopp failed."
 msgid "Exporting selection failed, no file selected"
-msgstr ".xoppへの保存に失敗しました。"
+msgstr "選択範囲をエクスポートできませんでした: ファイルが未選択です"
 
 #: crates/rnote-ui/src/dialogs/export.rs:791
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Exporting selection failed"
-msgstr "選択範囲をSVGに保存"
+msgstr "選択範囲をエクスポートできませんでした"
 
 #: crates/rnote-ui/src/dialogs/export.rs:795
-#, fuzzy
-#| msgid "Exported document as .xopp successfully."
 msgid "Exported selection successfully"
-msgstr ".xoppに保存しました。"
+msgstr "選択範囲をエクスポートしました"
 
 #: crates/rnote-ui/src/dialogs/export.rs:897
 #: crates/rnote-ui/src/dialogs/export.rs:945
 msgid "Json"
-msgstr ""
+msgstr "Json"
 
 #: crates/rnote-ui/src/dialogs/export.rs:905
-#, fuzzy
-#| msgid "Selector"
 msgid "Export Engine State"
-msgstr "選択"
+msgstr "エンジンの状態をエクスポート"
 
 #: crates/rnote-ui/src/dialogs/export.rs:923
-#, fuzzy
-#| msgid "Selector"
 msgid "Exporting engine state failed"
-msgstr "選択"
+msgstr "エンジンの状態をエクスポートできませんでした"
 
 #: crates/rnote-ui/src/dialogs/export.rs:927
-#, fuzzy
-#| msgid "Exported document as .xopp successfully."
 msgid "Exported engine state successfully"
-msgstr ".xoppに保存しました。"
+msgstr "エンジンの状態をエクスポートしました"
 
 #: crates/rnote-ui/src/dialogs/export.rs:953
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Export Engine Config"
-msgstr "選択範囲をSVGに保存"
+msgstr "エンジンの設定をエクスポート"
 
 #: crates/rnote-ui/src/dialogs/export.rs:971
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Exporting engine config failed"
-msgstr "選択範囲をSVGに保存"
+msgstr "エンジンの設定をエクスポートできませんでした"
 
 #: crates/rnote-ui/src/dialogs/export.rs:975
-#, fuzzy
-#| msgid "Exported document as .xopp successfully."
 msgid "Exported engine config successfully"
-msgstr ".xoppに保存しました。"
+msgstr "エンジンの設定をエクスポートしました"
 
 #: crates/rnote-ui/src/dialogs/import.rs:24
 msgid "Open File"
-msgstr ""
+msgstr "ファイルを開く"
 
 #: crates/rnote-ui/src/dialogs/import.rs:63
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr ""
+msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:192
 msgid "- no file name -"
-msgstr ""
+msgstr "- ファイル名なし -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:197
 msgid "- no title -"
-msgstr ""
+msgstr "- タイトルなし -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:200
 msgid "- no author -"
-msgstr ""
+msgstr "- 作者なし -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:204
 msgid "- no date -"
-msgstr ""
+msgstr "- 日付なし -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:211
 msgid "File name:"
-msgstr ""
+msgstr "ファイル名:"
 
 #: crates/rnote-ui/src/dialogs/import.rs:215
 msgid "Title:"
-msgstr ""
+msgstr "タイトル:"
 
 #: crates/rnote-ui/src/dialogs/import.rs:219
 msgid "Author:"
-msgstr ""
+msgstr "作者:"
 
 #: crates/rnote-ui/src/dialogs/import.rs:223
 msgid "Modification date:"
-msgstr ""
+msgstr "修正日:"
 
 #: crates/rnote-ui/src/dialogs/import.rs:227
 msgid "Pages:"
-msgstr ""
+msgstr "ページ数:"
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: crates/rnote-ui/src/dialogs/mod.rs:47
 msgid "translator-credits"
-msgstr "Seio Inoue <sei0okun@gmail.com>"
-
-#: crates/rnote-ui/src/dialogs/mod.rs:211
-#: crates/rnote-ui/src/dialogs/mod.rs:348
-msgid "- invalid save folder name -"
 msgstr ""
+"Seio Inoue <sei0okun@gmail.com>\n"
+"Ryo Nakano<ryonakaknock3@gmail.com>"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:227
-#: crates/rnote-ui/src/dialogs/mod.rs:363
+#: crates/rnote-ui/src/dialogs/mod.rs:212
+#: crates/rnote-ui/src/dialogs/mod.rs:349
+msgid "- invalid save folder name -"
+msgstr "- 無効な保存フォルダー名 -"
+
+#: crates/rnote-ui/src/dialogs/mod.rs:228
+#: crates/rnote-ui/src/dialogs/mod.rs:364
 msgid "The changes will be saved"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:232
-#: crates/rnote-ui/src/dialogs/mod.rs:368
+#: crates/rnote-ui/src/dialogs/mod.rs:233
+#: crates/rnote-ui/src/dialogs/mod.rs:369
 msgid "A new file will be created"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:507
+#: crates/rnote-ui/src/dialogs/mod.rs:508
 #, fuzzy
 #| msgid "Export selection as SVG"
 msgid "Change Workspace Directory"
 msgstr "選択範囲をSVGに保存"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:617
+#: crates/rnote-ui/src/dialogs/mod.rs:618
 msgid "Band-Aid"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:618
+#: crates/rnote-ui/src/dialogs/mod.rs:619
 msgid "Bank"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:619
+#: crates/rnote-ui/src/dialogs/mod.rs:620
 msgid "Bookmark"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:620
+#: crates/rnote-ui/src/dialogs/mod.rs:621
 msgid "Book"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:621
+#: crates/rnote-ui/src/dialogs/mod.rs:622
 msgid "Bread"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:622
+#: crates/rnote-ui/src/dialogs/mod.rs:623
 msgid "Calendar"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:623
+#: crates/rnote-ui/src/dialogs/mod.rs:624
 msgid "Camera"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:624
+#: crates/rnote-ui/src/dialogs/mod.rs:625
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:625
+#: crates/rnote-ui/src/dialogs/mod.rs:626
 msgid "Clock"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:626
+#: crates/rnote-ui/src/dialogs/mod.rs:627
 msgid "Code"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:627
+#: crates/rnote-ui/src/dialogs/mod.rs:628
 msgid "Compose"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:628
+#: crates/rnote-ui/src/dialogs/mod.rs:629
 msgctxt "as in plant"
 msgid "Crop"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:629
+#: crates/rnote-ui/src/dialogs/mod.rs:630
 msgid "Dictionary"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:631
+#: crates/rnote-ui/src/dialogs/mod.rs:632
 msgid "Drinks"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:632
+#: crates/rnote-ui/src/dialogs/mod.rs:633
 msgid "Flag"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:633
+#: crates/rnote-ui/src/dialogs/mod.rs:634
 msgid "Folder"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:634
+#: crates/rnote-ui/src/dialogs/mod.rs:635
 msgid "Footprints"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:635
+#: crates/rnote-ui/src/dialogs/mod.rs:636
 msgid "Gamepad"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:636
+#: crates/rnote-ui/src/dialogs/mod.rs:637
 msgid "Gear"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:637
+#: crates/rnote-ui/src/dialogs/mod.rs:638
 msgid "Globe"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:638
+#: crates/rnote-ui/src/dialogs/mod.rs:639
 msgid "Hammer"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:639
+#: crates/rnote-ui/src/dialogs/mod.rs:640
 msgid "Heart"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:640
+#: crates/rnote-ui/src/dialogs/mod.rs:641
 msgid "Hourglass"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:641
+#: crates/rnote-ui/src/dialogs/mod.rs:642
 msgid "Key"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:642
+#: crates/rnote-ui/src/dialogs/mod.rs:643
 msgid "Language"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:643
+#: crates/rnote-ui/src/dialogs/mod.rs:644
 msgid "Library"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:644
+#: crates/rnote-ui/src/dialogs/mod.rs:645
 msgid "Lightbulb"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:645
+#: crates/rnote-ui/src/dialogs/mod.rs:646
 msgid "Mathematics"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:646
+#: crates/rnote-ui/src/dialogs/mod.rs:647
 #, fuzzy
 #| msgid "Settings"
 msgid "Meeting"
 msgstr "設定"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:647
+#: crates/rnote-ui/src/dialogs/mod.rs:648
 msgid "Money"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:648
+#: crates/rnote-ui/src/dialogs/mod.rs:649
 msgid "Musical Note"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:649
+#: crates/rnote-ui/src/dialogs/mod.rs:650
 msgid "Nature"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:650
+#: crates/rnote-ui/src/dialogs/mod.rs:651
 msgid "Open Book"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:651
+#: crates/rnote-ui/src/dialogs/mod.rs:652
 msgid "Paintbrush"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:652
+#: crates/rnote-ui/src/dialogs/mod.rs:653
 msgid "Pencil and Paper"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:653
+#: crates/rnote-ui/src/dialogs/mod.rs:654
 msgid "People"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:654
+#: crates/rnote-ui/src/dialogs/mod.rs:655
 msgid "Person"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:655
+#: crates/rnote-ui/src/dialogs/mod.rs:656
 #, fuzzy
 #| msgid "Vector"
 msgid "Projector"
 msgstr "ベクター"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:656
+#: crates/rnote-ui/src/dialogs/mod.rs:657
 msgid "Science"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:657
+#: crates/rnote-ui/src/dialogs/mod.rs:658
 msgid "Scratchpad"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:658
+#: crates/rnote-ui/src/dialogs/mod.rs:659
 #, fuzzy
 #| msgid "Shaper"
 msgid "Shapes"
 msgstr "図形"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:659
+#: crates/rnote-ui/src/dialogs/mod.rs:660
 msgid "Shopping"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:660
+#: crates/rnote-ui/src/dialogs/mod.rs:661
 msgid "Speech Bubble"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:661
+#: crates/rnote-ui/src/dialogs/mod.rs:662
 msgid "Speedometer"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:662
+#: crates/rnote-ui/src/dialogs/mod.rs:663
 msgid "Star"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:664
+#: crates/rnote-ui/src/dialogs/mod.rs:665
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:666
+#: crates/rnote-ui/src/dialogs/mod.rs:667
 msgid "Text"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:667
+#: crates/rnote-ui/src/dialogs/mod.rs:668
 msgid "Travel"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:668
+#: crates/rnote-ui/src/dialogs/mod.rs:669
 msgid "Weather"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:669
+#: crates/rnote-ui/src/dialogs/mod.rs:670
 msgid "Weight"
 msgstr ""
 
@@ -2320,7 +2188,7 @@ msgstr ""
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:428
 msgid "Rectangle"
-msgstr "長方形"
+msgstr "矩形"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
 msgid "2D coordinate system"
@@ -2358,96 +2226,96 @@ msgstr ""
 msgid "Polygon"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:536
+#: crates/rnote-ui/src/settingspanel/mod.rs:551
 msgid "Application restart is required"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:831
+#: crates/rnote-ui/src/settingspanel/mod.rs:864
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:832
+#: crates/rnote-ui/src/settingspanel/mod.rs:865
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:833
+#: crates/rnote-ui/src/settingspanel/mod.rs:866
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:834
+#: crates/rnote-ui/src/settingspanel/mod.rs:867
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:835
+#: crates/rnote-ui/src/settingspanel/mod.rs:868
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:836
+#: crates/rnote-ui/src/settingspanel/mod.rs:869
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:837
+#: crates/rnote-ui/src/settingspanel/mod.rs:870
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:838
+#: crates/rnote-ui/src/settingspanel/mod.rs:871
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:839
+#: crates/rnote-ui/src/settingspanel/mod.rs:872
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:840
+#: crates/rnote-ui/src/settingspanel/mod.rs:873
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:841
+#: crates/rnote-ui/src/settingspanel/mod.rs:874
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:842
+#: crates/rnote-ui/src/settingspanel/mod.rs:875
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:843
+#: crates/rnote-ui/src/settingspanel/mod.rs:876
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:844
+#: crates/rnote-ui/src/settingspanel/mod.rs:877
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:845
+#: crates/rnote-ui/src/settingspanel/mod.rs:878
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:846
+#: crates/rnote-ui/src/settingspanel/mod.rs:879
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:847
+#: crates/rnote-ui/src/settingspanel/mod.rs:880
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:848
+#: crates/rnote-ui/src/settingspanel/mod.rs:881
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr ""

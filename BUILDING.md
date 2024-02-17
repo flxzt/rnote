@@ -103,8 +103,15 @@ If a native build on the host is wanted, meson can be called directly.
 Install all needed dependencies and build tools, e.g. for Fedora:
 
 ```bash
-sudo dnf install gcc gcc-c++ clang clang-devel python3 make cmake meson git kernel-devel gtk4-devel libadwaita-devel \
-poppler-glib-devel poppler-data alsa-lib-devel
+sudo dnf install gcc gcc-c++ clang clang-devel python3 make cmake meson git appstream-util gettext desktop-file-utils \
+shared-mime-info kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
+```
+
+For debian based distros:
+
+```bash
+sudo apt install build-essential clang libclang-dev python3 make cmake meson git appstream-util gettext \
+desktop-file-utils shared-mime-info libgtk-4-dev libadwaita-1-dev libpoppler-glib-dev libasound2-dev
 ```
 
 Also make sure `rustc` and `cargo` are installed ( see [https://www.rust-lang.org/](https://www.rust-lang.org/) ).

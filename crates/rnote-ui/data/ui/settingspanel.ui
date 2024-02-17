@@ -246,6 +246,21 @@ gets disabled.</property>
                   <object class="AdwPreferencesGroup">
                     <property name="title" translatable="yes">Document</property>
                     <child>
+                      <object class="AdwComboRow" id="doc_document_layout_row">
+                        <property name="title" translatable="yes">Document Layout</property>
+                        <property name="model">
+                          <object class="GtkStringList">
+                            <items>
+                              <item translatable="yes">Fixed Size</item>
+                              <item translatable="yes">Continuous Vertical</item>
+                              <item translatable="yes">Semi Infinite</item>
+                              <item translatable="yes">Infinite</item>
+                            </items>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="AdwActionRow" id="doc_format_border_color_row">
                         <property name="title" translatable="yes">Format Border Color</property>
                         <property name="subtitle" translatable="yes">Set the format border color</property>

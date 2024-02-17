@@ -1,14 +1,7 @@
 // Imports
 use crate::{workspacebrowser::widgethelper, RnWorkspaceBrowser};
 use gettextrs::gettext;
-use gtk4::{
-    gio, glib,
-    glib::clone,
-    pango,
-    prelude::*,
-    traits::{BoxExt, ButtonExt, EditableExt, PopoverExt, WidgetExt},
-    Align, Button, Entry, Label, Popover,
-};
+use gtk4::{gio, glib, glib::clone, pango, prelude::*, Align, Button, Entry, Label, Popover};
 use std::path::PathBuf;
 
 /// Create a new `create_folder` action.

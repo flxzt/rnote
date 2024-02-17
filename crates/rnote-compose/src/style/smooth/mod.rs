@@ -8,12 +8,9 @@ pub use smoothoptions::SmoothOptions;
 use super::Composer;
 use crate::ext::Vector2Ext;
 use crate::penpath::{self, Segment};
-use crate::shapes::Line;
-use crate::shapes::QuadraticBezier;
-use crate::shapes::Rectangle;
-use crate::shapes::Shapeable;
-use crate::shapes::{Arrow, CubicBezier};
-use crate::shapes::{Ellipse, Polyline};
+use crate::shapes::{
+    Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
+};
 use crate::PenPath;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -176,6 +173,42 @@ impl Composer<SmoothOptions> for Polyline {
     }
 }
 
+impl Composer<SmoothOptions> for Polygon {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
+        self.bounds().loosened(options.stroke_width * 0.5)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        let Some(color) = options.stroke_color else {
+            return;
+        };
+        let n_points = self.path.len();
+        let single_pos = self.path.iter().all(|p| *p == self.start);
+
+        // Single element/position polylines need special treatment to be rendered
+        if n_points == 0 || single_pos {
+            cx.fill(
+                kurbo::Circle::new(self.start.to_kurbo_point(), options.stroke_width),
+                &Into::<piet::Color>::into(color),
+            );
+        } else {
+            let outline_path = self.outline_path();
+            if let Some(fill_color) = options.fill_color {
+                cx.fill(&outline_path, &Into::<piet::Color>::into(fill_color));
+            }
+
+            cx.stroke_styled(
+                &outline_path,
+                &Into::<piet::Color>::into(color),
+                options.stroke_width,
+                &piet::StrokeStyle::default()
+                    .line_cap(piet::LineCap::Butt)
+                    .line_join(piet::LineJoin::Bevel),
+            );
+        }
+    }
+}
+
 impl Composer<SmoothOptions> for PenPath {
     fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
@@ -310,6 +343,7 @@ impl Composer<SmoothOptions> for crate::Shape {
             crate::Shape::QuadraticBezier(quadbez) => quadbez.composed_bounds(options),
             crate::Shape::CubicBezier(cubbez) => cubbez.composed_bounds(options),
             crate::Shape::Polyline(polyline) => polyline.composed_bounds(options),
+            crate::Shape::Polygon(polygon) => polygon.composed_bounds(options),
         }
     }
 
@@ -322,6 +356,7 @@ impl Composer<SmoothOptions> for crate::Shape {
             crate::Shape::QuadraticBezier(quadbez) => quadbez.draw_composed(cx, options),
             crate::Shape::CubicBezier(cubbez) => cubbez.draw_composed(cx, options),
             crate::Shape::Polyline(polyline) => polyline.draw_composed(cx, options),
+            crate::Shape::Polygon(polygon) => polygon.draw_composed(cx, options),
         }
     }
 }

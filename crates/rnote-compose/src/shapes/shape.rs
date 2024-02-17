@@ -1,5 +1,7 @@
 // Imports
-use super::{Arrow, CubicBezier, Ellipse, Line, Polyline, QuadraticBezier, Rectangle, Shapeable};
+use super::{
+    Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
+};
 use crate::transform::Transformable;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -8,27 +10,30 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "shape")]
 pub enum Shape {
-    #[serde(rename = "line")]
     /// A line shape.
+    #[serde(rename = "line")]
     Line(Line),
-    #[serde(rename = "arrow")]
     /// An arrow shape.
+    #[serde(rename = "arrow")]
     Arrow(Arrow),
-    #[serde(rename = "rect")]
     /// A rectangle shape.
+    #[serde(rename = "rect")]
     Rectangle(Rectangle),
-    #[serde(rename = "ellipse")]
     /// An ellipse shape.
+    #[serde(rename = "ellipse")]
     Ellipse(Ellipse),
-    #[serde(rename = "quadbez")]
     /// A quadratic bezier curve shape.
+    #[serde(rename = "quadbez")]
     QuadraticBezier(QuadraticBezier),
-    #[serde(rename = "cubbez")]
     /// A cubic bezier curve shape.
+    #[serde(rename = "cubbez")]
     CubicBezier(CubicBezier),
-    #[serde(rename = "polyline")]
     /// A polyline shape.
+    #[serde(rename = "polyline")]
     Polyline(Polyline),
+    /// A polygon shape.
+    #[serde(rename = "polygon")]
+    Polygon(Polygon),
 }
 
 impl Default for Shape {
@@ -61,6 +66,9 @@ impl Transformable for Shape {
             Self::Polyline(polyline) => {
                 polyline.translate(offset);
             }
+            Self::Polygon(polygon) => {
+                polygon.translate(offset);
+            }
         }
     }
 
@@ -86,6 +94,9 @@ impl Transformable for Shape {
             }
             Self::Polyline(polyline) => {
                 polyline.rotate(angle, center);
+            }
+            Self::Polygon(polygon) => {
+                polygon.rotate(angle, center);
             }
         }
     }
@@ -113,6 +124,9 @@ impl Transformable for Shape {
             Self::Polyline(polyline) => {
                 polyline.scale(scale);
             }
+            Self::Polygon(polygon) => {
+                polygon.scale(scale);
+            }
         }
     }
 }
@@ -127,6 +141,7 @@ impl Shapeable for Shape {
             Self::QuadraticBezier(quadbez) => quadbez.bounds(),
             Self::CubicBezier(cubbez) => cubbez.bounds(),
             Self::Polyline(polyline) => polyline.bounds(),
+            Self::Polygon(polygon) => polygon.bounds(),
         }
     }
 
@@ -139,6 +154,7 @@ impl Shapeable for Shape {
             Self::QuadraticBezier(quadbez) => quadbez.hitboxes(),
             Self::CubicBezier(cubbez) => cubbez.hitboxes(),
             Self::Polyline(polyline) => polyline.hitboxes(),
+            Self::Polygon(polygon) => polygon.hitboxes(),
         }
     }
 
@@ -151,6 +167,7 @@ impl Shapeable for Shape {
             Self::QuadraticBezier(quadbez) => quadbez.outline_path(),
             Self::CubicBezier(cubbez) => cubbez.outline_path(),
             Self::Polyline(polyline) => polyline.outline_path(),
+            Self::Polygon(polygon) => polygon.outline_path(),
         }
     }
 }

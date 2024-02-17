@@ -753,18 +753,18 @@ impl Engine {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Vec<u8>>>>();
         let doc_pages_export_prefs =
             doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
-        let pages_content = self.extract_pages_content(doc_pages_export_prefs.page_order);
+        let pages_contents = self.extract_pages_content(doc_pages_export_prefs.page_order);
 
         rayon::spawn(move || {
             let result = || -> Result<Vec<Vec<u8>>, anyhow::Error> {
-                let bitmapimage_format = match doc_pages_export_prefs.export_format {
+                let image_format = match doc_pages_export_prefs.export_format {
                     DocPagesExportFormat::Svg => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
                     DocPagesExportFormat::Png => image::ImageOutputFormat::Png,
                     DocPagesExportFormat::Jpeg => {
                         image::ImageOutputFormat::Jpeg(doc_pages_export_prefs.jpeg_quality)
                     }
                 };
-                pages_content
+                pages_contents
                     .into_par_iter()
                     .enumerate()
                     .map(|(i, page_content)| {
@@ -779,7 +779,7 @@ impl Engine {
                                 "Generating Svg for page {i} failed, returned None."
                             ))?
                             .gen_image(doc_pages_export_prefs.bitmap_scalefactor)?
-                            .into_encoded_bytes(bitmapimage_format.clone())
+                            .into_encoded_bytes(image_format.clone())
                     })
                     .collect()
             };
@@ -818,14 +818,14 @@ impl Engine {
             oneshot::channel::<anyhow::Result<Option<Vec<u8>>>>();
         let selection_export_prefs =
             selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
-        let selection_content = self.extract_selection_content();
+        let content = self.extract_selection_content();
 
         rayon::spawn(move || {
             let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
-                let Some(selection_content) = selection_content else {
+                let Some(content) = content else {
                     return Ok(None);
                 };
-                let Some(selection_svg) = selection_content.gen_svg(
+                let Some(svg) = content.gen_svg(
                     selection_export_prefs.with_background,
                     selection_export_prefs.with_pattern,
                     selection_export_prefs.optimize_printing,
@@ -838,9 +838,9 @@ impl Engine {
                 Ok(Some(
                     rnote_compose::utils::add_xml_header(
                         rnote_compose::utils::wrap_svg_root(
-                            selection_svg.svg_data.as_str(),
-                            Some(selection_svg.bounds),
-                            Some(selection_svg.bounds),
+                            svg.svg_data.as_str(),
+                            Some(svg.bounds),
+                            Some(svg.bounds),
                             false,
                         )
                         .as_str(),
@@ -867,14 +867,14 @@ impl Engine {
             oneshot::channel::<anyhow::Result<Option<Vec<u8>>>>();
         let selection_export_prefs =
             selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
-        let selection_content = self.extract_selection_content();
+        let content = self.extract_selection_content();
 
         rayon::spawn(move || {
             let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
-                let Some(selection_content) = selection_content else {
+                let Some(content) = content else {
                     return Ok(None);
                 };
-                let Some(selection_svg) = selection_content.gen_svg(
+                let Some(svg) = content.gen_svg(
                     selection_export_prefs.with_background,
                     selection_export_prefs.with_pattern,
                     selection_export_prefs.optimize_printing,
@@ -883,7 +883,7 @@ impl Engine {
                 else {
                     return Ok(None);
                 };
-                let bitmapimage_format = match selection_export_prefs.export_format {
+                let image_format = match selection_export_prefs.export_format {
                     SelectionExportFormat::Svg => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
                     SelectionExportFormat::Png => image::ImageOutputFormat::Png,
                     SelectionExportFormat::Jpeg => {
@@ -892,9 +892,8 @@ impl Engine {
                 };
 
                 Ok(Some(
-                    selection_svg
-                        .gen_image(selection_export_prefs.bitmap_scalefactor)?
-                        .into_encoded_bytes(bitmapimage_format)?,
+                    svg.gen_image(selection_export_prefs.bitmap_scalefactor)?
+                        .into_encoded_bytes(image_format)?,
                 ))
             };
             if oneshot_sender.send(result()).is_err() {

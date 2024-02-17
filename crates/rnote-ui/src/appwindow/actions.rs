@@ -205,15 +205,23 @@ impl RnAppWindow {
 
         // Open Canvas Menu
         action_open_canvasmenu.connect_activate(clone!(@weak self as appwindow => move |_,_| {
+            if appwindow.split_view().shows_sidebar() && appwindow.split_view().is_collapsed() {
+                appwindow.split_view().set_show_sidebar(false);
+            }
             appwindow.main_header().canvasmenu().popovermenu().popup();
         }));
 
         // Open App Menu
         action_open_appmenu.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            if appwindow.split_view().is_collapsed() {
-                appwindow.sidebar().appmenu().popovermenu().popup();
-            } else {
+            if !appwindow.split_view().shows_sidebar() {
                 appwindow.main_header().appmenu().popovermenu().popup();
+                return
+            }
+            if appwindow.split_view().is_collapsed() {
+                appwindow.split_view().set_show_sidebar(false);
+                appwindow.main_header().appmenu().popovermenu().popup();
+            } else {
+                appwindow.sidebar().appmenu().popovermenu().popup();
             }
         }));
 
@@ -779,10 +787,10 @@ impl RnAppWindow {
         app.set_accels_for_action("win.keyboard-shortcuts", &["<Ctrl>question"]);
         app.set_accels_for_action("win.open-canvasmenu", &["F9"]);
         app.set_accels_for_action("win.open-appmenu", &["F10"]);
-        app.set_accels_for_action("win.new-doc", &["<Ctrl>n"]);
         app.set_accels_for_action("win.open-doc", &["<Ctrl>o"]);
         app.set_accels_for_action("win.save-doc", &["<Ctrl>s"]);
         app.set_accels_for_action("win.save-doc-as", &["<Ctrl><Shift>s"]);
+        app.set_accels_for_action("win.new-tab", &["<Ctrl>t"]);
         app.set_accels_for_action("win.snap-positions", &["<Ctrl><Shift>p"]);
         app.set_accels_for_action("win.clear-doc", &["<Ctrl>l"]);
         app.set_accels_for_action("win.print-doc", &["<Ctrl>p"]);

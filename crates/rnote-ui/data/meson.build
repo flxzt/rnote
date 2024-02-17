@@ -242,6 +242,7 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/shapebuilder-fociellipse-symbolic.svg',
     'icons/scalable/actions/shapebuilder-grid-symbolic.svg',
     'icons/scalable/actions/shapebuilder-line-symbolic.svg',
+    'icons/scalable/actions/shapebuilder-polygon-symbolic.svg',
     'icons/scalable/actions/shapebuilder-polyline-symbolic.svg',
     'icons/scalable/actions/shapebuilder-quadbez-symbolic.svg',
     'icons/scalable/actions/shapebuilder-quadrantcoordsystem2d-symbolic.svg',

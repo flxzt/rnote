@@ -8,11 +8,9 @@ pub use roughoptions::RoughOptions;
 // Imports
 use super::Composer;
 use crate::ext::Vector2Ext;
-use crate::shapes::Line;
-use crate::shapes::Rectangle;
-use crate::shapes::{Arrow, Polyline};
-use crate::shapes::{CubicBezier, Shapeable};
-use crate::shapes::{Ellipse, QuadraticBezier};
+use crate::shapes::{
+    Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
+};
 use crate::Color;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use roughr::Point2D;
@@ -228,6 +226,31 @@ impl Composer<RoughOptions> for Polyline {
     }
 }
 
+impl Composer<RoughOptions> for Polygon {
+    fn composed_bounds(&self, options: &RoughOptions) -> Aabb {
+        self.bounds()
+            .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        let points: Vec<roughr::Point2D<_, _>> = std::iter::once(roughr::Point2D::new(
+            self.start[0] as f32,
+            self.start[1] as f32,
+        ))
+        .chain(
+            self.path
+                .iter()
+                .map(|p| roughr::Point2D::new(p[0] as f32, p[1] as f32)),
+        )
+        .collect();
+
+        let drawable =
+            rough_piet::KurboGenerator::new(generate_roughr_options(options)).polygon(&points);
+
+        drawable.draw(cx);
+    }
+}
+
 impl Composer<RoughOptions> for crate::Shape {
     fn composed_bounds(&self, options: &RoughOptions) -> Aabb {
         match self {
@@ -238,6 +261,7 @@ impl Composer<RoughOptions> for crate::Shape {
             crate::Shape::QuadraticBezier(quadbez) => quadbez.composed_bounds(options),
             crate::Shape::CubicBezier(cubbez) => cubbez.composed_bounds(options),
             crate::Shape::Polyline(polyline) => polyline.composed_bounds(options),
+            crate::Shape::Polygon(polygon) => polygon.composed_bounds(options),
         }
     }
 
@@ -250,6 +274,7 @@ impl Composer<RoughOptions> for crate::Shape {
             crate::Shape::QuadraticBezier(quadbez) => quadbez.draw_composed(cx, options),
             crate::Shape::CubicBezier(cubbez) => cubbez.draw_composed(cx, options),
             crate::Shape::Polyline(polyline) => polyline.draw_composed(cx, options),
+            crate::Shape::Polygon(polygon) => polygon.draw_composed(cx, options),
         }
     }
 }

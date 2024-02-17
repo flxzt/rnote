@@ -15,6 +15,9 @@ impl RnApp {
         );
         self.add_action(&action_color_scheme);
 
+        let action_new_window = gio::SimpleAction::new("new-window", None);
+        self.add_action(&action_new_window);
+
         action_color_scheme
             .bind_property("state", &self.style_manager(), "color-scheme")
             .transform_to(move |_, val: glib::Variant| {
@@ -46,10 +49,15 @@ impl RnApp {
                 app.quit();
             }
         }));
+
+        action_new_window.connect_activate(clone!(@weak self as app => move |_, _| {
+            app.new_appwindow_init_show();
+        }));
     }
 
     // Accelerators / Keyboard Shortcuts
     pub(crate) fn setup_action_accels(&self) {
         self.set_accels_for_action("app.quit", &["<Ctrl>q"]);
+        self.set_accels_for_action("app.new-window", &["<Ctrl>n"]);
     }
 }

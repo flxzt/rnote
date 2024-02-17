@@ -51,7 +51,7 @@ pub fn calculate_resize_ratio(
         );
 
     // check if we go out of the page on the right
-    // we don't want to go out of the page
+    // we don't want to go out of the page for fixed layouts
     match resize.isfixed_layout {
         false => ratio_viewport,
         true => ratio_viewport.min((resize.width - pos_left_top_canvas.index(0)) / (current_width)),

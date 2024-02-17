@@ -162,7 +162,7 @@ impl VectorImage {
             svg_tree.size().height() as f64
         ];
         let svg_data = svg_tree.to_string(&xml_options);
-        
+
         let mut transform = Transform::default();
         let rectangle = match size {
             ImageSizeOption::RespectOriginalSize => {

@@ -53,7 +53,7 @@ same-file = "1"
 unicode-segmentation = "1"
 roxmltree = "0.19"
 xmlwriter = "0.1"
-usvg = "0.36"
+usvg = "0.40"
 svg = "0.15.1"
 image = "0.24"
 kurbo = "0.10"
@@ -76,7 +76,7 @@ glib-build-tools = "0.19.0"
 gio = "0.19.0"
 cairo-rs = { version = "0.19.1", features = ["v1_18", "png", "svg", "pdf"] }
 # once a new librsvg (current v2.57.1) is released that includes updated cairo,
-# this can be replaced by a crates-io dep.
+# this can be replaced by the version on crates-io.
 librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", rev = "3a497b56fe581ab4fda1a80ac19352bfb91676b6" }
 poppler-rs = { version = "0.23.0", features = ["v22_2"] }
 gtk4 = { version = "0.8.0", features = ["v4_12"] }

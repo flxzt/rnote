@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-07 10:08+0100\n"
-"PO-Revision-Date: 2024-02-17 10:59+0000\n"
+"PO-Revision-Date: 2024-02-17 14:42+0000\n"
 "Last-Translator: Ryo Nakano <ryonakaknock3@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/>"
 "\n"
@@ -410,7 +410,7 @@ msgstr "Jpegの品質"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:376
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr "Jpeg画像の品質を設定します(1 - 100)"
+msgstr "Jpeg画像の品質を設定します (1 - 100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:408
 #: crates/rnote-ui/src/dialogs/export.rs:854
@@ -457,7 +457,7 @@ msgstr "終了ページ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
 msgid "Page Width (%)"
-msgstr "ページ幅(%)"
+msgstr "ページ幅 (%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
 msgid "Set the width of imported Pdf's in percentage to the format width"
@@ -1630,11 +1630,11 @@ msgstr "位置をスナップ"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Add Page (When in Fixed-Size Layout)"
-msgstr "ページを追加(固定サイズのレイアウトの場合)"
+msgstr "ページを追加 (固定サイズのレイアウトの場合)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:197
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr "最後のページを削除(固定サイズのレイアウトの場合)"
+msgstr "最後のページを削除 (固定サイズのレイアウトの場合)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:203
 msgid "Print Document"
@@ -2189,7 +2189,7 @@ msgstr "3次元の座標"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
 msgid "2D single quadrant coordinate system"
-msgstr "2次元の座標(第一象限のみ)"
+msgstr "2次元の座標 (第一象限のみ)"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
 msgid "Ellipse"

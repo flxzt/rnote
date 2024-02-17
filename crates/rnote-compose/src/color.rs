@@ -164,6 +164,58 @@ impl Color {
             ((1000.0 * self.a).round() / 1000.0),
         )
     }
+
+    /// Create a string for display the hue, saturation and value properties of the color.
+    pub fn to_hsv_label_string(self) -> String {
+        let color: palette::Okhsv<f64> = self.into_color();
+        let alpha = self.a;
+        let hue = color.hue.into_inner();
+        let saturation = color.saturation;
+        let value = color.value;
+
+        tracing::debug!("alpha: {alpha:?}, hue: {hue:?}, sat: {saturation:?}, value: {value:?}");
+
+        let hue_str = match hue {
+            _ if saturation <= 0.0 => "grey",
+            v if v < 15.0 => "rose",
+            v if (15.0..45.0).contains(&v) => "red",
+            v if (45.0..75.0).contains(&v) => "orange",
+            v if (75.0..105.0).contains(&v) => "yellow",
+            v if (105.0..135.0).contains(&v) => "chartreuse-green",
+            v if (135.0..165.0).contains(&v) => "green",
+            v if (165.0..195.0).contains(&v) => "spring-green",
+            v if (195.0..225.0).contains(&v) => "cyan",
+            v if (225.0..255.0).contains(&v) => "azure",
+            v if (255.0..285.0).contains(&v) => "blue",
+            v if (285.0..315.0).contains(&v) => "violet",
+            v if (315.0..345.0).contains(&v) => "magenta",
+            v if v >= 345.0 => "rose",
+            _ => "invalid",
+        };
+        let saturation_str = match saturation {
+            v if v <= 0.0 => "",
+            v if v < 0.333 => "desaturated",
+            v if (0.333..0.667).contains(&v) => "",
+            v if v >= 0.667 => "vibrant",
+            _ => "invalid",
+        };
+        let value_str = match value {
+            v if v < 0.333 => "dark",
+            v if (0.333..0.667).contains(&v) => "mid",
+            v if v >= 0.666 => "bright",
+            _ => "invalid",
+        };
+
+        if alpha == 0.0 {
+            format!("transparent")
+        } else if value <= 0.0 {
+            format!("black")
+        } else if value >= 1.0 {
+            format!("white")
+        } else {
+            format!("{saturation_str} {value_str} {hue_str}")
+        }
+    }
 }
 
 impl From<piet::Color> for Color {

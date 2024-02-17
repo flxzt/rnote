@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-07 10:08+0100\n"
-"PO-Revision-Date: 2024-02-12 06:02+0000\n"
+"PO-Revision-Date: 2024-02-17 10:59+0000\n"
 "Last-Translator: Ryo Nakano <ryonakaknock3@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/>"
 "\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.4\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -275,13 +275,13 @@ msgstr "背景もエクスポートするかどうかを設定します"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:323
 #: crates/rnote-ui/data/ui/dialogs/export.ui:517
 msgid "With Pattern"
-msgstr ""
+msgstr "罫線を含める"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:117
 #: crates/rnote-ui/data/ui/dialogs/export.ui:324
 #: crates/rnote-ui/data/ui/dialogs/export.ui:518
 msgid "Set whether the background pattern should be exported"
-msgstr ""
+msgstr "背景の罫線もエクスポートするかどうかを設定します"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:122
 #: crates/rnote-ui/data/ui/dialogs/export.ui:329
@@ -353,32 +353,26 @@ msgstr "垂直方向順"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:172
 #: crates/rnote-ui/src/dialogs/export.rs:565
-#, fuzzy
-#| msgid "Export document as PDF"
 msgid "Export Document Pages"
-msgstr "選択範囲をPDFに保存"
+msgstr "文書をページ単位でエクスポート"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:254
 msgid "Page Files Naming:"
-msgstr ""
+msgstr "ファイル名の付け方:"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:274
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Export Directory"
-msgstr "選択範囲をSVGに保存"
+msgstr "エクスポート先ディレクトリ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:275
 msgid "Select the export directory"
 msgstr "エクスポート先のディレクトリを選択します"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
-#, fuzzy
-#| msgid "Selector"
 msgctxt ""
 "When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
-msgstr "選択"
+msgstr "拡張子を除くファイル名"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:535
@@ -458,9 +452,8 @@ msgid "Start Page"
 msgstr "開始ページ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:92
-#, fuzzy
 msgid "End Page"
-msgstr "ページを追加"
+msgstr "終了ページ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
 msgid "Page Width (%)"
@@ -468,7 +461,7 @@ msgstr "ページ幅(%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
 msgid "Set the width of imported Pdf's in percentage to the format width"
-msgstr ""
+msgstr "インポートする PDF の幅を、用紙幅に対する比率で設定します"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
 msgid "Page Spacing"
@@ -1068,7 +1061,7 @@ msgstr "文書を消去(_L)"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:44
 msgid "Show _Format Borders"
-msgstr ""
+msgstr "用紙の枠線を表示(_F)"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:49
 msgid "Show _Origin Indicator"
@@ -1275,15 +1268,15 @@ msgstr "描画カーソルを設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:128
 msgid "Page Format"
-msgstr ""
+msgstr "ページの寸法"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:131
 msgid "Format"
-msgstr ""
+msgstr "寸法"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:132
 msgid "Choose a format"
-msgstr ""
+msgstr "寸法を選択します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:136
 msgid "A6"
@@ -1323,7 +1316,7 @@ msgstr "向き"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:152
 msgid "Set the format orientation"
-msgstr ""
+msgstr "用紙の向きを設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:164
 msgid "Portrait"
@@ -1339,7 +1332,7 @@ msgstr "幅"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:181
 msgid "Set the format width"
-msgstr ""
+msgstr "用紙の幅を設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:197
 msgid "Height"
@@ -1347,7 +1340,7 @@ msgstr "高さ"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:198
 msgid "Set the format height"
-msgstr ""
+msgstr "用紙の高さを設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:214
 msgid "Dpi"
@@ -1389,84 +1382,84 @@ msgstr "無限"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:265
 msgid "Format Border Color"
-msgstr ""
+msgstr "用紙の枠線の色"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:266
 msgid "Set the format border color"
-msgstr ""
+msgstr "用紙の枠線の色を設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:287
 msgid "Set the background color"
-msgstr ""
+msgstr "背景色を設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:307
 msgid "Pattern"
-msgstr ""
+msgstr "罫線"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:308
 msgid "Choose a background pattern"
-msgstr ""
+msgstr "背景の罫線を選択します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:312
 msgid "None"
-msgstr ""
+msgstr "無地"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:313
 msgid "Lines"
-msgstr ""
+msgstr "横線"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:314
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "Grid"
-msgstr ""
+msgstr "方眼"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:316
 msgid "Isometric Grid"
-msgstr ""
+msgstr "アイソメトリック (方眼)"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:317
 msgid "Isometric Dots"
-msgstr ""
+msgstr "アイソメトリック (ドット)"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:325
 msgid "Pattern Color"
-msgstr ""
+msgstr "罫線の色"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:326
 msgid "Set the background pattern color"
-msgstr ""
+msgstr "背景の罫線の色を設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:346
 msgid "Pattern Width"
-msgstr ""
+msgstr "罫線の幅"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:347
 msgid "Set the background pattern width"
-msgstr ""
+msgstr "背景の罫線の幅を設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:363
 msgid "Pattern Height"
-msgstr ""
+msgstr "罫線の高さ"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:364
 msgid "Set the background pattern height"
-msgstr ""
+msgstr "背景の罫線の高さを設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:380
 msgid "Invert Color Brightness"
-msgstr ""
+msgstr "色の明るさを反転"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:381
 msgid "Invert the brightness of all background pattern colors"
-msgstr ""
+msgstr "すべての背景色の明るさを反転させます"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:385
 msgid "Invert"
-msgstr ""
+msgstr "反転"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:395
 msgid "Button Shortcuts"
-msgstr ""
+msgstr "ボタンのショートカット"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:398
 msgid "Stylus Primary Button Action"
@@ -2318,11 +2311,11 @@ msgstr ""
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:56
 msgid "Folder Name"
-msgstr ""
+msgstr "フォルダー名"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
 msgid "New Folder"
-msgstr ""
+msgstr "新しいフォルダー"
 
 #, fuzzy
 #~| msgid "New Window"

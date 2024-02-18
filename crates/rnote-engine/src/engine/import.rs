@@ -168,6 +168,7 @@ impl Engine {
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
+                dnd: &mut false,
             });
         widget_flags |= self.doc_resize_to_fit_content();
         widget_flags.redraw = true;
@@ -379,6 +380,7 @@ impl Engine {
                     store: &mut self.store,
                     camera: &mut self.camera,
                     audioplayer: &mut self.audioplayer,
+                    dnd: &mut self.dnd,
                 },
             );
         }
@@ -419,6 +421,7 @@ impl Engine {
             store: &mut self.store,
             camera: &mut self.camera,
             audioplayer: &mut self.audioplayer,
+            dnd: &mut self.dnd,
         });
 
         widget_flags |= self.store.record(Instant::now());

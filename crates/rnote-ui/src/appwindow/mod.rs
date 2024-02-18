@@ -439,10 +439,11 @@ impl RnAppWindow {
         input_file: gio::File,
         target_pos: Option<na::Vector2<f64>>,
         rnote_file_new_tab: bool,
+        respect_border: bool,
     ) {
         self.overlays().progressbar_start_pulsing();
         match self
-            .try_open_file(input_file, target_pos, rnote_file_new_tab)
+            .try_open_file(input_file, target_pos, rnote_file_new_tab, respect_border)
             .await
         {
             Ok(true) => {
@@ -469,6 +470,7 @@ impl RnAppWindow {
         input_file: gio::File,
         target_pos: Option<na::Vector2<f64>>,
         rnote_file_new_tab: bool,
+        respect_border: bool,
     ) -> anyhow::Result<bool> {
         let file_imported = match FileType::lookup_file_type(&input_file) {
             FileType::RnoteFile => {
@@ -511,7 +513,7 @@ impl RnAppWindow {
                 let canvas = self.active_tab_wrapper().canvas();
                 let (bytes, _) = input_file.load_bytes_future().await?;
                 canvas
-                    .load_in_vectorimage_bytes(bytes.to_vec(), target_pos, false)
+                    .load_in_vectorimage_bytes(bytes.to_vec(), target_pos, respect_border)
                     .await?;
                 true
             }
@@ -519,7 +521,7 @@ impl RnAppWindow {
                 let canvas = self.active_tab_wrapper().canvas();
                 let (bytes, _) = input_file.load_bytes_future().await?;
                 canvas
-                    .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos, false)
+                    .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos, respect_border)
                     .await?;
                 true
             }

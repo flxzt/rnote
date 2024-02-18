@@ -20,7 +20,7 @@ pub(crate) fn handle_pointer_controller_event(
     let mut widget_flags = WidgetFlags::default();
     let touch_drawing = canvas.touch_drawing();
     let gdk_event_type = event.event_type();
-    let gdk_modifiers = event.modifier_state();
+    let gdk_modifiers = event.modifier_state(); // interesting for us
     let _gdk_device = event.device().unwrap();
     let backlog_policy = canvas.engine_ref().penholder.backlog_policy();
     let is_stylus = event_is_stylus(event);
@@ -225,7 +225,7 @@ pub(crate) fn handle_key_controller_key_pressed(
     gdk_key: gdk::Key,
     gdk_modifiers: gdk::ModifierType,
 ) -> glib::Propagation {
-    tracing::trace!(
+    tracing::debug!(
         "canvas event key pressed - gdk_key: {gdk_key:?}, gdk_modifiers: {gdk_modifiers:?}"
     );
     canvas.grab_focus();
@@ -234,6 +234,17 @@ pub(crate) fn handle_key_controller_key_pressed(
     let keyboard_key = retrieve_keyboard_key(gdk_key);
     let modifier_keys = retrieve_modifier_keys(gdk_modifiers);
     let shortcut_key = retrieve_keyboard_shortcut_key(gdk_key, gdk_modifiers);
+
+    // re print all of this information once again
+    tracing::debug!(
+        "key\t {:?}
+        modifier\t {:?}
+        shortcut\t {:?} 
+        ",
+        keyboard_key,
+        modifier_keys,
+        shortcut_key
+    );
 
     let (propagation, widget_flags) = if let Some(shortcut_key) = shortcut_key {
         canvas
@@ -259,9 +270,15 @@ pub(crate) fn handle_key_controller_key_released(
     gdk_key: gdk::Key,
     gdk_modifiers: gdk::ModifierType,
 ) {
-    tracing::trace!(
+    tracing::debug!(
         "canvas event key released - gdk_key: {gdk_key:?}, gdk_modifiers: {gdk_modifiers:?}"
     );
+    let keyboard_key = retrieve_keyboard_key(gdk_key);
+
+    match keyboard_key {
+        KeyboardKey::ShiftLeft | KeyboardKey::ShiftRight => _canvas.engine_mut().update_dnd(false),
+        _ => {}
+    }
 }
 
 pub(crate) fn handle_imcontext_text_commit(canvas: &RnCanvas, text: &str) {
@@ -447,6 +464,7 @@ fn retrieve_pen_mode(event: &gdk::Event) -> Option<PenMode> {
     }
 }
 
+/// correspond to KeyboardCtrlSpace
 pub(crate) fn retrieve_keyboard_shortcut_key(
     gdk_key: gdk::Key,
     modifier: gdk::ModifierType,

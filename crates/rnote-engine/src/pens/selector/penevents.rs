@@ -84,6 +84,7 @@ impl Selector {
                             )
                             .pop();
 
+                        // ALL of the logic here to have the selection and resizing logic
                         if (engine_view.pens_config.selector_config.style == SelectorStyle::Single
                             || modifier_keys.contains(&ModifierKey::KeyboardShift))
                             && key_to_add
@@ -255,6 +256,8 @@ impl Selector {
                             *current_rotation_angle = new_rotation_angle;
                         }
                     }
+                    // here is ALL of the logic for the resize part
+                    // modifier_keys ?
                     ModifyState::Resize {
                         from_corner,
                         start_bounds,
@@ -320,6 +323,7 @@ impl Selector {
                             .component_div(&selection_bounds.extents());
 
                         // resize strokes
+                        // THIS WILL REDUCE DOWN TO MUCH LESS HERE
                         engine_view
                             .store
                             .scale_strokes_with_pivot(selection, scale, pivot);

@@ -10,7 +10,7 @@ pub(crate) fn open(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleA
         clone!(@weak filerow, @weak appwindow => move |_action_open_file, _| {
             if let Some(current_file) = filerow.current_file() {
                 glib::spawn_future_local(clone!(@weak appwindow => async move {
-                    appwindow.open_file_w_dialogs(current_file, None, true).await;
+                    appwindow.open_file_w_dialogs(current_file, None, true,false).await;
                 }));
             }
         }),

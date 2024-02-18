@@ -685,6 +685,27 @@ impl RnAppWindow {
                         return;
                     }
                 };
+                // // check the content length here (3) ?
+                // // stroke, then the xml then the image ?
+                // let debug_types=content.iter().map(|(_data,mime_type)|-> &str {
+                //     mime_type.as_str()
+                // }).collect::<Vec<&str>>();
+                // tracing::debug!("{:?}",debug_types);
+
+
+                // let mut stringify=content[0..content.len()-1].iter().map(|(data,_)| {String::from_utf8_lossy(data)});
+                // // check what is in the stroke data part 
+                // tracing::debug!("stroke data {:?}",stringify.next());
+
+                // // xml part ?
+                // tracing::debug!("xml part {:?}",stringify.next());
+
+                // // jpg part ?
+                // // tracing::debug!("jpg part {:?}",stringify.next());        
+                // let image = render::Image::try_from_encoded_bytes(content.iter().map(|(x,_)| {x}).last().unwrap()).unwrap();
+                // tracing::debug!("image part rect \t{:?}\n pixel width\t{:?}\n pixel height\t{:?}\n memory format\t{:?}\n",image.rect,image.pixel_width,image.pixel_height,image.memory_format);
+
+
                 let gdk_content_provider = gdk::ContentProvider::new_union(content.into_iter().map(|(data, mime_type)| {
                     gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data))
                 }).collect::<Vec<gdk::ContentProvider>>().as_slice());
@@ -783,6 +804,9 @@ impl RnAppWindow {
 pub fn paste_content(appwindow: RnAppWindow, respect_borders: bool) {
     let canvas = appwindow.active_tab_wrapper().canvas();
     let content_formats = appwindow.clipboard().formats();
+
+    // tracing::debug!("{:?}",content_formats);
+
     // Order matters here, we want to go from specific -> generic, mostly because `text/plain` is contained in other text based formats
     if content_formats.contain_mime_type("text/uri-list") {
         glib::spawn_future_local(clone!(@weak appwindow => async move {
@@ -805,7 +829,7 @@ pub fn paste_content(appwindow: RnAppWindow, respect_borders: bool) {
                     }).collect::<Vec<PathBuf>>();
 
                     for file_path in file_paths {
-                        appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), None, true).await;
+                        appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), None, true,respect_borders).await;
                     }
                 }
                 Ok(None) => {}
@@ -841,6 +865,12 @@ pub fn paste_content(appwindow: RnAppWindow, respect_borders: bool) {
                     if !acc.is_empty() {
                         match crate::utils::str_from_u8_nul_utf8(&acc) {
                             Ok(json_string) => {
+                                // debug the json_string
+                                // can I change the StrokeContent
+                                let final_thing = serde_json::from_str::<StrokeContent>(&json_string.to_string()).unwrap();
+                                tracing::debug!("{:?}",final_thing);
+                                // only strokes, bounds and background a priori
+
                                 if let Err(e) = canvas.insert_stroke_content(json_string.to_string()).await {
                                     tracing::error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
                                 }

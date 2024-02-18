@@ -153,7 +153,7 @@ mod imp {
                 drawing_cursor: RefCell::new(drawing_cursor),
                 drawing_cursor_icon_name: RefCell::new(drawing_cursor_icon_name),
                 invisible_cursor: RefCell::new(invisible_cursor),
-                pointer_controller,
+                pointer_controller: pointer_controller,
                 key_controller,
                 key_controller_im_context,
                 drop_target,
@@ -1119,18 +1119,22 @@ impl RnCanvas {
             .build();
 
         // Drop Target
+        // [OUR DRAG AND DROP PART]
+        // derived from drop_target
         let appwindow_drop_target = self.imp().drop_target.connect_drop(
             clone!(@weak self as canvas, @weak appwindow => @default-return false, move |_, value, x, y| {
                 let pos = (canvas.engine_ref().camera.transform().inverse() *
                     na::point![x,y]).coords;
                 let mut accept_drop = false;
+                let respect_border = canvas.engine_ref().dnd;
+
 
                 if value.is::<gio::File>() {
                     // In some scenarios, get() can fail with `UnexpectedNone` even though is() returned true, e.g. when dealing with trashed files.
                     match value.get::<gio::File>() {
                         Ok(file) => {
                             glib::spawn_future_local(clone!(@weak appwindow => async move {
-                                appwindow.open_file_w_dialogs(file, Some(pos), true).await;
+                                appwindow.open_file_w_dialogs(file, Some(pos), true,respect_border).await;
                             }));
                             accept_drop = true;
                         },

@@ -616,13 +616,13 @@ impl RnSettingsPanel {
                     let document_layout = settings_panel.document_layout();
                     let canvas = appwindow.active_tab_wrapper().canvas();
 
-                    if canvas.engine_ref().document.layout != document_layout {
-                        appwindow
-                            .main_header()
-                            .canvasmenu()
-                            .fixedsize_quickactions_box()
-                            .set_sensitive(document_layout == Layout::FixedSize);
+                    appwindow
+                        .main_header()
+                        .canvasmenu()
+                        .fixedsize_quickactions_box()
+                        .set_sensitive(document_layout == Layout::FixedSize);
 
+                    if canvas.engine_ref().document.layout != document_layout {
                         let mut widget_flags = canvas.engine_mut().set_doc_layout(document_layout);
                         widget_flags.store_modified = true;
                         appwindow.handle_widget_flags(widget_flags, &canvas);

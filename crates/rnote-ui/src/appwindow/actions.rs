@@ -9,7 +9,6 @@ use gtk4::{
 use p2d::bounding_volume::BoundingVolume;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_compose::SplitOrder;
-use rnote_engine::document::Layout;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::{Camera, Engine};
@@ -67,12 +66,6 @@ impl RnAppWindow {
         let action_focus_mode = gio::PropertyAction::new("focus-mode", self, "focus-mode");
         self.add_action(&action_focus_mode);
 
-        // Could not make it work with enums as state together with activating from menu model, so using strings instead
-        let action_doc_layout = gio::SimpleAction::new_stateful(
-            "doc-layout",
-            Some(&String::static_variant_type()),
-            &String::from("infinite").to_variant(),
-        );
         let action_pen_sounds =
             gio::SimpleAction::new_stateful("pen-sounds", None, &false.to_variant());
         self.add_action(&action_pen_sounds);
@@ -88,7 +81,6 @@ impl RnAppWindow {
         let action_block_pinch_zoom =
             gio::PropertyAction::new("block-pinch-zoom", self, "block-pinch-zoom");
         self.add_action(&action_block_pinch_zoom);
-        self.add_action(&action_doc_layout);
         let action_pen_style = gio::SimpleAction::new_stateful(
             "pen-style",
             Some(&String::static_variant_type()),
@@ -267,7 +259,7 @@ impl RnAppWindow {
         // Export engine state
         action_debug_export_engine_state.connect_activate(
             clone!(@weak self as appwindow => move |_, _| {
-                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                glib::spawn_future_local(clone!(@weak appwindow => async move {
                     dialogs::export::filechooser_export_engine_state(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
                 }));
             }),
@@ -276,32 +268,9 @@ impl RnAppWindow {
         // Export engine config
         action_debug_export_engine_config.connect_activate(
             clone!(@weak self as appwindow => move |_, _| {
-                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                glib::spawn_future_local(clone!(@weak appwindow => async move {
                     dialogs::export::filechooser_export_engine_config(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
                 }));
-            }),
-        );
-
-        // Doc layout
-        action_doc_layout.connect_activate(
-            clone!(@weak self as appwindow => move |action, target| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
-                let doc_layout_str = target.unwrap().str().unwrap();
-                let doc_layout = match Layout::from_str(doc_layout_str) {
-                    Ok(s) => s,
-                    Err(e) => {
-                        tracing::error!("Activated doc-layout action with invalid target, Err: {e:}");
-                        return;
-                    }
-                };
-                action.set_state(&doc_layout_str.to_variant());
-                appwindow
-                    .main_header()
-                    .canvasmenu()
-                    .fixedsize_quickactions_box()
-                    .set_sensitive(doc_layout == Layout::FixedSize);
-                let widget_flags = canvas.engine_mut().set_doc_layout(doc_layout);
-                appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );
 
@@ -475,7 +444,7 @@ impl RnAppWindow {
 
         // Clear doc
         action_clear_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+            glib::spawn_future_local(clone!(@weak appwindow => async move {
                 dialogs::dialog_clear_doc(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
             }));
         }));
@@ -573,21 +542,21 @@ impl RnAppWindow {
 
         // New doc
         action_new_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+            glib::spawn_future_local(clone!(@weak appwindow => async move {
                 dialogs::dialog_new_doc(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
             }));
         }));
 
         // Open doc
         action_open_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+            glib::spawn_future_local(clone!(@weak appwindow => async move {
                 dialogs::import::filedialog_open_doc(&appwindow).await;
             }));
         }));
 
         // Save doc
         action_save_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+            glib::spawn_future_local(clone!(@weak appwindow => async move {
                 let canvas = appwindow.active_tab_wrapper().canvas();
 
                 if let Some(output_file) = canvas.output_file() {
@@ -612,7 +581,7 @@ impl RnAppWindow {
 
         // Save doc as
         action_save_doc_as.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+            glib::spawn_future_local(clone!(@weak appwindow => async move {
                 dialogs::export::dialog_save_doc_as(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
             }));
         }));
@@ -669,28 +638,28 @@ impl RnAppWindow {
 
         // Import
         action_import_file.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+            glib::spawn_future_local(clone!(@weak appwindow => async move {
                 dialogs::import::filedialog_import_file(&appwindow).await;
             }));
         }));
 
         // Export document
         action_export_doc.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+            glib::spawn_future_local(clone!(@weak appwindow => async move {
                 dialogs::export::dialog_export_doc_w_prefs(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
             }));
         }));
 
         // Export document pages
         action_export_doc_pages.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+            glib::spawn_future_local(clone!(@weak appwindow => async move {
                 dialogs::export::dialog_export_doc_pages_w_prefs(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
             }));
         }));
 
         // Export selection
         action_export_selection.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+            glib::spawn_future_local(clone!(@weak appwindow => async move {
                 let canvas = appwindow.active_tab_wrapper().canvas();
 
                 if !canvas.engine_ref().nothing_selected() {
@@ -703,7 +672,7 @@ impl RnAppWindow {
 
         // Clipboard copy
         action_clipboard_copy.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+            glib::spawn_future_local(clone!(@weak appwindow => async move {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let receiver = canvas.engine_ref().fetch_clipboard_content();
                 let (content, widget_flags) = match receiver.await {
@@ -731,7 +700,7 @@ impl RnAppWindow {
 
         // Clipboard cut
         action_clipboard_cut.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+            glib::spawn_future_local(clone!(@weak appwindow => async move {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let receiver = canvas.engine_mut().cut_clipboard_content();
                 let (content, widget_flags) = match receiver.await {

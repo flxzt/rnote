@@ -40,10 +40,10 @@ rand = "0.8"
 rand_pcg = "0.3"
 rand_distr = "0.4"
 slotmap = { version = "1", features = ["serde"] }
-rstar = "0.11"
+rstar = "0.12"
 geo = "0.27"
 flate2 = "1"
-chrono = "0.4.31"
+chrono = "0.4.33"
 base64 = "0.21"
 semver = { version = "1", features = ["serde"]}
 regex = "1.10"
@@ -53,39 +53,40 @@ same-file = "1"
 unicode-segmentation = "1"
 roxmltree = "0.19"
 xmlwriter = "0.1"
-usvg = "0.36"
-svg = "0.14"
+usvg = "0.40"
+svg = "0.15.1"
 image = "0.24"
-kurbo = "0.9"
+kurbo = "0.10"
 piet = "0.6"
 piet-cairo = "0.6"
 roughr = "0.6"
 rough_piet = "0.6"
-palette = "0.7.3"
+palette = "0.7.4"
 rodio = { version = "0.17", default-features = false, features = ["symphonia-wav"] }
 winresource = "0.1"
-smol = "1"
+smol = "2"
 clap = { version = "4", features = ["derive"] }
 indicatif = "0.17"
 dialoguer = "0.11"
 open = "5"
 atty = "0.2"
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
-glib = "0.18.3"
-glib-build-tools = "0.18.0"
-gio = "0.18.3"
-cairo-rs = { version = "0.18", features = ["png", "svg", "pdf"] }
-librsvg = "2.57"
-# newest poppler feature ("v21_12") is causing linking errors when building in mingw for some reason.
-poppler-rs = { version = "0.22", features = ["v20_9"] }
-gtk4 = { version = "0.7.3", features = ["v4_12"] }
-adw = { version = "0.5.3", package="libadwaita", features = ["v1_4"] }
+glib = "0.19.0"
+glib-build-tools = "0.19.0"
+gio = "0.19.0"
+cairo-rs = { version = "0.19.1", features = ["v1_18", "png", "svg", "pdf"] }
+# once a new librsvg (current v2.57.1) is released that includes updated cairo,
+# this can be replaced by the version on crates-io.
+librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", rev = "3a497b56fe581ab4fda1a80ac19352bfb91676b6" }
+poppler-rs = { version = "0.23.0", features = ["v22_2"] }
+gtk4 = { version = "0.8.0", features = ["v4_12"] }
+adw = { version = "0.6.0", package="libadwaita", features = ["v1_4"] }
 numeric-sort = "0.1"
 
 [patch.crates-io]
-# once a new piet (current v0.6.2) is released with the updated cairo, this can be removed
-piet = { git = "https://github.com/linebender/piet", rev = "88e8e6c6fe41d8c99e3bccbf3a076b3661c4472a" }
-piet-cairo = { git = "https://github.com/linebender/piet", rev = "88e8e6c6fe41d8c99e3bccbf3a076b3661c4472a" }
+# once a new piet (current v0.6.2) is released with updated cairo and kurbo deps, this can be removed.
+piet = { git = "https://github.com/linebender/piet", rev = "30813def608e74c0fc1a6aaf726bd3f7bf6964c2" }
+piet-cairo = { git = "https://github.com/linebender/piet", rev = "30813def608e74c0fc1a6aaf726bd3f7bf6964c2" }
 
 [profile.dev]
 opt-level = 2

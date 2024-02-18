@@ -122,7 +122,7 @@ impl RnTypewriterPage {
         let imp = self.imp();
 
         imp.fontdialog_button.connect_clicked(clone!(@weak self as typewriterpage, @weak appwindow => move |_| {
-            glib::MainContext::default().spawn_local(clone!(@weak typewriterpage, @weak appwindow => async move {
+            glib::spawn_future_local(clone!(@weak typewriterpage, @weak appwindow => async move {
                 let dialog = FontDialog::builder().modal(false).build();
                 let prev_picked_font_family = typewriterpage.imp().prev_picked_font_family.borrow().clone();
 

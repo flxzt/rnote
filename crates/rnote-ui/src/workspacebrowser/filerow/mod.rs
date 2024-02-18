@@ -8,7 +8,7 @@ use gtk4::{
     GestureClick, GestureLongPress, Image, Label, MenuButton, PopoverMenu, Widget,
 };
 use once_cell::sync::Lazy;
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 
 mod imp {
     use super::*;
@@ -17,6 +17,8 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/filerow.ui")]
     pub(crate) struct RnFileRow {
         pub(crate) current_file: RefCell<Option<gio::File>>,
+        /// The position in the list.
+        pub(crate) position: Cell<u32>,
         pub(crate) drag_source: DragSource,
         pub(crate) action_group: gio::SimpleActionGroup,
 
@@ -41,6 +43,7 @@ mod imp {
 
             Self {
                 action_group: gio::SimpleActionGroup::new(),
+                position: Cell::new(0),
                 current_file: RefCell::new(None),
                 drag_source,
                 file_image: TemplateChild::<Image>::default(),
@@ -87,6 +90,7 @@ mod imp {
                 vec![
                     // this is nullable, so it can be used to represent Option<gio::File>
                     glib::ParamSpecObject::builder::<gio::File>("current-file").build(),
+                    glib::ParamSpecUInt::builder("position").build(),
                 ]
             });
             PROPERTIES.as_ref()
@@ -100,6 +104,12 @@ mod imp {
                         .expect("The value needs to be of type `Option<gio::File>`");
                     self.current_file.replace(current_file);
                 }
+                "position" => {
+                    let position = value
+                        .get::<u32>()
+                        .expect("The value needs to be of type `u32`");
+                    self.position.set(position);
+                }
                 _ => unimplemented!(),
             }
         }
@@ -107,6 +117,7 @@ mod imp {
         fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "current-file" => self.current_file.borrow().to_value(),
+                "position" => self.position.get().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -172,6 +183,16 @@ impl RnFileRow {
         self.set_property("current-file", current_file.to_value());
     }
 
+    #[allow(unused)]
+    pub(crate) fn position(&self) -> u32 {
+        self.property::<u32>("position")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_position(&self, position: u32) {
+        self.set_property("position", position);
+    }
+
     pub(crate) fn file_image(&self) -> Image {
         self.imp().file_image.clone()
     }
@@ -191,15 +212,13 @@ impl RnFileRow {
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.setup_actions(appwindow);
 
-        self.imp().popovermenu.connect_visible_notify(clone!(@weak self as filerow, @weak appwindow => move |w| {
-            if w.get_visible() {
-                if let Some(current_file_path) = filerow.current_file().and_then(|f| f.path()) {
-                    if let Some(selected_pos) = appwindow.sidebar().workspacebrowser().query_selected_file_path_pos(current_file_path) {
-                        appwindow.sidebar().workspacebrowser().dirlist_set_selected(selected_pos);
-                    }
+        self.imp().popovermenu.connect_visible_notify(
+            clone!(@weak self as filerow, @weak appwindow => move |w| {
+                if w.get_visible() {
+                    appwindow.sidebar().workspacebrowser().files_list_set_selected(Some(filerow.position()));
                 }
-            }
-        }));
+            }),
+        );
     }
 
     fn setup_actions(&self, appwindow: &RnAppWindow) {

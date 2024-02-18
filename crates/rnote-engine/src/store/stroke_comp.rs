@@ -385,7 +385,7 @@ impl StrokeStore {
                         render_comp.rendernodes = rendernodes;
                     }
                     Err(e) => tracing::error!(
-                        "Generating rendernodes from iamges failed while rotating stroke images , Err: {e:?}"
+                        "Generating rendernodes from images failed while rotating stroke images , Err: {e:?}"
                     ),
                 }
             }

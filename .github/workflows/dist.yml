@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo dnf upgrade --refresh -y
-          sudo dnf install -y gcc gcc-c++ clang python3 make cmake meson git gh kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel libappstream-glib desktop-file-utils
+          sudo dnf install -y gcc gcc-c++ clang python3 make cmake meson git gh kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel appstream-devel desktop-file-utils
       - name: Install toolchain
         id: toolchain
         uses: dtolnay/rust-toolchain@stable

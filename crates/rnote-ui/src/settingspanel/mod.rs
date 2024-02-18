@@ -18,6 +18,7 @@ use num_traits::ToPrimitive;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
+use rnote_engine::document::Layout;
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
 
@@ -76,6 +77,8 @@ mod imp {
         pub(crate) format_revert_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) format_apply_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) doc_document_layout_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(crate) doc_format_border_color_button: TemplateChild<ColorDialogButton>,
         #[template_child]
@@ -339,6 +342,16 @@ impl RnSettingsPanel {
         self.imp().general_inertial_scrolling_row.clone()
     }
 
+    pub(crate) fn document_layout(&self) -> Layout {
+        Layout::try_from(self.imp().doc_document_layout_row.get().selected()).unwrap()
+    }
+
+    pub(crate) fn set_document_layout(&self, layout: &Layout) {
+        self.imp()
+            .doc_document_layout_row
+            .set_selected(layout.to_u32().unwrap());
+    }
+
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
         self.refresh_general_ui(active_tab);
         self.refresh_format_ui(active_tab);
@@ -376,6 +389,7 @@ impl RnSettingsPanel {
         let canvas = active_tab.canvas();
         let background = canvas.engine_ref().document.background;
         let format = canvas.engine_ref().document.format;
+        let document_layout = canvas.engine_ref().document.layout;
 
         imp.doc_background_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
@@ -390,6 +404,7 @@ impl RnSettingsPanel {
             .set_dpi(format.dpi());
         imp.doc_background_pattern_height_unitentry
             .set_value_in_px(background.pattern_size[1]);
+        self.set_document_layout(&document_layout);
     }
 
     fn refresh_shortcuts_ui(&self, active_tab: &RnCanvasWrapper) {
@@ -593,6 +608,24 @@ impl RnSettingsPanel {
                 }
             }),
         );
+
+        imp.doc_document_layout_row
+            .get()
+            .connect_selected_item_notify(
+                clone!(@weak self as settings_panel, @weak appwindow => move |_| {
+                    let document_layout = settings_panel.document_layout();
+                    let canvas = appwindow.active_tab_wrapper().canvas();
+
+                    appwindow
+                        .main_header()
+                        .canvasmenu()
+                        .fixedsize_quickactions_box()
+                        .set_sensitive(document_layout == Layout::FixedSize);
+
+                    let widget_flags = canvas.engine_mut().set_doc_layout(document_layout);
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                }),
+            );
 
         imp.doc_background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_| {
             let pattern = settings_panel.background_pattern();

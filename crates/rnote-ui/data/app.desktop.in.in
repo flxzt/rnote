@@ -1,6 +1,6 @@
 [Desktop Entry]
 # Translators: This is the App name, don't translate this.
-Name=@APP_NAME_CAPITALIZED@
+Name=@DESKTOP_FILE_NAME_ENTRY@
 Comment=Sketch and take handwritten notes
 # Translators: Do NOT translate or transliterate this text, this is an icon file name!
 Icon=@APP_ID@

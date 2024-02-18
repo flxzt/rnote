@@ -152,10 +152,41 @@ impl Engine {
         self.penholder = engine_config.penholder;
         self.import_prefs = engine_config.import_prefs;
         self.export_prefs = engine_config.export_prefs;
-        self.pen_sounds = engine_config.pen_sounds;
 
         // Set the pen sounds to update the audioplayer
-        self.set_pen_sounds(self.pen_sounds, data_dir);
+        self.set_pen_sounds(engine_config.pen_sounds, data_dir);
+
+        widget_flags |= self
+            .penholder
+            .reinstall_pen_current_style(&mut EngineViewMut {
+                tasks_tx: self.tasks_tx.clone(),
+                pens_config: &mut self.pens_config,
+                document: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            });
+        widget_flags |= self.doc_resize_to_fit_content();
+        widget_flags.redraw = true;
+        widget_flags.refresh_ui = true;
+        widget_flags
+    }
+
+    /// Loads the config when syncing engine state between tabs.
+    pub fn load_engine_config_sync_tab(
+        &mut self,
+        engine_config: EngineConfig,
+        data_dir: Option<PathBuf>,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        self.pens_config = engine_config.pens_config;
+        self.penholder = engine_config.penholder;
+        self.import_prefs = engine_config.import_prefs;
+        self.export_prefs = engine_config.export_prefs;
+
+        // Set the pen sounds to update the audioplayer
+        self.set_pen_sounds(engine_config.pen_sounds, data_dir);
 
         widget_flags |= self
             .penholder

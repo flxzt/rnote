@@ -622,8 +622,11 @@ impl RnSettingsPanel {
                         .fixedsize_quickactions_box()
                         .set_sensitive(document_layout == Layout::FixedSize);
 
-                    let widget_flags = canvas.engine_mut().set_doc_layout(document_layout);
-                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                    if canvas.engine_ref().document.layout != document_layout {
+                        let mut widget_flags = canvas.engine_mut().set_doc_layout(document_layout);
+                        widget_flags.store_modified = true;
+                        appwindow.handle_widget_flags(widget_flags, &canvas);
+                    }
                 }),
             );
 

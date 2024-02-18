@@ -511,7 +511,7 @@ impl RnAppWindow {
                 let canvas = self.active_tab_wrapper().canvas();
                 let (bytes, _) = input_file.load_bytes_future().await?;
                 canvas
-                    .load_in_vectorimage_bytes(bytes.to_vec(), target_pos)
+                    .load_in_vectorimage_bytes(bytes.to_vec(), target_pos, false)
                     .await?;
                 true
             }
@@ -519,7 +519,7 @@ impl RnAppWindow {
                 let canvas = self.active_tab_wrapper().canvas();
                 let (bytes, _) = input_file.load_bytes_future().await?;
                 canvas
-                    .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos)
+                    .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos, false)
                     .await?;
                 true
             }

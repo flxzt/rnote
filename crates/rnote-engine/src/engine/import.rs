@@ -194,10 +194,12 @@ impl Engine {
         &self,
         pos: na::Vector2<f64>,
         bytes: Vec<u8>,
+        respect_borders: bool,
     ) -> oneshot::Receiver<anyhow::Result<VectorImage>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<VectorImage>>();
 
         let width_page = self.document.format.width().clone();
+        let height_page = self.document.format.height().clone();
         let is_fixed = self.document.layout.is_fixed_layout();
         let point_max: na::OPoint<f64, na::Const<2>> = self.camera.viewport().maxs;
 
@@ -210,8 +212,10 @@ impl Engine {
                     pos,
                     ImageSizeOption::ResizeImage(Resize {
                         width: width_page,
+                        height: height_page,
                         isfixed_layout: is_fixed,
                         max_viewpoint: point_max,
+                        respect_borders: respect_borders,
                     }),
                 )
             };
@@ -233,11 +237,13 @@ impl Engine {
         &self,
         pos: na::Vector2<f64>,
         bytes: Vec<u8>,
+        respect_borders: bool,
     ) -> oneshot::Receiver<anyhow::Result<BitmapImage>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<BitmapImage>>();
 
         // we get these parameters to enable proper resizing of the windowsœ
         let width_page = self.document.format.width().clone();
+        let height_page = self.document.format.height().clone();
         let is_fixed = self.document.layout.is_fixed_layout();
         let point_max: na::OPoint<f64, na::Const<2>> = self.camera.viewport().maxs;
 
@@ -248,8 +254,10 @@ impl Engine {
                     pos,
                     ImageSizeOption::ResizeImage(Resize {
                         width: width_page,
+                        height: height_page,
                         isfixed_layout: is_fixed,
                         max_viewpoint: point_max,
+                        respect_borders,
                     }),
                 )
             };

@@ -76,14 +76,15 @@ impl RnCanvas {
         &self,
         bytes: Vec<u8>,
         target_pos: Option<na::Vector2<f64>>,
+        respect_borders: bool,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
 
         // Splitting the import operation into two parts: a receiver that gets awaited with the content, and
         // the blocking import avoids borrowing the entire engine RefCell while awaiting the content, avoiding panics.
-        let vectorimage_receiver = self
-            .engine_mut()
-            .generate_vectorimage_from_bytes(pos, bytes);
+        let vectorimage_receiver =
+            self.engine_mut()
+                .generate_vectorimage_from_bytes(pos, bytes, respect_borders);
         let vectorimage = vectorimage_receiver.await??;
         let widget_flags = self
             .engine_mut()
@@ -100,12 +101,13 @@ impl RnCanvas {
         &self,
         bytes: Vec<u8>,
         target_pos: Option<na::Vector2<f64>>,
+        respect_borders: bool,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
 
-        let bitmapimage_receiver = self
-            .engine_mut()
-            .generate_bitmapimage_from_bytes(pos, bytes);
+        let bitmapimage_receiver =
+            self.engine_mut()
+                .generate_bitmapimage_from_bytes(pos, bytes, respect_borders);
         let bitmapimage = bitmapimage_receiver.await??;
         let widget_flags = self
             .engine_mut()

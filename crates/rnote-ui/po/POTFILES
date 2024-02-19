@@ -20,6 +20,7 @@ crates/rnote-ui/data/ui/appwindow.ui
 crates/rnote-ui/data/ui/canvasmenu.ui
 crates/rnote-ui/data/ui/canvaswrapper.ui
 crates/rnote-ui/data/ui/colorpicker.ui
+crates/rnote-ui/data/ui/contextmenu.ui
 crates/rnote-ui/data/ui/filerow.ui
 crates/rnote-ui/data/ui/iconpicker.ui
 crates/rnote-ui/data/ui/mainheader.ui

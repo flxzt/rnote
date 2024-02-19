@@ -453,13 +453,6 @@ impl PenHolder {
 
                     EventPropagation::Stop
                 }
-                KeyboardKey::ShiftLeft | KeyboardKey::ShiftRight => {
-                    // shift is a modifier for drag and drop, so we capture it here
-                    tracing::debug!("captured shift key for drop state");
-                    engine_view.update_dnd(true);
-
-                    EventPropagation::Stop
-                }
                 _ => EventPropagation::Proceed,
             },
         };

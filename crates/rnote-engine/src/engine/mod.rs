@@ -45,7 +45,6 @@ pub struct EngineView<'a> {
     pub store: &'a StrokeStore,
     pub camera: &'a Camera,
     pub audioplayer: &'a Option<AudioPlayer>,
-    pub dnd: &'a bool,
 }
 
 /// A mutable view into the engine, excluding the penholder.
@@ -57,7 +56,6 @@ pub struct EngineViewMut<'a> {
     pub store: &'a mut StrokeStore,
     pub camera: &'a mut Camera,
     pub audioplayer: &'a mut Option<AudioPlayer>,
-    pub dnd: &'a mut bool,
 }
 
 impl<'a> EngineViewMut<'a> {
@@ -70,13 +68,7 @@ impl<'a> EngineViewMut<'a> {
             store: self.store,
             camera: self.camera,
             audioplayer: self.audioplayer,
-            dnd: self.dnd,
         }
-    }
-
-    // change a value
-    pub(crate) fn update_dnd<'m>(&'m mut self, new: bool) {
-        *self.dnd = new
     }
 }
 
@@ -182,8 +174,6 @@ pub struct Engine {
     audioplayer: Option<AudioPlayer>,
     #[serde(skip)]
     visual_debug: bool,
-    #[serde(skip)]
-    pub dnd: bool,
     // the task sender. Must not be modified, only cloned.
     #[serde(skip)]
     tasks_tx: EngineTaskSender,
@@ -213,7 +203,6 @@ impl Default for Engine {
 
             audioplayer: None,
             visual_debug: false,
-            dnd: false,
             tasks_tx: EngineTaskSender(tasks_tx),
             tasks_rx: Some(EngineTaskReceiver(tasks_rx)),
             background_tile_image: None,
@@ -243,7 +232,6 @@ impl Engine {
             store: &self.store,
             camera: &self.camera,
             audioplayer: &self.audioplayer,
-            dnd: &self.dnd,
         }
     }
 
@@ -256,7 +244,6 @@ impl Engine {
             store: &mut self.store,
             camera: &mut self.camera,
             audioplayer: &mut self.audioplayer,
-            dnd: &mut self.dnd,
         }
     }
 
@@ -487,13 +474,8 @@ impl Engine {
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
-                dnd: &mut self.dnd,
             },
         )
-    }
-
-    pub fn update_dnd(&mut self, new: bool) {
-        self.dnd = new
     }
 
     /// Handle a pressed shortcut key.
@@ -512,7 +494,6 @@ impl Engine {
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
-                dnd: &mut self.dnd,
             },
         )
     }
@@ -528,7 +509,6 @@ impl Engine {
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
-                dnd: &mut self.dnd,
             },
         )
     }
@@ -547,7 +527,6 @@ impl Engine {
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
-                dnd: &mut self.dnd,
             },
         )
     }
@@ -563,7 +542,6 @@ impl Engine {
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
-                dnd: &mut self.dnd,
             },
         )
     }
@@ -578,7 +556,6 @@ impl Engine {
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
-                dnd: &mut self.dnd,
             })
     }
 
@@ -778,7 +755,6 @@ impl Engine {
             store: &mut self.store,
             camera: &mut self.camera,
             audioplayer: &mut self.audioplayer,
-            dnd: &mut self.dnd,
         })
     }
 
@@ -794,7 +770,6 @@ impl Engine {
             store: &self.store,
             camera: &self.camera,
             audioplayer: &self.audioplayer,
-            dnd: &self.dnd,
         })
     }
 
@@ -810,7 +785,6 @@ impl Engine {
             store: &mut self.store,
             camera: &mut self.camera,
             audioplayer: &mut self.audioplayer,
-            dnd: &mut self.dnd,
         })
     }
 
@@ -920,7 +894,6 @@ impl Engine {
                     store: &mut self.store,
                     camera: &mut self.camera,
                     audioplayer: &mut self.audioplayer,
-                    dnd: &mut self.dnd,
                 },
             )
         }
@@ -938,7 +911,6 @@ impl Engine {
                     store: &mut self.store,
                     camera: &mut self.camera,
                     audioplayer: &mut self.audioplayer,
-                    dnd: &mut self.dnd,
                 })
         }
         widget_flags
@@ -959,7 +931,6 @@ impl Engine {
                     store: &mut self.store,
                     camera: &mut self.camera,
                     audioplayer: &mut self.audioplayer,
-                    dnd: &mut self.dnd,
                 },
             )
         }
@@ -978,7 +949,6 @@ impl Engine {
                     store: &mut self.store,
                     camera: &mut self.camera,
                     audioplayer: &mut self.audioplayer,
-                    dnd: &mut self.dnd,
                 },
             )
         }

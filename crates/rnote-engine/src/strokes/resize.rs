@@ -91,7 +91,7 @@ pub fn calculate_resize_ratio(
         .zip(apply_ratios)
         .filter(|x| x.1)
         .fold(1.0f64, |acc, x| acc.min(*x.0))
-        .max(1e-8f64) //force the value to be positive as a zero would incurr crashes when applying the transforms
+        .max(1e-15f64) //force the value to be positive as a zero would incurr crashes when applying the transforms
 }
 
 /// calculate the ratio to not go over borders
@@ -134,5 +134,5 @@ pub fn calculate_resize_ratio_respect_borders(
         .iter()
         .zip(rule_apply)
         .fold(1.0f64, |acc, x| acc.min(*x.0))
-        .max(1e-8f64)
+        .max(1e-15f64) //force the final value to be positive
 }

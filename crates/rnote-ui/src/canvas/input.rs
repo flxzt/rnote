@@ -1,5 +1,6 @@
 // Imports
 use super::RnCanvas;
+use adw::glib::subclass::types::ObjectSubclassIsExt;
 use gtk4::{gdk, glib, graphene, prelude::*, Native};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenState, ShortcutKey};
 use rnote_compose::penpath::Element;

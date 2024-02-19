@@ -622,7 +622,7 @@ mod imp {
                     clone!(@weak obj as canvaswrapper => move |_gesture, x, y| {
                         let popover = canvaswrapper.contextmenu().popover();
                         canvaswrapper.imp().last_contextmenu_pos.set(Some(na::vector![x, y]));
-                        popover.set_pointing_to(Some(&gdk::Rectangle::new(x as i32, y as i32, 0, 0)));
+                        popover.set_pointing_to(Some(&gdk::Rectangle::new(x as i32, y as i32, 4, 4)));
                         popover.popup();
                     }),
                 );

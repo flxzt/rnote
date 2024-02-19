@@ -155,10 +155,14 @@ impl RnCanvas {
     /// Deserializes the stroke content and inserts it into the engine.
     ///
     /// The data is usually coming from the clipboard, drop source, etc.
-    pub(crate) async fn insert_stroke_content(&self, json_string: String) -> anyhow::Result<()> {
+    pub(crate) async fn insert_stroke_content(
+        &self,
+        json_string: String,
+        target_pos: Option<na::Vector2<f64>>,
+    ) -> anyhow::Result<()> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<StrokeContent>>();
-        let pos = self.determine_stroke_import_pos(None);
+        let pos = self.determine_stroke_import_pos(target_pos);
 
         rayon::spawn(move || {
             let result = || -> Result<StrokeContent, anyhow::Error> {

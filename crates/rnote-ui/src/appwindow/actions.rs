@@ -865,12 +865,7 @@ pub fn paste_content(appwindow: RnAppWindow, respect_borders: bool) {
                     if !acc.is_empty() {
                         match crate::utils::str_from_u8_nul_utf8(&acc) {
                             Ok(json_string) => {
-                                // debug the json_string
-                                // can I change the StrokeContent
-                                let final_thing = serde_json::from_str::<StrokeContent>(&json_string.to_string()).unwrap();
-                                tracing::debug!("{:?}",final_thing);
-                                // only strokes, bounds and background a priori
-
+                                // here, stroke content is inserted
                                 if let Err(e) = canvas.insert_stroke_content(json_string.to_string()).await {
                                     tracing::error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
                                 }

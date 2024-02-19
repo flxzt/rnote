@@ -257,7 +257,6 @@ impl Selector {
                         }
                     }
                     // here is ALL of the logic for the resize part
-                    // modifier_keys ?
                     ModifyState::Resize {
                         from_corner,
                         start_bounds,
@@ -322,8 +321,7 @@ impl Selector {
                             .maxs(&min_extents)
                             .component_div(&selection_bounds.extents());
 
-                        // resize strokes
-                        // THIS WILL REDUCE DOWN TO MUCH LESS HERE
+                        // resize strokes [0]
                         engine_view
                             .store
                             .scale_strokes_with_pivot(selection, scale, pivot);

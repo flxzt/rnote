@@ -21,7 +21,7 @@ pub(crate) fn handle_pointer_controller_event(
     let mut widget_flags = WidgetFlags::default();
     let touch_drawing = canvas.touch_drawing();
     let gdk_event_type = event.event_type();
-    let gdk_modifiers = event.modifier_state(); // interesting for us
+    let gdk_modifiers = event.modifier_state();
     let _gdk_device = event.device().unwrap();
     let backlog_policy = canvas.engine_ref().penholder.backlog_policy();
     let is_stylus = event_is_stylus(event);

@@ -241,7 +241,7 @@ impl Engine {
     ) -> oneshot::Receiver<anyhow::Result<BitmapImage>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<BitmapImage>>();
 
-        // we get these parameters to enable proper resizing of the windowsœ
+        // we get these parameters to enable proper resizing of the windows
         let width_page = self.document.format.width().clone();
         let height_page = self.document.format.height().clone();
         let is_fixed = self.document.layout.is_fixed_layout();
@@ -257,7 +257,7 @@ impl Engine {
                         height: height_page,
                         isfixed_layout: is_fixed,
                         max_viewpoint: point_max,
-                        respect_borders,
+                        respect_borders: respect_borders,
                     }),
                 )
             };

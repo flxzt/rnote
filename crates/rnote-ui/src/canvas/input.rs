@@ -67,8 +67,11 @@ pub(crate) fn handle_pointer_controller_event(
             let gdk_button = button_event.button();
             let mut handle_shortcut_key = false;
 
-            // check this with a stylus
-            tracing::debug!(
+            // check this with a stylus : not working
+            // the intent would be to capture if a button on the stylus is pressed
+            // when the drag and drop occurs but nothing is captured when a drag and
+            // drop occurs from the pen on windows
+            tracing::trace!(
                 "canvas event ButtonPress - gdk_button: {gdk_button}, is_stylus: {is_stylus}"
             );
 
@@ -110,8 +113,8 @@ pub(crate) fn handle_pointer_controller_event(
             let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
             let gdk_button = button_event.button();
 
-            // check this with a stylus
-            tracing::debug!(
+            // check this with a stylus : not working, see below
+            tracing::tracing!(
                 "canvas event ButtonRelease - gdk_button: {gdk_button}, is_stylus: {is_stylus}"
             );
 

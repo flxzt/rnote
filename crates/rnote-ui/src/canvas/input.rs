@@ -67,45 +67,36 @@ pub(crate) fn handle_pointer_controller_event(
             let gdk_button = button_event.button();
             let mut handle_shortcut_key = false;
 
-            // check this with a stylus : not working
-            // the intent would be to capture if a button on the stylus is pressed
-            // when the drag and drop occurs but nothing is captured when a drag and
-            // drop occurs from the pen on windows
             tracing::trace!(
                 "canvas event ButtonPress - gdk_button: {gdk_button}, is_stylus: {is_stylus}"
             );
 
-            if canvas.imp().dnd_status.get() {
-                handle_pen_event = false;
-                canvas.imp().dnd_respect_borders.set(true);
-            } else {
-                if is_stylus {
-                    if gdk_button == gdk::BUTTON_PRIMARY
-                        || gdk_button == gdk::BUTTON_SECONDARY
-                        || gdk_button == gdk::BUTTON_MIDDLE
-                    {
-                        handle_pen_event = true;
-                        handle_shortcut_key = true;
-                    }
-                } else {
-                    #[allow(clippy::collapsible_else_if)]
-                    if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {
-                        handle_pen_event = true;
-                        handle_shortcut_key = true;
-                        pen_state = PenState::Down;
-                    }
+            if is_stylus {
+                if gdk_button == gdk::BUTTON_PRIMARY
+                    || gdk_button == gdk::BUTTON_SECONDARY
+                    || gdk_button == gdk::BUTTON_MIDDLE
+                {
+                    handle_pen_event = true;
+                    handle_shortcut_key = true;
                 }
+            } else {
+                #[allow(clippy::collapsible_else_if)]
+                if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {
+                    handle_pen_event = true;
+                    handle_shortcut_key = true;
+                    pen_state = PenState::Down;
+                }
+            }
 
-                if handle_shortcut_key {
-                    let shortcut_key = retrieve_button_shortcut_key(gdk_button, is_stylus);
+            if handle_shortcut_key {
+                let shortcut_key = retrieve_button_shortcut_key(gdk_button, is_stylus);
 
-                    if let Some(shortcut_key) = shortcut_key {
-                        let (ep, wf) = canvas
-                            .engine_mut()
-                            .handle_pressed_shortcut_key(shortcut_key, now);
-                        widget_flags |= wf;
-                        propagation = ep.into_glib();
-                    }
+                if let Some(shortcut_key) = shortcut_key {
+                    let (ep, wf) = canvas
+                        .engine_mut()
+                        .handle_pressed_shortcut_key(shortcut_key, now);
+                    widget_flags |= wf;
+                    propagation = ep.into_glib();
                 }
             }
         }
@@ -113,37 +104,31 @@ pub(crate) fn handle_pointer_controller_event(
             let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
             let gdk_button = button_event.button();
 
-            // check this with a stylus : not working, see below
             tracing::trace!(
                 "canvas event ButtonRelease - gdk_button: {gdk_button}, is_stylus: {is_stylus}"
             );
 
-            if canvas.imp().dnd_status.get() {
-                handle_pen_event = false;
-                canvas.imp().dnd_respect_borders.set(false);
-            } else {
-                if is_stylus {
-                    if gdk_button == gdk::BUTTON_PRIMARY
-                        || gdk_button == gdk::BUTTON_SECONDARY
-                        || gdk_button == gdk::BUTTON_MIDDLE
-                    {
-                        handle_pen_event = true;
-                    }
+            if is_stylus {
+                if gdk_button == gdk::BUTTON_PRIMARY
+                    || gdk_button == gdk::BUTTON_SECONDARY
+                    || gdk_button == gdk::BUTTON_MIDDLE
+                {
+                    handle_pen_event = true;
+                }
 
-                    // again, this is the method to detect proximity on stylus.
-                    if gdk_button == gdk::BUTTON_PRIMARY {
-                        pen_state = PenState::Up;
-                    } else {
-                        pen_state = PenState::Proximity;
-                    }
+                // again, this is the method to detect proximity on stylus.
+                if gdk_button == gdk::BUTTON_PRIMARY {
+                    pen_state = PenState::Up;
                 } else {
-                    #[allow(clippy::collapsible_else_if)]
-                    if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {
-                        pen_state = PenState::Up;
-                        handle_pen_event = true;
-                    }
-                };
-            }
+                    pen_state = PenState::Proximity;
+                }
+            } else {
+                #[allow(clippy::collapsible_else_if)]
+                if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {
+                    pen_state = PenState::Up;
+                    handle_pen_event = true;
+                }
+            };
         }
         gdk::EventType::ProximityIn => {
             pen_state = PenState::Proximity;

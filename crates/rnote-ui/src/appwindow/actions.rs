@@ -152,6 +152,9 @@ impl RnAppWindow {
         let action_clipboard_paste_contextmenu =
             gio::SimpleAction::new("clipboard-paste-contextmenu", None);
         self.add_action(&action_clipboard_paste_contextmenu);
+        let action_clipboard_paste_contextmenu_special =
+            gio::SimpleAction::new("clipboard-paste-contextmenu-special", None);
+        self.add_action(&action_clipboard_paste_contextmenu_special);
         let action_active_tab_move_left = gio::SimpleAction::new("active-tab-move-left", None);
         self.add_action(&action_active_tab_move_left);
         let action_active_tab_move_right = gio::SimpleAction::new("active-tab-move-right", None);
@@ -735,11 +738,11 @@ impl RnAppWindow {
         // the logic has been moved to paste_content to make it possible to add a special paste method
         action_clipboard_respect_borders.connect_activate(
             clone!(@weak self as appwindow => move |_, _| {
-                paste_content(appwindow,true);
+                appwindow.clipboard_paste(None,true);
             }),
         );
         action_clipboard_paste.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            paste_content(appwindow,false);
+            appwindow.clipboard_paste(None,false);
         }));
 
         action_clipboard_paste_contextmenu.connect_activate(
@@ -754,7 +757,23 @@ impl RnAppWindow {
                     .coords
                 });
 
-                appwindow.clipboard_paste(last_contextmenu_pos);
+                appwindow.clipboard_paste(last_contextmenu_pos,false);
+            }),
+        );
+
+        action_clipboard_paste_contextmenu_special.connect_activate(
+            clone!(@weak self as appwindow => move |_, _| {
+                let canvas_wrapper = appwindow.active_tab_wrapper();
+                let canvas = canvas_wrapper.canvas();
+
+                let last_contextmenu_pos = canvas_wrapper.last_contextmenu_pos().map(|vec2| {
+                    let p = graphene::Point::new(vec2.x as f32, vec2.y as f32);
+                    (canvas.engine_ref().camera.transform().inverse()
+                        * na::point![p.x() as f64, p.y() as f64])
+                    .coords
+                });
+
+                appwindow.clipboard_paste(last_contextmenu_pos,true);
             }),
         );
     }
@@ -798,7 +817,7 @@ impl RnAppWindow {
         }
     }
 
-    fn clipboard_paste(&self, target_pos: Option<na::Vector2<f64>>) {
+    fn clipboard_paste(&self, target_pos: Option<na::Vector2<f64>>, respect_borders: bool) {
         let canvas_wrapper = self.active_tab_wrapper();
         let canvas = canvas_wrapper.canvas();
         let content_formats = self.clipboard().formats();
@@ -825,7 +844,7 @@ impl RnAppWindow {
                         }).collect::<Vec<PathBuf>>();
 
                         for file_path in file_paths {
-                            appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), target_pos, false,false).await;
+                            appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), target_pos, false,respect_borders).await;
                         }
                     }
                     Ok(None) => {}
@@ -861,7 +880,25 @@ impl RnAppWindow {
                         if !acc.is_empty() {
                             match crate::utils::str_from_u8_nul_utf8(&acc) {
                                 Ok(json_string) => {
-                                    if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), ImageSizeOption::RespectOriginalSize,target_pos).await {
+                                    let resize_argument = match respect_borders {
+                                        false => ImageSizeOption::RespectOriginalSize,
+                                        true => {
+                                        // get all info if resizing has to be done
+                                        let width_page = canvas.engine_ref().document.format.width().clone();
+                                        let height_page = canvas.engine_ref().document.format.height().clone();
+                                        let is_fixed = canvas.engine_ref().document.layout.is_fixed_layout();
+                                        let point_max: na::OPoint<f64, na::Const<2>> = canvas.engine_ref().camera.viewport().maxs;
+
+                                        ImageSizeOption::ResizeImage(Resize {
+                                            width: width_page,
+                                            height: height_page,
+                                            isfixed_layout: is_fixed,
+                                            max_viewpoint: point_max,
+                                            respect_borders: respect_borders,
+                                        })
+                                        }
+                                    };
+                                    if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), resize_argument,target_pos).await {
                                         tracing::error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
                                     }
                                 }
@@ -903,7 +940,7 @@ impl RnAppWindow {
                         if !acc.is_empty() {
                             match crate::utils::str_from_u8_nul_utf8(&acc) {
                                 Ok(text) => {
-                                    if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), target_pos,false).await {
+                                    if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), target_pos,respect_borders).await {
                                         tracing::error!(
                                             "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
                                         );
@@ -941,7 +978,7 @@ impl RnAppWindow {
 
                         match appwindow.clipboard().read_texture_future().await {
                             Ok(Some(texture)) => {
-                                if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), target_pos,false).await {
+                                if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), target_pos,respect_borders).await {
                                     tracing::error!(
                                         "Loading bitmap image bytes failed while pasting clipboard as {mime_type}, Err: {e:?}"
                                     );
@@ -983,215 +1020,5 @@ impl RnAppWindow {
                 content_formats.mime_types()
             );
         }
-    }
-}
-
-/// for now we end up with two different function with the same function and two different additional arguments, this can be cleaned up further ...
-
-/// logic for pasting content from the clipboard
-/// the extra argument `respect_borders` is to change the logic
-/// when importing images (for now, limited to only that)
-pub fn paste_content(appwindow: RnAppWindow, respect_borders: bool) {
-    let canvas = appwindow.active_tab_wrapper().canvas();
-    let content_formats = appwindow.clipboard().formats();
-
-    // Order matters here, we want to go from specific -> generic, mostly because `text/plain` is contained in other text based formats
-    if content_formats.contain_mime_type("text/uri-list") {
-        glib::spawn_future_local(clone!(@weak appwindow => async move {
-            tracing::debug!("Recognized clipboard content format: files list");
-
-            match appwindow.clipboard().read_text_future().await {
-                Ok(Some(text)) => {
-                    let file_paths = text.lines().filter_map(|line| {
-                        let file_path = if let Ok(path_uri) = url::Url::parse(line) {
-                            path_uri.to_file_path().ok()?
-                        } else {
-                            PathBuf::from(&line)
-                        };
-
-                        if file_path.exists() {
-                            Some(file_path)
-                        } else {
-                            None
-                        }
-                    }).collect::<Vec<PathBuf>>();
-
-                    for file_path in file_paths {
-                        appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), None, true,respect_borders).await;
-                    }
-                }
-                Ok(None) => {}
-                Err(e) => {
-                    tracing::error!("Reading clipboard text while pasting clipboard from path failed, Err: {e:?}");
-
-                }
-            }
-        }));
-    } else if content_formats.contain_mime_type(StrokeContent::MIME_TYPE) {
-        glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
-            tracing::debug!("Recognized clipboard content format: {}", StrokeContent::MIME_TYPE);
-
-            match appwindow.clipboard().read_future(&[StrokeContent::MIME_TYPE], glib::source::Priority::DEFAULT).await {
-                Ok((input_stream, _)) => {
-                    let mut acc = Vec::new();
-                    loop {
-                        match input_stream.read_future(vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE], glib::source::Priority::DEFAULT).await {
-                            Ok((mut bytes, n)) => {
-                                if n == 0 {
-                                    break;
-                                }
-                                acc.append(&mut bytes);
-                            }
-                            Err(e) => {
-                                tracing::error!("Failed to read clipboard input stream, Err: {e:?}");
-                                acc.clear();
-                                break;
-                            }
-                        }
-                    }
-
-                    if !acc.is_empty() {
-                        match crate::utils::str_from_u8_nul_utf8(&acc) {
-                            Ok(json_string) => {
-                                let resize_argument = match respect_borders {
-                                    false => ImageSizeOption::RespectOriginalSize,
-                                    true => {
-                                    // get all info if resizing has to be done
-                                    let width_page = canvas.engine_ref().document.format.width().clone();
-                                    let height_page = canvas.engine_ref().document.format.height().clone();
-                                    let is_fixed = canvas.engine_ref().document.layout.is_fixed_layout();
-                                    let point_max: na::OPoint<f64, na::Const<2>> = canvas.engine_ref().camera.viewport().maxs;
-
-                                    ImageSizeOption::ResizeImage(Resize {
-                                        width: width_page,
-                                        height: height_page,
-                                        isfixed_layout: is_fixed,
-                                        max_viewpoint: point_max,
-                                        respect_borders: respect_borders,
-                                    })
-                                    }
-                                };
-
-                                if let Err(e) = canvas.insert_stroke_content(json_string.to_string(),resize_argument,None).await { //may be wrong to set to None
-                                    tracing::error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
-                                }
-                            }
-                            Err(e) => tracing::error!("Failed to read stroke content &str from clipboard data, Err: {e:?}"),
-                        }
-                    }
-                }
-                Err(e) => {
-                    tracing::error!(
-                        "Reading clipboard failed while pasting as `{}`, Err: {e:?}",
-                        StrokeContent::MIME_TYPE
-                    );
-                }
-            };
-        }));
-    } else if content_formats.contain_mime_type("image/svg+xml") {
-        glib::spawn_future_local(clone!(@weak appwindow => async move {
-            tracing::debug!("Recognized clipboard content: svg image");
-
-            match appwindow.clipboard().read_future(&["image/svg+xml"], glib::source::Priority::DEFAULT).await {
-                Ok((input_stream, _)) => {
-                    let mut acc = Vec::new();
-                    loop {
-                        match input_stream.read_future(vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE], glib::source::Priority::DEFAULT).await {
-                            Ok((mut bytes, n)) => {
-                                if n == 0 {
-                                    break;
-                                }
-                                acc.append(&mut bytes);
-                            }
-                            Err(e) => {
-                                tracing::error!("Failed to read clipboard input stream while pasting as Svg, Err: {e:?}");
-                                acc.clear();
-                                break;
-                            }
-                        }
-                    }
-
-                    if !acc.is_empty() {
-                        match crate::utils::str_from_u8_nul_utf8(&acc) {
-                            Ok(text) => {
-                                // need to pass the respect_border to `load_in_vectorimage_bytes`
-                                if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), None, respect_borders).await {
-                                    tracing::error!(
-                                        "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
-                                    );
-                                };
-                            }
-                            Err(e) => tracing::error!("Failed to get string from clipboard data while pasting as Svg, Err: {e:?}"),
-                        }
-                    }
-                }
-                Err(e) => {
-                    tracing::error!("Failed to read clipboard data while pasting as Svg, Err: {e:?}");
-                }
-            };
-        }));
-    } else if content_formats.contain_mime_type("image/png")
-        || content_formats.contain_mime_type("image/jpeg")
-        || content_formats.contain_mime_type("image/jpg")
-        || content_formats.contain_mime_type("image/tiff")
-        || content_formats.contain_mime_type("image/bmp")
-    {
-        const MIMES: [&str; 5] = [
-            "image/png",
-            "image/jpeg",
-            "image/jpg",
-            "image/tiff",
-            "image/bmp",
-        ];
-        if let Some(mime_type) = MIMES
-            .into_iter()
-            .find(|&mime| content_formats.contain_mime_type(mime))
-        {
-            glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
-                tracing::debug!("Recognized clipboard content: bitmap image");
-
-                match appwindow.clipboard().read_texture_future().await {
-                    Ok(Some(texture)) => {
-                        if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), None,respect_borders).await {
-                            tracing::error!(
-                                "Loading bitmap image bytes failed while pasting clipboard as {mime_type}, Err: {e:?}"
-                            );
-                        };
-                    }
-                    Ok(None) => {}
-                    Err(e) => {
-                        tracing::error!(
-                            "Reading clipboard text failed while pasting clipboard as {mime_type}, Err: {e:?}"
-                        );
-                    }
-                };
-            }));
-        }
-    } else if content_formats.contain_mime_type("text/plain")
-        || content_formats.contain_mime_type("text/plain;charset=utf-8")
-    {
-        glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
-            tracing::debug!("Recognized clipboard content: plain text");
-
-            match appwindow.clipboard().read_text_future().await {
-                Ok(Some(text)) => {
-                    if let Err(e) = canvas.load_in_text(text.to_string(), None) {
-                        tracing::error!("Failed to paste clipboard text, Err: {e:?}");
-                    }
-                }
-                Ok(None) => {}
-                Err(e) => {
-                    tracing::error!(
-                        "Reading clipboard text failed while pasting clipboard as plain text, Err: {e:?}"
-                    );
-
-                }
-            }
-        }));
-    } else {
-        tracing::debug!(
-            "Failed to paste clipboard, unsupported MIME-type(s): {:?}",
-            content_formats.mime_types()
-        );
     }
 }

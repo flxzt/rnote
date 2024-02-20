@@ -256,7 +256,6 @@ impl Selector {
                             *current_rotation_angle = new_rotation_angle;
                         }
                     }
-                    // here is ALL of the logic for the resize part
                     ModifyState::Resize {
                         from_corner,
                         start_bounds,

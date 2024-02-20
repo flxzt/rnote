@@ -4,6 +4,7 @@ use crate::pens::Pen;
 use crate::pens::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
 use crate::store::StrokeKey;
+use crate::strokes::resize::calculate_resize_ratio;
 use crate::strokes::resize::ImageSizeOption;
 use crate::strokes::Resize;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
@@ -395,6 +396,7 @@ impl Engine {
         &mut self,
         content: StrokeContent,
         pos: na::Vector2<f64>,
+        resize: ImageSizeOption,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
@@ -404,13 +406,14 @@ impl Engine {
         self.store.set_selected_keys(&all_strokes, false);
         widget_flags |= self.change_pen_style(PenStyle::Selector);
 
+        // calculate ratio
+        let ratio = match resize {
+            ImageSizeOption::ResizeImage(resize) => {
+                calculate_resize_ratio(resize, content.size().unwrap(), pos)
+            }
+            _ => 1.0f64,
+        };
         let inserted_keys = self.store.insert_stroke_content(content, pos);
-
-        // test : resize these things here
-        self.store
-            .scale_strokes_with_pivot(&inserted_keys, na::Vector2::new(0.1, 0.1), pos);
-        self.store
-            .scale_strokes_images_with_pivot(&inserted_keys, na::Vector2::new(0.1, 0.1), pos);
 
         self.store.update_geometry_for_strokes(&inserted_keys);
         self.store.regenerate_rendering_in_viewport_threaded(
@@ -419,6 +422,24 @@ impl Engine {
             self.camera.viewport(),
             self.camera.image_scale(),
         );
+
+        self.store
+            .scale_strokes_with_pivot(&inserted_keys, na::Vector2::new(ratio, ratio), pos);
+        self.store.scale_strokes_images_with_pivot(
+            &inserted_keys,
+            na::Vector2::new(ratio, ratio),
+            pos,
+        );
+
+        // re generate view
+        self.store.update_geometry_for_strokes(&inserted_keys);
+        self.store.regenerate_rendering_in_viewport_threaded(
+            self.tasks_tx.clone(),
+            false,
+            self.camera.viewport(),
+            self.camera.image_scale(),
+        );
+
         widget_flags |= self.penholder.current_pen_update_state(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &mut self.pens_config,

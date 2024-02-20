@@ -5,6 +5,7 @@ use gtk4::{gio, prelude::*};
 use rnote_compose::ext::Vector2Ext;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
 use rnote_engine::engine::{EngineSnapshot, StrokeContent};
+use rnote_engine::strokes::resize::ImageSizeOption;
 use rnote_engine::strokes::Stroke;
 use rnote_engine::WidgetFlags;
 use std::ops::Range;
@@ -157,7 +158,11 @@ impl RnCanvas {
     /// Deserializes the stroke content and inserts it into the engine.
     ///
     /// The data is usually coming from the clipboard, drop source, etc.
-    pub(crate) async fn insert_stroke_content(&self, json_string: String) -> anyhow::Result<()> {
+    pub(crate) async fn insert_stroke_content(
+        &self,
+        json_string: String,
+        resize: ImageSizeOption,
+    ) -> anyhow::Result<()> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<StrokeContent>>();
         let pos = self.determine_stroke_import_pos(None);
@@ -175,7 +180,9 @@ impl RnCanvas {
         let content = oneshot_receiver.await??;
 
         tracing::debug!("{:?} {:?}", content.bounds(), content.size()); //debug trace to see the size of the imported content
-        let widget_flags = self.engine_mut().insert_stroke_content(content, pos);
+        let widget_flags = self
+            .engine_mut()
+            .insert_stroke_content(content, pos, resize);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())

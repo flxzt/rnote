@@ -241,7 +241,7 @@ pub(crate) fn handle_key_controller_key_pressed(
     gdk_key: gdk::Key,
     gdk_modifiers: gdk::ModifierType,
 ) -> glib::Propagation {
-    tracing::debug!(
+    tracing::trace!(
         "canvas event key pressed - gdk_key: {gdk_key:?}, gdk_modifiers: {gdk_modifiers:?}"
     );
     canvas.grab_focus();
@@ -250,17 +250,6 @@ pub(crate) fn handle_key_controller_key_pressed(
     let keyboard_key = retrieve_keyboard_key(gdk_key);
     let modifier_keys = retrieve_modifier_keys(gdk_modifiers);
     let shortcut_key = retrieve_keyboard_shortcut_key(gdk_key, gdk_modifiers);
-
-    // re print all of this information once again
-    tracing::debug!(
-        "key\t {:?}
-        modifier\t {:?}
-        shortcut\t {:?} 
-        ",
-        keyboard_key,
-        modifier_keys,
-        shortcut_key
-    );
 
     match (keyboard_key, canvas.imp().dnd_status.get()) {
         (KeyboardKey::ShiftLeft, true) | (KeyboardKey::ShiftRight, true) => {
@@ -295,7 +284,7 @@ pub(crate) fn handle_key_controller_key_released(
     gdk_key: gdk::Key,
     gdk_modifiers: gdk::ModifierType,
 ) {
-    tracing::debug!(
+    tracing::trace!(
         "canvas event key released - gdk_key: {gdk_key:?}, gdk_modifiers: {gdk_modifiers:?}"
     );
     let keyboard_key = retrieve_keyboard_key(gdk_key);

@@ -174,7 +174,7 @@ impl RnCanvas {
         });
         let content = oneshot_receiver.await??;
 
-        tracing::debug!("{:?} {:?}", content.bounds(), content.size()); //calculate bounds
+        tracing::debug!("{:?} {:?}", content.bounds(), content.size()); //debug trace to see the size of the imported content
         let widget_flags = self.engine_mut().insert_stroke_content(content, pos);
 
         self.emit_handle_widget_flags(widget_flags);

@@ -405,6 +405,13 @@ impl Engine {
         widget_flags |= self.change_pen_style(PenStyle::Selector);
 
         let inserted_keys = self.store.insert_stroke_content(content, pos);
+
+        // test : resize these things here
+        self.store
+            .scale_strokes_images_with_pivot(&inserted_keys, na::Vector2::new(0.1, 0.1), pos);
+        self.store
+            .scale_strokes_with_pivot(&inserted_keys, na::Vector2::new(0.1, 0.1), pos);
+
         self.store.update_geometry_for_strokes(&inserted_keys);
         self.store.regenerate_rendering_in_viewport_threaded(
             self.tasks_tx.clone(),

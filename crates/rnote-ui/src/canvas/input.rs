@@ -114,7 +114,7 @@ pub(crate) fn handle_pointer_controller_event(
             let gdk_button = button_event.button();
 
             // check this with a stylus : not working, see below
-            tracing::tracing!(
+            tracing::trace!(
                 "canvas event ButtonRelease - gdk_button: {gdk_button}, is_stylus: {is_stylus}"
             );
 

@@ -321,7 +321,7 @@ impl Selector {
                             .maxs(&min_extents)
                             .component_div(&selection_bounds.extents());
 
-                        // resize strokes [0]
+                        // resize strokes
                         engine_view
                             .store
                             .scale_strokes_with_pivot(selection, scale, pivot);

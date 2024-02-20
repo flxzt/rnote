@@ -1,5 +1,5 @@
 // Imports
-use crate::{RnAppWindow, RnCanvas};
+use crate::{RnAppWindow, RnCanvas, RnContextMenu};
 use gtk4::{
     gdk, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, CompositeTemplate,
     CornerType, EventControllerMotion, EventControllerScroll, EventControllerScrollFlags,
@@ -34,6 +34,7 @@ mod imp {
         pub(crate) block_pinch_zoom: Cell<bool>,
         pub(crate) inertial_scrolling: Cell<bool>,
         pub(crate) pointer_pos: Cell<Option<na::Vector2<f64>>>,
+        pub(crate) last_contextmenu_pos: Cell<Option<na::Vector2<f64>>>,
 
         pub(crate) pointer_motion_controller: EventControllerMotion,
         pub(crate) canvas_drag_gesture: GestureDrag,
@@ -43,11 +44,14 @@ mod imp {
         pub(crate) canvas_alt_drag_gesture: GestureDrag,
         pub(crate) canvas_alt_shift_drag_gesture: GestureDrag,
         pub(crate) touch_two_finger_long_press_gesture: GestureLongPress,
+        pub(crate) touch_long_press_gesture: GestureLongPress,
 
         #[template_child]
         pub(crate) scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
         pub(crate) canvas: TemplateChild<RnCanvas>,
+        #[template_child]
+        pub(crate) contextmenu: TemplateChild<RnContextMenu>,
     }
 
     impl Default for RnCanvasWrapper {
@@ -109,6 +113,11 @@ mod imp {
                 .propagation_phase(PropagationPhase::Capture)
                 .build();
 
+            let touch_long_press_gesture = GestureLongPress::builder()
+                .name("touch_long_press_gesture")
+                .touch_only(true)
+                .build();
+
             Self {
                 connections: RefCell::new(Connections::default()),
                 canvas_touch_drawing_handler: RefCell::new(None),
@@ -116,6 +125,7 @@ mod imp {
                 block_pinch_zoom: Cell::new(false),
                 inertial_scrolling: Cell::new(true),
                 pointer_pos: Cell::new(None),
+                last_contextmenu_pos: Cell::new(None),
 
                 pointer_motion_controller,
                 canvas_drag_gesture,
@@ -125,9 +135,11 @@ mod imp {
                 canvas_alt_drag_gesture,
                 canvas_alt_shift_drag_gesture,
                 touch_two_finger_long_press_gesture,
+                touch_long_press_gesture,
 
                 scroller: TemplateChild::<ScrolledWindow>::default(),
                 canvas: TemplateChild::<RnCanvas>::default(),
+                contextmenu: TemplateChild::<RnContextMenu>::default(),
             }
         }
     }
@@ -169,6 +181,8 @@ mod imp {
                 .add_controller(self.canvas_alt_shift_drag_gesture.clone());
             self.scroller
                 .add_controller(self.touch_two_finger_long_press_gesture.clone());
+            self.canvas
+                .add_controller(self.touch_long_press_gesture.clone());
 
             // group
             self.touch_two_finger_long_press_gesture
@@ -601,6 +615,18 @@ mod imp {
                     }),
                 );
             }
+
+            {
+                // Context menu
+                self.touch_long_press_gesture.connect_pressed(
+                    clone!(@weak obj as canvaswrapper => move |_gesture, x, y| {
+                        let popover = canvaswrapper.contextmenu().popover();
+                        canvaswrapper.imp().last_contextmenu_pos.set(Some(na::vector![x, y]));
+                        popover.set_pointing_to(Some(&gdk::Rectangle::new(x as i32, y as i32, 4, 4)));
+                        popover.popup();
+                    }),
+                );
+            }
         }
     }
 }
@@ -650,12 +676,20 @@ impl RnCanvasWrapper {
         self.set_property("inertial-scrolling", inertial_scrolling);
     }
 
+    pub(crate) fn last_contextmenu_pos(&self) -> Option<na::Vector2<f64>> {
+        self.imp().last_contextmenu_pos.get()
+    }
+
     pub(crate) fn scroller(&self) -> ScrolledWindow {
         self.imp().scroller.get()
     }
 
     pub(crate) fn canvas(&self) -> RnCanvas {
         self.imp().canvas.get()
+    }
+
+    pub(crate) fn contextmenu(&self) -> RnContextMenu {
+        self.imp().contextmenu.get()
     }
 
     /// Initializes for the given appwindow. Usually `init()` is only called once,

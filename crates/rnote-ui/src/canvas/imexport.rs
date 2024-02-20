@@ -162,10 +162,11 @@ impl RnCanvas {
         &self,
         json_string: String,
         resize: ImageSizeOption,
+        target_pos: Option<na::Vector2<f64>>, // is this used ? To see if everything is okay ...
     ) -> anyhow::Result<()> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<StrokeContent>>();
-        let pos = self.determine_stroke_import_pos(None);
+        let pos = self.determine_stroke_import_pos(target_pos);
 
         rayon::spawn(move || {
             let result = || -> Result<StrokeContent, anyhow::Error> {

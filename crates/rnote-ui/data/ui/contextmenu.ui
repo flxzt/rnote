@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="RnContextMenu" parent="GtkWidget">
+    <child>
+      <object class="GtkPopoverMenu" id="popover">
+        <property name="menu-model">menu_model</property>
+        <property name="has-arrow">false</property>
+        <menu id="menu_model">
+          <item>
+            <attribute name="label" translatable="yes">_Copy</attribute>
+            <attribute name="action">win.clipboard-copy</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">C_ut</attribute>
+            <attribute name="action">win.clipboard-cut</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">_Paste</attribute>
+            <attribute name="action">win.clipboard-paste-contextmenu</attribute>
+          </item>
+        </menu>
+      </object>
+    </child>
+  </template>
+</interface>

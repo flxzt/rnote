@@ -361,6 +361,7 @@ rnote_ui_gresources_ui_files = files(
     'ui/canvasmenu.ui',
     'ui/canvaswrapper.ui',
     'ui/colorpicker.ui',
+    'ui/contextmenu.ui',
     'ui/filerow.ui',
     'ui/iconpicker.ui',
     'ui/mainheader.ui',

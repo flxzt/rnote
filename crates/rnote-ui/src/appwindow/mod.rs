@@ -829,7 +829,7 @@ impl RnAppWindow {
         let active_canvas_wrapper = active_tab.child().downcast::<RnCanvasWrapper>().unwrap();
         let active_canvas = active_canvas_wrapper.canvas();
 
-        let mut widget_flags = active_canvas.engine_mut().load_engine_config(
+        let mut widget_flags = active_canvas.engine_mut().load_engine_config_sync_tab(
             prev_canvas.engine_ref().extract_engine_config(),
             crate::env::pkg_data_dir().ok(),
         );

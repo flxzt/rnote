@@ -817,6 +817,7 @@ impl RnAppWindow {
         }
     }
 
+    /// `respect_borders` : activate the special paste mode
     fn clipboard_paste(&self, target_pos: Option<na::Vector2<f64>>, respect_borders: bool) {
         let canvas_wrapper = self.active_tab_wrapper();
         let canvas = canvas_wrapper.canvas();
@@ -825,7 +826,7 @@ impl RnAppWindow {
         // Order matters here, we want to go from specific -> generic, mostly because `text/plain` is contained in other text based formats
         if content_formats.contain_mime_type("text/uri-list") {
             glib::spawn_future_local(clone!(@weak self as appwindow => async move {
-                tracing::debug!("Recognized clipboard content format: files list");
+                tracing::trace!("Recognized clipboard content format: files list");
 
                 match appwindow.clipboard().read_text_future().await {
                     Ok(Some(text)) => {
@@ -856,7 +857,7 @@ impl RnAppWindow {
             }));
         } else if content_formats.contain_mime_type(StrokeContent::MIME_TYPE) {
             glib::spawn_future_local(clone!(@weak canvas, @weak self as appwindow => async move {
-                tracing::debug!("Recognized clipboard content format: {}", StrokeContent::MIME_TYPE);
+                tracing::trace!("Recognized clipboard content format: {}", StrokeContent::MIME_TYPE);
 
                 match appwindow.clipboard().read_future(&[StrokeContent::MIME_TYPE], glib::source::Priority::DEFAULT).await {
                     Ok((input_stream, _)) => {
@@ -880,24 +881,25 @@ impl RnAppWindow {
                         if !acc.is_empty() {
                             match crate::utils::str_from_u8_nul_utf8(&acc) {
                                 Ok(json_string) => {
-                                    let resize_argument = match respect_borders {
-                                        false => ImageSizeOption::RespectOriginalSize,
-                                        true => {
                                         // get all info if resizing has to be done
                                         let width_page = canvas.engine_ref().document.format.width().clone();
                                         let height_page = canvas.engine_ref().document.format.height().clone();
                                         let is_fixed = canvas.engine_ref().document.layout.is_fixed_layout();
-                                        let point_max: na::OPoint<f64, na::Const<2>> = canvas.engine_ref().camera.viewport().maxs;
+                                        // let point_max: na::OPoint<f64, na::Const<2>> = canvas.engine_ref().camera.viewport().maxs;
 
-                                        ImageSizeOption::ResizeImage(Resize {
+                                        // we choose here to
+                                        // - do not resize to the viewport in all cases (only reserved for paste of images)
+                                        // - resize to make the content fit on the page for fixed layouts
+                                        // - if the special method is activated, we will resize to make the
+                                        //  content not go over any page borders
+                                        let resize_argument = ImageSizeOption::ResizeImage(Resize {
                                             width: width_page,
                                             height: height_page,
                                             isfixed_layout: is_fixed,
-                                            max_viewpoint: point_max,
+                                            max_viewpoint: None,
+                                            restrain_to_viewport: false,
                                             respect_borders: respect_borders,
-                                        })
-                                        }
-                                    };
+                                        });
                                     if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), resize_argument,target_pos).await {
                                         tracing::error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
                                     }
@@ -916,7 +918,7 @@ impl RnAppWindow {
             }));
         } else if content_formats.contain_mime_type("image/svg+xml") {
             glib::spawn_future_local(clone!(@weak self as appwindow => async move {
-                tracing::debug!("Recognized clipboard content: svg image");
+                tracing::trace!("Recognized clipboard content: svg image");
 
                 match appwindow.clipboard().read_future(&["image/svg+xml"], glib::source::Priority::DEFAULT).await {
                     Ok((input_stream, _)) => {
@@ -974,7 +976,7 @@ impl RnAppWindow {
             {
                 glib::spawn_future_local(
                     clone!(@weak canvas, @weak self as appwindow => async move {
-                        tracing::debug!("Recognized clipboard content: bitmap image");
+                        tracing::trace!("Recognized clipboard content: bitmap image");
 
                         match appwindow.clipboard().read_texture_future().await {
                             Ok(Some(texture)) => {
@@ -998,7 +1000,7 @@ impl RnAppWindow {
             || content_formats.contain_mime_type("text/plain;charset=utf-8")
         {
             glib::spawn_future_local(clone!(@weak canvas, @weak self as appwindow => async move {
-                tracing::debug!("Recognized clipboard content: plain text");
+                tracing::trace!("Recognized clipboard content: plain text");
 
                 match appwindow.clipboard().read_text_future().await {
                     Ok(Some(text)) => {

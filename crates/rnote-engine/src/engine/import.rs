@@ -246,7 +246,8 @@ impl Engine {
                         width: width_page,
                         height: height_page,
                         isfixed_layout: is_fixed,
-                        max_viewpoint: point_max,
+                        max_viewpoint: Some(point_max),
+                        restrain_to_viewport: true,
                         respect_borders: respect_borders,
                     }),
                 )
@@ -288,7 +289,8 @@ impl Engine {
                         width: width_page,
                         height: height_page,
                         isfixed_layout: is_fixed,
-                        max_viewpoint: point_max,
+                        max_viewpoint: Some(point_max),
+                        restrain_to_viewport: true,
                         respect_borders: respect_borders,
                     }),
                 )

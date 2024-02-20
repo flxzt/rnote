@@ -10,7 +10,7 @@ pub enum ImageSizeOption {
     RespectOriginalSize,
     /// Use the given size
     ImposeSize(na::Vector2<f64>),
-    /// Resize the image to canvas/page view
+    /// Resize the image with various constraints
     ResizeImage(Resize),
 }
 
@@ -23,14 +23,30 @@ pub struct Resize {
     /// if the layout has a fixed size vertically
     pub isfixed_layout: bool,
     /// viewport
-    pub max_viewpoint: na::OPoint<f64, na::Const<2>>,
+    pub max_viewpoint: Option<na::OPoint<f64, na::Const<2>>>,
+    /// resize to the viewport
+    pub restrain_to_viewport: bool,
     /// To force elements to not go over borders
     /// maybe enabling that to be on only when borders are active
     /// would be a better idea
     pub respect_borders: bool,
 }
 
-/// Helper function to calculate ratios
+/// helper functions for calculating resizing factors
+
+/// Calculate where the next border of the page is
+/// based on the current `position` and the `size` of
+/// the page length
+///
+/// in conjunction with the the ratio min value, may
+/// fail if the position is very close to a page border
+fn helper_calculate_page_next_limit(position: &f64, size: &f64) -> f64 {
+    ((position / size).floor() + 1.0f64) * size
+}
+
+/// Helper function to calculate ratios : min ratio for
+/// the image to go from `current_position` to `current_size`
+/// exactly
 fn helper_calculate_fit_ratio(
     max_position: &f64,
     current_position: &f64,
@@ -58,31 +74,48 @@ pub fn calculate_resize_ratio(
     let current_width = initial_size_image.x;
     let current_height = initial_size_image.y;
 
+    let next_page_vertical_border =
+        helper_calculate_page_next_limit(&pos_left_top_canvas.index(0), &resize.width);
+    let next_page_horizontal_border =
+        helper_calculate_page_next_limit(&pos_left_top_canvas.index(1), &resize.height);
+
     // compile all ratio in a vec
     let ratios = vec![
         // check that we do not go out of the canvas view in the x direction
         helper_calculate_fit_ratio(
-            &resize.max_viewpoint.x,
+            &resize.max_viewpoint.unwrap_or(na::point![1.0, 1.0]).x,
             &pos_left_top_canvas.index(0),
             &current_width,
         ),
         // check that we do not go out of view in the y direction
         helper_calculate_fit_ratio(
-            &resize.max_viewpoint.y,
+            &resize.max_viewpoint.unwrap_or(na::point![1.0, 1.0]).y,
             &pos_left_top_canvas.index(1),
             &current_height,
         ),
         // check if we go out of the page on the right on fixed layout
         helper_calculate_fit_ratio(&resize.width, &pos_left_top_canvas.index(0), &current_width),
         // check if we have to respect borders
-        calculate_resize_ratio_respect_borders(&resize, &initial_size_image, &pos_left_top_canvas),
+        helper_calculate_fit_ratio(
+            &next_page_vertical_border,
+            &pos_left_top_canvas.index(0),
+            &initial_size_image.x,
+        ), // vertical border
+        helper_calculate_fit_ratio(
+            &next_page_horizontal_border,
+            &pos_left_top_canvas.index(1),
+            &initial_size_image.y,
+        ), //horizontal border
     ];
+
+    let is_provided_viewport = resize.max_viewpoint.is_some();
 
     // apply rules
     let apply_ratios = vec![
-        true,                   //canvas in the x direction
-        true,                   //canvas in the y direction
-        resize.isfixed_layout,  //do not go over the page on the right for fixed layout
+        is_provided_viewport & resize.restrain_to_viewport, //canvas in the x direction
+        is_provided_viewport & resize.restrain_to_viewport, //canvas in the y direction
+        resize.isfixed_layout, //do not go over the page on the right for fixed layout
+        resize.respect_borders, //do not go over the page on the bottom for all layouts (slightly redundant)
         resize.respect_borders, //do not go over the page on the right for all layouts (slightly redundant)
     ];
 
@@ -92,47 +125,4 @@ pub fn calculate_resize_ratio(
         .filter(|x| x.1)
         .fold(1.0f64, |acc, x| acc.min(*x.0))
         .max(1e-15f64) //force the value to be positive as a zero would incurr crashes when applying the transforms
-}
-
-/// calculate the ratio to not go over borders
-pub fn calculate_resize_ratio_respect_borders(
-    resize: &Resize,
-    initial_size_image: &na::Vector2<f64>,
-    pos_left_top_canvas: &na::Vector2<f64>,
-) -> f64 {
-    // closure to calculate the ceil
-    // We take the `floor (ratio + eps) + 1``
-    // This allows for element that would fall exactly
-    // on a border to be on the next page and disallow
-    // too small ratios
-    let f_ratio = |position: &f64, size: &f64| -> f64 {
-        (((position / size) + 1e-8f64).floor() + 1.0f64) * size
-    };
-
-    let next_page_vertical_border = f_ratio(&pos_left_top_canvas.index(0), &resize.width);
-    let next_page_horizontal_border = f_ratio(&pos_left_top_canvas.index(1), &resize.height);
-
-    let ratios = vec![
-        helper_calculate_fit_ratio(
-            &next_page_vertical_border,
-            &pos_left_top_canvas.index(0),
-            &initial_size_image.x,
-        ),
-        helper_calculate_fit_ratio(
-            &next_page_horizontal_border,
-            &pos_left_top_canvas.index(1),
-            &initial_size_image.y,
-        ),
-    ];
-
-    let rule_apply = vec![
-        true, // vertical rule
-        true, // horizontal rule
-    ];
-
-    ratios
-        .iter()
-        .zip(rule_apply)
-        .fold(1.0f64, |acc, x| acc.min(*x.0))
-        .max(1e-15f64) //force the final value to be positive
 }

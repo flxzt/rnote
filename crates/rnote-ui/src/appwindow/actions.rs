@@ -825,7 +825,7 @@ impl RnAppWindow {
                         }).collect::<Vec<PathBuf>>();
 
                         for file_path in file_paths {
-                            appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), target_pos, true).await;
+                            appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), target_pos, false,false).await;
                         }
                     }
                     Ok(None) => {}
@@ -861,7 +861,7 @@ impl RnAppWindow {
                         if !acc.is_empty() {
                             match crate::utils::str_from_u8_nul_utf8(&acc) {
                                 Ok(json_string) => {
-                                    if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), target_pos).await {
+                                    if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), ImageSizeOption::RespectOriginalSize,target_pos).await {
                                         tracing::error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
                                     }
                                 }
@@ -903,7 +903,7 @@ impl RnAppWindow {
                         if !acc.is_empty() {
                             match crate::utils::str_from_u8_nul_utf8(&acc) {
                                 Ok(text) => {
-                                    if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), target_pos).await {
+                                    if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), target_pos,false).await {
                                         tracing::error!(
                                             "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
                                         );
@@ -941,7 +941,7 @@ impl RnAppWindow {
 
                         match appwindow.clipboard().read_texture_future().await {
                             Ok(Some(texture)) => {
-                                if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), target_pos).await {
+                                if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), target_pos,false).await {
                                     tracing::error!(
                                         "Loading bitmap image bytes failed while pasting clipboard as {mime_type}, Err: {e:?}"
                                     );
@@ -1072,7 +1072,7 @@ pub fn paste_content(appwindow: RnAppWindow, respect_borders: bool) {
                                     }
                                 };
 
-                                if let Err(e) = canvas.insert_stroke_content(json_string.to_string(),resize_argument).await {
+                                if let Err(e) = canvas.insert_stroke_content(json_string.to_string(),resize_argument,None).await { //may be wrong to set to None
                                     tracing::error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
                                 }
                             }

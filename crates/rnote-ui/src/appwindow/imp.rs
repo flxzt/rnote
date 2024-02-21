@@ -238,19 +238,22 @@ impl RnAppWindow {
         if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(),
                 clone!(@weak obj as appwindow => @default-return glib::ControlFlow::Break, move || {
                     let canvas = appwindow.active_tab_wrapper().canvas();
+                    let unsaved_changes=canvas.imp().unsaved_changes.get();
 
-                    if let Some(output_file) = canvas.output_file() {
-                        glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
-                            if let Err(e) = canvas.save_document_to_file(&output_file).await {
-                                canvas.set_output_file(None);
+                    if unsaved_changes {
+                        tracing::debug!("there are unsaved changes on the current tab, saving");
+                        if let Some(output_file) = canvas.output_file() {
+                            glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
+                                if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                                    canvas.set_output_file(None);
 
-                                tracing::error!("Saving document failed, Err: `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
+                                    tracing::error!("Saving document failed, Err: `{e:?}`");
+                                    appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
+                                }
                             }
-                        }
-                    ));
+                        ));
+                    }
                 }
-
                 glib::ControlFlow::Continue
             }))) {
                 removed_id.remove();

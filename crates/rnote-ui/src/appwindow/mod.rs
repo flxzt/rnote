@@ -104,6 +104,10 @@ impl RnAppWindow {
         self.imp().overlays.get()
     }
 
+    pub(crate) fn get_tab_i(&self, i: u32) -> Option<glib::Object> {
+        self.imp().overlays.tabview().pages().item(i)
+    }
+
     /// Must be called after application is associated with the window else the init will panic
     pub(crate) fn init(&self) {
         let imp = self.imp();

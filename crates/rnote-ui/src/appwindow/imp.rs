@@ -246,8 +246,7 @@ impl RnAppWindow {
                             .tabview()
                             .pages()
                             .n_items();
-
-                        tracing::debug!("{:?}",tabs);
+                        // tabs is the number of tabs in the window to index them later
 
                         for i in 0..tabs {
                             match appwindow.get_tab_i(i) {
@@ -264,13 +263,13 @@ impl RnAppWindow {
                                         .canvas();
                                     if canvas_i.unsaved_changes() {
                                         if let Some(output_file) = canvas_i.output_file() {
-                                        tracing::debug!("there are unsaved changes on the current tab with a file on disk, saving"); //debug trace
-                                    glib::spawn_future_local(clone!(@weak canvas_i, @weak appwindow => async move {
-                                    if let Err(e) = canvas_i.save_document_to_file(&output_file).await {
-                                        canvas_i.set_output_file(None);
-                                        tracing::error!("Saving document failed, Err: `{e:?}`");
-                                        appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
-                                    }
+                                        tracing::trace!("there are unsaved changes on the current tab with a file on disk, saving");
+                                        glib::spawn_future_local(clone!(@weak canvas_i, @weak appwindow => async move {
+                                        if let Err(e) = canvas_i.save_document_to_file(&output_file).await {
+                                            canvas_i.set_output_file(None);
+                                            tracing::error!("Saving document failed, Err: `{e:?}`");
+                                            appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
+                                        }
                                 }
                                 ));
                             }

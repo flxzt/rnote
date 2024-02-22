@@ -1,38 +1,38 @@
 [package]
-name = "rnote-compose"
-version.workspace = true
-edition.workspace = true
-rust-version.workspace = true
 authors.workspace = true
-license.workspace = true
+edition.workspace = true
 homepage.workspace = true
+license.workspace = true
+name = "rnote-compose"
 repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
 
 [dependencies]
 ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "b67f11b2c174a9ae4a54c22313cf8c218ff0946a" }
 
-tracing = { workspace = true }
 anyhow = { workspace = true }
+approx = { workspace = true }
+base64 = { workspace = true }
+clap = { workspace = true, optional = true }
+kurbo = { workspace = true }
+nalgebra = { workspace = true }
 num-derive = { workspace = true }
 num-traits = { workspace = true }
-approx = { workspace = true }
 once_cell = { workspace = true }
-serde = { workspace = true }
-nalgebra = { workspace = true }
+palette = { workspace = true }
 parry2d-f64 = { workspace = true }
-rand = { workspace = true }
-rand_pcg = { workspace = true }
-rand_distr = { workspace = true }
-base64 = { workspace = true }
-regex = { workspace = true }
-svg = { workspace = true }
-kurbo = { workspace = true }
 piet = { workspace = true }
 piet-cairo = { workspace = true }
-roughr = { workspace = true }
+rand = { workspace = true }
+rand_distr = { workspace = true }
+rand_pcg = { workspace = true }
+regex = { workspace = true }
 rough_piet = { workspace = true }
-palette = { workspace = true }
-clap = { workspace = true, optional = true }
+roughr = { workspace = true }
+serde = { workspace = true }
+svg = { workspace = true }
+tracing = { workspace = true }
 
 [features]
-clap-derive = [ "dep:clap" ]
+clap-derive = ["dep:clap"]

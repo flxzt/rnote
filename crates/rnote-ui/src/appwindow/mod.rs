@@ -270,7 +270,9 @@ impl RnAppWindow {
             if glib_obj.is_none() {
                 return Err(anyhow::anyhow!("could not obtain the tab {:?}", i));
             }
-            let tab_glib = glib_obj.expect("downcast failure").downcast::<adw::TabPage>();
+            let tab_glib = glib_obj
+                .expect("downcast failure")
+                .downcast::<adw::TabPage>();
             let wrapper = tab_glib
                 .unwrap()
                 .child()
@@ -278,7 +280,7 @@ impl RnAppWindow {
             let canvas = wrapper.unwrap().canvas();
             output.push(canvas);
         }
-        return Ok(output)
+        return Ok(output);
     }
 
     /// Get the active (selected) tab page child.

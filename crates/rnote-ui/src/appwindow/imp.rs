@@ -246,7 +246,8 @@ impl RnAppWindow {
                         Ok(tabs) => {
                             tabs
                                 .iter()
-                                .map(|canvas_i| {
+                                .enumerate()
+                                .for_each(|(i,canvas_i)| {
                                     if canvas_i.unsaved_changes() {
                                         if let Some(output_file) = canvas_i.output_file() {
                                             tracing::trace!(

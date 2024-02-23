@@ -104,30 +104,6 @@ impl RnAppWindow {
         self.imp().overlays.get()
     }
 
-    pub(crate) fn get_number_of_tabs(&self) -> u32 {
-        self.imp().overlays.tabview().pages().n_items()
-    }
-
-    pub(crate) fn get_tab_i(&self, i: u32) -> Result<RnCanvas, anyhow::Error> {
-        let glib_obj = self.imp().overlays.tabview().pages().item(i);
-        if !glib_obj.is_some() {
-            return Err(anyhow::anyhow!("could not obtain the tab {:?}", i));
-        }
-        let tab_glib = glib_obj.unwrap().downcast::<adw::TabPage>();
-        if tab_glib.is_err() {
-            return Err(anyhow::anyhow!("Error, cannot downcast to TabPage"));
-        }
-        let wrapper = tab_glib
-            .unwrap()
-            .child()
-            .downcast::<crate::RnCanvasWrapper>();
-        if wrapper.is_err() {
-            return Err(anyhow::anyhow!("Error, cannot downcast to RnCanvasWrapper"));
-        }
-        let canvas = wrapper.unwrap().canvas();
-        return Ok(canvas);
-    }
-
     /// Must be called after application is associated with the window else the init will panic
     pub(crate) fn init(&self) {
         let imp = self.imp();
@@ -278,6 +254,30 @@ impl RnAppWindow {
             .tabview()
             .selected_page()
             .expect("there must always be one active tab")
+    }
+
+    pub(crate) fn get_number_of_tabs(&self) -> u32 {
+        self.imp().overlays.tabview().pages().n_items()
+    }
+
+    pub(crate) fn get_tab_i(&self, i: u32) -> Result<RnCanvas, anyhow::Error> {
+        let glib_obj = self.imp().overlays.tabview().pages().item(i);
+        if !glib_obj.is_some() {
+            return Err(anyhow::anyhow!("could not obtain the tab {:?}", i));
+        }
+        let tab_glib = glib_obj.unwrap().downcast::<adw::TabPage>();
+        if tab_glib.is_err() {
+            return Err(anyhow::anyhow!("Error, cannot downcast to TabPage"));
+        }
+        let wrapper = tab_glib
+            .unwrap()
+            .child()
+            .downcast::<crate::RnCanvasWrapper>();
+        if wrapper.is_err() {
+            return Err(anyhow::anyhow!("Error, cannot downcast to RnCanvasWrapper"));
+        }
+        let canvas = wrapper.unwrap().canvas();
+        return Ok(canvas);
     }
 
     /// Get the active (selected) tab page child.

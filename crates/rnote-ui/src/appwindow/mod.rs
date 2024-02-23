@@ -280,7 +280,7 @@ impl RnAppWindow {
             let canvas = wrapper.unwrap().canvas();
             output.push(canvas);
         }
-        return Ok(output);
+        Ok(output)
     }
 
     /// Get the active (selected) tab page child.

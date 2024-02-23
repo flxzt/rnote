@@ -240,43 +240,42 @@ impl RnAppWindow {
                 self.autosave_interval_secs.get(),
                 clone!(@weak obj as appwindow => @default-return glib::ControlFlow::Break, move || {
                     // save for all tabs opened in the current window that have unsaved changes
-                    let tabs = appwindow.get_number_of_tabs();
-                    // tabs is the number of tabs in the window to index them later
+                    let tabs_result = appwindow.get_all_tabs(); // get all tabs in a vec
 
-                    for i in 0..tabs {
-                        let canvas_i_res = appwindow.get_tab_i(i);
-                        match canvas_i_res {
-                            Err(e) => {
-                                tracing::error!("failed to open tab {:?}, {:?}",i,e);
-                                appwindow
-                                    .overlays()
-                                    .dispatch_toast_error(&gettext("Failed to open tab"));
-                            }
-                            Ok(canvas_i) => {
-                                if canvas_i.unsaved_changes() {
-                                    if let Some(output_file) = canvas_i.output_file() {
-                                        tracing::trace!(
-                                            "there are unsaved changes on the tab {:?} with a file on disk, saving",i
-                                        );
-                                        glib::spawn_future_local(
-                                            clone!(@weak canvas_i, @weak appwindow => async move {
-                                        if let Err(e) = canvas_i
-                                            .save_document_to_file(&output_file)
-                                            .await {
-                                        canvas_i.set_output_file(None);
-                                        tracing::error!("Saving document failed, Err: `{e:?}`");
-                                        appwindow
-                                            .overlays()
-                                            .dispatch_toast_error(&gettext("Saving document failed"));
+                    match tabs_result {
+                        Ok(tabs) => {
+                            tabs
+                                .iter()
+                                .map(|canvas_i| {
+                                    if canvas_i.unsaved_changes() {
+                                        if let Some(output_file) = canvas_i.output_file() {
+                                            tracing::trace!(
+                                                "there are unsaved changes on the tab {:?} with a file on disk, saving",i
+                                            );
+                                            glib::spawn_future_local(
+                                                clone!(@weak canvas_i, @weak appwindow => async move {
+                                            if let Err(e) = canvas_i
+                                                .save_document_to_file(&output_file)
+                                                .await {
+                                            canvas_i.set_output_file(None);
+                                            tracing::error!("Saving document failed, Err: `{e:?}`");
+                                            appwindow
+                                                .overlays()
+                                                .dispatch_toast_error(&gettext("Saving document failed"));
+                                            }
+                                        }
+                                        ));
                                         }
                                     }
-                                    ));
-                                    }
-                                }
-                            }
+                                });
                         }
-
+                        Err(e) => {
+                            tracing::error!("failed to open tabs, {:?}",e);
+                            appwindow
+                                .overlays()
+                                .dispatch_toast_error(&gettext("Failed to open tabs"));
                         }
+                    }
                 glib::ControlFlow::Continue
                     }),
             ),

@@ -882,8 +882,8 @@ impl RnAppWindow {
                             match crate::utils::str_from_u8_nul_utf8(&acc) {
                                 Ok(json_string) => {
                                         // get all info if resizing has to be done
-                                        let width_page = canvas.engine_ref().document.format.width().clone();
-                                        let height_page = canvas.engine_ref().document.format.height().clone();
+                                        let width_page = canvas.engine_ref().document.format.width();
+                                        let height_page = canvas.engine_ref().document.format.height();
                                         let is_fixed = canvas.engine_ref().document.layout.is_fixed_layout();
                                         // let point_max: na::OPoint<f64, na::Const<2>> = canvas.engine_ref().camera.viewport().maxs;
 
@@ -898,7 +898,7 @@ impl RnAppWindow {
                                             isfixed_layout: is_fixed,
                                             max_viewpoint: None,
                                             restrain_to_viewport: false,
-                                            respect_borders: respect_borders,
+                                            respect_borders,
                                         });
                                     if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), resize_argument,target_pos).await {
                                         tracing::error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);

@@ -170,7 +170,7 @@ impl VectorImage {
                 transform.append_translation_mut(pos + intrinsic_size * 0.5);
                 Rectangle {
                     cuboid: p2d::shape::Cuboid::new(intrinsic_size * 0.5),
-                    transform: transform,
+                    transform,
                 }
             }
             ImageSizeOption::ImposeSize(given_size) => {
@@ -178,7 +178,7 @@ impl VectorImage {
                 transform.append_translation_mut(pos + given_size * 0.5);
                 Rectangle {
                     cuboid: p2d::shape::Cuboid::new(given_size * 0.5),
-                    transform: transform,
+                    transform,
                 }
             }
             ImageSizeOption::ResizeImage(resize_struct) => {
@@ -187,7 +187,7 @@ impl VectorImage {
                 transform.append_translation_mut(pos + intrinsic_size * resize_ratio * 0.5);
                 Rectangle {
                     cuboid: p2d::shape::Cuboid::new(intrinsic_size * resize_ratio * 0.5),
-                    transform: transform,
+                    transform,
                 }
             }
         };

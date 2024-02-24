@@ -84,7 +84,6 @@ impl Selector {
                             )
                             .pop();
 
-                        // ALL of the logic here to have the selection and resizing logic
                         if (engine_view.pens_config.selector_config.style == SelectorStyle::Single
                             || modifier_keys.contains(&ModifierKey::KeyboardShift))
                             && key_to_add

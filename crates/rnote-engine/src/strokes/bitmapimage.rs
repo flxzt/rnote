@@ -108,7 +108,6 @@ impl BitmapImage {
 
         let initial_size = na::vector![f64::from(image.pixel_width), f64::from(image.pixel_height)];
 
-        // pattern match on ImageSizeOption
         let (size, resize_ratio) = match size {
             ImageSizeOption::RespectOriginalSize => (initial_size, 1.0f64),
             ImageSizeOption::ImposeSize(given_size) => (given_size, 1.0f64),
@@ -119,13 +118,12 @@ impl BitmapImage {
         };
         tracing::debug!("the resize ratio is {resize_ratio}");
 
-        // general transform
         let mut transform = Transform::default();
         transform.append_scale_mut(na::Vector2::new(resize_ratio, resize_ratio));
         transform.append_translation_mut(pos + size * resize_ratio * 0.5);
         let rectangle = Rectangle {
             cuboid: p2d::shape::Cuboid::new(size * 0.5),
-            transform: transform,
+            transform,
         };
         Ok(Self { image, rectangle })
     }

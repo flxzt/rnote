@@ -157,7 +157,7 @@ mod imp {
                 drawing_cursor: RefCell::new(drawing_cursor),
                 drawing_cursor_icon_name: RefCell::new(drawing_cursor_icon_name),
                 invisible_cursor: RefCell::new(invisible_cursor),
-                pointer_controller: pointer_controller,
+                pointer_controller,
                 key_controller,
                 key_controller_im_context,
                 drop_target,

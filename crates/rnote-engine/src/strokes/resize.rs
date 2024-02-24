@@ -74,36 +74,38 @@ pub fn calculate_resize_ratio(
     let current_width = initial_size_image.x;
     let current_height = initial_size_image.y;
 
-    let next_page_vertical_border =
-        helper_calculate_page_next_limit(&pos_left_top_canvas.index(0), &resize.width);
+    let pos_vertical = pos_left_top_canvas.index(0);
+    let pos_horizontal = pos_left_top_canvas.index(1);
+
+    let next_page_vertical_border = helper_calculate_page_next_limit(pos_vertical, &resize.width);
     let next_page_horizontal_border =
-        helper_calculate_page_next_limit(&pos_left_top_canvas.index(1), &resize.height);
+        helper_calculate_page_next_limit(pos_horizontal, &resize.height);
 
     // compile all ratio in a vec
-    let ratios = vec![
+    let ratios = [
         // check that we do not go out of the canvas view in the x direction
         helper_calculate_fit_ratio(
             &resize.max_viewpoint.unwrap_or(na::point![1.0, 1.0]).x,
-            &pos_left_top_canvas.index(0),
+            pos_vertical,
             &current_width,
         ),
         // check that we do not go out of view in the y direction
         helper_calculate_fit_ratio(
             &resize.max_viewpoint.unwrap_or(na::point![1.0, 1.0]).y,
-            &pos_left_top_canvas.index(1),
+            pos_horizontal,
             &current_height,
         ),
         // check if we go out of the page on the right on fixed layout
-        helper_calculate_fit_ratio(&resize.width, &pos_left_top_canvas.index(0), &current_width),
+        helper_calculate_fit_ratio(&resize.width, pos_vertical, &current_width),
         // check if we have to respect borders
         helper_calculate_fit_ratio(
             &next_page_vertical_border,
-            &pos_left_top_canvas.index(0),
+            pos_horizontal,
             &initial_size_image.x,
         ), // vertical border
         helper_calculate_fit_ratio(
             &next_page_horizontal_border,
-            &pos_left_top_canvas.index(1),
+            pos_vertical,
             &initial_size_image.y,
         ), //horizontal border
     ];

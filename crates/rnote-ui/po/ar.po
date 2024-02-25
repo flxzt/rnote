@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-19 17:20+0100\n"
-"PO-Revision-Date: 2024-02-25 12:23+0000\n"
+"PO-Revision-Date: 2024-02-26 10:33+0000\n"
 "Last-Translator: shetozz <a.teama3317@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -337,10 +337,9 @@ msgid ""
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
-"ترتيب الصفحات حين\n"
-"تقسيم المستندات التي\n"
-" تخطيطاتها تتوسع\n"
-"رأسيًّا أو أفقيًّا صفحاتٍ"
+"ترتيب الصفحات للمستندات ذات التخطيط\n"
+"الممتد أفقياً ورأسياً\n"
+"عند فصلها إلى صفحات"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:150
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
@@ -718,7 +717,7 @@ msgstr "حدِّد باستخدام مستطيل"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:42
 msgid "Select One by One"
-msgstr "اختر واحدًا واحدًا"
+msgstr "اختر واحدًا تلو الآخر"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:52
 msgid "Select Intersecting Path"
@@ -958,11 +957,11 @@ msgstr "صدِّر حالة المحرِّك"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:60
 msgid "Export Engine _Config"
-msgstr "صدِّر تكوين المحرِّك"
+msgstr "صدِّر إعدادات المحرِّك"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:68
 msgid "_New"
-msgstr "جديد"
+msgstr "_جديد"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_Open"
@@ -1013,7 +1012,7 @@ msgstr "تصدير ملف"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:115
 msgid "Export Document _Pages"
-msgstr "صدِّر صفحات المستند"
+msgstr "صدِّر _صفحات المستند"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:119
 msgid "Export _Selection"
@@ -1021,7 +1020,7 @@ msgstr "تصدير المحدَّد"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:126
 msgid "Se_ttings"
-msgstr "الإعدادات"
+msgstr "الإعداد_ات"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:130
 msgid "_Keyboard Shortcuts"
@@ -1939,9 +1938,7 @@ msgstr "الصفحات:"
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: crates/rnote-ui/src/dialogs/mod.rs:47
 msgid "translator-credits"
-msgstr ""
-"Ali Aljishi <ahj696@hotmail.com>\n"
-"mahmoud ibrahim atiyah <mahmoudaboattia1999@gmail.com>"
+msgstr "فريق الترجمة"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:212
 #: crates/rnote-ui/src/dialogs/mod.rs:349

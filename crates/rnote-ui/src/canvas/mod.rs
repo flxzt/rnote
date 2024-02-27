@@ -6,6 +6,8 @@ mod widgetflagsboxed;
 
 // Re-exports
 pub(crate) use canvaslayout::RnCanvasLayout;
+use futures::StreamExt;
+use notify::Watcher;
 pub(crate) use widgetflagsboxed::WidgetFlagsBoxed;
 
 // Imports
@@ -68,9 +70,7 @@ mod imp {
         pub(crate) engine_task_handler_handle: RefCell<Option<glib::JoinHandle<()>>>,
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
-        pub(crate) output_file_saved_modified_date_time: RefCell<Option<glib::DateTime>>,
-        pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
-        pub(crate) output_file_monitor_changed_handler: RefCell<Option<glib::SignalHandlerId>>,
+        pub(crate) output_file_watcher_task: RefCell<Option<glib::JoinHandle<()>>>,
         pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
         pub(crate) output_file_expect_write: Cell<bool>,
         pub(crate) save_in_progress: Cell<bool>,
@@ -163,10 +163,8 @@ mod imp {
                 engine_task_handler_handle: RefCell::new(None),
 
                 output_file: RefCell::new(None),
+                output_file_watcher_task: RefCell::new(None),
                 // is automatically updated whenever the output file changes.
-                output_file_saved_modified_date_time: RefCell::new(None),
-                output_file_monitor: RefCell::new(None),
-                output_file_monitor_changed_handler: RefCell::new(None),
                 output_file_modified_toast_singleton: RefCell::new(None),
                 output_file_expect_write: Cell::new(false),
                 save_in_progress: Cell::new(false),
@@ -306,17 +304,6 @@ mod imp {
                     let output_file = value
                         .get::<Option<gio::File>>()
                         .expect("The value needs to be of type `Option<gio::File>`");
-                    self.output_file_saved_modified_date_time.replace(
-                        output_file.as_ref().and_then(|f| {
-                            f.query_info(
-                                gio::FILE_ATTRIBUTE_TIME_MODIFIED_USEC,
-                                gio::FileQueryInfoFlags::NONE,
-                                gio::Cancellable::NONE,
-                            )
-                            .ok()?
-                            .modification_date_time()
-                        }),
-                    );
                     self.output_file.replace(output_file);
                 }
                 "unsaved-changes" => {
@@ -716,16 +703,6 @@ impl RnCanvas {
         self.imp().last_export_dir.replace(dir);
     }
 
-    /// Returns the saved date time for the modification time of the output file when it was set by the app.
-    ///
-    /// It might not be correct if the content of the output file has changed from outside the app.
-    pub(crate) fn output_file_saved_modified_date_time(&self) -> Option<glib::DateTime> {
-        self.imp()
-            .output_file_saved_modified_date_time
-            .borrow()
-            .to_owned()
-    }
-
     pub(crate) fn canvas_layout_manager(&self) -> RnCanvasLayout {
         self.layout_manager()
             .and_downcast::<RnCanvasLayout>()
@@ -882,13 +859,9 @@ impl RnCanvas {
             .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string())
     }
 
-    pub(crate) fn clear_output_file_monitor(&self) {
-        if let Some(old_output_file_monitor) = self.imp().output_file_monitor.take() {
-            if let Some(handler) = self.imp().output_file_monitor_changed_handler.take() {
-                old_output_file_monitor.disconnect(handler);
-            }
-
-            old_output_file_monitor.cancel();
+    pub(crate) fn clear_output_file_watcher(&self) {
+        if let Some(handle) = self.imp().output_file_watcher_task.take() {
+            handle.abort();
         }
     }
 
@@ -900,25 +873,11 @@ impl RnCanvas {
         }
     }
 
-    pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnAppWindow) {
-        let new_monitor =
-            match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
-                Ok(output_file_monitor) => output_file_monitor,
-                Err(e) => {
-                    self.clear_output_file_monitor();
-                    tracing::error!(
-                        "Creating a file monitor for the new output file failed , Err: {e:?}"
-                    );
-                    return;
-                }
-            };
+    pub(crate) fn create_output_file_watcher(&self, file: &gio::File, appwindow: &RnAppWindow) {
+        let dispatch_toast_reload_modified_file = |appwindow: &RnAppWindow, canvas: &RnCanvas| {
+            canvas.set_unsaved_changes(true);
 
-        let new_handler = new_monitor.connect_changed(
-            glib::clone!(@weak self as canvas, @weak appwindow => move |_monitor, file, other_file, event| {
-                let dispatch_toast_reload_modified_file = || {
-                    canvas.set_unsaved_changes(true);
-
-                    appwindow.overlays().dispatch_toast_w_button_singleton(
+            appwindow.overlays().dispatch_toast_w_button_singleton(
                         &gettext("Opened file was modified on disk"),
                         &gettext("Reload"),
                         clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
@@ -936,126 +895,128 @@ impl RnCanvas {
                         }),
                         0,
                     &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
-                };
+        };
 
-                tracing::debug!("Canvas with title: `{}` - output-file monitor emitted `changed` - file: {:?}, other_file: {:?}, event: {event:?}, expect_write: {}",
-                    canvas.doc_title_display(),
-                    file.path(),
-                    other_file.map(|f| f.path()),
-                    canvas.output_file_expect_write(),
-                );
+        let event_handler =
+            move |appwindow: &RnAppWindow, canvas: &RnCanvas, event: notify::Event| {
+                tracing::info!("file watcher - handling event: {event:?}");
 
-                match event {
-                    gio::FileMonitorEvent::Changed => {
-                        if canvas.output_file_expect_write() {
-                            // => file has been modified due to own save, don't do anything.
-                            canvas.set_output_file_expect_write(false);
-                            return;
-                        }
-                        if let (Some(saved_modified_time), Some(changed_modified_time)) =
-                            (canvas.output_file_saved_modified_date_time(),
-                            file.query_info(
-                                gio::FILE_ATTRIBUTE_TIME_MODIFIED_USEC,
-                                gio::FileQueryInfoFlags::NONE,
-                                gio::Cancellable::NONE).ok().and_then(|i| i.modification_date_time())
-                            ) {
-                            if saved_modified_time == changed_modified_time {
-                                // The changed file has the same modified date so it should be equal to the saved one.
-                                // A changed file event can happen when saving to a gvfs directory or to a directory
-                                // synced with cloud storage providers, even though the file itself has not actually
-                                // changed.
-                                return
+                match event.kind {
+                    notify::EventKind::Create(_create_kind) => {}
+                    notify::EventKind::Modify(modify_kind) => match modify_kind {
+                        notify::event::ModifyKind::Data(_data_change) => {
+                            if canvas.output_file_expect_write() {
+                                // While writing is in progress, multiple modify events might occur.
+                                return;
                             }
+                            dispatch_toast_reload_modified_file(appwindow, canvas);
                         }
-
-                        dispatch_toast_reload_modified_file();
-                    },
-                    gio::FileMonitorEvent::Renamed => {
-                        if canvas.output_file_expect_write() {
-                            // => file has been modified due to own save, don't do anything.
-                            canvas.set_output_file_expect_write(false);
-                            return;
-                        }
-
-                        // if previous file name was .goutputstream-<hash>, then the file has been replaced using gio.
-                        if crate::utils::is_goutputstream_file(file) {
-                            // => file has been modified, handle it the same as the Changed event.
-                            dispatch_toast_reload_modified_file();
-                        } else {
-                            // => file has been renamed.
-
-                            // other_file *should* never be none.
-                            if other_file.is_none() {
+                        notify::event::ModifyKind::Name(rename_mode) => match rename_mode {
+                            notify::event::RenameMode::Both => {
+                                // Only when the new path is known we can update the output file
+                                let new_path = &event.paths[1];
+                                canvas.set_output_file(Some(gio::File::for_path(new_path)));
+                            }
+                            _ => {
                                 canvas.set_unsaved_changes(true);
+                                canvas.set_output_file(None);
+
+                                appwindow.overlays().dispatch_toast_text(
+                                    &gettext("Opened file was renamed or moved."),
+                                    crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
+                                );
                             }
-
-                            canvas.set_output_file(other_file.cloned());
-
-                            appwindow.overlays().dispatch_toast_text(&gettext("Opened file was renamed on disk"), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
-                        }
+                        },
+                        _ => {}
                     },
-                    gio::FileMonitorEvent::Deleted | gio::FileMonitorEvent::MovedOut => {
-                        if canvas.output_file_expect_write() {
-                            // => file has been modified due to own save, don't do anything.
-                            canvas.set_output_file_expect_write(false);
-                            return;
-                        }
-
+                    notify::EventKind::Remove(_remove_kind) => {
                         canvas.set_unsaved_changes(true);
                         canvas.set_output_file(None);
 
-                        appwindow.overlays().dispatch_toast_text(&gettext("Opened file was moved or deleted on disk"), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
-                    },
-                    _ => {},
+                        appwindow.overlays().dispatch_toast_text(
+                            &gettext("Opened file was removed."),
+                            crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
+                        );
+                    }
+                    notify::EventKind::Access(notify::event::AccessKind::Close(
+                        notify::event::AccessMode::Write,
+                    )) => {
+                        if canvas.output_file_expect_write() {
+                            // Own file writing has finished
+                            canvas.set_output_file_expect_write(false);
+                        }
+                    }
+                    notify::EventKind::Other => todo!(),
+                    _ => {}
                 }
+            };
+        let new_watcher_task = glib::spawn_future_local(
+            glib::clone!(@strong file, @weak self as canvas, @weak appwindow => async move {
+                let (tx, mut rx) = futures::channel::mpsc::unbounded();
+                let Some(file_path) = file.path() else {
+                    tracing::warn!("Can't create watcher for file that has no patch");
+                    return;
+                };
 
-                // The expect_write flag can't be cleared after any event has been fired, because some actions emit multiple
-                // events - not all of which are handled. The flag should stick around until a handled event has been blocked by it,
-                // otherwise it will likely miss its purpose.
+                let mut watcher = match notify::RecommendedWatcher::new(move |res| {
+                    if let Err(e) = tx.unbounded_send(res) {
+                        tracing::error!("File watcher reported change, but failed to send it through channel. Err: {e:?}");
+                    }
+                }, notify::Config::default()) {
+                    Ok(w) => {
+                        w
+                    },
+                    Err(e) => {
+                        tracing::error!("Failed to create file watcher, Err: {e:?}");
+                        return;
+                    }
+                };
+                if let Err(e) = watcher.watch(&file_path, notify::RecursiveMode::NonRecursive) {
+                    tracing::error!("Failed to start watching file with path '{}', Err: {e:?}", file_path.display());
+                }
+                while let Some(res) = rx.next().await {
+                    match res {
+                        Ok(event) => {
+                            event_handler(&appwindow, &canvas, event);
+                        }
+                        Err(e) => tracing::error!("File watcher sent error message, Err: {e:?}"),
+                    }
+                }
             }),
         );
 
-        if let Some(old_monitor) = self
+        if let Some(old_watcher_task) = self
             .imp()
-            .output_file_monitor
+            .output_file_watcher_task
             .borrow_mut()
-            .replace(new_monitor)
+            .replace(new_watcher_task)
         {
-            if let Some(old_handler) = self
-                .imp()
-                .output_file_monitor_changed_handler
-                .borrow_mut()
-                .replace(new_handler)
-            {
-                old_monitor.disconnect(old_handler);
-            }
-
-            old_monitor.cancel();
+            old_watcher_task.abort();
         }
     }
 
     /// Replaces and installs a new file monitor when there is an output file present
-    fn reinstall_output_file_monitor(&self, appwindow: &RnAppWindow) {
+    fn reinstall_output_file_watcher(&self, appwindow: &RnAppWindow) {
         if let Some(output_file) = self.output_file() {
-            self.create_output_file_monitor(&output_file, appwindow);
+            self.create_output_file_watcher(&output_file, appwindow);
         } else {
-            self.clear_output_file_monitor();
+            self.clear_output_file_watcher();
         }
     }
 
     /// Initializes for the given appwindow. Usually `init()` is only called once, but since this widget can be moved between appwindows through tabs,
     /// this function also disconnects and replaces all existing old connections
     pub(crate) fn init_reconnect(&self, appwindow: &RnAppWindow) {
-        // Initial file monitor, (e.g. needed when reiniting the widget on a new appwindow)
-        self.reinstall_output_file_monitor(appwindow);
+        // initialize file watcher, needed when the tab is moved to another window and is re-initializing
+        self.reinstall_output_file_watcher(appwindow);
 
         let appwindow_output_file = self.connect_notify_local(
             Some("output-file"),
             clone!(@weak appwindow => move |canvas, _pspec| {
                 if let Some(output_file) = canvas.output_file(){
-                    canvas.create_output_file_monitor(&output_file, &appwindow);
+                    canvas.create_output_file_watcher(&output_file, &appwindow);
                 } else {
-                    canvas.clear_output_file_monitor();
+                    canvas.clear_output_file_watcher();
                     canvas.dismiss_output_file_modified_toast();
                 }
 
@@ -1230,7 +1191,7 @@ impl RnCanvas {
     /// to prepare moving the widget to another appwindow or closing it,
     /// when it is inside a tab page.
     pub(crate) fn disconnect_connections(&self) {
-        self.clear_output_file_monitor();
+        self.clear_output_file_watcher();
 
         let mut connections = self.imp().connections.borrow_mut();
         if let Some(old) = connections.appwindow_output_file.take() {

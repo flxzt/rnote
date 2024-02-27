@@ -1,5 +1,7 @@
+use anyhow::Context;
+use futures::AsyncWriteExt;
 // Imports
-use gtk4::{gdk, gio, glib, prelude::*};
+use gtk4::{gdk, gio, prelude::*};
 use std::cell::Ref;
 use std::slice::Iter;
 
@@ -8,47 +10,28 @@ pub(crate) const FILE_DUP_SUFFIX_DELIM: &str = " - ";
 /// The suffix delimiter when duplicating/renaming already existing files for usage in a regular expression
 pub(crate) const FILE_DUP_SUFFIX_DELIM_REGEX: &str = r"\s-\s";
 
-/// Check if the file is a temporary goutputstream file.
-pub(crate) fn is_goutputstream_file(file: &gio::File) -> bool {
-    if let Some(path) = file.path() {
-        if let Some(file_name) = path.file_name() {
-            if String::from(file_name.to_string_lossy()).starts_with(".goutputstream-") {
-                return true;
-            }
-        }
-    }
-
-    false
-}
-
 /// Create a new file or replace if it already exists, asynchronously.
 pub(crate) async fn create_replace_file_future(
     bytes: Vec<u8>,
     file: &gio::File,
 ) -> anyhow::Result<()> {
-    let output_stream = file
-        .replace_future(
-            None,
-            false,
-            gio::FileCreateFlags::REPLACE_DESTINATION,
-            glib::source::Priority::HIGH,
-        )
-        .await
-        .map_err(|e| anyhow::anyhow!("Executing replace file `{file:?}` failed, Err: {e:?}"))?;
-
-    output_stream
-        .write_all_future(bytes, glib::source::Priority::HIGH)
-        .await
-        .map_err(|(_, e)| {
-            anyhow::anyhow!("Writing output stream for file `{file:?}` failed, Err: {e:?}")
-        })?;
-    output_stream
-        .close_future(glib::source::Priority::HIGH)
-        .await
-        .map_err(|e| {
-            anyhow::anyhow!("Closing output stream for file `{file:?}` failed, Err: {e:?}")
-        })?;
-
+    let Some(path) = file.path() else {
+        return Err(anyhow::anyhow!(
+            "Can't create-replace file that has no path."
+        ));
+    };
+    let mut file = async_fs::File::create(&path).await.context(format!(
+        "Failed to create file for path '{}'",
+        path.display()
+    ))?;
+    file.write_all(&bytes).await.context(format!(
+        "Failed to write bytes to file with path '{}'",
+        path.display()
+    ))?;
+    file.flush().await.context(format!(
+        "Failed to flush file with path '{}'",
+        path.display()
+    ))?;
     Ok(())
 }
 

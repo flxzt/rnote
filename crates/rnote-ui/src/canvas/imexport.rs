@@ -210,12 +210,6 @@ impl RnCanvas {
             }
         }
 
-        // this **must** come before actually saving the file to disk,
-        // else the event might not be caught by the monitor for new or changed files
-        if !skip_set_output_file {
-            self.set_output_file(Some(file.to_owned()));
-        }
-
         self.dismiss_output_file_modified_toast();
         self.set_output_file_expect_write(true);
 
@@ -233,6 +227,11 @@ impl RnCanvas {
             return Err(e);
         }
 
+        // this **must** come after saving the file to disk,
+        // else it is not possible to watch the file.
+        if !skip_set_output_file {
+            self.set_output_file(Some(file.to_owned()));
+        }
         self.set_unsaved_changes(false);
         self.set_save_in_progress(false);
 

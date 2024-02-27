@@ -15,6 +15,7 @@ rnote-engine = { workspace = true, features = ["ui"] }
 
 adw = { workspace = true }
 anyhow = { workspace = true }
+async-fs = "2"
 base64 = { workspace = true }
 cairo-rs = { workspace = true }
 fs_extra = { workspace = true }
@@ -26,6 +27,7 @@ image = { workspace = true }
 itertools = { workspace = true }
 kurbo = { workspace = true }
 nalgebra = { workspace = true }
+notify = { workspace = true }
 num-derive = { workspace = true }
 num-traits = { workspace = true }
 numeric-sort = { workspace = true }

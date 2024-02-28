@@ -232,6 +232,13 @@ impl Camera {
         self.zoom * self.scale_factor
     }
 
+    /// The scale factor that gets set according to the toolkit hi-dpi settings.
+    ///
+    /// For Gtk it currently is 1.0 for scaling < 150%, 2.0 for >= 150% and < 250%, ..
+    pub fn scale_factor(&self) -> f64 {
+        self.scale_factor
+    }
+
     pub fn set_scale_factor(&mut self, scale_factor: f64) -> WidgetFlags {
         self.scale_factor = scale_factor;
         let mut widget_flags = WidgetFlags::default();

@@ -215,11 +215,11 @@ impl RnCanvas {
 
         let file_write_operation = async move {
             let bytes = rnote_bytes_receiver.await??;
+            self.set_output_file_expect_write(true);
             let mut write_file = async_fs::File::create(&file_path).await.context(format!(
                 "Failed to create file for path '{}'",
                 file_path.display()
             ))?;
-            self.set_output_file_expect_write(true);
             if !skip_set_output_file {
                 // this installs the file watcher.
                 self.set_output_file(Some(file.to_owned()));

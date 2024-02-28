@@ -950,6 +950,7 @@ impl RnCanvas {
                     _ => {}
                 }
             };
+
         let new_watcher_task = glib::spawn_future_local(
             glib::clone!(@strong file, @weak self as canvas, @weak appwindow => async move {
                 let (tx, mut rx) = futures::channel::mpsc::unbounded();

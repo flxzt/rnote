@@ -185,6 +185,8 @@ impl RnAppWindow {
 
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
     pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags, canvas: &RnCanvas) {
+        //tracing::info!("handling widget flags: '{widget_flags:?}'");
+
         if widget_flags.redraw {
             canvas.queue_draw();
         }
@@ -254,6 +256,33 @@ impl RnAppWindow {
             .tabview()
             .selected_page()
             .expect("there must always be one active tab")
+    }
+
+    pub(crate) fn get_number_of_tabs(&self) -> u32 {
+        self.imp().overlays.tabview().pages().n_items()
+    }
+
+    /// returns a vector of all tabs of the current windows
+    pub(crate) fn get_all_tabs(&self) -> Result<Vec<RnCanvas>, anyhow::Error> {
+        let n_tabs = self.get_number_of_tabs();
+        let mut output = Vec::<RnCanvas>::new();
+
+        for i in 0..n_tabs {
+            let glib_obj = self.imp().overlays.tabview().pages().item(i);
+            if glib_obj.is_none() {
+                return Err(anyhow::anyhow!("could not obtain the tab {:?}", i));
+            }
+            let tab_glib = glib_obj
+                .expect("downcast failure")
+                .downcast::<adw::TabPage>();
+            let wrapper = tab_glib
+                .unwrap()
+                .child()
+                .downcast::<crate::RnCanvasWrapper>();
+            let canvas = wrapper.unwrap().canvas();
+            output.push(canvas);
+        }
+        Ok(output)
     }
 
     /// Get the active (selected) tab page child.

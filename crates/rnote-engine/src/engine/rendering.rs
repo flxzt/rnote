@@ -1,5 +1,9 @@
 // Imports
+use crate::render::Image;
 use crate::{Engine, WidgetFlags};
+use p2d::bounding_volume::Aabb;
+use piet::RenderContext;
+use rnote_compose::color;
 
 impl Engine {
     /// Update the background rendering for the current viewport.
@@ -47,6 +51,38 @@ impl Engine {
             self.background_rendernodes = rendernodes;
         }
 
+        #[cfg(feature = "ui")]
+        {
+            use crate::ext::GrapheneRectExt;
+            use gtk4::{graphene, gsk, prelude::*};
+
+            let image_scale = self.camera.image_scale();
+
+            if let Some(image) = &self.origin_indicator_image {
+                // Only create the texture once, it is expensive
+                let new_texture = match image.to_memtexture() {
+                    Ok(t) => t,
+                    Err(e) => {
+                        tracing::error!(
+                            "failed to generate memory-texture of origin indicator image, {e:?}"
+                        );
+                        return widget_flags;
+                    }
+                };
+
+                self.origin_indicator_rendernode = Some(
+                    gsk::TextureNode::new(
+                        &new_texture,
+                        &graphene::Rect::from_p2d_aabb(
+                            origin_indicator_bounds()
+                                .scaled(&na::Vector2::repeat(1.0 / image_scale)),
+                        ),
+                    )
+                    .upcast(),
+                );
+            }
+        }
+
         widget_flags.redraw = true;
         widget_flags
     }
@@ -77,25 +113,44 @@ impl Engine {
         let mut widget_flags = WidgetFlags::default();
         self.store.clear_rendering();
         self.background_tile_image.take();
+        self.origin_indicator_image.take();
         #[cfg(feature = "ui")]
         {
             self.background_rendernodes.clear();
+            self.origin_indicator_rendernode.take();
         }
         widget_flags.redraw = true;
         widget_flags
     }
 
-    /// Regenerate the background tile image and updates the background rendering.
-    pub fn background_regenerate_pattern(&mut self) -> WidgetFlags {
+    /// Regenerate the background tile image, origin indicator and updates the background rendering.
+    pub fn background_rendering_regenerate(&mut self) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         let image_scale = self.camera.image_scale();
+        let scale_factor = self.camera.scale_factor();
+
         match self.document.background.gen_tile_image(image_scale) {
             Ok(image) => {
                 self.background_tile_image = Some(image);
-                widget_flags |= self.update_background_rendering_current_viewport();
             }
-            Err(e) => tracing::error!("Regenerating background tile image failed, Err: {e:?}"),
+            Err(e) => {
+                tracing::error!("Regenerating background tile image failed, Err: {e:?}");
+                return widget_flags;
+            }
         }
+
+        match gen_origin_indicator_image(scale_factor) {
+            Ok(image) => {
+                self.origin_indicator_image = Some(image);
+            }
+            Err(e) => {
+                tracing::error!("Regenerating origin indicator image failed, Err: {e:?}");
+                widget_flags.redraw = true;
+                return widget_flags;
+            }
+        }
+
+        widget_flags |= self.update_background_rendering_current_viewport();
         widget_flags.redraw = true;
         widget_flags
     }
@@ -121,10 +176,7 @@ impl Engine {
         self.draw_document_shadow_to_gtk_snapshot(snapshot);
         self.draw_background_to_gtk_snapshot(snapshot)?;
         self.draw_format_borders_to_gtk_snapshot(snapshot)?;
-        snapshot.restore();
         self.draw_origin_indicator_to_gtk_snapshot(snapshot)?;
-        snapshot.save();
-        snapshot.transform(Some(&camera_transform));
         self.store
             .draw_strokes_to_gtk_snapshot(snapshot, doc_bounds, viewport);
         snapshot.restore();
@@ -276,52 +328,63 @@ impl Engine {
     }
 
     /// Draw the document origin indicator cross.
-    ///
-    /// Expects that the snapshot is untransformed in surface coordinate space.
     #[cfg(feature = "ui")]
     fn draw_origin_indicator_to_gtk_snapshot(
         &self,
         snapshot: &gtk4::Snapshot,
     ) -> anyhow::Result<()> {
-        use crate::ext::GrapheneRectExt;
-        use gtk4::{graphene, prelude::*};
-        use p2d::bounding_volume::Aabb;
-        use piet::RenderContext;
-        use rnote_compose::color;
-        use rnote_compose::ext::{AabbExt, Affine2Ext};
+        use gtk4::prelude::*;
 
         if self.document.format.show_origin_indicator {
-            const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
-            const PATH_WIDTH: f64 = 1.5;
-            let total_zoom = self.camera.total_zoom();
-
-            let bounds = Aabb::from_half_extents(
-                na::point![0.0, 0.0],
-                na::Vector2::repeat(5.0 / total_zoom),
-            );
-            let bounds_on_surface = bounds
-                .extend_by(na::Vector2::repeat(PATH_WIDTH / total_zoom))
-                .scale(total_zoom)
-                .translate(-self.camera.offset());
-
-            let cairo_cx =
-                snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(bounds_on_surface.ceil()));
-            let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-            let path = kurbo::BezPath::from_iter([
-                kurbo::PathEl::MoveTo(kurbo::Point::new(bounds.mins[0], bounds.mins[1])),
-                kurbo::PathEl::LineTo(kurbo::Point::new(bounds.maxs[0], bounds.maxs[1])),
-                kurbo::PathEl::MoveTo(kurbo::Point::new(bounds.mins[0], bounds.maxs[1])),
-                kurbo::PathEl::LineTo(kurbo::Point::new(bounds.maxs[0], bounds.mins[1])),
-            ]);
-            piet_cx.transform(self.camera.transform().to_kurbo());
-            piet_cx.stroke_styled(
-                path,
-                &PATH_COLOR,
-                PATH_WIDTH / total_zoom,
-                &piet::StrokeStyle::default().line_cap(piet::LineCap::Round),
-            );
+            if let Some(r) = &self.origin_indicator_rendernode {
+                snapshot.append_node(r);
+            }
         }
 
         Ok(())
     }
+}
+
+/// Origin indicator bounds in document coordinate space.
+fn origin_indicator_bounds() -> Aabb {
+    const SIZE: na::Vector2<f64> = na::vector![17., 17.];
+    Aabb::from_half_extents(na::Vector2::zeros().into(), SIZE * 0.5)
+}
+
+fn gen_origin_indicator_image(scale_factor: f64) -> anyhow::Result<Image> {
+    const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
+    const PATH_WIDTH: f64 = 1.5;
+    let bounds = origin_indicator_bounds();
+
+    Image::gen_with_piet(
+        |piet_cx| {
+            let path = kurbo::BezPath::from_iter([
+                kurbo::PathEl::MoveTo(kurbo::Point::new(
+                    bounds.mins[0] + PATH_WIDTH * 0.5,
+                    bounds.mins[1] + PATH_WIDTH * 0.5,
+                )),
+                kurbo::PathEl::LineTo(kurbo::Point::new(
+                    bounds.maxs[0] - PATH_WIDTH * 0.5,
+                    bounds.maxs[1] - PATH_WIDTH * 0.5,
+                )),
+                kurbo::PathEl::MoveTo(kurbo::Point::new(
+                    bounds.mins[0] + PATH_WIDTH * 0.5,
+                    bounds.maxs[1] - PATH_WIDTH * 0.5,
+                )),
+                kurbo::PathEl::LineTo(kurbo::Point::new(
+                    bounds.maxs[0] - PATH_WIDTH * 0.5,
+                    bounds.mins[1] + PATH_WIDTH * 0.5,
+                )),
+            ]);
+            piet_cx.stroke_styled(
+                path,
+                &PATH_COLOR,
+                PATH_WIDTH,
+                &piet::StrokeStyle::default().line_cap(piet::LineCap::Round),
+            );
+            Ok(())
+        },
+        bounds,
+        scale_factor,
+    )
 }

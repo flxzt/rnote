@@ -1,10 +1,7 @@
 option(
   'profile',
   type: 'combo',
-  choices: [
-    'default',
-    'devel'
-  ],
+  choices: ['default', 'devel'],
   value: 'default',
   description: 'The build profile for rnote. One of "default" or "devel".',
 )

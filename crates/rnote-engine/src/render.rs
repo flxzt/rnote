@@ -525,6 +525,7 @@ impl Svg {
         );
         let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
         let handle = rsvg::Loader::new()
+            .with_unlimited_size(true)
             .read_stream(&stream, None::<&gio::File>, None::<&gio::Cancellable>)
             .context("reading stream to rsvg loader failed.")?;
         let renderer = rsvg::CairoRenderer::new(&handle);
@@ -581,6 +582,7 @@ impl Svg {
                 gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
 
             let handle = rsvg::Loader::new()
+                .with_unlimited_size(true)
                 .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
                     &stream, None, None,
                 )

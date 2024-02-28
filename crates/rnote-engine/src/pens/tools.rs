@@ -369,7 +369,9 @@ impl PenBehaviour for Tools {
                         widget_flags |= engine_view
                             .camera
                             .nudge_w_pos(element.pos, engine_view.document);
-                        widget_flags |= engine_view.document.expand_autoexpand(engine_view.camera);
+                        widget_flags |= engine_view
+                            .document
+                            .expand_autoexpand(engine_view.camera, engine_view.store);
                         engine_view.store.regenerate_rendering_in_viewport_threaded(
                             engine_view.tasks_tx.clone(),
                             false,
@@ -415,7 +417,9 @@ impl PenBehaviour for Tools {
                                 .camera
                                 .zoom_w_timeout(new_zoom, engine_view.tasks_tx.clone());
                             widget_flags |= engine_view.camera.set_viewport_center(viewport_center)
-                                | engine_view.document.expand_autoexpand(engine_view.camera);
+                                | engine_view
+                                    .document
+                                    .expand_autoexpand(engine_view.camera, engine_view.store);
                         }
                         self.zoom_tool.current_surface_coord = new_surface_coord;
                     }

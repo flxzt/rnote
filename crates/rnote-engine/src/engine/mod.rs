@@ -689,7 +689,7 @@ impl Engine {
     ///
     /// Background and content rendering then needs to be updated.
     pub fn doc_expand_autoexpand(&mut self) -> WidgetFlags {
-        self.document.expand_autoexpand(&self.camera)
+        self.document.expand_autoexpand(&self.camera, &self.store)
     }
 
     /// Add a page to the document when in fixed size layout.

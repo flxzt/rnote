@@ -475,16 +475,15 @@ impl XmlWritable for XoppLayer {
     fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
         // only do something if we are sure the layer is not empty
         // Fix for #985
-        tracing::debug!("name {:?}", self.name.as_ref());
         let is_empty = self.name.as_ref().is_none()
             && (self.strokes.is_empty())
             && (self.texts.is_empty())
             && (self.images.is_empty());
         if is_empty {
-            tracing::debug!("empty layer, skipped")
+            tracing::trace!("empty layer, skipped")
         } else {
             w.start_element("layer");
-            tracing::debug!("layer element opened");
+            tracing::trace!("layer element opened");
 
             if let Some(name) = self.name.as_ref() {
                 w.write_attribute("name", name.as_str());

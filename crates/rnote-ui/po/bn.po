@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-19 17:20+0100\n"
-"PO-Revision-Date: 2024-02-15 17:02+0000\n"
+"PO-Revision-Date: 2024-02-29 08:34+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -39,16 +39,16 @@ msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"Rnote স্কেচিং, হাতে লেখা নোট এবং নথি এবং ছবি টীকা করার জন্য একটি ভেক্টর-ভিত্তিক "
-"অঙ্কন অ্যাপ্লিকেশন।"
+"Rnote স্কেচিং, হাতে লেখা নোট এবং নথি এবং ছবি টীকা যোগ করার জন্য একটি "
+"ভেক্টর-ভিত্তিক অঙ্কন অ্যাপ্লিকেশন।"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"দাবিত্যাগ: ফাইল বিন্যাস এখনও অস্থির। এটি ভার্সনগুলির মধ্যে সামঞ্জস্যতা পরিবর্তন এবং "
-"ভাঙ্গতে সক্ষম।"
+"দাবিত্যাগ: ফাইল বিন্যাস এখনও অস্থির। এটি সংস্করণগুলির মধ্যে সামঞ্জস্যতা "
+"পরিবর্তন এবং ভাঙ্গতে সক্ষম।"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An overview"
@@ -68,15 +68,15 @@ msgstr "ফোকাস মোডে টুলবার লোকান"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
-msgstr "কর্মক্ষেত্র থেকে সহজে নথি এক্সেস করুন"
+msgstr "কর্মক্ষেত্র থেকে সহজে নথি উপলব্ধ করুন"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
-msgstr "নথির সেটিংস্‌ সামঞ্জস্য করুন"
+msgstr "নথির সেটিংস্‌ এডজাস্ট করুন"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
 msgid "Configure action shortcuts"
-msgstr "ক্রিয়া পরিবর্তন শর্টকাট"
+msgstr "ক্রিয়া পরিবর্তন শর্টকাট ঠিক করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
@@ -141,7 +141,7 @@ msgid ""
 "Changes which are not saved will be permanently lost."
 msgstr ""
 "এই ট্যাবে অসংরক্ষিত পরিবর্তন রয়েছে।\n"
-"যে পরিবর্তনগুলি সংরক্ষণ করা হয়নি সেগুলি স্থায়ীভাবে হারিয়ে যাবে।"
+"যে পরিবর্তনগুলি সংরক্ষণ করা হয়নি সেগুলি সম্পূর্ণভাবে হারিয়ে যাবে।"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
@@ -153,7 +153,7 @@ msgid ""
 "Changes which are not saved will be permanently lost."
 msgstr ""
 "কিছু খোলা ফাইলে অসংরক্ষিত পরিবর্তন রয়েছে।\n"
-"যে পরিবর্তনগুলি সংরক্ষণ করা হয়নি সেগুলি স্থায়ীভাবে হারিয়ে যাবে।"
+"যে পরিবর্তনগুলি সংরক্ষণ করা হয়নি সেগুলি সম্পূর্ণভাবে হারিয়ে যাবে।"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
@@ -165,7 +165,7 @@ msgstr "সব পরিত্যাগ করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:67
 msgid "Edit Workspace"
-msgstr "কর্মক্ষেত্র সম্পাদনা করুন"
+msgstr "কর্মক্ষেত্র এডিট করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:75
 #: crates/rnote-ui/data/ui/settingspanel.ui:234
@@ -664,8 +664,6 @@ msgid "Exponential"
 msgstr "সূচকীয়"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
-#, fuzzy
-#| msgid "Reverse Exponential"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
 msgstr "বিপরীত সূচকীয়"

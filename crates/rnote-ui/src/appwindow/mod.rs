@@ -258,31 +258,31 @@ impl RnAppWindow {
             .expect("there must always be one active tab")
     }
 
-    pub(crate) fn get_number_of_tabs(&self) -> u32 {
-        self.imp().overlays.tabview().pages().n_items()
+    pub(crate) fn n_tabs_open(&self) -> usize {
+        self.imp().overlays.tabview().pages().n_items() as usize
     }
 
-    /// returns a vector of all tabs of the current windows
-    pub(crate) fn get_all_tabs(&self) -> Result<Vec<RnCanvas>, anyhow::Error> {
-        let n_tabs = self.get_number_of_tabs();
-        let mut output = Vec::<RnCanvas>::new();
+    /// Returns a vector of all tabs of the current windows
+    pub(crate) fn get_all_tabs(&self) -> Vec<RnCanvasWrapper> {
+        let n_tabs = self.n_tabs_open();
+        let mut tabs = Vec::with_capacity(n_tabs);
 
         for i in 0..n_tabs {
-            let glib_obj = self.imp().overlays.tabview().pages().item(i);
-            if glib_obj.is_none() {
-                return Err(anyhow::anyhow!("could not obtain the tab {:?}", i));
-            }
-            let tab_glib = glib_obj
-                .expect("downcast failure")
-                .downcast::<adw::TabPage>();
-            let wrapper = tab_glib
+            let wrapper = self
+                .imp()
+                .overlays
+                .tabview()
+                .pages()
+                .item(i as u32)
+                .unwrap()
+                .downcast::<adw::TabPage>()
                 .unwrap()
                 .child()
-                .downcast::<crate::RnCanvasWrapper>();
-            let canvas = wrapper.unwrap().canvas();
-            output.push(canvas);
+                .downcast::<crate::RnCanvasWrapper>()
+                .unwrap();
+            tabs.push(wrapper);
         }
-        Ok(output)
+        tabs
     }
 
     /// Get the active (selected) tab page child.

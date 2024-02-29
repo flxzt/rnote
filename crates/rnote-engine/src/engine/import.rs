@@ -363,8 +363,8 @@ impl Engine {
                 .iter()
                 .map(|(stroke, _)| stroke.bounds().extents())
                 .fold(na::Vector2::<f64>::zeros(), |acc, x| acc.maxs(&x));
-            self.document.width = max_size[0];
-            self.document.height = max_size[1];
+            self.document.format.set_width(max_size[0]);
+            self.document.format.set_height(max_size[1]);
             widget_flags |= self.set_doc_layout(Layout::FixedSize) | self.doc_resize_autoexpand()
         }
 

@@ -475,8 +475,7 @@ impl XmlWritable for XoppLayer {
     fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
         // only do something if we are sure the layer is not empty
         // Fix for #985
-        let is_empty = self.name.as_ref().is_none()
-            && (self.strokes.is_empty())
+        let is_empty = (self.strokes.is_empty())
             && (self.texts.is_empty())
             && (self.images.is_empty());
         if is_empty {

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-19 17:20+0100\n"
-"PO-Revision-Date: 2023-12-18 18:02+0000\n"
-"Last-Translator: openCC converted detiam <dehe_tian@outlook.com>\n"
+"PO-Revision-Date: 2024-02-28 21:02+0000\n"
+"Last-Translator: openCC converted Integral <integral@member.fsf.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
 "Language: zh_Hant\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.3\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -28,7 +28,7 @@ msgstr "素描與手寫筆記"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;Office;圖形;筆記;"
+msgstr "Gnome;GTK;Office;Graphics;Notes;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:20
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
@@ -39,9 +39,8 @@ msgstr "新建視窗"
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
-msgstr ""
-"Rnote 是一款基於向量繪圖的軟體，用於素描、手寫筆記、以及為檔案和圖片添加註"
-"釋。"
+msgstr "Rnote "
+"是一款基於向量繪圖的軟體，用於素描、手寫筆記，以及為檔案和圖片添加註釋。"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
@@ -72,11 +71,11 @@ msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
-msgstr ""
+msgstr "透過工作區快速訪問檔案"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
-msgstr ""
+msgstr "調整文件設定"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
 #, fuzzy

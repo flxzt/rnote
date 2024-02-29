@@ -112,8 +112,21 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         builder.object("pdf_import_bitmap_scalefactor_row").unwrap();
     let pdf_import_page_borders_row: adw::SwitchRow =
         builder.object("pdf_import_page_borders_row").unwrap();
+    let pdf_import_adjust_document_row: adw::SwitchRow =
+        builder.object("pdf_import_adjust_document_row").unwrap();
 
     dialog.set_transient_for(Some(appwindow));
+
+    pdf_import_adjust_document_row
+        .bind_property("active", &pdf_import_width_row, "sensitive")
+        .invert_boolean()
+        .sync_create()
+        .build();
+    pdf_import_adjust_document_row
+        .bind_property("active", &pdf_import_page_spacing_row, "sensitive")
+        .invert_boolean()
+        .sync_create()
+        .build();
 
     let pdf_import_prefs = canvas.engine_ref().import_prefs.pdf_import_prefs;
 
@@ -132,6 +145,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     pdf_import_page_spacing_row.set_selected(pdf_import_prefs.page_spacing.to_u32().unwrap());
     pdf_import_bitmap_scalefactor_row.set_value(pdf_import_prefs.bitmap_scalefactor);
     pdf_import_page_borders_row.set_active(pdf_import_prefs.page_borders);
+    pdf_import_adjust_document_row.set_active(pdf_import_prefs.adjust_document);
 
     pdf_page_start_row
         .bind_property("value", &pdf_page_end_row.adjustment(), "lower")
@@ -182,6 +196,12 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     pdf_import_page_borders_row.connect_active_notify(
         clone!(@weak canvas, @weak appwindow => move |row| {
             canvas.engine_mut().import_prefs.pdf_import_prefs.page_borders = row.is_active();
+        }),
+    );
+
+    pdf_import_adjust_document_row.connect_active_notify(
+        clone!(@weak canvas, @weak appwindow => move |row| {
+            canvas.engine_mut().import_prefs.pdf_import_prefs.adjust_document = row.is_active();
         }),
     );
 

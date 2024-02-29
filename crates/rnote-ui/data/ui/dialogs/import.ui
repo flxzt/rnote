@@ -97,6 +97,12 @@
                   </object>
                 </child>
                 <child>
+                  <object class="AdwSwitchRow" id="pdf_import_adjust_document_row">
+                    <property name="title" translatable="yes">Adjust Document</property>
+                    <property name="subtitle" translatable="yes">Whether the document layout should be adjusted to the Pdf</property>
+                  </object>
+                </child>
+                <child>
                   <object class="AdwSpinRow" id="pdf_import_width_row">
                     <property name="title" translatable="yes">Page Width (%)</property>
                     <property name="subtitle" translatable="yes">Set the width of imported Pdf's in percentage to the format width</property>

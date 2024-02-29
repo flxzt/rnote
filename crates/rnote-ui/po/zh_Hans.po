@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-07 10:08+0100\n"
-"PO-Revision-Date: 2023-12-18 18:02+0000\n"
-"Last-Translator: detiam <dehe_tian@outlook.com>\n"
+"POT-Creation-Date: 2024-02-19 17:20+0100\n"
+"PO-Revision-Date: 2024-02-28 21:02+0000\n"
+"Last-Translator: Integral <integral@member.fsf.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
 "Language: zh_Hans\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.3\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -28,7 +28,7 @@ msgstr "素描与手写笔记"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;Office;图形;笔记;"
+msgstr "Gnome;GTK;Office;Graphics;Notes;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:20
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
@@ -39,9 +39,8 @@ msgstr "新建窗口"
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
-msgstr ""
-"Rnote 是一款基于矢量绘图的软件，用于素描、手写笔记、以及为文件和图片添加注"
-"释。"
+msgstr "Rnote "
+"是一款基于矢量绘图的软件，用于素描、手写笔记，以及为文件和图片添加注释。"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
@@ -72,11 +71,11 @@ msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
-msgstr ""
+msgstr "通过工作区快速访问文件"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
-msgstr ""
+msgstr "调整文档设置"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
 #, fuzzy
@@ -103,7 +102,7 @@ msgstr "这将清空整个文档。请确认。"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:411
 #: crates/rnote-ui/data/ui/dialogs/import.ui:10
 #: crates/rnote-ui/data/ui/dialogs/import.ui:199
-#: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:34
+#: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
 msgstr "取消"
 
@@ -175,7 +174,7 @@ msgstr "编辑工作区"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:75
 #: crates/rnote-ui/data/ui/settingspanel.ui:234
-#: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:39
+#: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:36
 msgid "Apply"
 msgstr "应用"
 
@@ -1005,14 +1004,17 @@ msgid "_Clipboard"
 msgstr "剪切板 [_C]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:96
+#: crates/rnote-ui/data/ui/contextmenu.ui:10
 msgid "_Copy"
 msgstr "复制 [_C]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:100
+#: crates/rnote-ui/data/ui/contextmenu.ui:14
 msgid "C_ut"
 msgstr "剪切 [_u]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:104
+#: crates/rnote-ui/data/ui/contextmenu.ui:18
 msgid "_Paste"
 msgstr "粘贴 [_P]"
 
@@ -1157,7 +1159,7 @@ msgid "Open in Default App"
 msgstr "在默认应用内打开"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:72
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:65
 msgid "Rename"
 msgstr "重命名"
 
@@ -1739,7 +1741,7 @@ msgstr "工作区目录操作"
 msgid "Create new Folder"
 msgstr "创建新文件夹"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:565
+#: crates/rnote-ui/src/appwindow/actions.rs:569
 #: crates/rnote-ui/src/appwindow/imp.rs:248
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:127
@@ -1748,11 +1750,11 @@ msgstr "创建新文件夹"
 msgid "Saving document failed"
 msgstr "文档保存失败"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:628
+#: crates/rnote-ui/src/appwindow/actions.rs:632
 msgid "Printing document failed"
 msgstr "打印失败"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:664
+#: crates/rnote-ui/src/appwindow/actions.rs:668
 msgid "Exporting selection failed, nothing selected"
 msgstr "导出选择内容失败，没有选择内容"
 
@@ -2258,101 +2260,101 @@ msgstr "多段线"
 msgid "Application restart is required"
 msgstr "应用程序需要重新启动"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:864
+#: crates/rnote-ui/src/settingspanel/mod.rs:867
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "十字准线（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:865
+#: crates/rnote-ui/src/settingspanel/mod.rs:868
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "十字准线（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:866
+#: crates/rnote-ui/src/settingspanel/mod.rs:869
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "十字准线（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:867
+#: crates/rnote-ui/src/settingspanel/mod.rs:870
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "点（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:868
+#: crates/rnote-ui/src/settingspanel/mod.rs:871
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "点（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:869
+#: crates/rnote-ui/src/settingspanel/mod.rs:872
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "点（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:870
+#: crates/rnote-ui/src/settingspanel/mod.rs:873
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "西北方向水滴（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:871
+#: crates/rnote-ui/src/settingspanel/mod.rs:874
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "西北方向水滴（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:872
+#: crates/rnote-ui/src/settingspanel/mod.rs:875
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "西北方向水滴（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:873
+#: crates/rnote-ui/src/settingspanel/mod.rs:876
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "东北方向水滴（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:874
+#: crates/rnote-ui/src/settingspanel/mod.rs:877
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "东北方向水滴（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:875
+#: crates/rnote-ui/src/settingspanel/mod.rs:878
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "东北方向水滴（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:876
+#: crates/rnote-ui/src/settingspanel/mod.rs:879
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "正北方向水滴（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:877
+#: crates/rnote-ui/src/settingspanel/mod.rs:880
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "正北方向水滴（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:878
+#: crates/rnote-ui/src/settingspanel/mod.rs:881
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "正北方向水滴（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:879
+#: crates/rnote-ui/src/settingspanel/mod.rs:882
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "横（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:880
+#: crates/rnote-ui/src/settingspanel/mod.rs:883
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "横（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:881
+#: crates/rnote-ui/src/settingspanel/mod.rs:884
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "横（大）"
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:56
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:49
 msgid "Folder Name"
 msgstr "文件夹名称"
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
 msgid "New Folder"
 msgstr "新建文件夹"
 

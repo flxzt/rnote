@@ -185,7 +185,7 @@ impl RnAppWindow {
 
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
     pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags, canvas: &RnCanvas) {
-        //tracing::info!("handling widget flags: '{widget_flags:?}'");
+        //tracing::debug!("handling widget flags: '{widget_flags:?}'");
 
         if widget_flags.redraw {
             canvas.queue_draw();

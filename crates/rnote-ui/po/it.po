@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-07 10:08+0100\n"
-"PO-Revision-Date: 2024-01-15 15:06+0000\n"
+"POT-Creation-Date: 2024-02-19 17:20+0100\n"
+"PO-Revision-Date: 2024-02-19 16:18+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -97,7 +97,7 @@ msgstr "Questo cancella l'intero documento. Si prega di confermare."
 #: crates/rnote-ui/data/ui/dialogs/export.ui:411
 #: crates/rnote-ui/data/ui/dialogs/import.ui:10
 #: crates/rnote-ui/data/ui/dialogs/import.ui:199
-#: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:34
+#: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
 msgstr "Annulla"
 
@@ -170,7 +170,7 @@ msgstr "Modifica area di lavoro"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:75
 #: crates/rnote-ui/data/ui/settingspanel.ui:234
-#: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:39
+#: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:36
 msgid "Apply"
 msgstr "Applica"
 
@@ -995,14 +995,17 @@ msgid "_Clipboard"
 msgstr "_Appunti"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:96
+#: crates/rnote-ui/data/ui/contextmenu.ui:10
 msgid "_Copy"
 msgstr "_Copia"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:100
+#: crates/rnote-ui/data/ui/contextmenu.ui:14
 msgid "C_ut"
 msgstr "T_aglia"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:104
+#: crates/rnote-ui/data/ui/contextmenu.ui:18
 msgid "_Paste"
 msgstr "_Incolla"
 
@@ -1147,7 +1150,7 @@ msgid "Open in Default App"
 msgstr "Apri nell'app predefinita"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:72
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:65
 msgid "Rename"
 msgstr "Rinomina"
 
@@ -1369,34 +1372,24 @@ msgid "Document"
 msgstr "Documento"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:250
-#, fuzzy
-#| msgid "_Document Layout"
 msgid "Document Layout"
-msgstr "_Layout Documento"
+msgstr "Layout del documento"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:254
-#, fuzzy
-#| msgid "_Fixed Size"
 msgid "Fixed Size"
-msgstr "_Dimensione Fissa"
+msgstr "Dimensione Fissa"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:255
-#, fuzzy
-#| msgid "_Continuous Vertical"
 msgid "Continuous Vertical"
-msgstr "_Verticale Continua"
+msgstr "Verticale Continua"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:256
-#, fuzzy
-#| msgid "_Semi Infinite"
 msgid "Semi Infinite"
-msgstr "_Semi Infinito"
+msgstr "Semi Infinito"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:257
-#, fuzzy
-#| msgid "_Infinite"
 msgid "Infinite"
-msgstr "_Infinito"
+msgstr "Infinito"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:265
 msgid "Format Border Color"
@@ -1729,7 +1722,7 @@ msgstr "Azioni Dell'Area Di Lavoro"
 msgid "Create new Folder"
 msgstr "Crea nuova Cartella"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:565
+#: crates/rnote-ui/src/appwindow/actions.rs:569
 #: crates/rnote-ui/src/appwindow/imp.rs:248
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:127
@@ -1738,11 +1731,11 @@ msgstr "Crea nuova Cartella"
 msgid "Saving document failed"
 msgstr "Salvataggio del documento fallito"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:628
+#: crates/rnote-ui/src/appwindow/actions.rs:632
 msgid "Printing document failed"
 msgstr "Stampa del documento fallita"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:664
+#: crates/rnote-ui/src/appwindow/actions.rs:668
 msgid "Exporting selection failed, nothing selected"
 msgstr "Esportazione della selezione fallita, non si è selezionato nulla"
 
@@ -2248,101 +2241,101 @@ msgstr "Poligono"
 msgid "Application restart is required"
 msgstr "Riavvio di applicazione necessario"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:864
+#: crates/rnote-ui/src/settingspanel/mod.rs:867
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "Mirino (piccolo)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:865
+#: crates/rnote-ui/src/settingspanel/mod.rs:868
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "Mirino (medio)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:866
+#: crates/rnote-ui/src/settingspanel/mod.rs:869
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "Mirino (grande)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:867
+#: crates/rnote-ui/src/settingspanel/mod.rs:870
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "Punto (piccolo)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:868
+#: crates/rnote-ui/src/settingspanel/mod.rs:871
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "Punto (medio)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:869
+#: crates/rnote-ui/src/settingspanel/mod.rs:872
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "Punto (grande)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:870
+#: crates/rnote-ui/src/settingspanel/mod.rs:873
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "A Goccia Nord-Ovest (piccolo)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:871
+#: crates/rnote-ui/src/settingspanel/mod.rs:874
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "A Goccia Nord-Ovest (medio)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:872
+#: crates/rnote-ui/src/settingspanel/mod.rs:875
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "A Goccia Nord-Ovest (grande)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:873
+#: crates/rnote-ui/src/settingspanel/mod.rs:876
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "A Goccia Nord-Est (piccolo)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:874
+#: crates/rnote-ui/src/settingspanel/mod.rs:877
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "A Goccia Nord-Est (medio)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:875
+#: crates/rnote-ui/src/settingspanel/mod.rs:878
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "A Goccia Nord-Est (grande)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:876
+#: crates/rnote-ui/src/settingspanel/mod.rs:879
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "A Goccia Nord (piccolo)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:877
+#: crates/rnote-ui/src/settingspanel/mod.rs:880
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "A Goccia Nord (medio)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:878
+#: crates/rnote-ui/src/settingspanel/mod.rs:881
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "A Goccia Nord (grande)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:879
+#: crates/rnote-ui/src/settingspanel/mod.rs:882
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "Fascia (piccolo)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:880
+#: crates/rnote-ui/src/settingspanel/mod.rs:883
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "Fascia (medio)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:881
+#: crates/rnote-ui/src/settingspanel/mod.rs:884
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "Fascia (grande)"
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:56
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:49
 msgid "Folder Name"
 msgstr "Nome Cartella"
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
 msgid "New Folder"
 msgstr "Nuova Cartella"
 

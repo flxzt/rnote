@@ -899,7 +899,7 @@ impl RnCanvas {
 
         let event_handler =
             move |appwindow: &RnAppWindow, canvas: &RnCanvas, event: notify::Event| {
-                tracing::info!("file watcher - received event: {event:?}");
+                tracing::debug!("file watcher - received event: {event:?}");
 
                 match event.kind {
                     notify::EventKind::Create(_create_kind) => {}

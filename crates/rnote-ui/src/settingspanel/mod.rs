@@ -602,7 +602,7 @@ impl RnSettingsPanel {
 
                 if !canvas.engine_ref().document.background.color.approx_eq_f32(background_color) {
                     canvas.engine_mut().document.background.color = background_color;
-                    let mut widget_flags = canvas.engine_mut().background_regenerate_pattern();
+                    let mut widget_flags = canvas.engine_mut().background_rendering_regenerate();
                     widget_flags.store_modified = true;
                     appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
@@ -663,7 +663,7 @@ impl RnSettingsPanel {
 
             if canvas.engine_ref().document.background.pattern != pattern {
                 canvas.engine_mut().document.background.pattern = pattern;
-                let mut widget_flags = canvas.engine_mut().background_regenerate_pattern();
+                let mut widget_flags = canvas.engine_mut().background_rendering_regenerate();
                 widget_flags.store_modified = true;
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
@@ -676,7 +676,7 @@ impl RnSettingsPanel {
 
                 if !canvas.engine_ref().document.background.pattern_color.approx_eq_f32(pattern_color) {
                     canvas.engine_mut().document.background.pattern_color = pattern_color;
-                    let mut widget_flags = canvas.engine_mut().background_regenerate_pattern();
+                    let mut widget_flags = canvas.engine_mut().background_rendering_regenerate();
                     widget_flags.store_modified = true;
                     appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
@@ -694,7 +694,7 @@ impl RnSettingsPanel {
 
                         if !canvas.engine_ref().document.background.pattern_size.approx_eq(&pattern_size) {
                             canvas.engine_mut().document.background.pattern_size = pattern_size;
-                            let mut widget_flags = canvas.engine_mut().background_regenerate_pattern();
+                            let mut widget_flags = canvas.engine_mut().background_rendering_regenerate();
                             widget_flags.store_modified = true;
                             appwindow.handle_widget_flags(widget_flags, &canvas);
                         }
@@ -712,7 +712,7 @@ impl RnSettingsPanel {
 
                         if !canvas.engine_ref().document.background.pattern_size.approx_eq(&pattern_size) {
                             canvas.engine_mut().document.background.pattern_size = pattern_size;
-                            let mut widget_flags = canvas.engine_mut().background_regenerate_pattern();
+                            let mut widget_flags = canvas.engine_mut().background_rendering_regenerate();
                             widget_flags.store_modified = true;
                             appwindow.handle_widget_flags(widget_flags, &canvas);
                         }
@@ -728,7 +728,7 @@ impl RnSettingsPanel {
                         engine.document.background.color = engine.document.background.color.to_inverted_brightness_color();
                         engine.document.background.pattern_color = engine.document.background.pattern_color.to_inverted_brightness_color();
                         engine.document.format.border_color = engine.document.format.border_color.to_inverted_brightness_color();
-                        engine.background_regenerate_pattern()
+                        engine.background_rendering_regenerate()
                     };
 
                     widget_flags.refresh_ui = true;

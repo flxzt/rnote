@@ -175,21 +175,20 @@ impl Document {
         let mut widget_flags = WidgetFlags::default();
         match self.layout {
             Layout::FixedSize => {
-                self.resize_doc_fixed_size_layout(store);
+                widget_flags.resize |= self.resize_doc_fixed_size_layout(store);
             }
             Layout::ContinuousVertical => {
-                self.resize_doc_continuous_vertical_layout(store);
+                widget_flags.resize |= self.resize_doc_continuous_vertical_layout(store);
             }
             Layout::SemiInfinite => {
-                self.resize_doc_semi_infinite_layout_to_fit_content(store);
-                self.expand_doc_semi_infinite_layout(camera.viewport());
+                widget_flags.resize |=
+                    self.resize_doc_semi_infinite_layout(camera.viewport(), store, true);
             }
             Layout::Infinite => {
-                self.resize_doc_infinite_layout_to_fit_content(store);
-                self.expand_doc_infinite_layout(camera.viewport());
+                widget_flags.resize |=
+                    self.resize_doc_infinite_layout(camera.viewport(), store, true);
             }
         }
-        widget_flags.resize = true;
         widget_flags
     }
 
@@ -204,24 +203,25 @@ impl Document {
                 // do not resize in fixed size mode, if wanted use resize_to_fit_content() for it.
             }
             Layout::ContinuousVertical => {
-                self.resize_doc_continuous_vertical_layout(store);
-                widget_flags.resize = true;
+                widget_flags.resize |= self.resize_doc_continuous_vertical_layout(store);
             }
             Layout::SemiInfinite => {
-                self.resize_doc_semi_infinite_layout_to_fit_content(store);
-                self.expand_doc_semi_infinite_layout(camera.viewport());
-                widget_flags.resize = true;
+                widget_flags.resize |=
+                    self.resize_doc_semi_infinite_layout(camera.viewport(), store, true);
             }
             Layout::Infinite => {
-                self.resize_doc_infinite_layout_to_fit_content(store);
-                self.expand_doc_infinite_layout(camera.viewport());
-                widget_flags.resize = true;
+                widget_flags.resize |=
+                    self.resize_doc_infinite_layout(camera.viewport(), store, true);
             }
         }
         widget_flags
     }
 
-    pub(crate) fn expand_autoexpand(&mut self, camera: &Camera) -> WidgetFlags {
+    pub(crate) fn expand_autoexpand(
+        &mut self,
+        camera: &Camera,
+        store: &StrokeStore,
+    ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         match self.layout {
             Layout::FixedSize | Layout::ContinuousVertical => {
@@ -229,13 +229,13 @@ impl Document {
             }
             Layout::SemiInfinite => {
                 // only expand, don't resize to fit content
-                self.expand_doc_semi_infinite_layout(camera.viewport());
-                widget_flags.resize = true;
+                widget_flags.resize |=
+                    self.resize_doc_semi_infinite_layout(camera.viewport(), store, false);
             }
             Layout::Infinite => {
                 // only expand, don't resize to fit content
-                self.expand_doc_infinite_layout(camera.viewport());
-                widget_flags.resize = true;
+                widget_flags.resize |=
+                    self.resize_doc_infinite_layout(camera.viewport(), store, false);
             }
         }
         widget_flags
@@ -265,94 +265,133 @@ impl Document {
         true
     }
 
-    fn resize_doc_fixed_size_layout(&mut self, store: &StrokeStore) {
+    /// Returns true if a resize happened.
+    #[must_use = "Determines if the resize flag should be set"]
+    fn resize_doc_fixed_size_layout(&mut self, store: &StrokeStore) -> bool {
         let format_height = self.format.height();
 
         let new_width = self.format.width();
         // max(1.0) because then 'fraction'.ceil() is at least 1
         let new_height = ((store.calc_height().max(1.0)) / format_height).ceil() * format_height;
 
-        self.x = 0.0;
-        self.y = 0.0;
-        self.width = new_width;
-        self.height = new_height;
+        set_dimensions_checked(
+            &mut self.x,
+            &mut self.y,
+            &mut self.width,
+            &mut self.height,
+            0.,
+            0.,
+            new_width,
+            new_height,
+        )
     }
 
-    fn resize_doc_continuous_vertical_layout(&mut self, store: &StrokeStore) {
+    /// Returns true if a resize happened.
+    #[must_use = "Determines if the resize flag should be set"]
+    fn resize_doc_continuous_vertical_layout(&mut self, store: &StrokeStore) -> bool {
         let padding_bottom = self.format.height();
         let new_height = store.calc_height() + padding_bottom;
         let new_width = self.format.width();
 
-        self.x = 0.0;
-        self.y = 0.0;
-        self.width = new_width;
-        self.height = new_height;
+        set_dimensions_checked(
+            &mut self.x,
+            &mut self.y,
+            &mut self.width,
+            &mut self.height,
+            0.,
+            0.,
+            new_width,
+            new_height,
+        )
     }
 
-    fn expand_doc_semi_infinite_layout(&mut self, viewport: Aabb) {
+    /// Resizes the document to include the viewport for the semi-infinite layout mode.
+    ///
+    /// if `include_content` is set, this also expands to included the content.
+    /// The computation will then get more expensive, though.
+    ///
+    /// Returns true if a resize happened.
+    #[must_use = "Determines if the resize flag should be set"]
+    fn resize_doc_semi_infinite_layout(
+        &mut self,
+        viewport: Aabb,
+        store: &StrokeStore,
+        include_content: bool,
+    ) -> bool {
         let padding_horizontal = self.format.width() * 2.0;
         let padding_vertical = self.format.height() * 2.0;
 
-        let new_bounds = self.bounds().merged(
+        let mut new_bounds = self.bounds().merged(
             &viewport.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical]),
         );
 
-        self.x = 0.0;
-        self.y = 0.0;
-        self.width = new_bounds.maxs[0];
-        self.height = new_bounds.maxs[1];
+        if include_content {
+            let keys = store.stroke_keys_as_rendered();
+            let content_bounds = if let Some(content_bounds) = store.bounds_for_strokes(&keys) {
+                content_bounds
+                    .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
+            } else {
+                // If doc is empty, resize to one page with the format size
+                Aabb::new(na::point![0.0, 0.0], self.format.size().into())
+                    .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
+            };
+            new_bounds.merge(&content_bounds);
+        }
+
+        set_dimensions_checked(
+            &mut self.x,
+            &mut self.y,
+            &mut self.width,
+            &mut self.height,
+            0.,
+            0.,
+            new_bounds.maxs[0],
+            new_bounds.maxs[1],
+        )
     }
 
-    fn expand_doc_infinite_layout(&mut self, viewport: Aabb) {
+    /// Resizes the document to include the viewport for the infinite layout mode.
+    ///
+    /// if `include_content` is set, this also expands to included the content.
+    /// The computation will then get more expensive, though.
+    ///
+    /// Returns true if a resize happened.
+    #[must_use = "Determines if the resize flag should be set"]
+    fn resize_doc_infinite_layout(
+        &mut self,
+        viewport: Aabb,
+        store: &StrokeStore,
+        include_content: bool,
+    ) -> bool {
         let padding_horizontal = self.format.width() * 2.0;
         let padding_vertical = self.format.height() * 2.0;
 
-        let new_bounds = self
+        let mut new_bounds = self
             .bounds()
             .merged(&viewport.extend_by(na::vector![padding_horizontal, padding_vertical]));
 
-        self.x = new_bounds.mins[0];
-        self.y = new_bounds.mins[1];
-        self.width = new_bounds.extents()[0];
-        self.height = new_bounds.extents()[1];
-    }
+        if include_content {
+            let keys = store.stroke_keys_as_rendered();
+            let content_bounds = if let Some(content_bounds) = store.bounds_for_strokes(&keys) {
+                content_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])
+            } else {
+                // If doc is empty, resize to one page with the format size
+                Aabb::new(na::point![0.0, 0.0], self.format.size().into())
+                    .extend_by(na::vector![padding_horizontal, padding_vertical])
+            };
+            new_bounds.merge(&content_bounds);
+        }
 
-    fn resize_doc_semi_infinite_layout_to_fit_content(&mut self, store: &StrokeStore) {
-        let padding_horizontal = self.format.width() * 2.0;
-        let padding_vertical = self.format.height() * 2.0;
-
-        let keys = store.stroke_keys_as_rendered();
-
-        let new_bounds = if let Some(new_bounds) = store.bounds_for_strokes(&keys) {
-            new_bounds.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
-        } else {
-            // If doc is empty, resize to one page with the format size
-            Aabb::new(na::point![0.0, 0.0], self.format.size().into())
-                .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
-        };
-        self.x = 0.0;
-        self.y = 0.0;
-        self.width = new_bounds.extents()[0];
-        self.height = new_bounds.extents()[1];
-    }
-
-    fn resize_doc_infinite_layout_to_fit_content(&mut self, store: &StrokeStore) {
-        let padding_horizontal = self.format.width() * 2.0;
-        let padding_vertical = self.format.height() * 2.0;
-
-        let keys = store.stroke_keys_as_rendered();
-
-        let new_bounds = if let Some(new_bounds) = store.bounds_for_strokes(&keys) {
-            new_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])
-        } else {
-            // If doc is empty, resize to one page with the format size
-            Aabb::new(na::point![0.0, 0.0], self.format.size().into())
-                .extend_by(na::vector![padding_horizontal, padding_vertical])
-        };
-        self.x = new_bounds.mins[0];
-        self.y = new_bounds.mins[1];
-        self.width = new_bounds.extents()[0];
-        self.height = new_bounds.extents()[1];
+        set_dimensions_checked(
+            &mut self.x,
+            &mut self.y,
+            &mut self.width,
+            &mut self.height,
+            new_bounds.mins[0],
+            new_bounds.mins[1],
+            new_bounds.extents()[0],
+            new_bounds.extents()[1],
+        )
     }
 
     /// Snap the position to the document and pattern grid when `snap_positions` is enabled.
@@ -387,4 +426,36 @@ impl Document {
 
         pos_snapped
     }
+}
+
+#[must_use = "Determines if the resize flag should be set"]
+#[allow(clippy::too_many_arguments)]
+fn set_dimensions_checked(
+    x: &mut f64,
+    y: &mut f64,
+    width: &mut f64,
+    height: &mut f64,
+    new_x: f64,
+    new_y: f64,
+    new_width: f64,
+    new_height: f64,
+) -> bool {
+    let mut check = false;
+    if approx::relative_ne!(*x, new_x) {
+        *x = new_x;
+        check = true;
+    }
+    if approx::relative_ne!(*y, new_y) {
+        *y = new_y;
+        check = true
+    }
+    if approx::relative_ne!(*width, new_width) {
+        *width = new_width;
+        check = true
+    }
+    if approx::relative_ne!(*height, new_height) {
+        *height = new_height;
+        check = true;
+    }
+    check
 }

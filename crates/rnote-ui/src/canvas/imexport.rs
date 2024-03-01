@@ -206,7 +206,7 @@ impl RnCanvas {
             .save_as_rnote_bytes(basename.to_string_lossy().to_string());
         let mut skip_set_output_file = false;
         if let Some(current_file_path) = self.output_file().and_then(|f| f.path()) {
-            if same_file::is_same_file(current_file_path, &file_path).unwrap_or(false) {
+            if crate::utils::paths_abs_eq(current_file_path, &file_path).unwrap_or(false) {
                 skip_set_output_file = true;
             }
         }
@@ -216,10 +216,16 @@ impl RnCanvas {
         let file_write_operation = async move {
             let bytes = rnote_bytes_receiver.await??;
             self.set_output_file_expect_write(true);
-            let mut write_file = async_fs::File::create(&file_path).await.context(format!(
-                "Failed to create file for path '{}'",
-                file_path.display()
-            ))?;
+            let mut write_file = async_fs::OpenOptions::new()
+                .create(true)
+                .truncate(true)
+                .write(true)
+                .open(&file_path)
+                .await
+                .context(format!(
+                    "Failed to create/open/truncate file for path '{}'",
+                    file_path.display()
+                ))?;
             if !skip_set_output_file {
                 // this installs the file watcher.
                 self.set_output_file(Some(file.to_owned()));
@@ -228,8 +234,8 @@ impl RnCanvas {
                 "Failed to write bytes to file with path '{}'",
                 file_path.display()
             ))?;
-            write_file.flush().await.context(format!(
-                "Failed to flush file with path '{}'",
+            write_file.sync_all().await.context(format!(
+                "Failed to sync file after writing with path '{}'",
                 file_path.display()
             ))?;
             Ok(())

@@ -1,8 +1,10 @@
+// Imports
 use anyhow::Context;
 use futures::AsyncWriteExt;
-// Imports
 use gtk4::{gdk, gio, prelude::*};
+use path_absolutize::Absolutize;
 use std::cell::Ref;
+use std::path::Path;
 use std::slice::Iter;
 
 /// The suffix delimiter when duplicating/renaming already existing files
@@ -15,22 +17,28 @@ pub(crate) async fn create_replace_file_future(
     bytes: Vec<u8>,
     file: &gio::File,
 ) -> anyhow::Result<()> {
-    let Some(path) = file.path() else {
+    let Some(file_path) = file.path() else {
         return Err(anyhow::anyhow!(
             "Can't create-replace file that has no path."
         ));
     };
-    let mut file = async_fs::File::create(&path).await.context(format!(
-        "Failed to create file for path '{}'",
-        path.display()
-    ))?;
-    file.write_all(&bytes).await.context(format!(
+    let mut write_file = async_fs::OpenOptions::new()
+        .create(true)
+        .truncate(true)
+        .write(true)
+        .open(&file_path)
+        .await
+        .context(format!(
+            "Failed to create/open/truncate file for path '{}'",
+            file_path.display()
+        ))?;
+    write_file.write_all(&bytes).await.context(format!(
         "Failed to write bytes to file with path '{}'",
-        path.display()
+        file_path.display()
     ))?;
-    file.flush().await.context(format!(
-        "Failed to flush file with path '{}'",
-        path.display()
+    write_file.sync_all().await.context(format!(
+        "Failed to sync file after writing with path '{}'",
+        file_path.display()
     ))?;
     Ok(())
 }
@@ -83,6 +91,19 @@ pub(crate) fn default_file_title_for_export(
     }
 
     title
+}
+
+/// Absolutizes two paths and checks if they are equal.
+///
+/// Compared to `canonicalize()`, the files do not need to exist on the fs and symlinks are not resolved.
+#[inline]
+pub(crate) fn paths_abs_eq(
+    first: impl AsRef<Path>,
+    second: impl AsRef<Path>,
+) -> anyhow::Result<bool> {
+    let first = first.as_ref().absolutize()?.into_owned();
+    let second = second.as_ref().absolutize()?.into_owned();
+    Ok(first == second)
 }
 
 /// Wrapper type that enables iterating over [`std::cell::RefCell<Vec<T>>`]

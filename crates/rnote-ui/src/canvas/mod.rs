@@ -6,18 +6,18 @@ mod widgetflagsboxed;
 
 // Re-exports
 pub(crate) use canvaslayout::RnCanvasLayout;
-use futures::StreamExt;
-use notify::Watcher;
 pub(crate) use widgetflagsboxed::WidgetFlagsBoxed;
 
 // Imports
 use crate::{config, RnAppWindow};
+use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, Adjustment,
     DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext, PropagationPhase,
     Scrollable, ScrollablePolicy, Widget,
 };
+use notify_debouncer_full::notify::{self, Watcher};
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
@@ -27,6 +27,8 @@ use rnote_engine::ext::GrapheneRectExt;
 use rnote_engine::Camera;
 use rnote_engine::{Engine, WidgetFlags};
 use std::cell::{Cell, Ref, RefCell, RefMut};
+use std::path::Path;
+use std::time::Duration;
 
 #[derive(Debug, Default)]
 struct Connections {
@@ -897,73 +899,89 @@ impl RnCanvas {
                     &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
         };
 
-        let event_handler =
-            move |appwindow: &RnAppWindow, canvas: &RnCanvas, event: notify::Event| {
-                tracing::debug!("file watcher - received event: {event:?}");
+        let event_handler = move |appwindow: &RnAppWindow,
+                                  canvas: &RnCanvas,
+                                  event: notify_debouncer_full::DebouncedEvent,
+                                  file_path: &Path| {
+            use notify::event::{AccessKind, AccessMode, ModifyKind, RenameMode};
+            use notify::EventKind;
 
-                match event.kind {
-                    notify::EventKind::Create(_create_kind) => {}
-                    notify::EventKind::Modify(modify_kind) => match modify_kind {
-                        notify::event::ModifyKind::Data(_data_change) => {
-                            if canvas.output_file_expect_write() {
-                                // While writing is in progress, multiple modify events might occur.
-                                return;
-                            }
-                            dispatch_toast_reload_modified_file(appwindow, canvas);
-                        }
-                        notify::event::ModifyKind::Name(rename_mode) => match rename_mode {
-                            notify::event::RenameMode::Both => {
-                                // Only when the new path is known we can update the output file
-                                let new_path = &event.paths[1];
-                                canvas.set_output_file(Some(gio::File::for_path(new_path)));
-                            }
-                            _ => {
-                                canvas.set_unsaved_changes(true);
-                                canvas.set_output_file(None);
+            tracing::trace!("file parent directory watcher - received event: {event:?}");
 
-                                appwindow.overlays().dispatch_toast_text(
-                                    &gettext("Opened file was renamed or moved."),
-                                    crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
-                                );
-                            }
-                        },
-                        _ => {}
-                    },
-                    notify::EventKind::Remove(_remove_kind) => {
-                        canvas.set_unsaved_changes(true);
-                        canvas.set_output_file(None);
-
-                        appwindow.overlays().dispatch_toast_text(
-                            &gettext("Opened file was removed."),
-                            crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
-                        );
+            match event.kind {
+                EventKind::Create(_create_kind) => {}
+                EventKind::Modify(ModifyKind::Data(_data_change)) => {
+                    let Some(event_path) = event.paths.first() else {
+                        return;
+                    };
+                    if !crate::utils::paths_abs_eq(file_path, event_path).unwrap_or(false) {
+                        return;
                     }
-                    notify::EventKind::Access(notify::event::AccessKind::Close(
-                        notify::event::AccessMode::Write,
-                    )) => {
-                        if canvas.output_file_expect_write() {
-                            // Own file writing has finished
-                            canvas.set_output_file_expect_write(false);
-                        }
+                    if canvas.output_file_expect_write() {
+                        // While writing is in progress, multiple modify events might occur.
+                        return;
                     }
-                    notify::EventKind::Other => todo!(),
-                    _ => {}
+                    dispatch_toast_reload_modified_file(appwindow, canvas);
                 }
-            };
+                EventKind::Modify(ModifyKind::Name(RenameMode::Both)) => {
+                    let (Some(from_path), Some(to_path)) =
+                        (event.paths.first(), event.paths.get(1))
+                    else {
+                        return;
+                    };
+                    if !crate::utils::paths_abs_eq(file_path, from_path).unwrap_or(false) {
+                        return;
+                    }
+                    // Only when the new path is known we can update the output file
+                    canvas.set_output_file(Some(gio::File::for_path(to_path)));
+                }
+                EventKind::Remove(_remove_kind) => {
+                    let Some(event_path) = event.paths.first() else {
+                        return;
+                    };
+                    if !crate::utils::paths_abs_eq(file_path, event_path).unwrap_or(false) {
+                        return;
+                    }
+                    canvas.set_unsaved_changes(true);
+                    canvas.set_output_file(None);
+                    appwindow.overlays().dispatch_toast_text(
+                        &gettext("Opened file was removed."),
+                        crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
+                    );
+                }
+                EventKind::Access(AccessKind::Close(AccessMode::Write)) => {
+                    let Some(event_path) = event.paths.first() else {
+                        return;
+                    };
+                    if !crate::utils::paths_abs_eq(file_path, event_path).unwrap_or(false) {
+                        return;
+                    }
+                    if canvas.output_file_expect_write() {
+                        // Own file writing has finished
+                        canvas.set_output_file_expect_write(false);
+                    }
+                }
+                _ => {}
+            }
+        };
 
         let new_watcher_task = glib::spawn_future_local(
             glib::clone!(@strong file, @weak self as canvas, @weak appwindow => async move {
                 let (tx, mut rx) = futures::channel::mpsc::unbounded();
                 let Some(file_path) = file.path() else {
-                    tracing::warn!("Can't create watcher for file that has no patch");
+                    tracing::warn!("Can't create watcher for file that has no path");
+                    return;
+                };
+                let Some(parent_path) = file_path.parent() else {
+                    tracing::warn!("Can't create watcher for file that has no parent directory");
                     return;
                 };
 
-                let mut watcher = match notify::RecommendedWatcher::new(move |res| {
+                let mut debouncer = match notify_debouncer_full::new_debouncer(Duration::from_millis(1000), None, move |res| {
                     if let Err(e) = tx.unbounded_send(res) {
                         tracing::error!("File watcher reported change, but failed to send it through channel. Err: {e:?}");
                     }
-                }, notify::Config::default()) {
+                }) {
                     Ok(w) => {
                         w
                     },
@@ -972,13 +990,16 @@ impl RnCanvas {
                         return;
                     }
                 };
-                if let Err(e) = watcher.watch(&file_path, notify::RecursiveMode::NonRecursive) {
-                    tracing::error!("Failed to start watching file with path '{}', Err: {e:?}", file_path.display());
+                if let Err(e) = debouncer.watcher().watch(parent_path, notify::RecursiveMode::NonRecursive) {
+                    tracing::error!("Failed to start watching directory '{}', Err: {e:?}", parent_path.display());
                 }
+                debouncer.cache().add_root(parent_path, notify::RecursiveMode::NonRecursive);
                 while let Some(res) = rx.next().await {
                     match res {
-                        Ok(event) => {
-                            event_handler(&appwindow, &canvas, event);
+                        Ok(events) => {
+                            for event in events {
+                                event_handler(&appwindow, &canvas, event, &file_path);
+                            }
                         }
                         Err(e) => tracing::error!("File watcher sent error message, Err: {e:?}"),
                     }

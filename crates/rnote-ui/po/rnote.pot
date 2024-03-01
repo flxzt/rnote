@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-01 13:59+0100\n"
+"POT-Creation-Date: 2024-03-01 14:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1742,15 +1742,19 @@ msgstr ""
 msgid "Reloading .rnote file from disk failed"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:948
+#: crates/rnote-ui/src/canvas/mod.rs:957
+msgid "Opened file was renamed or moved."
+msgstr ""
+
+#: crates/rnote-ui/src/canvas/mod.rs:971
 msgid "Opened file was removed."
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:1122
+#: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:1132
+#: crates/rnote-ui/src/canvas/mod.rs:1155
 msgid "Inserting text failed"
 msgstr ""
 

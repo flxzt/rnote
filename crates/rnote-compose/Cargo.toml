@@ -9,12 +9,11 @@ rust-version.workspace = true
 version.workspace = true
 
 [dependencies]
-ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "b67f11b2c174a9ae4a54c22313cf8c218ff0946a" }
-
 anyhow = { workspace = true }
 approx = { workspace = true }
 base64 = { workspace = true }
 clap = { workspace = true, optional = true }
+ink-stroke-modeler-rs = { workspace = true }
 kurbo = { workspace = true }
 nalgebra = { workspace = true }
 num-derive = { workspace = true }

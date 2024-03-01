@@ -58,7 +58,6 @@ parry2d-f64 = { version = "0.13.6", features = ["serde-serialize"] }
 path-absolutize = "3.1"
 piet = "0.6.2"
 piet-cairo = "0.6.2"
-poppler-rs = { version = "0.23.0", features = ["v22_2"] }
 rand = "0.8.5"
 rand_distr = "0.4.3"
 rand_pcg = "0.3.1"
@@ -85,6 +84,8 @@ url = "2.5"
 usvg = "0.40.0"
 winresource = "0.1.17"
 xmlwriter = "0.1.0"
+# Enabling feature > v20_9 causes linker errors on mingw
+poppler-rs = { version = "0.23.0", features = ["v20_9"] }
 
 [patch.crates-io]
 # once a new piet (current v0.6.2) is released with updated cairo and kurbo deps, this can be removed.

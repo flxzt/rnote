@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-29 23:53+0100\n"
+"POT-Creation-Date: 2024-03-01 13:59+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -110,7 +110,7 @@ msgstr "ล้าง"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
-#: crates/rnote-ui/src/canvas/mod.rs:593
+#: crates/rnote-ui/src/canvas/mod.rs:582
 msgid "New Document"
 msgstr "เอกสารใหม่"
 
@@ -1105,151 +1105,157 @@ msgstr "ใช้ธีมมืด"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:42
 #, fuzzy
-#| msgid "Developer mode"
-msgid "De_veloper Mode"
-msgstr "โหมดนักพัฒนา"
-
-#: crates/rnote-ui/data/ui/appmenu.ui:47
-#, fuzzy
 #| msgid "Developer menu"
 msgid "Developer _Menu"
 msgstr "เมนูสำหรับนักพัฒนา"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:52
+#: crates/rnote-ui/data/ui/appmenu.ui:47
 #, fuzzy
 #| msgid "Visual debugging"
 msgid "Visual _Debugging"
 msgstr "แก้ไขปัญหาการแสดงผล"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:56
+#: crates/rnote-ui/data/ui/appmenu.ui:51
 #, fuzzy
 #| msgid "Export engine state"
 msgid "Export Engine _State"
 msgstr "ส่งออกสภาพของเอนจิน"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:60
+#: crates/rnote-ui/data/ui/appmenu.ui:55
 #, fuzzy
 #| msgid "Export engine config"
 msgid "Export Engine _Config"
 msgstr "ส่งออกการตั้งค่าเอนจิน"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:68
+#: crates/rnote-ui/data/ui/appmenu.ui:61
+#, fuzzy
+#| msgid "Developer mode"
+msgid "De_veloper Mode"
+msgstr "โหมดนักพัฒนา"
+
+#: crates/rnote-ui/data/ui/appmenu.ui:66
+#, fuzzy
+#| msgid "New Window"
+msgid "New _Window"
+msgstr "หน้าต่างใหม่"
+
+#: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/appmenu.ui:72
+#: crates/rnote-ui/data/ui/appmenu.ui:76
 #, fuzzy
 #| msgid "Open"
 msgid "_Open"
 msgstr "เปิด"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:76
+#: crates/rnote-ui/data/ui/appmenu.ui:80
 #, fuzzy
 #| msgid "Save"
 msgid "_Save"
 msgstr "บันทึก"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:80
+#: crates/rnote-ui/data/ui/appmenu.ui:84
 #, fuzzy
 #| msgid "Save as"
 msgid "Save _As"
 msgstr "บันทึกที่"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:86
+#: crates/rnote-ui/data/ui/appmenu.ui:90
 #, fuzzy
 #| msgid "Print"
 msgid "_Print"
 msgstr "พิมพ์"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:90
+#: crates/rnote-ui/data/ui/appmenu.ui:94
 #, fuzzy
 #| msgid "Import file"
 msgid "_Import File"
 msgstr "นำเข้าไฟล์"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:94
+#: crates/rnote-ui/data/ui/appmenu.ui:98
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Paste clipboard"
 msgid "_Clipboard"
 msgstr "วางคลิปบอร์ด"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:96
+#: crates/rnote-ui/data/ui/appmenu.ui:100
 #: crates/rnote-ui/data/ui/contextmenu.ui:10
 msgid "_Copy"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/appmenu.ui:100
+#: crates/rnote-ui/data/ui/appmenu.ui:104
 #: crates/rnote-ui/data/ui/contextmenu.ui:14
 msgid "C_ut"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/appmenu.ui:104
+#: crates/rnote-ui/data/ui/appmenu.ui:108
 #: crates/rnote-ui/data/ui/contextmenu.ui:18
 msgid "_Paste"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/appmenu.ui:109
+#: crates/rnote-ui/data/ui/appmenu.ui:113
 #, fuzzy
 #| msgid "Export…"
 msgid "_Export…"
 msgstr "ส่งออก…"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:111
+#: crates/rnote-ui/data/ui/appmenu.ui:115
 #, fuzzy
 #| msgid "Export document"
 msgid "Export _Document"
 msgstr "ส่งออกเอกสาร"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:115
+#: crates/rnote-ui/data/ui/appmenu.ui:119
 #, fuzzy
 #| msgid "Export document as SVG"
 msgid "Export Document _Pages"
 msgstr "ส่งออกเอกสารไปเป็นไฟล์ SVG"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:119
+#: crates/rnote-ui/data/ui/appmenu.ui:123
 #, fuzzy
 #| msgid "Export Selection"
 msgid "Export _Selection"
 msgstr "ส่งออกสิ่งที่เลือก"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:126
+#: crates/rnote-ui/data/ui/appmenu.ui:130
 #, fuzzy
 #| msgid "Settings"
 msgid "Se_ttings"
 msgstr "การตั้งค่า"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:130
+#: crates/rnote-ui/data/ui/appmenu.ui:134
 #, fuzzy
 #| msgid "Keyboard shortcuts"
 msgid "_Keyboard Shortcuts"
 msgstr "คีย์ลัด"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:134
+#: crates/rnote-ui/data/ui/appmenu.ui:138
 #, fuzzy
 #| msgid "Donate 💝"
 msgid "_Donate 💝"
 msgstr "บริจาค 💝"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:138
+#: crates/rnote-ui/data/ui/appmenu.ui:142
 #, fuzzy
 #| msgid "About Rnote"
 msgid "A_bout Rnote"
 msgstr "เกี่ยวกับอาร์โน๊ต"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:169
+#: crates/rnote-ui/data/ui/appmenu.ui:173
 #, fuzzy
 #| msgid "Sidebar on the left side"
 msgid "Sidebar on the Left Side"
 msgstr "แถบข้างอยู่ด้านซ้าย"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:178
+#: crates/rnote-ui/data/ui/appmenu.ui:182
 #, fuzzy
 #| msgid "Sidebar on the right side"
 msgid "Sidebar on the Right Side"
 msgstr "แถบข้างอยู่ด้านขวา"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:188
+#: crates/rnote-ui/data/ui/appmenu.ui:192
 #: crates/rnote-ui/data/ui/shortcuts.ui:56
 #, fuzzy
 #| msgid "Toggle fullscreen"
@@ -1380,7 +1386,7 @@ msgid "Duplicate"
 msgstr "สำเนาสิ่งที่เลือก"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:595
+#: crates/rnote-ui/src/canvas/mod.rs:584
 msgid "Draft"
 msgstr "ฉบับร่าง"
 
@@ -2072,52 +2078,50 @@ msgid ""
 "be saved."
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/mod.rs:487
+#: crates/rnote-ui/src/appwindow/mod.rs:488
 #, fuzzy
 #| msgid "Opening file failed."
 msgid "Opening file failed"
 msgstr "การเปิดไฟล์ล้มเหลว"
 
-#: crates/rnote-ui/src/canvas/mod.rs:867 crates/rnote-ui/src/dialogs/mod.rs:205
+#: crates/rnote-ui/src/canvas/mod.rs:846 crates/rnote-ui/src/dialogs/mod.rs:205
 #: crates/rnote-ui/src/dialogs/mod.rs:342
 #, fuzzy
 #| msgid "- no file name -"
 msgid "- invalid file name -"
 msgstr "- ไม่มีชื่อไฟล์ -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:880
+#: crates/rnote-ui/src/canvas/mod.rs:859
 msgid "- invalid folder path -"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:922
+#: crates/rnote-ui/src/canvas/mod.rs:883
 msgid "Opened file was modified on disk"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:923
+#: crates/rnote-ui/src/canvas/mod.rs:884
 msgid "Reload"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:930
+#: crates/rnote-ui/src/canvas/mod.rs:891
 #, fuzzy
 #| msgid "Opening .rnote file failed."
 msgid "Reloading .rnote file from disk failed"
 msgstr "การเปิดไฟล์ .rnote ล้มเหลว"
 
-#: crates/rnote-ui/src/canvas/mod.rs:994
-msgid "Opened file was renamed on disk"
-msgstr ""
+#: crates/rnote-ui/src/canvas/mod.rs:948
+#, fuzzy
+#| msgid "Opening file failed."
+msgid "Opened file was removed."
+msgstr "การเปิดไฟล์ล้มเหลว"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1007
-msgid "Opened file was moved or deleted on disk"
-msgstr ""
-
-#: crates/rnote-ui/src/canvas/mod.rs:1139
+#: crates/rnote-ui/src/canvas/mod.rs:1122
 #, fuzzy
 #| msgid "Opening file failed."
 msgid "Inserting file failed"
 msgstr "การเปิดไฟล์ล้มเหลว"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1149
+#: crates/rnote-ui/src/canvas/mod.rs:1132
 #, fuzzy
 #| msgid "Printing document failed"
 msgid "Inserting text failed"

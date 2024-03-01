@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-29 23:53+0100\n"
+"POT-Creation-Date: 2024-03-01 13:59+0100\n"
 "PO-Revision-Date: 2023-09-15 16:52+0000\n"
 "Last-Translator: יובל הרמן <nhajeho1@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
@@ -116,7 +116,7 @@ msgstr "ניקוי"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
-#: crates/rnote-ui/src/canvas/mod.rs:593
+#: crates/rnote-ui/src/canvas/mod.rs:582
 #, fuzzy
 msgid "New Document"
 msgstr "מסמך חדש"
@@ -1064,137 +1064,143 @@ msgstr "להשתמש בצבעים כהים"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:42
 #, fuzzy
-#| msgid "Developer mode"
-msgid "De_veloper Mode"
-msgstr "מצב מפתחים"
-
-#: crates/rnote-ui/data/ui/appmenu.ui:47
-#, fuzzy
 msgid "Developer _Menu"
 msgstr "מצב מפתחים"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:52
+#: crates/rnote-ui/data/ui/appmenu.ui:47
 #, fuzzy
 #| msgid "Visual debugging"
 msgid "Visual _Debugging"
 msgstr "ניפוי שגיאות חזותי"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:56
+#: crates/rnote-ui/data/ui/appmenu.ui:51
 #, fuzzy
 msgid "Export Engine _State"
 msgstr "ייצוא גיליון"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:60
+#: crates/rnote-ui/data/ui/appmenu.ui:55
 #, fuzzy
 msgid "Export Engine _Config"
 msgstr "יצוא הבחירה"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:68
+#: crates/rnote-ui/data/ui/appmenu.ui:61
+#, fuzzy
+#| msgid "Developer mode"
+msgid "De_veloper Mode"
+msgstr "מצב מפתחים"
+
+#: crates/rnote-ui/data/ui/appmenu.ui:66
+#, fuzzy
+#| msgid "New Window"
+msgid "New _Window"
+msgstr "חלון חדש"
+
+#: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/appmenu.ui:72
+#: crates/rnote-ui/data/ui/appmenu.ui:76
 #, fuzzy
 #| msgid "Open"
 msgid "_Open"
 msgstr "פתיחה"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:76
+#: crates/rnote-ui/data/ui/appmenu.ui:80
 #, fuzzy
 #| msgid "Save"
 msgid "_Save"
 msgstr "שמירה"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:80
+#: crates/rnote-ui/data/ui/appmenu.ui:84
 #, fuzzy
 #| msgid "Save as"
 msgid "Save _As"
 msgstr "שמירה בשם"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:86
+#: crates/rnote-ui/data/ui/appmenu.ui:90
 #, fuzzy
 #| msgid "Print"
 msgid "_Print"
 msgstr "הדפסה"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:90
+#: crates/rnote-ui/data/ui/appmenu.ui:94
 #, fuzzy
 #| msgid "Import file"
 msgid "_Import File"
 msgstr "ייבוא קובץ"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:94
+#: crates/rnote-ui/data/ui/appmenu.ui:98
 #, fuzzy
 msgid "_Clipboard"
 msgstr "הדבקת לוח הגזירים כבחירה"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:96
+#: crates/rnote-ui/data/ui/appmenu.ui:100
 #: crates/rnote-ui/data/ui/contextmenu.ui:10
 msgid "_Copy"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/appmenu.ui:100
+#: crates/rnote-ui/data/ui/appmenu.ui:104
 #: crates/rnote-ui/data/ui/contextmenu.ui:14
 msgid "C_ut"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/appmenu.ui:104
+#: crates/rnote-ui/data/ui/appmenu.ui:108
 #: crates/rnote-ui/data/ui/contextmenu.ui:18
 msgid "_Paste"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/appmenu.ui:109
+#: crates/rnote-ui/data/ui/appmenu.ui:113
 #, fuzzy
 msgid "_Export…"
 msgstr "ייצוא"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:111
+#: crates/rnote-ui/data/ui/appmenu.ui:115
 #, fuzzy
 msgid "Export _Document"
 msgstr "מסמך חדש"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:115
+#: crates/rnote-ui/data/ui/appmenu.ui:119
 #, fuzzy
 msgid "Export Document _Pages"
 msgstr "ייצוא הגיליון ל־SVG"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:119
+#: crates/rnote-ui/data/ui/appmenu.ui:123
 #, fuzzy
 #| msgid "Export Selection"
 msgid "Export _Selection"
 msgstr "יצוא הבחירה"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:126
+#: crates/rnote-ui/data/ui/appmenu.ui:130
 #, fuzzy
 #| msgid "Settings"
 msgid "Se_ttings"
 msgstr "הגדרות"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:130
+#: crates/rnote-ui/data/ui/appmenu.ui:134
 #, fuzzy
 #| msgid "Keyboard shortcuts"
 msgid "_Keyboard Shortcuts"
 msgstr "צירופי מקשים"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:134
+#: crates/rnote-ui/data/ui/appmenu.ui:138
 msgid "_Donate 💝"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/appmenu.ui:138
+#: crates/rnote-ui/data/ui/appmenu.ui:142
 #, fuzzy
 #| msgid "About Rnote"
 msgid "A_bout Rnote"
 msgstr "על rnote"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:169
+#: crates/rnote-ui/data/ui/appmenu.ui:173
 msgid "Sidebar on the Left Side"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/appmenu.ui:178
+#: crates/rnote-ui/data/ui/appmenu.ui:182
 msgid "Sidebar on the Right Side"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/appmenu.ui:188
+#: crates/rnote-ui/data/ui/appmenu.ui:192
 #: crates/rnote-ui/data/ui/shortcuts.ui:56
 #, fuzzy
 #| msgid "Toggle fullscreen"
@@ -1320,7 +1326,7 @@ msgid "Duplicate"
 msgstr "שכפול הבחירה"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:595
+#: crates/rnote-ui/src/canvas/mod.rs:584
 msgid "Draft"
 msgstr "טיוטה"
 
@@ -1987,47 +1993,44 @@ msgid ""
 "be saved."
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/mod.rs:487
+#: crates/rnote-ui/src/appwindow/mod.rs:488
 #, fuzzy
 msgid "Opening file failed"
 msgstr "פתיחת הגיליון נכשלה"
 
-#: crates/rnote-ui/src/canvas/mod.rs:867 crates/rnote-ui/src/dialogs/mod.rs:205
+#: crates/rnote-ui/src/canvas/mod.rs:846 crates/rnote-ui/src/dialogs/mod.rs:205
 #: crates/rnote-ui/src/dialogs/mod.rs:342
 msgid "- invalid file name -"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:880
+#: crates/rnote-ui/src/canvas/mod.rs:859
 msgid "- invalid folder path -"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:922
+#: crates/rnote-ui/src/canvas/mod.rs:883
 msgid "Opened file was modified on disk"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:923
+#: crates/rnote-ui/src/canvas/mod.rs:884
 msgid "Reload"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:930
+#: crates/rnote-ui/src/canvas/mod.rs:891
 #, fuzzy
 msgid "Reloading .rnote file from disk failed"
 msgstr "פתיחת הגיליון נכשלה"
 
-#: crates/rnote-ui/src/canvas/mod.rs:994
-msgid "Opened file was renamed on disk"
-msgstr ""
+#: crates/rnote-ui/src/canvas/mod.rs:948
+#, fuzzy
+msgid "Opened file was removed."
+msgstr "פתיחת הגיליון נכשלה"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1007
-msgid "Opened file was moved or deleted on disk"
-msgstr ""
-
-#: crates/rnote-ui/src/canvas/mod.rs:1139
+#: crates/rnote-ui/src/canvas/mod.rs:1122
 #, fuzzy
 msgid "Inserting file failed"
 msgstr "פתיחת הגיליון נכשלה"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1149
+#: crates/rnote-ui/src/canvas/mod.rs:1132
 #, fuzzy
 msgid "Inserting text failed"
 msgstr "פתיחת הגיליון נכשלה"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-01 13:59+0100\n"
+"POT-Creation-Date: 2024-03-01 14:11+0100\n"
 "PO-Revision-Date: 2023-10-24 04:15+0000\n"
 "Last-Translator: Rickey Ho <rickey.ho2020@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/rnote/repo/vi/"
@@ -1866,19 +1866,25 @@ msgstr ""
 msgid "Reloading .rnote file from disk failed"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:948
+#: crates/rnote-ui/src/canvas/mod.rs:957
+#, fuzzy
+#| msgid "Export _selection"
+msgid "Opened file was renamed or moved."
+msgstr "Xuất phần chọn"
+
+#: crates/rnote-ui/src/canvas/mod.rs:971
 #, fuzzy
 #| msgid "Export _selection"
 msgid "Opened file was removed."
 msgstr "Xuất phần chọn"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1122
+#: crates/rnote-ui/src/canvas/mod.rs:1145
 #, fuzzy
 #| msgid "Export _selection"
 msgid "Inserting file failed"
 msgstr "Xuất phần chọn"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1132
+#: crates/rnote-ui/src/canvas/mod.rs:1155
 #, fuzzy
 #| msgid "Export document _pages"
 msgid "Inserting text failed"

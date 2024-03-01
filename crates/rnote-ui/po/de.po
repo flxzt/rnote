@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-01 13:59+0100\n"
+"POT-Creation-Date: 2024-03-01 14:11+0100\n"
 "PO-Revision-Date: 2024-03-01 13:12+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
@@ -1800,17 +1800,23 @@ msgstr "Neu laden"
 msgid "Reloading .rnote file from disk failed"
 msgstr "Neuladen der .rnote Datei gescheitert"
 
-#: crates/rnote-ui/src/canvas/mod.rs:948
+#: crates/rnote-ui/src/canvas/mod.rs:957
+#, fuzzy
+#| msgid "Opened file was renamed on disk"
+msgid "Opened file was renamed or moved."
+msgstr "Geöffnete Datei wurde auf dem Datenträger umbenannt"
+
+#: crates/rnote-ui/src/canvas/mod.rs:971
 #, fuzzy
 #| msgid "Opened file was renamed on disk"
 msgid "Opened file was removed."
 msgstr "Geöffnete Datei wurde auf dem Datenträger umbenannt"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1122
+#: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
 msgstr "Datei einfügen gescheitert"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1132
+#: crates/rnote-ui/src/canvas/mod.rs:1155
 msgid "Inserting text failed"
 msgstr "Text einfügen gescheitert"
 

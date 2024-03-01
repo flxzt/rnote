@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-01 13:59+0100\n"
+"POT-Creation-Date: 2024-03-01 14:11+0100\n"
 "PO-Revision-Date: 2022-12-08 18:13+0000\n"
 "Last-Translator: D0V4HKIIN <jonas.bonnaudet@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/rnote/repo/sv/>\n"
@@ -2014,17 +2014,22 @@ msgstr ""
 msgid "Reloading .rnote file from disk failed"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:948
+#: crates/rnote-ui/src/canvas/mod.rs:957
+#, fuzzy
+msgid "Opened file was renamed or moved."
+msgstr "Öppna fil"
+
+#: crates/rnote-ui/src/canvas/mod.rs:971
 #, fuzzy
 msgid "Opened file was removed."
 msgstr "Öppna fil"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1122
+#: crates/rnote-ui/src/canvas/mod.rs:1145
 #, fuzzy
 msgid "Inserting file failed"
 msgstr "Öppna fil"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1132
+#: crates/rnote-ui/src/canvas/mod.rs:1155
 #, fuzzy
 msgid "Inserting text failed"
 msgstr "Exportera blad som SVG"

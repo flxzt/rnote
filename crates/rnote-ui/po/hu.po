@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-01 13:59+0100\n"
+"POT-Creation-Date: 2024-03-01 14:11+0100\n"
 "PO-Revision-Date: 2024-02-25 12:23+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
@@ -1790,17 +1790,23 @@ msgstr "Újratöltés"
 msgid "Reloading .rnote file from disk failed"
 msgstr "Az .rnote fájl újratöltése a lemezről sikertelen"
 
-#: crates/rnote-ui/src/canvas/mod.rs:948
+#: crates/rnote-ui/src/canvas/mod.rs:957
+#, fuzzy
+#| msgid "Opened file was renamed on disk"
+msgid "Opened file was renamed or moved."
+msgstr "A megnyitott fájl át lett nevezve a lemezen"
+
+#: crates/rnote-ui/src/canvas/mod.rs:971
 #, fuzzy
 #| msgid "Opened file was renamed on disk"
 msgid "Opened file was removed."
 msgstr "A megnyitott fájl át lett nevezve a lemezen"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1122
+#: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
 msgstr "Fájl beszúrása sikertelen"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1132
+#: crates/rnote-ui/src/canvas/mod.rs:1155
 msgid "Inserting text failed"
 msgstr "Szöveg beszúrása sikertelen"
 

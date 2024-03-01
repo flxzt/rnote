@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-01 13:59+0100\n"
+"POT-Creation-Date: 2024-03-01 14:11+0100\n"
 "PO-Revision-Date: 2023-06-26 08:36+0000\n"
 "Last-Translator: Lucas Martins <luckshiba@protonmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
@@ -1993,19 +1993,25 @@ msgstr ""
 msgid "Reloading .rnote file from disk failed"
 msgstr "Falha ao abrir arquivo .rnote."
 
-#: crates/rnote-ui/src/canvas/mod.rs:948
+#: crates/rnote-ui/src/canvas/mod.rs:957
+#, fuzzy
+#| msgid "Opening file failed."
+msgid "Opened file was renamed or moved."
+msgstr "Falha ao abrir arquivo."
+
+#: crates/rnote-ui/src/canvas/mod.rs:971
 #, fuzzy
 #| msgid "Opening file failed."
 msgid "Opened file was removed."
 msgstr "Falha ao abrir arquivo."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1122
+#: crates/rnote-ui/src/canvas/mod.rs:1145
 #, fuzzy
 #| msgid "Importing file failed."
 msgid "Inserting file failed"
 msgstr "Falha ao importar arquivo."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1132
+#: crates/rnote-ui/src/canvas/mod.rs:1155
 #, fuzzy
 #| msgid "Importing file failed."
 msgid "Inserting text failed"

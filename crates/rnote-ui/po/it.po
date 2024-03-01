@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-01 14:11+0100\n"
-"PO-Revision-Date: 2024-02-19 16:18+0000\n"
+"PO-Revision-Date: 2024-03-02 19:01+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -369,12 +369,10 @@ msgid "Select the export directory"
 msgstr "Selezionare la cartella di esportazione"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
-#, fuzzy
-#| msgid "Export Files Stem Name"
 msgctxt ""
 "When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
-msgstr "Esporta il nome principale del file"
+msgstr "Esporta il nome del file"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:535
@@ -460,16 +458,12 @@ msgid "End Page"
 msgstr "Pagina Finale"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
-#, fuzzy
-#| msgid "Adjust document settings"
 msgid "Adjust Document"
-msgstr "Regola le impostazioni del documento"
+msgstr "Regola documento"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "Impostare se il modello di sfondo dovrebbe essere esportato"
+msgstr "Se il layout del documento deve essere adattato al Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:107
 msgid "Page Width (%)"
@@ -657,12 +651,10 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "La densità è la quantità di punti per area 10x10"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
-#, fuzzy
-#| msgid "Stroke Dots Position Distribution"
 msgctxt ""
 "Drawing with a textured pen, how the dots of the texture are distributed"
 msgid "Stroke Dots Position Distribution"
-msgstr "Distribuzione Dei Punti"
+msgstr "Distribuzione della posizione dei punti del tratto"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:249
 msgid "Choose a dots position probability distribution"
@@ -979,10 +971,8 @@ msgid "De_veloper Mode"
 msgstr "Mo_dalità Sviluppatore"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
-#, fuzzy
-#| msgid "New Window"
 msgid "New _Window"
-msgstr "Nuova Finestra"
+msgstr "Nuova_Finestra"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
@@ -1807,16 +1797,12 @@ msgid "Reloading .rnote file from disk failed"
 msgstr "Ricaricamento del file .rnote fallito"
 
 #: crates/rnote-ui/src/canvas/mod.rs:957
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was renamed or moved."
-msgstr "Il file aperto è stato rinominato"
+msgstr "Il file aperto è stato rinominato o spostato."
 
 #: crates/rnote-ui/src/canvas/mod.rs:971
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was removed."
-msgstr "Il file aperto è stato rinominato"
+msgstr "Il file aperto è stato rimosso."
 
 #: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"

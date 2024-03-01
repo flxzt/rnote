@@ -935,6 +935,29 @@ impl RnCanvas {
                     // Only when the new path is known we can update the output file
                     canvas.set_output_file(Some(gio::File::for_path(to_path)));
                 }
+                EventKind::Modify(ModifyKind::Name(RenameMode::To)) => {
+                    let Some(event_path) = event.paths.first() else {
+                        return;
+                    };
+                    if !crate::utils::paths_abs_eq(file_path, event_path).unwrap_or(false) {
+                        return;
+                    }
+                    dispatch_toast_reload_modified_file(appwindow, canvas);
+                }
+                EventKind::Modify(ModifyKind::Name(_)) => {
+                    let Some(event_path) = event.paths.first() else {
+                        return;
+                    };
+                    if !crate::utils::paths_abs_eq(file_path, event_path).unwrap_or(false) {
+                        return;
+                    }
+                    canvas.set_unsaved_changes(true);
+                    canvas.set_output_file(None);
+                    appwindow.overlays().dispatch_toast_text(
+                        &gettext("Opened file was renamed or moved."),
+                        crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
+                    );
+                }
                 EventKind::Remove(_remove_kind) => {
                     let Some(event_path) = event.paths.first() else {
                         return;

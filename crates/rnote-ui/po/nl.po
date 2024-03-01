@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-29 23:53+0100\n"
-"PO-Revision-Date: 2024-02-16 14:43+0000\n"
+"PO-Revision-Date: 2024-03-01 12:58+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -457,10 +457,8 @@ msgid "End Page"
 msgstr "Laatste pagina"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
-#, fuzzy
-#| msgid "Adjust document settings"
 msgid "Adjust Document"
-msgstr "Document­instellingen aanpassen"
+msgstr "Document aan­passen"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
 #, fuzzy

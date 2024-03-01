@@ -384,7 +384,8 @@ impl RnAppWindow {
                 ))
             })
             .find(|(_, output_file_path)| {
-                same_file::is_same_file(output_file_path, input_file_path.as_ref()).unwrap_or(false)
+                crate::utils::paths_abs_eq(output_file_path, input_file_path.as_ref())
+                    .unwrap_or(false)
             })
             .map(|(found, _)| found)
     }

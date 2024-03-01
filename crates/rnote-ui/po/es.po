@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-01 14:11+0100\n"
-"PO-Revision-Date: 2024-03-01 12:58+0000\n"
+"PO-Revision-Date: 2024-03-01 15:49+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
@@ -971,10 +971,8 @@ msgid "De_veloper Mode"
 msgstr "Modo de de_sarrollo"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
-#, fuzzy
-#| msgid "New Window"
 msgid "New _Window"
-msgstr "Ventana nueva"
+msgstr "Nueva _ventana"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
@@ -1800,16 +1798,12 @@ msgid "Reloading .rnote file from disk failed"
 msgstr "Error al volver a cargar el archivo .rnote desde el disco"
 
 #: crates/rnote-ui/src/canvas/mod.rs:957
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was renamed or moved."
-msgstr "Se cambió el nombre del archivo abierto en el disco"
+msgstr "El archivo abierto ha sido renombrado o movido."
 
 #: crates/rnote-ui/src/canvas/mod.rs:971
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was removed."
-msgstr "Se cambió el nombre del archivo abierto en el disco"
+msgstr "Se eliminó el archivo abierto."
 
 #: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"

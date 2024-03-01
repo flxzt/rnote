@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-19 17:20+0100\n"
+"POT-Creation-Date: 2024-03-01 14:11+0100\n"
 "PO-Revision-Date: 2024-02-29 08:34+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -39,16 +39,16 @@ msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"Rnote স্কেচিং, হাতে লেখা নোট এবং নথি এবং ছবি টীকা যোগ করার জন্য একটি "
-"ভেক্টর-ভিত্তিক অঙ্কন অ্যাপ্লিকেশন।"
+"Rnote স্কেচিং, হাতে লেখা নোট এবং নথি এবং ছবি টীকা যোগ করার জন্য একটি ভেক্টর-"
+"ভিত্তিক অঙ্কন অ্যাপ্লিকেশন।"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"দাবিত্যাগ: ফাইল বিন্যাস এখনও অস্থির। এটি সংস্করণগুলির মধ্যে সামঞ্জস্যতা "
-"পরিবর্তন এবং ভাঙ্গতে সক্ষম।"
+"দাবিত্যাগ: ফাইল বিন্যাস এখনও অস্থির। এটি সংস্করণগুলির মধ্যে সামঞ্জস্যতা পরিবর্তন এবং "
+"ভাঙ্গতে সক্ষম।"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An overview"
@@ -96,7 +96,7 @@ msgstr "এটি সম্পূর্ণ নথি পরিষ্কার �
 #: crates/rnote-ui/data/ui/dialogs/export.ui:175
 #: crates/rnote-ui/data/ui/dialogs/export.ui:411
 #: crates/rnote-ui/data/ui/dialogs/import.ui:10
-#: crates/rnote-ui/data/ui/dialogs/import.ui:199
+#: crates/rnote-ui/data/ui/dialogs/import.ui:205
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
 msgstr "বাতিল করুন"
@@ -107,7 +107,7 @@ msgstr "পরিষ্কার করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
-#: crates/rnote-ui/src/canvas/mod.rs:593
+#: crates/rnote-ui/src/canvas/mod.rs:582
 msgid "New Document"
 msgstr "নতুন নথি"
 
@@ -389,13 +389,13 @@ msgstr "জেপিজি/জেপেগ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:366
 #: crates/rnote-ui/data/ui/dialogs/export.ui:544
-#: crates/rnote-ui/data/ui/dialogs/import.ui:152
+#: crates/rnote-ui/data/ui/dialogs/import.ui:158
 msgid "Bitmap Scale-Factor"
 msgstr "বিটম্যাপ স্কেল ফ্যাক্টর"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:367
 #: crates/rnote-ui/data/ui/dialogs/export.ui:545
-#: crates/rnote-ui/data/ui/dialogs/import.ui:153
+#: crates/rnote-ui/data/ui/dialogs/import.ui:159
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
@@ -435,7 +435,7 @@ msgid "Import Pdf"
 msgstr "পিডিএফ আমদানি করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
-#: crates/rnote-ui/data/ui/dialogs/import.ui:204
+#: crates/rnote-ui/data/ui/dialogs/import.ui:210
 #: crates/rnote-ui/src/dialogs/import.rs:68
 msgid "Import"
 msgstr "আমদানি করুন"
@@ -457,66 +457,78 @@ msgid "End Page"
 msgstr "শেষ পৃষ্ঠা"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
+#, fuzzy
+#| msgid "Adjust document settings"
+msgid "Adjust Document"
+msgstr "নথির সেটিংস্‌ এডজাস্ট করুন"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:102
+#, fuzzy
+#| msgid "Set whether the background pattern should be exported"
+msgid "Whether the document layout should be adjusted to the Pdf"
+msgstr "পটভূমির প্যাটার্ন রপ্তানি করা উচিত কিনা তা সেট করুন"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:107
 msgid "Page Width (%)"
 msgstr "পৃষ্ঠার প্রস্থ (%)"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:102
+#: crates/rnote-ui/data/ui/dialogs/import.ui:108
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr "আমদানি করা পিডিএফগুলির প্রস্থ বিন্যাস এর প্রস্থের শতকরা অনুপাত হিসাবে সেট করুন"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:109
+#: crates/rnote-ui/data/ui/dialogs/import.ui:115
 msgid "Page Spacing"
 msgstr "পৃষ্ঠার ব্যবধান"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:110
+#: crates/rnote-ui/data/ui/dialogs/import.ui:116
 msgid "How Pdf pages are spaced"
 msgstr "কিভাবে পিডিএফ পৃষ্ঠাগুলি ব্যবধান করা হয়"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:114
+#: crates/rnote-ui/data/ui/dialogs/import.ui:120
 msgid "Continuous"
 msgstr "একটানা"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:115
+#: crates/rnote-ui/data/ui/dialogs/import.ui:121
 msgid "One per Document Page"
 msgstr "নথি পৃষ্ঠা প্রতি একটি"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:123
+#: crates/rnote-ui/data/ui/dialogs/import.ui:129
 msgid "Pages Type"
 msgstr "পৃষ্ঠার ধরন"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:124
+#: crates/rnote-ui/data/ui/dialogs/import.ui:130
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr "পিডিএফ গুলি কি ভেক্টর বা বিটম্যাপ ছবি হিসাবে আমদানি করা উচিত তা ঠিক করুন"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:136
+#: crates/rnote-ui/data/ui/dialogs/import.ui:142
 msgid "Vector"
 msgstr "ভেক্টর"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:143
+#: crates/rnote-ui/data/ui/dialogs/import.ui:149
 msgid "Bitmap"
 msgstr "বিটম্যাপ"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:161
+#: crates/rnote-ui/data/ui/dialogs/import.ui:167
 msgid "Page Borders"
 msgstr "পৃষ্ঠার সীমানা"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:162
+#: crates/rnote-ui/data/ui/dialogs/import.ui:168
 msgid "Whether the pages have drawn borders"
 msgstr "পৃষ্ঠাগুলির সীমানা আঁকছে কিনা"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:196
+#: crates/rnote-ui/data/ui/dialogs/import.ui:202
 msgid "Import Xournal++ File"
 msgstr "Xournal++ ফাইল আমদানি করুন"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:235
+#: crates/rnote-ui/data/ui/dialogs/import.ui:241
 msgid "Xournal++ File Import Preferences"
 msgstr "Xournal++ ফাইল আমদানি পছন্দসমূহ"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:239
+#: crates/rnote-ui/data/ui/dialogs/import.ui:245
 msgid "DPI"
 msgstr "ডিপিআই"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:240
+#: crates/rnote-ui/data/ui/dialogs/import.ui:246
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Xournal++ ফাইলের জন্য পছন্দের DPI সেট করুন"
 
@@ -939,109 +951,115 @@ msgid "Use _Dark Colors"
 msgstr "_গাঢ় রঙ ব্যবহার করুন"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:42
-msgid "De_veloper Mode"
-msgstr "বি_কাশকারী মোড"
-
-#: crates/rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _Menu"
 msgstr "বিকাশকারী _মেনু"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:52
+#: crates/rnote-ui/data/ui/appmenu.ui:47
 msgid "Visual _Debugging"
 msgstr "ভিজ্যুয়াল _ডিবাগিং"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:56
+#: crates/rnote-ui/data/ui/appmenu.ui:51
 msgid "Export Engine _State"
 msgstr "ইঞ্জিনের _অবস্থা রপ্তানী করুন"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:60
+#: crates/rnote-ui/data/ui/appmenu.ui:55
 msgid "Export Engine _Config"
 msgstr "ইঞ্জিন _কনফিগ রপ্তানী করুন"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:68
+#: crates/rnote-ui/data/ui/appmenu.ui:61
+msgid "De_veloper Mode"
+msgstr "বি_কাশকারী মোড"
+
+#: crates/rnote-ui/data/ui/appmenu.ui:66
+#, fuzzy
+#| msgid "New Window"
+msgid "New _Window"
+msgstr "নতুন উইন্ডো"
+
+#: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
 msgstr "_নতুন"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:72
+#: crates/rnote-ui/data/ui/appmenu.ui:76
 msgid "_Open"
 msgstr "_খুলুন"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:76
+#: crates/rnote-ui/data/ui/appmenu.ui:80
 msgid "_Save"
 msgstr "_সংরক্ষণ করুন"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:80
+#: crates/rnote-ui/data/ui/appmenu.ui:84
 msgid "Save _As"
 msgstr "_এইরূপে সংরক্ষণ করুন"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:86
+#: crates/rnote-ui/data/ui/appmenu.ui:90
 msgid "_Print"
 msgstr "_প্রিন্ট করুন"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:90
+#: crates/rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import File"
 msgstr "ফাইল _আমদানি করুন"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:94
+#: crates/rnote-ui/data/ui/appmenu.ui:98
 msgid "_Clipboard"
 msgstr "_ক্লিপবোর্ড"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:96
+#: crates/rnote-ui/data/ui/appmenu.ui:100
 #: crates/rnote-ui/data/ui/contextmenu.ui:10
 msgid "_Copy"
 msgstr "_কপি"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:100
+#: crates/rnote-ui/data/ui/appmenu.ui:104
 #: crates/rnote-ui/data/ui/contextmenu.ui:14
 msgid "C_ut"
 msgstr "কা_ট"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:104
+#: crates/rnote-ui/data/ui/appmenu.ui:108
 #: crates/rnote-ui/data/ui/contextmenu.ui:18
 msgid "_Paste"
 msgstr "_পেস্ট করুন"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:109
+#: crates/rnote-ui/data/ui/appmenu.ui:113
 msgid "_Export…"
 msgstr "_রপ্তানি…"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:111
+#: crates/rnote-ui/data/ui/appmenu.ui:115
 msgid "Export _Document"
 msgstr "_নথি রপ্তানি করুন"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:115
+#: crates/rnote-ui/data/ui/appmenu.ui:119
 msgid "Export Document _Pages"
 msgstr "নথি _পৃষ্ঠা রপ্তানি করুন"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:119
+#: crates/rnote-ui/data/ui/appmenu.ui:123
 msgid "Export _Selection"
 msgstr "_নির্বাচন রপ্তানি করুন"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:126
+#: crates/rnote-ui/data/ui/appmenu.ui:130
 msgid "Se_ttings"
 msgstr "সে_টিংস"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:130
+#: crates/rnote-ui/data/ui/appmenu.ui:134
 msgid "_Keyboard Shortcuts"
 msgstr "_কীবোর্ড শর্টকাট"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:134
+#: crates/rnote-ui/data/ui/appmenu.ui:138
 msgid "_Donate 💝"
 msgstr "_দান করুন 💝"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:138
+#: crates/rnote-ui/data/ui/appmenu.ui:142
 msgid "A_bout Rnote"
 msgstr "Rnote স_ম্পর্কে"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:169
+#: crates/rnote-ui/data/ui/appmenu.ui:173
 msgid "Sidebar on the Left Side"
 msgstr "বাম দিকের সাইডবার"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:178
+#: crates/rnote-ui/data/ui/appmenu.ui:182
 msgid "Sidebar on the Right Side"
 msgstr "ডান দিকের সাইডবার"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:188
+#: crates/rnote-ui/data/ui/appmenu.ui:192
 #: crates/rnote-ui/data/ui/shortcuts.ui:56
 msgid "Toggle Fullscreen"
 msgstr "পূর্ণস্ক্রীন টগল করুন"
@@ -1155,7 +1173,7 @@ msgid "Duplicate"
 msgstr "নকল করুন"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:595
+#: crates/rnote-ui/src/canvas/mod.rs:584
 msgid "Draft"
 msgstr "খসড়া"
 
@@ -1715,7 +1733,7 @@ msgid "Create new Folder"
 msgstr "নতুন ফোল্ডার তৈরি করুন"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:569
-#: crates/rnote-ui/src/appwindow/imp.rs:248
+#: crates/rnote-ui/src/appwindow/imp.rs:258
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:127
 #: crates/rnote-ui/src/dialogs/mod.rs:258
@@ -1731,19 +1749,19 @@ msgstr "নথি প্রিন্ট করা ব্যর্থ হয়ে�
 msgid "Exporting selection failed, nothing selected"
 msgstr "নির্বাচন রপ্তানি করতে ব্যর্থ হয়েছে, কোনকিছু নির্বাচিত হয়নি"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:268
+#: crates/rnote-ui/src/appwindow/imp.rs:281
 msgid "Button 1"
 msgstr "বোতাম ১"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:275
+#: crates/rnote-ui/src/appwindow/imp.rs:288
 msgid "Button 2"
 msgstr "বোতাম ২"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:282
+#: crates/rnote-ui/src/appwindow/imp.rs:295
 msgid "Button 3"
 msgstr "বোতাম ৩"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:289
+#: crates/rnote-ui/src/appwindow/imp.rs:302
 msgid "Button 4"
 msgstr "বোতাম ৪"
 
@@ -1754,44 +1772,48 @@ msgid ""
 msgstr ""
 "সেটিংস স্কিমা ইনস্টল করা নেই। অ্যাপ সেটিংস লোড করা যায়নি এবং সংরক্ষণ করা হবে না।"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:458
+#: crates/rnote-ui/src/appwindow/mod.rs:488
 msgid "Opening file failed"
 msgstr "ফাইল খুলতে ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/canvas/mod.rs:867 crates/rnote-ui/src/dialogs/mod.rs:205
+#: crates/rnote-ui/src/canvas/mod.rs:846 crates/rnote-ui/src/dialogs/mod.rs:205
 #: crates/rnote-ui/src/dialogs/mod.rs:342
 msgid "- invalid file name -"
 msgstr "- অবৈধ ফাইলের নাম -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:880
+#: crates/rnote-ui/src/canvas/mod.rs:859
 msgid "- invalid folder path -"
 msgstr "- অবৈধ ফোল্ডার পাথ -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:922
+#: crates/rnote-ui/src/canvas/mod.rs:883
 msgid "Opened file was modified on disk"
 msgstr "খোলা ফাইল ডিস্কে পরিবর্তন করা হয়েছে"
 
-#: crates/rnote-ui/src/canvas/mod.rs:923
+#: crates/rnote-ui/src/canvas/mod.rs:884
 msgid "Reload"
 msgstr "পুনরায় লোড করুন"
 
-#: crates/rnote-ui/src/canvas/mod.rs:930
+#: crates/rnote-ui/src/canvas/mod.rs:891
 msgid "Reloading .rnote file from disk failed"
 msgstr "ডিস্ক থেকে .rnote ফাইল পুনরায় খোলা করা ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/canvas/mod.rs:994
-msgid "Opened file was renamed on disk"
+#: crates/rnote-ui/src/canvas/mod.rs:957
+#, fuzzy
+#| msgid "Opened file was renamed on disk"
+msgid "Opened file was renamed or moved."
 msgstr "খোলা ফাইলটি ডিস্কে পুনঃনামকরণ করা হয়েছে"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1007
-msgid "Opened file was moved or deleted on disk"
-msgstr "খোলা ফাইলটি ডিস্কে সরানো বা মুছে ফেলা হয়েছে"
+#: crates/rnote-ui/src/canvas/mod.rs:971
+#, fuzzy
+#| msgid "Opened file was renamed on disk"
+msgid "Opened file was removed."
+msgstr "খোলা ফাইলটি ডিস্কে পুনঃনামকরণ করা হয়েছে"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1139
+#: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
 msgstr "ফাইল সন্নিবেশ ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1149
+#: crates/rnote-ui/src/canvas/mod.rs:1155
 msgid "Inserting text failed"
 msgstr "পাঠ্য সন্নিবেশ ব্যর্থ হয়েছে"
 
@@ -1899,39 +1921,39 @@ msgstr "ফাইল খুলুন"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
-#: crates/rnote-ui/src/dialogs/import.rs:192
+#: crates/rnote-ui/src/dialogs/import.rs:212
 msgid "- no file name -"
 msgstr "- কোন ফাইলের নাম নেই -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:197
+#: crates/rnote-ui/src/dialogs/import.rs:217
 msgid "- no title -"
 msgstr "- কোনো শিরোনাম নেই -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:200
+#: crates/rnote-ui/src/dialogs/import.rs:220
 msgid "- no author -"
 msgstr "- কোন লেখক নেই -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:204
+#: crates/rnote-ui/src/dialogs/import.rs:224
 msgid "- no date -"
 msgstr "- তারিখ নেই -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:211
+#: crates/rnote-ui/src/dialogs/import.rs:231
 msgid "File name:"
 msgstr "ফাইলের নাম:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:215
+#: crates/rnote-ui/src/dialogs/import.rs:235
 msgid "Title:"
 msgstr "শিরোনাম:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:219
+#: crates/rnote-ui/src/dialogs/import.rs:239
 msgid "Author:"
 msgstr "লেখক:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:223
+#: crates/rnote-ui/src/dialogs/import.rs:243
 msgid "Modification date:"
 msgstr "পরিবর্তনের তারিখ:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:227
+#: crates/rnote-ui/src/dialogs/import.rs:247
 msgid "Pages:"
 msgstr "পৃষ্ঠা:"
 
@@ -2327,6 +2349,9 @@ msgstr "ফোল্ডারের নাম"
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
 msgid "New Folder"
 msgstr "নতুন ফোল্ডার"
+
+#~ msgid "Opened file was moved or deleted on disk"
+#~ msgstr "খোলা ফাইলটি ডিস্কে সরানো বা মুছে ফেলা হয়েছে"
 
 #~ msgid "Lecture Note 1"
 #~ msgstr "লেকচার নোট ১"

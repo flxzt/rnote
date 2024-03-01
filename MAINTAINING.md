@@ -8,7 +8,8 @@
 - Run cargo update and update dependencies in flatpak dev Yaml manifest
 - Update the flatpak dev Json manifest from Yaml
 - Commit the changes and push
-- Release commit: replace all version numbers in the project and build, install and run all tests:
+- Release commit: Update the changelog in the appdata file, replace all version numbers in the project and build,
+    install and run all tests:
     - `meson install -C _mesonbuild`
     - `meson compile ui-cargo-clippy -C _mesonbuild`
     - `meson compile cli-cargo-clippy -C _mesonbuild`

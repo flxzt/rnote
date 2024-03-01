@@ -87,6 +87,32 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.10.0" date="2024-03-01">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feat: touch-hold context-menu with basic actions (thanks to @silvasch)</li>
+          <li>feat: added polygon shape and builder</li>
+          <li>feat: added adjust-document Pdf import option that configures the document for improved annotation use-case</li>
+          <li>improv: additional color button (default: white) (thanks to @silvasch)</li>
+          <li>improv: new keyboard shortcuts for managing windows and tabs (thanks to @silvasch)</li>
+          <li>improv: autosave all tabs, but only ones that are flagged modified (thanks to @Doublonmousse)</li>
+          <li>improv: don't export empty layers when exporting to xopp (thanks to @Doublonmousse)</li>
+          <li>improv: workspace browser is now separated into three sections: folders - rnote notes - other importable files</li>
+          <li>improv: use start aspect ratio when resizing and locking aspect-ratio</li>
+          <li>improv: renaming file in workspace browser selects only file stem initially</li>
+          <li>improv: move document-layout option from canvas-menu to settings</li>
+          <li>improv: reduce repaints - when stroke is finished, cache origin-indicator rendering</li>
+          <li>improv: added new-window menu entry</li>
+          <li>improv: file watcher implementation and rnote file writing, possibly fixing "reload document" toasts when file is saved on windows</li>
+          <li>fix: failing export/clipboard-copy with large images (thanks to @Doublonmousse)</li>
+          <li>fix: menus positions when opened through keyboard shortcut (thanks to @detiam)</li>
+          <li>fix: zoom label not being updated after switching tab</li>
+          <li>fix: regression where margin is not applied when exporting selection</li>
+          <li>fix: undo/redo triggering document-modified flag</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.9.4" date="2023-12-13">
       <description>
         <p>this release changes:</p>

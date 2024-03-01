@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-01 13:59+0100\n"
-"PO-Revision-Date: 2024-02-29 22:54+0000\n"
+"PO-Revision-Date: 2024-03-01 13:12+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -458,16 +458,12 @@ msgid "End Page"
 msgstr "Letzte Seite"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
-#, fuzzy
-#| msgid "Adjust document settings"
 msgid "Adjust Document"
-msgstr "Passe Dokumenteinstellungen an"
+msgstr "Passe Dokument an"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "Ändere, ob das Hintergrundmuster exportiert werden soll"
+msgstr "Ändere, ob das Dokumentenlayout an die Pdf angepasst werden soll"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:107
 msgid "Page Width (%)"

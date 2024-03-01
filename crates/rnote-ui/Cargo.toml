@@ -34,6 +34,7 @@ numeric-sort = { workspace = true }
 once_cell = { workspace = true }
 open = { workspace = true }
 parry2d-f64 = { workspace = true }
+path-absolutize = { workspace = true }
 piet = { workspace = true }
 piet-cairo = { workspace = true }
 poppler-rs = { workspace = true }
@@ -44,7 +45,6 @@ rayon = { workspace = true }
 regex = { workspace = true }
 rough_piet = { workspace = true }
 roughr = { workspace = true }
-path-absolutize = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 svg = { workspace = true }

@@ -38,11 +38,6 @@
               <attribute name="target">force-dark</attribute>
             </item>
           </submenu>
-          <item>
-            <attribute name="label" translatable="yes">De_veloper Mode</attribute>
-            <attribute name="toggle" />
-            <attribute name="action">win.devel-mode</attribute>
-          </item>
           <submenu>
             <attribute name="label" translatable="yes">Developer _Menu</attribute>
             <attribute name="action">win.devel-menu</attribute>
@@ -62,6 +57,15 @@
               </item>
             </section>
           </submenu>
+          <item>
+            <attribute name="label" translatable="yes">De_veloper Mode</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.devel-mode</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">New _Window</attribute>
+            <attribute name="action">app.new-window</attribute>
+          </item>
         </section>
         <section>
           <item>

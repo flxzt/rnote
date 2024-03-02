@@ -240,45 +240,30 @@ impl RnAppWindow {
                 self.autosave_interval_secs.get(),
                 clone!(@weak obj as appwindow => @default-return glib::ControlFlow::Break, move || {
                     // save for all tabs opened in the current window that have unsaved changes
-                    let tabs_result = appwindow.get_all_tabs(); // get all tabs in a vec
+                    let tabs = appwindow.get_all_tabs();
 
-                    match tabs_result {
-                        Ok(tabs) => {
-                            tabs
-                                .iter()
-                                .enumerate()
-                                .for_each(|(i,canvas_i)| {
-                                    if canvas_i.unsaved_changes() {
-                                        if let Some(output_file) = canvas_i.output_file() {
-                                            tracing::trace!(
-                                                "there are unsaved changes on the tab {:?} with a file on disk, saving",i
-                                            );
-                                            glib::spawn_future_local(
-                                                clone!(@weak canvas_i, @weak appwindow => async move {
-                                            if let Err(e) = canvas_i
-                                                .save_document_to_file(&output_file)
-                                                .await {
-                                            canvas_i.set_output_file(None);
-                                            tracing::error!("Saving document failed, Err: `{e:?}`");
-                                            appwindow
-                                                .overlays()
-                                                .dispatch_toast_error(&gettext("Saving document failed"));
-                                            }
-                                        }
-                                        ));
-                                        }
-                                    }
-                                });
-                        }
-                        Err(e) => {
-                            tracing::error!("failed to open tabs, {:?}",e);
-                            appwindow
-                                .overlays()
-                                .dispatch_toast_error(&gettext("Failed to open tabs"));
+                    for (i, tab) in tabs.iter().enumerate() {
+                        let canvas = tab.canvas();
+                        if canvas.unsaved_changes() {
+                            if let Some(output_file) = canvas.output_file() {
+                                tracing::trace!(
+                                    "there are unsaved changes on the tab {:?} with a file on disk, saving",i
+                                );
+                                glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
+                                    if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                                        canvas.set_output_file(None);
+                                        tracing::error!("Saving document failed, Err: `{e:?}`");
+                                        appwindow
+                                            .overlays()
+                                            .dispatch_toast_error(&gettext("Saving document failed"));
+                                    };
+                                }));
+                            }
                         }
                     }
-                glib::ControlFlow::Continue
-                    }),
+
+                    glib::ControlFlow::Continue
+                }),
             ),
         ) {
             removed_id.remove();

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-19 17:20+0100\n"
+"POT-Creation-Date: 2024-03-01 14:11+0100\n"
 "PO-Revision-Date: 2024-01-18 13:00+0000\n"
 "Last-Translator: Nils Van Zuijlen <nils.van-zuijlen@mailo.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -97,7 +97,7 @@ msgstr "Ceci efface tout le document. Veuillez confirmer."
 #: crates/rnote-ui/data/ui/dialogs/export.ui:175
 #: crates/rnote-ui/data/ui/dialogs/export.ui:411
 #: crates/rnote-ui/data/ui/dialogs/import.ui:10
-#: crates/rnote-ui/data/ui/dialogs/import.ui:199
+#: crates/rnote-ui/data/ui/dialogs/import.ui:205
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
 msgstr "Annuler"
@@ -108,7 +108,7 @@ msgstr "Effacer"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
-#: crates/rnote-ui/src/canvas/mod.rs:593
+#: crates/rnote-ui/src/canvas/mod.rs:582
 msgid "New Document"
 msgstr "Nouveau document"
 
@@ -390,13 +390,13 @@ msgstr "Jpeg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:366
 #: crates/rnote-ui/data/ui/dialogs/export.ui:544
-#: crates/rnote-ui/data/ui/dialogs/import.ui:152
+#: crates/rnote-ui/data/ui/dialogs/import.ui:158
 msgid "Bitmap Scale-Factor"
 msgstr "Échelle des images matricielles"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:367
 #: crates/rnote-ui/data/ui/dialogs/export.ui:545
-#: crates/rnote-ui/data/ui/dialogs/import.ui:153
+#: crates/rnote-ui/data/ui/dialogs/import.ui:159
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
@@ -436,7 +436,7 @@ msgid "Import Pdf"
 msgstr "Importer un PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
-#: crates/rnote-ui/data/ui/dialogs/import.ui:204
+#: crates/rnote-ui/data/ui/dialogs/import.ui:210
 #: crates/rnote-ui/src/dialogs/import.rs:68
 msgid "Import"
 msgstr "Importer"
@@ -458,69 +458,81 @@ msgid "End Page"
 msgstr "Dernière page"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
+#, fuzzy
+#| msgid "Adjust document settings"
+msgid "Adjust Document"
+msgstr "Ajuster les paramètres du document"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:102
+#, fuzzy
+#| msgid "Set whether the background pattern should be exported"
+msgid "Whether the document layout should be adjusted to the Pdf"
+msgstr "Définir si le motif d’arrière-plan doit être exporté"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:107
 msgid "Page Width (%)"
 msgstr "Largeur de page (%)"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:102
+#: crates/rnote-ui/data/ui/dialogs/import.ui:108
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr ""
 "Définir la largeur des PDF importés en pourcentage de la largeur de la page"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:109
+#: crates/rnote-ui/data/ui/dialogs/import.ui:115
 msgid "Page Spacing"
 msgstr "Espacement des pages"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:110
+#: crates/rnote-ui/data/ui/dialogs/import.ui:116
 msgid "How Pdf pages are spaced"
 msgstr "Comment les pages du Pdf sont espacées"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:114
+#: crates/rnote-ui/data/ui/dialogs/import.ui:120
 msgid "Continuous"
 msgstr "Continu"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:115
+#: crates/rnote-ui/data/ui/dialogs/import.ui:121
 msgid "One per Document Page"
 msgstr "Une par page de document"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:123
+#: crates/rnote-ui/data/ui/dialogs/import.ui:129
 msgid "Pages Type"
 msgstr "Type de pages"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:124
+#: crates/rnote-ui/data/ui/dialogs/import.ui:130
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr ""
 "Définir si les Pdf doivent être importés en tant qu’images vectorielles ou "
 "matricielles (bitmap)"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:136
+#: crates/rnote-ui/data/ui/dialogs/import.ui:142
 msgid "Vector"
 msgstr "Vectorielle"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:143
+#: crates/rnote-ui/data/ui/dialogs/import.ui:149
 msgid "Bitmap"
 msgstr "Matricielle"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:161
+#: crates/rnote-ui/data/ui/dialogs/import.ui:167
 msgid "Page Borders"
 msgstr "Bordures des pages"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:162
+#: crates/rnote-ui/data/ui/dialogs/import.ui:168
 msgid "Whether the pages have drawn borders"
 msgstr "Si les pages ont des bordures dessinées"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:196
+#: crates/rnote-ui/data/ui/dialogs/import.ui:202
 msgid "Import Xournal++ File"
 msgstr "Importer un fichier Xournal++"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:235
+#: crates/rnote-ui/data/ui/dialogs/import.ui:241
 msgid "Xournal++ File Import Preferences"
 msgstr "Paramètres d’importation de fichiers Xournal++"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:239
+#: crates/rnote-ui/data/ui/dialogs/import.ui:245
 msgid "DPI"
 msgstr "PPP"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:240
+#: crates/rnote-ui/data/ui/dialogs/import.ui:246
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Définit le nombre de PPP préféré pour le fichier Xournal++"
 
@@ -943,109 +955,115 @@ msgid "Use _Dark Colors"
 msgstr "Thème _sombre"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:42
-msgid "De_veloper Mode"
-msgstr "Mode dé_veloppeur"
-
-#: crates/rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _Menu"
 msgstr "_Menu développeur"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:52
+#: crates/rnote-ui/data/ui/appmenu.ui:47
 msgid "Visual _Debugging"
 msgstr "_Débogage visuel"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:56
+#: crates/rnote-ui/data/ui/appmenu.ui:51
 msgid "Export Engine _State"
 msgstr "Exporter le _statut interne"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:60
+#: crates/rnote-ui/data/ui/appmenu.ui:55
 msgid "Export Engine _Config"
 msgstr "Exporter la _configuration interne"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:68
+#: crates/rnote-ui/data/ui/appmenu.ui:61
+msgid "De_veloper Mode"
+msgstr "Mode dé_veloppeur"
+
+#: crates/rnote-ui/data/ui/appmenu.ui:66
+#, fuzzy
+#| msgid "New Window"
+msgid "New _Window"
+msgstr "Nouvelle Fenêtre"
+
+#: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
 msgstr "_Nouveau"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:72
+#: crates/rnote-ui/data/ui/appmenu.ui:76
 msgid "_Open"
 msgstr "_Ouvrir"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:76
+#: crates/rnote-ui/data/ui/appmenu.ui:80
 msgid "_Save"
 msgstr "_Enregistrer"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:80
+#: crates/rnote-ui/data/ui/appmenu.ui:84
 msgid "Save _As"
 msgstr "Enregistrer _sous"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:86
+#: crates/rnote-ui/data/ui/appmenu.ui:90
 msgid "_Print"
 msgstr "Im_primer"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:90
+#: crates/rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import File"
 msgstr "_Importer un fichier"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:94
+#: crates/rnote-ui/data/ui/appmenu.ui:98
 msgid "_Clipboard"
 msgstr "_Presse-papiers"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:96
+#: crates/rnote-ui/data/ui/appmenu.ui:100
 #: crates/rnote-ui/data/ui/contextmenu.ui:10
 msgid "_Copy"
 msgstr "_Copier"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:100
+#: crates/rnote-ui/data/ui/appmenu.ui:104
 #: crates/rnote-ui/data/ui/contextmenu.ui:14
 msgid "C_ut"
 msgstr "Co_uper"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:104
+#: crates/rnote-ui/data/ui/appmenu.ui:108
 #: crates/rnote-ui/data/ui/contextmenu.ui:18
 msgid "_Paste"
 msgstr "Co_ller"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:109
+#: crates/rnote-ui/data/ui/appmenu.ui:113
 msgid "_Export…"
 msgstr "_Exporter…"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:111
+#: crates/rnote-ui/data/ui/appmenu.ui:115
 msgid "Export _Document"
 msgstr "Exporter le _document"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:115
+#: crates/rnote-ui/data/ui/appmenu.ui:119
 msgid "Export Document _Pages"
 msgstr "Exporter les _pages du document"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:119
+#: crates/rnote-ui/data/ui/appmenu.ui:123
 msgid "Export _Selection"
 msgstr "Exporter la _sélection"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:126
+#: crates/rnote-ui/data/ui/appmenu.ui:130
 msgid "Se_ttings"
 msgstr "_Paramètres"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:130
+#: crates/rnote-ui/data/ui/appmenu.ui:134
 msgid "_Keyboard Shortcuts"
 msgstr "_Raccourcis clavier"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:134
+#: crates/rnote-ui/data/ui/appmenu.ui:138
 msgid "_Donate 💝"
 msgstr "Faire un _don 💝"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:138
+#: crates/rnote-ui/data/ui/appmenu.ui:142
 msgid "A_bout Rnote"
 msgstr "À _propos de Rnote"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:169
+#: crates/rnote-ui/data/ui/appmenu.ui:173
 msgid "Sidebar on the Left Side"
 msgstr "Barre latérale à gauche"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:178
+#: crates/rnote-ui/data/ui/appmenu.ui:182
 msgid "Sidebar on the Right Side"
 msgstr "Barre latérale à droite"
 
-#: crates/rnote-ui/data/ui/appmenu.ui:188
+#: crates/rnote-ui/data/ui/appmenu.ui:192
 #: crates/rnote-ui/data/ui/shortcuts.ui:56
 msgid "Toggle Fullscreen"
 msgstr "Basculer en plein écran"
@@ -1159,7 +1177,7 @@ msgid "Duplicate"
 msgstr "Dupliquer"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:595
+#: crates/rnote-ui/src/canvas/mod.rs:584
 msgid "Draft"
 msgstr "Brouillon"
 
@@ -1730,7 +1748,7 @@ msgid "Create new Folder"
 msgstr "Créer un nouveau répertoire"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:569
-#: crates/rnote-ui/src/appwindow/imp.rs:248
+#: crates/rnote-ui/src/appwindow/imp.rs:258
 #: crates/rnote-ui/src/dialogs/export.rs:70
 #: crates/rnote-ui/src/dialogs/mod.rs:127
 #: crates/rnote-ui/src/dialogs/mod.rs:258
@@ -1746,19 +1764,19 @@ msgstr "Échec de l'impression du document"
 msgid "Exporting selection failed, nothing selected"
 msgstr "Échec de l’exportation de la sélection, rien n'est sélectionné"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:268
+#: crates/rnote-ui/src/appwindow/imp.rs:281
 msgid "Button 1"
 msgstr "Bouton 1"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:275
+#: crates/rnote-ui/src/appwindow/imp.rs:288
 msgid "Button 2"
 msgstr "Bouton 2"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:282
+#: crates/rnote-ui/src/appwindow/imp.rs:295
 msgid "Button 3"
 msgstr "Bouton 3"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:289
+#: crates/rnote-ui/src/appwindow/imp.rs:302
 msgid "Button 4"
 msgstr "Bouton 4"
 
@@ -1768,44 +1786,48 @@ msgid ""
 "be saved."
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/mod.rs:458
+#: crates/rnote-ui/src/appwindow/mod.rs:488
 msgid "Opening file failed"
 msgstr "L'ouverture du fichier a échoué"
 
-#: crates/rnote-ui/src/canvas/mod.rs:867 crates/rnote-ui/src/dialogs/mod.rs:205
+#: crates/rnote-ui/src/canvas/mod.rs:846 crates/rnote-ui/src/dialogs/mod.rs:205
 #: crates/rnote-ui/src/dialogs/mod.rs:342
 msgid "- invalid file name -"
 msgstr "- nom de fichier invalide -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:880
+#: crates/rnote-ui/src/canvas/mod.rs:859
 msgid "- invalid folder path -"
 msgstr "- chemin d'accès au répertoire invalide -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:922
+#: crates/rnote-ui/src/canvas/mod.rs:883
 msgid "Opened file was modified on disk"
 msgstr "Le fichier ouvert a été modifié sur le disque"
 
-#: crates/rnote-ui/src/canvas/mod.rs:923
+#: crates/rnote-ui/src/canvas/mod.rs:884
 msgid "Reload"
 msgstr "Recharger"
 
-#: crates/rnote-ui/src/canvas/mod.rs:930
+#: crates/rnote-ui/src/canvas/mod.rs:891
 msgid "Reloading .rnote file from disk failed"
 msgstr "Le rechargement du fichier .rnote à partir du disque a échoué"
 
-#: crates/rnote-ui/src/canvas/mod.rs:994
-msgid "Opened file was renamed on disk"
+#: crates/rnote-ui/src/canvas/mod.rs:957
+#, fuzzy
+#| msgid "Opened file was renamed on disk"
+msgid "Opened file was renamed or moved."
 msgstr "Le fichier ouvert a été renommé sur le disque"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1007
-msgid "Opened file was moved or deleted on disk"
-msgstr "Le fichier ouvert a été déplacé ou supprimé sur le disque"
+#: crates/rnote-ui/src/canvas/mod.rs:971
+#, fuzzy
+#| msgid "Opened file was renamed on disk"
+msgid "Opened file was removed."
+msgstr "Le fichier ouvert a été renommé sur le disque"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1139
+#: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
 msgstr "Échec de l'insertion du fichier"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1149
+#: crates/rnote-ui/src/canvas/mod.rs:1155
 msgid "Inserting text failed"
 msgstr "Échec de l'insertion du texte"
 
@@ -1915,39 +1937,39 @@ msgstr "Ouvrir le fichier"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "JPG, PDF, PNG, SVG, Xopp, Txt"
 
-#: crates/rnote-ui/src/dialogs/import.rs:192
+#: crates/rnote-ui/src/dialogs/import.rs:212
 msgid "- no file name -"
 msgstr "- aucun nom de fichier -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:197
+#: crates/rnote-ui/src/dialogs/import.rs:217
 msgid "- no title -"
 msgstr "- aucun titre -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:200
+#: crates/rnote-ui/src/dialogs/import.rs:220
 msgid "- no author -"
 msgstr "- aucun auteur -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:204
+#: crates/rnote-ui/src/dialogs/import.rs:224
 msgid "- no date -"
 msgstr "- aucune date -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:211
+#: crates/rnote-ui/src/dialogs/import.rs:231
 msgid "File name:"
 msgstr "Nom du fichier :"
 
-#: crates/rnote-ui/src/dialogs/import.rs:215
+#: crates/rnote-ui/src/dialogs/import.rs:235
 msgid "Title:"
 msgstr "Titre :"
 
-#: crates/rnote-ui/src/dialogs/import.rs:219
+#: crates/rnote-ui/src/dialogs/import.rs:239
 msgid "Author:"
 msgstr "Auteur :"
 
-#: crates/rnote-ui/src/dialogs/import.rs:223
+#: crates/rnote-ui/src/dialogs/import.rs:243
 msgid "Modification date:"
 msgstr "Date de modification :"
 
-#: crates/rnote-ui/src/dialogs/import.rs:227
+#: crates/rnote-ui/src/dialogs/import.rs:247
 msgid "Pages:"
 msgstr "Pages :"
 
@@ -2343,6 +2365,9 @@ msgstr "Nom du répertoire"
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
 msgid "New Folder"
 msgstr "Nouveau répertoire"
+
+#~ msgid "Opened file was moved or deleted on disk"
+#~ msgstr "Le fichier ouvert a été déplacé ou supprimé sur le disque"
 
 #~ msgid "Lecture Note 1"
 #~ msgstr "Note de cours 1"

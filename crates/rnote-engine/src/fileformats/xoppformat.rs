@@ -473,22 +473,30 @@ impl XmlLoadable for XoppLayer {
 
 impl XmlWritable for XoppLayer {
     fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
-        w.start_element("layer");
+        // only do something if we are sure the layer is not empty
+        // Fix for #985
+        let is_empty = self.strokes.is_empty() && self.texts.is_empty() && self.images.is_empty();
+        if is_empty {
+            tracing::trace!("empty layer, skipped")
+        } else {
+            w.start_element("layer");
+            tracing::trace!("layer element opened");
 
-        if let Some(name) = self.name.as_ref() {
-            w.write_attribute("name", name.as_str());
-        }
+            if let Some(name) = self.name.as_ref() {
+                w.write_attribute("name", name.as_str());
+            }
 
-        for stroke in self.strokes.iter() {
-            stroke.write_to_xml(w);
+            for stroke in self.strokes.iter() {
+                stroke.write_to_xml(w);
+            }
+            for text in self.texts.iter() {
+                text.write_to_xml(w);
+            }
+            for image in self.images.iter() {
+                image.write_to_xml(w);
+            }
+            w.end_element();
         }
-        for text in self.texts.iter() {
-            text.write_to_xml(w);
-        }
-        for image in self.images.iter() {
-            image.write_to_xml(w);
-        }
-        w.end_element();
     }
 }
 

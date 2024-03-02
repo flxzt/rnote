@@ -1,7 +1,10 @@
 #![warn(missing_debug_implementations)]
 #![allow(clippy::single_match)]
-// Hides console window on windows
-#![windows_subsystem = "windows"]
+// Turns off console window on Windows, but not when building with dev profile.
+#![cfg_attr(
+    all(not(debug_assertions), target_os = "windows"),
+    windows_subsystem = "windows"
+)]
 
 // Modules
 pub(crate) mod app;

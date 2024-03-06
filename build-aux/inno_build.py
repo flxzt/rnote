@@ -61,9 +61,14 @@ for angle_dll in itertools.chain(
     glob.glob(f"{build_environment_path}/bin/libEGL*.dll"),
     glob.glob(f"{build_environment_path}/bin/libGLES*.dll"),
 ):
+    print(f"angle dll: {angle_dll}")
+    run_command(
+        f"cp {angle_dll} {dlls_dir}",
+        f"Transferring angle ({angle_dll}) DLLs failed",
+    )
     run_command(
         f"ldd {angle_dll} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
-        f"Collecting angle ({angle_dll}) DLLs failed",
+        f"Collecting angle dependency ({angle_dll}) DLLs failed",
     )
 
 # Collect necessary GSchema Xml's and compile them into a `gschemas.compiled`

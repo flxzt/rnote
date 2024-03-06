@@ -61,7 +61,6 @@ for angle_dll in itertools.chain(
     glob.glob(f"{build_environment_path}/bin/libEGL*.dll"),
     glob.glob(f"{build_environment_path}/bin/libGLES*.dll"),
 ):
-    print(f"angle dll: {angle_dll}")
     run_command(
         f"cp {angle_dll} {dlls_dir}",
         f"Transferring angle ({angle_dll}) DLLs failed",
@@ -129,7 +128,7 @@ for file in os.listdir(app_mo_dir):
 print("Running ISCC...", file=sys.stderr)
 
 run_command(
-    f"bash -lc \"iscc {inno_script}\"",
+    f"iscc {inno_script}",
     "Running ISCC failed"
 )
 

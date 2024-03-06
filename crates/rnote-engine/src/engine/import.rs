@@ -347,7 +347,7 @@ impl Engine {
         if strokes.is_empty() {
             return widget_flags;
         }
-        let select = !self.import_prefs.pdf_import_prefs.adjust_document;
+        let select = !adjust_document;
 
         // we need to always deselect all strokes. Even tough changing the pen style deselects too, it does only when
         // the pen is actually different.

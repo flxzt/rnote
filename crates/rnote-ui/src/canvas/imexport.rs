@@ -89,7 +89,7 @@ impl RnCanvas {
         let vectorimage = vectorimage_receiver.await??;
         let widget_flags = self
             .engine_mut()
-            .import_generated_content(vec![(Stroke::VectorImage(vectorimage), None)]);
+            .import_generated_content(vec![(Stroke::VectorImage(vectorimage), None)], false);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
@@ -111,7 +111,7 @@ impl RnCanvas {
         let bitmapimage = bitmapimage_receiver.await??;
         let widget_flags = self
             .engine_mut()
-            .import_generated_content(vec![(Stroke::BitmapImage(bitmapimage), None)]);
+            .import_generated_content(vec![(Stroke::BitmapImage(bitmapimage), None)], false);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
@@ -127,12 +127,19 @@ impl RnCanvas {
         page_range: Option<Range<u32>>,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
+        let adjust_document = self
+            .engine_ref()
+            .import_prefs
+            .pdf_import_prefs
+            .adjust_document;
 
         let strokes_receiver = self
             .engine_mut()
             .generate_pdf_pages_from_bytes(bytes, pos, page_range);
         let strokes = strokes_receiver.await??;
-        let widget_flags = self.engine_mut().import_generated_content(strokes);
+        let widget_flags = self
+            .engine_mut()
+            .import_generated_content(strokes, adjust_document);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())

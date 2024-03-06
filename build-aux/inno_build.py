@@ -63,7 +63,7 @@ for angle_dll in itertools.chain(
 ):
     run_command(
         f"cp {angle_dll} {dlls_dir}",
-        f"Transferring angle ({angle_dll}) DLLs failed",
+        f"Collecting angle ({angle_dll}) DLLs failed",
     )
     run_command(
         f"ldd {angle_dll} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",

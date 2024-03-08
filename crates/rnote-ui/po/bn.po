@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-01 14:11+0100\n"
-"PO-Revision-Date: 2024-02-29 08:34+0000\n"
+"PO-Revision-Date: 2024-03-08 08:58+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -457,10 +457,8 @@ msgid "End Page"
 msgstr "শেষ পৃষ্ঠা"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
-#, fuzzy
-#| msgid "Adjust document settings"
 msgid "Adjust Document"
-msgstr "নথির সেটিংস্‌ এডজাস্ট করুন"
+msgstr "নথি এডজাস্ট করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
 #, fuzzy
@@ -971,10 +969,8 @@ msgid "De_veloper Mode"
 msgstr "বি_কাশকারী মোড"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
-#, fuzzy
-#| msgid "New Window"
 msgid "New _Window"
-msgstr "নতুন উইন্ডো"
+msgstr "নতুন _উইন্ডো"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"

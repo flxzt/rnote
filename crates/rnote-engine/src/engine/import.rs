@@ -341,13 +341,13 @@ impl Engine {
     pub fn import_generated_content(
         &mut self,
         strokes: Vec<(Stroke, Option<StrokeLayer>)>,
+        adjust_document: bool,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         if strokes.is_empty() {
             return widget_flags;
         }
-        let adjust_document = self.import_prefs.pdf_import_prefs.adjust_document;
-        let select = !self.import_prefs.pdf_import_prefs.adjust_document;
+        let select = !adjust_document;
 
         // we need to always deselect all strokes. Even tough changing the pen style deselects too, it does only when
         // the pen is actually different.

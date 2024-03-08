@@ -87,6 +87,15 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.10.1" date="2024-03-08">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: importing images changed document dimensions when `adjust-document` pdf import setting is set</li>
+          <li>fix: windows installer now includes EGL/GLES libraries, fixing launch error when they are present elsewhere but in PATH</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.10.0" date="2024-03-01">
       <description>
         <p>this release changes:</p>

@@ -8,65 +8,73 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-01 14:11+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-03-12 15:01+0000\n"
+"Last-Translator: mohammedbilalns <bilalnsmuhammed@gmail.com>\n"
+"Language-Team: Malayalam <https://hosted.weblate.org/projects/rnote/repo/ml/>"
+"\n"
 "Language: ml\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
 #: crates/rnote-ui/src/dialogs/mod.rs:35
 msgid "Sketch and take handwritten notes"
-msgstr ""
+msgstr "വരയ്ക്കുക, കയ്യക്ഷര കുറിപ്പുകൾ ഉണ്ടാക്കുക"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr ""
+msgstr "ഗ്നോം;ജി ടി കെ;ഓഫീസ്;ഗ്രാഫിക്സ്;നോട്ടുകൾ;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:20
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
 msgid "New Window"
-msgstr ""
+msgstr "പുതിയ ജാലകം"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
+"വരയ്ക്കാനും , കൈയെഴുത്ത് കുറിപ്പുകളുണ്ടാക്കാനും , രേഖകളിലും ചിത്രങ്ങളിലും "
+"വ്യാഖ്യാനിക്കുന്നതിനുമുള്ള വെക്റ്റർ അടിസ്ഥാനമാക്കിയുള്ള ഡ്രോയിംഗ് "
+"ആപ്ലിക്കേഷനാണ് ആർനോട്ട്"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
+"നിരാകരണം: ഈ ഫയൽ ഫോർമാറ്റ് സ്ഥിരതയുള്ളതല്ല , ഇത് ചിലപ്പോൾ പതിപ്പുകൾ തമ്മിലുള്"
+"ള അനുയോജ്യതയെ നഷ്ടപ്പെത്തിയേക്കാം."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An overview"
-msgstr ""
+msgstr "ഒരു അവലോകനം"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "A selection"
-msgstr ""
+msgstr "ഒരു സെലെക്ഷൻ"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "Write text with the typewriter"
-msgstr ""
+msgstr "ടൈപ്പ്റൈറ്റർ ഉപയോഗിച്ച് ടൈപ്പ് ചെയ്യുക"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"
-msgstr ""
+msgstr "ഫോക്കസ് മോഡോട് കൂടി ടൂൾബാർ മറയ്ക്കുക"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
-msgstr ""
+msgstr "വർക്ക് സ്പേസുകളിലൂടെ ഫയലുകൾ പെട്ടെന്ന് തിരഞ്ഞെടുക്കൂ"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
-msgstr ""
+msgstr "ഡോക്യൂമെന്റിന്റെ സെറ്റിങ്‌സ് ക്രമീകരിക്കുക"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
 msgid "Configure action shortcuts"
@@ -75,7 +83,7 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Clear Document"
-msgstr ""
+msgstr "ഡോക്യുമെന്റ് ക്ലിയർ ചെയ്യുക"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
@@ -93,39 +101,41 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/import.ui:205
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
-msgstr ""
+msgstr "പിൻവലിക്കുക"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
-msgstr ""
+msgstr "ക്ലിയർ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
 #: crates/rnote-ui/src/canvas/mod.rs:582
 msgid "New Document"
-msgstr ""
+msgstr "പുതിയ ഡോക്യുമെന്റ്"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:17
 msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
 msgstr ""
+"പുതിയ ഡോക്യുമെന്റ് തുടങ്ങിയാൽ സേവ് ചെയ്യാത്ത ഡോക്യൂമെന്റുകൾ നഷ്ടപ്പെടും\n"
+"ഈ ഡോക്യുമെന്റ് സേവ് ചെയ്യണോ?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Discard"
-msgstr ""
+msgstr "നിരസിക്കുക"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:42
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:60
 #: crates/rnote-ui/src/dialogs/export.rs:32
 msgid "Save"
-msgstr ""
+msgstr "സേവ്"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:29
 msgid "Close Tab"
-msgstr ""
+msgstr "ടാബ് അടയ്ക്കുക"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
@@ -135,17 +145,19 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
-msgstr ""
+msgstr "വിൻഡോ അടയ്ക്കുക"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:48
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
+"തുറന്നിരിക്കുന്ന ചില ഫയലുകളിൽ സേവ് ചെയ്യാത്ത മാറ്റങ്ങളുണ്ട്\n"
+"സേവ് ചെയ്യാത്ത മാറ്റങ്ങൾ സ്ഥിരമായി നഷ്ടപ്പെടും."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
-msgstr ""
+msgstr "സേവ് ചെയ്യാത്ത ഡോക്യൂമെന്റുകൾ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:59
 msgid "Discard All"
@@ -159,32 +171,32 @@ msgstr ""
 #: crates/rnote-ui/data/ui/settingspanel.ui:234
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:36
 msgid "Apply"
-msgstr ""
+msgstr "അപ്ലൈ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:117
 msgid "Workspace Name"
-msgstr ""
+msgstr "വർക്സ്പേസിന്റെ പേര്"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:122
 msgid "Icon"
-msgstr ""
+msgstr "ഐക്കൺ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:123
 msgid "Change the workspace icon"
-msgstr ""
+msgstr "വർക്സ്പേസ് ഐക്കൺ മാറ്റുക"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:143
 #: crates/rnote-ui/data/ui/settingspanel.ui:286
 msgid "Color"
-msgstr ""
+msgstr "നിറം"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:144
 msgid "Change the workspace color"
-msgstr ""
+msgstr "വർക്സ്പേസിന്റെ നിറം മാറ്റുക"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:158
 msgid "Directory"
-msgstr ""
+msgstr "ഡയറക്ടറി"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:159
 msgid "Change the workspace directory"
@@ -197,16 +209,16 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:417
 #: crates/rnote-ui/src/dialogs/mod.rs:528
 msgid "- no directory selected -"
-msgstr ""
+msgstr "ഒരു ഡയറക്ടറിയും തിരഞ്ഞെടുത്തില്ല"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:183
 msgid "Change the directory"
-msgstr ""
+msgstr "ഡയറക്ടറി മാറ്റുക"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
 #: crates/rnote-ui/src/dialogs/export.rs:268
 msgid "Export Document"
-msgstr ""
+msgstr "ഡോക്യുമെന്റ് എക്സ്പോർട്ട് ചെയ്യുക"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
 #: crates/rnote-ui/data/ui/dialogs/export.ui:180
@@ -214,7 +226,7 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:907
 #: crates/rnote-ui/src/dialogs/export.rs:955
 msgid "Export"
-msgstr ""
+msgstr "എക്സ്പോർട്ട്"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:72
 #: crates/rnote-ui/data/ui/dialogs/export.ui:473
@@ -238,7 +250,7 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:697
 #: crates/rnote-ui/src/dialogs/export.rs:748
 msgid "- no file selected -"
-msgstr ""
+msgstr "ഒരു ഫയലും തിരഞ്ഞെടുത്തില്ല"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:106
 #: crates/rnote-ui/data/ui/dialogs/export.ui:313
@@ -250,31 +262,31 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:317
 #: crates/rnote-ui/data/ui/dialogs/export.ui:511
 msgid "With Background"
-msgstr ""
+msgstr "പശ്ചാത്തലത്തോട് കൂടി"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:111
 #: crates/rnote-ui/data/ui/dialogs/export.ui:318
 #: crates/rnote-ui/data/ui/dialogs/export.ui:512
 msgid "Set whether the background should be exported"
-msgstr ""
+msgstr "ബാക്ക്ഗ്രൗണ്ടോട് കൂടി വേണോ എന്ന് തിരഞ്ഞെടുക്കുക"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:116
 #: crates/rnote-ui/data/ui/dialogs/export.ui:323
 #: crates/rnote-ui/data/ui/dialogs/export.ui:517
 msgid "With Pattern"
-msgstr ""
+msgstr "പാറ്റെർണോട്‌ കൂടി"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:117
 #: crates/rnote-ui/data/ui/dialogs/export.ui:324
 #: crates/rnote-ui/data/ui/dialogs/export.ui:518
 msgid "Set whether the background pattern should be exported"
-msgstr ""
+msgstr "പശ്ചാത്തലത്തിന്റെ പാറ്റേൺ എക്സ്പോർട്ട് ചെയ്യണോയെന്ന് തിരഞ്ഞെടുക്കുക"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:122
 #: crates/rnote-ui/data/ui/dialogs/export.ui:329
 #: crates/rnote-ui/data/ui/dialogs/export.ui:523
 msgid "Optimize for Printing"
-msgstr ""
+msgstr "പ്രിന്റിങ്ങിന് വേണ്ടി ഒപ്റ്റിമൈസ് ചെയ്യുക"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:123
 #: crates/rnote-ui/data/ui/dialogs/export.ui:330
@@ -286,7 +298,7 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:335
 #: crates/rnote-ui/data/ui/dialogs/export.ui:529
 msgid "Export Format"
-msgstr ""
+msgstr "എക്സ്പോർട്ട് ചെയ്യേണ്ട ഫോർമാറ്റ്"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:129
 #: crates/rnote-ui/data/ui/dialogs/export.ui:336
@@ -300,22 +312,22 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:579
 #: crates/rnote-ui/src/dialogs/export.rs:866
 msgid "Svg"
-msgstr ""
+msgstr "എസ് വി ജി"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:134
 #: crates/rnote-ui/src/dialogs/export.rs:283
 msgid "Pdf"
-msgstr ""
+msgstr "പി ഡി എഫ്"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
 #: crates/rnote-ui/src/dialogs/export.rs:288
 msgid "Xopp"
-msgstr ""
+msgstr "Xopp"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:143
 #: crates/rnote-ui/data/ui/dialogs/export.ui:350
 msgid "Page Order"
-msgstr ""
+msgstr "പേജ് ഓർഡർ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:144
 #: crates/rnote-ui/data/ui/dialogs/export.ui:351
@@ -328,12 +340,12 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:150
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
 msgid "Horizontal First"
-msgstr ""
+msgstr "തിരശ്ചീനമായ ആദ്യം"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:151
 #: crates/rnote-ui/data/ui/dialogs/export.ui:358
 msgid "Vertical First"
-msgstr ""
+msgstr "ലംബമായി ആദ്യം"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:172
 #: crates/rnote-ui/src/dialogs/export.rs:565
@@ -363,14 +375,14 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:584
 #: crates/rnote-ui/src/dialogs/export.rs:871
 msgid "Png"
-msgstr ""
+msgstr "പി എൻ ജി"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:342
 #: crates/rnote-ui/data/ui/dialogs/export.ui:536
 #: crates/rnote-ui/src/dialogs/export.rs:590
 #: crates/rnote-ui/src/dialogs/export.rs:877
 msgid "Jpeg"
-msgstr ""
+msgstr "ജെ പെഗ്"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:366
 #: crates/rnote-ui/data/ui/dialogs/export.ui:544
@@ -389,7 +401,7 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:375
 #: crates/rnote-ui/data/ui/dialogs/export.ui:553
 msgid "Jpeg Quality"
-msgstr ""
+msgstr "ജെ പെഗിന്റെ ഗുണമേന്മ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:376
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
@@ -407,7 +419,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:561
 msgid "Margin"
-msgstr ""
+msgstr "മാർജിൻ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:562
 msgid "Set the margin around the selected area"
@@ -421,7 +433,7 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/import.ui:210
 #: crates/rnote-ui/src/dialogs/import.rs:68
 msgid "Import"
-msgstr ""
+msgstr "ഇമ്പോർട്ട്"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:61
 msgid "Info"
@@ -433,11 +445,11 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start Page"
-msgstr ""
+msgstr "പേജ് തുടങ്ങുക"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:92
 msgid "End Page"
-msgstr ""
+msgstr "പേജ് അവസാനിപ്പിക്കുക"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
 msgid "Adjust Document"
@@ -449,7 +461,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:107
 msgid "Page Width (%)"
-msgstr ""
+msgstr "പേജിന്റെ വീതി"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:108
 msgid "Set the width of imported Pdf's in percentage to the format width"
@@ -465,7 +477,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:120
 msgid "Continuous"
-msgstr ""
+msgstr "തുടർച്ചയായി"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:121
 msgid "One per Document Page"
@@ -513,7 +525,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
-msgstr ""
+msgstr "പേജ് ടൈപ്പ്"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:149
@@ -2284,8 +2296,8 @@ msgstr ""
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:49
 msgid "Folder Name"
-msgstr ""
+msgstr "ഫോൾഡറിന്റെ പേര്"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
 msgid "New Folder"
-msgstr ""
+msgstr "പുതിയ ഫോൾഡർ"

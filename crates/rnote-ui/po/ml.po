@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-01 14:11+0100\n"
-"PO-Revision-Date: 2024-03-12 15:01+0000\n"
+"PO-Revision-Date: 2024-03-14 07:01+0000\n"
 "Last-Translator: mohammedbilalns <bilalnsmuhammed@gmail.com>\n"
 "Language-Team: Malayalam <https://hosted.weblate.org/projects/rnote/repo/ml/>"
 "\n"
@@ -87,7 +87,7 @@ msgstr "ഡോക്യുമെന്റ് ക്ലിയർ ചെയ്യ�
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
-msgstr ""
+msgstr "ഇത് ഡോക്യൂമെന്റിനെ ക്ലിയർ ചെയ്യും. ദയവായി ഉറപ്പുവരുത്തുക."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:22
@@ -142,6 +142,8 @@ msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
+"ഈ ടാബിൽ സേവ് ചെയ്യാത്ത മാറ്റങ്ങളുണ്ട്.\n"
+"സേവ് ചെയ്യാത്ത മാറ്റങ്ങൾ സ്ഥിരമായി നഷ്ടപ്പെട്ടേക്കാം."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
@@ -165,7 +167,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:67
 msgid "Edit Workspace"
-msgstr ""
+msgstr "വർക്സ്പേസ് തിരുത്തുക"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:75
 #: crates/rnote-ui/data/ui/settingspanel.ui:234
@@ -200,7 +202,7 @@ msgstr "ഡയറക്ടറി"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:159
 msgid "Change the workspace directory"
-msgstr ""
+msgstr "വർക്സ്പേസ് ഡയറക്ടറി മാറ്റുക"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: crates/rnote-ui/data/ui/dialogs/export.ui:284
@@ -231,12 +233,12 @@ msgstr "എക്സ്പോർട്ട്"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:72
 #: crates/rnote-ui/data/ui/dialogs/export.ui:473
 msgid "Export File"
-msgstr ""
+msgstr "ഫയൽ എക്സ്പോർട്ട് ചെയ്യുക"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:73
 #: crates/rnote-ui/data/ui/dialogs/export.ui:474
 msgid "Select the export file"
-msgstr ""
+msgstr "എക്സ്പോർട് ചെയ്യേണ്ട ഫയൽ തിരഞ്ഞെടുക്കുക"
 
 #. force the user to pick another file
 #: crates/rnote-ui/data/ui/dialogs/export.ui:82
@@ -303,7 +305,7 @@ msgstr "എക്സ്പോർട്ട് ചെയ്യേണ്ട ഫോ�
 #: crates/rnote-ui/data/ui/dialogs/export.ui:129
 #: crates/rnote-ui/data/ui/dialogs/export.ui:336
 msgid "The export format"
-msgstr ""
+msgstr "എക്സ്പോർട്ട് ഫോർമാറ്റ്"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:340
@@ -354,7 +356,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:254
 msgid "Page Files Naming:"
-msgstr ""
+msgstr "പേജ് ഫയൽ നാമകരണം:"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:274
 msgid "Export Directory"
@@ -368,7 +370,7 @@ msgstr ""
 msgctxt ""
 "When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
-msgstr ""
+msgstr "ഫയലുകളുടെ സ്റ്റം നാമം എക്സ്പോർട്ട് ചെയ്യുക"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:535
@@ -388,7 +390,7 @@ msgstr "ജെ പെഗ്"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:544
 #: crates/rnote-ui/data/ui/dialogs/import.ui:158
 msgid "Bitmap Scale-Factor"
-msgstr ""
+msgstr "ബിറ്റ്‌മാപ് സ്കെയിൽ ഫാക്ടർ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:367
 #: crates/rnote-ui/data/ui/dialogs/export.ui:545
@@ -397,6 +399,8 @@ msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
+"ഡോക്യൂമെന്റിന്റെ യഥാർത്ഥ വലിപ്പത്തിനനുസരിച്ചു\n"
+"ബിറ്റ്മാപ് സ്കെയിൽ മാറ്റുക"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:375
 #: crates/rnote-ui/data/ui/dialogs/export.ui:553
@@ -406,12 +410,12 @@ msgstr "ജെ പെഗിന്റെ ഗുണമേന്മ"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:376
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr ""
+msgstr "ജെ പെഗ് ചിത്രത്തിന്റെ ഗുണമേന്മ തിരഞ്ഞെടുക്കുക(1-100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:408
 #: crates/rnote-ui/src/dialogs/export.rs:854
 msgid "Export Selection"
-msgstr ""
+msgstr "സെക്ഷൻ എക്സ്പോർട്ട് ചെയ്യുക"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:530
 msgid "The export image format"
@@ -427,7 +431,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:7
 msgid "Import Pdf"
-msgstr ""
+msgstr "pdf ഇമ്പോർട്ട് ചെയ്യുക"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
 #: crates/rnote-ui/data/ui/dialogs/import.ui:210
@@ -465,15 +469,15 @@ msgstr "പേജിന്റെ വീതി"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:108
 msgid "Set the width of imported Pdf's in percentage to the format width"
-msgstr ""
+msgstr "ഇമ്പോർട്ട്‌ ചെയ്ത പി ഡി എഫിന്റെ വീതി ഫോര്മാറ്റിന്റെ ശതമാനത്തിൽ മാറ്റുക"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:115
 msgid "Page Spacing"
-msgstr ""
+msgstr "പേജ് സ്പേസിംഗ്"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:116
 msgid "How Pdf pages are spaced"
-msgstr ""
+msgstr "Pdf പേജുകൾ എങ്ങനെയാണ് സ്‌പെയ്‌സ് ചെയ്യേണ്ടത്"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:120
 msgid "Continuous"

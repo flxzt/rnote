@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-01 14:11+0100\n"
-"PO-Revision-Date: 2024-03-10 00:01+0000\n"
+"PO-Revision-Date: 2024-03-15 11:02+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -196,7 +196,7 @@ msgstr "কর্মক্ষেত্রের রঙ পরিবর্তন 
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:158
 msgid "Directory"
-msgstr "নির্দেশিকা"
+msgstr "ডিরেক্টরি"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:159
 msgid "Change the workspace directory"
@@ -286,7 +286,7 @@ msgstr "পটভূমির প্যাটার্ন রপ্তানি 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:329
 #: crates/rnote-ui/data/ui/dialogs/export.ui:523
 msgid "Optimize for Printing"
-msgstr "প্রিন্ট করার জন্য অপ্টিমাইজ করা"
+msgstr "প্রিন্ট করার জন্য অপ্টিমাইজ করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:123
 #: crates/rnote-ui/data/ui/dialogs/export.ui:330

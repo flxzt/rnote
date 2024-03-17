@@ -29,7 +29,6 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::{PenEvent, ShortcutKey};
-use rnote_compose::shapes::Shapeable;
 use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -86,8 +85,6 @@ pub enum EngineTask {
         images: GeneratedContentImages,
         /// The image scale-factor the render task was using while generating the images.
         image_scale: f64,
-        /// The stroke bounds at the time when the render task has launched.
-        stroke_bounds: Aabb,
     },
     /// Appends the images to the rendering of the given stroke.
     ///
@@ -403,7 +400,6 @@ impl Engine {
                 key,
                 images,
                 image_scale,
-                stroke_bounds,
             } => {
                 if let Some(state) = self.store.render_comp_state(key) {
                     match state {
@@ -413,18 +409,12 @@ impl Engine {
                         }
                         RenderCompState::BusyRenderingInTask => {
                             if (self.camera.image_scale()
-                                - render_comp::RENDER_IMAGE_SCALE_EQUALITY_TOLERANCE
+                                - render_comp::RENDER_IMAGE_SCALE_TOLERANCE
                                 ..self.camera.image_scale()
-                                    + render_comp::RENDER_IMAGE_SCALE_EQUALITY_TOLERANCE)
+                                    + render_comp::RENDER_IMAGE_SCALE_TOLERANCE)
                                 .contains(&image_scale)
-                                && self
-                                    .store
-                                    .get_stroke_ref(key)
-                                    .map(|s| s.bounds() == stroke_bounds)
-                                    .unwrap_or(true)
                             {
-                                // Only when the image scale and stroke bounds are the same
-                                // to when the render task was started,
+                                // Only when the image scale is roughly the same to when the render task was started,
                                 // the new images are considered valid and can replace the old.
                                 self.store.replace_rendering_with_images(key, images);
                             }

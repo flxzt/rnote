@@ -9,7 +9,7 @@ use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Shapeable;
 
 /// The tolerance where check between scale-factors are considered "equal".
-pub(crate) const RENDER_IMAGE_SCALE_EQUALITY_TOLERANCE: f64 = 0.01;
+pub(crate) const RENDER_IMAGE_SCALE_TOLERANCE: f64 = 0.01;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RenderCompState {
@@ -206,7 +206,6 @@ impl StrokeStore {
                             key,
                             images,
                             image_scale,
-                            stroke_bounds: stroke.bounds(),
                         });
                     }
                     Err(e) => {
@@ -305,7 +304,6 @@ impl StrokeStore {
                                 key,
                                 images,
                                 image_scale,
-                                stroke_bounds: stroke.bounds(),
                             });
                         }
                         Err(e) => {

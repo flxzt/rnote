@@ -50,6 +50,7 @@ pub(super) enum ModifyState {
         from_corner: ResizeCorner,
         start_bounds: Aabb,
         start_pos: na::Vector2<f64>,
+        last_rendered_bounds: Aabb,
     },
 }
 
@@ -416,6 +417,7 @@ impl DrawableOnDoc for Selector {
                 modify_state,
                 selection,
                 selection_bounds,
+                ..
             } => {
                 // Draw the highlight for the selected strokes
                 for stroke in engine_view.store.get_strokes_ref(selection) {

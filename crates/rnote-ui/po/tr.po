@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-01 14:11+0100\n"
-"PO-Revision-Date: 2024-02-09 18:14+0000\n"
-"Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
+"PO-Revision-Date: 2024-03-21 20:49+0000\n"
+"Last-Translator: Sabri Ünal <yakushabb@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -99,7 +99,7 @@ msgstr "Bu, tüm belgeyi temizleyecek. Lütfen doğrulayın."
 #: crates/rnote-ui/data/ui/dialogs/import.ui:205
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
-msgstr "İptal Et"
+msgstr "İptal"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
@@ -457,16 +457,12 @@ msgid "End Page"
 msgstr "Bitiş sayfası"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
-#, fuzzy
-#| msgid "Adjust document settings"
 msgid "Adjust Document"
-msgstr "Belge ayarlarını düzenle"
+msgstr "Belgeyi Düzenle"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "Arka plan deseninin dışa aktarılıp aktarılmayacağını ayarla"
+msgstr "Belge düzeninin PDF'ye uydurulma durumu"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:107
 msgid "Page Width (%)"
@@ -974,10 +970,8 @@ msgid "De_veloper Mode"
 msgstr "_Geliştirici Kipi"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
-#, fuzzy
-#| msgid "New Window"
 msgid "New _Window"
-msgstr "Yeni Pencere"
+msgstr "Yeni _Pencere"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
@@ -1802,16 +1796,12 @@ msgid "Reloading .rnote file from disk failed"
 msgstr ".rnote dosyasının diskten yeniden yüklenmesi başarısız oldu"
 
 #: crates/rnote-ui/src/canvas/mod.rs:957
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was renamed or moved."
-msgstr "Açılan dosya disk üzerinde yeniden adlandırıldı"
+msgstr "Açılan dosya yeniden adlandırıldı ya da taşındı."
 
 #: crates/rnote-ui/src/canvas/mod.rs:971
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was removed."
-msgstr "Açılan dosya disk üzerinde yeniden adlandırıldı"
+msgstr "Açılan dosya kaldırıldı."
 
 #: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
@@ -1965,7 +1955,7 @@ msgstr "Sayfalar:"
 #: crates/rnote-ui/src/dialogs/mod.rs:47
 msgid "translator-credits"
 msgstr ""
-"Sabri Ünal <libreajans@gmail.com>\n"
+"Sabri Ünal <yakushabb@gmail.com>\n"
 "Oğuz Ersen <oguz@ersen.moe>"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:212

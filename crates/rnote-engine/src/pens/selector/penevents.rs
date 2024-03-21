@@ -321,7 +321,7 @@ impl Selector {
                             let offset_mean = offset_to_start.mean();
                             offset_to_start = start_extents * (offset_mean / start_mean);
                         }
-                        let min_extents = (na::Vector2::<f64>::from_element(2.0f64))
+                        let min_extents = na::Vector2::<f64>::from_element(2.0f64)
                             / engine_view.camera.total_zoom();
                         let scale = (start_bounds.extents() + offset_to_start)
                             .maxs(&min_extents)

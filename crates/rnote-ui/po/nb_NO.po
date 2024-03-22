@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-22 11:21+0100\n"
+"POT-Creation-Date: 2024-03-22 15:14+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: fredrikrab <fredrrbo@stud.ntnu.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/rnote/"
@@ -2577,13 +2577,13 @@ msgid "Open the file in the default app failed"
 msgstr "Feil: Prøvde å åpne mappe som fil"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
-msgid "Renaming file failed, target file already exists."
+msgid "Renaming file failed, target file already exists"
 msgstr ""
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
 #, fuzzy
 #| msgid "Opening PDF file failed."
-msgid "Renaming file failed."
+msgid "Renaming file failed"
 msgstr "Åpning av PDF-fil mislyktes."
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20

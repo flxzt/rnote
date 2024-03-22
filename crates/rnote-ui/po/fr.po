@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-22 11:21+0100\n"
+"POT-Creation-Date: 2024-03-22 15:14+0100\n"
 "PO-Revision-Date: 2024-03-10 00:01+0000\n"
 "Last-Translator: \"Mathieu B.\" <mathieu.bousquet2@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -2363,13 +2363,13 @@ msgid "Open the file in the default app failed"
 msgstr "Impossible d’ouvrir le fichier dans l’explorateur de fichiers"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
-msgid "Renaming file failed, target file already exists."
+msgid "Renaming file failed, target file already exists"
 msgstr ""
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
 #, fuzzy
 #| msgid "Opening file failed"
-msgid "Renaming file failed."
+msgid "Renaming file failed"
 msgstr "L’ouverture du fichier a échoué"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20

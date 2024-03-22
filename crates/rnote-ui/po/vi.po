@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-22 11:21+0100\n"
+"POT-Creation-Date: 2024-03-22 15:14+0100\n"
 "PO-Revision-Date: 2023-10-24 04:15+0000\n"
 "Last-Translator: Rickey Ho <rickey.ho2020@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/rnote/repo/vi/"
@@ -2470,13 +2470,13 @@ msgid "Open the file in the default app failed"
 msgstr ""
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
-msgid "Renaming file failed, target file already exists."
+msgid "Renaming file failed, target file already exists"
 msgstr ""
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
 #, fuzzy
 #| msgid "Export _selection"
-msgid "Renaming file failed."
+msgid "Renaming file failed"
 msgstr "Xuất phần chọn"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20

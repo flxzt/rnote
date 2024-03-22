@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-01 14:11+0100\n"
+"POT-Creation-Date: 2024-03-22 11:21+0100\n"
 "PO-Revision-Date: 2024-03-10 00:01+0000\n"
 "Last-Translator: \"Mathieu B.\" <mathieu.bousquet2@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -1158,7 +1158,7 @@ msgid "Open in Default App"
 msgstr "Ouvrir dans l’application par défaut"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:65
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:91
 msgid "Rename"
 msgstr "Renommer"
 
@@ -2340,11 +2340,49 @@ msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "Faisceau (grand)"
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:49
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:35
+msgid "Can't duplicate an unsaved document"
+msgstr ""
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
+#, fuzzy
+#| msgid "Opening .rnote file failed"
+msgid "Duplicating the file failed"
+msgstr "L'ouverture du fichier .rnote a échoué"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
+#, fuzzy
+#| msgid "Change the directory"
+msgid "Duplicating the directory failed"
+msgstr "Changer de répertoire"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:18
+#, fuzzy
+#| msgid "Failed to open the file in the file manager"
+msgid "Open the file in the default app failed"
+msgstr "Impossible d’ouvrir le fichier dans l’explorateur de fichiers"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
+msgid "Renaming file failed, target file already exists."
+msgstr ""
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
+#, fuzzy
+#| msgid "Opening file failed"
+msgid "Renaming file failed."
+msgstr "L’ouverture du fichier a échoué"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
+#, fuzzy
+#| msgid "Inserting file failed"
+msgid "Trashing file failed"
+msgstr "Échec de l’insertion du fichier"
+
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 msgid "Folder Name"
 msgstr "Nom du répertoire"
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:75
 msgid "New Folder"
 msgstr "Nouveau répertoire"
 
@@ -2378,9 +2416,6 @@ msgstr "Nouveau répertoire"
 #~ msgstr ""
 #~ "L’ouverture de ce fichier écrasera toutes les modifications non-"
 #~ "sauvegardées. Voulez-vous sauvegarder le document actuel ?"
-
-#~ msgid "Opening .rnote file failed"
-#~ msgstr "L'ouverture du fichier .rnote a échoué"
 
 #~ msgid "Opening vector image file failed"
 #~ msgstr "L'ouverture du fichier image vectorielle a échoué"

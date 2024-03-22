@@ -1,8 +1,7 @@
 // Imports
 use crate::workspacebrowser::RnFileRow;
 use crate::RnAppWindow;
-use fs_extra::dir::{CopyOptions, TransitProcessResult};
-use fs_extra::TransitProcess;
+use gettextrs::gettext;
 use gtk4::prelude::FileExt;
 use gtk4::{gio, glib, glib::clone};
 use once_cell::sync::Lazy;
@@ -30,68 +29,59 @@ static DUP_REGEX: Lazy<Regex> = Lazy::new(|| {
 pub(crate) fn duplicate(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleAction {
     let action = gio::SimpleAction::new("duplicate", None);
 
-    action.connect_activate(
-        clone!(@weak filerow as filerow, @weak appwindow => move |_action_duplicate_file, _| {
-            if let Some(current_file) = filerow.current_file() {
-                if let Some(current_path) = current_file.path() {
-                    if current_path.is_file() {
-                        if let Err(e) = duplicate_file(&current_path) {
-                            tracing::error!("Duplicating file for path `{current_path:?}` failed, Err: {e:?}");
-                        }
-                    } else if current_path.is_dir() {
-                        let progress_handler = creat_dup_dir_progress_handler(appwindow.clone());
+    action.connect_activate(clone!(@weak filerow, @weak appwindow => move |_, _| {
+        glib::spawn_future_local(clone!(@weak filerow, @weak appwindow => async move {
+            let Some(current_path) = filerow.current_file().and_then(|f| f.path()) else {
+                appwindow.overlays().dispatch_toast_error(&gettext("Can't duplicate an unsaved document"));
+                tracing::debug!("Could not duplicate file, current file is None.");
+                return;
+            };
 
-                        if let Err(e) = duplicate_dir(&current_path, progress_handler) {
-                            tracing::error!("Duplicating directory for path `{current_path:?}` failed, Err: {e:?}");
-                        }
-                    }
+            let mut success = true;
+            appwindow.overlays().progressbar_start_pulsing();
+
+            if current_path.is_file() {
+                if let Err(e) = duplicate_file(&current_path).await {
+                    appwindow.overlays().dispatch_toast_error(&gettext("Duplicating the file failed"));
+                    tracing::debug!("Duplicating file for path `{current_path:?}` failed, Err: {e:?}");
+                    success = false;
+                }
+            } else if current_path.is_dir() {
+                if let Err(e) = duplicate_dir(&current_path).await {
+                    appwindow.overlays().dispatch_toast_error(&gettext("Duplicating the directory failed"));
+                    tracing::debug!("Duplicating directory for path `{current_path:?}` failed, Err: {e:?}");
+                    success = false;
                 }
             } else {
-                tracing::warn!("Could not duplicate file, current file is None.");
+                success = false;
             }
 
-            appwindow.overlays().progressbar_finish();
-        }),
-    );
+            if success {
+                appwindow.overlays().progressbar_finish();
+            } else {
+                appwindow.overlays().progressbar_abort();
+            }
+        }));
+    }));
 
     action
 }
 
-/// Returns the progress handler for
-/// [copy_items_with_progress](https://docs.rs/fs_extra/1.2.0/fs_extra/fn.copy_items_with_progress.html).
-fn creat_dup_dir_progress_handler(
-    appwindow: RnAppWindow,
-) -> impl Fn(TransitProcess) -> TransitProcessResult {
-    move |process: TransitProcess| -> TransitProcessResult {
-        let status = {
-            let status = process.copied_bytes / process.total_bytes;
-            status as f64
-        };
-        appwindow.overlays().progressbar().set_fraction(status);
-        TransitProcessResult::ContinueOrAbort
-    }
-}
-
-fn duplicate_file(source: impl AsRef<Path>) -> anyhow::Result<()> {
+async fn duplicate_file(source: impl AsRef<Path>) -> anyhow::Result<()> {
     let destination = generate_destination_path(&source)?;
-    std::fs::copy(source, destination)?;
+    async_fs::copy(source, destination).await?;
     Ok(())
 }
 
-fn duplicate_dir<F>(source: impl AsRef<Path>, progress_handler: F) -> anyhow::Result<()>
-where
-    F: Fn(TransitProcess) -> TransitProcessResult,
-{
+async fn duplicate_dir(source: impl AsRef<Path>) -> anyhow::Result<()> {
     let destination = generate_destination_path(&source)?;
-    let options = CopyOptions {
-        copy_inside: true,
-        ..CopyOptions::default()
-    };
-    fs_extra::copy_items_with_progress(
+    fs_extra::copy_items(
         &[source.as_ref()],
         destination,
-        &options,
-        progress_handler,
+        &fs_extra::dir::CopyOptions {
+            copy_inside: true,
+            ..Default::default()
+        },
     )?;
     Ok(())
 }

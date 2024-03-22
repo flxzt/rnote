@@ -1,14 +1,17 @@
 // Imports
-use crate::{workspacebrowser::widgethelper, RnWorkspaceBrowser};
+use crate::workspacebrowser::widgethelper;
+use crate::{RnAppWindow, RnWorkspaceBrowser};
 use gettextrs::gettext;
-use gtk4::{gio, glib, glib::clone, pango, prelude::*, Align, Button, Entry, Label, Popover};
-use std::path::PathBuf;
+use gtk4::{gio, glib, glib::clone, pango, prelude::*, Align, Entry, Label};
 
 /// Create a new `create_folder` action.
-pub(crate) fn create_folder(workspacebrowser: &RnWorkspaceBrowser) -> gio::SimpleAction {
+pub(crate) fn create_folder(
+    workspacebrowser: &RnWorkspaceBrowser,
+    appwindow: &RnAppWindow,
+) -> gio::SimpleAction {
     let new_folder_action = gio::SimpleAction::new("create-folder", None);
 
-    new_folder_action.connect_activate(clone!(@weak workspacebrowser as workspacebrowser => move |_, _| {
+    new_folder_action.connect_activate(clone!(@weak workspacebrowser, @weak appwindow => move |_, _| {
         if let Some(parent_path) = workspacebrowser.dir_list_file().and_then(|f| f.path()) {
             let folder_name_entry = create_folder_name_entry();
             let dialog_title_label = create_dialog_title_label();
@@ -33,7 +36,22 @@ pub(crate) fn create_folder(workspacebrowser: &RnWorkspaceBrowser) -> gio::Simpl
                 }
             }));
 
-            connect_apply_button(&apply_button, &popover, &folder_name_entry, parent_path);
+            apply_button.connect_clicked(clone!(@weak popover, @weak folder_name_entry, @weak appwindow => move |_| {
+                let new_folder_path = parent_path.join(folder_name_entry.text().as_str());
+
+                if new_folder_path.exists() {
+                    // Should have been caught earlier, but making sure
+                    appwindow.overlays().dispatch_toast_error("Can't create folder that already exists.");
+                    tracing::debug!("Couldn't create new folder wit name `{}`, it already exists.", folder_name_entry.text().as_str());
+                } else {
+                    if let Err(e) = fs_extra::dir::create(new_folder_path, false) {
+                        appwindow.overlays().dispatch_toast_error("Creating new folder failed");
+                        tracing::debug!("Couldn't create folder, Err: {e:?}");
+                    }
+
+                    popover.popdown();
+                }
+            }));
 
             popover.popup();
         } else {
@@ -60,26 +78,4 @@ fn create_dialog_title_label() -> Label {
         .build();
     label.add_css_class("title-4");
     label
-}
-
-fn connect_apply_button(
-    apply_button: &Button,
-    popover: &Popover,
-    entry: &Entry,
-    parent_path: PathBuf,
-) {
-    apply_button.connect_clicked(clone!(@weak popover, @weak entry => move |_| {
-        let new_folder_path = parent_path.join(entry.text().as_str());
-
-        if new_folder_path.exists() {
-            // Should have been caught earlier, but making sure
-            tracing::error!("Couldn't create new folder wit name `{}`, it already exists.", entry.text().as_str());
-        } else {
-            if let Err(e) = fs_extra::dir::create(new_folder_path, false) {
-                tracing::error!("Couldn't create folder, Err: {e:?}");
-            }
-
-            popover.popdown();
-        }
-    }));
 }

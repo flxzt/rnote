@@ -93,9 +93,10 @@ impl Transformable for ShapeStroke {
     }
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.shape.scale(scale);
-        let scale_uniform = (scale[0] + scale[1]) / 2.;
+        // Using the geometric mean behaves the best when scaling non-uniformly.
+        let scale_scalar = (scale[0] * scale[1]).sqrt();
         self.style
-            .set_stroke_width(self.style.stroke_width() * scale_uniform);
+            .set_stroke_width(self.style.stroke_width() * scale_scalar);
     }
 }
 

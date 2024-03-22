@@ -36,14 +36,14 @@ pub(crate) fn rename(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::Simpl
             let new_file_path = parent_path.join(&entry.text());
 
             if new_file_path.exists() {
-                appwindow.overlays().dispatch_toast_error(&gettext("Renaming file failed, target file already exists."));
+                appwindow.overlays().dispatch_toast_error(&gettext("Renaming file failed, target file already exists"));
                 tracing::debug!("Renaming file with path '{}' failed, target file already exists", new_file_path.display());
             } else {
                 glib::spawn_future_local(clone!(@strong current_file_path, @weak appwindow => async move {
                     appwindow.overlays().progressbar_start_pulsing();
                     if let Err(e) = async_fs::rename(&current_file_path, &new_file_path).await {
                         tracing::error!("Renaming file with path `{}` failed, Err: {e:?}", new_file_path.display());
-                        appwindow.overlays().dispatch_toast_error(&gettext("Renaming file failed."));
+                        appwindow.overlays().dispatch_toast_error(&gettext("Renaming file failed"));
                         appwindow.overlays().progressbar_abort();
                     } else {
                         appwindow.overlays().progressbar_finish();

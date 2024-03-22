@@ -230,8 +230,12 @@ impl RnFileRow {
         self.imp()
             .action_group
             .add_action(&actions::open_in_default_app(self, appwindow));
-        self.imp().action_group.add_action(&actions::rename(self));
-        self.imp().action_group.add_action(&actions::trash(self));
+        self.imp()
+            .action_group
+            .add_action(&actions::rename(self, appwindow));
+        self.imp()
+            .action_group
+            .add_action(&actions::trash(self, appwindow));
         self.imp()
             .action_group
             .add_action(&actions::duplicate(self, appwindow));

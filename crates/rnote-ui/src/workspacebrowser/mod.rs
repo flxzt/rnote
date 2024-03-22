@@ -190,10 +190,10 @@ impl RnWorkspaceBrowser {
         }
     }
 
-    fn setup_actions(&self, _appwindow: &RnAppWindow) {
+    fn setup_actions(&self, appwindow: &RnAppWindow) {
         self.imp()
             .action_group
-            .add_action(&workspaceactions::create_folder(self));
+            .add_action(&workspaceactions::create_folder(self, appwindow));
     }
 
     fn setup_dir_controls(&self, appwindow: &RnAppWindow) {

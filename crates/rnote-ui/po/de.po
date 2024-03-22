@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-22 15:14+0100\n"
-"PO-Revision-Date: 2024-03-22 14:16+0000\n"
+"PO-Revision-Date: 2024-03-22 14:17+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -2356,22 +2356,16 @@ msgid "Open the file in the default app failed"
 msgstr "Datei mit der Standard-App öffnen fehlgeschlagen"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
-#, fuzzy
-#| msgid "Renaming file failed, target file already exists."
 msgid "Renaming file failed, target file already exists"
-msgstr "Datei umbennen fehlgeschlagen, Ziel existiert bereits."
+msgstr "Datei umbenennen fehlgeschlagen, Ziel existiert bereits"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
-#, fuzzy
-#| msgid "Opening file failed"
 msgid "Renaming file failed"
-msgstr "Datei öffnen gescheitert"
+msgstr "Datei umbenennen fehlgeschlagen"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
-#, fuzzy
-#| msgid "Inserting file failed"
 msgid "Trashing file failed"
-msgstr "Datei einfügen gescheitert"
+msgstr "Datei in Papierkorb verschieben fehlgeschlagen"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 msgid "Folder Name"

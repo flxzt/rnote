@@ -640,6 +640,19 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>()
     }
 
+    pub(crate) fn filter_keys_intersecting_bounds<'a, I: IntoIterator<Item = &'a StrokeKey>>(
+        &'a self,
+        keys: I,
+        bounds: Aabb,
+    ) -> impl Iterator<Item = &'a StrokeKey> {
+        keys.into_iter().filter(move |key| {
+            self.stroke_components
+                .get(**key)
+                .map(|s| s.bounds().intersects(&bounds))
+                .unwrap_or(false)
+        })
+    }
+
     pub(crate) fn fetch_stroke_content(&self, keys: &[StrokeKey]) -> StrokeContent {
         let strokes = keys
             .iter()

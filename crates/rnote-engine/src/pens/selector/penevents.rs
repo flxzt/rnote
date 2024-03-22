@@ -3,6 +3,7 @@ use super::{ModifyState, ResizeCorner, Selector, SelectorState};
 use crate::engine::EngineViewMut;
 use crate::pens::pensconfig::selectorconfig::SelectorStyle;
 use crate::snap::SnapCorner;
+use crate::store::StrokeKey;
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use p2d::query::PointQuery;
@@ -358,9 +359,16 @@ impl Selector {
                             || last_rendered_bounds_scale[1] < 1. / RERENDER_BOUNDS_FACTOR
                             || last_rendered_bounds_scale[1] > RERENDER_BOUNDS_FACTOR
                         {
-                            engine_view.store.regenerate_rendering_in_viewport_threaded(
-                                engine_view.tasks_tx.clone(),
-                                false,
+                            let selection_in_viewport: Vec<StrokeKey> = engine_view
+                                .store
+                                .filter_keys_intersecting_bounds::<&Vec<StrokeKey>>(
+                                    selection,
+                                    engine_view.camera.viewport(),
+                                )
+                                .copied()
+                                .collect();
+                            engine_view.store.regenerate_rendering_for_strokes(
+                                &selection_in_viewport,
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
                             );

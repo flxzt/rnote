@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-22 11:21+0100\n"
-"PO-Revision-Date: 2024-03-01 13:13+0000\n"
+"PO-Revision-Date: 2024-03-22 14:16+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -2341,29 +2341,23 @@ msgstr "Strahl (Groß)"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:35
 msgid "Can't duplicate an unsaved document"
-msgstr ""
+msgstr "Nicht möglich ein ungesichertes Dokument zu duplizieren"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
-#, fuzzy
-#| msgid "Opening .rnote file failed"
 msgid "Duplicating the file failed"
-msgstr ".rnote Dateiöffnung gescheitert"
+msgstr "Datei duplizieren fehlgeschlagen"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
-#, fuzzy
-#| msgid "Change the directory"
 msgid "Duplicating the directory failed"
-msgstr "Verzeichnis ändern"
+msgstr "Verzeichnis duplizieren fehlgeschlagen"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:18
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Open the file in the default app failed"
-msgstr "Datei im Dateimanager öffnen gescheitert"
+msgstr "Datei mit der Standard-App öffnen fehlgeschlagen"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
 msgid "Renaming file failed, target file already exists."
-msgstr ""
+msgstr "Datei umbennen fehlgeschlagen, Ziel existiert bereits."
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
 #, fuzzy

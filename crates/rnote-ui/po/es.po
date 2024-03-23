@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-22 15:14+0100\n"
 "PO-Revision-Date: 2024-03-23 12:16+0000\n"
-"Last-Translator: Óscar Fernández Díaz <oscfdezdz@tuta.io>\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -2358,17 +2358,12 @@ msgid "Open the file in the default app failed"
 msgstr "Error al abrir el archivo en la aplicación predeterminada"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
-#, fuzzy
-#| msgid "Renaming file failed, target file already exists."
 msgid "Renaming file failed, target file already exists"
-msgstr ""
-"Error al cambiar el nombre del archivo, el archivo de destino ya existe."
+msgstr "Error al cambiar el nombre del archivo, el archivo de destino ya existe"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
-#, fuzzy
-#| msgid "Renaming file failed."
 msgid "Renaming file failed"
-msgstr "Error al cambiar el nombre del archivo."
+msgstr "Error al cambiar el nombre del archivo"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
 msgid "Trashing file failed"

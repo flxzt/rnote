@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-22 15:14+0100\n"
-"PO-Revision-Date: 2024-03-22 13:33+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"PO-Revision-Date: 2024-03-23 12:16+0000\n"
+"Last-Translator: Óscar Fernández Díaz <oscfdezdz@tuta.io>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -2372,7 +2372,7 @@ msgstr "Error al cambiar el nombre del archivo."
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
 msgid "Trashing file failed"
-msgstr "Error en el archivo trashing"
+msgstr "Error al eliminar el archivo"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 msgid "Folder Name"

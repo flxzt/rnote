@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-22 15:14+0100\n"
-"PO-Revision-Date: 2024-03-23 12:16+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"PO-Revision-Date: 2024-03-24 13:01+0000\n"
+"Last-Translator: Óscar Fernández Díaz <oscfdezdz@tuta.io>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -1803,7 +1803,7 @@ msgstr "El archivo abierto ha sido renombrado o movido."
 
 #: crates/rnote-ui/src/canvas/mod.rs:971
 msgid "Opened file was removed."
-msgstr "Se eliminó el archivo abierto."
+msgstr "El archivo abierto ha sido eliminado."
 
 #: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
@@ -2359,11 +2359,11 @@ msgstr "Error al abrir el archivo en la aplicación predeterminada"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
 msgid "Renaming file failed, target file already exists"
-msgstr "Error al cambiar el nombre del archivo, el archivo de destino ya existe"
+msgstr "Error al renombrar el archivo, el archivo de destino ya existe"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
 msgid "Renaming file failed"
-msgstr "Error al cambiar el nombre del archivo"
+msgstr "Error al renombrar el archivo"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
 msgid "Trashing file failed"

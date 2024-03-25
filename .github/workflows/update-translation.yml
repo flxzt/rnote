@@ -51,7 +51,7 @@ jobs:
       - name: Commit changes
         id: commit-changes
         run: |
-          echo -e "Update traditional Chinese translation\nreferenced issue: 220" \
+          echo -e "i18n: Update traditional Chinese translation\nreferenced issue: #220" \
           | git commit -a -F - || export failure=$?
 
           if [ -z $failure ]; then

@@ -1,6 +1,8 @@
 // Imports
 use super::RnCanvas;
+use anyhow::Context;
 use futures::channel::oneshot;
+use futures::AsyncWriteExt;
 use gtk4::{gio, prelude::*};
 use rnote_compose::ext::Vector2Ext;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
@@ -89,7 +91,7 @@ impl RnCanvas {
         let vectorimage = vectorimage_receiver.await??;
         let widget_flags = self
             .engine_mut()
-            .import_generated_content(vec![(Stroke::VectorImage(vectorimage), None)]);
+            .import_generated_content(vec![(Stroke::VectorImage(vectorimage), None)], false);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
@@ -112,7 +114,7 @@ impl RnCanvas {
         let bitmapimage = bitmapimage_receiver.await??;
         let widget_flags = self
             .engine_mut()
-            .import_generated_content(vec![(Stroke::BitmapImage(bitmapimage), None)]);
+            .import_generated_content(vec![(Stroke::BitmapImage(bitmapimage), None)], false);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
@@ -128,12 +130,19 @@ impl RnCanvas {
         page_range: Option<Range<u32>>,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
+        let adjust_document = self
+            .engine_ref()
+            .import_prefs
+            .pdf_import_prefs
+            .adjust_document;
 
         let strokes_receiver = self
             .engine_mut()
             .generate_pdf_pages_from_bytes(bytes, pos, page_range);
         let strokes = strokes_receiver.await??;
-        let widget_flags = self.engine_mut().import_generated_content(strokes);
+        let widget_flags = self
+            .engine_mut()
+            .import_generated_content(strokes, adjust_document);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
@@ -203,44 +212,58 @@ impl RnCanvas {
             tracing::debug!("Saving file already in progress.");
             return Ok(false);
         }
+        self.set_save_in_progress(true);
+
         let file_path = file
             .path()
             .ok_or_else(|| anyhow::anyhow!("Could not get a path for file: `{file:?}`."))?;
         let basename = file
             .basename()
             .ok_or_else(|| anyhow::anyhow!("Could not retrieve basename for file: `{file:?}`."))?;
-
-        self.set_save_in_progress(true);
         let rnote_bytes_receiver = self
             .engine_ref()
             .save_as_rnote_bytes(basename.to_string_lossy().to_string());
-
         let mut skip_set_output_file = false;
         if let Some(current_file_path) = self.output_file().and_then(|f| f.path()) {
-            if same_file::is_same_file(current_file_path, file_path).unwrap_or(false) {
+            if crate::utils::paths_abs_eq(current_file_path, &file_path).unwrap_or(false) {
                 skip_set_output_file = true;
             }
         }
 
-        // this **must** come before actually saving the file to disk,
-        // else the event might not be caught by the monitor for new or changed files
-        if !skip_set_output_file {
-            self.set_output_file(Some(file.to_owned()));
-        }
-
         self.dismiss_output_file_modified_toast();
-        self.set_output_file_expect_write(true);
 
-        let res = async move {
-            crate::utils::create_replace_file_future(rnote_bytes_receiver.await??, file).await
-        }
-        .await;
+        let file_write_operation = async move {
+            let bytes = rnote_bytes_receiver.await??;
+            self.set_output_file_expect_write(true);
+            let mut write_file = async_fs::OpenOptions::new()
+                .create(true)
+                .truncate(true)
+                .write(true)
+                .open(&file_path)
+                .await
+                .context(format!(
+                    "Failed to create/open/truncate file for path '{}'",
+                    file_path.display()
+                ))?;
+            if !skip_set_output_file {
+                // this installs the file watcher.
+                self.set_output_file(Some(file.to_owned()));
+            }
+            write_file.write_all(&bytes).await.context(format!(
+                "Failed to write bytes to file with path '{}'",
+                file_path.display()
+            ))?;
+            write_file.sync_all().await.context(format!(
+                "Failed to sync file after writing with path '{}'",
+                file_path.display()
+            ))?;
+            Ok(())
+        };
 
-        if let Err(e) = res {
+        if let Err(e) = file_write_operation.await {
             self.set_save_in_progress(false);
-
             // If the file operations failed in any way, we make sure to clear the expect_write flag
-            // because we can't know for sure if the output_file monitor will be able to.
+            // because we can't know for sure if the output-file watcher will be able to.
             self.set_output_file_expect_write(false);
             return Err(e);
         }

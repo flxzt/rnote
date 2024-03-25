@@ -185,6 +185,8 @@ impl RnAppWindow {
 
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
     pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags, canvas: &RnCanvas) {
+        //tracing::debug!("handling widget flags: '{widget_flags:?}'");
+
         if widget_flags.redraw {
             canvas.queue_draw();
         }
@@ -254,6 +256,33 @@ impl RnAppWindow {
             .tabview()
             .selected_page()
             .expect("there must always be one active tab")
+    }
+
+    pub(crate) fn n_tabs_open(&self) -> usize {
+        self.imp().overlays.tabview().pages().n_items() as usize
+    }
+
+    /// Returns a vector of all tabs of the current windows
+    pub(crate) fn get_all_tabs(&self) -> Vec<RnCanvasWrapper> {
+        let n_tabs = self.n_tabs_open();
+        let mut tabs = Vec::with_capacity(n_tabs);
+
+        for i in 0..n_tabs {
+            let wrapper = self
+                .imp()
+                .overlays
+                .tabview()
+                .pages()
+                .item(i as u32)
+                .unwrap()
+                .downcast::<adw::TabPage>()
+                .unwrap()
+                .child()
+                .downcast::<crate::RnCanvasWrapper>()
+                .unwrap();
+            tabs.push(wrapper);
+        }
+        tabs
     }
 
     /// Get the active (selected) tab page child.
@@ -355,7 +384,8 @@ impl RnAppWindow {
                 ))
             })
             .find(|(_, output_file_path)| {
-                same_file::is_same_file(output_file_path, input_file_path.as_ref()).unwrap_or(false)
+                crate::utils::paths_abs_eq(output_file_path, input_file_path.as_ref())
+                    .unwrap_or(false)
             })
             .map(|(found, _)| found)
     }

@@ -47,7 +47,11 @@ crates/rnote-ui/src/dialogs/mod.rs
 crates/rnote-ui/src/penssidebar/shaperpage.rs
 crates/rnote-ui/src/settingspanel/mod.rs
 crates/rnote-ui/src/settingspanel/penshortcutmodels.rs
+crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs
+crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs
+crates/rnote-ui/src/workspacebrowser/filerow/actions/open.rs
 crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs
+crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs
 crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs
 crates/rnote-ui/src/workspacebrowser/mod.rs
 crates/rnote-ui/src/workspacebrowser/widgethelper.rs

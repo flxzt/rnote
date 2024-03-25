@@ -209,7 +209,11 @@ impl VectorImage {
         let doc = poppler::Document::from_bytes(&glib::Bytes::from(bytes), None)?;
         let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
 
-        let page_width = format.width() * (pdf_import_prefs.page_width_perc / 100.0);
+        let page_width = if pdf_import_prefs.adjust_document {
+            format.width()
+        } else {
+            format.width() * (pdf_import_prefs.page_width_perc / 100.0)
+        };
         // calculate the page zoom based on the width of the first page.
         let page_zoom = if let Some(first_page) = doc.page(0) {
             page_width / first_page.size().0
@@ -299,12 +303,16 @@ impl VectorImage {
 
                 let bounds = Aabb::new(na::point![x, y], na::point![x + width, y + height]);
 
-                y += match pdf_import_prefs.page_spacing {
-                    PdfImportPageSpacing::Continuous => {
-                        height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5
-                    }
-                    PdfImportPageSpacing::OnePerDocumentPage => format.height(),
-                };
+                if pdf_import_prefs.adjust_document {
+                    y += height
+                } else {
+                    y += match pdf_import_prefs.page_spacing {
+                        PdfImportPageSpacing::Continuous => {
+                            height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5
+                        }
+                        PdfImportPageSpacing::OnePerDocumentPage => format.height(),
+                    };
+                }
 
                 match res() {
                     Ok(svg_data) => Some(render::Svg { svg_data, bounds }),

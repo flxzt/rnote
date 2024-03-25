@@ -1,66 +1,67 @@
 [package]
-name = "rnote-engine"
-version.workspace = true
-edition.workspace = true
-rust-version.workspace = true
 authors.workspace = true
-license.workspace = true
+edition.workspace = true
 homepage.workspace = true
+license.workspace = true
+name = "rnote-engine"
 repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
 
 [dependencies]
 rnote-compose = { workspace = true }
 
-tracing = { workspace = true }
 anyhow = { workspace = true }
-thiserror = { workspace = true }
+approx = { workspace = true }
+base64 = { workspace = true }
+cairo-rs = { workspace = true }
+chrono = { workspace = true }
+clap = { workspace = true, optional = true }
+flate2 = { workspace = true }
+futures = { workspace = true }
+geo = { workspace = true }
+gio = { workspace = true }
+glib = { workspace = true }
+ijson = { workspace = true }
+image = { workspace = true }
+itertools = { workspace = true }
+kurbo = { workspace = true }
+librsvg = { workspace = true }
+nalgebra = { workspace = true }
 num-derive = { workspace = true }
 num-traits = { workspace = true }
-itertools = { workspace = true }
 once_cell = { workspace = true }
-futures = { workspace = true }
-rayon = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
-ijson = { workspace = true }
-nalgebra = { workspace = true }
 parry2d-f64 = { workspace = true }
-chrono = { workspace = true }
-semver = { workspace = true }
-rand = { workspace = true }
-rand_pcg = { workspace = true }
-rand_distr = { workspace = true }
-slotmap = { workspace = true }
-rstar = { workspace = true }
-geo = { workspace = true }
-flate2 = { workspace = true }
-base64 = { workspace = true }
-regex = { workspace = true }
-unicode-segmentation = { workspace = true }
-roxmltree = { workspace = true }
-xmlwriter = { workspace = true }
-usvg = { workspace = true }
-svg = { workspace = true }
-image = { workspace = true }
-kurbo = { workspace = true }
 piet = { workspace = true }
 piet-cairo = { workspace = true }
-roughr = { workspace = true }
-rough_piet = { workspace = true }
-rodio = { workspace = true }
-glib = { workspace = true }
-gio = { workspace = true }
-cairo-rs = { workspace = true }
-librsvg = { workspace = true }
 poppler-rs = { workspace = true }
+rand = { workspace = true }
+rand_distr = { workspace = true }
+rand_pcg = { workspace = true }
+rayon = { workspace = true }
+regex = { workspace = true }
+rodio = { workspace = true }
+rough_piet = { workspace = true }
+roughr = { workspace = true }
+roxmltree = { workspace = true }
+rstar = { workspace = true }
+semver = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+slotmap = { workspace = true }
+svg = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+unicode-segmentation = { workspace = true }
+usvg = { workspace = true }
+xmlwriter = { workspace = true }
 # the long-term plan is to remove the gtk4 dependency entirely after switching to another renderer.
 gtk4 = { workspace = true, optional = true }
-clap = { workspace = true, optional = true }
 
 [dev-dependencies]
 approx = { workspace = true }
 
 [features]
-default = []
 cli = ["dep:clap"]
+default = []
 ui = ["dep:gtk4"]

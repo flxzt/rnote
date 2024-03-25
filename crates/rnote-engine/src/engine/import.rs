@@ -1,5 +1,6 @@
 // Imports
 use super::{EngineConfig, EngineViewMut, StrokeContent};
+use crate::document::Layout;
 use crate::pens::Pen;
 use crate::pens::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
@@ -10,6 +11,8 @@ use crate::strokes::Resize;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{CloneConfig, Engine, WidgetFlags};
 use futures::channel::oneshot;
+use rnote_compose::ext::Vector2Ext;
+use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use std::path::PathBuf;
@@ -94,6 +97,9 @@ pub struct PdfImportPrefs {
     /// Whether the imported Pdf pages have drawn borders
     #[serde(rename = "page_borders")]
     pub page_borders: bool,
+    /// Whether the document layout should be adjusted to the Pdf
+    #[serde(rename = "adjust_document")]
+    pub adjust_document: bool,
 }
 
 impl Default for PdfImportPrefs {
@@ -104,6 +110,7 @@ impl Default for PdfImportPrefs {
             page_spacing: PdfImportPageSpacing::default(),
             bitmap_scalefactor: 1.8,
             page_borders: true,
+            adjust_document: false,
         }
     }
 }
@@ -309,6 +316,8 @@ impl Engine {
     /// Generate image strokes for each page for the bytes.
     ///
     /// The bytes are expected to be from a valid Pdf.
+    ///
+    /// Note: `insert_pos` does not have an effect when the `adjust_document` import pref is set true.
     #[allow(clippy::type_complexity)]
     pub fn generate_pdf_pages_from_bytes(
         &self,
@@ -320,6 +329,11 @@ impl Engine {
             oneshot::channel::<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>>();
         let pdf_import_prefs = self.import_prefs.pdf_import_prefs;
         let format = self.document.format;
+        let insert_pos = if self.import_prefs.pdf_import_prefs.adjust_document {
+            na::Vector2::<f64>::zeros()
+        } else {
+            insert_pos
+        };
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>> {
@@ -365,15 +379,32 @@ impl Engine {
     pub fn import_generated_content(
         &mut self,
         strokes: Vec<(Stroke, Option<StrokeLayer>)>,
+        adjust_document: bool,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
+        if strokes.is_empty() {
+            return widget_flags;
+        }
+        let select = !adjust_document;
 
-        // we need to always deselect all strokes -
-        // even tough changing the pen style deselects too, it does only when the pen is actually different.
+        // we need to always deselect all strokes. Even tough changing the pen style deselects too, it does only when
+        // the pen is actually different.
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
 
-        widget_flags |= self.change_pen_style(PenStyle::Selector);
+        if select {
+            widget_flags |= self.change_pen_style(PenStyle::Selector);
+        }
+
+        if adjust_document {
+            let max_size = strokes
+                .iter()
+                .map(|(stroke, _)| stroke.bounds().extents())
+                .fold(na::Vector2::<f64>::zeros(), |acc, x| acc.maxs(&x));
+            self.document.format.set_width(max_size[0]);
+            self.document.format.set_height(max_size[1]);
+            widget_flags |= self.set_doc_layout(Layout::FixedSize) | self.doc_resize_autoexpand()
+        }
 
         let inserted = strokes
             .into_iter()
@@ -382,7 +413,9 @@ impl Engine {
 
         // resize after the strokes are inserted, but before they are set selected
         widget_flags |= self.doc_resize_to_fit_content();
-        self.store.set_selected_keys(&inserted, true);
+        if select {
+            self.store.set_selected_keys(&inserted, true);
+        }
         widget_flags |= self.current_pen_update_state();
         widget_flags |= self.store.record(Instant::now());
         widget_flags.resize = true;

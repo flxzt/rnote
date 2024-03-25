@@ -1,10 +1,10 @@
 project(
     'rnote',
     ['rust', 'cpp'],
-    version: '0.9.4',
+    version: '0.10.1',
     meson_version: '>= 1.0',
 )
-# add a patch suffix for alpha or beta version, starting with a dash.
+# add a patch suffix for alpha or beta versions in format '-<alpha|beta>.<x>'.
 patch = ''
 
 # Modules
@@ -119,7 +119,8 @@ run_target(
             'fmt',
             '--all',
             '--check',
-            '--manifest-path', cargo_manifest_path,
+            '--manifest-path',
+            cargo_manifest_path,
         ],
     ],
     env: cargo_env,
@@ -133,8 +134,10 @@ run_target(
         [
             'test',
             '--workspace',
-            '--manifest-path', cargo_manifest_path,
-            '--target-dir', cargo_target_dir,
+            '--manifest-path',
+            cargo_manifest_path,
+            '--target-dir',
+            cargo_target_dir,
         ],
     ],
     env: cargo_env,
@@ -147,8 +150,10 @@ run_target(
         cargo,
         [
             'clean',
-            '--manifest-path', cargo_manifest_path,
-            '--target-dir', cargo_target_dir,
+            '--manifest-path',
+            cargo_manifest_path,
+            '--target-dir',
+            cargo_target_dir,
         ],
     ],
     env: cargo_env,
@@ -265,7 +270,7 @@ if build_ui == true
     # Windows installer
     message('Configuring Inno-Setup installer script file')
 
-    installer_output= win_installer_name + '.exe'
+    installer_output = win_installer_name + '.exe'
 
     inno_script_conf = configuration_data()
     inno_script_conf.set_quoted('MESON_SOURCE_ROOT', meson.project_source_root())
@@ -293,10 +298,11 @@ if build_ui == true
 
     if host_machine.system() == 'windows'
         # build installer
-        custom_target('build-installer',
-            input : inno_script,
-            output : installer_output,
-            command : [
+        custom_target(
+            'build-installer',
+            input: inno_script,
+            output: installer_output,
+            command: [
                 inno_build_script,
                 meson.project_source_root(),
                 meson.project_build_root(),

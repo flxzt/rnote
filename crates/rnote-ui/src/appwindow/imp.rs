@@ -235,26 +235,39 @@ impl RnAppWindow {
     fn update_autosave_handler(&self) {
         let obj = self.obj();
 
-        if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(),
+        if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(
+            glib::source::timeout_add_seconds_local(
+                self.autosave_interval_secs.get(),
                 clone!(@weak obj as appwindow => @default-return glib::ControlFlow::Break, move || {
-                    let canvas = appwindow.active_tab_wrapper().canvas();
+                    // save for all tabs opened in the current window that have unsaved changes
+                    let tabs = appwindow.get_all_tabs();
 
-                    if let Some(output_file) = canvas.output_file() {
-                        glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
-                            if let Err(e) = canvas.save_document_to_file(&output_file).await {
-                                canvas.set_output_file(None);
-
-                                tracing::error!("Saving document failed, Err: `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
+                    for (i, tab) in tabs.iter().enumerate() {
+                        let canvas = tab.canvas();
+                        if canvas.unsaved_changes() {
+                            if let Some(output_file) = canvas.output_file() {
+                                tracing::trace!(
+                                    "there are unsaved changes on the tab {:?} with a file on disk, saving",i
+                                );
+                                glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
+                                    if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                                        canvas.set_output_file(None);
+                                        tracing::error!("Saving document failed, Err: `{e:?}`");
+                                        appwindow
+                                            .overlays()
+                                            .dispatch_toast_error(&gettext("Saving document failed"));
+                                    };
+                                }));
                             }
                         }
-                    ));
-                }
+                    }
 
-                glib::ControlFlow::Continue
-            }))) {
-                removed_id.remove();
-            }
+                    glib::ControlFlow::Continue
+                }),
+            ),
+        ) {
+            removed_id.remove();
+        }
     }
 
     fn setup_input(&self) {

@@ -62,8 +62,12 @@ for angle_dll in itertools.chain(
     glob.glob(f"{build_environment_path}/bin/libGLES*.dll"),
 ):
     run_command(
-        f"ldd {angle_dll} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+        f"cp {angle_dll} {dlls_dir}",
         f"Collecting angle ({angle_dll}) DLLs failed",
+    )
+    run_command(
+        f"ldd {angle_dll} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+        f"Collecting angle dependency ({angle_dll}) DLLs failed",
     )
 
 # Collect necessary GSchema Xml's and compile them into a `gschemas.compiled`
@@ -124,7 +128,7 @@ for file in os.listdir(app_mo_dir):
 print("Running ISCC...", file=sys.stderr)
 
 run_command(
-    f"bash -lc \"iscc {inno_script}\"",
+    f"iscc {inno_script}",
     "Running ISCC failed"
 )
 

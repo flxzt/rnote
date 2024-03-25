@@ -50,6 +50,7 @@ pub(super) enum ModifyState {
         from_corner: ResizeCorner,
         start_bounds: Aabb,
         start_pos: na::Vector2<f64>,
+        last_rendered_bounds: Aabb,
     },
 }
 
@@ -416,6 +417,7 @@ impl DrawableOnDoc for Selector {
                 modify_state,
                 selection,
                 selection_bounds,
+                ..
             } => {
                 // Draw the highlight for the selected strokes
                 for stroke in engine_view.store.get_strokes_ref(selection) {
@@ -495,19 +497,31 @@ impl Selector {
         let total_zoom = camera.total_zoom();
         match position {
             ResizeCorner::TopLeft => Aabb::from_half_extents(
-                na::point![selection_bounds.mins[0], selection_bounds.mins[1]],
+                na::point![
+                    selection_bounds.mins[0] - Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom,
+                    selection_bounds.mins[1] - Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom
+                ],
                 Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
             ResizeCorner::TopRight => Aabb::from_half_extents(
-                na::point![selection_bounds.maxs[0], selection_bounds.mins[1]],
+                na::point![
+                    selection_bounds.maxs[0] + Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom,
+                    selection_bounds.mins[1] - Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom
+                ],
                 Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
             ResizeCorner::BottomLeft => Aabb::from_half_extents(
-                na::point![selection_bounds.mins[0], selection_bounds.maxs[1]],
+                na::point![
+                    selection_bounds.mins[0] - Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom,
+                    selection_bounds.maxs[1] + Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom
+                ],
                 Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
             ResizeCorner::BottomRight => Aabb::from_half_extents(
-                na::point![selection_bounds.maxs[0], selection_bounds.maxs[1]],
+                na::point![
+                    selection_bounds.maxs[0] + Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom,
+                    selection_bounds.maxs[1] + Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom
+                ],
                 Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
         }
@@ -516,7 +530,7 @@ impl Selector {
     fn rotate_node_sphere(selection_bounds: Aabb, camera: &Camera) -> BoundingSphere {
         let total_zoom = camera.total_zoom();
         let pos = na::point![
-            selection_bounds.maxs[0],
+            selection_bounds.maxs[0] + Self::RESIZE_NODE_SIZE[0] / (2.0 * total_zoom),
             (selection_bounds.maxs[1] + selection_bounds.mins[1]) * 0.5
         ];
         BoundingSphere::new(pos, Self::ROTATE_NODE_DIAMETER * 0.5 / total_zoom)

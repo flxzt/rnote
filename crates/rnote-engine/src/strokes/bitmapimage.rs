@@ -137,7 +137,11 @@ impl BitmapImage {
     ) -> Result<Vec<Self>, anyhow::Error> {
         let doc = poppler::Document::from_bytes(&glib::Bytes::from(to_be_read), None)?;
         let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
-        let page_width = format.width() * (pdf_import_prefs.page_width_perc / 100.0);
+        let page_width = if pdf_import_prefs.adjust_document {
+            format.width()
+        } else {
+            format.width() * (pdf_import_prefs.page_width_perc / 100.0)
+        };
         // calculate the page zoom based on the width of the first page.
         let page_zoom = if let Some(first_page) = doc.page(0) {
             page_width / first_page.size().0
@@ -210,12 +214,16 @@ impl BitmapImage {
                 let image_pos = na::vector![x, y];
                 let image_size = na::vector![width, height];
 
-                y += match pdf_import_prefs.page_spacing {
-                    PdfImportPageSpacing::Continuous => {
-                        height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5
-                    }
-                    PdfImportPageSpacing::OnePerDocumentPage => format.height(),
-                };
+                if pdf_import_prefs.adjust_document {
+                    y += height
+                } else {
+                    y += match pdf_import_prefs.page_spacing {
+                        PdfImportPageSpacing::Continuous => {
+                            height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5
+                        }
+                        PdfImportPageSpacing::OnePerDocumentPage => format.height(),
+                    };
+                }
 
                 Ok((png_data, image_pos, image_size))
             })

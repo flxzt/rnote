@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-01 14:11+0100\n"
-"PO-Revision-Date: 2024-03-08 08:58+0000\n"
+"POT-Creation-Date: 2024-03-22 15:14+0100\n"
+"PO-Revision-Date: 2024-03-24 13:01+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -196,7 +196,7 @@ msgstr "কর্মক্ষেত্রের রঙ পরিবর্তন 
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:158
 msgid "Directory"
-msgstr "নির্দেশিকা"
+msgstr "ডিরেক্টরি"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:159
 msgid "Change the workspace directory"
@@ -286,7 +286,7 @@ msgstr "পটভূমির প্যাটার্ন রপ্তানি 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:329
 #: crates/rnote-ui/data/ui/dialogs/export.ui:523
 msgid "Optimize for Printing"
-msgstr "প্রিন্ট করার জন্য অপ্টিমাইজ করা"
+msgstr "প্রিন্ট করার জন্য অপ্টিমাইজ করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:123
 #: crates/rnote-ui/data/ui/dialogs/export.ui:330
@@ -461,10 +461,8 @@ msgid "Adjust Document"
 msgstr "নথি এডজাস্ট করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "পটভূমির প্যাটার্ন রপ্তানি করা উচিত কিনা তা সেট করুন"
+msgstr "নথির বিন্যাস পিডিএফের সাথে সংগতি করা হবে কিনা"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:107
 msgid "Page Width (%)"
@@ -1156,7 +1154,7 @@ msgid "Open in Default App"
 msgstr "ডিফল্ট অ্যাপে খুলুন"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:65
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:91
 msgid "Rename"
 msgstr "নাম পরিবর্তন করুন"
 
@@ -1794,16 +1792,12 @@ msgid "Reloading .rnote file from disk failed"
 msgstr "ডিস্ক থেকে .rnote ফাইল পুনরায় খোলা করা ব্যর্থ হয়েছে"
 
 #: crates/rnote-ui/src/canvas/mod.rs:957
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was renamed or moved."
-msgstr "খোলা ফাইলটি ডিস্কে পুনঃনামকরণ করা হয়েছে"
+msgstr "খোলা ফাইলটি ডিস্কে পুনঃনামকরণ কিংবা সরান হয়েছে।"
 
 #: crates/rnote-ui/src/canvas/mod.rs:971
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was removed."
-msgstr "খোলা ফাইলটি ডিস্কে পুনঃনামকরণ করা হয়েছে"
+msgstr "খোলা ফাইলটি সরিয়ে ফেলা হয়েছে।"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
@@ -2338,11 +2332,39 @@ msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "রশ্মি (বড়)"
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:49
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:35
+msgid "Can't duplicate an unsaved document"
+msgstr "অসংরক্ষিত ফাইল নকল করা সম্ভব নই"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
+msgid "Duplicating the file failed"
+msgstr "ফাইল নকল করতে ব্যর্থ হয়েছে"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
+msgid "Duplicating the directory failed"
+msgstr "ডিরেক্টরি নকল করুন"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:18
+msgid "Open the file in the default app failed"
+msgstr "ডিফল্ট অ্যাপে ফাইল খুলতে ব্যর্থ হয়েছে"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
+msgid "Renaming file failed, target file already exists"
+msgstr "ফাইলের পুনঃনামকরণ ব্যর্থ হয়েছে, এই নামের ফাইল আগে থেকে আছে"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
+msgid "Renaming file failed"
+msgstr "ফাইল পুনঃনামকরণ ব্যর্থ হয়েছে"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
+msgid "Trashing file failed"
+msgstr "ফাইল বর্জন ব্যর্থ হয়েছে"
+
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 msgid "Folder Name"
 msgstr "ফোল্ডারের নাম"
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:75
 msgid "New Folder"
 msgstr "নতুন ফোল্ডার"
 
@@ -2376,9 +2398,6 @@ msgstr "নতুন ফোল্ডার"
 #~ msgstr ""
 #~ "এই ফাইলটি খোলার ফলে যে কোন অসংরক্ষিত পরিবর্তন মুছে যাবে। আপনি কি বর্তমান "
 #~ "নথিটি সংরক্ষণ করতে চান?"
-
-#~ msgid "Opening .rnote file failed"
-#~ msgstr ".rnote ফাইল খোলা ব্যর্থ হয়েছে"
 
 #~ msgid "Opening vector image file failed"
 #~ msgstr "ভেক্টর ইমেজ ফাইল খোলা ব্যর্থ হয়েছে"

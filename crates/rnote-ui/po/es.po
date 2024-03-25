@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-01 14:11+0100\n"
-"PO-Revision-Date: 2024-03-01 15:49+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"POT-Creation-Date: 2024-03-22 15:14+0100\n"
+"PO-Revision-Date: 2024-03-24 13:01+0000\n"
+"Last-Translator: Óscar Fernández Díaz <oscfdezdz@tuta.io>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -972,7 +972,7 @@ msgstr "Modo de de_sarrollo"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
 msgid "New _Window"
-msgstr "Nueva _ventana"
+msgstr "_Ventana nueva"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
@@ -1158,7 +1158,7 @@ msgid "Open in Default App"
 msgstr "Abrir por defecto en la aplicación"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:65
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:91
 msgid "Rename"
 msgstr "Renombrar"
 
@@ -1803,7 +1803,7 @@ msgstr "El archivo abierto ha sido renombrado o movido."
 
 #: crates/rnote-ui/src/canvas/mod.rs:971
 msgid "Opened file was removed."
-msgstr "Se eliminó el archivo abierto."
+msgstr "El archivo abierto ha sido eliminado."
 
 #: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
@@ -2341,11 +2341,39 @@ msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "Haz (grande)"
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:49
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:35
+msgid "Can't duplicate an unsaved document"
+msgstr "No se puede duplicar un documento no guardado"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
+msgid "Duplicating the file failed"
+msgstr "Error al duplicar el archivo"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
+msgid "Duplicating the directory failed"
+msgstr "Error al duplicar el directorio"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:18
+msgid "Open the file in the default app failed"
+msgstr "Error al abrir el archivo en la aplicación predeterminada"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
+msgid "Renaming file failed, target file already exists"
+msgstr "Error al renombrar el archivo, el archivo de destino ya existe"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
+msgid "Renaming file failed"
+msgstr "Error al renombrar el archivo"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
+msgid "Trashing file failed"
+msgstr "Error al eliminar el archivo"
+
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 msgid "Folder Name"
 msgstr "Nombre de la carpeta"
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:75
 msgid "New Folder"
 msgstr "Carpeta nueva"
 
@@ -2379,9 +2407,6 @@ msgstr "Carpeta nueva"
 #~ msgstr ""
 #~ "Al abrir este archivo se sobrescriben los cambios no guardados. ¿Desea "
 #~ "guardar el documento actual?"
-
-#~ msgid "Opening .rnote file failed"
-#~ msgstr "Error al abrir el archivo .rnote"
 
 #~ msgid "Opening vector image file failed"
 #~ msgstr "Error al abrir el archivo de imagen vectorial"

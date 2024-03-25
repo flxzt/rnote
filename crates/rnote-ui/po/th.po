@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-01 14:11+0100\n"
+"POT-Creation-Date: 2024-03-22 15:14+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -1370,7 +1370,7 @@ msgid "Open in Default App"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:65
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:91
 msgid "Rename"
 msgstr "ตั้งชื่อใหม่"
 
@@ -2720,13 +2720,51 @@ msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:49
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:35
+msgid "Can't duplicate an unsaved document"
+msgstr ""
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
+#, fuzzy
+#| msgid "Opening .rnote file failed."
+msgid "Duplicating the file failed"
+msgstr "การเปิดไฟล์ .rnote ล้มเหลว"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
+#, fuzzy
+#| msgid "Change the workspace directory"
+msgid "Duplicating the directory failed"
+msgstr "เปลี่ยนไดเรกทอรีของพื้นที่ทำงานนี้"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:18
+#, fuzzy
+#| msgid "Failed to open file: Unsupported file type."
+msgid "Open the file in the default app failed"
+msgstr "การเปิดไฟล์ล้มเหลว, ไม่รองรับประเภทไฟล์ที่เปิด"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
+msgid "Renaming file failed, target file already exists"
+msgstr ""
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
+#, fuzzy
+#| msgid "Opening file failed."
+msgid "Renaming file failed"
+msgstr "การเปิดไฟล์ล้มเหลว"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
+#, fuzzy
+#| msgid "Opening file failed."
+msgid "Trashing file failed"
+msgstr "การเปิดไฟล์ล้มเหลว"
+
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 #, fuzzy
 #| msgid "File name:"
 msgid "Folder Name"
 msgstr "ชื่อไฟล์:"
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:75
 msgid "New Folder"
 msgstr ""
 
@@ -2755,11 +2793,6 @@ msgstr ""
 #~ "current document?"
 #~ msgstr ""
 #~ "การเปิดไฟล์นี้ จะเขียนทับการเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมด คุณต้องการบันทึกเอกสารนี้หรือไม่?"
-
-#, fuzzy
-#~| msgid "Opening .rnote file failed."
-#~ msgid "Opening .rnote file failed"
-#~ msgstr "การเปิดไฟล์ .rnote ล้มเหลว"
 
 #, fuzzy
 #~| msgid "Opening vector image file failed."

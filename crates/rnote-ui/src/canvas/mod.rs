@@ -71,10 +71,6 @@ mod imp {
         pub(crate) engine: RefCell<Engine>,
         pub(crate) engine_task_handler_handle: RefCell<Option<glib::JoinHandle<()>>>,
 
-        // dnd status
-        pub(crate) dnd_status: Cell<bool>,
-        pub(crate) dnd_respect_borders: Cell<bool>,
-
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_watcher_task: RefCell<Option<glib::JoinHandle<()>>>,
         pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
@@ -167,9 +163,6 @@ mod imp {
 
                 engine: RefCell::new(engine),
                 engine_task_handler_handle: RefCell::new(None),
-
-                dnd_status: Cell::new(false),
-                dnd_respect_borders: Cell::new(false),
 
                 output_file: RefCell::new(None),
                 output_file_watcher_task: RefCell::new(None),
@@ -1132,35 +1125,18 @@ impl RnCanvas {
             .build();
 
         // Drop Target
-        // change the global state for dnd
-        self.imp().drop_target.connect_enter(
-            clone!(@weak self as canvas => @default-return gdk::DragAction::COPY, move |_,_,_| {
-                    canvas.imp().dnd_status.set(true);
-                    canvas.imp().dnd_respect_borders.set(false);
-                    gdk::DragAction::COPY
-            }),
-        );
-
-        self.imp().drop_target.connect_leave(
-            clone!(@weak self as canvas => @default-return (), move |_| {
-                    canvas.imp().dnd_status.set(false); // set the status to false
-            }),
-        );
         let appwindow_drop_target = self.imp().drop_target.connect_drop(
             clone!(@weak self as canvas, @weak appwindow => @default-return false, move |_, value, x, y| {
                 let pos = (canvas.engine_ref().camera.transform().inverse() *
                     na::point![x,y]).coords;
                 let mut accept_drop = false;
 
-                // should we respect borders ?
-                let respect_border = canvas.imp().dnd_respect_borders.get();
-
                 if value.is::<gio::File>() {
                     // In some scenarios, get() can fail with `UnexpectedNone` even though is() returned true, e.g. when dealing with trashed files.
                     match value.get::<gio::File>() {
                         Ok(file) => {
                             glib::spawn_future_local(clone!(@weak appwindow => async move {
-                                appwindow.open_file_w_dialogs(file, Some(pos), true,respect_border).await;
+                                appwindow.open_file_w_dialogs(file, Some(pos), true, false).await;
                             }));
                             accept_drop = true;
                         },

@@ -171,7 +171,7 @@ impl RnCanvas {
         &self,
         json_string: String,
         resize: ImageSizeOption,
-        target_pos: Option<na::Vector2<f64>>, // is this used ? To see if everything is okay ...
+        target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<StrokeContent>>();

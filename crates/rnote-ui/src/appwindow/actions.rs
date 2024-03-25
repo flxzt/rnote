@@ -735,14 +735,13 @@ impl RnAppWindow {
         }));
 
         // Clipboard paste
-        // the logic has been moved to paste_content to make it possible to add a special paste method
         action_clipboard_respect_borders.connect_activate(
             clone!(@weak self as appwindow => move |_, _| {
-                appwindow.clipboard_paste(None,true);
+                appwindow.clipboard_paste(None, true);
             }),
         );
         action_clipboard_paste.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            appwindow.clipboard_paste(None,false);
+            appwindow.clipboard_paste(None, false);
         }));
 
         action_clipboard_paste_contextmenu.connect_activate(
@@ -757,7 +756,7 @@ impl RnAppWindow {
                     .coords
                 });
 
-                appwindow.clipboard_paste(last_contextmenu_pos,false);
+                appwindow.clipboard_paste(last_contextmenu_pos, false);
             }),
         );
 
@@ -773,7 +772,7 @@ impl RnAppWindow {
                     .coords
                 });
 
-                appwindow.clipboard_paste(last_contextmenu_pos,true);
+                appwindow.clipboard_paste(last_contextmenu_pos, true);
             }),
         );
     }
@@ -813,7 +812,7 @@ impl RnAppWindow {
 
         // shortcuts for devel build
         if config::PROFILE.to_lowercase().as_str() == "devel" {
-            app.set_accels_for_action("win.visual-debug", &["<Ctrl><Alt>v"]); //clashes with the special paste method
+            app.set_accels_for_action("win.visual-debug", &["<Ctrl><Alt>v"]);
         }
     }
 
@@ -826,7 +825,7 @@ impl RnAppWindow {
         // Order matters here, we want to go from specific -> generic, mostly because `text/plain` is contained in other text based formats
         if content_formats.contain_mime_type("text/uri-list") {
             glib::spawn_future_local(clone!(@weak self as appwindow => async move {
-                tracing::trace!("Recognized clipboard content format: files list");
+                tracing::debug!("Recognized clipboard content format: files list");
 
                 match appwindow.clipboard().read_text_future().await {
                     Ok(Some(text)) => {
@@ -845,7 +844,7 @@ impl RnAppWindow {
                         }).collect::<Vec<PathBuf>>();
 
                         for file_path in file_paths {
-                            appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), target_pos, false,respect_borders).await;
+                            appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), target_pos, false, respect_borders).await;
                         }
                     }
                     Ok(None) => {}
@@ -857,7 +856,7 @@ impl RnAppWindow {
             }));
         } else if content_formats.contain_mime_type(StrokeContent::MIME_TYPE) {
             glib::spawn_future_local(clone!(@weak canvas, @weak self as appwindow => async move {
-                tracing::trace!("Recognized clipboard content format: {}", StrokeContent::MIME_TYPE);
+                tracing::debug!("Recognized clipboard content format: {}", StrokeContent::MIME_TYPE);
 
                 match appwindow.clipboard().read_future(&[StrokeContent::MIME_TYPE], glib::source::Priority::DEFAULT).await {
                     Ok((input_stream, _)) => {
@@ -881,17 +880,10 @@ impl RnAppWindow {
                         if !acc.is_empty() {
                             match crate::utils::str_from_u8_nul_utf8(&acc) {
                                 Ok(json_string) => {
-                                        // get all info if resizing has to be done
                                         let width_page = canvas.engine_ref().document.format.width();
                                         let height_page = canvas.engine_ref().document.format.height();
                                         let is_fixed = canvas.engine_ref().document.layout.is_fixed_layout();
-                                        // let point_max: na::OPoint<f64, na::Const<2>> = canvas.engine_ref().camera.viewport().maxs;
 
-                                        // we choose here to
-                                        // - do not resize to the viewport in all cases (only reserved for paste of images)
-                                        // - resize to make the content fit on the page for fixed layouts
-                                        // - if the special method is activated, we will resize to make the
-                                        //  content not go over any page borders
                                         let resize_argument = ImageSizeOption::ResizeImage(Resize {
                                             width: width_page,
                                             height: height_page,
@@ -918,7 +910,7 @@ impl RnAppWindow {
             }));
         } else if content_formats.contain_mime_type("image/svg+xml") {
             glib::spawn_future_local(clone!(@weak self as appwindow => async move {
-                tracing::trace!("Recognized clipboard content: svg image");
+                tracing::debug!("Recognized clipboard content: svg image");
 
                 match appwindow.clipboard().read_future(&["image/svg+xml"], glib::source::Priority::DEFAULT).await {
                     Ok((input_stream, _)) => {
@@ -942,7 +934,7 @@ impl RnAppWindow {
                         if !acc.is_empty() {
                             match crate::utils::str_from_u8_nul_utf8(&acc) {
                                 Ok(text) => {
-                                    if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), target_pos,respect_borders).await {
+                                    if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), target_pos, respect_borders).await {
                                         tracing::error!(
                                             "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
                                         );
@@ -976,11 +968,11 @@ impl RnAppWindow {
             {
                 glib::spawn_future_local(
                     clone!(@weak canvas, @weak self as appwindow => async move {
-                        tracing::trace!("Recognized clipboard content: bitmap image");
+                        tracing::debug!("Recognized clipboard content: bitmap image");
 
                         match appwindow.clipboard().read_texture_future().await {
                             Ok(Some(texture)) => {
-                                if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), target_pos,respect_borders).await {
+                                if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), target_pos, respect_borders).await {
                                     tracing::error!(
                                         "Loading bitmap image bytes failed while pasting clipboard as {mime_type}, Err: {e:?}"
                                     );
@@ -1000,7 +992,7 @@ impl RnAppWindow {
             || content_formats.contain_mime_type("text/plain;charset=utf-8")
         {
             glib::spawn_future_local(clone!(@weak canvas, @weak self as appwindow => async move {
-                tracing::trace!("Recognized clipboard content: plain text");
+                tracing::debug!("Recognized clipboard content: plain text");
 
                 match appwindow.clipboard().read_text_future().await {
                     Ok(Some(text)) => {

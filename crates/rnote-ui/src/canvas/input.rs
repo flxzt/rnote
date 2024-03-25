@@ -1,6 +1,5 @@
 // Imports
 use super::RnCanvas;
-use adw::glib::subclass::types::ObjectSubclassIsExt;
 use gtk4::{gdk, glib, graphene, prelude::*, Native};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenState, ShortcutKey};
 use rnote_compose::penpath::Element;
@@ -236,51 +235,33 @@ pub(crate) fn handle_key_controller_key_pressed(
     let modifier_keys = retrieve_modifier_keys(gdk_modifiers);
     let shortcut_key = retrieve_keyboard_shortcut_key(gdk_key, gdk_modifiers);
 
-    match (keyboard_key, canvas.imp().dnd_status.get()) {
-        (KeyboardKey::ShiftLeft, true) | (KeyboardKey::ShiftRight, true) => {
-            //we only capture here if there is a drag and drop in progress
-            canvas.imp().dnd_respect_borders.set(true);
-            glib::Propagation::Stop
-        }
-        _ => {
-            let (propagation, widget_flags) = if let Some(shortcut_key) = shortcut_key {
-                canvas
-                    .engine_mut()
-                    .handle_pressed_shortcut_key(shortcut_key, now)
-            } else {
-                canvas.engine_mut().handle_pen_event(
-                    PenEvent::KeyPressed {
-                        keyboard_key,
-                        modifier_keys,
-                    },
-                    None,
-                    now,
-                )
-            };
+    let (propagation, widget_flags) = if let Some(shortcut_key) = shortcut_key {
+        canvas
+            .engine_mut()
+            .handle_pressed_shortcut_key(shortcut_key, now)
+    } else {
+        canvas.engine_mut().handle_pen_event(
+            PenEvent::KeyPressed {
+                keyboard_key,
+                modifier_keys,
+            },
+            None,
+            now,
+        )
+    };
 
-            canvas.emit_handle_widget_flags(widget_flags);
-            propagation.into_glib()
-        }
-    }
+    canvas.emit_handle_widget_flags(widget_flags);
+    propagation.into_glib()
 }
 
 pub(crate) fn handle_key_controller_key_released(
-    canvas: &RnCanvas,
+    _canvas: &RnCanvas,
     gdk_key: gdk::Key,
     gdk_modifiers: gdk::ModifierType,
 ) {
     tracing::trace!(
         "canvas event key released - gdk_key: {gdk_key:?}, gdk_modifiers: {gdk_modifiers:?}"
     );
-    let keyboard_key = retrieve_keyboard_key(gdk_key);
-
-    match (keyboard_key, canvas.imp().dnd_status.get()) {
-        (KeyboardKey::ShiftLeft, true) | (KeyboardKey::ShiftRight, true) => {
-            // we only remove the modifier if the drag and drop is in progress
-            canvas.imp().dnd_respect_borders.set(false);
-        }
-        _ => {}
-    }
 }
 
 pub(crate) fn handle_imcontext_text_commit(canvas: &RnCanvas, text: &str) {
@@ -466,7 +447,6 @@ fn retrieve_pen_mode(event: &gdk::Event) -> Option<PenMode> {
     }
 }
 
-/// correspond to KeyboardCtrlSpace
 pub(crate) fn retrieve_keyboard_shortcut_key(
     gdk_key: gdk::Key,
     modifier: gdk::ModifierType,

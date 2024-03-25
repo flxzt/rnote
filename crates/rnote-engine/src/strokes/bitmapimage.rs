@@ -1,10 +1,9 @@
 // Imports
-use super::resize::ImageSizeOption;
+use super::resize::{calculate_resize_ratio, ImageSizeOption};
 use super::{Content, Stroke};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::render;
-use crate::strokes::resize::calculate_resize_ratio;
 use crate::Drawable;
 use anyhow::Context;
 use kurbo::Shape;
@@ -116,7 +115,6 @@ impl BitmapImage {
                 calculate_resize_ratio(resize_struct, initial_size, pos),
             ),
         };
-        tracing::debug!("the resize ratio is {resize_ratio}");
 
         let mut transform = Transform::default();
         transform.append_scale_mut(na::Vector2::new(resize_ratio, resize_ratio));

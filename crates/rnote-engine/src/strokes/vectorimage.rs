@@ -1,10 +1,9 @@
 // Imports
 use super::content::GeneratedContentImages;
-use super::resize::ImageSizeOption;
+use super::resize::{calculate_resize_ratio, ImageSizeOption};
 use super::{Content, Stroke};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
-use crate::strokes::resize::calculate_resize_ratio;
 use crate::{render, Drawable};
 use kurbo::Shape;
 use na;

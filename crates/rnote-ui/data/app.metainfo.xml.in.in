@@ -745,5 +745,8 @@ Breakages in the file format will be explicitly announced (but we'll work as har
       </description>
     </release>
   </releases>
-
+  <branding>
+    <color type="primary" scheme_preference="light">#ffbe6f</color>
+    <color type="primary" scheme_preference="dark">#613583</color>
+  </branding>
 </component>

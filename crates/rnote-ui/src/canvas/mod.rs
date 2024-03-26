@@ -1136,7 +1136,7 @@ impl RnCanvas {
                     match value.get::<gio::File>() {
                         Ok(file) => {
                             glib::spawn_future_local(clone!(@weak appwindow => async move {
-                                appwindow.open_file_w_dialogs(file, Some(pos), true).await;
+                                appwindow.open_file_w_dialogs(file, Some(pos), true, false).await;
                             }));
                             accept_drop = true;
                         },

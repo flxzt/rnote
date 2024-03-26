@@ -80,6 +80,13 @@ impl std::string::ToString for Layout {
     }
 }
 
+impl Layout {
+    /// checks if the layout is constrained in the horizontal direction
+    pub fn is_fixed_layout(&self) -> bool {
+        matches!(self, Layout::FixedSize | Layout::ContinuousVertical)
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "document")]
 pub struct Document {

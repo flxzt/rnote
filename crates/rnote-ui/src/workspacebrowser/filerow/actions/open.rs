@@ -11,7 +11,7 @@ pub(crate) fn open(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleA
             return
         };
         glib::spawn_future_local(clone!(@weak appwindow => async move {
-            appwindow.open_file_w_dialogs(current_file, None, true).await;
+            appwindow.open_file_w_dialogs(current_file, None, true, false).await;
         }));
     }));
     action

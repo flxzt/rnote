@@ -34,7 +34,7 @@ pub(crate) async fn filedialog_open_doc(appwindow: &RnAppWindow) {
     match filedialog.open_future(Some(appwindow)).await {
         Ok(selected_file) => {
             appwindow
-                .open_file_w_dialogs(selected_file, None, true)
+                .open_file_w_dialogs(selected_file, None, true, false)
                 .await;
         }
         Err(e) => {
@@ -76,7 +76,7 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
     match dialog.open_future(Some(appwindow)).await {
         Ok(selected_file) => {
             appwindow
-                .open_file_w_dialogs(selected_file, None, true)
+                .open_file_w_dialogs(selected_file, None, true, false)
                 .await;
         }
         Err(e) => {

@@ -5,6 +5,7 @@ use crate::pens::Pen;
 use crate::pens::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
 use crate::store::StrokeKey;
+use crate::strokes::{resize::calculate_resize_ratio, resize::ImageSizeOption, Resize};
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{CloneConfig, Engine, WidgetFlags};
 use futures::channel::oneshot;
@@ -230,14 +231,31 @@ impl Engine {
         &self,
         pos: na::Vector2<f64>,
         bytes: Vec<u8>,
+        respect_borders: bool,
     ) -> oneshot::Receiver<anyhow::Result<VectorImage>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<VectorImage>>();
+
+        let width_page = self.document.format.width();
+        let height_page = self.document.format.height();
+        let is_fixed = self.document.layout.is_fixed_layout();
+        let point_max: na::OPoint<f64, na::Const<2>> = self.camera.viewport().maxs;
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<VectorImage> {
                 let svg_str = String::from_utf8(bytes)?;
 
-                VectorImage::from_svg_str(&svg_str, pos, None)
+                VectorImage::from_svg_str(
+                    &svg_str,
+                    pos,
+                    ImageSizeOption::ResizeImage(Resize {
+                        width: width_page,
+                        height: height_page,
+                        isfixed_layout: is_fixed,
+                        max_viewpoint: Some(point_max),
+                        restrain_to_viewport: true,
+                        respect_borders,
+                    }),
+                )
             };
 
             if oneshot_sender.send(result()).is_err() {
@@ -257,12 +275,30 @@ impl Engine {
         &self,
         pos: na::Vector2<f64>,
         bytes: Vec<u8>,
+        respect_borders: bool,
     ) -> oneshot::Receiver<anyhow::Result<BitmapImage>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<BitmapImage>>();
 
+        // we get these parameters to enable proper resizing of the windows
+        let width_page = self.document.format.width();
+        let height_page = self.document.format.height();
+        let is_fixed = self.document.layout.is_fixed_layout();
+        let point_max: na::OPoint<f64, na::Const<2>> = self.camera.viewport().maxs;
+
         rayon::spawn(move || {
             let result = || -> anyhow::Result<BitmapImage> {
-                BitmapImage::from_image_bytes(&bytes, pos, None)
+                BitmapImage::from_image_bytes(
+                    &bytes,
+                    pos,
+                    ImageSizeOption::ResizeImage(Resize {
+                        width: width_page,
+                        height: height_page,
+                        isfixed_layout: is_fixed,
+                        max_viewpoint: Some(point_max),
+                        restrain_to_viewport: true,
+                        respect_borders,
+                    }),
+                )
             };
 
             if oneshot_sender.send(result()).is_err() {
@@ -424,6 +460,7 @@ impl Engine {
         &mut self,
         content: StrokeContent,
         pos: na::Vector2<f64>,
+        resize: ImageSizeOption,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
@@ -433,7 +470,15 @@ impl Engine {
         self.store.set_selected_keys(&all_strokes, false);
         widget_flags |= self.change_pen_style(PenStyle::Selector);
 
+        // calculate ratio
+        let ratio = match resize {
+            ImageSizeOption::ResizeImage(resize) => {
+                calculate_resize_ratio(resize, content.size().unwrap(), pos)
+            }
+            _ => 1.0f64,
+        };
         let inserted_keys = self.store.insert_stroke_content(content, pos);
+
         self.store.update_geometry_for_strokes(&inserted_keys);
         self.store.regenerate_rendering_in_viewport_threaded(
             self.tasks_tx.clone(),
@@ -441,6 +486,24 @@ impl Engine {
             self.camera.viewport(),
             self.camera.image_scale(),
         );
+
+        self.store
+            .scale_strokes_with_pivot(&inserted_keys, na::Vector2::new(ratio, ratio), pos);
+        self.store.scale_strokes_images_with_pivot(
+            &inserted_keys,
+            na::Vector2::new(ratio, ratio),
+            pos,
+        );
+
+        // re generate view
+        self.store.update_geometry_for_strokes(&inserted_keys);
+        self.store.regenerate_rendering_in_viewport_threaded(
+            self.tasks_tx.clone(),
+            false,
+            self.camera.viewport(),
+            self.camera.image_scale(),
+        );
+
         widget_flags |= self.penholder.current_pen_update_state(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &mut self.pens_config,

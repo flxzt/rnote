@@ -108,6 +108,10 @@
               <attribute name="label" translatable="yes">_Paste</attribute>
               <attribute name="action">win.clipboard-paste</attribute>
             </item>
+            <item>
+              <attribute name="label" translatable="yes">_Paste whilst respecting borders</attribute>
+              <attribute name="action">win.clipboard-paste-respect-borders</attribute>
+            </item>
           </submenu>
           <submenu>
             <attribute name="label" translatable="yes">_Export…</attribute>

@@ -235,11 +235,14 @@ impl Engine {
     ) -> oneshot::Receiver<anyhow::Result<VectorImage>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<VectorImage>>();
 
-        let width_page = self.document.format.width();
-        let height_page = self.document.format.height();
-        let is_fixed = self.document.layout.is_fixed_layout();
-        let point_max: na::OPoint<f64, na::Const<2>> = self.camera.viewport().maxs;
-
+        let resize_struct = Resize {
+            width: self.document.format.width(),
+            height: self.document.format.height(),
+            isfixed_layout: self.document.layout.is_fixed_layout(),
+            max_viewpoint: Some(self.camera.viewport().maxs),
+            restrain_to_viewport: true,
+            respect_borders,
+        };
         rayon::spawn(move || {
             let result = || -> anyhow::Result<VectorImage> {
                 let svg_str = String::from_utf8(bytes)?;
@@ -247,14 +250,7 @@ impl Engine {
                 VectorImage::from_svg_str(
                     &svg_str,
                     pos,
-                    ImageSizeOption::ResizeImage(Resize {
-                        width: width_page,
-                        height: height_page,
-                        isfixed_layout: is_fixed,
-                        max_viewpoint: Some(point_max),
-                        restrain_to_viewport: true,
-                        respect_borders,
-                    }),
+                    ImageSizeOption::ResizeImage(resize_struct),
                 )
             };
 
@@ -279,25 +275,20 @@ impl Engine {
     ) -> oneshot::Receiver<anyhow::Result<BitmapImage>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<BitmapImage>>();
 
-        // we get these parameters to enable proper resizing of the windows
-        let width_page = self.document.format.width();
-        let height_page = self.document.format.height();
-        let is_fixed = self.document.layout.is_fixed_layout();
-        let point_max: na::OPoint<f64, na::Const<2>> = self.camera.viewport().maxs;
-
+        let resize_struct = Resize {
+            width: self.document.format.width(),
+            height: self.document.format.height(),
+            isfixed_layout: self.document.layout.is_fixed_layout(),
+            max_viewpoint: Some(self.camera.viewport().maxs),
+            restrain_to_viewport: true,
+            respect_borders,
+        };
         rayon::spawn(move || {
             let result = || -> anyhow::Result<BitmapImage> {
                 BitmapImage::from_image_bytes(
                     &bytes,
                     pos,
-                    ImageSizeOption::ResizeImage(Resize {
-                        width: width_page,
-                        height: height_page,
-                        isfixed_layout: is_fixed,
-                        max_viewpoint: Some(point_max),
-                        restrain_to_viewport: true,
-                        respect_borders,
-                    }),
+                    ImageSizeOption::ResizeImage(resize_struct),
                 )
             };
 

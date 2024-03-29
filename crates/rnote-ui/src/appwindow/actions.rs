@@ -880,19 +880,15 @@ impl RnAppWindow {
                         if !acc.is_empty() {
                             match crate::utils::str_from_u8_nul_utf8(&acc) {
                                 Ok(json_string) => {
-                                        let width_page = canvas.engine_ref().document.format.width();
-                                        let height_page = canvas.engine_ref().document.format.height();
-                                        let is_fixed = canvas.engine_ref().document.layout.is_fixed_layout();
-
                                         let resize_argument = ImageSizeOption::ResizeImage(Resize {
-                                            width: width_page,
-                                            height: height_page,
-                                            isfixed_layout: is_fixed,
+                                            width: canvas.engine_ref().document.format.width(),
+                                            height: canvas.engine_ref().document.format.height(),
+                                            isfixed_layout: canvas.engine_ref().document.layout.is_fixed_layout(),
                                             max_viewpoint: None,
                                             restrain_to_viewport: false,
                                             respect_borders,
                                         });
-                                    if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), resize_argument,target_pos).await {
+                                    if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), resize_argument, target_pos).await {
                                         tracing::error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
                                     }
                                 }

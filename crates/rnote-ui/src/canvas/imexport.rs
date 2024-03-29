@@ -188,12 +188,6 @@ impl RnCanvas {
             }
         });
         let content = oneshot_receiver.await??;
-
-        tracing::debug!(
-            "inserting stroke content : bounds\t {:?}\t content size:\t {:?}",
-            content.bounds(),
-            content.size()
-        );
         let widget_flags = self
             .engine_mut()
             .insert_stroke_content(content, pos, resize);

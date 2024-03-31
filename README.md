@@ -53,6 +53,16 @@ Rnote has a project website: [rnote.flxzt.net](https://rnote.flxzt.net/)
 
 ### Linux
 
+#### Arch Linux
+
+Install rnote from Arch Linux official repository:
+
+```shell
+sudo pacman -S rnote
+```
+
+#### Flatpak
+
 Download the official flatpak on Flathub [here](https://flathub.org/apps/details/com.github.flxzt.rnote).
 
 <div align="start">

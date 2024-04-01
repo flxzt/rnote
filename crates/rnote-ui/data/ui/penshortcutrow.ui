@@ -11,6 +11,7 @@
               <item translatable="yes">Temporary</item>
               <item translatable="yes">Permanent</item>
               <item translatable="yes">Toggle</item>
+              <item translatable="yes">Disabled</item>
             </items>
           </object>
         </property>

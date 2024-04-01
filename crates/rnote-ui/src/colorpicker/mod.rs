@@ -240,9 +240,7 @@ mod imp {
     impl WidgetImpl for RnColorPicker {}
 
     impl RnColorPicker {
-        fn setup_setters(&self) {
-            let obj = self.obj();
-
+        pub fn reset_colors(&self) {
             self.setter_1.set_color(Self::default_color(0));
             self.setter_2.set_color(Self::default_color(1));
             self.setter_3.set_color(Self::default_color(2));
@@ -252,6 +250,12 @@ mod imp {
             self.setter_7.set_color(Self::default_color(6));
             self.setter_8.set_color(Self::default_color(7));
             self.setter_9.set_color(Self::default_color(8));
+        }
+
+        fn setup_setters(&self) {
+            let obj = self.obj();
+
+            self.reset_colors();
 
             self.setter_1
                 .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
@@ -580,5 +584,9 @@ impl RnColorPicker {
         imp.setter_7.set_active(false);
         imp.setter_8.set_active(false);
         imp.setter_9.set_active(false);
+    }
+
+    pub(crate) fn reset_colors(&self) {
+        self.imp().reset_colors();
     }
 }

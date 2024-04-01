@@ -387,6 +387,18 @@ gets disabled.</property>
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="AdwActionRow" id="reset_all_colors_row">
+                        <property name="title" translatable="yes">Reset Colors</property>
+                        <property name="subtitle" translatable="yes">Reset stroke/fill color choices</property>
+                        <child type="suffix">
+                          <object class="GtkButton" id="reset_all_colors_button">
+                            <property name="valign">center</property>
+                            <property name="label" translatable="yes">Reset Colors</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <!-- Button Shortcuts Group -->

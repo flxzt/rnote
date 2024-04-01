@@ -6,6 +6,7 @@ mod penshortcutrow;
 pub(crate) use penshortcutrow::RnPenShortcutRow;
 use rnote_compose::ext::Vector2Ext;
 
+use crate::colorpicker::STROKE_COLOR_DEFAULT;
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
 use adw::prelude::*;
@@ -93,6 +94,8 @@ mod imp {
         pub(crate) doc_background_pattern_height_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
         pub(crate) background_pattern_invert_color_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) reset_all_colors_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) penshortcut_stylus_button_primary_row: TemplateChild<RnPenShortcutRow>,
         #[template_child]
@@ -735,6 +738,20 @@ impl RnSettingsPanel {
                     widget_flags.store_modified = true;
                     appwindow.handle_widget_flags(widget_flags, &canvas);
                 }),
+            );
+
+        imp.reset_all_colors_button.get().connect_clicked(
+            clone!(@weak self as settings_panel, @weak appwindow => move |_| {
+                // reset the colors of the overlays
+                appwindow.overlays().colorpicker().deselect_setters();
+                appwindow.overlays().colorpicker().reset_colors();
+
+                // reset the stroke and fill color
+                appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(*STROKE_COLOR_DEFAULT));
+                appwindow.overlays().colorpicker().set_fill_color(gdk::RGBA::new(0.0, 0.0, 0.0, 0.0));
+
+                // reset things like format border color, background color and pattern color to default values as well ?
+            })
             );
     }
 

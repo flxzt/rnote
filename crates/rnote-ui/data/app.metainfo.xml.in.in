@@ -87,6 +87,20 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.10.2" date="2024-04-06">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>improv: put handles outside of selection borders, enable resizing to smaller sizes (thanks to @Doublonmousse)</li>
+          <li>improv: error notification when file operations fail in workspace browser</li>
+          <li>metainfo: add brand colors (thanks to @bertob)</li>
+          <li>fix: origin indicator cross size on hi-dpi screens</li>
+          <li>fix: rendering got out of sync when resizing long-to-render content</li>
+          <li>fix: selection stroke widths got larger when resizing non-uniformly</li>
+          <li>fix: regression which caused excessive rerendering of selection during resizing</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.10.1" date="2024-03-08">
       <description>
         <p>this release changes:</p>

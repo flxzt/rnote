@@ -25,7 +25,7 @@ anyhow = "1.0"
 approx = "0.5.1"
 async-fs = "2.1"
 atty = "0.2.14"
-base64 = "0.21.7"
+base64 = "0.22.0"
 cairo-rs = { version = "0.19.2", features = ["v1_18", "png", "svg", "pdf"] }
 chrono = "0.4.34"
 clap = { version = "4.4", features = ["derive"] }
@@ -81,7 +81,7 @@ tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 unicode-segmentation = "1.11"
 url = "2.5"
-usvg = "0.40.0"
+usvg = "0.41.0"
 winresource = "0.1.17"
 xmlwriter = "0.1.0"
 # Enabling feature > v20_9 causes linker errors on mingw

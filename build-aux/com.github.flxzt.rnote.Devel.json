@@ -4,11 +4,11 @@
     "development"
   ],
   "runtime": "org.gnome.Platform",
-  "runtime-version": "45",
+  "runtime-version": "46",
   "sdk": "org.gnome.Sdk",
   "sdk-extensions": [
     "org.freedesktop.Sdk.Extension.rust-stable",
-    "org.freedesktop.Sdk.Extension.llvm16"
+    "org.freedesktop.Sdk.Extension.llvm17"
   ],
   "command": "rnote",
   "finish-args": [
@@ -29,7 +29,7 @@
     "--env=GST_DEBUG=3"
   ],
   "build-options": {
-    "append-path": "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm16/bin",
+    "append-path": "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm17/bin",
     "env": {
       "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": "clang",
       "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS": "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold",
@@ -43,7 +43,7 @@
       "--socket=x11",
       "--share=network"
     ],
-    "prepend-ld-library-path": "/usr/lib/sdk/llvm16/lib"
+    "prepend-ld-library-path": "/usr/lib/sdk/llvm17/lib"
   },
   "modules": [
     {
@@ -63,8 +63,8 @@
       "sources": [
         {
           "type": "archive",
-          "url": "https://poppler.freedesktop.org/poppler-24.02.0.tar.xz",
-          "sha256": "19187a3fdd05f33e7d604c4799c183de5ca0118640c88b370ddcf3136343222e"
+          "url": "https://poppler.freedesktop.org/poppler-24.04.0.tar.xz",
+          "sha256": "1e804ec565acf7126eb2e9bb3b56422ab2039f7e05863a5dfabdd1ffd1bb77a7"
         }
       ]
     },

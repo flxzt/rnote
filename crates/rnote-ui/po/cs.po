@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-22 15:14+0100\n"
-"PO-Revision-Date: 2023-12-29 12:43+0000\n"
+"PO-Revision-Date: 2024-04-09 00:23+0000\n"
 "Last-Translator: vikdevelop <super-vik1@protonmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -103,7 +103,7 @@ msgstr "Zrušit"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
-msgstr "Vymazat"
+msgstr "Vyčistit"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
@@ -116,8 +116,8 @@ msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
 msgstr ""
-"Vytvoření nového dokument dojde k zahození neuložených změn.\n"
-"Chcete uložit aktuální dokument?"
+"Vytvořením nového dokumentu dojde k zahození neuložených změn.\n"
+"Přejete si uložit aktuální dokument?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:41
@@ -327,7 +327,7 @@ msgstr "Xopp"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:143
 #: crates/rnote-ui/data/ui/dialogs/export.ui:350
 msgid "Page Order"
-msgstr "Objednávky"
+msgstr "Pořadí stránek"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:144
 #: crates/rnote-ui/data/ui/dialogs/export.ui:351
@@ -336,19 +336,19 @@ msgid ""
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
-"Pořadí stránky když jsou dokumenty s rozvrženími\n"
-"které se roztahují v horizontálních a vertikálních směrech\n"
+"Pořadí stránky, když jsou dokumenty s rozvrženími\n"
+"které se roztahují v horizontálních a vertikálních směrech,\n"
 "jsou rozděleny do stránek"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:150
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
 msgid "Horizontal First"
-msgstr "Nejdříve horizontálně"
+msgstr "Nejprve horizontálně"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:151
 #: crates/rnote-ui/data/ui/dialogs/export.ui:358
 msgid "Vertical First"
-msgstr "Nejdříve vertikálně"
+msgstr "Nejprve vertikálně"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:172
 #: crates/rnote-ui/src/dialogs/export.rs:565
@@ -368,8 +368,6 @@ msgid "Select the export directory"
 msgstr "Vybrat adresář pro export"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
-#, fuzzy
-#| msgid "Export Files Stem Name"
 msgctxt ""
 "When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
@@ -459,16 +457,12 @@ msgid "End Page"
 msgstr "Končící stránka"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
-#, fuzzy
-#| msgid "Adjust document settings"
 msgid "Adjust Document"
-msgstr "Úprava nastavení dokumentu"
+msgstr "Úprava dokumentu"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "Nastavit zda se má vzor pozadí exportovat"
+msgstr "Zda se má rozvržení dokumentu přizpůsobit formátu Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:107
 msgid "Page Width (%)"
@@ -551,11 +545,11 @@ msgstr "Styly štětce"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:95
 msgid "Marker"
-msgstr "Popisovač"
+msgstr "Zvýrazňovač"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:96
 msgid "Mark underneath other strokes"
-msgstr "Označení pod ostatními tahy"
+msgstr "Značka pod dalšími tahy"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:107
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:201
@@ -564,7 +558,7 @@ msgstr "Solidní"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:108
 msgid "Draw solid color strokes"
-msgstr "Nakreslete jednobarevné tahy"
+msgstr "Kreslit tahy plnou barvou"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:119
 msgid "Textured"
@@ -572,7 +566,7 @@ msgstr "Texturovaný"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:120
 msgid "Draw textured strokes"
-msgstr "Kreslení tahů s texturou"
+msgstr "Kreslit tahy s texturou"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:170
 msgid "Path Modelling"
@@ -616,7 +610,7 @@ msgstr "Tlaková křivka"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:215
 msgid "Choose a pressure curve"
-msgstr "Výběr tlakové křivky"
+msgstr "Vybrat tlakovou křivku"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:219
 msgid "Constant"
@@ -655,8 +649,6 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "Hustota je počet bodů na plochu 10x10"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
-#, fuzzy
-#| msgid "Stroke Dots Position Distribution"
 msgctxt ""
 "Drawing with a textured pen, how the dots of the texture are distributed"
 msgid "Stroke Dots Position Distribution"
@@ -667,8 +659,6 @@ msgid "Choose a dots position probability distribution"
 msgstr "Zvolte rozdělení pravděpodobnosti polohy bodů"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
-#, fuzzy
-#| msgid "Uniform"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
 msgstr "Uniforma"

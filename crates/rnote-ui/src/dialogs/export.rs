@@ -26,10 +26,15 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
     filter.add_suffix("rnote");
     filter.set_name(Some(&gettext(".rnote")));
 
+    // create the list of filters
+    let filter_list = gio::ListStore::new::<FileFilter>();
+    filter_list.append(&filter);
+
     let filedialog = FileDialog::builder()
         .title(gettext("Save Document As"))
         .modal(true)
         .accept_label(gettext("Save"))
+        .filters(&filter_list)
         .default_filter(&filter)
         .build();
 

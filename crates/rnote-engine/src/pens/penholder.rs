@@ -299,6 +299,7 @@ impl PenHolder {
                             widget_flags |= self.change_style_int(style, engine_view);
                         }
                     }
+                    ShortcutMode::Disabled => {}
                 },
             }
 

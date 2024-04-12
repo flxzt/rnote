@@ -25,6 +25,8 @@ pub enum ShortcutMode {
     Permanent,
     #[serde(rename = "toggle")]
     Toggle,
+    #[serde(rename = "disabled")]
+    Disabled,
 }
 
 impl TryFrom<u32> for ShortcutMode {

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-22 15:14+0100\n"
-"PO-Revision-Date: 2024-04-09 00:23+0000\n"
+"PO-Revision-Date: 2024-04-12 20:06+0000\n"
 "Last-Translator: vikdevelop <super-vik1@protonmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
@@ -664,22 +664,16 @@ msgid "Uniform"
 msgstr "Uniforma"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
-#, fuzzy
-#| msgid "Normal"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
 msgstr "Normální"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
-#, fuzzy
-#| msgid "Exponential"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
 msgstr "Exponenciální"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
-#, fuzzy
-#| msgid "Reverse Exponential"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
 msgstr "Reverzní exponenciála"
@@ -975,10 +969,8 @@ msgid "De_veloper Mode"
 msgstr "Vývojářský režim"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
-#, fuzzy
-#| msgid "New Window"
 msgid "New _Window"
-msgstr "Nové okno"
+msgstr "_Nové okno"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
@@ -1386,34 +1378,24 @@ msgid "Document"
 msgstr "Dokument"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:250
-#, fuzzy
-#| msgid "_Document Layout"
 msgid "Document Layout"
-msgstr "_Rozvržení dokumenty"
+msgstr "Rozvržení dokumentu"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:254
-#, fuzzy
-#| msgid "_Fixed Size"
 msgid "Fixed Size"
-msgstr "_Pevná velikost"
+msgstr "Pevná velikost"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:255
-#, fuzzy
-#| msgid "_Continuous Vertical"
 msgid "Continuous Vertical"
-msgstr "_Průběžně vertikální"
+msgstr "Průběžně vertikální"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:256
-#, fuzzy
-#| msgid "_Semi Infinite"
 msgid "Semi Infinite"
-msgstr "_Částečně nekonečný"
+msgstr "Částečně nekonečný"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:257
-#, fuzzy
-#| msgid "_Infinite"
 msgid "Infinite"
-msgstr "_Nekonečný"
+msgstr "Nekonečný"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:265
 msgid "Format Border Color"
@@ -1565,148 +1547,154 @@ msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
+"Nastavit akci pro tlačítko\n"
+"na kreslící podložce"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:476
 msgid "Drawing Pad Button 2 Action"
-msgstr ""
+msgstr "Akce pro tlačítko 2 kreslící podložky"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:477
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
+"Nastavit akci pro tlačítko 2\n"
+"na kreslící podložce"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:489
 msgid "Drawing Pad Button 3 Action"
-msgstr ""
+msgstr "Akce pro tlačítko 3 kreslící podložky"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:490
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
+"Nastavit akci pro tlačítko 3\n"
+"na kreslící podložce"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:502
 msgid "Drawing Pad Button 4 Action"
-msgstr ""
+msgstr "Akce pro tlačítko 4 kreslící podložky"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:503
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
 msgstr ""
+"Nastavit akci pro tlačítko 4\n"
+"na kreslící podložce"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"
-msgstr ""
+msgstr "Zobrazit klávesové zkratky"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:32
 msgid "Close the Active Tab"
-msgstr ""
+msgstr "Zavřít aktivní kartu"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:38
 msgid "Quit the Application"
-msgstr ""
+msgstr "Ukončit aplikaci"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:44
 msgid "Open the Canvas-Menu"
-msgstr ""
+msgstr "Otevřít nabídku plátna"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:50
 msgid "Open the App-Menu"
-msgstr ""
+msgstr "Otevřít nabídku aplikace"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:64
 msgid "Navigation"
-msgstr ""
+msgstr "Navigace"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:67
 msgid "Switch to the 'Brush'"
-msgstr ""
+msgstr "Přepnout na štětec"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:73
 msgid "Switch to the 'Shaper'"
-msgstr ""
+msgstr "Přepnout na tvarovač"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:79
 msgid "Switch to the 'Typewriter'"
-msgstr ""
+msgstr "Přepnout na psací stroj"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:85
 msgid "Switch to the 'Eraser'"
-msgstr ""
+msgstr "Přepnout na gumu"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:91
 msgid "Switch to the 'Selector'"
-msgstr ""
+msgstr "Přepnout na selektor"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:97
 msgid "Switch to the 'Tools'"
-msgstr ""
+msgstr "Přepnout na nástroje"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:105
 msgid "View"
-msgstr ""
+msgstr "Zobrazit"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:109
 msgid "Alt + Drag"
-msgstr ""
+msgstr "Alt + výběr"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:150
 msgid "Zoom in/out"
-msgstr ""
+msgstr "Přiblížit/Oddálit"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:151
 msgid "Alt + Shift + Drag"
-msgstr ""
+msgstr "Alt + Shift + výběr"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:161
 msgid "Open Document"
-msgstr ""
+msgstr "Otevřít dokument"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:173
 #: crates/rnote-ui/src/dialogs/export.rs:30
 msgid "Save Document As"
-msgstr ""
+msgstr "Uložit dokument jako"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
-#, fuzzy
-#| msgid "Shape Configuration"
 msgid "Snap Positions"
-msgstr "Konfigurace tvarování"
+msgstr "Zaklapávací pozice"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Add Page (When in Fixed-Size Layout)"
-msgstr ""
+msgstr "Přidat stránku (je-li aktivní rozvržení s pevnou velikostí)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:197
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr ""
+msgstr "Odstranit poslední stránku (je-li aktivní rozvržení s pevnou velikostí)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:203
 msgid "Print Document"
-msgstr ""
+msgstr "Vytisknout dokument"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:209
 #: crates/rnote-ui/src/dialogs/import.rs:66
 msgid "Import File"
-msgstr ""
+msgstr "Importovat soubor"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:215
 msgid "Drawing"
-msgstr ""
+msgstr "Kreslení"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:218
 msgid "Copy to Clipboard"
-msgstr ""
+msgstr "Kopírovat do schránky"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:224
 msgid "Cut to Clipboard"
-msgstr ""
+msgstr "Vyjmout do schránky"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:230
 msgid "Paste Clipboard"
-msgstr ""
+msgstr "Vložit ze schránky"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:242
 msgid "Undo"
@@ -1725,22 +1713,20 @@ msgid "Settings"
 msgstr "Nastavení"
 
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:79
-#, fuzzy
-#| msgid "End Page"
 msgid "Page"
-msgstr "Končící stránka"
+msgstr "Stránka"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
-msgstr ""
+msgstr "Přesunout adresář nahoru"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:81
 msgid "Workspace Directory Actions"
-msgstr ""
+msgstr "Akce adresáře pracovního prostoru"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:163
 msgid "Create new Folder"
-msgstr ""
+msgstr "Vytvořit novou složku"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:569
 #: crates/rnote-ui/src/appwindow/imp.rs:258
@@ -1749,174 +1735,176 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/mod.rs:258
 #: crates/rnote-ui/src/dialogs/mod.rs:412
 msgid "Saving document failed"
-msgstr ""
+msgstr "Uložení dokumentu selhalo"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:632
 msgid "Printing document failed"
-msgstr ""
+msgstr "Tisk dokumentu selhal"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:668
 msgid "Exporting selection failed, nothing selected"
-msgstr ""
+msgstr "Export vybraného selhal, nic nebylo vybráno"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:281
 msgid "Button 1"
-msgstr ""
+msgstr "Tlačítko 1"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:288
 msgid "Button 2"
-msgstr ""
+msgstr "Tlačítko 2"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:295
 msgid "Button 3"
-msgstr ""
+msgstr "Tlačítko 3"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:302
 msgid "Button 4"
-msgstr ""
+msgstr "Tlačítko 4"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:126
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
 msgstr ""
+"Schéma s nastavením není nainstalováno. Nastavení aplikace by se měla "
+"načíst, ale nebudou uloženy."
 
 #: crates/rnote-ui/src/appwindow/mod.rs:488
 msgid "Opening file failed"
-msgstr ""
+msgstr "Otevření souboru selhalo"
 
 #: crates/rnote-ui/src/canvas/mod.rs:846 crates/rnote-ui/src/dialogs/mod.rs:205
 #: crates/rnote-ui/src/dialogs/mod.rs:342
 msgid "- invalid file name -"
-msgstr ""
+msgstr "- nesprávný název souboru -"
 
 #: crates/rnote-ui/src/canvas/mod.rs:859
 msgid "- invalid folder path -"
-msgstr ""
+msgstr "- nesprávná cesta ke složce -"
 
 #: crates/rnote-ui/src/canvas/mod.rs:883
 msgid "Opened file was modified on disk"
-msgstr ""
+msgstr "Otevřený soubor byl upraven na disk"
 
 #: crates/rnote-ui/src/canvas/mod.rs:884
 msgid "Reload"
-msgstr ""
+msgstr "Načíst znovu"
 
 #: crates/rnote-ui/src/canvas/mod.rs:891
 msgid "Reloading .rnote file from disk failed"
-msgstr ""
+msgstr "Načtení souboru .rnote z disku selhalo"
 
 #: crates/rnote-ui/src/canvas/mod.rs:957
 msgid "Opened file was renamed or moved."
-msgstr ""
+msgstr "Otevřeny soubor byl odstraněn nebo přesunut."
 
 #: crates/rnote-ui/src/canvas/mod.rs:971
 msgid "Opened file was removed."
-msgstr ""
+msgstr "Otevřeny soubor byl odstraněn."
 
 #: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
-msgstr ""
+msgstr "Vložení souboru selhalo"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1155
 msgid "Inserting text failed"
-msgstr ""
+msgstr "Vložení textu selhalo"
 
 #: crates/rnote-ui/src/dialogs/export.rs:27
 #: crates/rnote-ui/src/dialogs/import.rs:21
 msgid ".rnote"
-msgstr ""
+msgstr ".rnote"
 
 #: crates/rnote-ui/src/dialogs/export.rs:55
 msgid "Saved document successfully"
-msgstr ""
+msgstr "Uložení dokumentu bylo úspěšné"
 
 #: crates/rnote-ui/src/dialogs/export.rs:226
 #: crates/rnote-ui/src/dialogs/export.rs:239
 #: crates/rnote-ui/src/dialogs/export.rs:536
 #: crates/rnote-ui/src/dialogs/export.rs:804
 msgid "Exporting document failed"
-msgstr ""
+msgstr "Exportování dokumentu selhalo"
 
 #: crates/rnote-ui/src/dialogs/export.rs:230
 msgid "Exported document successfully"
-msgstr ""
+msgstr "Exportování dokumentu proběhlo úspěšně"
 
 #: crates/rnote-ui/src/dialogs/export.rs:231
 #: crates/rnote-ui/src/dialogs/export.rs:532
 #: crates/rnote-ui/src/dialogs/export.rs:796
 msgid "View in file manager"
-msgstr ""
+msgstr "Zobrazit ve správci souborů"
 
 #: crates/rnote-ui/src/dialogs/export.rs:245
 #: crates/rnote-ui/src/dialogs/export.rs:542
 #: crates/rnote-ui/src/dialogs/export.rs:810
 msgid "Failed to open the file in the file manager"
-msgstr ""
+msgstr "Otevření souboru ve správci souborů se nezdařilo"
 
 #: crates/rnote-ui/src/dialogs/export.rs:255
 msgid "Exporting document failed, no file selected"
-msgstr ""
+msgstr "Export dokumentu selhal, žádný soubor nebyl vybrán"
 
 #: crates/rnote-ui/src/dialogs/export.rs:270
 #: crates/rnote-ui/src/dialogs/export.rs:567
 #: crates/rnote-ui/src/dialogs/export.rs:856
 #: crates/rnote-ui/src/dialogs/mod.rs:510
 msgid "Select"
-msgstr ""
+msgstr "Vybrat"
 
 #: crates/rnote-ui/src/dialogs/export.rs:527
 msgid "Exporting document pages failed"
-msgstr ""
+msgstr "Export stránek dokumentu selhal"
 
 #: crates/rnote-ui/src/dialogs/export.rs:531
 msgid "Exported document pages successfully"
-msgstr ""
+msgstr "Export stránek dokumentu byl úspěšný"
 
 #: crates/rnote-ui/src/dialogs/export.rs:551
 msgid "Exporting document pages failed, no directory selected"
-msgstr ""
+msgstr "Export stránek dokumentu selhal, žádný adresář nebyl vybrán"
 
 #: crates/rnote-ui/src/dialogs/export.rs:781
 msgid "Exporting selection failed, no file selected"
-msgstr ""
+msgstr "Export vybraného selhal, žádný soubor nebyl vybrán"
 
 #: crates/rnote-ui/src/dialogs/export.rs:791
 msgid "Exporting selection failed"
-msgstr ""
+msgstr "Export vybraného selhal"
 
 #: crates/rnote-ui/src/dialogs/export.rs:795
 msgid "Exported selection successfully"
-msgstr ""
+msgstr "Export vybraného byl úspěšný"
 
 #: crates/rnote-ui/src/dialogs/export.rs:897
 #: crates/rnote-ui/src/dialogs/export.rs:945
 msgid "Json"
-msgstr ""
+msgstr "Json"
 
 #: crates/rnote-ui/src/dialogs/export.rs:905
 msgid "Export Engine State"
-msgstr ""
+msgstr "Stav exportního motoru"
 
 #: crates/rnote-ui/src/dialogs/export.rs:923
 msgid "Exporting engine state failed"
-msgstr ""
+msgstr "Export stavu exportního motoru selhal"
 
 #: crates/rnote-ui/src/dialogs/export.rs:927
 msgid "Exported engine state successfully"
-msgstr ""
+msgstr "Export stavu exportního motoru byl úspěšný"
 
 #: crates/rnote-ui/src/dialogs/export.rs:953
 msgid "Export Engine Config"
-msgstr ""
+msgstr "Export konfigurace motoru"
 
 #: crates/rnote-ui/src/dialogs/export.rs:971
 msgid "Exporting engine config failed"
-msgstr ""
+msgstr "Export konfigurace motoru selhal"
 
 #: crates/rnote-ui/src/dialogs/export.rs:975
 msgid "Exported engine config successfully"
-msgstr ""
+msgstr "Export konfigurace motoru byl úspěšný"
 
 #: crates/rnote-ui/src/dialogs/import.rs:24
 msgid "Open File"
@@ -1924,48 +1912,48 @@ msgstr "Otevřít soubor"
 
 #: crates/rnote-ui/src/dialogs/import.rs:63
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr ""
+msgstr "JPG, PDF, PNG, SVG, Xopp, TXT"
 
 #: crates/rnote-ui/src/dialogs/import.rs:212
 msgid "- no file name -"
-msgstr ""
+msgstr "- žádný název souboru -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:217
 msgid "- no title -"
-msgstr ""
+msgstr "- žádný nadpis -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:220
 msgid "- no author -"
-msgstr ""
+msgstr "- žádný autor -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:224
 msgid "- no date -"
-msgstr ""
+msgstr "- žádné datum -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:231
 msgid "File name:"
-msgstr ""
+msgstr "Název souboru:"
 
 #: crates/rnote-ui/src/dialogs/import.rs:235
 msgid "Title:"
-msgstr ""
+msgstr "Nadpis:"
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
 msgid "Author:"
-msgstr ""
+msgstr "Autor:"
 
 #: crates/rnote-ui/src/dialogs/import.rs:243
 msgid "Modification date:"
-msgstr ""
+msgstr "Datum změny:"
 
 #: crates/rnote-ui/src/dialogs/import.rs:247
 msgid "Pages:"
-msgstr ""
+msgstr "Stránky:"
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: crates/rnote-ui/src/dialogs/mod.rs:47
 msgid "translator-credits"
-msgstr ""
+msgstr "vikdevelop https://github.com/vikdevelop"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:212
 #: crates/rnote-ui/src/dialogs/mod.rs:349

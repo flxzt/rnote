@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-01 14:11+0100\n"
-"PO-Revision-Date: 2024-02-28 21:02+0000\n"
+"POT-Creation-Date: 2024-03-22 15:14+0100\n"
+"PO-Revision-Date: 2024-04-02 00:01+0000\n"
 "Last-Translator: Integral <integral@member.fsf.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
@@ -51,8 +51,6 @@ msgstr ""
 "免责声明：该文件格式尚未完全支持，它可能改变并损坏不同版本之间的兼容性。"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
-#, fuzzy
-#| msgid "An Overview"
 msgid "An overview"
 msgstr "概述"
 
@@ -61,14 +59,12 @@ msgid "A selection"
 msgstr "选项"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
-#| msgid "Switch to the 'Typewriter'"
 msgid "Write text with the typewriter"
-msgstr "切换到“文本”"
+msgstr "使用 “文本工具” 输入文本"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"
-msgstr ""
+msgstr "在专注模式中隐藏工具栏"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
@@ -79,10 +75,8 @@ msgid "Adjust document settings"
 msgstr "调整文档设置"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
-#, fuzzy
-#| msgid "Button Shortcuts"
 msgid "Configure action shortcuts"
-msgstr "按键快捷键"
+msgstr "配置动作快捷键"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
@@ -374,12 +368,10 @@ msgid "Select the export directory"
 msgstr "选择导出文件所在目录"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
-#, fuzzy
-#| msgid "Export Files Stem Name"
 msgctxt ""
 "When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
-msgstr "导出文件标题"
+msgstr "导出文件标题名"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:535
@@ -465,16 +457,12 @@ msgid "End Page"
 msgstr "最后一页"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
-#, fuzzy
-#| msgid "Adjust document settings"
 msgid "Adjust Document"
-msgstr "调整文档设置"
+msgstr "调整文档"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "设置导出时包含的背景图案"
+msgstr "文档布局是否应该调整为 Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:107
 msgid "Page Width (%)"
@@ -542,7 +530,7 @@ msgstr "为Xournal++文件设置推荐的DPI"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
-msgstr "刷子样式"
+msgstr "笔刷样式"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:149
@@ -551,7 +539,7 @@ msgstr "刷子设置"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:66
 msgid "Brush Styles"
-msgstr "刷子样式"
+msgstr "笔刷样式"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:95
 msgid "Marker"
@@ -572,11 +560,11 @@ msgstr "绘制纯色笔画"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:119
 msgid "Textured"
-msgstr "纹理"
+msgstr "材质笔"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:120
 msgid "Draw textured strokes"
-msgstr "绘制纹理笔画"
+msgstr "绘制材质笔画"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:170
 msgid "Path Modelling"
@@ -648,7 +636,7 @@ msgstr "三次抛物线"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:235
 msgid "Textured Style"
-msgstr "纹理样式"
+msgstr "材质笔样式"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:238
 msgid "Density"
@@ -659,41 +647,31 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "密度指的是10x10区域内点的数量"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
-#, fuzzy
-#| msgid "Stroke Dots Position Distribution"
 msgctxt ""
 "Drawing with a textured pen, how the dots of the texture are distributed"
 msgid "Stroke Dots Position Distribution"
-msgstr "笔画点位分布"
+msgstr "笔画点的位置分布"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:249
 msgid "Choose a dots position probability distribution"
 msgstr "选择点的分布概率"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
-#, fuzzy
-#| msgid "Uniform"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
 msgstr "集中"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
-#, fuzzy
-#| msgid "Normal"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
-msgstr "一般"
+msgstr "正常"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
-#, fuzzy
-#| msgid "Exponential"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
 msgstr "指数"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
-#, fuzzy
-#| msgid "Reverse Exponential"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
 msgstr "对数"
@@ -989,10 +967,8 @@ msgid "De_veloper Mode"
 msgstr "开发者模式 [_v]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
-#, fuzzy
-#| msgid "New Window"
 msgid "New _Window"
-msgstr "新建窗口"
+msgstr "新建窗口 [_W]"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
@@ -1178,7 +1154,7 @@ msgid "Open in Default App"
 msgstr "在默认应用内打开"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:65
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:91
 msgid "Rename"
 msgstr "重命名"
 
@@ -1400,34 +1376,24 @@ msgid "Document"
 msgstr "文档"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:250
-#, fuzzy
-#| msgid "_Document Layout"
 msgid "Document Layout"
-msgstr "文档布局 [_D]"
+msgstr "文档布局"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:254
-#, fuzzy
-#| msgid "_Fixed Size"
 msgid "Fixed Size"
-msgstr "固定尺寸 [_F]"
+msgstr "固定尺寸"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:255
-#, fuzzy
-#| msgid "_Continuous Vertical"
 msgid "Continuous Vertical"
-msgstr "垂直连续的页面 [_C]"
+msgstr "垂直连续的页面"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:256
-#, fuzzy
-#| msgid "_Semi Infinite"
 msgid "Semi Infinite"
-msgstr "半无限 [_S]"
+msgstr "半无限"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:257
-#, fuzzy
-#| msgid "_Infinite"
 msgid "Infinite"
-msgstr "无限 [_I]"
+msgstr "无限"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:265
 msgid "Format Border Color"
@@ -1447,7 +1413,7 @@ msgstr "纹理"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:308
 msgid "Choose a background pattern"
-msgstr "设置背景纹理"
+msgstr "选择背景使用的纹理"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:312
 msgid "None"
@@ -1476,7 +1442,7 @@ msgstr "纹理颜色"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:326
 msgid "Set the background pattern color"
-msgstr "设置背景纹理颜色"
+msgstr "选择背景使用的纹理的颜色"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:346
 msgid "Pattern Width"
@@ -1484,7 +1450,7 @@ msgstr "纹理宽度"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:347
 msgid "Set the background pattern width"
-msgstr "设置背景纹理宽度"
+msgstr "选择背景使用的纹理的宽度"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:363
 msgid "Pattern Height"
@@ -1492,7 +1458,7 @@ msgstr "纹理高度"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:364
 msgid "Set the background pattern height"
-msgstr "设置背景纹理高度"
+msgstr "选择背景使用的纹理的高度"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:380
 msgid "Invert Color Brightness"
@@ -1500,7 +1466,7 @@ msgstr "反转色彩亮度"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:381
 msgid "Invert the brightness of all background pattern colors"
-msgstr "反转所有背景纹理颜色的亮度"
+msgstr "反转背景纹理的颜色明暗"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:385
 msgid "Invert"
@@ -1825,16 +1791,12 @@ msgid "Reloading .rnote file from disk failed"
 msgstr "从磁盘重新加载 .rnote 文件失败"
 
 #: crates/rnote-ui/src/canvas/mod.rs:957
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was renamed or moved."
-msgstr "打开的文件已在磁盘上被重命名"
+msgstr "打开的文件已被删除或者重命名。"
 
 #: crates/rnote-ui/src/canvas/mod.rs:971
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was removed."
-msgstr "打开的文件已在磁盘上被重命名"
+msgstr "打开的文件已被删除。"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
@@ -2274,10 +2236,8 @@ msgid "Polyline"
 msgstr "多段线"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:438
-#, fuzzy
-#| msgid "Polyline"
 msgid "Polygon"
-msgstr "多段线"
+msgstr "多边形"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:551
 msgid "Application restart is required"
@@ -2373,11 +2333,41 @@ msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "横（大）"
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:49
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:35
+msgid "Can't duplicate an unsaved document"
+msgstr "无法复制未保存的文档"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
+msgid "Duplicating the file failed"
+msgstr ".rnote 文件复制失败"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
+msgid "Duplicating the directory failed"
+msgstr "复制目录失败"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:18
+#, fuzzy
+#| msgid "Failed to open the file in the file manager"
+msgid "Open the file in the default app failed"
+msgstr "无法打开在文件管理器中选择的文件"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
+msgid "Renaming file failed, target file already exists"
+msgstr "重命名文件失败，目标文件已存在"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
+msgid "Renaming file failed"
+msgstr "文件重命名失败"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
+msgid "Trashing file failed"
+msgstr "删除文件失败"
+
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 msgid "Folder Name"
 msgstr "文件夹名称"
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:75
 msgid "New Folder"
 msgstr "新建文件夹"
 
@@ -2409,9 +2399,6 @@ msgstr "新建文件夹"
 #~ "Opening this file overwrites any unsaved changes. Do you want to save the "
 #~ "current document?"
 #~ msgstr "打开该文件将覆盖所有未保存的更改。你希望保存当前的文档吗？"
-
-#~ msgid "Opening .rnote file failed"
-#~ msgstr ".rnote 文件打开失败"
 
 #~ msgid "Opening vector image file failed"
 #~ msgstr "矢量图文件打开失败"

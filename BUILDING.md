@@ -40,8 +40,8 @@ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.f
 The flatpak Gnome Runtime, SDK and some extensions are needed:
 
 ```bash
-flatpak install org.gnome.Platform//45 org.gnome.Sdk//45 org.freedesktop.Sdk.Extension.rust-stable//23.08 \
-org.freedesktop.Sdk.Extension.llvm16//23.08
+flatpak install org.gnome.Platform//46 org.gnome.Sdk//46 org.freedesktop.Sdk.Extension.rust-stable//23.08 \
+org.freedesktop.Sdk.Extension.llvm17//23.08
 ```
 
 Use Gnome Builder or VSCode with the

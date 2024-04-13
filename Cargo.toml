@@ -14,18 +14,18 @@ homepage = "https://rnote.flxzt.net"
 license = "GPL-3.0-or-later"
 repository = "https://github.com/flxzt/rnote"
 rust-version = "1.74"
-version = "0.10.1"
+version = "0.10.2"
 
 [workspace.dependencies]
-rnote-compose = { version = "0.10.1", path = "crates/rnote-compose" }
-rnote-engine = { version = "0.10.1", path = "crates/rnote-engine" }
+rnote-compose = { version = "0.10.2", path = "crates/rnote-compose" }
+rnote-engine = { version = "0.10.2", path = "crates/rnote-engine" }
 
 adw = { version = "0.6.0", package = "libadwaita", features = ["v1_4"] }
 anyhow = "1.0"
 approx = "0.5.1"
 async-fs = "2.1"
 atty = "0.2.14"
-base64 = "0.21.7"
+base64 = "0.22.0"
 cairo-rs = { version = "0.19.2", features = ["v1_18", "png", "svg", "pdf"] }
 chrono = "0.4.34"
 clap = { version = "4.4", features = ["derive"] }
@@ -81,7 +81,7 @@ tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 unicode-segmentation = "1.11"
 url = "2.5"
-usvg = "0.40.0"
+usvg = "0.41.0"
 winresource = "0.1.17"
 xmlwriter = "0.1.0"
 # Enabling feature > v20_9 causes linker errors on mingw

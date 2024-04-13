@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
   workflow_call:
 
-name: Update Translation
+name: Update Translations
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
@@ -35,18 +35,9 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-      - name: Generate zh_Hant from zh_Hans
+      - name: Update translations
         run: |
-          cat ./crates/rnote-ui/po/LINGUAS \
-          | sed -e 's|zh_Hans|zh_Hans\nzh_CN\nzh_SG|' \
-                -e 's|zh_Hant|zh_Hant\nzh_HK\nzh_TW|' \
-          | sort -uo ./crates/rnote-ui/po/LINGUAS
-
-          cat ./crates/rnote-ui/po/zh_Hans.po \
-          | sed -e 's|Language: zh_Hans|Language: zh_Hant|' \
-                -e 's|Last-Translator:|Last-Translator: openCC converted|' \
-          | opencc -c /usr/share/opencc/s2twp.json \
-                   -o ./crates/rnote-ui/po/zh_Hant.po
+          bash ./build-aux/update-translations.sh
 
       - name: Commit changes
         id: commit-changes

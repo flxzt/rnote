@@ -8,16 +8,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-01 14:11+0100\n"
-"PO-Revision-Date: 2024-01-18 13:00+0000\n"
-"Last-Translator: Nils Van Zuijlen <nils.van-zuijlen@mailo.com>\n"
+"POT-Creation-Date: 2024-03-22 15:14+0100\n"
+"PO-Revision-Date: 2024-03-10 00:01+0000\n"
+"Last-Translator: \"Mathieu B.\" <mathieu.bousquet2@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -48,8 +48,8 @@ msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"ATTENTION : le format de fichier est toujours instable. Cela pourrait "
-"changer à l'avenir et rompre la compatibilité entre les versions."
+"ATTENTION : le format de fichier est toujours instable. Cela pourrait "
+"changer à l’avenir et rompre la compatibilité entre les versions."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An overview"
@@ -65,11 +65,11 @@ msgstr "Écrire du texte au clavier"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"
-msgstr "Cacher la barre d'outil dans le mode focus"
+msgstr "Cacher la barre d’outil dans le mode focus"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
-msgstr "Accéder rapidement aux fichiers dans l'espace de travail"
+msgstr "Accéder rapidement aux fichiers dans l’espace de travail"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
@@ -184,7 +184,7 @@ msgstr "Icône"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:123
 msgid "Change the workspace icon"
-msgstr "Modifier l'icône de l'espace de travail"
+msgstr "Modifier l’icône de l’espace de travail"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:143
 #: crates/rnote-ui/data/ui/settingspanel.ui:286
@@ -193,7 +193,7 @@ msgstr "Couleur"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:144
 msgid "Change the workspace color"
-msgstr "Modifier la couleur de l'espace de travail"
+msgstr "Modifier la couleur de l’espace de travail"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:158
 msgid "Directory"
@@ -412,7 +412,7 @@ msgstr "Qualité Jpeg"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:376
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr "Définir la qualité de l'image Jpeg (1 - 100)"
+msgstr "Définir la qualité de l’image Jpeg (1 - 100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:408
 #: crates/rnote-ui/src/dialogs/export.rs:854
@@ -421,7 +421,7 @@ msgstr "Exporter la sélection"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:530
 msgid "The export image format"
-msgstr "Le format d'exportation de l’image"
+msgstr "Le format d’exportation de l’image"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:561
 msgid "Margin"
@@ -458,16 +458,12 @@ msgid "End Page"
 msgstr "Dernière page"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
-#, fuzzy
-#| msgid "Adjust document settings"
 msgid "Adjust Document"
-msgstr "Ajuster les paramètres du document"
+msgstr "Ajuster le document"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "Définir si le motif d’arrière-plan doit être exporté"
+msgstr "Ajuster la mise en page du document au Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:107
 msgid "Page Width (%)"
@@ -576,7 +572,7 @@ msgstr "Tracer des traits texturés"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:170
 msgid "Path Modelling"
-msgstr "Modélisation de la trajectoire"
+msgstr "Modélisation des chemins"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:187
 msgid "Simple"
@@ -784,7 +780,7 @@ msgstr "Configuration de la forme"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:101
 msgid "Shaper Styles"
-msgstr "Styles de formes"
+msgstr "Styles de forme"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:130
 msgid "Smooth"
@@ -837,7 +833,7 @@ msgstr "Angle des hachures"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:216
 msgid "Set the angle of hachure fills"
-msgstr "Définir l'angle des hachures"
+msgstr "Définir l’angle des hachures"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:319
 msgid "Enabled"
@@ -863,7 +859,7 @@ msgstr "3:2"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:337
 msgid "Golden Ratio (1:1.618)"
-msgstr "Nombre d'or (1:1.618)"
+msgstr "Nombre d’or (1:1.618)"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:19
 msgid "Insert Vertical Space"
@@ -975,10 +971,8 @@ msgid "De_veloper Mode"
 msgstr "Mode dé_veloppeur"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
-#, fuzzy
-#| msgid "New Window"
 msgid "New _Window"
-msgstr "Nouvelle Fenêtre"
+msgstr "Nouvelle fenêtre"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
@@ -1098,7 +1092,7 @@ msgstr "Dessiner avec la saisie _tactile"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Block Pinch to _Zoom"
-msgstr "Bloquer le _zoom à deux doigts"
+msgstr "Bloquer le Pincer pour Zoomer"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:90
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
@@ -1164,7 +1158,7 @@ msgid "Open in Default App"
 msgstr "Ouvrir dans l’application par défaut"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:65
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:91
 msgid "Rename"
 msgstr "Renommer"
 
@@ -1235,11 +1229,11 @@ msgstr "Enregistrement automatique"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:45
 msgid "Enable or disable autosave"
-msgstr "Activer ou désactiver l'enregistrement automatique"
+msgstr "Activer ou désactiver l’enregistrement automatique"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:50
 msgid "Autosave Interval (secs)"
-msgstr "Intervalle d'enregistrement automatique (secs)"
+msgstr "Intervalle d’enregistrement automatique (secs)"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:51
 msgid "Set the autosave interval in seconds"
@@ -1386,34 +1380,24 @@ msgid "Document"
 msgstr "Document"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:250
-#, fuzzy
-#| msgid "_Document Layout"
 msgid "Document Layout"
-msgstr "_Mise en page"
+msgstr "Mise en page"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:254
-#, fuzzy
-#| msgid "_Fixed Size"
 msgid "Fixed Size"
-msgstr "Taille _fixe"
+msgstr "Taille fixe"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:255
-#, fuzzy
-#| msgid "_Continuous Vertical"
 msgid "Continuous Vertical"
-msgstr "Vertical _continu"
+msgstr "Vertical continue"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:256
-#, fuzzy
-#| msgid "_Semi Infinite"
 msgid "Semi Infinite"
-msgstr "_Semi infini"
+msgstr "Semi infini"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:257
-#, fuzzy
-#| msgid "_Infinite"
 msgid "Infinite"
-msgstr "_Infini"
+msgstr "Infini"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:265
 msgid "Format Border Color"
@@ -1425,7 +1409,7 @@ msgstr "Définir la couleur des bordures du format"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:287
 msgid "Set the background color"
-msgstr "Définir la couleur de l'arrière-plan"
+msgstr "Définir la couleur de l’arrière-plan"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:307
 msgid "Pattern"
@@ -1433,7 +1417,7 @@ msgstr "Motif"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:308
 msgid "Choose a background pattern"
-msgstr "Choisissez un motif d'arrière-plan"
+msgstr "Choisissez un motif d’arrière-plan"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:312
 msgid "None"
@@ -1482,7 +1466,7 @@ msgstr "Définir la hauteur du motif d’arrière-plan"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:380
 msgid "Invert Color Brightness"
-msgstr "Inverser de la luminosité des couleurs"
+msgstr "Inverser la luminosité des couleurs"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:381
 msgid "Invert the brightness of all background pattern colors"
@@ -1541,7 +1525,7 @@ msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
 msgstr ""
-"Définir l’action de l'appui\n"
+"Définir l’action de l’appui\n"
 "long à deux doigts"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:450
@@ -1610,11 +1594,11 @@ msgstr "Afficher les raccourcis clavier"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:32
 msgid "Close the Active Tab"
-msgstr "Fermer l'onglet actif"
+msgstr "Fermer l’onglet actif"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:38
 msgid "Quit the Application"
-msgstr "Quitter l'application"
+msgstr "Quitter l’application"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:44
 msgid "Open the Canvas-Menu"
@@ -1622,7 +1606,7 @@ msgstr "Ouvrir le menu du canevas"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:50
 msgid "Open the App-Menu"
-msgstr "Ouvrir le menu de l'application"
+msgstr "Ouvrir le menu de l’application"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:64
 msgid "Navigation"
@@ -1741,7 +1725,7 @@ msgstr "Déplacer le répertoire vers le haut"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:81
 msgid "Workspace Directory Actions"
-msgstr "Actions sur le répertoire de l'espace de travail"
+msgstr "Actions sur le répertoire de l’espace de travail"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:163
 msgid "Create new Folder"
@@ -1754,15 +1738,15 @@ msgstr "Créer un nouveau répertoire"
 #: crates/rnote-ui/src/dialogs/mod.rs:258
 #: crates/rnote-ui/src/dialogs/mod.rs:412
 msgid "Saving document failed"
-msgstr "Échec de l'enregistrement du document"
+msgstr "Échec de l’enregistrement du document"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:632
 msgid "Printing document failed"
-msgstr "Échec de l'impression du document"
+msgstr "Échec de l’impression du document"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:668
 msgid "Exporting selection failed, nothing selected"
-msgstr "Échec de l’exportation de la sélection, rien n'est sélectionné"
+msgstr "Échec de l’exportation de la sélection, rien n’est sélectionné"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:281
 msgid "Button 1"
@@ -1785,10 +1769,12 @@ msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
 msgstr ""
+"Le schéma des paramètres n’est pas installé. Les paramètres de l’application "
+"n’ont pas pu être chargés et ne seront pas enregistrés."
 
 #: crates/rnote-ui/src/appwindow/mod.rs:488
 msgid "Opening file failed"
-msgstr "L'ouverture du fichier a échoué"
+msgstr "L’ouverture du fichier a échoué"
 
 #: crates/rnote-ui/src/canvas/mod.rs:846 crates/rnote-ui/src/dialogs/mod.rs:205
 #: crates/rnote-ui/src/dialogs/mod.rs:342
@@ -1797,7 +1783,7 @@ msgstr "- nom de fichier invalide -"
 
 #: crates/rnote-ui/src/canvas/mod.rs:859
 msgid "- invalid folder path -"
-msgstr "- chemin d'accès au répertoire invalide -"
+msgstr "- chemin d’accès au répertoire invalide -"
 
 #: crates/rnote-ui/src/canvas/mod.rs:883
 msgid "Opened file was modified on disk"
@@ -1812,24 +1798,20 @@ msgid "Reloading .rnote file from disk failed"
 msgstr "Le rechargement du fichier .rnote à partir du disque a échoué"
 
 #: crates/rnote-ui/src/canvas/mod.rs:957
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was renamed or moved."
-msgstr "Le fichier ouvert a été renommé sur le disque"
+msgstr "Le fichier ouvert a été renommé ou déplacé."
 
 #: crates/rnote-ui/src/canvas/mod.rs:971
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was removed."
-msgstr "Le fichier ouvert a été renommé sur le disque"
+msgstr "Le dossier ouvert a été supprimé."
 
 #: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
-msgstr "Échec de l'insertion du fichier"
+msgstr "Échec de l’insertion du fichier"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1155
 msgid "Inserting text failed"
-msgstr "Échec de l'insertion du texte"
+msgstr "Échec de l’insertion du texte"
 
 #: crates/rnote-ui/src/dialogs/export.rs:27
 #: crates/rnote-ui/src/dialogs/import.rs:21
@@ -1845,7 +1827,7 @@ msgstr "Document enregistré avec succès"
 #: crates/rnote-ui/src/dialogs/export.rs:536
 #: crates/rnote-ui/src/dialogs/export.rs:804
 msgid "Exporting document failed"
-msgstr "Échec de l'exportation du document"
+msgstr "Échec de l’exportation du document"
 
 #: crates/rnote-ui/src/dialogs/export.rs:230
 msgid "Exported document successfully"
@@ -1855,13 +1837,13 @@ msgstr "Document exporté avec succès"
 #: crates/rnote-ui/src/dialogs/export.rs:532
 #: crates/rnote-ui/src/dialogs/export.rs:796
 msgid "View in file manager"
-msgstr "Voir dans l'explorateur de fichiers"
+msgstr "Voir dans l’explorateur de fichiers"
 
 #: crates/rnote-ui/src/dialogs/export.rs:245
 #: crates/rnote-ui/src/dialogs/export.rs:542
 #: crates/rnote-ui/src/dialogs/export.rs:810
 msgid "Failed to open the file in the file manager"
-msgstr "Impossible d’ouvrir le fichier dans l'explorateur de fichiers"
+msgstr "Impossible d’ouvrir le fichier dans l’explorateur de fichiers"
 
 #: crates/rnote-ui/src/dialogs/export.rs:255
 msgid "Exporting document failed, no file selected"
@@ -1876,7 +1858,7 @@ msgstr "Sélectionner"
 
 #: crates/rnote-ui/src/dialogs/export.rs:527
 msgid "Exporting document pages failed"
-msgstr "Échec de l'exportation des pages du document"
+msgstr "Échec de l’exportation des pages du document"
 
 #: crates/rnote-ui/src/dialogs/export.rs:531
 msgid "Exported document pages successfully"
@@ -1894,7 +1876,7 @@ msgstr "Échec de l’exportation de la sélection, aucun fichier sélectionné"
 
 #: crates/rnote-ui/src/dialogs/export.rs:791
 msgid "Exporting selection failed"
-msgstr "Échec de l'exportation de la sélection"
+msgstr "Échec de l’exportation de la sélection"
 
 #: crates/rnote-ui/src/dialogs/export.rs:795
 msgid "Exported selection successfully"
@@ -1907,15 +1889,15 @@ msgstr "Json"
 
 #: crates/rnote-ui/src/dialogs/export.rs:905
 msgid "Export Engine State"
-msgstr "Exporter l'état interne"
+msgstr "Exporter l’état interne"
 
 #: crates/rnote-ui/src/dialogs/export.rs:923
 msgid "Exporting engine state failed"
-msgstr "Échec de l'exportation de l'état interne"
+msgstr "Échec de l’exportation de l’état interne"
 
 #: crates/rnote-ui/src/dialogs/export.rs:927
 msgid "Exported engine state successfully"
-msgstr "L'état interne a été exporté avec succès"
+msgstr "L’état interne a été exporté avec succès"
 
 #: crates/rnote-ui/src/dialogs/export.rs:953
 msgid "Export Engine Config"
@@ -1923,7 +1905,7 @@ msgstr "Exporter la configuration interne"
 
 #: crates/rnote-ui/src/dialogs/export.rs:971
 msgid "Exporting engine config failed"
-msgstr "Échec de l'exportation de la configuration interne"
+msgstr "Échec de l’exportation de la configuration interne"
 
 #: crates/rnote-ui/src/dialogs/export.rs:975
 msgid "Exported engine config successfully"
@@ -1995,7 +1977,7 @@ msgstr "Un nouveau fichier sera créé"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:508
 msgid "Change Workspace Directory"
-msgstr "Changer d'espace de travail"
+msgstr "Changer d’espace de travail"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:618
 msgid "Band-Aid"
@@ -2206,7 +2188,7 @@ msgstr "Divers"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:396
 msgid "Coordinate Systems"
-msgstr "Système de coordonnées"
+msgstr "Systèmes de coordonnées"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:404
 msgid "Ellipses"
@@ -2266,7 +2248,7 @@ msgstr "Polygone"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:551
 msgid "Application restart is required"
-msgstr "Le redémarrage de l'application est nécessaire"
+msgstr "Le redémarrage de l’application est nécessaire"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:867
 msgctxt "a cursor type"
@@ -2301,47 +2283,47 @@ msgstr "Point (grand)"
 #: crates/rnote-ui/src/settingspanel/mod.rs:873
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
-msgstr "Goutte d'eau Nord-Ouest (petite)"
+msgstr "Goutte d’eau Nord-Ouest (petite)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:874
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
-msgstr "Goutte d'eau Nord-Ouest (moyenne)"
+msgstr "Goutte d’eau Nord-Ouest (moyenne)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:875
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
-msgstr "Goutte d'eau Nord-Ouest (grande)"
+msgstr "Goutte d’eau Nord-Ouest (grande)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:876
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
-msgstr "Goutte d'eau Nord-Est (petite)"
+msgstr "Goutte d’eau Nord-Est (petite)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:877
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
-msgstr "Goutte d'eau Nord-Est (moyenne)"
+msgstr "Goutte d’eau Nord-Est (moyenne)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:878
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
-msgstr "Goutte d'eau Nord-Est (grande)"
+msgstr "Goutte d’eau Nord-Est (grande)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:879
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
-msgstr "Goutte d'eau Nord (petite)"
+msgstr "Goutte d’eau Nord (petite)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:880
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
-msgstr "Goutte d'eau Nord (moyenne)"
+msgstr "Goutte d’eau Nord (moyenne)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:881
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
-msgstr "Goutte d'eau Nord (grande)"
+msgstr "Goutte d’eau Nord (grande)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:882
 msgctxt "a cursor type"
@@ -2358,11 +2340,49 @@ msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "Faisceau (grand)"
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:49
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:35
+msgid "Can't duplicate an unsaved document"
+msgstr ""
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
+#, fuzzy
+#| msgid "Opening .rnote file failed"
+msgid "Duplicating the file failed"
+msgstr "L'ouverture du fichier .rnote a échoué"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
+#, fuzzy
+#| msgid "Change the directory"
+msgid "Duplicating the directory failed"
+msgstr "Changer de répertoire"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:18
+#, fuzzy
+#| msgid "Failed to open the file in the file manager"
+msgid "Open the file in the default app failed"
+msgstr "Impossible d’ouvrir le fichier dans l’explorateur de fichiers"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
+msgid "Renaming file failed, target file already exists"
+msgstr ""
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
+#, fuzzy
+#| msgid "Opening file failed"
+msgid "Renaming file failed"
+msgstr "L’ouverture du fichier a échoué"
+
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
+#, fuzzy
+#| msgid "Inserting file failed"
+msgid "Trashing file failed"
+msgstr "Échec de l’insertion du fichier"
+
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 msgid "Folder Name"
 msgstr "Nom du répertoire"
 
-#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
+#: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:75
 msgid "New Folder"
 msgstr "Nouveau répertoire"
 
@@ -2396,9 +2416,6 @@ msgstr "Nouveau répertoire"
 #~ msgstr ""
 #~ "L’ouverture de ce fichier écrasera toutes les modifications non-"
 #~ "sauvegardées. Voulez-vous sauvegarder le document actuel ?"
-
-#~ msgid "Opening .rnote file failed"
-#~ msgstr "L'ouverture du fichier .rnote a échoué"
 
 #~ msgid "Opening vector image file failed"
 #~ msgstr "L'ouverture du fichier image vectorielle a échoué"

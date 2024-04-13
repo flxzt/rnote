@@ -191,7 +191,6 @@ impl Color {
             _ => "invalid",
         };
         let saturation_str = match saturation {
-            v if v <= 0.0 => "",
             v if v < 0.333 => "desaturated",
             v if (0.333..0.667).contains(&v) => "",
             v if v >= 0.667 => "vibrant",

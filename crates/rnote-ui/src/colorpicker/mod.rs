@@ -338,15 +338,19 @@ mod imp {
                 }));
 
             obj.connect_notify_local(Some("stroke-color"), move |colorpicker, _| {
-                colorpicker
-                    .imp()
-                    .update_color_label_string(colorpicker.stroke_color().into_compose_color());
+                if colorpicker.stroke_color_pad_active() {
+                    colorpicker
+                        .imp()
+                        .update_color_label_string(colorpicker.stroke_color().into_compose_color());
+                }
             });
 
             obj.connect_notify_local(Some("fill-color"), move |colorpicker, _| {
-                colorpicker
-                    .imp()
-                    .update_color_label_string(colorpicker.fill_color().into_compose_color());
+                if colorpicker.fill_color_pad_active() {
+                    colorpicker
+                        .imp()
+                        .update_color_label_string(colorpicker.fill_color().into_compose_color());
+                }
             });
         }
 

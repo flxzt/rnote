@@ -173,8 +173,6 @@ impl Color {
         let saturation = color.saturation;
         let value = color.value;
 
-        tracing::debug!("alpha: {alpha:?}, hue: {hue:?}, sat: {saturation:?}, value: {value:?}");
-
         let hue_str = match hue {
             _ if saturation <= 0.0 => "grey",
             v if v < 15.0 => "rose",

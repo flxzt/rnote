@@ -428,7 +428,7 @@ impl PenBehaviour for Tools {
                                 - self.zoom_tool.start_surface_coord;
                             widget_flags |= engine_view
                                 .camera
-                                .set_offset(new_camera_offset, &engine_view.document);
+                                .set_offset(new_camera_offset, engine_view.document);
 
                             widget_flags |= engine_view
                                 .document

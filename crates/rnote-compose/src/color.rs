@@ -203,7 +203,7 @@ impl Color {
             _ => "invalid",
         };
 
-        if alpha == 0.0 {
+        if alpha <= 0.0 {
             format!("transparent")
         } else if value <= 0.0 {
             format!("black")

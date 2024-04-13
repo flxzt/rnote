@@ -340,10 +340,6 @@ impl RnSettingsPanel {
         self.imp().general_show_scrollbars_row.clone()
     }
 
-    pub(crate) fn general_optimize_epd_row(&self) -> adw::SwitchRow {
-        self.imp().general_optimize_epd_row.clone()
-    }
-
     pub(crate) fn general_inertial_scrolling_row(&self) -> adw::SwitchRow {
         self.imp().general_inertial_scrolling_row.clone()
     }

@@ -40,6 +40,8 @@ mod imp {
         #[template_child]
         pub(crate) general_show_scrollbars_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
+        pub(crate) general_optimize_epd_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
         pub(crate) general_inertial_scrolling_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(crate) general_regular_cursor_picker: TemplateChild<RnIconPicker>,
@@ -338,6 +340,10 @@ impl RnSettingsPanel {
         self.imp().general_show_scrollbars_row.clone()
     }
 
+    pub(crate) fn general_optimize_epd_row(&self) -> adw::SwitchRow {
+        self.imp().general_optimize_epd_row.clone()
+    }
+
     pub(crate) fn general_inertial_scrolling_row(&self) -> adw::SwitchRow {
         self.imp().general_inertial_scrolling_row.clone()
     }
@@ -364,9 +370,12 @@ impl RnSettingsPanel {
         let canvas = active_tab.canvas();
 
         let format_border_color = canvas.engine_ref().document.format.border_color;
+        let optimize_epd = canvas.engine_ref().optimize_epd();
 
         imp.doc_format_border_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
+
+        imp.general_optimize_epd_row.set_active(optimize_epd);
     }
 
     fn refresh_format_ui(&self, active_tab: &RnCanvasWrapper) {
@@ -499,6 +508,21 @@ impl RnSettingsPanel {
         imp.general_show_scrollbars_row.connect_active_notify(
             clone!(@weak appwindow => move |row| {
                     set_overlays_margins(&appwindow, row.is_active());
+            }),
+        );
+
+        imp.general_optimize_epd_row
+            .bind_property(
+                "active",
+                &appwindow.overlays().colorpicker().active_color_label(),
+                "visible",
+            )
+            .sync_create()
+            .build();
+
+        imp.general_optimize_epd_row.connect_active_notify(
+            clone!(@weak appwindow => move |row| {
+                appwindow.active_tab_wrapper().canvas().engine_mut().set_optimize_epd(row.is_active());
             }),
         );
 

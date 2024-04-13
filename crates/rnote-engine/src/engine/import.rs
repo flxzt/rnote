@@ -163,6 +163,8 @@ impl Engine {
         // Set the pen sounds to update the audioplayer
         self.set_pen_sounds(engine_config.pen_sounds, data_dir);
 
+        self.set_optimize_epd(engine_config.optimize_epd);
+
         widget_flags |= self
             .penholder
             .reinstall_pen_current_style(&mut EngineViewMut {
@@ -194,6 +196,8 @@ impl Engine {
 
         // Set the pen sounds to update the audioplayer
         self.set_pen_sounds(engine_config.pen_sounds, data_dir);
+
+        self.set_optimize_epd(engine_config.optimize_epd);
 
         widget_flags |= self
             .penholder

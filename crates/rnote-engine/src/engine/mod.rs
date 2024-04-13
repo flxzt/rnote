@@ -120,6 +120,8 @@ pub struct EngineConfig {
     export_prefs: ExportPrefs,
     #[serde(rename = "pen_sounds")]
     pen_sounds: bool,
+    #[serde(rename = "optimize_epd")]
+    optimize_epd: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -166,6 +168,8 @@ pub struct Engine {
     pub export_prefs: ExportPrefs,
     #[serde(rename = "pen_sounds")]
     pen_sounds: bool,
+    #[serde(rename = "optimize_epd")]
+    optimize_epd: bool,
 
     #[serde(skip)]
     audioplayer: Option<AudioPlayer>,
@@ -203,6 +207,7 @@ impl Default for Engine {
             import_prefs: ImportPrefs::default(),
             export_prefs: ExportPrefs::default(),
             pen_sounds: false,
+            optimize_epd: false,
 
             audioplayer: None,
             visual_debug: false,
@@ -280,6 +285,14 @@ impl Engine {
         } else {
             self.audioplayer.take();
         }
+    }
+
+    pub fn optimize_epd(&self) -> bool {
+        self.optimize_epd
+    }
+
+    pub fn set_optimize_epd(&mut self, optimize_epd: bool) {
+        self.optimize_epd = optimize_epd
     }
 
     pub fn visual_debug(&self) -> bool {

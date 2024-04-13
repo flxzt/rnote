@@ -60,6 +60,13 @@
                       </object>
                     </child>
                     <child>
+                      <object class="AdwSwitchRow" id="general_optimize_epd_row">
+                        <property name="title" translatable="yes">Optimize for E-Paper Displays</property>
+                        <property name="subtitle" translatable="yes">Changes certain UI elements and modifies behaviour
+of tools for optimized usage on E-Paper displays</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="AdwSwitchRow" id="general_inertial_scrolling_row">
                         <property name="title" translatable="yes">Inertial Touch Scrolling</property>
                         <property name="subtitle" translatable="yes">Set whether touch scrolling on the canvas is inertial.

@@ -454,6 +454,10 @@ impl RnColorPicker {
         self.imp().setter_9.get()
     }
 
+    pub(crate) fn active_color_label(&self) -> Label {
+        self.imp().active_color_label.get()
+    }
+
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.imp().colordialog_button.connect_clicked(
             clone!(@weak self as colorpicker, @weak appwindow => move |_| {

@@ -370,7 +370,7 @@ mod imp {
         }
 
         fn update_color_label_string(&self, color: Color) {
-            let color_string = color.to_hsv_label_string();
+            let color_string = crate::utils::color_to_hsv_label_string(color);
             self.active_color_label.set_label(&color_string);
         }
     }

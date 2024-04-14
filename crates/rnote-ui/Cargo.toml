@@ -33,6 +33,7 @@ num-traits = { workspace = true }
 numeric-sort = { workspace = true }
 once_cell = { workspace = true }
 open = { workspace = true }
+palette = { workspace = true }
 parry2d-f64 = { workspace = true }
 path-absolutize = { workspace = true }
 piet = { workspace = true }

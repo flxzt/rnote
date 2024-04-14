@@ -1,8 +1,11 @@
 // Imports
 use anyhow::Context;
 use futures::AsyncWriteExt;
+use gettextrs::pgettext;
 use gtk4::{gdk, gio, prelude::*};
+use palette::convert::IntoColor;
 use path_absolutize::Absolutize;
+use rnote_compose::Color;
 use std::cell::Ref;
 use std::path::Path;
 use std::slice::Iter;
@@ -126,5 +129,55 @@ where
 {
     pub(crate) fn new(r: Ref<'a, Vec<T>>) -> Self {
         Self { r }
+    }
+}
+
+/// Create a string for display the hue, saturation and value properties of the color.
+pub(crate) fn color_to_hsv_label_string(color: Color) -> String {
+    let palette_color: palette::Okhsv<f64> = color.into_color();
+    let alpha = color.a;
+    let hue = palette_color.hue.into_inner();
+    let saturation = palette_color.saturation;
+    let value = palette_color.value;
+
+    const I18N_CONTEXT: &str = "string representation of the current selected color";
+    let hue_str = match hue {
+        _ if saturation <= 0.0 => pgettext(I18N_CONTEXT, "grey"),
+        v if v < 15.0 => pgettext(I18N_CONTEXT, "rose"),
+        v if (15.0..45.0).contains(&v) => pgettext(I18N_CONTEXT, "red"),
+        v if (45.0..75.0).contains(&v) => pgettext(I18N_CONTEXT, "orange"),
+        v if (75.0..105.0).contains(&v) => pgettext(I18N_CONTEXT, "yellow"),
+        v if (105.0..135.0).contains(&v) => pgettext(I18N_CONTEXT, "chartreuse-green"),
+        v if (135.0..165.0).contains(&v) => pgettext(I18N_CONTEXT, "green"),
+        v if (165.0..195.0).contains(&v) => pgettext(I18N_CONTEXT, "spring-green"),
+        v if (195.0..225.0).contains(&v) => pgettext(I18N_CONTEXT, "cyan"),
+        v if (225.0..255.0).contains(&v) => pgettext(I18N_CONTEXT, "azure"),
+        v if (255.0..285.0).contains(&v) => pgettext(I18N_CONTEXT, "blue"),
+        v if (285.0..315.0).contains(&v) => pgettext(I18N_CONTEXT, "violet"),
+        v if (315.0..345.0).contains(&v) => pgettext(I18N_CONTEXT, "magenta"),
+        v if v >= 345.0 => pgettext(I18N_CONTEXT, "rose"),
+        _ => pgettext(I18N_CONTEXT, "invalid"),
+    };
+    let saturation_str = match saturation {
+        v if v < 0.333 => pgettext(I18N_CONTEXT, "desaturated"),
+        v if (0.333..0.667).contains(&v) => "".to_string(),
+        v if v >= 0.667 => pgettext(I18N_CONTEXT, "vibrant"),
+        _ => pgettext(I18N_CONTEXT, "invalid"),
+    };
+    let value_str = match value {
+        v if v < 0.333 => pgettext(I18N_CONTEXT, "dark"),
+        v if (0.333..0.667).contains(&v) => pgettext(I18N_CONTEXT, "mid"),
+        v if v >= 0.666 => pgettext(I18N_CONTEXT, "bright"),
+        _ => pgettext(I18N_CONTEXT, "invalid"),
+    };
+
+    if alpha <= 0.0 {
+        pgettext(I18N_CONTEXT, "transparent")
+    } else if value <= 0.0 {
+        pgettext(I18N_CONTEXT, "black")
+    } else if value >= 1.0 {
+        pgettext(I18N_CONTEXT, "white")
+    } else {
+        format!("{saturation_str} {value_str} {hue_str}")
     }
 }

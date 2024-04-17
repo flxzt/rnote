@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-22 15:14+0100\n"
-"PO-Revision-Date: 2023-12-07 16:05+0000\n"
+"PO-Revision-Date: 2024-04-18 09:03+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.3-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -51,8 +51,6 @@ msgstr ""
 "மாற்றலாம் மற்றும் உடைக்கலாம்."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
-#, fuzzy
-#| msgid "An Overview"
 msgid "An overview"
 msgstr "ஒரு மேலோட்டப் பார்வை"
 
@@ -61,28 +59,24 @@ msgid "A selection"
 msgstr "ஒரு தேர்வு"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
-#| msgid "Switch to the 'Typewriter'"
 msgid "Write text with the typewriter"
-msgstr "'தட்டச்சுப்பொறிக்கு' மாறவும்"
+msgstr "தட்டச்சுப்பொறி மூலம் உரை எழுதவும்"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"
-msgstr ""
+msgstr "கவனி பயன்முறையுடன் கருவிப்பட்டிகளை மறைக்கவும்"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
-msgstr ""
+msgstr "பணியிடத்தின் மூலம் கோப்புகளை விரைவாக அணுகவும்"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
-msgstr ""
+msgstr "ஆவண அமைப்புகளை சரிசெய்யவும்"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
-#, fuzzy
-#| msgid "Button Shortcuts"
 msgid "Configure action shortcuts"
-msgstr "பட்டன் ஷார்ட்கட்கள்"
+msgstr "செயல் குறுக்குவழிகளை உள்ளமைக்கவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
@@ -374,12 +368,10 @@ msgid "Select the export directory"
 msgstr "ஏற்றுமதி கோப்பகத்தைத் தேர்ந்தெடுக்கவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
-#, fuzzy
-#| msgid "Export Files Stem Name"
 msgctxt ""
 "When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
-msgstr "கோப்புகளின் தண்டு பெயரை ஏற்றுமதி செய்யவும்"
+msgstr "ஏற்றுமதி கோப்புகள் தண்டு பெயர்"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:535
@@ -465,16 +457,12 @@ msgid "End Page"
 msgstr "முடிவுப் பக்கம்"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
-#, fuzzy
-#| msgid "Document"
 msgid "Adjust Document"
-msgstr "ஆவணம்"
+msgstr "ஆவணத்தை சரிசெய்யவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "பின்னணி வடிவத்தை ஏற்றுமதி செய்ய வேண்டுமா என்பதை அமைக்கவும்"
+msgstr "ஆவண தளவமைப்பை Pdf இல் சரிசெய்ய வேண்டுமா"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:107
 msgid "Page Width (%)"
@@ -660,41 +648,31 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "அடர்த்தி என்பது 10x10 பகுதிக்கு உள்ள புள்ளிகளின் அளவு"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
-#, fuzzy
-#| msgid "Stroke Dots Position Distribution"
 msgctxt ""
 "Drawing with a textured pen, how the dots of the texture are distributed"
 msgid "Stroke Dots Position Distribution"
-msgstr "பக்கவாதம் புள்ளிகளின் நிலைப் பரவல்"
+msgstr "பக்கவாதம் புள்ளிகள் நிலை விநியோகம்"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:249
 msgid "Choose a dots position probability distribution"
 msgstr "புள்ளிகளின் நிலை நிகழ்தகவுப் பரவலைத் தேர்வு செய்யவும்"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
-#, fuzzy
-#| msgid "Uniform"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
 msgstr "சீருடை"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
-#, fuzzy
-#| msgid "Normal"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
 msgstr "சாதாரண"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
-#, fuzzy
-#| msgid "Exponential"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
 msgstr "அதிவேக"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
-#, fuzzy
-#| msgid "Reverse Exponential"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
 msgstr "தலைகீழ் அதிவேக"
@@ -990,10 +968,8 @@ msgid "De_veloper Mode"
 msgstr "மேம்பாட்டாளர் (_v) பயன்முறை"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
-#, fuzzy
-#| msgid "New Window"
 msgid "New _Window"
-msgstr "புதிய விண்டோ"
+msgstr "புதிய சாளரம் (_W)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
@@ -1401,34 +1377,24 @@ msgid "Document"
 msgstr "ஆவணம்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:250
-#, fuzzy
-#| msgid "_Document Layout"
 msgid "Document Layout"
-msgstr "ஆவணத்தின் தளவமைப்பு (_D)"
+msgstr "ஆவணத்தின் தளவமைப்பு"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:254
-#, fuzzy
-#| msgid "_Fixed Size"
 msgid "Fixed Size"
-msgstr "நிலையான அளவு (_F)"
+msgstr "நிலையான அளவு"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:255
-#, fuzzy
-#| msgid "_Continuous Vertical"
 msgid "Continuous Vertical"
-msgstr "தொடர்ச்சியான செங்குத்து (_C)"
+msgstr "தொடர்ச்சியான செங்குத்து"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:256
-#, fuzzy
-#| msgid "_Semi Infinite"
 msgid "Semi Infinite"
-msgstr "அரை எல்லையற்றது (_S)"
+msgstr "அரை எல்லையற்றது"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:257
-#, fuzzy
-#| msgid "_Infinite"
 msgid "Infinite"
-msgstr "எல்லையற்ற (_I)"
+msgstr "எல்லையற்றது"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:265
 msgid "Format Border Color"
@@ -1828,16 +1794,12 @@ msgid "Reloading .rnote file from disk failed"
 msgstr "வட்டில் இருந்து .rnote கோப்பை மீண்டும் ஏற்றுவது தோல்வியடைந்தது"
 
 #: crates/rnote-ui/src/canvas/mod.rs:957
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was renamed or moved."
-msgstr "திறந்த கோப்பு வட்டில் மறுபெயரிடப்பட்டது"
+msgstr "திறக்கப்பட்ட கோப்பு மறுபெயரிடப்பட்டது அல்லது நகர்த்தப்பட்டது."
 
 #: crates/rnote-ui/src/canvas/mod.rs:971
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was removed."
-msgstr "திறந்த கோப்பு வட்டில் மறுபெயரிடப்பட்டது"
+msgstr "திறக்கப்பட்ட கோப்பு அகற்றப்பட்டது."
 
 #: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
@@ -2275,10 +2237,8 @@ msgid "Polyline"
 msgstr "பாலிலைன்"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:438
-#, fuzzy
-#| msgid "Polyline"
 msgid "Polygon"
-msgstr "பாலிலைன்"
+msgstr "பலகோணம்"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:551
 msgid "Application restart is required"
@@ -2376,41 +2336,31 @@ msgstr "கற்றை (பெரியது)"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:35
 msgid "Can't duplicate an unsaved document"
-msgstr ""
+msgstr "சேமிக்கப்படாத ஆவணத்தை நகலெடுக்க முடியாது"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
-#, fuzzy
-#| msgid "Opening .rnote file failed"
 msgid "Duplicating the file failed"
-msgstr ".rnote கோப்பை திறக்க முடியவில்லை"
+msgstr "கோப்பை நகலெடுக்க முடியவில்லை"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
-#, fuzzy
-#| msgid "Change the directory"
 msgid "Duplicating the directory failed"
-msgstr "கோப்பகத்தை மாற்றவும்"
+msgstr "கோப்பகத்தை நகலெடுப்பது தோல்வியடைந்தது"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:18
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Open the file in the default app failed"
-msgstr "கோப்பு மேலாளரில் கோப்பைத் திறக்க முடியவில்லை"
+msgstr "இயல்புநிலை பயன்பாட்டில் கோப்பைத் திறக்க முடியவில்லை"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
 msgid "Renaming file failed, target file already exists"
-msgstr ""
+msgstr "கோப்பை மறுபெயரிடுவதில் தோல்வி, இலக்கு கோப்பு ஏற்கனவே உள்ளது"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
-#, fuzzy
-#| msgid "Opening file failed"
 msgid "Renaming file failed"
-msgstr "கோப்பைத் திறப்பதில் தோல்வி"
+msgstr "கோப்பை மறுபெயரிடுவதில் தோல்வி"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
-#, fuzzy
-#| msgid "Inserting file failed"
 msgid "Trashing file failed"
-msgstr "கோப்பைச் செருகுவதில் தோல்வி"
+msgstr "கோப்பை குப்பைக்கு அனுப்ப முடியவில்லை"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 msgid "Folder Name"

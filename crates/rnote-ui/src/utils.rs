@@ -140,43 +140,70 @@ pub(crate) fn color_to_hsv_label_string(color: Color) -> String {
     let saturation = palette_color.saturation;
     let value = palette_color.value;
 
-    const I18N_CONTEXT: &str = "string representation of the current selected color";
     let hue_str = match hue {
-        _ if saturation <= 0.0 => pgettext(I18N_CONTEXT, "grey"),
-        v if v < 15.0 => pgettext(I18N_CONTEXT, "rose"),
-        v if (15.0..45.0).contains(&v) => pgettext(I18N_CONTEXT, "red"),
-        v if (45.0..75.0).contains(&v) => pgettext(I18N_CONTEXT, "orange"),
-        v if (75.0..105.0).contains(&v) => pgettext(I18N_CONTEXT, "yellow"),
-        v if (105.0..135.0).contains(&v) => pgettext(I18N_CONTEXT, "chartreuse-green"),
-        v if (135.0..165.0).contains(&v) => pgettext(I18N_CONTEXT, "green"),
-        v if (165.0..195.0).contains(&v) => pgettext(I18N_CONTEXT, "spring-green"),
-        v if (195.0..225.0).contains(&v) => pgettext(I18N_CONTEXT, "cyan"),
-        v if (225.0..255.0).contains(&v) => pgettext(I18N_CONTEXT, "azure"),
-        v if (255.0..285.0).contains(&v) => pgettext(I18N_CONTEXT, "blue"),
-        v if (285.0..315.0).contains(&v) => pgettext(I18N_CONTEXT, "violet"),
-        v if (315.0..345.0).contains(&v) => pgettext(I18N_CONTEXT, "magenta"),
-        v if v >= 345.0 => pgettext(I18N_CONTEXT, "rose"),
-        _ => pgettext(I18N_CONTEXT, "invalid"),
+        _ if saturation <= 0.0 => pgettext(
+            "used in string representation of the current selected color",
+            "grey",
+        ),
+        v if v < 15.0 => pgettext("part of string representation of a color", "rose"),
+        v if (15.0..45.0).contains(&v) => {
+            pgettext("part of string representation of a color", "red")
+        }
+        v if (45.0..75.0).contains(&v) => {
+            pgettext("part of string representation of a color", "orange")
+        }
+        v if (75.0..105.0).contains(&v) => {
+            pgettext("part of string representation of a color", "yellow")
+        }
+        v if (105.0..135.0).contains(&v) => pgettext(
+            "part of string representation of a color",
+            "chartreuse-green",
+        ),
+        v if (135.0..165.0).contains(&v) => {
+            pgettext("part of string representation of a color", "green")
+        }
+        v if (165.0..195.0).contains(&v) => {
+            pgettext("part of string representation of a color", "spring-green")
+        }
+        v if (195.0..225.0).contains(&v) => {
+            pgettext("part of string representation of a color", "cyan")
+        }
+        v if (225.0..255.0).contains(&v) => {
+            pgettext("part of string representation of a color", "azure")
+        }
+        v if (255.0..285.0).contains(&v) => {
+            pgettext("part of string representation of a color", "blue")
+        }
+        v if (285.0..315.0).contains(&v) => {
+            pgettext("part of string representation of a color", "violet")
+        }
+        v if (315.0..345.0).contains(&v) => {
+            pgettext("part of string representation of a color", "magenta")
+        }
+        v if v >= 345.0 => pgettext("part of string representation of a color", "rose"),
+        _ => pgettext("part of string representation of a color", "invalid"),
     };
     let saturation_str = match saturation {
-        v if v < 0.333 => pgettext(I18N_CONTEXT, "desaturated"),
+        v if v < 0.333 => pgettext("part of string representation of a color", "desaturated"),
         v if (0.333..0.667).contains(&v) => "".to_string(),
-        v if v >= 0.667 => pgettext(I18N_CONTEXT, "vibrant"),
-        _ => pgettext(I18N_CONTEXT, "invalid"),
+        v if v >= 0.667 => pgettext("part of string representation of a color", "vibrant"),
+        _ => pgettext("part of string representation of a color", "invalid"),
     };
     let value_str = match value {
-        v if v < 0.333 => pgettext(I18N_CONTEXT, "dark"),
-        v if (0.333..0.667).contains(&v) => pgettext(I18N_CONTEXT, "mid"),
-        v if v >= 0.666 => pgettext(I18N_CONTEXT, "bright"),
-        _ => pgettext(I18N_CONTEXT, "invalid"),
+        v if v < 0.333 => pgettext("part of string representation of a color", "dark"),
+        v if (0.333..0.667).contains(&v) => {
+            pgettext("part of string representation of a color", "mid")
+        }
+        v if v >= 0.666 => pgettext("part of string representation of a color", "bright"),
+        _ => pgettext("part of string representation of a color", "invalid"),
     };
 
     if alpha <= 0.0 {
-        pgettext(I18N_CONTEXT, "transparent")
+        pgettext("part of string representation of a color", "transparent")
     } else if value <= 0.0 {
-        pgettext(I18N_CONTEXT, "black")
+        pgettext("part of string representation of a color", "black")
     } else if value >= 1.0 {
-        pgettext(I18N_CONTEXT, "white")
+        pgettext("part of string representation of a color", "white")
     } else {
         format!("{saturation_str} {value_str} {hue_str}")
     }

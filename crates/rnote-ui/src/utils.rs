@@ -153,41 +153,43 @@ pub(crate) fn color_to_hsv_label_string(color: Color) -> String {
     let min_alpha = approx::relative_eq!(alpha, 0.0, epsilon = f32::EPSILON as f64) || alpha <= 0.0;
     //let max_alpha = approx::relative_eq!(alpha, 1.0, epsilon = f32::EPSILON as f64) || alpha >= 1.0;
 
+    // The ranges are tweaked by hand, because the percieved color might not always match slices of 30deg of the value
+    // pie exactly.
     let hue_str = match hue {
         _ if min_saturated => pgettext(
             "used in string representation of the current selected color",
             "grey",
         ),
-        v if v < 15.0 => pgettext("part of string representation of a color", "rose"),
-        v if (15.0..45.0).contains(&v) => {
+        v if v < 0.0 => pgettext("part of string representation of a color", "rose"),
+        v if (0.0..40.0).contains(&v) => {
             pgettext("part of string representation of a color", "red")
         }
-        v if (45.0..75.0).contains(&v) => {
+        v if (40.0..80.0).contains(&v) => {
             pgettext("part of string representation of a color", "orange")
         }
-        v if (75.0..105.0).contains(&v) => {
+        v if (80.0..108.0).contains(&v) => {
             pgettext("part of string representation of a color", "yellow")
         }
-        v if (105.0..135.0).contains(&v) => pgettext(
+        v if (108.0..120.0).contains(&v) => pgettext(
             "part of string representation of a color",
             "chartreuse-green",
         ),
-        v if (135.0..165.0).contains(&v) => {
+        v if (120.0..150.0).contains(&v) => {
             pgettext("part of string representation of a color", "green")
         }
-        v if (165.0..195.0).contains(&v) => {
+        v if (150.0..180.0).contains(&v) => {
             pgettext("part of string representation of a color", "spring-green")
         }
-        v if (195.0..225.0).contains(&v) => {
+        v if (180.0..210.0).contains(&v) => {
             pgettext("part of string representation of a color", "cyan")
         }
-        v if (225.0..255.0).contains(&v) => {
+        v if (210.0..240.0).contains(&v) => {
             pgettext("part of string representation of a color", "azure")
         }
-        v if (255.0..285.0).contains(&v) => {
+        v if (240.0..280.0).contains(&v) => {
             pgettext("part of string representation of a color", "blue")
         }
-        v if (285.0..315.0).contains(&v) => {
+        v if (280.0..315.0).contains(&v) => {
             pgettext("part of string representation of a color", "violet")
         }
         v if (315.0..345.0).contains(&v) => {
@@ -198,7 +200,7 @@ pub(crate) fn color_to_hsv_label_string(color: Color) -> String {
     };
     let saturation_str = match saturation {
         _ if min_saturated => "".to_string(),
-        v if v < 0.25 => pgettext("part of string representation of a color", "desaturated"),
+        v if v < 0.25 => pgettext("part of string representation of a color", "greyish"),
         v if (0.25..0.50).contains(&v) => "".to_string(),
         v if (0.50..0.75).contains(&v) => "strong".to_string(),
         v if v >= 0.75 => pgettext("part of string representation of a color", "vivid"),

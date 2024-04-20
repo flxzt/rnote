@@ -3430,6 +3430,7 @@ name = "rnote"
 version = "0.10.2"
 dependencies = [
  "anyhow",
+ "approx",
  "async-fs",
  "base64",
  "cairo-rs",

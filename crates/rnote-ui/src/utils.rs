@@ -140,8 +140,21 @@ pub(crate) fn color_to_hsv_label_string(color: Color) -> String {
     let saturation = palette_color.saturation;
     let value = palette_color.value;
 
+    tracing::debug!("color: alpha: {alpha}, hue: {hue}, saturation: {saturation}, value: {value}");
+
+    // Since the color might come from gdk which only has f32 precision, let's use f32's epsilon
+    let min_saturated =
+        approx::relative_eq!(saturation, 0.0, epsilon = f32::EPSILON as f64) || saturation <= 0.0;
+    //let max_saturated = approx::relative_eq!(saturation, 1.0, epsilon = f32::EPSILON as f64) || saturation >= 1.0;
+    let min_bright =
+        approx::relative_eq!(value, 0.0, epsilon = f32::EPSILON as f64) || value <= 0.0;
+    let max_bright =
+        approx::relative_eq!(value, 1.0, epsilon = f32::EPSILON as f64) || value >= 1.0;
+    let min_alpha = approx::relative_eq!(alpha, 0.0, epsilon = f32::EPSILON as f64) || alpha <= 0.0;
+    //let max_alpha = approx::relative_eq!(alpha, 1.0, epsilon = f32::EPSILON as f64) || alpha >= 1.0;
+
     let hue_str = match hue {
-        _ if saturation <= 0.0 => pgettext(
+        _ if min_saturated => pgettext(
             "used in string representation of the current selected color",
             "grey",
         ),
@@ -181,21 +194,26 @@ pub(crate) fn color_to_hsv_label_string(color: Color) -> String {
             pgettext("part of string representation of a color", "magenta")
         }
         v if v >= 345.0 => pgettext("part of string representation of a color", "rose"),
-        _ => pgettext("part of string representation of a color", "invalid"),
+        _ => unreachable!(),
     };
     let saturation_str = match saturation {
-        v if v < 0.333 => pgettext("part of string representation of a color", "desaturated"),
-        v if (0.333..0.667).contains(&v) => "".to_string(),
-        v if v >= 0.667 => pgettext("part of string representation of a color", "vibrant"),
-        _ => pgettext("part of string representation of a color", "invalid"),
+        _ if min_saturated => "".to_string(),
+        v if v < 0.25 => pgettext("part of string representation of a color", "desaturated"),
+        v if (0.25..0.50).contains(&v) => "".to_string(),
+        v if (0.50..0.75).contains(&v) => "strong".to_string(),
+        v if v >= 0.75 => pgettext("part of string representation of a color", "vivid"),
+        _ => unreachable!(),
     };
     let value_str = match value {
-        v if v < 0.333 => pgettext("part of string representation of a color", "dark"),
-        v if (0.333..0.667).contains(&v) => {
+        v if v < 0.25 => pgettext("part of string representation of a color", "very-dark"),
+        v if (0.25..0.50).contains(&v) => {
+            pgettext("part of string representation of a color", "dark")
+        }
+        v if (0.50..0.75).contains(&v) => {
             pgettext("part of string representation of a color", "mid")
         }
         v if v >= 0.667 => pgettext("part of string representation of a color", "bright"),
-        _ => pgettext("part of string representation of a color", "invalid"),
+        _ => unreachable!(),
     };
     let alpha_str = match alpha {
         v if v < 0.333 => pgettext("part of string representation of a color", "transparent"),
@@ -207,14 +225,17 @@ pub(crate) fn color_to_hsv_label_string(color: Color) -> String {
             "slightly translucent",
         ),
         v if v >= 1.0 => "".to_string(),
-        _ => pgettext("part of string representation of a color", "invalid"),
+        _ => unreachable!(),
     };
 
-    if alpha <= 0.0 {
-        pgettext("part of string representation of a color", "transparent")
-    } else if value <= 0.0 {
+    if min_alpha {
+        pgettext(
+            "part of string representation of a color",
+            "fully transparent",
+        )
+    } else if min_saturated && min_bright {
         pgettext("part of string representation of a color", "black")
-    } else if value >= 1.0 {
+    } else if min_saturated && max_bright {
         pgettext("part of string representation of a color", "white")
     } else {
         format!("{alpha_str} {saturation_str} {value_str} {hue_str}")

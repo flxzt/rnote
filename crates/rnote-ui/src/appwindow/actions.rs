@@ -883,7 +883,7 @@ impl RnAppWindow {
                                         let resize_argument = ImageSizeOption::ResizeImage(Resize {
                                             width: canvas.engine_ref().document.format.width(),
                                             height: canvas.engine_ref().document.format.height(),
-                                            isfixed_layout: canvas.engine_ref().document.layout.is_fixed_layout(),
+                                            layout_fixed_width: canvas.engine_ref().document.layout.is_fixed_width(),
                                             max_viewpoint: None,
                                             restrain_to_viewport: false,
                                             respect_borders,

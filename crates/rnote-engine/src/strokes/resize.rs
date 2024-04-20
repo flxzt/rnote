@@ -21,7 +21,7 @@ pub struct Resize {
     /// height of a page
     pub height: f64,
     /// if the layout has a fixed size vertically
-    pub isfixed_layout: bool,
+    pub layout_fixed_width: bool,
     /// viewport
     pub max_viewpoint: Option<na::OPoint<f64, na::Const<2>>>,
     /// resize to the viewport
@@ -101,9 +101,9 @@ pub fn calculate_resize_ratio(
     let apply_ratios = vec![
         is_provided_viewport & resize.restrain_to_viewport, //canvas in the x direction
         is_provided_viewport & resize.restrain_to_viewport, //canvas in the y direction
-        resize.isfixed_layout, //do not go over the page on the right for fixed layout
-        resize.respect_borders, //do not go over the page on the bottom for all layouts
-        resize.respect_borders, //do not go over the page on the right for all layouts
+        resize.layout_fixed_width, //do not go over the page on the right for fixed layout
+        resize.respect_borders,    //do not go over the page on the bottom for all layouts
+        resize.respect_borders,    //do not go over the page on the right for all layouts
     ];
 
     ratios

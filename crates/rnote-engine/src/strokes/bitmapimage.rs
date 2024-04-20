@@ -101,13 +101,13 @@ impl BitmapImage {
     pub fn from_image_bytes(
         bytes: &[u8],
         pos: na::Vector2<f64>,
-        size: ImageSizeOption,
+        size_option: ImageSizeOption,
     ) -> Result<Self, anyhow::Error> {
         let image = render::Image::try_from_encoded_bytes(bytes)?;
 
         let initial_size = na::vector![f64::from(image.pixel_width), f64::from(image.pixel_height)];
 
-        let (size, resize_ratio) = match size {
+        let (size, resize_ratio) = match size_option {
             ImageSizeOption::RespectOriginalSize => (initial_size, 1.0f64),
             ImageSizeOption::ImposeSize(given_size) => (given_size, 1.0f64),
             ImageSizeOption::ResizeImage(resize_struct) => (

@@ -170,7 +170,7 @@ impl RnCanvas {
     pub(crate) async fn insert_stroke_content(
         &self,
         json_string: String,
-        resize: ImageSizeOption,
+        resize_option: ImageSizeOption,
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let (oneshot_sender, oneshot_receiver) =
@@ -190,7 +190,7 @@ impl RnCanvas {
         let content = oneshot_receiver.await??;
         let widget_flags = self
             .engine_mut()
-            .insert_stroke_content(content, pos, resize);
+            .insert_stroke_content(content, pos, resize_option);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())

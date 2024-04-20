@@ -6,7 +6,6 @@ use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::{render, Drawable};
 use kurbo::Shape;
-use na;
 use p2d::bounding_volume::Aabb;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
@@ -139,7 +138,7 @@ impl VectorImage {
     pub fn from_svg_str(
         svg_data: &str,
         pos: na::Vector2<f64>,
-        size: ImageSizeOption,
+        size_option: ImageSizeOption,
     ) -> Result<Self, anyhow::Error> {
         const COORDINATES_PREC: u8 = 3;
         const TRANSFORMS_PREC: u8 = 4;
@@ -163,7 +162,7 @@ impl VectorImage {
         let svg_data = svg_tree.to_string(&xml_options);
 
         let mut transform = Transform::default();
-        let rectangle = match size {
+        let rectangle = match size_option {
             ImageSizeOption::RespectOriginalSize => {
                 // Size not given : use the intrisic size
                 transform.append_translation_mut(pos + intrinsic_size * 0.5);

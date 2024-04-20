@@ -82,7 +82,7 @@ impl std::string::ToString for Layout {
 
 impl Layout {
     /// checks if the layout is constrained in the horizontal direction
-    pub fn is_fixed_layout(&self) -> bool {
+    pub fn is_fixed_width(&self) -> bool {
         matches!(self, Layout::FixedSize | Layout::ContinuousVertical)
     }
 }

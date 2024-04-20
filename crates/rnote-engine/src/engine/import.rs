@@ -238,7 +238,7 @@ impl Engine {
         let resize_struct = Resize {
             width: self.document.format.width(),
             height: self.document.format.height(),
-            isfixed_layout: self.document.layout.is_fixed_layout(),
+            layout_fixed_width: self.document.layout.is_fixed_width(),
             max_viewpoint: Some(self.camera.viewport().maxs),
             restrain_to_viewport: true,
             respect_borders,
@@ -278,7 +278,7 @@ impl Engine {
         let resize_struct = Resize {
             width: self.document.format.width(),
             height: self.document.format.height(),
-            isfixed_layout: self.document.layout.is_fixed_layout(),
+            layout_fixed_width: self.document.layout.is_fixed_width(),
             max_viewpoint: Some(self.camera.viewport().maxs),
             restrain_to_viewport: true,
             respect_borders,

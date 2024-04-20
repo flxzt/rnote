@@ -153,7 +153,7 @@ pub(crate) fn color_to_hsv_label_string(color: Color) -> String {
     let min_alpha = approx::relative_eq!(alpha, 0.0, epsilon = f32::EPSILON as f64) || alpha <= 0.0;
     //let max_alpha = approx::relative_eq!(alpha, 1.0, epsilon = f32::EPSILON as f64) || alpha >= 1.0;
 
-    // The ranges are tweaked by hand, because the percieved color might not always match slices of 30deg of the value
+    // The ranges are tweaked by hand, because the perceived color might not always match slices of 30deg of the value
     // pie exactly.
     let hue_str = match hue {
         _ if min_saturated => pgettext(

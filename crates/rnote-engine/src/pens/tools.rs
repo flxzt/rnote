@@ -420,7 +420,7 @@ impl PenBehaviour for Tools {
                                 .zoom_w_timeout(new_zoom, engine_view.tasks_tx.clone());
 
                             // Translate the camera view so that the start_surface_coord has the same surface position
-                            // as before the zoom occured
+                            // as before the zoom occurred
                             let new_camera_offset = (((camera_offset
                                 + self.zoom_tool.start_surface_coord)
                                 / total_zoom_old)

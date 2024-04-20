@@ -50,43 +50,31 @@ pub(crate) async fn filedialog_open_doc(appwindow: &RnAppWindow) {
 }
 
 pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
-    // use a list of filters
-    let filters = gio::ListStore::new::<FileFilter>();
+    let filter = FileFilter::new();
+    filter.add_mime_type("application/x-xopp");
+    filter.add_mime_type("application/pdf");
+    filter.add_mime_type("image/svg+xml");
+    filter.add_mime_type("image/png");
+    filter.add_mime_type("image/jpeg");
+    filter.add_mime_type("text/plain");
+    filter.add_suffix("xopp");
+    filter.add_suffix("pdf");
+    filter.add_suffix("svg");
+    filter.add_suffix("png");
+    filter.add_suffix("jpg");
+    filter.add_suffix("jpeg");
+    filter.add_suffix("txt");
+    filter.set_name(Some(&gettext("Jpg, Pdf, Png, Svg, Xopp, Txt")));
 
-    let filters_vec = vec![FileFilter::new(); 6];
-    filters_vec[0].add_mime_type("application/x-xopp");
-    filters_vec[0].add_suffix("xopp");
-    filters_vec[0].set_name(Some(&gettext("Xopp")));
-
-    filters_vec[1].add_mime_type("application/pdf");
-    filters_vec[1].add_suffix("pdf");
-    filters_vec[1].set_name(Some(&gettext("Pdf")));
-
-    filters_vec[2].add_mime_type("image/svg+xml");
-    filters_vec[2].add_suffix("svg");
-    filters_vec[2].set_name(Some(&gettext("Svg")));
-
-    filters_vec[3].add_mime_type("image/png");
-    filters_vec[3].add_suffix("png");
-    filters_vec[3].set_name(Some(&gettext("Png")));
-
-    filters_vec[4].add_mime_type("image/jpeg");
-    filters_vec[4].add_suffix("jpg");
-    filters_vec[4].add_suffix("jpeg");
-    filters_vec[4].set_name(Some(&gettext("Jpg")));
-
-    filters_vec[5].add_mime_type("text/plain");
-    filters_vec[5].add_suffix("txt");
-    filters_vec[5].set_name(Some(&gettext("Txt")));
-
-    // append all these filters to the gio::ListStore
-    filters_vec.iter().for_each(|filter| filters.append(filter));
+    let filter_list = gio::ListStore::new::<FileFilter>();
+    filter_list.append(&filter);
 
     let dialog = FileDialog::builder()
         .title(gettext("Import File"))
         .modal(true)
         .accept_label(gettext("Import"))
-        .filters(&filters)
+        .filters(&filter_list)
+        .default_filter(&filter)
         .build();
 
     if let Some(current_workspace_dir) = appwindow.sidebar().workspacebrowser().dir_list_dir() {

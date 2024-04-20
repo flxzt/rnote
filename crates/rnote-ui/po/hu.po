@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-22 15:14+0100\n"
-"PO-Revision-Date: 2024-02-25 12:23+0000\n"
+"PO-Revision-Date: 2024-04-20 14:07+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -458,16 +458,12 @@ msgid "End Page"
 msgstr "Záró oldal"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
-#, fuzzy
-#| msgid "Adjust document settings"
 msgid "Adjust Document"
-msgstr "Dokumentum beállításainak módosítása"
+msgstr "Dokumentum beállítása"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "Állítsa be, hogy exportálja-e a háttérmintát"
+msgstr "A dokumentum elrendezését a PDF-dokumentumhoz kell-e igazítani"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:107
 msgid "Page Width (%)"
@@ -974,10 +970,8 @@ msgid "De_veloper Mode"
 msgstr "_Fejlesztői mód"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
-#, fuzzy
-#| msgid "New Window"
 msgid "New _Window"
-msgstr "Új ablak"
+msgstr "Új _ablak"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
@@ -1731,15 +1725,15 @@ msgstr "Új mappa létrehozása"
 #: crates/rnote-ui/src/dialogs/mod.rs:258
 #: crates/rnote-ui/src/dialogs/mod.rs:412
 msgid "Saving document failed"
-msgstr "A dokumentum mentése sikertelen"
+msgstr "Nem sikerült a dokumentum mentése"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:632
 msgid "Printing document failed"
-msgstr "A dokumentum nyomtatása nem sikerült"
+msgstr "Nem sikerült a dokumentum nyomtatása"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:668
 msgid "Exporting selection failed, nothing selected"
-msgstr "Kijelölés exportálása sikertelen, nincs kijelölve semmi"
+msgstr "Nem sikerült a kijelölés exportálása, nincs kijelölve semmi"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:281
 msgid "Button 1"
@@ -1767,7 +1761,7 @@ msgstr ""
 
 #: crates/rnote-ui/src/appwindow/mod.rs:488
 msgid "Opening file failed"
-msgstr "A fájl megnyitása sikertelen"
+msgstr "Nem sikerült a fájl megnyitása"
 
 #: crates/rnote-ui/src/canvas/mod.rs:846 crates/rnote-ui/src/dialogs/mod.rs:205
 #: crates/rnote-ui/src/dialogs/mod.rs:342
@@ -1788,27 +1782,23 @@ msgstr "Újratöltés"
 
 #: crates/rnote-ui/src/canvas/mod.rs:891
 msgid "Reloading .rnote file from disk failed"
-msgstr "Az .rnote fájl újratöltése a lemezről sikertelen"
+msgstr "Nem sikerült az .rnote fájl újratöltése a lemezről"
 
 #: crates/rnote-ui/src/canvas/mod.rs:957
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was renamed or moved."
-msgstr "A megnyitott fájl át lett nevezve a lemezen"
+msgstr "A megnyitott fájl át lett nevezve vagy át lett helyezve."
 
 #: crates/rnote-ui/src/canvas/mod.rs:971
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was removed."
-msgstr "A megnyitott fájl át lett nevezve a lemezen"
+msgstr "A megnyitott fájl eltávolításra került."
 
 #: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
-msgstr "Fájl beszúrása sikertelen"
+msgstr "Nem sikerült a fájl beszúrása"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1155
 msgid "Inserting text failed"
-msgstr "Szöveg beszúrása sikertelen"
+msgstr "Nem sikerült a szöveg beszúrása"
 
 #: crates/rnote-ui/src/dialogs/export.rs:27
 #: crates/rnote-ui/src/dialogs/import.rs:21
@@ -1824,7 +1814,7 @@ msgstr "A dokumentum sikeresen mentve"
 #: crates/rnote-ui/src/dialogs/export.rs:536
 #: crates/rnote-ui/src/dialogs/export.rs:804
 msgid "Exporting document failed"
-msgstr "Dokumentum exportálása sikertelen"
+msgstr "Nem sikerült a dokumentum exportálása"
 
 #: crates/rnote-ui/src/dialogs/export.rs:230
 msgid "Exported document successfully"
@@ -1840,11 +1830,11 @@ msgstr "Megtekintés a fájlkezelőben"
 #: crates/rnote-ui/src/dialogs/export.rs:542
 #: crates/rnote-ui/src/dialogs/export.rs:810
 msgid "Failed to open the file in the file manager"
-msgstr "Nem sikerült megnyitni a fájlt a fájlkezelőben"
+msgstr "Nem sikerült a fájl megnyitása a fájlkezelőben"
 
 #: crates/rnote-ui/src/dialogs/export.rs:255
 msgid "Exporting document failed, no file selected"
-msgstr "Dokumentum exportálása sikertelen, nincs fájl kiválasztva"
+msgstr "Nem sikerült a dokumentum exportálása, nincs fájl kijelölve"
 
 #: crates/rnote-ui/src/dialogs/export.rs:270
 #: crates/rnote-ui/src/dialogs/export.rs:567
@@ -1855,7 +1845,7 @@ msgstr "Kijelölés"
 
 #: crates/rnote-ui/src/dialogs/export.rs:527
 msgid "Exporting document pages failed"
-msgstr "Dokumentumoldalak exportálása sikertelen"
+msgstr "Nem sikerült a dokumentumoldalak exportálása"
 
 #: crates/rnote-ui/src/dialogs/export.rs:531
 msgid "Exported document pages successfully"
@@ -1863,15 +1853,15 @@ msgstr "A dokumentumoldalak exportálása sikeres"
 
 #: crates/rnote-ui/src/dialogs/export.rs:551
 msgid "Exporting document pages failed, no directory selected"
-msgstr "Dokumentumoldalak exportálása sikertelen, nincs kijelölve könyvtár"
+msgstr "Nem sikerült a dokumentumoldalak exportálása, nincs könyvtár kijelölve"
 
 #: crates/rnote-ui/src/dialogs/export.rs:781
 msgid "Exporting selection failed, no file selected"
-msgstr "Kijelölés exportálása sikertelen, nincs kijelölve fájl"
+msgstr "Nem sikerült a kijelölés exportálása, nincs kijelölve fájl"
 
 #: crates/rnote-ui/src/dialogs/export.rs:791
 msgid "Exporting selection failed"
-msgstr "Kijelölés exportálása sikertelen"
+msgstr "Nem sikerült a kijelölés exportálása"
 
 #: crates/rnote-ui/src/dialogs/export.rs:795
 msgid "Exported selection successfully"
@@ -1888,7 +1878,7 @@ msgstr "Motor állapotának exportálása"
 
 #: crates/rnote-ui/src/dialogs/export.rs:923
 msgid "Exporting engine state failed"
-msgstr "Motor állapotának exportálása sikertelen"
+msgstr "Nem sikerült a motor állapotának exportálása"
 
 #: crates/rnote-ui/src/dialogs/export.rs:927
 msgid "Exported engine state successfully"
@@ -1900,7 +1890,7 @@ msgstr "Motor beállításainak exportálása"
 
 #: crates/rnote-ui/src/dialogs/export.rs:971
 msgid "Exporting engine config failed"
-msgstr "Motorkonfiguráció exportálása sikertelen"
+msgstr "Nem sikerült a motorkonfiguráció exportálása"
 
 #: crates/rnote-ui/src/dialogs/export.rs:975
 msgid "Exported engine config successfully"
@@ -2337,41 +2327,31 @@ msgstr "Gerenda (nagy)"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:35
 msgid "Can't duplicate an unsaved document"
-msgstr ""
+msgstr "Nem lehet megkettőzni egy el nem mentett dokumentumot"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
-#, fuzzy
-#| msgid "Opening .rnote file failed"
 msgid "Duplicating the file failed"
-msgstr "Az .rnote fájl megnyitása sikertelen"
+msgstr "Nem sikerült a fájl megkettőzése"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
-#, fuzzy
-#| msgid "Change the directory"
 msgid "Duplicating the directory failed"
-msgstr "Könyvtár módosítása"
+msgstr "Nem sikerült a könyvtár megkettőzése"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:18
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Open the file in the default app failed"
-msgstr "Nem sikerült megnyitni a fájlt a fájlkezelőben"
+msgstr "Nem sikerült a fájl megnyitása az alapértelmezett alkalmazásban"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
 msgid "Renaming file failed, target file already exists"
-msgstr ""
+msgstr "Nem sikerült a fájl átnevezése, a célfájl már létezik"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
-#, fuzzy
-#| msgid "Opening file failed"
 msgid "Renaming file failed"
-msgstr "A fájl megnyitása sikertelen"
+msgstr "Nem sikerült a fájl átnevezése"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
-#, fuzzy
-#| msgid "Inserting file failed"
 msgid "Trashing file failed"
-msgstr "Fájl beszúrása sikertelen"
+msgstr "Nem sikerült a fájl törlése"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 msgid "Folder Name"

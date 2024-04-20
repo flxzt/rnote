@@ -224,7 +224,7 @@ pub(crate) fn color_to_hsv_label_string(color: Color) -> String {
         }
         v if (0.667..1.0).contains(&v) => pgettext(
             "part of string representation of a color",
-            "slightly translucent",
+            "slightly-translucent",
         ),
         v if v >= 1.0 => "".to_string(),
         _ => unreachable!(),

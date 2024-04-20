@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-19 14:36+0200\n"
+"POT-Creation-Date: 2024-04-20 10:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2333,113 +2333,127 @@ msgstr ""
 msgid "New Folder"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:144
+#: crates/rnote-ui/src/utils.rs:161
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:145 crates/rnote-ui/src/utils.rs:157
+#: crates/rnote-ui/src/utils.rs:163 crates/rnote-ui/src/utils.rs:198
 msgctxt "part of string representation of a color"
 msgid "rose"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:146
+#: crates/rnote-ui/src/utils.rs:165
 msgctxt "part of string representation of a color"
 msgid "red"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:147
+#: crates/rnote-ui/src/utils.rs:168
 msgctxt "part of string representation of a color"
 msgid "orange"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:148
+#: crates/rnote-ui/src/utils.rs:171
 msgctxt "part of string representation of a color"
 msgid "yellow"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:149
+#: crates/rnote-ui/src/utils.rs:175
 msgctxt "part of string representation of a color"
 msgid "chartreuse-green"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:150
+#: crates/rnote-ui/src/utils.rs:178
 msgctxt "part of string representation of a color"
 msgid "green"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:151
+#: crates/rnote-ui/src/utils.rs:181
 msgctxt "part of string representation of a color"
 msgid "spring-green"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:152
+#: crates/rnote-ui/src/utils.rs:184
 msgctxt "part of string representation of a color"
 msgid "cyan"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:153
+#: crates/rnote-ui/src/utils.rs:187
 msgctxt "part of string representation of a color"
 msgid "azure"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:154
+#: crates/rnote-ui/src/utils.rs:190
 msgctxt "part of string representation of a color"
 msgid "blue"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:155
+#: crates/rnote-ui/src/utils.rs:193
 msgctxt "part of string representation of a color"
 msgid "violet"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:156
+#: crates/rnote-ui/src/utils.rs:196
 msgctxt "part of string representation of a color"
 msgid "magenta"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:158 crates/rnote-ui/src/utils.rs:164
-#: crates/rnote-ui/src/utils.rs:170
+#: crates/rnote-ui/src/utils.rs:203
 msgctxt "part of string representation of a color"
-msgid "invalid"
+msgid "greyish"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:161
+#: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"
-msgid "desaturated"
+msgid "vivid"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:163
+#: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
-msgid "vibrant"
+msgid "very-dark"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:167
+#: crates/rnote-ui/src/utils.rs:212
 msgctxt "part of string representation of a color"
 msgid "dark"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:168
+#: crates/rnote-ui/src/utils.rs:215
 msgctxt "part of string representation of a color"
 msgid "mid"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:169
+#: crates/rnote-ui/src/utils.rs:217
 msgctxt "part of string representation of a color"
 msgid "bright"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:174
+#: crates/rnote-ui/src/utils.rs:221
 msgctxt "part of string representation of a color"
 msgid "transparent"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:176
+#: crates/rnote-ui/src/utils.rs:223
+msgctxt "part of string representation of a color"
+msgid "translucent"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:227
+msgctxt "part of string representation of a color"
+msgid "slightly translucent"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:236
+msgctxt "part of string representation of a color"
+msgid "fully transparent"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "black"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:178
+#: crates/rnote-ui/src/utils.rs:241
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr ""

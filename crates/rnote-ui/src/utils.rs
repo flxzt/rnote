@@ -194,7 +194,19 @@ pub(crate) fn color_to_hsv_label_string(color: Color) -> String {
         v if (0.333..0.667).contains(&v) => {
             pgettext("part of string representation of a color", "mid")
         }
-        v if v >= 0.666 => pgettext("part of string representation of a color", "bright"),
+        v if v >= 0.667 => pgettext("part of string representation of a color", "bright"),
+        _ => pgettext("part of string representation of a color", "invalid"),
+    };
+    let alpha_str = match alpha {
+        v if v < 0.333 => pgettext("part of string representation of a color", "transparent"),
+        v if (0.333..0.667).contains(&v) => {
+            pgettext("part of string representation of a color", "translucent")
+        }
+        v if (0.667..1.0).contains(&v) => pgettext(
+            "part of string representation of a color",
+            "slightly translucent",
+        ),
+        v if v >= 1.0 => "".to_string(),
         _ => pgettext("part of string representation of a color", "invalid"),
     };
 
@@ -205,6 +217,6 @@ pub(crate) fn color_to_hsv_label_string(color: Color) -> String {
     } else if value >= 1.0 {
         pgettext("part of string representation of a color", "white")
     } else {
-        format!("{saturation_str} {value_str} {hue_str}")
+        format!("{alpha_str} {saturation_str} {value_str} {hue_str}")
     }
 }

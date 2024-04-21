@@ -49,6 +49,8 @@
 }
 
 .colorpad {
+    min-width: 32px;
+    min-height: 32px;
     padding: 0px;
     margin: 0px;
     background-blend-mode: screen;
@@ -60,7 +62,7 @@
     background-size: 18px 18px;
     background-position: 0px 0px, 9px 9px;
     border: 1px solid @borders;
-    border-radius: 12px;
+    border-radius: 4px;
     transition: all 0.15s ease-out;
 }
 
@@ -75,7 +77,9 @@
 .colorpad:checked {
     filter: brightness(100%);
     border-color: alpha(@accent_color, 1.0);
-    box-shadow: 0px 0px 6px @accent_bg_color;
+    box-shadow:
+        0px 0px 3px 1px @accent_bg_color,
+        inset 0px -3px 0px 0px @colorpad_fg_color;
 }
 
 .colorsetter {

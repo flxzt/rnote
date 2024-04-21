@@ -26,10 +26,15 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
     filter.add_suffix("rnote");
     filter.set_name(Some(&gettext(".rnote")));
 
+    // create the list of filters
+    let filter_list = gio::ListStore::new::<FileFilter>();
+    filter_list.append(&filter);
+
     let filedialog = FileDialog::builder()
         .title(gettext("Save Document As"))
         .modal(true)
         .accept_label(gettext("Save"))
+        .filters(&filter_list)
         .default_filter(&filter)
         .build();
 
@@ -294,6 +299,10 @@ fn create_filedialog_export_doc(
         Some(&canvas::OUTPUT_FILE_NEW_TITLE),
         Some(&(String::from(".") + &file_ext)),
     );
+
+    let filter_list = gio::ListStore::new::<FileFilter>();
+    filter_list.append(&filter);
+    filedialog.set_filters(Some(&filter_list));
 
     filedialog.set_default_filter(Some(&filter));
     filedialog.set_initial_name(Some(&file_name));
@@ -591,6 +600,10 @@ fn create_filedialog_export_doc_pages(
         }
     }
 
+    let filter_list = gio::ListStore::new::<FileFilter>();
+    filter_list.append(&filter);
+    filedialog.set_filters(Some(&filter_list));
+
     filedialog.set_default_filter(Some(&filter));
 
     filedialog
@@ -884,6 +897,10 @@ fn create_filedialog_export_selection(
         Some(&(String::from(" - Selection") + "." + &file_ext)),
     );
 
+    let filter_list = gio::ListStore::new::<FileFilter>();
+    filter_list.append(&filter);
+    filedialog.set_filters(Some(&filter_list));
+
     filedialog.set_default_filter(Some(&filter));
     filedialog.set_initial_name(Some(&file_name));
 
@@ -895,6 +912,10 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
     filter.add_mime_type("application/json");
     filter.add_suffix("json");
     filter.set_name(Some(&gettext("Json")));
+
+    let filter_list = gio::ListStore::new::<FileFilter>();
+    filter_list.append(&filter);
+
     let initial_name = crate::utils::default_file_title_for_export(
         canvas.output_file(),
         Some(&canvas::OUTPUT_FILE_NEW_TITLE),
@@ -905,6 +926,7 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
         .title(gettext("Export Engine State"))
         .modal(true)
         .accept_label(gettext("Export"))
+        .filters(&filter_list)
         .default_filter(&filter)
         .initial_name(&initial_name)
         .build();
@@ -943,6 +965,10 @@ pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, ca
     filter.add_mime_type("application/json");
     filter.add_suffix("json");
     filter.set_name(Some(&gettext("Json")));
+
+    let filter_list = gio::ListStore::new::<FileFilter>();
+    filter_list.append(&filter);
+
     let initial_name = crate::utils::default_file_title_for_export(
         canvas.output_file(),
         Some(&canvas::OUTPUT_FILE_NEW_TITLE),
@@ -953,6 +979,7 @@ pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, ca
         .title(gettext("Export Engine Config"))
         .modal(true)
         .accept_label(gettext("Export"))
+        .filters(&filter_list)
         .default_filter(&filter)
         .initial_name(&initial_name)
         .build();

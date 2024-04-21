@@ -1,8 +1,11 @@
 // Imports
 use anyhow::Context;
 use futures::AsyncWriteExt;
+use gettextrs::pgettext;
 use gtk4::{gdk, gio, prelude::*};
+use palette::convert::IntoColor;
 use path_absolutize::Absolutize;
+use rnote_compose::Color;
 use std::cell::Ref;
 use std::path::Path;
 use std::slice::Iter;
@@ -126,5 +129,117 @@ where
 {
     pub(crate) fn new(r: Ref<'a, Vec<T>>) -> Self {
         Self { r }
+    }
+}
+
+/// Create a string for display the hue, saturation and value properties of the color.
+pub(crate) fn color_to_hsv_label_string(color: Color) -> String {
+    let palette_color: palette::Okhsv<f64> = color.into_color();
+    let alpha = color.a;
+    let hue = palette_color.hue.into_inner();
+    let saturation = palette_color.saturation;
+    let value = palette_color.value;
+
+    tracing::debug!("color: alpha: {alpha}, hue: {hue}, saturation: {saturation}, value: {value}");
+
+    // Since the color might come from gdk which only has f32 precision, let's use f32's epsilon
+    let min_saturated =
+        approx::relative_eq!(saturation, 0.0, epsilon = f32::EPSILON as f64) || saturation <= 0.0;
+    //let max_saturated = approx::relative_eq!(saturation, 1.0, epsilon = f32::EPSILON as f64) || saturation >= 1.0;
+    let min_bright =
+        approx::relative_eq!(value, 0.0, epsilon = f32::EPSILON as f64) || value <= 0.0;
+    let max_bright =
+        approx::relative_eq!(value, 1.0, epsilon = f32::EPSILON as f64) || value >= 1.0;
+    let min_alpha = approx::relative_eq!(alpha, 0.0, epsilon = f32::EPSILON as f64) || alpha <= 0.0;
+    //let max_alpha = approx::relative_eq!(alpha, 1.0, epsilon = f32::EPSILON as f64) || alpha >= 1.0;
+
+    // The ranges are tweaked by hand, because the perceived color might not always match slices of 30deg of the value
+    // pie exactly.
+    let hue_str = match hue {
+        _ if min_saturated => pgettext(
+            "used in string representation of the current selected color",
+            "grey",
+        ),
+        v if v < 0.0 => pgettext("part of string representation of a color", "rose"),
+        v if (0.0..40.0).contains(&v) => {
+            pgettext("part of string representation of a color", "red")
+        }
+        v if (40.0..80.0).contains(&v) => {
+            pgettext("part of string representation of a color", "orange")
+        }
+        v if (80.0..108.0).contains(&v) => {
+            pgettext("part of string representation of a color", "yellow")
+        }
+        v if (108.0..120.0).contains(&v) => pgettext(
+            "part of string representation of a color",
+            "chartreuse-green",
+        ),
+        v if (120.0..150.0).contains(&v) => {
+            pgettext("part of string representation of a color", "green")
+        }
+        v if (150.0..180.0).contains(&v) => {
+            pgettext("part of string representation of a color", "spring-green")
+        }
+        v if (180.0..210.0).contains(&v) => {
+            pgettext("part of string representation of a color", "cyan")
+        }
+        v if (210.0..240.0).contains(&v) => {
+            pgettext("part of string representation of a color", "azure")
+        }
+        v if (240.0..280.0).contains(&v) => {
+            pgettext("part of string representation of a color", "blue")
+        }
+        v if (280.0..315.0).contains(&v) => {
+            pgettext("part of string representation of a color", "violet")
+        }
+        v if (315.0..345.0).contains(&v) => {
+            pgettext("part of string representation of a color", "magenta")
+        }
+        v if v >= 345.0 => pgettext("part of string representation of a color", "rose"),
+        _ => unreachable!(),
+    };
+    let saturation_str = match saturation {
+        _ if min_saturated => "".to_string(),
+        v if v < 0.25 => pgettext("part of string representation of a color", "greyish"),
+        v if (0.25..0.50).contains(&v) => "".to_string(),
+        v if (0.50..0.75).contains(&v) => "strong".to_string(),
+        v if v >= 0.75 => pgettext("part of string representation of a color", "vivid"),
+        _ => unreachable!(),
+    };
+    let value_str = match value {
+        v if v < 0.25 => pgettext("part of string representation of a color", "very-dark"),
+        v if (0.25..0.50).contains(&v) => {
+            pgettext("part of string representation of a color", "dark")
+        }
+        v if (0.50..0.75).contains(&v) => {
+            pgettext("part of string representation of a color", "mid")
+        }
+        v if v >= 0.667 => pgettext("part of string representation of a color", "bright"),
+        _ => unreachable!(),
+    };
+    let alpha_str = match alpha {
+        v if v < 0.333 => pgettext("part of string representation of a color", "transparent"),
+        v if (0.333..0.667).contains(&v) => {
+            pgettext("part of string representation of a color", "translucent")
+        }
+        v if (0.667..1.0).contains(&v) => pgettext(
+            "part of string representation of a color",
+            "slightly-translucent",
+        ),
+        v if v >= 1.0 => "".to_string(),
+        _ => unreachable!(),
+    };
+
+    if min_alpha {
+        pgettext(
+            "part of string representation of a color",
+            "fully transparent",
+        )
+    } else if min_saturated && min_bright {
+        pgettext("part of string representation of a color", "black")
+    } else if min_saturated && max_bright {
+        pgettext("part of string representation of a color", "white")
+    } else {
+        format!("{alpha_str} {saturation_str} {value_str} {hue_str}")
     }
 }

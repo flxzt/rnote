@@ -3430,6 +3430,7 @@ name = "rnote"
 version = "0.10.2"
 dependencies = [
  "anyhow",
+ "approx",
  "async-fs",
  "base64",
  "cairo-rs",
@@ -3450,6 +3451,7 @@ dependencies = [
  "numeric-sort",
  "once_cell",
  "open",
+ "palette",
  "parry2d-f64",
  "path-absolutize",
  "piet",

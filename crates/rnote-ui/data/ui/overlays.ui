@@ -46,7 +46,6 @@
             <property name="margin-bottom">6</property>
             <property name="margin-start">18</property>
             <property name="margin-end">18</property>
-            <property name="position">top</property>
             <style>
               <class name="overlay_toolbar" />
             </style>

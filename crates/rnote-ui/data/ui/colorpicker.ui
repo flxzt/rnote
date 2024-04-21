@@ -11,78 +11,94 @@
       <class name="colorpicker"/>
     </style>
     <child>
-      <object class="GtkBox" id="active_colors_box">
-        <property name="spacing">3</property>
-        <child>
-          <object class="RnColorPad" id="stroke_color_pad">
-            <property name="icon_name">stroke-color-symbolic</property>
-            <property name="tooltip-text" translatable="yes">Stroke Color</property>
-            <property name="active">true</property>
-          </object>
-        </child>
-        <child>
-          <object class="RnColorPad" id="fill_color_pad">
-            <property name="icon_name">fill-color-symbolic</property>
-            <property name="tooltip-text" translatable="yes">Fill Color</property>
-            <property name="group">stroke_color_pad</property>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator"></object>
-    </child>
-    <child>
-      <object class="GtkBox" id="setter_box">
-        <property name="orientation">vertical</property>
-        <property name="homogeneous">true</property>
+      <object class="GtkBox">
+        <property name="orientation">horizontal</property>
         <property name="spacing">6</property>
-        <style>
-          <class name="linked" />
-        </style>
         <child>
-          <object class="RnColorSetter" id="setter_1">
+          <object class="GtkBox" id="active_colors_box">
+            <property name="spacing">3</property>
+            <child>
+              <object class="RnColorPad" id="stroke_color_pad">
+                <property name="icon_name">stroke-color-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Stroke Color</property>
+                <property name="active">true</property>
+              </object>
+            </child>
+            <child>
+              <object class="RnColorPad" id="fill_color_pad">
+                <property name="icon_name">fill-color-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Fill Color</property>
+                <property name="group">stroke_color_pad</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
-          <object class="RnColorSetter" id="setter_2">
+          <object class="GtkSeparator"></object>
+        </child>
+        <child>
+          <object class="GtkBox" id="setter_box">
+            <property name="orientation">horizontal</property>
+            <property name="homogeneous">true</property>
+            <property name="spacing">6</property>
+            <style>
+              <class name="linked" />
+            </style>
+            <child>
+              <object class="RnColorSetter" id="setter_1">
+              </object>
+            </child>
+            <child>
+              <object class="RnColorSetter" id="setter_2">
+              </object>
+            </child>
+            <child>
+              <object class="RnColorSetter" id="setter_3">
+              </object>
+            </child>
+            <child>
+              <object class="RnColorSetter" id="setter_4">
+              </object>
+            </child>
+            <child>
+              <object class="RnColorSetter" id="setter_5">
+              </object>
+            </child>
+            <child>
+              <object class="RnColorSetter" id="setter_6">
+              </object>
+            </child>
+            <child>
+              <object class="RnColorSetter" id="setter_7">
+              </object>
+            </child>
+            <child>
+              <object class="RnColorSetter" id="setter_8">
+              </object>
+            </child>
+            <child>
+              <object class="RnColorSetter" id="setter_9">
+              </object>
+            </child>
           </object>
         </child>
         <child>
-          <object class="RnColorSetter" id="setter_3">
-          </object>
-        </child>
-        <child>
-          <object class="RnColorSetter" id="setter_4">
-          </object>
-        </child>
-        <child>
-          <object class="RnColorSetter" id="setter_5">
-          </object>
-        </child>
-        <child>
-          <object class="RnColorSetter" id="setter_6">
-          </object>
-        </child>
-        <child>
-          <object class="RnColorSetter" id="setter_7">
-          </object>
-        </child>
-        <child>
-          <object class="RnColorSetter" id="setter_8">
-          </object>
-        </child>
-        <child>
-          <object class="RnColorSetter" id="setter_9">
+          <object class="GtkButton" id="colordialog_button">
+            <property name="icon-name">preferences-color-symbolic</property>
+            <style>
+              <class name="flat" />
+            </style>
           </object>
         </child>
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="colordialog_button">
-        <property name="icon-name">preferences-color-symbolic</property>
+      <object class="GtkLabel" id="active_color_label">
+        <property name="hexpand">true</property>
+        <property name="halign">center</property>
+        <property name="label">...</property>
         <style>
-          <class name="flat" />
+          <class name="caption" />
         </style>
       </object>
     </child>

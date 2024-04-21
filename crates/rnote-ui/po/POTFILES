@@ -56,3 +56,4 @@ crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs
 crates/rnote-ui/src/workspacebrowser/mod.rs
 crates/rnote-ui/src/workspacebrowser/widgethelper.rs
 crates/rnote-ui/src/overlays.rs
+crates/rnote-ui/src/utils.rs

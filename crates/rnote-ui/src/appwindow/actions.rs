@@ -82,6 +82,9 @@ impl RnAppWindow {
         let action_block_pinch_zoom =
             gio::PropertyAction::new("block-pinch-zoom", self, "block-pinch-zoom");
         self.add_action(&action_block_pinch_zoom);
+        let action_respect_borders =
+            gio::PropertyAction::new("respect-borders", self, "respect-borders");
+        self.add_action(&action_respect_borders);
         let action_pen_style = gio::SimpleAction::new_stateful(
             "pen-style",
             Some(&String::static_variant_type()),

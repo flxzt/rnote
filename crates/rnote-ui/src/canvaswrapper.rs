@@ -20,6 +20,7 @@ struct Connections {
     appwindow_show_scrollbars_bind: Option<glib::Binding>,
     appwindow_inertial_scrolling_bind: Option<glib::Binding>,
     appwindow_righthanded_bind: Option<glib::Binding>,
+    appwindow_respect_borders_bind: Option<glib::Binding>,
 }
 
 mod imp {
@@ -33,6 +34,7 @@ mod imp {
         pub(crate) show_scrollbars: Cell<bool>,
         pub(crate) block_pinch_zoom: Cell<bool>,
         pub(crate) inertial_scrolling: Cell<bool>,
+        pub(crate) respect_borders: Cell<bool>,
         pub(crate) pointer_pos: Cell<Option<na::Vector2<f64>>>,
         pub(crate) last_contextmenu_pos: Cell<Option<na::Vector2<f64>>>,
 
@@ -124,6 +126,7 @@ mod imp {
                 show_scrollbars: Cell::new(false),
                 block_pinch_zoom: Cell::new(false),
                 inertial_scrolling: Cell::new(true),
+                respect_borders: Cell::new(false),
                 pointer_pos: Cell::new(None),
                 last_contextmenu_pos: Cell::new(None),
 
@@ -232,6 +235,9 @@ mod imp {
                     glib::ParamSpecBoolean::builder("inertial-scrolling")
                         .default_value(true)
                         .build(),
+                    glib::ParamSpecBoolean::builder("respect-borders")
+                        .default_value(false)
+                        .build(),
                 ]
             });
             PROPERTIES.as_ref()
@@ -242,6 +248,7 @@ mod imp {
                 "show-scrollbars" => self.show_scrollbars.get().to_value(),
                 "block-pinch-zoom" => self.block_pinch_zoom.get().to_value(),
                 "inertial-scrolling" => self.inertial_scrolling.get().to_value(),
+                "respect-borders" => self.respect_borders.get().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -271,6 +278,12 @@ mod imp {
 
                     self.inertial_scrolling.replace(inertial_scrolling);
                     self.canvas_kinetic_scrolling_update();
+                }
+                "respect-borders" => {
+                    let respect_borders = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type bool");
+                    self.respect_borders.replace(respect_borders);
                 }
                 _ => unimplemented!(),
             }
@@ -705,6 +718,11 @@ impl RnCanvasWrapper {
             .sync_create()
             .build();
 
+        let appwindow_respect_borders_bind = appwindow
+            .bind_property("respect-borders", self, "respect_borders")
+            .sync_create()
+            .build();
+
         let appwindow_show_scrollbars_bind = appwindow
             .sidebar()
             .settings_panel()
@@ -758,6 +776,12 @@ impl RnCanvasWrapper {
         {
             old.unbind();
         }
+        if let Some(old) = connections
+            .appwindow_respect_borders_bind
+            .replace(appwindow_respect_borders_bind)
+        {
+            old.unbind();
+        }
     }
 
     /// This disconnects all connections with references to external objects,
@@ -778,6 +802,9 @@ impl RnCanvasWrapper {
             old.unbind();
         }
         if let Some(old) = connections.appwindow_righthanded_bind.take() {
+            old.unbind();
+        }
+        if let Some(old) = connections.appwindow_respect_borders_bind.take() {
             old.unbind();
         }
     }

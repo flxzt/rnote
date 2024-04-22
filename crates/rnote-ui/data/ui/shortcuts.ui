@@ -233,12 +233,6 @@
                 </child>
                 <child>
                   <object class="GtkShortcutsShortcut">
-                    <property name="title" translatable="yes">Paste Clipboard whilst respecting borders</property>
-                    <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;v</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkShortcutsShortcut">
                     <property name="title" translatable="yes">Duplicate Selection</property>
                     <property name="accelerator">&lt;ctrl&gt;d</property>
                   </object>

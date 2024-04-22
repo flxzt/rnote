@@ -1,5 +1,3 @@
-use na;
-
 /// Enum that lists the different options for sizing the image
 ///
 /// Either respect the original image size (in pixel or dimensions)

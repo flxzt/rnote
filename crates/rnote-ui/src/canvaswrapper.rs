@@ -675,6 +675,11 @@ impl RnCanvasWrapper {
     }
 
     #[allow(unused)]
+    pub(crate) fn respect_borders(&self) -> bool {
+        self.property::<bool>("respect-borders")
+    }
+
+    #[allow(unused)]
     pub(crate) fn set_block_pinch_zoom(&self, block_pinch_zoom: bool) {
         self.set_property("block-pinch-zoom", block_pinch_zoom);
     }

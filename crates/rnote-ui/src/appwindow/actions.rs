@@ -1,5 +1,6 @@
 // Imports
 use crate::{config, dialogs, RnAppWindow, RnCanvas};
+use adw::glib::property::PropertyGet;
 use gettextrs::gettext;
 use gtk4::graphene;
 use gtk4::{
@@ -155,9 +156,6 @@ impl RnAppWindow {
         let action_clipboard_paste_contextmenu =
             gio::SimpleAction::new("clipboard-paste-contextmenu", None);
         self.add_action(&action_clipboard_paste_contextmenu);
-        let action_clipboard_paste_contextmenu_special =
-            gio::SimpleAction::new("clipboard-paste-contextmenu-special", None);
-        self.add_action(&action_clipboard_paste_contextmenu_special);
         let action_active_tab_move_left = gio::SimpleAction::new("active-tab-move-left", None);
         self.add_action(&action_active_tab_move_left);
         let action_active_tab_move_right = gio::SimpleAction::new("active-tab-move-right", None);
@@ -738,13 +736,8 @@ impl RnAppWindow {
         }));
 
         // Clipboard paste
-        action_clipboard_respect_borders.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
-                appwindow.clipboard_paste(None, true);
-            }),
-        );
         action_clipboard_paste.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            appwindow.clipboard_paste(None, false);
+            appwindow.clipboard_paste(None, appwindow.active_tab_wrapper().respect_borders());
         }));
 
         action_clipboard_paste_contextmenu.connect_activate(
@@ -760,22 +753,6 @@ impl RnAppWindow {
                 });
 
                 appwindow.clipboard_paste(last_contextmenu_pos, false);
-            }),
-        );
-
-        action_clipboard_paste_contextmenu_special.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
-                let canvas_wrapper = appwindow.active_tab_wrapper();
-                let canvas = canvas_wrapper.canvas();
-
-                let last_contextmenu_pos = canvas_wrapper.last_contextmenu_pos().map(|vec2| {
-                    let p = graphene::Point::new(vec2.x as f32, vec2.y as f32);
-                    (canvas.engine_ref().camera.transform().inverse()
-                        * na::point![p.x() as f64, p.y() as f64])
-                    .coords
-                });
-
-                appwindow.clipboard_paste(last_contextmenu_pos, true);
             }),
         );
     }
@@ -805,7 +782,6 @@ impl RnAppWindow {
         app.set_accels_for_action("win.clipboard-copy", &["<Ctrl>c"]);
         app.set_accels_for_action("win.clipboard-cut", &["<Ctrl>x"]);
         app.set_accels_for_action("win.clipboard-paste", &["<Ctrl>v"]);
-        app.set_accels_for_action("win.clipboard-paste-respect-borders", &["<Ctrl><Shift>v"]);
         app.set_accels_for_action("win.pen-style::brush", &["<Ctrl>1"]);
         app.set_accels_for_action("win.pen-style::shaper", &["<Ctrl>2"]);
         app.set_accels_for_action("win.pen-style::typewriter", &["<Ctrl>3"]);
@@ -815,7 +791,7 @@ impl RnAppWindow {
 
         // shortcuts for devel build
         if config::PROFILE.to_lowercase().as_str() == "devel" {
-            app.set_accels_for_action("win.visual-debug", &["<Ctrl><Alt>v"]);
+            app.set_accels_for_action("win.visual-debug", &["<Ctrl><Shift>v"]);
         }
     }
 

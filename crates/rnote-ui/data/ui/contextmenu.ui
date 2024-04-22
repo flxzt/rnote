@@ -18,10 +18,6 @@
             <attribute name="label" translatable="yes">_Paste</attribute>
             <attribute name="action">win.clipboard-paste-contextmenu</attribute>
           </item>
-          <item>
-            <attribute name="label" translatable="yes">_Paste whilst respecting borders</attribute>
-            <attribute name="action">win.clipboard-paste-contextmenu-special</attribute>
-          </item>
         </menu>
       </object>
     </child>

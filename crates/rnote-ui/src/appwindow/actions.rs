@@ -1,6 +1,5 @@
 // Imports
 use crate::{config, dialogs, RnAppWindow, RnCanvas};
-use adw::glib::property::PropertyGet;
 use gettextrs::gettext;
 use gtk4::graphene;
 use gtk4::{
@@ -752,7 +751,7 @@ impl RnAppWindow {
                     .coords
                 });
 
-                appwindow.clipboard_paste(last_contextmenu_pos, false);
+                appwindow.clipboard_paste(last_contextmenu_pos, appwindow.active_tab_wrapper().respect_borders());
             }),
         );
     }
@@ -795,7 +794,6 @@ impl RnAppWindow {
         }
     }
 
-    /// `respect_borders` : activate the special paste mode
     fn clipboard_paste(&self, target_pos: Option<na::Vector2<f64>>, respect_borders: bool) {
         let canvas_wrapper = self.active_tab_wrapper();
         let canvas = canvas_wrapper.canvas();

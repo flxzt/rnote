@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-20 11:12+0200\n"
-"PO-Revision-Date: 2024-03-24 13:01+0000\n"
+"PO-Revision-Date: 2024-04-25 16:37+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.5.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1219,10 +1219,8 @@ msgid "Toggle"
 msgstr "Attiva/disattiva"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:14
-#, fuzzy
-#| msgid "Enabled"
 msgid "Disabled"
-msgstr "Abilitato"
+msgstr "Disabilitato"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:41
 #: crates/rnote-ui/data/ui/shortcuts.ui:11
@@ -1254,16 +1252,16 @@ msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "Imposta se le barre di scorrimento sull'area di disegno sono mostrate"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:64
-#, fuzzy
-#| msgid "Optimize for Printing"
 msgid "Optimize for E-Paper Displays"
-msgstr "Ottimizza per la stampa"
+msgstr "Ottimizza per display E-Paper"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:65
 msgid ""
 "Changes certain UI elements and modifies behaviour\n"
 "of tools for optimized usage on E-Paper displays"
 msgstr ""
+"Cambia alcuni elementi dell'interfaccia utente e modifica il comportamento\n"
+"di strumenti per un utilizzo ottimizzato sui display E-Paper"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:71
 msgid "Inertial Touch Scrolling"
@@ -2396,89 +2394,87 @@ msgstr "Nuova Cartella"
 #: crates/rnote-ui/src/utils.rs:161
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
-msgstr ""
+msgstr "grigio"
 
 #: crates/rnote-ui/src/utils.rs:163 crates/rnote-ui/src/utils.rs:198
 msgctxt "part of string representation of a color"
 msgid "rose"
-msgstr ""
+msgstr "rosa"
 
 #: crates/rnote-ui/src/utils.rs:165
-#, fuzzy
-#| msgid "Bread"
 msgctxt "part of string representation of a color"
 msgid "red"
-msgstr "Pane"
+msgstr "rosso"
 
 #: crates/rnote-ui/src/utils.rs:168
 msgctxt "part of string representation of a color"
 msgid "orange"
-msgstr ""
+msgstr "arancio"
 
 #: crates/rnote-ui/src/utils.rs:171
 msgctxt "part of string representation of a color"
 msgid "yellow"
-msgstr ""
+msgstr "giallo"
 
 #: crates/rnote-ui/src/utils.rs:175
 msgctxt "part of string representation of a color"
 msgid "chartreuse-green"
-msgstr ""
+msgstr "verde-certosa"
 
 #: crates/rnote-ui/src/utils.rs:178
 msgctxt "part of string representation of a color"
 msgid "green"
-msgstr ""
+msgstr "verde"
 
 #: crates/rnote-ui/src/utils.rs:181
 msgctxt "part of string representation of a color"
 msgid "spring-green"
-msgstr ""
+msgstr "verde-primavera"
 
 #: crates/rnote-ui/src/utils.rs:184
 msgctxt "part of string representation of a color"
 msgid "cyan"
-msgstr ""
+msgstr "ciano"
 
 #: crates/rnote-ui/src/utils.rs:187
 msgctxt "part of string representation of a color"
 msgid "azure"
-msgstr ""
+msgstr "azzurro"
 
 #: crates/rnote-ui/src/utils.rs:190
 msgctxt "part of string representation of a color"
 msgid "blue"
-msgstr ""
+msgstr "blu"
 
 #: crates/rnote-ui/src/utils.rs:193
 msgctxt "part of string representation of a color"
 msgid "violet"
-msgstr ""
+msgstr "viola"
 
 #: crates/rnote-ui/src/utils.rs:196
 msgctxt "part of string representation of a color"
 msgid "magenta"
-msgstr ""
+msgstr "magenta"
 
 #: crates/rnote-ui/src/utils.rs:203
 msgctxt "part of string representation of a color"
 msgid "greyish"
-msgstr ""
+msgstr "grigiastro"
 
 #: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"
 msgid "vivid"
-msgstr ""
+msgstr "vivido"
 
 #: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
 msgid "very-dark"
-msgstr ""
+msgstr "molto scuro"
 
 #: crates/rnote-ui/src/utils.rs:212
 msgctxt "part of string representation of a color"
 msgid "dark"
-msgstr ""
+msgstr "scuro"
 
 #: crates/rnote-ui/src/utils.rs:215
 msgctxt "part of string representation of a color"
@@ -2486,45 +2482,39 @@ msgid "mid"
 msgstr ""
 
 #: crates/rnote-ui/src/utils.rs:217
-#, fuzzy
-#| msgid "Height"
 msgctxt "part of string representation of a color"
 msgid "bright"
-msgstr "Altezza"
+msgstr "acceso"
 
 #: crates/rnote-ui/src/utils.rs:221
-#, fuzzy
-#| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "transparent"
-msgstr "Albano Battistella <albano_battistella@hotmail.com>"
+msgstr "trasparente"
 
 #: crates/rnote-ui/src/utils.rs:223
-#, fuzzy
-#| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "translucent"
-msgstr "Albano Battistella <albano_battistella@hotmail.com>"
+msgstr "traslucido"
 
 #: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
-msgstr ""
+msgstr "leggermente traslucido"
 
 #: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
-msgstr ""
+msgstr "completamente trasparente"
 
 #: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "black"
-msgstr ""
+msgstr "nero"
 
 #: crates/rnote-ui/src/utils.rs:241
 msgctxt "part of string representation of a color"
 msgid "white"
-msgstr ""
+msgstr "bianco"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "Il file aperto è stato spostato o cancellato"

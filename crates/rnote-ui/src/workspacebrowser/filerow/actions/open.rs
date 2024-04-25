@@ -11,7 +11,6 @@ pub(crate) fn open(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleA
             return
         };
         glib::spawn_future_local(clone!(@weak appwindow => async move {
-            tracing::debug!("open action in the workspace bar");
             appwindow.open_file_w_dialogs(current_file, None, true, appwindow.active_tab_wrapper().respect_borders()).await;
         }));
     }));

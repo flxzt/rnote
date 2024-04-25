@@ -149,9 +149,6 @@ impl RnAppWindow {
         self.add_action(&action_clipboard_cut);
         let action_clipboard_paste = gio::SimpleAction::new("clipboard-paste", None);
         self.add_action(&action_clipboard_paste);
-        let action_clipboard_respect_borders =
-            gio::SimpleAction::new("clipboard-paste-respect-borders", None);
-        self.add_action(&action_clipboard_respect_borders);
         let action_clipboard_paste_contextmenu =
             gio::SimpleAction::new("clipboard-paste-contextmenu", None);
         self.add_action(&action_clipboard_paste_contextmenu);
@@ -821,7 +818,6 @@ impl RnAppWindow {
                         }).collect::<Vec<PathBuf>>();
 
                         for file_path in file_paths {
-                            tracing::debug!("clipboard_paste");
                             appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), target_pos, false, respect_borders).await;
                         }
                     }

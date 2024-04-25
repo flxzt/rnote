@@ -683,8 +683,8 @@ impl StrokeStore {
     /// The inserted strokes then need to update their geometry and rendering.
     pub(crate) fn insert_stroke_content(
         &mut self,
-        ratio: f64,
         clipboard_content: StrokeContent,
+        ratio: f64,
         pos: na::Vector2<f64>,
     ) -> Vec<StrokeKey> {
         if clipboard_content.strokes.is_empty() {

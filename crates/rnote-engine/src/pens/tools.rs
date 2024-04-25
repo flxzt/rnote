@@ -399,27 +399,40 @@ impl PenBehaviour for Tools {
                             .resize_autoexpand(engine_view.store, engine_view.camera);
                     }
                     ToolStyle::Zoom => {
-                        let total_zoom = engine_view.camera.total_zoom();
-                        let viewport_center = engine_view.camera.viewport_center();
+                        let total_zoom_old = engine_view.camera.total_zoom();
+                        let camera_offset = engine_view.camera.offset();
+
                         let new_surface_coord = engine_view
                             .camera
                             .transform()
                             .transform_point(&element.pos.into())
                             .coords;
+
                         let offset = new_surface_coord - self.zoom_tool.current_surface_coord;
 
                         // Drag down zooms out, drag up zooms in
                         let new_zoom =
-                            total_zoom * (1.0 - offset[1] * Camera::DRAG_ZOOM_MAGN_ZOOM_FACTOR);
+                            total_zoom_old * (1.0 - offset[1] * Camera::DRAG_ZOOM_MAGN_ZOOM_FACTOR);
 
                         if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
                             widget_flags |= engine_view
                                 .camera
                                 .zoom_w_timeout(new_zoom, engine_view.tasks_tx.clone());
-                            widget_flags |= engine_view.camera.set_viewport_center(viewport_center)
-                                | engine_view
-                                    .document
-                                    .expand_autoexpand(engine_view.camera, engine_view.store);
+
+                            // Translate the camera view so that the start_surface_coord has the same surface position
+                            // as before the zoom occurred
+                            let new_camera_offset = (((camera_offset
+                                + self.zoom_tool.start_surface_coord)
+                                / total_zoom_old)
+                                * new_zoom)
+                                - self.zoom_tool.start_surface_coord;
+                            widget_flags |= engine_view
+                                .camera
+                                .set_offset(new_camera_offset, engine_view.document);
+
+                            widget_flags |= engine_view
+                                .document
+                                .expand_autoexpand(engine_view.camera, engine_view.store);
                         }
                         self.zoom_tool.current_surface_coord = new_surface_coord;
                     }

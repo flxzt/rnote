@@ -96,10 +96,12 @@ unlock the weblate repo to resynchronize with upstream.
 
 ## Update the "Chinese Traditional" Translation (zh_Hant.po) Manually
 
+The package providing the `opencc` tool (`opencc-tools` on Fedora) needs to be installed to regenerate the translation.
+
 To autogenerate chinese traditional translation (`zh_Hant`) from chinese simplified (`zh_Hans`), use opencc:
 
 ```bash
-opencc -i crates/rnote-ui/po/zh_Hans.po -o crates/rnote-ui/po/zh_Hant.po -c /usr/share/opencc/s2twp.json
+./build-aux/update-translations.sh
 ```
 
 discussed in [issue 220](https://github.com/flxzt/rnote/issues/220)

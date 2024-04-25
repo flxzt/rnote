@@ -406,7 +406,7 @@ impl RnAppWindow {
             let is_maximized = app_settings.boolean("is-maximized");
 
             if is_maximized {
-                // don't restore maximized window state on macos, avoids issues disussed in
+                // don't restore maximized window state on macos, avoids issues discussed in
                 // issue 823 - https://github.com/flxzt/rnote/issues/823
                 #[cfg(not(target_os = "macos"))]
                 self.maximize();

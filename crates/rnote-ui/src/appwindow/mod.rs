@@ -127,13 +127,13 @@ impl RnAppWindow {
             ));
         } else {
             if let Err(e) = self.setup_settings_binds() {
-                tracing::error!("Failed to setup settings binds, Err: {e:}");
+                tracing::error!("Failed to setup settings binds, Err: {e:?}");
             }
             if let Err(e) = self.setup_periodic_save() {
-                tracing::error!("Failed to setup periodic save, Err: {e:}");
+                tracing::error!("Failed to setup periodic save, Err: {e:?}");
             }
             if let Err(e) = self.load_settings() {
-                tracing::error!("Failed to load initial settings, Err: {e:}");
+                tracing::error!("Failed to load initial settings, Err: {e:?}");
             }
         }
 

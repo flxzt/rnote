@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-22 15:14+0100\n"
-"PO-Revision-Date: 2024-03-15 11:02+0000\n"
-"Last-Translator: openCC converted detiam <dehe_tian@outlook.com>\n"
+"PO-Revision-Date: 2024-04-02 00:01+0000\n"
+"Last-Translator: openCC converted Integral <integral@member.fsf.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
 "Language: zh_Hant\n"
@@ -2335,19 +2335,15 @@ msgstr "橫（大）"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:35
 msgid "Can't duplicate an unsaved document"
-msgstr ""
+msgstr "無法複製未儲存的文件"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
-#, fuzzy
-#| msgid "Opening .rnote file failed"
 msgid "Duplicating the file failed"
-msgstr ".rnote 檔案開啟失敗"
+msgstr ".rnote 檔案複製失敗"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
-#, fuzzy
-#| msgid "Change the directory"
 msgid "Duplicating the directory failed"
-msgstr "更改目錄"
+msgstr "複製目錄失敗"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:18
 #, fuzzy
@@ -2357,19 +2353,15 @@ msgstr "無法開啟在檔案管理器中選擇的檔案"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
 msgid "Renaming file failed, target file already exists"
-msgstr ""
+msgstr "重新命名檔案失敗，目標檔案已存在"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
-#, fuzzy
-#| msgid "Opening file failed"
 msgid "Renaming file failed"
-msgstr "檔案開啟失敗"
+msgstr "檔案重新命名失敗"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
-#, fuzzy
-#| msgid "Inserting file failed"
 msgid "Trashing file failed"
-msgstr "插入檔案失敗"
+msgstr "刪除檔案失敗"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 msgid "Folder Name"

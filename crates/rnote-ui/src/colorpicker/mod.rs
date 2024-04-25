@@ -9,13 +9,13 @@ pub(crate) use colorsetter::RnColorSetter;
 // Imports
 use crate::RnAppWindow;
 use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, BoxLayout, Button, ColorDialog,
-    CompositeTemplate, Orientation, PositionType, Widget,
+    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, Button, ColorDialog,
+    CompositeTemplate, Label, Widget,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::{color, Color};
 use rnote_engine::ext::GdkRGBAExt;
-use std::cell::{Cell, RefCell};
+use std::cell::RefCell;
 
 mod imp {
     use super::*;
@@ -25,7 +25,6 @@ mod imp {
     pub(crate) struct RnColorPicker {
         pub(crate) stroke_color: RefCell<gdk::RGBA>,
         pub(crate) fill_color: RefCell<gdk::RGBA>,
-        pub(crate) position: Cell<PositionType>,
         pub(crate) color_dialog: glib::WeakRef<ColorDialog>,
 
         #[template_child]
@@ -56,6 +55,8 @@ mod imp {
         pub(crate) setter_9: TemplateChild<RnColorSetter>,
         #[template_child]
         pub(crate) colordialog_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) active_color_label: TemplateChild<Label>,
     }
 
     impl Default for RnColorPicker {
@@ -65,7 +66,6 @@ mod imp {
                     *super::STROKE_COLOR_DEFAULT,
                 )),
                 fill_color: RefCell::new(gdk::RGBA::from_compose_color(*super::FILL_COLOR_DEFAULT)),
-                position: Cell::new(PositionType::Right),
                 color_dialog: glib::WeakRef::new(),
 
                 active_colors_box: TemplateChild::default(),
@@ -82,6 +82,7 @@ mod imp {
                 setter_8: TemplateChild::default(),
                 setter_9: TemplateChild::default(),
                 colordialog_button: TemplateChild::default(),
+                active_color_label: TemplateChild::default(),
             }
         }
     }
@@ -117,6 +118,9 @@ mod imp {
             self.stroke_color_pad.connect_active_notify(
                 clone!(@weak obj as colorpicker => move |_| {
                     colorpicker.deselect_setters();
+                    colorpicker
+                        .imp()
+                        .update_color_label_string(colorpicker.stroke_color().into_compose_color());
                 }),
             );
 
@@ -129,6 +133,9 @@ mod imp {
             self.fill_color_pad.connect_active_notify(
                 clone!(@weak obj as colorpicker => move |_| {
                     colorpicker.deselect_setters();
+                    colorpicker
+                        .imp()
+                        .update_color_label_string(colorpicker.fill_color().into_compose_color());
                 }),
             );
         }
@@ -143,11 +150,6 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpecEnum::builder_with_default::<PositionType>(
-                        "position",
-                        PositionType::Right,
-                    )
-                    .build(),
                     glib::ParamSpecBoxed::builder::<gdk::RGBA>("stroke-color").build(),
                     glib::ParamSpecBoxed::builder::<gdk::RGBA>("fill-color").build(),
                 ]
@@ -156,59 +158,7 @@ mod imp {
         }
 
         fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
-            let obj = self.obj();
-
             match pspec.name() {
-                "position" => {
-                    let layout_manager = obj
-                        .layout_manager()
-                        .unwrap()
-                        .downcast::<BoxLayout>()
-                        .unwrap();
-
-                    let position = value
-                        .get::<PositionType>()
-                        .expect("value not of type `PositionType`");
-                    self.position.replace(position);
-
-                    self.setter_1.set_position(position);
-                    self.setter_2.set_position(position);
-                    self.setter_3.set_position(position);
-                    self.setter_4.set_position(position);
-                    self.setter_5.set_position(position);
-                    self.setter_6.set_position(position);
-                    self.setter_7.set_position(position);
-                    self.setter_8.set_position(position);
-                    self.setter_9.set_position(position);
-
-                    match position {
-                        PositionType::Left => {
-                            layout_manager.set_orientation(Orientation::Vertical);
-                            self.active_colors_box
-                                .set_orientation(Orientation::Vertical);
-                            self.setter_box.set_orientation(Orientation::Vertical);
-                        }
-                        PositionType::Right => {
-                            layout_manager.set_orientation(Orientation::Vertical);
-                            self.active_colors_box
-                                .set_orientation(Orientation::Vertical);
-                            self.setter_box.set_orientation(Orientation::Vertical);
-                        }
-                        PositionType::Top => {
-                            layout_manager.set_orientation(Orientation::Horizontal);
-                            self.active_colors_box
-                                .set_orientation(Orientation::Horizontal);
-                            self.setter_box.set_orientation(Orientation::Horizontal);
-                        }
-                        PositionType::Bottom => {
-                            layout_manager.set_orientation(Orientation::Horizontal);
-                            self.active_colors_box
-                                .set_orientation(Orientation::Horizontal);
-                            self.setter_box.set_orientation(Orientation::Horizontal);
-                        }
-                        _ => {}
-                    }
-                }
                 "stroke-color" => {
                     self.stroke_color.replace(
                         value
@@ -229,7 +179,6 @@ mod imp {
 
         fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
-                "position" => self.position.get().to_value(),
                 "stroke-color" => self.stroke_color.borrow().to_value(),
                 "fill-color" => self.fill_color.borrow().to_value(),
                 _ => panic!("invalid property name"),
@@ -387,6 +336,22 @@ mod imp {
                         colorpicker.set_color_active_pad(setter.color());
                     }
                 }));
+
+            obj.connect_notify_local(Some("stroke-color"), move |colorpicker, _| {
+                if colorpicker.stroke_color_pad_active() {
+                    colorpicker
+                        .imp()
+                        .update_color_label_string(colorpicker.stroke_color().into_compose_color());
+                }
+            });
+
+            obj.connect_notify_local(Some("fill-color"), move |colorpicker, _| {
+                if colorpicker.fill_color_pad_active() {
+                    colorpicker
+                        .imp()
+                        .update_color_label_string(colorpicker.fill_color().into_compose_color());
+                }
+            });
         }
 
         fn default_color(i: usize) -> gdk::RGBA {
@@ -402,6 +367,11 @@ mod imp {
                 8 => gdk::RGBA::new(0.644, 0.113, 0.175, 1.0),
                 _ => gdk::RGBA::new(0.0, 0.0, 0.0, 1.0),
             }
+        }
+
+        fn update_color_label_string(&self, color: Color) {
+            let color_string = crate::utils::color_to_hsv_label_string(color);
+            self.active_color_label.set_label(&color_string);
         }
     }
 }
@@ -426,16 +396,6 @@ pub(crate) static FILL_COLOR_DEFAULT: Lazy<Color> =
 impl RnColorPicker {
     pub(crate) fn new() -> Self {
         glib::Object::new()
-    }
-
-    #[allow(unused)]
-    pub(crate) fn position(&self) -> PositionType {
-        self.property::<PositionType>("position")
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_position(&self, position: PositionType) {
-        self.set_property("position", position.to_value());
     }
 
     #[allow(unused)]
@@ -492,6 +452,10 @@ impl RnColorPicker {
 
     pub(crate) fn setter_9(&self) -> RnColorSetter {
         self.imp().setter_9.get()
+    }
+
+    pub(crate) fn active_color_label(&self) -> Label {
+        self.imp().active_color_label.get()
     }
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {

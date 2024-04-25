@@ -56,7 +56,7 @@ impl Engine {
             use crate::ext::GrapheneRectExt;
             use gtk4::{graphene, gsk, prelude::*};
 
-            let image_scale = self.camera.image_scale();
+            let total_zoom = self.camera.total_zoom();
 
             if let Some(image) = &self.origin_indicator_image {
                 // Only create the texture once, it is expensive
@@ -75,7 +75,7 @@ impl Engine {
                         &new_texture,
                         &graphene::Rect::from_p2d_aabb(
                             origin_indicator_bounds()
-                                .scaled(&na::Vector2::repeat(1.0 / image_scale)),
+                                .scaled(&na::Vector2::repeat(1.0 / total_zoom)),
                         ),
                     )
                     .upcast(),

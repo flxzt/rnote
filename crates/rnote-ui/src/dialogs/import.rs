@@ -20,10 +20,14 @@ pub(crate) async fn filedialog_open_doc(appwindow: &RnAppWindow) {
     filter.add_suffix("rnote");
     filter.set_name(Some(&gettext(".rnote")));
 
+    let filter_list = gio::ListStore::new::<FileFilter>();
+    filter_list.append(&filter);
+
     let filedialog = FileDialog::builder()
         .title(gettext("Open File"))
         .modal(true)
         .accept_label(gettext("Open"))
+        .filters(&filter_list)
         .default_filter(&filter)
         .build();
 
@@ -62,10 +66,14 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
     filter.add_suffix("txt");
     filter.set_name(Some(&gettext("Jpg, Pdf, Png, Svg, Xopp, Txt")));
 
+    let filter_list = gio::ListStore::new::<FileFilter>();
+    filter_list.append(&filter);
+
     let dialog = FileDialog::builder()
         .title(gettext("Import File"))
         .modal(true)
         .accept_label(gettext("Import"))
+        .filters(&filter_list)
         .default_filter(&filter)
         .build();
 

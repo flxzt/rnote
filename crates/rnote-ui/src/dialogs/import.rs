@@ -37,6 +37,7 @@ pub(crate) async fn filedialog_open_doc(appwindow: &RnAppWindow) {
 
     match filedialog.open_future(Some(appwindow)).await {
         Ok(selected_file) => {
+            tracing::debug!("filedialog_open_doc");
             appwindow
                 .open_file_w_dialogs(selected_file, None, true, false)
                 .await;
@@ -83,6 +84,7 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
 
     match dialog.open_future(Some(appwindow)).await {
         Ok(selected_file) => {
+            tracing::debug!("filedialog_import_file");
             appwindow
                 .open_file_w_dialogs(selected_file, None, true, false)
                 .await;

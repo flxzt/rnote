@@ -821,6 +821,7 @@ impl RnAppWindow {
                         }).collect::<Vec<PathBuf>>();
 
                         for file_path in file_paths {
+                            tracing::debug!("clipboard_paste");
                             appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), target_pos, false, respect_borders).await;
                         }
                     }

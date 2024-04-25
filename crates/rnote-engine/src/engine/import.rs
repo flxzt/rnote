@@ -472,23 +472,7 @@ impl Engine {
             }
             _ => 1.0f64,
         };
-        let inserted_keys = self.store.insert_stroke_content(content, pos);
-
-        self.store.update_geometry_for_strokes(&inserted_keys);
-        self.store.regenerate_rendering_in_viewport_threaded(
-            self.tasks_tx.clone(),
-            false,
-            self.camera.viewport(),
-            self.camera.image_scale(),
-        );
-
-        self.store
-            .scale_strokes_with_pivot(&inserted_keys, na::Vector2::new(ratio, ratio), pos);
-        self.store.scale_strokes_images_with_pivot(
-            &inserted_keys,
-            na::Vector2::new(ratio, ratio),
-            pos,
-        );
+        let inserted_keys = self.store.insert_stroke_content(content, ratio, pos);
 
         // re generate view
         self.store.update_geometry_for_strokes(&inserted_keys);

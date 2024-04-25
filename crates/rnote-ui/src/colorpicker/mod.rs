@@ -257,6 +257,15 @@ mod imp {
 
             self.reset_colors();
 
+            // doing this here won't work
+            // let obj1 = self.setter_1.obj();
+            // let rightclick_gesture = GestureClick::builder()
+            //     .name("rightclick_gesture")
+            //     .button(gdk::BUTTON_SECONDARY)
+            //     .build();
+            // obj1.add_controller(rightclick_gesture.clone());
+            // rightclick_gesture.connect_pressed(|_, _, _, _| tracing::debug!("right click"));
+
             self.setter_1
                 .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
                     if setter.is_active() {

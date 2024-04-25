@@ -1,7 +1,7 @@
 // Imports
 use gtk4::{
-    gdk, glib, prelude::*, subclass::prelude::*, Align, Button, CssProvider, PositionType,
-    ToggleButton, Widget,
+    gdk, glib, prelude::*, subclass::prelude::*, Align, Button, CssProvider, GestureClick,
+    GestureLongPress, PositionType, ToggleButton, Widget,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::{color, Color};
@@ -47,6 +47,21 @@ mod imp {
             obj.set_width_request(34);
             obj.set_height_request(34);
             obj.set_css_classes(&["colorsetter"]);
+
+            // then set the custom gestures
+            let rightclick_gesture = GestureClick::builder()
+                .name("rightclick_gesture")
+                .button(gdk::BUTTON_SECONDARY)
+                .build();
+            obj.add_controller(rightclick_gesture.clone());
+            rightclick_gesture.connect_pressed(|_, _, _, _| tracing::debug!("right click"));
+
+            // let longpress_gesture = GestureLongPress::builder()
+                .name("longpress_gesture")
+                .touch_only(true) // needs to be true to work with long press with touch, without it's mouse only
+                .build();
+            obj.add_controller(longpress_gesture.clone());
+            longpress_gesture.connect_pressed(|_, _, _| tracing::debug!("longpress_gesture"));
 
             self.update_appearance(super::RnColorSetter::COLOR_DEFAULT);
         }

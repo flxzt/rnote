@@ -733,7 +733,7 @@ impl RnAppWindow {
 
         // Clipboard paste
         action_clipboard_paste.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            appwindow.clipboard_paste(None, appwindow.active_tab_wrapper().respect_borders());
+            appwindow.clipboard_paste(None);
         }));
 
         action_clipboard_paste_contextmenu.connect_activate(
@@ -748,7 +748,7 @@ impl RnAppWindow {
                     .coords
                 });
 
-                appwindow.clipboard_paste(last_contextmenu_pos, appwindow.active_tab_wrapper().respect_borders());
+                appwindow.clipboard_paste(last_contextmenu_pos);
             }),
         );
     }
@@ -791,7 +791,7 @@ impl RnAppWindow {
         }
     }
 
-    fn clipboard_paste(&self, target_pos: Option<na::Vector2<f64>>, respect_borders: bool) {
+    fn clipboard_paste(&self, target_pos: Option<na::Vector2<f64>>) {
         let canvas_wrapper = self.active_tab_wrapper();
         let canvas = canvas_wrapper.canvas();
         let content_formats = self.clipboard().formats();
@@ -818,7 +818,8 @@ impl RnAppWindow {
                         }).collect::<Vec<PathBuf>>();
 
                         for file_path in file_paths {
-                            appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), target_pos, false, respect_borders).await;
+                            // [1] respect_borders to do later
+                            appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), target_pos, false).await;
                         }
                     }
                     Ok(None) => {}
@@ -860,7 +861,7 @@ impl RnAppWindow {
                                             layout_fixed_width: canvas.engine_ref().document.layout.is_fixed_width(),
                                             max_viewpoint: None,
                                             restrain_to_viewport: false,
-                                            respect_borders,
+                                            respect_borders: appwindow.respect_borders(),
                                         });
                                     if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), resize_argument, target_pos).await {
                                         tracing::error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
@@ -904,7 +905,7 @@ impl RnAppWindow {
                         if !acc.is_empty() {
                             match crate::utils::str_from_u8_nul_utf8(&acc) {
                                 Ok(text) => {
-                                    if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), target_pos, respect_borders).await {
+                                    if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), target_pos, appwindow.respect_borders()).await {
                                         tracing::error!(
                                             "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
                                         );
@@ -942,7 +943,7 @@ impl RnAppWindow {
 
                         match appwindow.clipboard().read_texture_future().await {
                             Ok(Some(texture)) => {
-                                if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), target_pos, respect_borders).await {
+                                if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), target_pos, appwindow.respect_borders()).await {
                                     tracing::error!(
                                         "Loading bitmap image bytes failed while pasting clipboard as {mime_type}, Err: {e:?}"
                                     );

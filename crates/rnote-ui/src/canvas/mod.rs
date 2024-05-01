@@ -1137,7 +1137,7 @@ impl RnCanvas {
                         Ok(file) => {
                             tracing::debug!("drop target");
                             glib::spawn_future_local(clone!(@weak appwindow => async move {
-                                appwindow.open_file_w_dialogs(file, Some(pos), true, appwindow.active_tab_wrapper().respect_borders()).await;
+                                appwindow.open_file_w_dialogs(file, Some(pos), true).await;
                             }));
                             accept_drop = true;
                         },

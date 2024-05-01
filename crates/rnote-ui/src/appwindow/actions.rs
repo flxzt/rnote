@@ -818,7 +818,6 @@ impl RnAppWindow {
                         }).collect::<Vec<PathBuf>>();
 
                         for file_path in file_paths {
-                            // [1] respect_borders to do later
                             appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), target_pos, false).await;
                         }
                     }

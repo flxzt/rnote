@@ -1135,7 +1135,6 @@ impl RnCanvas {
                     // In some scenarios, get() can fail with `UnexpectedNone` even though is() returned true, e.g. when dealing with trashed files.
                     match value.get::<gio::File>() {
                         Ok(file) => {
-                            tracing::debug!("drop target");
                             glib::spawn_future_local(clone!(@weak appwindow => async move {
                                 appwindow.open_file_w_dialogs(file, Some(pos), true).await;
                             }));

@@ -11,6 +11,7 @@ use rnote_compose::penevent::ShortcutKey;
 use rnote_compose::SplitOrder;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::pens::PenStyle;
+use rnote_engine::strokes::resize::{ImageSizeOption, Resize};
 use rnote_engine::{Camera, Engine};
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -81,6 +82,9 @@ impl RnAppWindow {
         let action_block_pinch_zoom =
             gio::PropertyAction::new("block-pinch-zoom", self, "block-pinch-zoom");
         self.add_action(&action_block_pinch_zoom);
+        let action_respect_borders =
+            gio::PropertyAction::new("respect-borders", self, "respect-borders");
+        self.add_action(&action_respect_borders);
         let action_pen_style = gio::SimpleAction::new_stateful(
             "pen-style",
             Some(&String::static_variant_type()),
@@ -686,6 +690,7 @@ impl RnAppWindow {
                         return;
                     }
                 };
+
                 let gdk_content_provider = gdk::ContentProvider::new_union(content.into_iter().map(|(data, mime_type)| {
                     gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data))
                 }).collect::<Vec<gdk::ContentProvider>>().as_slice());
@@ -849,7 +854,15 @@ impl RnAppWindow {
                         if !acc.is_empty() {
                             match crate::utils::str_from_u8_nul_utf8(&acc) {
                                 Ok(json_string) => {
-                                    if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), target_pos).await {
+                                        let resize_argument = ImageSizeOption::ResizeImage(Resize {
+                                            width: canvas.engine_ref().document.format.width(),
+                                            height: canvas.engine_ref().document.format.height(),
+                                            layout_fixed_width: canvas.engine_ref().document.layout.is_fixed_width(),
+                                            max_viewpoint: None,
+                                            restrain_to_viewport: false,
+                                            respect_borders: appwindow.respect_borders(),
+                                        });
+                                    if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), resize_argument, target_pos).await {
                                         tracing::error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
                                     }
                                 }
@@ -891,7 +904,7 @@ impl RnAppWindow {
                         if !acc.is_empty() {
                             match crate::utils::str_from_u8_nul_utf8(&acc) {
                                 Ok(text) => {
-                                    if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), target_pos).await {
+                                    if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), target_pos, appwindow.respect_borders()).await {
                                         tracing::error!(
                                             "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
                                         );
@@ -929,7 +942,7 @@ impl RnAppWindow {
 
                         match appwindow.clipboard().read_texture_future().await {
                             Ok(Some(texture)) => {
-                                if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), target_pos).await {
+                                if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), target_pos, appwindow.respect_borders()).await {
                                     tracing::error!(
                                         "Loading bitmap image bytes failed while pasting clipboard as {mime_type}, Err: {e:?}"
                                     );
@@ -962,7 +975,6 @@ impl RnAppWindow {
                         tracing::error!(
                             "Reading clipboard text failed while pasting clipboard as plain text, Err: {e:?}"
                         );
-
                     }
                 }
             }));

@@ -84,6 +84,11 @@ impl RnAppWindow {
         self.set_property("focus-mode", focus_mode.to_value());
     }
 
+    #[allow(unused)]
+    pub(crate) fn respect_borders(&self) -> bool {
+        self.property::<bool>("respect-borders")
+    }
+
     pub(crate) fn app(&self) -> RnApp {
         self.application().unwrap().downcast::<RnApp>().unwrap()
     }
@@ -541,7 +546,7 @@ impl RnAppWindow {
                 let canvas = self.active_tab_wrapper().canvas();
                 let (bytes, _) = input_file.load_bytes_future().await?;
                 canvas
-                    .load_in_vectorimage_bytes(bytes.to_vec(), target_pos)
+                    .load_in_vectorimage_bytes(bytes.to_vec(), target_pos, self.respect_borders())
                     .await?;
                 true
             }
@@ -549,7 +554,7 @@ impl RnAppWindow {
                 let canvas = self.active_tab_wrapper().canvas();
                 let (bytes, _) = input_file.load_bytes_future().await?;
                 canvas
-                    .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos)
+                    .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos, self.respect_borders())
                     .await?;
                 true
             }

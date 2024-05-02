@@ -1,5 +1,6 @@
 // Imports
 use super::content::GeneratedContentImages;
+use super::resize::{calculate_resize_ratio, ImageSizeOption};
 use super::{Content, Stroke};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
@@ -137,7 +138,7 @@ impl VectorImage {
     pub fn from_svg_str(
         svg_data: &str,
         pos: na::Vector2<f64>,
-        size: Option<na::Vector2<f64>>,
+        size_option: ImageSizeOption,
     ) -> Result<Self, anyhow::Error> {
         const COORDINATES_PREC: u8 = 3;
         const TRANSFORMS_PREC: u8 = 4;
@@ -159,18 +160,33 @@ impl VectorImage {
             svg_tree.size().height() as f64
         ];
         let svg_data = svg_tree.to_string(&xml_options);
-        let rectangle = if let Some(size) = size {
-            Rectangle {
-                cuboid: p2d::shape::Cuboid::new(size * 0.5),
-                transform: Transform::new_w_isometry(na::Isometry2::new(pos + size * 0.5, 0.0)),
+
+        let mut transform = Transform::default();
+        let rectangle = match size_option {
+            ImageSizeOption::RespectOriginalSize => {
+                // Size not given : use the intrisic size
+                transform.append_translation_mut(pos + intrinsic_size * 0.5);
+                Rectangle {
+                    cuboid: p2d::shape::Cuboid::new(intrinsic_size * 0.5),
+                    transform,
+                }
             }
-        } else {
-            Rectangle {
-                cuboid: p2d::shape::Cuboid::new(intrinsic_size * 0.5),
-                transform: Transform::new_w_isometry(na::Isometry2::new(
-                    pos + intrinsic_size * 0.5,
-                    0.0,
-                )),
+            ImageSizeOption::ImposeSize(given_size) => {
+                // Size given : use the given size
+                transform.append_translation_mut(pos + given_size * 0.5);
+                Rectangle {
+                    cuboid: p2d::shape::Cuboid::new(given_size * 0.5),
+                    transform,
+                }
+            }
+            ImageSizeOption::ResizeImage(resize_struct) => {
+                // Resize : calculate the ratio
+                let resize_ratio = calculate_resize_ratio(resize_struct, intrinsic_size, pos);
+                transform.append_translation_mut(pos + intrinsic_size * resize_ratio * 0.5);
+                Rectangle {
+                    cuboid: p2d::shape::Cuboid::new(intrinsic_size * resize_ratio * 0.5),
+                    transform,
+                }
             }
         };
 
@@ -311,7 +327,7 @@ impl VectorImage {
                 Self::from_svg_str(
                     svg.svg_data.as_str(),
                     svg.bounds.mins.coords,
-                    Some(svg.bounds.extents()),
+                    ImageSizeOption::ImposeSize(svg.bounds.extents()),
                 )
             })
             .collect()

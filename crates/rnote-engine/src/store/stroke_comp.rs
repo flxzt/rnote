@@ -684,6 +684,7 @@ impl StrokeStore {
     pub(crate) fn insert_stroke_content(
         &mut self,
         clipboard_content: StrokeContent,
+        ratio: f64,
         pos: na::Vector2<f64>,
     ) -> Vec<StrokeKey> {
         if clipboard_content.strokes.is_empty() {
@@ -700,8 +701,15 @@ impl StrokeStore {
             .map(|s| {
                 let offset = s.bounds().mins.coords - clipboard_bounds.mins.coords;
                 let key = self.insert_stroke((*s).clone(), None);
+                // position strokes without resizing
                 self.set_stroke_pos(key, pos);
                 self.translate_strokes(&[key], offset);
+
+                // apply a rescale around a pivot
+                self.scale_strokes_with_pivot(&[key], na::Vector2::new(ratio, ratio), pos);
+                self.scale_strokes_images_with_pivot(&[key], na::Vector2::new(ratio, ratio), pos);
+
+                // select keys
                 self.set_selected(key, true);
                 key
             })

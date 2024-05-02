@@ -141,6 +141,10 @@
       <default>false</default>
       <summary>block pinch to zoom</summary>
     </key>
+    <key name="respect-borders" type="b">
+      <default>false</default>
+      <summary>respect borders when pasting</summary>
+    </key>
     <key name="touch-drawing" type="b">
       <default>false</default>
       <summary>enable drawing with touch input</summary>

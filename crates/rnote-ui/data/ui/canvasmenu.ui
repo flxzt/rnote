@@ -60,6 +60,11 @@
             <attribute name="toggle" />
             <attribute name="action">win.block-pinch-zoom</attribute>
           </item>
+          <item>
+            <attribute name="label" translatable="yes">Respect Borders When Pasting</attribute>
+            <attribute name="toggle"/>
+            <attribute name="action">win.respect-borders</attribute>
+          </item>
         </section>
       </menu>
 

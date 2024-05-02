@@ -62,6 +62,12 @@ impl RnAppWindow {
             .get_no_changes()
             .build();
 
+        // respect borders
+        app_settings
+            .bind("respect-borders", self, "respect-borders")
+            .get_no_changes()
+            .build();
+
         // show scrollbars
         app_settings
             .bind(

@@ -84,6 +84,11 @@ impl RnAppWindow {
         self.set_property("focus-mode", focus_mode.to_value());
     }
 
+    #[allow(unused)]
+    pub(crate) fn respect_borders(&self) -> bool {
+        self.property::<bool>("respect-borders")
+    }
+
     pub(crate) fn app(&self) -> RnApp {
         self.application().unwrap().downcast::<RnApp>().unwrap()
     }
@@ -102,11 +107,6 @@ impl RnAppWindow {
 
     pub(crate) fn overlays(&self) -> RnOverlays {
         self.imp().overlays.get()
-    }
-
-    #[allow(unused)]
-    pub(crate) fn respect_borders(&self) -> bool {
-        self.property::<bool>("respect-borders")
     }
 
     /// Must be called after application is associated with the window else the init will panic

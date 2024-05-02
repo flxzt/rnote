@@ -7,6 +7,7 @@ use gtk4::{gio, prelude::*};
 use rnote_compose::ext::Vector2Ext;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
 use rnote_engine::engine::{EngineSnapshot, StrokeContent};
+use rnote_engine::strokes::resize::ImageSizeOption;
 use rnote_engine::strokes::Stroke;
 use rnote_engine::WidgetFlags;
 use std::ops::Range;
@@ -78,14 +79,15 @@ impl RnCanvas {
         &self,
         bytes: Vec<u8>,
         target_pos: Option<na::Vector2<f64>>,
+        respect_borders: bool,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
 
         // Splitting the import operation into two parts: a receiver that gets awaited with the content, and
         // the blocking import avoids borrowing the entire engine RefCell while awaiting the content, avoiding panics.
-        let vectorimage_receiver = self
-            .engine_mut()
-            .generate_vectorimage_from_bytes(pos, bytes);
+        let vectorimage_receiver =
+            self.engine_mut()
+                .generate_vectorimage_from_bytes(pos, bytes, respect_borders);
         let vectorimage = vectorimage_receiver.await??;
         let widget_flags = self
             .engine_mut()
@@ -102,12 +104,13 @@ impl RnCanvas {
         &self,
         bytes: Vec<u8>,
         target_pos: Option<na::Vector2<f64>>,
+        respect_borders: bool,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
 
-        let bitmapimage_receiver = self
-            .engine_mut()
-            .generate_bitmapimage_from_bytes(pos, bytes);
+        let bitmapimage_receiver =
+            self.engine_mut()
+                .generate_bitmapimage_from_bytes(pos, bytes, respect_borders);
         let bitmapimage = bitmapimage_receiver.await??;
         let widget_flags = self
             .engine_mut()
@@ -167,6 +170,7 @@ impl RnCanvas {
     pub(crate) async fn insert_stroke_content(
         &self,
         json_string: String,
+        resize_option: ImageSizeOption,
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let (oneshot_sender, oneshot_receiver) =
@@ -184,7 +188,9 @@ impl RnCanvas {
             }
         });
         let content = oneshot_receiver.await??;
-        let widget_flags = self.engine_mut().insert_stroke_content(content, pos);
+        let widget_flags = self
+            .engine_mut()
+            .insert_stroke_content(content, pos, resize_option);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())

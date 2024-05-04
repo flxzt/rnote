@@ -53,6 +53,7 @@ num-traits = "0.2.18"
 numeric-sort = "0.1.0"
 once_cell = "1.19"
 open = "5.1"
+opener = {version = "0.7.0", features=["reveal"]}
 palette = "0.7.5"
 parry2d-f64 = { version = "0.13.6", features = ["serde-serialize"] }
 path-absolutize = "3.1"

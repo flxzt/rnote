@@ -37,12 +37,7 @@ pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
         .issue_url(config::APP_ISSUES_URL)
         .support_url(config::APP_SUPPORT_URL)
         .developer_name(config::APP_AUTHOR_NAME)
-        .developers(glib::StrV::from(
-            config::APP_AUTHORS
-                .iter()
-                .map(|&s| String::from(s))
-                .collect::<Vec<String>>(),
-        ))
+        .developers(config::APP_AUTHORS.lines().collect::<Vec<&str>>())
         // TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
         .translator_credits(gettext("translator-credits"))
         .license_type(globals::APP_LICENSE)

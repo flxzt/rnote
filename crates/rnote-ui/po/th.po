@@ -7,27 +7,27 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-22 15:14+0100\n"
-"PO-Revision-Date: 2022-11-02 18:07+0000\n"
-"Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
+"POT-Creation-Date: 2024-04-20 11:12+0200\n"
+"PO-Revision-Date: 2024-04-11 08:02+0000\n"
+"Last-Translator: Waris Lappanathiti <waris.lapp@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
 "Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
 #: crates/rnote-ui/src/dialogs/mod.rs:35
 msgid "Sketch and take handwritten notes"
-msgstr "วาดและจดโน๊ตด้วยปากกา"
+msgstr "วาดและจดโน้ตด้วยปากกา"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "โนม;จีทีเค;ออฟฟิศ;กราฟิก;โน๊ต;"
+msgstr "Gnome;GTK;ออฟฟิศ;กราฟิก;โน้ต;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:20
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
@@ -39,19 +39,19 @@ msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"อาร์โน๊ตเป็นแอปวาดรูปแบบเวกเตอร์ สำหรับการร่างเส้นและจดโน๊ตด้วยปากกา "
-"และยังสามารถใช้งานเพื่อใส่คำอธิบายประกอบเอกสารและรูปภาพต่าง ๆ ได้อีกด้วย"
+"อาร์โน้ตเป็นแอปวาดรูปแบบเวกเตอร์ สำหรับการร่างเส้น, จดโน้ตด้วยปากกา "
+"และใส่คำอธิบายประกอบเอกสาร และรูปภาพต่าง ๆ"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"หมายเหตุ: ฟอร์แมตไฟล์ยังไม่เสถียร อาจมีการเปลี่ยนแปลงและไม่สามารถใช้งานข้ามเวอร์ชั่นได้"
+"หมายเหตุ: ฟอร์แมตไฟล์ยังไม่เสถียร อาจมีการเปลี่ยนแปลง และทำให้ไม่สามารถใช้งานข้ามเวอร์ชั่นได้"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An overview"
-msgstr ""
+msgstr "ภาพรวม"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "A selection"
@@ -59,36 +59,32 @@ msgstr "การเลือก"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "Write text with the typewriter"
-msgstr ""
+msgstr "พิมพ์ข้อความด้วยพิมพ์ดีด"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"
-msgstr ""
+msgstr "ซ่อนแถบเครื่องมือด้วยโหมดโฟกัส"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
-msgstr ""
+msgstr "เข้าถึงไฟล์ได้อย่างรวดเร็วจากพื้นที่ทำงาน"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
-msgstr ""
+msgstr "แก้ไขการตั้งค่าเอกสาร"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
-#, fuzzy
-#| msgid "Button Shortcuts"
 msgid "Configure action shortcuts"
-msgstr "คีย์ลัดของปุ่มต่าง ๆ"
+msgstr "ตั้งค่าคีย์ลัดต่าง ๆ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
-#, fuzzy
-#| msgid "Clear document"
 msgid "Clear Document"
 msgstr "ล้างเอกสาร"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
-msgstr "การทำสิ่งนี้ จะล้างเอกสารทั้งฉบับ โปรดยืนยัน"
+msgstr "การทำสิ่งนี้จะล้างเอกสารทั้งฉบับ โปรดยืนยัน"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:22
@@ -115,12 +111,12 @@ msgid "New Document"
 msgstr "เอกสารใหม่"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:17
-#, fuzzy
 msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
 msgstr ""
-"การสร้างเอกสารใหม่จะลบการเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมด คุณต้องการบันทึกเอกสารนี้หรือไม่?"
+"การสร้างเอกสารใหม่จะลบการเปลี่ยนแปลงที่ยังไม่ได้ถูกบันทึกทั้งหมด\n"
+"คุณต้องการบันทึกเอกสารนี้หรือไม่?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:41
@@ -135,51 +131,43 @@ msgid "Save"
 msgstr "บันทึก"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close Tab"
-msgstr "ปิดหน้าต่างที่กำลังใช้งานอยู่"
+msgstr "ปิดแท็บ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
+"แท็บนี้มีการเปลี่ยนแปลงที่ยังไม่ได้ถูกบันทึกอยู่\n"
+"หากไม่บันทึกจะถูกลบถาวร"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close Window"
-msgstr "ปิดหน้าต่างที่กำลังใช้งานอยู่"
+msgstr "ปิดหน้าต่าง"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:48
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
+"ไฟล์ที่เปิดอยู่บางไฟล์มีการเปลี่ยนแปลงที่ยังไม่ได้ถูกบันทึกอยู่\n"
+"หากไม่บันทึกจะถูกลบถาวร"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
-#, fuzzy
-#| msgid "Save document"
 msgid "Unsaved Documents"
-msgstr "บันทึกเอกสาร"
+msgstr "เอกสารที่ยังไม่ถูกบันทึก"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:59
-#, fuzzy
-#| msgid "Discard"
 msgid "Discard All"
-msgstr "ทิ้ง"
+msgstr "ทิ้งทั้งหมด"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:67
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit Workspace"
 msgstr "แก้ไขพื้นที่ทำงาน"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:75
-#: crates/rnote-ui/data/ui/settingspanel.ui:234
+#: crates/rnote-ui/data/ui/settingspanel.ui:241
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:36
 msgid "Apply"
 msgstr "นำไปใช้"
@@ -190,14 +178,14 @@ msgstr "ชื่อพื้นที่ทำงาน"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:122
 msgid "Icon"
-msgstr "ไอค่อน"
+msgstr "ไอคอน"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:123
 msgid "Change the workspace icon"
-msgstr "เปลี่ยนไอค่อนของพื้นที่ทำงานนี้"
+msgstr "เปลี่ยนไอคอนของพื้นที่ทำงานนี้"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:143
-#: crates/rnote-ui/data/ui/settingspanel.ui:286
+#: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Color"
 msgstr "สี"
 
@@ -223,15 +211,11 @@ msgid "- no directory selected -"
 msgstr "- ไม่มีไดเรกทอรีที่เลือกไว้ -"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:183
-#, fuzzy
-#| msgid "Change the workspace directory"
 msgid "Change the directory"
-msgstr "เปลี่ยนไดเรกทอรีของพื้นที่ทำงานนี้"
+msgstr "เปลี่ยนไดเรกทอรี"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
 #: crates/rnote-ui/src/dialogs/export.rs:268
-#, fuzzy
-#| msgid "Export document"
 msgid "Export Document"
 msgstr "ส่งออกเอกสาร"
 
@@ -245,17 +229,13 @@ msgstr "ส่งออก"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:72
 #: crates/rnote-ui/data/ui/dialogs/export.ui:473
-#, fuzzy
-#| msgid "Import file"
 msgid "Export File"
-msgstr "นำเข้าไฟล์"
+msgstr "ส่งออกไฟล์"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:73
 #: crates/rnote-ui/data/ui/dialogs/export.ui:474
-#, fuzzy
-#| msgid "Set the format width"
 msgid "Select the export file"
-msgstr "ตั้งความกว้างของหน้ากระดาษ"
+msgstr "เลือกไฟล์ที่จะส่งออก"
 
 #. force the user to pick another file
 #: crates/rnote-ui/data/ui/dialogs/export.ui:82
@@ -268,79 +248,61 @@ msgstr "ตั้งความกว้างของหน้ากระด
 #: crates/rnote-ui/src/dialogs/export.rs:690
 #: crates/rnote-ui/src/dialogs/export.rs:697
 #: crates/rnote-ui/src/dialogs/export.rs:748
-#, fuzzy
-#| msgid "- no directory selected -"
 msgid "- no file selected -"
-msgstr "- ไม่มีไดเรกทอรีที่เลือกไว้ -"
+msgstr "- ไม่มีไฟล์ที่เลือกไว้ -"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:106
 #: crates/rnote-ui/data/ui/dialogs/export.ui:313
 #: crates/rnote-ui/data/ui/dialogs/export.ui:507
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "Export Preferences"
-msgstr "ตั้งค่าการนำเข้า PDF"
+msgstr "ตั้งค่าการส่งออก"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:110
 #: crates/rnote-ui/data/ui/dialogs/export.ui:317
 #: crates/rnote-ui/data/ui/dialogs/export.ui:511
-#, fuzzy
-#| msgid "Document background"
 msgid "With Background"
-msgstr "พื้นหลังของเอกสาร"
+msgstr "ส่งออกพร้อมพื้นหลัง"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:111
 #: crates/rnote-ui/data/ui/dialogs/export.ui:318
 #: crates/rnote-ui/data/ui/dialogs/export.ui:512
-#, fuzzy
-#| msgid "Set the background color"
 msgid "Set whether the background should be exported"
-msgstr "ตั้งสีพื้นหลัง"
+msgstr "กำหนดว่าจะส่งออกพื้นหลังของเอกสารด้วยหรือไม่"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:116
 #: crates/rnote-ui/data/ui/dialogs/export.ui:323
 #: crates/rnote-ui/data/ui/dialogs/export.ui:517
-#, fuzzy
-#| msgid "Pattern"
 msgid "With Pattern"
-msgstr "ลวดลาย"
+msgstr "ส่งออกพร้อมลวดลาย"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:117
 #: crates/rnote-ui/data/ui/dialogs/export.ui:324
 #: crates/rnote-ui/data/ui/dialogs/export.ui:518
-#, fuzzy
-#| msgid "Set the background color"
 msgid "Set whether the background pattern should be exported"
-msgstr "ตั้งสีพื้นหลัง"
+msgstr "กำหนดว่าจะส่งออกลวดลายของเอกสารด้วยหรือไม่"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:122
 #: crates/rnote-ui/data/ui/dialogs/export.ui:329
 #: crates/rnote-ui/data/ui/dialogs/export.ui:523
 msgid "Optimize for Printing"
-msgstr ""
+msgstr "สำหรับการพิมพ์"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:123
 #: crates/rnote-ui/data/ui/dialogs/export.ui:330
 #: crates/rnote-ui/data/ui/dialogs/export.ui:524
-#, fuzzy
-#| msgid "Set the background color"
 msgid "Set whether the content should be optimized for printing"
-msgstr "ตั้งสีพื้นหลัง"
+msgstr "กำหนดว่าจะปรับแต่งเอกสารที่ส่งออกสำหรับการพิมพ์ด้วยหรือไม่"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:128
 #: crates/rnote-ui/data/ui/dialogs/export.ui:335
 #: crates/rnote-ui/data/ui/dialogs/export.ui:529
-#, fuzzy
-#| msgid "Export document"
 msgid "Export Format"
-msgstr "ส่งออกเอกสาร"
+msgstr "ฟอร์แมตเอกสาร"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:129
 #: crates/rnote-ui/data/ui/dialogs/export.ui:336
-#, fuzzy
-#| msgid "Export document"
 msgid "The export format"
-msgstr "ส่งออกเอกสาร"
+msgstr "ฟอร์แมตของเอกสารที่ต้องการจะส่งออก"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:340
@@ -349,24 +311,22 @@ msgstr "ส่งออกเอกสาร"
 #: crates/rnote-ui/src/dialogs/export.rs:579
 #: crates/rnote-ui/src/dialogs/export.rs:866
 msgid "Svg"
-msgstr ""
+msgstr "Svg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:134
 #: crates/rnote-ui/src/dialogs/export.rs:283
 msgid "Pdf"
-msgstr ""
+msgstr "Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
 #: crates/rnote-ui/src/dialogs/export.rs:288
 msgid "Xopp"
-msgstr ""
+msgstr "Xopp"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:143
 #: crates/rnote-ui/data/ui/dialogs/export.ui:350
-#, fuzzy
-#| msgid "Pages type"
 msgid "Page Order"
-msgstr "ประเภทของหน้ากระดาษ"
+msgstr "ลำดับของหน้ากระดาษ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:144
 #: crates/rnote-ui/data/ui/dialogs/export.ui:351
@@ -375,68 +335,62 @@ msgid ""
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
+"ลำดับของหน้ากระดาษ สำหรับเมื่อเอกสาร\n"
+"ที่ขยายออกทางแนวนอนหรือแนวตั้ง\n"
+"ถูกตัดแบ่งเป็นหน้า"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:150
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
 msgid "Horizontal First"
-msgstr ""
+msgstr "เรียงตามแนวนอนก่อน"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:151
 #: crates/rnote-ui/data/ui/dialogs/export.ui:358
 msgid "Vertical First"
-msgstr ""
+msgstr "เรียงตามแนวตั้งก่อน"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:172
 #: crates/rnote-ui/src/dialogs/export.rs:565
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export Document Pages"
-msgstr "ส่งออกเอกสารไปเป็นไฟล์ SVG"
+msgstr "ส่งออกหน้าเอกสาร"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:254
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page Files Naming:"
-msgstr "ระยะห่างหน้ากระดาษ"
+msgstr "ชื่อไฟล์หน้าเอกสาร :"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:274
-#, fuzzy
 msgid "Export Directory"
-msgstr "ไดเรกทอรี"
+msgstr "ไดเรกทอรีที่จะส่งออก"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:275
-#, fuzzy
-#| msgid "Set the format width"
 msgid "Select the export directory"
-msgstr "ตั้งความกว้างของหน้ากระดาษ"
+msgstr "เลือกไดเร็กทอรี่ที่จะส่งออกไป"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
-#, fuzzy
-#| msgid "Export engine state"
 msgctxt ""
 "When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
-msgstr "ส่งออกสภาพของเอนจิน"
+msgstr "ชื่อไฟล์ของหน้าเอกสารที่ถูกส่งออก"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:535
 #: crates/rnote-ui/src/dialogs/export.rs:584
 #: crates/rnote-ui/src/dialogs/export.rs:871
 msgid "Png"
-msgstr ""
+msgstr "Png"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:342
 #: crates/rnote-ui/data/ui/dialogs/export.ui:536
 #: crates/rnote-ui/src/dialogs/export.rs:590
 #: crates/rnote-ui/src/dialogs/export.rs:877
 msgid "Jpeg"
-msgstr ""
+msgstr "Jpeg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:366
 #: crates/rnote-ui/data/ui/dialogs/export.ui:544
 #: crates/rnote-ui/data/ui/dialogs/import.ui:158
 msgid "Bitmap Scale-Factor"
-msgstr ""
+msgstr "มาตราส่วนของไฟล์บิตแม็ป"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:367
 #: crates/rnote-ui/data/ui/dialogs/export.ui:545
@@ -445,16 +399,18 @@ msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
+"กำหนดมาตราส่วนของภาพ\n"
+"ต่อขนาดของเอกสารจริง"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:375
 #: crates/rnote-ui/data/ui/dialogs/export.ui:553
 msgid "Jpeg Quality"
-msgstr ""
+msgstr "คุณภาพของไฟล์ Jpeg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:376
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr ""
+msgstr "กำหนดคุณภาพของไฟล์รูปภาพ Jpeg (1-100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:408
 #: crates/rnote-ui/src/dialogs/export.rs:854
@@ -463,21 +419,19 @@ msgstr "ส่งออกสิ่งที่เลือก"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:530
 msgid "The export image format"
-msgstr ""
+msgstr "ฟอร์แมตรูปที่จะส่งออก"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:561
 msgid "Margin"
-msgstr ""
+msgstr "ขอบ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:562
 msgid "Set the margin around the selected area"
-msgstr ""
+msgstr "กำหนดระยะเว้นขอบรอบพื้นที่ที่เลือก"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:7
-#, fuzzy
-#| msgid "Import PDF"
 msgid "Import Pdf"
-msgstr "นำเข้า PDF"
+msgstr "นำเข้า Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
 #: crates/rnote-ui/data/ui/dialogs/import.ui:210
@@ -487,81 +441,59 @@ msgstr "นำเข้า"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:61
 msgid "Info"
-msgstr ""
+msgstr "ข้อมูล"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:79
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "Pdf Import Preferences"
-msgstr "ตั้งค่าการนำเข้า PDF"
+msgstr "ตั้งค่าการนำเข้า Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start Page"
-msgstr ""
+msgstr "เริ่มหน้า"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:92
-#, fuzzy
 msgid "End Page"
-msgstr "เพิ่มหน้าใหม่"
+msgstr "สิ้นสุดหน้า"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Document"
 msgid "Adjust Document"
-msgstr "เอกสาร"
+msgstr "แก้ไขเอกสาร"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
-#, fuzzy
-#| msgid "Set the background color"
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "ตั้งสีพื้นหลัง"
+msgstr "กำหนดว่าการออกแบบหน้ากระดาษควรถูกแก้ไขให้เหมาะกับ Pdf หรือไม่"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:107
-#, fuzzy
-#| msgid "Page width (%)"
 msgid "Page Width (%)"
 msgstr "ความกว้างหน้ากระดาษ (%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:108
-#, fuzzy
-#| msgid "Set the width of imported PDF's in percentage to the format width"
 msgid "Set the width of imported Pdf's in percentage to the format width"
-msgstr "ตั้งความกว้างของไฟล์ PDF ที่นำเข้ามา เป็นเปอร์เซ็นต์อิงจากความกว้างของหน้ากระดาษ"
+msgstr "กำหนดความกว้างของไฟล์ Pdf ที่นำเข้ามา เป็นเปอร์เซ็นต์อิงจากความกว้างของหน้ากระดาษ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:115
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page Spacing"
 msgstr "ระยะห่างหน้ากระดาษ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:116
-#, fuzzy
-#| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
-msgstr "การเว้นระยะห่างหน้ากระดาษของไฟล์ PDF"
+msgstr "การเว้นระยะห่างหน้ากระดาษของไฟล์ Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:120
 msgid "Continuous"
 msgstr "แบบต่อเนื่อง"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:121
-#, fuzzy
-#| msgid "One per document page"
 msgid "One per Document Page"
 msgstr "หน้าต่อหน้า"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:129
-#, fuzzy
-#| msgid "Pages type"
 msgid "Pages Type"
 msgstr "ประเภทของหน้ากระดาษ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:130
-#, fuzzy
-#| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
-msgstr "ตั้งเพื่อกำหนดว่าจะนำเข้าไฟล์ PDF เป็นรูปแบบเวกเตอร์หรือบิตแมพ"
+msgstr "กำหนดว่าจะนำเข้าไฟล์ Pdf เป็นรูปแบบเวกเตอร์หรือบิตแม็ป"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:142
 msgid "Vector"
@@ -569,29 +501,23 @@ msgstr "เวกเตอร์"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:149
 msgid "Bitmap"
-msgstr "บิตแมพ"
+msgstr "บิตแม็ป"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:167
-#, fuzzy
-#| msgid "Pages type"
 msgid "Page Borders"
-msgstr "ประเภทของหน้ากระดาษ"
+msgstr "กรอบของหน้ากระดาษ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:168
 msgid "Whether the pages have drawn borders"
-msgstr ""
+msgstr "กำหนดกรอบของหน้ากระดาษ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:202
-#, fuzzy
-#| msgid "Import file"
 msgid "Import Xournal++ File"
-msgstr "นำเข้าไฟล์"
+msgstr "นำเข้าไฟล์ Xournal++"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:241
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "Xournal++ File Import Preferences"
-msgstr "ตั้งค่าการนำเข้า PDF"
+msgstr "ตั้งค่าการนำเข้าไฟล์ Xournal++"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:245
 msgid "DPI"
@@ -599,24 +525,18 @@ msgstr "DPI"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:246
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr ""
+msgstr "กำหนด DPI ที่ต้องการสำหรับไฟล์ Xournal++"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
-#, fuzzy
-#| msgid "Brush style"
 msgid "Brush Style"
 msgstr "รูปแบบพู่กัน"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:149
-#, fuzzy
-#| msgid "Brush configuration"
 msgid "Brush Configuration"
 msgstr "กำหนดค่าพู่กัน"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:66
-#, fuzzy
-#| msgid "Brush styles"
 msgid "Brush Styles"
 msgstr "รูปแบบพู่กันต่าง ๆ"
 
@@ -625,10 +545,8 @@ msgid "Marker"
 msgstr "ปากกาเมจิก"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:96
-#, fuzzy
-#| msgid "Mark underneath other brush strokes"
 msgid "Mark underneath other strokes"
-msgstr "มาร์คใต้เส้นของพู่กันแบบอื่น ๆ"
+msgstr "เขียนใต้เส้นของพู่กันแบบอื่น ๆ"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:107
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:201
@@ -641,57 +559,55 @@ msgstr "วาดเส้นสีทึบ"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:119
 msgid "Textured"
-msgstr "เส้นเทกเจอร์"
+msgstr "เส้นมีลวดลาย"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:120
 msgid "Draw textured strokes"
-msgstr "วาดเส้นเทกเจอร์"
+msgstr "วาดเส้นมีลวดลาย"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:170
 msgid "Path Modelling"
-msgstr ""
+msgstr "การประมวลผลเส้นปากกา"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:187
 msgid "Simple"
-msgstr ""
+msgstr "อย่างง่าย"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:188
 msgid "Produces line segments from the raw input.\n"
-msgstr ""
+msgstr "สร้างเส้นปากกาจากอินพุตโดยตรง\n"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "Curved"
-msgstr ""
+msgstr "โค้งมน"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "สร้างเส้นปากกาให้เรียบและโค้งมน\n"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:201
 msgid "Modeled"
-msgstr ""
+msgstr "เสมือนจริง"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:202
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"สร้างเส้นปากกาด้วยชุดคำสั่งที่อ้างอิงหลักการทางฟิสิกส์\n"
+"ให้ผลลัพธ์ที่ดีที่สุดสำหรับลายมือ"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:211
-#, fuzzy
-#| msgid "Solid style"
 msgid "Solid Style"
 msgstr "รูปแบบเส้นทึบ"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:214
-#, fuzzy
-#| msgid "Pressure curve"
 msgid "Pressure Curve"
-msgstr "เคิร์ฟวแรงกดของปากกา"
+msgstr "แรงกดของปากกา"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:215
 msgid "Choose a pressure curve"
-msgstr "เลือกเคิร์ฟวแรงกดของปากกา"
+msgstr "เลือกรูปแบบแรงกดของปากกา"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:219
 msgid "Constant"
@@ -703,11 +619,11 @@ msgstr "เชิงเส้น"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:221
 msgid "Square root"
-msgstr "สแควรูท"
+msgstr "สแควร์รูต"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:222
 msgid "Cubic root"
-msgstr "คิวบิกรูท"
+msgstr "คิวบิกรูต"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:223
 msgid "Quadratic Parabola"
@@ -718,10 +634,8 @@ msgid "Cubic Parabola"
 msgstr "คิวบิกพาราโบลา"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:235
-#, fuzzy
-#| msgid "Textured style"
 msgid "Textured Style"
-msgstr "รูปแบบเทกเจอร์"
+msgstr "รูปแบบลวดลาย"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:238
 msgid "Density"
@@ -732,56 +646,42 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "ความหนาแน่น คือ จำนวนจุดต่อพื้นที่ 10x10"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
-#, fuzzy
-#| msgid "Stroke dots position distribution"
 msgctxt ""
 "Drawing with a textured pen, how the dots of the texture are distributed"
 msgid "Stroke Dots Position Distribution"
-msgstr "การกระจายตำแหน่งของจุดต่าง ๆ บนเส้น"
+msgstr "การกระจายของจุดบนเส้น"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:249
 msgid "Choose a dots position probability distribution"
-msgstr "เลือกการกระจายตามความน่าจะเป็นในการจัดวางตำแหน่งของจุดต่าง ๆ"
+msgstr "เลือกรูปแบบของการกระจายจุดบนเส้นปากกา"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
-#, fuzzy
-#| msgid "Uniform"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
-msgstr "แบบเดียวกันทั้งหมด"
+msgstr "เท่ากันทั้งหมด"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
-#, fuzzy
-#| msgid "Normal"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
-msgstr "แบบปกติ"
+msgstr "กระจายแบบปกติ"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
-#, fuzzy
-#| msgid "Exponential"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
-msgstr "แบบก้าวหน้า"
+msgstr "กระจายแบบเลขชี้กำลัง"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
-#, fuzzy
-#| msgid "Reverse Exponential"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
-msgstr "แบบก้าวหน้าย้อนกลับ"
+msgstr "กระจายแบบเลขชี้กำลังย้อนกลับ"
 
 #: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:21
-#, fuzzy
-#| msgid "Trash strokes"
 msgid "Trash Strokes"
-msgstr "ลบทั้งเส้น"
+msgstr "ลบเส้น"
 
 #: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:31
-#, fuzzy
-#| msgid "Split strokes"
 msgid "Split Strokes"
-msgstr "ลบเป็นส่วน ๆ"
+msgstr "แยกส่วนเส้น"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:17
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:81
@@ -796,7 +696,7 @@ msgstr "รูปทรง"
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:49
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:83
 msgid "Typewriter"
-msgstr "พิมพ์ตัวอักษร"
+msgstr "พิมพ์ดีด"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:65
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:84
@@ -806,74 +706,56 @@ msgstr "ยางลบ"
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:81
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:85
 msgid "Selector"
-msgstr "รูปแบบการเลือก"
+msgstr "เลือก"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:97
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:86
 msgid "Tools"
-msgstr "เครื่องมือต่าง ๆ"
+msgstr "เครื่องมือ"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:22
-#, fuzzy
-#| msgid "Selecting with a polygon"
 msgid "Select With a Polygon"
-msgstr "การเลือกโดยใช้รูปทรงหลายเหลี่ยม"
+msgstr "เลือกโดยใช้รูปทรงหลายเหลี่ยม"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:32
-#, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Select With a Rectangle"
-msgstr "การเลือกโดยใช้สี่เหลี่ยม"
+msgstr "เลือกโดยใช้สี่เหลี่ยม"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:42
 msgid "Select One by One"
-msgstr ""
+msgstr "เลือกทีละชิ้น"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:52
-#, fuzzy
-#| msgid "Select intersecting path"
 msgid "Select Intersecting Path"
-msgstr "เลือกโดยใช้เส้นตัด"
+msgstr "เลือกเส้นที่ตัดกัน"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
-#, fuzzy
-#| msgid "Lock aspectratio while resizing the selection"
 msgid "Lock Aspectratio While Resizing the Selection"
 msgstr "รักษาอัตราส่วนในการย่อขยายสิ่งที่เลือก"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:83
-#, fuzzy
-#| msgid "Select all strokes"
 msgid "Select All Strokes"
 msgstr "เลือกเส้นทั้งหมด"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:94
-#, fuzzy
-#| msgid "Deselect all strokes"
 msgid "Deselect All Strokes"
 msgstr "เลิกเลือกเส้นทั้งหมด"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 msgid "Invert Color Brightness of All Selected Strokes"
-msgstr ""
+msgstr "กลับความสว่างสีของเส้นทั้งหมดที่เลือก"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 #: crates/rnote-ui/data/ui/shortcuts.ui:236
-#, fuzzy
-#| msgid "Duplicate selection"
 msgid "Duplicate Selection"
 msgstr "สำเนาสิ่งที่เลือก"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:127
-#, fuzzy
-#| msgid "Delete selection"
 msgid "Delete Selection"
 msgstr "ลบสิ่งที่เลือก"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:19
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:248
-#, fuzzy
-#| msgid "Shape builders"
 msgid "Shape Builders"
 msgstr "ตัวสร้างรูปทรง"
 
@@ -883,23 +765,17 @@ msgid "Constraints"
 msgstr "เงื่อนไขบังคับ"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:64
-#, fuzzy
-#| msgid "Shaper style"
 msgid "Shaper Style"
 msgstr "รูปแบบของรูปทรง"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:77
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
-#, fuzzy
-#| msgid "Shape configuration"
 msgid "Shape Configuration"
 msgstr "กำหนดค่ารูปทรง"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:101
-#, fuzzy
-#| msgid "Shaper styles"
 msgid "Shaper Styles"
-msgstr "รูปแบบต่าง ๆ ของรูปทรง"
+msgstr "รูปแบบตัวสร้างรูปทรง"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:130
 msgid "Smooth"
@@ -914,62 +790,59 @@ msgid "Rough style"
 msgstr "รูปแบบของความหยาบ"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:196
-#, fuzzy
-#| msgid "Solid style"
 msgid "Fill Style"
-msgstr "รูปแบบเส้นทึบ"
+msgstr "รูปแบบการลงสี"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:197
-#, fuzzy
-#| msgid "Choose a format"
 msgid "Choose a fill style"
-msgstr "เลือกขนาด"
+msgstr "เลือกรูปแบบการลงสี"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:202
 msgid "Hachure"
-msgstr ""
+msgstr "เส้นขนาน"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:203
 msgid "Zig-Zag"
-msgstr ""
+msgstr "เส้นซิกแซก"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:204
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "เส้นซิกแซก"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:205
 msgid "Crosshatch"
-msgstr ""
+msgstr "เส้นไขว้"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:206
-#: crates/rnote-ui/data/ui/settingspanel.ui:315
+#: crates/rnote-ui/data/ui/settingspanel.ui:322
 msgid "Dots"
 msgstr "จุด"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:207
 msgid "Dashed"
-msgstr ""
+msgstr "ขีด"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:215
 msgid "Hachure Angle"
-msgstr ""
+msgstr "แนวของเส้นขนาน"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:216
-#, fuzzy
 msgid "Set the angle of hachure fills"
-msgstr "ตั้งสีพื้นหลัง"
+msgstr "กำหนดแนวของเส้นขนาน"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:319
 msgid "Enabled"
 msgstr "เปิดใช้งาน"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:320
-#, fuzzy
 msgid ""
 "Hold Ctrl to temporarily\n"
 "enable/disable constraints\n"
 "when this switch is off/on"
-msgstr "กด Ctrl ค้างไว้ เพื่อเปิด/ปิดการใช้งานเงื่อนไขบังคับชั่วคราว เมื่อสวิตช์นี้ปิด/เปิด"
+msgstr ""
+"กด Ctrl ค้างไว้\n"
+"เพื่อเปิด/ปิดการใช้งานเงื่อนไขบังคับชั่วคราว\n"
+"เมื่อสวิตช์นี้ปิด/เปิด"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:327
 msgid "1:1"
@@ -980,37 +853,27 @@ msgid "3:2"
 msgstr "3:2"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:337
-#, fuzzy
-#| msgid "Golden ratio (1:1.618)"
 msgid "Golden Ratio (1:1.618)"
 msgstr "อัตราส่วนทองคำ (1:1.618)"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:19
-#, fuzzy
-#| msgid "Insert vertical space"
 msgid "Insert Vertical Space"
-msgstr "ใส่ที่ว่างคั่นแนวตั้ง"
+msgstr "ใส่ที่ว่างแนวตั้ง"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:29
 #: crates/rnote-ui/data/ui/shortcuts.ui:108
 msgid "Move View"
-msgstr ""
+msgstr "ย้ายมุมมอง"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:40
-#, fuzzy
-#| msgid "Zoom out"
 msgid "Zoom In/Out"
-msgstr "ซูมออก"
+msgstr "ซูมเข้า/ออก"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:43
-#, fuzzy
-#| msgid "Pick and insert an emoji"
 msgid "Pick And Insert Emoji"
 msgstr "เลือกและใส่อีโมจิ"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:68
-#, fuzzy
-#| msgid "Reset text attributes"
 msgid "Reset Text Attributes"
 msgstr "รีเซ็ตคุณลักษณะของตัวอักษร"
 
@@ -1031,20 +894,14 @@ msgid "Strikethrough"
 msgstr "ขีดฆ่า"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:126
-#, fuzzy
-#| msgid "Align left"
 msgid "Align Left"
 msgstr "ชิดซ้าย"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:133
-#, fuzzy
-#| msgid "Align center"
 msgid "Align Center"
 msgstr "กึ่งกลาง"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:140
-#, fuzzy
-#| msgid "Align right"
 msgid "Align Right"
 msgstr "ชิดขวา"
 
@@ -1053,256 +910,184 @@ msgid "Fill"
 msgstr "เต็มบรรทัด"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:60
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Move Selected Workspace Up"
-msgstr "ลบพื้นที่ทำงาน"
+msgstr "ขยับพื้นที่ทำงานขึ้น"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:69
-#, fuzzy
-#| msgid "Change the workspace icon"
 msgid "Move Selected Workspace Down"
-msgstr "เปลี่ยนไอค่อนของพื้นที่ทำงานนี้"
+msgstr "ขยับพื้นที่ทำงานลง"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:80
-#, fuzzy
-#| msgid "Add workspace"
 msgid "Add Workspace"
 msgstr "เพิ่มพื้นที่ทำงาน"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:89
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Remove Selected Workspace"
-msgstr "ลบพื้นที่ทำงาน"
+msgstr "ลบพื้นที่ทำงานที่เลือก"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:99
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit Selected Workspace"
-msgstr "แก้ไขพื้นที่ทำงาน"
+msgstr "แก้ไขพื้นที่ทำงานที่เลือก"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:24
 msgid "Co_lor Scheme"
-msgstr ""
+msgstr "ธีม"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
 msgid "Use _System Colors"
 msgstr "ใช้การตั้งค่าธีมตามระบบ"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:31
-#, fuzzy
-#| msgid "Use light colors"
 msgid "Use _Light Colors"
 msgstr "ใช้ธีมสว่าง"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:36
-#, fuzzy
-#| msgid "Use dark colors"
 msgid "Use _Dark Colors"
 msgstr "ใช้ธีมมืด"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "Developer menu"
 msgid "Developer _Menu"
 msgstr "เมนูสำหรับนักพัฒนา"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:47
-#, fuzzy
-#| msgid "Visual debugging"
 msgid "Visual _Debugging"
 msgstr "แก้ไขปัญหาการแสดงผล"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:51
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export Engine _State"
 msgstr "ส่งออกสภาพของเอนจิน"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:55
-#, fuzzy
-#| msgid "Export engine config"
 msgid "Export Engine _Config"
 msgstr "ส่งออกการตั้งค่าเอนจิน"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:61
-#, fuzzy
-#| msgid "Developer mode"
 msgid "De_veloper Mode"
 msgstr "โหมดนักพัฒนา"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
-#, fuzzy
-#| msgid "New Window"
 msgid "New _Window"
 msgstr "หน้าต่างใหม่"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
-msgstr ""
+msgstr "เพิ่ม"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:76
-#, fuzzy
-#| msgid "Open"
 msgid "_Open"
 msgstr "เปิด"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:80
-#, fuzzy
-#| msgid "Save"
 msgid "_Save"
 msgstr "บันทึก"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:84
-#, fuzzy
-#| msgid "Save as"
 msgid "Save _As"
 msgstr "บันทึกที่"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgid "Print"
 msgid "_Print"
 msgstr "พิมพ์"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:94
-#, fuzzy
-#| msgid "Import file"
 msgid "_Import File"
 msgstr "นำเข้าไฟล์"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:98
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "_Clipboard"
-msgstr "วางคลิปบอร์ด"
+msgstr "คลิปบอร์ด"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:100
 #: crates/rnote-ui/data/ui/contextmenu.ui:10
 msgid "_Copy"
-msgstr ""
+msgstr "คัดลอก"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:104
 #: crates/rnote-ui/data/ui/contextmenu.ui:14
 msgid "C_ut"
-msgstr ""
+msgstr "ตัด"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:108
 #: crates/rnote-ui/data/ui/contextmenu.ui:18
 msgid "_Paste"
-msgstr ""
+msgstr "วาง"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:113
-#, fuzzy
-#| msgid "Export…"
 msgid "_Export…"
 msgstr "ส่งออก…"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:115
-#, fuzzy
-#| msgid "Export document"
 msgid "Export _Document"
 msgstr "ส่งออกเอกสาร"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:119
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export Document _Pages"
-msgstr "ส่งออกเอกสารไปเป็นไฟล์ SVG"
+msgstr "ส่งออกหน้าเอกสาร"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:123
-#, fuzzy
-#| msgid "Export Selection"
 msgid "Export _Selection"
 msgstr "ส่งออกสิ่งที่เลือก"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:130
-#, fuzzy
-#| msgid "Settings"
 msgid "Se_ttings"
 msgstr "การตั้งค่า"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:134
-#, fuzzy
-#| msgid "Keyboard shortcuts"
 msgid "_Keyboard Shortcuts"
 msgstr "คีย์ลัด"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:138
-#, fuzzy
-#| msgid "Donate 💝"
 msgid "_Donate 💝"
 msgstr "บริจาค 💝"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:142
-#, fuzzy
-#| msgid "About Rnote"
 msgid "A_bout Rnote"
 msgstr "เกี่ยวกับอาร์โน๊ต"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:173
-#, fuzzy
-#| msgid "Sidebar on the left side"
 msgid "Sidebar on the Left Side"
-msgstr "แถบข้างอยู่ด้านซ้าย"
+msgstr "แถบข้างด้านซ้าย"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:182
-#, fuzzy
-#| msgid "Sidebar on the right side"
 msgid "Sidebar on the Right Side"
-msgstr "แถบข้างอยู่ด้านขวา"
+msgstr "แถบข้างด้านขวา"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:192
 #: crates/rnote-ui/data/ui/shortcuts.ui:56
-#, fuzzy
-#| msgid "Toggle fullscreen"
 msgid "Toggle Fullscreen"
 msgstr "สลับโหมดเต็มหน้าจอ"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:24
 msgid "_Snap Positions"
-msgstr ""
+msgstr "ตำแหน่งสแนป"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:29
-#, fuzzy
-#| msgid "Pen sounds"
 msgid "_Pen Sounds"
 msgstr "จำลองเสียงปากกา"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:34
-#, fuzzy
-#| msgid "Return to the origin page"
 msgid "_Return to Origin Page"
 msgstr "กลับไปหน้าแรก"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:38
-#, fuzzy
-#| msgid "Clear document"
 msgid "C_lear Document"
 msgstr "ล้างเอกสาร"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:44
-#, fuzzy
-#| msgid "Show format borders"
 msgid "Show _Format Borders"
 msgstr "แสดงขอบเขตของหน้ากระดาษ"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:49
 msgid "Show _Origin Indicator"
-msgstr ""
+msgstr "แสดงตัวบอกจุดเริ่มต้น"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "Draw with touch input"
 msgid "Draw With _Touch Input"
-msgstr "วาดด้วยการทัช"
+msgstr "วาดด้วยการสัมผัส"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Block Pinch to _Zoom"
-msgstr ""
+msgstr "ปิดการใช้สองนิ้วเพื่อซูม"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:90
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
@@ -1312,8 +1097,6 @@ msgid "Zoom out"
 msgstr "ซูมออก"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:99
-#, fuzzy
-#| msgid "Reset the zoom"
 msgid "Reset Zoom"
 msgstr "รีเซ็ตการซูม"
 
@@ -1325,8 +1108,6 @@ msgid "Zoom in"
 msgstr "ซูมเข้า"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:118
-#, fuzzy
-#| msgid "Zoom to fit page width"
 msgid "Zoom to Page Width"
 msgstr "ซูมให้พอดีกับความกว้างของหน้ากระดาษ"
 
@@ -1335,30 +1116,32 @@ msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"ลบหน้า\n"
+"เฉพาะเอกสารที่กำหนดขนาดคงที่"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:142
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"เพิ่มหน้า\n"
+"เฉพาะเอกสารที่กำหนดขนาดคงที่"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:151
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"ปรับขนาดเอกสารให้พอดีกับเนื้อหา\n"
+"เฉพาะเอกสารที่กำหนดขนาดคงที่"
 
-#: crates/rnote-ui/data/ui/colorpicker.ui:19
-#, fuzzy
-#| msgid "Stroke dots radii"
+#: crates/rnote-ui/data/ui/colorpicker.ui:23
 msgid "Stroke Color"
-msgstr "รัศมีของจุดต่าง ๆ บนเส้น"
+msgstr "สีของเส้น"
 
-#: crates/rnote-ui/data/ui/colorpicker.ui:26
-#, fuzzy
-#| msgid "Solid style"
+#: crates/rnote-ui/data/ui/colorpicker.ui:30
 msgid "Fill Color"
-msgstr "รูปแบบเส้นทึบ"
+msgstr "สีภายใน"
 
 #: crates/rnote-ui/data/ui/filerow.ui:61
 #: crates/rnote-ui/src/dialogs/import.rs:26
@@ -1367,23 +1150,20 @@ msgstr "เปิด"
 
 #: crates/rnote-ui/data/ui/filerow.ui:65
 msgid "Open in Default App"
-msgstr ""
+msgstr "เปิดในแอพตั้งต้น"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:91
 msgid "Rename"
-msgstr "ตั้งชื่อใหม่"
+msgstr "เปลี่ยนชื่อ"
 
 #: crates/rnote-ui/data/ui/filerow.ui:73
-#, fuzzy
-#| msgid "Move into trash"
 msgid "Move to Trash"
-msgstr "ย้ายลงสู่ถังขยะ"
+msgstr "ย้ายไปถังขยะ"
 
 #: crates/rnote-ui/data/ui/filerow.ui:77
-#, fuzzy
 msgid "Duplicate"
-msgstr "สำเนาสิ่งที่เลือก"
+msgstr "สำเนา"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
 #: crates/rnote-ui/src/canvas/mod.rs:584
@@ -1393,50 +1173,51 @@ msgstr "ฉบับร่าง"
 #: crates/rnote-ui/data/ui/mainheader.ui:40
 #: crates/rnote-ui/data/ui/mainheader.ui:74
 msgid "Show/Hide Sidebar"
-msgstr ""
+msgstr "แสดง/ซ่อนแถบข้าง"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:47
 #: crates/rnote-ui/data/ui/shortcuts.ui:26
 msgid "New Tab"
-msgstr ""
+msgstr "แท็บใหม่"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:54
 msgid "Focus Mode"
-msgstr ""
+msgstr "โหมดโฟกัส"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:66
 #: crates/rnote-ui/data/ui/shortcuts.ui:167
-#, fuzzy
-#| msgid "Save document"
 msgid "Save Document"
 msgstr "บันทึกเอกสาร"
 
-#: crates/rnote-ui/data/ui/overlays.ui:99
+#: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
-msgstr ""
+msgstr "ขยับไปทางซ้าย"
 
-#: crates/rnote-ui/data/ui/overlays.ui:103
+#: crates/rnote-ui/data/ui/overlays.ui:102
 msgid "Move _Right"
-msgstr ""
+msgstr "ขยับไปทางขวา"
 
-#: crates/rnote-ui/data/ui/overlays.ui:109
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
+#: crates/rnote-ui/data/ui/overlays.ui:108
 msgid "_Close"
-msgstr "ปิดหน้าต่างที่กำลังใช้งานอยู่"
+msgstr "ปิด"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
-msgstr ""
+msgstr "ชั่วคราว"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:12
 msgid "Permanent"
-msgstr ""
+msgstr "ถาวร"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
-msgstr ""
+msgstr "เปิด-ปิด"
+
+#: crates/rnote-ui/data/ui/penshortcutrow.ui:14
+#, fuzzy
+#| msgid "Enabled"
+msgid "Disabled"
+msgstr "เปิดใช้งาน"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:41
 #: crates/rnote-ui/data/ui/shortcuts.ui:11
@@ -1452,548 +1233,481 @@ msgid "Enable or disable autosave"
 msgstr "เปิดหรือปิดโหมดบันทึกอัตโนมัติ"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:50
-#, fuzzy
-#| msgid "Autosave interval (secs)"
 msgid "Autosave Interval (secs)"
 msgstr "ช่วงเวลาในการบันทึกอัตโนมัติ (วินาที)"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:51
 msgid "Set the autosave interval in seconds"
-msgstr "ตั้งช่วงเวลาในการบันทึกอัตโนมัติเป็นวินาที"
+msgstr "กำหนดช่วงเวลาในการบันทึกอัตโนมัติเป็นวินาที"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:58
 msgid "Show Scrollbars"
-msgstr ""
+msgstr "แสดงแถบเลื่อน"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:59
-#, fuzzy
 msgid "Set whether the scrollbars on the canvas are shown"
-msgstr "ตั้งว่าจะให้ซ่อนแถบเลื่อนของเอกสารเป็นการถาวรหรือไม่"
+msgstr "กำหนดการแสดงแถบเลื่อนของเอกสาร"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:64
-msgid "Inertial Touch Scrolling"
-msgstr ""
+#, fuzzy
+#| msgid "Optimize for Printing"
+msgid "Optimize for E-Paper Displays"
+msgstr "สำหรับการพิมพ์"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:65
+msgid ""
+"Changes certain UI elements and modifies behaviour\n"
+"of tools for optimized usage on E-Paper displays"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:71
+msgid "Inertial Touch Scrolling"
+msgstr "เลื่อนด้วยการสับผัสแบบหน่วง"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:72
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option\n"
 "gets disabled."
 msgstr ""
+"กำหนดการหน่วงของการเลื่อนด้วยการสัมผัส\n"
+"จำเป็นต้องรีสตาร์ทแอปพลิเคชั่น\n"
+"เมื่อปิดการตั้งค่านี้"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:72
-#, fuzzy
+#: crates/rnote-ui/data/ui/settingspanel.ui:79
 msgid "Regular Cursor"
-msgstr "ตั้งค่าสีขอบเขตของหน้ากระดาษ"
+msgstr "รูปแบบเคอร์เซอร์ปกติ"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:73
-#, fuzzy
+#: crates/rnote-ui/data/ui/settingspanel.ui:80
 msgid "Set the regular cursor"
-msgstr "ตั้งค่าสีขอบเขตของหน้ากระดาษ"
-
-#: crates/rnote-ui/data/ui/settingspanel.ui:95
-#, fuzzy
-msgid "Show Drawing Cursor"
-msgstr "การวาด"
-
-#: crates/rnote-ui/data/ui/settingspanel.ui:96
-#, fuzzy
-msgid "Set whether the drawing cursor is visible"
-msgstr "ตั้งสีพื้นหลัง"
+msgstr "กำหนดรูปแบบเคอร์เซอร์ปกติ"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:102
-#, fuzzy
-msgid "Drawing Cursor"
-msgstr "การวาด"
+msgid "Show Drawing Cursor"
+msgstr "แสดงเคอร์เซอร์ในการวาด"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:103
-#, fuzzy
-msgid "Set the drawing cursor"
-msgstr "ตั้งสีพื้นหลัง"
+msgid "Set whether the drawing cursor is visible"
+msgstr "กำหนดการแสดงผลเคอร์เซอร์ขณะวาด"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:128
-#, fuzzy
-#| msgid "Page format"
+#: crates/rnote-ui/data/ui/settingspanel.ui:109
+msgid "Drawing Cursor"
+msgstr "รูปแบบเคอร์เซอร์ในการวาด"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:110
+msgid "Set the drawing cursor"
+msgstr "กำหนดรูปแบบเคอร์เซอร์ในการวาด"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:135
 msgid "Page Format"
 msgstr "ตั้งค่าหน้ากระดาษ"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:131
+#: crates/rnote-ui/data/ui/settingspanel.ui:138
 msgid "Format"
 msgstr "ขนาด"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:132
+#: crates/rnote-ui/data/ui/settingspanel.ui:139
 msgid "Choose a format"
 msgstr "เลือกขนาด"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:136
+#: crates/rnote-ui/data/ui/settingspanel.ui:143
 msgid "A6"
 msgstr "A6"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:137
+#: crates/rnote-ui/data/ui/settingspanel.ui:144
 msgid "A5"
 msgstr "A5"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:138
+#: crates/rnote-ui/data/ui/settingspanel.ui:145
 msgid "A4"
 msgstr "A4"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:139
+#: crates/rnote-ui/data/ui/settingspanel.ui:146
 msgid "A3"
 msgstr "A3"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:140
+#: crates/rnote-ui/data/ui/settingspanel.ui:147
 msgid "A2"
 msgstr "A2"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:141
+#: crates/rnote-ui/data/ui/settingspanel.ui:148
 msgid "US letter"
 msgstr "US letter (8.5 x 11 นิ้ว)"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:142
+#: crates/rnote-ui/data/ui/settingspanel.ui:149
 msgid "US legal"
 msgstr "US legal (8.5 x 14 นิ้ว)"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:143
+#: crates/rnote-ui/data/ui/settingspanel.ui:150
 msgid "Custom"
 msgstr "กำหนดเอง"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:151
+#: crates/rnote-ui/data/ui/settingspanel.ui:158
 msgid "Orientation"
 msgstr "ทิศทางของหน้ากระดาษ"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:152
+#: crates/rnote-ui/data/ui/settingspanel.ui:159
 msgid "Set the format orientation"
 msgstr "ตั้งทิศทางของหน้ากระดาษ"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:164
+#: crates/rnote-ui/data/ui/settingspanel.ui:171
 msgid "Portrait"
 msgstr "แนวตั้ง"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:170
+#: crates/rnote-ui/data/ui/settingspanel.ui:177
 msgid "Landscape"
 msgstr "แนวนอน"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:180
+#: crates/rnote-ui/data/ui/settingspanel.ui:187
 msgid "Width"
 msgstr "กว้าง"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:181
+#: crates/rnote-ui/data/ui/settingspanel.ui:188
 msgid "Set the format width"
 msgstr "ตั้งความกว้างของหน้ากระดาษ"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:197
+#: crates/rnote-ui/data/ui/settingspanel.ui:204
 msgid "Height"
 msgstr "สูง"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:198
+#: crates/rnote-ui/data/ui/settingspanel.ui:205
 msgid "Set the format height"
 msgstr "ตั้งความสูงของหน้ากระดาษ"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:214
+#: crates/rnote-ui/data/ui/settingspanel.ui:221
 msgid "Dpi"
-msgstr ""
+msgstr "Dpi"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:215
-#, fuzzy
-#| msgid "Set the DPI (dots per inch). Defaults to 96"
+#: crates/rnote-ui/data/ui/settingspanel.ui:222
 msgid "Set the Dpi (dots per inch). Defaults to 96."
-msgstr "ตั้งค่า DPI (จำนวนจุดต่อตารางนิ้ว) ค่าเริ่มต้นคือ 96"
+msgstr "ตั้งค่า Dpi (จำนวนจุดต่อตารางนิ้ว) ค่าเริ่มต้นคือ 96"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:225
+#: crates/rnote-ui/data/ui/settingspanel.ui:232
 msgid "Revert"
 msgstr "คืนค่าเริ่มต้น"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:247
+#: crates/rnote-ui/data/ui/settingspanel.ui:254
 #: crates/rnote-ui/data/ui/shortcuts.ui:158
 #: crates/rnote-ui/src/dialogs/mod.rs:631
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Document"
 msgid "Document"
 msgstr "เอกสาร"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:250
-#, fuzzy
-#| msgid "Document layout"
+#: crates/rnote-ui/data/ui/settingspanel.ui:257
 msgid "Document Layout"
 msgstr "รูปแบบเอกสาร"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:254
-#, fuzzy
-#| msgid "Fixed size"
+#: crates/rnote-ui/data/ui/settingspanel.ui:261
 msgid "Fixed Size"
-msgstr "ตามขนาดที่กำหนด"
+msgstr "ขนาดคงที่"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:255
-#, fuzzy
-#| msgid "Continuous vertical"
+#: crates/rnote-ui/data/ui/settingspanel.ui:262
 msgid "Continuous Vertical"
-msgstr "แบบต่อเนื่องไปเรื่อย ๆ ในแนวตั้ง"
+msgstr "ต่อเนื่องในแนวตั้ง"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:256
-#, fuzzy
-#| msgid "Infinite"
+#: crates/rnote-ui/data/ui/settingspanel.ui:263
 msgid "Semi Infinite"
-msgstr "ไม่จำกัดขนาด"
+msgstr "กึ่งไม่จำกัดขนาด"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:257
-#, fuzzy
-#| msgid "Infinite"
+#: crates/rnote-ui/data/ui/settingspanel.ui:264
 msgid "Infinite"
 msgstr "ไม่จำกัดขนาด"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:265
-#, fuzzy
-#| msgid "Format border color"
+#: crates/rnote-ui/data/ui/settingspanel.ui:272
 msgid "Format Border Color"
-msgstr "สีขอบเขตของหน้ากระดาษ"
+msgstr "สีขอบหน้ากระดาษ"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:266
+#: crates/rnote-ui/data/ui/settingspanel.ui:273
 msgid "Set the format border color"
-msgstr "ตั้งค่าสีขอบเขตของหน้ากระดาษ"
+msgstr "กำหนดสีของขอบหน้ากระดาษ"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:287
+#: crates/rnote-ui/data/ui/settingspanel.ui:294
 msgid "Set the background color"
-msgstr "ตั้งสีพื้นหลัง"
+msgstr "กำหนดสีพื้นหลัง"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:307
+#: crates/rnote-ui/data/ui/settingspanel.ui:314
 msgid "Pattern"
 msgstr "ลวดลาย"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:308
+#: crates/rnote-ui/data/ui/settingspanel.ui:315
 msgid "Choose a background pattern"
 msgstr "เลือกลวดลายของพื้นหลัง"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:312
+#: crates/rnote-ui/data/ui/settingspanel.ui:319
 msgid "None"
 msgstr "ไม่มี"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:313
+#: crates/rnote-ui/data/ui/settingspanel.ui:320
 msgid "Lines"
 msgstr "เส้นบรรทัด"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:314
+#: crates/rnote-ui/data/ui/settingspanel.ui:321
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "Grid"
 msgstr "ตาราง"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:316
+#: crates/rnote-ui/data/ui/settingspanel.ui:323
 msgid "Isometric Grid"
-msgstr ""
+msgstr "ตารางแบบไอโซเมทริก"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:317
+#: crates/rnote-ui/data/ui/settingspanel.ui:324
 msgid "Isometric Dots"
-msgstr ""
+msgstr "จุดแบบไอโซเมทริก"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:325
+#: crates/rnote-ui/data/ui/settingspanel.ui:332
 msgid "Pattern Color"
 msgstr "สีของลวดลาย"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:326
+#: crates/rnote-ui/data/ui/settingspanel.ui:333
 msgid "Set the background pattern color"
-msgstr "ตั้งสีของลวดลายพื้นหลัง"
+msgstr "กำหนดสีของลวดลายพื้นหลัง"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:346
+#: crates/rnote-ui/data/ui/settingspanel.ui:353
 msgid "Pattern Width"
 msgstr "ความกว้างของลวดลาย"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:347
+#: crates/rnote-ui/data/ui/settingspanel.ui:354
 msgid "Set the background pattern width"
-msgstr "ตั้งความกว้างของลวดลายพื้นหลัง"
+msgstr "กำหนดความกว้างของลวดลายพื้นหลัง"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:363
+#: crates/rnote-ui/data/ui/settingspanel.ui:370
 msgid "Pattern Height"
 msgstr "ความสูงของลวดลาย"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:364
+#: crates/rnote-ui/data/ui/settingspanel.ui:371
 msgid "Set the background pattern height"
-msgstr "ตั้งความสูงของลวดลายพื้นหลัง"
+msgstr "กำหนดความสูงของลวดลายพื้นหลัง"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:380
+#: crates/rnote-ui/data/ui/settingspanel.ui:387
 msgid "Invert Color Brightness"
-msgstr ""
+msgstr "กลับความสว่างสี"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:381
-#, fuzzy
-#| msgid "Set the background pattern color"
+#: crates/rnote-ui/data/ui/settingspanel.ui:388
 msgid "Invert the brightness of all background pattern colors"
-msgstr "ตั้งสีของลวดลายพื้นหลัง"
+msgstr "กลับความสว่างสีของลวดลายพื้นหลังทั้งหมด"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:385
-#, fuzzy
-#| msgid "Revert"
+#: crates/rnote-ui/data/ui/settingspanel.ui:392
 msgid "Invert"
-msgstr "คืนค่าเริ่มต้น"
+msgstr "กลับค่า"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:395
+#: crates/rnote-ui/data/ui/settingspanel.ui:402
 msgid "Button Shortcuts"
 msgstr "คีย์ลัดของปุ่มต่าง ๆ"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:398
-#, fuzzy
-#| msgid "Stylus primary button action"
+#: crates/rnote-ui/data/ui/settingspanel.ui:405
 msgid "Stylus Primary Button Action"
 msgstr "ปุ่มหลักของปากกา"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:399
-#, fuzzy
-#| msgid "Set the action for the primary stylus button"
+#: crates/rnote-ui/data/ui/settingspanel.ui:406
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
-msgstr "ตั้งค่าปุ่มหลักของปากกา"
+msgstr ""
+"ตั้งค่า\n"
+"ปุ่มหลักของปากกา"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:411
-#, fuzzy
-#| msgid "Stylus secondary button action"
+#: crates/rnote-ui/data/ui/settingspanel.ui:418
 msgid "Stylus Secondary Button Action"
 msgstr "ปุ่มรองของปากกา"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:412
-#, fuzzy
-#| msgid "Set the action for the secondary stylus button"
+#: crates/rnote-ui/data/ui/settingspanel.ui:419
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
-msgstr "ตั้งค่าปุ่มรองของปากกา"
+msgstr ""
+"ตั้งค่า\n"
+"ปุ่มรองของปากกา"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:424
-#, fuzzy
-#| msgid "Mouse secondary button action"
+#: crates/rnote-ui/data/ui/settingspanel.ui:431
 msgid "Mouse Secondary Button Action"
 msgstr "ปุ่มคลิกขวาของเมาส์"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:425
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
+#: crates/rnote-ui/data/ui/settingspanel.ui:432
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
-msgstr "ตั้งค่าปุ่มคลิกขวาของเมาส์"
-
-#: crates/rnote-ui/data/ui/settingspanel.ui:437
-msgid "Touch Two-Finger Long-Press Action"
 msgstr ""
+"ตั้งค่า\n"
+"ปุ่มคลิกขวาของเมาส์"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:438
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
+#: crates/rnote-ui/data/ui/settingspanel.ui:444
+msgid "Touch Two-Finger Long-Press Action"
+msgstr "แตะค้างด้วยสองนิ้ว"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:445
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
-msgstr "ตั้งค่าปุ่มคลิกขวาของเมาส์"
-
-#: crates/rnote-ui/data/ui/settingspanel.ui:450
-msgid "Keyboard Ctrl-Space Action"
 msgstr ""
+"ตั้งค่าการแตะ\n"
+"ค้างด้วยสองนิ้ว"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:451
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
+#: crates/rnote-ui/data/ui/settingspanel.ui:457
+msgid "Keyboard Ctrl-Space Action"
+msgstr "ปุ่ม Ctrl-Space"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:458
 msgid ""
 "Set the action for the keyboard\n"
 "Ctrl plus Space shortcut"
-msgstr "ตั้งค่าปุ่มคลิกขวาของเมาส์"
+msgstr ""
+"ตั้งค่าปุ่มคีย์บอร์ด\n"
+"Ctrl พร้อม Space"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:463
-#, fuzzy
-#| msgid "Stylus primary button action"
+#: crates/rnote-ui/data/ui/settingspanel.ui:470
 msgid "Drawing Pad Button 1 Action"
-msgstr "ปุ่มหลักของปากกา"
+msgstr "ปุ่มของแผ่นวาด 1"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:464
+#: crates/rnote-ui/data/ui/settingspanel.ui:471
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
+"ตั้งค่าปุ่ม 1\n"
+"ของแผ่นวาด"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:476
-#, fuzzy
-#| msgid "Stylus primary button action"
+#: crates/rnote-ui/data/ui/settingspanel.ui:483
 msgid "Drawing Pad Button 2 Action"
-msgstr "ปุ่มหลักของปากกา"
+msgstr "ปุ่มของแผ่นวาด 2"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:477
+#: crates/rnote-ui/data/ui/settingspanel.ui:484
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
+"ตั้งค่าปุ่ม 2\n"
+"ของแผ่นวาด"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:489
-#, fuzzy
-#| msgid "Stylus primary button action"
+#: crates/rnote-ui/data/ui/settingspanel.ui:496
 msgid "Drawing Pad Button 3 Action"
-msgstr "ปุ่มหลักของปากกา"
+msgstr "ปุ่มของแผ่นวาด 3"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:490
+#: crates/rnote-ui/data/ui/settingspanel.ui:497
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
+"ตั้งค่าปุ่ม 3\n"
+"ของแผ่นวาด"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:502
-#, fuzzy
-#| msgid "Stylus primary button action"
+#: crates/rnote-ui/data/ui/settingspanel.ui:509
 msgid "Drawing Pad Button 4 Action"
-msgstr "ปุ่มหลักของปากกา"
+msgstr "ปุ่มของแผ่นวาด 4"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:503
+#: crates/rnote-ui/data/ui/settingspanel.ui:510
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
 msgstr ""
+"ตั้งค่าปุ่ม 4\n"
+"ของแผ่นวาด"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:14
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Show keyboard shortcuts"
 msgid "Show Keyboard Shortcuts"
 msgstr "แสดงคีย์ลัด"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:32
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close the Active Tab"
-msgstr "ปิดหน้าต่างที่กำลังใช้งานอยู่"
+msgstr "ปิดแท็บที่กำลังใช้งานอยู่"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:38
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Quit the application"
 msgid "Quit the Application"
 msgstr "ออกจากแอปพลิเคชัน"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:44
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Open the canvas menu"
 msgid "Open the Canvas-Menu"
 msgstr "เปิดเมนูของเอกสาร"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:50
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Open the app menu"
 msgid "Open the App-Menu"
 msgstr "เปิดเมนูของแอปฯ"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:64
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Navigation"
 msgid "Navigation"
-msgstr "เนวิเกชั่น"
+msgstr "การนำทาง"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:67
 msgid "Switch to the 'Brush'"
-msgstr ""
+msgstr "สลับไปยัง ‘พู่กัน’"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:73
 msgid "Switch to the 'Shaper'"
-msgstr ""
+msgstr "สลับไปยัง ‘ตัวสร้างรูปทรง’"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:79
 msgid "Switch to the 'Typewriter'"
-msgstr ""
+msgstr "สลับไปยัง ‘พิมพ์ดีด’"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:85
 msgid "Switch to the 'Eraser'"
-msgstr ""
+msgstr "สลับไปยัง ‘ยางลบ’"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:91
 msgid "Switch to the 'Selector'"
-msgstr ""
+msgstr "สลับไปยัง ‘เลือก’"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:97
 msgid "Switch to the 'Tools'"
-msgstr ""
+msgstr "สลับไปยัง ‘เครื่องมือ’"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:105
 msgid "View"
-msgstr ""
+msgstr "มุมมอง"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:109
 msgid "Alt + Drag"
-msgstr ""
+msgstr "Alt + ลาก"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:150
-#, fuzzy
-#| msgid "Zoom out"
 msgid "Zoom in/out"
-msgstr "ซูมออก"
+msgstr "ซูมเข้า/ออก"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:151
 msgid "Alt + Shift + Drag"
-msgstr ""
+msgstr "Alt + Shift + ลาก"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:161
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Open document"
 msgid "Open Document"
 msgstr "เปิดเอกสาร"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:173
 #: crates/rnote-ui/src/dialogs/export.rs:30
-#, fuzzy
-#| msgid "Save document as"
 msgid "Save Document As"
 msgstr "บันทึกเอกสารที่"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
-#, fuzzy
-#| msgid "Shape configuration"
 msgid "Snap Positions"
-msgstr "กำหนดค่ารูปทรง"
+msgstr "ตำแหน่งสแนป"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Add Page (When in Fixed-Size Layout)"
-msgstr ""
+msgstr "เพิ่มหน้า (เฉพาะเอกสารที่ขนาดคงที่)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:197
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr ""
+msgstr "ลบหน้าสุดท้าย (เฉพาะเอกสารที่ขนาดคงที่)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:203
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Print document"
 msgid "Print Document"
 msgstr "พิมพ์เอกสาร"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:209
 #: crates/rnote-ui/src/dialogs/import.rs:66
-#, fuzzy
-#| msgid "Import file"
 msgid "Import File"
 msgstr "นำเข้าไฟล์"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:215
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drawing"
 msgid "Drawing"
 msgstr "การวาด"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:218
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgid "Copy to Clipboard"
 msgstr "คัดลอกไปยังคลิปบอร์ด"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:224
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgid "Cut to Clipboard"
-msgstr "คัดลอกไปยังคลิปบอร์ด"
+msgstr "ตัดไปยังคลิปบอร์ด"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:230
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "Paste Clipboard"
 msgstr "วางคลิปบอร์ด"
 
@@ -2014,26 +1728,20 @@ msgid "Settings"
 msgstr "การตั้งค่า"
 
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:79
-#, fuzzy
-#| msgid "Pages:"
 msgid "Page"
-msgstr "จำนวนหน้า:"
+msgstr "หน้า"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
-#, fuzzy
-#| msgid "Move directory up"
 msgid "Move Directory up"
-msgstr "กลับไปไดเร็กทอรีก่อนหน้า"
+msgstr "ขยับไดเร็กทอรีขึ้น"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:81
-#, fuzzy
 msgid "Workspace Directory Actions"
 msgstr "เปลี่ยนไดเรกทอรีของพื้นที่ทำงาน"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:163
-#, fuzzy
 msgid "Create new Folder"
-msgstr "ไดเรกทอรี"
+msgstr "สร้างแฟ้มใหม่"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:569
 #: crates/rnote-ui/src/appwindow/imp.rs:258
@@ -2041,8 +1749,6 @@ msgstr "ไดเรกทอรี"
 #: crates/rnote-ui/src/dialogs/mod.rs:127
 #: crates/rnote-ui/src/dialogs/mod.rs:258
 #: crates/rnote-ui/src/dialogs/mod.rs:412
-#, fuzzy
-#| msgid "Saving document failed."
 msgid "Saving document failed"
 msgstr "การบันทึกเอกสารล้มเหลว"
 
@@ -2051,137 +1757,107 @@ msgid "Printing document failed"
 msgstr "การพิมพ์เอกสารล้มเหลว"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:668
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Exporting selection failed, nothing selected"
-msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ SVG ล้มเหลว"
+msgstr "ส่งออกสิ่งที่เลือกล้มเหลว ไม่พบสิ่งที่ถูกเลือก"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:281
 msgid "Button 1"
-msgstr ""
+msgstr "ปุ่ม 1"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:288
 msgid "Button 2"
-msgstr ""
+msgstr "ปุ่ม 2"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:295
 msgid "Button 3"
-msgstr ""
+msgstr "ปุ่ม 3"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:302
 msgid "Button 4"
-msgstr ""
+msgstr "ปุ่ม 4"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:126
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
-msgstr ""
+msgstr "ไม่ได้ติดตั้งเค้าร่างการตั้งค่าไว้ ไม่สามารถโหลดการตั้งค่าของแอป และไม่สามารถเซฟได้"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:488
-#, fuzzy
-#| msgid "Opening file failed."
 msgid "Opening file failed"
 msgstr "การเปิดไฟล์ล้มเหลว"
 
 #: crates/rnote-ui/src/canvas/mod.rs:846 crates/rnote-ui/src/dialogs/mod.rs:205
 #: crates/rnote-ui/src/dialogs/mod.rs:342
-#, fuzzy
-#| msgid "- no file name -"
 msgid "- invalid file name -"
-msgstr "- ไม่มีชื่อไฟล์ -"
+msgstr "- ไม่พบชื่อไฟล์นี้ -"
 
 #: crates/rnote-ui/src/canvas/mod.rs:859
 msgid "- invalid folder path -"
-msgstr ""
+msgstr "- ไม่พบแฟ้มนี้ -"
 
 #: crates/rnote-ui/src/canvas/mod.rs:883
 msgid "Opened file was modified on disk"
-msgstr ""
+msgstr "ไฟล์ที่เปิดอยู่ถูกปรับเปลี่ยนบนไดรฟ์"
 
 #: crates/rnote-ui/src/canvas/mod.rs:884
 msgid "Reload"
-msgstr ""
+msgstr "โหลดใหม่"
 
 #: crates/rnote-ui/src/canvas/mod.rs:891
-#, fuzzy
-#| msgid "Opening .rnote file failed."
 msgid "Reloading .rnote file from disk failed"
-msgstr "การเปิดไฟล์ .rnote ล้มเหลว"
+msgstr "โหลดไฟล์ .rnote ใหม่จากไดรฟ์ล้มเหลว"
 
 #: crates/rnote-ui/src/canvas/mod.rs:957
-#, fuzzy
-#| msgid "Opening file failed."
 msgid "Opened file was renamed or moved."
-msgstr "การเปิดไฟล์ล้มเหลว"
+msgstr "ไฟล์ที่เปิดถูกลบหรือเปลี่ยนชื่อ"
 
 #: crates/rnote-ui/src/canvas/mod.rs:971
-#, fuzzy
-#| msgid "Opening file failed."
 msgid "Opened file was removed."
-msgstr "การเปิดไฟล์ล้มเหลว"
+msgstr "ไฟล์ที่เปิดถูกลบไปแล้ว"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1145
-#, fuzzy
-#| msgid "Opening file failed."
 msgid "Inserting file failed"
-msgstr "การเปิดไฟล์ล้มเหลว"
+msgstr "การแทรกไฟล์ล้มเหลว"
 
 #: crates/rnote-ui/src/canvas/mod.rs:1155
-#, fuzzy
-#| msgid "Printing document failed"
 msgid "Inserting text failed"
-msgstr "การพิมพ์เอกสารล้มเหลว"
+msgstr "เพิ่มข้อความล้มเหลว"
 
 #: crates/rnote-ui/src/dialogs/export.rs:27
 #: crates/rnote-ui/src/dialogs/import.rs:21
-#, fuzzy
-#| msgid ".rnote file"
 msgid ".rnote"
-msgstr "ไฟล์ .rnote"
+msgstr ".rnote"
 
 #: crates/rnote-ui/src/dialogs/export.rs:55
-#, fuzzy
-#| msgid "Saved document successfully."
 msgid "Saved document successfully"
-msgstr "บันทึกเอกสารสำเร็จแล้ว"
+msgstr "บันทึกเอกสารสำเร็จ"
 
 #: crates/rnote-ui/src/dialogs/export.rs:226
 #: crates/rnote-ui/src/dialogs/export.rs:239
 #: crates/rnote-ui/src/dialogs/export.rs:536
 #: crates/rnote-ui/src/dialogs/export.rs:804
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Exporting document failed"
-msgstr "ส่งออกเอกสารเป็นไฟล์ SVG ล้มเหลว"
+msgstr "ส่งออกเอกสารล้มเหลว"
 
 #: crates/rnote-ui/src/dialogs/export.rs:230
-#, fuzzy
-#| msgid "Exported document as SVG successfully."
 msgid "Exported document successfully"
-msgstr "ส่งออกเอกสารเป็นไฟล์ SVG สำเร็จแล้ว"
+msgstr "ส่งออกเอกสารสำเร็จ"
 
 #: crates/rnote-ui/src/dialogs/export.rs:231
 #: crates/rnote-ui/src/dialogs/export.rs:532
 #: crates/rnote-ui/src/dialogs/export.rs:796
-#, fuzzy
-#| msgid "- no file name -"
 msgid "View in file manager"
-msgstr "- ไม่มีชื่อไฟล์ -"
+msgstr "ดูในตัวจัดการไฟล์"
 
 #: crates/rnote-ui/src/dialogs/export.rs:245
 #: crates/rnote-ui/src/dialogs/export.rs:542
 #: crates/rnote-ui/src/dialogs/export.rs:810
-#, fuzzy
-#| msgid "Failed to open file: Unsupported file type."
 msgid "Failed to open the file in the file manager"
-msgstr "การเปิดไฟล์ล้มเหลว, ไม่รองรับประเภทไฟล์ที่เปิด"
+msgstr "การเปิดไฟล์จากตัวจัดการไฟล์ล้มเหลว"
 
 #: crates/rnote-ui/src/dialogs/export.rs:255
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Exporting document failed, no file selected"
-msgstr "ส่งออกเอกสารเป็นไฟล์ SVG ล้มเหลว"
+msgstr "ส่งออกเอกสารล้มเหลว ไม่มีไฟล์ถูกเลือกอยู่"
 
 #: crates/rnote-ui/src/dialogs/export.rs:270
 #: crates/rnote-ui/src/dialogs/export.rs:567
@@ -2191,81 +1867,57 @@ msgid "Select"
 msgstr "เลือก"
 
 #: crates/rnote-ui/src/dialogs/export.rs:527
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Exporting document pages failed"
-msgstr "ส่งออกเอกสารเป็นไฟล์ SVG ล้มเหลว"
+msgstr "ส่งออกหน้าเอกสารล้มเหลว"
 
 #: crates/rnote-ui/src/dialogs/export.rs:531
-#, fuzzy
-#| msgid "Exported document as SVG successfully."
 msgid "Exported document pages successfully"
-msgstr "ส่งออกเอกสารเป็นไฟล์ SVG สำเร็จแล้ว"
+msgstr "ส่งออกหน้าเอกสารสำเร็จ"
 
 #: crates/rnote-ui/src/dialogs/export.rs:551
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Exporting document pages failed, no directory selected"
-msgstr "ส่งออกเอกสารเป็นไฟล์ SVG ล้มเหลว"
+msgstr "ส่งออกหน้าเอกสารล้มเหลว ไม่ได้เลือกไดเร็กทอรี่"
 
 #: crates/rnote-ui/src/dialogs/export.rs:781
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Exporting selection failed, no file selected"
-msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ SVG ล้มเหลว"
+msgstr "ส่งออกสิ่งที่เลือกล้มเหลว ไม่มีไฟล์ถูกเลือกไว้"
 
 #: crates/rnote-ui/src/dialogs/export.rs:791
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Exporting selection failed"
-msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ SVG ล้มเหลว"
+msgstr "ส่งออกสิ่งที่เลือกล้มเหลว"
 
 #: crates/rnote-ui/src/dialogs/export.rs:795
-#, fuzzy
-#| msgid "Exported selection as SVG successfully."
 msgid "Exported selection successfully"
-msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ SVG สำเร็จแล้ว"
+msgstr "ส่งออกสิ่งที่เลือกสำเร็จ"
 
 #: crates/rnote-ui/src/dialogs/export.rs:897
 #: crates/rnote-ui/src/dialogs/export.rs:945
 msgid "Json"
-msgstr ""
+msgstr "Json"
 
 #: crates/rnote-ui/src/dialogs/export.rs:905
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export Engine State"
 msgstr "ส่งออกสภาพของเอนจิน"
 
 #: crates/rnote-ui/src/dialogs/export.rs:923
-#, fuzzy
-#| msgid "Export engine state failed."
 msgid "Exporting engine state failed"
 msgstr "ส่งออกสภาพของเอนจินล้มเหลว"
 
 #: crates/rnote-ui/src/dialogs/export.rs:927
-#, fuzzy
-#| msgid "Exported engine state successfully."
 msgid "Exported engine state successfully"
-msgstr "ส่งออกสภาพของเอนจินสำเร็จแล้ว"
+msgstr "ส่งออกสภาพของเอนจินสำเร็จ"
 
 #: crates/rnote-ui/src/dialogs/export.rs:953
-#, fuzzy
-#| msgid "Export engine config"
 msgid "Export Engine Config"
 msgstr "ส่งออกการตั้งค่าเอนจิน"
 
 #: crates/rnote-ui/src/dialogs/export.rs:971
-#, fuzzy
-#| msgid "Export engine config failed."
 msgid "Exporting engine config failed"
 msgstr "ส่งออกการตั้งค่าเอนจินล้มเหลว"
 
 #: crates/rnote-ui/src/dialogs/export.rs:975
-#, fuzzy
-#| msgid "Exported engine config successfully."
 msgid "Exported engine config successfully"
-msgstr "ส่งออกการตั้งค่าเอนจินสำเร็จแล้ว"
+msgstr "ส่งออกการตั้งค่าเอนจินสำเร็จ"
 
 #: crates/rnote-ui/src/dialogs/import.rs:24
 msgid "Open File"
@@ -2273,7 +1925,7 @@ msgstr "เปิดไฟล์"
 
 #: crates/rnote-ui/src/dialogs/import.rs:63
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr ""
+msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:212
 msgid "- no file name -"
@@ -2293,294 +1945,270 @@ msgstr "- ไม่มีวันที่ -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:231
 msgid "File name:"
-msgstr "ชื่อไฟล์:"
+msgstr "ชื่อไฟล์ :"
 
 #: crates/rnote-ui/src/dialogs/import.rs:235
 msgid "Title:"
-msgstr "ชื่อเรื่อง:"
+msgstr "ชื่อเรื่อง :"
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
 msgid "Author:"
-msgstr "ผู้เขียน:"
+msgstr "ผู้เขียน :"
 
 #: crates/rnote-ui/src/dialogs/import.rs:243
 msgid "Modification date:"
-msgstr "วันที่แก้ไข:"
+msgstr "วันที่แก้ไข :"
 
 #: crates/rnote-ui/src/dialogs/import.rs:247
 msgid "Pages:"
-msgstr "จำนวนหน้า:"
+msgstr "จำนวนหน้า :"
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: crates/rnote-ui/src/dialogs/mod.rs:47
 msgid "translator-credits"
-msgstr "ผู้แปล: 'Archer Allstars https://dev.to/archerallstars'"
+msgstr "ผู้แปล : 'Archer Allstars https://dev.to/archerallstars' และ 'Waris L.'"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:212
 #: crates/rnote-ui/src/dialogs/mod.rs:349
-#, fuzzy
-#| msgid "- no file name -"
 msgid "- invalid save folder name -"
-msgstr "- ไม่มีชื่อไฟล์ -"
+msgstr "- ไม่มีชื่อโฟลเดอร์นี้ -"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:228
 #: crates/rnote-ui/src/dialogs/mod.rs:364
 msgid "The changes will be saved"
-msgstr ""
+msgstr "การเปลี่ยนแปลงจะถูกบันทึก"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:233
 #: crates/rnote-ui/src/dialogs/mod.rs:369
-#, fuzzy
-#| msgid "- no directory selected -"
 msgid "A new file will be created"
-msgstr "- ไม่มีไดเรกทอรีที่เลือกไว้ -"
+msgstr "ไฟล์ใหม่จะถูกสร้าง"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:508
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change Workspace Directory"
 msgstr "เปลี่ยนไดเรกทอรีของพื้นที่ทำงาน"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:618
 msgid "Band-Aid"
-msgstr ""
+msgstr "พลาสเตอร์"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:619
 msgid "Bank"
-msgstr ""
+msgstr "ธนาคาร"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:620
 msgid "Bookmark"
-msgstr ""
+msgstr "ที่คั่นหนังสือ"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:621
 msgid "Book"
-msgstr ""
+msgstr "หนังสือ"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:622
 msgid "Bread"
-msgstr ""
+msgstr "ขนมปัง"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:623
 msgid "Calendar"
-msgstr ""
+msgstr "ปฏิทิน"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:624
 msgid "Camera"
-msgstr ""
+msgstr "กล้อง"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:625
 msgctxt "as in computer chip"
 msgid "Chip"
-msgstr ""
+msgstr "ชิป"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:626
 msgid "Clock"
-msgstr ""
+msgstr "นาฬิกา"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:627
 msgid "Code"
-msgstr ""
+msgstr "โค้ด"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:628
 msgid "Compose"
-msgstr ""
+msgstr "แต่งเพลง"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:629
 msgctxt "as in plant"
 msgid "Crop"
-msgstr ""
+msgstr "พืชผล"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:630
 msgid "Dictionary"
-msgstr ""
+msgstr "พจนานุกรม"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:632
 msgid "Drinks"
-msgstr ""
+msgstr "เครื่องดื่ม"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:633
 msgid "Flag"
-msgstr ""
+msgstr "ธง"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:634
-#, fuzzy
-#| msgid "File name:"
 msgid "Folder"
-msgstr "ชื่อไฟล์:"
+msgstr "แฟ้ม"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:635
-#, fuzzy
-#| msgid "Constraints"
 msgid "Footprints"
-msgstr "เงื่อนไขบังคับ"
+msgstr "รอยเท้า"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:636
 msgid "Gamepad"
-msgstr ""
+msgstr "เครื่องเล่นเกม"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:637
 msgid "Gear"
-msgstr ""
+msgstr "เกียร์"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:638
 msgid "Globe"
-msgstr ""
+msgstr "ลูกโลก"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:639
 msgid "Hammer"
-msgstr ""
+msgstr "ค้อน"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:640
 msgid "Heart"
-msgstr ""
+msgstr "หัวใจ"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:641
 msgid "Hourglass"
-msgstr ""
+msgstr "นาฬิกาทราย"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:642
 msgid "Key"
-msgstr ""
+msgstr "กุญแจ"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:643
 msgid "Language"
-msgstr ""
+msgstr "ภาษา"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:644
 msgid "Library"
-msgstr ""
+msgstr "ห้องสมุด"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:645
 msgid "Lightbulb"
-msgstr ""
+msgstr "หลอดไฟ"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:646
 msgid "Mathematics"
-msgstr ""
+msgstr "คณิตศาสตร์"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:647
-#, fuzzy
-#| msgid "Settings"
 msgid "Meeting"
-msgstr "การตั้งค่า"
+msgstr "การประชุม"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:648
 msgid "Money"
-msgstr ""
+msgstr "เงิน"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:649
 msgid "Musical Note"
-msgstr ""
+msgstr "โน้ตเพลง"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:650
 msgid "Nature"
-msgstr ""
+msgstr "ธรรมชาติ"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:651
-#, fuzzy
-#| msgid "Open"
 msgid "Open Book"
-msgstr "เปิด"
+msgstr "หนังสือที่เปิดอยู่"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:652
 msgid "Paintbrush"
-msgstr ""
+msgstr "พู่กัน"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:653
 msgid "Pencil and Paper"
-msgstr ""
+msgstr "ปากกาและกระดาษ"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:654
 msgid "People"
-msgstr ""
+msgstr "ผู้คน"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:655
 msgid "Person"
-msgstr ""
+msgstr "คน"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:656
-#, fuzzy
-#| msgid "Directory"
 msgid "Projector"
-msgstr "ไดเรกทอรี"
+msgstr "โปรเจกเตอร์"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:657
 msgid "Science"
-msgstr ""
+msgstr "วิทยาศาสตร์"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:658
 msgid "Scratchpad"
-msgstr ""
+msgstr "กระดานวาดรูป"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:659
-#, fuzzy
-#| msgid "Shaper"
 msgid "Shapes"
 msgstr "รูปทรง"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:660
 msgid "Shopping"
-msgstr ""
+msgstr "ชอปปิง"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:661
 msgid "Speech Bubble"
-msgstr ""
+msgstr "คำพูด"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:662
 msgid "Speedometer"
-msgstr ""
+msgstr "มาตรความเร็ว"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:663
 msgid "Star"
-msgstr ""
+msgstr "ดาว"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:665
 msgctxt "as in terminal software"
 msgid "Terminal"
-msgstr ""
+msgstr "เทอร์มินัล"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:667
-#, fuzzy
-#| msgid "Textured"
 msgid "Text"
-msgstr "เส้นเทกเจอร์"
+msgstr "ข้อความ"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:668
 msgid "Travel"
-msgstr ""
+msgstr "ท่องเที่ยว"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:669
 msgid "Weather"
-msgstr ""
+msgstr "สภาพอากาศ"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:670
-#, fuzzy
-#| msgid "Height"
 msgid "Weight"
-msgstr "สูง"
+msgstr "น้ำหนัก"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:387
 msgid "Miscellaneous"
-msgstr ""
+msgstr "อื่น ๆ"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:396
 msgid "Coordinate Systems"
-msgstr ""
+msgstr "ระบบพิกัด"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:404
-#, fuzzy
-#| msgid "Ellipse"
 msgid "Ellipses"
 msgstr "วงรี"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:411
 msgid "Curves & Paths"
-msgstr ""
+msgstr "เส้นและเส้นโค้ง"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
-msgstr ""
+msgstr "ลูกศร"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:427
 msgid "Line"
@@ -2592,15 +2220,15 @@ msgstr "สี่เหลี่ยม"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:430
 msgid "2D coordinate system"
-msgstr ""
+msgstr "ระบบพิกัด 2 มิติ"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:431
 msgid "3D coordinate system"
-msgstr ""
+msgstr "ระบบพิกัด 3 มิติ"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:432
 msgid "2D single quadrant coordinate system"
-msgstr ""
+msgstr "ระบบพิกัด 2 มิติจตุภาคเดียว"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:433
 msgid "Ellipse"
@@ -2620,152 +2248,273 @@ msgstr "เส้นโค้งเบซิเยร์สามจังหว
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
-msgstr ""
+msgstr "เส้นหลายจุด"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:438
 msgid "Polygon"
-msgstr ""
+msgstr "รูปหลายเหลี่ยม"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:551
+#: crates/rnote-ui/src/settingspanel/mod.rs:571
 msgid "Application restart is required"
-msgstr ""
+msgstr "จำเป็นต้องรีสตาร์ทแอปพลิเคชัน"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:867
+#: crates/rnote-ui/src/settingspanel/mod.rs:887
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
-msgstr ""
+msgstr "เป้าเล็ง (เล็ก)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:868
+#: crates/rnote-ui/src/settingspanel/mod.rs:888
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
-msgstr ""
+msgstr "เป้าเล็ง (กลาง)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:869
+#: crates/rnote-ui/src/settingspanel/mod.rs:889
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
-msgstr ""
+msgstr "เป้าเล็ง (ใหญ่)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:870
+#: crates/rnote-ui/src/settingspanel/mod.rs:890
 msgctxt "a cursor type"
 msgid "Dot (Small)"
-msgstr ""
+msgstr "จุด (เล็ก)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:871
+#: crates/rnote-ui/src/settingspanel/mod.rs:891
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
-msgstr ""
+msgstr "จุด (กลาง)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:872
+#: crates/rnote-ui/src/settingspanel/mod.rs:892
 msgctxt "a cursor type"
 msgid "Dot (Large)"
-msgstr ""
+msgstr "จุด (ใหญ่)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:873
+#: crates/rnote-ui/src/settingspanel/mod.rs:893
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
-msgstr ""
+msgstr "หยดน้ำบนซ้าย (เล็ก)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:874
+#: crates/rnote-ui/src/settingspanel/mod.rs:894
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
-msgstr ""
+msgstr "หยดน้ำบนซ้าย (กลาง)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:875
+#: crates/rnote-ui/src/settingspanel/mod.rs:895
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
-msgstr ""
+msgstr "หยดน้ำบนซ้าย (ใหญ่)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:876
+#: crates/rnote-ui/src/settingspanel/mod.rs:896
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
-msgstr ""
+msgstr "หยดน้ำบนขวา (เล็ก)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:877
+#: crates/rnote-ui/src/settingspanel/mod.rs:897
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
-msgstr ""
+msgstr "หยดน้ำบนขวา (กลาง)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:878
+#: crates/rnote-ui/src/settingspanel/mod.rs:898
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
-msgstr ""
+msgstr "หยดน้ำบนขวา (ใหญ่)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:879
+#: crates/rnote-ui/src/settingspanel/mod.rs:899
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
-msgstr ""
+msgstr "หยดน้ำบน (เล็ก)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:880
+#: crates/rnote-ui/src/settingspanel/mod.rs:900
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
-msgstr ""
+msgstr "หยดน้ำบน (กลาง)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:881
+#: crates/rnote-ui/src/settingspanel/mod.rs:901
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
-msgstr ""
+msgstr "หยดน้ำบน (ใหญ่)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:882
+#: crates/rnote-ui/src/settingspanel/mod.rs:902
 msgctxt "a cursor type"
 msgid "Beam (Small)"
-msgstr ""
+msgstr "ลำแสง (เล็ก)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:883
+#: crates/rnote-ui/src/settingspanel/mod.rs:903
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
-msgstr ""
+msgstr "ลำแสง (กลาง)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:884
+#: crates/rnote-ui/src/settingspanel/mod.rs:904
 msgctxt "a cursor type"
 msgid "Beam (Large)"
-msgstr ""
+msgstr "ลำแสง (ใหญ่)"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:35
 msgid "Can't duplicate an unsaved document"
-msgstr ""
+msgstr "ไม่สามารถสำเนาเอกสารที่ยังไม่ถูกบันทึก"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
-#, fuzzy
-#| msgid "Opening .rnote file failed."
 msgid "Duplicating the file failed"
-msgstr "การเปิดไฟล์ .rnote ล้มเหลว"
+msgstr "สำเนาไฟล์ล้มเหลว"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
-#, fuzzy
-#| msgid "Change the workspace directory"
 msgid "Duplicating the directory failed"
-msgstr "เปลี่ยนไดเรกทอรีของพื้นที่ทำงานนี้"
+msgstr "สำเนาไดเรกทอรีล้มเหลว"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:18
-#, fuzzy
-#| msgid "Failed to open file: Unsupported file type."
 msgid "Open the file in the default app failed"
-msgstr "การเปิดไฟล์ล้มเหลว, ไม่รองรับประเภทไฟล์ที่เปิด"
+msgstr "การเปิดไฟล์ในแอปเริ่มต้นล้มเหลว"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
 msgid "Renaming file failed, target file already exists"
-msgstr ""
+msgstr "เปลี่ยนชื่อไฟล์ล้มเหลว มีไฟล์ชื่อซ้ำกันแล้ว"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
-#, fuzzy
-#| msgid "Opening file failed."
 msgid "Renaming file failed"
-msgstr "การเปิดไฟล์ล้มเหลว"
+msgstr "เปลี่ยนชื่อไฟล์ล้มเหลว"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
-#, fuzzy
-#| msgid "Opening file failed."
 msgid "Trashing file failed"
-msgstr "การเปิดไฟล์ล้มเหลว"
+msgstr "ลบไฟล์ล้มเหลว"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
-#, fuzzy
-#| msgid "File name:"
 msgid "Folder Name"
-msgstr "ชื่อไฟล์:"
+msgstr "ชื่อแฟ้ม"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:75
 msgid "New Folder"
+msgstr "สร้างแฟ้มใหม่"
+
+#: crates/rnote-ui/src/utils.rs:161
+msgctxt "used in string representation of the current selected color"
+msgid "grey"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:163 crates/rnote-ui/src/utils.rs:198
+msgctxt "part of string representation of a color"
+msgid "rose"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:165
+#, fuzzy
+#| msgid "Bread"
+msgctxt "part of string representation of a color"
+msgid "red"
+msgstr "ขนมปัง"
+
+#: crates/rnote-ui/src/utils.rs:168
+msgctxt "part of string representation of a color"
+msgid "orange"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:171
+msgctxt "part of string representation of a color"
+msgid "yellow"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:175
+msgctxt "part of string representation of a color"
+msgid "chartreuse-green"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:178
+msgctxt "part of string representation of a color"
+msgid "green"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:181
+msgctxt "part of string representation of a color"
+msgid "spring-green"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:184
+msgctxt "part of string representation of a color"
+msgid "cyan"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:187
+msgctxt "part of string representation of a color"
+msgid "azure"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:190
+msgctxt "part of string representation of a color"
+msgid "blue"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:193
+msgctxt "part of string representation of a color"
+msgid "violet"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:196
+msgctxt "part of string representation of a color"
+msgid "magenta"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:203
+msgctxt "part of string representation of a color"
+msgid "greyish"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:206
+msgctxt "part of string representation of a color"
+msgid "vivid"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:210
+msgctxt "part of string representation of a color"
+msgid "very-dark"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:212
+msgctxt "part of string representation of a color"
+msgid "dark"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:215
+msgctxt "part of string representation of a color"
+msgid "mid"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:217
+#, fuzzy
+#| msgid "Height"
+msgctxt "part of string representation of a color"
+msgid "bright"
+msgstr "สูง"
+
+#: crates/rnote-ui/src/utils.rs:221
+#, fuzzy
+#| msgid "translator-credits"
+msgctxt "part of string representation of a color"
+msgid "transparent"
+msgstr "ผู้แปล : 'Archer Allstars https://dev.to/archerallstars' และ 'Waris L.'"
+
+#: crates/rnote-ui/src/utils.rs:223
+#, fuzzy
+#| msgid "translator-credits"
+msgctxt "part of string representation of a color"
+msgid "translucent"
+msgstr "ผู้แปล : 'Archer Allstars https://dev.to/archerallstars' และ 'Waris L.'"
+
+#: crates/rnote-ui/src/utils.rs:227
+msgctxt "part of string representation of a color"
+msgid "slightly-translucent"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:236
+msgctxt "part of string representation of a color"
+msgid "fully transparent"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:239
+msgctxt "part of string representation of a color"
+msgid "black"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:241
+msgctxt "part of string representation of a color"
+msgid "white"
 msgstr ""
 
 #, fuzzy

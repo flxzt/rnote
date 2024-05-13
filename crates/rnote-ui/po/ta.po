@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-22 15:14+0100\n"
-"PO-Revision-Date: 2023-12-07 16:05+0000\n"
+"POT-Creation-Date: 2024-04-20 11:12+0200\n"
+"PO-Revision-Date: 2024-04-23 03:07+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.3-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -51,8 +51,6 @@ msgstr ""
 "மாற்றலாம் மற்றும் உடைக்கலாம்."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
-#, fuzzy
-#| msgid "An Overview"
 msgid "An overview"
 msgstr "ஒரு மேலோட்டப் பார்வை"
 
@@ -61,28 +59,24 @@ msgid "A selection"
 msgstr "ஒரு தேர்வு"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
-#| msgid "Switch to the 'Typewriter'"
 msgid "Write text with the typewriter"
-msgstr "'தட்டச்சுப்பொறிக்கு' மாறவும்"
+msgstr "தட்டச்சுப்பொறி மூலம் உரை எழுதவும்"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"
-msgstr ""
+msgstr "கவனி பயன்முறையுடன் கருவிப்பட்டிகளை மறைக்கவும்"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
-msgstr ""
+msgstr "பணியிடத்தின் மூலம் கோப்புகளை விரைவாக அணுகவும்"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
-msgstr ""
+msgstr "ஆவண அமைப்புகளை சரிசெய்யவும்"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
-#, fuzzy
-#| msgid "Button Shortcuts"
 msgid "Configure action shortcuts"
-msgstr "பட்டன் ஷார்ட்கட்கள்"
+msgstr "செயல் குறுக்குவழிகளை உள்ளமைக்கவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
@@ -174,7 +168,7 @@ msgid "Edit Workspace"
 msgstr "பணியிடத்தை திருத்து"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:75
-#: crates/rnote-ui/data/ui/settingspanel.ui:234
+#: crates/rnote-ui/data/ui/settingspanel.ui:241
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:36
 msgid "Apply"
 msgstr "விண்ணப்பிக்க"
@@ -192,7 +186,7 @@ msgid "Change the workspace icon"
 msgstr "பணியிட ஐகானை மாற்று"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:143
-#: crates/rnote-ui/data/ui/settingspanel.ui:286
+#: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Color"
 msgstr "நிறம்"
 
@@ -374,12 +368,10 @@ msgid "Select the export directory"
 msgstr "ஏற்றுமதி கோப்பகத்தைத் தேர்ந்தெடுக்கவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:306
-#, fuzzy
-#| msgid "Export Files Stem Name"
 msgctxt ""
 "When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
-msgstr "கோப்புகளின் தண்டு பெயரை ஏற்றுமதி செய்யவும்"
+msgstr "ஏற்றுமதி கோப்புகள் தண்டு பெயர்"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:535
@@ -465,16 +457,12 @@ msgid "End Page"
 msgstr "முடிவுப் பக்கம்"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:101
-#, fuzzy
-#| msgid "Document"
 msgid "Adjust Document"
-msgstr "ஆவணம்"
+msgstr "ஆவணத்தை சரிசெய்யவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:102
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "பின்னணி வடிவத்தை ஏற்றுமதி செய்ய வேண்டுமா என்பதை அமைக்கவும்"
+msgstr "ஆவண தளவமைப்பை Pdf இல் சரிசெய்ய வேண்டுமா"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:107
 msgid "Page Width (%)"
@@ -660,41 +648,31 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "அடர்த்தி என்பது 10x10 பகுதிக்கு உள்ள புள்ளிகளின் அளவு"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
-#, fuzzy
-#| msgid "Stroke Dots Position Distribution"
 msgctxt ""
 "Drawing with a textured pen, how the dots of the texture are distributed"
 msgid "Stroke Dots Position Distribution"
-msgstr "பக்கவாதம் புள்ளிகளின் நிலைப் பரவல்"
+msgstr "பக்கவாதம் புள்ளிகள் நிலை விநியோகம்"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:249
 msgid "Choose a dots position probability distribution"
 msgstr "புள்ளிகளின் நிலை நிகழ்தகவுப் பரவலைத் தேர்வு செய்யவும்"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
-#, fuzzy
-#| msgid "Uniform"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
 msgstr "சீருடை"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
-#, fuzzy
-#| msgid "Normal"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
 msgstr "சாதாரண"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
-#, fuzzy
-#| msgid "Exponential"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
 msgstr "அதிவேக"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
-#, fuzzy
-#| msgid "Reverse Exponential"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
 msgstr "தலைகீழ் அதிவேக"
@@ -838,7 +816,7 @@ msgid "Crosshatch"
 msgstr "குறுக்குவெட்டு"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:206
-#: crates/rnote-ui/data/ui/settingspanel.ui:315
+#: crates/rnote-ui/data/ui/settingspanel.ui:322
 msgid "Dots"
 msgstr "புள்ளிகள்"
 
@@ -990,10 +968,8 @@ msgid "De_veloper Mode"
 msgstr "மேம்பாட்டாளர் (_v) பயன்முறை"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
-#, fuzzy
-#| msgid "New Window"
 msgid "New _Window"
-msgstr "புதிய விண்டோ"
+msgstr "புதிய சாளரம் (_W)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
@@ -1161,11 +1137,11 @@ msgstr ""
 "உள்ளடக்கத்தை பொருத்துவதற்கு ஆவணத்தின் அளவை மாற்றவும்.\n"
 "நிலையான அளவு ஆவண அமைப்பில் கிடைக்கும்."
 
-#: crates/rnote-ui/data/ui/colorpicker.ui:19
+#: crates/rnote-ui/data/ui/colorpicker.ui:23
 msgid "Stroke Color"
 msgstr "பக்கவாதம் நிறம்"
 
-#: crates/rnote-ui/data/ui/colorpicker.ui:26
+#: crates/rnote-ui/data/ui/colorpicker.ui:30
 msgid "Fill Color"
 msgstr "வண்ணத்தை நிரப்பவும்"
 
@@ -1215,15 +1191,15 @@ msgstr "கவனம் பயன்முறை"
 msgid "Save Document"
 msgstr "ஆவணத்தைச் சேமி"
 
-#: crates/rnote-ui/data/ui/overlays.ui:99
+#: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
 msgstr "நகர்த்து இடதுபுறம் (_L)"
 
-#: crates/rnote-ui/data/ui/overlays.ui:103
+#: crates/rnote-ui/data/ui/overlays.ui:102
 msgid "Move _Right"
 msgstr "நகர்த்து வலதுபுறம் (_R)"
 
-#: crates/rnote-ui/data/ui/overlays.ui:109
+#: crates/rnote-ui/data/ui/overlays.ui:108
 msgid "_Close"
 msgstr "மூடவும் (_C)"
 
@@ -1238,6 +1214,10 @@ msgstr "நிரந்தரமானது"
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
 msgstr "நிலைமாற்று"
+
+#: crates/rnote-ui/data/ui/penshortcutrow.ui:14
+msgid "Disabled"
+msgstr "முடக்கப்பட்டது"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:41
 #: crates/rnote-ui/data/ui/shortcuts.ui:11
@@ -1269,10 +1249,22 @@ msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "கேன்வாஸில் உள்ள சுருள் பட்டைகள் காட்டப்பட வேண்டுமா என்பதை அமைக்கவும்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:64
+msgid "Optimize for E-Paper Displays"
+msgstr "மின்-தாள்(E-Paper) காட்சிகளை மேம்படுத்தவும்"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:65
+msgid ""
+"Changes certain UI elements and modifies behaviour\n"
+"of tools for optimized usage on E-Paper displays"
+msgstr ""
+"சில UI கூறுகளை மாற்றுகிறது மற்றும் நடத்தையை மாற்றுகிறது\n"
+"மின் காகித காட்சிகளில் உகந்த பயன்பாட்டிற்கான கருவிகள்"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:71
 msgid "Inertial Touch Scrolling"
 msgstr "செயலற்ற தொடு உருட்டுதல்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:65
+#: crates/rnote-ui/data/ui/settingspanel.ui:72
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option\n"
@@ -1282,240 +1274,230 @@ msgstr ""
 "இந்த விருப்பத்தின் போது பயன்பாட்டை மறுதொடக்கம் செய்ய வேண்டியது\n"
 "முடக்கப்படுகிறது."
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:72
+#: crates/rnote-ui/data/ui/settingspanel.ui:79
 msgid "Regular Cursor"
 msgstr "வழக்கமான சுட்டி"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:73
+#: crates/rnote-ui/data/ui/settingspanel.ui:80
 msgid "Set the regular cursor"
 msgstr "வழக்கமான சுட்டியை அமைக்கவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:95
+#: crates/rnote-ui/data/ui/settingspanel.ui:102
 msgid "Show Drawing Cursor"
 msgstr "வரைதல் சுட்டியைக் காட்டு"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:96
+#: crates/rnote-ui/data/ui/settingspanel.ui:103
 msgid "Set whether the drawing cursor is visible"
 msgstr "வரைதல் சுட்டி தெரியும் என்பதை அமைக்கவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:102
+#: crates/rnote-ui/data/ui/settingspanel.ui:109
 msgid "Drawing Cursor"
 msgstr "வரைதல் சுட்டி"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:103
+#: crates/rnote-ui/data/ui/settingspanel.ui:110
 msgid "Set the drawing cursor"
 msgstr "வரைதல் சுட்டியை அமைக்கவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:128
+#: crates/rnote-ui/data/ui/settingspanel.ui:135
 msgid "Page Format"
 msgstr "பக்க வடிவம்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:131
+#: crates/rnote-ui/data/ui/settingspanel.ui:138
 msgid "Format"
 msgstr "வடிவம்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:132
+#: crates/rnote-ui/data/ui/settingspanel.ui:139
 msgid "Choose a format"
 msgstr "ஒரு வடிவமைப்பைத் தேர்வுசெய்க"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:136
+#: crates/rnote-ui/data/ui/settingspanel.ui:143
 msgid "A6"
 msgstr "A6"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:137
+#: crates/rnote-ui/data/ui/settingspanel.ui:144
 msgid "A5"
 msgstr "A5"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:138
+#: crates/rnote-ui/data/ui/settingspanel.ui:145
 msgid "A4"
 msgstr "A4"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:139
+#: crates/rnote-ui/data/ui/settingspanel.ui:146
 msgid "A3"
 msgstr "A3"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:140
+#: crates/rnote-ui/data/ui/settingspanel.ui:147
 msgid "A2"
 msgstr "A2"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:141
+#: crates/rnote-ui/data/ui/settingspanel.ui:148
 msgid "US letter"
 msgstr "அமெரிக்க கடிதம்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:142
+#: crates/rnote-ui/data/ui/settingspanel.ui:149
 msgid "US legal"
 msgstr "அமெரிக்க சட்டப்பூர்வமானது"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:143
+#: crates/rnote-ui/data/ui/settingspanel.ui:150
 msgid "Custom"
 msgstr "தனிப்பயன்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:151
+#: crates/rnote-ui/data/ui/settingspanel.ui:158
 msgid "Orientation"
 msgstr "நோக்குநிலை"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:152
+#: crates/rnote-ui/data/ui/settingspanel.ui:159
 msgid "Set the format orientation"
 msgstr "வடிவ நோக்குநிலையை அமைக்கவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:164
+#: crates/rnote-ui/data/ui/settingspanel.ui:171
 msgid "Portrait"
 msgstr "உருவப்படம்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:170
+#: crates/rnote-ui/data/ui/settingspanel.ui:177
 msgid "Landscape"
 msgstr "நிலப்பரப்பு"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:180
+#: crates/rnote-ui/data/ui/settingspanel.ui:187
 msgid "Width"
 msgstr "அகலம்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:181
+#: crates/rnote-ui/data/ui/settingspanel.ui:188
 msgid "Set the format width"
 msgstr "வடிவத்தின் அகலத்தை அமைக்கவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:197
+#: crates/rnote-ui/data/ui/settingspanel.ui:204
 msgid "Height"
 msgstr "உயரம்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:198
+#: crates/rnote-ui/data/ui/settingspanel.ui:205
 msgid "Set the format height"
 msgstr "வடிவத்தின் உயரத்தை அமைக்கவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:214
+#: crates/rnote-ui/data/ui/settingspanel.ui:221
 msgid "Dpi"
 msgstr "Dpi"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:215
+#: crates/rnote-ui/data/ui/settingspanel.ui:222
 msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr "Dpi (ஒரு அங்குலத்திற்கு புள்ளிகள்) அமைக்கவும். இயல்புநிலை 96."
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:225
+#: crates/rnote-ui/data/ui/settingspanel.ui:232
 msgid "Revert"
 msgstr "பின்செல்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:247
+#: crates/rnote-ui/data/ui/settingspanel.ui:254
 #: crates/rnote-ui/data/ui/shortcuts.ui:158
 #: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "Document"
 msgstr "ஆவணம்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:250
-#, fuzzy
-#| msgid "_Document Layout"
-msgid "Document Layout"
-msgstr "ஆவணத்தின் தளவமைப்பு (_D)"
-
-#: crates/rnote-ui/data/ui/settingspanel.ui:254
-#, fuzzy
-#| msgid "_Fixed Size"
-msgid "Fixed Size"
-msgstr "நிலையான அளவு (_F)"
-
-#: crates/rnote-ui/data/ui/settingspanel.ui:255
-#, fuzzy
-#| msgid "_Continuous Vertical"
-msgid "Continuous Vertical"
-msgstr "தொடர்ச்சியான செங்குத்து (_C)"
-
-#: crates/rnote-ui/data/ui/settingspanel.ui:256
-#, fuzzy
-#| msgid "_Semi Infinite"
-msgid "Semi Infinite"
-msgstr "அரை எல்லையற்றது (_S)"
-
 #: crates/rnote-ui/data/ui/settingspanel.ui:257
-#, fuzzy
-#| msgid "_Infinite"
-msgid "Infinite"
-msgstr "எல்லையற்ற (_I)"
+msgid "Document Layout"
+msgstr "ஆவணத்தின் தளவமைப்பு"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:265
+#: crates/rnote-ui/data/ui/settingspanel.ui:261
+msgid "Fixed Size"
+msgstr "நிலையான அளவு"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:262
+msgid "Continuous Vertical"
+msgstr "தொடர்ச்சியான செங்குத்து"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:263
+msgid "Semi Infinite"
+msgstr "அரை எல்லையற்றது"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:264
+msgid "Infinite"
+msgstr "எல்லையற்றது"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:272
 msgid "Format Border Color"
 msgstr "பார்டர் வண்ணத்தை வடிவமைக்கவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:266
+#: crates/rnote-ui/data/ui/settingspanel.ui:273
 msgid "Set the format border color"
 msgstr "பார்மட் பார்டர் நிறத்தை அமைக்கவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:287
+#: crates/rnote-ui/data/ui/settingspanel.ui:294
 msgid "Set the background color"
 msgstr "பின்னணி நிறத்தை அமைக்கவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:307
+#: crates/rnote-ui/data/ui/settingspanel.ui:314
 msgid "Pattern"
 msgstr "பேட்டர்ன்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:308
+#: crates/rnote-ui/data/ui/settingspanel.ui:315
 msgid "Choose a background pattern"
 msgstr "பின்னணி வடிவத்தைத் தேர்வு செய்யவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:312
+#: crates/rnote-ui/data/ui/settingspanel.ui:319
 msgid "None"
 msgstr "எதுவும் இல்லை"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:313
+#: crates/rnote-ui/data/ui/settingspanel.ui:320
 msgid "Lines"
 msgstr "கோடுகள்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:314
+#: crates/rnote-ui/data/ui/settingspanel.ui:321
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "Grid"
 msgstr "கட்டம்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:316
+#: crates/rnote-ui/data/ui/settingspanel.ui:323
 msgid "Isometric Grid"
 msgstr "ஐசோமெட்ரிக் கட்டம்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:317
+#: crates/rnote-ui/data/ui/settingspanel.ui:324
 msgid "Isometric Dots"
 msgstr "ஐசோமெட்ரிக் புள்ளிகள்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:325
+#: crates/rnote-ui/data/ui/settingspanel.ui:332
 msgid "Pattern Color"
 msgstr "வடிவ நிறம்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:326
+#: crates/rnote-ui/data/ui/settingspanel.ui:333
 msgid "Set the background pattern color"
 msgstr "பின்னணி மாதிரி நிறத்தை அமைக்கவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:346
+#: crates/rnote-ui/data/ui/settingspanel.ui:353
 msgid "Pattern Width"
 msgstr "வடிவ அகலம்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:347
+#: crates/rnote-ui/data/ui/settingspanel.ui:354
 msgid "Set the background pattern width"
 msgstr "பின்னணி வடிவ அகலத்தை அமைக்கவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:363
+#: crates/rnote-ui/data/ui/settingspanel.ui:370
 msgid "Pattern Height"
 msgstr "பேட்டர்ன் உயரம்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:364
+#: crates/rnote-ui/data/ui/settingspanel.ui:371
 msgid "Set the background pattern height"
 msgstr "பின்னணி வடிவ உயரத்தை அமைக்கவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:380
+#: crates/rnote-ui/data/ui/settingspanel.ui:387
 msgid "Invert Color Brightness"
 msgstr "தலைகீழ் வண்ண பிரகாசம்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:381
+#: crates/rnote-ui/data/ui/settingspanel.ui:388
 msgid "Invert the brightness of all background pattern colors"
 msgstr "அனைத்து பின்னணி வண்ணங்களின் பிரகாசத்தையும் மாற்றவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:385
+#: crates/rnote-ui/data/ui/settingspanel.ui:392
 msgid "Invert"
 msgstr "தலைகீழாக மாற்றவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:395
+#: crates/rnote-ui/data/ui/settingspanel.ui:402
 msgid "Button Shortcuts"
 msgstr "பட்டன் ஷார்ட்கட்கள்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:398
+#: crates/rnote-ui/data/ui/settingspanel.ui:405
 msgid "Stylus Primary Button Action"
 msgstr "எழுத்தாணி முதன்மை பொத்தான் நடவடிக்கை"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:399
+#: crates/rnote-ui/data/ui/settingspanel.ui:406
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
@@ -1523,11 +1505,11 @@ msgstr ""
 "முதன்மை ஸ்டைலஸ் பட்டனுக்கான \n"
 "செயலை அமைக்கவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:411
+#: crates/rnote-ui/data/ui/settingspanel.ui:418
 msgid "Stylus Secondary Button Action"
 msgstr "எழுத்தாணி இரண்டாம் நிலை பொத்தான் செயல்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:412
+#: crates/rnote-ui/data/ui/settingspanel.ui:419
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
@@ -1535,11 +1517,11 @@ msgstr ""
 "இரண்டாம் நிலை ஸ்டைலஸ் பொத்தானுக்கு \n"
 " செயலை அமைக்கவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:424
+#: crates/rnote-ui/data/ui/settingspanel.ui:431
 msgid "Mouse Secondary Button Action"
 msgstr "சுட்டி இரண்டாம் நிலை பொத்தான் செயல்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:425
+#: crates/rnote-ui/data/ui/settingspanel.ui:432
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
@@ -1547,11 +1529,11 @@ msgstr ""
 "இரண்டாம் நிலை சுட்டி பொத்தானின் \n"
 "செயலை அமைக்கவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:437
+#: crates/rnote-ui/data/ui/settingspanel.ui:444
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "இரண்டு விரல்களால் நீண்ட அழுத்த செயலைத் தொடவும்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:438
+#: crates/rnote-ui/data/ui/settingspanel.ui:445
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
@@ -1559,11 +1541,11 @@ msgstr ""
 "தொடுதலுக்கான செயலை அமைக்கவும் \n"
 "இரண்டு விரல் நீண்ட அழுத்த சைகை"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:450
+#: crates/rnote-ui/data/ui/settingspanel.ui:457
 msgid "Keyboard Ctrl-Space Action"
 msgstr "விசைப்பலகை Ctrl-Space செயல்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:451
+#: crates/rnote-ui/data/ui/settingspanel.ui:458
 msgid ""
 "Set the action for the keyboard\n"
 "Ctrl plus Space shortcut"
@@ -1571,11 +1553,11 @@ msgstr ""
 "விசைப்பலகைக்கான செயலை அமைக்கவும்\n"
 "Ctrl + Space குறுக்குவழி"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:463
+#: crates/rnote-ui/data/ui/settingspanel.ui:470
 msgid "Drawing Pad Button 1 Action"
 msgstr "வரைதல் திண்டு பட்டன் 1 செயல்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:464
+#: crates/rnote-ui/data/ui/settingspanel.ui:471
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
@@ -1583,11 +1565,11 @@ msgstr ""
 "பொத்தான் 1 க்கான செயலை அமைக்கவும் \n"
 "ஒரு வரைதல் திண்டு மீது"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:476
+#: crates/rnote-ui/data/ui/settingspanel.ui:483
 msgid "Drawing Pad Button 2 Action"
 msgstr "வரைதல் திண்டு பொத்தான் 2 செயல்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:477
+#: crates/rnote-ui/data/ui/settingspanel.ui:484
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
@@ -1595,11 +1577,11 @@ msgstr ""
 "பொத்தான் 2 க்கான செயலை அமைக்கவும்\n"
 "ஒரு வரைதல் திண்டு மீது"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:489
+#: crates/rnote-ui/data/ui/settingspanel.ui:496
 msgid "Drawing Pad Button 3 Action"
 msgstr "வரைதல் திண்டு பட்டன் 3 செயல்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:490
+#: crates/rnote-ui/data/ui/settingspanel.ui:497
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
@@ -1607,11 +1589,11 @@ msgstr ""
 "பொத்தான் 3 க்கான செயலை அமைக்கவும் \n"
 "ஒரு வரைதல் திண்டு மீது"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:502
+#: crates/rnote-ui/data/ui/settingspanel.ui:509
 msgid "Drawing Pad Button 4 Action"
 msgstr "வரைதல் திண்டு பட்டன் 4 செயல்"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:503
+#: crates/rnote-ui/data/ui/settingspanel.ui:510
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
@@ -1828,16 +1810,12 @@ msgid "Reloading .rnote file from disk failed"
 msgstr "வட்டில் இருந்து .rnote கோப்பை மீண்டும் ஏற்றுவது தோல்வியடைந்தது"
 
 #: crates/rnote-ui/src/canvas/mod.rs:957
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was renamed or moved."
-msgstr "திறந்த கோப்பு வட்டில் மறுபெயரிடப்பட்டது"
+msgstr "திறக்கப்பட்ட கோப்பு மறுபெயரிடப்பட்டது அல்லது நகர்த்தப்பட்டது."
 
 #: crates/rnote-ui/src/canvas/mod.rs:971
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was removed."
-msgstr "திறந்த கோப்பு வட்டில் மறுபெயரிடப்பட்டது"
+msgstr "திறக்கப்பட்ட கோப்பு அகற்றப்பட்டது."
 
 #: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
@@ -2275,142 +2253,130 @@ msgid "Polyline"
 msgstr "பாலிலைன்"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:438
-#, fuzzy
-#| msgid "Polyline"
 msgid "Polygon"
-msgstr "பாலிலைன்"
+msgstr "பலகோணம்"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:551
+#: crates/rnote-ui/src/settingspanel/mod.rs:571
 msgid "Application restart is required"
 msgstr "விண்ணப்பத்தை மறுதொடக்கம் செய்ய வேண்டும்"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:867
+#: crates/rnote-ui/src/settingspanel/mod.rs:887
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "குறுக்கு முடி (சிறியது)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:868
+#: crates/rnote-ui/src/settingspanel/mod.rs:888
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "குறுக்கு முடி (நடுத்தர)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:869
+#: crates/rnote-ui/src/settingspanel/mod.rs:889
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "குறுக்கு முடி (பெரியது)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:870
+#: crates/rnote-ui/src/settingspanel/mod.rs:890
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "புள்ளி (சிறியது)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:871
+#: crates/rnote-ui/src/settingspanel/mod.rs:891
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "புள்ளி (நடுத்தர)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:872
+#: crates/rnote-ui/src/settingspanel/mod.rs:892
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "புள்ளி (பெரியது)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:873
+#: crates/rnote-ui/src/settingspanel/mod.rs:893
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "கண்ணீர் வடமேற்கு (சிறியது)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:874
+#: crates/rnote-ui/src/settingspanel/mod.rs:894
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "கண்ணீர் வடமேற்கு (நடுத்தர)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:875
+#: crates/rnote-ui/src/settingspanel/mod.rs:895
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "கண்ணீர் வடமேற்கு (பெரியது)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:876
+#: crates/rnote-ui/src/settingspanel/mod.rs:896
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "கண்ணீர் வடகிழக்கு (சிறியது)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:877
+#: crates/rnote-ui/src/settingspanel/mod.rs:897
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "கண்ணீர் வடகிழக்கு (நடுத்தர)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:878
+#: crates/rnote-ui/src/settingspanel/mod.rs:898
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "கண்ணீர் வடகிழக்கு (பெரியது)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:879
+#: crates/rnote-ui/src/settingspanel/mod.rs:899
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "கண்ணீர் வடக்கு (சிறியது)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:880
+#: crates/rnote-ui/src/settingspanel/mod.rs:900
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "கண்ணீர் வடக்கு (நடுத்தர)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:881
+#: crates/rnote-ui/src/settingspanel/mod.rs:901
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "கண்ணீர் வடக்கு (பெரியது)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:882
+#: crates/rnote-ui/src/settingspanel/mod.rs:902
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "கற்றை (சிறியது)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:883
+#: crates/rnote-ui/src/settingspanel/mod.rs:903
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "கற்றை (நடுத்தரம்)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:884
+#: crates/rnote-ui/src/settingspanel/mod.rs:904
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "கற்றை (பெரியது)"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:35
 msgid "Can't duplicate an unsaved document"
-msgstr ""
+msgstr "சேமிக்கப்படாத ஆவணத்தை நகலெடுக்க முடியாது"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
-#, fuzzy
-#| msgid "Opening .rnote file failed"
 msgid "Duplicating the file failed"
-msgstr ".rnote கோப்பை திறக்க முடியவில்லை"
+msgstr "கோப்பை நகலெடுக்க முடியவில்லை"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
-#, fuzzy
-#| msgid "Change the directory"
 msgid "Duplicating the directory failed"
-msgstr "கோப்பகத்தை மாற்றவும்"
+msgstr "கோப்பகத்தை நகலெடுப்பது தோல்வியடைந்தது"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:18
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Open the file in the default app failed"
-msgstr "கோப்பு மேலாளரில் கோப்பைத் திறக்க முடியவில்லை"
+msgstr "இயல்புநிலை பயன்பாட்டில் கோப்பைத் திறக்க முடியவில்லை"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
 msgid "Renaming file failed, target file already exists"
-msgstr ""
+msgstr "கோப்பை மறுபெயரிடுவதில் தோல்வி, இலக்கு கோப்பு ஏற்கனவே உள்ளது"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
-#, fuzzy
-#| msgid "Opening file failed"
 msgid "Renaming file failed"
-msgstr "கோப்பைத் திறப்பதில் தோல்வி"
+msgstr "கோப்பை மறுபெயரிடுவதில் தோல்வி"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
-#, fuzzy
-#| msgid "Inserting file failed"
 msgid "Trashing file failed"
-msgstr "கோப்பைச் செருகுவதில் தோல்வி"
+msgstr "கோப்பை குப்பைக்கு அனுப்ப முடியவில்லை"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 msgid "Folder Name"
@@ -2419,6 +2385,131 @@ msgstr "கோப்புறை பெயர்"
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:75
 msgid "New Folder"
 msgstr "புதிய அடைவு"
+
+#: crates/rnote-ui/src/utils.rs:161
+msgctxt "used in string representation of the current selected color"
+msgid "grey"
+msgstr "சாம்பல் நிறம்"
+
+#: crates/rnote-ui/src/utils.rs:163 crates/rnote-ui/src/utils.rs:198
+msgctxt "part of string representation of a color"
+msgid "rose"
+msgstr "ரோஜா"
+
+#: crates/rnote-ui/src/utils.rs:165
+msgctxt "part of string representation of a color"
+msgid "red"
+msgstr "சிவப்பு"
+
+#: crates/rnote-ui/src/utils.rs:168
+msgctxt "part of string representation of a color"
+msgid "orange"
+msgstr "ஆரஞ்சு"
+
+#: crates/rnote-ui/src/utils.rs:171
+msgctxt "part of string representation of a color"
+msgid "yellow"
+msgstr "மஞ்சள்"
+
+#: crates/rnote-ui/src/utils.rs:175
+msgctxt "part of string representation of a color"
+msgid "chartreuse-green"
+msgstr "சார்ட்ரூஸ்-பச்சை"
+
+#: crates/rnote-ui/src/utils.rs:178
+msgctxt "part of string representation of a color"
+msgid "green"
+msgstr "பச்சை"
+
+#: crates/rnote-ui/src/utils.rs:181
+msgctxt "part of string representation of a color"
+msgid "spring-green"
+msgstr "வசந்த-பச்சை"
+
+#: crates/rnote-ui/src/utils.rs:184
+msgctxt "part of string representation of a color"
+msgid "cyan"
+msgstr "சியான்"
+
+#: crates/rnote-ui/src/utils.rs:187
+msgctxt "part of string representation of a color"
+msgid "azure"
+msgstr "ஆகாய நீலநிறம்"
+
+#: crates/rnote-ui/src/utils.rs:190
+msgctxt "part of string representation of a color"
+msgid "blue"
+msgstr "நீலம்"
+
+#: crates/rnote-ui/src/utils.rs:193
+msgctxt "part of string representation of a color"
+msgid "violet"
+msgstr "ஊதா"
+
+#: crates/rnote-ui/src/utils.rs:196
+msgctxt "part of string representation of a color"
+msgid "magenta"
+msgstr "மெஜந்தா"
+
+#: crates/rnote-ui/src/utils.rs:203
+msgctxt "part of string representation of a color"
+msgid "greyish"
+msgstr "சாம்பல் நிறமானது"
+
+#: crates/rnote-ui/src/utils.rs:206
+msgctxt "part of string representation of a color"
+msgid "vivid"
+msgstr "தெளிவான"
+
+#: crates/rnote-ui/src/utils.rs:210
+msgctxt "part of string representation of a color"
+msgid "very-dark"
+msgstr "மிகவும் இருள்"
+
+#: crates/rnote-ui/src/utils.rs:212
+msgctxt "part of string representation of a color"
+msgid "dark"
+msgstr "இருள்"
+
+#: crates/rnote-ui/src/utils.rs:215
+msgctxt "part of string representation of a color"
+msgid "mid"
+msgstr "நடுப்பகுதி"
+
+#: crates/rnote-ui/src/utils.rs:217
+msgctxt "part of string representation of a color"
+msgid "bright"
+msgstr "பிரகாசமான"
+
+#: crates/rnote-ui/src/utils.rs:221
+msgctxt "part of string representation of a color"
+msgid "transparent"
+msgstr "ஒளி புகும்"
+
+#: crates/rnote-ui/src/utils.rs:223
+msgctxt "part of string representation of a color"
+msgid "translucent"
+msgstr "ஒளிஊடுருவக்கூடியது"
+
+#: crates/rnote-ui/src/utils.rs:227
+msgctxt "part of string representation of a color"
+msgid "slightly-translucent"
+msgstr "சற்று ஒளிஊடுருவக்கூடியது"
+
+#: crates/rnote-ui/src/utils.rs:236
+msgctxt "part of string representation of a color"
+msgid "fully transparent"
+msgstr "முற்றிலும் வெளிப்படையானது"
+
+#: crates/rnote-ui/src/utils.rs:239
+msgctxt "part of string representation of a color"
+msgid "black"
+msgstr "கருப்பு"
+
+#: crates/rnote-ui/src/utils.rs:241
+msgctxt "part of string representation of a color"
+msgid "white"
+msgstr "வெள்ளை"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "திறக்கப்பட்ட கோப்பு வட்டில் நகர்த்தப்பட்டது அல்லது நீக்கப்பட்டது"

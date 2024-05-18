@@ -6,9 +6,7 @@ use crate::style::Composer;
 use crate::PenEvent;
 use crate::{Constraints, EventResult};
 use crate::{PenPath, Style};
-use ink_stroke_modeler_rs::{
-    ModelerInput, ModelerInputEventType, ModelerParams, PredictionParams, StrokeModeler,
-};
+use ink_stroke_modeler_rs::{ModelerInput, ModelerInputEventType, ModelerParams, StrokeModeler};
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
@@ -133,7 +131,6 @@ static MODELER_PARAMS: Lazy<ModelerParams> = Lazy::new(|| ModelerParams {
     sampling_end_of_stroke_max_iterations: 20,
     sampling_max_outputs_per_call: 200,
     stylus_state_modeler_max_input_samples: 20,
-    prediction_params: PredictionParams::StrokeEnd,
     ..ModelerParams::suggested()
 });
 
@@ -175,7 +172,7 @@ impl PenPathModeledBuilder {
 
         let n_steps = (now.duration_since(self.last_element_time).as_secs_f64()
             * MODELER_PARAMS.sampling_min_output_rate)
-            .ceil() as i32;
+            .ceil() as usize;
 
         if n_steps > MODELER_PARAMS.sampling_max_outputs_per_call {
             // If the no of outputs the modeler would need to produce exceeds the configured maximum
@@ -194,8 +191,6 @@ n_steps exceeds configured max outputs per call."
             (element.pos[0] as f32, element.pos[1] as f32),
             now.duration_since(self.start_time).as_secs_f64(),
             element.pressure as f32,
-            0.0,
-            0.0,
         );
 
         match self.stroke_modeler.update(modeler_input) {
@@ -249,8 +244,6 @@ n_steps exceeds configured max outputs per call."
             (element.pos[0] as f32, element.pos[1] as f32),
             0.0,
             element.pressure as f32,
-            0.0,
-            0.0,
         )) {
             Ok(results) => {
                 self.buffer.extend(results.into_iter().map(|r| {

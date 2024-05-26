@@ -186,17 +186,17 @@ n_steps exceeds configured max outputs per call."
         }
         self.last_element_time = now;
 
-        let modeler_input = ModelerInput::new(
+        let modeler_input = ModelerInput {
             event_type,
-            (element.pos[0] as f32, element.pos[1] as f32),
-            now.duration_since(self.start_time).as_secs_f64(),
-            element.pressure as f32,
-        );
+            pos: (element.pos[0] as f32, element.pos[1] as f32),
+            time: now.duration_since(self.start_time).as_secs_f64(),
+            pressure: element.pressure as f32,
+        };
 
         match self.stroke_modeler.update(modeler_input) {
             Ok(results) => self.buffer.extend(results.into_iter().map(|r| {
-                let pos = r.pos();
-                let pressure = r.pressure();
+                let pos = r.pos;
+                let pressure = r.pressure;
                 Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
             })),
             Err(e) => tracing::error!("Updating stroke modeler with element failed, Err: {e:?}"),
@@ -215,8 +215,8 @@ n_steps exceeds configured max outputs per call."
                 Ok(results) => results
                     .into_iter()
                     .map(|r| {
-                        let pos = r.pos();
-                        let pressure = r.pressure();
+                        let pos = r.pos;
+                        let pressure = r.pressure;
                         Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
                     })
                     .collect::<Vec<Element>>(),
@@ -239,16 +239,16 @@ n_steps exceeds configured max outputs per call."
             return;
         }
 
-        match self.stroke_modeler.update(ModelerInput::new(
-            ModelerInputEventType::kDown,
-            (element.pos[0] as f32, element.pos[1] as f32),
-            0.0,
-            element.pressure as f32,
-        )) {
+        match self.stroke_modeler.update(ModelerInput {
+            event_type: ModelerInputEventType::kDown,
+            pos: (element.pos[0] as f32, element.pos[1] as f32),
+            time: 0.0,
+            pressure: element.pressure as f32,
+        }) {
             Ok(results) => {
                 self.buffer.extend(results.into_iter().map(|r| {
-                    let pos = r.pos();
-                    let pressure = r.pressure();
+                    let pos = r.pos;
+                    let pressure = r.pressure;
                     Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
                 }));
             }

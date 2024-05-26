@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-20 11:12+0200\n"
-"PO-Revision-Date: 2024-05-21 21:12+0000\n"
+"PO-Revision-Date: 2024-05-27 12:09+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -1256,6 +1256,8 @@ msgid ""
 "Changes certain UI elements and modifies behaviour\n"
 "of tools for optimized usage on E-Paper displays"
 msgstr ""
+"কিছু UI উপাদান পরিবর্তন করে এবং E-paper ডিসপ্লেতে\n"
+"ব্যবহারের জন্য আপ্টিমাইজ করা টুলের আচরণ পরিবর্তন করে"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:71
 msgid "Inertial Touch Scrolling"
@@ -2410,7 +2412,7 @@ msgstr "হলুদ"
 #: crates/rnote-ui/src/utils.rs:175
 msgctxt "part of string representation of a color"
 msgid "chartreuse-green"
-msgstr ""
+msgstr "chartreuse-সবুজ"
 
 #: crates/rnote-ui/src/utils.rs:178
 msgctxt "part of string representation of a color"
@@ -2420,17 +2422,17 @@ msgstr "সবুজ"
 #: crates/rnote-ui/src/utils.rs:181
 msgctxt "part of string representation of a color"
 msgid "spring-green"
-msgstr ""
+msgstr "বসন্ত-সবুজ"
 
 #: crates/rnote-ui/src/utils.rs:184
 msgctxt "part of string representation of a color"
 msgid "cyan"
-msgstr ""
+msgstr "cyan-নীল"
 
 #: crates/rnote-ui/src/utils.rs:187
 msgctxt "part of string representation of a color"
 msgid "azure"
-msgstr ""
+msgstr "azure-নীল"
 
 #: crates/rnote-ui/src/utils.rs:190
 msgctxt "part of string representation of a color"
@@ -2445,32 +2447,32 @@ msgstr "বেগুনি"
 #: crates/rnote-ui/src/utils.rs:196
 msgctxt "part of string representation of a color"
 msgid "magenta"
-msgstr ""
+msgstr "magenta-বেগুনী"
 
 #: crates/rnote-ui/src/utils.rs:203
 msgctxt "part of string representation of a color"
 msgid "greyish"
-msgstr ""
+msgstr "ধুসরীয়"
 
 #: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"
 msgid "vivid"
-msgstr ""
+msgstr "প্রাণবন্ত"
 
 #: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
 msgid "very-dark"
-msgstr ""
+msgstr "খুব-গাড়"
 
 #: crates/rnote-ui/src/utils.rs:212
 msgctxt "part of string representation of a color"
 msgid "dark"
-msgstr ""
+msgstr "গাড়"
 
 #: crates/rnote-ui/src/utils.rs:215
 msgctxt "part of string representation of a color"
 msgid "mid"
-msgstr ""
+msgstr "মধ্য"
 
 #: crates/rnote-ui/src/utils.rs:217
 msgctxt "part of string representation of a color"
@@ -2490,12 +2492,12 @@ msgstr "ষদচ্ছ"
 #: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
-msgstr ""
+msgstr "হালকা ষদচ্ছ"
 
 #: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
-msgstr ""
+msgstr "সম্পূর্ণ ষদচ্ছ"
 
 #: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"

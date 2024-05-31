@@ -68,7 +68,7 @@ impl Buildable for PenPathModeledBuilder {
         let progress = match event {
             PenEvent::Down { element, .. } => {
                 // kDown is already fed into the modeler when the builder was instantiated (with start())
-                self.update_modeler_w_element(element, ModelerInputEventType::kMove, now);
+                self.update_modeler_w_element(element, ModelerInputEventType::Move, now);
 
                 match self.try_build_segments() {
                     Some(segments) => BuilderProgress::EmitContinue(segments),
@@ -76,7 +76,7 @@ impl Buildable for PenPathModeledBuilder {
                 }
             }
             PenEvent::Up { element, .. } => {
-                self.update_modeler_w_element(element, ModelerInputEventType::kUp, now);
+                self.update_modeler_w_element(element, ModelerInputEventType::Up, now);
 
                 let segments = self.build_segments_end();
 
@@ -208,7 +208,7 @@ n_steps exceeds configured max outputs per call."
         }
 
         // When the stroke is finished it is invalid to predict, and the existing prediction should be cleared.
-        if event_type == ModelerInputEventType::kUp {
+        if event_type == ModelerInputEventType::Up {
             self.prediction_buffer.clear();
         } else {
             self.prediction_buffer = match self.stroke_modeler.predict() {
@@ -240,7 +240,7 @@ n_steps exceeds configured max outputs per call."
         }
 
         match self.stroke_modeler.update(ModelerInput {
-            event_type: ModelerInputEventType::kDown,
+            event_type: ModelerInputEventType::Down,
             pos: (element.pos[0] as f32, element.pos[1] as f32),
             time: 0.0,
             pressure: element.pressure as f32,

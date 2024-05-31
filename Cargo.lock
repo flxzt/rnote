@@ -1707,7 +1707,7 @@ dependencies = [
 [[package]]
 name = "ink-stroke-modeler-rs"
 version = "0.1.0"
-source = "git+https://github.com/Doublonmousse/ink-stroke-modeler-rs?branch=riir#c3149db9c035a0d85acfedf49a2644a2e113d5ee"
+source = "git+https://github.com/Doublonmousse/ink-stroke-modeler-rs?branch=riir#1fefc239e00dc6daa6becd443d459ac002ff97bf"
 
 [[package]]
 name = "inotify"

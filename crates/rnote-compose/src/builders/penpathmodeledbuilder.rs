@@ -6,11 +6,13 @@ use crate::style::Composer;
 use crate::PenEvent;
 use crate::{Constraints, EventResult};
 use crate::{PenPath, Style};
-use ink_stroke_modeler_rs::{ModelerInput, ModelerInputEventType, ModelerParams, StrokeModeler};
+use ink_stroke_modeler_rs::{
+    Errors, ModelerInput, ModelerInputEventType, ModelerParams, StrokeModeler,
+};
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 /// Pen path modeled builder.
 pub struct PenPathModeledBuilder {
@@ -161,31 +163,6 @@ impl PenPathModeledBuilder {
         event_type: ModelerInputEventType,
         now: Instant,
     ) {
-        if self.last_element == element
-            || now.duration_since(self.last_element_time) <= Duration::ZERO
-        {
-            // Can't feed modeler with duplicate elements or with same or reverse time,
-            // would result in `INVALID_ARGUMENT` errors
-            return;
-        }
-        self.last_element = element;
-
-        let n_steps = (now.duration_since(self.last_element_time).as_secs_f64()
-            * MODELER_PARAMS.sampling_min_output_rate)
-            .ceil() as usize;
-
-        if n_steps > MODELER_PARAMS.sampling_max_outputs_per_call {
-            // If the no of outputs the modeler would need to produce exceeds the configured maximum
-            // (because the time delta between the last elements is too large), it needs to be restarted.
-            tracing::debug!(
-                "PenpathModeledBuilder: updating modeler with element failed,
-n_steps exceeds configured max outputs per call."
-            );
-
-            self.restart(element, now);
-        }
-        self.last_element_time = now;
-
         let modeler_input = ModelerInput {
             event_type,
             pos: (element.pos[0] as f32, element.pos[1] as f32),
@@ -199,8 +176,26 @@ n_steps exceeds configured max outputs per call."
                 let pressure = r.pressure;
                 Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
             })),
-            Err(e) => tracing::error!("Updating stroke modeler with element failed, Err: {e:?}"),
+            Err(e) => {
+                match e {
+                    Errors::DuplicateElement => return, // we have a duplicate element so go back
+                    Errors::NegativeTimeDelta => return, //error on times
+                    Errors::TooFarApart => {
+                        self.last_element = element;
+                        tracing::debug!(
+                            "PenpathModeledBuilder: updating modeler with element failed,
+            n_steps exceeds configured max outputs per call."
+                        );
+                        self.restart(element, now);
+                    }
+                    Errors::ElementOrderError => {
+                        self.last_element = element;
+                        tracing::error!("Updating stroke modeler with element failed, Err: {e:?}")
+                    }
+                };
+            }
         }
+        self.last_element_time = now;
 
         // The prediction start is the last buffer element (which will get drained)
         if let Some(last) = self.buffer.last() {

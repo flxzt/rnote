@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-20 11:12+0200\n"
-"PO-Revision-Date: 2024-06-04 12:28+0000\n"
-"Last-Translator: Deleted User <noreply+86738@weblate.org>\n"
+"PO-Revision-Date: 2024-06-05 22:09+0000\n"
+"Last-Translator: Krzysztof Chorzempa <kasztan2@users.noreply.github.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -75,7 +75,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
-msgstr ""
+msgstr "Dostosuj ustawienia dokumentu"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
 #, fuzzy
@@ -1200,7 +1200,7 @@ msgstr "Otwórz"
 
 #: crates/rnote-ui/data/ui/filerow.ui:65
 msgid "Open in Default App"
-msgstr ""
+msgstr "Otwórz w domyślnej aplikacji"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:91
@@ -2173,7 +2173,7 @@ msgstr "Koło zębate"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:638
 msgid "Globe"
-msgstr ""
+msgstr "Glob"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:639
 msgid "Hammer"
@@ -2360,11 +2360,11 @@ msgstr "Sześcienna krzywa Beziera"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
-msgstr ""
+msgstr "Łamana"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:438
 msgid "Polygon"
-msgstr ""
+msgstr "Wielokąt"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:571
 msgid "Application restart is required"
@@ -2486,7 +2486,7 @@ msgstr "Belka (duża)"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:35
 msgid "Can't duplicate an unsaved document"
-msgstr ""
+msgstr "Nie można zduplikować niezapisanego dokumentu"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
 #, fuzzy
@@ -2533,7 +2533,7 @@ msgstr "Nowy folder"
 #: crates/rnote-ui/src/utils.rs:161
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
-msgstr ""
+msgstr "szary"
 
 #: crates/rnote-ui/src/utils.rs:163 crates/rnote-ui/src/utils.rs:198
 msgctxt "part of string representation of a color"
@@ -2550,12 +2550,12 @@ msgstr "Chleb"
 #: crates/rnote-ui/src/utils.rs:168
 msgctxt "part of string representation of a color"
 msgid "orange"
-msgstr ""
+msgstr "pomarańczowy"
 
 #: crates/rnote-ui/src/utils.rs:171
 msgctxt "part of string representation of a color"
 msgid "yellow"
-msgstr ""
+msgstr "żółty"
 
 #: crates/rnote-ui/src/utils.rs:175
 msgctxt "part of string representation of a color"
@@ -2565,7 +2565,7 @@ msgstr ""
 #: crates/rnote-ui/src/utils.rs:178
 msgctxt "part of string representation of a color"
 msgid "green"
-msgstr ""
+msgstr "zielony"
 
 #: crates/rnote-ui/src/utils.rs:181
 msgctxt "part of string representation of a color"
@@ -2585,12 +2585,12 @@ msgstr ""
 #: crates/rnote-ui/src/utils.rs:190
 msgctxt "part of string representation of a color"
 msgid "blue"
-msgstr ""
+msgstr "niebieski"
 
 #: crates/rnote-ui/src/utils.rs:193
 msgctxt "part of string representation of a color"
 msgid "violet"
-msgstr ""
+msgstr "fioletowy"
 
 #: crates/rnote-ui/src/utils.rs:196
 msgctxt "part of string representation of a color"
@@ -2600,27 +2600,27 @@ msgstr ""
 #: crates/rnote-ui/src/utils.rs:203
 msgctxt "part of string representation of a color"
 msgid "greyish"
-msgstr ""
+msgstr "szarawy"
 
 #: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"
 msgid "vivid"
-msgstr ""
+msgstr "żywy"
 
 #: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
 msgid "very-dark"
-msgstr ""
+msgstr "bardzo ciemny"
 
 #: crates/rnote-ui/src/utils.rs:212
 msgctxt "part of string representation of a color"
 msgid "dark"
-msgstr ""
+msgstr "ciemny"
 
 #: crates/rnote-ui/src/utils.rs:215
 msgctxt "part of string representation of a color"
 msgid "mid"
-msgstr ""
+msgstr "średnio"
 
 #: crates/rnote-ui/src/utils.rs:217
 #, fuzzy
@@ -2651,17 +2651,17 @@ msgstr ""
 #: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
-msgstr ""
+msgstr "w pełni przeźroczysty"
 
 #: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "black"
-msgstr ""
+msgstr "czarny"
 
 #: crates/rnote-ui/src/utils.rs:241
 msgctxt "part of string representation of a color"
 msgid "white"
-msgstr ""
+msgstr "biały"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "Otwarty plik został przeniesiony lub usunięty z dysku"

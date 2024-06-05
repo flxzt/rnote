@@ -165,16 +165,16 @@ impl PenPathModeledBuilder {
     ) {
         let modeler_input = ModelerInput {
             event_type,
-            pos: (element.pos[0] as f32, element.pos[1] as f32),
+            pos: (element.pos[0], element.pos[1]),
             time: now.duration_since(self.start_time).as_secs_f64(),
-            pressure: element.pressure as f32,
+            pressure: element.pressure,
         };
 
         match self.stroke_modeler.update(modeler_input) {
             Ok(results) => self.buffer.extend(results.into_iter().map(|r| {
                 let pos = r.pos;
                 let pressure = r.pressure;
-                Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
+                Element::new(na::vector![pos.0, pos.1], pressure)
             })),
             Err(e) => {
                 match e {
@@ -212,7 +212,7 @@ impl PenPathModeledBuilder {
                     .map(|r| {
                         let pos = r.pos;
                         let pressure = r.pressure;
-                        Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
+                        Element::new(na::vector![pos.0, pos.1], pressure)
                     })
                     .collect::<Vec<Element>>(),
                 Err(e) => {
@@ -236,15 +236,15 @@ impl PenPathModeledBuilder {
 
         match self.stroke_modeler.update(ModelerInput {
             event_type: ModelerInputEventType::Down,
-            pos: (element.pos[0] as f32, element.pos[1] as f32),
+            pos: (element.pos[0], element.pos[1]),
             time: 0.0,
-            pressure: element.pressure as f32,
+            pressure: element.pressure,
         }) {
             Ok(results) => {
                 self.buffer.extend(results.into_iter().map(|r| {
                     let pos = r.pos;
                     let pressure = r.pressure;
-                    Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
+                    Element::new(na::vector![pos.0, pos.1], pressure)
                 }));
             }
             Err(e) => {

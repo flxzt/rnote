@@ -272,7 +272,8 @@ pub(crate) async fn create_overwrite_file_w_bytes(
 }
 
 pub(crate) fn open_file_default_app(file_path: impl AsRef<Path>) -> anyhow::Result<()> {
-    open::that_detached(file_path.as_ref()).with_context(|| {
+    // this one may be problematic compared to open::that_detached
+    opener::open(file_path.as_ref()).with_context(|| {
         format!(
             "Failed to open output file/folder \"{}\".",
             file_path.as_ref().display()

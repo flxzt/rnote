@@ -164,6 +164,12 @@
             <attribute name="action">workspacebrowser.create-folder</attribute>
           </item>
         </section>
+        <section>
+          <item>
+            <attribute name="label" translatable="yes">Open Workspace Folder</attribute>
+            <attribute name="action">workspacebrowser.open-folder</attribute>
+          </item>
+        </section>
       </menu>
     </object>
   </template>

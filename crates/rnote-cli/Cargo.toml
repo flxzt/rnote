@@ -18,7 +18,7 @@ clap = { workspace = true }
 dialoguer = { workspace = true }
 indicatif = { workspace = true }
 nalgebra = { workspace = true }
-open = { workspace = true }
+opener = { workspace = true }
 parry2d-f64 = { workspace = true }
 smol = { workspace = true }
 tracing = { workspace = true }

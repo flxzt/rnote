@@ -33,7 +33,6 @@ num-derive = { workspace = true }
 num-traits = { workspace = true }
 numeric-sort = { workspace = true }
 once_cell = { workspace = true }
-open = { workspace = true }
 opener = { workspace = true }
 palette = { workspace = true }
 parry2d-f64 = { workspace = true }

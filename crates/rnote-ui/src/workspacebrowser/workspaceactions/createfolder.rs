@@ -62,6 +62,24 @@ pub(crate) fn create_folder(
     new_folder_action
 }
 
+pub(crate) fn open_folder(
+    workspacebrowser: &RnWorkspaceBrowser,
+    appwindow: &RnAppWindow,
+) -> gio::SimpleAction {
+    let open_folder_action = gio::SimpleAction::new("open-folder", None);
+
+    open_folder_action.connect_activate(clone!(@weak workspacebrowser, @weak appwindow => move |_, _| {
+        if let Some(parent_path) = workspacebrowser.dir_list_file().and_then(|f| f.path()) {
+            opener::open(parent_path).unwrap(); //for now not robust to errors
+            // maybe more things
+        } else {
+            tracing::warn!("Can't create new folder when there currently is no workspace selected");
+        }
+    }
+    ));
+
+    open_folder_action
+}
 fn create_folder_name_entry() -> Entry {
     Entry::builder()
         .placeholder_text(gettext("Folder Name"))

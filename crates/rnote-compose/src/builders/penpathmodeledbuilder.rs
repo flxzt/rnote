@@ -7,7 +7,8 @@ use crate::PenEvent;
 use crate::{Constraints, EventResult};
 use crate::{PenPath, Style};
 use ink_stroke_modeler_rs::{
-    Errors, ModelerInput, ModelerInputEventType, ModelerParams, StrokeModeler,
+    error::ElementError, error::ModelerError, ModelerInput, ModelerInputEventType, ModelerParams,
+    StrokeModeler,
 };
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
@@ -178,9 +179,15 @@ impl PenPathModeledBuilder {
             })),
             Err(e) => {
                 match e {
-                    Errors::DuplicateElement => return, // we have a duplicate element so go back
-                    Errors::NegativeTimeDelta => return, //error on times
-                    Errors::TooFarApart => {
+                    ModelerError::Element {
+                        src: ElementError::Duplicate,
+                    } => return, // we have a duplicate element so go back
+                    ModelerError::Element {
+                        src: ElementError::NegativeTimeDelta,
+                    } => return, //error on times
+                    ModelerError::Element {
+                        src: ElementError::TooFarApart,
+                    } => {
                         self.last_element = element;
                         tracing::debug!(
                             "PenpathModeledBuilder: updating modeler with element failed,
@@ -188,10 +195,13 @@ impl PenPathModeledBuilder {
                         );
                         self.restart(element, now);
                     }
-                    Errors::ElementOrderError => {
+                    ModelerError::Element {
+                        src: ElementError::Order { src: _ },
+                    } => {
                         self.last_element = element;
                         tracing::error!("Updating stroke modeler with element failed, Err: {e:?}")
                     }
+                    _ => return,
                 };
             }
         }

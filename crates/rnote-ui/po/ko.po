@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-22 15:14+0100\n"
+"POT-Creation-Date: 2024-04-20 11:12+0200\n"
 "PO-Revision-Date: 2023-02-09 20:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
@@ -182,7 +182,7 @@ msgid "Edit Workspace"
 msgstr "작업 공간 편집하기"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:75
-#: crates/rnote-ui/data/ui/settingspanel.ui:234
+#: crates/rnote-ui/data/ui/settingspanel.ui:241
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:36
 msgid "Apply"
 msgstr "적용하기"
@@ -200,7 +200,7 @@ msgid "Change the workspace icon"
 msgstr "작업 공간 아이콘 변경하기"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:143
-#: crates/rnote-ui/data/ui/settingspanel.ui:286
+#: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Color"
 msgstr "색상"
 
@@ -858,7 +858,7 @@ msgid "Crosshatch"
 msgstr "망상선"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:206
-#: crates/rnote-ui/data/ui/settingspanel.ui:315
+#: crates/rnote-ui/data/ui/settingspanel.ui:322
 msgid "Dots"
 msgstr "점선"
 
@@ -1178,11 +1178,11 @@ msgid ""
 "Available in Fixed-Size Document Layout."
 msgstr ""
 
-#: crates/rnote-ui/data/ui/colorpicker.ui:19
+#: crates/rnote-ui/data/ui/colorpicker.ui:23
 msgid "Stroke Color"
 msgstr "자획 색상"
 
-#: crates/rnote-ui/data/ui/colorpicker.ui:26
+#: crates/rnote-ui/data/ui/colorpicker.ui:30
 msgid "Fill Color"
 msgstr "채움 색상"
 
@@ -1234,15 +1234,15 @@ msgstr ""
 msgid "Save Document"
 msgstr "문서 저장하기"
 
-#: crates/rnote-ui/data/ui/overlays.ui:99
+#: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
 msgstr "왼쪽으로 이동(_L)"
 
-#: crates/rnote-ui/data/ui/overlays.ui:103
+#: crates/rnote-ui/data/ui/overlays.ui:102
 msgid "Move _Right"
 msgstr "오른쪽으로 이동(_R)"
 
-#: crates/rnote-ui/data/ui/overlays.ui:109
+#: crates/rnote-ui/data/ui/overlays.ui:108
 msgid "_Close"
 msgstr "닫기(_C)"
 
@@ -1257,6 +1257,12 @@ msgstr ""
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
 msgstr ""
+
+#: crates/rnote-ui/data/ui/penshortcutrow.ui:14
+#, fuzzy
+#| msgid "Enabled"
+msgid "Disabled"
+msgstr "활성화됨"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:41
 #: crates/rnote-ui/data/ui/shortcuts.ui:11
@@ -1288,258 +1294,268 @@ msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "캔버스에 스크롤 막대를 표시할지 여부를 설정합니다"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:64
-msgid "Inertial Touch Scrolling"
+msgid "Optimize for E-Paper Displays"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:65
+msgid ""
+"Changes certain UI elements and modifies behaviour\n"
+"of tools for optimized usage on E-Paper displays"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:71
+msgid "Inertial Touch Scrolling"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:72
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option\n"
 "gets disabled."
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:72
+#: crates/rnote-ui/data/ui/settingspanel.ui:79
 msgid "Regular Cursor"
 msgstr "일반 커서"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:73
+#: crates/rnote-ui/data/ui/settingspanel.ui:80
 msgid "Set the regular cursor"
 msgstr "일반 커서를 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:95
+#: crates/rnote-ui/data/ui/settingspanel.ui:102
 #, fuzzy
 #| msgid "Drawing Cursor"
 msgid "Show Drawing Cursor"
 msgstr "드로잉 커서"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:96
+#: crates/rnote-ui/data/ui/settingspanel.ui:103
 #, fuzzy
 #| msgid "Set the drawing cursor"
 msgid "Set whether the drawing cursor is visible"
 msgstr "드로잉 커서를 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:102
+#: crates/rnote-ui/data/ui/settingspanel.ui:109
 msgid "Drawing Cursor"
 msgstr "드로잉 커서"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:103
+#: crates/rnote-ui/data/ui/settingspanel.ui:110
 msgid "Set the drawing cursor"
 msgstr "드로잉 커서를 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:128
+#: crates/rnote-ui/data/ui/settingspanel.ui:135
 msgid "Page Format"
 msgstr "페이지 형식"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:131
+#: crates/rnote-ui/data/ui/settingspanel.ui:138
 msgid "Format"
 msgstr "형식"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:132
+#: crates/rnote-ui/data/ui/settingspanel.ui:139
 msgid "Choose a format"
 msgstr "형식 고르기"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:136
+#: crates/rnote-ui/data/ui/settingspanel.ui:143
 msgid "A6"
 msgstr "A6"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:137
+#: crates/rnote-ui/data/ui/settingspanel.ui:144
 msgid "A5"
 msgstr "A5"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:138
+#: crates/rnote-ui/data/ui/settingspanel.ui:145
 msgid "A4"
 msgstr "A4"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:139
+#: crates/rnote-ui/data/ui/settingspanel.ui:146
 msgid "A3"
 msgstr "A3"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:140
+#: crates/rnote-ui/data/ui/settingspanel.ui:147
 msgid "A2"
 msgstr "A2"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:141
+#: crates/rnote-ui/data/ui/settingspanel.ui:148
 msgid "US letter"
 msgstr "US letter"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:142
+#: crates/rnote-ui/data/ui/settingspanel.ui:149
 msgid "US legal"
 msgstr "US legal"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:143
+#: crates/rnote-ui/data/ui/settingspanel.ui:150
 msgid "Custom"
 msgstr "사용자 지정"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:151
+#: crates/rnote-ui/data/ui/settingspanel.ui:158
 msgid "Orientation"
 msgstr "방향"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:152
+#: crates/rnote-ui/data/ui/settingspanel.ui:159
 msgid "Set the format orientation"
 msgstr "형식 방향을 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:164
+#: crates/rnote-ui/data/ui/settingspanel.ui:171
 msgid "Portrait"
 msgstr "세로 방향"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:170
+#: crates/rnote-ui/data/ui/settingspanel.ui:177
 msgid "Landscape"
 msgstr "가로 방향"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:180
+#: crates/rnote-ui/data/ui/settingspanel.ui:187
 msgid "Width"
 msgstr "너비"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:181
+#: crates/rnote-ui/data/ui/settingspanel.ui:188
 msgid "Set the format width"
 msgstr "형식 너비를 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:197
+#: crates/rnote-ui/data/ui/settingspanel.ui:204
 msgid "Height"
 msgstr "높이"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:198
+#: crates/rnote-ui/data/ui/settingspanel.ui:205
 msgid "Set the format height"
 msgstr "형식 높이를 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:214
+#: crates/rnote-ui/data/ui/settingspanel.ui:221
 msgid "Dpi"
 msgstr "Dpi"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:215
+#: crates/rnote-ui/data/ui/settingspanel.ui:222
 msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr "Dpi(인치당 도트 수)를 설정합니다. 기본값은 96입니다."
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:225
+#: crates/rnote-ui/data/ui/settingspanel.ui:232
 msgid "Revert"
 msgstr "되돌리기"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:247
+#: crates/rnote-ui/data/ui/settingspanel.ui:254
 #: crates/rnote-ui/data/ui/shortcuts.ui:158
 #: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "Document"
 msgstr "문서"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:250
+#: crates/rnote-ui/data/ui/settingspanel.ui:257
 #, fuzzy
 #| msgid "_Document Layout"
 msgid "Document Layout"
 msgstr "문서 레이아웃(_D)"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:254
+#: crates/rnote-ui/data/ui/settingspanel.ui:261
 #, fuzzy
 #| msgid "_Fixed Size"
 msgid "Fixed Size"
 msgstr "고정된 크기(_F)"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:255
+#: crates/rnote-ui/data/ui/settingspanel.ui:262
 #, fuzzy
 #| msgid "_Continuous Vertical"
 msgid "Continuous Vertical"
 msgstr "세로로 연속된 페이지(_C)"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:256
+#: crates/rnote-ui/data/ui/settingspanel.ui:263
 #, fuzzy
 #| msgid "_Semi Infinite"
 msgid "Semi Infinite"
 msgstr "반무한(_S)"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:257
+#: crates/rnote-ui/data/ui/settingspanel.ui:264
 #, fuzzy
 #| msgid "_Infinite"
 msgid "Infinite"
 msgstr "무한(_I)"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:265
+#: crates/rnote-ui/data/ui/settingspanel.ui:272
 msgid "Format Border Color"
 msgstr "형식 테두리 색상"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:266
+#: crates/rnote-ui/data/ui/settingspanel.ui:273
 msgid "Set the format border color"
 msgstr "형식 테두리 색상을 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:287
+#: crates/rnote-ui/data/ui/settingspanel.ui:294
 msgid "Set the background color"
 msgstr "배경 색상을 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:307
+#: crates/rnote-ui/data/ui/settingspanel.ui:314
 msgid "Pattern"
 msgstr "패턴"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:308
+#: crates/rnote-ui/data/ui/settingspanel.ui:315
 msgid "Choose a background pattern"
 msgstr "배경 패턴을 고릅니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:312
+#: crates/rnote-ui/data/ui/settingspanel.ui:319
 msgid "None"
 msgstr "없음"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:313
+#: crates/rnote-ui/data/ui/settingspanel.ui:320
 msgid "Lines"
 msgstr "선"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:314
+#: crates/rnote-ui/data/ui/settingspanel.ui:321
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:429
 msgid "Grid"
 msgstr "격자"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:316
+#: crates/rnote-ui/data/ui/settingspanel.ui:323
 msgid "Isometric Grid"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:317
+#: crates/rnote-ui/data/ui/settingspanel.ui:324
 msgid "Isometric Dots"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:325
+#: crates/rnote-ui/data/ui/settingspanel.ui:332
 msgid "Pattern Color"
 msgstr "패턴 색상"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:326
+#: crates/rnote-ui/data/ui/settingspanel.ui:333
 msgid "Set the background pattern color"
 msgstr "배경 패턴 색상을 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:346
+#: crates/rnote-ui/data/ui/settingspanel.ui:353
 msgid "Pattern Width"
 msgstr "패턴 너비"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:347
+#: crates/rnote-ui/data/ui/settingspanel.ui:354
 msgid "Set the background pattern width"
 msgstr "배경 패턴 너비를 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:363
+#: crates/rnote-ui/data/ui/settingspanel.ui:370
 msgid "Pattern Height"
 msgstr "패턴 높이"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:364
+#: crates/rnote-ui/data/ui/settingspanel.ui:371
 msgid "Set the background pattern height"
 msgstr "배경 패턴 높이를 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:380
+#: crates/rnote-ui/data/ui/settingspanel.ui:387
 msgid "Invert Color Brightness"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:381
+#: crates/rnote-ui/data/ui/settingspanel.ui:388
 #, fuzzy
 #| msgid "Set the background pattern color"
 msgid "Invert the brightness of all background pattern colors"
 msgstr "배경 패턴 색상을 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:385
+#: crates/rnote-ui/data/ui/settingspanel.ui:392
 #, fuzzy
 #| msgid "Revert"
 msgid "Invert"
 msgstr "되돌리기"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:395
+#: crates/rnote-ui/data/ui/settingspanel.ui:402
 msgid "Button Shortcuts"
 msgstr "버튼 단축키"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:398
+#: crates/rnote-ui/data/ui/settingspanel.ui:405
 msgid "Stylus Primary Button Action"
 msgstr "스타일러스 기본 버튼 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:399
+#: crates/rnote-ui/data/ui/settingspanel.ui:406
 #, fuzzy
 #| msgid "Set the action for the primary stylus button"
 msgid ""
@@ -1547,11 +1563,11 @@ msgid ""
 "primary stylus button"
 msgstr "기본 스타일러스 버튼의 동작을 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:411
+#: crates/rnote-ui/data/ui/settingspanel.ui:418
 msgid "Stylus Secondary Button Action"
 msgstr "스타일러스 보조 버튼 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:412
+#: crates/rnote-ui/data/ui/settingspanel.ui:419
 #, fuzzy
 #| msgid "Set the action for the secondary stylus button"
 msgid ""
@@ -1559,11 +1575,11 @@ msgid ""
 "secondary stylus button"
 msgstr "보조 스타일러스 버튼의 동작을 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:424
+#: crates/rnote-ui/data/ui/settingspanel.ui:431
 msgid "Mouse Secondary Button Action"
 msgstr "마우스 보조 버튼 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:425
+#: crates/rnote-ui/data/ui/settingspanel.ui:432
 #, fuzzy
 #| msgid "Set the action for the secondary mouse button"
 msgid ""
@@ -1571,11 +1587,11 @@ msgid ""
 "secondary mouse button"
 msgstr "보조 마우스 버튼에 대한 동작을 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:437
+#: crates/rnote-ui/data/ui/settingspanel.ui:444
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "두 손가락 터치 길게 누르기 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:438
+#: crates/rnote-ui/data/ui/settingspanel.ui:445
 #, fuzzy
 #| msgid "Set the action for the touch two-finger long-press gesture"
 msgid ""
@@ -1583,11 +1599,11 @@ msgid ""
 "two-finger long-press gesture"
 msgstr "두 손가락 터치 길게 누르기 제스처에 대한 동작을 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:450
+#: crates/rnote-ui/data/ui/settingspanel.ui:457
 msgid "Keyboard Ctrl-Space Action"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:451
+#: crates/rnote-ui/data/ui/settingspanel.ui:458
 #, fuzzy
 #| msgid "Set the action for the secondary mouse button"
 msgid ""
@@ -1595,49 +1611,49 @@ msgid ""
 "Ctrl plus Space shortcut"
 msgstr "보조 마우스 버튼에 대한 동작을 설정합니다"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:463
+#: crates/rnote-ui/data/ui/settingspanel.ui:470
 #, fuzzy
 #| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 1 Action"
 msgstr "스타일러스 기본 버튼 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:464
+#: crates/rnote-ui/data/ui/settingspanel.ui:471
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:476
+#: crates/rnote-ui/data/ui/settingspanel.ui:483
 #, fuzzy
 #| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 2 Action"
 msgstr "스타일러스 기본 버튼 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:477
+#: crates/rnote-ui/data/ui/settingspanel.ui:484
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:489
+#: crates/rnote-ui/data/ui/settingspanel.ui:496
 #, fuzzy
 #| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 3 Action"
 msgstr "스타일러스 기본 버튼 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:490
+#: crates/rnote-ui/data/ui/settingspanel.ui:497
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:502
+#: crates/rnote-ui/data/ui/settingspanel.ui:509
 #, fuzzy
 #| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 4 Action"
 msgstr "스타일러스 기본 버튼 동작"
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:503
+#: crates/rnote-ui/data/ui/settingspanel.ui:510
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
@@ -2324,118 +2340,118 @@ msgstr ""
 msgid "Polygon"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:551
+#: crates/rnote-ui/src/settingspanel/mod.rs:571
 msgid "Application restart is required"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:867
+#: crates/rnote-ui/src/settingspanel/mod.rs:887
 #, fuzzy
 #| msgid "Crosshair (Small)"
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "십자선 (소)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:868
+#: crates/rnote-ui/src/settingspanel/mod.rs:888
 #, fuzzy
 #| msgid "Crosshair (Medium)"
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "십자선 (중)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:869
+#: crates/rnote-ui/src/settingspanel/mod.rs:889
 #, fuzzy
 #| msgid "Crosshair (Large)"
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "십자선 (대)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:870
+#: crates/rnote-ui/src/settingspanel/mod.rs:890
 #, fuzzy
 #| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "점 (소)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:871
+#: crates/rnote-ui/src/settingspanel/mod.rs:891
 #, fuzzy
 #| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "점 (중)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:872
+#: crates/rnote-ui/src/settingspanel/mod.rs:892
 #, fuzzy
 #| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "점 (대)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:873
+#: crates/rnote-ui/src/settingspanel/mod.rs:893
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:874
+#: crates/rnote-ui/src/settingspanel/mod.rs:894
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:875
+#: crates/rnote-ui/src/settingspanel/mod.rs:895
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:876
+#: crates/rnote-ui/src/settingspanel/mod.rs:896
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:877
+#: crates/rnote-ui/src/settingspanel/mod.rs:897
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:878
+#: crates/rnote-ui/src/settingspanel/mod.rs:898
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:879
+#: crates/rnote-ui/src/settingspanel/mod.rs:899
 #, fuzzy
 #| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "점 (소)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:880
+#: crates/rnote-ui/src/settingspanel/mod.rs:900
 #, fuzzy
 #| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "점 (중)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:881
+#: crates/rnote-ui/src/settingspanel/mod.rs:901
 #, fuzzy
 #| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "점 (대)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:882
+#: crates/rnote-ui/src/settingspanel/mod.rs:902
 #, fuzzy
 #| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "점 (소)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:883
+#: crates/rnote-ui/src/settingspanel/mod.rs:903
 #, fuzzy
 #| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "점 (중)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:884
+#: crates/rnote-ui/src/settingspanel/mod.rs:904
 #, fuzzy
 #| msgid "Dot (Large)"
 msgctxt "a cursor type"
@@ -2487,6 +2503,139 @@ msgstr "폴더 이름"
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:75
 msgid "New Folder"
 msgstr "새 폴더"
+
+#: crates/rnote-ui/src/utils.rs:161
+msgctxt "used in string representation of the current selected color"
+msgid "grey"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:163 crates/rnote-ui/src/utils.rs:198
+msgctxt "part of string representation of a color"
+msgid "rose"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:165
+#, fuzzy
+#| msgid "Bread"
+msgctxt "part of string representation of a color"
+msgid "red"
+msgstr "빵"
+
+#: crates/rnote-ui/src/utils.rs:168
+msgctxt "part of string representation of a color"
+msgid "orange"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:171
+msgctxt "part of string representation of a color"
+msgid "yellow"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:175
+msgctxt "part of string representation of a color"
+msgid "chartreuse-green"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:178
+msgctxt "part of string representation of a color"
+msgid "green"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:181
+msgctxt "part of string representation of a color"
+msgid "spring-green"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:184
+msgctxt "part of string representation of a color"
+msgid "cyan"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:187
+msgctxt "part of string representation of a color"
+msgid "azure"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:190
+msgctxt "part of string representation of a color"
+msgid "blue"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:193
+msgctxt "part of string representation of a color"
+msgid "violet"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:196
+msgctxt "part of string representation of a color"
+msgid "magenta"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:203
+msgctxt "part of string representation of a color"
+msgid "greyish"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:206
+msgctxt "part of string representation of a color"
+msgid "vivid"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:210
+msgctxt "part of string representation of a color"
+msgid "very-dark"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:212
+msgctxt "part of string representation of a color"
+msgid "dark"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:215
+msgctxt "part of string representation of a color"
+msgid "mid"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:217
+#, fuzzy
+#| msgid "Height"
+msgctxt "part of string representation of a color"
+msgid "bright"
+msgstr "높이"
+
+#: crates/rnote-ui/src/utils.rs:221
+#, fuzzy
+#| msgid "translator-credits"
+msgctxt "part of string representation of a color"
+msgid "transparent"
+msgstr "이정희 <daemul72@gmail.com>"
+
+#: crates/rnote-ui/src/utils.rs:223
+#, fuzzy
+#| msgid "translator-credits"
+msgctxt "part of string representation of a color"
+msgid "translucent"
+msgstr "이정희 <daemul72@gmail.com>"
+
+#: crates/rnote-ui/src/utils.rs:227
+msgctxt "part of string representation of a color"
+msgid "slightly-translucent"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:236
+msgctxt "part of string representation of a color"
+msgid "fully transparent"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:239
+msgctxt "part of string representation of a color"
+msgid "black"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:241
+msgctxt "part of string representation of a color"
+msgid "white"
+msgstr ""
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "디스크에서 열린 파일이 이동 또는 삭제되었습니다"

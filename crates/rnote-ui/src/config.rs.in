@@ -13,7 +13,7 @@ pub(crate) const APP_VERSION_SUFFIX: &str = @APP_VERSION_SUFFIX@;
 #[allow(unused)]
 pub(crate) const APP_AUTHOR_NAME: &str = @APP_AUTHOR_NAME@;
 #[allow(unused)]
-pub(crate) const APP_AUTHORS: &[&str] = &[@APP_AUTHORS@];
+pub(crate) const APP_AUTHORS: &str = @APP_AUTHORS@;
 #[allow(unused)]
 pub(crate) const APP_WEBSITE: &str = @APP_WEBSITE@;
 #[allow(unused)]

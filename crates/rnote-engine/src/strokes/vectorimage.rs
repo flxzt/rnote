@@ -16,6 +16,7 @@ use rnote_compose::transform::Transform;
 use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
+use std::sync::Arc;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "vectorimage")]
@@ -152,8 +153,13 @@ impl VectorImage {
             indent: xmlwriter::Indent::None,
             attributes_indent: xmlwriter::Indent::None,
         };
-        let svg_tree =
-            usvg::Tree::from_str(svg_data, &usvg::Options::default(), &render::USVG_FONTDB)?;
+        let svg_tree = usvg::Tree::from_str(
+            svg_data,
+            &usvg::Options {
+                fontdb: Arc::clone(&render::USVG_FONTDB),
+                ..Default::default()
+            },
+        )?;
 
         let intrinsic_size = na::vector![
             svg_tree.size().width() as f64,

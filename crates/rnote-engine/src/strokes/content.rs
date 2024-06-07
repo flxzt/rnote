@@ -107,7 +107,7 @@ where
     /// Export to encoded bitmap image (Png/Jpeg/..).
     fn export_to_bitmap_image_bytes(
         &self,
-        format: image::ImageOutputFormat,
+        format: image::ImageFormat,
         image_scale: f64,
     ) -> Result<Vec<u8>, anyhow::Error> {
         render::Image::gen_with_piet(
@@ -115,6 +115,6 @@ where
             self.bounds(),
             image_scale,
         )?
-        .into_encoded_bytes(format)
+        .into_encoded_bytes(format, None)
     }
 }

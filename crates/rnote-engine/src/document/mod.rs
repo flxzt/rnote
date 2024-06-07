@@ -8,6 +8,7 @@ pub use format::Format;
 
 // Imports
 use crate::{Camera, CloneConfig, StrokeStore, WidgetFlags};
+use core::fmt::Display;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::{Color, SplitOrder};
@@ -69,13 +70,13 @@ impl std::str::FromStr for Layout {
     }
 }
 
-impl std::string::ToString for Layout {
-    fn to_string(&self) -> String {
+impl Display for Layout {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Layout::FixedSize => String::from("fixed-size"),
-            Layout::ContinuousVertical => String::from("continuous-vertical"),
-            Layout::SemiInfinite => String::from("semi-infinite"),
-            Layout::Infinite => String::from("infinite"),
+            Layout::FixedSize => write!(f, "fixed-size"),
+            Layout::ContinuousVertical => write!(f, "continuous-vertical"),
+            Layout::SemiInfinite => write!(f, "semi-infinite"),
+            Layout::Infinite => write!(f, "infinite"),
         }
     }
 }

@@ -7,12 +7,13 @@ use crate::PenEvent;
 use crate::{Constraints, EventResult};
 use crate::{PenPath, Style};
 use ink_stroke_modeler_rs::{
-    ModelerInput, ModelerInputEventType, ModelerParams, PredictionParams, StrokeModeler,
+    error::ElementError, error::ModelerError, ModelerInput, ModelerInputEventType, ModelerParams,
+    StrokeModeler,
 };
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 /// Pen path modeled builder.
 pub struct PenPathModeledBuilder {
@@ -70,7 +71,7 @@ impl Buildable for PenPathModeledBuilder {
         let progress = match event {
             PenEvent::Down { element, .. } => {
                 // kDown is already fed into the modeler when the builder was instantiated (with start())
-                self.update_modeler_w_element(element, ModelerInputEventType::kMove, now);
+                self.update_modeler_w_element(element, ModelerInputEventType::Move, now);
 
                 match self.try_build_segments() {
                     Some(segments) => BuilderProgress::EmitContinue(segments),
@@ -78,7 +79,7 @@ impl Buildable for PenPathModeledBuilder {
                 }
             }
             PenEvent::Up { element, .. } => {
-                self.update_modeler_w_element(element, ModelerInputEventType::kUp, now);
+                self.update_modeler_w_element(element, ModelerInputEventType::Up, now);
 
                 let segments = self.build_segments_end();
 
@@ -133,7 +134,6 @@ static MODELER_PARAMS: Lazy<ModelerParams> = Lazy::new(|| ModelerParams {
     sampling_end_of_stroke_max_iterations: 20,
     sampling_max_outputs_per_call: 200,
     stylus_state_modeler_max_input_samples: 20,
-    prediction_params: PredictionParams::StrokeEnd,
     ..ModelerParams::suggested()
 });
 
@@ -164,48 +164,51 @@ impl PenPathModeledBuilder {
         event_type: ModelerInputEventType,
         now: Instant,
     ) {
-        if self.last_element == element
-            || now.duration_since(self.last_element_time) <= Duration::ZERO
-        {
-            // Can't feed modeler with duplicate elements or with same or reverse time,
-            // would result in `INVALID_ARGUMENT` errors
-            return;
-        }
-        self.last_element = element;
-
-        let n_steps = (now.duration_since(self.last_element_time).as_secs_f64()
-            * MODELER_PARAMS.sampling_min_output_rate)
-            .ceil() as i32;
-
-        if n_steps > MODELER_PARAMS.sampling_max_outputs_per_call {
-            // If the no of outputs the modeler would need to produce exceeds the configured maximum
-            // (because the time delta between the last elements is too large), it needs to be restarted.
-            tracing::debug!(
-                "PenpathModeledBuilder: updating modeler with element failed,
-n_steps exceeds configured max outputs per call."
-            );
-
-            self.restart(element, now);
-        }
-        self.last_element_time = now;
-
-        let modeler_input = ModelerInput::new(
+        let modeler_input = ModelerInput {
             event_type,
-            (element.pos[0] as f32, element.pos[1] as f32),
-            now.duration_since(self.start_time).as_secs_f64(),
-            element.pressure as f32,
-            0.0,
-            0.0,
-        );
+            pos: (element.pos[0], element.pos[1]),
+            time: now.duration_since(self.start_time).as_secs_f64(),
+            pressure: element.pressure,
+        };
 
         match self.stroke_modeler.update(modeler_input) {
             Ok(results) => self.buffer.extend(results.into_iter().map(|r| {
-                let pos = r.pos();
-                let pressure = r.pressure();
-                Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
+                let pos = r.pos;
+                let pressure = r.pressure;
+                Element::new(na::vector![pos.0, pos.1], pressure)
             })),
-            Err(e) => tracing::error!("Updating stroke modeler with element failed, Err: {e:?}"),
+            Err(e) => {
+                match e {
+                    ModelerError::Element {
+                        src: ElementError::Duplicate,
+                    } => return, // we have a duplicate element so go back
+                    ModelerError::Element {
+                        src: ElementError::NegativeTimeDelta,
+                    } => return, //error on times
+                    ModelerError::Element {
+                        src: ElementError::TooFarApart,
+                    } => {
+                        self.last_element = element;
+                        tracing::debug!(
+                            "PenpathModeledBuilder: updating modeler with element failed,
+            n_steps exceeds configured max outputs per call."
+                        );
+                        self.restart(element, now);
+                    }
+                    ModelerError::Element {
+                        src: ElementError::Order { src: _ },
+                    } => {
+                        self.last_element = element;
+                        tracing::error!("Updating stroke modeler with element failed, Err: {e:?}")
+                    }
+                    _ => {
+                        tracing::error!("Updating stroke modeler with element failed, Err: {e:?}");
+                        return;
+                    }
+                };
+            }
         }
+        self.last_element_time = now;
 
         // The prediction start is the last buffer element (which will get drained)
         if let Some(last) = self.buffer.last() {
@@ -213,16 +216,16 @@ n_steps exceeds configured max outputs per call."
         }
 
         // When the stroke is finished it is invalid to predict, and the existing prediction should be cleared.
-        if event_type == ModelerInputEventType::kUp {
+        if event_type == ModelerInputEventType::Up {
             self.prediction_buffer.clear();
         } else {
             self.prediction_buffer = match self.stroke_modeler.predict() {
                 Ok(results) => results
                     .into_iter()
                     .map(|r| {
-                        let pos = r.pos();
-                        let pressure = r.pressure();
-                        Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
+                        let pos = r.pos;
+                        let pressure = r.pressure;
+                        Element::new(na::vector![pos.0, pos.1], pressure)
                     })
                     .collect::<Vec<Element>>(),
                 Err(e) => {
@@ -244,19 +247,17 @@ n_steps exceeds configured max outputs per call."
             return;
         }
 
-        match self.stroke_modeler.update(ModelerInput::new(
-            ModelerInputEventType::kDown,
-            (element.pos[0] as f32, element.pos[1] as f32),
-            0.0,
-            element.pressure as f32,
-            0.0,
-            0.0,
-        )) {
+        match self.stroke_modeler.update(ModelerInput {
+            event_type: ModelerInputEventType::Down,
+            pos: (element.pos[0], element.pos[1]),
+            time: 0.0,
+            pressure: element.pressure,
+        }) {
             Ok(results) => {
                 self.buffer.extend(results.into_iter().map(|r| {
-                    let pos = r.pos();
-                    let pressure = r.pressure();
-                    Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
+                    let pos = r.pos;
+                    let pressure = r.pressure;
+                    Element::new(na::vector![pos.0, pos.1], pressure)
                 }));
             }
             Err(e) => {

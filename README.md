@@ -176,7 +176,7 @@ To be able to open and export older files that are incompatible with the newest 
 
 ## License
 
-Rnote is available under the GPL-3.0-or-later. See the LICENSE file for more info.
+Rnote is available under GPL-3.0-or-later. See the LICENSE file for more info.
 
     Copyright (C) 2023  The Rnote Authors
 

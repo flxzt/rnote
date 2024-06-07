@@ -201,7 +201,10 @@ impl PenPathModeledBuilder {
                         self.last_element = element;
                         tracing::error!("Updating stroke modeler with element failed, Err: {e:?}")
                     }
-                    _ => return,
+                    _ => {
+                        tracing::error!("Updating stroke modeler with element failed, Err: {e:?}");
+                        return;
+                    }
                 };
             }
         }

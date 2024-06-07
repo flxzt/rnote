@@ -194,7 +194,7 @@ impl PenBehaviour for Selector {
                         // Add rendered Png
                         let image = stroke_content_svg
                             .gen_image(Engine::STROKE_EXPORT_IMAGE_SCALE)?
-                            .into_encoded_bytes(image::ImageOutputFormat::Png)?;
+                            .into_encoded_bytes(image::ImageFormat::Png, None)?;
                         clipboard_content.push((image, String::from("image/png")));
                     }
                 }
@@ -255,7 +255,7 @@ impl PenBehaviour for Selector {
                         // Add rendered Png
                         let image = stroke_content_svg
                             .gen_image(Engine::STROKE_EXPORT_IMAGE_SCALE)?
-                            .into_encoded_bytes(image::ImageOutputFormat::Png)?;
+                            .into_encoded_bytes(image::ImageFormat::Png, None)?;
                         clipboard_content.push((image, String::from("image/png")));
                     }
                 }

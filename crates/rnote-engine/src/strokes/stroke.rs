@@ -496,7 +496,7 @@ impl Stroke {
             }
             Stroke::ShapeStroke(shapestroke) => {
                 let png_data = match shapestroke.export_to_bitmap_image_bytes(
-                    image::ImageOutputFormat::Png,
+                    image::ImageFormat::Png,
                     Engine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,
@@ -540,7 +540,7 @@ impl Stroke {
                 // Xournal++ text strokes do not support affine transformations, so we have to convert on best effort here.
                 // The best solution for now seems to be to export them as a bitmap image.
                 let png_data = match textstroke.export_to_bitmap_image_bytes(
-                    image::ImageOutputFormat::Png,
+                    image::ImageFormat::Png,
                     Engine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,
@@ -582,7 +582,7 @@ impl Stroke {
             }
             Stroke::VectorImage(vectorimage) => {
                 let png_data = match vectorimage.export_to_bitmap_image_bytes(
-                    image::ImageOutputFormat::Png,
+                    image::ImageFormat::Png,
                     Engine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,
@@ -626,7 +626,7 @@ impl Stroke {
             }
             Stroke::BitmapImage(bitmapimage) => {
                 let png_data = match bitmapimage.export_to_bitmap_image_bytes(
-                    image::ImageOutputFormat::Png,
+                    image::ImageFormat::Png,
                     Engine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,

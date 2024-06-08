@@ -46,7 +46,91 @@
             </style>
           </object>
         </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkMenuButton" id="verticaltool_menubutton">
+                <property name="icon-name">settings-symbolic</property>
+                <property name="direction">left</property>
+                <property name="tooltip_text" translatable="yes">Vertical Toolspace Configuration</property>
+                <property name="popover">verticaltool_popover</property>
+                <style>
+                  <class name="flat" />
+                  <class name="sidebar_action_button" />
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
+
+    <object class="GtkPopover" id="verticaltool_popover">
+      <child>
+        <object class="GtkBox">
+          <property name="orientation">vertical</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
+          <property name="spacing">12</property>
+          <child>
+            <object class="GtkBox">
+              <child>
+                <object class="GtkLabel">
+                  <property name="label" translatable="yes">Shape Configuration</property>
+                  <property name="hexpand">true</property>
+                  <property name="halign">center</property>
+                  <style>
+                    <class name="title-3" />
+                  </style>
+                </object>
+              </child>
+              <child>
+                <object class="GtkButton" id="verticaltool_popover_close_button">
+                  <property name="icon-name">window-close-symbolic</property>
+                  <style>
+                    <class name="flat" />
+                    <class name="circular" />
+                  </style>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
+            <object class="GtkListBox">
+              <property name="width-request">300</property>
+              <property name="selection-mode">none</property>
+              <style>
+                <class name="content" />
+                <class name="medium" />
+              </style>
+              <child>
+                <object class="AdwSwitchRow" id="verticalspace_enable_snaprow">
+                  <property name="title" translatable="yes">Force snapping</property>
+                  <property name="subtitle" translatable="yes">Force the vertical space tool to
+snap to the grid</property>
+                </object>
+              </child>
+              <child>
+                <object class="AdwSwitchRow" id="verticalspace_respect_vertical_bordersrow">
+                  <property name="title">Respect Vertical Borders</property>
+                  <property name="subtitle">Only select elements that are inside or below the
+page selected, not ones on the left/right</property>
+                </object>
+              </child>
+              <child>
+                <object class="AdwSwitchRow" id="verticalspace_respect_horizontal_bordersrow">
+                  <property name="title">respect Horizontal Borders</property>
+                  <property name="subtitle">Only select elements between the current position
+and the next horizontal border below</property>
+                </object>
+              </child>
+            </object>
+          </child>
+        </object>
+      </child>
+    </object>
   </template>
 </interface>

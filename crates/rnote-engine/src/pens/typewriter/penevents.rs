@@ -27,7 +27,7 @@ impl Typewriter {
             TypewriterState::Idle | TypewriterState::Start { .. } => {
                 let mut refresh_state = false;
                 let mut new_state =
-                    TypewriterState::Start(engine_view.document.snap_position(element.pos));
+                    TypewriterState::Start(engine_view.document.snap_position(element.pos, false));
 
                 if let Some(&stroke_key) = engine_view
                     .store
@@ -238,10 +238,10 @@ impl Typewriter {
                             .map(|s| s.bounds())
                         {
                             let snap_corner_pos = textstroke_bounds.mins.coords;
-                            let offset = engine_view
-                                .document
-                                .snap_position(snap_corner_pos + (element.pos - *current_pos))
-                                - snap_corner_pos;
+                            let offset = engine_view.document.snap_position(
+                                snap_corner_pos + (element.pos - *current_pos),
+                                false,
+                            ) - snap_corner_pos;
 
                             if offset.magnitude()
                                 > Self::TRANSLATE_OFFSET_THRESHOLD / engine_view.camera.total_zoom()

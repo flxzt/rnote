@@ -404,12 +404,12 @@ impl Document {
     /// Snap the position to the document and pattern grid when `snap_positions` is enabled.
     ///
     /// If not, the original coordinates are returned.
-    pub(crate) fn snap_position(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
+    pub(crate) fn snap_position(&self, pos: na::Vector2<f64>, force: bool) -> na::Vector2<f64> {
         const DOCUMENT_SNAP_DIST: f64 = 10.;
         let doc_format_size = self.format.size();
         let pattern_size = self.background.pattern_size;
 
-        if !self.snap_positions {
+        if !self.snap_positions && !force {
             return pos;
         }
 

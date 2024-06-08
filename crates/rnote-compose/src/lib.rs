@@ -31,6 +31,8 @@ pub mod style;
 pub mod transform;
 /// other misc utilities
 pub mod utils;
+/// vertical tool options
+pub mod verticaltoolconfig;
 
 // Re-exports
 pub use color::Color;
@@ -42,6 +44,7 @@ pub use shapes::Shape;
 pub use splitorder::SplitOrder;
 pub use style::Style;
 pub use transform::Transform;
+pub use verticaltoolconfig::VerticalToolConfig;
 
 // Renames
 extern crate nalgebra as na;

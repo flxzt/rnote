@@ -640,6 +640,50 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>()
     }
 
+    pub(crate) fn keys_between(
+        &self,
+        y_start: f64,
+        y_end: Option<f64>,
+        x_start: Option<f64>,
+        x_end: Option<f64>,
+    ) -> Vec<StrokeKey> {
+        // match on constraints
+        match (y_end, x_start, x_end) {
+            (None, None, None) => return self.keys_below_y(y_start),
+            (Some(ymax), Some(xmin), Some(xmax)) => {
+                return self
+                    .stroke_components
+                    .iter()
+                    .filter_map(|(key, stroke)| {
+                        if stroke.bounds().mins[1] > y_start
+                            && stroke.bounds().maxs[1] < ymax
+                            && stroke.bounds().mins[0] > xmin
+                            && stroke.bounds().maxs[0] < xmax
+                        {
+                            Some(key)
+                        } else {
+                            None
+                        }
+                    })
+                    .collect::<Vec<StrokeKey>>();
+            }
+            (Some(ymax), _, _) => {
+                return self
+                    .stroke_components
+                    .iter()
+                    .filter_map(|(key, stroke)| {
+                        if stroke.bounds().mins[1] > y_start && stroke.bounds().maxs[1] < ymax {
+                            Some(key)
+                        } else {
+                            None
+                        }
+                    })
+                    .collect::<Vec<StrokeKey>>();
+            }
+            _ => Vec::<StrokeKey>::new(),
+        }
+    }
+
     pub(crate) fn filter_keys_intersecting_bounds<'a, I: IntoIterator<Item = &'a StrokeKey>>(
         &'a self,
         keys: I,

@@ -3,7 +3,7 @@
 <component type="desktop-application">
   <id>@APP_ID@</id>
   <metadata_license>CC0</metadata_license>
-  <project_license>GPL-3.0</project_license>
+  <project_license>GPL-3.0-or-later</project_license>
   <name translatable="no">@APP_NAME_CAPITALIZED@</name>
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   <summary>Sketch and take handwritten notes</summary>

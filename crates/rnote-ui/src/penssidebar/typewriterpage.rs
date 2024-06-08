@@ -132,7 +132,7 @@ impl RnTypewriterPage {
                         let font_family_name = new_font_family.name().to_string();
 
                         typewriterpage.imp().prev_picked_font_family.borrow_mut().replace(new_font_family);
-                        canvas.engine_mut().pens_config.typewriter_config.text_style.font_family = font_family_name.clone();
+                        canvas.engine_mut().pens_config.typewriter_config.text_style.font_family.clone_from(&font_family_name);
                         let widget_flags = canvas.engine_mut().text_selection_change_style(|style| {style.font_family = font_family_name});
                         appwindow.handle_widget_flags(widget_flags, &canvas);
                     }

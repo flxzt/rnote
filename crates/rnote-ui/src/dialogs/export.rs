@@ -22,7 +22,7 @@ use std::rc::Rc;
 
 pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let filter = FileFilter::new();
-    filter.add_mime_type("application/rnote");
+    filter.add_pattern("*.rnote");
     filter.add_suffix("rnote");
     filter.set_name(Some(&gettext(".rnote")));
 
@@ -278,17 +278,17 @@ fn create_filedialog_export_doc(
     let filter = FileFilter::new();
     match doc_export_prefs.export_format {
         DocExportFormat::Svg => {
-            filter.add_mime_type("image/svg+xml");
+            filter.add_pattern("*.svg");
             filter.add_suffix("svg");
             filter.set_name(Some(&gettext("Svg")));
         }
         DocExportFormat::Pdf => {
-            filter.add_mime_type("application/pdf");
+            filter.add_pattern("*.pdf");
             filter.add_suffix("pdf");
             filter.set_name(Some(&gettext("Pdf")));
         }
         DocExportFormat::Xopp => {
-            filter.add_mime_type("application/x-xopp");
+            filter.add_pattern("*.xopp");
             filter.add_suffix("xopp");
             filter.set_name(Some(&gettext("Xopp")));
         }
@@ -583,27 +583,23 @@ fn create_filedialog_export_doc_pages(
     filter.add_mime_type("inode/directory");
     match doc_pages_export_prefs.export_format {
         DocPagesExportFormat::Svg => {
-            filter.add_mime_type("image/svg+xml");
+            filter.add_pattern("*.svg");
             filter.add_suffix("svg");
             filter.set_name(Some(&gettext("Svg")));
         }
         DocPagesExportFormat::Png => {
-            filter.add_mime_type("image/png");
+            filter.add_pattern("*.png");
             filter.add_suffix("png");
             filter.set_name(Some(&gettext("Png")));
         }
         DocPagesExportFormat::Jpeg => {
-            filter.add_mime_type("image/jpeg");
+            filter.add_pattern("*.jpg");
+            filter.add_pattern("*.jpeg");
             filter.add_suffix("jpg");
             filter.add_suffix("jpeg");
             filter.set_name(Some(&gettext("Jpeg")));
         }
     }
-
-    let filter_list = gio::ListStore::new::<FileFilter>();
-    filter_list.append(&filter);
-    filedialog.set_filters(Some(&filter_list));
-
     filedialog.set_default_filter(Some(&filter));
 
     filedialog
@@ -874,17 +870,18 @@ fn create_filedialog_export_selection(
     let filter = FileFilter::new();
     match selection_export_prefs.export_format {
         SelectionExportFormat::Svg => {
-            filter.add_mime_type("image/svg+xml");
+            filter.add_pattern("*.svg");
             filter.add_suffix("svg");
             filter.set_name(Some(&gettext("Svg")));
         }
         SelectionExportFormat::Png => {
-            filter.add_mime_type("image/png");
+            filter.add_pattern("*.png");
             filter.add_suffix("png");
             filter.set_name(Some(&gettext("Png")));
         }
         SelectionExportFormat::Jpeg => {
-            filter.add_mime_type("image/jpeg");
+            filter.add_pattern("*.jpg");
+            filter.add_pattern("*.jpeg");
             filter.add_suffix("jpg");
             filter.add_suffix("jpeg");
             filter.set_name(Some(&gettext("Jpeg")));
@@ -909,7 +906,7 @@ fn create_filedialog_export_selection(
 
 pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let filter = FileFilter::new();
-    filter.add_mime_type("application/json");
+    filter.add_pattern("*.json");
     filter.add_suffix("json");
     filter.set_name(Some(&gettext("Json")));
 
@@ -962,7 +959,7 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
 
 pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let filter = FileFilter::new();
-    filter.add_mime_type("application/json");
+    filter.add_pattern("*.json");
     filter.add_suffix("json");
     filter.set_name(Some(&gettext("Json")));
 

@@ -412,9 +412,6 @@ impl RnAppWindow {
             let is_maximized = app_settings.boolean("is-maximized");
 
             if is_maximized {
-                // don't restore maximized window state on macos, avoids issues discussed in
-                // issue 823 - https://github.com/flxzt/rnote/issues/823
-                #[cfg(not(target_os = "macos"))]
                 self.maximize();
             } else {
                 self.set_default_size(window_width, window_height);
@@ -446,9 +443,17 @@ impl RnAppWindow {
 
         {
             // Appwindow
-            app_settings.set_int("window-width", self.width())?;
-            app_settings.set_int("window-height", self.height())?;
-            app_settings.set_boolean("is-maximized", self.is_maximized())?;
+            match self.is_maximized() {
+                false => {
+                    app_settings.set_int("window-width", self.width())?;
+                    app_settings.set_int("window-height", self.height())?;
+                    app_settings.set_boolean("is-maximized", self.is_maximized())?;
+                }
+                true => {
+                    // this way we don't force the window to be the same size as the last maximized window
+                    app_settings.set_boolean("is-maximized", self.is_maximized())?;
+                }
+            }
         }
 
         {

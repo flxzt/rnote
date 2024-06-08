@@ -463,7 +463,7 @@ fn create_folders_sorter() -> MultiSorter {
 
 fn create_notes_filter() -> EveryFilter {
     let file_filter = FileFilter::new();
-    file_filter.add_mime_type("application/rnote");
+    file_filter.add_pattern("*.rnote");
     file_filter.add_suffix("rnote");
     let hidden_filter = create_hidden_filter();
 
@@ -481,12 +481,12 @@ fn create_notes_sorter() -> MultiSorter {
 
 fn create_files_filter() -> EveryFilter {
     let file_filter = FileFilter::new();
-    file_filter.add_mime_type("application/pdf");
-    file_filter.add_mime_type("application/x-xopp");
-    file_filter.add_mime_type("image/svg+xml");
-    file_filter.add_mime_type("image/png");
-    file_filter.add_mime_type("image/jpeg");
-    file_filter.add_mime_type("text/plain");
+    file_filter.add_pattern("*.pdf");
+    file_filter.add_pattern("*.xopp");
+    file_filter.add_pattern("*.svg");
+    file_filter.add_pattern("*.png");
+    file_filter.add_pattern("*.jpeg");
+    file_filter.add_pattern("*.plain");
     file_filter.add_suffix("pdf");
     file_filter.add_suffix("xopp");
     file_filter.add_suffix("svg");

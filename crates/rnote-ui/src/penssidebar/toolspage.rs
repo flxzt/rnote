@@ -1,9 +1,6 @@
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper};
-use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, MenuButton,
-    Popover, ToggleButton,
-};
+use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
 use rnote_engine::pens::pensconfig::toolsconfig::ToolStyle;
 
 mod imp {
@@ -18,18 +15,6 @@ mod imp {
         pub(crate) toolstyle_offsetcamera_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) toolstyle_zoom_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) verticaltool_menubutton: TemplateChild<MenuButton>,
-        #[template_child]
-        pub(crate) verticaltool_popover: TemplateChild<Popover>,
-        #[template_child]
-        pub(crate) verticaltool_popover_close_button: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) verticalspace_enable_snaprow: TemplateChild<adw::SwitchRow>,
-        #[template_child]
-        pub(crate) verticalspace_respect_vertical_bordersrow: TemplateChild<adw::SwitchRow>,
-        #[template_child]
-        pub(crate) verticalspace_respect_horizontal_bordersrow: TemplateChild<adw::SwitchRow>,
     }
 
     #[glib::object_subclass]
@@ -95,11 +80,6 @@ impl RnToolsPage {
     }
 
     #[allow(unused)]
-    pub(crate) fn verticaltool_menubutton(&self) -> MenuButton {
-        self.imp().verticaltool_menubutton.get()
-    }
-
-    #[allow(unused)]
     pub(crate) fn set_tool_style(&self, style: ToolStyle) {
         let imp = self.imp();
 
@@ -112,8 +92,6 @@ impl RnToolsPage {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        // for now doesn't do anything but for the close button later
-        let verticaltool_popover = imp.verticaltool_popover.get();
 
         imp.toolstyle_verticalspace_toggle.connect_toggled(clone!(@weak appwindow => move |toggle| {
             if toggle.is_active() {
@@ -132,28 +110,6 @@ impl RnToolsPage {
                 appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.style = ToolStyle::Zoom;
             }
         }));
-
-        imp.verticaltool_popover_close_button.connect_clicked(
-            clone!(@weak verticaltool_popover => move |_| {
-                verticaltool_popover.popdown();
-            }),
-        );
-
-        imp.verticalspace_enable_snaprow
-            .get()
-            .connect_active_notify(clone!(@weak appwindow => move |row| {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.vertical_tool_config.force_snap = row.is_active();
-            }));
-        imp.verticalspace_respect_vertical_bordersrow
-            .get()
-            .connect_active_notify(clone!(@weak appwindow => move |row| {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.vertical_tool_config.vertical_border = row.is_active();
-            }));
-        imp.verticalspace_respect_horizontal_bordersrow
-            .get()
-            .connect_active_notify(clone!(@weak appwindow => move |row| {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.vertical_tool_config.horizontal_border = row.is_active();
-            }));
     }
 
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
@@ -165,13 +121,5 @@ impl RnToolsPage {
             .clone();
 
         self.set_tool_style(tools_config.style);
-
-        let imp = self.imp();
-        imp.verticalspace_enable_snaprow
-            .set_active(tools_config.vertical_tool_config.force_snap);
-        imp.verticalspace_respect_vertical_bordersrow
-            .set_active(tools_config.vertical_tool_config.horizontal_border);
-        imp.verticalspace_respect_horizontal_bordersrow
-            .set_active(tools_config.vertical_tool_config.vertical_border);
     }
 }

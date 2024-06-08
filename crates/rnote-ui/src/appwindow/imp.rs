@@ -556,11 +556,6 @@ impl RnAppWindow {
                 .eraser_page()
                 .stroke_width_picker()
                 .set_position(PositionType::Left);
-            obj.overlays()
-                .penssidebar()
-                .tools_page()
-                .verticaltool_menubutton()
-                .set_direction(ArrowType::Right);
         } else {
             obj.split_view().set_sidebar_position(PackType::End);
             obj.main_header()
@@ -683,11 +678,6 @@ impl RnAppWindow {
                 .eraser_page()
                 .stroke_width_picker()
                 .set_position(PositionType::Right);
-            obj.overlays()
-                .penssidebar()
-                .tools_page()
-                .verticaltool_menubutton()
-                .set_direction(ArrowType::Left);
         }
     }
 }

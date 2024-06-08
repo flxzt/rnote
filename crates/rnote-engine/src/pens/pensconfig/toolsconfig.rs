@@ -1,5 +1,4 @@
 // Imports
-use rnote_compose::VerticalToolConfig;
 use serde::{Deserialize, Serialize};
 
 #[derive(
@@ -46,5 +45,4 @@ impl TryFrom<u32> for ToolStyle {
 pub struct ToolsConfig {
     #[serde(rename = "style")]
     pub style: ToolStyle,
-    pub vertical_tool_config: VerticalToolConfig,
 }

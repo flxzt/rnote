@@ -760,8 +760,10 @@ impl Engine {
             let result = || -> Result<Vec<Vec<u8>>, anyhow::Error> {
                 let image_format = match doc_pages_export_prefs.export_format {
                     DocPagesExportFormat::Svg => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
-                    DocPagesExportFormat::Png => image::ImageFormat::Png,
-                    DocPagesExportFormat::Jpeg => image::ImageFormat::Jpeg,
+                    DocPagesExportFormat::Png => image::ImageOutputFormat::Png,
+                    DocPagesExportFormat::Jpeg => {
+                        image::ImageOutputFormat::Jpeg(doc_pages_export_prefs.jpeg_quality)
+                    }
                 };
                 pages_contents
                     .into_par_iter()
@@ -778,10 +780,7 @@ impl Engine {
                                 "Generating Svg for page {i} failed, returned None."
                             ))?
                             .gen_image(doc_pages_export_prefs.bitmap_scalefactor)?
-                            .into_encoded_bytes(
-                                image_format,
-                                Some(doc_pages_export_prefs.jpeg_quality),
-                            )
+                            .into_encoded_bytes(image_format.clone())
                     })
                     .collect()
             };
@@ -887,16 +886,15 @@ impl Engine {
                 };
                 let image_format = match selection_export_prefs.export_format {
                     SelectionExportFormat::Svg => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
-                    SelectionExportFormat::Png => image::ImageFormat::Png,
-                    SelectionExportFormat::Jpeg => image::ImageFormat::Jpeg
+                    SelectionExportFormat::Png => image::ImageOutputFormat::Png,
+                    SelectionExportFormat::Jpeg => {
+                        image::ImageOutputFormat::Jpeg(selection_export_prefs.jpeg_quality)
+                    }
                 };
 
                 Ok(Some(
                     svg.gen_image(selection_export_prefs.bitmap_scalefactor)?
-                        .into_encoded_bytes(
-                            image_format,
-                            Some(selection_export_prefs.jpeg_quality),
-                        )?,
+                        .into_encoded_bytes(image_format)?,
                 ))
             };
             if oneshot_sender.send(result()).is_err() {

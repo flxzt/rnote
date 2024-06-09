@@ -152,13 +152,22 @@ impl PenPath {
                 seg_hitboxes
                     .into_iter()
                     .any(|hitbox| hitbox.loosened(loosened).intersects(hit))
-                    .then_some(i)
+                    .then_some(i?)
             })
             .collect()
     }
 
-    fn hitboxes_w_segs_indices(&self) -> Vec<(usize, Vec<Aabb>)> {
+    fn hitboxes_w_segs_indices(&self) -> Vec<(Option<usize>, Vec<Aabb>)> {
         let mut hitboxes = Vec::with_capacity(self.segments.len());
+        if self.segments.is_empty() {
+            return vec![(
+                None,
+                vec![Aabb::from_half_extents(
+                    self.start.pos.into(),
+                    na::Vector2::from_element(self.start.pressure),
+                )],
+            )];
+        }
 
         let mut prev = self.start;
         for (i, seg) in self.segments.iter().enumerate() {
@@ -171,7 +180,7 @@ impl PenPath {
                     };
 
                     hitboxes.push((
-                        i,
+                        Some(i),
                         line.split(n_splits)
                             .into_iter()
                             .map(|line| line.bounds())
@@ -190,7 +199,7 @@ impl PenPath {
                         no_subsegments_for_segment_len(quadbez.outline_path().perimeter(0.25));
 
                     hitboxes.push((
-                        i,
+                        Some(i),
                         quadbez
                             .approx_with_lines(n_splits)
                             .into_iter()
@@ -211,7 +220,7 @@ impl PenPath {
                         no_subsegments_for_segment_len(cubbez.outline_path().perimeter(0.25));
 
                     hitboxes.push((
-                        i,
+                        Some(i),
                         cubbez
                             .approx_with_lines(n_splits)
                             .into_iter()

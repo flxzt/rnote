@@ -119,12 +119,9 @@ pub(crate) fn handle_pointer_controller_event(
                 if gdk_button == gdk::BUTTON_PRIMARY {
                     pen_state = PenState::Up;
                 } else {
-                    #[cfg(target_os = "windows")]
-                    {
+                    if cfg!(target_os = "windows") {
                         pen_state = PenState::Up;
-                    }
-                    #[cfg(not(target_os = "windows"))]
-                    {
+                    } else {
                         pen_state = PenState::Proximity;
                     }
                 }

@@ -443,16 +443,13 @@ impl RnAppWindow {
 
         {
             // Appwindow
-            match self.is_maximized() {
-                false => {
-                    app_settings.set_int("window-width", self.width())?;
-                    app_settings.set_int("window-height", self.height())?;
-                    app_settings.set_boolean("is-maximized", self.is_maximized())?;
-                }
-                true => {
-                    // this way we don't force the window to be the same size as the last maximized window
-                    app_settings.set_boolean("is-maximized", self.is_maximized())?;
-                }
+            if self.is_maximized() {
+                // this way we don't force the window to be the same size as the last maximized window
+                app_settings.set_boolean("is-maximized", self.is_maximized())?;
+            } else {
+                app_settings.set_int("window-width", self.width())?;
+                app_settings.set_int("window-height", self.height())?;
+                app_settings.set_boolean("is-maximized", self.is_maximized())?;
             }
         }
 

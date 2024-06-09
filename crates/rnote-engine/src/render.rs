@@ -1,6 +1,7 @@
 // Imports
 use crate::Drawable;
 use anyhow::Context;
+use core::fmt::Debug;
 use image::io::Reader;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -77,7 +78,7 @@ impl From<ImageMemoryFormat> for piet::ImageFormat {
 }
 
 /// A bitmap image.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(default, rename = "image")]
 pub struct Image {
     /// The image data.
@@ -97,6 +98,18 @@ pub struct Image {
     /// Memory format.
     #[serde(rename = "memory_format")]
     pub memory_format: ImageMemoryFormat,
+}
+
+impl Debug for Image {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Image")
+            .field("data", &String::from("- no debug impl -"))
+            .field("rect", &self.rect)
+            .field("pixel_width", &self.pixel_width)
+            .field("pixel_height", &self.pixel_height)
+            .field("memory_format", &self.memory_format)
+            .finish()
+    }
 }
 
 impl Default for Image {

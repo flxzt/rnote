@@ -61,7 +61,7 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
     // note : mimetypes are not supported with the native file picker on windows
     // See the limitations on FileChooserNative
     // https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/struct.FileChooserNative.html#win32-details--gtkfilechooserdialognative-win32
-    if !cfg(target_os = "windows") {
+    if cfg!(target_os = "windows") {
         filter.add_pattern("*.xopp");
         filter.add_pattern("*.pdf");
         filter.add_pattern("*.svg");

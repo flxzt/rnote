@@ -25,7 +25,7 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
     // See the limitations on FileChooserNative
     // https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/struct.FileChooserNative.html#win32-details--gtkfilechooserdialognative-win32
     let filter = FileFilter::new();
-    if !cfg!(target_os = "windows") {
+    if cfg!(target_os = "windows") {
         filter.add_pattern("*.rnote");
     } else {
         filter.add_mime_type("application/rnote");

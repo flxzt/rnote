@@ -235,18 +235,14 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
                             &gettext("Exported document successfully"),
                             &gettext("View in file manager"),
                             clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
-                                let Some(folder_path_string) = file
-                                    .parent()
-                                    .and_then(|p|
-                                        p.path())
-                                    .and_then(|p| p.into_os_string().into_string().ok()) else {
-                                        tracing::error!("Failed to get the parent folder of the output file `{file:?}.");
-                                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
-                                        return;
-                                };
+                                let Some(file_path_string) = file.path().and_then(|p| p.into_os_string().into_string().ok()) else {
+                                    tracing::error!("Failed to get the path of the file `{file:?}.");
+                                    appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
+                                    return;
+                            };
 
-                                if let Err(e) = opener::open(&folder_path_string) {
-                                    tracing::error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
+                                if let Err(e) = opener::reveal(&file_path_string) {
+                                    tracing::error!("Revealing the file '{file_path_string}' in the file manager failed, Err: {e:?}");
                                     appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the file in the file manager"));
                                 }
                             }

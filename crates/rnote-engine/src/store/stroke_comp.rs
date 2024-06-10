@@ -675,6 +675,23 @@ impl StrokeStore {
                         if stroke.bounds().mins[1] > y_start && stroke.bounds().maxs[1] < ymax {
                             Some(key)
                         } else {
+                            println!("not selected, bounds : {:?}", stroke.bounds());
+                            None
+                        }
+                    })
+                    .collect::<Vec<StrokeKey>>();
+            }
+            (None, Some(xmin), Some(xmax)) => {
+                return self
+                    .stroke_components
+                    .iter()
+                    .filter_map(|(key, stroke)| {
+                        if stroke.bounds().mins[1] > y_start
+                            && stroke.bounds().mins[0] > xmin
+                            && stroke.bounds().maxs[0] < xmax
+                        {
+                            Some(key)
+                        } else {
                             None
                         }
                     })

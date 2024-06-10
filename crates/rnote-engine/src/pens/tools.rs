@@ -17,7 +17,6 @@ use std::time::Instant;
 pub struct VerticalSpaceTool {
     start_pos_y: f64,
     pos_y: f64,
-    pos_x: f64,
     strokes_below: Vec<StrokeKey>,
 }
 
@@ -26,7 +25,6 @@ impl Default for VerticalSpaceTool {
         Self {
             start_pos_y: 0.0,
             pos_y: 0.0,
-            pos_x: 0.0,
             strokes_below: vec![],
         }
     }
@@ -301,7 +299,8 @@ impl PenBehaviour for Tools {
                     ToolStyle::VerticalSpace => {
                         self.verticalspace_tool.start_pos_y = element.pos[1];
                         self.verticalspace_tool.pos_y = element.pos[1];
-                        self.verticalspace_tool.pos_x = element.pos[0];
+
+                        let pos_x = element.pos[0];
 
                         let y_max: Option<f64> = if engine_view
                             .pens_config
@@ -310,10 +309,11 @@ impl PenBehaviour for Tools {
                             .horizontal_border
                         {
                             Some(
-                                ((self.verticalspace_tool.pos_y / engine_view.document.height)
-                                    .floor()
+                                ((self.verticalspace_tool.pos_y
+                                    / engine_view.document.format.height())
+                                .floor()
                                     + 1.0f64)
-                                    * engine_view.document.height,
+                                    * engine_view.document.format.height(),
                             )
                         } else {
                             None
@@ -326,10 +326,8 @@ impl PenBehaviour for Tools {
                             .vertical_border
                         {
                             Some(
-                                ((self.verticalspace_tool.pos_x / engine_view.document.width)
-                                    .floor()
-                                    + 1.0f64)
-                                    * engine_view.document.width,
+                                ((pos_x / engine_view.document.format.width()).floor() + 1.0f64)
+                                    * engine_view.document.format.width(),
                             )
                         } else {
                             None
@@ -342,29 +340,12 @@ impl PenBehaviour for Tools {
                             .vertical_border
                         {
                             Some(
-                                ((self.verticalspace_tool.pos_x / engine_view.document.width)
-                                    .floor())
-                                    * engine_view.document.width,
+                                (pos_x / engine_view.document.format.width()).floor()
+                                    * engine_view.document.format.width(),
                             )
                         } else {
                             None
                         };
-
-                        println!(
-                            "config : hor {:?}, ver {:?}, xmax {:?} ymax {:?}",
-                            engine_view
-                                .pens_config
-                                .tools_config
-                                .vertical_tool_config
-                                .horizontal_border,
-                            engine_view
-                                .pens_config
-                                .tools_config
-                                .vertical_tool_config
-                                .vertical_border,
-                            x_max,
-                            y_max
-                        );
 
                         self.verticalspace_tool.strokes_below = engine_view.store.keys_between(
                             self.verticalspace_tool.pos_y,

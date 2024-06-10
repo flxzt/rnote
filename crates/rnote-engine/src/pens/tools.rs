@@ -72,7 +72,7 @@ impl DrawableOnDoc for VerticalSpaceTool {
         };
         let y = self.start_pos_y;
         let width = if self.limit_x.is_some() {
-            self.limit_x.unwrap().1 - self.limit_x.unwrap().0
+            self.limit_x.unwrap().1 - viewport.mins[0].max(self.limit_x.unwrap().0)
         } else {
             viewport.extents()[0]
         };
@@ -103,7 +103,6 @@ impl DrawableOnDoc for VerticalSpaceTool {
             &Self::OFFSET_LINE_COLOR,
             Self::OFFSET_LINE_WIDTH / total_zoom,
         );
-
         cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
@@ -328,8 +327,6 @@ impl PenBehaviour for Tools {
                         } else {
                             None
                         };
-
-                        self.verticalspace_tool.limit_x = None;
 
                         self.verticalspace_tool.limit_x = if engine_view
                             .pens_config

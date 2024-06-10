@@ -674,7 +674,6 @@ impl StrokeStore {
                         if stroke.bounds().mins[1] > y_start && stroke.bounds().maxs[1] < ymax {
                             Some(key)
                         } else {
-                            println!("not selected, bounds : {:?}", stroke.bounds());
                             None
                         }
                     })

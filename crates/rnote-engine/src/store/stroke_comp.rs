@@ -644,13 +644,12 @@ impl StrokeStore {
         &self,
         y_start: f64,
         y_end: Option<f64>,
-        x_start: Option<f64>,
-        x_end: Option<f64>,
+        x_lims: Option<(f64, f64)>,
     ) -> Vec<StrokeKey> {
         // match on constraints
-        match (y_end, x_start, x_end) {
-            (None, None, None) => return self.keys_below_y(y_start),
-            (Some(ymax), Some(xmin), Some(xmax)) => {
+        match (y_end, x_lims) {
+            (None, None) => return self.keys_below_y(y_start),
+            (Some(ymax), Some((xmin, xmax))) => {
                 return self
                     .stroke_components
                     .iter()
@@ -667,7 +666,7 @@ impl StrokeStore {
                     })
                     .collect::<Vec<StrokeKey>>();
             }
-            (Some(ymax), _, _) => {
+            (Some(ymax), _) => {
                 return self
                     .stroke_components
                     .iter()
@@ -681,7 +680,7 @@ impl StrokeStore {
                     })
                     .collect::<Vec<StrokeKey>>();
             }
-            (None, Some(xmin), Some(xmax)) => {
+            (None, Some((xmin, xmax))) => {
                 return self
                     .stroke_components
                     .iter()
@@ -697,7 +696,6 @@ impl StrokeStore {
                     })
                     .collect::<Vec<StrokeKey>>();
             }
-            _ => Vec::<StrokeKey>::new(),
         }
     }
 

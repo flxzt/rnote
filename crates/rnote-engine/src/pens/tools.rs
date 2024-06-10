@@ -17,6 +17,7 @@ use std::time::Instant;
 pub struct VerticalSpaceTool {
     start_pos_y: f64,
     pos_y: f64,
+    limit_x: Option<(f64, f64)>,
     strokes_below: Vec<StrokeKey>,
 }
 
@@ -25,6 +26,7 @@ impl Default for VerticalSpaceTool {
         Self {
             start_pos_y: 0.0,
             pos_y: 0.0,
+            limit_x: None,
             strokes_below: vec![],
         }
     }
@@ -63,9 +65,17 @@ impl DrawableOnDoc for VerticalSpaceTool {
 
         let total_zoom = engine_view.camera.total_zoom();
         let viewport = engine_view.camera.viewport();
-        let x = viewport.mins[0];
+        let x = if self.limit_x.is_some() {
+            viewport.mins[0].max(self.limit_x.unwrap().0)
+        } else {
+            viewport.mins[0]
+        };
         let y = self.start_pos_y;
-        let width = viewport.extents()[0];
+        let width = if self.limit_x.is_some() {
+            self.limit_x.unwrap().1 - self.limit_x.unwrap().0
+        } else {
+            viewport.extents()[0]
+        };
         let height = self.pos_y - self.start_pos_y;
         let tool_bounds = Aabb::new_positive(na::point![x, y], na::point![x + width, y + height]);
 
@@ -319,30 +329,20 @@ impl PenBehaviour for Tools {
                             None
                         };
 
-                        let x_max: Option<f64> = if engine_view
-                            .pens_config
-                            .tools_config
-                            .vertical_tool_config
-                            .vertical_border
-                        {
-                            Some(
-                                ((pos_x / engine_view.document.format.width()).floor() + 1.0f64)
-                                    * engine_view.document.format.width(),
-                            )
-                        } else {
-                            None
-                        };
+                        self.verticalspace_tool.limit_x = None;
 
-                        let x_min: Option<f64> = if engine_view
+                        self.verticalspace_tool.limit_x = if engine_view
                             .pens_config
                             .tools_config
                             .vertical_tool_config
                             .vertical_border
                         {
-                            Some(
-                                (pos_x / engine_view.document.format.width()).floor()
-                                    * engine_view.document.format.width(),
-                            )
+                            let page_number_hor =
+                                (pos_x / engine_view.document.format.width()).floor();
+                            Some((
+                                page_number_hor * engine_view.document.format.width(),
+                                (page_number_hor + 1.0f64) * engine_view.document.format.width(),
+                            ))
                         } else {
                             None
                         };
@@ -350,8 +350,7 @@ impl PenBehaviour for Tools {
                         self.verticalspace_tool.strokes_below = engine_view.store.keys_between(
                             self.verticalspace_tool.pos_y,
                             y_max,
-                            x_min,
-                            x_max,
+                            self.verticalspace_tool.limit_x,
                         );
                     }
                     ToolStyle::OffsetCamera => {

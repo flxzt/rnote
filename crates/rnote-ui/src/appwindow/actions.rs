@@ -334,13 +334,28 @@ impl RnAppWindow {
                 // don't change the style if the current style with override is already the same
                 // (e.g. when switched to from the pen button, not by clicking the pen page)
                 if pen_style != canvas.engine_ref().penholder.current_pen_style_w_override() {
+                    let lock_out = canvas.engine_ref().penholder.pen_mode_state().get_lock();
+                    let active_pen = canvas.engine_ref().penholder.pen_mode_state().pen_mode();
+                    if lock_out {
+                        // display a popup that can unlock the pen tool
+                        appwindow.overlays().dispatch_toast_w_button_singleton(
+                        &gettext("Tool Locked"), 
+                        &gettext("Unlock"), //padlock symbol ? 
+                        clone!(@weak canvas =>  move |_reload_toast | {
+                                canvas.engine_mut().penholder.pen_mode_state_mut().unlock_pen(active_pen);
+                            }
+                        )
+                        , 2,
+                        &mut None);
+                        // refresh the ui
+                        appwindow.refresh_ui_from_engine(&appwindow.active_tab_wrapper());
+                } else {
                     let mut widget_flags = canvas.engine_mut().change_pen_style(pen_style);
                     widget_flags |= canvas.engine_mut().change_pen_style_override(None);
                     appwindow.handle_widget_flags(widget_flags, &canvas);
-                }
-
-                action.set_state(&pen_style_str.to_variant());
-            }),
+                    action.set_state(&pen_style_str.to_variant());
+            }
+        }}),
         );
 
         // Tab actions

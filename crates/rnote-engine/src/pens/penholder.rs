@@ -121,6 +121,11 @@ impl PenHolder {
         self.pen_mode_state = pen_mode_state;
     }
 
+    /// mutable pen mode state
+    pub fn pen_mode_state_mut(&mut self) -> &mut PenModeState {
+        &mut self.pen_mode_state
+    }
+
     pub fn backlog_policy(&self) -> BacklogPolicy {
         self.backlog_policy
     }

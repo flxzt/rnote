@@ -118,8 +118,6 @@ impl RnPenPicker {
             .build();
 
         pointer_controller.connect_event(clone!(@weak appwindow => @default-return glib::Propagation::Proceed,  move |_,event| {
-            println!("{:?}",event);
-
             let mut widget_flags = WidgetFlags::default();
             let is_stylus = event.device_tool().is_some();
             if is_stylus {

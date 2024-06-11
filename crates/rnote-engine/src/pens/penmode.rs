@@ -28,6 +28,10 @@ pub struct PenModeState {
     #[serde(rename = "penmode_eraser_style")]
     penmode_eraser_style: PenStyle,
 
+    //lock styles
+    penmode_pen_lock: bool,
+    penmode_eraser_lock: bool,
+
     #[serde(skip)]
     penmode_pen_style_override: Option<PenStyle>,
     #[serde(skip)]
@@ -40,6 +44,9 @@ impl Default for PenModeState {
             pen_mode: PenMode::Pen,
             penmode_pen_style: PenStyle::Brush,
             penmode_eraser_style: PenStyle::Eraser,
+
+            penmode_pen_lock: true,
+            penmode_eraser_lock: true,
 
             penmode_pen_style_override: None,
             penmode_eraser_style_override: None,
@@ -59,6 +66,20 @@ impl CloneConfig for PenModeState {
 }
 
 impl PenModeState {
+    pub fn get_lock(&self) -> bool {
+        match self.pen_mode {
+            PenMode::Pen => self.penmode_pen_lock,
+            PenMode::Eraser => self.penmode_eraser_lock,
+        }
+    }
+
+    pub fn unlock_pen(&mut self, pen_mode: PenMode) {
+        match pen_mode {
+            PenMode::Pen => self.penmode_pen_lock = false,
+            PenMode::Eraser => self.penmode_eraser_lock = false,
+        }
+    }
+
     pub fn current_style_w_override(&self) -> PenStyle {
         match self.pen_mode {
             PenMode::Pen => self

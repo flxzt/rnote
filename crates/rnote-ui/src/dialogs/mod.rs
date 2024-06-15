@@ -27,9 +27,7 @@ pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
         config::APP_NAME.to_string()
     };
 
-    let aboutdialog = adw::AboutWindow::builder()
-        .modal(true)
-        .transient_for(appwindow)
+    let aboutdialog = adw::AboutDialog::builder()
         .application_name(config::APP_NAME_CAPITALIZED)
         .application_icon(app_icon_name)
         .comments(gettext("Sketch and take handwritten notes"))
@@ -48,7 +46,7 @@ pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
         aboutdialog.add_css_class("devel");
     }
 
-    aboutdialog.present();
+    aboutdialog.present(appwindow);
 }
 
 pub(crate) fn dialog_keyboard_shortcuts(appwindow: &RnAppWindow) {
@@ -63,10 +61,9 @@ pub(crate) async fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas)
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
-    let dialog: adw::MessageDialog = builder.object("dialog_clear_doc").unwrap();
-    dialog.set_transient_for(Some(appwindow));
+    let dialog: adw::AlertDialog = builder.object("dialog_clear_doc").unwrap();
 
-    match dialog.choose_future().await.as_str() {
+    match dialog.choose_future(appwindow).await.as_str() {
         "clear" => {
             let prev_empty = canvas.empty();
 
@@ -89,8 +86,7 @@ pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
-    let dialog: adw::MessageDialog = builder.object("dialog_new_doc").unwrap();
-    dialog.set_transient_for(Some(appwindow));
+    let dialog: adw::AlertDialog = builder.object("dialog_new_doc").unwrap();
 
     let new_doc = |appwindow: &RnAppWindow, canvas: &RnCanvas| {
         let widget_flags = canvas.engine_mut().clear();
@@ -106,7 +102,7 @@ pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
         return;
     }
 
-    match dialog.choose_future().await.as_str() {
+    match dialog.choose_future(appwindow).await.as_str() {
         "discard" => {
             new_doc(appwindow, canvas);
         }
@@ -151,9 +147,8 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
-    let dialog: adw::MessageDialog = builder.object("dialog_close_tab").unwrap();
+    let dialog: adw::AlertDialog = builder.object("dialog_close_tab").unwrap();
     let file_group: adw::PreferencesGroup = builder.object("close_tab_file_group").unwrap();
-    dialog.set_transient_for(Some(appwindow));
     let canvas = tab_page
         .child()
         .downcast::<RnCanvasWrapper>()
@@ -238,7 +233,7 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
 
     // Returns close_finish_confirm, a boolean that indicates if the tab should actually be closed or closing
     // should be aborted.
-    match dialog.choose_future().await.as_str() {
+    match dialog.choose_future(appwindow).await.as_str() {
         "discard" => true,
         "save" => {
             if let Some(save_file) = save_file {
@@ -274,9 +269,8 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
-    let dialog: adw::MessageDialog = builder.object("dialog_close_window").unwrap();
+    let dialog: adw::AlertDialog = builder.object("dialog_close_window").unwrap();
     let files_group: adw::PreferencesGroup = builder.object("close_window_files_group").unwrap();
-    dialog.set_transient_for(Some(appwindow));
 
     let tabs = appwindow.tabs_snapshot();
     let mut rows = Vec::new();
@@ -375,7 +369,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         rows.push((i, check, save_file));
     }
 
-    let close = match dialog.choose_future().await.as_str() {
+    let close = match dialog.choose_future(appwindow).await.as_str() {
         "discard" => {
             // do nothing and close
             true

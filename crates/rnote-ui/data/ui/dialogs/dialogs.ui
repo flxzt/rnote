@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- misc dialogs -->
 <interface>
-  <object class="AdwMessageDialog" id="dialog_clear_doc">
+  <object class="AdwAlertDialog" id="dialog_clear_doc">
     <property name="heading" translatable="yes">Clear Document</property>
     <property name="body" translatable="yes">This clears the entire document. Please confirm.</property>
     <property name="default-response">clear</property>
@@ -12,7 +12,7 @@
     </responses>
   </object>
 
-  <object class="AdwMessageDialog" id="dialog_new_doc">
+  <object class="AdwAlertDialog" id="dialog_new_doc">
     <property name="heading" translatable="yes">New Document</property>
     <property name="body" translatable="yes">Creating a new document will discard any unsaved changes.
 Do you want to save the current document?</property>
@@ -25,7 +25,7 @@ Do you want to save the current document?</property>
     </responses>
   </object>
 
-  <object class="AdwMessageDialog" id="dialog_close_tab">
+  <object class="AdwAlertDialog" id="dialog_close_tab">
     <property name="heading" translatable="yes">Close Tab</property>
     <property name="body" translatable="yes">This tab contains unsaved changes.
 Changes which are not saved will be permanently lost.</property>
@@ -43,7 +43,7 @@ Changes which are not saved will be permanently lost.</property>
     </responses>
   </object>
 
-  <object class="AdwMessageDialog" id="dialog_close_window">
+  <object class="AdwAlertDialog" id="dialog_close_window">
     <property name="heading" translatable="yes">Close Window</property>
     <property name="body" translatable="yes">Some opened files contain unsaved changes.
 Changes which are not saved will be permanently lost.</property>

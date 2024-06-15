@@ -1,171 +1,176 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Import dialogs -->
 <interface>
-  <object class="GtkDialog" id="dialog_import_pdf_w_prefs">
-    <property name="use-header-bar">1</property>
-    <property name="modal">true</property>
+  <object class="AdwDialog" id="dialog_import_pdf_w_prefs">
     <property name="title" translatable="yes">Import Pdf</property>
-    <child type="action">
-      <object class="GtkButton" id="import_pdf_button_cancel">
-        <property name="label" translatable="yes">Cancel</property>
-      </object>
-    </child>
-    <child type="action">
-      <object class="GtkButton" id="import_pdf_button_confirm">
-        <property name="label" translatable="yes">Import</property>
-        <style>
-          <class name="suggested-action" />
-        </style>
-      </object>
-    </child>
-    <action-widgets>
-      <action-widget response="cancel">import_pdf_button_cancel</action-widget>
-      <action-widget response="apply" default="true">import_pdf_button_confirm</action-widget>
-    </action-widgets>
     <child>
-      <object class="AdwClamp">
-        <property name="maximum-size">800</property>
-        <property name="tightening-threshold">600</property>
-        <property name="hexpand">true</property>
-        <property name="vexpand">false</property>
-        <property name="valign">fill</property>
-        <property name="halign">fill</property>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkBox">
-            <property name="orientation">vertical</property>
-            <property name="spacing">24</property>
-            <property name="margin-start">12</property>
-            <property name="margin-end">12</property>
-            <property name="margin-top">12</property>
-            <property name="margin-bottom">12</property>
-            <style>
-              <class name="background" />
-            </style>
+          <object class="AdwHeaderBar">
+            <property name="show-end-title-buttons">false</property>
+            <property name="show-start-title-buttons">false</property>
+            <child type="start">
+              <object class="GtkButton" id="import_pdf_button_cancel">
+                <property name="label" translatable="yes">Cancel</property>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkButton" id="import_pdf_button_confirm">
+                <property name="label" translatable="yes">Import</property>
+                <style>
+                  <class name="suggested-action" />
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwClamp">
+            <property name="maximum-size">800</property>
+            <property name="tightening-threshold">600</property>
+            <property name="hexpand">true</property>
+            <property name="vexpand">false</property>
+            <property name="valign">fill</property>
+            <property name="halign">fill</property>
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
-                <property name="halign">fill</property>
-                <property name="spacing">12</property>
+                <property name="spacing">24</property>
+                <property name="margin-start">12</property>
+                <property name="margin-end">12</property>
+                <property name="margin-top">12</property>
+                <property name="margin-bottom">12</property>
                 <style>
-                  <class name="card" />
-                  <class name="view" />
+                  <class name="background" />
                 </style>
                 <child>
-                  <object class="GtkLabel">
-                    <property name="margin-start">24</property>
-                    <property name="margin-end">24</property>
-                    <property name="margin-top">12</property>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="halign">fill</property>
+                    <property name="spacing">12</property>
                     <style>
-                      <class name="title-4" />
+                      <class name="card" />
+                      <class name="view" />
                     </style>
-                    <property name="label" translatable="yes">Info</property>
-                    <property name="halign">center</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="pdf_info_label">
-                    <property name="halign">start</property>
-                    <property name="margin-start">24</property>
-                    <property name="margin-end">24</property>
-                    <property name="margin-bottom">12</property>
-                    <property name="use-markup">true</property>
-                    <property name="ellipsize">end</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="AdwPreferencesGroup">
-                <property name="title" translatable="yes">Pdf Import Preferences</property>
-                <property name="halign">fill</property>
-                <child>
-                  <object class="AdwSpinRow" id="pdf_page_start_row">
-                    <property name="title" translatable="yes">Start Page</property>
-                    <property name="adjustment">pdf_page_start_adj</property>
-                    <property name="numeric">true</property>
-                    <property name="digits">0</property>
-                    <property name="climb-rate">1</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="AdwSpinRow" id="pdf_page_end_row">
-                    <property name="title" translatable="yes">End Page</property>
-                    <property name="adjustment">pdf_page_end_adj</property>
-                    <property name="numeric">true</property>
-                    <property name="digits">0</property>
-                    <property name="climb-rate">1</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="AdwSwitchRow" id="pdf_import_adjust_document_row">
-                    <property name="title" translatable="yes">Adjust Document</property>
-                    <property name="subtitle" translatable="yes">Whether the document layout should be adjusted to the Pdf</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="AdwSpinRow" id="pdf_import_width_row">
-                    <property name="title" translatable="yes">Page Width (%)</property>
-                    <property name="subtitle" translatable="yes">Set the width of imported Pdf's in percentage to the format width</property>
-                    <property name="adjustment">pdf_import_width_perc_adj</property>
-                    <property name="digits">0</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="AdwComboRow" id="pdf_import_page_spacing_row">
-                    <property name="title" translatable="yes">Page Spacing</property>
-                    <property name="subtitle" translatable="yes">How Pdf pages are spaced</property>
-                    <property name="model">
-                      <object class="GtkStringList">
-                        <items>
-                          <item translatable="yes">Continuous</item>
-                          <item translatable="yes">One per Document Page</item>
-                        </items>
-                      </object>
-                    </property>
-                  </object>
-                </child>
-                <child>
-                  <object class="AdwActionRow" id="pdf_import_pages_type_row">
-                    <property name="title" translatable="yes">Pages Type</property>
-                    <property name="subtitle" translatable="yes">Set whether Pdf's should be imported as vector or bitmap images</property>
-                    <child type="suffix">
-                      <object class="GtkBox">
-                        <property name="orientation">horizontal</property>
-                        <property name="homogeneous">true</property>
-                        <property name="vexpand">false</property>
-                        <property name="valign">center</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="margin-start">24</property>
+                        <property name="margin-end">24</property>
+                        <property name="margin-top">12</property>
                         <style>
-                          <class name="linked" />
+                          <class name="title-4" />
                         </style>
-                        <child>
-                          <object class="GtkToggleButton" id="pdf_import_as_vector_toggle">
-                            <property name="label" translatable="yes">Vector</property>
-                            <property name="active">true</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkToggleButton" id="pdf_import_as_bitmap_toggle">
-                            <property name="group">pdf_import_as_vector_toggle</property>
-                            <property name="label" translatable="yes">Bitmap</property>
-                          </object>
-                        </child>
+                        <property name="label" translatable="yes">Info</property>
+                        <property name="halign">center</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="pdf_info_label">
+                        <property name="halign">start</property>
+                        <property name="margin-start">24</property>
+                        <property name="margin-end">24</property>
+                        <property name="margin-bottom">12</property>
+                        <property name="use-markup">true</property>
+                        <property name="ellipsize">end</property>
                       </object>
                     </child>
                   </object>
                 </child>
                 <child>
-                  <object class="AdwSpinRow" id="pdf_import_bitmap_scalefactor_row">
-                    <property name="title" translatable="yes">Bitmap Scale-Factor</property>
-                    <property name="subtitle" translatable="yes">Set the bitmap scale factor in relation
-to the actual size on the document</property>
-                    <property name="adjustment">pdf_import_bitmap_scalefactor_adj</property>
-                    <property name="digits">1</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="AdwSwitchRow" id="pdf_import_page_borders_row">
-                    <property name="title" translatable="yes">Page Borders</property>
-                    <property name="subtitle" translatable="yes">Whether the pages have drawn borders</property>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title" translatable="yes">Pdf Import Preferences</property>
+                    <property name="halign">fill</property>
+                    <child>
+                      <object class="AdwSpinRow" id="pdf_page_start_row">
+                        <property name="title" translatable="yes">Start Page</property>
+                        <property name="adjustment">pdf_page_start_adj</property>
+                        <property name="numeric">true</property>
+                        <property name="digits">0</property>
+                        <property name="climb-rate">1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwSpinRow" id="pdf_page_end_row">
+                        <property name="title" translatable="yes">End Page</property>
+                        <property name="adjustment">pdf_page_end_adj</property>
+                        <property name="numeric">true</property>
+                        <property name="digits">0</property>
+                        <property name="climb-rate">1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwSwitchRow" id="pdf_import_adjust_document_row">
+                        <property name="title" translatable="yes">Adjust Document</property>
+                        <property name="subtitle" translatable="yes">Whether the document layout should be adjusted to the Pdf</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwSpinRow" id="pdf_import_width_row">
+                        <property name="title" translatable="yes">Page Width (%)</property>
+                        <property name="subtitle" translatable="yes">Set the width of imported Pdf's in percentage to the format width</property>
+                        <property name="adjustment">pdf_import_width_perc_adj</property>
+                        <property name="digits">0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwComboRow" id="pdf_import_page_spacing_row">
+                        <property name="title" translatable="yes">Page Spacing</property>
+                        <property name="subtitle" translatable="yes">How Pdf pages are spaced</property>
+                        <property name="model">
+                          <object class="GtkStringList">
+                            <items>
+                              <item translatable="yes">Continuous</item>
+                              <item translatable="yes">One per Document Page</item>
+                            </items>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="pdf_import_pages_type_row">
+                        <property name="title" translatable="yes">Pages Type</property>
+                        <property name="subtitle" translatable="yes">Set whether Pdf's should be imported as vector or bitmap images</property>
+                        <child type="suffix">
+                          <object class="GtkBox">
+                            <property name="orientation">horizontal</property>
+                            <property name="homogeneous">true</property>
+                            <property name="vexpand">false</property>
+                            <property name="valign">center</property>
+                            <style>
+                              <class name="linked" />
+                            </style>
+                            <child>
+                              <object class="GtkToggleButton" id="pdf_import_as_vector_toggle">
+                                <property name="label" translatable="yes">Vector</property>
+                                <property name="active">true</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkToggleButton" id="pdf_import_as_bitmap_toggle">
+                                <property name="group">pdf_import_as_vector_toggle</property>
+                                <property name="label" translatable="yes">Bitmap</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwSpinRow" id="pdf_import_bitmap_scalefactor_row">
+                        <property name="title" translatable="yes">Bitmap Scale-Factor</property>
+                        <property name="subtitle" translatable="yes">Set the bitmap scale factor in relation
+    to the actual size on the document</property>
+                        <property name="adjustment">pdf_import_bitmap_scalefactor_adj</property>
+                        <property name="digits">1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwSwitchRow" id="pdf_import_page_borders_row">
+                        <property name="title" translatable="yes">Page Borders</property>
+                        <property name="subtitle" translatable="yes">Whether the pages have drawn borders</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -196,56 +201,61 @@ to the actual size on the document</property>
     <property name="value">1.0</property>
   </object>
 
-  <object class="GtkDialog" id="dialog_import_xopp_w_prefs">
-    <property name="use-header-bar">1</property>
-    <property name="modal">true</property>
+  <object class="AdwDialog" id="dialog_import_xopp_w_prefs">
     <property name="title" translatable="yes">Import Xournal++ File</property>
-    <child type="action">
-      <object class="GtkButton" id="import_xopp_button_cancel">
-        <property name="label" translatable="yes">Cancel</property>
-      </object>
-    </child>
-    <child type="action">
-      <object class="GtkButton" id="import_xopp_button_confirm">
-        <property name="label" translatable="yes">Import</property>
-        <style>
-          <class name="suggested-action" />
-        </style>
-      </object>
-    </child>
-    <action-widgets>
-      <action-widget response="cancel">import_xopp_button_cancel</action-widget>
-      <action-widget response="apply" default="true">import_xopp_button_confirm</action-widget>
-    </action-widgets>
     <child>
-      <object class="AdwClamp">
-        <property name="maximum-size">800</property>
-        <property name="tightening-threshold">600</property>
-        <property name="hexpand">true</property>
-        <property name="vexpand">false</property>
-        <property name="valign">fill</property>
-        <property name="halign">fill</property>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkBox">
-            <property name="orientation">vertical</property>
-            <property name="spacing">24</property>
-            <property name="margin-start">12</property>
-            <property name="margin-end">12</property>
-            <property name="margin-top">12</property>
-            <property name="margin-bottom">12</property>
-            <style>
-              <class name="background" />
-            </style>
+          <object class="AdwHeaderBar">
+            <property name="show-end-title-buttons">false</property>
+            <property name="show-start-title-buttons">false</property>
+            <child type="start">
+              <object class="GtkButton" id="import_xopp_button_cancel">
+                <property name="label" translatable="yes">Cancel</property>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkButton" id="import_xopp_button_confirm">
+                <property name="label" translatable="yes">Import</property>
+                <style>
+                  <class name="suggested-action" />
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwClamp">
+            <property name="maximum-size">800</property>
+            <property name="tightening-threshold">600</property>
+            <property name="hexpand">true</property>
+            <property name="vexpand">false</property>
+            <property name="valign">fill</property>
+            <property name="halign">fill</property>
             <child>
-              <object class="AdwPreferencesGroup">
-                <property name="title" translatable="yes">Xournal++ File Import Preferences</property>
-                <property name="halign">fill</property>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">24</property>
+                <property name="margin-start">12</property>
+                <property name="margin-end">12</property>
+                <property name="margin-top">12</property>
+                <property name="margin-bottom">12</property>
+                <style>
+                  <class name="background" />
+                </style>
                 <child>
-                  <object class="AdwSpinRow" id="xopp_import_dpi_row">
-                    <property name="title" translatable="yes">DPI</property>
-                    <property name="subtitle" translatable="yes">Set the preferred DPI for the Xournal++ file</property>
-                    <property name="adjustment">xopp_import_dpi_adj</property>
-                    <property name="digits">0</property>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title" translatable="yes">Xournal++ File Import Preferences</property>
+                    <property name="halign">fill</property>
+                    <child>
+                      <object class="AdwSpinRow" id="xopp_import_dpi_row">
+                        <property name="title" translatable="yes">DPI</property>
+                        <property name="subtitle" translatable="yes">Set the preferred DPI for the Xournal++ file</property>
+                        <property name="adjustment">xopp_import_dpi_adj</property>
+                        <property name="digits">0</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

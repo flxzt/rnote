@@ -64,9 +64,8 @@ Changes which are not saved will be permanently lost.</property>
   <object class="AdwDialog" id="dialog_edit_selected_workspace">
     <property name="title" translatable="yes">Edit Workspace</property>
     <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
+      <object class="AdwToolbarView">
+        <child type="top">
           <object class="AdwHeaderBar">
             <property name="show-end-title-buttons">false</property>
             <property name="show-start-title-buttons">false</property>
@@ -85,7 +84,7 @@ Changes which are not saved will be permanently lost.</property>
             </child>
           </object>
         </child>
-        <child>
+        <property name="content">
           <object class="AdwClamp">
             <property name="maximum-size">800</property>
             <property name="tightening-threshold">600</property>
@@ -195,7 +194,7 @@ Changes which are not saved will be permanently lost.</property>
               </object>
             </child>
           </object>
-        </child>
+        </property>
       </object>
     </child>
   </object>

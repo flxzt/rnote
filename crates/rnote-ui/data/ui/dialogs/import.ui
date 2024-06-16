@@ -4,9 +4,8 @@
   <object class="AdwDialog" id="dialog_import_pdf_w_prefs">
     <property name="title" translatable="yes">Import Pdf</property>
     <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
+      <object class="AdwToolbarView">
+        <child type="top">
           <object class="AdwHeaderBar">
             <property name="show-end-title-buttons">false</property>
             <property name="show-start-title-buttons">false</property>
@@ -25,7 +24,7 @@
             </child>
           </object>
         </child>
-        <child>
+        <property name="content">
           <object class="AdwClamp">
             <property name="maximum-size">800</property>
             <property name="tightening-threshold">600</property>
@@ -176,7 +175,7 @@
               </object>
             </child>
           </object>
-        </child>
+        </property>
       </object>
     </child>
   </object>
@@ -204,9 +203,8 @@
   <object class="AdwDialog" id="dialog_import_xopp_w_prefs">
     <property name="title" translatable="yes">Import Xournal++ File</property>
     <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
+      <object class="AdwToolbarView">
+        <child type="top">
           <object class="AdwHeaderBar">
             <property name="show-end-title-buttons">false</property>
             <property name="show-start-title-buttons">false</property>
@@ -225,7 +223,7 @@
             </child>
           </object>
         </child>
-        <child>
+        <property name="content">
           <object class="AdwClamp">
             <property name="maximum-size">800</property>
             <property name="tightening-threshold">600</property>
@@ -261,7 +259,7 @@
               </object>
             </child>
           </object>
-        </child>
+        </property>
       </object>
     </child>
   </object>

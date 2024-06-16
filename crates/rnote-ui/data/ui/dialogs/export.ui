@@ -4,9 +4,8 @@
   <object class="AdwDialog" id="dialog_export_doc_w_prefs">
     <property name="title" translatable="yes">Export Document</property>
     <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
+      <object class="AdwToolbarView">
+        <child type="top">
           <object class="AdwHeaderBar">
             <property name="show-end-title-buttons">false</property>
             <property name="show-start-title-buttons">false</property>
@@ -26,7 +25,7 @@
             </child>
           </object>
         </child>
-        <child>
+        <property name="content">
           <object class="AdwClamp">
             <property name="maximum-size">1000</property>
             <property name="tightening-threshold">900</property>
@@ -166,7 +165,7 @@
               </object>
             </child>
           </object>
-        </child>
+        </property>
       </object>
     </child>
   </object>
@@ -174,9 +173,8 @@
   <object class="AdwDialog" id="dialog_export_doc_pages_w_prefs">
     <property name="title" translatable="yes">Export Document Pages</property>
     <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
+      <object class="AdwToolbarView">
+        <child type="top">
           <object class="AdwHeaderBar">
             <property name="show-end-title-buttons">false</property>
             <property name="show-start-title-buttons">false</property>
@@ -196,7 +194,7 @@
             </child>
           </object>
         </child>
-        <child>
+        <property name="content">
           <object class="AdwClamp">
             <property name="maximum-size">1000</property>
             <property name="tightening-threshold">900</property>
@@ -395,7 +393,7 @@
               </object>
             </child>
           </object>
-        </child>
+        </property>
       </object>
     </child>
   </object>
@@ -415,9 +413,8 @@
   <object class="AdwDialog" id="dialog_export_selection_w_prefs">
     <property name="title" translatable="yes">Export Selection</property>
     <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
+      <object class="AdwToolbarView">
+        <child type="top">
           <object class="AdwHeaderBar">
             <property name="show-end-title-buttons">false</property>
             <property name="show-start-title-buttons">false</property>
@@ -437,7 +434,7 @@
             </child>
           </object>
         </child>
-        <child>
+        <property name="content">
           <object class="AdwClamp">
             <property name="maximum-size">1000</property>
             <property name="tightening-threshold">900</property>
@@ -586,7 +583,7 @@
               </object>
             </child>
           </object>
-        </child>
+        </property>
       </object>
     </child>
   </object>

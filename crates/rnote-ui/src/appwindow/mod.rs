@@ -366,6 +366,23 @@ impl RnAppWindow {
             .any(|c| c.unsaved_changes())
     }
 
+    pub(crate) fn tabs_any_saves_in_progress(&self) -> bool {
+        self.overlays()
+            .tabview()
+            .pages()
+            .snapshot()
+            .iter()
+            .map(|o| {
+                o.downcast_ref::<adw::TabPage>()
+                    .unwrap()
+                    .child()
+                    .downcast_ref::<RnCanvasWrapper>()
+                    .unwrap()
+                    .canvas()
+            })
+            .any(|c| c.save_in_progress())
+    }
+
     pub(crate) fn tabs_query_file_opened(
         &self,
         input_file_path: impl AsRef<Path>,

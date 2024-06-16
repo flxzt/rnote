@@ -27,6 +27,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/overlays.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penshortcutrow.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/penmoderow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/settingspanel.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/shortcuts.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/sidebar.ui</file>

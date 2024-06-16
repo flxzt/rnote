@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-16 09:43+0200\n"
-"PO-Revision-Date: 2024-04-26 17:07+0000\n"
+"PO-Revision-Date: 2024-06-16 21:09+0000\n"
 "Last-Translator: Sabri Ünal <yakushabb@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5.1\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1095,7 +1095,7 @@ msgstr "_Yakınlaştırma için Çimdiklemeyi Engelle"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:64
 msgid "Respect Borders When Pasting"
-msgstr ""
+msgstr "Yapıştırırken Kenarlıkları Koru"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:95
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
@@ -1768,7 +1768,7 @@ msgstr "Seçim dışa aktarılamadı, hiçbir şey seçilmedi"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:229
 msgid "Saves are in progress"
-msgstr ""
+msgstr "Kayıt devam ediyor"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:299
 msgid "Button 1"

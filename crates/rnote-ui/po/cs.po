@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-16 09:43+0200\n"
-"PO-Revision-Date: 2024-05-20 09:01+0000\n"
+"PO-Revision-Date: 2024-06-16 21:09+0000\n"
 "Last-Translator: Fjuro <fjuro@alius.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
@@ -1094,7 +1094,7 @@ msgstr "Blokovat stisknutí na _Přiblížení/Oddálení"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:64
 msgid "Respect Borders When Pasting"
-msgstr ""
+msgstr "Dodržovat hranice při vkládání"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:95
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
@@ -1768,7 +1768,7 @@ msgstr "Export vybraného selhal, nic nebylo vybráno"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:229
 msgid "Saves are in progress"
-msgstr ""
+msgstr "Probíhá ukládání"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:299
 msgid "Button 1"

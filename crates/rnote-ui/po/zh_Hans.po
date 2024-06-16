@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-20 11:12+0200\n"
+"POT-Creation-Date: 2024-06-16 09:43+0200\n"
 "PO-Revision-Date: 2024-04-02 00:01+0000\n"
 "Last-Translator: Integral <integral@member.fsf.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
-#: crates/rnote-ui/src/dialogs/mod.rs:35
+#: crates/rnote-ui/src/dialogs/mod.rs:33
 msgid "Sketch and take handwritten notes"
 msgstr "素描与手写笔记"
 
@@ -127,7 +127,7 @@ msgstr "不保存"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:42
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:60
-#: crates/rnote-ui/src/dialogs/export.rs:32
+#: crates/rnote-ui/src/dialogs/export.rs:36
 msgid "Save"
 msgstr "保存"
 
@@ -204,10 +204,10 @@ msgstr "更改工作区目录"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: crates/rnote-ui/data/ui/dialogs/export.ui:284
-#: crates/rnote-ui/src/dialogs/export.rs:372
-#: crates/rnote-ui/src/dialogs/export.rs:409
-#: crates/rnote-ui/src/dialogs/export.rs:417
-#: crates/rnote-ui/src/dialogs/mod.rs:528
+#: crates/rnote-ui/src/dialogs/export.rs:381
+#: crates/rnote-ui/src/dialogs/export.rs:418
+#: crates/rnote-ui/src/dialogs/export.rs:426
+#: crates/rnote-ui/src/dialogs/mod.rs:517
 msgid "- no directory selected -"
 msgstr "—— 没有选择目录 ——"
 
@@ -216,15 +216,15 @@ msgid "Change the directory"
 msgstr "更改目录"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
-#: crates/rnote-ui/src/dialogs/export.rs:268
+#: crates/rnote-ui/src/dialogs/export.rs:273
 msgid "Export Document"
 msgstr "导出文档"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
 #: crates/rnote-ui/data/ui/dialogs/export.ui:180
 #: crates/rnote-ui/data/ui/dialogs/export.ui:416
-#: crates/rnote-ui/src/dialogs/export.rs:907
-#: crates/rnote-ui/src/dialogs/export.rs:955
+#: crates/rnote-ui/src/dialogs/export.rs:928
+#: crates/rnote-ui/src/dialogs/export.rs:981
 msgid "Export"
 msgstr "导出"
 
@@ -241,14 +241,14 @@ msgstr "选择导出文件"
 #. force the user to pick another file
 #: crates/rnote-ui/data/ui/dialogs/export.ui:82
 #: crates/rnote-ui/data/ui/dialogs/export.ui:483
-#: crates/rnote-ui/src/dialogs/export.rs:119
-#: crates/rnote-ui/src/dialogs/export.rs:141
-#: crates/rnote-ui/src/dialogs/export.rs:148
-#: crates/rnote-ui/src/dialogs/export.rs:193
-#: crates/rnote-ui/src/dialogs/export.rs:664
-#: crates/rnote-ui/src/dialogs/export.rs:690
-#: crates/rnote-ui/src/dialogs/export.rs:697
-#: crates/rnote-ui/src/dialogs/export.rs:748
+#: crates/rnote-ui/src/dialogs/export.rs:124
+#: crates/rnote-ui/src/dialogs/export.rs:146
+#: crates/rnote-ui/src/dialogs/export.rs:153
+#: crates/rnote-ui/src/dialogs/export.rs:198
+#: crates/rnote-ui/src/dialogs/export.rs:677
+#: crates/rnote-ui/src/dialogs/export.rs:703
+#: crates/rnote-ui/src/dialogs/export.rs:710
+#: crates/rnote-ui/src/dialogs/export.rs:761
 msgid "- no file selected -"
 msgstr "— 没有文件被选中 —"
 
@@ -308,19 +308,19 @@ msgstr "导出的格式"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:133
 #: crates/rnote-ui/data/ui/dialogs/export.ui:340
 #: crates/rnote-ui/data/ui/dialogs/export.ui:534
-#: crates/rnote-ui/src/dialogs/export.rs:278
-#: crates/rnote-ui/src/dialogs/export.rs:579
-#: crates/rnote-ui/src/dialogs/export.rs:866
+#: crates/rnote-ui/src/dialogs/export.rs:283
+#: crates/rnote-ui/src/dialogs/export.rs:588
+#: crates/rnote-ui/src/dialogs/export.rs:879
 msgid "Svg"
 msgstr "可缩放矢量图（SVG）"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:134
-#: crates/rnote-ui/src/dialogs/export.rs:283
+#: crates/rnote-ui/src/dialogs/export.rs:288
 msgid "Pdf"
 msgstr "便携式文档格式（PDF）"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
-#: crates/rnote-ui/src/dialogs/export.rs:288
+#: crates/rnote-ui/src/dialogs/export.rs:293
 msgid "Xopp"
 msgstr "Xournal++ 笔记本（Xopp）"
 
@@ -351,7 +351,7 @@ msgid "Vertical First"
 msgstr "垂直优先"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:172
-#: crates/rnote-ui/src/dialogs/export.rs:565
+#: crates/rnote-ui/src/dialogs/export.rs:574
 msgid "Export Document Pages"
 msgstr "分页导出"
 
@@ -375,15 +375,15 @@ msgstr "导出文件标题名"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:535
-#: crates/rnote-ui/src/dialogs/export.rs:584
-#: crates/rnote-ui/src/dialogs/export.rs:871
+#: crates/rnote-ui/src/dialogs/export.rs:593
+#: crates/rnote-ui/src/dialogs/export.rs:884
 msgid "Png"
 msgstr "便携式网络图形（PNG）"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:342
 #: crates/rnote-ui/data/ui/dialogs/export.ui:536
-#: crates/rnote-ui/src/dialogs/export.rs:590
-#: crates/rnote-ui/src/dialogs/export.rs:877
+#: crates/rnote-ui/src/dialogs/export.rs:599
+#: crates/rnote-ui/src/dialogs/export.rs:890
 msgid "Jpeg"
 msgstr "联合图像标准（JPEG）"
 
@@ -414,7 +414,7 @@ msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "设置Jpeg图像的质量（1-100）"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:408
-#: crates/rnote-ui/src/dialogs/export.rs:854
+#: crates/rnote-ui/src/dialogs/export.rs:867
 msgid "Export Selection"
 msgstr "导出所选"
 
@@ -436,7 +436,7 @@ msgstr "导入 PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:15
 #: crates/rnote-ui/data/ui/dialogs/import.ui:210
-#: crates/rnote-ui/src/dialogs/import.rs:68
+#: crates/rnote-ui/src/dialogs/import.rs:75
 msgid "Import"
 msgstr "导入"
 
@@ -1090,29 +1090,33 @@ msgstr "使用触摸绘制 [_T]"
 msgid "Block Pinch to _Zoom"
 msgstr "禁用双指缩放 [_Z]"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:90
+#: crates/rnote-ui/data/ui/canvasmenu.ui:64
+msgid "Respect Borders When Pasting"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:95
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
 #: crates/rnote-ui/data/ui/shortcuts.ui:138
 #: crates/rnote-ui/data/ui/shortcuts.ui:144
 msgid "Zoom out"
 msgstr "缩小"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:99
+#: crates/rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset Zoom"
 msgstr "重置缩放"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:106
+#: crates/rnote-ui/data/ui/canvasmenu.ui:111
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
 #: crates/rnote-ui/data/ui/shortcuts.ui:120
 #: crates/rnote-ui/data/ui/shortcuts.ui:126
 msgid "Zoom in"
 msgstr "放大"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:118
+#: crates/rnote-ui/data/ui/canvasmenu.ui:123
 msgid "Zoom to Page Width"
 msgstr "缩放以适合页宽"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:133
+#: crates/rnote-ui/data/ui/canvasmenu.ui:138
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1120,7 +1124,7 @@ msgstr ""
 "移除页面。\n"
 "可选用固定大小的文档布局。"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:142
+#: crates/rnote-ui/data/ui/canvasmenu.ui:147
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1128,7 +1132,7 @@ msgstr ""
 "添加页面。\n"
 "可选用固定大小的文档布局。"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:151
+#: crates/rnote-ui/data/ui/canvasmenu.ui:156
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
@@ -1145,7 +1149,7 @@ msgid "Fill Color"
 msgstr "填充颜色"
 
 #: crates/rnote-ui/data/ui/filerow.ui:61
-#: crates/rnote-ui/src/dialogs/import.rs:26
+#: crates/rnote-ui/src/dialogs/import.rs:29
 msgid "Open"
 msgstr "打开"
 
@@ -1389,7 +1393,7 @@ msgstr "撤销"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:254
 #: crates/rnote-ui/data/ui/shortcuts.ui:158
-#: crates/rnote-ui/src/dialogs/mod.rs:631
+#: crates/rnote-ui/src/dialogs/mod.rs:620
 msgid "Document"
 msgstr "文档"
 
@@ -1671,7 +1675,7 @@ msgid "Open Document"
 msgstr "打开文档"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:173
-#: crates/rnote-ui/src/dialogs/export.rs:30
+#: crates/rnote-ui/src/dialogs/export.rs:34
 msgid "Save Document As"
 msgstr "另存文档为"
 
@@ -1692,7 +1696,7 @@ msgid "Print Document"
 msgstr "打印"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:209
-#: crates/rnote-ui/src/dialogs/import.rs:66
+#: crates/rnote-ui/src/dialogs/import.rs:73
 msgid "Import File"
 msgstr "导入文件"
 
@@ -1744,51 +1748,55 @@ msgstr "工作区目录操作"
 msgid "Create new Folder"
 msgstr "创建新文件夹"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:569
-#: crates/rnote-ui/src/appwindow/imp.rs:258
-#: crates/rnote-ui/src/dialogs/export.rs:70
-#: crates/rnote-ui/src/dialogs/mod.rs:127
-#: crates/rnote-ui/src/dialogs/mod.rs:258
-#: crates/rnote-ui/src/dialogs/mod.rs:412
+#: crates/rnote-ui/src/appwindow/actions.rs:573
+#: crates/rnote-ui/src/appwindow/imp.rs:276
+#: crates/rnote-ui/src/dialogs/export.rs:75
+#: crates/rnote-ui/src/dialogs/mod.rs:118
+#: crates/rnote-ui/src/dialogs/mod.rs:248
+#: crates/rnote-ui/src/dialogs/mod.rs:401
 msgid "Saving document failed"
 msgstr "文档保存失败"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:632
+#: crates/rnote-ui/src/appwindow/actions.rs:636
 msgid "Printing document failed"
 msgstr "打印失败"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:668
+#: crates/rnote-ui/src/appwindow/actions.rs:672
 msgid "Exporting selection failed, nothing selected"
 msgstr "导出选择内容失败，没有选择内容"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:281
+#: crates/rnote-ui/src/appwindow/imp.rs:229
+msgid "Saves are in progress"
+msgstr ""
+
+#: crates/rnote-ui/src/appwindow/imp.rs:299
 msgid "Button 1"
 msgstr "按钮1"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:288
+#: crates/rnote-ui/src/appwindow/imp.rs:306
 msgid "Button 2"
 msgstr "按钮2"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:295
+#: crates/rnote-ui/src/appwindow/imp.rs:313
 msgid "Button 3"
 msgstr "按钮3"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:302
+#: crates/rnote-ui/src/appwindow/imp.rs:320
 msgid "Button 4"
 msgstr "按钮4"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:126
+#: crates/rnote-ui/src/appwindow/mod.rs:131
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
 msgstr "未安装设置格式（Settings schema）。无法加载和保存应用程序设置。"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:488
+#: crates/rnote-ui/src/appwindow/mod.rs:510
 msgid "Opening file failed"
 msgstr "文件打开失败"
 
-#: crates/rnote-ui/src/canvas/mod.rs:846 crates/rnote-ui/src/dialogs/mod.rs:205
-#: crates/rnote-ui/src/dialogs/mod.rs:342
+#: crates/rnote-ui/src/canvas/mod.rs:846 crates/rnote-ui/src/dialogs/mod.rs:195
+#: crates/rnote-ui/src/dialogs/mod.rs:331
 msgid "- invalid file name -"
 msgstr "—— 无效文件名 ——"
 
@@ -1829,367 +1837,367 @@ msgstr "插入文本失败"
 msgid ".rnote"
 msgstr ".rnote"
 
-#: crates/rnote-ui/src/dialogs/export.rs:55
+#: crates/rnote-ui/src/dialogs/export.rs:60
 msgid "Saved document successfully"
 msgstr "文档保存成功"
 
-#: crates/rnote-ui/src/dialogs/export.rs:226
-#: crates/rnote-ui/src/dialogs/export.rs:239
-#: crates/rnote-ui/src/dialogs/export.rs:536
-#: crates/rnote-ui/src/dialogs/export.rs:804
+#: crates/rnote-ui/src/dialogs/export.rs:231
+#: crates/rnote-ui/src/dialogs/export.rs:244
+#: crates/rnote-ui/src/dialogs/export.rs:545
+#: crates/rnote-ui/src/dialogs/export.rs:817
 msgid "Exporting document failed"
 msgstr "导出文档失败"
 
-#: crates/rnote-ui/src/dialogs/export.rs:230
+#: crates/rnote-ui/src/dialogs/export.rs:235
 msgid "Exported document successfully"
 msgstr "导出文档成功"
 
-#: crates/rnote-ui/src/dialogs/export.rs:231
-#: crates/rnote-ui/src/dialogs/export.rs:532
-#: crates/rnote-ui/src/dialogs/export.rs:796
+#: crates/rnote-ui/src/dialogs/export.rs:236
+#: crates/rnote-ui/src/dialogs/export.rs:541
+#: crates/rnote-ui/src/dialogs/export.rs:809
 msgid "View in file manager"
 msgstr "在文件管理器中查看"
 
-#: crates/rnote-ui/src/dialogs/export.rs:245
-#: crates/rnote-ui/src/dialogs/export.rs:542
-#: crates/rnote-ui/src/dialogs/export.rs:810
+#: crates/rnote-ui/src/dialogs/export.rs:250
+#: crates/rnote-ui/src/dialogs/export.rs:551
+#: crates/rnote-ui/src/dialogs/export.rs:823
 msgid "Failed to open the file in the file manager"
 msgstr "无法打开在文件管理器中选择的文件"
 
-#: crates/rnote-ui/src/dialogs/export.rs:255
+#: crates/rnote-ui/src/dialogs/export.rs:260
 msgid "Exporting document failed, no file selected"
 msgstr "导出文件失败，没有选择文件"
 
-#: crates/rnote-ui/src/dialogs/export.rs:270
-#: crates/rnote-ui/src/dialogs/export.rs:567
-#: crates/rnote-ui/src/dialogs/export.rs:856
-#: crates/rnote-ui/src/dialogs/mod.rs:510
+#: crates/rnote-ui/src/dialogs/export.rs:275
+#: crates/rnote-ui/src/dialogs/export.rs:576
+#: crates/rnote-ui/src/dialogs/export.rs:869
+#: crates/rnote-ui/src/dialogs/mod.rs:499
 msgid "Select"
 msgstr "选择"
 
-#: crates/rnote-ui/src/dialogs/export.rs:527
+#: crates/rnote-ui/src/dialogs/export.rs:536
 msgid "Exporting document pages failed"
 msgstr "导出文档页面失败"
 
-#: crates/rnote-ui/src/dialogs/export.rs:531
+#: crates/rnote-ui/src/dialogs/export.rs:540
 msgid "Exported document pages successfully"
 msgstr "导出文档页面成功"
 
-#: crates/rnote-ui/src/dialogs/export.rs:551
+#: crates/rnote-ui/src/dialogs/export.rs:560
 msgid "Exporting document pages failed, no directory selected"
 msgstr "导出文档页面失败，没有选择目录"
 
-#: crates/rnote-ui/src/dialogs/export.rs:781
+#: crates/rnote-ui/src/dialogs/export.rs:794
 msgid "Exporting selection failed, no file selected"
 msgstr "导出选择内容失败，没有选择文件"
 
-#: crates/rnote-ui/src/dialogs/export.rs:791
+#: crates/rnote-ui/src/dialogs/export.rs:804
 msgid "Exporting selection failed"
 msgstr "导出选择内容失败"
 
-#: crates/rnote-ui/src/dialogs/export.rs:795
+#: crates/rnote-ui/src/dialogs/export.rs:808
 msgid "Exported selection successfully"
 msgstr "导出选择内容成功"
 
-#: crates/rnote-ui/src/dialogs/export.rs:897
-#: crates/rnote-ui/src/dialogs/export.rs:945
+#: crates/rnote-ui/src/dialogs/export.rs:914
+#: crates/rnote-ui/src/dialogs/export.rs:967
 msgid "Json"
 msgstr "JSON"
 
-#: crates/rnote-ui/src/dialogs/export.rs:905
+#: crates/rnote-ui/src/dialogs/export.rs:926
 msgid "Export Engine State"
 msgstr "导出引擎状态"
 
-#: crates/rnote-ui/src/dialogs/export.rs:923
+#: crates/rnote-ui/src/dialogs/export.rs:945
 msgid "Exporting engine state failed"
 msgstr "引擎状态导出失败"
 
-#: crates/rnote-ui/src/dialogs/export.rs:927
+#: crates/rnote-ui/src/dialogs/export.rs:949
 msgid "Exported engine state successfully"
 msgstr "引擎状态导出成功"
 
-#: crates/rnote-ui/src/dialogs/export.rs:953
+#: crates/rnote-ui/src/dialogs/export.rs:979
 msgid "Export Engine Config"
 msgstr "导出引擎配置"
 
-#: crates/rnote-ui/src/dialogs/export.rs:971
+#: crates/rnote-ui/src/dialogs/export.rs:998
 msgid "Exporting engine config failed"
 msgstr "引擎设置导出失败"
 
-#: crates/rnote-ui/src/dialogs/export.rs:975
+#: crates/rnote-ui/src/dialogs/export.rs:1002
 msgid "Exported engine config successfully"
 msgstr "引擎设置导出成功"
 
-#: crates/rnote-ui/src/dialogs/import.rs:24
+#: crates/rnote-ui/src/dialogs/import.rs:27
 msgid "Open File"
 msgstr "打开文件"
 
-#: crates/rnote-ui/src/dialogs/import.rs:63
+#: crates/rnote-ui/src/dialogs/import.rs:67
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
-#: crates/rnote-ui/src/dialogs/import.rs:212
+#: crates/rnote-ui/src/dialogs/import.rs:220
 msgid "- no file name -"
 msgstr "—— 没有文件名 ——"
 
-#: crates/rnote-ui/src/dialogs/import.rs:217
+#: crates/rnote-ui/src/dialogs/import.rs:225
 msgid "- no title -"
 msgstr "—— 无标题 ——"
 
-#: crates/rnote-ui/src/dialogs/import.rs:220
+#: crates/rnote-ui/src/dialogs/import.rs:228
 msgid "- no author -"
 msgstr "—— 无作者 ——"
 
-#: crates/rnote-ui/src/dialogs/import.rs:224
+#: crates/rnote-ui/src/dialogs/import.rs:232
 msgid "- no date -"
 msgstr "—— 无日期 ——"
 
-#: crates/rnote-ui/src/dialogs/import.rs:231
+#: crates/rnote-ui/src/dialogs/import.rs:239
 msgid "File name:"
 msgstr "文件名："
 
-#: crates/rnote-ui/src/dialogs/import.rs:235
+#: crates/rnote-ui/src/dialogs/import.rs:243
 msgid "Title:"
 msgstr "标题："
 
-#: crates/rnote-ui/src/dialogs/import.rs:239
+#: crates/rnote-ui/src/dialogs/import.rs:247
 msgid "Author:"
 msgstr "作者："
 
-#: crates/rnote-ui/src/dialogs/import.rs:243
+#: crates/rnote-ui/src/dialogs/import.rs:251
 msgid "Modification date:"
 msgstr "修改日期："
 
-#: crates/rnote-ui/src/dialogs/import.rs:247
+#: crates/rnote-ui/src/dialogs/import.rs:255
 msgid "Pages:"
 msgstr "页码："
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
-#: crates/rnote-ui/src/dialogs/mod.rs:47
+#: crates/rnote-ui/src/dialogs/mod.rs:40
 msgid "translator-credits"
 msgstr ""
 "Mr_Spade <Mr_Spade@foxmail.com>\n"
 "detiam <dehe_tian@outlook.com>"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:212
-#: crates/rnote-ui/src/dialogs/mod.rs:349
+#: crates/rnote-ui/src/dialogs/mod.rs:202
+#: crates/rnote-ui/src/dialogs/mod.rs:338
 msgid "- invalid save folder name -"
 msgstr "—— 无效保存文件夹名 ——"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:228
-#: crates/rnote-ui/src/dialogs/mod.rs:364
+#: crates/rnote-ui/src/dialogs/mod.rs:218
+#: crates/rnote-ui/src/dialogs/mod.rs:353
 msgid "The changes will be saved"
 msgstr "此更改将被保存"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:233
-#: crates/rnote-ui/src/dialogs/mod.rs:369
+#: crates/rnote-ui/src/dialogs/mod.rs:223
+#: crates/rnote-ui/src/dialogs/mod.rs:358
 msgid "A new file will be created"
 msgstr "新文件将被创建"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:508
+#: crates/rnote-ui/src/dialogs/mod.rs:497
 msgid "Change Workspace Directory"
 msgstr "更改工作区目录"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:618
+#: crates/rnote-ui/src/dialogs/mod.rs:607
 msgid "Band-Aid"
 msgstr "胶布"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:619
+#: crates/rnote-ui/src/dialogs/mod.rs:608
 msgid "Bank"
 msgstr "银行"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:620
+#: crates/rnote-ui/src/dialogs/mod.rs:609
 msgid "Bookmark"
 msgstr "书签"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:621
+#: crates/rnote-ui/src/dialogs/mod.rs:610
 msgid "Book"
 msgstr "书籍"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:622
+#: crates/rnote-ui/src/dialogs/mod.rs:611
 msgid "Bread"
 msgstr "面包"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:623
+#: crates/rnote-ui/src/dialogs/mod.rs:612
 msgid "Calendar"
 msgstr "日历"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:624
+#: crates/rnote-ui/src/dialogs/mod.rs:613
 msgid "Camera"
 msgstr "相机"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:625
+#: crates/rnote-ui/src/dialogs/mod.rs:614
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "芯片"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:626
+#: crates/rnote-ui/src/dialogs/mod.rs:615
 msgid "Clock"
 msgstr "时钟"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:627
+#: crates/rnote-ui/src/dialogs/mod.rs:616
 msgid "Code"
 msgstr "代码"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:628
+#: crates/rnote-ui/src/dialogs/mod.rs:617
 msgid "Compose"
 msgstr "作品"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:629
+#: crates/rnote-ui/src/dialogs/mod.rs:618
 msgctxt "as in plant"
 msgid "Crop"
 msgstr "作物"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:630
+#: crates/rnote-ui/src/dialogs/mod.rs:619
 msgid "Dictionary"
 msgstr "字典"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:632
+#: crates/rnote-ui/src/dialogs/mod.rs:621
 msgid "Drinks"
 msgstr "饮料"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:633
+#: crates/rnote-ui/src/dialogs/mod.rs:622
 msgid "Flag"
 msgstr "旗帜"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:634
+#: crates/rnote-ui/src/dialogs/mod.rs:623
 msgid "Folder"
 msgstr "文件夹"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:635
+#: crates/rnote-ui/src/dialogs/mod.rs:624
 msgid "Footprints"
 msgstr "足迹"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:636
+#: crates/rnote-ui/src/dialogs/mod.rs:625
 msgid "Gamepad"
 msgstr "手柄"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:637
+#: crates/rnote-ui/src/dialogs/mod.rs:626
 msgid "Gear"
 msgstr "齿轮"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:638
+#: crates/rnote-ui/src/dialogs/mod.rs:627
 msgid "Globe"
 msgstr "地球"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:639
+#: crates/rnote-ui/src/dialogs/mod.rs:628
 msgid "Hammer"
 msgstr "锤子"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:640
+#: crates/rnote-ui/src/dialogs/mod.rs:629
 msgid "Heart"
 msgstr "爱心"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:641
+#: crates/rnote-ui/src/dialogs/mod.rs:630
 msgid "Hourglass"
 msgstr "沙漏"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:642
+#: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "Key"
 msgstr "钥匙"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:643
+#: crates/rnote-ui/src/dialogs/mod.rs:632
 msgid "Language"
 msgstr "语言"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:644
+#: crates/rnote-ui/src/dialogs/mod.rs:633
 msgid "Library"
 msgstr "图书馆"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:645
+#: crates/rnote-ui/src/dialogs/mod.rs:634
 msgid "Lightbulb"
 msgstr "灯泡"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:646
+#: crates/rnote-ui/src/dialogs/mod.rs:635
 msgid "Mathematics"
 msgstr "数学"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:647
+#: crates/rnote-ui/src/dialogs/mod.rs:636
 msgid "Meeting"
 msgstr "会议"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:648
+#: crates/rnote-ui/src/dialogs/mod.rs:637
 msgid "Money"
 msgstr "钱"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:649
+#: crates/rnote-ui/src/dialogs/mod.rs:638
 msgid "Musical Note"
 msgstr "音符"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:650
+#: crates/rnote-ui/src/dialogs/mod.rs:639
 msgid "Nature"
 msgstr "自然"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:651
+#: crates/rnote-ui/src/dialogs/mod.rs:640
 msgid "Open Book"
 msgstr "打开的书籍"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:652
+#: crates/rnote-ui/src/dialogs/mod.rs:641
 msgid "Paintbrush"
 msgstr "画笔"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:653
+#: crates/rnote-ui/src/dialogs/mod.rs:642
 msgid "Pencil and Paper"
 msgstr "铅笔和纸"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:654
+#: crates/rnote-ui/src/dialogs/mod.rs:643
 msgid "People"
 msgstr "人们"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:655
+#: crates/rnote-ui/src/dialogs/mod.rs:644
 msgid "Person"
 msgstr "单人"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:656
+#: crates/rnote-ui/src/dialogs/mod.rs:645
 msgid "Projector"
 msgstr "投影仪"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:657
+#: crates/rnote-ui/src/dialogs/mod.rs:646
 msgid "Science"
 msgstr "科学"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:658
+#: crates/rnote-ui/src/dialogs/mod.rs:647
 msgid "Scratchpad"
 msgstr "便笺"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:659
+#: crates/rnote-ui/src/dialogs/mod.rs:648
 msgid "Shapes"
 msgstr "形状"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:660
+#: crates/rnote-ui/src/dialogs/mod.rs:649
 msgid "Shopping"
 msgstr "购物"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:661
+#: crates/rnote-ui/src/dialogs/mod.rs:650
 msgid "Speech Bubble"
 msgstr "会话框"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:662
+#: crates/rnote-ui/src/dialogs/mod.rs:651
 msgid "Speedometer"
 msgstr "里程计"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:663
+#: crates/rnote-ui/src/dialogs/mod.rs:652
 msgid "Star"
 msgstr "星星"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:665
+#: crates/rnote-ui/src/dialogs/mod.rs:654
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "终端"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:667
+#: crates/rnote-ui/src/dialogs/mod.rs:656
 msgid "Text"
 msgstr "文本"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:668
+#: crates/rnote-ui/src/dialogs/mod.rs:657
 msgid "Travel"
 msgstr "旅行"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:669
+#: crates/rnote-ui/src/dialogs/mod.rs:658
 msgid "Weather"
 msgstr "天气"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:670
+#: crates/rnote-ui/src/dialogs/mod.rs:659
 msgid "Weight"
 msgstr "权重"
 

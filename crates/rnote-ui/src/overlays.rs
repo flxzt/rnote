@@ -2,6 +2,7 @@
 use crate::canvaswrapper::RnCanvasWrapper;
 use crate::RnPensSideBar;
 use crate::{dialogs, RnAppWindow, RnColorPicker, RnPenPicker};
+use core::time::Duration;
 use gtk4::{
     gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Overlay,
     ProgressBar, ScrolledWindow, Widget,
@@ -84,7 +85,7 @@ mod imp {
 }
 
 /// The default timeout for regular text toasts.
-pub(crate) const TEXT_TOAST_TIMEOUT_DEFAULT: u32 = 5;
+pub(crate) const TEXT_TOAST_TIMEOUT_DEFAULT: Option<Duration> = Some(Duration::from_secs(5));
 
 glib::wrapper! {
     pub(crate) struct RnOverlays(ObjectSubclass<imp::RnOverlays>)
@@ -351,13 +352,13 @@ impl RnOverlays {
         text: &str,
         button_label: &str,
         button_callback: F,
-        timeout: u32,
+        timeout: Option<Duration>,
     ) -> adw::Toast {
         let toast = adw::Toast::builder()
             .title(text)
             .priority(adw::ToastPriority::High)
             .button_label(button_label)
-            .timeout(timeout)
+            .timeout(timeout.map(|t| t.as_secs() as u32).unwrap_or(0))
             .build();
         toast.connect_button_clicked(button_callback);
         self.toast_overlay().add_toast(toast.clone());
@@ -373,7 +374,7 @@ impl RnOverlays {
         text: &str,
         button_label: &str,
         button_callback: F,
-        timeout: u32,
+        timeout: Option<Duration>,
         singleton_toast: &mut Option<adw::Toast>,
     ) {
         if let Some(previous_toast) = singleton_toast {
@@ -383,11 +384,11 @@ impl RnOverlays {
             Some(self.dispatch_toast_w_button(text, button_label, button_callback, timeout));
     }
 
-    pub(crate) fn dispatch_toast_text(&self, text: &str, timeout: u32) -> adw::Toast {
+    pub(crate) fn dispatch_toast_text(&self, text: &str, timeout: Option<Duration>) -> adw::Toast {
         let toast = adw::Toast::builder()
             .title(text)
             .priority(adw::ToastPriority::High)
-            .timeout(timeout)
+            .timeout(timeout.map(|t| t.as_secs() as u32).unwrap_or(0))
             .build();
         self.toast_overlay().add_toast(toast.clone());
         toast
@@ -396,7 +397,7 @@ impl RnOverlays {
     pub(crate) fn dispatch_toast_text_singleton(
         &self,
         text: &str,
-        timeout: u32,
+        timeout: Option<Duration>,
         singleton_toast: &mut Option<adw::Toast>,
     ) {
         if let Some(previous_toast) = singleton_toast {

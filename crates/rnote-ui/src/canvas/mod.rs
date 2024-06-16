@@ -895,7 +895,7 @@ impl RnCanvas {
                                 }
                             }));
                         }),
-                        0,
+                        None,
                     &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
         };
 

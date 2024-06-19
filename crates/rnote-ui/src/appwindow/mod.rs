@@ -89,6 +89,16 @@ impl RnAppWindow {
         self.property::<bool>("respect-borders")
     }
 
+    #[allow(unused)]
+    pub(crate) fn lock_pen(&self) -> bool {
+        self.property::<bool>("lock-pen")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn lock_eraser(&self) -> bool {
+        self.property::<bool>("lock-eraser")
+    }
+
     pub(crate) fn app(&self) -> RnApp {
         self.application().unwrap().downcast::<RnApp>().unwrap()
     }

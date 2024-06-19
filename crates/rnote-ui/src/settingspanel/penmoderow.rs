@@ -130,11 +130,11 @@ impl RnPenModeRow {
         *self.imp().action.borrow()
     }
 
-    #[allow(unused)]
+    /*     #[allow(unused)]
     pub(crate) fn set_action(&self, action: ShortcutAction) {
         *self.imp().action.borrow_mut() = action;
         self.emit_by_name::<()>("action-changed", &[]);
-    }
+    } */
 
     pub(crate) fn pen_style(&self) -> PenStyle {
         PenStyle::try_from(self.selected()).unwrap()

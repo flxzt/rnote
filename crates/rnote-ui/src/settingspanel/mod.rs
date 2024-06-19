@@ -8,6 +8,7 @@ pub(crate) use penmoderow::RnPenModeRow;
 pub(crate) use penshortcutrow::RnPenShortcutRow;
 
 use rnote_compose::ext::Vector2Ext;
+use rnote_engine::pens::PenMode;
 
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
@@ -351,8 +352,11 @@ impl RnSettingsPanel {
         self.imp().general_inertial_scrolling_row.clone()
     }
 
-    pub(crate) fn lock_pen_switch(&self) -> gtk4::Switch {
-        self.imp().lock_pen_mode.imp().mode.clone()
+    pub(crate) fn set_lock_state(&self, pen_mode: PenMode, state: bool) {
+        match pen_mode {
+            PenMode::Pen => self.imp().lock_pen_mode.get().set_lock_state(state),
+            PenMode::Eraser => self.imp().lock_eraser_mode.get().set_lock_state(state),
+        }
     }
 
     pub(crate) fn document_layout(&self) -> Layout {

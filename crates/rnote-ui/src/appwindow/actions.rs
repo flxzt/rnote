@@ -343,7 +343,8 @@ impl RnAppWindow {
                         &gettext("Unlock"), //padlock symbol ? 
                         clone!(@weak canvas, @weak appwindow =>  move |_reload_toast | {
                                 canvas.engine_mut().penholder.pen_mode_state_mut().unlock_pen(active_pen);
-                                appwindow.sidebar().settings_panel().lock_pen_switch().set_state(false);
+                                appwindow.sidebar().settings_panel().set_lock_state(active_pen,false);
+                                appwindow.sidebar().settings_panel().refresh_ui(&appwindow.active_tab_wrapper());
                             }
                         )
                         , 2,

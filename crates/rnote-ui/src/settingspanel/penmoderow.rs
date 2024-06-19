@@ -77,11 +77,6 @@ mod imp {
                 row.emit_by_name::<()>("action-changed", &[]);
             });
 
-            // need to add the switch signal for the switch pen
-            self.mode.get().connect_active_notify(|_ev| {
-                println!("button pressed");
-            });
-
             obj.connect_local(
                 "action-changed",
                 false,
@@ -130,11 +125,11 @@ impl RnPenModeRow {
         *self.imp().action.borrow()
     }
 
-    /*     #[allow(unused)]
+    #[allow(unused)]
     pub(crate) fn set_action(&self, action: ShortcutAction) {
         *self.imp().action.borrow_mut() = action;
         self.emit_by_name::<()>("action-changed", &[]);
-    } */
+    }
 
     pub(crate) fn pen_style(&self) -> PenStyle {
         PenStyle::try_from(self.selected()).unwrap()
@@ -142,6 +137,11 @@ impl RnPenModeRow {
 
     pub(crate) fn set_pen_style(&self, style: PenStyle) {
         self.set_selected(style.to_u32().unwrap())
+    }
+
+    pub(crate) fn set_lock_state(&self, state: bool) {
+        self.imp().mode.get().set_state(state);
+        self.imp().mode.get().set_active(state);
     }
 
     fn update_ui(&self) {

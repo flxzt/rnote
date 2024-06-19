@@ -374,6 +374,7 @@ impl RnSettingsPanel {
         self.refresh_format_ui(active_tab);
         self.refresh_doc_ui(active_tab);
         self.refresh_shortcuts_ui(active_tab);
+        self.refresh_locks_ui(active_tab);
     }
 
     fn refresh_general_ui(&self, active_tab: &RnCanvasWrapper) {
@@ -466,6 +467,27 @@ impl RnSettingsPanel {
                     imp.penshortcut_drawing_pad_button_3.set_action(action);
                 }
             });
+    }
+
+    fn refresh_locks_ui(&self, active_tab: &RnCanvasWrapper) {
+        let imp = self.imp();
+        let canvas = active_tab.canvas();
+
+        imp.lock_pen_mode.set_action(
+            canvas
+                .engine_ref()
+                .penholder
+                .pen_mode_state()
+                .get_style(PenMode::Pen),
+        );
+
+        imp.lock_eraser_mode.set_action(
+            canvas
+                .engine_ref()
+                .penholder
+                .pen_mode_state()
+                .get_style(PenMode::Eraser),
+        );
     }
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
@@ -881,6 +903,22 @@ impl RnSettingsPanel {
         imp.penshortcut_drawing_pad_button_3.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_3, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_drawing_pad_button_3.action();
             appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton3, action);
+            None
+        }));
+
+        let lock_pen = imp.lock_pen_mode.get();
+        let lock_eraser = imp.lock_eraser_mode.get();
+
+        imp.lock_pen_mode.connect_local("action-changed",false, clone!(@weak lock_pen, @weak appwindow => @default-return None, move |_values| {
+            let action = lock_pen.action();
+            // BorrowMut with this ...
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.pen_mode_state_mut().set_style_single_mode(PenMode::Pen, action);
+            None
+        }));
+
+        imp.lock_eraser_mode.connect_local("action-changed",false, clone!(@weak lock_pen, @weak appwindow => @default-return None, move |_values| {
+            let action = lock_eraser.action();
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.pen_mode_state_mut().set_style_single_mode(PenMode::Eraser, action);
             None
         }));
     }

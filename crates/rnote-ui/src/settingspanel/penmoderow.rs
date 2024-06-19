@@ -6,8 +6,6 @@ use adw::{prelude::*, subclass::prelude::*};
 use gtk4::{glib, glib::clone, glib::subclass::*, CompositeTemplate};
 use num_traits::ToPrimitive;
 use once_cell::sync::Lazy;
-use rnote_engine::pens::shortcuts::ShortcutAction;
-use rnote_engine::pens::shortcuts::ShortcutMode;
 use rnote_engine::pens::PenStyle;
 use std::cell::RefCell;
 
@@ -17,7 +15,7 @@ mod imp {
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penmoderow.ui")]
     pub(crate) struct RnPenModeRow {
-        pub(crate) action: RefCell<ShortcutAction>,
+        pub(crate) action: RefCell<PenStyle>,
         pub(crate) changepenstyle_model: ChangePenStyleListModel,
 
         #[template_child]
@@ -27,10 +25,7 @@ mod imp {
     impl Default for RnPenModeRow {
         fn default() -> Self {
             Self {
-                action: RefCell::new(ShortcutAction::ChangePenStyle {
-                    style: PenStyle::Eraser,
-                    mode: ShortcutMode::Temporary,
-                }),
+                action: RefCell::new(PenStyle::Eraser),
                 changepenstyle_model: ChangePenStyleListModel::default(),
 
                 mode: TemplateChild::default(),
@@ -70,10 +65,11 @@ mod imp {
                 let new_pen_style = row.pen_style();
 
                 match &mut *row.imp().action.borrow_mut() {
-                    ShortcutAction::ChangePenStyle { style, .. } => {
-                        *style = new_pen_style;
+                    current_style => {
+                        *current_style = new_pen_style;
                     }
                 }
+
                 row.emit_by_name::<()>("action-changed", &[]);
             });
 
@@ -121,12 +117,12 @@ impl RnPenModeRow {
     }
 
     #[allow(unused)]
-    pub(crate) fn action(&self) -> ShortcutAction {
+    pub(crate) fn action(&self) -> PenStyle {
         *self.imp().action.borrow()
     }
 
     #[allow(unused)]
-    pub(crate) fn set_action(&self, action: ShortcutAction) {
+    pub(crate) fn set_action(&self, action: PenStyle) {
         *self.imp().action.borrow_mut() = action;
         self.emit_by_name::<()>("action-changed", &[]);
     }
@@ -146,8 +142,7 @@ impl RnPenModeRow {
 
     fn update_ui(&self) {
         match self.action() {
-            // either need a new action or something else
-            ShortcutAction::ChangePenStyle { style, mode: _mode } => {
+            style => {
                 self.set_pen_style(style);
             }
         }

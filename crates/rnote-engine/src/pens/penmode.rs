@@ -1,4 +1,5 @@
 use crate::CloneConfig;
+use std::cell::RefCell;
 
 // Imports
 use super::PenStyle;
@@ -62,8 +63,8 @@ impl CloneConfig for PenModeState {
             pen_mode: self.pen_mode,
             penmode_pen_style: self.penmode_pen_style,
             penmode_eraser_style: self.penmode_eraser_style,
-            penmode_pen_lock: self.penmode_pen_lock,
-            penmode_eraser_lock: self.penmode_eraser_lock,
+            penmode_pen_lock: self.penmode_pen_lock.clone(),
+            penmode_eraser_lock: self.penmode_eraser_lock.clone(),
             ..Default::default()
         }
     }
@@ -111,6 +112,20 @@ impl PenModeState {
         match self.pen_mode {
             PenMode::Pen => self.penmode_pen_style,
             PenMode::Eraser => self.penmode_eraser_style,
+        }
+    }
+
+    pub fn get_style(&self, penmode: PenMode) -> PenStyle {
+        match penmode {
+            PenMode::Pen => self.penmode_pen_style,
+            PenMode::Eraser => self.penmode_eraser_style,
+        }
+    }
+
+    pub fn set_style_single_mode(&mut self, mode: PenMode, style: PenStyle) {
+        match mode {
+            PenMode::Pen => self.penmode_pen_style = style,
+            PenMode::Eraser => self.penmode_eraser_style = style,
         }
     }
 

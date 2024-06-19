@@ -162,7 +162,7 @@ impl ObjectImpl for RnAppWindow {
             "touch-drawing" => self.touch_drawing.get().to_value(),
             "focus-mode" => self.focus_mode.get().to_value(),
             "lock-pen" => self.lock_pen.get().to_value(),
-            "eraser-pen" => self.lock_eraser.get().to_value(),
+            "lock-eraser" => self.lock_eraser.get().to_value(),
             _ => unimplemented!(),
         }
     }

@@ -341,8 +341,9 @@ impl RnAppWindow {
                         appwindow.overlays().dispatch_toast_w_button_singleton(
                         &gettext("Tool Locked"), 
                         &gettext("Unlock"), //padlock symbol ? 
-                        clone!(@weak canvas =>  move |_reload_toast | {
+                        clone!(@weak canvas, @weak appwindow =>  move |_reload_toast | {
                                 canvas.engine_mut().penholder.pen_mode_state_mut().unlock_pen(active_pen);
+                                appwindow.sidebar().settings_panel().lock_pen_switch().set_state(false);
                             }
                         )
                         , 2,

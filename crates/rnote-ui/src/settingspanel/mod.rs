@@ -351,6 +351,10 @@ impl RnSettingsPanel {
         self.imp().general_inertial_scrolling_row.clone()
     }
 
+    pub(crate) fn lock_pen_switch(&self) -> gtk4::Switch {
+        self.imp().lock_pen_mode.imp().mode.clone()
+    }
+
     pub(crate) fn document_layout(&self) -> Layout {
         Layout::try_from(self.imp().doc_document_layout_row.get().selected()).unwrap()
     }
@@ -592,6 +596,18 @@ impl RnSettingsPanel {
             .bidirectional()
             .build();
 
+        imp.lock_pen_mode.imp().mode.connect_active_notify(
+            clone!(@weak appwindow => move |switch| {
+                appwindow
+                    .active_tab_wrapper()
+                    .canvas()
+                    .engine_mut()
+                    .penholder
+                    .pen_mode_state_mut()
+                    .set_lock(rnote_engine::pens::PenMode::Pen,switch.is_active());
+            }),
+        );
+
         // lock eraser
         imp.lock_eraser_mode
             .imp()
@@ -600,6 +616,18 @@ impl RnSettingsPanel {
             .sync_create()
             .bidirectional()
             .build();
+
+        imp.lock_eraser_mode.imp().mode.connect_active_notify(
+            clone!(@weak appwindow => move |switch| {
+                appwindow
+                    .active_tab_wrapper()
+                    .canvas()
+                    .engine_mut()
+                    .penholder
+                    .pen_mode_state_mut()
+                    .set_lock(rnote_engine::pens::PenMode::Pen,switch.is_active());
+            }),
+        );
     }
 
     fn setup_format(&self, appwindow: &RnAppWindow) {

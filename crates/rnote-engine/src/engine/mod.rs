@@ -525,6 +525,22 @@ impl Engine {
         )
     }
 
+    /// Change the pen or earser style.
+    pub fn change_pen_eraser_style(&mut self, mode: PenMode, new_style: PenStyle) -> WidgetFlags {
+        self.penholder.change_style_single_mode(
+            mode,
+            new_style,
+            &mut EngineViewMut {
+                tasks_tx: self.engine_tasks_tx(),
+                pens_config: &mut self.pens_config,
+                document: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            },
+        )
+    }
+
     /// Change the pen style (temporary) override.
     pub fn change_pen_style_override(
         &mut self,

@@ -651,7 +651,7 @@ impl RnSettingsPanel {
                     .engine_mut()
                     .penholder
                     .pen_mode_state_mut()
-                    .set_lock(rnote_engine::pens::PenMode::Pen,switch.is_active());
+                    .set_lock(rnote_engine::pens::PenMode::Eraser,switch.is_active());
             }),
         );
     }
@@ -909,17 +909,23 @@ impl RnSettingsPanel {
         let lock_pen = imp.lock_pen_mode.get();
         let lock_eraser = imp.lock_eraser_mode.get();
 
-        imp.lock_pen_mode.connect_local("action-changed",false, clone!(@weak lock_pen, @weak appwindow => @default-return None, move |_values| {
-            let action = lock_pen.action();
-            // BorrowMut with this ...
-            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.pen_mode_state_mut().set_style_single_mode(PenMode::Pen, action);
-            None
-        }));
+        imp.lock_pen_mode.connect_local(
+            "action-changed",
+            false,
+            clone!(@weak lock_pen, @weak appwindow => @default-return None, move |_values| {
+                let action = lock_pen.action();
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-styles", Some(&("pen",action.to_string()).to_variant()));
+                None
+            }),
+        );
 
-        imp.lock_eraser_mode.connect_local("action-changed",false, clone!(@weak lock_pen, @weak appwindow => @default-return None, move |_values| {
-            let action = lock_eraser.action();
-            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.pen_mode_state_mut().set_style_single_mode(PenMode::Eraser, action);
-            None
+        imp.lock_eraser_mode.connect_local(
+            "action-changed",
+            false,
+             clone!(@weak lock_eraser, @weak appwindow => @default-return None, move |_values| {
+                let action = lock_eraser.action();
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-styles", Some(&("eraser",action.to_string()).to_variant()));
+                None
         }));
     }
 

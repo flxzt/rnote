@@ -167,6 +167,21 @@ impl PenHolder {
         widget_flags
     }
 
+    /// Change the pen or eraser style.
+    pub fn change_style_single_mode(
+        &mut self,
+        mode: PenMode,
+        new_style: PenStyle,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let widget_flags = self.change_style_pen_eraser_int(new_style, mode, engine_view);
+        // When the style is changed externally, the toggle mode / internal states are reset
+        self.toggle_pen_style = None;
+        self.prev_shortcut_key = None;
+
+        widget_flags
+    }
+
     /// Change the style override.
     pub fn change_style_override(
         &mut self,
@@ -350,6 +365,29 @@ impl PenHolder {
             engine_view.store.set_selected_keys(&all_strokes, false);
 
             self.pen_mode_state.set_style(new_style);
+            widget_flags |= self.reinstall_pen_current_style(engine_view);
+            widget_flags.refresh_ui = true;
+        }
+
+        widget_flags
+    }
+
+    /// Internal method for changing the pen/eraser style, without some of the side effects that are happening in the public
+    /// method.
+    fn change_style_pen_eraser_int(
+        &mut self,
+        new_style: PenStyle,
+        mode: PenMode,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if self.pen_mode_state.get_style(mode) != new_style {
+            // Deselecting when changing the style
+            let all_strokes = engine_view.store.selection_keys_as_rendered();
+            engine_view.store.set_selected_keys(&all_strokes, false);
+
+            self.pen_mode_state.set_style_single_mode(mode, new_style);
             widget_flags |= self.reinstall_pen_current_style(engine_view);
             widget_flags.refresh_ui = true;
         }

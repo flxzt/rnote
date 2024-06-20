@@ -1,5 +1,4 @@
 use crate::CloneConfig;
-use std::cell::RefCell;
 
 // Imports
 use super::PenStyle;

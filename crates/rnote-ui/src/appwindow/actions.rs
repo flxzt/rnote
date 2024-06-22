@@ -16,6 +16,7 @@ use rnote_engine::strokes::resize::{ImageSizeOption, Resize};
 use rnote_engine::{Camera, Engine};
 use std::path::PathBuf;
 use std::str::FromStr;
+use std::time::Duration;
 use std::time::Instant;
 
 const CLIPBOARD_INPUT_STREAM_BUFSIZE: usize = 4096;
@@ -352,8 +353,8 @@ impl RnAppWindow {
                                 appwindow.sidebar().settings_panel().set_lock_state(active_pen,false);
                                 appwindow.sidebar().settings_panel().refresh_ui(&appwindow.active_tab_wrapper());
                             }
-                        )
-                        , 2,
+                        ),
+                        Some(Duration::from_secs(2)),
                         &mut None);
                         // refresh the ui
                         appwindow.refresh_ui_from_engine(&appwindow.active_tab_wrapper());

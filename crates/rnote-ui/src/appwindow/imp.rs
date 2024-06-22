@@ -1,4 +1,5 @@
 // Imports
+use crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT;
 use crate::{config, dialogs, RnMainHeader, RnOverlays, RnSidebar};
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
@@ -242,17 +243,23 @@ impl ObjectImpl for RnAppWindow {
 impl WidgetImpl for RnAppWindow {}
 
 impl WindowImpl for RnAppWindow {
-    // Save window state right before the window will be closed
     fn close_request(&self) -> glib::Propagation {
         let obj = self.obj().to_owned();
 
-        // Save current doc
-        if obj.tabs_any_unsaved_changes() {
-            glib::spawn_future_local(clone!(@weak obj as appwindow => async move {
-                dialogs::dialog_close_window(&obj).await;
-            }));
+        if obj.tabs_any_saves_in_progress() {
+            obj.overlays().dispatch_toast_text(
+                &gettext("Saves are in progress"),
+                TEXT_TOAST_TIMEOUT_DEFAULT,
+            );
         } else {
-            obj.close_force();
+            // Save current doc
+            if obj.tabs_any_unsaved_changes() {
+                glib::spawn_future_local(clone!(@weak obj as appwindow => async move {
+                    dialogs::dialog_close_window(&obj).await;
+                }));
+            } else {
+                obj.close_force();
+            }
         }
 
         // Inhibit (Overwrite) the default handler. This handler is then responsible for destroying the window.

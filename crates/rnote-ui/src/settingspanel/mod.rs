@@ -606,7 +606,7 @@ impl RnSettingsPanel {
                 if !row.is_active() {
                     appwindow.overlays().dispatch_toast_text_singleton(
                         &gettext("Application restart is required"),
-                        0,
+                        None,
                         &mut settingspanel.imp().app_restart_toast_singleton.borrow_mut()
                     );
                 }

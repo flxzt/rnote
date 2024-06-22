@@ -8,7 +8,7 @@ name: Generate Dist Archive
 jobs:
   dist:
     runs-on: ubuntu-22.04
-    container: fedora:39
+    container: fedora:40
     permissions:
       contents: write # needed for uploading release artifact
     steps:

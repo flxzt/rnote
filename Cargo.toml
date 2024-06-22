@@ -20,7 +20,7 @@ version = "0.10.2"
 rnote-compose = { version = "0.10.2", path = "crates/rnote-compose" }
 rnote-engine = { version = "0.10.2", path = "crates/rnote-engine" }
 
-adw = { version = "0.6.0", package = "libadwaita", features = ["v1_4"] }
+adw = { version = "0.6.0", package = "libadwaita", features = ["v1_5"] }
 anyhow = "1.0"
 approx = "0.5.1"
 async-fs = "2.1"

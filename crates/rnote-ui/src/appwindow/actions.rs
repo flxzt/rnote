@@ -358,7 +358,7 @@ impl RnAppWindow {
                         // refresh the ui
                         appwindow.refresh_ui_from_engine(&appwindow.active_tab_wrapper());
                 } else {
-                    let mut widget_flags = canvas.engine_mut().change_pen_style(pen_style);
+                    let mut widget_flags = canvas.engine_mut().change_pen_style(pen_style, Some(active_pen));
                     widget_flags |= canvas.engine_mut().change_pen_style_override(None);
                     appwindow.handle_widget_flags(widget_flags, &canvas);
                     action.set_state(&pen_style_str.to_variant());
@@ -393,7 +393,7 @@ impl RnAppWindow {
                 // This prevents circular calls between the settings panel and the canvas
                 let current_pen = canvas.engine_ref().penholder.pen_mode_state().get_style(pen_mode);
                 if current_pen != pen_style {
-                    let mut widget_flags = canvas.engine_mut().change_pen_eraser_style(pen_mode,pen_style);
+                    let mut widget_flags = canvas.engine_mut().change_pen_style(pen_style,Some(pen_mode));
                     widget_flags |= canvas.engine_mut().change_pen_style_override(None);
                     appwindow.handle_widget_flags(widget_flags, &canvas);
                 }

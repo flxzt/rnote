@@ -121,15 +121,8 @@ impl PenModeState {
         }
     }
 
-    pub fn set_style_single_mode(&mut self, mode: PenMode, style: PenStyle) {
-        match mode {
-            PenMode::Pen => self.penmode_pen_style = style,
-            PenMode::Eraser => self.penmode_eraser_style = style,
-        }
-    }
-
-    pub fn set_style(&mut self, style: PenStyle) {
-        match self.pen_mode {
+    pub fn set_style(&mut self, style: PenStyle, mode: Option<PenMode>) {
+        match mode.unwrap_or(self.pen_mode) {
             PenMode::Pen => self.penmode_pen_style = style,
             PenMode::Eraser => self.penmode_eraser_style = style,
         }

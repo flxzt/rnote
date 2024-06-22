@@ -527,10 +527,9 @@ on a drawing pad</property>
                       <object class="RnPenModeRow" id="lock_pen_mode">
                         <property name="title" translatable="yes">Tool for the pen action</property>
                         <property name="subtitle" translatable="yes">Set/lock the action for the pen</property>
-                        <!-- need to add an image for the pen -->
                         <child type="prefix">
                           <object class="GtkImage">
-                            <property name="icon_name">drawing-pad-button-4-symbolic</property>
+                            <property name="icon_name">stylus-pen-symbolic</property>
                             <property name="icon-size">large</property>
                           </object>
                         </child>
@@ -538,13 +537,11 @@ on a drawing pad</property>
                     </child>
                     <child>
                       <object class="RnPenModeRow" id="lock_eraser_mode">
-                        <!-- need to add the id -->
                         <property name="title" translatable="yes">Tool for the eraser action</property>
                         <property name="subtitle" translatable="yes">Set/lock the action for the pen</property>
-                        <!-- need to add an image for the eraser -->
                         <child type="prefix">
                           <object class="GtkImage">
-                            <property name="icon_name">drawing-pad-button-4-symbolic</property>
+                            <property name="icon_name">stylus-button-eraser-symbolic</property>
                             <property name="icon-size">large</property>
                           </object>
                         </child>

@@ -62,8 +62,8 @@ impl CloneConfig for PenModeState {
             pen_mode: self.pen_mode,
             penmode_pen_style: self.penmode_pen_style,
             penmode_eraser_style: self.penmode_eraser_style,
-            penmode_pen_lock: self.penmode_pen_lock.clone(),
-            penmode_eraser_lock: self.penmode_eraser_lock.clone(),
+            penmode_pen_lock: self.penmode_pen_lock,
+            penmode_eraser_lock: self.penmode_eraser_lock,
             ..Default::default()
         }
     }

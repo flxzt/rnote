@@ -64,10 +64,9 @@ mod imp {
             obj.connect_selected_item_notify(move |row| {
                 let new_pen_style = row.pen_style();
 
-                match &mut *row.imp().action.borrow_mut() {
-                    current_style => {
-                        *current_style = new_pen_style;
-                    }
+                let current_style = &mut *row.imp().action.borrow_mut();
+                {
+                    *current_style = new_pen_style;
                 }
 
                 row.emit_by_name::<()>("action-changed", &[]);
@@ -141,10 +140,9 @@ impl RnPenModeRow {
     }
 
     fn update_ui(&self) {
-        match self.action() {
-            style => {
-                self.set_pen_style(style);
-            }
+        let style = self.action();
+        {
+            self.set_pen_style(style);
         }
     }
 }

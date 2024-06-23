@@ -72,6 +72,10 @@ impl RnMainHeader {
         glib::Object::new()
     }
 
+    pub(crate) fn headerbar(&self) -> adw::HeaderBar {
+        self.imp().headerbar.get()
+    }
+
     pub(crate) fn main_title(&self) -> adw::WindowTitle {
         self.imp().main_title.get()
     }

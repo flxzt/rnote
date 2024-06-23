@@ -35,6 +35,16 @@ impl RnAppWindow {
     }
 
     #[allow(unused)]
+    pub(crate) fn save_in_progress(&self) -> bool {
+        self.property::<bool>("save-in-progress")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_save_in_progress(&self, save_in_progress: bool) {
+        self.set_property("save-in-progress", save_in_progress.to_value());
+    }
+
+    #[allow(unused)]
     pub(crate) fn autosave(&self) -> bool {
         self.property::<bool>("autosave")
     }

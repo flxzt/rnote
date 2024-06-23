@@ -38,6 +38,7 @@ struct Connections {
     tab_page_unsaved_changes: Option<glib::Binding>,
     appwindow_output_file: Option<glib::SignalHandlerId>,
     appwindow_scalefactor: Option<glib::SignalHandlerId>,
+    appwindow_save_in_progress: Option<glib::SignalHandlerId>,
     appwindow_unsaved_changes: Option<glib::SignalHandlerId>,
     appwindow_touch_drawing: Option<glib::Binding>,
     appwindow_show_drawing_cursor: Option<glib::Binding>,
@@ -253,6 +254,9 @@ mod imp {
                 vec![
                     // this is nullable, so it can be used to represent Option<gio::File>
                     glib::ParamSpecObject::builder::<gio::File>("output-file").build(),
+                    glib::ParamSpecBoolean::builder("save-in-progress")
+                        .default_value(false)
+                        .build(),
                     glib::ParamSpecBoolean::builder("unsaved-changes")
                         .default_value(false)
                         .build(),
@@ -284,6 +288,7 @@ mod imp {
         fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "output-file" => self.output_file.borrow().to_value(),
+                "save-in-progress" => self.save_in_progress.get().to_value(),
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
                 "empty" => self.empty.get().to_value(),
                 "hadjustment" => self.hadjustment.borrow().to_value(),
@@ -307,6 +312,11 @@ mod imp {
                         .get::<Option<gio::File>>()
                         .expect("The value needs to be of type `Option<gio::File>`");
                     self.output_file.replace(output_file);
+                }
+                "save-in-progress" => {
+                    let save_in_progress: bool =
+                        value.get().expect("The value needs to be of type `bool`");
+                    self.save_in_progress.replace(save_in_progress);
                 }
                 "unsaved-changes" => {
                     let unsaved_changes: bool =
@@ -633,12 +643,14 @@ impl RnCanvas {
 
     #[allow(unused)]
     pub(crate) fn save_in_progress(&self) -> bool {
-        self.imp().save_in_progress.get()
+        self.property::<bool>("save-in-progress")
     }
 
     #[allow(unused)]
     pub(crate) fn set_save_in_progress(&self, save_in_progress: bool) {
-        self.imp().save_in_progress.set(save_in_progress);
+        if self.imp().save_in_progress.get() != save_in_progress {
+            self.set_property("save-in-progress", save_in_progress.to_value());
+        }
     }
 
     #[allow(unused)]
@@ -1082,10 +1094,22 @@ impl RnCanvas {
                 canvas.emit_handle_widget_flags(widget_flags);
             });
 
+        // Reset
+        let appwindow_save_in_progress = self.connect_notify_local(
+            Some("save-in-progress"),
+            clone!(@weak appwindow => move |canvas, _| {
+                if canvas.save_in_progress() {
+                    appwindow.set_save_in_progress(true);
+                } else if !appwindow.tabs_any_saves_in_progress() {
+                    appwindow.set_save_in_progress(false);
+                }
+            }),
+        );
+
         // Update titles when there are changes
         let appwindow_unsaved_changes = self.connect_notify_local(
             Some("unsaved-changes"),
-            clone!(@weak appwindow => move |_canvas, _pspec| {
+            clone!(@weak appwindow => move |_, _| {
                 appwindow.refresh_titles(&appwindow.active_tab_wrapper());
             }),
         );
@@ -1189,6 +1213,12 @@ impl RnCanvas {
             self.disconnect(old);
         }
         if let Some(old) = connections
+            .appwindow_save_in_progress
+            .replace(appwindow_save_in_progress)
+        {
+            self.disconnect(old);
+        }
+        if let Some(old) = connections
             .appwindow_unsaved_changes
             .replace(appwindow_unsaved_changes)
         {
@@ -1243,6 +1273,9 @@ impl RnCanvas {
             self.disconnect(old);
         }
         if let Some(old) = connections.appwindow_scalefactor.take() {
+            self.disconnect(old);
+        }
+        if let Some(old) = connections.appwindow_save_in_progress.take() {
             self.disconnect(old);
         }
         if let Some(old) = connections.appwindow_unsaved_changes.take() {

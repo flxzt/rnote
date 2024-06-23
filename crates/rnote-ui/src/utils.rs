@@ -140,8 +140,6 @@ pub(crate) fn color_to_hsv_label_string(color: Color) -> String {
     let saturation = palette_color.saturation;
     let value = palette_color.value;
 
-    tracing::debug!("color: alpha: {alpha}, hue: {hue}, saturation: {saturation}, value: {value}");
-
     // Since the color might come from gdk which only has f32 precision, let's use f32's epsilon
     let min_saturated =
         approx::relative_eq!(saturation, 0.0, epsilon = f32::EPSILON as f64) || saturation <= 0.0;

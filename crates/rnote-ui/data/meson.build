@@ -41,7 +41,7 @@ gschema_conf = configuration_data()
 gschema_conf.set('APP_ID', app_id)
 gschema_conf.set('APP_IDPATH', app_idpath)
 gschema_conf.set('APP_NAME', app_name)
-gschema_file = configure_file(
+configure_file(
     input: 'app.gschema.xml.in',
     output: app_id + '.gschema.xml',
     configuration: gschema_conf,

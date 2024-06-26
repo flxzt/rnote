@@ -20,7 +20,7 @@ global_conf.set_quoted('DATADIR', datadir)
 global_conf.set_quoted('LIBDIR', libdir)
 global_conf.set_quoted('LOCALEDIR', localedir)
 
-config = configure_file(
+configure_file(
     input: 'config.rs.in',
     output: 'config.rs',
     configuration: global_conf,

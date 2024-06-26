@@ -10,7 +10,6 @@ patch = ''
 # Modules
 i18n = import('i18n')
 gnome = import('gnome')
-fs = import('fs')
 
 # Options
 prefix = get_option('prefix')
@@ -73,13 +72,13 @@ dependency('cairo', version: '>= 1.18')
 
 cargo = find_program('cargo', required: true)
 # cmake is needed by the "ink-stroke-modeler-rs" bindings crate to build the C++ library
-cmake = find_program('cmake', required: true)
-glib_compile_resources = find_program('glib-compile-resources', required: true)
+find_program('cmake', required: true)
+find_program('glib-compile-resources', required: true)
 glib_compile_schemas = find_program('glib-compile-schemas', required: true)
 desktop_file_validate = find_program('desktop-file-validate', required: false)
 appstream_util = find_program('appstream-util', required: false)
-fc_cache = find_program('fc-cache', required: false)
-update_mime_database = find_program('update-mime-database', required: false)
+find_program('fc-cache', required: false)
+find_program('update-mime-database', required: false)
 cargo_build_script = find_program('build-aux/cargo_build.py', required: true)
 inno_build_script = find_program('build-aux/inno_build.py', required: true)
 

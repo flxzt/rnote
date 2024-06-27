@@ -16,7 +16,14 @@ use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
 /// Opens a new rnote save file in a new tab
 pub(crate) async fn filedialog_open_doc(appwindow: &RnAppWindow) {
     let filter = FileFilter::new();
-    filter.add_mime_type("application/rnote");
+    // note : mimetypes are not supported with the native file picker on windows
+    // See the limitations on FileChooserNative
+    // https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/struct.FileChooserNative.html#win32-details--gtkfilechooserdialognative-win32
+    if cfg!(target_os = "windows") {
+        filter.add_pattern("*.rnote");
+    } else {
+        filter.add_mime_type("application/rnote");
+    }
     filter.add_suffix("rnote");
     filter.set_name(Some(&gettext(".rnote")));
 
@@ -51,12 +58,24 @@ pub(crate) async fn filedialog_open_doc(appwindow: &RnAppWindow) {
 
 pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
     let filter = FileFilter::new();
-    filter.add_mime_type("application/x-xopp");
-    filter.add_mime_type("application/pdf");
-    filter.add_mime_type("image/svg+xml");
-    filter.add_mime_type("image/png");
-    filter.add_mime_type("image/jpeg");
-    filter.add_mime_type("text/plain");
+    // note : mimetypes are not supported with the native file picker on windows
+    // See the limitations on FileChooserNative
+    // https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/struct.FileChooserNative.html#win32-details--gtkfilechooserdialognative-win32
+    if cfg!(target_os = "windows") {
+        filter.add_pattern("*.xopp");
+        filter.add_pattern("*.pdf");
+        filter.add_pattern("*.svg");
+        filter.add_pattern("*.png");
+        filter.add_pattern("*.jpeg");
+        filter.add_pattern("*.txt");
+    } else {
+        filter.add_mime_type("application/x-xopp");
+        filter.add_mime_type("application/pdf");
+        filter.add_mime_type("image/svg+xml");
+        filter.add_mime_type("image/png");
+        filter.add_mime_type("image/jpeg");
+        filter.add_mime_type("text/plain");
+    }
     filter.add_suffix("xopp");
     filter.add_suffix("pdf");
     filter.add_suffix("svg");

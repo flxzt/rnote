@@ -386,7 +386,7 @@ impl Engine {
         self.store.set_selected_keys(&all_strokes, false);
 
         if select {
-            widget_flags |= self.change_pen_style(PenStyle::Selector);
+            widget_flags |= self.change_pen_style(PenStyle::Selector, None);
         }
 
         if adjust_document {
@@ -426,7 +426,7 @@ impl Engine {
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
 
-        widget_flags |= self.change_pen_style(PenStyle::Typewriter);
+        widget_flags |= self.change_pen_style(PenStyle::Typewriter, None);
 
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
             widget_flags |= typewriter.insert_text(
@@ -463,7 +463,7 @@ impl Engine {
         // even though changing the pen style deselects too, but only when the pen is actually different.
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
-        widget_flags |= self.change_pen_style(PenStyle::Selector);
+        widget_flags |= self.change_pen_style(PenStyle::Selector, None);
 
         // calculate ratio
         let ratio = match resize {

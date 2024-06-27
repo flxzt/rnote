@@ -519,6 +519,36 @@ on a drawing pad</property>
                     </child>
                   </object>
                 </child>
+                <!-- Lock settings for the pen/eraser-->
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title" translatable="yes">Pen/Eraser mode</property>
+                    <child>
+                      <object class="RnPenModeRow" id="lock_pen_mode">
+                        <property name="title" translatable="yes">Tool for the pen action</property>
+                        <property name="subtitle" translatable="yes">Set/lock the action for the pen</property>
+                        <child type="prefix">
+                          <object class="GtkImage">
+                            <property name="icon_name">stylus-pen-symbolic</property>
+                            <property name="icon-size">large</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="RnPenModeRow" id="lock_eraser_mode">
+                        <property name="title" translatable="yes">Tool for the eraser action</property>
+                        <property name="subtitle" translatable="yes">Set/lock the action for the pen</property>
+                        <child type="prefix">
+                          <object class="GtkImage">
+                            <property name="icon_name">stylus-button-eraser-symbolic</property>
+                            <property name="icon-size">large</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </property>
           </object>

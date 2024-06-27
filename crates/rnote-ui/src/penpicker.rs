@@ -1,10 +1,11 @@
 // Imports
 use crate::RnAppWindow;
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, TemplateChild,
-    ToggleButton, Widget,
+    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, Box, Button, CompositeTemplate,
+    EventControllerLegacy, PropagationPhase, TemplateChild, ToggleButton, Widget,
 };
-use rnote_engine::pens::PenStyle;
+use rnote_engine::pens::{PenMode, PenStyle};
+use rnote_engine::WidgetFlags;
 
 mod imp {
     use super::*;
@@ -12,6 +13,8 @@ mod imp {
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penpicker.ui")]
     pub(crate) struct RnPenPicker {
+        #[template_child]
+        pub(crate) toolbox: TemplateChild<Box>,
         #[template_child]
         pub(crate) brush_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -107,6 +110,36 @@ impl RnPenPicker {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
+
+        // create an event controller
+        let pointer_controller = EventControllerLegacy::builder()
+            .name("pointer_controller_toolbar")
+            .propagation_phase(PropagationPhase::Bubble)
+            .build();
+
+        pointer_controller.connect_event(clone!(@weak appwindow => @default-return glib::Propagation::Proceed,  move |_,event| {
+            let mut widget_flags = WidgetFlags::default();
+            let is_stylus = event.device_tool().is_some();
+            if is_stylus {
+                let device_tool = event.device_tool().unwrap();
+                match device_tool.tool_type() {
+                    gdk::DeviceToolType::Pen => {
+                        // switch the canvas to the pen
+                        widget_flags |= appwindow.active_tab_wrapper().canvas().engine_mut().change_pen_mode(PenMode::Pen);
+                    },
+                    gdk::DeviceToolType::Eraser => {
+                        // switch the canvas to the eraser
+                        widget_flags |= appwindow.active_tab_wrapper().canvas().engine_mut().change_pen_mode(PenMode::Eraser);
+
+                    },
+                    _ => (),
+                }
+            }
+            appwindow.active_tab_wrapper().canvas().emit_handle_widget_flags(widget_flags);
+            return glib::Propagation::Proceed
+        }));
+
+        imp.toolbox.add_controller(pointer_controller);
 
         imp.brush_toggle
             .connect_toggled(clone!(@weak appwindow => move |brush_toggle| {

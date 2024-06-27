@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="RnPenModeRow" parent="AdwComboRow">
+    <child type="suffix">
+      <object class="GtkSwitch" id="mode">
+        <property name="halign">end</property>
+        <property name="valign">center</property>
+      </object>
+    </child>
+  </template>
+</interface>

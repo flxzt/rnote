@@ -204,6 +204,7 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/drawing-pad-button-2-symbolic.svg',
     'icons/scalable/actions/drawing-pad-button-3-symbolic.svg',
     'icons/scalable/actions/drawing-pad-button-4-symbolic.svg',
+    'icons/scalable/actions/stylus-pen-symbolic.svg',
     'icons/scalable/actions/edit-redo-symbolic.svg',
     'icons/scalable/actions/edit-symbolic.svg',
     'icons/scalable/actions/edit-undo-symbolic.svg',

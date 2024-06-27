@@ -133,6 +133,18 @@ impl RnAppWindow {
             .get_no_changes()
             .build();
 
+        // lock pen tool
+        app_settings
+            .bind("lock-pen", self, "lock-pen")
+            .get_no_changes()
+            .build();
+
+        // lock eraser tool
+        app_settings
+            .bind("lock-eraser", self, "lock-eraser")
+            .get_no_changes()
+            .build();
+
         // colorpicker palette
         let gdk_color_mapping = |var: &glib::Variant, _: glib::Type| {
             let color = var.get::<(f64, f64, f64, f64)>()?;

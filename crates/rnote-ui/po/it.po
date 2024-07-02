@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-16 09:43+0200\n"
-"PO-Revision-Date: 2024-06-14 19:09+0000\n"
+"PO-Revision-Date: 2024-07-03 07:09+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1096,7 +1096,7 @@ msgstr "Blocca Pinch to Zoom"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:64
 msgid "Respect Borders When Pasting"
-msgstr ""
+msgstr "Rispetta i bordi quando incolli"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:95
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
@@ -1769,7 +1769,7 @@ msgstr "Esportazione della selezione fallita, non si è selezionato nulla"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:229
 msgid "Saves are in progress"
-msgstr ""
+msgstr "I salvataggi sono in corso"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:299
 msgid "Button 1"

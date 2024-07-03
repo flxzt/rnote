@@ -68,6 +68,7 @@ pub(crate) fn setup_env() -> anyhow::Result<()> {
         let lib_dir = lib_dir()?;
 
         std::env::set_var("XDG_DATA_DIRS", data_dir);
+        std::env::set_var("GSK_RENDERER", "gl");
         std::env::set_var(
             "GDK_PIXBUF_MODULEDIR",
             lib_dir.join("gdk-pixbuf-2.0\\2.10.0\\loaders"),

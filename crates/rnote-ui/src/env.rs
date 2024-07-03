@@ -65,7 +65,7 @@ pub(crate) fn locale_dir() -> anyhow::Result<PathBuf> {
 pub(crate) fn setup_env() -> anyhow::Result<()> {
     // workaround for issue 1061 https://github.com/flxzt/rnote/issues/1061
     std::env::set_var("GSK_RENDERER", "gl");
-    
+
     if cfg!(target_os = "windows") {
         let data_dir = data_dir()?;
         let lib_dir = lib_dir()?;

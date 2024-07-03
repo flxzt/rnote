@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-16 09:43+0200\n"
-"PO-Revision-Date: 2023-06-26 08:36+0000\n"
-"Last-Translator: Lucas Martins <luckshiba@protonmail.com>\n"
+"PO-Revision-Date: 2024-07-04 17:09+0000\n"
+"Last-Translator: PhoenixCausesOof <phoenixcausesoof@proton.me>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "rnote/repo/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.18.1\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -75,7 +75,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
-msgstr ""
+msgstr "Ajustar configurações do documento"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
 #, fuzzy
@@ -291,7 +291,7 @@ msgstr "Definir se o padrão do plano de fundo deve ser exportado"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:329
 #: crates/rnote-ui/data/ui/dialogs/export.ui:523
 msgid "Optimize for Printing"
-msgstr ""
+msgstr "Otimizar para impressão"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:123
 #: crates/rnote-ui/data/ui/dialogs/export.ui:330
@@ -529,8 +529,9 @@ msgid "Page Borders"
 msgstr "Ordem das páginas"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:168
+#, fuzzy
 msgid "Whether the pages have drawn borders"
-msgstr ""
+msgstr "Se as páginas possuem bordas desenhadas"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:202
 msgid "Import Xournal++ File"

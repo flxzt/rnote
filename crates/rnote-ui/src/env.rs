@@ -63,12 +63,14 @@ pub(crate) fn locale_dir() -> anyhow::Result<PathBuf> {
 
 /// depending on the target platform we need to set some env vars on startup
 pub(crate) fn setup_env() -> anyhow::Result<()> {
+    // workaround for issue 1061 https://github.com/flxzt/rnote/issues/1061
+    std::env::set_var("GSK_RENDERER", "gl");
+    
     if cfg!(target_os = "windows") {
         let data_dir = data_dir()?;
         let lib_dir = lib_dir()?;
 
         std::env::set_var("XDG_DATA_DIRS", data_dir);
-        std::env::set_var("GSK_RENDERER", "gl");
         std::env::set_var(
             "GDK_PIXBUF_MODULEDIR",
             lib_dir.join("gdk-pixbuf-2.0\\2.10.0\\loaders"),

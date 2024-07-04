@@ -269,14 +269,12 @@ impl WindowImpl for RnAppWindow {
                 None,
                 &mut self.save_in_progress_toast.borrow_mut(),
             );
+        } else if obj.tabs_any_unsaved_changes() {
+            glib::spawn_future_local(clone!(@weak obj as appwindow => async move {
+                dialogs::dialog_close_window(&appwindow).await;
+            }));
         } else {
-            if obj.tabs_any_unsaved_changes() {
-                glib::spawn_future_local(clone!(@weak obj as appwindow => async move {
-                    dialogs::dialog_close_window(&appwindow).await;
-                }));
-            } else {
-                obj.close_force();
-            }
+            obj.close_force();
         }
 
         // Inhibit (Overwrite) the default handler. This handler is then responsible for destroying the window.

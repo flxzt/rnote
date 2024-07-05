@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-16 09:43+0200\n"
-"PO-Revision-Date: 2024-03-01 12:58+0000\n"
+"PO-Revision-Date: 2024-07-06 09:04+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -973,10 +973,8 @@ msgid "De_veloper Mode"
 msgstr "Ont_wikkelaarsmodus"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
-#, fuzzy
-#| msgid "New Window"
 msgid "New _Window"
-msgstr "Nieuw venster"
+msgstr "Nieuw _venster"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
@@ -1227,10 +1225,8 @@ msgid "Toggle"
 msgstr "Omschakelen"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:14
-#, fuzzy
-#| msgid "Enabled"
 msgid "Disabled"
-msgstr "Ingeschakeld"
+msgstr "Uitgeschakeld"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:41
 #: crates/rnote-ui/data/ui/shortcuts.ui:11
@@ -1819,10 +1815,8 @@ msgid "Opened file was renamed or moved."
 msgstr "Het geopende bestand is van naam gewijzigd"
 
 #: crates/rnote-ui/src/canvas/mod.rs:971
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was removed."
-msgstr "Het geopende bestand is van naam gewijzigd"
+msgstr "Het geopende bestand is verwĳderd."
 
 #: crates/rnote-ui/src/canvas/mod.rs:1145
 msgid "Inserting file failed"
@@ -2364,10 +2358,8 @@ msgid "Can't duplicate an unsaved document"
 msgstr ""
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
-#, fuzzy
-#| msgid "Opening .rnote file failed"
 msgid "Duplicating the file failed"
-msgstr "Rnote-bestand kan niet worden geopend"
+msgstr "Bestand dupliceren mislukt"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
 #, fuzzy
@@ -2386,16 +2378,12 @@ msgid "Renaming file failed, target file already exists"
 msgstr ""
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
-#, fuzzy
-#| msgid "Opening file failed"
 msgid "Renaming file failed"
-msgstr "Bestand openen mislukt"
+msgstr "Bestand hernoemen mislukt"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
-#, fuzzy
-#| msgid "Inserting file failed"
 msgid "Trashing file failed"
-msgstr "Het importeren van het bestand is mislukt"
+msgstr "Bestand verwĳderen mislukt"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 msgid "Folder Name"
@@ -2408,139 +2396,127 @@ msgstr "Nieuwe map"
 #: crates/rnote-ui/src/utils.rs:161
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
-msgstr ""
+msgstr "grĳs"
 
 #: crates/rnote-ui/src/utils.rs:163 crates/rnote-ui/src/utils.rs:198
 msgctxt "part of string representation of a color"
 msgid "rose"
-msgstr ""
+msgstr "roze"
 
 #: crates/rnote-ui/src/utils.rs:165
-#, fuzzy
-#| msgid "Bread"
 msgctxt "part of string representation of a color"
 msgid "red"
-msgstr "Brood"
+msgstr "rood"
 
 #: crates/rnote-ui/src/utils.rs:168
 msgctxt "part of string representation of a color"
 msgid "orange"
-msgstr ""
+msgstr "oranje"
 
 #: crates/rnote-ui/src/utils.rs:171
 msgctxt "part of string representation of a color"
 msgid "yellow"
-msgstr ""
+msgstr "geel"
 
 #: crates/rnote-ui/src/utils.rs:175
 msgctxt "part of string representation of a color"
 msgid "chartreuse-green"
-msgstr ""
+msgstr "chartreuse-groen"
 
 #: crates/rnote-ui/src/utils.rs:178
 msgctxt "part of string representation of a color"
 msgid "green"
-msgstr ""
+msgstr "groen"
 
 #: crates/rnote-ui/src/utils.rs:181
 msgctxt "part of string representation of a color"
 msgid "spring-green"
-msgstr ""
+msgstr "lente­groen"
 
 #: crates/rnote-ui/src/utils.rs:184
 msgctxt "part of string representation of a color"
 msgid "cyan"
-msgstr ""
+msgstr "cyaan"
 
 #: crates/rnote-ui/src/utils.rs:187
 msgctxt "part of string representation of a color"
 msgid "azure"
-msgstr ""
+msgstr "azuur"
 
 #: crates/rnote-ui/src/utils.rs:190
 msgctxt "part of string representation of a color"
 msgid "blue"
-msgstr ""
+msgstr "blauw"
 
 #: crates/rnote-ui/src/utils.rs:193
 msgctxt "part of string representation of a color"
 msgid "violet"
-msgstr ""
+msgstr "violet"
 
 #: crates/rnote-ui/src/utils.rs:196
 msgctxt "part of string representation of a color"
 msgid "magenta"
-msgstr ""
+msgstr "magenta"
 
 #: crates/rnote-ui/src/utils.rs:203
 msgctxt "part of string representation of a color"
 msgid "greyish"
-msgstr ""
+msgstr "grijs­achtig"
 
 #: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"
 msgid "vivid"
-msgstr ""
+msgstr "levendig"
 
 #: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
 msgid "very-dark"
-msgstr ""
+msgstr "erg donker"
 
 #: crates/rnote-ui/src/utils.rs:212
 msgctxt "part of string representation of a color"
 msgid "dark"
-msgstr ""
+msgstr "donker"
 
 #: crates/rnote-ui/src/utils.rs:215
 msgctxt "part of string representation of a color"
 msgid "mid"
-msgstr ""
+msgstr "gemiddeld"
 
 #: crates/rnote-ui/src/utils.rs:217
-#, fuzzy
-#| msgid "Height"
 msgctxt "part of string representation of a color"
 msgid "bright"
-msgstr "Hoogte"
+msgstr "helder"
 
 #: crates/rnote-ui/src/utils.rs:221
-#, fuzzy
-#| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "transparent"
-msgstr ""
-"Heimen Stoffels <vistausss@fastmail.com>\n"
-"Philip Goto https://flipflop97.github.io/"
+msgstr "transparant"
 
 #: crates/rnote-ui/src/utils.rs:223
-#, fuzzy
-#| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "translucent"
-msgstr ""
-"Heimen Stoffels <vistausss@fastmail.com>\n"
-"Philip Goto https://flipflop97.github.io/"
+msgstr "doorschĳnend"
 
 #: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
-msgstr ""
+msgstr "licht doorschĳnend"
 
 #: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
-msgstr ""
+msgstr "volledig transparant"
 
 #: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "black"
-msgstr ""
+msgstr "zwart"
 
 #: crates/rnote-ui/src/utils.rs:241
 msgctxt "part of string representation of a color"
 msgid "white"
-msgstr ""
+msgstr "wit"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "Het geopende bestand is verplaatst of verwijderd"

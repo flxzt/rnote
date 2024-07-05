@@ -328,10 +328,11 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     dialog.add_controller(controller);
 
     // Wait for a response from the dialog
-    loop {
-        if let Some(res) = rx.next().await {
-            return res;
-        }
+    match rx.next().await {
+        Some(res) => res,
+        None => Err(anyhow::anyhow!(
+            "Channel closed before receiving a response from dialog."
+        )),
     }
 }
 
@@ -419,9 +420,10 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
     dialog.add_controller(controller);
 
     // Wait for a response from the dialog
-    loop {
-        if let Some(res) = rx.next().await {
-            return res;
-        }
+    match rx.next().await {
+        Some(res) => res,
+        None => Err(anyhow::anyhow!(
+            "Channel closed before receiving a response from dialog."
+        )),
     }
 }

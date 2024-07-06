@@ -642,6 +642,7 @@ fn create_filedialog_export_doc_pages(
             }
             if cfg!(target_os = "macos") {
                 filter.add_suffix("jpg");
+                filter.add_suffix("jpeg");
             }
             filter.set_name(Some(&gettext("Jpeg")));
         }
@@ -950,6 +951,7 @@ fn create_filedialog_export_selection(
             }
             if cfg!(target_os = "macos") {
                 filter.add_suffix("jpg");
+                filter.add_suffix("jpeg");
             }
             filter.set_name(Some(&gettext("Jpeg")));
         }

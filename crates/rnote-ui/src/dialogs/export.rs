@@ -608,7 +608,6 @@ fn create_filedialog_export_doc_pages(
             } else {
                 filter.add_mime_type("image/svg+xml");
             }
-            filter.add_suffix("svg");
             filter.set_name(Some(&gettext("Svg")));
         }
         DocPagesExportFormat::Png => {
@@ -617,7 +616,6 @@ fn create_filedialog_export_doc_pages(
             } else {
                 filter.add_mime_type("image/png");
             }
-            filter.add_suffix("png");
             filter.set_name(Some(&gettext("Png")));
         }
         DocPagesExportFormat::Jpeg => {
@@ -626,7 +624,6 @@ fn create_filedialog_export_doc_pages(
             } else {
                 filter.add_mime_type("image/jpeg");
             }
-            filter.add_suffix("jpg");
             filter.add_suffix("jpeg");
             filter.set_name(Some(&gettext("Jpeg")));
         }

@@ -15,8 +15,8 @@ use crate::{globals, RnIconPicker};
 use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
 use gtk4::{
-    gio, glib, glib::clone, Builder, Button, CheckButton, ColorDialogButton, Dialog, FileDialog,
-    Label, MenuButton, ResponseType, ShortcutsWindow, StringList,
+    gio, glib, glib::clone, Builder, Button, CheckButton, ColorDialogButton, FileDialog, Label,
+    MenuButton, ShortcutsWindow, StringList,
 };
 
 // About Dialog
@@ -420,7 +420,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
-    let dialog: Dialog = builder.object("dialog_edit_selected_workspace").unwrap();
+    let dialog: adw::Dialog = builder.object("dialog_edit_selected_workspace").unwrap();
     let preview_row: RnWorkspaceRow = builder
         .object("edit_selected_workspace_preview_row")
         .unwrap();
@@ -440,9 +440,14 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     let icon_picker: RnIconPicker = builder
         .object("edit_selected_workspace_icon_picker")
         .unwrap();
+    let edit_selected_workspace_button_cancel: Button = builder
+        .object("edit_selected_workspace_button_cancel")
+        .unwrap();
+    let edit_selected_workspace_button_apply: Button = builder
+        .object("edit_selected_workspace_button_apply")
+        .unwrap();
 
     preview_row.init(appwindow);
-    dialog.set_transient_for(Some(appwindow));
 
     // Sets the icons
     icon_picker.set_list(
@@ -491,7 +496,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     dir_button.connect_clicked(
         clone!(@weak preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => move |_| {
             glib::spawn_future_local(clone!(@weak preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => async move {
-                dialog.hide();
+                dialog.set_sensitive(false);
 
                 let filedialog = FileDialog::builder()
                     .title(gettext("Change Workspace Directory"))
@@ -521,15 +526,22 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
                         tracing::debug!("Did not select new folder for workspacerow (Error or dialog dismissed by user), Err: {e:?}");
                     }
                 }
-                dialog.present();
+
+                dialog.set_sensitive(true);
             }));
         }),
     );
 
-    let response = dialog.run_future().await;
-    dialog.close();
-    match response {
-        ResponseType::Apply => {
+    // Listen to responses
+
+    edit_selected_workspace_button_cancel.connect_clicked(clone!(@weak dialog => move |_| {
+        dialog.close();
+    }));
+
+    edit_selected_workspace_button_apply.connect_clicked(
+        clone!(@weak preview_row, @weak dialog, @weak appwindow => move |_| {
+            dialog.close();
+
             // update the actual selected entry
             appwindow
                 .sidebar()
@@ -541,11 +553,10 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
                 .sidebar()
                 .workspacebrowser()
                 .refresh_dir_list_selected_workspace();
-        }
-        _ => {
-            // Cancel
-        }
-    }
+        }),
+    );
+
+    dialog.present(appwindow);
 }
 
 const WORKSPACELISTENTRY_ICONS_LIST: &[&str] = &[

@@ -18,9 +18,18 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanvas) {
+    // note : mimetypes are not supported with the native file picker on windows
+    // See the limitations on FileChooserNative
+    // https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/struct.FileChooserNative.html#win32-details--gtkfilechooserdialognative-win32
     let filter = FileFilter::new();
-    filter.add_mime_type("application/rnote");
-    filter.add_suffix("rnote");
+    if cfg!(target_os = "windows") {
+        filter.add_pattern("*.rnote");
+    } else {
+        filter.add_mime_type("application/rnote");
+    }
+    if cfg!(target_os = "macos") {
+        filter.add_suffix("rnote");
+    }
     filter.set_name(Some(&gettext(".rnote")));
 
     // create the list of filters
@@ -279,20 +288,41 @@ fn create_filedialog_export_doc(
         .build();
 
     let filter = FileFilter::new();
+    // note : mimetypes are not supported with the native file picker on windows
+    // See the limitations on FileChooserNative
+    // https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/struct.FileChooserNative.html#win32-details--gtkfilechooserdialognative-win32
     match doc_export_prefs.export_format {
         DocExportFormat::Svg => {
-            filter.add_mime_type("image/svg+xml");
-            filter.add_suffix("svg");
+            if cfg!(target_os = "windows") {
+                filter.add_pattern("*.svg");
+            } else {
+                filter.add_mime_type("image/svg+xml");
+            }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("svg");
+            }
             filter.set_name(Some(&gettext("Svg")));
         }
         DocExportFormat::Pdf => {
-            filter.add_mime_type("application/pdf");
-            filter.add_suffix("pdf");
+            if cfg!(target_os = "windows") {
+                filter.add_pattern("*.pdf");
+            } else {
+                filter.add_mime_type("application/pdf");
+            }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("pdf");
+            }
             filter.set_name(Some(&gettext("Pdf")));
         }
         DocExportFormat::Xopp => {
-            filter.add_mime_type("application/x-xopp");
-            filter.add_suffix("xopp");
+            if cfg!(target_os = "windows") {
+                filter.add_pattern("*.xopp");
+            } else {
+                filter.add_mime_type("application/x-xopp");
+            }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("xopp");
+            }
             filter.set_name(Some(&gettext("Xopp")));
         }
     }
@@ -594,26 +624,41 @@ fn create_filedialog_export_doc_pages(
     filter.add_mime_type("inode/directory");
     match doc_pages_export_prefs.export_format {
         DocPagesExportFormat::Svg => {
-            filter.add_mime_type("image/svg+xml");
-            filter.add_suffix("svg");
+            if cfg!(target_os = "windows") {
+                filter.add_pattern("*.svg");
+            } else {
+                filter.add_mime_type("image/svg+xml");
+            }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("svg");
+            }
             filter.set_name(Some(&gettext("Svg")));
         }
         DocPagesExportFormat::Png => {
-            filter.add_mime_type("image/png");
-            filter.add_suffix("png");
+            if cfg!(target_os = "windows") {
+                filter.add_pattern("*.png");
+            } else {
+                filter.add_mime_type("image/png");
+            }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("png");
+            }
             filter.set_name(Some(&gettext("Png")));
         }
         DocPagesExportFormat::Jpeg => {
-            filter.add_mime_type("image/jpeg");
-            filter.add_suffix("jpg");
-            filter.add_suffix("jpeg");
+            if cfg!(target_os = "windows") {
+                filter.add_pattern("*.jpg");
+                filter.add_pattern("*.jpeg");
+            } else {
+                filter.add_mime_type("image/jpeg");
+            }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("jpg");
+                filter.add_suffix("jpeg");
+            }
             filter.set_name(Some(&gettext("Jpeg")));
         }
     }
-
-    let filter_list = gio::ListStore::new::<FileFilter>();
-    filter_list.append(&filter);
-    filedialog.set_filters(Some(&filter_list));
 
     filedialog.set_default_filter(Some(&filter));
 
@@ -893,21 +938,43 @@ fn create_filedialog_export_selection(
     filedialog.set_initial_folder(get_initial_folder_for_export(appwindow, canvas).as_ref());
 
     let filter = FileFilter::new();
+    // note : mimetypes are not supported with the native file picker on windows
+    // See the limitations on FileChooserNative
+    // https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/struct.FileChooserNative.html#win32-details--gtkfilechooserdialognative-win32
     match selection_export_prefs.export_format {
         SelectionExportFormat::Svg => {
-            filter.add_mime_type("image/svg+xml");
-            filter.add_suffix("svg");
+            if cfg!(target_os = "windows") {
+                filter.add_pattern("*.svg");
+            } else {
+                filter.add_mime_type("image/svg+xml");
+            }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("svg");
+            }
             filter.set_name(Some(&gettext("Svg")));
         }
         SelectionExportFormat::Png => {
-            filter.add_mime_type("image/png");
-            filter.add_suffix("png");
+            if cfg!(target_os = "windows") {
+                filter.add_pattern("*.png");
+            } else {
+                filter.add_mime_type("image/png");
+            }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("png");
+            }
             filter.set_name(Some(&gettext("Png")));
         }
         SelectionExportFormat::Jpeg => {
-            filter.add_mime_type("image/jpeg");
-            filter.add_suffix("jpg");
-            filter.add_suffix("jpeg");
+            if cfg!(target_os = "windows") {
+                filter.add_pattern("*.jpg");
+                filter.add_pattern("*.jpeg");
+            } else {
+                filter.add_mime_type("image/jpeg");
+            }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("jpg");
+                filter.add_suffix("jpeg");
+            }
             filter.set_name(Some(&gettext("Jpeg")));
         }
     }
@@ -930,8 +997,17 @@ fn create_filedialog_export_selection(
 
 pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let filter = FileFilter::new();
-    filter.add_mime_type("application/json");
-    filter.add_suffix("json");
+    // note : mimetypes are not supported with the native file picker on windows
+    // See the limitations on FileChooserNative
+    // https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/struct.FileChooserNative.html#win32-details--gtkfilechooserdialognative-win32
+    if cfg!(target_os = "windows") {
+        filter.add_pattern("*.json");
+    } else {
+        filter.add_mime_type("application/json");
+    }
+    if cfg!(target_os = "macos") {
+        filter.add_suffix("json");
+    }
     filter.set_name(Some(&gettext("Json")));
 
     let filter_list = gio::ListStore::new::<FileFilter>();
@@ -983,8 +1059,18 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
 
 pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let filter = FileFilter::new();
-    filter.add_mime_type("application/json");
-    filter.add_suffix("json");
+
+    // note : mimetypes are not supported with the native file picker on windows
+    // See the limitations on FileChooserNative
+    // https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/struct.FileChooserNative.html#win32-details--gtkfilechooserdialognative-win32
+    if cfg!(target_os = "windows") {
+        filter.add_pattern("*.json");
+    } else {
+        filter.add_mime_type("application/json");
+    }
+    if cfg!(target_os = "macos") {
+        filter.add_suffix("json");
+    }
     filter.set_name(Some(&gettext("Json")));
 
     let filter_list = gio::ListStore::new::<FileFilter>();

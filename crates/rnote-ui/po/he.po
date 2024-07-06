@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-16 09:43+0200\n"
 "PO-Revision-Date: 2024-07-06 17:34+0000\n"
-"Last-Translator: גלעד מיכאל סולומון <2019z2-gilad@melton.ort.org.il>\n"
+"Last-Translator: יובל הרמן <nhajeho1@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
@@ -36,22 +36,20 @@ msgid "New Window"
 msgstr "חלון חדש"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
-#, fuzzy
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"‫Rnote הוא יישום ציור פשוט מבוסס וקטורים להערות בכתב־יד וכדי להוסיף הערות על "
+"\"‫Rnote\" היא תוכנת ציור מבוססת וקטורים לרישום בכתב יד והוספת הערות על "
 "מסמכים ותמונות."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
-#, fuzzy
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"הבהרה: סוג הקובץ אינו יציב. הוא עשוי להשתנות בין הגרסאות והתאימות לאחור "
-"עשויה להיפגע."
+"אזהרה: פורמט הקבצים השמורים עדיין נתון לשינויים ופיתוח ועלול להפסיק לעבוד "
+"לאחר שדרוג."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An overview"

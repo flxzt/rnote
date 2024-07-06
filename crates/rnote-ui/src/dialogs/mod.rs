@@ -448,7 +448,6 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
         .unwrap();
 
     preview_row.init(appwindow);
-    dialog.present(appwindow);
 
     // Sets the icons
     icon_picker.set_list(
@@ -556,6 +555,8 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
                 .refresh_dir_list_selected_workspace();
         }),
     );
+
+    dialog.present(appwindow);
 }
 
 const WORKSPACELISTENTRY_ICONS_LIST: &[&str] = &[

@@ -125,8 +125,6 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     let import_pdf_button_cancel: Button = builder.object("import_pdf_button_cancel").unwrap();
     let import_pdf_button_confirm: Button = builder.object("import_pdf_button_confirm").unwrap();
 
-    dialog.present(appwindow);
-
     pdf_import_adjust_document_row
         .bind_property("active", &pdf_import_width_row, "sensitive")
         .invert_boolean()
@@ -327,7 +325,9 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     ));
     dialog.add_controller(controller);
 
-    // Wait for a response from the dialog
+    // Present than wait for a response from the dialog
+    dialog.present(appwindow);
+
     match rx.next().await {
         Some(res) => res,
         None => Err(anyhow::anyhow!(
@@ -352,8 +352,6 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
     let xopp_import_prefs = canvas.engine_ref().import_prefs.xopp_import_prefs;
     let import_xopp_button_cancel: Button = builder.object("import_xopp_button_cancel").unwrap();
     let import_xopp_button_confirm: Button = builder.object("import_xopp_button_confirm").unwrap();
-
-    dialog.present(appwindow);
 
     // Set initial widget state for preference
     dpi_row.set_value(xopp_import_prefs.dpi);
@@ -419,7 +417,9 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
     ));
     dialog.add_controller(controller);
 
-    // Wait for a response from the dialog
+    // Present than wait for a response from the dialog
+    dialog.present(appwindow);
+
     match rx.next().await {
         Some(res) => res,
         None => Err(anyhow::anyhow!(

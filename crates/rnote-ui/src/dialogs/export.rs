@@ -103,7 +103,6 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
 
     let initial_doc_export_prefs = canvas.engine_ref().export_prefs.doc_export_prefs;
     let doc_layout = canvas.engine_ref().document.layout;
-    dialog.present(appwindow);
 
     // initial widget state with the preferences
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
@@ -264,6 +263,8 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
                 .dispatch_toast_error(&gettext("Exporting document failed, no file selected"));
         }
     }));
+
+    dialog.present(appwindow);
 }
 
 fn create_filedialog_export_doc(
@@ -354,7 +355,6 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
 
     let initial_doc_pages_export_prefs = canvas.engine_ref().export_prefs.doc_pages_export_prefs;
     let doc_layout = canvas.engine_ref().document.layout;
-    dialog.present(appwindow);
 
     // initial widget state with the preferences
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
@@ -572,6 +572,8 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
             ));
         }
     }));
+
+    dialog.present(appwindow);
 }
 
 fn create_filedialog_export_doc_pages(
@@ -654,7 +656,6 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         builder.object("export_selection_button_confirm").unwrap();
 
     let initial_selection_export_prefs = canvas.engine_ref().export_prefs.selection_export_prefs;
-    dialog.present(appwindow);
 
     // initial widget state with the preferences
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
@@ -849,6 +850,8 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
             }
             }));
     }));
+
+    dialog.present(appwindow);
 }
 
 /// Returns (if possible) a "reasonable" folder for export operations

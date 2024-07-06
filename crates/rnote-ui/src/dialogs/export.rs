@@ -637,6 +637,7 @@ fn create_filedialog_export_doc_pages(
         DocPagesExportFormat::Jpeg => {
             if cfg!(target_os = "windows") {
                 filter.add_pattern("*.jpg");
+                filter.add_pattern("*.jpeg");
             } else {
                 filter.add_mime_type("image/jpeg");
             }

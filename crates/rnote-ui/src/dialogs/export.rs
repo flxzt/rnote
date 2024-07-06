@@ -30,7 +30,6 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
     } else {
         filter.add_mime_type("application/rnote");
     }
-    filter.add_suffix("rnote");
     filter.set_name(Some(&gettext(".rnote")));
 
     // create the list of filters
@@ -293,7 +292,6 @@ fn create_filedialog_export_doc(
             } else {
                 filter.add_mime_type("image/svg+xml");
             }
-            filter.add_suffix("svg");
             filter.set_name(Some(&gettext("Svg")));
         }
         DocExportFormat::Pdf => {
@@ -302,7 +300,6 @@ fn create_filedialog_export_doc(
             } else {
                 filter.add_mime_type("application/pdf");
             }
-            filter.add_suffix("pdf");
             filter.set_name(Some(&gettext("Pdf")));
         }
         DocExportFormat::Xopp => {
@@ -311,7 +308,6 @@ fn create_filedialog_export_doc(
             } else {
                 filter.add_mime_type("application/x-xopp");
             }
-            filter.add_suffix("xopp");
             filter.set_name(Some(&gettext("Xopp")));
         }
     }
@@ -605,10 +601,37 @@ fn create_filedialog_export_doc_pages(
     let filter = FileFilter::new();
     // We always need to be able to select folders
     filter.add_mime_type("inode/directory");
-    // note : we revert https://github.com/flxzt/rnote/pull/1075
-    // as applying the filter correctly makes it not work on all platforms with
-    // the native folder picker
-    // Here we need the mimetype as well, including on windows
+    match doc_pages_export_prefs.export_format {
+        DocPagesExportFormat::Svg => {
+            if cfg!(target_os = "windows") {
+                filter.add_pattern("*.svg");
+            } else {
+                filter.add_mime_type("image/svg+xml");
+            }
+            filter.add_suffix("svg");
+            filter.set_name(Some(&gettext("Svg")));
+        }
+        DocPagesExportFormat::Png => {
+            if cfg!(target_os = "windows") {
+                filter.add_pattern("*.png");
+            } else {
+                filter.add_mime_type("image/png");
+            }
+            filter.add_suffix("png");
+            filter.set_name(Some(&gettext("Png")));
+        }
+        DocPagesExportFormat::Jpeg => {
+            if cfg!(target_os = "windows") {
+                filter.add_pattern("*.jpg");
+            } else {
+                filter.add_mime_type("image/jpeg");
+            }
+            filter.add_suffix("jpg");
+            filter.add_suffix("jpeg");
+            filter.set_name(Some(&gettext("Jpeg")));
+        }
+    }
+
     filedialog.set_default_filter(Some(&filter));
 
     filedialog
@@ -887,7 +910,6 @@ fn create_filedialog_export_selection(
             } else {
                 filter.add_mime_type("image/svg+xml");
             }
-            filter.add_suffix("svg");
             filter.set_name(Some(&gettext("Svg")));
         }
         SelectionExportFormat::Png => {
@@ -896,7 +918,6 @@ fn create_filedialog_export_selection(
             } else {
                 filter.add_mime_type("image/png");
             }
-            filter.add_suffix("png");
             filter.set_name(Some(&gettext("Png")));
         }
         SelectionExportFormat::Jpeg => {
@@ -906,8 +927,6 @@ fn create_filedialog_export_selection(
             } else {
                 filter.add_mime_type("image/jpeg");
             }
-            filter.add_suffix("jpg");
-            filter.add_suffix("jpeg");
             filter.set_name(Some(&gettext("Jpeg")));
         }
     }
@@ -938,7 +957,6 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
     } else {
         filter.add_mime_type("application/json");
     }
-    filter.add_suffix("json");
     filter.set_name(Some(&gettext("Json")));
 
     let filter_list = gio::ListStore::new::<FileFilter>();
@@ -999,7 +1017,6 @@ pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, ca
     } else {
         filter.add_mime_type("application/json");
     }
-    filter.add_suffix("json");
     filter.set_name(Some(&gettext("Json")));
 
     let filter_list = gio::ListStore::new::<FileFilter>();

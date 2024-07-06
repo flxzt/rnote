@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-16 09:43+0200\n"
-"PO-Revision-Date: 2023-09-15 16:52+0000\n"
-"Last-Translator: יובל הרמן <nhajeho1@gmail.com>\n"
+"PO-Revision-Date: 2024-07-06 17:34+0000\n"
+"Last-Translator: גלעד מיכאל סולומון <2019z2-gilad@melton.ort.org.il>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n == 1) ? 0 : ((n == 2) ? 1 : ((n > 10 && "
 "n % 10 == 0) ? 2 : 3));\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -54,8 +54,6 @@ msgstr ""
 "עשויה להיפגע."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
-#, fuzzy
-#| msgid "An Overview"
 msgid "An overview"
 msgstr "סקירה"
 
@@ -64,20 +62,21 @@ msgid "A selection"
 msgstr "בחירה"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
+#, fuzzy
 msgid "Write text with the typewriter"
-msgstr ""
+msgstr "רישום טקסט באמצעות \"מכונת הכתיבה\""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"
-msgstr ""
+msgstr "הסתרת סרגי כלים בעזרת \"מצב ריכוז\""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
-msgstr ""
+msgstr "גישה מהירה לקבצים דרך סביבת העבודה"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
-msgstr ""
+msgstr "התאמת הגדרות המסמך"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
 #, fuzzy
@@ -122,11 +121,12 @@ msgid "New Document"
 msgstr "מסמך חדש"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:17
-#, fuzzy
 msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
-msgstr "יצירת גיליון חדש תמחק שינויים שלא נשמרו. ליצור?"
+msgstr ""
+"יצירת גיליון חדש תמחק שינויים שלא נשמרו.\n"
+" ליצור?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:41
@@ -172,7 +172,7 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
 #, fuzzy
 msgid "Unsaved Documents"
-msgstr "מסמך חדש"
+msgstr "מסמכים לא שמורים"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:59
 msgid "Discard All"
@@ -181,7 +181,7 @@ msgstr "אל תשמור"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:67
 #, fuzzy
 msgid "Edit Workspace"
-msgstr "פתיחת סביבת עבודה"
+msgstr "עריכת סביבת העבודה"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:75
 #: crates/rnote-ui/data/ui/settingspanel.ui:241
@@ -192,7 +192,7 @@ msgstr "החלה"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:117
 #, fuzzy
 msgid "Workspace Name"
-msgstr "סביבת עבודה"
+msgstr "שם סביבת עבודה"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:122
 msgid "Icon"
@@ -201,7 +201,7 @@ msgstr "צלמית"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:123
 #, fuzzy
 msgid "Change the workspace icon"
-msgstr "החלפת תיקיית סביבת עבודה"
+msgstr "החלפת סמליל סביבת העבודה"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:143
 #: crates/rnote-ui/data/ui/settingspanel.ui:293
@@ -211,17 +211,17 @@ msgstr "צבע"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:144
 #, fuzzy
 msgid "Change the workspace color"
-msgstr "החלפת תיקיית סביבת עבודה"
+msgstr "החלפת צבע סביבת העבודה"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:158
 #, fuzzy
 msgid "Directory"
-msgstr "וקטור"
+msgstr "תיקייה"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:159
 #, fuzzy
 msgid "Change the workspace directory"
-msgstr "החלפת תיקיית סביבת עבודה"
+msgstr "החלפת מיקום סביבת העבודה"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:168
 #: crates/rnote-ui/data/ui/dialogs/export.ui:284
@@ -235,13 +235,12 @@ msgstr "- לא נבחרה תיקייה -"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:183
 #, fuzzy
 msgid "Change the directory"
-msgstr "החלפת תיקיית סביבת עבודה"
+msgstr "שינוי מיקום סביבת העבודה"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:7
 #: crates/rnote-ui/src/dialogs/export.rs:273
-#, fuzzy
 msgid "Export Document"
-msgstr "מסמך חדש"
+msgstr "ייצא מסמך"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:15
 #: crates/rnote-ui/data/ui/dialogs/export.ui:180
@@ -253,17 +252,15 @@ msgstr "ייצוא"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:72
 #: crates/rnote-ui/data/ui/dialogs/export.ui:473
-#, fuzzy
-#| msgid "Import file"
 msgid "Export File"
-msgstr "ייבוא קובץ"
+msgstr "ייצוא קובץ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:73
 #: crates/rnote-ui/data/ui/dialogs/export.ui:474
 #, fuzzy
 #| msgid "Set the format width"
 msgid "Select the export file"
-msgstr "הגדרת רוחב התצורה"
+msgstr "בחירת קובץ ייצוא"
 
 #. force the user to pick another file
 #: crates/rnote-ui/data/ui/dialogs/export.ui:82
@@ -282,9 +279,8 @@ msgstr "- לא נבחרו קבצים -"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:106
 #: crates/rnote-ui/data/ui/dialogs/export.ui:313
 #: crates/rnote-ui/data/ui/dialogs/export.ui:507
-#, fuzzy
 msgid "Export Preferences"
-msgstr "סוג תמונת ה־PDF לייבוא"
+msgstr "העדפות ייצוא"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:110
 #: crates/rnote-ui/data/ui/dialogs/export.ui:317
@@ -589,23 +585,17 @@ msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "הגדר DPI מועדף עבור קבצי Xournal++"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
-#, fuzzy
-#| msgid "Brush style"
 msgid "Brush Style"
-msgstr "סגנון מברשת"
+msgstr "סגנון המברשת"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:149
-#, fuzzy
-#| msgid "Brush configuration"
 msgid "Brush Configuration"
-msgstr "הגדרות מברשת"
+msgstr "הגדרות המברשת"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:66
-#, fuzzy
-#| msgid "Brush styles"
 msgid "Brush Styles"
-msgstr "סגנונות מברשת"
+msgstr "סגנונות המברשת"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:95
 msgid "Marker"
@@ -730,8 +720,6 @@ msgid "Choose a dots position probability distribution"
 msgstr "בחירת הסתברות התפלגות של מיקומי נקודות"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
-#, fuzzy
-#| msgid "Uniform"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
 msgstr "אחיד"
@@ -777,7 +765,7 @@ msgstr "מעצב צורות"
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:49
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:83
 msgid "Typewriter"
-msgstr ""
+msgstr "מכונת כתיבה"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:65
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:84
@@ -2236,12 +2224,13 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/mod.rs:218
 #: crates/rnote-ui/src/dialogs/mod.rs:353
 msgid "The changes will be saved"
-msgstr ""
+msgstr "השינויים יישמרו"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:223
 #: crates/rnote-ui/src/dialogs/mod.rs:358
+#, fuzzy
 msgid "A new file will be created"
-msgstr ""
+msgstr "קובץ חדש ייווצר"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:497
 #, fuzzy
@@ -2250,45 +2239,47 @@ msgid "Change Workspace Directory"
 msgstr "החלפת תיקיית סביבת עבודה"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:607
+#, fuzzy
 msgid "Band-Aid"
-msgstr ""
+msgstr "פלסטר"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:608
 msgid "Bank"
-msgstr ""
+msgstr "בנק"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:609
 msgid "Bookmark"
-msgstr ""
+msgstr "סימנייה"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:610
 msgid "Book"
-msgstr ""
+msgstr "ספר"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:611
 msgid "Bread"
-msgstr ""
+msgstr "לחם"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:612
+#, fuzzy
 msgid "Calendar"
-msgstr ""
+msgstr "אלמנך"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:613
 msgid "Camera"
-msgstr ""
+msgstr "מצלמה"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:614
 msgctxt "as in computer chip"
 msgid "Chip"
-msgstr ""
+msgstr "שבב"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:615
 msgid "Clock"
-msgstr ""
+msgstr "שעון"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:616
 msgid "Code"
-msgstr ""
+msgstr "קוד"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:617
 msgid "Compose"
@@ -2297,24 +2288,23 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/mod.rs:618
 msgctxt "as in plant"
 msgid "Crop"
-msgstr ""
+msgstr "יבול"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:619
 msgid "Dictionary"
-msgstr ""
+msgstr "מילון"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:621
 msgid "Drinks"
-msgstr ""
+msgstr "משקה"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:622
 msgid "Flag"
-msgstr ""
+msgstr "דגל"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:623
-#, fuzzy
 msgid "Folder"
-msgstr "שינוי שם"
+msgstr "תיקייה"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:624
 #, fuzzy
@@ -2326,93 +2316,100 @@ msgid "Gamepad"
 msgstr ""
 
 #: crates/rnote-ui/src/dialogs/mod.rs:626
+#, fuzzy
 msgid "Gear"
-msgstr ""
+msgstr "גלגל שיניים"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:627
+#, fuzzy
 msgid "Globe"
-msgstr ""
+msgstr "גלובוס"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:628
 msgid "Hammer"
-msgstr ""
+msgstr "פטיש‌"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:629
 msgid "Heart"
-msgstr ""
+msgstr "לב"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:630
 msgid "Hourglass"
-msgstr ""
+msgstr "שעון חול"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "Key"
-msgstr ""
+msgstr "מפתח"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:632
 msgid "Language"
-msgstr ""
+msgstr "שפה"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:633
 msgid "Library"
-msgstr ""
+msgstr "ספרייה"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:634
 msgid "Lightbulb"
-msgstr ""
+msgstr "נורה"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:635
 msgid "Mathematics"
-msgstr ""
+msgstr "מתמטיקה"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:636
 #, fuzzy
 #| msgid "Settings"
 msgid "Meeting"
-msgstr "הגדרות"
+msgstr "פגישה"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:637
 msgid "Money"
-msgstr ""
+msgstr "כסף"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:638
+#, fuzzy
 msgid "Musical Note"
-msgstr ""
+msgstr "תו מוסיקלי"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:639
 msgid "Nature"
-msgstr ""
+msgstr "טבע"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:640
 #, fuzzy
 #| msgid "Open"
 msgid "Open Book"
-msgstr "פתיחה"
+msgstr "פתיחת ספר"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:641
+#, fuzzy
 msgid "Paintbrush"
-msgstr ""
+msgstr "מכחול"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:642
+#, fuzzy
 msgid "Pencil and Paper"
-msgstr ""
+msgstr "נייר ועיפרון"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:643
+#, fuzzy
 msgid "People"
-msgstr ""
+msgstr "אנשים"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:644
+#, fuzzy
 msgid "Person"
-msgstr ""
+msgstr "אדם"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:645
 #, fuzzy
 msgid "Projector"
-msgstr "וקטור"
+msgstr "מקרן"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:646
 msgid "Science"
-msgstr ""
+msgstr "מדע"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:647
 msgid "Scratchpad"
@@ -2422,23 +2419,26 @@ msgstr ""
 #, fuzzy
 #| msgid "Shaper"
 msgid "Shapes"
-msgstr "מעצב צורות"
+msgstr "צורות"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:649
+#, fuzzy
 msgid "Shopping"
-msgstr ""
+msgstr "קניות"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:650
+#, fuzzy
 msgid "Speech Bubble"
-msgstr ""
+msgstr "בועית דיבור"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:651
+#, fuzzy
 msgid "Speedometer"
-msgstr ""
+msgstr "מד מהירות"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:652
 msgid "Star"
-msgstr ""
+msgstr "כוכב"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:654
 msgctxt "as in terminal software"

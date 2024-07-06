@@ -30,6 +30,9 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
     } else {
         filter.add_mime_type("application/rnote");
     }
+    if cfg!(target_os = "macos") {
+        filter.add_suffix("rnote");
+    }
     filter.set_name(Some(&gettext(".rnote")));
 
     // create the list of filters
@@ -292,6 +295,9 @@ fn create_filedialog_export_doc(
             } else {
                 filter.add_mime_type("image/svg+xml");
             }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("svg");
+            }
             filter.set_name(Some(&gettext("Svg")));
         }
         DocExportFormat::Pdf => {
@@ -300,6 +306,9 @@ fn create_filedialog_export_doc(
             } else {
                 filter.add_mime_type("application/pdf");
             }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("pdf");
+            }
             filter.set_name(Some(&gettext("Pdf")));
         }
         DocExportFormat::Xopp => {
@@ -307,6 +316,9 @@ fn create_filedialog_export_doc(
                 filter.add_pattern("*.xopp");
             } else {
                 filter.add_mime_type("application/x-xopp");
+            }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("xopp");
             }
             filter.set_name(Some(&gettext("Xopp")));
         }
@@ -596,8 +608,6 @@ fn create_filedialog_export_doc_pages(
 
     filedialog.set_initial_folder(get_initial_folder_for_export(appwindow, canvas).as_ref());
 
-    // does it work with mimetype but not the previous thing ?
-
     let filter = FileFilter::new();
     // We always need to be able to select folders
     filter.add_mime_type("inode/directory");
@@ -608,6 +618,9 @@ fn create_filedialog_export_doc_pages(
             } else {
                 filter.add_mime_type("image/svg+xml");
             }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("svg");
+            }
             filter.set_name(Some(&gettext("Svg")));
         }
         DocPagesExportFormat::Png => {
@@ -615,6 +628,9 @@ fn create_filedialog_export_doc_pages(
                 filter.add_pattern("*.png");
             } else {
                 filter.add_mime_type("image/png");
+            }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("png");
             }
             filter.set_name(Some(&gettext("Png")));
         }
@@ -624,7 +640,9 @@ fn create_filedialog_export_doc_pages(
             } else {
                 filter.add_mime_type("image/jpeg");
             }
-            filter.add_suffix("jpeg");
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("jpg");
+            }
             filter.set_name(Some(&gettext("Jpeg")));
         }
     }
@@ -907,6 +925,9 @@ fn create_filedialog_export_selection(
             } else {
                 filter.add_mime_type("image/svg+xml");
             }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("svg");
+            }
             filter.set_name(Some(&gettext("Svg")));
         }
         SelectionExportFormat::Png => {
@@ -914,6 +935,9 @@ fn create_filedialog_export_selection(
                 filter.add_pattern("*.png");
             } else {
                 filter.add_mime_type("image/png");
+            }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("png");
             }
             filter.set_name(Some(&gettext("Png")));
         }
@@ -923,6 +947,9 @@ fn create_filedialog_export_selection(
                 filter.add_pattern("*.jpeg");
             } else {
                 filter.add_mime_type("image/jpeg");
+            }
+            if cfg!(target_os = "macos") {
+                filter.add_suffix("jpg");
             }
             filter.set_name(Some(&gettext("Jpeg")));
         }
@@ -953,6 +980,9 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
         filter.add_pattern("*.json");
     } else {
         filter.add_mime_type("application/json");
+    }
+    if cfg!(target_os = "macos") {
+        filter.add_suffix("json");
     }
     filter.set_name(Some(&gettext("Json")));
 
@@ -1013,6 +1043,9 @@ pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, ca
         filter.add_pattern("*.json");
     } else {
         filter.add_mime_type("application/json");
+    }
+    if cfg!(target_os = "macos") {
+        filter.add_suffix("json");
     }
     filter.set_name(Some(&gettext("Json")));
 

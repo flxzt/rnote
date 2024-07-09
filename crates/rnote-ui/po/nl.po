@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-16 09:43+0200\n"
-"PO-Revision-Date: 2024-07-06 09:04+0000\n"
+"PO-Revision-Date: 2024-07-10 22:09+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -2362,10 +2362,8 @@ msgid "Duplicating the file failed"
 msgstr "Bestand dupliceren mislukt"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
-#, fuzzy
-#| msgid "Change the directory"
 msgid "Duplicating the directory failed"
-msgstr "Wijzig de map"
+msgstr "Map dupliceren mislukt"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:18
 #, fuzzy

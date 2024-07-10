@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-16 09:43+0200\n"
-"PO-Revision-Date: 2024-07-06 17:34+0000\n"
-"Last-Translator: יובל הרמן <nhajeho1@gmail.com>\n"
+"PO-Revision-Date: 2024-07-10 22:09+0000\n"
+"Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
@@ -23,12 +23,12 @@ msgstr ""
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
 #: crates/rnote-ui/src/dialogs/mod.rs:33
 msgid "Sketch and take handwritten notes"
-msgstr "ציור ורישום הערות בכתב יד"
+msgstr "ציור וכתיבת הערות בכתב יד"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "‫Gnome;GTK;כלים משרדיים;אופיס;גרפיקה;הערות;פנקס;רישומים;תרשימים;"
+msgstr "‫Gnome;GTK;כלים משרדיים;אופיס;גרפיקה;הערות;פנקס;רישומים;תרשימים;פתקיות;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:20
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
@@ -60,9 +60,8 @@ msgid "A selection"
 msgstr "בחירה"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
 msgid "Write text with the typewriter"
-msgstr "רישום טקסט באמצעות \"מכונת הכתיבה\""
+msgstr "כתיבת טקסט עם „מכונת הכתיבה”"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"
@@ -84,14 +83,12 @@ msgstr "צירופי לחצנים"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
-#, fuzzy
 msgid "Clear Document"
-msgstr "מסמך חדש"
+msgstr "פינוי מסמך"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:6
-#, fuzzy
 msgid "This clears the entire document. Please confirm."
-msgstr "פעולה זו מוחקת את תוכן הגיליון במלואו. נא לאשר."
+msgstr "מנקה את תוכן המסמך במלואו. נא לאשר."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:22
@@ -109,7 +106,7 @@ msgstr "ביטול"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
-msgstr "ניקוי"
+msgstr "פינוי"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
@@ -139,10 +136,8 @@ msgid "Save"
 msgstr "שמירה"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
-#| msgid "New Sheet"
 msgid "Close Tab"
-msgstr "גיליון חדש"
+msgstr "סגירת לשונית"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
@@ -153,11 +148,8 @@ msgstr ""
 "שינויים שלא נשמרו יאבדו לצמיתות."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close Window"
-msgstr "סגירת החלון הפעיל"
+msgstr "סגירת החלון"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:48
 msgid ""

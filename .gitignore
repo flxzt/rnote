@@ -17,3 +17,5 @@
 .idea/
 .toggletasks.json
 *.flatpak
+.direnv
+

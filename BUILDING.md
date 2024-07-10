@@ -137,6 +137,23 @@ PKGBUILD](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=rnote-git) to
 see what dependencies you need to install. (The names assigned to the "depends"
 and "makedepends" variables).
 
+### Using the Nix package manager
+
+If you are running linux or darwin and have installed [Nix](https://nixos.org) then you can install all dependencies using Nix:
+
+```bash
+# This drops you in a shell with all the required dependencies available
+# Make sure your CWD is the root of the project.
+nix --extra-experimental-features 'nix-command flakes' develop
+```
+
+If you do not want to be dropped into a bash session you can use [direnv](https://github.com/direnv/direnv). Install direnv and then type
+
+```bash
+# In project root
+direnv allow .
+```
+
 ## Setup
 
 Make sure `rustc` and `cargo` are installed ( see [https://www.rust-lang.org/](https://www.rust-lang.org/) ).

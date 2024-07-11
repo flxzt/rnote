@@ -60,8 +60,11 @@ impl PenBehaviour for Eraser {
 
         let event_result = match (&mut self.state, event) {
             (EraserState::Up | EraserState::Proximity { .. }, PenEvent::Down { element, .. }) => {
-                widget_flags |= erase(element, engine_view);
-                self.state = EraserState::Down(element);
+                if !engine_view.store.get_cancelled_state() {
+                    widget_flags |= erase(element, engine_view);
+                    self.state = EraserState::Down(element);
+                    // this means we need one more up/down event here to activate the eraser
+                }
                 EventResult {
                     handled: true,
                     propagate: EventPropagation::Stop,

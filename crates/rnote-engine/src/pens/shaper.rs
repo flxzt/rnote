@@ -67,15 +67,19 @@ impl PenBehaviour for Shaper {
 
         let event_result = match (&mut self.state, event) {
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
-                engine_view.pens_config.shaper_config.new_style_seeds();
+                if !engine_view.store.get_cancelled_state() {
+                    // here we need an additional up/down event after a selection
+                    // cancellation
+                    engine_view.pens_config.shaper_config.new_style_seeds();
 
-                self.state = ShaperState::BuildShape {
-                    builder: new_builder(
-                        engine_view.pens_config.shaper_config.builder_type,
-                        element,
-                        now,
-                    ),
-                };
+                    self.state = ShaperState::BuildShape {
+                        builder: new_builder(
+                            engine_view.pens_config.shaper_config.builder_type,
+                            element,
+                            now,
+                        ),
+                    };
+                }
 
                 EventResult {
                     handled: true,

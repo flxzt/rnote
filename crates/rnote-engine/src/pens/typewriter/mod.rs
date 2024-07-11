@@ -14,6 +14,7 @@ use futures::channel::oneshot;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::EventResult;
+use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevent::{KeyboardKey, PenEvent, PenProgress, PenState};
 use rnote_compose::shapes::Shapeable;
@@ -386,7 +387,20 @@ impl PenBehaviour for Typewriter {
             PenEvent::Down {
                 element,
                 modifier_keys,
-            } => self.handle_pen_event_down(element, modifier_keys, now, engine_view),
+            } => {
+                if !engine_view.store.get_cancelled_state() {
+                    self.handle_pen_event_down(element, modifier_keys, now, engine_view)
+                } else {
+                    (
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::InProgress,
+                        },
+                        WidgetFlags::default(),
+                    )
+                }
+            }
             PenEvent::Up {
                 element,
                 modifier_keys,

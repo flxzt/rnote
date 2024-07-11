@@ -17,6 +17,8 @@ use rnote_compose::builders::{
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::{Element, Segment};
+use rnote_compose::shapes::Shapeable;
+use rnote_compose::Constraints;
 use std::time::Instant;
 
 #[derive(Debug)]
@@ -227,6 +229,28 @@ impl PenBehaviour for Brush {
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
                             );
+                        }
+
+                        // remove strokes that follow a selection cancellation if they are large
+                        // hence we can write after selecting strokes but we won't leave tiny spots
+                        // behind
+                        let volume = engine_view
+                            .store
+                            .get_stroke_ref(*current_stroke_key)
+                            .unwrap()
+                            .bounds()
+                            .volume();
+                        if engine_view.store.get_cancelled_state()
+                            && volume
+                                < 4.0
+                                    * engine_view
+                                        .pens_config
+                                        .brush_config
+                                        .get_stroke_width()
+                                        .powi(2)
+                        {
+                            tracing::debug!("VOLUME {volume}");
+                            engine_view.store.remove_stroke(*current_stroke_key);
                         }
 
                         // Finish up the last stroke

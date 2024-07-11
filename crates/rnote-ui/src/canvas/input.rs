@@ -1,5 +1,6 @@
 // Imports
 use super::RnCanvas;
+use adw::glib::subclass::types::ObjectSubclassIsExt;
 use gtk4::{gdk, glib, graphene, prelude::*, Native};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenState, ShortcutKey};
 use rnote_compose::penpath::Element;
@@ -28,7 +29,7 @@ pub(crate) fn handle_pointer_controller_event(
     //std::thread::sleep(std::time::Duration::from_millis(100));
     //super::input::debug_gdk_event(event);
 
-    if reject_pointer_input(event, touch_drawing) {
+    if reject_pointer_input(event, touch_drawing, canvas) {
         return (glib::Propagation::Proceed, pen_state);
     }
 
@@ -294,10 +295,34 @@ fn debug_gdk_event(event: &gdk::Event) {
 }
 
 /// Returns true if input should be rejected
-fn reject_pointer_input(event: &gdk::Event, touch_drawing: bool) -> bool {
+fn reject_pointer_input(event: &gdk::Event, touch_drawing: bool, canvas: &RnCanvas) -> bool {
     if touch_drawing {
-        if event.device().unwrap().num_touches() > 1 {
-            return true;
+        let sequence = event.event_sequence().as_ptr() as usize;
+        let event_type = event.event_type();
+        let status_tid = canvas.imp().touch_id.get();
+
+        match event_type {
+            gdk::EventType::TouchBegin => {
+                if status_tid.is_none() {
+                    canvas.imp().touch_id.set(Some(sequence));
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            gdk::EventType::TouchUpdate => {
+                return Some(sequence) != status_tid;
+                // reject if the sequence is not the same as the one in store
+            }
+            gdk::EventType::TouchEnd | gdk::EventType::TouchCancel => {
+                if Some(sequence) == status_tid {
+                    canvas.imp().touch_id.set(None);
+                    return false;
+                } else {
+                    return false;
+                }
+            }
+            _ => return false,
         }
     } else {
         let event_type = event.event_type();

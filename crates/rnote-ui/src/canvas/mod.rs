@@ -15,7 +15,7 @@ use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, Adjustment,
     DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext, PropagationPhase,
-    Scrollable, ScrollablePolicy, Widget,
+    Scrollable, ScrollablePolicy, Widget
 };
 use notify_debouncer_full::notify::{self, Watcher};
 use once_cell::sync::Lazy;
@@ -80,6 +80,7 @@ mod imp {
         pub(crate) unsaved_changes: Cell<bool>,
         pub(crate) empty: Cell<bool>,
         pub(crate) touch_drawing: Cell<bool>,
+        pub(crate) touch_id: Cell<Option<usize>>, // we need to extract the memory value ...
         pub(crate) show_drawing_cursor: Cell<bool>,
 
         pub(crate) last_export_dir: RefCell<Option<gio::File>>,
@@ -174,6 +175,7 @@ mod imp {
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
                 touch_drawing: Cell::new(false),
+                touch_id: Cell::new(None),
                 show_drawing_cursor: Cell::new(false),
 
                 last_export_dir: RefCell::new(None),

@@ -19,7 +19,7 @@ mod imp {
         pub(crate) dpi: Cell<f64>,
 
         #[template_child]
-        pub(crate) value_spinner: TemplateChild<SpinButton>,
+        pub(crate) value_spinner: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(crate) unit_dropdown: TemplateChild<DropDown>,
     }
@@ -30,7 +30,7 @@ mod imp {
                 value: Cell::new(1.0),
                 unit: Cell::new(MeasureUnit::Px),
                 dpi: Cell::new(96.0),
-                value_spinner: TemplateChild::<SpinButton>::default(),
+                value_spinner: TemplateChild::<adw::SpinRow>::default(),
                 unit_dropdown: TemplateChild::<DropDown>::default(),
             }
         }
@@ -169,15 +169,12 @@ mod imp {
         const MIN_VAL_IN_PX: f64 = 1.0;
         const MAX_VAL_IN_PX: f64 = 100_000.0;
 
-        const STEP_INCREMENT_PX: f64 = 1.0;
         const CLIMB_RATE_PX: f64 = 2.0;
         const DIGITS_PX: u32 = 0;
 
-        const STEP_INCREMENT_MM: f64 = 1.0;
         const CLIMB_RATE_MM: f64 = 2.0;
         const DIGITS_MM: u32 = 1;
 
-        const STEP_INCREMENT_CM: f64 = 0.1;
         const CLIMB_RATE_CM: f64 = 0.2;
         const DIGITS_CM: u32 = 2;
 
@@ -197,27 +194,13 @@ mod imp {
                 dpi,
             );
 
-            let (step_increment, climb_rate, digits) = match unit {
-                MeasureUnit::Px => (
-                    Self::STEP_INCREMENT_PX,
-                    Self::CLIMB_RATE_PX,
-                    Self::DIGITS_PX,
-                ),
-                MeasureUnit::Mm => (
-                    Self::STEP_INCREMENT_MM,
-                    Self::CLIMB_RATE_MM,
-                    Self::DIGITS_MM,
-                ),
-                MeasureUnit::Cm => (
-                    Self::STEP_INCREMENT_CM,
-                    Self::CLIMB_RATE_CM,
-                    Self::DIGITS_CM,
-                ),
+            let (climb_rate, digits) = match unit {
+                MeasureUnit::Px => (Self::CLIMB_RATE_PX, Self::DIGITS_PX),
+                MeasureUnit::Mm => (Self::CLIMB_RATE_MM, Self::DIGITS_MM),
+                MeasureUnit::Cm => (Self::CLIMB_RATE_CM, Self::DIGITS_CM),
             };
 
             self.value_spinner.set_range(min_val, max_val);
-            self.value_spinner
-                .set_increments(step_increment, 2.0 * step_increment);
             self.value_spinner.set_climb_rate(climb_rate);
             self.value_spinner.set_digits(digits);
         }

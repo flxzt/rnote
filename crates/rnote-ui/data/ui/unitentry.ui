@@ -9,7 +9,7 @@
       <object class="GtkAdjustment" id="value_adj">
         <property name="step-increment">1</property>
       </object>
-      <object class="GtkSpinButton" id="value_spinner">
+      <object class="AdwSpinRow" id="value_spinner">
         <property name="adjustment">value_adj</property>
         <property name="vexpand">false</property>
         <property name="valign">center</property>

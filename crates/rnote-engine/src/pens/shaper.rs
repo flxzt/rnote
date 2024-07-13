@@ -189,6 +189,7 @@ impl PenBehaviour for Shaper {
                             .unwrap_or(Aabb::new_invalid())
                             .volume()
                             > engine_view
+                                .config
                                 .pens_config
                                 .shaper_config
                                 .get_stroke_width()

@@ -833,6 +833,16 @@ impl Engine {
             | self.update_rendering_current_viewport()
     }
 
+    pub fn cancel_selection_temporary_pen(&self) -> bool {
+        let selection_keys = self.store.selection_keys_as_rendered();
+        !selection_keys.is_empty()
+            && self
+                .penholder
+                .pen_mode_state()
+                .take_style_override()
+                .is_some()
+    }
+
     pub fn trash_selection(&mut self) -> WidgetFlags {
         let selection_keys = self.store.selection_keys_as_rendered();
         self.store.set_trashed_keys(&selection_keys, true);

@@ -64,11 +64,7 @@ mod imp {
         #[template_child]
         pub(crate) format_orientation_landscape_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub(crate) format_width_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
         pub(crate) format_width_unitentry: TemplateChild<RnUnitEntry>,
-        #[template_child]
-        pub(crate) format_height_row: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub(crate) format_height_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
@@ -241,12 +237,12 @@ mod imp {
 
             match predefined_format {
                 PredefinedFormat::Custom => {
-                    self.format_width_row.set_sensitive(true);
-                    self.format_height_row.set_sensitive(true);
+                    self.format_width_unitentry.set_sensitive(true);
+                    self.format_height_unitentry.set_sensitive(true);
                 }
                 _ => {
-                    self.format_width_row.set_sensitive(false);
-                    self.format_height_row.set_sensitive(false);
+                    self.format_width_unitentry.set_sensitive(false);
+                    self.format_height_unitentry.set_sensitive(false);
                 }
             };
         }

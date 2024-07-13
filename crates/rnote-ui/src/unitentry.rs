@@ -1,14 +1,14 @@
 // Imports
-use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DropDown, SpinButton,
-    Widget,
-};
+use adw::subclass::prelude::{ActionRowImpl, PreferencesRowImpl};
+use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DropDown};
 use num_traits::ToPrimitive;
 use once_cell::sync::Lazy;
 use rnote_engine::document::format::MeasureUnit;
 use std::cell::Cell;
 
 mod imp {
+    use adw::subclass::spin_row::SpinRowImpl;
+
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]
@@ -40,7 +40,7 @@ mod imp {
     impl ObjectSubclass for RnUnitEntry {
         const NAME: &'static str = "RnUnitEntry";
         type Type = super::RnUnitEntry;
-        type ParentType = Widget;
+        type ParentType = adw::SpinRow;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -50,6 +50,16 @@ mod imp {
             obj.init_template();
         }
     }
+
+    impl ActionRowImpl for RnUnitEntry {
+        fn activate(&self) {}
+    }
+
+    impl PreferencesRowImpl for RnUnitEntry {}
+
+    impl SpinRowImpl for RnUnitEntry {}
+
+    impl ListBoxRowImpl for RnUnitEntry {}
 
     impl ObjectImpl for RnUnitEntry {
         fn constructed(&self) {
@@ -64,6 +74,11 @@ mod imp {
                 .transform_from(|_, val: f64| Some(val))
                 .sync_create()
                 .bidirectional()
+                .build();
+
+            obj.bind_property("title", &self.value_spinner.get(), "title")
+                .build();
+            obj.bind_property("subtitle", &self.value_spinner.get(), "subtitle")
                 .build();
 
             obj.connect_notify_local(Some("unit"), |unit_entry, _pspec| {
@@ -103,6 +118,8 @@ mod imp {
                         .maximum(f64::MAX)
                         .default_value(96.0)
                         .build(),
+                    glib::ParamSpecString::builder("title").build(),
+                    glib::ParamSpecString::builder("subtitle").build(),
                 ]
             });
             PROPERTIES.as_ref()
@@ -113,6 +130,8 @@ mod imp {
                 "value" => self.value.get().to_value(),
                 "unit" => self.unit.get().to_u32().unwrap().to_value(),
                 "dpi" => self.dpi.get().to_value(),
+                "title" => self.value_spinner.property::<String>("title").to_value(),
+                "subtitle" => self.value_spinner.property::<String>("subtitle").to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -157,6 +176,12 @@ mod imp {
                         ));
                         self.dpi.replace(dpi);
                     }
+                }
+                "title" => {
+                    self.value_spinner.set_property("title", value);
+                }
+                "subtitle" => {
+                    self.value_spinner.set_property("subtitle", value);
                 }
                 _ => unimplemented!(),
             }

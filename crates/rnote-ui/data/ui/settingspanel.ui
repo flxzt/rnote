@@ -183,37 +183,23 @@ gets disabled.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="format_width_row">
+                      <object class="RnUnitEntry" id="format_width_unitentry">
                         <property name="title" translatable="yes">Width</property>
                         <property name="subtitle" translatable="yes">Set the format width</property>
-                        <style>
-                          <class name="spin" />
-                        </style>
-                        <child type="suffix">
-                          <object class="RnUnitEntry" id="format_width_unitentry">
-                            <property name="vexpand">false</property>
-                            <property name="hexpand">false</property>
-                            <property name="halign">end</property>
-                            <property name="valign">center</property>
-                          </object>
-                        </child>
+                        <property name="vexpand">false</property>
+                        <property name="hexpand">false</property>
+                        <property name="halign">end</property>
+                        <property name="valign">center</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="format_height_row">
+                      <object class="RnUnitEntry" id="format_height_unitentry">
                         <property name="title" translatable="yes">Height</property>
                         <property name="subtitle" translatable="yes">Set the format height</property>
-                        <style>
-                          <class name="spin" />
-                        </style>
-                        <child type="suffix">
-                          <object class="RnUnitEntry" id="format_height_unitentry">
-                            <property name="vexpand">false</property>
-                            <property name="hexpand">false</property>
-                            <property name="halign">end</property>
-                            <property name="valign">center</property>
-                          </object>
-                        </child>
+                        <property name="vexpand">false</property>
+                        <property name="hexpand">false</property>
+                        <property name="halign">end</property>
+                        <property name="valign">center</property>
                       </object>
                     </child>
                     <child>

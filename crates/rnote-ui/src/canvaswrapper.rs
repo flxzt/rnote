@@ -589,31 +589,6 @@ mod imp {
                         .handle_pressed_shortcut_key(ShortcutKey::TouchTwoFingerLongPress, Instant::now());
                     canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                 }));
-
-                self.touch_two_finger_long_press_gesture.connect_end(
-                    clone!(@weak obj as canvaswrapper => move |gesture, event_sequence| {
-                        // Only deny the sequence that is actually handled.
-                        // Because this gesture is grouped with the zoom gesture, denying all
-                        // sequences within the group ( by calling `set_state()` ) might result in a segfault in certain cases
-                        if let Some(es) = event_sequence {
-                            // setting event sequences states directly is deprecated,
-                            // but it is not clear how to refactor it while not regressing the fix 4c33594 for #595
-                            #[allow(deprecated)]
-                            gesture.set_sequence_state(es, EventSequenceState::Denied);
-                        }
-                    }),
-                );
-
-                self.touch_two_finger_long_press_gesture.connect_cancel(
-                    clone!(@weak obj as canvaswrapper => move |gesture, event_sequence| {
-                        if let Some(es) = event_sequence {
-                            // setting event sequences states directly is deprecated,
-                            // but it is not clear how to refactor it while not regressing the fix 4c33594 for #595
-                            #[allow(deprecated)]
-                            gesture.set_sequence_state(es, EventSequenceState::Denied);
-                        }
-                    }),
-                );
             }
 
             {

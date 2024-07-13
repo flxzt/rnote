@@ -28,7 +28,7 @@ mod imp {
         #[template_child]
         pub(crate) quickactions_box: TemplateChild<Box>,
         #[template_child]
-        pub(crate) right_buttons: TemplateChild<Box>,
+        pub(crate) right_buttons_box: TemplateChild<Box>,
     }
 
     #[glib::object_subclass]
@@ -127,6 +127,6 @@ impl RnMainHeader {
             .build();
 
         capture_right.connect_event(|_, _| glib::Propagation::Stop);
-        imp.right_buttons.add_controller(capture_right);
+        imp.right_buttons_box.add_controller(capture_right);
     }
 }

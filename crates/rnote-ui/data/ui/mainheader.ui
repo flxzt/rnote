@@ -59,7 +59,7 @@
           </object>
         </child>
         <child type="end">
-          <object class="GtkBox">
+          <object class="GtkBox" id="right_buttons_box">
             <property name="spacing">3</property>
             <child>
               <object class="GtkButton">

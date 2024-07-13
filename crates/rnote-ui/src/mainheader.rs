@@ -1,7 +1,8 @@
 // Imports
 use crate::{appmenu::RnAppMenu, appwindow::RnAppWindow, canvasmenu::RnCanvasMenu};
 use gtk4::{
-    glib, prelude::*, subclass::prelude::*, CompositeTemplate, Label, ToggleButton, Widget,
+    glib, prelude::*, subclass::prelude::*, Box, CompositeTemplate, EventControllerLegacy, Label,
+    ToggleButton, Widget,
 };
 
 mod imp {
@@ -24,6 +25,10 @@ mod imp {
         pub(crate) canvasmenu: TemplateChild<RnCanvasMenu>,
         #[template_child]
         pub(crate) appmenu: TemplateChild<RnAppMenu>,
+        #[template_child]
+        pub(crate) quickactions_box: TemplateChild<Box>,
+        #[template_child]
+        pub(crate) right_buttons_box: TemplateChild<Box>,
     }
 
     #[glib::object_subclass]
@@ -105,5 +110,23 @@ impl RnMainHeader {
 
         imp.canvasmenu.get().init(appwindow);
         imp.appmenu.get().init(appwindow);
+
+        // add controllers to elements to prevent accidental resizes: left buttons
+        let capture_left = EventControllerLegacy::builder()
+            .name("capture_event_left")
+            .propagation_phase(gtk4::PropagationPhase::Bubble)
+            .build();
+
+        capture_left.connect_event(|_, _| glib::Propagation::Stop);
+        imp.quickactions_box.add_controller(capture_left);
+
+        // add controllers to elements to prevent accidental resizes: right buttons
+        let capture_right = EventControllerLegacy::builder()
+            .name("capture_event_right")
+            .propagation_phase(gtk4::PropagationPhase::Bubble)
+            .build();
+
+        capture_right.connect_event(|_, _| glib::Propagation::Stop);
+        imp.right_buttons_box.add_controller(capture_right);
     }
 }

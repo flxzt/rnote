@@ -24,6 +24,7 @@ use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
 use rnote_engine::document::Layout;
 use rnote_engine::ext::GdkRGBAExt;
+use rnote_engine::pens::PenStyle;
 use std::cell::RefCell;
 
 mod imp {
@@ -914,7 +915,12 @@ impl RnSettingsPanel {
             false,
             clone!(@weak lock_pen, @weak appwindow => @default-return None, move |_values| {
                 let action = lock_pen.action();
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-styles", Some(&("pen",action.to_string()).to_variant()));
+                match action {
+                Ok(value) => adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-styles", Some(&("pen",value.to_string()).to_variant())),
+                Err(e) => {
+                    tracing::debug!("error getting the lock pen action L921 {:?}",e);
+                }
+                }
                 None
             }),
         );
@@ -924,7 +930,12 @@ impl RnSettingsPanel {
             false,
              clone!(@weak lock_eraser, @weak appwindow => @default-return None, move |_values| {
                 let action = lock_eraser.action();
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-styles", Some(&("eraser",action.to_string()).to_variant()));
+                match action {
+                    Ok(value) => {
+                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-styles", Some(&("eraser",value.to_string()).to_variant()));
+                },
+                    Err(e) => tracing::debug!("error getting action eraser L937 {:?}",e),
+                }
                 None
         }));
     }

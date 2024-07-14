@@ -7,7 +7,10 @@ use gtk4::{glib, glib::clone, glib::subclass::*, CompositeTemplate};
 use num_traits::ToPrimitive;
 use once_cell::sync::Lazy;
 use rnote_engine::pens::PenStyle;
-use std::cell::RefCell;
+use std::{
+    borrow::BorrowMut,
+    cell::{BorrowError, RefCell},
+};
 
 mod imp {
     use super::*;
@@ -61,16 +64,17 @@ mod imp {
             obj.set_list_factory(Some(&*list_factory));
             obj.set_factory(Some(&*icon_factory));
 
-            obj.connect_selected_item_notify(move |row| {
-                let new_pen_style = row.pen_style();
+            // obj.connect_selected_item_notify(move |row| {
+            //     let new_pen_style = row.pen_style();
 
-                let current_style = &mut *row.imp().action.borrow_mut();
-                {
-                    *current_style = new_pen_style;
-                }
+            //     // is this the one taking the action hostage ?
+            //     let current_style = &mut *row.imp().action.borrow_mut();
+            //     {
+            //         *current_style = new_pen_style;
+            //     }
 
-                row.emit_by_name::<()>("action-changed", &[]);
-            });
+            //     row.emit_by_name::<()>("action-changed", &[]);
+            // });
 
             obj.connect_local(
                 "action-changed",
@@ -115,15 +119,24 @@ impl RnPenModeRow {
         glib::Object::new()
     }
 
-    #[allow(unused)]
-    pub(crate) fn action(&self) -> PenStyle {
-        *self.imp().action.borrow()
+    pub(crate) fn action(&self) -> Result<PenStyle, BorrowError> {
+        match self.imp().action.try_borrow() {
+            Ok(val) => Ok(*val),
+            Err(e) => Err(e),
+        }
     }
 
     #[allow(unused)]
     pub(crate) fn set_action(&self, action: PenStyle) {
-        *self.imp().action.borrow_mut() = action;
-        self.emit_by_name::<()>("action-changed", &[]);
+        match self.imp().action.try_borrow_mut() {
+            Ok(mut value) => {
+                *value = action;
+                self.emit_by_name::<()>("action-changed", &[]);
+            }
+            Err(e) => {
+                tracing::debug!("Error borrowing action L136 {:?}", e)
+            }
+        }
     }
 
     pub(crate) fn pen_style(&self) -> PenStyle {
@@ -140,9 +153,9 @@ impl RnPenModeRow {
     }
 
     fn update_ui(&self) {
-        let style = self.action();
-        {
-            self.set_pen_style(style);
+        match self.action() {
+            Ok(style) => self.set_pen_style(style),
+            Err(e) => tracing::error!("error borrowing action L157, {:?}", e),
         }
     }
 }

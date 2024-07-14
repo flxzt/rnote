@@ -26,7 +26,7 @@ use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::ext::GrapheneRectExt;
 use rnote_engine::Camera;
 use rnote_engine::{Engine, WidgetFlags};
-use std::cell::{Cell, Ref, RefCell, RefMut};
+use std::cell::{BorrowMutError, Cell, Ref, RefCell, RefMut};
 use std::path::Path;
 use std::time::Duration;
 
@@ -758,6 +758,11 @@ impl RnCanvas {
     /// Mutable borrow of the engine.
     pub(crate) fn engine_mut(&self) -> RefMut<Engine> {
         self.imp().engine.borrow_mut()
+    }
+
+    /// mutable borrow with error handling
+    pub(crate) fn try_engine_mut(&self) -> Result<RefMut<Engine>, BorrowMutError> {
+        self.imp().engine.try_borrow_mut()
     }
 
     /// Abort the engine task handler.

@@ -131,7 +131,7 @@ impl RnPenModeRow {
                 self.set_pen_style(action);
             }
             Err(e) => {
-                tracing::debug!("Error borrowing action L136 {:?}", e)
+                tracing::debug!("Error borrowing action {:?}", e)
             }
         }
     }

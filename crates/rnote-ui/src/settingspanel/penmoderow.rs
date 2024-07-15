@@ -3,14 +3,11 @@ use super::penshortcutmodels::{
     ChangePenStyleIconFactory, ChangePenStyleListFactory, ChangePenStyleListModel,
 };
 use adw::{prelude::*, subclass::prelude::*};
-use gtk4::{glib, glib::clone, glib::subclass::*, CompositeTemplate};
+use gtk4::{glib, glib::subclass::*, CompositeTemplate};
 use num_traits::ToPrimitive;
 use once_cell::sync::Lazy;
 use rnote_engine::pens::PenStyle;
-use std::{
-    borrow::BorrowMut,
-    cell::{BorrowError, RefCell},
-};
+use std::cell::RefCell;
 
 mod imp {
     use super::*;
@@ -64,26 +61,28 @@ mod imp {
             obj.set_list_factory(Some(&*list_factory));
             obj.set_factory(Some(&*icon_factory));
 
-            // obj.connect_selected_item_notify(move |row| {
-            //     let new_pen_style = row.pen_style();
-
-            //     // is this the one taking the action hostage ?
-            //     let current_style = &mut *row.imp().action.borrow_mut();
-            //     {
-            //         *current_style = new_pen_style;
-            //     }
-
-            //     row.emit_by_name::<()>("action-changed", &[]);
-            // });
-
-            obj.connect_local(
-                "action-changed",
-                false,
-                clone!(@weak obj as penshortcutrow => @default-return None, move |_values| {
-                    penshortcutrow.update_ui();
-                    None
-                }),
-            );
+            obj.connect_selected_item_notify(move |row| {
+                let new_pen_style = row.pen_style();
+                let trigger_action: bool = {
+                    let current_style_res = row.imp().action.try_borrow_mut();
+                    match current_style_res {
+                        Ok(mut current_style) => {
+                            // when set from the canvas, both are changed at the same time
+                            // it's not the case when a user change the selection
+                            if *current_style != new_pen_style {
+                                *current_style = new_pen_style;
+                                true
+                            } else {
+                                false
+                            }
+                        }
+                        Err(_) => false, // already used somewhere else, aborting
+                    }
+                };
+                if trigger_action {
+                    row.emit_by_name::<()>("action-changed", &[]);
+                }
+            });
         }
 
         fn dispose(&self) {
@@ -119,19 +118,17 @@ impl RnPenModeRow {
         glib::Object::new()
     }
 
-    pub(crate) fn action(&self) -> Result<PenStyle, BorrowError> {
-        match self.imp().action.try_borrow() {
-            Ok(val) => Ok(*val),
-            Err(e) => Err(e),
-        }
+    /// get the action immutably
+    pub(crate) fn get_action(&self) -> PenStyle {
+        *self.imp().action.borrow()
     }
 
-    #[allow(unused)]
+    /// incoming change of state (from the canvas to the settings panel)
     pub(crate) fn set_action(&self, action: PenStyle) {
         match self.imp().action.try_borrow_mut() {
             Ok(mut value) => {
                 *value = action;
-                self.emit_by_name::<()>("action-changed", &[]);
+                self.set_pen_style(action);
             }
             Err(e) => {
                 tracing::debug!("Error borrowing action L136 {:?}", e)
@@ -150,12 +147,5 @@ impl RnPenModeRow {
     pub(crate) fn set_lock_state(&self, state: bool) {
         self.imp().mode.get().set_state(state);
         self.imp().mode.get().set_active(state);
-    }
-
-    fn update_ui(&self) {
-        match self.action() {
-            Ok(style) => self.set_pen_style(style),
-            Err(e) => tracing::error!("error borrowing action L157, {:?}", e),
-        }
     }
 }

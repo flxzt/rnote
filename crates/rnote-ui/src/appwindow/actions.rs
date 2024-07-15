@@ -346,8 +346,8 @@ impl RnAppWindow {
                     if lock_out {
                         // display a popup that can unlock the pen tool
                         appwindow.overlays().dispatch_toast_w_button_singleton(
-                        &gettext("Tool Locked"), 
-                        &gettext("Unlock"), 
+                        &gettext("Tool Locked"),
+                        &gettext("Unlock"),
                         clone!(@weak canvas, @weak appwindow =>  move |_reload_toast | {
                                 canvas.engine_mut().penholder.pen_mode_state_mut().unlock_pen(active_pen);
                                 appwindow.sidebar().settings_panel().set_lock_state(active_pen,false);
@@ -377,7 +377,7 @@ impl RnAppWindow {
                     "pen" => PenMode::Pen,
                     "eraser" => PenMode::Eraser,
                     other => {
-                        tracing::error!("the pen style does not exist (either `pen` or `eraser` should be given as string, got {other:}");   
+                        tracing::error!("the pen style does not exist (either `pen` or `eraser` should be given as string, got {other:}");
                         return;
                     }
                 };
@@ -394,13 +394,15 @@ impl RnAppWindow {
                 // Changes the underlying values only if they are different from the current ones
                 // This prevents circular calls between the settings panel and the canvas
                 let current_pen = canvas.engine_ref().penholder.pen_mode_state().get_style(pen_mode);
-                if current_pen != pen_style && canvas.try_engine_mut().is_ok() {
+                if current_pen != pen_style {
                     tracing::debug!("engine mut 2 (ok)");
                     let mut widget_flags = canvas.engine_mut().change_pen_style(pen_style,Some(pen_mode));
                     widget_flags |= canvas.engine_mut().change_pen_style_override(None);
                     appwindow.handle_widget_flags(widget_flags, &canvas);
+                } else {
+                    tracing::debug!("same pen as the current one, aborting");
                 }
-            }),
+            })
         );
 
         // Tab actions

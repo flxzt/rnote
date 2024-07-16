@@ -105,6 +105,11 @@ mod imp {
                     .engine_mut()
                     .update_content_rendering_current_viewport();
             }
+
+            if old_viewport != new_viewport {
+                // update the page number
+                canvas.set_refresh_pages(true);
+            }
         }
     }
 }

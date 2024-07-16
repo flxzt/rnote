@@ -40,6 +40,7 @@ struct Connections {
     appwindow_scalefactor: Option<glib::SignalHandlerId>,
     appwindow_save_in_progress: Option<glib::SignalHandlerId>,
     appwindow_unsaved_changes: Option<glib::SignalHandlerId>,
+    appwindow_refresh_pages: Option<glib::SignalHandlerId>,
     appwindow_touch_drawing: Option<glib::Binding>,
     appwindow_show_drawing_cursor: Option<glib::Binding>,
     appwindow_regular_cursor: Option<glib::Binding>,
@@ -78,6 +79,7 @@ mod imp {
         pub(crate) output_file_expect_write: Cell<bool>,
         pub(crate) save_in_progress: Cell<bool>,
         pub(crate) unsaved_changes: Cell<bool>,
+        pub(crate) refresh_pages: Cell<bool>,
         pub(crate) empty: Cell<bool>,
         pub(crate) touch_drawing: Cell<bool>,
         pub(crate) show_drawing_cursor: Cell<bool>,
@@ -172,6 +174,7 @@ mod imp {
                 output_file_expect_write: Cell::new(false),
                 save_in_progress: Cell::new(false),
                 unsaved_changes: Cell::new(false),
+                refresh_pages: Cell::new(false),
                 empty: Cell::new(true),
                 touch_drawing: Cell::new(false),
                 show_drawing_cursor: Cell::new(false),
@@ -260,6 +263,9 @@ mod imp {
                     glib::ParamSpecBoolean::builder("unsaved-changes")
                         .default_value(false)
                         .build(),
+                    glib::ParamSpecBoolean::builder("refresh-pages")
+                        .default_value(false)
+                        .build(),
                     glib::ParamSpecBoolean::builder("empty")
                         .default_value(true)
                         .build(),
@@ -290,6 +296,7 @@ mod imp {
                 "output-file" => self.output_file.borrow().to_value(),
                 "save-in-progress" => self.save_in_progress.get().to_value(),
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
+                "refresh-pages" => self.refresh_pages.get().to_value(),
                 "empty" => self.empty.get().to_value(),
                 "hadjustment" => self.hadjustment.borrow().to_value(),
                 "vadjustment" => self.vadjustment.borrow().to_value(),
@@ -322,6 +329,11 @@ mod imp {
                     let unsaved_changes: bool =
                         value.get().expect("The value needs to be of type `bool`");
                     self.unsaved_changes.replace(unsaved_changes);
+                }
+                "refresh-pages" => {
+                    let refresh_pages: bool =
+                        value.get().expect("The value needs to be of type `bool`");
+                    self.refresh_pages.replace(refresh_pages);
                 }
                 "empty" => {
                     let empty: bool = value.get().expect("The value needs to be of type `bool`");
@@ -662,6 +674,18 @@ impl RnCanvas {
     pub(crate) fn set_unsaved_changes(&self, unsaved_changes: bool) {
         if self.imp().unsaved_changes.get() != unsaved_changes {
             self.set_property("unsaved-changes", unsaved_changes.to_value());
+        }
+    }
+
+    #[allow(unused)]
+    pub(crate) fn refresh_pages(&self) -> bool {
+        self.property::<bool>("refresh-pages")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_refresh_pages(&self, refresh_pages: bool) {
+        if self.imp().refresh_pages.get() != refresh_pages {
+            self.set_property("refresh-pages", refresh_pages.to_value());
         }
     }
 
@@ -1078,6 +1102,7 @@ impl RnCanvas {
                 }
 
                 appwindow.refresh_titles(&appwindow.active_tab_wrapper());
+                appwindow.refresh_pages(&canvas);
             }),
         );
 
@@ -1111,6 +1136,13 @@ impl RnCanvas {
             Some("unsaved-changes"),
             clone!(@weak appwindow => move |_, _| {
                 appwindow.refresh_titles(&appwindow.active_tab_wrapper());
+            }),
+        );
+
+        let appwindow_refresh_pages = self.connect_notify_local(
+            Some("refresh-pages"),
+            clone!(@weak appwindow => move |_,_| {
+                appwindow.refresh_pages(&appwindow.active_tab_wrapper().canvas());
             }),
         );
 
@@ -1225,6 +1257,12 @@ impl RnCanvas {
             self.disconnect(old);
         }
         if let Some(old) = connections
+            .appwindow_refresh_pages
+            .replace(appwindow_refresh_pages)
+        {
+            self.disconnect(old)
+        }
+        if let Some(old) = connections
             .appwindow_touch_drawing
             .replace(appwindow_touch_drawing)
         {
@@ -1279,6 +1317,9 @@ impl RnCanvas {
             self.disconnect(old);
         }
         if let Some(old) = connections.appwindow_unsaved_changes.take() {
+            self.disconnect(old);
+        }
+        if let Some(old) = connections.appwindow_refresh_pages.take() {
             self.disconnect(old);
         }
         if let Some(old) = connections.appwindow_touch_drawing.take() {

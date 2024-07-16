@@ -351,7 +351,6 @@ mod imp {
                         widget_flags |= canvas.engine_mut().camera_set_offset_expand(new_camera_offset);
                         canvas.emit_handle_widget_flags(widget_flags);
                     }
-
                     glib::Propagation::Stop
                 }));
             }

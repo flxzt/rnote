@@ -171,6 +171,7 @@ pub(crate) fn handle_pointer_controller_event(
             match pen_state {
                 PenState::Up => {
                     canvas.enable_drawing_cursor(false);
+                    // refresh the page number
 
                     let (ep, wf) = canvas.engine_mut().handle_pen_event(
                         PenEvent::Up {

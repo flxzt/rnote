@@ -12,6 +12,7 @@ use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{gdk, gio, glib, Application, IconTheme};
 use rnote_compose::Color;
+use rnote_engine::document::Layout;
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
@@ -200,13 +201,12 @@ impl RnAppWindow {
 
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
     pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags, canvas: &RnCanvas) {
-        //tracing::debug!("handling widget flags: '{widget_flags:?}'");
-
         if widget_flags.redraw {
             canvas.queue_draw();
         }
         if widget_flags.resize {
             canvas.queue_resize();
+            self.refresh_pages(canvas);
         }
         if widget_flags.refresh_ui {
             self.refresh_ui_from_engine(&self.active_tab_wrapper());
@@ -490,6 +490,38 @@ impl RnAppWindow {
 
         self.main_header().main_title().set_title(&title);
         self.main_header().main_title().set_subtitle(&subtitle);
+    }
+
+    pub(crate) fn refresh_pages(&self, canvas: &RnCanvas) {
+        let layout = canvas.engine_ref().document.layout;
+        match layout {
+            Layout::FixedSize | Layout::ContinuousVertical => {
+                self.main_header().page_spin().set_visible(true);
+                let n_pages = canvas.engine_ref().document.calc_n_pages();
+                self.main_header()
+                    .page_spin()
+                    .set_range(1.0, n_pages as f64);
+
+                // zoom need to be taken into account
+
+                // slight offset : for now, because going to the page will
+                // give the previous page when the go_to_page function is called
+                // hence a cascade of calls are made until the first page is shown
+                // maybe we should set the page number based on the page visible
+                // at the center of the viewport instead
+                let page_number = ((canvas.engine_ref().camera.offset().y + 0.01)
+                    / (canvas.engine_ref().document.format.height()
+                        * canvas.engine_ref().camera.zoom()))
+                .ceil()
+                .max(1.0);
+                self.main_header().page_spin().set_value(page_number);
+            }
+            _ => {
+                // for now, not really working for infinite modes
+                self.main_header().page_spin().set_visible(false)
+            }
+        }
+        canvas.set_refresh_pages(false); // reset this property after dealing with the update
     }
 
     /// Open the file, with import dialogs when appropriate.
@@ -873,6 +905,7 @@ impl RnAppWindow {
             .refresh_ui(active_tab);
         self.sidebar().settings_panel().refresh_ui(active_tab);
         self.refresh_titles(active_tab);
+        self.refresh_pages(&active_tab.canvas());
     }
 
     /// Sync the state from the previous active tab and the current one. Used when the selected tab changes.

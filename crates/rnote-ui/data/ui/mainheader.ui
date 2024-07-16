@@ -62,6 +62,12 @@
           <object class="GtkBox" id="right_buttons_box">
             <property name="spacing">3</property>
             <child>
+              <object class="GtkSpinButton" id="page_spin">
+                <property name="orientation">horizontal</property>
+                <property name="numeric">true</property>
+              </object>
+            </child>
+            <child>
               <object class="GtkButton">
                 <property name="tooltip-text" translatable="yes">Save Document</property>
                 <property name="icon-name">doc-save-symbolic</property>

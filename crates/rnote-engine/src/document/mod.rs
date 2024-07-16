@@ -165,7 +165,7 @@ impl Document {
     }
 
     #[allow(unused)]
-    pub(crate) fn calc_n_pages(&self) -> u32 {
+    pub fn calc_n_pages(&self) -> u32 {
         // Avoid div by 0
         if self.format.height() > 0.0 && self.format.width() > 0.0 {
             (self.width / self.format.width()).ceil() as u32

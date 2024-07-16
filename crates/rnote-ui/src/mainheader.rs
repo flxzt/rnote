@@ -1,8 +1,8 @@
 // Imports
 use crate::{appmenu::RnAppMenu, appwindow::RnAppWindow, canvasmenu::RnCanvasMenu};
 use gtk4::{
-    glib, prelude::*, subclass::prelude::*, Box, CompositeTemplate, EventControllerLegacy, Label,
-    ToggleButton, Widget,
+    glib, glib::clone, prelude::*, subclass::prelude::*, Box, CompositeTemplate,
+    EventControllerLegacy, Label, SpinButton, ToggleButton, Widget,
 };
 
 mod imp {
@@ -29,6 +29,8 @@ mod imp {
         pub(crate) quickactions_box: TemplateChild<Box>,
         #[template_child]
         pub(crate) right_buttons_box: TemplateChild<Box>,
+        #[template_child]
+        pub(crate) page_spin: TemplateChild<SpinButton>,
     }
 
     #[glib::object_subclass]
@@ -105,6 +107,10 @@ impl RnMainHeader {
         self.imp().appmenu.get()
     }
 
+    pub(crate) fn page_spin(&self) -> SpinButton {
+        self.imp().page_spin.get()
+    }
+
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
@@ -128,5 +134,17 @@ impl RnMainHeader {
 
         capture_right.connect_event(|_, _| glib::Propagation::Stop);
         imp.right_buttons_box.add_controller(capture_right);
+
+        imp.page_spin.set_increments(1.0, 1.0);
+        imp.page_spin
+            .connect_value_changed(clone!(@weak appwindow => move |spinb| {
+                let page_number = spinb.value();
+                let canvas = appwindow.active_tab_wrapper().canvas();
+                if !canvas.property::<bool>("refresh-pages") {
+                    // go to the page indicated
+                    let widget_flags = canvas.engine_mut().go_to_page(page_number);
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                }
+            }));
     }
 }

@@ -641,6 +641,7 @@ impl RnSettingsPanel {
                         .canvasmenu()
                         .fixedsize_quickactions_box()
                         .set_sensitive(document_layout == Layout::FixedSize);
+                    appwindow.refresh_pages(&canvas);
 
                     if canvas.engine_ref().document.layout != document_layout {
                         let mut widget_flags = canvas.engine_mut().set_doc_layout(document_layout);

@@ -680,6 +680,17 @@ impl Engine {
         self.camera_set_offset_expand(new_offset)
     }
 
+    /// go to the page number for fixed layouts
+    pub fn go_to_page(&mut self, page_number: f64) -> WidgetFlags {
+        let zoom = self.camera.zoom();
+        let previous_offset = self.camera.offset();
+        let new_offset = na::vector![
+            previous_offset.x,
+            (page_number - 1.0) * self.document.format.height() * zoom
+        ];
+        self.camera_set_offset_expand(new_offset)
+    }
+
     /// Resize the doc when in autoexpanding layouts. called e.g. when finishing a new stroke.
     ///
     /// Background rendering then needs to be updated.

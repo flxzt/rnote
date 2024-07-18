@@ -212,22 +212,22 @@ impl RnCanvas {
         let file_path = file
             .path()
             .ok_or_else(|| anyhow::anyhow!("Could not get a path for file: `{file:?}`."))?;
-        let basename = file
-            .basename()
-            .ok_or_else(|| anyhow::anyhow!("Could not retrieve basename for file: `{file:?}`."))?;
         let mut tmp_file_path = file_path.clone();
         tmp_file_path.set_extension("tmp");
 
+        let basename = file
+            .basename()
+            .ok_or_else(|| anyhow::anyhow!("Could not retrieve basename for file: `{file:?}`."))?;
         let rnote_bytes_receiver = self
             .engine_ref()
             .save_as_rnote_bytes(basename.to_string_lossy().to_string());
 
         self.dismiss_output_file_modified_toast();
-        tracing::info!("two-step save method called");
 
+        use std::time::Instant;
+        let _global_start = Instant::now();
         let file_write_operation = async {
             let bytes = rnote_bytes_receiver.await??;
-            tracing::info!("bytes received");
             self.set_output_file_expect_write(true);
             let mut write_file = async_fs::OpenOptions::new()
                 .create(true)
@@ -248,10 +248,14 @@ impl RnCanvas {
                 &tmp_file_path.display()
             ))?;
 
-            Ok::<(usize, u32), anyhow::Error>((bytes.len(), crc32fast::hash(&bytes)))
+            let _start = Instant::now();
+            let hash = crc32fast::hash(&bytes);
+            tracing::info!("internal checksum : {:.5}", _start.elapsed().as_secs_f64());
+
+            Ok::<(usize, u32), anyhow::Error>((bytes.len(), hash))
         };
 
-        let (size, checksum) = file_write_operation.await.map_err(|e| {
+        let (size, internal_checksum) = file_write_operation.await.map_err(|e| {
             self.set_save_in_progress(false);
             // If the file operations failed in any way, we make sure to clear the expect_write flag
             // because we can't know for sure if the output-file watcher will be able to.
@@ -259,37 +263,35 @@ impl RnCanvas {
             e
         })?;
 
-        tracing::info!(
-            "finished writing to file, checksum calculated as : {}",
-            checksum
-        );
-
+        let _start = Instant::now();
         let file_check_operation = async {
             let mut read_file = async_fs::OpenOptions::new()
                 .read(true)
                 .open(&tmp_file_path)
                 .await
                 .context(format!(
-                    "Failed to open/read file for path '{}'",
+                    "Failed to open/read temporary file for path '{}'",
                     &tmp_file_path.display()
                 ))?;
             let mut data: Vec<u8> = Vec::with_capacity(size);
             read_file.read_to_end(&mut data).await?;
 
-            tracing::info!("finished reading temporary file");
-
-            let new_checksum = crc32fast::hash(&data);
-            tracing::info!("new checksum calculated as : {}", new_checksum);
-            if checksum != new_checksum {
+            let external_checksum = crc32fast::hash(&data);
+            if internal_checksum != external_checksum {
                 return Err(anyhow::anyhow!(
-                    "Checksum of temporary file does not match internal"
+                    "The checksum of the temporary file does not match the internal checksum"
                 ));
             }
 
             Ok::<(), anyhow::Error>(())
         };
         file_check_operation.await?;
+        tracing::info!(
+            "file_check_operation : {:.5}",
+            _start.elapsed().as_secs_f64()
+        );
 
+        let _start = Instant::now();
         let file_swap_operation = async {
             if file_path.exists() {
                 async_fs::remove_file(&file_path).await?;
@@ -298,11 +300,17 @@ impl RnCanvas {
             Ok::<(), anyhow::Error>(())
         };
         file_swap_operation.await?;
+        tracing::info!(
+            "file_swap_operation : {:.5}",
+            _start.elapsed().as_secs_f64()
+        );
 
         self.set_output_file(Some(gio::File::for_path(&file_path)));
 
         self.set_unsaved_changes(false);
         self.set_save_in_progress(false);
+
+        tracing::info!("total : {:.5}", _global_start.elapsed().as_secs_f64());
 
         Ok(true)
     }

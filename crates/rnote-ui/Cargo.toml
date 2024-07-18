@@ -19,6 +19,7 @@ anyhow = { workspace = true }
 async-fs = { workspace = true }
 base64 = { workspace = true }
 cairo-rs = { workspace = true }
+crc32fast = { workspace = true }
 fs_extra = { workspace = true }
 futures = { workspace = true }
 gettext-rs = { workspace = true }

@@ -280,8 +280,6 @@ impl RnCanvas {
         };
         file_check_operation.await?;
 
-        use std::time::Instant;
-        let _start = Instant::now();
         let file_swap_operation = async {
             if file_path.exists() {
                 // zeroize the previous version of the save file
@@ -310,7 +308,7 @@ impl RnCanvas {
 
                 // finally remove the previous save file after it was zeroized
                 async_fs::remove_file(&file_path).await.context(format!(
-                    "Failed to remove old save file with path '{}'",
+                    "Failed to remove previous save file with path '{}'",
                     &file_path.display()
                 ))?;
             }
@@ -321,7 +319,6 @@ impl RnCanvas {
             Ok::<(), anyhow::Error>(())
         };
         file_swap_operation.await?;
-        tracing::info!("file swap op : {:.7}", _start.elapsed().as_secs_f64());
 
         self.set_output_file(Some(gio::File::for_path(&file_path)));
         self.set_unsaved_changes(false);

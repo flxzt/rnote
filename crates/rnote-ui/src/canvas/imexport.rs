@@ -235,11 +235,11 @@ impl RnCanvas {
                 .await
                 .context(format!(
                     "Failed to create/open/truncate file for path '{}'",
-                    file_path.display()
+                    tmp_file_path.display()
                 ))?;
             write_file.write_all(&bytes).await.context(format!(
                 "Failed to write bytes to file with path '{}'",
-                file_path.display()
+                tmp_file_path.display()
             ))?;
             write_file.sync_all().await.context(format!(
                 "Failed to sync file after writing with path '{}'",
@@ -280,8 +280,35 @@ impl RnCanvas {
         };
         file_check_operation.await?;
 
+        use std::time::Instant;
+        let _start = Instant::now();
         let file_swap_operation = async {
             if file_path.exists() {
+                // zeroize the previous version of the save file
+                let mut zeroize_file = async_fs::OpenOptions::new()
+                    .write(true)
+                    .truncate(false) // no real need to truncate as we will manually overwrite everything
+                    .create(false)
+                    .open(&file_path)
+                    .await
+                    .context(format!(
+                        "Failed to open file for path '{}'",
+                        &file_path.display()
+                    ))?;
+                let file_size = zeroize_file.metadata().await?.len() as usize;
+                zeroize_file
+                    .write_all(&vec![0; file_size])
+                    .await
+                    .context(format!(
+                        "Failed to write bytes to file with path '{}'",
+                        file_path.display()
+                    ))?;
+                zeroize_file.sync_all().await.context(format!(
+                    "Failed to sync file after writing with path '{}'",
+                    &tmp_file_path.display()
+                ))?;
+
+                // finally remove the previous save file after it was zeroized
                 async_fs::remove_file(&file_path).await.context(format!(
                     "Failed to remove old save file with path '{}'",
                     &file_path.display()
@@ -294,6 +321,7 @@ impl RnCanvas {
             Ok::<(), anyhow::Error>(())
         };
         file_swap_operation.await?;
+        tracing::info!("file swap op : {:.7}", _start.elapsed().as_secs_f64());
 
         self.set_output_file(Some(gio::File::for_path(&file_path)));
         self.set_unsaved_changes(false);

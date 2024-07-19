@@ -224,8 +224,6 @@ impl RnCanvas {
 
         self.dismiss_output_file_modified_toast();
 
-        use std::time::Instant;
-        let _global_start = Instant::now();
         let file_write_operation = async {
             let bytes = rnote_bytes_receiver.await??;
             self.set_output_file_expect_write(true);
@@ -248,11 +246,7 @@ impl RnCanvas {
                 &tmp_file_path.display()
             ))?;
 
-            let _start = Instant::now();
-            let hash = crc32fast::hash(&bytes);
-            tracing::info!("internal checksum : {:.5}", _start.elapsed().as_secs_f64());
-
-            Ok::<(usize, u32), anyhow::Error>((bytes.len(), hash))
+            Ok::<(usize, u32), anyhow::Error>((bytes.len(), crc32fast::hash(&bytes)))
         };
 
         let (size, internal_checksum) = file_write_operation.await.map_err(|e| {
@@ -263,7 +257,6 @@ impl RnCanvas {
             e
         })?;
 
-        let _start = Instant::now();
         let file_check_operation = async {
             let mut read_file = async_fs::OpenOptions::new()
                 .read(true)
@@ -279,38 +272,32 @@ impl RnCanvas {
             let external_checksum = crc32fast::hash(&data);
             if internal_checksum != external_checksum {
                 return Err(anyhow::anyhow!(
-                    "The checksum of the temporary file does not match the internal checksum"
+                    "Mismatch between the internal and external checksum, temporary file most likely corrupted"
                 ));
             }
 
             Ok::<(), anyhow::Error>(())
         };
         file_check_operation.await?;
-        tracing::info!(
-            "file_check_operation : {:.5}",
-            _start.elapsed().as_secs_f64()
-        );
 
-        let _start = Instant::now();
         let file_swap_operation = async {
             if file_path.exists() {
-                async_fs::remove_file(&file_path).await?;
+                async_fs::remove_file(&file_path).await.context(format!(
+                    "Failed to remove old save file with path '{}'",
+                    &file_path.display()
+                ))?;
             }
-            async_fs::rename(&tmp_file_path, &file_path).await?;
+            async_fs::rename(&tmp_file_path, &file_path)
+                .await
+                .context("Failed to rename the temporary save file into the main one")?;
+
             Ok::<(), anyhow::Error>(())
         };
         file_swap_operation.await?;
-        tracing::info!(
-            "file_swap_operation : {:.5}",
-            _start.elapsed().as_secs_f64()
-        );
 
         self.set_output_file(Some(gio::File::for_path(&file_path)));
-
         self.set_unsaved_changes(false);
         self.set_save_in_progress(false);
-
-        tracing::info!("total : {:.5}", _global_start.elapsed().as_secs_f64());
 
         Ok(true)
     }

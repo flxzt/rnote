@@ -61,6 +61,9 @@ mod imp {
 
             // Disable scrolling entirely,
             // fixing unexpected scrolling issue when the unit entry is inside a scrolled window
+            //
+            // taken from the implementation libadwaita's SpinRow
+            // see: https://gitlab.gnome.org/GNOME/libadwaita/-/blob/44543013d76c37da6f8bbf558ea2d6b57f0bd692/src/adw-spin-row.c#L483
             if let Some(scroll_controller) = self.value_spinner.observe_controllers().into_iter().find(|controller| {
                 let Ok(controller) = controller else {
 

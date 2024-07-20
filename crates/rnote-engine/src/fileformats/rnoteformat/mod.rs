@@ -30,10 +30,24 @@ fn compress_to_gzip(to_compress: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
 
 /// Decompress from gzip.
 fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
-    let mut decoder = flate2::read::MultiGzDecoder::new(compressed);
-    let mut bytes: Vec<u8> = Vec::new();
-    decoder.read_to_end(&mut bytes)?;
+    // Optimisation for the gzip format, defined by RFC 1952
+    // vector's capacity defined by the size of the uncompressed data
+    // size given in little endian format, last 4 bytes of "compressed"
+    //
+    //   ISIZE (Input SIZE)
+    //     This contains the size of the original (uncompressed) input data modulo 2^32.
+    let mut bytes: Vec<u8> = std::panic::catch_unwind(|| {
+        let mut decompressed_size: [u8; 8] = [0; 8];
+        decompressed_size[0..4].copy_from_slice(&compressed[compressed.len() - 4..]);
+        Vec::with_capacity(usize::from_le_bytes(decompressed_size))
+    })
+    .unwrap_or_else(|_| {
+        tracing::warn!("Could not determine the size of the uncompressed data");
+        Vec::new()
+    });
 
+    let mut decoder = flate2::read::MultiGzDecoder::new(compressed);
+    decoder.read_to_end(&mut bytes)?;
     Ok(bytes)
 }
 

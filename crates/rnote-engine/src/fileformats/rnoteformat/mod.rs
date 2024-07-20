@@ -23,8 +23,7 @@ use std::io::{Read, Write};
 
 /// Compress bytes with gzip.
 fn compress_to_gzip(to_compress: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
-    let mut encoder =
-        flate2::write::GzEncoder::new(Vec::<u8>::new(), flate2::Compression::default());
+    let mut encoder = flate2::write::GzEncoder::new(Vec::<u8>::new(), flate2::Compression::new(5));
     encoder.write_all(to_compress)?;
     Ok(encoder.finish()?)
 }

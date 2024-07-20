@@ -129,9 +129,7 @@ impl FileFormatSaver for RnoteFile {
             data: ijson::to_value(self).context("converting RnoteFile to JSON value failed.")?,
         };
         let compressed = compress_to_gzip(
-            serde_json::to_string(&wrapper)
-                .context("Serializing RnoteFileWrapper failed.")?
-                .as_bytes(),
+            &serde_json::to_vec(&wrapper).context("Serializing RnoteFileWrapper failed.")?,
         )
         .context("compressing bytes failed.")?;
 

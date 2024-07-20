@@ -30,9 +30,9 @@ fn compress_to_gzip(to_compress: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
 
 /// Decompress from gzip.
 fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
-    // Optimisation for the gzip format, defined by RFC 1952
-    // vector's capacity defined by the size of the uncompressed data
-    // size given in little endian format, last 4 bytes of "compressed"
+    // Optimization for the gzip format, defined by RFC 1952
+    // capacity of the vector defined by the size of the uncompressed data
+    // given in little endian format, by the last 4 bytes of "compressed"
     //
     //   ISIZE (Input SIZE)
     //     This contains the size of the original (uncompressed) input data modulo 2^32.

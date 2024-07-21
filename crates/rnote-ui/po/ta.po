@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-16 09:43+0200\n"
-"PO-Revision-Date: 2024-04-23 03:07+0000\n"
+"PO-Revision-Date: 2024-07-22 11:09+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1093,7 +1093,7 @@ msgstr "பெரிதாக்க (_Z) கிள்ளுதலைத் த�
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:64
 msgid "Respect Borders When Pasting"
-msgstr ""
+msgstr "ஒட்டும்போது எல்லைகளை மதிக்கவும்"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:95
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
@@ -1766,7 +1766,7 @@ msgstr "தேர்வை ஏற்றுமதி செய்வதில் 
 
 #: crates/rnote-ui/src/appwindow/imp.rs:229
 msgid "Saves are in progress"
-msgstr ""
+msgstr "சேமிப்புகள் நடந்து வருகின்றன"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:299
 msgid "Button 1"

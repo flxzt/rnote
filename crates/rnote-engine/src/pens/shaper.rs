@@ -6,7 +6,6 @@ use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
-use p2d::bounding_volume::BoundingVolume;
 use piet::RenderContext;
 use rnote_compose::builders::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use rnote_compose::builders::{ArrowBuilder, GridBuilder, PolygonBuilder, PolylineBuilder};
@@ -17,7 +16,6 @@ use rnote_compose::builders::{
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenProgress};
 use rnote_compose::penpath::Element;
-use rnote_compose::shapes::Shapeable;
 use rnote_compose::Shape;
 use std::time::Instant;
 
@@ -159,20 +157,7 @@ impl PenBehaviour for Shaper {
                             .shaper_config
                             .gen_style_for_current_options();
 
-                        // calculate the bounds
-                        let bound_condition = shapes
-                            .iter()
-                            .map(|x| x.bounds())
-                            .reduce(|acc, x| acc.merged(&x))
-                            .unwrap_or(Aabb::new_invalid())
-                            .volume()
-                            > engine_view
-                                .pens_config
-                                .shaper_config
-                                .get_stroke_width()
-                                .powi(2);
-
-                        let shapes_emitted = !shapes.is_empty() && bound_condition;
+                        let shapes_emitted = !shapes.is_empty();
                         if shapes_emitted {
                             for shape in shapes {
                                 let key = engine_view.store.insert_stroke(

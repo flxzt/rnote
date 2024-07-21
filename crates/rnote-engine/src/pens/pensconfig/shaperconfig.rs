@@ -91,11 +91,4 @@ impl ShaperConfig {
             }
         }
     }
-
-    pub(crate) fn get_stroke_width(&self) -> f64 {
-        match &self.style {
-            ShaperStyle::Smooth => self.smooth_options.stroke_width,
-            ShaperStyle::Rough => self.rough_options.stroke_width,
-        }
-    }
 }

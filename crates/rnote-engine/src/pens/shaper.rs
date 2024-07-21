@@ -6,7 +6,6 @@ use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
-use p2d::bounding_volume::BoundingVolume;
 use piet::RenderContext;
 use rnote_compose::Shape;
 use rnote_compose::builders::buildable::{Buildable, BuilderCreator, BuilderProgress};
@@ -159,20 +158,7 @@ impl PenBehaviour for Shaper {
                             .shaper_config
                             .gen_style_for_current_options();
 
-                        // calculate the bounds
-                        let bound_condition = shapes
-                            .iter()
-                            .map(|x| x.bounds())
-                            .reduce(|acc, x| acc.merged(&x))
-                            .unwrap_or(Aabb::new_invalid())
-                            .volume()
-                            > engine_view
-                                .pens_config
-                                .shaper_config
-                                .get_stroke_width()
-                                .powi(2);
-
-                        let shapes_emitted = !shapes.is_empty() && bound_condition;
+                        let shapes_emitted = !shapes.is_empty();
                         if shapes_emitted {
                             for shape in shapes {
                                 let key = engine_view.store.insert_stroke(

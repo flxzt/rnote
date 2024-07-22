@@ -36,15 +36,15 @@ fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
     //
     //   ISIZE (Input SIZE)
     //     This contains the size of the original (uncompressed) input data modulo 2^32.
-    let mut bytes: Vec<u8> = std::panic::catch_unwind(|| {
+    let mut bytes: Vec<u8> = {
         let mut decompressed_size: [u8; 8] = [0; 8];
-        decompressed_size[0..4].copy_from_slice(&compressed[compressed.len() - 4..]);
+        let idx_start = compressed
+            .len()
+            .checked_sub(4)
+            .ok_or_else(|| anyhow::anyhow!("Invalid file format"))?;
+        decompressed_size[0..4].copy_from_slice(&compressed[idx_start..]);
         Vec::with_capacity(usize::from_le_bytes(decompressed_size))
-    })
-    .unwrap_or_else(|_| {
-        tracing::warn!("Could not determine the size of the uncompressed data");
-        Vec::new()
-    });
+    };
 
     let mut decoder = flate2::read::MultiGzDecoder::new(compressed);
     decoder.read_to_end(&mut bytes)?;

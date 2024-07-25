@@ -27,13 +27,13 @@ pub(crate) fn rename(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::Simpl
         apply_button.set_sensitive(false);
 
         entry.connect_text_notify(clone!(@strong parent_path, @weak apply_button => move |entry2| {
-            let new_file_path = parent_path.join(&entry2.text());
+            let new_file_path = parent_path.join(entry2.text());
             // Disable apply button to prevent overwrites when file already exists
             apply_button.set_sensitive(!new_file_path.exists());
         }));
 
         apply_button.connect_clicked(clone!(@weak popover, @weak entry, @weak appwindow => move |_| {
-            let new_file_path = parent_path.join(&entry.text());
+            let new_file_path = parent_path.join(entry.text());
 
             if new_file_path.exists() {
                 appwindow.overlays().dispatch_toast_error(&gettext("Renaming file failed, target file already exists"));

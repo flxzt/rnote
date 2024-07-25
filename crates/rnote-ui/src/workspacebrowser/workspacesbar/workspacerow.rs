@@ -192,7 +192,7 @@ impl Default for RnWorkspaceRow {
 impl RnWorkspaceRow {
     pub(crate) fn new(entry: &RnWorkspaceListEntry) -> Self {
         glib::Object::builder()
-            .property("entry", &entry.to_value())
+            .property("entry", entry.to_value())
             .build()
     }
 

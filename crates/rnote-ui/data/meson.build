@@ -96,11 +96,11 @@ if host_machine.system() != 'windows'
     )
 
     # Validate Appdata
-    if appstream_util.found()
+    if appstreamcli.found()
         test(
             'validate-appdata',
-            appstream_util,
-            args: ['validate', '--nonet', appdata_file],
+            appstreamcli,
+            args: ['validate', '--no-net', appdata_file],
         )
     endif
 endif

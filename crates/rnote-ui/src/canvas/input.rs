@@ -41,24 +41,15 @@ pub(crate) fn handle_pointer_controller_event(
             tracing::trace!(
                 "canvas event MotionNotify - gdk_modifiers: {gdk_modifiers:?}, is_stylus: {is_stylus}"
             );
+            handle_pen_event = true;
 
             if is_stylus {
-                handle_pen_event = true;
-
                 // like in gtk4 'gesturestylus.c:120' stylus proximity is detected this way,
                 // in case ProximityIn & ProximityOut is not reported.
                 if gdk_modifiers.contains(gdk::ModifierType::BUTTON1_MASK) {
                     pen_state = PenState::Down;
                 } else {
                     pen_state = PenState::Proximity;
-                }
-            } else {
-                // only handle no pressed button, primary and secondary mouse buttons.
-                if gdk_modifiers.is_empty()
-                    || gdk_modifiers.contains(gdk::ModifierType::BUTTON1_MASK)
-                    || gdk_modifiers.contains(gdk::ModifierType::BUTTON3_MASK)
-                {
-                    handle_pen_event = true;
                 }
             }
         }

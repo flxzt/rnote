@@ -1,6 +1,7 @@
 // Imports
 use crate::penpath::Element;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 
 /// A Pen Event.
 ///
@@ -15,28 +16,28 @@ pub enum PenEvent {
         /// The element for the down event.
         element: Element,
         /// Modifier keys pressed during the event.
-        modifier_keys: Vec<ModifierKey>,
+        modifier_keys: HashSet<ModifierKey>,
     },
     /// A pen up event.
     Up {
         /// The element for the up event.
         element: Element,
         /// Modifier keys pressed during the event.
-        modifier_keys: Vec<ModifierKey>,
+        modifier_keys: HashSet<ModifierKey>,
     },
     /// A pen down event. Is repeatedly emitted while the pen is in proximity and moved.
     Proximity {
         /// The element for the proximity event.
         element: Element,
         /// Modifier keys pressed during the event.
-        modifier_keys: Vec<ModifierKey>,
+        modifier_keys: HashSet<ModifierKey>,
     },
     /// A keyboard key pressed event.
     KeyPressed {
         /// the key
         keyboard_key: KeyboardKey,
         /// Modifier keys pressed during the event.
-        modifier_keys: Vec<ModifierKey>,
+        modifier_keys: HashSet<ModifierKey>,
     },
     /// Text input event.
     Text {

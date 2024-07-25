@@ -8,6 +8,7 @@ use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::pens::penholder::BacklogPolicy;
 use rnote_engine::pens::PenMode;
 use rnote_engine::WidgetFlags;
+use std::collections::HashSet;
 use std::time::{Duration, Instant};
 
 // Returns whether the event should be inhibited from propagating, and the new pen state
@@ -444,18 +445,19 @@ pub(crate) fn retrieve_button_shortcut_key(
     }
 }
 
-pub(crate) fn retrieve_modifier_keys(modifier: gdk::ModifierType) -> Vec<ModifierKey> {
-    let mut keys = vec![];
+pub(crate) fn retrieve_modifier_keys(modifier: gdk::ModifierType) -> HashSet<ModifierKey> {
+    let mut keys = HashSet::new();
 
     if modifier.contains(gdk::ModifierType::SHIFT_MASK) {
-        keys.push(ModifierKey::KeyboardShift);
+        keys.insert(ModifierKey::KeyboardShift);
     }
     if modifier.contains(gdk::ModifierType::CONTROL_MASK) {
-        keys.push(ModifierKey::KeyboardCtrl);
+        keys.insert(ModifierKey::KeyboardCtrl);
     }
     if modifier.contains(gdk::ModifierType::ALT_MASK) {
-        keys.push(ModifierKey::KeyboardAlt);
+        keys.insert(ModifierKey::KeyboardAlt);
     }
+
     keys
 }
 

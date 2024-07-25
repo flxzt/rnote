@@ -22,6 +22,7 @@ use rnote_compose::penpath::Element;
 use rnote_compose::style::indicators;
 use rnote_compose::EventResult;
 use rnote_compose::{color, Color};
+use std::collections::HashSet;
 use std::time::Instant;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -777,7 +778,7 @@ impl Selector {
 
     fn select_all(
         &mut self,
-        modifier_keys: Vec<ModifierKey>,
+        modifier_keys: HashSet<ModifierKey>,
         engine_view: &mut EngineViewMut,
         widget_flags: &mut WidgetFlags,
     ) {

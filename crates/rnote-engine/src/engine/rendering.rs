@@ -257,7 +257,7 @@ impl Engine {
 
         // Fill with background color just in case there is any space left between the tiles
         snapshot.append_node(
-            &gsk::ColorNode::new(
+            gsk::ColorNode::new(
                 &gdk::RGBA::from_compose_color(self.document.background.color),
                 //&gdk::RGBA::RED,
                 &graphene::Rect::from_p2d_aabb(doc_bounds),

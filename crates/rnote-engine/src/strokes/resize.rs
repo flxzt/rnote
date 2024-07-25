@@ -56,7 +56,7 @@ fn helper_calculate_fit_ratio(
 /// Calculate the `ratio` by which to resize the image such that
 /// - it stays fully in view
 /// - it does not goes over a page border when the mode has a fixed
-/// width size
+///     width size
 ///
 /// There is an additional constraint when the `respect_border`
 /// bool of the `Resize` struct is true. In this case we disallow

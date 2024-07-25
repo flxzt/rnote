@@ -19,7 +19,7 @@ impl TryFrom<RnoteFileMaj0Min6> for RnoteFileMaj0Min9 {
             .as_object_mut()
             .ok_or_else(|| anyhow::anyhow!("engine snapshot is not a JSON object."))?;
 
-        engine_snapsht.insert("camera", ijson::to_value(&Camera::default())?);
+        engine_snapsht.insert("camera", ijson::to_value(Camera::default())?);
 
         Ok(Self {
             engine_snapshot: value.engine_snapshot,

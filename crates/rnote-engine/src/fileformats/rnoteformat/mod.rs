@@ -75,7 +75,7 @@ struct RnotefileWrapper {
 pub type RnoteFile = RnoteFileMaj0Min9;
 
 impl RnoteFile {
-    pub const SEMVER: &'static str = "0.10.2";
+    pub const SEMVER: &'static str = crate::utils::crate_version();
 }
 
 impl FileFormatLoader for RnoteFile {

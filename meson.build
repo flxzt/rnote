@@ -1,7 +1,7 @@
 project(
     'rnote',
     ['rust', 'cpp'],
-    version: '0.10.2',
+    version: '0.11.0',
     meson_version: '>= 1.0',
 )
 # add a patch suffix for alpha or beta versions in format '-<alpha|beta>.<x>'.

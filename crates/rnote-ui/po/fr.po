@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-26 10:35+0200\n"
+"POT-Creation-Date: 2024-07-26 10:39+0200\n"
 "PO-Revision-Date: 2024-07-13 08:44+0000\n"
 "Last-Translator: Joshua Adamec <63282721+SkyrixFr@users.noreply.github.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -331,7 +331,6 @@ msgid "Page Order"
 msgstr "Ordre des pages"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 #, fuzzy
 #| msgid ""
 #| "The page order when documents with layouts\n"
@@ -339,8 +338,8 @@ msgstr "Ordre des pages"
 #| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
+"that expand in horizontal and vertical directions\n"
+"are cut into pages"
 msgstr ""
 "L’ordre des pages lorsque les documents avec des mises en page\n"
 "qui s’étendent horizontalement et verticalement\n"
@@ -393,6 +392,21 @@ msgstr "Png"
 msgid "Jpeg"
 msgstr "Jpeg"
 
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
+#, fuzzy
+#| msgid ""
+#| "The page order when documents with layouts\n"
+#| "that expand in horizontal and vertical directions\n"
+#| "are cut into pages"
+msgid ""
+"The page order when documents with layouts\n"
+"    that expand in horizontal and vertical directions\n"
+"    are cut into pages"
+msgstr ""
+"L’ordre des pages lorsque les documents avec des mises en page\n"
+"qui s’étendent horizontalement et verticalement\n"
+"sont découpés en pages"
+
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -400,7 +414,6 @@ msgid "Bitmap Scale-Factor"
 msgstr "Échelle des images matricielles"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 #, fuzzy
 #| msgid ""
@@ -431,6 +444,18 @@ msgstr "Exporter la sélection"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
 msgstr "Le format d’exportation de l’image"
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
+#, fuzzy
+#| msgid ""
+#| "Set the bitmap scale factor in relation\n"
+#| "to the actual size on the document"
+msgid ""
+"Set the bitmap scale factor in relation\n"
+"to the actual size on the document"
+msgstr ""
+"Définir la taille de l’image matricielle\n"
+"par rapport à sa taille réelle dans le document"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"

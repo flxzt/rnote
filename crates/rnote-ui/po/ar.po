@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-26 10:35+0200\n"
+"POT-Creation-Date: 2024-07-26 10:39+0200\n"
 "PO-Revision-Date: 2024-02-26 10:33+0000\n"
 "Last-Translator: shetozz <a.teama3317@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
@@ -331,7 +331,6 @@ msgid "Page Order"
 msgstr "ترتيب الصفحات"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 #, fuzzy
 #| msgid ""
 #| "The page order when documents with layouts\n"
@@ -339,8 +338,8 @@ msgstr "ترتيب الصفحات"
 #| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
+"that expand in horizontal and vertical directions\n"
+"are cut into pages"
 msgstr ""
 "ترتيب الصفحات للمستندات ذات التخطيط\n"
 "الممتد أفقياً ورأسياً\n"
@@ -393,6 +392,21 @@ msgstr "Png"
 msgid "Jpeg"
 msgstr "Jpeg"
 
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
+#, fuzzy
+#| msgid ""
+#| "The page order when documents with layouts\n"
+#| "that expand in horizontal and vertical directions\n"
+#| "are cut into pages"
+msgid ""
+"The page order when documents with layouts\n"
+"    that expand in horizontal and vertical directions\n"
+"    are cut into pages"
+msgstr ""
+"ترتيب الصفحات للمستندات ذات التخطيط\n"
+"الممتد أفقياً ورأسياً\n"
+"عند فصلها إلى صفحات"
+
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -400,7 +414,6 @@ msgid "Bitmap Scale-Factor"
 msgstr "معامل تحجيم النقاط"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 #, fuzzy
 #| msgid ""
@@ -431,6 +444,18 @@ msgstr "تصدير المحدد"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
 msgstr "تنسيق الصورة المصدَّرة"
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
+#, fuzzy
+#| msgid ""
+#| "Set the bitmap scale factor in relation\n"
+#| "to the actual size on the document"
+msgid ""
+"Set the bitmap scale factor in relation\n"
+"to the actual size on the document"
+msgstr ""
+"عيِّن معامل تحجيم النقاط بالنسبة\n"
+"للحجم الفعليِّ للمستند"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"

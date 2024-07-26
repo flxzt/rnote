@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-26 10:35+0200\n"
+"POT-Creation-Date: 2024-07-26 10:39+0200\n"
 "PO-Revision-Date: 2024-07-26 08:40+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
@@ -331,20 +331,17 @@ msgid "Page Order"
 msgstr "Seitenreihenfolge"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 #, fuzzy
 #| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
+#| "The page order when documents with layouts that expand\n"
+#| "in horizontal and vertical directions are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
+"that expand in horizontal and vertical directions\n"
+"are cut into pages"
 msgstr ""
-"Die Seitenreihenfolge wenn Dokumente mit Layouts,\n"
-"die in horizontale und vertikale Richtung expandieren\n"
-"in Seiten unterteilt werden"
+"Die Seitenreihenfolge, wenn Dokumente mit Layouts, die in horizontale\n"
+"und vertikale Richtung expandieren, in Seiten unterteilt werden"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:152
 #: crates/rnote-ui/data/ui/dialogs/export.ui:363
@@ -393,6 +390,21 @@ msgstr "Png"
 msgid "Jpeg"
 msgstr "Jpeg"
 
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
+#, fuzzy
+#| msgid ""
+#| "The page order when documents with layouts\n"
+#| "that expand in horizontal and vertical directions\n"
+#| "are cut into pages"
+msgid ""
+"The page order when documents with layouts\n"
+"    that expand in horizontal and vertical directions\n"
+"    are cut into pages"
+msgstr ""
+"Die Seitenreihenfolge wenn Dokumente mit Layouts,\n"
+"die in horizontale und vertikale Richtung expandieren\n"
+"in Seiten unterteilt werden"
+
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -400,7 +412,6 @@ msgid "Bitmap Scale-Factor"
 msgstr "Bitmap Skalierungsfaktor"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 #, fuzzy
 #| msgid ""
@@ -431,6 +442,18 @@ msgstr "Auswahl exportieren"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
 msgstr "Das Export Bildformat"
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
+#, fuzzy
+#| msgid ""
+#| "Set the bitmap scale factor in relation\n"
+#| "to the actual size on the document"
+msgid ""
+"Set the bitmap scale factor in relation\n"
+"to the actual size on the document"
+msgstr ""
+"Ändere den Bitmap Skalierungsfaktor im Verhältnis\n"
+"zur tatsächlichen Größe auf dem Dokument"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"
@@ -2552,13 +2575,6 @@ msgstr "weiss"
 
 #~ msgid "Resize Document to Fit Strokes"
 #~ msgstr "Dokumentgröße an Inhalt anpassen"
-
-#~ msgid ""
-#~ "The page order when documents with layouts that expand\n"
-#~ "in horizontal and vertical directions are cut into pages"
-#~ msgstr ""
-#~ "Die Seitenreihenfolge, wenn Dokumente mit Layouts, die in horizontale\n"
-#~ "und vertikale Richtung expandieren, in Seiten unterteilt werden"
 
 #~ msgid ""
 #~ "Opening this file overwrites any unsaved changes. Do you want to save the "

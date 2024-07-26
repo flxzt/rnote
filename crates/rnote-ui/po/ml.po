@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-26 10:35+0200\n"
+"POT-Creation-Date: 2024-07-26 10:39+0200\n"
 "PO-Revision-Date: 2024-03-14 07:01+0000\n"
 "Last-Translator: mohammedbilalns <bilalnsmuhammed@gmail.com>\n"
 "Language-Team: Malayalam <https://hosted.weblate.org/projects/rnote/repo/ml/"
@@ -331,11 +331,10 @@ msgid "Page Order"
 msgstr "പേജ് ഓർഡർ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 msgid ""
 "The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
+"that expand in horizontal and vertical directions\n"
+"are cut into pages"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:152
@@ -385,6 +384,13 @@ msgstr "പി എൻ ജി"
 msgid "Jpeg"
 msgstr "ജെ പെഗ്"
 
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
+msgid ""
+"The page order when documents with layouts\n"
+"    that expand in horizontal and vertical directions\n"
+"    are cut into pages"
+msgstr ""
+
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -392,7 +398,6 @@ msgid "Bitmap Scale-Factor"
 msgstr "ബിറ്റ്‌മാപ് സ്കെയിൽ ഫാക്ടർ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 #, fuzzy
 #| msgid ""
@@ -423,6 +428,18 @@ msgstr "സെക്ഷൻ എക്സ്പോർട്ട് ചെയ്യ�
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
 msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
+#, fuzzy
+#| msgid ""
+#| "Set the bitmap scale factor in relation\n"
+#| "to the actual size on the document"
+msgid ""
+"Set the bitmap scale factor in relation\n"
+"to the actual size on the document"
+msgstr ""
+"ഡോക്യൂമെന്റിന്റെ യഥാർത്ഥ വലിപ്പത്തിനനുസരിച്ചു\n"
+"ബിറ്റ്മാപ് സ്കെയിൽ മാറ്റുക"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-26 10:35+0200\n"
+"POT-Creation-Date: 2024-07-26 10:39+0200\n"
 "PO-Revision-Date: 2024-05-27 12:09+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -330,7 +330,6 @@ msgid "Page Order"
 msgstr "পৃষ্ঠার ক্রম"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 #, fuzzy
 #| msgid ""
 #| "The page order when documents with layouts\n"
@@ -338,8 +337,8 @@ msgstr "পৃষ্ঠার ক্রম"
 #| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
+"that expand in horizontal and vertical directions\n"
+"are cut into pages"
 msgstr ""
 "পৃষ্ঠার ক্রম যখন লেআউট সহ নথি\n"
 "যেটি অনুভূমিক এবং উল্লম্ব দিকগুলিতে প্রসারিত হয়\n"
@@ -392,6 +391,21 @@ msgstr "পিএনজি"
 msgid "Jpeg"
 msgstr "জেপিজি/জেপেগ"
 
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
+#, fuzzy
+#| msgid ""
+#| "The page order when documents with layouts\n"
+#| "that expand in horizontal and vertical directions\n"
+#| "are cut into pages"
+msgid ""
+"The page order when documents with layouts\n"
+"    that expand in horizontal and vertical directions\n"
+"    are cut into pages"
+msgstr ""
+"পৃষ্ঠার ক্রম যখন লেআউট সহ নথি\n"
+"যেটি অনুভূমিক এবং উল্লম্ব দিকগুলিতে প্রসারিত হয়\n"
+"পৃষ্ঠায় কাটা হয়"
+
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -399,7 +413,6 @@ msgid "Bitmap Scale-Factor"
 msgstr "বিটম্যাপ স্কেল ফ্যাক্টর"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 #, fuzzy
 #| msgid ""
@@ -430,6 +443,18 @@ msgstr "নির্বাচন রপ্তানি করুন"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
 msgstr "রপ্তানি চিত্র বিন্যাস"
+
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
+#, fuzzy
+#| msgid ""
+#| "Set the bitmap scale factor in relation\n"
+#| "to the actual size on the document"
+msgid ""
+"Set the bitmap scale factor in relation\n"
+"to the actual size on the document"
+msgstr ""
+"বিটম্যাপ স্কেল ফ্যাক্টর এর সাপেক্ষে সেট করুন\n"
+"নথির প্রকৃত আকার"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"

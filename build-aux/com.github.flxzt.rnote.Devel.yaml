@@ -52,8 +52,8 @@ modules:
           - "-DENABLE_UTILS=OFF"
       sources:
           - type: archive
-            url: "https://poppler.freedesktop.org/poppler-24.04.0.tar.xz"
-            sha256: 1e804ec565acf7126eb2e9bb3b56422ab2039f7e05863a5dfabdd1ffd1bb77a7
+            url: "https://poppler.freedesktop.org/poppler-24.07.0.tar.xz"
+            sha256: 19eb4f49198e4ae3fd9e5a6cf24d0fc7e674e8802046a7de14baab1e40cc2f1d
     - name: poppler-data
       buildsystem: cmake-ninja
       config-opts:

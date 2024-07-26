@@ -164,7 +164,7 @@ impl RnOverlays {
                     match current_pen_style {
                         PenStyle::Typewriter => {
                             if canvas.engine_ref().pens_config.typewriter_config.text_style.color != stroke_color {
-                                let widget_flags = canvas.engine_mut().text_selection_change_style(|style| {style.color = stroke_color});
+                                let widget_flags = canvas.engine_mut().text_change_color(stroke_color);
                                 appwindow.handle_widget_flags(widget_flags, &canvas);
                             }
                         }

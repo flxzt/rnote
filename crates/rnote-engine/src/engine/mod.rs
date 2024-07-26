@@ -966,4 +966,36 @@ impl Engine {
         }
         widget_flags
     }
+
+    pub fn text_change_color(&mut self, color: Color) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            if typewriter.selection_range().is_some() {
+                widget_flags |= typewriter.replace_text_attribute_current_selection(
+                    TextAttribute::TextColor(color),
+                    &mut EngineViewMut {
+                        tasks_tx: self.tasks_tx.clone(),
+                        pens_config: &mut self.pens_config,
+                        document: &mut self.document,
+                        store: &mut self.store,
+                        camera: &mut self.camera,
+                        audioplayer: &mut self.audioplayer,
+                    },
+                )
+            } else {
+                widget_flags |= typewriter.change_text_style_in_modifying_stroke(
+                    |style| style.color = color,
+                    &mut EngineViewMut {
+                        tasks_tx: self.tasks_tx.clone(),
+                        pens_config: &mut self.pens_config,
+                        document: &mut self.document,
+                        store: &mut self.store,
+                        camera: &mut self.camera,
+                        audioplayer: &mut self.audioplayer,
+                    },
+                )
+            }
+        }
+        widget_flags
+    }
 }

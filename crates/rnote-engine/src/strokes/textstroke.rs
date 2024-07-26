@@ -129,27 +129,40 @@ impl TextAttribute {
         T: piet::Text,
     {
         match self {
-            TextAttribute::FontFamily(font_family) => piet_text.font_family(font_family.as_str()).map(
-                piet::TextAttribute::FontFamily)
-                    .ok_or_else(|| anyhow::anyhow!("query piet font family failed in TextAttribute try_into_piet() with font family name: {}", font_family)),
+            TextAttribute::FontFamily(font_family) => piet_text
+                .font_family(font_family.as_str())
+                .map(piet::TextAttribute::FontFamily)
+                .ok_or_else(|| {
+                    anyhow::anyhow!(
+                        "query piet font family returned None for font family '{font_family}"
+                    )
+                }),
             TextAttribute::FontSize(font_size) => Ok(piet::TextAttribute::FontSize(font_size)),
-            TextAttribute::FontWeight(font_weight) => Ok(piet::TextAttribute::Weight(piet::FontWeight::new(font_weight))),
-            TextAttribute::TextColor(color) => Ok(piet::TextAttribute::TextColor(piet::Color::from(color))),
-            TextAttribute::Style(style) => Ok(piet::TextAttribute::Style(piet::FontStyle::from(style))),
+            TextAttribute::FontWeight(font_weight) => Ok(piet::TextAttribute::Weight(
+                piet::FontWeight::new(font_weight),
+            )),
+            TextAttribute::TextColor(color) => {
+                Ok(piet::TextAttribute::TextColor(piet::Color::from(color)))
+            }
+            TextAttribute::Style(style) => {
+                Ok(piet::TextAttribute::Style(piet::FontStyle::from(style)))
+            }
             TextAttribute::Underline(underline) => Ok(piet::TextAttribute::Underline(underline)),
-            TextAttribute::Strikethrough(strikethrough) => Ok(piet::TextAttribute::Strikethrough(strikethrough)),
+            TextAttribute::Strikethrough(strikethrough) => {
+                Ok(piet::TextAttribute::Strikethrough(strikethrough))
+            }
         }
     }
 
-    fn is_same_attribute(&self, other: &TextAttribute) -> bool {
+    fn same_variant(&self, other: &TextAttribute) -> bool {
         match (self, other) {
-            (TextAttribute::FontFamily(_), TextAttribute::FontFamily(_)) => true,
-            (TextAttribute::FontSize(_), TextAttribute::FontSize(_)) => true,
-            (TextAttribute::FontWeight(_), TextAttribute::FontWeight(_)) => true,
-            (TextAttribute::Strikethrough(_), TextAttribute::Strikethrough(_)) => true,
-            (TextAttribute::Underline(_), TextAttribute::Underline(_)) => true,
-            (TextAttribute::Style(_), TextAttribute::Style(_)) => true,
-            (TextAttribute::TextColor(_), TextAttribute::TextColor(_)) => true,
+            (TextAttribute::FontFamily(_), TextAttribute::FontFamily(_))
+            | (TextAttribute::FontSize(_), TextAttribute::FontSize(_))
+            | (TextAttribute::FontWeight(_), TextAttribute::FontWeight(_))
+            | (TextAttribute::TextColor(_), TextAttribute::TextColor(_))
+            | (TextAttribute::Style(_), TextAttribute::Style(_))
+            | (TextAttribute::Underline(_), TextAttribute::Underline(_))
+            | (TextAttribute::Strikethrough(_), TextAttribute::Strikethrough(_)) => true,
             (_, _) => false,
         }
     }
@@ -728,17 +741,40 @@ impl TextStroke {
     /// Remove all attributes in the given range.
     pub fn remove_attrs_for_range(&mut self, range: Range<usize>) {
         // partition into attrs that intersect the range, and those who don't and will be retained
-        let (intersecting_attrs, mut retained_attrs) = Self::get_intersecting_attrs_for_range(
+        let (intersecting_attrs, mut retained_attrs) = get_intersecting_attrs_for_range(
             &range,
             self.text_style.ranged_text_attributes.clone(),
         );
 
         // Truncate and filter the ranges of intersecting attrs
-        let truncated_attrs = Self::remove_intersecting_attrs_in_range(&range, intersecting_attrs);
+        let truncated_attrs = remove_intersecting_attrs_in_range(&range, intersecting_attrs);
 
         // Set the updated attributes
         self.text_style.ranged_text_attributes = {
             retained_attrs.extend(truncated_attrs);
+            retained_attrs
+        };
+    }
+
+    /// Replace the attribute of the same type in the given range.
+    pub fn replace_attr_for_range(&mut self, range: Range<usize>, text_attribute: TextAttribute) {
+        let (intersecting_attrs, mut retained_attrs) = get_intersecting_attrs_for_range(
+            &range,
+            self.text_style.ranged_text_attributes.clone(),
+        );
+        let truncated_attrs = remove_intersecting_attrs_in_range(
+            &range,
+            intersecting_attrs
+                .into_iter()
+                .filter(|attr| attr.attribute.same_variant(&text_attribute))
+                .collect(),
+        );
+        self.text_style.ranged_text_attributes = {
+            retained_attrs.extend(truncated_attrs);
+            retained_attrs.push(RangedTextAttribute {
+                range,
+                attribute: text_attribute,
+            });
             retained_attrs
         };
     }
@@ -749,12 +785,11 @@ impl TextStroke {
             .ranged_text_attributes
             .clone()
             .into_iter()
-            .partition(|attr| attr.attribute.is_same_attribute(&text_attribute));
+            .partition(|attr| attr.attribute.same_variant(&text_attribute));
 
         let (intersecting_attrs, retained_attrs) =
-            Self::get_intersecting_attrs_for_range(&range, matching_attributes);
+            get_intersecting_attrs_for_range(&range, matching_attributes);
 
-        let _bold_weight = piet::FontWeight::BOLD.to_raw();
         let toggled_attribute = intersecting_attrs
             .clone()
             .into_iter()
@@ -776,58 +811,15 @@ impl TextStroke {
             })
             .unwrap_or_else(|| Some(text_attribute.clone()));
 
-        let truncated_attrs = Self::remove_intersecting_attrs_in_range(&range, intersecting_attrs);
+        let truncated_attrs = remove_intersecting_attrs_in_range(&range, intersecting_attrs);
 
         non_matching_attrs.extend(retained_attrs);
         non_matching_attrs.extend(truncated_attrs);
         if let Some(attribute) = toggled_attribute {
-            non_matching_attrs.extend([RangedTextAttribute { attribute, range }]);
+            non_matching_attrs.push(RangedTextAttribute { attribute, range });
         }
 
-        // Set the updated attributes
         self.text_style.ranged_text_attributes = non_matching_attrs;
-    }
-
-    fn get_intersecting_attrs_for_range(
-        range: &Range<usize>,
-        ranged_text_attributes: Vec<RangedTextAttribute>,
-    ) -> (Vec<RangedTextAttribute>, Vec<RangedTextAttribute>) {
-        ranged_text_attributes
-            .into_iter()
-            .partition(|attr| attr.range.end > range.start && attr.range.start < range.end)
-    }
-
-    fn remove_intersecting_attrs_in_range(
-        range: &Range<usize>,
-        intersecting_attrs: Vec<RangedTextAttribute>,
-    ) -> Vec<RangedTextAttribute> {
-        intersecting_attrs
-            .into_iter()
-            .flat_map(|mut attr| {
-                if attr.range.start <= range.start && attr.range.end >= range.end {
-                    // if the attribute completely contains the given range, split it
-                    let mut first_split_attr = attr.clone();
-                    first_split_attr.range.end = range.start;
-                    let mut second_split_attr = attr;
-                    second_split_attr.range.start = range.end;
-
-                    vec![first_split_attr, second_split_attr]
-                } else if attr.range.start <= range.start && attr.range.end > range.start {
-                    // overlapping from the left, so truncate the end
-                    attr.range.end = range.start;
-                    vec![attr]
-                } else if attr.range.end >= range.end && attr.range.start < range.end {
-                    // overlapping from the right, so truncate the start
-                    attr.range.start = range.end;
-                    vec![attr]
-                } else {
-                    // Else the attribute is in the range, so we discard it
-                    vec![]
-                }
-            })
-            // Filter out any that became empty or are contained in the given range
-            .filter(|attr| !attr.range.is_empty())
-            .collect::<Vec<RangedTextAttribute>>()
     }
 
     pub fn update_selection_entire_text(
@@ -990,4 +982,46 @@ impl TextStroke {
             }
         }
     }
+}
+
+fn get_intersecting_attrs_for_range(
+    range: &Range<usize>,
+    ranged_text_attributes: Vec<RangedTextAttribute>,
+) -> (Vec<RangedTextAttribute>, Vec<RangedTextAttribute>) {
+    ranged_text_attributes
+        .into_iter()
+        .partition(|attr| attr.range.end > range.start && attr.range.start < range.end)
+}
+
+fn remove_intersecting_attrs_in_range(
+    range: &Range<usize>,
+    intersecting_attrs: Vec<RangedTextAttribute>,
+) -> Vec<RangedTextAttribute> {
+    intersecting_attrs
+        .into_iter()
+        .flat_map(|mut attr| {
+            if attr.range.start <= range.start && attr.range.end >= range.end {
+                // if the attribute completely contains the given range, split it
+                let mut first_split_attr = attr.clone();
+                first_split_attr.range.end = range.start;
+                let mut second_split_attr = attr;
+                second_split_attr.range.start = range.end;
+
+                vec![first_split_attr, second_split_attr]
+            } else if attr.range.start <= range.start && attr.range.end > range.start {
+                // overlapping from the left, so truncate the end
+                attr.range.end = range.start;
+                vec![attr]
+            } else if attr.range.end >= range.end && attr.range.start < range.end {
+                // overlapping from the right, so truncate the start
+                attr.range.start = range.end;
+                vec![attr]
+            } else {
+                // Else the attribute is in the range, so we discard it
+                vec![]
+            }
+        })
+        // Filter out any that became empty or are contained in the given range
+        .filter(|attr| !attr.range.is_empty())
+        .collect::<Vec<RangedTextAttribute>>()
 }

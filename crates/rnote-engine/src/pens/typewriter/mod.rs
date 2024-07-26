@@ -557,6 +557,27 @@ impl Typewriter {
         self.cursor_visible = !self.cursor_visible;
     }
 
+    /// The range of the current selection, if available.
+    pub(crate) fn selection_range(&self) -> Option<(Range<usize>, StrokeKey)> {
+        if let TypewriterState::Modifying {
+            modify_state:
+                ModifyState::Selecting {
+                    selection_cursor, ..
+                },
+            stroke_key,
+            cursor,
+            ..
+        } = &self.state
+        {
+            let selection_range =
+                crate::utils::positive_range(cursor.cur_cursor(), selection_cursor.cur_cursor());
+
+            Some((selection_range, *stroke_key))
+        } else {
+            None
+        }
+    }
+
     /// The bounds of the text rect enclosing the textstroke.
     fn text_rect_bounds(text_width: f64, textstroke: &TextStroke) -> Aabb {
         let origin = textstroke.transform.translation_part();
@@ -598,27 +619,6 @@ impl Typewriter {
             center.into(),
             Self::ADJUST_TEXT_WIDTH_NODE_SIZE * 0.5 / total_zoom,
         )
-    }
-
-    /// The range of the current selection, if available.
-    fn selection_range(&self) -> Option<(Range<usize>, StrokeKey)> {
-        if let TypewriterState::Modifying {
-            modify_state:
-                ModifyState::Selecting {
-                    selection_cursor, ..
-                },
-            stroke_key,
-            cursor,
-            ..
-        } = &self.state
-        {
-            let selection_range =
-                crate::utils::positive_range(cursor.cur_cursor(), selection_cursor.cur_cursor());
-
-            Some((selection_range, *stroke_key))
-        } else {
-            None
-        }
     }
 
     /// Insert text either at the current cursor position or, if the state is idle, in a new textstroke.
@@ -863,6 +863,34 @@ impl Typewriter {
                         attribute: text_attribute,
                         range: selection_range,
                     });
+                engine_view.store.update_geometry_for_stroke(stroke_key);
+                engine_view.store.regenerate_rendering_for_stroke(
+                    stroke_key,
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
+                );
+
+                widget_flags |= engine_view.store.record(Instant::now());
+                widget_flags.redraw = true;
+                widget_flags.store_modified = true;
+            }
+        }
+
+        widget_flags
+    }
+
+    pub(crate) fn replace_text_attribute_current_selection(
+        &mut self,
+        text_attribute: TextAttribute,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if let Some((selection_range, stroke_key)) = self.selection_range() {
+            if let Some(Stroke::TextStroke(textstroke)) =
+                engine_view.store.get_stroke_mut(stroke_key)
+            {
+                textstroke.replace_attr_for_range(selection_range, text_attribute);
                 engine_view.store.update_geometry_for_stroke(stroke_key);
                 engine_view.store.regenerate_rendering_for_stroke(
                     stroke_key,

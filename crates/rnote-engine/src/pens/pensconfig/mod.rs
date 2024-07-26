@@ -16,6 +16,7 @@ pub use typewriterconfig::TypewriterConfig;
 
 // Imports
 use crate::CloneConfig;
+use rnote_compose::Color;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -38,5 +39,23 @@ pub struct PensConfig {
 impl CloneConfig for PensConfig {
     fn clone_config(&self) -> Self {
         self.clone()
+    }
+}
+
+impl PensConfig {
+    pub fn set_all_stroke_colors(&mut self, stroke_color: Color) {
+        self.brush_config.marker_options.stroke_color = Some(stroke_color);
+        self.brush_config.solid_options.stroke_color = Some(stroke_color);
+        self.brush_config.textured_options.stroke_color = Some(stroke_color);
+        self.shaper_config.smooth_options.stroke_color = Some(stroke_color);
+        self.shaper_config.rough_options.stroke_color = Some(stroke_color);
+        self.typewriter_config.text_style.color = stroke_color;
+    }
+
+    pub fn set_all_fill_colors(&mut self, fill_color: Color) {
+        self.brush_config.marker_options.fill_color = Some(fill_color);
+        self.brush_config.solid_options.fill_color = Some(fill_color);
+        self.shaper_config.smooth_options.fill_color = Some(fill_color);
+        self.shaper_config.rough_options.fill_color = Some(fill_color);
     }
 }

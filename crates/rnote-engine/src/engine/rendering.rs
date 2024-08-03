@@ -28,7 +28,7 @@ impl Engine {
                 let new_texture = match image.to_memtexture() {
                     Ok(t) => t,
                     Err(e) => {
-                        error!("failed to generate memory-texture of background tile image, {e:?}");
+                        error!("Failed to generate memory-texture of background tile image, Err: {e:?}");
                         return widget_flags;
                     }
                 };
@@ -63,7 +63,7 @@ impl Engine {
                     Ok(t) => t,
                     Err(e) => {
                         error!(
-                            "failed to generate memory-texture of origin indicator image, {e:?}"
+                            "Failed to generate memory-texture of origin indicator image, Err: {e:?}"
                         );
                         return widget_flags;
                     }

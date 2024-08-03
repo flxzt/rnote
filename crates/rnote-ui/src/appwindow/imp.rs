@@ -29,6 +29,9 @@ pub(crate) struct RnAppWindow {
     pub(crate) focus_mode: Cell<bool>,
     pub(crate) close_in_progress: Cell<bool>,
 
+    pub(crate) lock_pen: Cell<bool>,
+    pub(crate) lock_eraser: Cell<bool>,
+
     #[template_child]
     pub(crate) main_header: TemplateChild<RnMainHeader>,
     #[template_child]
@@ -58,6 +61,9 @@ impl Default for RnAppWindow {
             touch_drawing: Cell::new(false),
             focus_mode: Cell::new(false),
             close_in_progress: Cell::new(false),
+
+            lock_pen: Cell::new(false),
+            lock_eraser: Cell::new(false),
 
             main_header: TemplateChild::<RnMainHeader>::default(),
             split_view: TemplateChild::<adw::OverlaySplitView>::default(),
@@ -145,6 +151,12 @@ impl ObjectImpl for RnAppWindow {
                 glib::ParamSpecBoolean::builder("focus-mode")
                     .default_value(false)
                     .build(),
+                glib::ParamSpecBoolean::builder("lock-pen")
+                    .default_value(false)
+                    .build(),
+                glib::ParamSpecBoolean::builder("lock-eraser")
+                    .default_value(true)
+                    .build(),
             ]
         });
         PROPERTIES.as_ref()
@@ -160,6 +172,8 @@ impl ObjectImpl for RnAppWindow {
             "respect-borders" => self.respect_borders.get().to_value(),
             "touch-drawing" => self.touch_drawing.get().to_value(),
             "focus-mode" => self.focus_mode.get().to_value(),
+            "lock-pen" => self.lock_pen.get().to_value(),
+            "lock-eraser" => self.lock_eraser.get().to_value(),
             _ => unimplemented!(),
         }
     }
@@ -228,6 +242,14 @@ impl ObjectImpl for RnAppWindow {
                 self.overlays.penpicker().set_visible(!focus_mode);
                 self.overlays.colorpicker().set_visible(!focus_mode);
                 self.overlays.sidebar_box().set_visible(!focus_mode);
+            }
+            "lock-pen" => {
+                let lock_pen: bool = value.get().expect("The value needs to be of type `bool`");
+                self.lock_pen.replace(lock_pen);
+            }
+            "lock-eraser" => {
+                let lock_eraser: bool = value.get().expect("The value needs to be of type `bool`");
+                self.lock_eraser.replace(lock_eraser);
             }
             _ => unimplemented!(),
         }

@@ -169,5 +169,13 @@
       <default>''</default>
       <summary>the engine configuration</summary>
     </key>
+    <key name="lock-pen" type="b">
+      <default>false</default>
+      <summary>lock the pen tool</summary>
+    </key>
+    <key name="lock-eraser" type="b">
+      <default>true</default>
+      <summary>lock the eraser tool</summary>
+    </key>
   </schema>
 </schemalist>

@@ -27,6 +27,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/overlays.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penshortcutrow.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/penmoderow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/settingspanel.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/shortcuts.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/sidebar.ui</file>
@@ -73,6 +74,7 @@
         <file compressed="true">icons/scalable/actions/drawing-pad-button-2-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/drawing-pad-button-3-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/drawing-pad-button-4-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/stylus-pen-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/edit-redo-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/edit-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/edit-undo-symbolic.svg</file>

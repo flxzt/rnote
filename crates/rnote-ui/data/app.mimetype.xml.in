@@ -3,6 +3,6 @@
    <mime-type type="application/rnote">
      <comment>Rnote notes file type</comment>
      <glob pattern="*.rnote"/>
-     <icon name="application-@APP_NAME@"/>
+     <generic-icon name="application-@APP_NAME@"/>
    </mime-type>
 </mime-info>

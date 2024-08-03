@@ -4,6 +4,7 @@ use crate::RnAppWindow;
 use gettextrs::gettext;
 use gtk4::{gio, glib, glib::clone, pango, prelude::*, Align, Entry, Label};
 use std::path::Path;
+use tracing::{debug, error};
 
 /// Create a new `rename` action.
 pub(crate) fn rename(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleAction {
@@ -37,12 +38,12 @@ pub(crate) fn rename(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::Simpl
 
             if new_file_path.exists() {
                 appwindow.overlays().dispatch_toast_error(&gettext("Renaming file failed, target file already exists"));
-                tracing::debug!("Renaming file with path '{}' failed, target file already exists", new_file_path.display());
+                debug!("Renaming file with path '{}' failed, target file already exists", new_file_path.display());
             } else {
                 glib::spawn_future_local(clone!(@strong current_file_path, @weak appwindow => async move {
                     appwindow.overlays().progressbar_start_pulsing();
                     if let Err(e) = async_fs::rename(&current_file_path, &new_file_path).await {
-                        tracing::error!("Renaming file with path `{}` failed, Err: {e:?}", new_file_path.display());
+                        error!("Renaming file with path `{}` failed, Err: {e:?}", new_file_path.display());
                         appwindow.overlays().dispatch_toast_error(&gettext("Renaming file failed"));
                         appwindow.overlays().progressbar_abort();
                     } else {
@@ -79,7 +80,7 @@ fn entry_text_select_stem(entry: &Entry) {
     entry.grab_focus();
     if let Some(end) = stem_end {
         // Select only the file stem
-        tracing::debug!("file name select end position: {end}");
+        debug!("file name select end position: {end}");
         entry.select_region(0, end as i32);
     }
 }

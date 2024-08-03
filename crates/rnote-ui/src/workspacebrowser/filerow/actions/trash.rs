@@ -3,6 +3,7 @@ use crate::workspacebrowser::RnFileRow;
 use crate::RnAppWindow;
 use gettextrs::gettext;
 use gtk4::{gio, glib, glib::clone, prelude::FileExt};
+use tracing::debug;
 
 /// Create a new `trash` action.
 pub(crate) fn trash(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleAction {
@@ -18,7 +19,7 @@ pub(crate) fn trash(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::Simple
                 clone!(@weak filerow, @strong current_file => move |res| {
                 if let Err(e) = res {
                     appwindow.overlays().dispatch_toast_error(&gettext("Trashing file failed"));
-                    tracing::debug!("Trash filerow file `{current_file:?}` failed , Err: {e:?}");
+                    debug!("Trash filerow file `{current_file:?}` failed , Err: {e:?}");
                     return;
                 }
                 filerow.set_current_file(None);

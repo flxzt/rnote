@@ -34,6 +34,7 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
+use tracing::error;
 
 /// An immutable view into the engine, excluding the penholder.
 #[derive(Debug)]
@@ -131,7 +132,7 @@ impl EngineTaskSender {
     pub fn send(&self, task: EngineTask) {
         if let Err(e) = self.0.unbounded_send(task) {
             let err = format!("{e:?}");
-            tracing::error!(
+            error!(
                 "Failed to send engine task {:?}, Err: {err}",
                 e.into_inner()
             );
@@ -276,7 +277,7 @@ impl Engine {
                     self.audioplayer = match AudioPlayer::new_init(pkg_data_dir) {
                         Ok(audioplayer) => Some(audioplayer),
                         Err(e) => {
-                            tracing::error!("Creating a new audioplayer failed while enabling pen sounds, Err: {e:?}");
+                            error!("Creating a new audioplayer failed while enabling pen sounds, Err: {e:?}");
                             None
                         }
                     }

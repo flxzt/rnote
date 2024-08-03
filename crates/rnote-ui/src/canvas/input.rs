@@ -10,6 +10,7 @@ use rnote_engine::pens::PenMode;
 use rnote_engine::WidgetFlags;
 use std::collections::HashSet;
 use std::time::{Duration, Instant};
+use tracing::trace;
 
 // Returns whether the event should be inhibited from propagating, and the new pen state
 pub(crate) fn handle_pointer_controller_event(
@@ -38,7 +39,7 @@ pub(crate) fn handle_pointer_controller_event(
 
     match gdk_event_type {
         gdk::EventType::MotionNotify => {
-            tracing::trace!(
+            trace!(
                 "canvas event MotionNotify - gdk_modifiers: {gdk_modifiers:?}, is_stylus: {is_stylus}"
             );
             handle_pen_event = true;
@@ -58,9 +59,7 @@ pub(crate) fn handle_pointer_controller_event(
             let gdk_button = button_event.button();
             let mut handle_shortcut_key = false;
 
-            tracing::trace!(
-                "canvas event ButtonPress - gdk_button: {gdk_button}, is_stylus: {is_stylus}"
-            );
+            trace!("canvas event ButtonPress - gdk_button: {gdk_button}, is_stylus: {is_stylus}");
 
             if is_stylus {
                 if gdk_button == gdk::BUTTON_PRIMARY
@@ -95,9 +94,7 @@ pub(crate) fn handle_pointer_controller_event(
             let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
             let gdk_button = button_event.button();
 
-            tracing::trace!(
-                "canvas event ButtonRelease - gdk_button: {gdk_button}, is_stylus: {is_stylus}"
-            );
+            trace!("canvas event ButtonRelease - gdk_button: {gdk_button}, is_stylus: {is_stylus}");
 
             if is_stylus {
                 if gdk_button == gdk::BUTTON_PRIMARY
@@ -167,7 +164,7 @@ pub(crate) fn handle_pointer_controller_event(
         let pen_mode = retrieve_pen_mode(event);
 
         for (element, event_time) in elements {
-            tracing::trace!("handle pen event element - element: {element:?}, pen_state: {pen_state:?}, event_time_delta: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}", now.duration_since(event_time));
+            trace!(?element, ?pen_state, ?modifier_keys, ?pen_mode, event_time_delta=?now.duration_since(event_time), msg="handle pen event element");
 
             // Workaround for https://github.com/flxzt/rnote/issues/785
             // only one event is sent when the pen approaches the screen
@@ -238,9 +235,7 @@ pub(crate) fn handle_key_controller_key_pressed(
     gdk_key: gdk::Key,
     gdk_modifiers: gdk::ModifierType,
 ) -> glib::Propagation {
-    tracing::trace!(
-        "canvas event key pressed - gdk_key: {gdk_key:?}, gdk_modifiers: {gdk_modifiers:?}"
-    );
+    trace!("canvas event key pressed - gdk_key: {gdk_key:?}, gdk_modifiers: {gdk_modifiers:?}");
     canvas.grab_focus();
 
     let now = Instant::now();
@@ -272,9 +267,7 @@ pub(crate) fn handle_key_controller_key_released(
     gdk_key: gdk::Key,
     gdk_modifiers: gdk::ModifierType,
 ) {
-    tracing::trace!(
-        "canvas event key released - gdk_key: {gdk_key:?}, gdk_modifiers: {gdk_modifiers:?}"
-    );
+    trace!("canvas event key released - gdk_key: {gdk_key:?}, gdk_modifiers: {gdk_modifiers:?}");
 }
 
 pub(crate) fn handle_imcontext_text_commit(canvas: &RnCanvas, text: &str) {
@@ -291,18 +284,18 @@ pub(crate) fn handle_imcontext_text_commit(canvas: &RnCanvas, text: &str) {
 }
 
 #[allow(unused)]
-fn debug_gdk_event(event: &gdk::Event) {
+fn trace_gdk_event(event: &gdk::Event) {
     let pos = event
         .position()
         .map(|(x, y)| format!("x: {x:.1}, y: {y:.1}"));
-    tracing::debug!(
-        "Gdk event: (pos: {:?}, device: {:?}, modifier: {:?}, event_type: {:?}, tool type: {:?}, input source: {:?}",
-        pos,
-        event.device(),
-        event.modifier_state(),
-        event.event_type(),
-        event.device_tool().map(|t| t.tool_type()),
-        event.device().map(|d| d.source())
+    trace!(
+        msg="Gdk event",
+        pos=?pos,
+        device=?event.device(),
+        modifier=?event.modifier_state(),
+        event_type=?event.event_type(),
+        tool_type=?event.device_tool().map(|t| t.tool_type()),
+        input_source=?event.device().map(|d| d.source())
     );
 }
 

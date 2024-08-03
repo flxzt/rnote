@@ -7,6 +7,8 @@ use gtk4::{
     Align, Box, FlowBox, FlowBoxChild, IconSize, Image, Label, StringList, StringObject,
     TemplateChild, Widget,
 };
+use once_cell::sync::Lazy;
+use std::cell::RefCell;
 
 pub(crate) struct GroupedIconPickerGroupData {
     pub(crate) name: String,
@@ -15,8 +17,6 @@ pub(crate) struct GroupedIconPickerGroupData {
 
 mod imp {
     use super::*;
-    use once_cell::sync::Lazy;
-    use std::cell::RefCell;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/groupediconpicker/groupediconpickergroup.ui")]

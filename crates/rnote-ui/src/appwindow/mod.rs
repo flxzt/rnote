@@ -18,6 +18,7 @@ use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::{engine::EngineTask, WidgetFlags};
 use std::path::Path;
+use tracing::{error, warn};
 
 glib::wrapper! {
     pub(crate) struct RnAppWindow(ObjectSubclass<imp::RnAppWindow>)
@@ -142,13 +143,13 @@ impl RnAppWindow {
             ));
         } else {
             if let Err(e) = self.setup_settings_binds() {
-                tracing::error!("Failed to setup settings binds, Err: {e:?}");
+                error!("Failed to setup settings binds, Err: {e:?}");
             }
             if let Err(e) = self.setup_periodic_save() {
-                tracing::error!("Failed to setup periodic save, Err: {e:?}");
+                error!("Failed to setup periodic save, Err: {e:?}");
             }
             if let Err(e) = self.load_settings() {
-                tracing::error!("Failed to load initial settings, Err: {e:?}");
+                error!("Failed to load initial settings, Err: {e:?}");
             }
         }
 
@@ -178,7 +179,7 @@ impl RnAppWindow {
         if self.app().settings_schema_found() {
             // Saving all state
             if let Err(e) = self.save_to_settings() {
-                tracing::error!("Failed to save appwindow to settings, Err: {e:?}");
+                error!("Failed to save appwindow to settings, Err: {e:?}");
             }
         }
 
@@ -200,7 +201,7 @@ impl RnAppWindow {
 
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
     pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags, canvas: &RnCanvas) {
-        //tracing::debug!("handling widget flags: '{widget_flags:?}'");
+        //debug!("handling widget flags: '{widget_flags:?}'");
 
         if widget_flags.redraw {
             canvas.queue_draw();
@@ -316,10 +317,10 @@ impl RnAppWindow {
                 .canvas()
                 .load_engine_config_from_settings(&app_settings)
             {
-                tracing::error!("Failed to load engine config for initial tab, Err: {e:?}");
+                error!("Failed to load engine config for initial tab, Err: {e:?}");
             }
         } else {
-            tracing::warn!("Could not load settings for initial tab. Settings schema not found.");
+            warn!("Could not load settings for initial tab. Settings schema not found.");
         }
         self.append_wrapper_new_tab(&wrapper)
     }
@@ -514,7 +515,7 @@ impl RnAppWindow {
                 self.overlays().progressbar_abort();
             }
             Err(e) => {
-                tracing::error!("Opening file with dialogs failed, Err: {e:?}");
+                error!("Opening file with dialogs failed, Err: {e:?}");
 
                 self.overlays()
                     .dispatch_toast_error(&gettext("Opening file failed"));

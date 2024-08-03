@@ -7,6 +7,7 @@ use num_traits::ToPrimitive;
 use once_cell::sync::Lazy;
 use rnote_engine::document::format::MeasureUnit;
 use std::cell::Cell;
+use tracing::error;
 
 mod imp {
     use super::*;
@@ -67,7 +68,7 @@ mod imp {
             if let Some(scroll_controller) = self.value_spinner.observe_controllers().into_iter().find(|controller| {
                 let Ok(controller) = controller else {
 
-                        tracing::error!("Unable to get scroll controller in RnUnitEntry, controller ListModel mutated while fetching");
+                        error!("Unable to get scroll controller in RnUnitEntry, controller ListModel mutated while fetching");
                         return false;
                 };
                 controller.downcast_ref::<EventControllerScroll>().is_some()

@@ -1,6 +1,3 @@
-// gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not suitable for a async flow
-#![allow(deprecated)]
-
 // Modules
 pub(crate) mod export;
 pub(crate) mod import;
@@ -18,6 +15,7 @@ use gtk4::{
     gio, glib, glib::clone, Builder, Button, CheckButton, ColorDialogButton, FileDialog, Label,
     MenuButton, ShortcutsWindow, StringList,
 };
+use tracing::{debug, error, warn};
 
 // About Dialog
 pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
@@ -112,8 +110,7 @@ pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
                     appwindow.overlays().progressbar_start_pulsing();
 
                     if let Err(e) = canvas.save_document_to_file(&output_file).await {
-                        tracing::error!("Saving document failed before creating new document, Err: {e:?}");
-
+                        error!("Saving document failed before creating new document, Err: {e:?}");
                         canvas.set_output_file(None);
                         appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                         appwindow.overlays().progressbar_abort();
@@ -240,19 +237,16 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
                 appwindow.overlays().progressbar_start_pulsing();
 
                 if let Err(e) = canvas.save_document_to_file(&save_file).await {
+                    error!("Saving document failed before closing tab, Err: {e:?}");
                     canvas.set_output_file(None);
-
-                    tracing::error!("Saving document failed before closing tab, Err: {e:?}");
                     appwindow
                         .overlays()
                         .dispatch_toast_error(&gettext("Saving document failed"));
                     appwindow.overlays().progressbar_abort();
                 } else {
                     appwindow.overlays().progressbar_finish();
+                    // No success toast on saving without dialog, success is already indicated in the header title
                 }
-
-                appwindow.overlays().progressbar_finish();
-                // No success toast on saving without dialog, success is already indicated in the header title
             }
 
             // only close if saving was successful
@@ -392,9 +386,8 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
                     .canvas();
 
                 if let Err(e) = canvas.save_document_to_file(&save_file).await {
-                    tracing::error!("Saving document failed before closing window, Err: `{e:?}`");
-
                     close = false;
+                    error!("Saving document failed before closing window, Err: `{e:?}`");
                     canvas.set_output_file(None);
                     appwindow
                         .overlays()
@@ -462,7 +455,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
         .workspacesbar()
         .selected_workspacelistentry()
     else {
-        tracing::warn!("Tried to edit workspace entry in dialog, but no workspace is selected.");
+        warn!("Tried to edit workspace entry in dialog, but no workspace is selected.");
         return;
     };
 
@@ -523,7 +516,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
                         }
                     }
                     Err(e) => {
-                        tracing::debug!("Did not select new folder for workspacerow (Error or dialog dismissed by user), Err: {e:?}");
+                        debug!("Did not select new folder for workspacerow (Error or dialog dismissed by user), Err: {e:?}");
                     }
                 }
 

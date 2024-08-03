@@ -16,6 +16,7 @@ use once_cell::sync::Lazy;
 use rnote_compose::{color, Color};
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
+use tracing::debug;
 
 mod imp {
     use super::*;
@@ -480,7 +481,7 @@ impl RnColorPicker {
                             },
                             // this reports as error if the dialog is dismissed by the user.
                             // The API is a bit odd, expected would be Result<Option<RGBA>>
-                            Err(e) => tracing::debug!("Did not choose new color (Error or dialog dismissed by user), Err: {e:?}"),
+                            Err(e) => debug!("Did not choose new color (Error or dialog dismissed by user), Err: {e:?}"),
                         }
 
                         colorpicker.imp().color_dialog.set(None);

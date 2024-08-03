@@ -8,6 +8,7 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 use std::ffi::{OsStr, OsString};
 use std::path::{Path, PathBuf};
+use tracing::debug;
 
 /// The regex used to search for duplicated files
 /// ```text
@@ -33,7 +34,7 @@ pub(crate) fn duplicate(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::Si
         glib::spawn_future_local(clone!(@weak filerow, @weak appwindow => async move {
             let Some(current_path) = filerow.current_file().and_then(|f| f.path()) else {
                 appwindow.overlays().dispatch_toast_error(&gettext("Can't duplicate an unsaved document"));
-                tracing::debug!("Could not duplicate file, current file is None.");
+                debug!("Could not duplicate file, current file is None.");
                 return;
             };
 
@@ -43,13 +44,13 @@ pub(crate) fn duplicate(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::Si
             if current_path.is_file() {
                 if let Err(e) = duplicate_file(&current_path).await {
                     appwindow.overlays().dispatch_toast_error(&gettext("Duplicating the file failed"));
-                    tracing::debug!("Duplicating file for path `{current_path:?}` failed, Err: {e:?}");
+                    debug!("Duplicating file for path `{current_path:?}` failed, Err: {e:?}");
                     success = false;
                 }
             } else if current_path.is_dir() {
                 if let Err(e) = duplicate_dir(&current_path).await {
                     appwindow.overlays().dispatch_toast_error(&gettext("Duplicating the directory failed"));
-                    tracing::debug!("Duplicating directory for path `{current_path:?}` failed, Err: {e:?}");
+                    debug!("Duplicating directory for path `{current_path:?}` failed, Err: {e:?}");
                     success = false;
                 }
             } else {
@@ -109,9 +110,7 @@ fn generate_destination_path(source: impl AsRef<Path>) -> anyhow::Result<PathBuf
             return Ok(destination_path);
         }
 
-        tracing::debug!(
-            "File '{destination_path:?}' already exists. Incrementing duplication index.",
-        );
+        debug!("File '{destination_path:?}' already exists. Incrementing duplication index.",);
         duplicate_index += 1;
     }
 }

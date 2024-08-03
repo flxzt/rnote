@@ -14,6 +14,7 @@ use rnote_compose::style::Composer;
 use rnote_compose::transform::Transformable;
 use rnote_compose::{PenPath, Style};
 use serde::{Deserialize, Serialize};
+use tracing::error;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "brushstroke")]
@@ -74,9 +75,7 @@ impl Content for BrushStroke {
                     match image {
                         Ok(image) => vec![image],
                         Err(e) => {
-                            tracing::error!(
-                                "Generating images for brushstroke failed , Err: {e:?}"
-                            );
+                            error!("Generating images for brushstroke failed , Err: {e:?}");
                             vec![]
                         }
                     }
@@ -98,9 +97,7 @@ impl Content for BrushStroke {
                     match image {
                         Ok(image) => vec![image],
                         Err(e) => {
-                            tracing::error!(
-                                "Generating images for brushstroke failed , Err: {e:?}"
-                            );
+                            error!("Generating images for brushstroke failed , Err: {e:?}");
                             vec![]
                         }
                     }
@@ -125,9 +122,7 @@ impl Content for BrushStroke {
                         match image {
                             Ok(image) => images.push(image),
                             Err(e) => {
-                                tracing::error!(
-                                    "generating images for brushstroke failed , Err: {e:?}"
-                                );
+                                error!("generating images for brushstroke failed , Err: {e:?}");
                             }
                         }
 
@@ -158,9 +153,7 @@ impl Content for BrushStroke {
                         match image {
                             Ok(image) => images.push(image),
                             Err(e) => {
-                                tracing::error!(
-                                    "generating images for brushstroke failed , Err: {e:?}"
-                                );
+                                error!("generating images for brushstroke failed , Err: {e:?}");
                             }
                         }
 

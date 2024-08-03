@@ -17,6 +17,8 @@ use gtk4::{
     DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext, PropagationPhase,
     Scrollable, ScrollablePolicy, Widget,
 };
+use notify::event::{AccessKind, AccessMode, ModifyKind, RenameMode};
+use notify::EventKind;
 use notify_debouncer_full::notify::{self, Watcher};
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
@@ -915,10 +917,7 @@ impl RnCanvas {
                                   canvas: &RnCanvas,
                                   event: notify_debouncer_full::DebouncedEvent,
                                   file_path: &Path| {
-            use notify::event::{AccessKind, AccessMode, ModifyKind, RenameMode};
-            use notify::EventKind;
-
-            tracing::trace!("file parent directory watcher - received event: {event:?}");
+            tracing::debug!(?event, expect_write=?canvas.output_file_expect_write(), msg="output file parent directory watcher event received");
 
             match event.kind {
                 EventKind::Create(_create_kind) => {}

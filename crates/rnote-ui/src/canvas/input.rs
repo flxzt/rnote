@@ -167,7 +167,7 @@ pub(crate) fn handle_pointer_controller_event(
         let pen_mode = retrieve_pen_mode(event);
 
         for (element, event_time) in elements {
-            tracing::trace!("handle pen event element - element: {element:?}, pen_state: {pen_state:?}, event_time_delta: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}", now.duration_since(event_time));
+            tracing::trace!(?element, ?pen_state, ?modifier_keys, ?pen_mode, event_time_delta=?now.duration_since(event_time), msg="handle pen event element");
 
             // Workaround for https://github.com/flxzt/rnote/issues/785
             // only one event is sent when the pen approaches the screen

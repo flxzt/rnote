@@ -86,8 +86,12 @@ fn main() -> glib::ExitCode {
 }
 
 fn setup_tracing() -> anyhow::Result<()> {
+    let timer = tracing_subscriber::fmt::time::Uptime::default();
+
     tracing_subscriber::fmt()
+        .compact()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .with_timer(timer)
         .try_init()
         .map_err(|e| anyhow::anyhow!(e))?;
     tracing::debug!(".. tracing subscriber initialized.");

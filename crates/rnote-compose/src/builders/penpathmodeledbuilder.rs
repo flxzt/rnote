@@ -14,6 +14,7 @@ use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use std::time::Instant;
+use tracing::{debug, error};
 
 /// Pen path modeled builder.
 pub struct PenPathModeledBuilder {
@@ -189,7 +190,7 @@ impl PenPathModeledBuilder {
                         src: ElementError::TooFarApart,
                     } => {
                         self.last_element = element;
-                        tracing::debug!(
+                        debug!(
                             "PenpathModeledBuilder: updating modeler with element failed,
             n_steps exceeds configured max outputs per call."
                         );
@@ -199,10 +200,10 @@ impl PenPathModeledBuilder {
                         src: ElementError::Order { src: _ },
                     } => {
                         self.last_element = element;
-                        tracing::error!("Updating stroke modeler with element failed, Err: {e:?}")
+                        error!("Updating stroke modeler with element failed, Err: {e:?}")
                     }
                     _ => {
-                        tracing::error!("Updating stroke modeler with element failed, Err: {e:?}");
+                        error!("Updating stroke modeler with element failed, Err: {e:?}");
                         return;
                     }
                 };
@@ -229,7 +230,7 @@ impl PenPathModeledBuilder {
                     })
                     .collect::<Vec<Element>>(),
                 Err(e) => {
-                    tracing::error!("Stroke modeler predict failed, Err: {e:?}");
+                    error!("Stroke modeler predict failed, Err: {e:?}");
                     Vec::new()
                 }
             }
@@ -243,7 +244,7 @@ impl PenPathModeledBuilder {
         self.last_element_time = now;
         self.last_element = element;
         if let Err(e) = self.stroke_modeler.reset_w_params(*MODELER_PARAMS) {
-            tracing::error!("Resetting stroke modeler failed while restarting, Err: {e:?}");
+            error!("Resetting stroke modeler failed while restarting, Err: {e:?}");
             return;
         }
 
@@ -261,7 +262,7 @@ impl PenPathModeledBuilder {
                 }));
             }
             Err(e) => {
-                tracing::error!("Updating stroke modeler failed while restarting, Err: {e:?}")
+                error!("Updating stroke modeler failed while restarting, Err: {e:?}")
             }
         }
     }

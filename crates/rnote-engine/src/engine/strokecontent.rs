@@ -7,6 +7,7 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
+use tracing::warn;
 
 /// Stroke content.
 ///
@@ -90,7 +91,7 @@ impl StrokeContent {
         )?;
         // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
         if let Err(e) = svg.simplify() {
-            tracing::warn!("Simplifying Svg while generating StrokeContent Svg failed, Err: {e:?}");
+            warn!("Simplifying Svg while generating StrokeContent Svg failed, Err: {e:?}");
         };
         Ok(Some(svg))
     }

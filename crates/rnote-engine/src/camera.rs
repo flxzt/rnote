@@ -7,6 +7,7 @@ use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
+use tracing::error;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum NudgeDirection {
@@ -205,7 +206,7 @@ impl Camera {
                     reinstall_zoom_task = true;
                 }
                 Err(e) => {
-                    tracing::error!("Could not replace task for one off zoom task, Err: {e:?}");
+                    error!("Could not replace task for one off zoom task, Err: {e:?}");
                     reinstall_zoom_task = true;
                 }
             }

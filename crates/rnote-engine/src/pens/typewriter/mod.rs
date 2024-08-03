@@ -21,6 +21,7 @@ use rnote_compose::EventResult;
 use rnote_compose::{color, Transform};
 use std::ops::Range;
 use std::time::{Duration, Instant};
+use tracing::error;
 use unicode_segmentation::GraphemeCursor;
 
 #[derive(Debug, Clone)]
@@ -423,7 +424,7 @@ impl PenBehaviour for Typewriter {
         }
 
         if sender.send(Ok((clipboard_content, widget_flags))).is_err() {
-            tracing::error!(
+            error!(
                 "Sending fetched typewriter clipboard content failed, receiver already dropped."
             );
         }
@@ -507,9 +508,7 @@ impl PenBehaviour for Typewriter {
         self.reset_blink();
 
         if sender.send(Ok((clipboard_content, widget_flags))).is_err() {
-            tracing::error!(
-                "Sending cut typewriter clipboard content failed, receiver already dropped."
-            );
+            error!("Sending cut typewriter clipboard content failed, receiver already dropped.");
         }
         receiver
     }
@@ -911,7 +910,7 @@ impl Typewriter {
     fn reset_blink(&mut self) {
         if let Some(handle) = &mut self.blink_task_handle {
             if let Err(e) = handle.skip() {
-                tracing::error!("Skipping blink task failed, Err: {e:?}");
+                error!("Skipping blink task failed, Err: {e:?}");
             }
         }
         self.cursor_visible = true;

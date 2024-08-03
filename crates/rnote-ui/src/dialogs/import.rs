@@ -12,6 +12,7 @@ use gtk4::{
 };
 use num_traits::ToPrimitive;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
+use tracing::{debug, error};
 
 /// Opens a new rnote save file in a new tab
 pub(crate) async fn filedialog_open_doc(appwindow: &RnAppWindow) {
@@ -49,9 +50,7 @@ pub(crate) async fn filedialog_open_doc(appwindow: &RnAppWindow) {
                 .await;
         }
         Err(e) => {
-            tracing::debug!(
-                "Did not open document (Error or dialog dismissed by user), Err: {e:?}"
-            );
+            debug!("Did not open document (Error or dialog dismissed by user), Err: {e:?}");
         }
     }
 }
@@ -107,7 +106,7 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
                 .await;
         }
         Err(e) => {
-            tracing::debug!("Did not import file (Error or dialog dismissed by user), Err: {e:?}");
+            debug!("Did not import file (Error or dialog dismissed by user), Err: {e:?}");
         }
     }
 }
@@ -295,7 +294,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         dialog.close();
 
         if let Err(e) = tx_cancel.unbounded_send(Ok(false)) {
-            tracing::error!(
+            error!(
                 "PDF import dialog closed, but failed to send signal through channel. Err: {e:?}"
             );
         }
@@ -314,20 +313,20 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
                 Ok(res) => {res}
                 Err(err) => {
                     if let Err(e) = inner_tx_confirm.unbounded_send(Err(err.into())) {
-                        tracing::error!("Failed to load file, but failed to send signal through channel. Err: {e:?}");
+                        error!("Failed to load file, but failed to send signal through channel. Err: {e:?}");
                     }
                     return;
                 }
             };
             if let Err(e) = canvas.load_in_pdf_bytes(bytes.to_vec(), target_pos, Some(page_range)).await {
                 if let Err(e) = inner_tx_confirm.unbounded_send(Err(e)) {
-                    tracing::error!("Failed to load PDF, but failed to send signal through channel. Err: {e:?}");
+                    error!("Failed to load PDF, but failed to send signal through channel. Err: {e:?}");
                 }
                 return;
             }
 
             if let Err(e) = inner_tx_confirm.unbounded_send(Ok(true)) {
-                tracing::error!("PDF file imported, but failed to send signal through channel. Err: {e:?}");
+                error!("PDF file imported, but failed to send signal through channel. Err: {e:?}");
             }
         }));
     }));
@@ -390,7 +389,7 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
         dialog.close();
 
         if let Err(e) = tx_cancel.unbounded_send(Ok(false)) {
-            tracing::error!(
+            error!(
                 "XOPP import dialog closed, but failed to send signal through channel. Err: {e:?}"
             );
         }
@@ -406,20 +405,20 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
                 Ok(res) => {res}
                 Err(err) => {
                     if let Err(e) = inner_tx_confirm.unbounded_send(Err(err.into())) {
-                        tracing::error!("Failed to load file, but failed to send signal through channel. Err: {e:?}");
+                        error!("Failed to load file, but failed to send signal through channel. Err: {e:?}");
                     }
                     return;
                 }
             };
             if let Err(e) = canvas.load_in_xopp_bytes(bytes.to_vec()).await {
                 if let Err(e) = inner_tx_confirm.unbounded_send(Err(e)) {
-                    tracing::error!("Failed to load XOPP, but failed to send signal through channel. Err: {e:?}");
+                    error!("Failed to load XOPP, but failed to send signal through channel. Err: {e:?}");
                 }
                 return;
             };
 
             if let Err(e) = inner_tx_confirm.unbounded_send(Ok(true)) {
-                tracing::error!("XOPP file imported, but failed to send signal through channel. Err: {e:?}");
+                error!("XOPP file imported, but failed to send signal through channel. Err: {e:?}");
             }
         }));
     }));

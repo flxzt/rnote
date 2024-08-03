@@ -11,6 +11,7 @@ use rnote_compose::transform::Transformable;
 use rnote_compose::{color, Color, Transform};
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
+use tracing::error;
 use unicode_segmentation::{GraphemeCursor, UnicodeSegmentation};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -485,9 +486,7 @@ impl Shapeable for TextStroke {
         {
             Ok(text_layout) => text_layout,
             Err(e) => {
-                tracing::error!(
-                    "Building text layout failed while calculating the hitboxes, Err: {e:?}"
-                );
+                error!("Building text layout failed while calculating the hitboxes, Err: {e:?}");
                 return vec![self.bounds()];
             }
         };

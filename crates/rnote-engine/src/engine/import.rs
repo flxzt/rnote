@@ -15,6 +15,7 @@ use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use std::path::PathBuf;
 use std::time::Instant;
+use tracing::error;
 
 #[derive(
     Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
@@ -259,7 +260,7 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                tracing::error!(
+                error!(
                     "Sending result to receiver while generating VectorImage from bytes failed. Receiver already dropped."
                 );
             }
@@ -297,7 +298,7 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                tracing::error!(
+                error!(
                     "Sending result to receiver while generating BitmapImage from bytes failed. Receiver already dropped."
                 );
             }
@@ -361,7 +362,7 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                tracing::error!("Sending result to receiver while importing Pdf bytes failed. Receiver already dropped");
+                error!("Sending result to receiver while importing Pdf bytes failed. Receiver already dropped");
             }
         });
 

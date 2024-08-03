@@ -17,6 +17,7 @@ use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use std::sync::Arc;
+use tracing::error;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "vectorimage")]
@@ -321,7 +322,7 @@ impl VectorImage {
                 match res() {
                     Ok(svg_data) => Some(render::Svg { svg_data, bounds }),
                     Err(e) => {
-                        tracing::error!("Importing page {page_i} from pdf failed, Err: {e:?}");
+                        error!("Importing page {page_i} from pdf failed, Err: {e:?}");
                         None
                     }
                 }

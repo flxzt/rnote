@@ -8,6 +8,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::path::PathBuf;
 use std::time::Duration;
+use tracing::error;
 
 /// The audio player for pen sounds.
 pub struct AudioPlayer {
@@ -130,7 +131,7 @@ impl AudioPlayer {
                 sink.detach();
             }
             Err(e) => {
-                tracing::error!("Failed to create sink when trying to play marker sound, Err {e:?}",)
+                error!("Failed to create sink when trying to play marker sound, Err {e:?}",)
             }
         }
     }
@@ -145,9 +146,7 @@ impl AudioPlayer {
         if let Some(handle) = self.brush_sound_task_handle.as_mut() {
             if !handle.timeout_reached() {
                 if let Err(e) = handle.reset_timeout() {
-                    tracing::error!(
-                        "Resetting timeout on brush sound stop task failed, Err: {e:?}"
-                    );
+                    error!("Resetting timeout on brush sound stop task failed, Err: {e:?}");
                     reinstall_task = true;
                 }
             } else {
@@ -161,7 +160,7 @@ impl AudioPlayer {
             let sink = match rodio::Sink::try_new(&self.brush_outputstream_handle) {
                 Ok(sink) => sink,
                 Err(e) => {
-                    tracing::error!(
+                    error!(
                         "Failed to create sink when trying to trigger random brush sound, Err {e:?}",
                     );
                     self.brush_sound_task_handle = None;
@@ -193,9 +192,7 @@ impl AudioPlayer {
         let sink = match rodio::Sink::try_new(&self.typewriter_outputstream_handle) {
             Ok(sink) => sink,
             Err(e) => {
-                tracing::error!(
-                    "Failed to create sink when trying to play typewriter sound, Err {e:?}"
-                );
+                error!("Failed to create sink when trying to play typewriter sound, Err {e:?}");
                 return;
             }
         };

@@ -10,6 +10,7 @@ use gtk4::{
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::PenStyle;
 use std::cell::{Cell, RefCell};
+use tracing::error;
 
 mod imp {
     use super::*;
@@ -402,14 +403,14 @@ impl RnOverlays {
         *singleton_toast = Some(self.dispatch_toast_text(text, timeout));
     }
 
-    pub(crate) fn dispatch_toast_error(&self, error: &str) -> adw::Toast {
+    pub(crate) fn dispatch_toast_error(&self, err: &str) -> adw::Toast {
         let toast = adw::Toast::builder()
-            .title(error)
+            .title(err)
             .priority(adw::ToastPriority::High)
             .timeout(0)
             .build();
         self.toast_overlay().add_toast(toast.clone());
-        tracing::error!("{error}");
+        error!("{err}");
         toast
     }
 }

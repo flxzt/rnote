@@ -568,14 +568,13 @@ impl RnAppWindow {
 
                     if let Err(e) = canvas.save_document_to_file(&output_file).await {
                         tracing::error!("Saving document failed, Err: `{e:?}`");
-
                         canvas.set_output_file(None);
                         appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                         appwindow.overlays().progressbar_abort();
                     } else {
                         appwindow.overlays().progressbar_finish();
+                        // No success toast on saving without dialog, success is already indicated in the header title
                     }
-                    // No success toast on saving without dialog, success is already indicated in the header title
                 } else {
                     // Open a dialog to choose a save location
                     dialogs::export::dialog_save_doc_as(&appwindow, &canvas).await;

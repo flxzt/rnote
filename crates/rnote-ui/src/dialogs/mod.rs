@@ -113,7 +113,6 @@ pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
 
                     if let Err(e) = canvas.save_document_to_file(&output_file).await {
                         tracing::error!("Saving document failed before creating new document, Err: {e:?}");
-
                         canvas.set_output_file(None);
                         appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                         appwindow.overlays().progressbar_abort();
@@ -240,19 +239,16 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
                 appwindow.overlays().progressbar_start_pulsing();
 
                 if let Err(e) = canvas.save_document_to_file(&save_file).await {
-                    canvas.set_output_file(None);
-
                     tracing::error!("Saving document failed before closing tab, Err: {e:?}");
+                    canvas.set_output_file(None);
                     appwindow
                         .overlays()
                         .dispatch_toast_error(&gettext("Saving document failed"));
                     appwindow.overlays().progressbar_abort();
                 } else {
                     appwindow.overlays().progressbar_finish();
+                    // No success toast on saving without dialog, success is already indicated in the header title
                 }
-
-                appwindow.overlays().progressbar_finish();
-                // No success toast on saving without dialog, success is already indicated in the header title
             }
 
             // only close if saving was successful
@@ -392,9 +388,8 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
                     .canvas();
 
                 if let Err(e) = canvas.save_document_to_file(&save_file).await {
-                    tracing::error!("Saving document failed before closing window, Err: `{e:?}`");
-
                     close = false;
+                    tracing::error!("Saving document failed before closing window, Err: `{e:?}`");
                     canvas.set_output_file(None);
                     appwindow
                         .overlays()

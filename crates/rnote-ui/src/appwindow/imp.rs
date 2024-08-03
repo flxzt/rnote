@@ -306,8 +306,8 @@ impl RnAppWindow {
                                 );
                                 glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
                                     if let Err(e) = canvas.save_document_to_file(&output_file).await {
-                                        canvas.set_output_file(None);
                                         tracing::error!("Saving document failed, Err: `{e:?}`");
+                                        canvas.set_output_file(None);
                                         appwindow
                                             .overlays()
                                             .dispatch_toast_error(&gettext("Saving document failed"));

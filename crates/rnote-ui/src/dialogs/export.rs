@@ -243,7 +243,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
                     appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
                     appwindow.overlays().progressbar_abort();
                 } else {
-                    appwindow.overlays().dispatch_toast_w_button_singleton(
+                    appwindow.overlays().dispatch_toast_w_button(
                         &gettext("Exported document successfully"),
                         &gettext("View in file manager"),
                         clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
@@ -262,7 +262,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
                                 appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the file in the file manager"));
                             }
                         }
-                    ), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT, &mut None);
+                    ), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
                     appwindow.overlays().progressbar_finish();
                 }
             }));
@@ -577,7 +577,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
                     appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed"));
                     appwindow.overlays().progressbar_abort();
                 } else {
-                    appwindow.overlays().dispatch_toast_w_button_singleton(
+                    appwindow.overlays().dispatch_toast_w_button(
                         &gettext("Exported document pages successfully"),
                         &gettext("View in file manager"),
                         clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
@@ -592,7 +592,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
                                 appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the file in the file manager"));
                             }
                         }
-                    ), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT, &mut None);
+                    ), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
                     appwindow.overlays().progressbar_finish();
                 }
             }));
@@ -869,7 +869,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
                     .dispatch_toast_error(&gettext("Exporting selection failed"));
                 appwindow.overlays().progressbar_abort();
             } else {
-                appwindow.overlays().dispatch_toast_w_button_singleton(
+                appwindow.overlays().dispatch_toast_w_button(
                     &gettext("Exported selection successfully"),
                     &gettext("View in file manager"),
                     clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
@@ -889,7 +889,6 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
                                 }
                     }),
                     crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
-                    &mut None,
                 );
                 appwindow.overlays().progressbar_finish();
             }

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-07-10 22:09+0000\n"
+"PO-Revision-Date: 2024-07-27 13:09+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
 "Language: he\n"
@@ -40,15 +40,15 @@ msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"\"‫Rnote\" היא תוכנת ציור מבוססת וקטורים לרישום בכתב יד והוספת הערות על "
-"מסמכים ותמונות."
+"„‫Rnote” היא תוכנת ציור מבוססת וקטורים לרישום בכתב יד והוספת הערות על מסמכים "
+"ותמונות."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"אזהרה: פורמט הקבצים השמורים עדיין נתון לשינויים ופיתוח ועלול להפסיק לעבוד "
+"אזהרה: תבנית הקבצים השמורים עדיין נתונה לשינויים ופיתוח ועלולה להפסיק לעבוד "
 "לאחר שדרוג."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
@@ -65,7 +65,7 @@ msgstr "כתיבת טקסט עם „מכונת הכתיבה”"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"
-msgstr "הסתרת סרגי כלים בעזרת \"מצב ריכוז\""
+msgstr "הסתרת סרגי כלים בעזרת „מצב ריכוז”"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
@@ -88,7 +88,7 @@ msgstr "פינוי מסמך"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
-msgstr "מנקה את תוכן המסמך במלואו. נא לאשר."
+msgstr "ניקוי תוכן המסמך במלואו. נא לאשר."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:22
@@ -355,11 +355,6 @@ msgid "Page Order"
 msgstr "סדר עמודים"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
@@ -367,7 +362,7 @@ msgid ""
 msgstr ""
 "סדר העמודים כאשר מסמכים\n"
 "רחבים או ארוכים\n"
-"מחולק לדפים שונים"
+"מחולקים לעמודים שונים"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:152
 #: crates/rnote-ui/data/ui/dialogs/export.ui:363
@@ -475,16 +470,12 @@ msgid "The export image format"
 msgstr "פורמט יצוא התמונה"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
-"הגדר את היחס בין גודל התמונות\n"
-"לבין גודל המסמך בפועל"
+"הגדרת היחס בין מקדם גודל התמונות\n"
+"לבין הגודל על המסמך בפועל"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"
@@ -492,12 +483,11 @@ msgstr "שוליים"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:572
 msgid "Set the margin around the selected area"
-msgstr "הגדר את רוחב השוליים לשטח הנבחר"
+msgstr "הגדרת רוחב השוליים לשטח הנבחר"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
-#, fuzzy
 msgid "Import Pdf"
-msgstr "ייבוא"
+msgstr "ייבוא Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:218

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-06-16 21:09+0000\n"
+"PO-Revision-Date: 2024-07-28 10:46+0000\n"
 "Last-Translator: Fjuro <fjuro@alius.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -330,19 +330,14 @@ msgid "Page Order"
 msgstr "Pořadí stránek"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
-"Pořadí stránky, když jsou dokumenty s rozvrženími\n"
+"Pořadí stránek, když jsou dokumenty s rozvrženími,\n"
 "které se roztahují v horizontálních a vertikálních směrech,\n"
-"jsou rozděleny do stránek"
+"rozděleny do stránek"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:152
 #: crates/rnote-ui/data/ui/dialogs/export.ui:363
@@ -392,19 +387,14 @@ msgid "Jpeg"
 msgstr "JPEG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "    that expand in horizontal and vertical directions\n"
 "    are cut into pages"
 msgstr ""
-"Pořadí stránky, když jsou dokumenty s rozvrženími\n"
-"které se roztahují v horizontálních a vertikálních směrech,\n"
-"jsou rozděleny do stránek"
+"Pořadí stránek, když jsou dokumenty s rozvrženími,\n"
+"    které se roztahují v horizontálních a vertikálních směrech,\n"
+"    rozděleny do stránek"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
@@ -414,16 +404,12 @@ msgstr "Škálovací faktor Bitmap"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "    to the actual size on the document"
 msgstr ""
-"Nastavení faktoru měřítka bitmapy ve vztahu k\n"
-"ke skutečné velikosti v dokumentu"
+"Nastavení faktoru měřítka bitmapy ve vztahu\n"
+"    ke skutečné velikosti v dokumentu"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
@@ -445,15 +431,11 @@ msgid "The export image format"
 msgstr "Formát obrázku pro export"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
-"Nastavení faktoru měřítka bitmapy ve vztahu k\n"
+"Nastavení faktoru měřítka bitmapy ve vztahu\n"
 "ke skutečné velikosti v dokumentu"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
@@ -1801,10 +1783,8 @@ msgid "Exporting selection failed, nothing selected"
 msgstr "Export vybraného selhal, nic nebylo vybráno"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
-#, fuzzy
-#| msgid "Saves are in progress"
 msgid "Saves are in progress, waiting before closing.."
-msgstr "Probíhá ukládání"
+msgstr "Probíhá ukládání, čekání před uzavřením..."
 
 #: crates/rnote-ui/src/appwindow/imp.rs:336
 msgid "Button 1"

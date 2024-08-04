@@ -79,8 +79,9 @@ meson setup --prefix=usr/local _mesonbuild
 Next, we have to build `rnote`.
 
 ```sh
-meson compile -C _mesonbuild
+CFLAGS=-Wno-error=incompatible-function-pointer-types meson compile -C _mesonbuild
 ```
+(the additional flags are added to workaround issue https://github.com/gettext-rs/gettext-rs/issues/121)
 
 Now, we can install the binary and place resource files in their desired
 locations. `sudo` is required because `prefix` is set to `/usr/local`. You can

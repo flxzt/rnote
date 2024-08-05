@@ -101,6 +101,10 @@ pub enum EngineTask {
     BlinkTypewriterCursor,
     /// Change the permanent zoom to the given value
     Zoom(f64),
+    /// Task for a pen that's held down at the same position for a long time
+    /// We do that through a task to take into account the case of a mouse that's
+    /// held down at the same position without giving any new event
+    LongPressStatic,
     /// Indicates that the application is quitting. Sent to quit the handler which receives the tasks.
     Quit,
 }
@@ -463,6 +467,9 @@ impl Engine {
             EngineTask::Quit => {
                 widget_flags |= self.set_active(false);
                 quit = true;
+            }
+            EngineTask::LongPressStatic => {
+                todo!()
             }
         }
 

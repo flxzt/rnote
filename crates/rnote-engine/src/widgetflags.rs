@@ -26,6 +26,10 @@ pub struct WidgetFlags {
     /// Meaning, when enabled instead of key events, text events are then emitted
     /// for regular unicode text. Used when writing text with the typewriter.
     pub enable_text_preprocessing: Option<bool>,
+    /// long press event to take into account
+    /// This triggers actions on the engine further up (additional events)
+    /// to take it into consideration
+    pub long_hold: bool,
 }
 
 impl Default for WidgetFlags {
@@ -42,6 +46,7 @@ impl Default for WidgetFlags {
             hide_undo: None,
             hide_redo: None,
             enable_text_preprocessing: None,
+            long_hold: false,
         }
     }
 }
@@ -74,5 +79,6 @@ impl std::ops::BitOrAssign for WidgetFlags {
         if rhs.enable_text_preprocessing.is_some() {
             self.enable_text_preprocessing = rhs.enable_text_preprocessing;
         }
+        self.long_hold |= rhs.long_hold;
     }
 }

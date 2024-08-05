@@ -13,9 +13,12 @@ use crate::{CloneConfig, DrawableOnDoc};
 use futures::channel::oneshot;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
+use rnote_compose::builders::ShapeBuilderType;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenProgress, ShortcutKey};
+use rnote_compose::penpath::Element;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use std::time::{Duration, Instant};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -245,12 +248,79 @@ impl PenHolder {
         let (mut event_result, wf) = self
             .current_pen
             .handle_event(event.clone(), now, engine_view);
+        // does the pen loose its path here or before ?
+        // we have to get the path here
+        let path = match wf.long_hold {
+            true => {
+                // need to get back the original position
+                // but if we have more than this (shape or more)
+                // we need to retrieve the full shape here
+                // we thus recuperate the data here, saved inside an optional part of the pen struct
+                println!("getting the pen path back");
+                match &self.current_pen {
+                    Pen::Brush(brush) => brush.pen_path_recognition.clone(),
+                    _ => None,
+                }
+            }
+            false => None,
+        };
+        //normally this wouldn't be the case as we are doing this on a cancel which is not the real thing !
+        //if cancel the pen is reinitialized !
+        // could be done further done like the rest
+
         widget_flags |= wf | self.handle_pen_progress(event_result.progress, engine_view);
 
         if !event_result.handled {
             let (propagate, wf) = self.handle_pen_event_global(event, now, engine_view);
             event_result.propagate |= propagate;
             widget_flags |= wf;
+        }
+
+        // test the wf for the long press
+        if widget_flags.long_hold {
+            // need to get back the original position
+            // but if we have more than this (shape or more)
+            // we need to retrieve the full shape here
+            // we thus recuperate the data here, saved inside an optional part of the pen struct
+            println!("the path is {:?}", path);
+            println!("long hold for the pen, sending new events");
+            // change the type to line first
+            engine_view.pens_config.shaper_config.builder_type = ShapeBuilderType::Line;
+
+            // switch to the shaper tool but as an override (temporary)
+            widget_flags |= self.change_style_override(Some(PenStyle::Shaper), engine_view);
+
+            // update the state of the shaper to be in building
+            match &self.current_pen {
+                Pen::Shaper(shaper) => {
+                    println!("hello {:?}", shaper);
+                }
+                _ => println!("error"),
+            }
+            // then add two new events
+            // or edit directly the shaper ?
+            // first event is the original position (to get back up from somewhere ...)
+            let (_, wf) = self.current_pen.handle_event(
+                PenEvent::Down {
+                    element: path.as_ref().unwrap().start,
+                    modifier_keys: HashSet::new(),
+                },
+                now,
+                engine_view,
+            );
+            widget_flags |= wf;
+            // second event is the last position
+            let (_, wf) = self.current_pen.handle_event(
+                PenEvent::Down {
+                    element: path.unwrap().segments.last().unwrap().end(),
+                    modifier_keys: HashSet::new(),
+                },
+                now,
+                engine_view,
+            );
+            widget_flags |= wf;
+            // maybe try with the other method : modify the thing manually
+            // also need to be a temporary pen and have it cancelled back to a pen afterward
         }
 
         // Always redraw after handling a pen event

@@ -17,6 +17,7 @@ use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::Constraints;
+use rnote_compose::PenPath;
 use std::time::Instant;
 
 #[derive(Debug)]
@@ -31,12 +32,42 @@ enum BrushState {
 #[derive(Debug)]
 pub struct Brush {
     state: BrushState,
+    /// if we have a long hold of the pen, we save the
+    /// penpath for recognition one level upper
+    pub pen_path_recognition: Option<PenPath>,
+    // maybe we can do that as a speed based detection
+    // if the speed is lower than ... in the timeout
+    // calculate here the state
+    // for a pen that's down and not moving
+    // vecdecque of the last position + distance to the previous element
+    // for all events inside the timeout
+    // and a distance on the side
+
+    // then test inside handle event to trigger the long press
+
+    // but we still need the task if we hold the pen down
+    // So what we need to do is to have a periodic task
+    // where we send times of relevant pen events
+
+    // when read, it sleeps until the time + timeout is done
+    // then tests if the channel is empty
+    // if it is, then calls the task (and the "does the task need to happen" test is done)
+    // if not, reads the next messages
+
+    // we need to keep the state of whether a long hold has occured or not as well
+    // to not trigger the same code twice
+
+    // we'll start with the internal state bookkeeping then try the other part after
+
+    // another thing is to not trigger this too soon ? for a pen stuck on the start position
+    // maybe not good ?
 }
 
 impl Default for Brush {
     fn default() -> Self {
         Self {
             state: BrushState::Idle,
+            pen_path_recognition: None,
         }
     }
 }
@@ -65,6 +96,16 @@ impl PenBehaviour for Brush {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
+
+        // we should have a special task on a separate thread that sends event
+        // with the channel the strategy is the following
+        // - CANCEL
+        //      the state is idle
+        //      pen cancel event
+        // - if we start with drawing and the pen is down, start signal
+        // - as long as we stay in drawing mode :
+        //      - send pen down events
+        //      -
 
         let event_result = match (&mut self.state, event) {
             (BrushState::Idle, PenEvent::Down { element, .. }) => {
@@ -229,6 +270,34 @@ impl PenBehaviour for Brush {
                             );
                         }
 
+                        // we have to see if we can cancel the stroke here
+                        // and then change the type to be a line with the start position
+                        // and end position saved
+                        // so with a change of tools
+
+                        // this will have to move a little (happens potentially in the other branch)
+
+                        // cancel the stroke (if we have a longpress)
+
+                        // the normal way this would happen would be at the previous step : for an in progress penprogress
+                        if true {
+                            // we need to save the stroke data before deleting it
+                            println!("saving the current stroke data");
+                            if let Some(Stroke::BrushStroke(brushstroke)) =
+                                engine_view.store.get_stroke_ref(*current_stroke_key)
+                            {
+                                let path = brushstroke.path.clone();
+                                println!("the path is {:?}", path);
+
+                                // save to a location
+                                self.pen_path_recognition = Some(path);
+                            }
+                            println!("cancelled stroke");
+                            engine_view.store.remove_stroke(*current_stroke_key);
+                            widget_flags.long_hold = true;
+                        }
+                        // change to a shaper : need to use the widget flags higher up
+
                         // Finish up the last stroke
                         engine_view
                             .store
@@ -247,6 +316,8 @@ impl PenBehaviour for Brush {
 
                         widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
+
+                        println!("pen : {:?}", self); //brush reset ?
 
                         PenProgress::Finished
                     }

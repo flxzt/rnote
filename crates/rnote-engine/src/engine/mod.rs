@@ -11,12 +11,13 @@ pub use export::ExportPrefs;
 use futures::channel::mpsc::UnboundedReceiver;
 use futures::StreamExt;
 pub use import::ImportPrefs;
+use rnote_compose::penpath::Element;
 pub use snapshot::EngineSnapshot;
 pub use strokecontent::StrokeContent;
 
 // Imports
 use crate::document::Layout;
-use crate::pens::{Pen, PenStyle};
+use crate::pens::{Pen, PenBehaviour, PenStyle};
 use crate::pens::{PenMode, PensConfig};
 use crate::store::render_comp::{self, RenderCompState};
 use crate::store::StrokeKey;
@@ -31,6 +32,7 @@ use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::{PenEvent, ShortcutKey};
 use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
@@ -455,6 +457,34 @@ impl Engine {
                     widget_flags.redraw = true;
                 }
             }
+            EngineTask::LongPressStatic => {
+                println!("long press event");
+                // for now just detect is good enough
+                // we should sent an event (what event ?)
+                // the idea is that we need to send events to this task
+                // hence we reply with the lastest such event
+                // with a wf set to long_hold true as well
+                // hence for a mouse that's not moving, we re send an event at the same location
+                // not implemented
+
+                // for now we have a
+                //    3.110231056s ERROR rnote_engine::tasks: Could not quit periodic task while handle is being dropped, Err: Sending `Quit` message to periodic task failed.
+                // from waiting for the pen event to finish ?
+
+                let (_, wf) = self.handle_pen_event(
+                    PenEvent::Down {
+                        element: Element {
+                            pos: na::Vector2::new(1.0, 1.0), //for now this is a dummy
+                            pressure: 1.0,
+                        },
+                        modifier_keys: HashSet::new(),
+                    },
+                    None,
+                    Instant::now(),
+                );
+                widget_flags |= wf;
+                widget_flags.long_hold = true;
+            }
             EngineTask::Zoom(zoom) => {
                 widget_flags |= self.camera.zoom_temporarily_to(1.0) | self.camera.zoom_to(zoom);
 
@@ -467,9 +497,6 @@ impl Engine {
             EngineTask::Quit => {
                 widget_flags |= self.set_active(false);
                 quit = true;
-            }
-            EngineTask::LongPressStatic => {
-                todo!()
             }
         }
 

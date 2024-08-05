@@ -16,7 +16,6 @@ use piet::RenderContext;
 use rnote_compose::builders::ShapeBuilderType;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenProgress, ShortcutKey};
-use rnote_compose::penpath::Element;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::time::{Duration, Instant};

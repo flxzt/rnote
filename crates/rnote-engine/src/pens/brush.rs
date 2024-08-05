@@ -2,6 +2,7 @@
 use super::pensconfig::brushconfig::BrushStyle;
 use super::PenBehaviour;
 use super::PenStyle;
+use crate::engine::EngineTask;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
@@ -18,6 +19,7 @@ use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::Constraints;
 use rnote_compose::PenPath;
+use std::time::Duration;
 use std::time::Instant;
 
 #[derive(Debug)]
@@ -35,32 +37,35 @@ pub struct Brush {
     /// if we have a long hold of the pen, we save the
     /// penpath for recognition one level upper
     pub pen_path_recognition: Option<PenPath>,
-    // maybe we can do that as a speed based detection
-    // if the speed is lower than ... in the timeout
-    // calculate here the state
-    // for a pen that's down and not moving
-    // vecdecque of the last position + distance to the previous element
-    // for all events inside the timeout
-    // and a distance on the side
+    longpress_handle: Option<crate::tasks::PeriodicTaskHandle>,
 
-    // then test inside handle event to trigger the long press
+    // dumb thing : take the start time of the stroke and transform to a line after 1 second
+    pub time_start: Option<Instant>, // maybe we can do that as a speed based detection
+                                     // if the speed is lower than ... in the timeout
+                                     // calculate here the state
+                                     // for a pen that's down and not moving
+                                     // vecdecque of the last position + distance to the previous element
+                                     // for all events inside the timeout
+                                     // and a distance on the side
 
-    // but we still need the task if we hold the pen down
-    // So what we need to do is to have a periodic task
-    // where we send times of relevant pen events
+                                     // then test inside handle event to trigger the long press
 
-    // when read, it sleeps until the time + timeout is done
-    // then tests if the channel is empty
-    // if it is, then calls the task (and the "does the task need to happen" test is done)
-    // if not, reads the next messages
+                                     // but we still need the task if we hold the pen down
+                                     // So what we need to do is to have a periodic task
+                                     // where we send times of relevant pen events
 
-    // we need to keep the state of whether a long hold has occured or not as well
-    // to not trigger the same code twice
+                                     // when read, it sleeps until the time + timeout is done
+                                     // then tests if the channel is empty
+                                     // if it is, then calls the task (and the "does the task need to happen" test is done)
+                                     // if not, reads the next messages
 
-    // we'll start with the internal state bookkeeping then try the other part after
+                                     // we need to keep the state of whether a long hold has occured or not as well
+                                     // to not trigger the same code twice
 
-    // another thing is to not trigger this too soon ? for a pen stuck on the start position
-    // maybe not good ?
+                                     // we'll start with the internal state bookkeeping then try the other part after
+
+                                     // another thing is to not trigger this too soon ? for a pen stuck on the start position
+                                     // maybe not good ?
 }
 
 impl Default for Brush {
@@ -68,6 +73,8 @@ impl Default for Brush {
         Self {
             state: BrushState::Idle,
             pen_path_recognition: None,
+            time_start: None,
+            longpress_handle: None,
         }
     }
 }
@@ -154,6 +161,16 @@ impl PenBehaviour for Brush {
                         ),
                         current_stroke_key,
                     };
+                    self.time_start = Some(now);
+                    let tasks_tx = engine_view.tasks_tx.clone();
+                    let longpress_reminder = move || -> crate::tasks::PeriodicTaskResult {
+                        tasks_tx.send(EngineTask::LongPressStatic);
+                        crate::tasks::PeriodicTaskResult::Quit
+                    };
+                    self.longpress_handle = Some(crate::tasks::PeriodicTaskHandle::new(
+                        longpress_reminder,
+                        Duration::from_secs(1),
+                    ));
 
                     EventResult {
                         handled: true,
@@ -194,6 +211,7 @@ impl PenBehaviour for Brush {
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = BrushState::Idle;
+                self.time_start = None;
 
                 widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.store_modified = true;
@@ -248,6 +266,29 @@ impl PenBehaviour for Brush {
                             );
                         }
 
+                        // then test
+                        let delta = now - self.time_start.unwrap();
+                        if delta > Duration::from_secs(1) {
+                            //triger the actual change
+                            // we need to save the stroke data before deleting it
+                            println!("saving the current stroke data");
+                            if let Some(Stroke::BrushStroke(brushstroke)) =
+                                engine_view.store.get_stroke_ref(*current_stroke_key)
+                            {
+                                let path = brushstroke.path.clone();
+                                println!("the path is {:?}", path);
+
+                                // save to a location
+                                self.pen_path_recognition = Some(path);
+                            }
+                            println!("cancelled stroke");
+                            engine_view.store.remove_stroke(*current_stroke_key);
+                            widget_flags.long_hold = true;
+
+                            // we probably need to set to idle our brush stroke then
+                            //                 self.state = BrushState::Idle;
+                        }
+                        // is inprogress an issue ?
                         PenProgress::InProgress
                     }
                     BuilderProgress::Finished(segments) => {
@@ -270,17 +311,8 @@ impl PenBehaviour for Brush {
                             );
                         }
 
-                        // we have to see if we can cancel the stroke here
-                        // and then change the type to be a line with the start position
-                        // and end position saved
-                        // so with a change of tools
-
-                        // this will have to move a little (happens potentially in the other branch)
-
-                        // cancel the stroke (if we have a longpress)
-
                         // the normal way this would happen would be at the previous step : for an in progress penprogress
-                        if true {
+                        if false {
                             // we need to save the stroke data before deleting it
                             println!("saving the current stroke data");
                             if let Some(Stroke::BrushStroke(brushstroke)) =
@@ -316,8 +348,6 @@ impl PenBehaviour for Brush {
 
                         widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
-
-                        println!("pen : {:?}", self); //brush reset ?
 
                         PenProgress::Finished
                     }

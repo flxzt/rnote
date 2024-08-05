@@ -17,7 +17,7 @@ pub use strokecontent::StrokeContent;
 
 // Imports
 use crate::document::Layout;
-use crate::pens::{Pen, PenBehaviour, PenStyle};
+use crate::pens::{Pen, PenStyle};
 use crate::pens::{PenMode, PensConfig};
 use crate::store::render_comp::{self, RenderCompState};
 use crate::store::StrokeKey;

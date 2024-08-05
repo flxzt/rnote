@@ -13,6 +13,7 @@ use crate::{CloneConfig, DrawableOnDoc};
 use futures::channel::oneshot;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
+use rand::Rng;
 use rnote_compose::builders::ShapeBuilderType;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenProgress, ShortcutKey};
@@ -267,6 +268,19 @@ impl PenHolder {
         //if cancel the pen is reinitialized !
         // could be done further done like the rest
 
+        //let's get our stroke key here as well
+        // should only trigger if wf.long_hold TODO
+        let stroke_key = match &self.current_pen {
+            Pen::Brush(brush) => {
+                let stroke_key_opt = brush.current_stroke_key;
+                match stroke_key_opt {
+                    Some(stroke) => Some(stroke.clone()),
+                    _ => None,
+                }
+            }
+            _ => None,
+        };
+
         widget_flags |= wf | self.handle_pen_progress(event_result.progress, engine_view);
 
         if !event_result.handled {
@@ -282,44 +296,55 @@ impl PenHolder {
             // we need to retrieve the full shape here
             // we thus recuperate the data here, saved inside an optional part of the pen struct
             println!("the path is {:?}", path);
-            println!("long hold for the pen, sending new events");
-            // change the type to line first
-            engine_view.pens_config.shaper_config.builder_type = ShapeBuilderType::Line;
 
-            // switch to the shaper tool but as an override (temporary)
-            widget_flags |= self.change_style_override(Some(PenStyle::Shaper), engine_view);
+            // random chance between recognition and not (to replace with a real recognizer)
+            let mut rng = rand::thread_rng();
+            let value = rng.gen_bool(0.5);
+            if value {
+                println!("recognition successful");
 
-            // update the state of the shaper to be in building
-            match &self.current_pen {
-                Pen::Shaper(shaper) => {
-                    println!("hello {:?}", shaper);
+                // cancel the stroke
+                engine_view.store.remove_stroke(stroke_key.unwrap());
+
+                // change the type to line first
+                engine_view.pens_config.shaper_config.builder_type = ShapeBuilderType::Line;
+
+                // switch to the shaper tool but as an override (temporary)
+                widget_flags |= self.change_style_override(Some(PenStyle::Shaper), engine_view);
+
+                // update the state of the shaper to be in building
+                match &self.current_pen {
+                    Pen::Shaper(shaper) => {
+                        println!("hello {:?}", shaper);
+                    }
+                    _ => println!("error"),
                 }
-                _ => println!("error"),
+                // then add two new events
+                // or edit directly the shaper ?
+                // first event is the original position (to get back up from somewhere ...)
+                let (_, wf) = self.current_pen.handle_event(
+                    PenEvent::Down {
+                        element: path.as_ref().unwrap().start,
+                        modifier_keys: HashSet::new(),
+                    },
+                    now,
+                    engine_view,
+                );
+                widget_flags |= wf;
+                // second event is the last position
+                let (_, wf) = self.current_pen.handle_event(
+                    PenEvent::Down {
+                        element: path.unwrap().segments.last().unwrap().end(),
+                        modifier_keys: HashSet::new(),
+                    },
+                    now,
+                    engine_view,
+                );
+                widget_flags |= wf;
+                // maybe try with the other method : modify the thing manually
+            } else {
+                println!("recognition failed");
             }
-            // then add two new events
-            // or edit directly the shaper ?
-            // first event is the original position (to get back up from somewhere ...)
-            let (_, wf) = self.current_pen.handle_event(
-                PenEvent::Down {
-                    element: path.as_ref().unwrap().start,
-                    modifier_keys: HashSet::new(),
-                },
-                now,
-                engine_view,
-            );
-            widget_flags |= wf;
-            // second event is the last position
-            let (_, wf) = self.current_pen.handle_event(
-                PenEvent::Down {
-                    element: path.unwrap().segments.last().unwrap().end(),
-                    modifier_keys: HashSet::new(),
-                },
-                now,
-                engine_view,
-            );
-            widget_flags |= wf;
-            // maybe try with the other method : modify the thing manually
-            // also need to be a temporary pen and have it cancelled back to a pen afterward
         }
 
         // Always redraw after handling a pen event

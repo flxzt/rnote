@@ -38,6 +38,7 @@ pub struct Brush {
     /// penpath for recognition one level upper
     pub pen_path_recognition: Option<PenPath>,
     longpress_handle: Option<crate::tasks::PeriodicTaskHandle>,
+    pub current_stroke_key: Option<StrokeKey>,
 
     // dumb thing : take the start time of the stroke and transform to a line after 1 second
     pub time_start: Option<Instant>, // maybe we can do that as a speed based detection
@@ -74,6 +75,7 @@ impl Default for Brush {
             state: BrushState::Idle,
             pen_path_recognition: None,
             time_start: None,
+            current_stroke_key: None,
             longpress_handle: None,
         }
     }
@@ -85,6 +87,7 @@ impl PenBehaviour for Brush {
     }
 
     fn deinit(&mut self) -> WidgetFlags {
+        self.longpress_handle = None;
         WidgetFlags::default()
     }
 
@@ -165,11 +168,11 @@ impl PenBehaviour for Brush {
                     let tasks_tx = engine_view.tasks_tx.clone();
                     let longpress_reminder = move || -> crate::tasks::PeriodicTaskResult {
                         tasks_tx.send(EngineTask::LongPressStatic);
-                        crate::tasks::PeriodicTaskResult::Quit
+                        crate::tasks::PeriodicTaskResult::Continue
                     };
                     self.longpress_handle = Some(crate::tasks::PeriodicTaskHandle::new(
                         longpress_reminder,
-                        Duration::from_secs(1),
+                        Duration::from_secs(2),
                     ));
 
                     EventResult {
@@ -282,13 +285,13 @@ impl PenBehaviour for Brush {
                                 self.pen_path_recognition = Some(path);
                             }
                             println!("cancelled stroke");
-                            engine_view.store.remove_stroke(*current_stroke_key);
+                            // this HAS to happen AFTER the recognition is done and successful
+                            // dummy test : do this half the time
+                            self.current_stroke_key = Some(current_stroke_key.clone());
+                            // can't do that here : need to do this two steps higher
+                            //engine_view.store.remove_stroke(*current_stroke_key);
                             widget_flags.long_hold = true;
-
-                            // we probably need to set to idle our brush stroke then
-                            //                 self.state = BrushState::Idle;
                         }
-                        // is inprogress an issue ?
                         PenProgress::InProgress
                     }
                     BuilderProgress::Finished(segments) => {

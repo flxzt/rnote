@@ -415,6 +415,12 @@ impl DrawableOnDoc for Brush {
 
 impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
+
+    // reset the long press
+    pub fn reset_long_press(&mut self) {
+        self.time_start = Some(Instant::now());
+        // this resets the time to the current one (dummy test)
+    }
 }
 
 fn play_marker_sound(engine_view: &mut EngineViewMut) {

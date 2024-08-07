@@ -52,6 +52,16 @@ impl Default for Pen {
     }
 }
 
+impl Pen {
+    // need an intermediary
+    pub fn reset_long_press(&mut self) {
+        match self {
+            Pen::Brush(brush) => brush.reset_long_press(),
+            _ => panic!("can't reset a not brush"),
+        }
+    }
+}
+
 impl PenBehaviour for Pen {
     fn init(&mut self, engine_view: &EngineView) -> WidgetFlags {
         match self {

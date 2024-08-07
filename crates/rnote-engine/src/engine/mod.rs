@@ -467,23 +467,21 @@ impl Engine {
                 // hence for a mouse that's not moving, we re send an event at the same location
                 // not implemented
 
-                // for now we have a
-                //    3.110231056s ERROR rnote_engine::tasks: Could not quit periodic task while handle is being dropped, Err: Sending `Quit` message to periodic task failed.
-                // from waiting for the pen event to finish ?
+                //
 
-                let (_, wf) = self.handle_pen_event(
-                    PenEvent::Down {
-                        element: Element {
-                            pos: na::Vector2::new(1.0, 1.0), //for now this is a dummy
-                            pressure: 1.0,
-                        },
-                        modifier_keys: HashSet::new(),
-                    },
-                    None,
-                    Instant::now(),
-                );
-                widget_flags |= wf;
-                widget_flags.long_hold = true;
+                // let (_, wf) = self.handle_pen_event(
+                //     PenEvent::Down {
+                //         element: Element {
+                //             pos: na::Vector2::new(1.0, 1.0), //for now this is a dummy
+                //             pressure: 1.0,
+                //         },
+                //         modifier_keys: HashSet::new(),
+                //     },
+                //     None,
+                //     Instant::now(),
+                // );
+                // widget_flags |= wf;
+                // widget_flags.long_hold = true;
             }
             EngineTask::Zoom(zoom) => {
                 widget_flags |= self.camera.zoom_temporarily_to(1.0) | self.camera.zoom_to(zoom);

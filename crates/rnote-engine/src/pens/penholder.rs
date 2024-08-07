@@ -298,9 +298,7 @@ impl PenHolder {
             println!("the path is {:?}", path);
 
             // random chance between recognition and not (to replace with a real recognizer)
-            let mut rng = rand::thread_rng();
-            let value = rng.gen_bool(0.5);
-            if value {
+            if false {
                 println!("recognition successful");
 
                 // cancel the stroke
@@ -321,6 +319,11 @@ impl PenHolder {
                 }
                 // then add two new events
                 // or edit directly the shaper ?
+                // we probably will have to do custom methods
+                // one thing that's lacking here is the stroke width that's not set
+                // but we shouldn't make the settings for the shape tool change for a stroke
+                // recognition
+
                 // first event is the original position (to get back up from somewhere ...)
                 let (_, wf) = self.current_pen.handle_event(
                     PenEvent::Down {
@@ -344,6 +347,11 @@ impl PenHolder {
                 // maybe try with the other method : modify the thing manually
             } else {
                 println!("recognition failed");
+                // here we have to reset both the status for the long press recogniser that is done by event
+                // and the one on the dedicated thread
+                self.current_pen.reset_long_press();
+
+                // ideally we could keep the same vec for the path and extend it with only new elements if this happens multiple times
             }
         }
 

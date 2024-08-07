@@ -55,6 +55,7 @@ tracing = { workspace = true }
 unicode-segmentation = { workspace = true }
 usvg = { workspace = true }
 xmlwriter = { workspace = true }
+zstd = { workspace = true, features = ["zstdmt"] }
 # the long-term plan is to remove the gtk4 dependency entirely after switching to another renderer.
 gtk4 = { workspace = true, optional = true }
 

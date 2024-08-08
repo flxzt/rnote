@@ -300,7 +300,7 @@ impl RnCanvas {
 
         self.set_output_file(Some(gio::File::for_path(&file_path)));
         debug!("Saving file has finished successfully");
-      
+
         self.set_unsaved_changes(false);
         self.set_save_in_progress(false);
 

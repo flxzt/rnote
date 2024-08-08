@@ -166,7 +166,7 @@ impl BitmapImage {
                 )
                 .map_err(|e| {
                     anyhow::anyhow!(
-                        "Creating image surface while importing bitmapimage failed, {e:?}"
+                        "Creating image surface while importing bitmapimage failed, Err: {e:?}"
                     )
                 })?;
 

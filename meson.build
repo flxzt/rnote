@@ -1,7 +1,7 @@
 project(
     'rnote',
     ['rust', 'cpp'],
-    version: '0.10.2',
+    version: '0.11.0',
     meson_version: '>= 1.0',
 )
 # add a patch suffix for alpha or beta versions in format '-<alpha|beta>.<x>'.
@@ -76,7 +76,7 @@ find_program('cmake', required: true)
 find_program('glib-compile-resources', required: true)
 glib_compile_schemas = find_program('glib-compile-schemas', required: true)
 desktop_file_validate = find_program('desktop-file-validate', required: false)
-appstream_util = find_program('appstream-util', required: false)
+appstreamcli = find_program('appstreamcli', required: false)
 find_program('fc-cache', required: false)
 find_program('update-mime-database', required: false)
 cargo_build_script = find_program('build-aux/cargo_build.py', required: true)

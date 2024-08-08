@@ -13,6 +13,7 @@ use rnote_engine::strokes::Stroke;
 use rnote_engine::WidgetFlags;
 use std::ops::Range;
 use std::path::Path;
+use tracing::{debug, error};
 
 impl RnCanvas {
     /// Load the bytes of a `.rnote` file and imports it into the engine.
@@ -183,7 +184,7 @@ impl RnCanvas {
                 Ok(serde_json::from_str(&json_string)?)
             };
             if oneshot_sender.send(result()).is_err() {
-                tracing::error!(
+                error!(
                     "Sending result to receiver while inserting stroke content failed. Receiver already dropped."
                 );
             }
@@ -201,13 +202,15 @@ impl RnCanvas {
     ///
     /// Returns Ok(true) if saved successfully, Ok(false) when a save is already in progress and no file operatiosn were
     /// executed, Err(e) when saving failed in any way.
+    #[tracing::instrument(skip_all, fields(path = format!("{:?}", file.path())))]
     pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<bool> {
         // skip saving when it is already in progress
         if self.save_in_progress() {
-            tracing::debug!("Saving file already in progress.");
+            debug!("Returning early, saving file is already in progress");
             return Ok(false);
         }
         self.set_save_in_progress(true);
+        debug!("Saving file is now in progress");
 
         let file_path = file
             .path()
@@ -296,6 +299,8 @@ impl RnCanvas {
         file_swap_operation.await?;
 
         self.set_output_file(Some(gio::File::for_path(&file_path)));
+        debug!("Saving file has finished successfully");
+      
         self.set_unsaved_changes(false);
         self.set_save_in_progress(false);
 

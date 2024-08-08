@@ -6,6 +6,7 @@ use gtk4::{
 };
 use rnote_engine::strokes::textstroke::{FontStyle, TextAlignment, TextAttribute, TextStyle};
 use std::cell::RefCell;
+use tracing::debug;
 
 mod imp {
     use super::*;
@@ -136,7 +137,7 @@ impl RnTypewriterPage {
                         let widget_flags = canvas.engine_mut().text_selection_change_style(|style| {style.font_family = font_family_name});
                         appwindow.handle_widget_flags(widget_flags, &canvas);
                     }
-                    Err(e) => tracing::debug!("Did not choose new font family (Error or dialog dismissed by user), Err: {e:?}"),
+                    Err(e) => debug!("Did not choose new font family (Error or dialog dismissed by user), Err: {e:?}"),
                 }
             }));
         }));

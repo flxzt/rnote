@@ -2,7 +2,7 @@
 use crate::Drawable;
 use anyhow::Context;
 use core::fmt::Debug;
-use image::io::Reader;
+use image::ImageReader;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
@@ -205,7 +205,7 @@ impl Image {
     }
 
     pub fn try_from_encoded_bytes(bytes: &[u8]) -> Result<Self, anyhow::Error> {
-        let reader = Reader::new(io::Cursor::new(bytes)).with_guessed_format()?;
+        let reader = ImageReader::new(io::Cursor::new(bytes)).with_guessed_format()?;
         Ok(Image::from(reader.decode()?))
     }
 

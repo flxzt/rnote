@@ -5,6 +5,10 @@ use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
 use std::ops::Range;
 
+pub const fn crate_version() -> &'static str {
+    env!("CARGO_PKG_VERSION")
+}
+
 pub fn color_from_xopp(xopp_color: xoppformat::XoppColor) -> Color {
     Color {
         r: f64::from(xopp_color.red) / 255.0,

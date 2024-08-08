@@ -3,6 +3,7 @@ use crate::workspacebrowser::RnFileRow;
 use crate::RnAppWindow;
 use gettextrs::gettext;
 use gtk4::{gio, gio::prelude::FileExt, glib, glib::clone};
+use tracing::debug;
 
 /// Create a new `open-in-default-app` action.
 pub(crate) fn open_in_default_app(
@@ -16,7 +17,7 @@ pub(crate) fn open_in_default_app(
             };
             if let Err(e) =  open::that(current_file.uri()) {
                 appwindow.overlays().dispatch_toast_error(&gettext("Open the file in the default app failed"));
-                tracing::debug!("Opening file {} with default app failed, Err: {e:?}", current_file.uri());
+                debug!("Opening file {} with default app failed, Err: {e:?}", current_file.uri());
             }
         }),
     );

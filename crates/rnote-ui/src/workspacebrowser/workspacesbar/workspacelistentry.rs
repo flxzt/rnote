@@ -129,13 +129,13 @@ impl RnWorkspaceListEntry {
 
     pub(crate) fn new(inner: RnWorkspaceListEntryInner) -> Self {
         glib::Object::builder()
-            .property("dir", &inner.dir.to_string_lossy().to_string().to_value())
-            .property("icon", &inner.icon.to_value())
+            .property("dir", inner.dir.to_string_lossy().to_string().to_value())
+            .property("icon", inner.icon.to_value())
             .property(
                 "color",
-                &gdk::RGBA::from_compose_color(rnote_compose::Color::from(inner.color)).to_value(),
+                gdk::RGBA::from_compose_color(rnote_compose::Color::from(inner.color)).to_value(),
             )
-            .property("name", &inner.name.to_value())
+            .property("name", inner.name.to_value())
             .build()
     }
 

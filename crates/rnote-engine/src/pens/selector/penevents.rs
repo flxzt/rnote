@@ -11,13 +11,14 @@ use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenProgress};
 use rnote_compose::penpath::Element;
+use std::collections::HashSet;
 use std::time::Instant;
 
 impl Selector {
     pub(super) fn handle_pen_event_down(
         &mut self,
         element: Element,
-        modifier_keys: Vec<ModifierKey>,
+        modifier_keys: HashSet<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
@@ -393,7 +394,7 @@ impl Selector {
     pub(super) fn handle_pen_event_up(
         &mut self,
         element: Element,
-        _modifier_keys: Vec<ModifierKey>,
+        _modifier_keys: HashSet<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
@@ -536,7 +537,7 @@ impl Selector {
     pub(super) fn handle_pen_event_proximity(
         &mut self,
         element: Element,
-        _modifier_keys: Vec<ModifierKey>,
+        _modifier_keys: HashSet<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
@@ -577,7 +578,7 @@ impl Selector {
     pub(super) fn handle_pen_event_keypressed(
         &mut self,
         keyboard_key: KeyboardKey,
-        modifier_keys: Vec<ModifierKey>,
+        modifier_keys: HashSet<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {

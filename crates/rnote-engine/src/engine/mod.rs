@@ -34,6 +34,7 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
+use tracing::error;
 
 /// An immutable view into the engine, excluding the penholder.
 #[derive(Debug)]
@@ -131,7 +132,7 @@ impl EngineTaskSender {
     pub fn send(&self, task: EngineTask) {
         if let Err(e) = self.0.unbounded_send(task) {
             let err = format!("{e:?}");
-            tracing::error!(
+            error!(
                 "Failed to send engine task {:?}, Err: {err}",
                 e.into_inner()
             );
@@ -276,7 +277,7 @@ impl Engine {
                     self.audioplayer = match AudioPlayer::new_init(pkg_data_dir) {
                         Ok(audioplayer) => Some(audioplayer),
                         Err(e) => {
-                            tracing::error!("Creating a new audioplayer failed while enabling pen sounds, Err: {e:?}");
+                            error!("Creating a new audioplayer failed while enabling pen sounds, Err: {e:?}");
                             None
                         }
                     }
@@ -963,6 +964,38 @@ impl Engine {
                     audioplayer: &mut self.audioplayer,
                 },
             )
+        }
+        widget_flags
+    }
+
+    pub fn text_change_color(&mut self, color: Color) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            if typewriter.selection_range().is_some() {
+                widget_flags |= typewriter.replace_text_attribute_current_selection(
+                    TextAttribute::TextColor(color),
+                    &mut EngineViewMut {
+                        tasks_tx: self.tasks_tx.clone(),
+                        pens_config: &mut self.pens_config,
+                        document: &mut self.document,
+                        store: &mut self.store,
+                        camera: &mut self.camera,
+                        audioplayer: &mut self.audioplayer,
+                    },
+                )
+            } else {
+                widget_flags |= typewriter.change_text_style_in_modifying_stroke(
+                    |style| style.color = color,
+                    &mut EngineViewMut {
+                        tasks_tx: self.tasks_tx.clone(),
+                        pens_config: &mut self.pens_config,
+                        document: &mut self.document,
+                        store: &mut self.store,
+                        camera: &mut self.camera,
+                        audioplayer: &mut self.audioplayer,
+                    },
+                )
+            }
         }
         widget_flags
     }

@@ -8,6 +8,7 @@ use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenProgress};
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::Shapeable;
+use std::collections::HashSet;
 use std::time::Instant;
 use unicode_segmentation::GraphemeCursor;
 
@@ -15,7 +16,7 @@ impl Typewriter {
     pub(super) fn handle_pen_event_down(
         &mut self,
         element: Element,
-        _modifier_keys: Vec<ModifierKey>,
+        _modifier_keys: HashSet<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
@@ -325,7 +326,7 @@ impl Typewriter {
     pub(super) fn handle_pen_event_up(
         &mut self,
         element: Element,
-        _modifier_keys: Vec<ModifierKey>,
+        _modifier_keys: HashSet<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
@@ -430,7 +431,7 @@ impl Typewriter {
     pub(super) fn handle_pen_event_proximity(
         &mut self,
         element: Element,
-        _modifier_keys: Vec<ModifierKey>,
+        _modifier_keys: HashSet<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
@@ -478,7 +479,7 @@ impl Typewriter {
     pub(super) fn handle_pen_event_keypressed(
         &mut self,
         keyboard_key: KeyboardKey,
-        modifier_keys: Vec<ModifierKey>,
+        modifier_keys: HashSet<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {

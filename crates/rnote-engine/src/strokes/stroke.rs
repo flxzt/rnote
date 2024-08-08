@@ -18,6 +18,7 @@ use rnote_compose::transform::Transform;
 use rnote_compose::transform::Transformable;
 use rnote_compose::{Color, PenPath, Style};
 use serde::{Deserialize, Serialize};
+use tracing::error;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "stroke")]
@@ -501,7 +502,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        tracing::error!("Converting ShapeStroke to XoppImage failed, Err: {e:?}");
+                        error!("Converting ShapeStroke to XoppImage failed, Err: {e:?}");
                         return None;
                     }
                 };
@@ -545,7 +546,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        tracing::error!("Converting TextStroke to XoppImage failed, Err: {e:?}");
+                        error!("Converting TextStroke to XoppImage failed, Err: {e:?}");
                         return None;
                     }
                 };
@@ -587,7 +588,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        tracing::error!(
+                        error!(
                             "Exporting VectorImage to image bytes failed while converting Stroke to Xopp, Err: {e:?}"
                         );
                         return None;
@@ -631,7 +632,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        tracing::error!(
+                        error!(
                             "Exporting BitmapImage to image bytes failed while converting Stroke to Xopp, Err: {e:?}"
                         );
                         return None;

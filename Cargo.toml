@@ -14,11 +14,11 @@ homepage = "https://rnote.flxzt.net"
 license = "GPL-3.0-or-later"
 repository = "https://github.com/flxzt/rnote"
 rust-version = "1.74"
-version = "0.10.2"
+version = "0.11.0"
 
 [workspace.dependencies]
-rnote-compose = { version = "0.10.2", path = "crates/rnote-compose" }
-rnote-engine = { version = "0.10.2", path = "crates/rnote-engine" }
+rnote-compose = { version = "0.11.0", path = "crates/rnote-compose" }
+rnote-engine = { version = "0.11.0", path = "crates/rnote-engine" }
 
 adw = { version = "0.6.0", package = "libadwaita", features = ["v1_5"] }
 anyhow = "1.0"
@@ -41,21 +41,21 @@ glib = "0.19.7"
 glib-build-tools = "0.19.0"
 gtk4 = { version = "0.8.2", features = ["v4_12"] }
 ijson = "0.1.3"
-image = "0.25.1"
+image = "0.25.2"
 indicatif = "0.17.8"
 ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "84d311e9b0d034dcd955a1f353d37f54b2bda70f" }
 itertools = "0.13.0"
 kurbo = "0.10.4"
-librsvg = "2.58.1"
-nalgebra = { version = "0.32.5", features = ["serde-serialize"] }
+librsvg = "2.58.2"
+nalgebra = { version = "0.33.0", features = ["serde-serialize"] }
 notify-debouncer-full = "0.3.1"
 num-derive = "0.4.2"
 num-traits = "0.2.19"
 numeric-sort = "0.1.1"
 once_cell = "1.19"
-open = "5.1"
+open = "5.3"
 palette = "0.7.6"
-parry2d-f64 = { version = "0.15.1", features = ["serde-serialize"] }
+parry2d-f64 = { version = "0.17.0", features = ["serde-serialize"] }
 path-absolutize = "3.1"
 piet = "0.6.2"
 piet-cairo = "0.6.2"
@@ -64,7 +64,7 @@ rand_distr = "0.4.3"
 rand_pcg = "0.3.1"
 rayon = "1.10"
 regex = "1.10"
-rodio = { version = "0.18.1", default-features = false, features = [
+rodio = { version = "0.19.0", default-features = false, features = [
     "symphonia-wav",
 ] }
 rough_piet = "0.6.0"

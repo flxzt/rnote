@@ -17,6 +17,8 @@ use gtk4::{
     DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext, PropagationPhase,
     Scrollable, ScrollablePolicy, Widget,
 };
+use notify::event::{AccessKind, AccessMode, ModifyKind, RenameMode};
+use notify::EventKind;
 use notify_debouncer_full::notify::{self, Watcher};
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
@@ -29,6 +31,7 @@ use rnote_engine::{Engine, WidgetFlags};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 use std::path::Path;
 use std::time::Duration;
+use tracing::{debug, error, warn};
 
 #[derive(Debug, Default)]
 struct Connections {
@@ -74,7 +77,7 @@ mod imp {
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_watcher_task: RefCell<Option<glib::JoinHandle<()>>>,
-        pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
+        pub(crate) output_file_modified_toast_singleton: glib::WeakRef<adw::Toast>,
         pub(crate) output_file_expect_write: Cell<bool>,
         pub(crate) save_in_progress: Cell<bool>,
         pub(crate) unsaved_changes: Cell<bool>,
@@ -168,7 +171,7 @@ mod imp {
                 output_file: RefCell::new(None),
                 output_file_watcher_task: RefCell::new(None),
                 // is automatically updated whenever the output file changes.
-                output_file_modified_toast_singleton: RefCell::new(None),
+                output_file_modified_toast_singleton: glib::WeakRef::new(),
                 output_file_expect_write: Cell::new(false),
                 save_in_progress: Cell::new(false),
                 unsaved_changes: Cell::new(false),
@@ -218,7 +221,7 @@ mod imp {
             let engine_task_handler_handle = glib::spawn_future_local(
                 clone!(@weak obj as canvas => async move {
                     let Some(mut task_rx) = canvas.engine_mut().take_engine_tasks_rx() else {
-                        tracing::error!("Installing the engine task handler failed, taken tasks_rx is None.");
+                        error!("Installing the engine task handler failed, taken tasks_rx is None.");
                         return;
                     };
 
@@ -452,7 +455,7 @@ mod imp {
                 snapshot.pop();
                 Ok(())
             }() {
-                tracing::error!("Snapshot canvas failed , Err: {e:?}");
+                error!("Snapshot canvas failed , Err: {e:?}");
             }
         }
     }
@@ -813,7 +816,7 @@ impl RnCanvas {
             Err(e) => {
                 if engine_config.is_empty() {
                     // On first app startup the engine config is empty, so we don't log an error
-                    tracing::debug!("Did not load `engine-config` from settings, was empty");
+                    debug!("Did not load `engine-config` from settings, was empty");
                 } else {
                     return Err(e);
                 }
@@ -881,7 +884,7 @@ impl RnCanvas {
 
     pub(crate) fn dismiss_output_file_modified_toast(&self) {
         if let Some(output_file_modified_toast) =
-            self.imp().output_file_modified_toast_singleton.take()
+            self.imp().output_file_modified_toast_singleton.upgrade()
         {
             output_file_modified_toast.dismiss();
         }
@@ -899,7 +902,7 @@ impl RnCanvas {
                                 appwindow.overlays().progressbar_start_pulsing();
 
                                 if let Err(e) = canvas.reload_from_disk().await {
-                                    tracing::error!("Failed to reload current output file, Err: {e:?}");
+                                    error!("Failed to reload current output file, Err: {e:?}");
                                     appwindow.overlays().dispatch_toast_error(&gettext("Reloading .rnote file from disk failed"));
                                     appwindow.overlays().progressbar_abort();
                                 } else {
@@ -908,17 +911,14 @@ impl RnCanvas {
                             }));
                         }),
                         None,
-                    &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
+                    &canvas.imp().output_file_modified_toast_singleton);
         };
 
         let event_handler = move |appwindow: &RnAppWindow,
                                   canvas: &RnCanvas,
                                   event: notify_debouncer_full::DebouncedEvent,
                                   file_path: &Path| {
-            use notify::event::{AccessKind, AccessMode, ModifyKind, RenameMode};
-            use notify::EventKind;
-
-            tracing::trace!("file parent directory watcher - received event: {event:?}");
+            debug!(?event, expect_write=?canvas.output_file_expect_write(), msg="output file parent directory watcher event received");
 
             match event.kind {
                 EventKind::Create(_create_kind) => {}
@@ -1004,29 +1004,29 @@ impl RnCanvas {
             glib::clone!(@strong file, @weak self as canvas, @weak appwindow => async move {
                 let (tx, mut rx) = futures::channel::mpsc::unbounded();
                 let Some(file_path) = file.path() else {
-                    tracing::warn!("Can't create watcher for file that has no path");
+                    warn!("Can't create watcher for file that has no path");
                     return;
                 };
                 let Some(parent_path) = file_path.parent() else {
-                    tracing::warn!("Can't create watcher for file that has no parent directory");
+                    warn!("Can't create watcher for file that has no parent directory");
                     return;
                 };
 
                 let mut debouncer = match notify_debouncer_full::new_debouncer(Duration::from_millis(1000), None, move |res| {
                     if let Err(e) = tx.unbounded_send(res) {
-                        tracing::error!("File watcher reported change, but failed to send it through channel. Err: {e:?}");
+                        error!("File watcher reported change, but failed to send it through channel. Err: {e:?}");
                     }
                 }) {
                     Ok(w) => {
                         w
                     },
                     Err(e) => {
-                        tracing::error!("Failed to create file watcher, Err: {e:?}");
+                        error!("Failed to create file watcher, Err: {e:?}");
                         return;
                     }
                 };
                 if let Err(e) = debouncer.watcher().watch(parent_path, notify::RecursiveMode::NonRecursive) {
-                    tracing::error!("Failed to start watching directory '{}', Err: {e:?}", parent_path.display());
+                    error!("Failed to start watching directory '{}', Err: {e:?}", parent_path.display());
                 }
                 debouncer.cache().add_root(parent_path, notify::RecursiveMode::NonRecursive);
                 while let Some(res) = rx.next().await {
@@ -1036,7 +1036,7 @@ impl RnCanvas {
                                 event_handler(&appwindow, &canvas, event, &file_path);
                             }
                         }
-                        Err(e) => tracing::error!("File watcher sent error message, Err: {e:?}"),
+                        Err(e) => error!("File watcher sent error message, Err: {e:?}"),
                     }
                 }
             }),
@@ -1165,7 +1165,7 @@ impl RnCanvas {
                             accept_drop = true;
                         },
                         Err(e) => {
-                            tracing::error!("Failed to get dropped in file, Err: {e:?}");
+                            error!("Failed to get dropped in file, Err: {e:?}");
                             appwindow.overlays().dispatch_toast_error(&gettext("Inserting file failed"));
                         },
                     };
@@ -1175,7 +1175,7 @@ impl RnCanvas {
                             accept_drop = true;
                         },
                         Err(e) => {
-                            tracing::error!("Failed to insert dropped in text, Err: {e:?}");
+                            error!("Failed to insert dropped in text, Err: {e:?}");
                             appwindow.overlays().dispatch_toast_error(&gettext("Inserting text failed"));
                         }
                     };

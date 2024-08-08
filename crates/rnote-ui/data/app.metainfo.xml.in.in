@@ -87,6 +87,32 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.11.0" date="2024-07-26">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feat: add disable option for pen shortcuts (thanks to @Doublonmousse)</li>
+          <li>feat: add respect-borders option, improving size logic when pasting content (thanks to @Doublonmousse)</li>
+          <li>feat: add improve-for-E-Paper option, showing current selected color as a string</li>
+          <li>improv: migrate to libadwaita based dialogs (thanks to @zefr0x)</li>
+          <li>improv: stroke modeler entirely rewritten in Rust! (thanks to @Doublonmousse)</li>
+          <li>improv: zoom tool following the pointer (thanks to @JonathanGodar)</li>
+          <li>improv: developers list in about window (thanks to @zefr0x)</li>
+          <li>improv: native file dialogs on Windows, macOS (thanks to @Doublonmousse)</li>
+          <li>improv: gzip (de)compression optimizations, reducing file save/load times (thanks to @anesthetice)</li>
+          <li>improv: prevent accidental resizes/moves when interacting with buttons in the titlebar</li>
+          <li>improv: inhibit app close while saves are in progress</li>
+          <li>improv: ability to change text selection colors inside a single text box</li>
+          <li>fix: pen state becoming incorrect on windows (thanks to @Doublonmousse)</li>
+          <li>fix: file extension filters in dialogs (thanks to @Doublonmousse)</li>
+          <li>fix: force the gtk renderer to gl for now, fixing recurring crashes for some users (thanks to @Doublonmousse)</li>
+          <li>fix: two-finger long-press gesture causing crashes for some users</li>
+          <li>fix: single element stroke not generating hitboxes</li>
+          <li>fix: scrolls being captured by unit-entries in settings, causing accidental value changes</li>
+          <li>fix: hover state for typewriter move/resize nodes</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.10.2" date="2024-04-06">
       <description>
         <p>this release changes:</p>

@@ -10,6 +10,7 @@ use gtk4::{
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::PenStyle;
 use std::cell::{Cell, RefCell};
+use tracing::error;
 
 mod imp {
     use super::*;
@@ -163,10 +164,8 @@ impl RnOverlays {
 
                     match current_pen_style {
                         PenStyle::Typewriter => {
-                            if canvas.engine_ref().pens_config.typewriter_config.text_style.color != stroke_color {
-                                let widget_flags = canvas.engine_mut().text_selection_change_style(|style| {style.color = stroke_color});
-                                appwindow.handle_widget_flags(widget_flags, &canvas);
-                            }
+                            let widget_flags = canvas.engine_mut().text_change_color(stroke_color);
+                            appwindow.handle_widget_flags(widget_flags, &canvas);
                         }
                         PenStyle::Selector => {
                             let widget_flags = canvas.engine_mut().change_selection_stroke_colors(stroke_color);
@@ -176,12 +175,7 @@ impl RnOverlays {
                     }
 
                     // We have a global colorpicker, so we apply it to all styles
-                    canvas.engine_mut().pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
-                    canvas.engine_mut().pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
-                    canvas.engine_mut().pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
-                    canvas.engine_mut().pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
-                    canvas.engine_mut().pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
-                    canvas.engine_mut().pens_config.typewriter_config.text_style.color = stroke_color;
+                    canvas.engine_mut().pens_config.set_all_stroke_colors(stroke_color);
                 }),
             );
 
@@ -201,10 +195,7 @@ impl RnOverlays {
                 }
 
                 // We have a global colorpicker, so we apply it to all styles
-                canvas.engine_mut().pens_config.brush_config.marker_options.fill_color = Some(fill_color);
-                canvas.engine_mut().pens_config.brush_config.solid_options.fill_color = Some(fill_color);
-                canvas.engine_mut().pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
-                canvas.engine_mut().pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
+                canvas.engine_mut().pens_config.set_all_fill_colors(fill_color);
             }),
         );
     }
@@ -353,7 +344,7 @@ impl RnOverlays {
         button_label: &str,
         button_callback: F,
         timeout: Option<Duration>,
-    ) -> adw::Toast {
+    ) -> glib::WeakRef<adw::Toast> {
         let toast = adw::Toast::builder()
             .title(text)
             .priority(adw::ToastPriority::High)
@@ -361,27 +352,33 @@ impl RnOverlays {
             .timeout(timeout.map(|t| t.as_secs() as u32).unwrap_or(0))
             .build();
         toast.connect_button_clicked(button_callback);
-        self.toast_overlay().add_toast(toast.clone());
-        toast
+        let toast_ref = glib::WeakRef::new();
+        toast_ref.set(Some(&toast));
+        self.toast_overlay().add_toast(toast);
+        toast_ref
     }
 
     /// Ensures that only one toast per `singleton_toast` is queued at the same time by dismissing the previous toast.
     ///
-    /// `singleton_toast` is a mutable reference to an `Option<Toast>`. It will always hold the most recently dispatched toast
-    /// and it should not be modified, because it's used to keep track of previous toasts.
+    /// `singleton_toast` is a weak reference to a `Toast` which should be held somewhere by the caller.
+    /// On subsequent calls the held reference will be replaced by one of the new dispatched toast.
+    /// The caller should not modifiy this weak reference themselves.
     pub(crate) fn dispatch_toast_w_button_singleton<F: Fn(&adw::Toast) + 'static>(
         &self,
         text: &str,
         button_label: &str,
         button_callback: F,
         timeout: Option<Duration>,
-        singleton_toast: &mut Option<adw::Toast>,
+        singleton_toast: &glib::WeakRef<adw::Toast>,
     ) {
-        if let Some(previous_toast) = singleton_toast {
+        if let Some(previous_toast) = singleton_toast.upgrade() {
             previous_toast.dismiss();
         }
-        *singleton_toast =
-            Some(self.dispatch_toast_w_button(text, button_label, button_callback, timeout));
+        singleton_toast.set(
+            self.dispatch_toast_w_button(text, button_label, button_callback, timeout)
+                .upgrade()
+                .as_ref(),
+        );
     }
 
     pub(crate) fn dispatch_toast_text(&self, text: &str, timeout: Option<Duration>) -> adw::Toast {
@@ -406,14 +403,14 @@ impl RnOverlays {
         *singleton_toast = Some(self.dispatch_toast_text(text, timeout));
     }
 
-    pub(crate) fn dispatch_toast_error(&self, error: &str) -> adw::Toast {
+    pub(crate) fn dispatch_toast_error(&self, err: &str) -> adw::Toast {
         let toast = adw::Toast::builder()
-            .title(error)
+            .title(err)
             .priority(adw::ToastPriority::High)
             .timeout(0)
             .build();
         self.toast_overlay().add_toast(toast.clone());
-        tracing::error!("{error}");
+        error!("{err}");
         toast
     }
 }

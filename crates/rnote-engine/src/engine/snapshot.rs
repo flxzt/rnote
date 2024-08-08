@@ -10,6 +10,7 @@ use futures::channel::oneshot;
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 use std::sync::Arc;
+use tracing::error;
 
 // An engine snapshot, used when loading/saving the current document from/into a file.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -54,7 +55,7 @@ impl EngineSnapshot {
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {
-                tracing::error!(
+                error!(
                     "Sending bytes result to receiver failed while loading rnote bytes in. Receiver already dropped."
                 );
             }
@@ -149,7 +150,7 @@ impl EngineSnapshot {
                                     engine.store.insert_stroke(new_stroke, Some(layer));
                                 }
                                 Err(e) => {
-                                    tracing::error!(
+                                    error!(
                                         "Creating Stroke from XoppStroke failed while loading Xopp bytess, Err: {e:?}",
                                     );
                                 }
@@ -167,7 +168,7 @@ impl EngineSnapshot {
                                     engine.store.insert_stroke(new_image, None);
                                 }
                                 Err(e) => {
-                                    tracing::error!(
+                                    error!(
                                         "Creating Stroke from XoppImage failed while loading Xopp bytes, Err: {e:?}",
                                     );
                                 }
@@ -187,7 +188,7 @@ impl EngineSnapshot {
             };
 
             if snapshot_sender.send(result()).is_err() {
-                tracing::error!("Sending result to receiver while loading Xopp bytes failed. Receiver already dropped");
+                error!("Sending result to receiver while loading Xopp bytes failed. Receiver already dropped");
             }
         });
 

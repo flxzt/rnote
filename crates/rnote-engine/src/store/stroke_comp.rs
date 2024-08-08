@@ -12,6 +12,7 @@ use rnote_compose::shapes::Shapeable;
 use rnote_compose::transform::Transformable;
 use rnote_compose::Color;
 use std::sync::Arc;
+use tracing::error;
 
 /// Systems that are related to the stroke components.
 impl StrokeStore {
@@ -224,7 +225,7 @@ impl StrokeStore {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
-                    Err(e) => tracing::error!(
+                    Err(e) => error!(
                         "Generating rendernodes from images failed while translating stroke images , Err: {e:?}"
                     ),
                 }
@@ -384,7 +385,7 @@ impl StrokeStore {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
-                    Err(e) => tracing::error!(
+                    Err(e) => error!(
                         "Generating rendernodes from images failed while rotating stroke images , Err: {e:?}"
                     ),
                 }
@@ -427,7 +428,7 @@ impl StrokeStore {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
-                    Err(e) => tracing::error!(
+                    Err(e) => error!(
                         "Generating rendernodes from images failed while scaling stroke images, Err: {e:?}"
                     ),
                 }

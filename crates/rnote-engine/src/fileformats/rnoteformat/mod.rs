@@ -21,13 +21,6 @@ use anyhow::Context;
 use serde::{Deserialize, Serialize};
 use std::io::{Read, Write};
 
-/// Compress bytes with gzip.
-fn compress_to_gzip(to_compress: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
-    let mut encoder = flate2::write::GzEncoder::new(Vec::<u8>::new(), flate2::Compression::new(5));
-    encoder.write_all(to_compress)?;
-    Ok(encoder.finish()?)
-}
-
 /// Decompress from gzip.
 fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
     // Optimization for the gzip format, defined by RFC 1952
@@ -95,6 +88,7 @@ pub fn decompress_from_zstd(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error>
                         ),
                     )?,
                 );
+                // 256 offset
                 Vec::with_capacity(usize::from(256 + u16::from_le_bytes(decompressed_size)))
             }
             2 => {
@@ -173,12 +167,10 @@ impl FileFormatLoader for RnoteFile {
         let wrapper = serde_json::from_slice::<RnotefileWrapper>(&{
             // zstd magic number
             if bytes.starts_with(&[0x28, 0xb5, 0x2f, 0xfd]) {
-                tracing::info!("using zstd to decompress");
                 decompress_from_zstd(bytes)?
             }
             // gzip ID1 and ID2
             else if bytes.starts_with(&[0x1f, 0x8b]) {
-                tracing::info!("using gzip to decompress");
                 decompress_from_gzip(bytes)?
             } else {
                 Err(anyhow::anyhow!(

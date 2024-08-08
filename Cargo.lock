@@ -3263,6 +3263,7 @@ dependencies = [
  "async-fs",
  "base64",
  "cairo-rs",
+ "crc32fast",
  "fs_extra",
  "futures",
  "gettext-rs",

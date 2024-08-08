@@ -2,6 +2,7 @@
 use super::RnCanvas;
 use anyhow::Context;
 use futures::channel::oneshot;
+use futures::AsyncReadExt;
 use futures::AsyncWriteExt;
 use gtk4::{gio, prelude::*};
 use rnote_compose::ext::Vector2Ext;
@@ -214,57 +215,92 @@ impl RnCanvas {
         let file_path = file
             .path()
             .ok_or_else(|| anyhow::anyhow!("Could not get a path for file: `{file:?}`."))?;
+        let mut tmp_file_path = file_path.clone();
+        tmp_file_path.set_extension("tmp");
+
         let basename = file
             .basename()
             .ok_or_else(|| anyhow::anyhow!("Could not retrieve basename for file: `{file:?}`."))?;
         let rnote_bytes_receiver = self
             .engine_ref()
             .save_as_rnote_bytes(basename.to_string_lossy().to_string());
-        let mut skip_set_output_file = false;
-        if let Some(output_file_path) = self.output_file().and_then(|f| f.path()) {
-            if crate::utils::paths_abs_eq(output_file_path, &file_path).unwrap_or(false) {
-                skip_set_output_file = true;
-            }
-        }
+
         self.dismiss_output_file_modified_toast();
 
-        let file_write_operation = async move {
+        let file_write_operation = async {
             let bytes = rnote_bytes_receiver.await??;
             self.set_output_file_expect_write(true);
             let mut write_file = async_fs::OpenOptions::new()
                 .create(true)
                 .truncate(true)
                 .write(true)
-                .open(&file_path)
+                .open(&tmp_file_path)
                 .await
                 .context(format!(
                     "Failed to create/open/truncate file for path '{}'",
-                    file_path.display()
+                    tmp_file_path.display()
                 ))?;
-            if !skip_set_output_file {
-                // this installs the file watcher.
-                self.set_output_file(Some(file.to_owned()));
-            }
             write_file.write_all(&bytes).await.context(format!(
                 "Failed to write bytes to file with path '{}'",
-                file_path.display()
+                tmp_file_path.display()
             ))?;
             write_file.sync_all().await.context(format!(
                 "Failed to sync file after writing with path '{}'",
-                file_path.display()
+                &tmp_file_path.display()
             ))?;
-            Ok(())
+
+            Ok::<(usize, u32), anyhow::Error>((bytes.len(), crc32fast::hash(&bytes)))
         };
 
-        if let Err(e) = file_write_operation.await {
+        let (size, internal_checksum) = file_write_operation.await.map_err(|e| {
             self.set_save_in_progress(false);
             // If the file operations failed in any way, we make sure to clear the expect_write flag
             // because we can't know for sure if the output-file watcher will be able to.
             self.set_output_file_expect_write(false);
-            return Err(e);
-        }
+            e
+        })?;
 
+        let file_check_operation = async {
+            let mut read_file = async_fs::OpenOptions::new()
+                .read(true)
+                .open(&tmp_file_path)
+                .await
+                .context(format!(
+                    "Failed to open/read temporary file for path '{}'",
+                    &tmp_file_path.display()
+                ))?;
+            let mut data: Vec<u8> = Vec::with_capacity(size);
+            read_file.read_to_end(&mut data).await?;
+
+            let external_checksum = crc32fast::hash(&data);
+            if internal_checksum != external_checksum {
+                return Err(anyhow::anyhow!(
+                    "Mismatch between the internal and external checksum, temporary file most likely corrupted"
+                ));
+            }
+
+            Ok::<(), anyhow::Error>(())
+        };
+        file_check_operation.await?;
+
+        let file_swap_operation = async {
+            if file_path.exists() {
+                async_fs::remove_file(&file_path).await.context(format!(
+                    "Failed to remove previous save file with path '{}'",
+                    &file_path.display()
+                ))?;
+            }
+            async_fs::rename(&tmp_file_path, &file_path)
+                .await
+                .context("Failed to rename the temporary save file into the main one")?;
+
+            Ok::<(), anyhow::Error>(())
+        };
+        file_swap_operation.await?;
+
+        self.set_output_file(Some(gio::File::for_path(&file_path)));
         debug!("Saving file has finished successfully");
+
         self.set_unsaved_changes(false);
         self.set_save_in_progress(false);
 

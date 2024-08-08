@@ -170,9 +170,22 @@ impl RnoteFile {
 
 impl FileFormatLoader for RnoteFile {
     fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self> {
-        let wrapper = serde_json::from_slice::<RnotefileWrapper>(
-            &decompress_from_gzip(bytes).context("decompressing bytes failed.")?,
-        )
+        let wrapper = serde_json::from_slice::<RnotefileWrapper>(&{
+            // zstd magic number
+            if bytes.starts_with(&[0x28, 0xb5, 0x2f, 0xfd]) {
+                tracing::info!("using zstd to decompress");
+                decompress_from_zstd(bytes)?
+            }
+            // gzip ID1 and ID2
+            else if bytes.starts_with(&[0x1f, 0x8b]) {
+                tracing::info!("using gzip to decompress");
+                decompress_from_gzip(bytes)?
+            } else {
+                Err(anyhow::anyhow!(
+                    "Unknown compression format, expected zstd or gzip"
+                ))?
+            }
+        })
         .context("deserializing RnotefileWrapper from bytes failed.")?;
 
         // Conversions for older file format versions happen here
@@ -224,7 +237,7 @@ impl FileFormatSaver for RnoteFile {
             version: semver::Version::parse(Self::SEMVER).unwrap(),
             data: ijson::to_value(self).context("converting RnoteFile to JSON value failed.")?,
         };
-        let compressed = compress_to_gzip(
+        let compressed = compress_to_zstd(
             &serde_json::to_vec(&wrapper).context("Serializing RnoteFileWrapper failed.")?,
         )
         .context("compressing bytes failed.")?;

@@ -459,29 +459,29 @@ impl Engine {
             }
             EngineTask::LongPressStatic => {
                 println!("long press event");
-                // for now just detect is good enough
-                // we should sent an event (what event ?)
-                // the idea is that we need to send events to this task
-                // hence we reply with the lastest such event
-                // with a wf set to long_hold true as well
-                // hence for a mouse that's not moving, we re send an event at the same location
-                // not implemented
 
-                //
+                // TODO
+                // re send the latest event
+                // this event will be part of the vecdeques of the brush
+                // this decque can't be empty !
+                let position = match self.penholder.current_pen_mut() {
+                    Pen::Brush(brush) => brush.long_press_detector.get_latest_pos(),
+                    _ => na::Vector2::new(1.0, 1.0),
+                };
 
-                // let (_, wf) = self.handle_pen_event(
-                //     PenEvent::Down {
-                //         element: Element {
-                //             pos: na::Vector2::new(1.0, 1.0), //for now this is a dummy
-                //             pressure: 1.0,
-                //         },
-                //         modifier_keys: HashSet::new(),
-                //     },
-                //     None,
-                //     Instant::now(),
-                // );
-                // widget_flags |= wf;
-                // widget_flags.long_hold = true;
+                let (_, wf) = self.handle_pen_event(
+                    PenEvent::Down {
+                        element: Element {
+                            pos: position,
+                            pressure: 1.0,
+                        },
+                        modifier_keys: HashSet::new(),
+                    },
+                    None,
+                    Instant::now(),
+                );
+                widget_flags |= wf;
+                widget_flags.long_hold = true;
             }
             EngineTask::Zoom(zoom) => {
                 widget_flags |= self.camera.zoom_temporarily_to(1.0) | self.camera.zoom_to(zoom);

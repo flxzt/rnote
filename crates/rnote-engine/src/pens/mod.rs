@@ -18,6 +18,7 @@ pub use penbehaviour::PenBehaviour;
 pub use penholder::PenHolder;
 pub use penmode::PenMode;
 pub use pensconfig::PensConfig;
+use rnote_compose::penpath::Element;
 pub use selector::Selector;
 pub use shaper::Shaper;
 pub use shortcuts::Shortcuts;
@@ -53,11 +54,12 @@ impl Default for Pen {
 }
 
 impl Pen {
-    // need an intermediary
-    pub fn reset_long_press(&mut self) {
+    // intermediary function
+    // result/error propagation ?
+    pub fn reset_long_press(&mut self, element: Element, now: Instant) {
         match self {
-            Pen::Brush(brush) => brush.reset_long_press(),
-            _ => panic!("can't reset a not brush"),
+            Pen::Brush(brush) => brush.reset_long_press(element, now),
+            _ => panic!("can't reset a pen that's not a brush"),
         }
     }
 }

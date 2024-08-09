@@ -13,7 +13,6 @@ use crate::{CloneConfig, DrawableOnDoc};
 use futures::channel::oneshot;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
-use rand::Rng;
 use rnote_compose::builders::ShapeBuilderType;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenProgress, ShortcutKey};
@@ -264,9 +263,6 @@ impl PenHolder {
             }
             false => None,
         };
-        //normally this wouldn't be the case as we are doing this on a cancel which is not the real thing !
-        //if cancel the pen is reinitialized !
-        // could be done further done like the rest
 
         //let's get our stroke key here as well
         // should only trigger if wf.long_hold TODO
@@ -298,7 +294,7 @@ impl PenHolder {
             println!("the path is {:?}", path);
 
             // random chance between recognition and not (to replace with a real recognizer)
-            if false {
+            if true {
                 println!("recognition successful");
 
                 // cancel the stroke
@@ -349,7 +345,12 @@ impl PenHolder {
                 println!("recognition failed");
                 // here we have to reset both the status for the long press recogniser that is done by event
                 // and the one on the dedicated thread
-                self.current_pen.reset_long_press();
+                // ISSUE HERE
+                self.current_pen
+                    .reset_long_press(path.unwrap().segments.last().unwrap().end(), now);
+                // not too robust is it ?
+                // could this happen with no element ?
+                // ?? is this okay now ?
 
                 // ideally we could keep the same vec for the path and extend it with only new elements if this happens multiple times
             }

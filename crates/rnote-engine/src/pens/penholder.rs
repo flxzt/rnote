@@ -8,6 +8,7 @@ use super::{
 use crate::camera::NudgeDirection;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::pens::shortcuts::ShortcutAction;
+use crate::strokes::Stroke;
 use crate::widgetflags::WidgetFlags;
 use crate::{CloneConfig, DrawableOnDoc};
 use futures::channel::oneshot;
@@ -229,6 +230,77 @@ impl PenHolder {
         self.current_pen_mut().deinit()
     }
 
+    /// handle a hold press for the pen
+    pub fn handle_long_press(
+        &mut self,
+        now: Instant,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        match &mut self.current_pen {
+            Pen::Brush(brush) => {
+                brush.add_stroke_key().unwrap();
+                let stroke_key = brush.current_stroke_key.unwrap();
+
+                // get the path
+                let path = if let Some(Stroke::BrushStroke(brushstroke)) =
+                    engine_view.store.get_stroke_ref(stroke_key)
+                {
+                    Some(brushstroke.path.clone())
+                } else {
+                    None
+                };
+
+                // recognize ?
+                if true {
+                    println!("recognition successful");
+
+                    // cancel the stroke
+                    engine_view.store.remove_stroke(stroke_key);
+
+                    // change the type to line first
+                    engine_view.pens_config.shaper_config.builder_type = ShapeBuilderType::Line;
+                    // switch to the shaper tool but as an override (temporary)
+                    widget_flags |= self.change_style_override(Some(PenStyle::Shaper), engine_view);
+
+                    // need a function to add a shape directly with some stroke width ?
+
+                    // first event is the original position
+                    let (_, wf) = self.current_pen.handle_event(
+                        PenEvent::Down {
+                            element: path.as_ref().unwrap().start,
+                            modifier_keys: HashSet::new(),
+                        },
+                        now,
+                        engine_view,
+                    );
+                    widget_flags |= wf;
+                    // second event is the last position
+                    let (_, wf) = self.current_pen.handle_event(
+                        PenEvent::Down {
+                            element: path.unwrap().segments.last().unwrap().end(),
+                            modifier_keys: HashSet::new(),
+                        },
+                        now,
+                        engine_view,
+                    );
+                    widget_flags |= wf;
+                } else {
+                    // reset : We get the last element stored in the recognizer
+                    match self.current_pen.reset_long_press(now) {
+                        Ok(()) => (),
+                        Err(()) => {
+                            tracing::debug!("called `reset_long_press` on an incompatible pen mode")
+                        }
+                    }
+                }
+            }
+            _ => {}
+        }
+        return widget_flags;
+    }
+
     /// Handle a pen event.
     pub fn handle_pen_event(
         &mut self,
@@ -247,113 +319,17 @@ impl PenHolder {
         let (mut event_result, wf) = self
             .current_pen
             .handle_event(event.clone(), now, engine_view);
-        // does the pen loose its path here or before ?
-        // we have to get the path here
-        let path = match wf.long_hold {
-            true => {
-                // need to get back the original position
-                // but if we have more than this (shape or more)
-                // we need to retrieve the full shape here
-                // we thus recuperate the data here, saved inside an optional part of the pen struct
-                println!("getting the pen path back");
-                match &self.current_pen {
-                    Pen::Brush(brush) => brush.pen_path_recognition.clone(),
-                    _ => None,
-                }
-            }
-            false => None,
-        };
-
-        //let's get our stroke key here as well
-        // should only trigger if wf.long_hold TODO
-        let stroke_key = match &self.current_pen {
-            Pen::Brush(brush) => {
-                let stroke_key_opt = brush.current_stroke_key;
-                match stroke_key_opt {
-                    Some(stroke) => Some(stroke.clone()),
-                    _ => None,
-                }
-            }
-            _ => None,
-        };
 
         widget_flags |= wf | self.handle_pen_progress(event_result.progress, engine_view);
 
         if !event_result.handled {
-            let (propagate, wf) = self.handle_pen_event_global(event, now, engine_view);
+            let (propagate, wf) = self.handle_pen_event_global(event.clone(), now, engine_view);
             event_result.propagate |= propagate;
             widget_flags |= wf;
         }
 
-        // test the wf for the long press
         if widget_flags.long_hold {
-            // need to get back the original position
-            // but if we have more than this (shape or more)
-            // we need to retrieve the full shape here
-            // we thus recuperate the data here, saved inside an optional part of the pen struct
-            println!("the path is {:?}", path);
-
-            // random chance between recognition and not (to replace with a real recognizer)
-            if true {
-                println!("recognition successful");
-
-                // cancel the stroke
-                engine_view.store.remove_stroke(stroke_key.unwrap());
-
-                // change the type to line first
-                engine_view.pens_config.shaper_config.builder_type = ShapeBuilderType::Line;
-
-                // switch to the shaper tool but as an override (temporary)
-                widget_flags |= self.change_style_override(Some(PenStyle::Shaper), engine_view);
-
-                // update the state of the shaper to be in building
-                match &self.current_pen {
-                    Pen::Shaper(shaper) => {
-                        println!("hello {:?}", shaper);
-                    }
-                    _ => println!("error"),
-                }
-                // then add two new events
-                // or edit directly the shaper ?
-                // we probably will have to do custom methods
-                // one thing that's lacking here is the stroke width that's not set
-                // but we shouldn't make the settings for the shape tool change for a stroke
-                // recognition
-
-                // first event is the original position (to get back up from somewhere ...)
-                let (_, wf) = self.current_pen.handle_event(
-                    PenEvent::Down {
-                        element: path.as_ref().unwrap().start,
-                        modifier_keys: HashSet::new(),
-                    },
-                    now,
-                    engine_view,
-                );
-                widget_flags |= wf;
-                // second event is the last position
-                let (_, wf) = self.current_pen.handle_event(
-                    PenEvent::Down {
-                        element: path.unwrap().segments.last().unwrap().end(),
-                        modifier_keys: HashSet::new(),
-                    },
-                    now,
-                    engine_view,
-                );
-                widget_flags |= wf;
-                // maybe try with the other method : modify the thing manually
-            } else {
-                println!("recognition failed");
-                // here we have to reset both the status for the long press recogniser that is done by event
-                // and the one on the dedicated thread
-                // ISSUE HERE
-                self.current_pen
-                    .reset_long_press(path.unwrap().segments.last().unwrap().end(), now);
-                // not too robust is it ?
-                // could this happen with no element ?
-                // ?? is this okay now ?
-
-                // ideally we could keep the same vec for the path and extend it with only new elements if this happens multiple times
-            }
+            widget_flags |= self.handle_long_press(now, engine_view);
         }
 
         // Always redraw after handling a pen event

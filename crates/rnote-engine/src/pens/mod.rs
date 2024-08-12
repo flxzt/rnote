@@ -54,12 +54,21 @@ impl Default for Pen {
 }
 
 impl Pen {
-    // intermediary function
-    // result/error propagation ?
-    pub fn reset_long_press(&mut self, element: Element, now: Instant) {
+    // intermediary function for mutability
+    pub fn reset_long_press(&mut self, now: Instant) -> Result<(), ()> {
         match self {
-            Pen::Brush(brush) => brush.reset_long_press(element, now),
-            _ => panic!("can't reset a pen that's not a brush"),
+            Pen::Brush(brush) => {
+                // get the last element stored in the recognizer
+                brush.reset_long_press(
+                    Element {
+                        pos: brush.long_press_detector.get_latest_pos(),
+                        pressure: 1.0,
+                    },
+                    now,
+                );
+                Ok(())
+            }
+            _ => Err(()),
         }
     }
 }

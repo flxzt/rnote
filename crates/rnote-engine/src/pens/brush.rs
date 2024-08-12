@@ -18,7 +18,6 @@ use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::Constraints;
-use rnote_compose::PenPath;
 use std::collections::VecDeque;
 use std::time::Duration;
 use std::time::Instant;
@@ -92,7 +91,7 @@ impl LongPressDetector {
         });
         self.distance += dist_delta;
 
-        println!("adding {:?}", dist_delta);
+        //println!("adding {:?}", dist_delta);
 
         self.total_distance += dist_delta;
 
@@ -103,9 +102,8 @@ impl LongPressDetector {
             // remove the last element
             let back_element = self.last_strokes.pop_back().unwrap();
             self.distance -= back_element.distance_to_previous;
-            println!("removing {:?}", back_element.distance_to_previous);
+            //println!("removing {:?}", back_element.distance_to_previous);
         }
-        // println!("last stroke vecdeque {:?}", self.last_strokes);
     }
 
     pub fn get_latest_pos(&self) -> na::Vector2<f64> {
@@ -116,8 +114,6 @@ impl LongPressDetector {
 #[derive(Debug)]
 pub struct Brush {
     state: BrushState,
-    /// save the current path for recognition one level upper
-    pub pen_path_recognition: Option<PenPath>,
     /// handle for the separate task that makes it possible to
     /// trigger long press for input with no jitter (where a long press
     /// hold wouldn't trigger any new event)
@@ -128,7 +124,6 @@ pub struct Brush {
     /// This prevents long press from happening on a point
     /// We create a deadzone around the start position
     pub start_position: Option<PosTimeDict>,
-    pub stroke_width: Option<f64>,
     pub long_press_detector: LongPressDetector,
 }
 
@@ -136,11 +131,9 @@ impl Default for Brush {
     fn default() -> Self {
         Self {
             state: BrushState::Idle,
-            pen_path_recognition: None,
             current_stroke_key: None,
             longpress_handle: None,
             start_position: None,
-            stroke_width: None,
             long_press_detector: LongPressDetector::default(),
         }
     }
@@ -204,9 +197,6 @@ impl PenBehaviour for Brush {
                                 .layer_for_current_options(),
                         ),
                     );
-
-                    self.stroke_width =
-                        Some(engine_view.pens_config.brush_config.get_stroke_width());
 
                     engine_view.store.regenerate_rendering_for_stroke(
                         current_stroke_key,
@@ -275,7 +265,6 @@ impl PenBehaviour for Brush {
 
                 self.state = BrushState::Idle;
                 self.current_stroke_key = None;
-                self.pen_path_recognition = None;
                 self.start_position = None;
                 self.long_press_detector.clear();
                 self.cancel_handle_long_press();
@@ -333,12 +322,10 @@ impl PenBehaviour for Brush {
                             );
                         }
 
-                        // first send the event:
+                        // first send the event
                         if let Some(handle) = self.longpress_handle.as_mut() {
                             let _ = handle.reset_timeout();
-                            // we may have asusmed wrongly the type of pen event ?
-                            // could be a key press that's ignored ? KeyPressed
-                            // or Text ?
+                            // only send pen down event to the detector
                             match pen_event {
                                 PenEvent::Down { element, .. } => {
                                     self.long_press_detector.add_event(element, now)
@@ -347,6 +334,7 @@ impl PenBehaviour for Brush {
                             }
                         } else {
                             // recreate the handle if it was dropped
+                            // errors from not using a refcell like the other use ?
                             // this happens when we sent a long_hold event and cancelled the long
                             // press.
                             // We have to restart he handle and the long press detector
@@ -364,8 +352,6 @@ impl PenBehaviour for Brush {
                                         time: now,
                                     });
                                     self.current_stroke_key = None;
-                                    self.pen_path_recognition = None;
-
                                     self.long_press_detector.reset(element, now);
                                 }
                                 _ => {
@@ -373,11 +359,11 @@ impl PenBehaviour for Brush {
                                 }
                             }
                         }
-                        // then test : long press ?
+                        // then test : do we have a long press ?
                         let is_deadzone = self.long_press_detector.total_distance()
-                            > 4.0 * self.stroke_width.unwrap_or(0.5);
-                        let is_static =
-                            self.long_press_detector.distance() < 4.0 * self.stroke_width.unwrap();
+                            > 4.0 * engine_view.pens_config.brush_config.get_stroke_width();
+                        let is_static = self.long_press_detector.distance()
+                            < 0.1 * engine_view.pens_config.brush_config.get_stroke_width();
                         let time_delta =
                             now - self.start_position.unwrap_or(PosTimeDict::default()).time;
 
@@ -391,24 +377,12 @@ impl PenBehaviour for Brush {
                             && is_static
                             && is_deadzone
                         {
-                            // save the current stroke for recognition
-                            println!("saving the current stroke data");
-
                             //save the key for potentially deleting it and replacing it with a shape
                             self.current_stroke_key = Some(current_stroke_key.clone());
-
-                            // save the current stroke for recognition
-                            if let Some(Stroke::BrushStroke(brushstroke)) =
-                                engine_view.store.get_stroke_ref(*current_stroke_key)
-                            {
-                                let path = brushstroke.path.clone();
-                                self.pen_path_recognition = Some(path);
-                            }
-
                             widget_flags.long_hold = true;
 
                             // quit the handle. Either recognition is successful and we are right
-                            // or we aren't and a new handle will be create on the next event
+                            // or we aren't and a new handle will be created on the next event
                             self.cancel_handle_long_press();
                         }
                         PenProgress::InProgress
@@ -516,14 +490,13 @@ impl DrawableOnDoc for Brush {
 
 impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
-    const LONGPRESS_TIMEOUT: f64 = 0.5;
+    const LONGPRESS_TIMEOUT: f64 = 1.5;
 
     pub fn cancel_handle_long_press(&mut self) {
         // cancel the long press handle
         if let Some(handle) = self.longpress_handle.as_mut() {
             let _ = handle.quit();
         }
-        self.longpress_handle = None;
     }
 
     pub fn reset_long_press(&mut self, element: Element, now: Instant) {
@@ -531,8 +504,22 @@ impl Brush {
         self.current_stroke_key = None;
         self.cancel_handle_long_press();
         self.longpress_handle = None;
-        self.stroke_width = None;
         self.long_press_detector.reset(element, now);
+    }
+
+    pub fn add_stroke_key(&mut self) -> Result<(), ()> {
+        // extract the content of the stroke for recognition purposes
+        match &mut self.state {
+            BrushState::Drawing {
+                path_builder: _,
+                current_stroke_key,
+            } => {
+                //save the key
+                self.current_stroke_key = Some(current_stroke_key.clone());
+                Ok(())
+            }
+            _ => Err(()),
+        }
     }
 }
 

@@ -332,6 +332,7 @@ impl Engine {
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
                 let rnote_file = RnoteFile {
+                    header: RnoteHeader::default(),
                     engine_snapshot: ijson::to_value(&engine_snapshot)?,
                 };
                 rnote_file.save_as_bytes(&file_name)

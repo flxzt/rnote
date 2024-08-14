@@ -17,6 +17,7 @@ use crate::engine::EngineSnapshot;
 
 use super::{FileFormatLoader, FileFormatSaver};
 use legacy::LegacyRnoteFile;
+use maj0min12::RnoteFileMaj0Min12;
 use serde::{Deserialize, Serialize};
 use std::{
     io::{Read, Write},
@@ -76,6 +77,7 @@ pub fn decompress_from_zstd(
 }
 
 pub type RnoteFile = maj0min12::RnoteFileMaj0Min12;
+pub type RnoteHeader = maj0min12::RnoteHeaderMaj0Min12;
 
 impl FileFormatSaver for RnoteFile {
     fn save_as_bytes(&self, _file_name: &str) -> anyhow::Result<Vec<u8>> {
@@ -105,7 +107,9 @@ impl FileFormatLoader for RnoteFile {
 
         if magic_number != Self::MAGIC_NUMBER {
             if magic_number[..2] == [0x1f, 0x8b] {
-                return Ok(RnoteFile::from(LegacyRnoteFile::load_from_bytes(bytes)?));
+                return Ok(RnoteFile::try_from(LegacyRnoteFile::load_from_bytes(
+                    bytes,
+                )?)?);
             } else {
                 Err(anyhow::anyhow!("Unkown file"))?;
             }
@@ -141,10 +145,10 @@ impl FileFormatLoader for RnoteFile {
     }
 }
 
-impl TryFrom<RnoteFile> for EngineSnapshot {
+impl TryFrom<RnoteFileMaj0Min12> for EngineSnapshot {
     type Error = anyhow::Error;
 
-    fn try_from(value: RnoteFile) -> Result<Self, Self::Error> {
+    fn try_from(value: RnoteFileMaj0Min12) -> Result<Self, Self::Error> {
         let uncompressed = match value.header.compression {
             CompressionMethods::None => value.engine_snapshot,
             CompressionMethods::Gzip => decompress_from_gzip(
@@ -163,5 +167,25 @@ impl TryFrom<RnoteFile> for EngineSnapshot {
             >(&uncompressed)?)?),
             SerializationMethods::Bincode => unreachable!(),
         }
+    }
+}
+
+impl TryFrom<EngineSnapshot> for RnoteFile {
+    type Error = anyhow::Error;
+
+    fn try_from(value: EngineSnapshot) -> Result<Self, Self::Error> {
+        let json = serde_json::to_vec(&ijson::to_value(value)?)?;
+        let size = json.len() as u64;
+
+        let engine_snapshot = compress_to_zstd(&json)?;
+
+        Ok(Self {
+            header: RnoteHeader {
+                compression: CompressionMethods::Zstd,
+                serialization: SerializationMethods::Json,
+                size,
+            },
+            engine_snapshot,
+        })
     }
 }

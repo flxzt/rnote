@@ -26,16 +26,17 @@ impl RnoteFileMaj0Min12 {
     pub const VERSION: [u8; 3] = [0, 12, 0];
 }
 
-impl From<RnoteFileMaj0Min9> for RnoteFileMaj0Min12 {
-    fn from(value: RnoteFileMaj0Min9) -> Self {
-        Self {
+impl TryFrom<RnoteFileMaj0Min9> for RnoteFileMaj0Min12 {
+    type Error = anyhow::Error;
+    fn try_from(value: RnoteFileMaj0Min9) -> Result<Self, Self::Error> {
+        Ok(Self {
             header: RnoteHeaderMaj0Min12 {
                 serialization: SerializationMethods::Json,
                 compression: CompressionMethods::None,
                 size: 0,
             },
             engine_snapshot: serde_json::to_vec(&value.engine_snapshot)?,
-        }
+        })
     }
 }
 

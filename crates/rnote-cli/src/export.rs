@@ -10,8 +10,8 @@ use rnote_engine::engine::export::{
 };
 use rnote_engine::engine::EngineSnapshot;
 use rnote_engine::{Engine, SelectionCollision};
-use std::path::{Path, PathBuf};
 use std::io::{self, IsTerminal};
+use std::path::{Path, PathBuf};
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn run_export(

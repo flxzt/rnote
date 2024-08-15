@@ -24,7 +24,6 @@ adw = { version = "0.6.0", package = "libadwaita", features = ["v1_5"] }
 anyhow = "1.0"
 approx = "0.5.1"
 async-fs = "2.1"
-atty = "0.2.14"
 base64 = "0.22.1"
 cairo-rs = { version = "0.19.4", features = ["v1_18", "png", "svg", "pdf"] }
 chrono = "0.4.38"

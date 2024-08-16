@@ -1,10 +1,16 @@
+// Modules
+mod maj0min5patch8;
+mod maj0min5patch9;
+mod maj0min6;
+pub mod maj0min9;
+
 // Imports
-use super::maj0min5patch8::RnoteFileMaj0Min5Patch8;
-use super::maj0min5patch9::RnoteFileMaj0Min5Patch9;
-use super::maj0min6::RnoteFileMaj0Min6;
-use super::maj0min9::RnoteFileMaj0Min9;
 use super::FileFormatLoader;
 use anyhow::Context;
+use maj0min5patch8::RnoteFileMaj0Min5Patch8;
+use maj0min5patch9::RnoteFileMaj0Min5Patch9;
+use maj0min6::RnoteFileMaj0Min6;
+use maj0min9::RnoteFileMaj0Min9;
 use serde::{Deserialize, Serialize};
 use std::io::Read;
 

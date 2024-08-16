@@ -8,90 +8,34 @@
 // Modules
 pub(crate) mod legacy;
 pub(crate) mod maj0min12;
-pub(crate) mod maj0min5patch8;
-pub(crate) mod maj0min5patch9;
-pub(crate) mod maj0min6;
-pub(crate) mod maj0min9;
+pub(crate) mod methods;
 
-use crate::engine::EngineSnapshot;
-
+// Imports
 use super::{FileFormatLoader, FileFormatSaver};
+use crate::engine::EngineSnapshot;
 use legacy::LegacyRnoteFile;
 use maj0min12::RnoteFileMaj0Min12;
-use serde::{Deserialize, Serialize};
-use std::{
-    io::{Read, Write},
-    usize,
-};
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum CompressionMethods {
-    None,
-    Gzip,
-    Zstd,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum SerializationMethods {
-    Bincode,
-    Json,
-}
-
-/// Compress bytes with gzip.
-fn compress_to_gzip(to_compress: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
-    let mut encoder = flate2::write::GzEncoder::new(Vec::<u8>::new(), flate2::Compression::new(5));
-    encoder.write_all(to_compress)?;
-    Ok(encoder.finish()?)
-}
-
-/// Decompress from gzip.
-fn decompress_from_gzip(
-    compressed: &[u8],
-    uncompressed_siez: usize,
-) -> Result<Vec<u8>, anyhow::Error> {
-    let mut bytes: Vec<u8> = Vec::with_capacity(uncompressed_siez);
-    let mut decoder = flate2::read::MultiGzDecoder::new(compressed);
-    decoder.read_to_end(&mut bytes)?;
-    Ok(bytes)
-}
-
-/// Compress bytes with zstd
-pub fn compress_to_zstd(to_compress: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
-    let mut encoder = zstd::Encoder::new(Vec::<u8>::new(), 9)?;
-    if let Ok(num_workers) = std::thread::available_parallelism() {
-        encoder.multithread(num_workers.get() as u32)?;
-    }
-    encoder.write_all(to_compress)?;
-    Ok(encoder.finish()?)
-}
-
-/// Decompress bytes with zstd
-pub fn decompress_from_zstd(
-    compressed: &[u8],
-    uncompressed_siez: usize,
-) -> Result<Vec<u8>, anyhow::Error> {
-    let mut bytes: Vec<u8> = Vec::with_capacity(uncompressed_siez);
-    let mut decoder = zstd::Decoder::new(compressed)?;
-    decoder.read_to_end(&mut bytes)?;
-    Ok(bytes)
-}
+use methods::{CompM, SerM};
+use std::io::Write;
 
 pub type RnoteFile = maj0min12::RnoteFileMaj0Min12;
 pub type RnoteHeader = maj0min12::RnoteHeaderMaj0Min12;
 
+pub const MAGIC_NUMBER: [u8; 9] = [0x52, 0x4e, 0x4f, 0x54, 0x45, 0xce, 0xa6, 0xce, 0x9b];
+
 impl FileFormatSaver for RnoteFile {
     fn save_as_bytes(&self, _file_name: &str) -> anyhow::Result<Vec<u8>> {
-        let json_header = serde_json::to_vec(&self.header)?;
+        let json_header = serde_json::to_vec(&self.head)?;
         let header = [
-            &Self::MAGIC_NUMBER[..],
+            &MAGIC_NUMBER[..],
             &Self::VERSION[..],
-            &u16::try_from(json_header.len())?.to_le_bytes(),
+            &u32::try_from(json_header.len())?.to_le_bytes(),
             &json_header,
         ]
         .concat();
         let mut buffer: Vec<u8> = Vec::new();
         buffer.write_all(&header)?;
-        buffer.write_all(&self.engine_snapshot)?;
+        buffer.write_all(&self.body)?;
         Ok(buffer)
     }
 }
@@ -105,13 +49,11 @@ impl FileFormatLoader for RnoteFile {
             .get(..9)
             .ok_or(anyhow::anyhow!("Failed to get magic number"))?;
 
-        if magic_number != Self::MAGIC_NUMBER {
+        if magic_number != MAGIC_NUMBER {
             if magic_number[..2] == [0x1f, 0x8b] {
-                return Ok(RnoteFile::try_from(LegacyRnoteFile::load_from_bytes(
-                    bytes,
-                )?)?);
+                return RnoteFile::try_from(LegacyRnoteFile::load_from_bytes(bytes)?);
             } else {
-                Err(anyhow::anyhow!("Unkown file"))?;
+                Err(anyhow::anyhow!("Unkown file format"))?;
             }
         }
 
@@ -122,25 +64,25 @@ impl FileFormatLoader for RnoteFile {
                 .ok_or(anyhow::anyhow!("Failed to get version"))?,
         );
 
-        let mut header_size: [u8; 2] = [0; 2];
+        let mut header_size: [u8; 4] = [0; 4];
         header_size.copy_from_slice(
             bytes
-                .get(12..14)
+                .get(12..16)
                 .ok_or(anyhow::anyhow!("Failed to get header size"))?,
         );
-        let header_size = u16::from_le_bytes(header_size);
+        let header_size = u32::from_le_bytes(header_size);
 
         let header_slice = bytes
-            .get(14..14 + header_size as usize)
-            .ok_or(anyhow::anyhow!("Missing header"))?;
+            .get(16..16 + usize::try_from(header_size)?)
+            .ok_or(anyhow::anyhow!("File head missing"))?;
 
         let body_slice = bytes
-            .get(14 + header_size as usize..)
-            .ok_or(anyhow::anyhow!("Missing body"))?;
+            .get(16 + usize::try_from(header_size)?..)
+            .ok_or(anyhow::anyhow!("File body missing"))?;
 
         Ok(Self {
-            header: serde_json::from_slice(header_slice)?,
-            engine_snapshot: body_slice.to_vec(),
+            head: serde_json::from_slice(header_slice)?,
+            body: body_slice.to_vec(),
         })
     }
 }
@@ -149,43 +91,29 @@ impl TryFrom<RnoteFileMaj0Min12> for EngineSnapshot {
     type Error = anyhow::Error;
 
     fn try_from(value: RnoteFileMaj0Min12) -> Result<Self, Self::Error> {
-        let uncompressed = match value.header.compression {
-            CompressionMethods::None => value.engine_snapshot,
-            CompressionMethods::Gzip => decompress_from_gzip(
-                &value.engine_snapshot,
-                usize::try_from(value.header.size).unwrap_or(usize::MAX),
-            )?,
-            CompressionMethods::Zstd => decompress_from_zstd(
-                &value.engine_snapshot,
-                usize::try_from(value.header.size).unwrap_or(usize::MAX),
-            )?,
-        };
-
-        match value.header.serialization {
-            SerializationMethods::Json => Ok(ijson::from_value(&serde_json::from_slice::<
-                ijson::IValue,
-            >(&uncompressed)?)?),
-            SerializationMethods::Bincode => unreachable!(),
-        }
+        let uc_size = usize::try_from(value.head.uc_size).unwrap_or(usize::MAX);
+        let uc_body = value.head.compression.decompress(uc_size, value.body)?;
+        value.head.serialization.deserialize(&uc_body)
     }
 }
 
-impl TryFrom<EngineSnapshot> for RnoteFile {
+impl TryFrom<&EngineSnapshot> for RnoteFile {
     type Error = anyhow::Error;
 
-    fn try_from(value: EngineSnapshot) -> Result<Self, Self::Error> {
-        let json = serde_json::to_vec(&ijson::to_value(value)?)?;
-        let size = json.len() as u64;
-
-        let engine_snapshot = compress_to_zstd(&json)?;
+    fn try_from(value: &EngineSnapshot) -> Result<Self, Self::Error> {
+        let serialization = SerM::Json;
+        let compression = CompM::Zstd;
+        let uc_data = serialization.serialize(value)?;
+        let uc_size = uc_data.len() as u64;
+        let data = compression.compress(uc_data)?;
 
         Ok(Self {
-            header: RnoteHeader {
-                compression: CompressionMethods::Zstd,
-                serialization: SerializationMethods::Json,
-                size,
+            head: RnoteHeader {
+                compression,
+                serialization,
+                uc_size,
             },
-            engine_snapshot,
+            body: data,
         })
     }
 }

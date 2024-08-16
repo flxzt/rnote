@@ -331,7 +331,7 @@ impl Engine {
         let engine_snapshot = self.take_snapshot();
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
-                let rnote_file = RnoteFileMaj0Min12::try_from(engine_snapshot)?;
+                let rnote_file = RnoteFileMaj0Min12::try_from(&engine_snapshot)?;
                 rnote_file.save_as_bytes(&file_name)
             };
             if oneshot_sender.send(result()).is_err() {

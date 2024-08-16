@@ -25,11 +25,6 @@ pub struct RnoteFileMaj0Min12 {
     pub body: Vec<u8>,
 }
 
-impl RnoteFileMaj0Min12 {
-    pub const VERSION: [u8; 3] = [0, 12, 0];
-    pub const SEMVER: semver::Version = semver::Version::new(0, 12, 0);
-}
-
 impl TryFrom<RnoteFileMaj0Min9> for RnoteFileMaj0Min12 {
     type Error = anyhow::Error;
     fn try_from(value: RnoteFileMaj0Min9) -> Result<Self, Self::Error> {

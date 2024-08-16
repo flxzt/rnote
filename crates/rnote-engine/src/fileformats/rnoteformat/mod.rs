@@ -21,13 +21,17 @@ use std::io::Write;
 pub type RnoteFile = maj0min12::RnoteFileMaj0Min12;
 pub type RnoteHeader = maj0min12::RnoteHeaderMaj0Min12;
 
-pub const MAGIC_NUMBER: [u8; 9] = [0x52, 0x4e, 0x4f, 0x54, 0x45, 0xce, 0xa6, 0xce, 0x9b];
+impl RnoteFileMaj0Min12 {
+    pub const MAGIC_NUMBER: [u8; 9] = [0x52, 0x4e, 0x4f, 0x54, 0x45, 0xce, 0xa6, 0xce, 0x9b];
+    pub const VERSION: [u8; 3] = [0, 12, 0];
+    pub const SEMVER: semver::Version = semver::Version::new(0, 12, 0);
+}
 
 impl FileFormatSaver for RnoteFile {
     fn save_as_bytes(&self, _file_name: &str) -> anyhow::Result<Vec<u8>> {
         let json_header = serde_json::to_vec(&self.head)?;
         let header = [
-            &MAGIC_NUMBER[..],
+            &Self::MAGIC_NUMBER[..],
             &Self::VERSION[..],
             &u32::try_from(json_header.len())?.to_le_bytes(),
             &json_header,
@@ -49,7 +53,8 @@ impl FileFormatLoader for RnoteFile {
             .get(..9)
             .ok_or(anyhow::anyhow!("Failed to get magic number"))?;
 
-        if magic_number != MAGIC_NUMBER {
+        if magic_number != Self::MAGIC_NUMBER {
+            // Gzip magic number
             if magic_number[..2] == [0x1f, 0x8b] {
                 return RnoteFile::try_from(LegacyRnoteFile::load_from_bytes(bytes)?);
             } else {
@@ -63,6 +68,11 @@ impl FileFormatLoader for RnoteFile {
                 .get(9..12)
                 .ok_or(anyhow::anyhow!("Failed to get version"))?,
         );
+        let version = semver::Version::new(
+            u64::from(version[0]),
+            u64::from(version[1]),
+            u64::from(version[2]),
+        );
 
         let mut header_size: [u8; 4] = [0; 4];
         header_size.copy_from_slice(
@@ -71,7 +81,6 @@ impl FileFormatLoader for RnoteFile {
                 .ok_or(anyhow::anyhow!("Failed to get header size"))?,
         );
         let header_size = u32::from_le_bytes(header_size);
-
         let header_slice = bytes
             .get(16..16 + usize::try_from(header_size)?)
             .ok_or(anyhow::anyhow!("File head missing"))?;
@@ -81,9 +90,22 @@ impl FileFormatLoader for RnoteFile {
             .ok_or(anyhow::anyhow!("File body missing"))?;
 
         Ok(Self {
-            head: serde_json::from_slice(header_slice)?,
+            head: RnoteHeader::load_from_slice(header_slice, &version)?,
             body: body_slice.to_vec(),
         })
+    }
+}
+
+impl RnoteHeader {
+    fn load_from_slice(slice: &[u8], version: &semver::Version) -> anyhow::Result<Self> {
+        if semver::VersionReq::parse(">=0.12.0")
+            .unwrap()
+            .matches(version)
+        {
+            Ok(serde_json::from_slice(slice)?)
+        } else {
+            Err(anyhow::anyhow!("Unrecognized header"))
+        }
     }
 }
 

@@ -16,7 +16,11 @@ use crate::engine::EngineSnapshot;
 use legacy::LegacyRnoteFile;
 use maj0min12::RnoteFileMaj0Min12;
 use methods::{CompM, SerM};
-use std::io::Write;
+use std::{
+    env,
+    io::{Read, Write},
+    str::FromStr,
+};
 
 pub type RnoteFile = maj0min12::RnoteFileMaj0Min12;
 pub type RnoteHeader = maj0min12::RnoteHeaderMaj0Min12;
@@ -124,6 +128,11 @@ impl TryFrom<&EngineSnapshot> for RnoteFile {
 
     fn try_from(value: &EngineSnapshot) -> Result<Self, Self::Error> {
         let serialization = SerM::Json;
+        // FOR TESTING ONLY
+        let ser_string = env::var("SER").unwrap();
+        let serialization = SerM::from_str(ser_string.trim()).unwrap();
+        tracing::info!(ser_string);
+        // END OF TESTING
         let compression = CompM::Zstd;
         let uc_data = serialization.serialize(value)?;
         let uc_size = uc_data.len() as u64;

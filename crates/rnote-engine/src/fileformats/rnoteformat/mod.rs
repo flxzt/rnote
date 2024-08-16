@@ -127,12 +127,7 @@ impl TryFrom<&EngineSnapshot> for RnoteFile {
     type Error = anyhow::Error;
 
     fn try_from(value: &EngineSnapshot) -> Result<Self, Self::Error> {
-        let serialization = SerM::Json;
-        // FOR TESTING ONLY
-        let ser_string = env::var("SER").unwrap();
-        let serialization = SerM::from_str(ser_string.trim()).unwrap();
-        tracing::info!(ser_string);
-        // END OF TESTING
+        let serialization = SerM::Bitcode;
         let compression = CompM::Zstd;
         let uc_data = serialization.serialize(value)?;
         let uc_size = uc_data.len() as u64;

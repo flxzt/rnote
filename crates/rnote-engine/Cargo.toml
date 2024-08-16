@@ -18,7 +18,6 @@ bincode = { workspace = true }
 bitcode = { workspace = true, features = ["serde"] }
 cairo-rs = { workspace = true }
 chrono = { workspace = true }
-ciborium = { workspace = true }
 clap = { workspace = true, optional = true }
 flate2 = { workspace = true }
 futures = { workspace = true }
@@ -55,7 +54,6 @@ serde_json = { workspace = true }
 slotmap = { workspace = true }
 svg = { workspace = true }
 thiserror = { workspace = true }
-toml = { workspace = true }
 tracing = { workspace = true }
 unicode-segmentation = { workspace = true }
 usvg = { workspace = true }

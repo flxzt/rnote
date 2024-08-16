@@ -10,6 +10,7 @@ use rnote_engine::engine::export::{
 };
 use rnote_engine::engine::EngineSnapshot;
 use rnote_engine::{Engine, SelectionCollision};
+use std::io::{self, IsTerminal};
 use std::path::{Path, PathBuf};
 
 #[allow(clippy::too_many_arguments)]
@@ -427,7 +428,7 @@ pub(crate) fn file_conflict_prompt_action(
     if !output_file.exists() {
         return Ok(None);
     }
-    if atty::isnt(atty::Stream::Stdout) {
+    if !io::stdout().is_terminal() {
         return Err(anyhow::anyhow!(
             "File conflict for file \"{}\" detected and terminal is not interactive. Option \"--on-conflict\" needs to be supplied.", output_file.display()
         ));

@@ -10,8 +10,8 @@ use crate::engine::EngineSnapshot;
 /// Compression methods that can be applied to the serialized engine snapshot
 pub enum CompM {
     None,
-    Gzip,
-    Zstd,
+    Gzip { compression_level: u8 },
+    Zstd { compression_level: u8 },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -27,14 +27,17 @@ impl CompM {
     pub fn compress(&self, data: Vec<u8>) -> anyhow::Result<Vec<u8>> {
         match self {
             Self::None => Ok(data),
-            Self::Gzip => {
-                let mut encoder =
-                    flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::new(5));
+            Self::Gzip { compression_level } => {
+                let mut encoder = flate2::write::GzEncoder::new(
+                    Vec::new(),
+                    flate2::Compression::new(u32::from(*compression_level)),
+                );
                 encoder.write_all(&data)?;
                 Ok(encoder.finish()?)
             }
-            Self::Zstd => {
-                let mut encoder = zstd::Encoder::new(Vec::<u8>::new(), 12)?;
+            Self::Zstd { compression_level } => {
+                let mut encoder =
+                    zstd::Encoder::new(Vec::<u8>::new(), i32::from(*compression_level))?;
                 if let Ok(num_workers) = std::thread::available_parallelism() {
                     encoder.multithread(num_workers.get() as u32)?;
                 }
@@ -46,13 +49,13 @@ impl CompM {
     pub fn decompress(&self, uc_size: usize, data: Vec<u8>) -> anyhow::Result<Vec<u8>> {
         match self {
             Self::None => Ok(data),
-            Self::Gzip => {
+            Self::Gzip { .. } => {
                 let mut bytes: Vec<u8> = Vec::with_capacity(uc_size);
                 let mut decoder = flate2::read::MultiGzDecoder::new(&data[..]);
                 decoder.read_to_end(&mut bytes)?;
                 Ok(bytes)
             }
-            Self::Zstd => {
+            Self::Zstd { .. } => {
                 let mut bytes: Vec<u8> = Vec::with_capacity(uc_size);
                 let mut decoder = zstd::Decoder::new(&data[..])?;
                 decoder.read_to_end(&mut bytes)?;

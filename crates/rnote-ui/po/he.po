@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-07-27 13:09+0000\n"
+"PO-Revision-Date: 2024-08-18 09:57+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
 "Language: he\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n == 1) ? 0 : ((n == 2) ? 1 : ((n > 10 && "
 "n % 10 == 0) ? 2 : 3));\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.7\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -40,7 +40,7 @@ msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"„‫Rnote” היא תוכנת ציור מבוססת וקטורים לרישום בכתב יד והוספת הערות על מסמכים "
+"‫Rnote היא תוכנת ציור מבוססת וקטורים לרישום בכתב יד והוספת הערות על מסמכים "
 "ותמונות."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
@@ -48,7 +48,7 @@ msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"אזהרה: תבנית הקבצים השמורים עדיין נתונה לשינויים ופיתוח ועלולה להפסיק לעבוד "
+"אזהרה: תבנית הקבצים השמורים עדיין נתון לשינויים ופיתוח ועלול להפסיק לעבוד "
 "לאחר שדרוג."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
@@ -76,10 +76,8 @@ msgid "Adjust document settings"
 msgstr "התאמת הגדרות המסמך"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
-#, fuzzy
-#| msgid "Button Shortcuts"
 msgid "Configure action shortcuts"
-msgstr "צירופי לחצנים"
+msgstr "הגדרת קיצורי פעולות"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
@@ -111,7 +109,6 @@ msgstr "פינוי"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
 #: crates/rnote-ui/src/canvas/mod.rs:592
-#, fuzzy
 msgid "New Document"
 msgstr "מסמך חדש"
 
@@ -160,7 +157,6 @@ msgstr ""
 "שינויים שלא נשמרו יאבדו לצמיתות."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
-#, fuzzy
 msgid "Unsaved Documents"
 msgstr "מסמכים לא שמורים"
 
@@ -169,7 +165,6 @@ msgid "Discard All"
 msgstr "אל תשמור"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:65
-#, fuzzy
 msgid "Edit Workspace"
 msgstr "עריכת סביבת העבודה"
 
@@ -180,18 +175,16 @@ msgid "Apply"
 msgstr "החלה"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:119
-#, fuzzy
 msgid "Workspace Name"
 msgstr "שם סביבת עבודה"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:124
 msgid "Icon"
-msgstr "צלמית"
+msgstr "סמל"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:125
-#, fuzzy
 msgid "Change the workspace icon"
-msgstr "החלפת סמליל סביבת העבודה"
+msgstr "החלפת סמל סביבת העבודה"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:145
 #: crates/rnote-ui/data/ui/settingspanel.ui:293

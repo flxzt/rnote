@@ -4,20 +4,19 @@ use super::{
 };
 use serde::{Deserialize, Serialize};
 
-/// ## Description of Rnote's 0.12.0 file format
-/// ### rnote magic number
-/// the magic number present at the start of each rnote file, used to identify them
-/// "RNOTEϕλ" -> "RNOTEFILE" (a useful pun, phi-lambda ~ file)
-/// [u8; 9]
-/// ### version
-/// [u8; 3] [major, minor, patch]
-/// ### header size
-/// size of the json-encoded header, represented by 4 bytes, little endian
-/// [u8; 4]
-/// ### header
-/// describes how to decompress and deserialize the data
-/// ### data
-/// serialized and compressed engine snapshot
+/// # Rnote File Format Specifications
+/// ## Prelude (not included in this struct)
+/// * magic number: [u8; 9] = [0x52, 0x4e, 0x4f, 0x54, 0x45, 0xce, 0xa6, 0xce, 0x9b], "RNOTEϕλ"
+/// * version: [u8; 3] = [major, minor, patch]
+/// * header size: [u8; 4], little endian repr.
+/// ## Header
+/// the header is a forward-compatible json-encoded struct
+/// containing additional information on the file
+/// * serialization: method used to serialize/deserialize the engine snapshot
+/// * compression: method used to compress/decompress the serialized engine snapshot
+/// * uncompressed size: size of the uncompressed and serialized engine snapshot
+/// ## Body
+/// the body contains the serialized and (potentially) compressed engine snapshot
 #[derive(Debug, Clone)]
 pub struct RnoteFileMaj0Min12 {
     pub head: RnoteHeaderMaj0Min12,
@@ -33,6 +32,7 @@ impl TryFrom<RnoteFileMaj0Min9> for RnoteFileMaj0Min12 {
                 serialization: SerM::Json,
                 compression: CompM::None,
                 uc_size: 0,
+                method_lock: false,
             },
             body: serde_json::to_vec(&value.engine_snapshot)?,
         })
@@ -40,8 +40,17 @@ impl TryFrom<RnoteFileMaj0Min9> for RnoteFileMaj0Min12 {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "header")]
 pub struct RnoteHeaderMaj0Min12 {
+    /// method used to serialize/deserialize the engine snapshot
+    #[serde(rename = "serialization")]
     pub serialization: SerM,
+    /// method used to compress/decompress the serialized engine snapshot
+    #[serde(rename = "compression")]
     pub compression: CompM,
+    /// size of the uncompressed and serialized engine snapshot
+    #[serde(rename = "uncompressed_size")]
     pub uc_size: u64,
+    #[serde(rename = "method_lock")]
+    pub method_lock: bool,
 }

@@ -10,8 +10,8 @@ use crate::engine::EngineSnapshot;
 /// Compression methods that can be applied to the serialized engine snapshot
 pub enum CompM {
     None,
-    Gzip { compression_level: u8 },
-    Zstd { compression_level: u8 },
+    Gzip(u8),
+    Zstd(u8),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -27,7 +27,7 @@ impl CompM {
     pub fn compress(&self, data: Vec<u8>) -> anyhow::Result<Vec<u8>> {
         match self {
             Self::None => Ok(data),
-            Self::Gzip { compression_level } => {
+            Self::Gzip(compression_level) => {
                 let mut encoder = flate2::write::GzEncoder::new(
                     Vec::new(),
                     flate2::Compression::new(u32::from(*compression_level)),
@@ -35,7 +35,7 @@ impl CompM {
                 encoder.write_all(&data)?;
                 Ok(encoder.finish()?)
             }
-            Self::Zstd { compression_level } => {
+            Self::Zstd(compression_level) => {
                 let mut encoder =
                     zstd::Encoder::new(Vec::<u8>::new(), i32::from(*compression_level))?;
                 if let Ok(num_workers) = std::thread::available_parallelism() {
@@ -65,6 +65,12 @@ impl CompM {
     }
 }
 
+impl Default for CompM {
+    fn default() -> Self {
+        Self::Zstd(9)
+    }
+}
+
 impl SerM {
     pub fn serialize(&self, engine_snapshot: &EngineSnapshot) -> anyhow::Result<Vec<u8>> {
         match self {
@@ -81,6 +87,12 @@ impl SerM {
             Self::Json => Ok(ijson::from_value(&serde_json::from_slice(data)?)?),
             Self::Postcard => Ok(postcard::from_bytes(data)?),
         }
+    }
+}
+
+impl Default for SerM {
+    fn default() -> Self {
+        Self::Bitcode
     }
 }
 

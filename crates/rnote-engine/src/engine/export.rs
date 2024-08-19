@@ -351,6 +351,7 @@ impl Engine {
             penholder: self.penholder.clone_config(),
             import_prefs: self.import_prefs.clone_config(),
             export_prefs: self.export_prefs.clone_config(),
+            save_prefs: self.save_prefs.clone_config(),
             pen_sounds: self.pen_sounds(),
             optimize_epd: self.optimize_epd(),
         }

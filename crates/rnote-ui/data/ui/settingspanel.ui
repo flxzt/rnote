@@ -383,15 +383,32 @@ gets disabled.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="background_pattern_invert_color_row">
+                      <object class="AdwActionRow" id="doc_background_pattern_invert_color_row">
                         <property name="title" translatable="yes">Invert Color Brightness</property>
                         <property name="subtitle" translatable="yes">Invert the brightness of all background pattern colors</property>
                         <child type="suffix">
-                          <object class="GtkButton" id="background_pattern_invert_color_button">
+                          <object class="GtkButton" id="doc_background_pattern_invert_color_button">
                             <property name="valign">center</property>
                             <property name="label" translatable="yes">Invert</property>
                           </object>
                         </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwComboRow" id="doc_compression_level_row">
+                        <property name="title" translatable="yes">Compression Level</property>
+                        <property name="model">
+                          <object class="GtkStringList">
+                            <items>
+                              <item translatable="yes">Very High</item>
+                              <item translatable="yes">High</item>
+                              <item translatable="yes">Medium</item>
+                              <item translatable="yes">Low</item>
+                              <item translatable="yes">Very Low</item>
+                              <item translatable="yes">None</item>
+                            </items>
+                          </object>
+                        </property>
                       </object>
                     </child>
                   </object>

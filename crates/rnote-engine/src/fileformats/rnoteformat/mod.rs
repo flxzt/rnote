@@ -12,7 +12,7 @@ pub(crate) mod methods;
 
 // Imports
 use super::{FileFormatLoader, FileFormatSaver};
-use crate::engine::EngineSnapshot;
+use crate::engine::{save::SavePrefs, EngineSnapshot};
 use legacy::LegacyRnoteFile;
 use maj0min12::RnoteFileMaj0Min12;
 use methods::{CompM, SerM};
@@ -115,7 +115,26 @@ impl TryFrom<RnoteFileMaj0Min12> for EngineSnapshot {
     fn try_from(value: RnoteFileMaj0Min12) -> Result<Self, Self::Error> {
         let uc_size = usize::try_from(value.head.uc_size).unwrap_or(usize::MAX);
         let uc_body = value.head.compression.decompress(uc_size, value.body)?;
-        value.head.serialization.deserialize(&uc_body)
+
+        tracing::info!(
+            "loaded rnote file\ncomp: {:?}\nseri: {:?}\nlock: {}\n",
+            value.head.compression,
+            value.head.serialization,
+            value.head.method_lock,
+        );
+
+        let mut engine_snapshot = value.head.serialization.deserialize(&uc_body)?;
+        // save preferences are only kept if method_lock is true or both the ser. method and comp. method are "defaults"
+        if value.head.method_lock
+            | (matches!(value.head.compression, CompM::Zstd(_))
+                && matches!(value.head.serialization, SerM::Bitcode))
+        {
+            engine_snapshot
+                .save_prefs
+                .replace(SavePrefs::from(value.head));
+        }
+
+        Ok(engine_snapshot)
     }
 }
 
@@ -123,19 +142,31 @@ impl TryFrom<&EngineSnapshot> for RnoteFile {
     type Error = anyhow::Error;
 
     fn try_from(value: &EngineSnapshot) -> Result<Self, Self::Error> {
-        let serialization = SerM::Bitcode;
-        let compression = CompM::Zstd {
-            compression_level: 9,
-        };
+        let save_prefs = value
+            .save_prefs
+            .to_owned()
+            .ok_or(anyhow::anyhow!("No save preferences specified"))?;
+
+        let compression = save_prefs.compression;
+        let serialization = save_prefs.serialization;
+
         let uc_data = serialization.serialize(value)?;
         let uc_size = uc_data.len() as u64;
         let data = compression.compress(uc_data)?;
+        // if the compression method or serialization methid differ from the default, assume method lock is true
+        let method_lock =
+            !matches!(compression, CompM::Zstd(_)) | !matches!(serialization, SerM::Bitcode);
+
+        tracing::info!(
+            "saving rnote file\ncomp: {compression:?}\nseri: {serialization:?}\nlock: {method_lock}\n"
+        );
 
         Ok(Self {
             head: RnoteHeader {
                 compression,
                 serialization,
                 uc_size,
+                method_lock,
             },
             body: data,
         })

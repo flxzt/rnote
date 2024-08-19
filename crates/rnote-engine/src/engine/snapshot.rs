@@ -12,6 +12,8 @@ use slotmap::{HopSlotMap, SecondaryMap};
 use std::sync::Arc;
 use tracing::error;
 
+use super::save::SavePrefs;
+
 // An engine snapshot, used when loading/saving the current document from/into a file.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "engine_snapshot")]
@@ -26,6 +28,8 @@ pub struct EngineSnapshot {
     pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
     #[serde(rename = "chrono_counter")]
     pub chrono_counter: u32,
+    #[serde(skip, default)]
+    pub save_prefs: Option<SavePrefs>,
 }
 
 impl Default for EngineSnapshot {
@@ -36,6 +40,7 @@ impl Default for EngineSnapshot {
             stroke_components: Arc::new(HopSlotMap::with_key()),
             chrono_components: Arc::new(SecondaryMap::new()),
             chrono_counter: 0,
+            save_prefs: None,
         }
     }
 }
@@ -51,7 +56,7 @@ impl EngineSnapshot {
             let result = || -> anyhow::Result<Self> {
                 let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
                     .context("loading RnoteFile from bytes failed.")?;
-                Ok(Self::try_from(rnote_file)?)
+                Self::try_from(rnote_file)
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {

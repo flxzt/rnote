@@ -71,10 +71,7 @@ pub(crate) enum Command {
         open: bool,
     },
     /// Mutates one or more of the following for the specified Rnote file(s):{n}
-    /// * compression method
-    /// * compression level
-    /// * serialization method
-    /// * method lock
+    /// compression method, compression level, serialization method, method lock
     Mutate {
         /// The rnote save file(s) to mutate
         rnote_files: Vec<PathBuf>,
@@ -82,8 +79,11 @@ pub(crate) enum Command {
         #[arg(long = "not-in-place", alias = "nip", action = clap::ArgAction::SetTrue)]
         not_in_place: bool,
         /// Locks the compression and serialization methods used by the rnote save file(s)
+        /// Useful if either the desired serialization or compression methods differ from the defaults
+        /// Note that the compression level is not taken into account when comparing with the default methods
         #[arg(short = 'l', long, action = clap::ArgAction::SetTrue, conflicts_with = "unlock")]
         lock: bool,
+        /// Unlocks the compression and serialization methods used by the rnote save file(s)
         #[arg(short = 'u', long, action = clap::ArgAction::SetTrue, conflicts_with = "lock")]
         unlock: bool,
         #[arg(short = 's', long, action = clap::ArgAction::Set, value_parser = PossibleValuesParser::new(rnote_engine::fileformats::rnoteformat::SerM::VALID_STR_ARRAY))]

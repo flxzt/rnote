@@ -16,11 +16,13 @@ pub(crate) async fn run_mutate(
     compression_method: Option<String>,
     compression_level: Option<u8>,
 ) -> anyhow::Result<()> {
-    for mut file in rnote_files.into_iter() {
+    let total_len = rnote_files.len();
+    for (idx, mut filepath) in rnote_files.into_iter().enumerate() {
+        println!("Working on file {} out of {}", idx + 1, total_len);
         let mut bytes: Vec<u8> = Vec::new();
         OpenOptions::new()
             .read(true)
-            .open(&file)
+            .open(&filepath)
             .await?
             .read_to_end(&mut bytes)
             .await?;
@@ -30,13 +32,13 @@ pub(crate) async fn run_mutate(
         let serialization = if let Some(ref str) = serialization_method {
             rnote_engine::fileformats::rnoteformat::SerM::from_str(str).unwrap()
         } else {
-            rnote_file.head.serialization.clone()
+            rnote_file.head.serialization
         };
 
         let mut compression = if let Some(ref str) = compression_method {
             rnote_engine::fileformats::rnoteformat::CompM::from_str(str).unwrap()
         } else {
-            rnote_file.head.compression.clone()
+            rnote_file.head.compression
         };
 
         if let Some(lvl) = compression_level {
@@ -44,7 +46,6 @@ pub(crate) async fn run_mutate(
         }
 
         let method_lock = (rnote_file.head.method_lock | lock) && !unlock;
-
         let uc_data = serialization.serialize(&EngineSnapshot::try_from(rnote_file)?)?;
         let uc_size = uc_data.len() as u64;
 
@@ -59,12 +60,12 @@ pub(crate) async fn run_mutate(
         };
 
         if not_in_place {
-            let file_stem = file
+            let file_stem = filepath
                 .file_stem()
                 .ok_or(anyhow::anyhow!("File does not contain a valid file stem"))?
                 .to_str()
                 .ok_or(anyhow::anyhow!("File does not contain a valid file stem"))?;
-            file.set_file_name(format!("{}_mutated.rnote", file_stem));
+            filepath.set_file_name(format!("{}_mutated.rnote", file_stem));
         }
 
         let data = rnote_file.save_as_bytes("")?;
@@ -77,7 +78,7 @@ pub(crate) async fn run_mutate(
             .create(true)
             .truncate(true)
             .write(true)
-            .open(&file)
+            .open(&filepath)
             .await?;
 
         file.write_all(&data).await?;

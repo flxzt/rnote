@@ -29,7 +29,7 @@ pub struct EngineSnapshot {
     #[serde(rename = "chrono_counter")]
     pub chrono_counter: u32,
     #[serde(skip, default)]
-    pub save_prefs: Option<SavePrefs>,
+    pub save_prefs: SavePrefs,
 }
 
 impl Default for EngineSnapshot {
@@ -40,7 +40,7 @@ impl Default for EngineSnapshot {
             stroke_components: Arc::new(HopSlotMap::with_key()),
             chrono_components: Arc::new(SecondaryMap::new()),
             chrono_counter: 0,
-            save_prefs: None,
+            save_prefs: SavePrefs::default(),
         }
     }
 }

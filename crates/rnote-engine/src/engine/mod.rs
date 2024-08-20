@@ -336,7 +336,7 @@ impl Engine {
             stroke_components: Arc::clone(&store_history_entry.stroke_components),
             chrono_components: Arc::clone(&store_history_entry.chrono_components),
             chrono_counter: store_history_entry.chrono_counter,
-            save_prefs: Some(self.save_prefs.clone_config()),
+            save_prefs: self.save_prefs.clone_config(),
         }
     }
 
@@ -344,6 +344,9 @@ impl Engine {
     pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) -> WidgetFlags {
         self.document = snapshot.document.clone_config();
         self.camera = snapshot.camera.clone_config();
+        if snapshot.save_prefs.method_lock {
+            self.save_prefs = snapshot.save_prefs.clone_config();
+        }
         let mut widget_flags = self.store.import_from_snapshot(&snapshot)
             | self.doc_resize_autoexpand()
             | self.current_pen_update_state()

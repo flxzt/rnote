@@ -63,11 +63,52 @@ impl CompM {
             }
         }
     }
+    pub fn update_compression_level(&mut self, new: u8) -> anyhow::Result<()> {
+        match self {
+            Self::None => {
+                tracing::warn!("Cannot update the compression level of 'None'");
+                Ok(())
+            }
+            Self::Gzip(ref mut curr) => {
+                if !(0..=9).contains(&new) {
+                    Err(anyhow::anyhow!(
+                        "Invalid compression level for Gzip, expected a value between 0 and 9"
+                    ))
+                } else {
+                    *curr = new;
+                    Ok(())
+                }
+            }
+            Self::Zstd(ref mut curr) => {
+                if !zstd::compression_level_range().contains(&i32::from(new)) {
+                    Err(anyhow::anyhow!(
+                        "Invalid compression level for Zstd, expected a value between 0 and 22"
+                    ))
+                } else {
+                    *curr = new;
+                    Ok(())
+                }
+            }
+        }
+    }
+    pub const VALID_STR_ARRAY: [&'static str; 6] = ["None", "none", "Gzip", "gzip", "Zstd", "zstd"];
 }
 
 impl Default for CompM {
     fn default() -> Self {
         Self::Zstd(9)
+    }
+}
+
+impl FromStr for CompM {
+    type Err = &'static str;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "None" | "none" => Ok(Self::None),
+            "Gzip" | "gzip" => Ok(Self::Gzip(5)),
+            "Zstd" | "zstd" => Ok(Self::Zstd(9)),
+            _ => Err("Unknown compression method"),
+        }
     }
 }
 
@@ -88,6 +129,9 @@ impl SerM {
             Self::Postcard => Ok(postcard::from_bytes(data)?),
         }
     }
+    pub const VALID_STR_ARRAY: [&'static str; 9] = [
+        "Bincode", "bincode", "Bitcode", "bitcode", "Json", "JSON", "json", "Postcard", "postcard",
+    ];
 }
 
 impl Default for SerM {

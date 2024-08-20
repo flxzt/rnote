@@ -345,6 +345,7 @@ impl Engine {
 
     /// Extract the current engine configuration.
     pub fn extract_engine_config(&self) -> EngineConfig {
+        let save_prefs =
         EngineConfig {
             document: self.document.clone_config(),
             pens_config: self.pens_config.clone_config(),

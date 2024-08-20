@@ -1,6 +1,7 @@
 // Imports
-use crate::{export, import, test};
+use crate::{export, import, mutate, test};
 use anyhow::Context;
+use clap::builder::PossibleValuesParser;
 use clap::Parser;
 use rnote_compose::SplitOrder;
 use rnote_engine::engine::export::{
@@ -68,6 +69,29 @@ pub(crate) enum Command {
         /// Opens output folder when using "doc-pages" sub-command.
         #[arg(long, action = clap::ArgAction::SetTrue, global = true)]
         open: bool,
+    },
+    /// Mutates one or more of the following for the specified Rnote file(s):{n}
+    /// * compression method
+    /// * compression level
+    /// * serialization method
+    /// * method lock
+    Mutate {
+        /// The rnote save file(s) to mutate
+        rnote_files: Vec<PathBuf>,
+        /// Keeps the original rnote save file(s)
+        #[arg(long = "not-in-place", alias = "nip", action = clap::ArgAction::SetTrue)]
+        not_in_place: bool,
+        /// Locks the compression and serialization methods used by the rnote save file(s)
+        #[arg(short = 'l', long, action = clap::ArgAction::SetTrue, conflicts_with = "unlock")]
+        lock: bool,
+        #[arg(short = 'u', long, action = clap::ArgAction::SetTrue, conflicts_with = "lock")]
+        unlock: bool,
+        #[arg(short = 's', long, action = clap::ArgAction::Set, value_parser = PossibleValuesParser::new(rnote_engine::fileformats::rnoteformat::SerM::VALID_STR_ARRAY))]
+        serialization_method: Option<String>,
+        #[arg(short = 'c', long, action = clap::ArgAction::Set, value_parser = PossibleValuesParser::new(rnote_engine::fileformats::rnoteformat::CompM::VALID_STR_ARRAY))]
+        compression_method: Option<String>,
+        #[arg(short = 'v', long, action = clap::ArgAction::Set)]
+        compression_level: Option<u8>,
     },
 }
 
@@ -241,6 +265,28 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             )
             .await?;
             println!("Export finished!");
+        }
+        Command::Mutate {
+            rnote_files,
+            not_in_place,
+            lock,
+            unlock,
+            serialization_method,
+            compression_method,
+            compression_level,
+        } => {
+            println!("Mutating..");
+            mutate::run_mutate(
+                rnote_files,
+                not_in_place,
+                lock,
+                unlock,
+                serialization_method,
+                compression_method,
+                compression_level,
+            )
+            .await?;
+            println!("Mutate finished!");
         }
     }
 

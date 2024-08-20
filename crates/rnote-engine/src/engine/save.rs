@@ -13,6 +13,8 @@ pub struct SavePrefs {
     pub serialization: SerM,
     #[serde(rename = "compression")]
     pub compression: CompM,
+    #[serde(rename = "method_lock")]
+    pub method_lock: bool,
 }
 
 impl SavePrefs {
@@ -26,6 +28,7 @@ impl Default for SavePrefs {
         Self {
             serialization: SerM::default(),
             compression: CompM::default(),
+            method_lock: false,
         }
     }
 }
@@ -35,6 +38,7 @@ impl From<RnoteHeader> for SavePrefs {
         Self {
             serialization: value.serialization,
             compression: value.compression,
+            method_lock: value.method_lock,
         }
     }
 }
@@ -67,19 +71,19 @@ impl CompM {
         match self {
             Self::None => CompressionLevel::None,
             Self::Gzip(val) => match *val {
-                1..=2 => CompressionLevel::VeryLow,
-                3..=4 => CompressionLevel::Low,
-                5 => CompressionLevel::Medium,
+                0..=1 => CompressionLevel::VeryLow,
+                2..=3 => CompressionLevel::Low,
+                4..=5 => CompressionLevel::Medium,
                 6..=7 => CompressionLevel::High,
                 8..=9 => CompressionLevel::VeryHigh,
                 _ => unreachable!(),
             },
             Self::Zstd(val) => match *val {
-                1..=4 => CompressionLevel::VeryLow,
+                0..=4 => CompressionLevel::VeryLow,
                 5..=8 => CompressionLevel::Low,
                 9..=12 => CompressionLevel::Medium,
                 13..=16 => CompressionLevel::High,
-                17..=21 => CompressionLevel::VeryHigh,
+                17..=22 => CompressionLevel::VeryHigh,
                 _ => unreachable!(),
             },
         }

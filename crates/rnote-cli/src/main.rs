@@ -6,6 +6,7 @@
 pub(crate) mod cli;
 pub(crate) mod export;
 pub(crate) mod import;
+pub(crate) mod mutate;
 pub(crate) mod test;
 pub(crate) mod validators;
 

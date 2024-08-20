@@ -156,6 +156,12 @@ impl Engine {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
+        tracing::info!(
+            "loading engine conf.\nprev = {:?}\ncurr = {:?}",
+            self.save_prefs,
+            engine_config.save_prefs
+        );
+
         self.document = engine_config.document;
         self.pens_config = engine_config.pens_config;
         self.penholder = engine_config.penholder;

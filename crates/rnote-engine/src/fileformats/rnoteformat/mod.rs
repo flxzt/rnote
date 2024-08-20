@@ -127,13 +127,10 @@ impl TryFrom<RnoteFile> for EngineSnapshot {
 
         let mut engine_snapshot = value.head.serialization.deserialize(&uc_body)?;
         // save preferences are only kept if method_lock is true or both the ser. method and comp. method are "defaults"
-        if value.head.method_lock
-            | (matches!(value.head.compression, CompM::Zstd(_))
-                && matches!(value.head.serialization, SerM::Bitcode))
-        {
-            engine_snapshot.save_prefs = SavePrefs::from(value.head);
+        let save_prefs = SavePrefs::from(value.head);
+        if save_prefs.method_lock | save_prefs.conforms_to_default() {
+            engine_snapshot.save_prefs = save_prefs;
         }
-
         Ok(engine_snapshot)
     }
 }

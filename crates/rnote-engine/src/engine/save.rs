@@ -21,6 +21,20 @@ impl SavePrefs {
     pub fn clone_config(&self) -> Self {
         self.clone()
     }
+    pub fn conforms_to_default(&self) -> bool {
+        std::mem::discriminant(&self.serialization) == std::mem::discriminant(&SerM::default())
+            && std::mem::discriminant(&self.compression)
+                == std::mem::discriminant(&CompM::default())
+    }
+    /// The EngineExport should only contain SavePrefs that conform to the default
+    /// otherwise, for example, new files could be created without any compression and encoded in JSON
+    pub fn clone_conformed_config(&self) -> Self {
+        if self.conforms_to_default() {
+            self.clone_config()
+        } else {
+            Self::default()
+        }
+    }
 }
 
 impl Default for SavePrefs {

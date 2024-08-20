@@ -6,21 +6,30 @@ use std::{
 
 use crate::engine::EngineSnapshot;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 /// Compression methods that can be applied to the serialized engine snapshot
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename = "compression_method")]
 pub enum CompM {
+    #[serde(rename = "none")]
     None,
+    #[serde(rename = "gzip")]
     Gzip(u8),
     /// Zstd supports negative compression levels but I don't see the point in allowing these for rnote files
+    #[serde(rename = "zstd")]
     Zstd(u8),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 /// Serialization methods that can be applied to a snapshot of the engine
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename = "serialization_method")]
 pub enum SerM {
+    #[serde(rename = "bincode")]
     Bincode,
+    #[serde(rename = "bitcode")]
     Bitcode,
+    #[serde(rename = "json")]
     Json,
+    #[serde(rename = "postcard")]
     Postcard,
 }
 

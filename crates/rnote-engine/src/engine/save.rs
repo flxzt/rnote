@@ -58,7 +58,7 @@ impl From<RnoteHeader> for SavePrefs {
     }
 }
 
-#[derive(Debug, num_derive::FromPrimitive, num_derive::ToPrimitive)]
+#[derive(Debug, Clone, Copy, num_derive::FromPrimitive, num_derive::ToPrimitive)]
 pub enum CompressionLevel {
     VeryHigh,
     High,

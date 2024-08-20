@@ -3,23 +3,40 @@
   <template class="RnToolsPage" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBoxLayout">
-        <property name="spacing">6</property>
         <property name="orientation">vertical</property>
       </object>
     </property>
     <property name="hexpand">false</property>
     <property name="vexpand">false</property>
-    <child>
+      <child>
+        <object class="GtkBox">
+          <property name="orientation">vertical</property>
+          <property name="vexpand">false</property>
+          <child>
+            <object class="GtkMenuButton" id="verticaltool_menubutton">
+              <property name="icon-name">settings-symbolic</property>
+              <property name="direction">left</property>
+              <property name="tooltip_text" translatable="yes">Vertical Toolspace Configuration</property>
+              <property name="popover">verticaltool_popover</property>
+              <style>
+                <class name="flat" />
+              </style>
+            </object>
+          </child>
+        </object>
+      </child>
+      <child>
       <object class="GtkBox" id="toolstyle_togglebox">
         <property name="orientation">vertical</property>
-        <property name="homogeneous">true</property>
-        <property name="spacing">6</property>
+        <property name="homogeneous">false</property>
+        <style>
+          <class name="linked" />
+        </style>
         <child>
           <object class="GtkToggleButton" id="toolstyle_verticalspace_toggle">
             <property name="tooltip_text" translatable="yes">Insert Vertical Space</property>
             <property name="icon-name">pen-tools-verticalspacetool-symbolic</property>
             <style>
-              <class name="flat" />
               <class name="sidebar_action_button" />
             </style>
           </object>
@@ -30,7 +47,6 @@
             <property name="icon-name">pen-tools-offsetcameratool-symbolic</property>
             <property name="group">toolstyle_verticalspace_toggle</property>
             <style>
-              <class name="flat" />
               <class name="sidebar_action_button" />
             </style>
           </object>
@@ -41,26 +57,8 @@
             <property name="icon-name">pen-tools-zoomtool-symbolic</property>
             <property name="group">toolstyle_verticalspace_toggle</property>
             <style>
-              <class name="flat" />
               <class name="sidebar_action_button" />
             </style>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkMenuButton" id="verticaltool_menubutton">
-                <property name="icon-name">settings-symbolic</property>
-                <property name="direction">left</property>
-                <property name="tooltip_text" translatable="yes">Vertical Toolspace Configuration</property>
-                <property name="popover">verticaltool_popover</property>
-                <style>
-                  <class name="flat" />
-                  <class name="sidebar_action_button" />
-                </style>
-              </object>
-            </child>
           </object>
         </child>
       </object>
@@ -79,7 +77,7 @@
             <object class="GtkBox">
               <child>
                 <object class="GtkLabel">
-                  <property name="label" translatable="yes">Shape Configuration</property>
+                  <property name="label" translatable="yes">Vertical-Space Tool Options</property>
                   <property name="hexpand">true</property>
                   <property name="halign">center</property>
                   <style>
@@ -115,14 +113,14 @@ snap to the grid</property>
               </child>
               <child>
                 <object class="AdwSwitchRow" id="verticalspace_respect_vertical_bordersrow">
-                  <property name="title">Respect Vertical Borders</property>
+                  <property name="title">Limit movement to Vertical Page Borders</property>
                   <property name="subtitle">Only select elements that are inside or below the
 page selected, not ones on the left/right</property>
                 </object>
               </child>
               <child>
                 <object class="AdwSwitchRow" id="verticalspace_respect_horizontal_bordersrow">
-                  <property name="title">Respect Horizontal Borders</property>
+                  <property name="title">Limit movement to Horizontal Page Borders</property>
                   <property name="subtitle">Only select elements between the current position
 and the next horizontal border below</property>
                 </object>

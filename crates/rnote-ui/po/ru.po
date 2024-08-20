@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-07-03 07:09+0000\n"
+"PO-Revision-Date: 2024-08-21 03:09+0000\n"
 "Last-Translator: Pavel Ovchinnikov <opavel@internet.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
 "Language: ru\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.7\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -393,19 +393,14 @@ msgid "Jpeg"
 msgstr "JPEG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "    that expand in horizontal and vertical directions\n"
 "    are cut into pages"
 msgstr ""
 "Порядок страниц, при котором документы с компоновкой,\n"
-"расширяющейся по горизонтали и вертикали,\n"
-"делятся на страницы"
+"\tрасширяющейся по горизонтали и вертикали,\n"
+"\tделятся на страницы"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
@@ -415,16 +410,12 @@ msgstr "Коэффициент масштабирования растровог
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "    to the actual size on the document"
 msgstr ""
 "Установить коэффициент растрового масштабирования\n"
-"относительно фактического размера документа"
+"\tотносительно фактического размера документа"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
@@ -1804,10 +1795,8 @@ msgid "Exporting selection failed, nothing selected"
 msgstr "Не удалось экспортировать выделение, ничего не выделено"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
-#, fuzzy
-#| msgid "Saves are in progress"
 msgid "Saves are in progress, waiting before closing.."
-msgstr "Сохранения в прогрессе"
+msgstr "Сохранения в прогрессе, не закрывайте до завершения"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:336
 msgid "Button 1"

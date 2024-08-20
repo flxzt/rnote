@@ -11,6 +11,7 @@ use crate::engine::EngineSnapshot;
 pub enum CompM {
     None,
     Gzip(u8),
+    /// Zstd supports negative compression levels but I don't see the point in allowing these for rnote files
     Zstd(u8),
 }
 

@@ -5,6 +5,7 @@ mod penshortcutrow;
 // Re-exports
 pub(crate) use penshortcutrow::RnPenShortcutRow;
 use rnote_compose::ext::Vector2Ext;
+use rnote_engine::fileformats::rnoteformat::CompM;
 
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
@@ -768,8 +769,17 @@ impl RnSettingsPanel {
             );
 
         imp.doc_compression_level_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_| {
-            let compression_level = CompressionLevel::try_from(settings_panel.imp().doc_compression_level_row.get().selected()).unwrap();
-            appwindow.active_tab_wrapper().canvas().engine_mut().save_prefs.compression.set_compression_level(compression_level);
+            let canvas = appwindow.active_tab_wrapper().canvas();
+            let mut compression_level = CompressionLevel::try_from(settings_panel.imp().doc_compression_level_row.get().selected()).unwrap();
+
+            // None cannot be selected unless CompM is None iteself, otherwise selects Very Low instead
+            if matches!(compression_level, CompressionLevel::None)
+              && !matches!(canvas.engine_mut().save_prefs.compression, CompM::None)
+            {
+                compression_level = CompressionLevel::VeryLow;
+                settings_panel.imp().doc_compression_level_row.set_selected(compression_level.to_u32().unwrap());
+            }
+            canvas.engine_mut().save_prefs.compression.set_compression_level(compression_level);
         }));
     }
 

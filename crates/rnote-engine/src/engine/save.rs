@@ -7,7 +7,7 @@ use crate::fileformats::rnoteformat::{
 
 // Rnote file save preferences
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "save_prefs")]
+#[serde(default, rename = "save_prefs")]
 pub struct SavePrefs {
     #[serde(rename = "serialization")]
     pub serialization: SerM,

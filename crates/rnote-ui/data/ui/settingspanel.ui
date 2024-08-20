@@ -405,7 +405,6 @@ gets disabled.</property>
                               <item translatable="yes">Medium</item>
                               <item translatable="yes">Low</item>
                               <item translatable="yes">Very Low</item>
-                              <item translatable="yes">None</item>
                             </items>
                           </object>
                         </property>

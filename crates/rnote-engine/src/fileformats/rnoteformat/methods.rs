@@ -6,7 +6,7 @@ use std::{
 
 use crate::engine::EngineSnapshot;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 /// Compression methods that can be applied to the serialized engine snapshot
 pub enum CompM {
     None,
@@ -15,7 +15,7 @@ pub enum CompM {
     Zstd(u8),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 /// Serialization methods that can be applied to a snapshot of the engine
 pub enum SerM {
     Bincode,

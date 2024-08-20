@@ -399,11 +399,7 @@ impl RnSettingsPanel {
         let background = canvas.engine_ref().document.background;
         let format = canvas.engine_ref().document.format;
         let document_layout = canvas.engine_ref().document.layout;
-        let compression_level = canvas
-            .engine_ref()
-            .save_prefs
-            .compression
-            .get_compression_level();
+        let compression = canvas.engine_ref().save_prefs.compression;
 
         imp.doc_background_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
@@ -419,8 +415,16 @@ impl RnSettingsPanel {
         imp.doc_background_pattern_height_unitentry
             .set_value_in_px(background.pattern_size[1]);
         self.set_document_layout(&document_layout);
+        // set the compression level row to invisible if CompM is None
         imp.doc_compression_level_row
-            .set_selected(compression_level.to_u32().unwrap())
+            .set_visible(!matches!(compression, CompM::None));
+
+        match compression.get_compression_level() {
+            CompressionLevel::None => (),
+            other => imp
+                .doc_compression_level_row
+                .set_selected(other.to_u32().unwrap()),
+        }
     }
 
     fn refresh_shortcuts_ui(&self, active_tab: &RnCanvasWrapper) {
@@ -770,15 +774,7 @@ impl RnSettingsPanel {
 
         imp.doc_compression_level_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_| {
             let canvas = appwindow.active_tab_wrapper().canvas();
-            let mut compression_level = CompressionLevel::try_from(settings_panel.imp().doc_compression_level_row.get().selected()).unwrap();
-
-            // None cannot be selected unless CompM is None iteself, otherwise selects Very Low instead
-            if matches!(compression_level, CompressionLevel::None)
-              && !matches!(canvas.engine_mut().save_prefs.compression, CompM::None)
-            {
-                compression_level = CompressionLevel::VeryLow;
-                settings_panel.imp().doc_compression_level_row.set_selected(compression_level.to_u32().unwrap());
-            }
+            let compression_level = CompressionLevel::try_from(settings_panel.imp().doc_compression_level_row.get().selected()).unwrap();
             canvas.engine_mut().save_prefs.compression.set_compression_level(compression_level);
         }));
     }

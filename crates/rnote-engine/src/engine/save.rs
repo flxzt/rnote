@@ -5,7 +5,8 @@ use crate::fileformats::rnoteformat::{
     RnoteHeader,
 };
 
-// Rnote file save preferences
+/// Rnote file save preferences
+/// a subset of RnoteHeader
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "save_prefs")]
 pub struct SavePrefs {

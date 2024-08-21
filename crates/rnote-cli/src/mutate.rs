@@ -48,6 +48,7 @@ pub(crate) async fn run_mutate(
         let method_lock = (rnote_file.head.method_lock | lock) && !unlock;
         let uc_data = serialization.serialize(&EngineSnapshot::try_from(rnote_file)?)?;
         let uc_size = uc_data.len() as u64;
+        let data = compression.compress(uc_data)?;
 
         let rnote_file = RnoteFile {
             head: RnoteHeader {
@@ -56,7 +57,7 @@ pub(crate) async fn run_mutate(
                 uc_size,
                 method_lock,
             },
-            body: uc_data,
+            body: data,
         };
 
         if not_in_place {

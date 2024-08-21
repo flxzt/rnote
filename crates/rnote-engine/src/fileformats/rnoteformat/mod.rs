@@ -31,7 +31,7 @@ impl RnoteFileMaj0Min12 {
 
 impl FileFormatSaver for RnoteFile {
     fn save_as_bytes(&self, _file_name: &str) -> anyhow::Result<Vec<u8>> {
-        let json_header = serde_json::to_vec(&self.head)?;
+        let json_header = serde_json::to_vec(&ijson::to_value(&self.head)?)?;
         let header = [
             &Self::MAGIC_NUMBER[..],
             &Self::VERSION[..],
@@ -104,7 +104,7 @@ impl RnoteHeader {
             .unwrap()
             .matches(version)
         {
-            Ok(serde_json::from_slice(slice)?)
+            Ok(ijson::from_value(&serde_json::from_slice(slice)?)?)
         } else {
             Err(anyhow::anyhow!("Unrecognized header"))
         }

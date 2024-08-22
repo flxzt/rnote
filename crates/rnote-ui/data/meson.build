@@ -215,6 +215,8 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/misc-menu-symbolic.svg',
     'icons/scalable/actions/mouse-button-primary-symbolic.svg',
     'icons/scalable/actions/mouse-button-secondary-symbolic.svg',
+    'icons/scalable/actions/mouse-button-backward-symbolic.svg',
+    'icons/scalable/actions/mouse-button-forward-symbolic.svg',
     'icons/scalable/actions/pen-brush-style-marker-symbolic.svg',
     'icons/scalable/actions/pen-brush-style-solid-symbolic.svg',
     'icons/scalable/actions/pen-brush-style-textured-symbolic.svg',

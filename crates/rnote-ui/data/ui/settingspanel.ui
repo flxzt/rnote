@@ -440,6 +440,32 @@ secondary mouse button</property>
                       </object>
                     </child>
                     <child>
+                      <object class="RnPenShortcutRow" id="penshortcut_mouse_button_backward_row">
+                        <property name="title" translatable="yes">Mouse Backward Button Action</property>
+                        <property name="subtitle" translatable="yes">Set the action for the
+backward mouse button</property>
+                        <child type="prefix">
+                          <object class="GtkImage">
+                            <property name="icon_name">mouse-button-backward-symbolic</property>
+                            <property name="icon-size">large</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="RnPenShortcutRow" id="penshortcut_mouse_button_forward_row">
+                        <property name="title" translatable="yes">Mouse Forward Button Action</property>
+                        <property name="subtitle" translatable="yes">Set the action for the
+forward mouse button</property>
+                        <child type="prefix">
+                          <object class="GtkImage">
+                            <property name="icon_name">mouse-button-forward-symbolic</property>
+                            <property name="icon-size">large</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
                       <object class="RnPenShortcutRow" id="penshortcut_touch_two_finger_long_press_row">
                         <property name="title" translatable="yes">Touch Two-Finger Long-Press Action</property>
                         <property name="subtitle" translatable="yes">Set the action for the touch

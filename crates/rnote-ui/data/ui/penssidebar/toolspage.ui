@@ -115,13 +115,6 @@
                 <class name="medium" />
               </style>
               <child>
-                <object class="AdwSwitchRow" id="verticalspace_enable_snaprow">
-                  <property name="title" translatable="yes">Force snapping</property>
-                  <property name="subtitle" translatable="yes">Force the vertical space tool to
-snap to the grid</property>
-                </object>
-              </child>
-              <child>
                 <object class="AdwSwitchRow" id="verticalspace_respect_vertical_bordersrow">
                   <property name="title">Limit movement to Vertical Page Borders</property>
                   <property name="subtitle">Only select elements that are inside or below the

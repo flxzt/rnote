@@ -394,11 +394,6 @@ impl PenBehaviour for Tools {
                         } else {
                             engine_view.document.snap_position(
                                 element.pos - na::vector![0., self.verticalspace_tool.pos_y],
-                                engine_view
-                                    .pens_config
-                                    .tools_config
-                                    .vertical_tool_config
-                                    .force_snap,
                             )[1]
                         };
 

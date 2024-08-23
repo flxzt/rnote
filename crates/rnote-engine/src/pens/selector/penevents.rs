@@ -204,7 +204,7 @@ impl Selector {
 
                         let offset = engine_view
                             .document
-                            .snap_position(snap_corner_pos + (element.pos - *current_pos), false)
+                            .snap_position(snap_corner_pos + (element.pos - *current_pos))
                             - snap_corner_pos;
 
                         if offset.magnitude()
@@ -303,7 +303,7 @@ impl Selector {
                         if !lock_aspectratio {
                             offset_to_start = engine_view
                                 .document
-                                .snap_position(snap_corner_pos + offset_to_start, false)
+                                .snap_position(snap_corner_pos + offset_to_start)
                                 - snap_corner_pos;
                         }
                         offset_to_start = match from_corner {

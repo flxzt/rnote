@@ -25,8 +25,6 @@ mod imp {
         #[template_child]
         pub(crate) verticaltool_popover_close_button: TemplateChild<Button>,
         #[template_child]
-        pub(crate) verticalspace_enable_snaprow: TemplateChild<adw::SwitchRow>,
-        #[template_child]
         pub(crate) verticalspace_respect_vertical_bordersrow: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(crate) verticalspace_respect_horizontal_bordersrow: TemplateChild<adw::SwitchRow>,
@@ -147,11 +145,6 @@ impl RnToolsPage {
             }),
         );
 
-        imp.verticalspace_enable_snaprow
-            .get()
-            .connect_active_notify(clone!(@weak appwindow => move |row| {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.vertical_tool_config.force_snap = row.is_active();
-            }));
         imp.verticalspace_respect_vertical_bordersrow
             .get()
             .connect_active_notify(clone!(@weak appwindow => move |row| {
@@ -175,8 +168,6 @@ impl RnToolsPage {
         self.set_tool_style(tools_config.style);
 
         let imp = self.imp();
-        imp.verticalspace_enable_snaprow
-            .set_active(tools_config.vertical_tool_config.force_snap);
         imp.verticalspace_respect_vertical_bordersrow
             .set_active(tools_config.vertical_tool_config.horizontal_border);
         imp.verticalspace_respect_horizontal_bordersrow

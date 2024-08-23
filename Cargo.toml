@@ -80,7 +80,7 @@ tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 unicode-segmentation = "1.11"
 url = "2.5"
-usvg = "0.42.0"
+usvg = "0.43.0"
 winresource = "0.1.17"
 xmlwriter = "0.1.0"
 # Enabling feature > v20_9 causes linker errors on mingw

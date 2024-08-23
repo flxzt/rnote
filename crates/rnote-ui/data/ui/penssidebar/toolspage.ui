@@ -9,36 +9,39 @@
     <property name="hexpand">false</property>
     <property name="vexpand">false</property>
       <child>
-        <object class="GtkBox">
-          <property name="orientation">vertical</property>
-          <property name="vexpand">false</property>
-          <child>
-            <object class="GtkMenuButton" id="verticaltool_menubutton">
-              <property name="icon-name">settings-symbolic</property>
-              <property name="direction">left</property>
-              <property name="tooltip_text" translatable="yes">Vertical Toolspace Configuration</property>
-              <property name="popover">verticaltool_popover</property>
-              <style>
-                <class name="flat" />
-              </style>
-            </object>
-          </child>
-        </object>
-      </child>
-      <child>
       <object class="GtkBox" id="toolstyle_togglebox">
         <property name="orientation">vertical</property>
         <property name="homogeneous">false</property>
-        <style>
-          <class name="linked" />
-        </style>
+        <property name="spacing">6</property>
         <child>
-          <object class="GtkToggleButton" id="toolstyle_verticalspace_toggle">
-            <property name="tooltip_text" translatable="yes">Insert Vertical Space</property>
-            <property name="icon-name">pen-tools-verticalspacetool-symbolic</property>
-            <style>
-              <class name="sidebar_action_button" />
-            </style>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkToggleButton" id="toolstyle_verticalspace_toggle">
+                <property name="tooltip_text" translatable="yes">Insert Vertical Space</property>
+                <property name="icon-name">pen-tools-verticalspacetool-symbolic</property>
+                <style>
+                  <class name="sidebar_action_button" />
+                  <class name="flat" />
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuButton" id="verticaltool_menubutton">
+                <property name="icon-name">settings-symbolic</property>
+                <property name="direction">left</property>
+                <property name="tooltip_text" translatable="yes">Vertical Toolspace Configuration</property>
+                <property name="popover">verticaltool_popover</property>
+                <style>
+                  <class name="flat" />
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSeparator">
+            <property name="orientation">vertical</property>
           </object>
         </child>
         <child>
@@ -48,7 +51,13 @@
             <property name="group">toolstyle_verticalspace_toggle</property>
             <style>
               <class name="sidebar_action_button" />
+              <class name="flat" />
             </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSeparator">
+            <property name="orientation">vertical</property>
           </object>
         </child>
         <child>
@@ -58,6 +67,7 @@
             <property name="group">toolstyle_verticalspace_toggle</property>
             <style>
               <class name="sidebar_action_button" />
+              <class name="flat" />
             </style>
           </object>
         </child>

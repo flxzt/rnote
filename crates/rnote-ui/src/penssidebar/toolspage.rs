@@ -133,6 +133,14 @@ impl RnToolsPage {
             }
         }));
 
+        imp.verticaltool_menubutton.connect_active_notify(
+            clone!(@weak self as toolspage => move |menubutton| {
+                if menubutton.is_active() {
+                    toolspage.set_tool_style(ToolStyle::VerticalSpace);
+                }
+            }),
+        );
+
         imp.verticaltool_popover_close_button.connect_clicked(
             clone!(@weak verticaltool_popover => move |_| {
                 verticaltool_popover.popdown();

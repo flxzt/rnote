@@ -314,7 +314,7 @@ impl PenBehaviour for Tools {
                         let y_max: Option<f64> = if engine_view
                             .pens_config
                             .tools_config
-                            .vertical_tool_config
+                            .verticalspace_tool_config
                             .limit_movement_horizontal_borders
                         {
                             Some(
@@ -331,7 +331,7 @@ impl PenBehaviour for Tools {
                         self.verticalspace_tool.limit_x = if engine_view
                             .pens_config
                             .tools_config
-                            .vertical_tool_config
+                            .verticalspace_tool_config
                             .limit_movement_vertical_borders
                         {
                             let page_number_hor =

@@ -149,12 +149,12 @@ impl RnToolsPage {
         imp.verticalspace_limit_movement_vertical_bordersrow
             .get()
             .connect_active_notify(clone!(@weak appwindow => move |row| {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.vertical_tool_config.vertical_border = row.is_active();
+                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.verticalspace_tool_config.vertical_border = row.is_active();
             }));
         imp.verticalspace_limit_movement_horizontal_bordersrow
             .get()
             .connect_active_notify(clone!(@weak appwindow => move |row| {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.vertical_tool_config.horizontal_border = row.is_active();
+                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.verticalspace_tool_config.horizontal_border = row.is_active();
             }));
     }
 
@@ -172,13 +172,13 @@ impl RnToolsPage {
         imp.verticalspace_limit_movement_vertical_bordersrow
             .set_active(
                 tools_config
-                    .vertical_tool_config
+                    .verticalspace_tool_config
                     .limit_movement_horizontal_borders,
             );
         imp.verticalspace_limit_movement_horizontal_bordersrow
             .set_active(
                 tools_config
-                    .vertical_tool_config
+                    .verticalspace_tool_config
                     .limit_movement_vertical_borders,
             );
     }

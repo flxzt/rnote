@@ -94,8 +94,8 @@ impl RnToolsPage {
     }
 
     #[allow(unused)]
-    pub(crate) fn verticaltool_menubutton(&self) -> MenuButton {
-        self.imp().verticaltool_menubutton.get()
+    pub(crate) fn verticalspace_menubutton(&self) -> MenuButton {
+        self.imp().verticalspace_menubutton.get()
     }
 
     #[allow(unused)]
@@ -112,7 +112,7 @@ impl RnToolsPage {
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
         // for now doesn't do anything but for the close button later
-        let verticaltool_popover = imp.verticaltool_popover.get();
+        let verticalspace_popover = imp.verticalspace_popover.get();
 
         imp.toolstyle_verticalspace_toggle.connect_toggled(clone!(@weak appwindow => move |toggle| {
             if toggle.is_active() {
@@ -132,7 +132,7 @@ impl RnToolsPage {
             }
         }));
 
-        imp.verticaltool_menubutton.connect_active_notify(
+        imp.verticalspace_menubutton.connect_active_notify(
             clone!(@weak self as toolspage => move |menubutton| {
                 if menubutton.is_active() {
                     toolspage.set_tool_style(ToolStyle::VerticalSpace);
@@ -140,21 +140,21 @@ impl RnToolsPage {
             }),
         );
 
-        imp.verticaltool_popover_close_button.connect_clicked(
-            clone!(@weak verticaltool_popover => move |_| {
-                verticaltool_popover.popdown();
+        imp.verticalspace_popover_close_button.connect_clicked(
+            clone!(@weak verticalspace_popover => move |_| {
+                verticalspace_popover.popdown();
             }),
         );
 
         imp.verticalspace_limit_movement_vertical_bordersrow
             .get()
             .connect_active_notify(clone!(@weak appwindow => move |row| {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.verticalspace_tool_config.vertical_border = row.is_active();
+                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.verticalspace_tool_config.limit_movement_vertical_borders = row.is_active();
             }));
         imp.verticalspace_limit_movement_horizontal_bordersrow
             .get()
             .connect_active_notify(clone!(@weak appwindow => move |row| {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.verticalspace_tool_config.horizontal_border = row.is_active();
+                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.verticalspace_tool_config.limit_movement_horizontal_borders = row.is_active();
             }));
     }
 

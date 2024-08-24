@@ -559,7 +559,7 @@ impl RnAppWindow {
             obj.overlays()
                 .penssidebar()
                 .tools_page()
-                .verticaltool_menubutton()
+                .verticalspace_menubutton()
                 .set_direction(ArrowType::Right);
         } else {
             obj.split_view().set_sidebar_position(PackType::End);
@@ -686,7 +686,7 @@ impl RnAppWindow {
             obj.overlays()
                 .penssidebar()
                 .tools_page()
-                .verticaltool_menubutton()
+                .verticalspace_menubutton()
                 .set_direction(ArrowType::Left);
         }
     }

@@ -17,7 +17,7 @@ use std::time::Instant;
 pub struct VerticalSpaceTool {
     start_pos_y: f64,
     pos_y: f64,
-    limit_x: (f64, f64),
+    limit_x: Option<(f64, f64)>,
     strokes_below: Vec<StrokeKey>,
 }
 
@@ -328,7 +328,7 @@ impl PenBehaviour for Tools {
                             + 1.0f64)
                             * engine_view.document.format.height();
 
-                        self.verticalspace_tool.limit_x = {
+                        let limit_x = {
                             let page_number_hor =
                                 (pos_x / engine_view.document.format.width()).floor();
                             (
@@ -337,10 +337,16 @@ impl PenBehaviour for Tools {
                             )
                         };
 
+                        self.verticalspace_tool.limit_x = if limit_movement_vertical_borders {
+                            Some(limit_x)
+                        } else {
+                            None
+                        };
+
                         self.verticalspace_tool.strokes_below = engine_view.store.keys_between(
                             self.verticalspace_tool.pos_y,
                             y_max,
-                            self.verticalspace_tool.limit_x,
+                            limit_x,
                             limit_movement_vertical_borders,
                             limit_movement_horizontal_borders,
                         );

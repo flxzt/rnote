@@ -133,7 +133,7 @@ To update to the latest version again, unpin and run `flatpak update`.
 
 * One of the stylus buttons shortcut mapping does not work as intended -  
 On some devices one stylus button is mapped to a dedicated "Eraser" mode (which is the back-side on other styli). The buttons in the shortcuts settings could then be inconsistent ( the secondary / upper button is actually the primary / lower button , or reverse ). To change the tool that is mapped to this "Eraser" mode, do the following:  
-    * Hover over the canvas, and press and hold the button that that is suspected to be mapped to the "Eraser" mode
+    * Hover over the canvas, and press and hold the button that is suspected to be mapped to the "Eraser" mode
     * Switch to the desired pen style while keeping the button pressed
     * When releasing the pressed button, it should switch back to the previous pen style
     * The pen style in the "Eraser" mode should now be remembered

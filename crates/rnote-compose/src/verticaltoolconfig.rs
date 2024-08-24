@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 /// configuration for the vertical tool
 pub struct VerticalToolConfig {
     /// horizontal limit
-    pub horizontal_border: bool,
+    pub limit_movement_horizontal_borders: bool,
     /// vertical limit
-    pub vertical_border: bool,
+    pub limit_movement_vertical_borders: bool,
 }

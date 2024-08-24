@@ -27,11 +27,11 @@
               </object>
             </child>
             <child>
-              <object class="GtkMenuButton" id="verticaltool_menubutton">
+              <object class="GtkMenuButton" id="verticalspace_menubutton">
                 <property name="icon-name">settings-symbolic</property>
                 <property name="direction">left</property>
                 <property name="tooltip_text" translatable="yes">Vertical Toolspace Configuration</property>
-                <property name="popover">verticaltool_popover</property>
+                <property name="popover">verticalspace_popover</property>
                 <style>
                   <class name="flat" />
                 </style>
@@ -74,7 +74,7 @@
       </object>
     </child>
 
-    <object class="GtkPopover" id="verticaltool_popover">
+    <object class="GtkPopover" id="verticalspace_popover">
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
@@ -96,7 +96,7 @@
                 </object>
               </child>
               <child>
-                <object class="GtkButton" id="verticaltool_popover_close_button">
+                <object class="GtkButton" id="verticalspace_popover_close_button">
                   <property name="icon-name">window-close-symbolic</property>
                   <style>
                     <class name="flat" />
@@ -115,14 +115,14 @@
                 <class name="medium" />
               </style>
               <child>
-                <object class="AdwSwitchRow" id="verticalspace_respect_vertical_bordersrow">
+                <object class="AdwSwitchRow" id="verticalspace_limit_movement_vertical_bordersrow">
                   <property name="title">Limit movement to Vertical Page Borders</property>
                   <property name="subtitle">Only select elements that are inside or below the
 page selected, not ones on the left/right</property>
                 </object>
               </child>
               <child>
-                <object class="AdwSwitchRow" id="verticalspace_respect_horizontal_bordersrow">
+                <object class="AdwSwitchRow" id="verticalspace_limit_movement_horizontal_bordersrow">
                   <property name="title">Limit movement to Horizontal Page Borders</property>
                   <property name="subtitle">Only select elements between the current position
 and the next horizontal border below</property>

@@ -19,15 +19,16 @@ mod imp {
         #[template_child]
         pub(crate) toolstyle_zoom_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub(crate) verticaltool_menubutton: TemplateChild<MenuButton>,
+        pub(crate) verticalspace_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub(crate) verticaltool_popover: TemplateChild<Popover>,
+        pub(crate) verticalspace_popover: TemplateChild<Popover>,
         #[template_child]
-        pub(crate) verticaltool_popover_close_button: TemplateChild<Button>,
+        pub(crate) verticalspace_popover_close_button: TemplateChild<Button>,
         #[template_child]
-        pub(crate) verticalspace_respect_vertical_bordersrow: TemplateChild<adw::SwitchRow>,
+        pub(crate) verticalspace_limit_movement_vertical_bordersrow: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(crate) verticalspace_respect_horizontal_bordersrow: TemplateChild<adw::SwitchRow>,
+        pub(crate) verticalspace_limit_movement_horizontal_bordersrow:
+            TemplateChild<adw::SwitchRow>,
     }
 
     #[glib::object_subclass]
@@ -145,12 +146,12 @@ impl RnToolsPage {
             }),
         );
 
-        imp.verticalspace_respect_vertical_bordersrow
+        imp.verticalspace_limit_movement_vertical_bordersrow
             .get()
             .connect_active_notify(clone!(@weak appwindow => move |row| {
                 appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.vertical_tool_config.vertical_border = row.is_active();
             }));
-        imp.verticalspace_respect_horizontal_bordersrow
+        imp.verticalspace_limit_movement_horizontal_bordersrow
             .get()
             .connect_active_notify(clone!(@weak appwindow => move |row| {
                 appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.vertical_tool_config.horizontal_border = row.is_active();
@@ -168,9 +169,17 @@ impl RnToolsPage {
         self.set_tool_style(tools_config.style);
 
         let imp = self.imp();
-        imp.verticalspace_respect_vertical_bordersrow
-            .set_active(tools_config.vertical_tool_config.horizontal_border);
-        imp.verticalspace_respect_horizontal_bordersrow
-            .set_active(tools_config.vertical_tool_config.vertical_border);
+        imp.verticalspace_limit_movement_vertical_bordersrow
+            .set_active(
+                tools_config
+                    .vertical_tool_config
+                    .limit_movement_horizontal_borders,
+            );
+        imp.verticalspace_limit_movement_horizontal_bordersrow
+            .set_active(
+                tools_config
+                    .vertical_tool_config
+                    .limit_movement_vertical_borders,
+            );
     }
 }

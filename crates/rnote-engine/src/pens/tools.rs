@@ -315,7 +315,7 @@ impl PenBehaviour for Tools {
                             .pens_config
                             .tools_config
                             .vertical_tool_config
-                            .horizontal_border
+                            .limit_movement_horizontal_borders
                         {
                             Some(
                                 ((self.verticalspace_tool.pos_y
@@ -332,7 +332,7 @@ impl PenBehaviour for Tools {
                             .pens_config
                             .tools_config
                             .vertical_tool_config
-                            .vertical_border
+                            .limit_movement_vertical_borders
                         {
                             let page_number_hor =
                                 (pos_x / engine_view.document.format.width()).floor();

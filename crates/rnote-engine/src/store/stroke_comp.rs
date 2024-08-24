@@ -643,59 +643,23 @@ impl StrokeStore {
     pub(crate) fn keys_between(
         &self,
         y_start: f64,
-        y_end: Option<f64>,
-        x_lims: Option<(f64, f64)>,
+        y_end: f64,
+        x_lims: (f64, f64),
+        limit_movement_vertical_border: bool,
+        limit_movement_horizontal_border: bool,
     ) -> Vec<StrokeKey> {
-        // match on constraints
-        match (y_end, x_lims) {
-            (None, None) => return self.keys_below_y(y_start),
-            (Some(ymax), Some((xmin, xmax))) => {
-                return self
-                    .stroke_components
-                    .iter()
-                    .filter_map(|(key, stroke)| {
-                        if stroke.bounds().mins[1] > y_start
-                            && stroke.bounds().maxs[1] < ymax
-                            && stroke.bounds().mins[0] > xmin
-                            && stroke.bounds().maxs[0] < xmax
-                        {
-                            Some(key)
-                        } else {
-                            None
-                        }
-                    })
-                    .collect::<Vec<StrokeKey>>();
-            }
-            (Some(ymax), _) => {
-                return self
-                    .stroke_components
-                    .iter()
-                    .filter_map(|(key, stroke)| {
-                        if stroke.bounds().mins[1] > y_start && stroke.bounds().maxs[1] < ymax {
-                            Some(key)
-                        } else {
-                            None
-                        }
-                    })
-                    .collect::<Vec<StrokeKey>>();
-            }
-            (None, Some((xmin, xmax))) => {
-                return self
-                    .stroke_components
-                    .iter()
-                    .filter_map(|(key, stroke)| {
-                        if stroke.bounds().mins[1] > y_start
-                            && stroke.bounds().mins[0] > xmin
-                            && stroke.bounds().maxs[0] < xmax
-                        {
-                            Some(key)
-                        } else {
-                            None
-                        }
-                    })
-                    .collect::<Vec<StrokeKey>>();
-            }
-        }
+        self.stroke_components
+            .iter()
+            .filter(|(_, stroke)| stroke.bounds().mins[1] > y_start)
+            .filter(|(_, stroke)| {
+                !limit_movement_vertical_border
+                    || (stroke.bounds().mins[0] > x_lims.0 && stroke.bounds().maxs[0] < x_lims.1)
+            })
+            .filter(|(_, stroke)| {
+                !limit_movement_horizontal_border || (stroke.bounds().maxs[1] < y_end)
+            })
+            .map(|(key, _)| key)
+            .collect::<Vec<StrokeKey>>()
     }
 
     pub(crate) fn filter_keys_intersecting_bounds<'a, I: IntoIterator<Item = &'a StrokeKey>>(

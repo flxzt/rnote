@@ -17,7 +17,7 @@ use std::time::Instant;
 pub struct VerticalSpaceTool {
     start_pos_y: f64,
     pos_y: f64,
-    limit_x: Option<(f64, f64)>,
+    limit_x: (f64, f64),
     strokes_below: Vec<StrokeKey>,
 }
 
@@ -311,43 +311,38 @@ impl PenBehaviour for Tools {
 
                         let pos_x = element.pos[0];
 
-                        let y_max: Option<f64> = if engine_view
+                        let limit_movement_horizontal_borders = engine_view
                             .pens_config
                             .tools_config
                             .verticalspace_tool_config
-                            .limit_movement_horizontal_borders
-                        {
-                            Some(
-                                ((self.verticalspace_tool.pos_y
-                                    / engine_view.document.format.height())
-                                .floor()
-                                    + 1.0f64)
-                                    * engine_view.document.format.height(),
-                            )
-                        } else {
-                            None
-                        };
+                            .limit_movement_horizontal_borders;
+                        let limit_movement_vertical_borders = engine_view
+                            .pens_config
+                            .tools_config
+                            .verticalspace_tool_config
+                            .limit_movement_vertical_borders;
 
-                        self.verticalspace_tool.limit_x = if engine_view
-                            .pens_config
-                            .tools_config
-                            .verticalspace_tool_config
-                            .limit_movement_vertical_borders
-                        {
+                        let y_max = ((self.verticalspace_tool.pos_y
+                            / engine_view.document.format.height())
+                        .floor()
+                            + 1.0f64)
+                            * engine_view.document.format.height();
+
+                        self.verticalspace_tool.limit_x = {
                             let page_number_hor =
                                 (pos_x / engine_view.document.format.width()).floor();
-                            Some((
+                            (
                                 page_number_hor * engine_view.document.format.width(),
                                 (page_number_hor + 1.0f64) * engine_view.document.format.width(),
-                            ))
-                        } else {
-                            None
+                            )
                         };
 
                         self.verticalspace_tool.strokes_below = engine_view.store.keys_between(
                             self.verticalspace_tool.pos_y,
                             y_max,
                             self.verticalspace_tool.limit_x,
+                            limit_movement_vertical_borders,
+                            limit_movement_horizontal_borders,
                         );
                     }
                     ToolStyle::OffsetCamera => {

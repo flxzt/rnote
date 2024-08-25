@@ -24,7 +24,7 @@ use tracing::debug;
 static DUP_REGEX: Lazy<Regex> = Lazy::new(|| {
     // Incorporate FILE_DUP_SUFFIX_DELIM_REGEX dynamically into the regex pattern
     let regex_pattern: String = format!(
-        r"^(.*?)(?P<delim>{}\d+)?(\.\w+)?$",
+        r"^(.*?)(?P<delim>{}\d*)?(\.\w+)?$",
         crate::utils::FILE_DUP_SUFFIX_DELIM_REGEX
     );
 

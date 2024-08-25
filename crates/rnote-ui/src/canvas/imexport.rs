@@ -1,8 +1,6 @@
 // Imports
 use super::RnCanvas;
-use anyhow::Context;
 use futures::channel::oneshot;
-use futures::AsyncWriteExt;
 use gtk4::{gio, prelude::*};
 use rnote_compose::ext::Vector2Ext;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
@@ -211,7 +209,7 @@ impl RnCanvas {
         self.set_save_in_progress(true);
         debug!("Saving file is now in progress");
 
-        let file_path = file
+        let filepath = file
             .path()
             .ok_or_else(|| anyhow::anyhow!("Could not get a path for file: `{file:?}`."))?;
         let basename = file
@@ -220,43 +218,11 @@ impl RnCanvas {
         let rnote_bytes_receiver = self
             .engine_ref()
             .save_as_rnote_bytes(basename.to_string_lossy().to_string());
-        let mut skip_set_output_file = false;
-        if let Some(output_file_path) = self.output_file().and_then(|f| f.path()) {
-            if crate::utils::paths_abs_eq(output_file_path, &file_path).unwrap_or(false) {
-                skip_set_output_file = true;
-            }
-        }
         self.dismiss_output_file_modified_toast();
 
-        let file_write_operation = async move {
-            let bytes = rnote_bytes_receiver.await??;
-            self.set_output_file_expect_write(true);
-            let mut write_file = async_fs::OpenOptions::new()
-                .create(true)
-                .truncate(true)
-                .write(true)
-                .open(&file_path)
-                .await
-                .context(format!(
-                    "Failed to create/open/truncate file for path '{}'",
-                    file_path.display()
-                ))?;
-            if !skip_set_output_file {
-                // this installs the file watcher.
-                self.set_output_file(Some(file.to_owned()));
-            }
-            write_file.write_all(&bytes).await.context(format!(
-                "Failed to write bytes to file with path '{}'",
-                file_path.display()
-            ))?;
-            write_file.sync_all().await.context(format!(
-                "Failed to sync file after writing with path '{}'",
-                file_path.display()
-            ))?;
-            Ok(())
-        };
-
-        if let Err(e) = file_write_operation.await {
+        let bytes = rnote_bytes_receiver.await??;
+        self.set_output_file_expect_write(true);
+        if let Err(e) = rnote_engine::utils::atomic_save_to_file(&filepath, &bytes).await {
             self.set_save_in_progress(false);
             // If the file operations failed in any way, we make sure to clear the expect_write flag
             // because we can't know for sure if the output-file watcher will be able to.
@@ -264,6 +230,7 @@ impl RnCanvas {
             return Err(e);
         }
 
+        self.set_output_file(Some(gio::File::for_path(&filepath)));
         debug!("Saving file has finished successfully");
         self.set_unsaved_changes(false);
         self.set_save_in_progress(false);

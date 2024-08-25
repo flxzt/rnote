@@ -31,6 +31,7 @@ bitcode = { version = "0.6", features = ["serde"] }
 cairo-rs = { version = "0.19.4", features = ["v1_18", "png", "svg", "pdf"] }
 chrono = "0.4.38"
 clap = { version = "4.5", features = ["derive"] }
+crc32fast = { version = "1.4" }
 dialoguer = "0.11.0"
 flate2 = "1.0"
 fs_extra = "1.3"

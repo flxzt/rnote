@@ -13,12 +13,14 @@ rnote-compose = { workspace = true }
 
 anyhow = { workspace = true }
 approx = { workspace = true }
+async-fs = { workspace = true }
 base64 = { workspace = true }
 bincode = { workspace = true }
 bitcode = { workspace = true, features = ["serde"] }
 cairo-rs = { workspace = true }
 chrono = { workspace = true }
 clap = { workspace = true, optional = true }
+crc32fast = { workspace = true }
 flate2 = { workspace = true }
 futures = { workspace = true }
 geo = { workspace = true }

@@ -22,7 +22,7 @@ use tracing::debug;
 /// DELIM       (?P<rest>(.*))
 /// ```
 static DUP_REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(&(crate::utils::FILE_DUP_SUFFIX_DELIM_REGEX.to_string() + r"\d*(?P<rest>(.*))$"))
+    Regex::new(&(crate::utils::FILE_DUP_SUFFIX_DELIM_REGEX.to_string() + r"^(.*?)( - \d+)?$"))
         .unwrap()
 });
 

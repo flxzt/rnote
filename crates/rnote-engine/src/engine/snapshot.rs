@@ -58,7 +58,7 @@ impl EngineSnapshot {
                 // gzip magic number
                 if bytes
                     .get(..2)
-                    .ok_or_else(|| anyhow::anyhow!("Not an rnote file"))?
+                    .ok_or_else(|| anyhow::anyhow!("Not an Rnote file"))?
                     == [0x1f, 0x8b]
                 {
                     let legacy = rnoteformat::legacy::LegacyRnoteFile::load_from_bytes(&bytes)?;
@@ -66,7 +66,7 @@ impl EngineSnapshot {
                 }
 
                 let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
-                    .context("loading RnoteFile from bytes failed.")?;
+                    .context("Loading RnoteFile from bytes failed.")?;
                 Self::try_from(rnote_file)
             };
 

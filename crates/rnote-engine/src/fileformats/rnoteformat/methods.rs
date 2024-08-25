@@ -8,7 +8,6 @@ use crate::engine::EngineSnapshot;
 
 /// Compression methods that can be applied to the serialized engine snapshot
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename = "compression_method")]
 pub enum CompM {
     #[serde(rename = "none")]
     None,
@@ -21,7 +20,6 @@ pub enum CompM {
 
 /// Serialization methods that can be applied to a snapshot of the engine
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename = "serialization_method")]
 pub enum SerM {
     #[serde(rename = "bincode")]
     Bincode,

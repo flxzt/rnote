@@ -16,6 +16,7 @@ pub use methods::{CompM, SerM};
 // Imports
 use super::{FileFormatLoader, FileFormatSaver};
 use crate::engine::{save::SavePrefs, EngineSnapshot};
+use legacy::LegacyRnoteFile;
 use maj0min12::RnoteFileMaj0Min12;
 use std::io::Write;
 
@@ -58,7 +59,14 @@ impl FileFormatLoader for RnoteFile {
             .ok_or_else(|| anyhow::anyhow!("Failed to get magic number"))?;
 
         if magic_number != Self::MAGIC_NUMBER {
-            Err(anyhow::anyhow!("Unknown file format"))?;
+            // Gzip magic number
+            // The legacy file is generally caught first in Snapshot::load_from_rnote_bytes
+            // as this conversion is less efficient, but necessary to avoid spaghetti code in rnote-cli
+            if magic_number[..2] == [0x1f, 0x8b] {
+                return RnoteFile::try_from(LegacyRnoteFile::load_from_bytes(bytes)?);
+            } else {
+                Err(anyhow::anyhow!("Unrecognized file format"))?;
+            }
         }
 
         let mut version: [u8; 3] = [0; 3];

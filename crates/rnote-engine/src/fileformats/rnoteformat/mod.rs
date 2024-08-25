@@ -53,7 +53,7 @@ impl FileFormatLoader for RnoteFile {
     {
         let magic_number = bytes
             .get(..9)
-            .ok_or(anyhow::anyhow!("Failed to get magic number"))?;
+            .ok_or_else(|| anyhow::anyhow!("Failed to get magic number"))?;
 
         if magic_number != Self::MAGIC_NUMBER {
             // Gzip magic number
@@ -68,7 +68,7 @@ impl FileFormatLoader for RnoteFile {
         version.copy_from_slice(
             bytes
                 .get(9..12)
-                .ok_or(anyhow::anyhow!("Failed to get version"))?,
+                .ok_or_else(|| anyhow::anyhow!("Failed to get version"))?,
         );
         let version = semver::Version::new(
             u64::from(version[0]),
@@ -80,16 +80,16 @@ impl FileFormatLoader for RnoteFile {
         header_size.copy_from_slice(
             bytes
                 .get(12..16)
-                .ok_or(anyhow::anyhow!("Failed to get header size"))?,
+                .ok_or_else(|| anyhow::anyhow!("Failed to get header size"))?,
         );
         let header_size = u32::from_le_bytes(header_size);
         let header_slice = bytes
             .get(16..16 + usize::try_from(header_size)?)
-            .ok_or(anyhow::anyhow!("File head missing"))?;
+            .ok_or_else(|| anyhow::anyhow!("File head missing"))?;
 
         let body_slice = bytes
             .get(16 + usize::try_from(header_size)?..)
-            .ok_or(anyhow::anyhow!("File body missing"))?;
+            .ok_or_else(|| anyhow::anyhow!("File body missing"))?;
 
         Ok(Self {
             head: RnoteHeader::load_from_slice(header_slice, &version)?,

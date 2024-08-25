@@ -28,10 +28,10 @@ fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
             .len()
             .checked_sub(4)
             // only happens if the file has less than 4 bytes
-            .ok_or(
+            .ok_or_else(|| {
                 anyhow::anyhow!("Not a valid gzip-compressed file")
-                    .context("Failed to get the size of the decompressed data"),
-            )?;
+                    .context("Failed to get the size of the decompressed data")
+            })?;
         decompressed_size.copy_from_slice(&compressed[idx_start..]);
         // u32 -> usize to avoid issues on 32-bit architectures
         // also more reasonable since the uncompressed size is given by 4 bytes

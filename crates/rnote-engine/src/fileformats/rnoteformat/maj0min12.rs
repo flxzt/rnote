@@ -15,6 +15,7 @@ use serde::{Deserialize, Serialize};
 /// * serialization: method used to serialize/deserialize the engine snapshot
 /// * compression: method used to compress/decompress the serialized engine snapshot
 /// * uncompressed size: size of the uncompressed and serialized engine snapshot
+/// * method_lock: if set to true, the file can keep using non-standard methods and will not be forced back into using defaults
 /// ## Body
 /// the body contains the serialized and (potentially) compressed engine snapshot
 #[derive(Debug, Clone)]

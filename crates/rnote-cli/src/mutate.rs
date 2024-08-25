@@ -89,6 +89,6 @@ pub(crate) async fn run_mutate(
         println!("{:.2} MB → {:.2} MB", old_size_mb, new_size_mb,);
         total_delta += new_size_mb - old_size_mb;
     }
-    println!("\n  ⇒  ∆ = {:.2}", total_delta);
+    println!("\n⇒ ∆ = {:.2} MB", total_delta);
     Ok(())
 }

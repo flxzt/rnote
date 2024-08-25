@@ -275,7 +275,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             compression_method,
             compression_level,
         } => {
-            println!("Mutating..");
+            println!("Mutating..\n");
             mutate::run_mutate(
                 rnote_files,
                 not_in_place,

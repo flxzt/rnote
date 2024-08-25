@@ -12,18 +12,23 @@ use tracing::debug;
 
 /// The regex used to search for duplicated files
 /// ```text
-/// - Look for delimiter
+/// - Look for original filename lazily
 /// |         - Look for `<delim>1`/`<delim>2`/`<delim>123`/...
-/// |         |        - Look for the rest after the `<delim><num>` part
+/// |         |        - Look for the file extension after the `<delim><num>` part
 /// |         |       |       - At the end of the file name
 /// |         |       |       |
-/// |        \d*      |       $
+/// |         (?P<delim{}\d+)$
 /// |                 |
-/// DELIM       (?P<rest>(.*))
+/// ^(.*?)            (\.\w+)
 /// ```
 static DUP_REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(&(crate::utils::FILE_DUP_SUFFIX_DELIM_REGEX.to_string() + r"^(.*?)( - \d+)?$"))
-        .unwrap()
+    // Incorporate FILE_DUP_SUFFIX_DELIM_REGEX dynamically into the regex pattern
+    let regex_pattern: String = format!(
+        r"^(.*?)(?P<delim>{}\d+)?(\.\w+)?$",
+        crate::utils::FILE_DUP_SUFFIX_DELIM_REGEX
+    );
+
+    Regex::new(&regex_pattern).unwrap()
 });
 
 /// Create a new `duplicate` action.
@@ -99,10 +104,14 @@ fn generate_destination_path(source: impl AsRef<Path>) -> anyhow::Result<PathBuf
             "file of source path '{adjusted_source_path:?}' does not have a file stem."
         ));
     };
+
+    let source_extension = adjusted_source_path.extension();
+
+    // Loop to find the next available duplicate filename
     loop {
         destination_path.set_file_name(generate_duplicate_filename(
             source_stem,
-            adjusted_source_path.extension(),
+            source_extension,
             duplicate_index,
         ));
 
@@ -118,7 +127,7 @@ fn generate_destination_path(source: impl AsRef<Path>) -> anyhow::Result<PathBuf
 /// Creates the duplicate-filename by the given information about the source.
 ///
 /// For example:
-/// "test.txt" => "test-1.txt" => "test-2.txt"
+/// "test.txt" => "test - 1.txt" => "test - 2.txt"
 fn generate_duplicate_filename(
     source_stem: &OsStr,
     source_extension: Option<&OsStr>,
@@ -136,15 +145,11 @@ fn generate_duplicate_filename(
 
 /// Recursively removes found file-name suffixes that match with the above regex from the given file path.
 fn remove_dup_suffix(source: impl AsRef<Path>) -> PathBuf {
-    let mut removed = source.as_ref().to_string_lossy().to_string();
-    loop {
-        let new = DUP_REGEX.replace(&removed, "$rest").to_string();
-        if removed == new {
-            break;
-        }
-        removed = new;
-    }
-    PathBuf::from(removed)
+    let original = source.as_ref().to_string_lossy().to_string();
+    // Preserve the base and extension, remove duplicate suffix
+    let new = DUP_REGEX.replace(&original, "$1$3").to_string();
+
+    PathBuf::from(new)
 }
 
 #[cfg(test)]

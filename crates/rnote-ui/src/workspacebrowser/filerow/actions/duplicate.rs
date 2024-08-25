@@ -194,5 +194,17 @@ mod tests {
             let expected = PathBuf::from("normal_folder");
             assert_eq!(expected, remove_dup_suffix(&source));
         }
+
+        {
+            let source = PathBuf::from("normal - file.rnote");
+            let expected = source.clone();
+            assert_eq!(expected, remove_dup_suffix(&source));
+        }
+
+        {
+            let source = PathBuf::from("normal - file - 1.rnote");
+            let expected = PathBuf::from("normal - file.rnote");
+            assert_eq!(expected, remove_dup_suffix(&source));
+        }
     }
 }

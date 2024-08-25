@@ -9,6 +9,7 @@ use rnote_engine::engine::export::{
     SelectionExportPrefs,
 };
 use rnote_engine::engine::import::XoppImportPrefs;
+use rnote_engine::fileformats::rnoteformat;
 use rnote_engine::SelectionCollision;
 use smol::fs::File;
 use smol::io::{AsyncReadExt, AsyncWriteExt};
@@ -86,9 +87,9 @@ pub(crate) enum Command {
         /// Unlocks the compression and serialization methods used by the rnote save file(s)
         #[arg(short = 'u', long, action = clap::ArgAction::SetTrue, conflicts_with = "lock")]
         unlock: bool,
-        #[arg(short = 's', long, action = clap::ArgAction::Set, value_parser = PossibleValuesParser::new(rnote_engine::fileformats::rnoteformat::SerM::VALID_STR_ARRAY))]
+        #[arg(short = 's', long, action = clap::ArgAction::Set, value_parser = PossibleValuesParser::new(rnoteformat::SerM::VALID_STR_ARRAY))]
         serialization_method: Option<String>,
-        #[arg(short = 'c', long, action = clap::ArgAction::Set, value_parser = PossibleValuesParser::new(rnote_engine::fileformats::rnoteformat::CompM::VALID_STR_ARRAY))]
+        #[arg(short = 'c', long, action = clap::ArgAction::Set, value_parser = PossibleValuesParser::new(rnoteformat::CompM::VALID_STR_ARRAY))]
         compression_method: Option<String>,
         #[arg(short = 'v', long, action = clap::ArgAction::Set)]
         compression_level: Option<u8>,

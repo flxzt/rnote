@@ -21,14 +21,10 @@ pub enum CompM {
 /// Serialization methods that can be applied to a snapshot of the engine
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SerM {
-    #[serde(rename = "bincode")]
-    Bincode,
     #[serde(rename = "bitcode")]
     Bitcode,
     #[serde(rename = "json")]
     Json,
-    #[serde(rename = "postcard")]
-    Postcard,
 }
 
 impl CompM {
@@ -123,23 +119,17 @@ impl FromStr for CompM {
 impl SerM {
     pub fn serialize(&self, engine_snapshot: &EngineSnapshot) -> anyhow::Result<Vec<u8>> {
         match self {
-            Self::Bincode => Ok::<Vec<u8>, anyhow::Error>(bincode::serialize(engine_snapshot)?),
             Self::Bitcode => Ok(bitcode::serialize(engine_snapshot)?),
             Self::Json => Ok(serde_json::to_vec(&ijson::to_value(engine_snapshot)?)?),
-            Self::Postcard => Ok(postcard::to_allocvec(engine_snapshot)?),
         }
     }
     pub fn deserialize(&self, data: &[u8]) -> anyhow::Result<EngineSnapshot> {
         match self {
-            Self::Bincode => Ok(bincode::deserialize(data)?),
             Self::Bitcode => Ok(bitcode::deserialize(data)?),
             Self::Json => Ok(ijson::from_value(&serde_json::from_slice(data)?)?),
-            Self::Postcard => Ok(postcard::from_bytes(data)?),
         }
     }
-    pub const VALID_STR_ARRAY: [&'static str; 9] = [
-        "Bincode", "bincode", "Bitcode", "bitcode", "Json", "JSON", "json", "Postcard", "postcard",
-    ];
+    pub const VALID_STR_ARRAY: [&'static str; 5] = ["Bitcode", "bitcode", "Json", "JSON", "json"];
 }
 
 impl Default for SerM {
@@ -152,10 +142,8 @@ impl FromStr for SerM {
     type Err = &'static str;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "Bincode" | "bincode" => Ok(Self::Bincode),
             "Bitcode" | "bitcode" => Ok(Self::Bitcode),
             "Json" | "JSON" | "json" => Ok(Self::Json),
-            "Postcard" | "postcard" => Ok(Self::Postcard),
             _ => Err("Unknown serialization method"),
         }
     }

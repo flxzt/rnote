@@ -79,7 +79,7 @@ pub(crate) async fn run_mutate(
                 .ok_or_else(|| anyhow::anyhow!("File does not contain a valid file stem"))?
                 .to_str()
                 .ok_or_else(|| anyhow::anyhow!("File does not contain a valid file stem"))?;
-            filepath.set_file_name(format!("{}_mutated.rnote", file_stem));
+            filepath.set_file_name(format!("{}_mut.rnote", file_stem));
         }
 
         let data = rnote_file.save_as_bytes("")?;

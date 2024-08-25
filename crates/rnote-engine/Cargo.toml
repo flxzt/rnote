@@ -15,7 +15,6 @@ anyhow = { workspace = true }
 approx = { workspace = true }
 async-fs = { workspace = true }
 base64 = { workspace = true }
-bincode = { workspace = true }
 bitcode = { workspace = true, features = ["serde"] }
 cairo-rs = { workspace = true }
 chrono = { workspace = true }
@@ -39,7 +38,6 @@ parry2d-f64 = { workspace = true }
 piet = { workspace = true }
 piet-cairo = { workspace = true }
 poppler-rs = { workspace = true }
-postcard = { workspace = true, features = ["alloc"] }
 rand = { workspace = true }
 rand_distr = { workspace = true }
 rand_pcg = { workspace = true }

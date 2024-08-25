@@ -14,7 +14,7 @@ pub enum CompM {
     None,
     #[serde(rename = "gzip")]
     Gzip(u8),
-    /// Zstd supports negative compression levels but I don't see the point in allowing these for rnote files
+    /// Zstd supports negative compression levels but I don't see the point in allowing these for Rnote files
     #[serde(rename = "zstd")]
     Zstd(u8),
 }

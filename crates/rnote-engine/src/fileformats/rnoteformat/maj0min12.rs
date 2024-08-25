@@ -1,7 +1,4 @@
-use super::{
-    legacy::maj0min9::RnoteFileMaj0Min9,
-    methods::{CompM, SerM},
-};
+use super::methods::{CompM, SerM};
 use serde::{Deserialize, Serialize};
 
 /// # Rnote File Format Specifications
@@ -23,21 +20,6 @@ pub struct RnoteFileMaj0Min12 {
     pub head: RnoteHeaderMaj0Min12,
     /// A serialized and (potentially) compressed engine snapshot
     pub body: Vec<u8>,
-}
-
-impl TryFrom<RnoteFileMaj0Min9> for RnoteFileMaj0Min12 {
-    type Error = anyhow::Error;
-    fn try_from(value: RnoteFileMaj0Min9) -> Result<Self, Self::Error> {
-        Ok(Self {
-            head: RnoteHeaderMaj0Min12 {
-                serialization: SerM::Json,
-                compression: CompM::None,
-                uc_size: 0,
-                method_lock: false,
-            },
-            body: serde_json::to_vec(&value.engine_snapshot)?,
-        })
-    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

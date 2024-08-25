@@ -16,7 +16,6 @@ pub use methods::{CompM, SerM};
 // Imports
 use super::{FileFormatLoader, FileFormatSaver};
 use crate::engine::{save::SavePrefs, EngineSnapshot};
-use legacy::LegacyRnoteFile;
 use maj0min12::RnoteFileMaj0Min12;
 use std::io::Write;
 
@@ -24,7 +23,10 @@ pub type RnoteFile = maj0min12::RnoteFileMaj0Min12;
 pub type RnoteHeader = maj0min12::RnoteHeaderMaj0Min12;
 
 impl RnoteFileMaj0Min12 {
+    // ideally, this should never change
     pub const MAGIC_NUMBER: [u8; 9] = [0x52, 0x4e, 0x4f, 0x54, 0x45, 0xce, 0xa6, 0xce, 0x9b];
+    // version not directly linked with CARGO_PKG_VERSION, it should only be updated
+    // (to the newest Rnote version) when changes are made
     pub const VERSION: [u8; 3] = [0, 12, 0];
     pub const SEMVER: semver::Version = semver::Version::new(0, 12, 0);
 }
@@ -56,12 +58,7 @@ impl FileFormatLoader for RnoteFile {
             .ok_or_else(|| anyhow::anyhow!("Failed to get magic number"))?;
 
         if magic_number != Self::MAGIC_NUMBER {
-            // Gzip magic number
-            if magic_number[..2] == [0x1f, 0x8b] {
-                return RnoteFile::try_from(LegacyRnoteFile::load_from_bytes(bytes)?);
-            } else {
-                Err(anyhow::anyhow!("Unkown file format"))?;
-            }
+            Err(anyhow::anyhow!("Unknown file format"))?;
         }
 
         let mut version: [u8; 3] = [0; 3];
@@ -106,7 +103,7 @@ impl RnoteHeader {
         {
             Ok(ijson::from_value(&serde_json::from_slice(slice)?)?)
         } else {
-            Err(anyhow::anyhow!("Unrecognized header"))
+            Err(anyhow::anyhow!("Unrecognized header version"))
         }
     }
 }

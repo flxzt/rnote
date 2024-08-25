@@ -54,6 +54,17 @@ impl EngineSnapshot {
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Self> {
+                // support for legacy files
+                // gzip magic number
+                if bytes
+                    .get(..2)
+                    .ok_or_else(|| anyhow::anyhow!("Not an rnote file"))?
+                    == [0x1f, 0x8b]
+                {
+                    let legacy = rnoteformat::legacy::LegacyRnoteFile::load_from_bytes(&bytes)?;
+                    return Ok(ijson::from_value(&legacy.engine_snapshot)?);
+                }
+
                 let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
                     .context("loading RnoteFile from bytes failed.")?;
                 Self::try_from(rnote_file)

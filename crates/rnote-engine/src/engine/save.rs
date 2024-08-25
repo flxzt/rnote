@@ -1,9 +1,10 @@
-use serde::{Deserialize, Serialize};
-
+// Imports
 use crate::fileformats::rnoteformat::{
     methods::{CompM, SerM},
     RnoteHeader,
 };
+use serde::{Deserialize, Serialize};
+use std::mem::discriminant;
 
 /// Rnote file save preferences
 /// a subset of RnoteHeader
@@ -23,12 +24,12 @@ impl SavePrefs {
         self.clone()
     }
     pub fn conforms_to_default(&self) -> bool {
-        std::mem::discriminant(&self.serialization) == std::mem::discriminant(&SerM::default())
-            && std::mem::discriminant(&self.compression)
-                == std::mem::discriminant(&CompM::default())
+        discriminant(&self.serialization) == discriminant(&SerM::default())
+            && discriminant(&self.compression) == discriminant(&CompM::default())
     }
     /// The EngineExport should only contain SavePrefs that conform to the default
-    /// otherwise, for example, new files could be created without any compression and encoded in JSON
+    /// otherwise for example, after having opened an uncompressed and JSON-encoded Rnote
+    /// save file while debugging, all new save files would be using the same methods
     pub fn clone_conformed_config(&self) -> Self {
         if self.conforms_to_default() {
             self.clone_config()

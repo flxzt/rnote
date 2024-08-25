@@ -648,18 +648,28 @@ impl StrokeStore {
         limit_movement_vertical_border: bool,
         limit_movement_horizontal_border: bool,
     ) -> Vec<StrokeKey> {
-        self.stroke_components
-            .iter()
-            .filter(|(_, stroke)| stroke.bounds().mins[1] > y_start)
-            .filter(|(_, stroke)| {
-                !limit_movement_vertical_border
-                    || (stroke.bounds().mins[0] > x_lims.0 && stroke.bounds().maxs[0] < x_lims.1)
-            })
-            .filter(|(_, stroke)| {
-                !limit_movement_horizontal_border || (stroke.bounds().maxs[1] < y_end)
-            })
-            .map(|(key, _)| key)
-            .collect::<Vec<StrokeKey>>()
+        self.key_tree.keys_in_bounds(Aabb::new(
+            na::point![
+                if limit_movement_horizontal_border {
+                    f64::NEG_INFINITY
+                } else {
+                    x_lims.0
+                },
+                y_start
+            ],
+            na::point![
+                if limit_movement_vertical_border {
+                    x_lims.1
+                } else {
+                    f64::INFINITY
+                },
+                if limit_movement_horizontal_border {
+                    y_end
+                } else {
+                    f64::INFINITY
+                }
+            ],
+        ))
     }
 
     pub(crate) fn filter_keys_intersecting_bounds<'a, I: IntoIterator<Item = &'a StrokeKey>>(

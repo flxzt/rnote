@@ -8,6 +8,7 @@ use crate::canvas::RnCanvas;
 use crate::canvaswrapper::RnCanvasWrapper;
 use crate::config;
 use crate::workspacebrowser::workspacesbar::RnWorkspaceRow;
+use crate::workspacebrowser::RnFileRow;
 use crate::{globals, RnIconPicker};
 use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
@@ -550,6 +551,36 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     );
 
     dialog.present(appwindow);
+}
+
+pub(crate) async fn dialog_trash_file(appwindow: &'static RnAppWindow, filerow: &RnFileRow) -> () {
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
+    );
+    let dialog: adw::AlertDialog = builder.object("dialog_trash_file").unwrap();
+    let Some(current_file) = filerow.current_file() else {
+        return;
+    };
+
+    match dialog.choose_future(appwindow).await.as_str() {
+        "trash" => {
+            current_file.trash_async(
+                glib::source::Priority::DEFAULT,
+                None::<&gio::Cancellable>,
+                clone!(@weak filerow, @strong current_file => move |res| {
+                    if let Err(e) = res {
+                        appwindow.overlays().dispatch_toast_error(&gettext("Trashing file failed"));
+                        debug!("Trash filerow file `{current_file:?}` failed , Err: {e:?}");
+                        return;
+                    }
+                    filerow.set_current_file(None);
+                }),
+            );
+        }
+        _ => {
+            // Cancel
+        }
+    }
 }
 
 const WORKSPACELISTENTRY_ICONS_LIST: &[&str] = &[

@@ -144,11 +144,7 @@ On some devices one stylus button is mapped to a dedicated "Eraser" mode (which 
 <img src="https://hosted.weblate.org/widgets/rnote/-/repo/multi-auto.svg" alt="Translation status" />
 </a><br><br>
 
-A great way to contribute to the project without writing code is adding a new or start maintaining an existing translation language. The translations files are located in `crates/rnote-ui/po/`.
-
- Creating translations for new languages or updating existing ones can be done in multiple ways:
-- take the `rnote.pot` file and generate a new `.po` translation file from it, for example with "Poedit". Add the new translation language to `LINGUAS` and submit a PR with the changed files.
-- use [weblate](https://hosted.weblate.org/projects/rnote/repo/) for an easy way to translate in the browser without having to deal with git.
+If you want to start contribute by translating, take a look into the [CONTRIBUTING.md](./CONTRIBUTING.md) document.
 
 ## Fonts
 

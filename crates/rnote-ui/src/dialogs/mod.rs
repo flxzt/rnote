@@ -558,24 +558,26 @@ pub(crate) async fn dialog_trash_file(appwindow: &'static RnAppWindow, filerow: 
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
     let dialog: adw::AlertDialog = builder.object("dialog_trash_file").unwrap();
-    let Some(current_file) = filerow.current_file() else {
-        return;
-    };
 
     match dialog.choose_future(appwindow).await.as_str() {
         "trash" => {
-            current_file.trash_async(
-                glib::source::Priority::DEFAULT,
-                None::<&gio::Cancellable>,
-                clone!(@weak filerow, @strong current_file => move |res| {
-                    if let Err(e) = res {
-                        appwindow.overlays().dispatch_toast_error(&gettext("Trashing file failed"));
-                        debug!("Trash filerow file `{current_file:?}` failed , Err: {e:?}");
-                        return;
-                    }
-                    filerow.set_current_file(None);
-                }),
-            );
+            glib::spawn_future_local(clone!(@weak filerow, @weak appwindow => async move {
+                let Some(current_file) = filerow.current_file() else {
+                    return;
+                };
+                current_file.trash_async(
+                    glib::source::Priority::DEFAULT,
+                    None::<&gio::Cancellable>,
+                    clone!(@weak filerow, @strong current_file => move |res| {
+                        if let Err(e) = res {
+                            appwindow.overlays().dispatch_toast_error(&gettext("Trashing file failed"));
+                            debug!("Trash filerow file `{current_file:?}` failed , Err: {e:?}");
+                            return;
+                        }
+                        filerow.set_current_file(None);
+                    }),
+                );
+            }));
         }
         _ => {
             // Cancel

@@ -1,7 +1,7 @@
 # Contributing to Rnote
 
-It is possible to contributes in multiple ways.
-They are outlined in this document.
+This document outlines the various ways of contributing to Rnote
+and gives an overview of its structure and the tooling used.
 
 # Maintainers
 
@@ -22,7 +22,8 @@ Choose between the different existing templates and **please** fill them out com
 ## Linux
 
 Rnote is mainly developed for Linux and integrates best with the Gnome desktop environment.
-However, it should be ensured that it will work well regardless which DE, compositor or distribution is used.
+The application should nonetheless be ensured to function properly
+regardless of which DE, compositor, or distribution is used.
 
 In addition the focus for development and testing is on Wayland,
 because X11 has a lot of issues and inconsistencies especially with regards to
@@ -43,7 +44,7 @@ For windows `mingw64` is used as the development and build environment.
 For the installer `innosetup` is used.
 
 It should always be ensured that the app will build in `mingw64`,
-but it's not a focus to ensure tight integration with Windows OS.
+however tight integration with the Windows OS is not a priority.
 
 For more details how to build the application and the installer on Windows
 see: [rnote-windows-build.md](./misc/building/rnote-windows-build.md).
@@ -82,7 +83,7 @@ The formatting is also checked in the CI and a prerequisite for merging addition
 ## Lints
 
 For linting `clippy` is used.
-Because the app needs to be built through meson, there is a meson target the print lints available:
+Because the app needs to be built through meson, there is a meson target that prints available lints:
 
 For the UI
 
@@ -116,8 +117,10 @@ To run them, execute:
 meson compile cargo-test -C _mesonbuild
 ```
 
-Adding tests can be done like in any other rust crate by adding `tests` modules
-and `#[test]` cases directly in code in the same files where the code that should be tested is written.
+Just like in any other rust crate, tests can be added by declaring a tests module prefixed with the #[cfg(test)]
+attribute, then adding test functions prefixed by the #[test] attribute.
+Tests should be as closely coupled to the code they target as reasonably possible
+and in most cases should reside in the same source file.
 
 ## Data / Package File Validation
 
@@ -151,20 +154,20 @@ All needed additional files needed before/after compilation are prepared and pla
 # Dependencies
 
 Rust dependencies are declared in the root workspace `Cargo.toml`, or if crate-specific
-in the individual crates `Cargo.toml` configuration files.
+in the individual crate's `Cargo.toml` configuration files.
 
 The generated `Cargo.lock` file pins the dependencies to specific versions and is checked in.
 
 All non-rust dependencies are declared in the root `meson.build` file.
-You'll see declarations for example for `glib`, `gtk4`, `poppler` and so on.
+For example, you'll find declarations for dependencies like `glib`, `gtk4` and `poppler`.
 
 # Architecture
 
 The codebase is separated into multiple crates that have specific purposes and separate concerns:
 
 - `rnote-compose` : the base crate that is only responsible for supplying basic types needed for a drawing application.
-    Things like shapes, paths, pen-path builders, .. . In it is also the code for how to render these primitives
-    with `cairo` or rather the `piet` abstraction.
+    Things like shapes, paths, pen-path builders, etc. In this crate is also the implementation for how to render
+    these primitives with `cairo` or rather the `piet` abstraction.
     The dependencies should be kept minimal here. 
 - `rnote-engine` : the core crate of the drawing application.
     In it is the entire core logic of the drawing part of the Rnote application.
@@ -173,13 +176,14 @@ The codebase is separated into multiple crates that have specific purposes and s
     - `rnote-engine/store` : a Entity-Component-System pattern is used there to hold all strokes
     that are produced by the user in a generational Vector and the methods that define the interactions with them.
     - `rnote-engine/document` : information about the entire document (it's dimensions, colors, ..)
-    - `rnote-engine/fileformats` : for a stable `.rnote` file format a wrapper for the serialization/deserialization 
-        is used to upgrade the files when loading them in.
-        Conversions from/to different format's like Xournal++'s `.xopp` are contained in there as well.
+    - `rnote-engine/fileformats` : dictates the current stable Rnote file format,
+        and implements the methods required to load and save itself;
+        additionally contains the code required to convert from and into other formats
+        (notably Xournal++'s `.xopp` format and older versions of the Rnote file format).
     - `rnote-engine/pens` : The user always generates/interacts with strokes through what Rnote internally
         calls `pens`. For example the "Brush" pen produces pen paths, the "Shaper" pen produces geometric shapes,
         the `eraser` pen removes strokes, .. .
-    - `rnote-engine`strokes` contain the definition of different types that can be generated or imported
+    - `rnote-engine/strokes` contain the definition of different types that can be generated or imported
         into the engine. There are "brush strokes", "shape strokes" but also vector and rasterized images
         are represented as a "stroke type".
     
@@ -201,7 +205,7 @@ The codebase is separated into multiple crates that have specific purposes and s
 
 # Documentation
 
-the `rnote-compose` and `rnote-compose` crates should be treated as libraries and should contain at least
+the `rnote-compose` and `rnote-engine` crates should be treated as libraries and should contain at least
 a bit of documentation for their features and functionality.
 
 The `rnote-cli` and `rnote-ui` crates are "consumer" crates and especially the UI contains a ton of

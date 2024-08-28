@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-08-25 21:55+0200\n"
-"Last-Translator: Krzysztof Chorzempa <kasztan2@users.noreply.github.com>\n"
+"PO-Revision-Date: 2024-08-28 10:59+0200\n"
+"Last-Translator: Michał Mnich <m.mnich@proton.me>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -28,12 +28,12 @@ msgstr "Szkicuj i rób odręczne notatki"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;biuro;grafika;notatki;"
+msgstr "Gnome;GTK;Biuro;Grafika;Notatki;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:20
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
 msgid "New Window"
-msgstr "Nowe okno"
+msgstr "Nowe Okno"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
@@ -60,10 +60,8 @@ msgid "A selection"
 msgstr "Wybór"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
-#| msgid "Switch to the 'Typewriter'"
 msgid "Write text with the typewriter"
-msgstr "Wybierz \"Tryb pisania\""
+msgstr "Pisz tekst w trybie pisania"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"
@@ -78,10 +76,8 @@ msgid "Adjust document settings"
 msgstr "Dostosuj ustawienia dokumentu"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
-#, fuzzy
-#| msgid "Button Shortcuts"
 msgid "Configure action shortcuts"
-msgstr "Skróty klawiszowe"
+msgstr "Skonfiguruj skróty akcji"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:185
@@ -142,32 +138,24 @@ msgid "Close Tab"
 msgstr "Zamknij kartę"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:30
-#, fuzzy
-#| msgid ""
-#| "This tab contains unsaved changes. Changes which are not saved will be "
-#| "permanently lost."
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"Ta karta zawiera niezapisane zmiany. Zmiany, które nie zostaną zapisane, "
-"zostaną na zawsze utracone."
+"Ta karta zawiera niezapisane zmiany.\n"
+"Zmiany, które nie zostaną zapisane, zostaną na zawsze utracone."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
 msgstr "Zamknij okno"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:48
-#, fuzzy
-#| msgid ""
-#| "Some opened files contain unsaved changes. Changes which are not saved "
-#| "will be permanently lost."
 msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"Niektóre otwarte pliki zawierają niezapisane zmiany. Zmiany, które nie "
-"zostaną zapisane, zostaną na zawsze utracone."
+"Niektóre otwarte pliki zawierają niezapisane zmiany.\n"
+"Zmiany, które nie zostaną zapisane, zostaną na zawsze utracone."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
@@ -305,10 +293,8 @@ msgstr "Optymalizuj dla Druku"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:125
 #: crates/rnote-ui/data/ui/dialogs/export.ui:336
 #: crates/rnote-ui/data/ui/dialogs/export.ui:534
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Set whether the content should be optimized for printing"
-msgstr "Ustaw, czy wzór tła ma zostać wyeksportowany"
+msgstr "Ustaw, czy zawartość powinna zostać optymalizowana pod drukowanie"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:130
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
@@ -382,12 +368,10 @@ msgid "Select the export directory"
 msgstr "Wybierz katalog eksportu"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:312
-#, fuzzy
-#| msgid "Import file"
 msgctxt ""
 "When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
-msgstr "Importuj plik"
+msgstr "Eksportuj Nazwę Bazową Plików"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:347
 #: crates/rnote-ui/data/ui/dialogs/export.ui:545
@@ -420,10 +404,6 @@ msgstr "Współczynnik skali mapy bitowej"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "    to the actual size on the document"
@@ -451,10 +431,6 @@ msgid "The export image format"
 msgstr "Format eksportowanego obrazu"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
@@ -471,10 +447,8 @@ msgid "Set the margin around the selected area"
 msgstr "Ustaw margines wokół wybranego pola"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
-#, fuzzy
-#| msgid "Import PDF"
 msgid "Import Pdf"
-msgstr "Importuj PDF"
+msgstr "Importuj Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:218
@@ -487,10 +461,8 @@ msgid "Info"
 msgstr "Informacje"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
-#, fuzzy
-#| msgid "PDF Import Preferences"
 msgid "Pdf Import Preferences"
-msgstr "Preferencje importu PDF"
+msgstr "Preferencje importu Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
 msgid "Start Page"
@@ -501,27 +473,21 @@ msgid "End Page"
 msgstr "Strona końcowa"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:103
-#, fuzzy
-#| msgid "Document"
 msgid "Adjust Document"
-msgstr "Dokument"
+msgstr "Dostosuj Dokument"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "Ustaw, czy wzór tła ma zostać wyeksportowany"
+msgstr "Czy układ dokumentu powinien zostać dostosowany do Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
 msgid "Page Width (%)"
 msgstr "Szerokość strony (%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
-#, fuzzy
-#| msgid "Set the width of imported PDF's in percentage to the format width"
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr ""
-"Ustawianie szerokości importowanych plików PDF w procentach szerokości "
+"Ustawianie szerokości importowanych plików Pdf w procentach szerokości "
 "formatu"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
@@ -529,10 +495,8 @@ msgid "Page Spacing"
 msgstr "Odstępy między stronami"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
-#, fuzzy
-#| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
-msgstr "Sposób rozmieszczenia stron PDF"
+msgstr "Sposób rozmieszczenia stron Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
 msgid "Continuous"
@@ -547,11 +511,9 @@ msgid "Pages Type"
 msgstr "Typ strony"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
-#, fuzzy
-#| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr ""
-"Określenie, czy pliki PDF powinny być importowane jako obrazy wektorowe czy "
+"Ustaw, czy pliki Pdf powinny być importowane jako obrazy wektorowe czy "
 "bitmapowe"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:144
@@ -705,8 +667,6 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "Gęstość to liczba kropek na pole 10x10"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
-#, fuzzy
-#| msgid "Stroke Dots Position Distribution"
 msgctxt ""
 "Drawing with a textured pen, how the dots of the texture are distributed"
 msgid "Stroke Dots Position Distribution"
@@ -717,29 +677,21 @@ msgid "Choose a dots position probability distribution"
 msgstr "Wybierz prawdopodobieństwo rozłożenia kropek"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
-#, fuzzy
-#| msgid "Uniform"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
 msgstr "Jednolity"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
-#, fuzzy
-#| msgid "Normal"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
 msgstr "Normalne"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
-#, fuzzy
-#| msgid "Exponential"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
 msgstr "Wykładnicza"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
-#, fuzzy
-#| msgid "Reverse Exponential"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
 msgstr "Odwrócona Wykładnicza"
@@ -788,7 +740,7 @@ msgstr "Zaznaczenie Wielokątowe"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:32
 msgid "Select With a Rectangle"
-msgstr "Zaznaczenie prostokątne"
+msgstr "Zaznaczenie Prostokątne"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:42
 msgid "Select One by One"
@@ -896,10 +848,8 @@ msgid "Hachure Angle"
 msgstr "Kąt Hachurego"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:216
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set the angle of hachure fills"
-msgstr "Ustaw kursor rysunkowy"
+msgstr "Ustaw kąt wypełnienia kreskami"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:319
 msgid "Enabled"
@@ -937,10 +887,8 @@ msgid "Move View"
 msgstr "Przenieś widok"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:40
-#, fuzzy
-#| msgid "Zoom in/out"
 msgid "Zoom In/Out"
-msgstr "Powiększ/pomniejsz"
+msgstr "Powiększ/Pomniejsz"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:43
 msgid "Pick And Insert Emoji"
@@ -1039,10 +987,8 @@ msgid "De_veloper Mode"
 msgstr "Tryb programisty (_V)"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
-#, fuzzy
-#| msgid "New Window"
 msgid "New _Window"
-msgstr "Nowe okno"
+msgstr "Nowe _Okno"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
@@ -1133,7 +1079,6 @@ msgid "Toggle Fullscreen"
 msgstr "Przełączanie pełnego ekranu"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
 msgid "_Snap Positions"
 msgstr "_Pozycje Przyciągania"
 
@@ -1339,12 +1284,10 @@ msgstr ""
 "narzędzi by zoptymalizować użytkowanie na ekranach E-Paper"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:71
-#, fuzzy
 msgid "Inertial Touch Scrolling"
 msgstr "Inercyjne Przewijanie Dotykowe"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:72
-#, fuzzy
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option\n"
@@ -1472,34 +1415,24 @@ msgid "Document"
 msgstr "Dokument"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:257
-#, fuzzy
-#| msgid "_Document Layout"
 msgid "Document Layout"
-msgstr "Układ _dokumentu"
+msgstr "Układ _Dokumentu"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:261
-#, fuzzy
-#| msgid "_Fixed Size"
 msgid "Fixed Size"
-msgstr "Stały rozmiar (_F)"
+msgstr "Stały rozmiar"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:262
-#, fuzzy
-#| msgid "_Continuous Vertical"
 msgid "Continuous Vertical"
-msgstr "_Ciągły w pionie"
+msgstr "Ciągły w pionie"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:263
-#, fuzzy
-#| msgid "_Semi Infinite"
 msgid "Semi Infinite"
-msgstr "Półnie_skończony"
+msgstr "Pół-nieskończony"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:264
-#, fuzzy
-#| msgid "_Infinite"
 msgid "Infinite"
-msgstr "Nieskończony (_I)"
+msgstr "Nieskończony"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:272
 msgid "Format Border Color"
@@ -1571,10 +1504,8 @@ msgid "Invert Color Brightness"
 msgstr "Odwróć Jasność Kolorów"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:388
-#, fuzzy
-#| msgid "Set the background pattern color"
 msgid "Invert the brightness of all background pattern colors"
-msgstr "Ustawienie koloru szablonu tła"
+msgstr "Odwróć jasność wszystkich kolorów wzorów tła"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:392
 msgid "Invert"
@@ -1741,10 +1672,8 @@ msgid "Switch to the 'Tools'"
 msgstr "Wybierz 'Narzędzia'"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:105
-#, fuzzy
-#| msgid "Move View"
 msgid "View"
-msgstr "Przenieś widok"
+msgstr "Widok"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:109
 msgid "Alt + Drag"
@@ -1768,10 +1697,8 @@ msgid "Save Document As"
 msgstr "Zapisz dokument jako"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
-#, fuzzy
-#| msgid "Shape Configuration"
 msgid "Snap Positions"
-msgstr "Konfiguracja kształtu"
+msgstr "Pozycje Przyciągania"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Add Page (When in Fixed-Size Layout)"
@@ -1856,7 +1783,6 @@ msgid "Exporting selection failed, nothing selected"
 msgstr "Eksportowanie zaznaczenia nie powiódło się, nic nie jest zaznaczone"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
-#, fuzzy
 msgid "Saves are in progress, waiting before closing.."
 msgstr "Trwa zapisywanie, proszę czekać na zamknięcie.."
 
@@ -2027,10 +1953,8 @@ msgid "Open File"
 msgstr "Otwórz plik"
 
 #: crates/rnote-ui/src/dialogs/import.rs:86
-#, fuzzy
-#| msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp"
+msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
 msgid "- no file name -"
@@ -2159,10 +2083,8 @@ msgid "Folder"
 msgstr "Folder"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:635
-#, fuzzy
-#| msgid "Constraints"
 msgid "Footprints"
-msgstr "Ograniczenia"
+msgstr "Ślady"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:636
 msgid "Gamepad"
@@ -2225,10 +2147,8 @@ msgid "Nature"
 msgstr "Natura"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:651
-#, fuzzy
-#| msgid "Open"
 msgid "Open Book"
-msgstr "Otwórz"
+msgstr "Otwórz Książkę"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:652
 msgid "Paintbrush"
@@ -2236,7 +2156,7 @@ msgstr "Pędzel"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:653
 msgid "Pencil and Paper"
-msgstr "Ołówek i papier"
+msgstr "Ołówek i Papier"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:654
 msgid "People"
@@ -2247,10 +2167,8 @@ msgid "Person"
 msgstr "Osoba"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:656
-#, fuzzy
-#| msgid "Directory"
 msgid "Projector"
-msgstr "Katalog"
+msgstr "Projektor"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:657
 msgid "Science"
@@ -2314,10 +2232,8 @@ msgid "Ellipses"
 msgstr "Elipsy"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:411
-#, fuzzy
-#| msgid "Curves"
 msgid "Curves & Paths"
-msgstr "Krzywe"
+msgstr "Krzywe i Ścieżki"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:426
 msgid "Arrow"
@@ -2372,118 +2288,94 @@ msgid "Application restart is required"
 msgstr "Wymagany jest restart programu"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:887
-#, fuzzy
-#| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
-msgstr "Kropka (mała)"
+msgstr "Celownik (Mały)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:888
-#, fuzzy
-#| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
-msgstr "Kropka (średnia)"
+msgstr "Celownik (Średni)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:889
-#, fuzzy
-#| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
-msgstr "Kropka (duża)"
+msgstr "Celownik (Duży)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:890
-#, fuzzy
-#| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Dot (Small)"
-msgstr "Kropka (mała)"
+msgstr "Kropka (Mała)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:891
-#, fuzzy
-#| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
-msgstr "Kropka (średnia)"
+msgstr "Kropka (Średnia)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:892
-#, fuzzy
-#| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Dot (Large)"
-msgstr "Kropka (duża)"
+msgstr "Kropka (Duża)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:893
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
-msgstr "Łezka Północny Zachód (Mały)"
+msgstr "Łezka Północny Zachód (Mała)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:894
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
-msgstr "Łezka Północny Zachód (Średni)"
+msgstr "Łezka Północny Zachód (Średnia)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:895
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
-msgstr "Łezka Północny Zachód (Duży)"
+msgstr "Łezka Północny Zachód (Duża)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:896
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
-msgstr "Łezka Północny Wschód (Mały)"
+msgstr "Łezka Północny Wschód (Mała)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:897
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
-msgstr "Łezka Północny Wschód (Średni)"
+msgstr "Łezka Północny Wschód (Średnia)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:898
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
-msgstr "Łezka Północny Wschód (Duży)"
+msgstr "Łezka Północny Wschód (Duża)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:899
-#, fuzzy
-#| msgid "Dot (Small)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
-msgstr "Kropka (mała)"
+msgstr "Łezka Północ (Mała)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:900
-#, fuzzy
-#| msgid "Dot (Medium)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
-msgstr "Kropka (średnia)"
+msgstr "Łezka Północ (Średnia)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:901
-#, fuzzy
-#| msgid "Dot (Large)"
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
-msgstr "Kropka (duża)"
+msgstr "Łezka Północ (Duża)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:902
-#, fuzzy
-#| msgid "Beam (Small)"
 msgctxt "a cursor type"
 msgid "Beam (Small)"
-msgstr "Belka (mała)"
+msgstr "Belka (Mała)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:903
-#, fuzzy
-#| msgid "Beam (Medium)"
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
-msgstr "Belka (średnia)"
+msgstr "Belka (Średnia)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:904
-#, fuzzy
-#| msgid "Beam (Large)"
 msgctxt "a cursor type"
 msgid "Beam (Large)"
-msgstr "Belka (duża)"
+msgstr "Belka (Duża)"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:35
 msgid "Can't duplicate an unsaved document"
@@ -2515,11 +2407,11 @@ msgstr "Usuwanie pliku nie powiodło się"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 msgid "Folder Name"
-msgstr "Nazwa folderu"
+msgstr "Nazwa Folderu"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:75
 msgid "New Folder"
-msgstr "Nowy folder"
+msgstr "Nowy Folder"
 
 #: crates/rnote-ui/src/utils.rs:159
 msgctxt "used in string representation of the current selected color"
@@ -2634,7 +2526,7 @@ msgstr "półprzezroczysty"
 #: crates/rnote-ui/src/utils.rs:234
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
-msgstr "w pełni przeźroczysty"
+msgstr "całkowicie przezroczysty"
 
 #: crates/rnote-ui/src/utils.rs:237
 msgctxt "part of string representation of a color"

@@ -560,11 +560,11 @@ pub(crate) async fn dialog_trash_file(appwindow: &RnAppWindow, current_file: &gi
 
     match dialog.choose_future(appwindow).await.as_str() {
         "trash" => {
-            glib::spawn_future_local(clone!(@strong current_file, @weak appwindow => async move {
+            glib::spawn_future_local(clone!(@weak appwindow, @strong current_file => async move {
                 current_file.trash_async(
                     glib::source::Priority::DEFAULT,
                     None::<&gio::Cancellable>,
-                    clone!(@strong current_file, @strong current_file => move |res| {
+                    clone!(@weak appwindow, @strong current_file => move |res| {
                         if let Err(e) = res {
                             appwindow.overlays().dispatch_toast_error(&gettext("Trashing file failed"));
                             error!("Trash filerow file `{current_file:?}` failed , Err: {e:?}");

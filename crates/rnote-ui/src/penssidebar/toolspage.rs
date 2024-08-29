@@ -1,6 +1,9 @@
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper};
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
+use gtk4::{
+    glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, MenuButton,
+    Popover, ToggleButton,
+};
 use rnote_engine::pens::pensconfig::toolsconfig::ToolStyle;
 
 mod imp {
@@ -15,6 +18,17 @@ mod imp {
         pub(crate) toolstyle_offsetcamera_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) toolstyle_zoom_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) verticalspace_menubutton: TemplateChild<MenuButton>,
+        #[template_child]
+        pub(crate) verticalspace_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) verticalspace_popover_close_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) verticalspace_limit_movement_vertical_bordersrow: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(crate) verticalspace_limit_movement_horizontal_bordersrow:
+            TemplateChild<adw::SwitchRow>,
     }
 
     #[glib::object_subclass]
@@ -80,6 +94,11 @@ impl RnToolsPage {
     }
 
     #[allow(unused)]
+    pub(crate) fn verticalspace_menubutton(&self) -> MenuButton {
+        self.imp().verticalspace_menubutton.get()
+    }
+
+    #[allow(unused)]
     pub(crate) fn set_tool_style(&self, style: ToolStyle) {
         let imp = self.imp();
 
@@ -92,6 +111,8 @@ impl RnToolsPage {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
+        // for now doesn't do anything but for the close button later
+        let verticalspace_popover = imp.verticalspace_popover.get();
 
         imp.toolstyle_verticalspace_toggle.connect_toggled(clone!(@weak appwindow => move |toggle| {
             if toggle.is_active() {
@@ -110,6 +131,31 @@ impl RnToolsPage {
                 appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.style = ToolStyle::Zoom;
             }
         }));
+
+        imp.verticalspace_menubutton.connect_active_notify(
+            clone!(@weak self as toolspage => move |menubutton| {
+                if menubutton.is_active() {
+                    toolspage.set_tool_style(ToolStyle::VerticalSpace);
+                }
+            }),
+        );
+
+        imp.verticalspace_popover_close_button.connect_clicked(
+            clone!(@weak verticalspace_popover => move |_| {
+                verticalspace_popover.popdown();
+            }),
+        );
+
+        imp.verticalspace_limit_movement_vertical_bordersrow
+            .get()
+            .connect_active_notify(clone!(@weak appwindow => move |row| {
+                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.verticalspace_tool_config.limit_movement_vertical_borders = row.is_active();
+            }));
+        imp.verticalspace_limit_movement_horizontal_bordersrow
+            .get()
+            .connect_active_notify(clone!(@weak appwindow => move |row| {
+                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.verticalspace_tool_config.limit_movement_horizontal_borders = row.is_active();
+            }));
     }
 
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
@@ -121,5 +167,19 @@ impl RnToolsPage {
             .clone();
 
         self.set_tool_style(tools_config.style);
+
+        let imp = self.imp();
+        imp.verticalspace_limit_movement_vertical_bordersrow
+            .set_active(
+                tools_config
+                    .verticalspace_tool_config
+                    .limit_movement_horizontal_borders,
+            );
+        imp.verticalspace_limit_movement_horizontal_bordersrow
+            .set_active(
+                tools_config
+                    .verticalspace_tool_config
+                    .limit_movement_vertical_borders,
+            );
     }
 }

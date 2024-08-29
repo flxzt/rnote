@@ -7,9 +7,13 @@ use gtk4::{gio, glib, glib::clone};
 pub(crate) fn trash(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleAction {
     let action = gio::SimpleAction::new("trash-file", None);
     action.connect_activate(clone!(@weak appwindow, @weak filerow => move |_, _| {
-        glib::spawn_future_local(clone!(@weak appwindow, @weak filerow => async move {
-            dialogs::dialog_trash_file(&appwindow, &filerow).await;
+        let Some(current_file) = filerow.current_file() else {
+            return;
+        };
+        glib::spawn_future_local(clone!(@weak appwindow, @strong current_file => async move {
+            dialogs::dialog_trash_file(&appwindow, &current_file).await;
         }));
+        filerow.set_current_file(None);
     }));
     action
 }

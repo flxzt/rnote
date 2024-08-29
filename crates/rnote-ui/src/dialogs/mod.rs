@@ -8,7 +8,6 @@ use crate::canvas::RnCanvas;
 use crate::canvaswrapper::RnCanvasWrapper;
 use crate::config;
 use crate::workspacebrowser::workspacesbar::RnWorkspaceRow;
-use crate::workspacebrowser::RnFileRow;
 use crate::{globals, RnIconPicker};
 use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
@@ -553,7 +552,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     dialog.present(appwindow);
 }
 
-pub(crate) async fn dialog_trash_file(appwindow: &RnAppWindow, filerow: &RnFileRow) -> () {
+pub(crate) async fn dialog_trash_file(appwindow: &RnAppWindow, current_file: &gio::File) -> () {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
@@ -561,20 +560,16 @@ pub(crate) async fn dialog_trash_file(appwindow: &RnAppWindow, filerow: &RnFileR
 
     match dialog.choose_future(appwindow).await.as_str() {
         "trash" => {
-            glib::spawn_future_local(clone!(@weak filerow, @weak appwindow => async move {
-                let Some(current_file) = filerow.current_file() else {
-                    return;
-                };
+            glib::spawn_future_local(clone!(@strong current_file, @weak appwindow => async move {
                 current_file.trash_async(
                     glib::source::Priority::DEFAULT,
                     None::<&gio::Cancellable>,
-                    clone!(@weak filerow, @strong current_file => move |res| {
+                    clone!(@strong current_file, @strong current_file => move |res| {
                         if let Err(e) = res {
                             appwindow.overlays().dispatch_toast_error(&gettext("Trashing file failed"));
                             debug!("Trash filerow file `{current_file:?}` failed , Err: {e:?}");
                             return;
                         }
-                        filerow.set_current_file(None);
                     }),
                 );
             }));

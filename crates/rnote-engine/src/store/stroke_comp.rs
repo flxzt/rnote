@@ -648,12 +648,12 @@ impl StrokeStore {
         limit_movement_vertical_border: bool,
         limit_movement_horizontal_border: bool,
     ) -> Vec<StrokeKey> {
-        self.key_tree.keys_in_bounds(Aabb::new(
+        self.key_tree.keys_intersecting_bounds(Aabb::new(
             na::point![
                 if limit_movement_horizontal_border {
-                    f64::NEG_INFINITY
-                } else {
                     x_lims.0
+                } else {
+                    f64::NEG_INFINITY
                 },
                 y_start
             ],

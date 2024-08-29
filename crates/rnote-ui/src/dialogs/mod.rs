@@ -567,7 +567,7 @@ pub(crate) async fn dialog_trash_file(appwindow: &RnAppWindow, current_file: &gi
                     clone!(@strong current_file, @strong current_file => move |res| {
                         if let Err(e) = res {
                             appwindow.overlays().dispatch_toast_error(&gettext("Trashing file failed"));
-                            debug!("Trash filerow file `{current_file:?}` failed , Err: {e:?}");
+                            error!("Trash filerow file `{current_file:?}` failed , Err: {e:?}");
                             return;
                         }
                     }),

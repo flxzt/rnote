@@ -22,7 +22,7 @@ print(f"""
     output_file: {output_file}
 """, file=sys.stderr)
 
-cargo_call = f"env {cargo_env} {cargo_cmd} build {cargo_options}"
+cargo_call = f"env {cargo_env} RUSTFLAGS='-C linker=clang' {cargo_cmd} build {cargo_options}"
 cp_call = f"cp {bin_output} {output_file}"
 
 print(cargo_call, file=sys.stderr)

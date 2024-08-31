@@ -18,6 +18,8 @@ mod imp {
         #[template_child]
         pub(crate) main_title_unsaved_indicator: TemplateChild<Label>,
         #[template_child]
+        pub(crate) overview_button: TemplateChild<adw::TabButton>,
+        #[template_child]
         pub(crate) left_sidebar_reveal_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) right_sidebar_reveal_toggle: TemplateChild<ToggleButton>,
@@ -110,6 +112,10 @@ impl RnMainHeader {
 
         imp.canvasmenu.get().init(appwindow);
         imp.appmenu.get().init(appwindow);
+
+        imp.overview_button
+            .get()
+            .set_view(Some(&appwindow.overlays().tabview()));
 
         // add controllers to elements to prevent accidental resizes: left buttons
         let capture_left = EventControllerLegacy::builder()

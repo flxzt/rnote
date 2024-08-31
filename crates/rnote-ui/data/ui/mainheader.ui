@@ -41,6 +41,11 @@
                   </object>
                 </child>
                 <child>
+                  <object class="AdwTabButton" id="overview_button">
+                    <property name="action-name">overview.open</property>
+                  </object>
+                </child>
+                <child>
                   <object class="GtkButton">
                     <property name="icon-name">tab-new-symbolic</property>
                     <property name="action-name">win.new-tab</property>

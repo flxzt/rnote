@@ -57,6 +57,12 @@
                 <property name="accelerator">F11</property>
               </object>
             </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Toggle Tabs Overview</property>
+                <property name="accelerator">F12</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

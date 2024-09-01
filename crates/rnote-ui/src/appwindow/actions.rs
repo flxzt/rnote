@@ -367,12 +367,7 @@ impl RnAppWindow {
         );
         action_active_tab_close.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             let active_tab_page = appwindow.active_tab_page();
-            if appwindow.overlays().tabview().n_pages() <= 1 {
-                // If there is only one tab left, request to close the entire window.
-                appwindow.close();
-            } else {
-                appwindow.close_tab_request(&active_tab_page);
-            }
+            appwindow.close_tab_request(&active_tab_page);
         }));
 
         // Drawing pad buttons

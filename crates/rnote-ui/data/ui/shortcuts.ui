@@ -41,6 +41,12 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Toggle Tabs Overview</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;o</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes">Open the Canvas-Menu</property>
                 <property name="accelerator">F9</property>
               </object>
@@ -55,12 +61,6 @@
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes">Toggle Fullscreen</property>
                 <property name="accelerator">F11</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes">Toggle Tabs Overview</property>
-                <property name="accelerator">F12</property>
               </object>
             </child>
           </object>

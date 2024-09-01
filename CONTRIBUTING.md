@@ -109,9 +109,9 @@ Check out [pre-commit.hook](hooks/pre-commit.hook) to see what the hook will do 
 
 ## Unit Tests
 
-Some unit tests are specified throughout the codebase.
-
-To run them, execute:
+Some unit tests are added throughout the codebase.
+First, install [cargo-nextest](https://nexte.st/).
+To run the tests execute:
 
 ```bash
 meson compile cargo-test -C _mesonbuild

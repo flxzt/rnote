@@ -19,5 +19,5 @@ jobs:
       with:
         artifact: test-results
         name: Tests
-        path: 'target/nextest/ci/test-report-junit.xml'
+        path: 'test-report-junit.xml'
         reporter: java-junit

@@ -51,12 +51,12 @@ jobs:
           meson setup --prefix=/usr -Dprofile=devel -Dcli=true -Dci=true _mesonbuild
       - name: Run fmt check
         run: meson compile cargo-fmt-check -C _mesonbuild
-      - name: Run cargo tests
-        run: meson compile cargo-test -C _mesonbuild
       - name: Compile
         run: meson compile -v -C _mesonbuild
       - name: Install
         run: meson install -C _mesonbuild
+      - name: Run cargo tests
+        run: meson compile cargo-test -C _mesonbuild
       - name: Run meson tests
         run: meson test -v -C _mesonbuild
       - name: Run clippy for UI

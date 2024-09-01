@@ -1,3 +1,5 @@
+name: CI
+
 on:
   push:
     branches:
@@ -7,7 +9,8 @@ on:
   workflow_dispatch:
   workflow_call:
 
-name: CI
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
   check:
@@ -15,10 +18,14 @@ jobs:
     runs-on: ubuntu-22.04
     container: fedora:40
     steps:
-      - name: Install dependencies
+      - name: Install core dependencies
         run: |
           sudo dnf upgrade --refresh -y
           sudo dnf install -y gcc gcc-c++ clang python3 make cmake meson git kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel appstream-devel desktop-file-utils
+      - name: Install additional tools
+        uses: taiki-e/install-action@v2
+        with:
+          tool: nextest
       - name: Install toolchain
         id: toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -41,9 +48,11 @@ jobs:
           restore-keys: cargo-${{ runner.os }}-${{ steps.toolchain.outputs.cachekey }}
       - name: Setup
         run: |
-          meson setup --prefix=/usr -Dprofile=devel -Dcli=true _mesonbuild
+          meson setup --prefix=/usr -Dprofile=devel -Dcli=true -Dci=true _mesonbuild
       - name: Run fmt check
         run: meson compile cargo-fmt-check -C _mesonbuild
+      - name: Run cargo tests
+        run: meson compile cargo-test -C _mesonbuild
       - name: Compile
         run: meson compile -v -C _mesonbuild
       - name: Install
@@ -63,3 +72,9 @@ jobs:
             misc/file-tests/v0-5-13-test.rnote\
             misc/file-tests/v0-6-0-test.rnote\
             misc/file-tests/v0-9-0-test.rnote\
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: test-results
+          path: target/nextest/ci/test-report-junit.xml

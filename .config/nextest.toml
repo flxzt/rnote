@@ -1,0 +1,2 @@
+[profile.ci.junit]
+path = "test-report-junit.xml"

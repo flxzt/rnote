@@ -18,6 +18,12 @@ option(
   description: 'Build the CLI',
 )
 option(
+  'ci',
+  type: 'boolean',
+  value: false,
+  description: 'Whether the project is being built in a CI pipeline',
+)
+option(
   'win-installer-name',
   type: 'string',
   value: 'rnote-win-installer',

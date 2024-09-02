@@ -8,7 +8,7 @@ use crate::engine::EngineSnapshot;
 
 /// Compression methods that can be applied to the serialized engine snapshot
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum CompM {
+pub enum CompressionMethod {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "gzip")]
@@ -20,14 +20,14 @@ pub enum CompM {
 
 /// Serialization methods that can be applied to a snapshot of the engine
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SerM {
+pub enum SerializationMethod {
     #[serde(rename = "bitcode")]
     Bitcode,
     #[serde(rename = "json")]
     Json,
 }
 
-impl CompM {
+impl CompressionMethod {
     pub fn compress(&self, data: Vec<u8>) -> anyhow::Result<Vec<u8>> {
         match self {
             Self::None => Ok(data),
@@ -98,13 +98,13 @@ impl CompM {
     pub const VALID_STR_ARRAY: [&'static str; 6] = ["None", "none", "Gzip", "gzip", "Zstd", "zstd"];
 }
 
-impl Default for CompM {
+impl Default for CompressionMethod {
     fn default() -> Self {
         Self::Zstd(9)
     }
 }
 
-impl FromStr for CompM {
+impl FromStr for CompressionMethod {
     type Err = &'static str;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -116,7 +116,7 @@ impl FromStr for CompM {
     }
 }
 
-impl SerM {
+impl SerializationMethod {
     pub fn serialize(&self, engine_snapshot: &EngineSnapshot) -> anyhow::Result<Vec<u8>> {
         match self {
             Self::Bitcode => Ok(bitcode::serialize(engine_snapshot)?),
@@ -132,13 +132,13 @@ impl SerM {
     pub const VALID_STR_ARRAY: [&'static str; 5] = ["Bitcode", "bitcode", "Json", "JSON", "json"];
 }
 
-impl Default for SerM {
+impl Default for SerializationMethod {
     fn default() -> Self {
         Self::Bitcode
     }
 }
 
-impl FromStr for SerM {
+impl FromStr for SerializationMethod {
     type Err = &'static str;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {

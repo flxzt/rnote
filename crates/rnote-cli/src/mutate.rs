@@ -43,13 +43,13 @@ pub(crate) async fn run_mutate(
         let rnote_file = RnoteFile::load_from_bytes(&bytes)?;
 
         let serialization = if let Some(ref str) = serialization_method {
-            rnote_engine::fileformats::rnoteformat::SerM::from_str(str).unwrap()
+            rnote_engine::fileformats::rnoteformat::SerializationMethod::from_str(str).unwrap()
         } else {
             rnote_file.head.serialization
         };
 
         let mut compression = if let Some(ref str) = compression_method {
-            rnote_engine::fileformats::rnoteformat::CompM::from_str(str).unwrap()
+            rnote_engine::fileformats::rnoteformat::CompressionMethod::from_str(str).unwrap()
         } else {
             rnote_file.head.compression
         };

@@ -5,7 +5,7 @@ mod penshortcutrow;
 // Re-exports
 pub(crate) use penshortcutrow::RnPenShortcutRow;
 use rnote_compose::ext::Vector2Ext;
-use rnote_engine::fileformats::rnoteformat::CompM;
+use rnote_engine::fileformats::rnoteformat::CompressionMethod;
 
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
@@ -415,9 +415,9 @@ impl RnSettingsPanel {
         imp.doc_background_pattern_height_unitentry
             .set_value_in_px(background.pattern_size[1]);
         self.set_document_layout(&document_layout);
-        // set the compression level row to invisible if CompM is None
+        // set the compression level row to invisible if CompressionMethod is None
         imp.doc_compression_level_row
-            .set_visible(!matches!(compression, CompM::None));
+            .set_visible(!matches!(compression, CompressionMethod::None));
 
         match compression.get_compression_level() {
             CompressionLevel::None => (),

@@ -1,6 +1,6 @@
 use super::{
     legacy::maj0min9::RnoteFileMaj0Min9,
-    methods::{CompM, SerM},
+    methods::{CompressionMethod, SerializationMethod},
 };
 use serde::{Deserialize, Serialize};
 
@@ -30,10 +30,10 @@ pub struct RnoteFileMaj0Min12 {
 pub struct RnoteHeaderMaj0Min12 {
     /// method used to serialize/deserialize the engine snapshot
     #[serde(rename = "serialization")]
-    pub serialization: SerM,
+    pub serialization: SerializationMethod,
     /// method used to compress/decompress the serialized engine snapshot
     #[serde(rename = "compression")]
-    pub compression: CompM,
+    pub compression: CompressionMethod,
     /// size of the uncompressed and serialized engine snapshot
     #[serde(rename = "uncompressed_size")]
     pub uc_size: u64,
@@ -46,8 +46,8 @@ impl TryFrom<RnoteFileMaj0Min9> for RnoteFileMaj0Min12 {
     fn try_from(value: RnoteFileMaj0Min9) -> Result<Self, Self::Error> {
         Ok(Self {
             head: RnoteHeaderMaj0Min12 {
-                serialization: SerM::Json,
-                compression: CompM::None,
+                serialization: SerializationMethod::Json,
+                compression: CompressionMethod::None,
                 uc_size: 0,
                 method_lock: false,
             },

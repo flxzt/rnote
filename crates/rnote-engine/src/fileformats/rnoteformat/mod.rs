@@ -11,7 +11,7 @@ pub(crate) mod maj0min12;
 pub(crate) mod methods;
 
 // Re-exports
-pub use methods::{CompM, SerM};
+pub use methods::{CompressionMethod, SerializationMethod};
 
 // Imports
 use super::{FileFormatLoader, FileFormatSaver};

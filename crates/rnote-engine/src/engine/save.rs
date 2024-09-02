@@ -1,6 +1,6 @@
 // Imports
 use crate::fileformats::rnoteformat::{
-    methods::{CompM, SerM},
+    methods::{CompressionMethod, SerializationMethod},
     RnoteHeader,
 };
 use serde::{Deserialize, Serialize};
@@ -12,9 +12,9 @@ use std::mem::discriminant;
 #[serde(default, rename = "save_prefs")]
 pub struct SavePrefs {
     #[serde(rename = "serialization")]
-    pub serialization: SerM,
+    pub serialization: SerializationMethod,
     #[serde(rename = "compression")]
-    pub compression: CompM,
+    pub compression: CompressionMethod,
     #[serde(rename = "method_lock")]
     pub method_lock: bool,
 }
@@ -24,8 +24,8 @@ impl SavePrefs {
         self.clone()
     }
     pub fn conforms_to_default(&self) -> bool {
-        discriminant(&self.serialization) == discriminant(&SerM::default())
-            && discriminant(&self.compression) == discriminant(&CompM::default())
+        discriminant(&self.serialization) == discriminant(&SerializationMethod::default())
+            && discriminant(&self.compression) == discriminant(&CompressionMethod::default())
     }
     /// The EngineExport should only contain SavePrefs that conform to the default
     /// otherwise for example, after having opened an uncompressed and JSON-encoded Rnote
@@ -42,8 +42,8 @@ impl SavePrefs {
 impl Default for SavePrefs {
     fn default() -> Self {
         Self {
-            serialization: SerM::default(),
-            compression: CompM::default(),
+            serialization: SerializationMethod::default(),
+            compression: CompressionMethod::default(),
             method_lock: false,
         }
     }
@@ -82,7 +82,7 @@ impl TryFrom<u32> for CompressionLevel {
     }
 }
 
-impl CompM {
+impl CompressionMethod {
     pub fn get_compression_level(&self) -> CompressionLevel {
         match self {
             Self::None => CompressionLevel::None,

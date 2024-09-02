@@ -88,7 +88,7 @@ winresource = "0.1.17"
 xmlwriter = "0.1.0"
 # Enabling feature > v20_9 causes linker errors on mingw
 poppler-rs = { version = "0.23.0", features = ["v20_9"] }
-zstd = { version =  "0.13", features = ["zstdmt"] }
+zstd = { version = "0.13", features = ["zstdmt"] }
 
 [patch.crates-io]
 # once a new piet (current v0.6.2) is released with updated cairo and kurbo deps, this can be removed.

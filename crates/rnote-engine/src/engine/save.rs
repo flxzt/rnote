@@ -6,8 +6,18 @@ use crate::fileformats::rnoteformat::{
 use serde::{Deserialize, Serialize};
 use std::mem::discriminant;
 
-/// Rnote file save preferences
-/// a subset of RnoteHeader
+/// Rnote file save preferences, a subset of RnoteHeader
+/// used by EngineSnapshot, Engine, and EngineConfig
+///
+/// when loading in an Rnote file, SavePrefs will be created from RnoteHeader
+/// if RnoteHeader's serialization and compression methods conform to the defaults, or method_lock is set to true
+/// => SavePrefs override EngineSnapshot's default SavePrefs
+/// => SavePrefs transferred from EngineSnapshot to Engine
+///
+/// as for EngineConfig, if and only if Engine's SavePrefs conform to the defaults
+/// => SavePrefs cloned from Engine into EngineConfig
+///
+/// please note that the compression level is not used to check whether or not the methods conform to the defaults
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "save_prefs")]
 pub struct SavePrefs {

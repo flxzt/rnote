@@ -45,26 +45,26 @@ pub(crate) async fn run_mutate(
         let serialization = if let Some(ref str) = serialization_method {
             rnote_engine::fileformats::rnoteformat::SerializationMethod::from_str(str).unwrap()
         } else {
-            rnote_file.head.serialization
+            rnote_file.header.serialization
         };
 
         let mut compression = if let Some(ref str) = compression_method {
             rnote_engine::fileformats::rnoteformat::CompressionMethod::from_str(str).unwrap()
         } else {
-            rnote_file.head.compression
+            rnote_file.header.compression
         };
 
         if let Some(lvl) = compression_level {
             compression.update_compression_level(lvl)?;
         }
 
-        let method_lock = (rnote_file.head.method_lock | lock) && !unlock;
+        let method_lock = (rnote_file.header.method_lock | lock) && !unlock;
         let uc_data = serialization.serialize(&EngineSnapshot::try_from(rnote_file)?)?;
         let uc_size = uc_data.len() as u64;
         let data = compression.compress(uc_data)?;
 
         let rnote_file = RnoteFile {
-            head: RnoteHeader {
+            header: RnoteHeader {
                 serialization,
                 compression,
                 uc_size,

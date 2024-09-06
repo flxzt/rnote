@@ -5,22 +5,26 @@ use super::{
 use serde::{Deserialize, Serialize};
 
 /// # Rnote File Format Specifications
-/// ## Prelude (not included in this struct)
+///
+/// ## Prelude (not included in this struct, u16,u32,... are represented using little endian)
 /// * magic number: [u8; 9] = [0x52, 0x4e, 0x4f, 0x54, 0x45, 0xce, 0xa6, 0xce, 0x9b], "RNOTEϕλ"
-/// * version: [u8; 3] = [major, minor, patch]
-/// * header size: [u8; 4], little endian repr.
+/// * version: [u64, u64, u64, u16, str, u16, str] (almost one-to-one representation of semver::Version)
+///            [major, minor, patch, Prerelease size, Prerelease, BuildMetadata size, Buildmetadata]
+/// * header size: u32
+///
 /// ## Header
-/// the header is a forward-compatible json-encoded struct
-/// containing additional information on the file
+/// a forward-compatible json-encoded struct
 /// * serialization: method used to serialize/deserialize the engine snapshot
 /// * compression: method used to compress/decompress the serialized engine snapshot
 /// * uncompressed size: size of the uncompressed and serialized engine snapshot
-/// * method_lock: if set to true, the file can keep using non-standard methods and will not be forced back into using defaults
+/// * method lock: if set to true, the file can keep using non-standard methods and will not be forced back into using defaults
+///
 /// ## Body
 /// the body contains the serialized and (potentially) compressed engine snapshot
 #[derive(Debug, Clone)]
 pub struct RnoteFileMaj0Min12 {
-    pub head: RnoteHeaderMaj0Min12,
+    /// called header and not head because head = prelude + header
+    pub header: RnoteHeaderMaj0Min12,
     /// A serialized and (potentially) compressed engine snapshot
     pub body: Vec<u8>,
 }
@@ -45,7 +49,7 @@ impl TryFrom<RnoteFileMaj0Min9> for RnoteFileMaj0Min12 {
     type Error = anyhow::Error;
     fn try_from(value: RnoteFileMaj0Min9) -> Result<Self, Self::Error> {
         Ok(Self {
-            head: RnoteHeaderMaj0Min12 {
+            header: RnoteHeaderMaj0Min12 {
                 serialization: SerializationMethod::Json,
                 compression: CompressionMethod::None,
                 uc_size: 0,

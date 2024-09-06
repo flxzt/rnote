@@ -28,6 +28,7 @@ pub struct EngineSnapshot {
     pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
     #[serde(rename = "chrono_counter")]
     pub chrono_counter: u32,
+    // save_prefs is skipped as it is extracted and incorporated into the header when saving
     #[serde(skip, default)]
     pub save_prefs: SavePrefs,
 }

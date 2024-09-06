@@ -19,7 +19,6 @@ use crate::engine::{save::SavePrefs, EngineSnapshot};
 use anyhow::Context;
 use legacy::LegacyRnoteFile;
 use maj0min12::RnoteFileMaj0Min12;
-use std::io::Write;
 
 pub type RnoteFile = maj0min12::RnoteFileMaj0Min12;
 pub type RnoteHeader = maj0min12::RnoteHeaderMaj0Min12;
@@ -36,31 +35,30 @@ impl FileFormatSaver for RnoteFile {
         let pre_release = version.pre.as_str();
         let build_metadata = version.build.as_str();
 
-        let json_header = serde_json::to_vec(&ijson::to_value(&self.head)?)?;
-        let header = [
+        let header = serde_json::to_vec(&ijson::to_value(&self.header)?)?;
+        let head = [
             &Self::MAGIC_NUMBER[..],
             &version.major.to_le_bytes(),
             &version.minor.to_le_bytes(),
             &version.patch.to_le_bytes(),
             &u16::try_from(pre_release.len())
-                .context("Prerelease text is too long")?
+                .context("Prerelease exceeds max size (u16::MAX)")?
                 .to_le_bytes(),
             pre_release.as_bytes(),
             &u16::try_from(build_metadata.len())
-                .context("BuildMetadata text is too long")?
+                .context("BuildMetadata exceeds max size (u16::MAX)")?
                 .to_le_bytes(),
             build_metadata.as_bytes(),
-            &u32::try_from(json_header.len())
-                .context("Serialized header is too large")?
+            &u32::try_from(header.len())
+                .context("Serialized RnoteHeader exceeds max size (u32::MAX)")?
                 .to_le_bytes(),
-            &json_header,
+            &header,
         ]
         .concat();
 
-        let mut buffer: Vec<u8> = Vec::new();
-        buffer.write_all(&header)?;
-        buffer.write_all(&self.body)?;
-        Ok(buffer)
+        // .concat is absurdly fast
+        // much faster than Vec::apend or Vec::extend
+        Ok([head.as_slice(), self.body.as_slice()].concat())
     }
 }
 
@@ -69,12 +67,12 @@ impl FileFormatLoader for RnoteFile {
     where
         Self: Sized,
     {
-        let mut prelude_idx: usize = 0;
+        let mut cursor: usize = 0;
 
         let magic_number = bytes
-            .get(prelude_idx..9)
+            .get(cursor..9)
             .ok_or_else(|| anyhow::anyhow!("Failed to get magic number"))?;
-        prelude_idx += 9;
+        cursor += 9;
 
         if magic_number != Self::MAGIC_NUMBER {
             // Gzip magic number
@@ -83,76 +81,70 @@ impl FileFormatLoader for RnoteFile {
             if magic_number[..2] == [0x1f, 0x8b] {
                 return RnoteFile::try_from(LegacyRnoteFile::load_from_bytes(bytes)?);
             } else {
-                Err(anyhow::anyhow!("Unrecognized file format"))?;
+                return Err(anyhow::anyhow!("Unrecognized file format"));
             }
         }
 
         let mut major: [u8; 8] = [0; 8];
         major.copy_from_slice(
-            bytes
-                .get(prelude_idx..prelude_idx + 8)
-                .ok_or_else(|| anyhow::anyhow!("Failed to get version"))?,
+            bytes.get(cursor..cursor + 8).ok_or_else(|| {
+                anyhow::anyhow!("Failed to get version.major, insufficient bytes")
+            })?,
         );
-        prelude_idx += 8;
+        cursor += 8;
         let major = u64::from_le_bytes(major);
 
         let mut minor: [u8; 8] = [0; 8];
         minor.copy_from_slice(
-            bytes
-                .get(prelude_idx..prelude_idx + 8)
-                .ok_or_else(|| anyhow::anyhow!("Failed to get version"))?,
+            bytes.get(cursor..cursor + 8).ok_or_else(|| {
+                anyhow::anyhow!("Failed to get version.minor, insufficient bytes")
+            })?,
         );
-        prelude_idx += 8;
+        cursor += 8;
         let minor = u64::from_le_bytes(minor);
 
         let mut patch: [u8; 8] = [0; 8];
         patch.copy_from_slice(
-            bytes
-                .get(prelude_idx..prelude_idx + 8)
-                .ok_or_else(|| anyhow::anyhow!("Failed to get version"))?,
+            bytes.get(cursor..cursor + 8).ok_or_else(|| {
+                anyhow::anyhow!("Failed to get version.patch, insufficient bytes")
+            })?,
         );
-        prelude_idx += 8;
+        cursor += 8;
         let patch = u64::from_le_bytes(patch);
 
-        let mut pre_release_length: [u8; 2] = [0; 2];
-        pre_release_length.copy_from_slice(
-            bytes
-                .get(prelude_idx..prelude_idx + 2)
-                .ok_or_else(|| anyhow::anyhow!("Failed to get Prerelease length"))?,
-        );
-        prelude_idx += 2;
-        let pre_release_length = usize::from(u16::from_le_bytes(pre_release_length));
+        let mut pre_release_size: [u8; 2] = [0; 2];
+        pre_release_size.copy_from_slice(bytes.get(cursor..cursor + 2).ok_or_else(|| {
+            anyhow::anyhow!("Failed to get size of version.pre, insufficient bytes")
+        })?);
+        cursor += 2;
+        let pre_release_size = usize::from(u16::from_le_bytes(pre_release_size));
 
-        let pre_release = if pre_release_length == 0 {
+        let pre_release = if pre_release_size == 0 {
             semver::Prerelease::EMPTY
         } else {
-            let text = core::str::from_utf8(
-                bytes
-                    .get(prelude_idx..prelude_idx + pre_release_length)
-                    .ok_or_else(|| anyhow::anyhow!("Failed to get Prerelease"))?,
-            )?;
-            prelude_idx += pre_release_length;
+            let text =
+                core::str::from_utf8(bytes.get(cursor..cursor + pre_release_size).ok_or_else(
+                    || anyhow::anyhow!("Failed to get version.pre, insufficient bytes"),
+                )?)?;
+            cursor += pre_release_size;
             semver::Prerelease::new(text)?
         };
 
-        let mut build_metadata_length: [u8; 2] = [0; 2];
-        build_metadata_length.copy_from_slice(
-            bytes
-                .get(prelude_idx..prelude_idx + 2)
-                .ok_or_else(|| anyhow::anyhow!("Failed to get BuildMetadata length"))?,
-        );
-        prelude_idx += 2;
-        let build_metadata_length = usize::from(u16::from_le_bytes(build_metadata_length));
+        let mut build_metadata_size: [u8; 2] = [0; 2];
+        build_metadata_size.copy_from_slice(bytes.get(cursor..cursor + 2).ok_or_else(|| {
+            anyhow::anyhow!("Failed to get size of version.build, insufficient bytes")
+        })?);
+        cursor += 2;
+        let build_metadata_size = usize::from(u16::from_le_bytes(build_metadata_size));
 
-        let build_metadata = if build_metadata_length == 0 {
+        let build_metadata = if build_metadata_size == 0 {
             semver::BuildMetadata::EMPTY
         } else {
-            let text = core::str::from_utf8(
-                bytes
-                    .get(prelude_idx..prelude_idx + build_metadata_length)
-                    .ok_or_else(|| anyhow::anyhow!("Failed to get BuildMetadata"))?,
-            )?;
-            prelude_idx += build_metadata_length;
+            let text =
+                core::str::from_utf8(bytes.get(cursor..cursor + build_metadata_size).ok_or_else(
+                    || anyhow::anyhow!("Failed to get version.build, insufficient bytes"),
+                )?)?;
+            cursor += build_metadata_size;
             semver::BuildMetadata::new(text)?
         };
 
@@ -167,24 +159,25 @@ impl FileFormatLoader for RnoteFile {
         let mut header_size: [u8; 4] = [0; 4];
         header_size.copy_from_slice(
             bytes
-                .get(prelude_idx..prelude_idx + 4)
-                .ok_or_else(|| anyhow::anyhow!("Failed to get header size"))?,
+                .get(cursor..cursor + 4)
+                .ok_or_else(|| anyhow::anyhow!("Failed to get header size, insufficient bytes"))?,
         );
-        prelude_idx += 4;
+        cursor += 4;
         let header_size = usize::try_from(u32::from_le_bytes(header_size))
-            .context("Rnote file header is too large")?;
+            .context("Serialized RnoteHeader exceeds max size (usize::MAX)")?;
 
         let header_slice = bytes
-            .get(prelude_idx..prelude_idx + header_size)
-            .ok_or_else(|| anyhow::anyhow!("File header missing"))?;
-        prelude_idx += header_size;
+            .get(cursor..cursor + header_size)
+            .ok_or_else(|| anyhow::anyhow!("Failed to get RnoteHeader, insufficient bytes"))?;
+        cursor += header_size;
 
         let body_slice = bytes
-            .get(prelude_idx..)
-            .ok_or_else(|| anyhow::anyhow!("File body missing"))?;
+            .get(cursor..)
+            .ok_or_else(|| anyhow::anyhow!("Failed to get body, insufficient bytes"))?;
 
         Ok(Self {
-            head: RnoteHeader::load_from_slice(header_slice, &version)?,
+            header: RnoteHeader::load_from_slice(header_slice, &version)?,
+            // faster than draining bytes
             body: body_slice.to_vec(),
         })
     }
@@ -198,10 +191,7 @@ impl RnoteHeader {
         {
             Ok(ijson::from_value(&serde_json::from_slice(slice)?)?)
         } else {
-            Err(anyhow::anyhow!(
-                "Unrecognized version specifier '{}' for header",
-                version
-            ))
+            Err(anyhow::anyhow!("Unsupported version: '{}'", version))
         }
     }
 }
@@ -210,15 +200,16 @@ impl TryFrom<RnoteFile> for EngineSnapshot {
     type Error = anyhow::Error;
 
     fn try_from(value: RnoteFile) -> Result<Self, Self::Error> {
-        let uc_size = usize::try_from(value.head.uc_size).unwrap_or(usize::MAX);
-        let uc_body = value.head.compression.decompress(uc_size, value.body)?;
-        let mut engine_snapshot = value.head.serialization.deserialize(&uc_body)?;
+        let uc_size = usize::try_from(value.header.uc_size).unwrap_or(usize::MAX);
+        let uc_body = value.header.compression.decompress(uc_size, value.body)?;
+        let mut engine_snapshot = value.header.serialization.deserialize(&uc_body)?;
 
         // save preferences are only kept if method_lock is true or both the ser. method and comp. method are "defaults"
-        let save_prefs = SavePrefs::from(value.head);
+        let save_prefs = SavePrefs::from(value.header);
         if save_prefs.method_lock | save_prefs.conforms_to_default() {
             engine_snapshot.save_prefs = save_prefs;
         }
+
         Ok(engine_snapshot)
     }
 }
@@ -238,7 +229,7 @@ impl TryFrom<&EngineSnapshot> for RnoteFile {
         let method_lock = save_prefs.method_lock;
 
         Ok(Self {
-            head: RnoteHeader {
+            header: RnoteHeader {
                 compression,
                 serialization,
                 uc_size,

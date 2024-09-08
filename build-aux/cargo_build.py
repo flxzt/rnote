@@ -2,6 +2,7 @@
 
 import sys
 import os
+import platform
 
 project_build_root = sys.argv[1]
 project_src_root = sys.argv[2]
@@ -21,6 +22,15 @@ print(f"""
     bin_output: {bin_output}
     output_file: {output_file}
 """, file=sys.stderr)
+
+# Detecting architecture
+if sys.platform == 'win32':
+    if platform.machine().lower() == 'arm64':
+        rustflags = '-C linker=clang'
+    else:
+        rustflags = ''
+else:
+    rustflags = ''
 
 cargo_call = f"env {cargo_env} {cargo_cmd} build {cargo_options}"
 cp_call = f"cp {bin_output} {output_file}"

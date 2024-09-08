@@ -32,7 +32,7 @@ if sys.platform == 'win32':
 else:
     rustflags = ''
 
-cargo_call = f"env {cargo_env} {cargo_cmd} build {cargo_options}"
+cargo_call = f"env {cargo_env} RUSTFLAGS='{rustflags}' {cargo_cmd} build {cargo_options}"
 cp_call = f"cp {bin_output} {output_file}"
 
 print(cargo_call, file=sys.stderr)

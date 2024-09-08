@@ -172,7 +172,7 @@ pub struct Engine {
     pub import_prefs: ImportPrefs,
     #[serde(rename = "export_prefs")]
     pub export_prefs: ExportPrefs,
-    #[serde(skip)]
+    #[serde(rename = "save_prefs")]
     pub save_prefs: SavePrefs,
     #[serde(rename = "pen_sounds")]
     pen_sounds: bool,

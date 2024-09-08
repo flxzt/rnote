@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-08-18 09:57+0000\n"
+"PO-Revision-Date: 2024-09-08 22:42+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
 "Language: he\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n == 1) ? 0 : ((n == 2) ? 1 : ((n > 10 && "
 "n % 10 == 0) ? 2 : 3));\n"
-"X-Generator: Weblate 5.7\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -410,19 +410,14 @@ msgid "Jpeg"
 msgstr "תמונה (JPEG)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "    that expand in horizontal and vertical directions\n"
 "    are cut into pages"
 msgstr ""
 "סדר העמודים כאשר מסמכים\n"
-"רחבים או ארוכים\n"
-"מחולק לדפים שונים"
+"    רחבים או ארוכים\n"
+"    מחולק לדפים שונים"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
@@ -432,16 +427,12 @@ msgstr "קנה מידה של תמונות"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "    to the actual size on the document"
 msgstr ""
-"הגדר את היחס בין גודל התמונות\n"
-"לבין גודל המסמך בפועל"
+"הגדרת היחס בין גודל התמונות\n"
+"    לבין גודל המסמך בפועל"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563

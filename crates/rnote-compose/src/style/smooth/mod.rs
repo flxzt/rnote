@@ -1,8 +1,10 @@
 // Modules
 mod smoothoptions;
 
+use piet::StrokeStyle;
 // Re-exports
 pub use smoothoptions::SmoothOptions;
+use tracing::info;
 
 // Imports
 use super::Composer;
@@ -26,7 +28,13 @@ impl Composer<SmoothOptions> for Line {
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(line, &stroke_brush, options.stroke_width);
+            let stroke_style = StrokeStyle::new()
+                .dash_pattern(&[2.0, 3.0])
+                .line_cap(piet::LineCap::Round)
+                .dash_offset(0.0);
+
+            info!("{:#?}", stroke_style);
+            cx.stroke_styled(line, &stroke_brush, options.stroke_width, &stroke_style);
         }
         cx.restore().unwrap();
     }

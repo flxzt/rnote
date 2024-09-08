@@ -41,8 +41,8 @@ Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
 ; Run in 64-bit mode, restrict to x64 architecture.
-ArchitecturesAllowed=x64
-ArchitecturesInstallIn64BitMode=x64
+ArchitecturesAllowed=arm64
+ArchitecturesInstallIn64BitMode=arm64
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

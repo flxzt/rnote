@@ -354,17 +354,17 @@ msgstr "Извади документ"
 #: crates/rnote-ui/src/dialogs/export.rs:304
 #: crates/rnote-ui/src/dialogs/export.rs:635
 #: crates/rnote-ui/src/dialogs/export.rs:954
-msgid "Svg"
+msgid "SVG"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:315
-msgid "Pdf"
+msgid "PDF"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:326
-msgid "Xopp"
+msgid "XOPP"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
@@ -494,7 +494,7 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
 #, fuzzy
 #| msgid "Import PDF"
-msgid "Import Pdf"
+msgid "Import PDF"
 msgstr "Внеси PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
@@ -510,7 +510,7 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
 #, fuzzy
 #| msgid "PDF import preferences"
-msgid "Pdf Import Preferences"
+msgid "PDF Import Preferences"
 msgstr "Нагодувања при внес на PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
@@ -532,7 +532,7 @@ msgstr "Документ"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
 #, fuzzy
 #| msgid "Set the background color"
-msgid "Whether the document layout should be adjusted to the Pdf"
+msgid "Whether the document layout should be adjusted to the PDF"
 msgstr "Одреди ја позадинската боја"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
@@ -544,7 +544,7 @@ msgstr "Ширина на страница (%)"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
 #, fuzzy
 #| msgid "Set the width of imported PDF's in percentage to the format width"
-msgid "Set the width of imported Pdf's in percentage to the format width"
+msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr "Одбери ја ширината на внесениот PDF во проценти од ширината на формата"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
@@ -556,7 +556,7 @@ msgstr "Проред"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
 #, fuzzy
 #| msgid "How PDF pages are spaced"
-msgid "How Pdf pages are spaced"
+msgid "How PDF pages are spaced"
 msgstr "Како се проредуваат страниците на PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
@@ -578,7 +578,7 @@ msgstr "Вид на страници"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
 #, fuzzy
 #| msgid "Set whether PDFs should be imported as vector or bitmap images"
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgid "Set whether PDF's should be imported as vector or bitmap images"
 msgstr "Одреди дали PDF треба да се внесува како вектор или слика"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:144
@@ -2332,7 +2332,7 @@ msgid "Open File"
 msgstr "Отвори датотека"
 
 #: crates/rnote-ui/src/dialogs/import.rs:86
-msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
+msgid "Jpg, PDF, Png, SVG, XOPP, Txt"
 msgstr ""
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
@@ -2965,7 +2965,7 @@ msgstr ""
 
 #, fuzzy
 #~| msgid "A PDF annotation"
-#~ msgid "A Pdf annotation"
+#~ msgid "A PDF annotation"
 #~ msgstr "PDF бележење"
 
 #, fuzzy
@@ -3007,7 +3007,7 @@ msgstr ""
 
 #, fuzzy
 #~| msgid "Opening PDF file failed."
-#~ msgid "Opening Pdf file failed"
+#~ msgid "Opening PDF file failed"
 #~ msgstr "Отворањето на PDF-от беше неуспешно."
 
 #, fuzzy
@@ -3269,7 +3269,7 @@ msgstr ""
 
 #, fuzzy
 #~| msgid "PNG / SVG / JPG / PDF file"
-#~ msgid "Xopp, PNG, SVG, JPG, PDF"
+#~ msgid "XOPP, PNG, SVG, JPG, PDF"
 #~ msgstr "PNG / SVG / JPG / PDF датотека"
 
 #~ msgid "Drag stroke elements based on proximity"

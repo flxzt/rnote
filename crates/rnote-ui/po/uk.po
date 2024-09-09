@@ -310,18 +310,18 @@ msgstr "Тип файлу, який буде експортовано"
 #: crates/rnote-ui/src/dialogs/export.rs:304
 #: crates/rnote-ui/src/dialogs/export.rs:635
 #: crates/rnote-ui/src/dialogs/export.rs:954
-msgid "Svg"
-msgstr "Svg"
+msgid "SVG"
+msgstr "SVG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:315
-msgid "Pdf"
-msgstr "Pdf"
+msgid "PDF"
+msgstr "PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:326
-msgid "Xopp"
-msgstr "Xopp"
+msgid "XOPP"
+msgstr "XOPP"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
 #: crates/rnote-ui/data/ui/dialogs/export.ui:356
@@ -446,8 +446,8 @@ msgid "Set the margin around the selected area"
 msgstr "Встановіть поле навколо виділеної області"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
-msgid "Import Pdf"
-msgstr "Імпортувати Pdf"
+msgid "Import PDF"
+msgstr "Імпортувати PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:218
@@ -460,8 +460,8 @@ msgid "Info"
 msgstr "Інформація"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
-msgid "Pdf Import Preferences"
-msgstr "Параметри імпорту Pdf"
+msgid "PDF Import Preferences"
+msgstr "Параметри імпорту PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
 msgid "Start Page"
@@ -476,7 +476,7 @@ msgid "Adjust Document"
 msgstr "Адаптувати документ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
-msgid "Whether the document layout should be adjusted to the Pdf"
+msgid "Whether the document layout should be adjusted to the PDF"
 msgstr "Чи потрібно адаптувати макет документа до PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
@@ -484,17 +484,17 @@ msgid "Page Width (%)"
 msgstr "Ширина сторінки (%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
-msgid "Set the width of imported Pdf's in percentage to the format width"
+msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr ""
-"Встановити ширину імпортованих Pdf-файлів у відсотках від ширини аркуша"
+"Встановити ширину імпортованих PDF-файлів у відсотках від ширини аркуша"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
 msgid "Page Spacing"
 msgstr "Міжсторінковий інтервал"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
-msgid "How Pdf pages are spaced"
-msgstr "Як розділені сторінки Pdf"
+msgid "How PDF pages are spaced"
+msgstr "Як розділені сторінки PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
 msgid "Continuous"
@@ -509,8 +509,8 @@ msgid "Pages Type"
 msgstr "Тип сторінок"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
-msgstr "Імпортувати Pdf-файли як векторні чи растрові зображення"
+msgid "Set whether PDF's should be imported as vector or bitmap images"
+msgstr "Імпортувати PDF-файли як векторні чи растрові зображення"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:144
 msgid "Vector"
@@ -1949,8 +1949,8 @@ msgid "Open File"
 msgstr "Відкрити файл"
 
 #: crates/rnote-ui/src/dialogs/import.rs:86
-msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
+msgid "Jpg, PDF, Png, SVG, XOPP, Txt"
+msgstr "Jpg, PDF, Png, SVG, XOPP, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
 msgid "- no file name -"
@@ -2546,8 +2546,8 @@ msgstr "білий"
 #~ msgid "Lecture Note 1"
 #~ msgstr "Конспект лекції 1"
 
-#~ msgid "A Pdf annotation"
-#~ msgstr "Анотація Pdf"
+#~ msgid "A PDF annotation"
+#~ msgstr "Анотація PDF"
 
 #~ msgid "Lecture Note 2"
 #~ msgstr "Конспект лекції 2"
@@ -2580,8 +2580,8 @@ msgstr "білий"
 #~ msgid "Opening Xournal++ file failed"
 #~ msgstr "Не вдалося відкрити файл Xournal++"
 
-#~ msgid "Opening Pdf file failed"
-#~ msgstr "Не вдалося відкрити файл Pdf"
+#~ msgid "Opening PDF file failed"
+#~ msgstr "Не вдалося відкрити файл PDF"
 
 #~ msgid "Failed to open file, tried to open folder as file"
 #~ msgstr "Не вдалося відкрити файл, спробуйте відкрити папку як файл"
@@ -2811,7 +2811,7 @@ msgstr "білий"
 #~ msgstr "Вибір за допомогою прямокутника"
 
 #, fuzzy
-#~ msgid "Xopp, PNG, SVG, JPG, PDF"
+#~ msgid "XOPP, PNG, SVG, JPG, PDF"
 #~ msgstr "файл PNG / SVG / JPG / PDF"
 
 #~ msgid "Drag stroke elements based on proximity"

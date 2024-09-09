@@ -21,26 +21,26 @@ use tracing::error;
     Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
 )]
 #[serde(rename = "pdf_import_pages_type")]
-pub enum PdfImportPagesType {
+pub enum PDFImportPagesType {
     #[serde(rename = "bitmap")]
     Bitmap = 0,
     #[serde(rename = "vector")]
     Vector,
 }
 
-impl Default for PdfImportPagesType {
+impl Default for PDFImportPagesType {
     fn default() -> Self {
         Self::Vector
     }
 }
 
-impl TryFrom<u32> for PdfImportPagesType {
+impl TryFrom<u32> for PDFImportPagesType {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
             anyhow::anyhow!(
-                "PdfImportPagesType try_from::<u32>() for value {} failed",
+                "PDFImportPagesType try_from::<u32>() for value {} failed",
                 value
             )
         })
@@ -51,62 +51,62 @@ impl TryFrom<u32> for PdfImportPagesType {
     Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
 )]
 #[serde(rename = "pdf_import_page_spacing")]
-pub enum PdfImportPageSpacing {
+pub enum PDFImportPageSpacing {
     #[serde(rename = "continuous")]
     Continuous = 0,
     #[serde(rename = "one_per_document_page")]
     OnePerDocumentPage,
 }
 
-impl Default for PdfImportPageSpacing {
+impl Default for PDFImportPageSpacing {
     fn default() -> Self {
         Self::Continuous
     }
 }
 
-impl TryFrom<u32> for PdfImportPageSpacing {
+impl TryFrom<u32> for PDFImportPageSpacing {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
             anyhow::anyhow!(
-                "PdfImportPageSpacing try_from::<u32>() for value {} failed",
+                "PDFImportPageSpacing try_from::<u32>() for value {} failed",
                 value
             )
         })
     }
 }
 
-/// Pdf import preferences.
+/// PDF import preferences.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "pdf_import_prefs")]
-pub struct PdfImportPrefs {
-    /// Pdf page width in percentage to the format width.
+pub struct PDFImportPrefs {
+    /// PDF page width in percentage to the format width.
     #[serde(rename = "page_width_perc")]
     pub page_width_perc: f64,
-    /// Pdf page spacing.
+    /// PDF page spacing.
     #[serde(rename = "page_spacing")]
-    pub page_spacing: PdfImportPageSpacing,
-    /// Pdf pages import type.
+    pub page_spacing: PDFImportPageSpacing,
+    /// PDF pages import type.
     #[serde(rename = "pages_type")]
-    pub pages_type: PdfImportPagesType,
+    pub pages_type: PDFImportPagesType,
     /// The scalefactor when importing as bitmap image
     #[serde(rename = "bitmap_scalefactor")]
     pub bitmap_scalefactor: f64,
-    /// Whether the imported Pdf pages have drawn borders
+    /// Whether the imported PDF pages have drawn borders
     #[serde(rename = "page_borders")]
     pub page_borders: bool,
-    /// Whether the document layout should be adjusted to the Pdf
+    /// Whether the document layout should be adjusted to the PDF
     #[serde(rename = "adjust_document")]
     pub adjust_document: bool,
 }
 
-impl Default for PdfImportPrefs {
+impl Default for PDFImportPrefs {
     fn default() -> Self {
         Self {
-            pages_type: PdfImportPagesType::default(),
+            pages_type: PDFImportPagesType::default(),
             page_width_perc: 50.0,
-            page_spacing: PdfImportPageSpacing::default(),
+            page_spacing: PDFImportPageSpacing::default(),
             bitmap_scalefactor: 1.8,
             page_borders: true,
             adjust_document: false,
@@ -117,13 +117,13 @@ impl Default for PdfImportPrefs {
 /// Xournal++ `.xopp` file import preferences.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename = "xopp_import_prefs")]
-pub struct XoppImportPrefs {
+pub struct XOPPImportPrefs {
     /// Import DPI.
     #[serde(rename = "pages_type")]
     pub dpi: f64,
 }
 
-impl Default for XoppImportPrefs {
+impl Default for XOPPImportPrefs {
     fn default() -> Self {
         Self { dpi: 96.0 }
     }
@@ -133,12 +133,12 @@ impl Default for XoppImportPrefs {
 #[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
 #[serde(default, rename = "import_prefs")]
 pub struct ImportPrefs {
-    /// Pdf import preferences
+    /// PDF import preferences
     #[serde(rename = "pdf_import_prefs")]
-    pub pdf_import_prefs: PdfImportPrefs,
+    pub pdf_import_prefs: PDFImportPrefs,
     /// Xournal++ `.xopp` file import preferences
     #[serde(rename = "xopp_import_prefs")]
-    pub xopp_import_prefs: XoppImportPrefs,
+    pub xopp_import_prefs: XOPPImportPrefs,
 }
 
 impl CloneConfig for ImportPrefs {
@@ -231,7 +231,7 @@ impl Engine {
 
     /// Generate a vectorimage from the bytes.
     ///
-    /// The bytes are expected to be from a valid UTF-8 encoded Svg string.
+    /// The bytes are expected to be from a valid UTF-8 encoded SVG string.
     pub fn generate_vectorimage_from_bytes(
         &self,
         pos: na::Vector2<f64>,
@@ -309,7 +309,7 @@ impl Engine {
 
     /// Generate image strokes for each page for the bytes.
     ///
-    /// The bytes are expected to be from a valid Pdf.
+    /// The bytes are expected to be from a valid PDF.
     ///
     /// Note: `insert_pos` does not have an effect when the `adjust_document` import pref is set true.
     #[allow(clippy::type_complexity)]
@@ -332,7 +332,7 @@ impl Engine {
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>> {
                 match pdf_import_prefs.pages_type {
-                    PdfImportPagesType::Bitmap => {
+                    PDFImportPagesType::Bitmap => {
                         let bitmapimages = BitmapImage::from_pdf_bytes(
                             &bytes,
                             pdf_import_prefs,
@@ -345,7 +345,7 @@ impl Engine {
                         .collect::<Vec<(Stroke, Option<StrokeLayer>)>>();
                         Ok(bitmapimages)
                     }
-                    PdfImportPagesType::Vector => {
+                    PDFImportPagesType::Vector => {
                         let vectorimages = VectorImage::from_pdf_bytes(
                             &bytes,
                             pdf_import_prefs,
@@ -362,7 +362,7 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver while importing Pdf bytes failed. Receiver already dropped");
+                error!("Sending result to receiver while importing PDF bytes failed. Receiver already dropped");
             }
         });
 

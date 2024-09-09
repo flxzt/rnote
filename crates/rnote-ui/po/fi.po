@@ -312,18 +312,18 @@ msgstr "Viennissä käytettävä muoto"
 #: crates/rnote-ui/src/dialogs/export.rs:304
 #: crates/rnote-ui/src/dialogs/export.rs:635
 #: crates/rnote-ui/src/dialogs/export.rs:954
-msgid "Svg"
+msgid "SVG"
 msgstr "SVG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:315
-msgid "Pdf"
+msgid "PDF"
 msgstr "PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:326
-msgid "Xopp"
-msgstr "Xopp"
+msgid "XOPP"
+msgstr "XOPP"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
 #: crates/rnote-ui/data/ui/dialogs/export.ui:356
@@ -450,7 +450,7 @@ msgid "Set the margin around the selected area"
 msgstr "Aseta reunus valitun alueen ympärille"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
-msgid "Import Pdf"
+msgid "Import PDF"
 msgstr "Tuo PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
@@ -464,7 +464,7 @@ msgid "Info"
 msgstr "Tiedot"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
-msgid "Pdf Import Preferences"
+msgid "PDF Import Preferences"
 msgstr "PDF-tuonnin asetukset"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
@@ -480,7 +480,7 @@ msgid "Adjust Document"
 msgstr "Säädä asiakirjaa"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
-msgid "Whether the document layout should be adjusted to the Pdf"
+msgid "Whether the document layout should be adjusted to the PDF"
 msgstr "Säädetänkö asiakirjan asettelua vastaamaan PDF:ää"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
@@ -488,7 +488,7 @@ msgid "Page Width (%)"
 msgstr "Sivun leveys (%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
-msgid "Set the width of imported Pdf's in percentage to the format width"
+msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
@@ -496,7 +496,7 @@ msgid "Page Spacing"
 msgstr "Sivujen välistys"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
-msgid "How Pdf pages are spaced"
+msgid "How PDF pages are spaced"
 msgstr "Miten PDF:n sivut välistetään"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
@@ -512,7 +512,7 @@ msgid "Pages Type"
 msgstr "Sivujen tyyppi"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgid "Set whether PDF's should be imported as vector or bitmap images"
 msgstr "Tuodaanko PDF:t vektori- vai bittikarttakuvina"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:144
@@ -1941,8 +1941,8 @@ msgid "Open File"
 msgstr "Avaa tiedosto"
 
 #: crates/rnote-ui/src/dialogs/import.rs:86
-msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
+msgid "Jpg, PDF, Png, SVG, XOPP, Txt"
+msgstr "Jpg, PDF, Png, SVG, XOPP, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
 msgid "- no file name -"

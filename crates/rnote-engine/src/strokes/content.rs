@@ -25,12 +25,12 @@ pub trait Content: Drawable + Shapeable
 where
     Self: Sized,
 {
-    /// Generate Svg from the content, without the Xml header or the Svg root.
+    /// Generate SVG from the content, without the Xml header or the SVG root.
     ///
     /// Used for exporting.
-    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
+    fn gen_svg(&self) -> Result<render::SVG, anyhow::Error> {
         let bounds = self.bounds();
-        render::Svg::gen_with_cairo(|cx| self.draw_to_cairo(cx, 1.0), bounds)
+        render::SVG::gen_with_cairo(|cx| self.draw_to_cairo(cx, 1.0), bounds)
     }
 
     /// Generate bitmap images for rendering in the app.

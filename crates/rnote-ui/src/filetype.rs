@@ -9,8 +9,8 @@ pub(crate) enum FileType {
     RnoteFile,
     VectorImageFile,
     BitmapImageFile,
-    XoppFile,
-    PdfFile,
+    XOPPFile,
+    PDFFile,
     PlaintextFile,
     Unsupported,
 }
@@ -36,10 +36,10 @@ impl FileType {
                                 return Self::BitmapImageFile;
                             }
                             "application/x-xopp" => {
-                                return Self::XoppFile;
+                                return Self::XOPPFile;
                             }
                             "application/pdf" => {
-                                return Self::PdfFile;
+                                return Self::PDFFile;
                             }
                             "text/plain" => {
                                 return Self::PlaintextFile;
@@ -74,10 +74,10 @@ impl FileType {
                         return Self::BitmapImageFile;
                     }
                     "xopp" => {
-                        return Self::XoppFile;
+                        return Self::XOPPFile;
                     }
                     "pdf" => {
-                        return Self::PdfFile;
+                        return Self::PDFFile;
                     }
                     "txt" => {
                         return Self::PlaintextFile;

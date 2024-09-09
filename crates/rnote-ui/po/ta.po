@@ -311,18 +311,18 @@ msgstr "ஏற்றுமதி வடிவமைப்பு"
 #: crates/rnote-ui/src/dialogs/export.rs:304
 #: crates/rnote-ui/src/dialogs/export.rs:635
 #: crates/rnote-ui/src/dialogs/export.rs:954
-msgid "Svg"
-msgstr "Svg"
+msgid "SVG"
+msgstr "SVG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:315
-msgid "Pdf"
-msgstr "Pdf"
+msgid "PDF"
+msgstr "PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:326
-msgid "Xopp"
-msgstr "Xopp"
+msgid "XOPP"
+msgstr "XOPP"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
 #: crates/rnote-ui/data/ui/dialogs/export.ui:356
@@ -447,8 +447,8 @@ msgid "Set the margin around the selected area"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பகுதியைச் சுற்றி விளிம்பை அமைக்கவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
-msgid "Import Pdf"
-msgstr "Pdf ஐ இறக்குமதி செய்"
+msgid "Import PDF"
+msgstr "PDF ஐ இறக்குமதி செய்"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:218
@@ -461,8 +461,8 @@ msgid "Info"
 msgstr "தகவல்"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
-msgid "Pdf Import Preferences"
-msgstr "Pdf இறக்குமதி விருப்பத்தேர்வுகள்"
+msgid "PDF Import Preferences"
+msgstr "PDF இறக்குமதி விருப்பத்தேர்வுகள்"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
 msgid "Start Page"
@@ -477,24 +477,24 @@ msgid "Adjust Document"
 msgstr "ஆவணத்தை சரிசெய்யவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
-msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "ஆவண தளவமைப்பை Pdf இல் சரிசெய்ய வேண்டுமா"
+msgid "Whether the document layout should be adjusted to the PDF"
+msgstr "ஆவண தளவமைப்பை PDF இல் சரிசெய்ய வேண்டுமா"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
 msgid "Page Width (%)"
 msgstr "பக்கத்தின் அகலம் (%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
-msgid "Set the width of imported Pdf's in percentage to the format width"
-msgstr "இறக்குமதி செய்யப்பட்ட Pdf இன் அகலத்தை வடிவ அகலத்திற்கு சதவீதத்தில் அமைக்கவும்"
+msgid "Set the width of imported PDF's in percentage to the format width"
+msgstr "இறக்குமதி செய்யப்பட்ட PDF இன் அகலத்தை வடிவ அகலத்திற்கு சதவீதத்தில் அமைக்கவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
 msgid "Page Spacing"
 msgstr "பக்க இடைவெளி"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
-msgid "How Pdf pages are spaced"
-msgstr "Pdf பக்கங்கள் எவ்வாறு இடைவெளியில் உள்ளன"
+msgid "How PDF pages are spaced"
+msgstr "PDF பக்கங்கள் எவ்வாறு இடைவெளியில் உள்ளன"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
 msgid "Continuous"
@@ -509,9 +509,9 @@ msgid "Pages Type"
 msgstr "பக்கங்களின் வகை"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgid "Set whether PDF's should be imported as vector or bitmap images"
 msgstr ""
-"Pdfகளை வெக்டரா அல்லது பிட்மேப் படங்களாக இறக்குமதி செய்ய வேண்டுமா என்பதை அமைக்கவும்"
+"PDFகளை வெக்டரா அல்லது பிட்மேப் படங்களாக இறக்குமதி செய்ய வேண்டுமா என்பதை அமைக்கவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:144
 msgid "Vector"
@@ -1950,8 +1950,8 @@ msgid "Open File"
 msgstr "திறந்த கோப்பு"
 
 #: crates/rnote-ui/src/dialogs/import.rs:86
-msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
+msgid "Jpg, PDF, Png, SVG, XOPP, Txt"
+msgstr "Jpg, PDF, Png, SVG, XOPP, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
 msgid "- no file name -"
@@ -2541,8 +2541,8 @@ msgstr "வெள்ளை"
 #~ msgid "Lecture Note 1"
 #~ msgstr "விரிவுரை குறிப்பு 1"
 
-#~ msgid "A Pdf annotation"
-#~ msgstr "ஒரு Pdf சிறுகுறிப்பு"
+#~ msgid "A PDF annotation"
+#~ msgstr "ஒரு PDF சிறுகுறிப்பு"
 
 #~ msgid "Lecture Note 2"
 #~ msgstr "விரிவுரை குறிப்பு 2"
@@ -2575,8 +2575,8 @@ msgstr "வெள்ளை"
 #~ msgid "Opening Xournal++ file failed"
 #~ msgstr "Xournal++ கோப்பை திறப்பதில் தோல்வி"
 
-#~ msgid "Opening Pdf file failed"
-#~ msgstr "Pdf கோப்பை திறக்க முடியவில்லை"
+#~ msgid "Opening PDF file failed"
+#~ msgstr "PDF கோப்பை திறக்க முடியவில்லை"
 
 #~ msgid "Failed to open file, tried to open folder as file"
 #~ msgstr "கோப்பை திறக்க முடியவில்லை, கோப்புறையை கோப்பாக திறக்க முயற்சித்தேன்"
@@ -2799,9 +2799,9 @@ msgstr "வெள்ளை"
 #~ msgstr "ஒவ்வொன்றாகத் தேர்ந்தெடுக்கிறது"
 
 #, fuzzy
-#~| msgid "Xopp / PNG / SVG / JPG / PDF file"
-#~ msgid "Xopp, PNG, SVG, JPG, PDF"
-#~ msgstr "Xopp / PNG / SVG / JPG / PDF கோப்பு"
+#~| msgid "XOPP / PNG / SVG / JPG / PDF file"
+#~ msgid "XOPP, PNG, SVG, JPG, PDF"
+#~ msgstr "XOPP / PNG / SVG / JPG / PDF கோப்பு"
 
 #~ msgid "Drag stroke elements based on proximity"
 #~ msgstr "அருகாமையின் அடிப்படையில் ஸ்ட்ரோக் கூறுகளை இழுக்கவும்"

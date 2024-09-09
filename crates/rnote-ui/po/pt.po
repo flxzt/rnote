@@ -322,18 +322,18 @@ msgstr "O formato de exportação"
 #: crates/rnote-ui/src/dialogs/export.rs:304
 #: crates/rnote-ui/src/dialogs/export.rs:635
 #: crates/rnote-ui/src/dialogs/export.rs:954
-msgid "Svg"
-msgstr "Svg"
+msgid "SVG"
+msgstr "SVG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:315
-msgid "Pdf"
-msgstr "Pdf"
+msgid "PDF"
+msgstr "PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:326
-msgid "Xopp"
-msgstr "Xopp"
+msgid "XOPP"
+msgstr "XOPP"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
 #: crates/rnote-ui/data/ui/dialogs/export.ui:356
@@ -466,7 +466,7 @@ msgstr "Definir Margem à volta da área seleccionada"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
 #, fuzzy
 #| msgid "Import PDF"
-msgid "Import Pdf"
+msgid "Import PDF"
 msgstr "Importar PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
@@ -482,7 +482,7 @@ msgstr "Informação"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
 #, fuzzy
 #| msgid "PDF Import Preferences"
-msgid "Pdf Import Preferences"
+msgid "PDF Import Preferences"
 msgstr "Preferências de Importação de PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
@@ -502,7 +502,7 @@ msgstr "Exportar Documento"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
 #, fuzzy
 #| msgid "Set whether the background pattern should be exported"
-msgid "Whether the document layout should be adjusted to the Pdf"
+msgid "Whether the document layout should be adjusted to the PDF"
 msgstr "Definir se padrão de fundo deve ser exportado"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
@@ -512,7 +512,7 @@ msgstr "Largura da Página (%)"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
 #, fuzzy
 #| msgid "Set the width of imported PDF's in percentage to the format width"
-msgid "Set the width of imported Pdf's in percentage to the format width"
+msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr ""
 "Definir a largura de PDF's importados em percentagem para a largura do "
 "formato"
@@ -524,7 +524,7 @@ msgstr "Espaçamento da página"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
 #, fuzzy
 #| msgid "How PDF pages are spaced"
-msgid "How Pdf pages are spaced"
+msgid "How PDF pages are spaced"
 msgstr "Como são espaçadas as páginas em PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
@@ -542,7 +542,7 @@ msgstr "Tipo de Página"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
 #, fuzzy
 #| msgid "Set whether PDFs should be imported as vector or bitmap images"
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgid "Set whether PDF's should be imported as vector or bitmap images"
 msgstr ""
 "Definir se os PDF's devem ser importados como imagens vectoriais ou mapas de "
 "bits"
@@ -1984,7 +1984,7 @@ msgid "Open File"
 msgstr "Abrir Ficheiro"
 
 #: crates/rnote-ui/src/dialogs/import.rs:86
-msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
+msgid "Jpg, PDF, Png, SVG, XOPP, Txt"
 msgstr ""
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
@@ -2582,7 +2582,7 @@ msgstr ""
 
 #, fuzzy
 #~| msgid "A PDF annotation"
-#~ msgid "A Pdf annotation"
+#~ msgid "A PDF annotation"
 #~ msgstr "Anotação de PDF"
 
 #~ msgid "Lecture Note 2"

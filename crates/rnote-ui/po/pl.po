@@ -313,18 +313,18 @@ msgstr "Format eksportu"
 #: crates/rnote-ui/src/dialogs/export.rs:304
 #: crates/rnote-ui/src/dialogs/export.rs:635
 #: crates/rnote-ui/src/dialogs/export.rs:954
-msgid "Svg"
-msgstr "Svg"
+msgid "SVG"
+msgstr "SVG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:315
-msgid "Pdf"
-msgstr "Pdf"
+msgid "PDF"
+msgstr "PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:326
-msgid "Xopp"
-msgstr "Xopp"
+msgid "XOPP"
+msgstr "XOPP"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
 #: crates/rnote-ui/data/ui/dialogs/export.ui:356
@@ -447,8 +447,8 @@ msgid "Set the margin around the selected area"
 msgstr "Ustaw margines wokół wybranego pola"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
-msgid "Import Pdf"
-msgstr "Importuj Pdf"
+msgid "Import PDF"
+msgstr "Importuj PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:218
@@ -461,8 +461,8 @@ msgid "Info"
 msgstr "Informacje"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
-msgid "Pdf Import Preferences"
-msgstr "Preferencje importu Pdf"
+msgid "PDF Import Preferences"
+msgstr "Preferencje importu PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
 msgid "Start Page"
@@ -477,17 +477,17 @@ msgid "Adjust Document"
 msgstr "Dostosuj Dokument"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
-msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "Czy układ dokumentu powinien zostać dostosowany do Pdf"
+msgid "Whether the document layout should be adjusted to the PDF"
+msgstr "Czy układ dokumentu powinien zostać dostosowany do PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
 msgid "Page Width (%)"
 msgstr "Szerokość strony (%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
-msgid "Set the width of imported Pdf's in percentage to the format width"
+msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr ""
-"Ustawianie szerokości importowanych plików Pdf w procentach szerokości "
+"Ustawianie szerokości importowanych plików PDF w procentach szerokości "
 "formatu"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
@@ -495,8 +495,8 @@ msgid "Page Spacing"
 msgstr "Odstępy między stronami"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
-msgid "How Pdf pages are spaced"
-msgstr "Sposób rozmieszczenia stron Pdf"
+msgid "How PDF pages are spaced"
+msgstr "Sposób rozmieszczenia stron PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
 msgid "Continuous"
@@ -511,9 +511,9 @@ msgid "Pages Type"
 msgstr "Typ strony"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgid "Set whether PDF's should be imported as vector or bitmap images"
 msgstr ""
-"Ustaw, czy pliki Pdf powinny być importowane jako obrazy wektorowe czy "
+"Ustaw, czy pliki PDF powinny być importowane jako obrazy wektorowe czy "
 "bitmapowe"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:144
@@ -1953,8 +1953,8 @@ msgid "Open File"
 msgstr "Otwórz plik"
 
 #: crates/rnote-ui/src/dialogs/import.rs:86
-msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
+msgid "Jpg, PDF, Png, SVG, XOPP, Txt"
+msgstr "Jpg, PDF, Png, SVG, XOPP, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
 msgid "- no file name -"
@@ -2546,7 +2546,7 @@ msgstr "biały"
 
 #, fuzzy
 #~| msgid "A PDF annotation"
-#~ msgid "A Pdf annotation"
+#~ msgid "A PDF annotation"
 #~ msgstr "Adnotacja PDF"
 
 #~ msgid "Lecture Note 2"
@@ -2582,7 +2582,7 @@ msgstr "biały"
 
 #, fuzzy
 #~| msgid "Opening PDF file failed"
-#~ msgid "Opening Pdf file failed"
+#~ msgid "Opening PDF file failed"
 #~ msgstr "Otwarcie pliku PDF się nie powiodło"
 
 #~ msgid "Failed to open file, tried to open folder as file"
@@ -2820,7 +2820,7 @@ msgstr "biały"
 
 #, fuzzy
 #~| msgid "PNG / SVG / JPG / PDF file"
-#~ msgid "Xopp, PNG, SVG, JPG, PDF"
+#~ msgid "XOPP, PNG, SVG, JPG, PDF"
 #~ msgstr "plik PNG / SVG / JPG / PDF"
 
 #, fuzzy

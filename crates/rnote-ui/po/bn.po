@@ -311,18 +311,18 @@ msgstr "রপ্তানি বিন্যাস"
 #: crates/rnote-ui/src/dialogs/export.rs:304
 #: crates/rnote-ui/src/dialogs/export.rs:635
 #: crates/rnote-ui/src/dialogs/export.rs:954
-msgid "Svg"
+msgid "SVG"
 msgstr "এসভিজি"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:315
-msgid "Pdf"
+msgid "PDF"
 msgstr "পিডিএফ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:326
-msgid "Xopp"
-msgstr "Xopp"
+msgid "XOPP"
+msgstr "XOPP"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
 #: crates/rnote-ui/data/ui/dialogs/export.ui:356
@@ -465,7 +465,7 @@ msgid "Set the margin around the selected area"
 msgstr "নির্বাচিত এলাকার চারপাশে মার্জিন সেট করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
-msgid "Import Pdf"
+msgid "Import PDF"
 msgstr "পিডিএফ আমদানি করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
@@ -479,7 +479,7 @@ msgid "Info"
 msgstr "তথ্য"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
-msgid "Pdf Import Preferences"
+msgid "PDF Import Preferences"
 msgstr "পিডিএফ আমদানি পছন্দসমূহ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
@@ -495,7 +495,7 @@ msgid "Adjust Document"
 msgstr "নথি এডজাস্ট করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
-msgid "Whether the document layout should be adjusted to the Pdf"
+msgid "Whether the document layout should be adjusted to the PDF"
 msgstr "নথির বিন্যাস পিডিএফের সাথে সংগতি করা হবে কিনা"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
@@ -503,7 +503,7 @@ msgid "Page Width (%)"
 msgstr "পৃষ্ঠার প্রস্থ (%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
-msgid "Set the width of imported Pdf's in percentage to the format width"
+msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr "আমদানি করা পিডিএফগুলির প্রস্থ বিন্যাস এর প্রস্থের শতকরা অনুপাত হিসাবে সেট করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
@@ -511,7 +511,7 @@ msgid "Page Spacing"
 msgstr "পৃষ্ঠার ব্যবধান"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
-msgid "How Pdf pages are spaced"
+msgid "How PDF pages are spaced"
 msgstr "কিভাবে পিডিএফ পৃষ্ঠাগুলি ব্যবধান করা হয়"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
@@ -527,7 +527,7 @@ msgid "Pages Type"
 msgstr "পৃষ্ঠার ধরন"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgid "Set whether PDF's should be imported as vector or bitmap images"
 msgstr "পিডিএফ গুলি কি ভেক্টর বা বিটম্যাপ ছবি হিসাবে আমদানি করা উচিত তা ঠিক করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:144
@@ -1966,8 +1966,8 @@ msgid "Open File"
 msgstr "ফাইল খুলুন"
 
 #: crates/rnote-ui/src/dialogs/import.rs:86
-msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
+msgid "Jpg, PDF, Png, SVG, XOPP, Txt"
+msgstr "Jpg, PDF, Png, SVG, XOPP, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
 msgid "- no file name -"
@@ -2557,7 +2557,7 @@ msgstr "সাদা"
 #~ msgid "Lecture Note 1"
 #~ msgstr "লেকচার নোট ১"
 
-#~ msgid "A Pdf annotation"
+#~ msgid "A PDF annotation"
 #~ msgstr "একটি পিডিএফ টীকা"
 
 #~ msgid "Lecture Note 2"
@@ -2591,7 +2591,7 @@ msgstr "সাদা"
 #~ msgid "Opening Xournal++ file failed"
 #~ msgstr "Xournal++ ফাইল খুলতে ব্যর্থ হয়েছে"
 
-#~ msgid "Opening Pdf file failed"
+#~ msgid "Opening PDF file failed"
 #~ msgstr "পিডিএফ ফাইল খোলা ব্যর্থ হয়েছে"
 
 #~ msgid "Failed to open file, tried to open folder as file"
@@ -2838,7 +2838,7 @@ msgstr "সাদা"
 
 #, fuzzy
 #~| msgid "PNG / SVG / JPG / PDF file"
-#~ msgid "Xopp, PNG, SVG, JPG, PDF"
+#~ msgid "XOPP, PNG, SVG, JPG, PDF"
 #~ msgstr "PNG / SVG / JPG / PDF ফাইল"
 
 #~ msgid "Drag stroke elements based on proximity"

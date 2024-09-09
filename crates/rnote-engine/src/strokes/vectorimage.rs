@@ -3,7 +3,7 @@ use super::content::GeneratedContentImages;
 use super::resize::{calculate_resize_ratio, ImageSizeOption};
 use super::{Content, Stroke};
 use crate::document::Format;
-use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
+use crate::engine::import::{PDFImportPageSpacing, PDFImportPrefs};
 use crate::{render, Drawable};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
@@ -44,7 +44,7 @@ impl Default for VectorImage {
 }
 
 impl Content for VectorImage {
-    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
+    fn gen_svg(&self) -> Result<render::SVG, anyhow::Error> {
         let svg_root = svg::node::element::SVG::new()
             .set("x", -self.rectangle.cuboid.half_extents[0])
             .set("y", -self.rectangle.cuboid.half_extents[1])
@@ -66,7 +66,7 @@ impl Content for VectorImage {
             )
             .add(svg_root);
         let svg_data = rnote_compose::utils::svg_node_to_string(&group)?;
-        let svg = render::Svg {
+        let svg = render::SVG {
             bounds: self.rectangle.bounds(),
             svg_data,
         };
@@ -94,7 +94,7 @@ impl Content for VectorImage {
 
 // Because it is currently not possible to render SVGs directly with piet, the default gen_svg() implementation is
 // overwritten and called in `draw()` and `draw_to_cairo()`. There the rsvg renderer is used to generate bitmap
-// images. This way it is ensured that an actual Svg is generated when calling `gen_svg()`, but it is also possible to
+// images. This way it is ensured that an actual SVG is generated when calling `gen_svg()`, but it is also possible to
 // to be drawn to piet.
 impl Drawable for VectorImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
@@ -206,7 +206,7 @@ impl VectorImage {
 
     pub fn from_pdf_bytes(
         bytes: &[u8],
-        pdf_import_prefs: PdfImportPrefs,
+        pdf_import_prefs: PDFImportPrefs,
         insert_pos: na::Vector2<f64>,
         page_range: Option<Range<u32>>,
         format: &Format,
@@ -238,21 +238,21 @@ impl VectorImage {
                 let res = move || -> anyhow::Result<String> {
                     let svg_stream: Vec<u8> = vec![];
 
-                    let mut svg_surface = cairo::SvgSurface::for_stream(
+                    let mut svg_surface = cairo::SVGSurface::for_stream(
                         intrinsic_size.0,
                         intrinsic_size.1,
                         svg_stream,
                     )
                     .map_err(|e| {
                         anyhow::anyhow!(
-                            "Creating SvgSurface with dimensions ({}, {}) failed, Err: {e:?}",
+                            "Creating SVGSurface with dimensions ({}, {}) failed, Err: {e:?}",
                             intrinsic_size.0,
                             intrinsic_size.1
                         )
                     })?;
 
                     // Popplers page units are in points ( equals 1/72 inch )
-                    svg_surface.set_document_unit(cairo::SvgUnit::Pt);
+                    svg_surface.set_document_unit(cairo::SVGUnit::Pt);
 
                     {
                         let cx = cairo::Context::new(&svg_surface).map_err(|e| {
@@ -292,13 +292,13 @@ impl VectorImage {
                             .finish_output_stream()
                             .map_err(|e| {
                                 anyhow::anyhow!(
-                                    "Failed to finish Pdf page surface output stream, Err: {e:?}"
+                                    "Failed to finish PDF page surface output stream, Err: {e:?}"
                                 )
                             })?
                             .downcast::<Vec<u8>>()
                             .map_err(|e| {
                                 anyhow::anyhow!(
-                                    "Failed to downcast Pdf page surface content, Err: {e:?}"
+                                    "Failed to downcast PDF page surface content, Err: {e:?}"
                                 )
                             })?,
                     )?;
@@ -312,22 +312,22 @@ impl VectorImage {
                     y += height
                 } else {
                     y += match pdf_import_prefs.page_spacing {
-                        PdfImportPageSpacing::Continuous => {
+                        PDFImportPageSpacing::Continuous => {
                             height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5
                         }
-                        PdfImportPageSpacing::OnePerDocumentPage => format.height(),
+                        PDFImportPageSpacing::OnePerDocumentPage => format.height(),
                     };
                 }
 
                 match res() {
-                    Ok(svg_data) => Some(render::Svg { svg_data, bounds }),
+                    Ok(svg_data) => Some(render::SVG { svg_data, bounds }),
                     Err(e) => {
                         error!("Importing page {page_i} from pdf failed, Err: {e:?}");
                         None
                     }
                 }
             })
-            .collect::<Vec<render::Svg>>();
+            .collect::<Vec<render::SVG>>();
 
         svgs.into_par_iter()
             .map(|svg| {

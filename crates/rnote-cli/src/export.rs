@@ -311,9 +311,9 @@ pub(crate) fn create_doc_export_prefs_from_args(
 
 fn doc_export_format_from_ext_str(format: &str) -> anyhow::Result<DocExportFormat> {
     match format {
-        "svg" => Ok(DocExportFormat::Svg),
-        "xopp" => Ok(DocExportFormat::Xopp),
-        "pdf" => Ok(DocExportFormat::Pdf),
+        "svg" => Ok(DocExportFormat::SVG),
+        "xopp" => Ok(DocExportFormat::XOPP),
+        "pdf" => Ok(DocExportFormat::PDF),
         ext => Err(anyhow::anyhow!(
             "Exporting document to format with extension \"{ext}\" is not supported."
         )),
@@ -390,7 +390,7 @@ pub(crate) fn create_selection_export_prefs_from_args(
 
 fn get_selection_export_format(format: &str) -> anyhow::Result<SelectionExportFormat> {
     match format {
-        "svg" => Ok(SelectionExportFormat::Svg),
+        "svg" => Ok(SelectionExportFormat::SVG),
         "png" => Ok(SelectionExportFormat::Png),
         "jpg" | "jpeg" => Ok(SelectionExportFormat::Jpeg),
         ext => Err(anyhow::anyhow!(

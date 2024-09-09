@@ -315,17 +315,17 @@ msgstr "چارچوب بیرون‌آوری"
 #: crates/rnote-ui/src/dialogs/export.rs:304
 #: crates/rnote-ui/src/dialogs/export.rs:635
 #: crates/rnote-ui/src/dialogs/export.rs:954
-msgid "Svg"
+msgid "SVG"
 msgstr "اس‌وی‌جی"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:315
-msgid "Pdf"
+msgid "PDF"
 msgstr "پی‌دی‌اف"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:326
-msgid "Xopp"
+msgid "XOPP"
 msgstr "اکس‌اوپی‌پی"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
@@ -471,7 +471,7 @@ msgid "Set the margin around the selected area"
 msgstr "کناره پیرامون پهنه برگزیده‌شده را بنهانید"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
-msgid "Import Pdf"
+msgid "Import PDF"
 msgstr "درون‌آوری پی‌دی‌اف"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
@@ -485,7 +485,7 @@ msgid "Info"
 msgstr "داده‌ها"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
-msgid "Pdf Import Preferences"
+msgid "PDF Import Preferences"
 msgstr "نخستینگی‌های درون‌آوری پی‌دی‌اف"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
@@ -505,7 +505,7 @@ msgstr "بیرون‌آوری نامه"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
 #, fuzzy
 #| msgid "Set whether the background pattern should be exported"
-msgid "Whether the document layout should be adjusted to the Pdf"
+msgid "Whether the document layout should be adjusted to the PDF"
 msgstr "بگزینید که نمونه پس‌زمینه بیرون‌آوری شود یا نه"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
@@ -513,7 +513,7 @@ msgid "Page Width (%)"
 msgstr "درازای برگه (٪)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
-msgid "Set the width of imported Pdf's in percentage to the format width"
+msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr "درازای پی‌دی‌اف‌های درون‌آورده‌شده را به گونه درسد بر درازای چارچوب بنهانید"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
@@ -521,7 +521,7 @@ msgid "Page Spacing"
 msgstr "میان‌گذاری برگه‌ها"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
-msgid "How Pdf pages are spaced"
+msgid "How PDF pages are spaced"
 msgstr "برگه‌های پی‌دی‌اف چگونه میان‌گذاری می‌شوند"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
@@ -537,7 +537,7 @@ msgid "Pages Type"
 msgstr "گونه برگه‌ها"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgid "Set whether PDF's should be imported as vector or bitmap images"
 msgstr "بگزینید که پی‌دی‌اف‌ها باید به سان نگاره‌های برداری یا بیت‌مپ درون‌آوری شوند"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:144
@@ -1976,7 +1976,7 @@ msgid "Open File"
 msgstr "بازکردن فایل"
 
 #: crates/rnote-ui/src/dialogs/import.rs:86
-msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
+msgid "Jpg, PDF, Png, SVG, XOPP, Txt"
 msgstr ""
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
@@ -2570,7 +2570,7 @@ msgstr ""
 #~ msgid "Lecture Note 1"
 #~ msgstr "یادداشت سخنرانی ۱"
 
-#~ msgid "A Pdf annotation"
+#~ msgid "A PDF annotation"
 #~ msgstr "یک کنارنویسی پی‌دی‌اف"
 
 #~ msgid "Lecture Note 2"

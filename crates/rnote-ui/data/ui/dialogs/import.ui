@@ -2,7 +2,7 @@
 <!-- Import dialogs -->
 <interface>
   <object class="AdwDialog" id="dialog_import_pdf_w_prefs">
-    <property name="title" translatable="yes">Import Pdf</property>
+    <property name="title" translatable="yes">Import PDF</property>
     <child>
       <object class="AdwToolbarView">
         <child type="top">
@@ -78,7 +78,7 @@
                 </child>
                 <child>
                   <object class="AdwPreferencesGroup">
-                    <property name="title" translatable="yes">Pdf Import Preferences</property>
+                    <property name="title" translatable="yes">PDF Import Preferences</property>
                     <property name="halign">fill</property>
                     <child>
                       <object class="AdwSpinRow" id="pdf_page_start_row">
@@ -101,13 +101,13 @@
                     <child>
                       <object class="AdwSwitchRow" id="pdf_import_adjust_document_row">
                         <property name="title" translatable="yes">Adjust Document</property>
-                        <property name="subtitle" translatable="yes">Whether the document layout should be adjusted to the Pdf</property>
+                        <property name="subtitle" translatable="yes">Whether the document layout should be adjusted to the PDF</property>
                       </object>
                     </child>
                     <child>
                       <object class="AdwSpinRow" id="pdf_import_width_row">
                         <property name="title" translatable="yes">Page Width (%)</property>
-                        <property name="subtitle" translatable="yes">Set the width of imported Pdf's in percentage to the format width</property>
+                        <property name="subtitle" translatable="yes">Set the width of imported PDF's in percentage to the format width</property>
                         <property name="adjustment">pdf_import_width_perc_adj</property>
                         <property name="digits">0</property>
                       </object>
@@ -115,7 +115,7 @@
                     <child>
                       <object class="AdwComboRow" id="pdf_import_page_spacing_row">
                         <property name="title" translatable="yes">Page Spacing</property>
-                        <property name="subtitle" translatable="yes">How Pdf pages are spaced</property>
+                        <property name="subtitle" translatable="yes">How PDF pages are spaced</property>
                         <property name="model">
                           <object class="GtkStringList">
                             <items>
@@ -129,7 +129,7 @@
                     <child>
                       <object class="AdwActionRow" id="pdf_import_pages_type_row">
                         <property name="title" translatable="yes">Pages Type</property>
-                        <property name="subtitle" translatable="yes">Set whether Pdf's should be imported as vector or bitmap images</property>
+                        <property name="subtitle" translatable="yes">Set whether PDF's should be imported as vector or bitmap images</property>
                         <child type="suffix">
                           <object class="GtkBox">
                             <property name="orientation">horizontal</property>

@@ -327,18 +327,18 @@ msgstr "내보내기 형식"
 #: crates/rnote-ui/src/dialogs/export.rs:304
 #: crates/rnote-ui/src/dialogs/export.rs:635
 #: crates/rnote-ui/src/dialogs/export.rs:954
-msgid "Svg"
-msgstr "Svg"
+msgid "SVG"
+msgstr "SVG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:315
-msgid "Pdf"
-msgstr "Pdf"
+msgid "PDF"
+msgstr "PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:326
-msgid "Xopp"
-msgstr "Xopp"
+msgid "XOPP"
+msgstr "XOPP"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
 #: crates/rnote-ui/data/ui/dialogs/export.ui:356
@@ -471,7 +471,7 @@ msgstr "선택한 영역 주변의 여백을 설정합니다"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
 #, fuzzy
 #| msgid "Import PDF"
-msgid "Import Pdf"
+msgid "Import PDF"
 msgstr "PDF 가져오기"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
@@ -487,7 +487,7 @@ msgstr "정보"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
 #, fuzzy
 #| msgid "PDF Import Preferences"
-msgid "Pdf Import Preferences"
+msgid "PDF Import Preferences"
 msgstr "PDF 가져오기 환경설정"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
@@ -507,7 +507,7 @@ msgstr "문서"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
 #, fuzzy
 #| msgid "Set whether the background pattern should be exported"
-msgid "Whether the document layout should be adjusted to the Pdf"
+msgid "Whether the document layout should be adjusted to the PDF"
 msgstr "배경 패턴을 내보낼지 여부를 설정합니다"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
@@ -517,7 +517,7 @@ msgstr "페이지 너비 (%)"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
 #, fuzzy
 #| msgid "Set the width of imported PDF's in percentage to the format width"
-msgid "Set the width of imported Pdf's in percentage to the format width"
+msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr "가져온 PDF의 너비를 형식 너비에 대한 백분율로 설정합니다"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
@@ -527,7 +527,7 @@ msgstr "페이지 간격"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
 #, fuzzy
 #| msgid "How PDF pages are spaced"
-msgid "How Pdf pages are spaced"
+msgid "How PDF pages are spaced"
 msgstr "PDF 페이지 간격 지정 방법"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
@@ -545,7 +545,7 @@ msgstr "페이지 유형"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
 #, fuzzy
 #| msgid "Set whether PDFs should be imported as vector or bitmap images"
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgid "Set whether PDF's should be imported as vector or bitmap images"
 msgstr "PDF를 벡터 이미지로 가져올지 비트맵 이미지로 가져올지 설정합니다"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:144
@@ -2030,9 +2030,9 @@ msgstr "파일 열기"
 
 #: crates/rnote-ui/src/dialogs/import.rs:86
 #, fuzzy
-#| msgid "Jpg, Pdf, Png, Svg, Xopp"
-msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp"
+#| msgid "Jpg, PDF, Png, SVG, XOPP"
+msgid "Jpg, PDF, Png, SVG, XOPP, Txt"
+msgstr "Jpg, PDF, Png, SVG, XOPP"
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
 msgid "- no file name -"
@@ -2674,7 +2674,7 @@ msgstr ""
 
 #, fuzzy
 #~| msgid "A PDF annotation"
-#~ msgid "A Pdf annotation"
+#~ msgid "A PDF annotation"
 #~ msgstr "PDF 주석"
 
 #~ msgid "Lecture Note 2"
@@ -2707,7 +2707,7 @@ msgstr ""
 
 #, fuzzy
 #~| msgid "Opening PDF file failed"
-#~ msgid "Opening Pdf file failed"
+#~ msgid "Opening PDF file failed"
 #~ msgstr "PDF 파일 열기에 실패했습니다"
 
 #~ msgid "Failed to open file, tried to open folder as file"

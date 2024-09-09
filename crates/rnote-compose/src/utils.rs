@@ -27,7 +27,7 @@ pub fn remove_xml_header(svg: &str) -> String {
     String::from(re.replace_all(svg, ""))
 }
 
-/// Wrap a Svg root element around the Svg string.
+/// Wrap a SVG root element around the SVG string.
 pub fn wrap_svg_root(
     svg_data: &str,
     bounds: Option<Aabb>,
@@ -79,7 +79,7 @@ pub fn wrap_svg_root(
         .set("preserveAspectRatio", preserve_aspectratio.as_str())
         .add(svg::node::Blob::new(svg_data));
 
-    // unwrapping because we know its a valid Svg
+    // unwrapping because we know its a valid SVG
     svg_node_to_string(&svg_root).unwrap()
 }
 
@@ -104,7 +104,7 @@ pub fn new_rng_default_pcg64(seed: Option<u64>) -> rand_pcg::Pcg64 {
     }
 }
 
-/// Generate a alphanumeric random prefix for Svg Id's to avoid Id collisions.
+/// Generate a alphanumeric random prefix for SVG Id's to avoid Id collisions.
 pub fn svg_random_id_prefix() -> String {
     rand::thread_rng()
         .sample_iter(&rand::distributions::Alphanumeric)

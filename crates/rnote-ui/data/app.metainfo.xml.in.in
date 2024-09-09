@@ -142,7 +142,7 @@
         <ul>
           <li>feat: touch-hold context-menu with basic actions (thanks to @silvasch)</li>
           <li>feat: added polygon shape and builder</li>
-          <li>feat: added adjust-document Pdf import option that configures the document for improved annotation use-case</li>
+          <li>feat: added adjust-document PDF import option that configures the document for improved annotation use-case</li>
           <li>improv: additional color button (default: white) (thanks to @silvasch)</li>
           <li>improv: new keyboard shortcuts for managing windows and tabs (thanks to @silvasch)</li>
           <li>improv: autosave all tabs, but only ones that are flagged modified (thanks to @Doublonmousse)</li>
@@ -264,7 +264,7 @@
           <li>improvement: default view offset when opening documents</li>
           <li>enhancement: move view using arrow keys</li>
           <li>fix: orientation of some popovers when sidebar is on the left</li>
-          <li>fix: restore vectorized images (Pdf pages, Svg) export</li>
+          <li>fix: restore vectorized images (PDF pages, SVG) export</li>
           <li>fix: .rnote file imports that were created pre v0.5.9</li>
           <li>fix: rendering of closed shapes from imported xopp file</li>
         </ul>
@@ -295,7 +295,7 @@ If you are upgrading from a previous version, you need to uninstall the old vers
           <li>improvement: selection highlights for brush-strokes</li>
           <li>improvement: ctrl + scroll following the pointer</li>
           <li>improvement: scale-ratio when resizing the selection with locked aspect-ratio</li>
-          <li>improvement: provide selection content as Svg and Png when copying/cutting to the clipboard</li>
+          <li>improvement: provide selection content as SVG and Png when copying/cutting to the clipboard</li>
           <li>improvement: save file logic in close tab/window dialogs</li>
           <li>improvement: memory consumption when loading rnote files</li>
           <li>UI: page controls for the fixed-size layout were moved into the canvas menu dropdown</li>
@@ -361,9 +361,9 @@ Breakages in the file format will be explicitly announced (but we'll work as har
         <ul>
           <li>feature: configurable shortcuts for drawing pad buttons</li>
           <li>improvement: input events for rate-limited devices (E-Paper/ low-frequency displays)</li>
-          <li>improvement: reduced Svg export size</li>
+          <li>improvement: reduced SVG export size</li>
           <li>fix: artifacts when printing</li>
-          <li>fix: Jpeg images embedded in Pdfs were not rendered</li>
+          <li>fix: Jpeg images embedded in PDFs were not rendered</li>
           <li>fix: select-all with "ctrl+a" included trashed strokes</li>
           <li>fix: units in settings kept resetting to "Px"</li>
           <li>fix: flicker when duplicating large selections</li>
@@ -380,8 +380,8 @@ Breakages in the file format will be explicitly announced (but we'll work as har
           <li>improvement: indicate hover over nodes in the selector and typewriter</li>
           <li>improvement: reduced save and xopp export file sizes</li>
           <li>UI: follow Gnome HIG writing style more closely and fixed string inconsistencies</li>
-          <li>fix: Pdf import with different size pages</li>
-          <li>fix: image and Pdf import offsets now take the document bounds into account</li>
+          <li>fix: PDF import with different size pages</li>
+          <li>fix: image and PDF import offsets now take the document bounds into account</li>
           <li>fix: broken resizing in fixed-size document layout</li>
           <li>fix: crash when navigating up/down into non-ASCII text</li>
           <li>fix: crash on launch when using a custom stylesheet</li>
@@ -479,7 +479,7 @@ Breakages in the file format will be explicitly announced (but we'll work as har
           <li>improvement: Add zoom buttons to the quick-actions overlay</li>
           <li>improvement: By default use the workspace directory for import and export dialogs, and
             document file for save dialogs</li>
-          <li>fix: Pdf export and print sometimes produced empty pages</li>
+          <li>fix: PDF export and print sometimes produced empty pages</li>
           <li>fix: workspace files list not refreshing after modifying the workspace path</li>
           <li>fix: Selector being canceled when attempting to interact with the selection when
             "touch-drawing" was enabled</li>
@@ -503,7 +503,7 @@ Breakages in the file format will be explicitly announced (but we'll work as har
           <li>fix: background pattern tile rendering size</li>
           <li>fix: scrolling with touchpad was not possible when the "permanent hidden scrollbars"
             option was enabled</li>
-          <li>fix: broken Svg export</li>
+          <li>fix: broken SVG export</li>
           <li>fix: image layers when exporting to .xopp</li>
         </ul>
       </description>
@@ -592,7 +592,7 @@ Breakages in the file format will be explicitly announced (but we'll work as har
           <li>disclaimer: breaking file format compatibility</li>
           <li>feature: configurable button shortcuts (stylus, mouse)</li>
           <li>change: moved the marker into the brush pen as a style</li>
-          <li>improvement: faster Pdf export &amp; fix export with large sheet dimensions</li>
+          <li>improvement: faster PDF export &amp; fix export with large sheet dimensions</li>
           <li>bug fixes</li>
         </ul>
       </description>
@@ -625,7 +625,7 @@ Breakages in the file format will be explicitly announced (but we'll work as har
       <description>
         <p>this release changes:</p>
         <ul>
-          <li>new feature: Export as Pdf</li>
+          <li>new feature: Export as PDF</li>
           <li>bug fixes</li>
         </ul>
       </description>
@@ -677,7 +677,7 @@ Breakages in the file format will be explicitly announced (but we'll work as har
       <description>
         <p>this release changes:</p>
         <ul>
-          <li>Pdf import as vector images</li>
+          <li>PDF import as vector images</li>
           <li>bug fixes</li>
         </ul>
       </description>
@@ -708,7 +708,7 @@ Breakages in the file format will be explicitly announced (but we'll work as har
           <li>an updated file format. !!! Breaks compatibility to older versions. Please export
             existing files before upgrading / downgrade temporarily (explained how to downgrade at
             github.com/flxzt/rnote)</li>
-          <li>new features: Pdf import, clipboard and drag&amp;drop support</li>
+          <li>new features: PDF import, clipboard and drag&amp;drop support</li>
           <li>performance improvements in stroke rendering, selecting, erasing by parallelizing
             these operations</li>
           <li>UI improvements</li>

@@ -1,6 +1,6 @@
 // Imports
 use crate::document::Background;
-use crate::render::Svg;
+use crate::render::SVG;
 use crate::strokes::Stroke;
 use crate::Drawable;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -61,7 +61,7 @@ impl StrokeContent {
         self.bounds().map(|b| b.extents())
     }
 
-    /// Generate a Svg from the content.
+    /// Generate a SVG from the content.
     ///
     /// Moves the bounds to mins: [0.0, 0.0], maxs: extents.
     ///
@@ -72,11 +72,11 @@ impl StrokeContent {
         draw_pattern: bool,
         optimize_printing: bool,
         margin: f64,
-    ) -> anyhow::Result<Option<Svg>> {
+    ) -> anyhow::Result<Option<SVG>> {
         let Some(bounds_loosened) = self.bounds().map(|b| b.loosened(margin)) else {
             return Ok(None);
         };
-        let mut svg = Svg::gen_with_cairo(
+        let mut svg = SVG::gen_with_cairo(
             |cairo_cx| {
                 self.draw_to_cairo(
                     cairo_cx,
@@ -91,7 +91,7 @@ impl StrokeContent {
         )?;
         // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
         if let Err(e) = svg.simplify() {
-            warn!("Simplifying Svg while generating StrokeContent Svg failed, Err: {e:?}");
+            warn!("Simplifying SVG while generating StrokeContent SVG failed, Err: {e:?}");
         };
         Ok(Some(svg))
     }

@@ -7,7 +7,7 @@ use rnote_engine::engine::export::{
     DocExportFormat, DocPagesExportFormat, DocPagesExportPrefs, SelectionExportFormat,
     SelectionExportPrefs,
 };
-use rnote_engine::engine::import::XoppImportPrefs;
+use rnote_engine::engine::import::XOPPImportPrefs;
 use rnote_engine::SelectionCollision;
 use smol::fs::File;
 use smol::io::{AsyncReadExt, AsyncWriteExt};
@@ -41,7 +41,7 @@ pub(crate) enum Command {
         #[arg(short = 'i', long)]
         input_file: PathBuf,
         /// When importing a .xopp file, the import dpi can be specified.
-        #[arg(long, default_value_t = XoppImportPrefs::default().dpi)]
+        #[arg(long, default_value_t = XOPPImportPrefs::default().dpi)]
         xopp_dpi: f64,
     },
     /// Exports the Rnote file(s) and saves it/them in the desired format.{n}

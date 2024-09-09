@@ -6,7 +6,7 @@ use super::pensconfig::selectorconfig::SelectorStyle;
 use super::PenBehaviour;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut, StrokeContent};
-use crate::render::Svg;
+use crate::render::SVG;
 use crate::snap::SnapCorner;
 use crate::store::StrokeKey;
 use crate::strokes::Content;
@@ -187,10 +187,10 @@ impl PenBehaviour for Selector {
                         StrokeContent::MIME_TYPE.to_string(),
                     ));
                     if let Some(stroke_content_svg) = stroke_content_svg {
-                        // Add generated Svg
+                        // Add generated SVG
                         clipboard_content.push((
                             stroke_content_svg.svg_data.clone().into_bytes(),
-                            Svg::MIME_TYPE.to_string(),
+                            SVG::MIME_TYPE.to_string(),
                         ));
 
                         // Add rendered Png
@@ -248,10 +248,10 @@ impl PenBehaviour for Selector {
                         StrokeContent::MIME_TYPE.to_string(),
                     ));
                     if let Some(stroke_content_svg) = stroke_content_svg {
-                        // Add generated Svg
+                        // Add generated SVG
                         clipboard_content.push((
                             stroke_content_svg.svg_data.clone().into_bytes(),
-                            Svg::MIME_TYPE.to_string(),
+                            SVG::MIME_TYPE.to_string(),
                         ));
 
                         // Add rendered Png

@@ -293,7 +293,7 @@ fn create_filedialog_export_doc(
     // See the limitations on FileChooserNative
     // https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/struct.FileChooserNative.html#win32-details--gtkfilechooserdialognative-win32
     match doc_export_prefs.export_format {
-        DocExportFormat::Svg => {
+        DocExportFormat::SVG => {
             if cfg!(target_os = "windows") {
                 filter.add_pattern("*.svg");
             } else {
@@ -302,9 +302,9 @@ fn create_filedialog_export_doc(
             if cfg!(target_os = "macos") {
                 filter.add_suffix("svg");
             }
-            filter.set_name(Some(&gettext("Svg")));
+            filter.set_name(Some(&gettext("SVG")));
         }
-        DocExportFormat::Pdf => {
+        DocExportFormat::PDF => {
             if cfg!(target_os = "windows") {
                 filter.add_pattern("*.pdf");
             } else {
@@ -313,9 +313,9 @@ fn create_filedialog_export_doc(
             if cfg!(target_os = "macos") {
                 filter.add_suffix("pdf");
             }
-            filter.set_name(Some(&gettext("Pdf")));
+            filter.set_name(Some(&gettext("PDF")));
         }
-        DocExportFormat::Xopp => {
+        DocExportFormat::XOPP => {
             if cfg!(target_os = "windows") {
                 filter.add_pattern("*.xopp");
             } else {
@@ -324,7 +324,7 @@ fn create_filedialog_export_doc(
             if cfg!(target_os = "macos") {
                 filter.add_suffix("xopp");
             }
-            filter.set_name(Some(&gettext("Xopp")));
+            filter.set_name(Some(&gettext("XOPP")));
         }
     }
     let file_ext = doc_export_prefs.export_format.file_ext();
@@ -624,7 +624,7 @@ fn create_filedialog_export_doc_pages(
     // We always need to be able to select folders
     filter.add_mime_type("inode/directory");
     match doc_pages_export_prefs.export_format {
-        DocPagesExportFormat::Svg => {
+        DocPagesExportFormat::SVG => {
             if cfg!(target_os = "windows") {
                 filter.add_pattern("*.svg");
             } else {
@@ -633,7 +633,7 @@ fn create_filedialog_export_doc_pages(
             if cfg!(target_os = "macos") {
                 filter.add_suffix("svg");
             }
-            filter.set_name(Some(&gettext("Svg")));
+            filter.set_name(Some(&gettext("SVG")));
         }
         DocPagesExportFormat::Png => {
             if cfg!(target_os = "windows") {
@@ -942,7 +942,7 @@ fn create_filedialog_export_selection(
     // See the limitations on FileChooserNative
     // https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/struct.FileChooserNative.html#win32-details--gtkfilechooserdialognative-win32
     match selection_export_prefs.export_format {
-        SelectionExportFormat::Svg => {
+        SelectionExportFormat::SVG => {
             if cfg!(target_os = "windows") {
                 filter.add_pattern("*.svg");
             } else {
@@ -951,7 +951,7 @@ fn create_filedialog_export_selection(
             if cfg!(target_os = "macos") {
                 filter.add_suffix("svg");
             }
-            filter.set_name(Some(&gettext("Svg")));
+            filter.set_name(Some(&gettext("SVG")));
         }
         SelectionExportFormat::Png => {
             if cfg!(target_os = "windows") {

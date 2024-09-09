@@ -132,9 +132,9 @@
                                 <property name="model">
                                   <object class="GtkStringList">
                                     <items>
-                                      <item translatable="yes">Svg</item>
-                                      <item translatable="yes">Pdf</item>
-                                      <item translatable="yes">Xopp</item>
+                                      <item translatable="yes">SVG</item>
+                                      <item translatable="yes">PDF</item>
+                                      <item translatable="yes">XOPP</item>
                                     </items>
                                   </object>
                                 </property>
@@ -343,7 +343,7 @@ are cut into pages</property>
                                 <property name="model">
                                   <object class="GtkStringList">
                                     <items>
-                                      <item translatable="yes">Svg</item>
+                                      <item translatable="yes">SVG</item>
                                       <item translatable="yes">Png</item>
                                       <item translatable="yes">Jpeg</item>
                                     </items>
@@ -541,7 +541,7 @@ are cut into pages</property>
                                 <property name="model">
                                   <object class="GtkStringList">
                                     <items>
-                                      <item translatable="yes">Svg</item>
+                                      <item translatable="yes">SVG</item>
                                       <item translatable="yes">Png</item>
                                       <item translatable="yes">Jpeg</item>
                                     </items>

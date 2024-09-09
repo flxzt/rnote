@@ -586,7 +586,7 @@ impl RnAppWindow {
                     .await?;
                 true
             }
-            FileType::XoppFile => {
+            FileType::XOPPFile => {
                 // a new tab for xopp file import
                 let wrapper = self.new_canvas_wrapper();
                 let canvas = wrapper.canvas();
@@ -597,7 +597,7 @@ impl RnAppWindow {
                 }
                 file_imported
             }
-            FileType::PdfFile => {
+            FileType::PDFFile => {
                 let canvas = self.active_tab_wrapper().canvas();
                 dialogs::import::dialog_import_pdf_w_prefs(self, &canvas, input_file, target_pos)
                     .await?

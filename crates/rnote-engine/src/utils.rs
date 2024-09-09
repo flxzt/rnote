@@ -99,49 +99,48 @@ pub mod glib_bytes_base64 {
     }
 }
 
-pub async fn atomic_save_to_file<Q: AsRef<std::path::Path> + std::fmt::Debug>(
-    filepath: Q,
-    bytes: &[u8],
-) -> anyhow::Result<()> {
+pub async fn atomic_save_to_file<Q>(filepath: Q, bytes: &[u8]) -> anyhow::Result<()>
+where
+    Q: AsRef<std::path::Path>,
+{
     let filepath = filepath.as_ref().to_owned();
 
     // checks that the extension is not already 'tmp'
     if filepath
         .extension()
-        .ok_or_else(|| anyhow::anyhow!("Missing file extension"))?
+        .ok_or_else(|| anyhow::anyhow!("Specified filepath does not have an extension"))?
         .to_str()
-        .ok_or_else(|| anyhow::anyhow!("Invalid extension encoding"))?
+        .ok_or_else(|| anyhow::anyhow!("The extension of the specified filepath is invalid"))?
         == "tmp"
     {
-        Err(anyhow::anyhow!("File extension cannot be 'tmp'"))?;
+        Err(anyhow::anyhow!("The extension of the file cannot be 'tmp'"))?;
     }
 
-    let mut tmp_filepath = filepath.clone();
-    tmp_filepath.set_extension("tmp");
+    let tmp_filepath = filepath.with_extension("tmp");
 
     let file_write_operation = async {
         let mut write_file = async_fs::OpenOptions::new()
             .create(true)
-            .truncate(true)
             .write(true)
+            .truncate(true)
             .open(&tmp_filepath)
             .await
             .with_context(|| {
                 format!(
-                    "Failed to create/open/truncate tmp file for path '{}'",
+                    "Failed to create/open/truncate tmp file with path '{}'",
                     tmp_filepath.display()
                 )
             })?;
         write_file.write_all(bytes).await.with_context(|| {
             format!(
-                "Failed to write bytes to tmp file with path '{}'",
+                "Failed to write to tmp file with path '{}'",
                 tmp_filepath.display()
             )
         })?;
         write_file.sync_all().await.with_context(|| {
             format!(
-                "Failed to sync tmp file after writing with path '{}'",
-                &tmp_filepath.display()
+                "Failed to sync tmp file with path '{}'",
+                tmp_filepath.display()
             )
         })?;
 
@@ -150,7 +149,6 @@ pub async fn atomic_save_to_file<Q: AsRef<std::path::Path> + std::fmt::Debug>(
     file_write_operation.await?;
 
     let file_check_operation = async {
-        let size = bytes.len();
         let internal_checksum = crc32fast::hash(bytes);
 
         let mut read_file = async_fs::OpenOptions::new()
@@ -159,11 +157,11 @@ pub async fn atomic_save_to_file<Q: AsRef<std::path::Path> + std::fmt::Debug>(
             .await
             .with_context(|| {
                 format!(
-                    "Failed to open/read tmp file for path '{}'",
+                    "Failed to open/read tmp file with path '{}'",
                     &tmp_filepath.display()
                 )
             })?;
-        let mut data: Vec<u8> = Vec::with_capacity(size);
+        let mut data: Vec<u8> = Vec::with_capacity(bytes.len());
         read_file.read_to_end(&mut data).await?;
         let external_checksum = crc32fast::hash(&data);
 
@@ -180,7 +178,7 @@ pub async fn atomic_save_to_file<Q: AsRef<std::path::Path> + std::fmt::Debug>(
     let file_swap_operation = async {
         async_fs::rename(&tmp_filepath, &filepath)
             .await
-            .context("Failed to rename the temporary file into the main one")?;
+            .context("Failed to rename the temporary file into the original one")?;
 
         Ok::<(), anyhow::Error>(())
     };

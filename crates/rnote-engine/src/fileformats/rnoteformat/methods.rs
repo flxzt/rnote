@@ -1,10 +1,10 @@
+// Imports
+use crate::engine::EngineSnapshot;
 use serde::{Deserialize, Serialize};
 use std::{
     io::{Read, Write},
     str::FromStr,
 };
-
-use crate::engine::EngineSnapshot;
 
 /// Compression methods that can be applied to the serialized engine snapshot
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

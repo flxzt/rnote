@@ -33,11 +33,5 @@ option(
   'win-build-environment-path',
   type: 'string',
   value: 'C:\\msys64\\mingw64',
-  description: 'Only relevant for builds on Windows: the path of the installed msys/mingw64 environment.',
-)
-option(
-  'win-arm64-build-environment-path',
-  type: 'string',
-  value: 'C:\\msys64\\clangarm64',
-  description: 'Only relevant for ARM64 builds on Windows: the path of the installed msys/clangarm64 environment.',
+  description: 'Only relevant for builds on Windows: the path of the installed msys/mingw64 (or msys/clangarm64) environment.',
 )

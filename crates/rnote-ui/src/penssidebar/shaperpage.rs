@@ -23,25 +23,18 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage.ui")]
     pub(crate) struct RnShaperPage {
         #[template_child]
-        pub(crate) shaperstyle_menubutton: TemplateChild<MenuButton>,
+        pub(crate) shapebuildertype_popover: TemplateChild<Popover>,
         #[template_child]
-        pub(crate) shaperstyle_listbox: TemplateChild<ListBox>,
-        #[template_child]
-        pub(crate) shaperstyle_smooth_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shaperstyle_rough_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapeconfig_menubutton: TemplateChild<MenuButton>,
-        #[template_child]
-        pub(crate) roughstyle_fillstyle_row: TemplateChild<adw::ComboRow>,
-        #[template_child]
-        pub(crate) roughstyle_hachure_angle_row: TemplateChild<adw::SpinRow>,
-        #[template_child]
-        pub(crate) stroke_width_picker: TemplateChild<RnStrokeWidthPicker>,
+        pub(crate) shapebuildertype_popover_close_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) shapebuildertype_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub(crate) shapebuildertype_picker: TemplateChild<RnGroupedIconPicker>,
+
+        #[template_child]
+        pub(crate) constraint_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) constraint_popover_close_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) constraint_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -52,22 +45,33 @@ mod imp {
         pub(crate) constraint_three_to_two_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(crate) constraint_golden_row: TemplateChild<adw::SwitchRow>,
+
+        #[template_child]
+        pub(crate) stroke_width_picker: TemplateChild<RnStrokeWidthPicker>,
+
         #[template_child]
         pub(crate) shaperstyle_popover: TemplateChild<Popover>,
         #[template_child]
         pub(crate) shaperstyle_popover_close_button: TemplateChild<Button>,
         #[template_child]
+        pub(crate) shaperstyle_menubutton: TemplateChild<MenuButton>,
+        #[template_child]
+        pub(crate) shaperstyle_listbox: TemplateChild<ListBox>,
+        #[template_child]
+        pub(crate) shaperstyle_smooth_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub(crate) shaperstyle_rough_row: TemplateChild<adw::ActionRow>,
+
+        #[template_child]
         pub(crate) shapeconfig_popover: TemplateChild<Popover>,
         #[template_child]
         pub(crate) shapeconfig_popover_close_button: TemplateChild<Button>,
         #[template_child]
-        pub(crate) shapebuildertype_popover: TemplateChild<Popover>,
+        pub(crate) shapeconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub(crate) shapebuildertype_popover_close_button: TemplateChild<Button>,
+        pub(crate) roughstyle_fillstyle_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub(crate) constraint_popover: TemplateChild<Popover>,
-        #[template_child]
-        pub(crate) constraint_popover_close_button: TemplateChild<Button>,
+        pub(crate) roughstyle_hachure_angle_row: TemplateChild<adw::SpinRow>,
     }
 
     #[glib::object_subclass]

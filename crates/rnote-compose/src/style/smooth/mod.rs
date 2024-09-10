@@ -29,13 +29,8 @@ impl Composer<SmoothOptions> for Line {
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            let stroke_style = StrokeStyle::new()
-                .dash_pattern(&[2.0, 3.0])
-                .line_cap(piet::LineCap::Round)
-                .dash_offset(0.0);
-
-            info!("{:#?}", stroke_style);
-            cx.stroke_styled(line, &stroke_brush, options.stroke_width, &stroke_style);
+            let stroke_style = options.get_stroke_style_from_shape_style().unwrap();
+            cx.stroke_styled(line, &stroke_brush, options.stroke_width, stroke_style);
         }
         cx.restore().unwrap();
     }

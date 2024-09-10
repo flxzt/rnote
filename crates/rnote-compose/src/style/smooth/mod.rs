@@ -1,4 +1,5 @@
 // Modules
+mod shapestyle;
 mod smoothoptions;
 
 use piet::StrokeStyle;

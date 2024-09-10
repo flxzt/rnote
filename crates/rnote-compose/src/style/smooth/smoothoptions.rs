@@ -1,4 +1,5 @@
 // Imports
+use super::shapestyle::ShapeStyle;
 use crate::style::PressureCurve;
 use crate::Color;
 use serde::{Deserialize, Serialize};
@@ -19,6 +20,9 @@ pub struct SmoothOptions {
     /// Pressure curve.
     #[serde(rename = "pressure_curve")]
     pub pressure_curve: PressureCurve,
+    /// Shape style.
+    #[serde(rename = "shape_style")]
+    pub shape_style: Option<ShapeStyle>,
 }
 
 impl Default for SmoothOptions {
@@ -28,6 +32,7 @@ impl Default for SmoothOptions {
             stroke_color: Some(Color::BLACK),
             fill_color: None,
             pressure_curve: PressureCurve::default(),
+            shape_style: None,
         }
     }
 }

@@ -70,18 +70,6 @@ mod imp {
         pub(crate) shaperstyle_smooth_row: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub(crate) shaperstyle_rough_row: TemplateChild<adw::ActionRow>,
-        /*
-        #[template_child]
-        pub(crate) shapeconfig_popover: TemplateChild<Popover>,
-        #[template_child]
-        pub(crate) shapeconfig_popover_close_button: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) shapeconfig_menubutton: TemplateChild<MenuButton>,
-        #[template_child]
-        pub(crate) roughstyle_fillstyle_row: TemplateChild<adw::ComboRow>,
-        #[template_child]
-        pub(crate) roughstyle_hachure_angle_row: TemplateChild<adw::SpinRow>,
-        */
     }
 
     #[glib::object_subclass]

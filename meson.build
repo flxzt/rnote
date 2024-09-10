@@ -22,14 +22,7 @@ profile = get_option('profile')
 build_ui = get_option('ui')
 build_cli = get_option('cli')
 ci = get_option('ci')
-
-# Detecting architecture
-if host_machine.cpu_family() == 'aarch64'
-    win_build_environment_path = get_option('win-arm64-build-environment-path')
-else
-    win_build_environment_path = get_option('win-build-environment-path')
-endif
-
+win_build_environment_path = get_option('win-build-environment-path')
 win_installer_name = get_option('win-installer-name')
 
 app_name = 'rnote'

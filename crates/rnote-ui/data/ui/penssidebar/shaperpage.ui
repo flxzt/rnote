@@ -26,14 +26,11 @@
           </object>
         </child>
         <child>
-          <object class="GtkMenuButton" id="constraint_menubutton">
+          <object class="GtkMenuButton" id="shapeconfig_menubutton">
             <property name="icon-name">settings-symbolic</property>
-            <property name="hexpand">true</property>
-            <property name="sensitive">true</property>
-            <property name="halign">fill</property>
             <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Constraints</property>
-            <property name="popover">constraint_popover</property>
+            <property name="tooltip_text" translatable="yes">Shape Configuration</property>
+            <property name="popover">shapeconfig_popover</property>
             <style>
               <class name="flat" />
             </style>
@@ -70,21 +67,173 @@
             </style>
           </object>
         </child>
-        <child>
-          <object class="GtkMenuButton" id="shapeconfig_menubutton">
-            <property name="icon-name">settings-symbolic</property>
-            <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Shape Configuration</property>
-            <property name="popover">shapeconfig_popover</property>
-            <style>
-              <class name="flat" />
-            </style>
-          </object>
-        </child>
       </object>
     </child>
 
-    <!-- Shaper style -->
+    <!-- Shape config -->
+    <object class="GtkPopover" id="shapeconfig_popover">
+      <child>
+        <object class="GtkBox">
+          <property name="orientation">vertical</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
+          <property name="spacing">12</property>
+          <child>
+            <object class="GtkBox">
+              <child>
+                <object class="GtkLabel">
+                  <property name="label" translatable="yes">Shape Configuration</property>
+                  <property name="hexpand">true</property>
+                  <property name="halign">center</property>
+                  <style>
+                    <class name="title-3" />
+                  </style>
+                </object>
+              </child>
+              <child>
+                <object class="GtkButton" id="shapeconfig_popover_close_button">
+                  <property name="icon-name">window-close-symbolic</property>
+                  <style>
+                    <class name="flat" />
+                    <class name="circular" />
+                  </style>
+                </object>
+              </child>
+            </object>
+          </child>
+          <!-- Smooth options -->
+          <child>
+            <object class="GtkLabel">
+              <property name="label" translatable="yes">Smooth Style</property>
+              <property name="halign">start</property>
+              <style>
+                <class name="heading" />
+              </style>
+            </object>
+          </child>
+          <child>
+            <object class="AdwComboRow" id="smoothstyle_line_edge_row">
+                <property name="title" translatable="yes">Line Edge</property>
+                <property name="subtitle" translatable="yes">Choose a line edge</property>
+                <property name="model">
+                  <object class="GtkStringList">
+                    <items>
+                      <item translatable="yes">Straight</item>
+                      <item translatable="yes">Round</item>
+                    </items>
+                  </object>
+                </property>
+              </object>
+          </child>
+          <child>
+            <object class="AdwComboRow" id="smoothstyle_line_style_row">
+                <property name="title" translatable="yes">Line Style</property>
+                <property name="subtitle" translatable="yes">Choose a line style</property>
+                <property name="model">
+                  <object class="GtkStringList">
+                    <items>
+                      <item translatable="yes">Solid</item>
+                      <item translatable="yes">Dotted</item>
+                      <item translatable="yes">Dashed (equidistant)</item>
+                    </items>
+                  </object>
+                </property>
+              </object>
+          </child>
+          <!-- Rough options -->
+          <child>
+            <object class="GtkLabel">
+              <property name="label" translatable="yes">Rough Style</property>
+              <property name="halign">start</property>
+              <style>
+                <class name="heading" />
+              </style>
+            </object>
+          </child>
+          <child>
+            <object class="AdwComboRow" id="roughstyle_fillstyle_row">
+                <property name="title" translatable="yes">Fill Style</property>
+                <property name="subtitle" translatable="yes">Choose a fill style</property>
+                <property name="model">
+                  <object class="GtkStringList">
+                    <items>
+                      <item translatable="yes">Solid</item>
+                      <item translatable="yes">Hachure</item>
+                      <item translatable="yes">Zig-Zag</item>
+                      <item translatable="yes">Zig-Zag Line</item>
+                      <item translatable="yes">Crosshatch</item>
+                      <item translatable="yes">Dots</item>
+                      <item translatable="yes">Dashed</item>
+                    </items>
+                  </object>
+                </property>
+              </object>
+          </child>
+          <child>
+            <object class="AdwSpinRow" id="roughstyle_hachure_angle_row">
+              <property name="title" translatable="yes">Hachure Angle</property>
+              <property name="subtitle" translatable="yes">Set the angle of hachure fills</property>
+              <property name="adjustment">roughstyle_hachure_angle_adj</property>
+              <property name="numeric">true</property>
+              <property name="digits">0</property>
+            </object>
+          </child>
+          <child>
+            <!-- Constraints -->
+            <object class="GtkLabel">
+              <property name="label" translatable="yes">Constraints</property>
+              <property name="halign">start</property>
+              <style>
+                <class name="heading" />
+              </style>
+            </object>
+          </child>
+          <child>
+            <object class="GtkListBox">
+              <property name="width-request">300</property>
+              <property name="selection-mode">none</property>
+              <style>
+                <class name="content" />
+                <class name="medium" />
+              </style>
+              <child>
+                <object class="AdwSwitchRow" id="constraint_enabled_row">
+                  <property name="title" translatable="yes">Enabled</property>
+                  <property name="subtitle" translatable="yes">Hold Ctrl to temporarily
+enable/disable constraints
+when this switch is off/on</property>
+                </object>
+              </child>
+              <child>
+                <object class="AdwSwitchRow" id="constraint_one_to_one_row">
+                  <property name="title" translatable="yes">1:1</property>
+                </object>
+              </child>
+              <child>
+                <object class="AdwSwitchRow" id="constraint_three_to_two_row">
+                  <property name="title" translatable="yes">3:2</property>
+                </object>
+              </child>
+              <child>
+                <object class="AdwSwitchRow" id="constraint_golden_row">
+                  <property name="title" translatable="yes">Golden Ratio (1:1.618)</property>
+                </object>
+              </child>
+            </object>
+          </child>
+        </object>
+      </child>
+    </object>
+    <object class="GtkAdjustment" id="roughstyle_hachure_angle_adj">
+      <property name="step-increment">2</property>
+      <property name="upper">180.0</property>
+      <property name="lower">-180.0</property>
+      <property name="value">90.0</property>
+    </object>
+
+    <!-- Shape style -->
     <object class="GtkPopover" id="shaperstyle_popover">
       <child>
         <object class="GtkBox">
@@ -98,7 +247,7 @@
             <object class="GtkBox">
               <child>
                 <object class="GtkLabel">
-                  <property name="label" translatable="yes">Shaper Styles</property>
+                  <property name="label" translatable="yes">Shape Style</property>
                   <property name="hexpand">true</property>
                   <property name="halign">center</property>
                   <style>
@@ -153,83 +302,7 @@
       </child>
     </object>
 
-    <!-- Shape config -->
-    <object class="GtkPopover" id="shapeconfig_popover">
-      <child>
-        <object class="GtkBox">
-          <property name="orientation">vertical</property>
-          <property name="margin-top">6</property>
-          <property name="margin-bottom">6</property>
-          <property name="margin-start">6</property>
-          <property name="margin-end">6</property>
-          <property name="spacing">12</property>
-          <child>
-            <object class="GtkBox">
-              <child>
-                <object class="GtkLabel">
-                  <property name="label" translatable="yes">Shape Configuration</property>
-                  <property name="hexpand">true</property>
-                  <property name="halign">center</property>
-                  <style>
-                    <class name="title-3" />
-                  </style>
-                </object>
-              </child>
-              <child>
-                <object class="GtkButton" id="shapeconfig_popover_close_button">
-                  <property name="icon-name">window-close-symbolic</property>
-                  <style>
-                    <class name="flat" />
-                    <class name="circular" />
-                  </style>
-                </object>
-              </child>
-            </object>
-          </child>
-          <child>
-            <!-- Rough options -->
-            <object class="AdwPreferencesGroup">
-              <property name="title" translatable="yes">Rough style</property>
-              <property name="width-request">300</property>
-              <child>
-                <object class="AdwComboRow" id="roughstyle_fillstyle_row">
-                  <property name="title" translatable="yes">Fill Style</property>
-                  <property name="subtitle" translatable="yes">Choose a fill style</property>
-                  <property name="model">
-                    <object class="GtkStringList">
-                      <items>
-                        <item translatable="yes">Solid</item>
-                        <item translatable="yes">Hachure</item>
-                        <item translatable="yes">Zig-Zag</item>
-                        <item translatable="yes">Zig-Zag Line</item>
-                        <item translatable="yes">Crosshatch</item>
-                        <item translatable="yes">Dots</item>
-                        <item translatable="yes">Dashed</item>
-                      </items>
-                    </object>
-                  </property>
-                </object>
-              </child>
-              <child>
-                <object class="AdwSpinRow" id="roughstyle_hachure_angle_row">
-                  <property name="title" translatable="yes">Hachure Angle</property>
-                  <property name="subtitle" translatable="yes">Set the angle of hachure fills</property>
-                  <property name="adjustment">roughstyle_hachure_angle_adj</property>
-                  <property name="numeric">true</property>
-                  <property name="digits">0</property>
-                </object>
-              </child>
-            </object>
-          </child>
-        </object>
-      </child>
-    </object>
-    <object class="GtkAdjustment" id="roughstyle_hachure_angle_adj">
-      <property name="step-increment">2</property>
-      <property name="upper">180.0</property>
-      <property name="lower">-180.0</property>
-      <property name="value">90.0</property>
-    </object>
+
 
     <!-- Shape builder type -->
     <object class="GtkPopover" id="shapebuildertype_popover">
@@ -267,76 +340,6 @@
           <child>
             <object class="RnGroupedIconPicker" id="shapebuildertype_picker">
               <property name="width-request">250</property>
-            </object>
-          </child>
-        </object>
-      </child>
-    </object>
-
-    <!-- constraints -->
-    <object class="GtkPopover" id="constraint_popover">
-      <child>
-        <object class="GtkBox">
-          <property name="orientation">vertical</property>
-          <property name="margin-top">6</property>
-          <property name="margin-bottom">6</property>
-          <property name="margin-start">6</property>
-          <property name="margin-end">6</property>
-          <property name="spacing">12</property>
-          <child>
-            <object class="GtkBox">
-              <child>
-                <object class="GtkLabel">
-                  <property name="label" translatable="yes">Constraints</property>
-                  <property name="hexpand">true</property>
-                  <property name="halign">center</property>
-                  <style>
-                    <class name="title-3" />
-                  </style>
-                </object>
-              </child>
-              <child>
-                <object class="GtkButton" id="constraint_popover_close_button">
-                  <property name="icon-name">window-close-symbolic</property>
-                  <style>
-                    <class name="flat" />
-                    <class name="circular" />
-                  </style>
-                </object>
-              </child>
-            </object>
-          </child>
-          <child>
-            <object class="GtkListBox">
-              <property name="width-request">300</property>
-              <property name="selection-mode">none</property>
-              <style>
-                <class name="content" />
-                <class name="medium" />
-              </style>
-              <child>
-                <object class="AdwSwitchRow" id="constraint_enabled_row">
-                  <property name="title" translatable="yes">Enabled</property>
-                  <property name="subtitle" translatable="yes">Hold Ctrl to temporarily
-enable/disable constraints
-when this switch is off/on</property>
-                </object>
-              </child>
-              <child>
-                <object class="AdwSwitchRow" id="constraint_one_to_one_row">
-                  <property name="title" translatable="yes">1:1</property>
-                </object>
-              </child>
-              <child>
-                <object class="AdwSwitchRow" id="constraint_three_to_two_row">
-                  <property name="title" translatable="yes">3:2</property>
-                </object>
-              </child>
-              <child>
-                <object class="AdwSwitchRow" id="constraint_golden_row">
-                  <property name="title" translatable="yes">Golden Ratio (1:1.618)</property>
-                </object>
-              </child>
             </object>
           </child>
         </object>

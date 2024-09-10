@@ -1,10 +1,11 @@
+use anyhow::Context;
 // Imports
 use fragile::Fragile;
 use serde::{Deserialize, Serialize};
 use std::ops::{AddAssign, MulAssign};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub(crate) struct ShapeStyle {
+pub struct ShapeStyle {
     pub line_edge: LineEdge,
     pub line_style: LineStyle,
     #[serde(skip)]
@@ -12,15 +13,29 @@ pub(crate) struct ShapeStyle {
 }
 
 impl ShapeStyle {
-    pub(crate) fn update_line_edge(&mut self, line_edge: LineEdge, stroke_width: f64) {
+    pub(crate) fn get_inner(&self) -> anyhow::Result<&piet::StrokeStyle> {
+        self.inner.try_get().map_err(|_| {
+            anyhow::anyhow!(
+                "Failed to access piet::StrokeStyle from ShapeStyle, invalid thread access"
+            )
+        })
+    }
+    pub(crate) fn get_inner_mut(&mut self) -> anyhow::Result<&mut piet::StrokeStyle> {
+        self.inner.try_get_mut().map_err(|_| {
+            anyhow::anyhow!(
+                "Failed to access piet::StrokeStyle from ShapeStyle, invalid thread access"
+            )
+        })
+    }
+    pub fn update_line_edge(&mut self, line_edge: LineEdge, stroke_width: f64) {
         self.line_edge = line_edge;
         self.update_inner_strokedash(stroke_width);
     }
-    pub(crate) fn update_line_style(&mut self, line_style: LineStyle, stroke_width: f64) {
+    pub fn update_line_style(&mut self, line_style: LineStyle, stroke_width: f64) {
         self.line_style = line_style;
         self.update_inner_strokedash(stroke_width);
     }
-    pub(crate) fn update_inner_strokedash(&mut self, stroke_width: f64) {
+    pub fn update_inner_strokedash(&mut self, stroke_width: f64) {
         let mut unscaled = self.line_style.as_unscaled_vector();
         match self.line_edge {
             LineEdge::Straight => unscaled
@@ -33,11 +48,10 @@ impl ShapeStyle {
                 }
             }),
         }
-        let Ok(inner) = self.inner.try_get_mut() else {
-            tracing::warn!("Failed to acquire inner strokestyle, invalid thread access");
-            return;
+        match self.get_inner_mut() {
+            Ok(inner) => inner.set_dash_pattern(unscaled),
+            Err(err) => tracing::warn!("{err}"),
         };
-        inner.set_dash_pattern(unscaled)
     }
 }
 
@@ -57,14 +71,27 @@ impl Default for ShapeStyle {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub(crate) enum LineEdge {
+#[derive(
+    Debug, Clone, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+)]
+pub enum LineEdge {
     Straight,
     Rounded,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub(crate) enum LineStyle {
+impl TryFrom<u32> for LineEdge {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value)
+            .with_context(|| format!("LineEdge try_from::<u32>() for value {value} failed"))
+    }
+}
+
+#[derive(
+    Debug, Clone, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+)]
+pub enum LineStyle {
     Solid,
     Dotted,
     DashedEquidistant,
@@ -77,5 +104,14 @@ impl LineStyle {
             Self::Dotted => vec![0.0, 1.0],
             Self::DashedEquidistant => vec![1.0, 1.0],
         }
+    }
+}
+
+impl TryFrom<u32> for LineStyle {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value)
+            .with_context(|| format!("LineStyle try_from::<u32>() for value {value} failed"))
     }
 }

@@ -22,7 +22,7 @@ pub struct SmoothOptions {
     pub pressure_curve: PressureCurve,
     /// Shape style.
     #[serde(rename = "shape_style")]
-    pub shape_style: Option<ShapeStyle>,
+    pub shape_style: ShapeStyle,
 }
 
 impl Default for SmoothOptions {
@@ -32,31 +32,7 @@ impl Default for SmoothOptions {
             stroke_color: Some(Color::BLACK),
             fill_color: None,
             pressure_curve: PressureCurve::default(),
-            shape_style: None,
+            shape_style: ShapeStyle::default(),
         }
-    }
-}
-
-impl SmoothOptions {
-    fn default_shaper() -> Self {
-        Self {
-            stroke_width: 2.0,
-            stroke_color: Some(Color::BLACK),
-            fill_color: None,
-            pressure_curve: PressureCurve::default(),
-            shape_style: Some(ShapeStyle::default()),
-        }
-    }
-    pub(crate) fn get_stroke_style_from_shape_style(&self) -> anyhow::Result<&piet::StrokeStyle> {
-        self.shape_style
-            .as_ref()
-            .ok_or_else(|| anyhow::anyhow!("shape_style is None, expected Some(ShapeStyle)"))?
-            .inner
-            .try_get()
-            .map_err(|_| {
-                anyhow::anyhow!(
-                    "Invalid thread access, cannot access piet::StrokeStyle (ShaperStyle.inner) as it was created on a seperate thread"
-                )
-            })
     }
 }

@@ -73,7 +73,7 @@ source ~/.bashrc
    
 3. Reconfigure the project:
     ```bash
-    meson setup --prefix=C:/msys64/clangarm64 -Dwin-installer-name='windows_arm64_installer' _mesonbuild
+    meson setup --prefix="C:/msys64/clangarm64" -Dwin-installer-name='windows_arm64_installer' -Dwin-build-environment-path='C:\\msys64\\clangarm64' _mesonbuild
     ```
 
 4. Compile the project:

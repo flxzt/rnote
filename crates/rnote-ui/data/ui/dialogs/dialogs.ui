@@ -206,7 +206,7 @@ Changes which are not saved will be permanently lost.</property>
 
   <object class="AdwAlertDialog" id="dialog_trash_file">
     <property name="heading" translatable="yes">Trash File</property>
-    <property name="body" translatable="yes">Are you sure you want to delete this file?</property>
+    <property name="body" translatable="yes">Are you sure you want to move this file to the trash?</property>
     <property name="default-response">cancel</property>
     <property name="close-response">cancel</property>
     <responses>

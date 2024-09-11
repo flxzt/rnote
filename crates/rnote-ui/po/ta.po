@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-07-22 11:09+0000\n"
+"PO-Revision-Date: 2024-08-13 10:09+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -330,11 +330,6 @@ msgid "Page Order"
 msgstr "பக்க வரிசை"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
@@ -392,19 +387,14 @@ msgid "Jpeg"
 msgstr "Jpeg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "    that expand in horizontal and vertical directions\n"
 "    are cut into pages"
 msgstr ""
 "தளவமைப்புகளுடன் ஆவணங்கள் இருக்கும் போது பக்க வரிசை\n"
-"கிடைமட்ட மற்றும் செங்குத்து திசைகளில் விரிவடைகிறது\n"
-"பக்கங்களாக வெட்டப்படுகின்றன"
+" கிடைமட்ட மற்றும் செங்குத்து திசைகளில் விரிவடைகிறது\n"
+" பக்கங்களாக வெட்டப்படுகின்றன"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
@@ -414,16 +404,12 @@ msgstr "பிட்மேப் அளவிலான-காரணி"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "    to the actual size on the document"
 msgstr ""
-"தொடர்பில் பிட்மேப் அளவுகோலை அமைக்கவும் \n"
-"ஆவணத்தின் உண்மையான அளவிற்கு"
+"தொடர்பில் பிட்மேப் அளவுகோலை அமைக்கவும்\n"
+" ஆவணத்தின் உண்மையான அளவிற்கு"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
@@ -445,15 +431,11 @@ msgid "The export image format"
 msgstr "ஏற்றுமதி படத்தின் வடிவம்"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
-"தொடர்பில் பிட்மேப் அளவுகோலை அமைக்கவும் \n"
+"தொடர்பில் பிட்மேப் அளவுகோலை அமைக்கவும்\n"
 "ஆவணத்தின் உண்மையான அளவிற்கு"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
@@ -1799,10 +1781,8 @@ msgid "Exporting selection failed, nothing selected"
 msgstr "தேர்வை ஏற்றுமதி செய்வதில் தோல்வி, எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
-#, fuzzy
-#| msgid "Saves are in progress"
 msgid "Saves are in progress, waiting before closing.."
-msgstr "சேமிப்புகள் நடந்து வருகின்றன"
+msgstr "சேமிப்புகள் நடந்து கொண்டிருக்கின்றன, மூடுவதற்கு முன் காத்திருக்கிறது..."
 
 #: crates/rnote-ui/src/appwindow/imp.rs:336
 msgid "Button 1"

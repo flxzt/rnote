@@ -1,3 +1,5 @@
+name: Update Translations
+
 on:
   push:
     branches:
@@ -8,8 +10,6 @@ on:
       - 'crates/rnote-ui/po/zh_Hant.po'
   workflow_dispatch:
   workflow_call:
-
-name: Update Translations
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}

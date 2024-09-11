@@ -3,17 +3,17 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-02-15 17:02+0000\n"
-"Last-Translator: Сергій <sergiy.goncharuk.1@gmail.com>\n"
-"Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
-">\n"
+"PO-Revision-Date: 2024-08-31 10:09+0000\n"
+"Last-Translator: Bezruchenko Simon <worcposj44@gmail.com>\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/>"
+"\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -329,18 +329,13 @@ msgid "Page Order"
 msgstr "Порядок сторінок"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
-"Порядок сторінок, коли документи з макетами,\n"
-"що розгортаються в горизонтальному та вертикальному\n"
+"Порядок сторінок, коли документи з макетами, \n"
+"що розширюються в горизонтальному та вертикальному\n"
 "напрямках, розрізаються на сторінки"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:152
@@ -391,19 +386,14 @@ msgid "Jpeg"
 msgstr "Jpeg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "    that expand in horizontal and vertical directions\n"
 "    are cut into pages"
 msgstr ""
-"Порядок сторінок, коли документи з макетами,\n"
-"що розгортаються в горизонтальному та вертикальному\n"
-"напрямках, розрізаються на сторінки"
+"Порядок сторінок при розрізанні документів з макетами, \n"
+"що розширюються в горизонтальному та вертикальному \n"
+"напрямках, на сторінки"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
@@ -413,16 +403,12 @@ msgstr "Масштаб растрового зображення"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "    to the actual size on the document"
 msgstr ""
-"Встановити масштаб растрового зображення\n"
-"відносно фактичного розміру документа"
+"Встановіть масштабний коефіцієнт бітової карти \n"
+"відносно фактичного розміру на документі"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
@@ -444,16 +430,12 @@ msgid "The export image format"
 msgstr "Формат експортованого зображення"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
-"Встановити масштаб растрового зображення\n"
-"відносно фактичного розміру документа"
+"Встановіть коефіцієнт масштабу бітової карти \n"
+"відносно фактичного розміру на документі"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"
@@ -490,16 +472,12 @@ msgid "End Page"
 msgstr "Кінцева сторінка"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:103
-#, fuzzy
-#| msgid "Adjust document settings"
 msgid "Adjust Document"
-msgstr "Підлаштувати параметри документа"
+msgstr "Адаптувати документ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
-#, fuzzy
-#| msgid "Set whether the background pattern should be exported"
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "Чи експортувати шаблон фону"
+msgstr "Чи потрібно адаптувати макет документа до PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
 msgid "Page Width (%)"
@@ -1005,10 +983,8 @@ msgid "De_veloper Mode"
 msgstr "Режим _розробника"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
-#, fuzzy
-#| msgid "New Window"
 msgid "New _Window"
-msgstr "Нове вікно"
+msgstr "Нове _вікно"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
@@ -1132,7 +1108,7 @@ msgstr "Заблокувати дотики сенсорної панелі дл
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:64
 msgid "Respect Borders When Pasting"
-msgstr ""
+msgstr "Дотримуватися меж під час вставки"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:95
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
@@ -1259,10 +1235,8 @@ msgid "Toggle"
 msgstr "Перемикач"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:14
-#, fuzzy
-#| msgid "Enabled"
 msgid "Disabled"
-msgstr "Увімкнено"
+msgstr "Вимкнено"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:41
 #: crates/rnote-ui/data/ui/shortcuts.ui:11
@@ -1294,16 +1268,16 @@ msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "Встановити, чи відображати смужки гортання на полотні"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:64
-#, fuzzy
-#| msgid "Optimize for Printing"
 msgid "Optimize for E-Paper Displays"
-msgstr "Оптимізувати для друку"
+msgstr "Оптимізація для e-ink дисплеїв"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:65
 msgid ""
 "Changes certain UI elements and modifies behaviour\n"
 "of tools for optimized usage on E-Paper displays"
 msgstr ""
+"Змінює певні елементи інтерфейсу та модифікує поведінку\n"
+"інструментів для оптимізації використання на e-ink дисплеях"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:71
 msgid "Inertial Touch Scrolling"
@@ -1807,7 +1781,7 @@ msgstr "Не вдалося експортувати вибране, нічог�
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
 msgid "Saves are in progress, waiting before closing.."
-msgstr ""
+msgstr "Збереження в прогресі, не закривайте до завершення.."
 
 #: crates/rnote-ui/src/appwindow/imp.rs:336
 msgid "Button 1"
@@ -1859,16 +1833,12 @@ msgid "Reloading .rnote file from disk failed"
 msgstr "Не вдалося перезавантажити файл .rnote з диска"
 
 #: crates/rnote-ui/src/canvas/mod.rs:969
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was renamed or moved."
-msgstr "Відкритий файл було перейменовано на диску"
+msgstr "Відкритий файл було перейменовано або переміщено."
 
 #: crates/rnote-ui/src/canvas/mod.rs:983
-#, fuzzy
-#| msgid "Opened file was renamed on disk"
 msgid "Opened file was removed."
-msgstr "Відкритий файл було перейменовано на диску"
+msgstr "Відкритий файл було видалено."
 
 #: crates/rnote-ui/src/canvas/mod.rs:1169
 msgid "Inserting file failed"
@@ -2411,41 +2381,31 @@ msgstr "Промінь (Великий)"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:35
 msgid "Can't duplicate an unsaved document"
-msgstr ""
+msgstr "Не вдається продублювати незбережений документ"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
-#, fuzzy
-#| msgid "Opening .rnote file failed"
 msgid "Duplicating the file failed"
-msgstr "Не вдалося відкрити файл .rnote"
+msgstr "Дублювати файл не вдалося"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
-#, fuzzy
-#| msgid "Change the directory"
 msgid "Duplicating the directory failed"
-msgstr "Змінити теку"
+msgstr "Дублювання каталогу не вдалося"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:18
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Open the file in the default app failed"
-msgstr "Не вдалося відкрити файл у файловому менеджері"
+msgstr "Не вдалося відкрити файл у програмі за замовчуванням"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:39
 msgid "Renaming file failed, target file already exists"
-msgstr ""
+msgstr "Не вдалося перейменувати файл, файл із такою назвою вже існує"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
-#, fuzzy
-#| msgid "Opening file failed"
 msgid "Renaming file failed"
-msgstr "Не вдалося відкрити файл"
+msgstr "Не вдалося перейменувати файл"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
-#, fuzzy
-#| msgid "Inserting file failed"
 msgid "Trashing file failed"
-msgstr "Не вдалося вставити файл"
+msgstr "Не вдалося очистити файл"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 msgid "Folder Name"
@@ -2458,147 +2418,127 @@ msgstr "Нова теки"
 #: crates/rnote-ui/src/utils.rs:159
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
-msgstr ""
+msgstr "сірий"
 
 #: crates/rnote-ui/src/utils.rs:161 crates/rnote-ui/src/utils.rs:196
 msgctxt "part of string representation of a color"
 msgid "rose"
-msgstr ""
+msgstr "рожевий"
 
 #: crates/rnote-ui/src/utils.rs:163
-#, fuzzy
-#| msgid "Bread"
 msgctxt "part of string representation of a color"
 msgid "red"
-msgstr "Хліб"
+msgstr "червоний"
 
 #: crates/rnote-ui/src/utils.rs:166
 msgctxt "part of string representation of a color"
 msgid "orange"
-msgstr ""
+msgstr "помаранчевий"
 
 #: crates/rnote-ui/src/utils.rs:169
 msgctxt "part of string representation of a color"
 msgid "yellow"
-msgstr ""
+msgstr "жовтий"
 
 #: crates/rnote-ui/src/utils.rs:173
 msgctxt "part of string representation of a color"
 msgid "chartreuse-green"
-msgstr ""
+msgstr "жовтувато-зелений"
 
 #: crates/rnote-ui/src/utils.rs:176
 msgctxt "part of string representation of a color"
 msgid "green"
-msgstr ""
+msgstr "зелений"
 
 #: crates/rnote-ui/src/utils.rs:179
 msgctxt "part of string representation of a color"
 msgid "spring-green"
-msgstr ""
+msgstr "весняно-зелений"
 
 #: crates/rnote-ui/src/utils.rs:182
 msgctxt "part of string representation of a color"
 msgid "cyan"
-msgstr ""
+msgstr "блакитний"
 
 #: crates/rnote-ui/src/utils.rs:185
 msgctxt "part of string representation of a color"
 msgid "azure"
-msgstr ""
+msgstr "лазуровий"
 
 #: crates/rnote-ui/src/utils.rs:188
 msgctxt "part of string representation of a color"
 msgid "blue"
-msgstr ""
+msgstr "синій"
 
 #: crates/rnote-ui/src/utils.rs:191
 msgctxt "part of string representation of a color"
 msgid "violet"
-msgstr ""
+msgstr "фіолетовий"
 
 #: crates/rnote-ui/src/utils.rs:194
 msgctxt "part of string representation of a color"
 msgid "magenta"
-msgstr ""
+msgstr "пурпурний"
 
 #: crates/rnote-ui/src/utils.rs:201
 msgctxt "part of string representation of a color"
 msgid "greyish"
-msgstr ""
+msgstr "сіруватий"
 
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "vivid"
-msgstr ""
+msgstr "яскравий"
 
 #: crates/rnote-ui/src/utils.rs:208
 msgctxt "part of string representation of a color"
 msgid "very-dark"
-msgstr ""
+msgstr "дуже темний"
 
 #: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
 msgid "dark"
-msgstr ""
+msgstr "темний"
 
 #: crates/rnote-ui/src/utils.rs:213
 msgctxt "part of string representation of a color"
 msgid "mid"
-msgstr ""
+msgstr "середній"
 
 #: crates/rnote-ui/src/utils.rs:215
-#, fuzzy
-#| msgid "Height"
 msgctxt "part of string representation of a color"
 msgid "bright"
-msgstr "Висота"
+msgstr "світлий"
 
 #: crates/rnote-ui/src/utils.rs:219
-#, fuzzy
-#| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "transparent"
-msgstr ""
-"Володимир Лісівка <vlisivka@gmail.com>, https://linux.org.ua\n"
-"Kefir2105\n"
-"<jonweblin2205@protonmail.com>\n"
-"diminDDL\n"
-"dimin21590@gmail.com\n"
-"volkov <volkovissocool@gmail.com>"
+msgstr "прозорий"
 
 #: crates/rnote-ui/src/utils.rs:221
-#, fuzzy
-#| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "translucent"
-msgstr ""
-"Володимир Лісівка <vlisivka@gmail.com>, https://linux.org.ua\n"
-"Kefir2105\n"
-"<jonweblin2205@protonmail.com>\n"
-"diminDDL\n"
-"dimin21590@gmail.com\n"
-"volkov <volkovissocool@gmail.com>"
+msgstr "напівпрозорий"
 
 #: crates/rnote-ui/src/utils.rs:225
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
-msgstr ""
+msgstr "злегка прозорий"
 
 #: crates/rnote-ui/src/utils.rs:234
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
-msgstr ""
+msgstr "повністю прозорий"
 
 #: crates/rnote-ui/src/utils.rs:237
 msgctxt "part of string representation of a color"
 msgid "black"
-msgstr ""
+msgstr "чорний"
 
 #: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "white"
-msgstr ""
+msgstr "білий"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "Відкритий файл було переміщено або видалено на диску"

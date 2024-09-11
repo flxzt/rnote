@@ -17,14 +17,14 @@ use tracing::debug;
 /// |         |        - Look for the file extension after the `<delim><num>` part
 /// |         |       |       - At the end of the file name
 /// |         |       |       |
-/// |         (?P<delim{}\d+)$
+/// |         (?<delim>{}\d+) $
 /// |                 |
-/// ^(.*?)            (\.\w+)
+/// (?<filename>.*?)  (?<extension>\.\w+)
 /// ```
 static DUP_REGEX: Lazy<Regex> = Lazy::new(|| {
     // Incorporate FILE_DUP_SUFFIX_DELIM_REGEX dynamically into the regex pattern
     let regex_pattern: String = format!(
-        r"^(.*?)(?P<delim>{}\d*)?(\.\w+)?$",
+        r"^(?<filename>.*?)(?<delim>{}\d*)?(?<extension>\.\w+)?$",
         crate::utils::FILE_DUP_SUFFIX_DELIM_REGEX
     );
 
@@ -147,7 +147,9 @@ fn generate_duplicate_filename(
 fn remove_dup_suffix(source: impl AsRef<Path>) -> PathBuf {
     let original = source.as_ref().to_string_lossy().to_string();
     // Preserve the base and extension, remove duplicate suffix
-    let new = DUP_REGEX.replace(&original, "$1$3").to_string();
+    let new = DUP_REGEX
+        .replace(&original, "$filename$extension")
+        .to_string();
 
     PathBuf::from(new)
 }

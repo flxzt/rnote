@@ -1,9 +1,9 @@
+name: Release Windows
+
 on:
   release:
     types: [published]
   workflow_dispatch:
-
-name: Release Windows
 
 jobs:
   build:

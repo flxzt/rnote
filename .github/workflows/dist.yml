@@ -1,9 +1,9 @@
+name: Generate Dist Archive
+
 on:
   release:
     types: [published]
   workflow_dispatch:
-
-name: Generate Dist Archive
 
 jobs:
   dist:

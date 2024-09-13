@@ -108,9 +108,9 @@
             <object class="AdwPreferencesGroup">
               <property name="title" translatable="yes">Smooth Style</property>
               <child>
-                <object class="AdwComboRow" id="smoothstyle_line_edge_row">
-                    <property name="title" translatable="yes">Line Edge</property>
-                    <property name="subtitle" translatable="yes">Choose a line edge</property>
+                <object class="AdwComboRow" id="smoothstyle_line_cap_row">
+                    <property name="title" translatable="yes">Line Cap</property>
+                    <property name="subtitle" translatable="yes">Choose a line cap</property>
                     <property name="model">
                       <object class="GtkStringList">
                         <items>

@@ -15,6 +15,7 @@ use crate::shapes::{
 use crate::PenPath;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use std::borrow::Borrow;
 
 impl Composer<SmoothOptions> for Line {
     fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
@@ -27,7 +28,7 @@ impl Composer<SmoothOptions> for Line {
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            let stroke_style = options.shape_style.get_inner().unwrap();
+            let stroke_style = options.shape_style.inner.borrow();
             cx.stroke_styled(line, &stroke_brush, options.stroke_width, stroke_style);
         }
         cx.restore().unwrap();

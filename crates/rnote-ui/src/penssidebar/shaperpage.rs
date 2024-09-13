@@ -12,7 +12,7 @@ use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::ShapeBuilderType;
 use rnote_compose::constraints::ConstraintRatio;
 use rnote_compose::style::rough::roughoptions::FillStyle;
-use rnote_compose::style::smooth::shapestyle::{LineEdge, LineStyle};
+use rnote_compose::style::smooth::shapestyle::{LineCap, LineStyle};
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::pensconfig::ShaperConfig;
@@ -39,7 +39,7 @@ mod imp {
         #[template_child]
         pub(crate) shapeconfig_popover_close_button: TemplateChild<Button>,
         #[template_child]
-        pub(crate) smoothstyle_line_edge_row: TemplateChild<adw::ComboRow>,
+        pub(crate) smoothstyle_line_cap_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(crate) smoothstyle_line_style_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -159,8 +159,8 @@ impl RnShaperPage {
             .set_picked(Some(builder_type.to_icon_name()));
     }
 
-    pub(crate) fn smoothstyle_line_edge(&self) -> LineEdge {
-        LineEdge::try_from(self.imp().smoothstyle_line_edge_row.get().selected()).unwrap()
+    pub(crate) fn smoothstyle_line_cap(&self) -> LineCap {
+        LineCap::try_from(self.imp().smoothstyle_line_cap_row.get().selected()).unwrap()
     }
 
     pub(crate) fn smoothstyle_line_style(&self) -> LineStyle {
@@ -258,16 +258,22 @@ impl RnShaperPage {
             }),
         );
         // Smooth style
-        // Line edge
-        imp.smoothstyle_line_edge_row.get().connect_selected_notify(clone!(@weak self as shaperpage, @weak appwindow => move |a| {
-            let stroke_width = appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.rough_options.stroke_width;
-            appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.smooth_options.shape_style.update_line_edge(shaperpage.smoothstyle_line_edge(), stroke_width)
+        // Line cap
+        imp.smoothstyle_line_cap_row.get().connect_selected_notify(clone!(@weak self as shaperpage, @weak appwindow => move |_| {
+            let canvas = appwindow.active_tab_wrapper().canvas();
+            let stroke_width = canvas.engine_ref().pens_config.shaper_config.rough_options.stroke_width;
+            canvas.engine_mut().pens_config.shaper_config.smooth_options.shape_style.update_line_cap(shaperpage.smoothstyle_line_cap(), stroke_width);
         }));
 
         // Line style
-        imp.smoothstyle_line_style_row.get().connect_selected_notify(clone!(@weak self as shaperpage, @weak appwindow => move |a| {
-            let stroke_width = appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.rough_options.stroke_width;
-            appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.shaper_config.smooth_options.shape_style.update_line_style(shaperpage.smoothstyle_line_style(), stroke_width)
+        imp.smoothstyle_line_style_row.get().connect_selected_notify(clone!(@weak self as shaperpage, @weak appwindow => move |_| {
+            let canvas = appwindow.active_tab_wrapper().canvas();
+            let stroke_width = canvas.engine_ref().pens_config.shaper_config.rough_options.stroke_width;
+            let line_style = shaperpage.smoothstyle_line_style();
+            if line_style.is_dotted() {
+                shaperpage.imp().smoothstyle_line_cap_row.set_selected(line_style.to_u32().unwrap());
+            }
+            canvas.engine_mut().pens_config.shaper_config.smooth_options.shape_style.update_line_style(line_style, stroke_width);
         }));
 
         // Rough style
@@ -367,6 +373,22 @@ impl RnShaperPage {
         self.set_shapebuildertype(shaper_config.builder_type);
 
         // Smooth style
+        imp.smoothstyle_line_cap_row.set_selected(
+            shaper_config
+                .smooth_options
+                .shape_style
+                .line_cap
+                .to_u32()
+                .unwrap(),
+        );
+        imp.smoothstyle_line_style_row.set_selected(
+            shaper_config
+                .smooth_options
+                .shape_style
+                .line_style
+                .to_u32()
+                .unwrap(),
+        );
 
         // Rough style
         self.set_roughstyle_fillstyle(shaper_config.rough_options.fill_style);

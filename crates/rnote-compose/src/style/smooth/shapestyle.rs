@@ -4,14 +4,19 @@ use num_derive::{FromPrimitive, ToPrimitive};
 use serde::{Deserialize, Serialize};
 use std::ops::{AddAssign, MulAssign};
 
+/// Describes the style of shapes/lines using concise presets
 #[derive(Debug, Clone, Serialize)]
 #[serde(into = "ShapeStylePrecursor")]
 pub struct ShapeStyle {
+    /// Line cap
     pub line_cap: LineCap,
+    /// Line style
     pub line_style: LineStyle,
     inner: piet::StrokeStyle,
 }
 
+/// Required as piet::Linestyle cannot be serialized and requires stroke_width to be correctly calculated
+/// Nonetheless this keeps the impact on file sizes minimal
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "shape_style")]
@@ -37,7 +42,11 @@ unsafe impl Send for ShapeStyle {}
 unsafe impl Sync for ShapeStyle {}
 
 impl ShapeStyle {
+    /// The ratio between the length of a dash and the width of the stroke
+    const DASH_LENGTH_TO_WIDTH_RATIO: f64 = 3.0;
+    /// Updates the line cap
     pub fn update_line_cap(&mut self, line_cap: LineCap, stroke_width: f64) {
+        // Dotted style requires a round LineCap
         if self.line_style.is_dotted() && line_cap != LineCap::Rounded {
             self.line_style = LineStyle::Solid;
         }
@@ -45,6 +54,7 @@ impl ShapeStyle {
         self.line_cap = line_cap;
         self.update_inner_strokedash(stroke_width);
     }
+    /// Updates the line style
     pub fn update_line_style(&mut self, line_style: LineStyle, stroke_width: f64) {
         // Dotted style requires a round LineCap
         if line_style.is_dotted() {
@@ -54,26 +64,25 @@ impl ShapeStyle {
         self.line_style = line_style;
         self.update_inner_strokedash(stroke_width);
     }
+    /// Updates the inner strokedash
     pub fn update_inner_strokedash(&mut self, stroke_width: f64) {
         let mut dash_pattern = self.line_style.as_unscaled_vector();
         match self.line_cap {
             LineCap::Straight => dash_pattern
                 .iter_mut()
-                .for_each(|e| e.mul_assign(stroke_width * 3.0)),
+                .for_each(|e| e.mul_assign(stroke_width * Self::DASH_LENGTH_TO_WIDTH_RATIO)),
             LineCap::Rounded => dash_pattern.iter_mut().enumerate().for_each(|(idx, e)| {
                 if !self.line_style.is_dotted() {
-                    e.mul_assign(stroke_width * 3.0);
+                    e.mul_assign(stroke_width * Self::DASH_LENGTH_TO_WIDTH_RATIO);
                 }
+                // round edges add a half-disk with a radius equal to the stroke width to each edge of a line
+                // this increases the length of each line by the width of the stroke, and is not taken into account by DashStroke
+                // therefore we must manually account for it twice
                 if idx % 2 == 1 {
                     e.add_assign(2.0 * stroke_width)
                 }
             }),
         }
-        tracing::info!(
-            "width : {:?}\n => dash pattern = {:?}",
-            stroke_width,
-            dash_pattern
-        );
         self.inner.set_dash_pattern(dash_pattern);
     }
     pub(crate) fn from_precursor(precursor: ShapeStylePrecursor, stroke_width: f64) -> Self {
@@ -118,9 +127,12 @@ impl Default for ShapeStylePrecursor {
     }
 }
 
+/// Line cap present at the start and end of a line
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, FromPrimitive, ToPrimitive)]
 pub enum LineCap {
+    /// Straight line cap
     Straight,
+    /// Rounded line cap
     Rounded,
 }
 
@@ -133,21 +145,27 @@ impl TryFrom<u32> for LineCap {
     }
 }
 
-impl Into<piet::LineCap> for LineCap {
-    fn into(self) -> piet::LineCap {
-        match self {
-            Self::Straight => piet::LineCap::Butt,
-            Self::Rounded => piet::LineCap::Round,
+impl From<LineCap> for piet::LineCap {
+    fn from(value: LineCap) -> Self {
+        match value {
+            LineCap::Straight => piet::LineCap::Butt,
+            LineCap::Rounded => piet::LineCap::Round,
         }
     }
 }
 
+/// The overall style of the line
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, FromPrimitive, ToPrimitive)]
 pub enum LineStyle {
+    /// Solid line style
     Solid,
+    /// Dotted line style, the dots are equidistant
     Dotted,
+    /// Dashed line style, the dashes have less space between them
     DashedNarrow,
+    /// Dashed line style, the dashes are equidistant
     DashedEquidistant,
+    /// Dashed line style, the dashes have more space between them
     DashedWide,
 }
 

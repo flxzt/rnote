@@ -44,7 +44,7 @@ pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
         aboutdialog.add_css_class("devel");
     }
 
-    aboutdialog.present(appwindow);
+    aboutdialog.present(appwindow.root().as_ref());
 }
 
 pub(crate) fn dialog_keyboard_shortcuts(appwindow: &RnAppWindow) {
@@ -549,7 +549,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
         }),
     );
 
-    dialog.present(appwindow);
+    dialog.present(appwindow.root().as_ref());
 }
 
 const WORKSPACELISTENTRY_ICONS_LIST: &[&str] = &[

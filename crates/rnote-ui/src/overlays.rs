@@ -246,7 +246,7 @@ impl RnOverlays {
         );
 
         imp.tabview.connect_close_page(
-            clone!(@weak self as overlays, @weak appwindow => @default-return true, move |_, page| {
+            clone!(@weak self as overlays, @weak appwindow => @default-return glib::Propagation::Proceed, move |_, page| {
                     glib::spawn_future_local(clone!(@weak overlays, @weak appwindow, @weak page => async move {
                     let close_finish_confirm = if page
                         .child()
@@ -263,7 +263,7 @@ impl RnOverlays {
                     appwindow.close_tab_finish(&page, close_finish_confirm);
                 }));
 
-                true
+                glib::Propagation::Proceed
             }),
         );
 

@@ -20,12 +20,12 @@ version = "0.11.0"
 rnote-compose = { version = "0.11.0", path = "crates/rnote-compose" }
 rnote-engine = { version = "0.11.0", path = "crates/rnote-engine" }
 
-adw = { version = "0.6.0", package = "libadwaita", features = ["v1_5"] }
+adw = { version = "0.7.0", package = "libadwaita", features = ["v1_5"] }
 anyhow = "1.0"
 approx = "0.5.1"
 async-fs = "2.1"
 base64 = "0.22.1"
-cairo-rs = { version = "0.19.4", features = ["v1_18", "png", "svg", "pdf"] }
+cairo-rs = { version = "0.20.1", features = ["v1_18", "png", "svg", "pdf"] }
 chrono = "0.4.38"
 clap = { version = "4.5", features = ["derive"] }
 dialoguer = "0.11.0"
@@ -34,17 +34,17 @@ fs_extra = "1.3"
 futures = "0.3.30"
 geo = "0.28.0"
 gettext-rs = { version = "0.7.1", features = ["gettext-system"] }
-gio = "0.19.5"
-glib = "0.19.7"
-glib-build-tools = "0.19.0"
-gtk4 = { version = "0.8.2", features = ["v4_12"] }
+gio = "0.20.1"
+glib = "0.20.3"
+glib-build-tools = "0.20.0"
+gtk4 = { version = "0.9.1", features = ["v4_14"] }
 ijson = "0.1.3"
 image = "0.25.2"
 indicatif = "0.17.8"
 ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "84d311e9b0d034dcd955a1f353d37f54b2bda70f" }
 itertools = "0.13.0"
 kurbo = "0.10.4"
-librsvg = "2.58.2"
+librsvg = "2.59.0"
 nalgebra = { version = "0.33.0", features = ["serde-serialize"] }
 notify-debouncer-full = "0.3.1"
 num-derive = "0.4.2"
@@ -84,12 +84,15 @@ usvg = "0.43.0"
 winresource = "0.1.17"
 xmlwriter = "0.1.0"
 # Enabling feature > v20_9 causes linker errors on mingw
-poppler-rs = { version = "0.23.0", features = ["v20_9"] }
+poppler-rs = { version = "0.24.1", features = ["v20_9"] }
 
 [patch.crates-io]
 # once a new piet (current v0.6.2) is released with updated cairo and kurbo deps, this can be removed.
-piet = { git = "https://github.com/linebender/piet", rev = "02eb5f0152e893626c43980bf37eeb0ccb1acb46" }
-piet-cairo = { git = "https://github.com/linebender/piet", rev = "02eb5f0152e893626c43980bf37eeb0ccb1acb46" }
+piet = { git = "https://github.com/flxzt/piet", rev = "a480bc20bd0d235928d46b009dae54e52e32767a" }
+piet-cairo = { git = "https://github.com/flxzt/piet", rev = "a480bc20bd0d235928d46b009dae54e52e32767a" }
+# the latest commit in rough depends on nightly-only features
+roughr = { git = "https://github.com/orhanbalci/rough-rs", rev = "0701ce0b874061707ef726533b43e1806af8b666" }
+rough_piet = { git = "https://github.com/orhanbalci/rough-rs", rev = "0701ce0b874061707ef726533b43e1806af8b666" }
 
 [profile.dev]
 debug = true

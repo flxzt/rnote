@@ -274,7 +274,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         }
     }));
 
-    dialog.present(appwindow);
+    dialog.present(appwindow.root().as_ref());
 }
 
 fn create_filedialog_export_doc(
@@ -604,7 +604,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         }
     }));
 
-    dialog.present(appwindow);
+    dialog.present(appwindow.root().as_ref());
 }
 
 fn create_filedialog_export_doc_pages(
@@ -896,7 +896,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
             }));
     }));
 
-    dialog.present(appwindow);
+    dialog.present(appwindow.root().as_ref());
 }
 
 /// Returns (if possible) a "reasonable" folder for export operations

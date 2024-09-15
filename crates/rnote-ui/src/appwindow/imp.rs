@@ -535,22 +535,22 @@ impl RnAppWindow {
             obj.sidebar()
                 .workspacebrowser()
                 .files_scroller()
-                .set_window_placement(CornerType::TopRight);
+                .set_placement(CornerType::TopRight);
             obj.sidebar()
                 .workspacebrowser()
                 .workspacesbar()
                 .workspaces_scroller()
-                .set_window_placement(CornerType::TopRight);
+                .set_placement(CornerType::TopRight);
 
             obj.sidebar()
                 .settings_panel()
                 .settings_scroller()
-                .set_window_placement(CornerType::TopRight);
+                .set_placement(CornerType::TopRight);
 
             obj.overlays().sidebar_box().set_halign(Align::Start);
             obj.overlays()
                 .sidebar_scroller()
-                .set_window_placement(CornerType::TopRight);
+                .set_placement(CornerType::TopRight);
             obj.overlays()
                 .penssidebar()
                 .brush_page()
@@ -662,22 +662,22 @@ impl RnAppWindow {
             obj.sidebar()
                 .workspacebrowser()
                 .files_scroller()
-                .set_window_placement(CornerType::TopLeft);
+                .set_placement(CornerType::TopLeft);
             obj.sidebar()
                 .workspacebrowser()
                 .workspacesbar()
                 .workspaces_scroller()
-                .set_window_placement(CornerType::TopLeft);
+                .set_placement(CornerType::TopLeft);
 
             obj.sidebar()
                 .settings_panel()
                 .settings_scroller()
-                .set_window_placement(CornerType::TopLeft);
+                .set_placement(CornerType::TopLeft);
 
             obj.overlays().sidebar_box().set_halign(Align::End);
             obj.overlays()
                 .sidebar_scroller()
-                .set_window_placement(CornerType::TopLeft);
+                .set_placement(CornerType::TopLeft);
             obj.overlays()
                 .penssidebar()
                 .brush_page()

@@ -344,7 +344,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     dialog.add_controller(controller);
 
     // Present than wait for a response from the dialog
-    dialog.present(appwindow);
+    dialog.present(appwindow.root().as_ref());
 
     match rx.next().await {
         Some(res) => res,
@@ -436,7 +436,7 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
     dialog.add_controller(controller);
 
     // Present than wait for a response from the dialog
-    dialog.present(appwindow);
+    dialog.present(appwindow.root().as_ref());
 
     match rx.next().await {
         Some(res) => res,

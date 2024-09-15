@@ -30,7 +30,6 @@ chrono = "0.4.38"
 clap = { version = "4.5", features = ["derive"] }
 dialoguer = "0.11.0"
 flate2 = "1.0"
-fragile = "2.0"
 fs_extra = "1.3"
 futures = "0.3.30"
 geo = "0.28.0"

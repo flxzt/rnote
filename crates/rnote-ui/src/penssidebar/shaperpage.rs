@@ -261,14 +261,18 @@ impl RnShaperPage {
         // Line cap
         imp.smoothstyle_line_cap_row.get().connect_selected_notify(clone!(@weak self as shaperpage, @weak appwindow => move |_| {
             let canvas = appwindow.active_tab_wrapper().canvas();
-            let stroke_width = canvas.engine_ref().pens_config.shaper_config.rough_options.stroke_width;
-            canvas.engine_mut().pens_config.shaper_config.smooth_options.shape_style.update_line_cap(shaperpage.smoothstyle_line_cap(), stroke_width);
+            let stroke_width = canvas.engine_ref().pens_config.shaper_config.smooth_options.stroke_width;
+            let line_cap = shaperpage.smoothstyle_line_cap();
+            if line_cap == LineCap::Straight && shaperpage.smoothstyle_line_style().is_dotted() {
+                shaperpage.imp().smoothstyle_line_style_row.set_selected(LineStyle::Solid.to_u32().unwrap())
+            }
+            canvas.engine_mut().pens_config.shaper_config.smooth_options.shape_style.update_line_cap(line_cap, stroke_width);
         }));
 
         // Line style
         imp.smoothstyle_line_style_row.get().connect_selected_notify(clone!(@weak self as shaperpage, @weak appwindow => move |_| {
             let canvas = appwindow.active_tab_wrapper().canvas();
-            let stroke_width = canvas.engine_ref().pens_config.shaper_config.rough_options.stroke_width;
+            let stroke_width = canvas.engine_ref().pens_config.shaper_config.smooth_options.stroke_width;
             let line_style = shaperpage.smoothstyle_line_style();
             if line_style.is_dotted() {
                 shaperpage.imp().smoothstyle_line_cap_row.set_selected(line_style.to_u32().unwrap());

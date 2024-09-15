@@ -130,7 +130,9 @@
                         <items>
                           <item translatable="yes">Solid</item>
                           <item translatable="yes">Dotted</item>
+                          <item translatable="yes">Dashed (narrow)</item>
                           <item translatable="yes">Dashed (equidistant)</item>
+                          <item translatable="yes">Dashed (wide)</item>
                         </items>
                       </object>
                     </property>
@@ -162,15 +164,15 @@
                     </property>
                   </object>
               </child>
-            </object>
-          </child>
-          <child>
-            <object class="AdwSpinRow" id="roughstyle_hachure_angle_row">
-              <property name="title" translatable="yes">Hachure Angle</property>
-              <property name="subtitle" translatable="yes">Set the angle of hachure fills</property>
-              <property name="adjustment">roughstyle_hachure_angle_adj</property>
-              <property name="numeric">true</property>
-              <property name="digits">0</property>
+              <child>
+                <object class="AdwSpinRow" id="roughstyle_hachure_angle_row">
+                  <property name="title" translatable="yes">Hachure Angle</property>
+                  <property name="subtitle" translatable="yes">Set the angle of hachure fills</property>
+                  <property name="adjustment">roughstyle_hachure_angle_adj</property>
+                  <property name="numeric">true</property>
+                  <property name="digits">0</property>
+                </object>
+              </child>
             </object>
           </child>
           <child>

@@ -1118,12 +1118,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fragile"
-version = "2.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6c2141d6d6c8512188a7891b4b01590a45f6dac67afb4f255c4124dbb86d4eaa"
-
-[[package]]
 name = "fs_extra"
 version = "1.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3349,7 +3343,6 @@ dependencies = [
  "approx",
  "base64",
  "clap",
- "fragile",
  "ink-stroke-modeler-rs",
  "kurbo 0.10.4",
  "nalgebra 0.33.0",

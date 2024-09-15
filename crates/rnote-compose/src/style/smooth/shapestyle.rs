@@ -1,15 +1,15 @@
 // Imports
 use anyhow::Context;
+use num_derive::{FromPrimitive, ToPrimitive};
 use serde::{Deserialize, Serialize};
 use std::ops::{AddAssign, MulAssign};
-use tracing::info;
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(into = "ShapeStylePrecursor")]
 pub struct ShapeStyle {
     pub line_cap: LineCap,
     pub line_style: LineStyle,
-    pub inner: piet::StrokeStyle,
+    inner: piet::StrokeStyle,
 }
 
 #[allow(missing_docs)]
@@ -38,6 +38,9 @@ unsafe impl Sync for ShapeStyle {}
 
 impl ShapeStyle {
     pub fn update_line_cap(&mut self, line_cap: LineCap, stroke_width: f64) {
+        if self.line_style.is_dotted() && line_cap != LineCap::Rounded {
+            self.line_style = LineStyle::Solid;
+        }
         self.inner.set_line_cap(line_cap.into());
         self.line_cap = line_cap;
         self.update_inner_strokedash(stroke_width);
@@ -58,13 +61,19 @@ impl ShapeStyle {
                 .iter_mut()
                 .for_each(|e| e.mul_assign(stroke_width * 3.0)),
             LineCap::Rounded => dash_pattern.iter_mut().enumerate().for_each(|(idx, e)| {
-                e.mul_assign(stroke_width * 3.0);
+                if !self.line_style.is_dotted() {
+                    e.mul_assign(stroke_width * 3.0);
+                }
                 if idx % 2 == 1 {
-                    e.add_assign(stroke_width)
+                    e.add_assign(2.0 * stroke_width)
                 }
             }),
         }
-        info!("dash pattern = {:?}", dash_pattern);
+        tracing::info!(
+            "width : {:?}\n => dash pattern = {:?}",
+            stroke_width,
+            dash_pattern
+        );
         self.inner.set_dash_pattern(dash_pattern);
     }
     pub(crate) fn from_precursor(precursor: ShapeStylePrecursor, stroke_width: f64) -> Self {
@@ -80,6 +89,9 @@ impl ShapeStyle {
         };
         shape_style.update_inner_strokedash(stroke_width);
         shape_style
+    }
+    pub(crate) fn get(&self) -> &piet::StrokeStyle {
+        &self.inner
     }
 }
 
@@ -106,9 +118,7 @@ impl Default for ShapeStylePrecursor {
     }
 }
 
-#[derive(
-    Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, FromPrimitive, ToPrimitive)]
 pub enum LineCap {
     Straight,
     Rounded,
@@ -132,13 +142,13 @@ impl Into<piet::LineCap> for LineCap {
     }
 }
 
-#[derive(
-    Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, FromPrimitive, ToPrimitive)]
 pub enum LineStyle {
     Solid,
     Dotted,
+    DashedNarrow,
     DashedEquidistant,
+    DashedWide,
 }
 
 impl LineStyle {
@@ -147,8 +157,10 @@ impl LineStyle {
         match self {
             Self::Solid => Vec::new(),
             // LineCap must be set to 'Rounded'
-            Self::Dotted => vec![0.0, 1.0],
+            Self::Dotted => vec![0.0, 0.0],
+            Self::DashedNarrow => vec![1.0, 0.618],
             Self::DashedEquidistant => vec![1.0, 1.0],
+            Self::DashedWide => vec![1.0, 1.618],
         }
     }
     /// Indicates whether or not the LineStyle is dotted
@@ -156,7 +168,9 @@ impl LineStyle {
         match self {
             Self::Solid => false,
             Self::Dotted => true,
+            Self::DashedNarrow => false,
             Self::DashedEquidistant => false,
+            Self::DashedWide => false,
         }
     }
 }

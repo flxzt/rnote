@@ -13,7 +13,6 @@ anyhow = { workspace = true }
 approx = { workspace = true }
 base64 = { workspace = true }
 clap = { workspace = true, optional = true }
-fragile = { workspace = true }
 ink-stroke-modeler-rs = { workspace = true }
 kurbo = { workspace = true }
 nalgebra = { workspace = true }

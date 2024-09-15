@@ -408,13 +408,13 @@ impl Background {
         na::vector![tile_width, tile_height]
     }
 
-    /// Generate the background svg, without Xml header or Svg root.
+    /// Generate the background svg, without Xml header or SVG root.
     pub(crate) fn gen_svg(
         &self,
         bounds: Aabb,
         with_pattern: bool,
         optimize_printing: bool,
-    ) -> Result<render::Svg, anyhow::Error> {
+    ) -> Result<render::SVG, anyhow::Error> {
         let (color, pattern_color) = if optimize_printing {
             if self.color.luma() > 0.5 {
                 // original background color is bright, don't invert pattern color
@@ -489,9 +489,9 @@ impl Background {
         }
 
         let svg_data = rnote_compose::utils::svg_node_to_string(&svg_group)
-            .context("Converting Svg group node to String failed.")?;
+            .context("Converting SVG group node to String failed.")?;
 
-        Ok(render::Svg { svg_data, bounds })
+        Ok(render::SVG { svg_data, bounds })
     }
 
     pub(crate) fn gen_tile_image(&self, image_scale: f64) -> Result<render::Image, anyhow::Error> {

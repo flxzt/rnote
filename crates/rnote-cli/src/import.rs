@@ -10,7 +10,7 @@ pub(crate) async fn run_import(
     xopp_dpi: f64,
 ) -> anyhow::Result<()> {
     validators::file_has_ext(rnote_file, "rnote")?;
-    // Xopp files don't require file extensions
+    // XOPP files don't require file extensions
     validators::path_is_file(input_file)?;
 
     let mut engine = Engine::default();

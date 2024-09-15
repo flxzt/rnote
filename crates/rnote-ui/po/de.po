@@ -312,18 +312,18 @@ msgstr "Das Exportformat"
 #: crates/rnote-ui/src/dialogs/export.rs:304
 #: crates/rnote-ui/src/dialogs/export.rs:635
 #: crates/rnote-ui/src/dialogs/export.rs:954
-msgid "Svg"
-msgstr "Svg"
+msgid "SVG"
+msgstr "SVG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:315
-msgid "Pdf"
-msgstr "Pdf"
+msgid "PDF"
+msgstr "PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:326
-msgid "Xopp"
-msgstr "Xopp"
+msgid "XOPP"
+msgstr "XOPP"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
 #: crates/rnote-ui/data/ui/dialogs/export.ui:356
@@ -448,8 +448,8 @@ msgid "Set the margin around the selected area"
 msgstr "Abstand des Randes zur Auswahl ändern"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
-msgid "Import Pdf"
-msgstr "Pdf importieren"
+msgid "Import PDF"
+msgstr "PDF importieren"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:218
@@ -462,8 +462,8 @@ msgid "Info"
 msgstr "Info"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
-msgid "Pdf Import Preferences"
-msgstr "Pdf Importeinstellungen"
+msgid "PDF Import Preferences"
+msgstr "PDF Importeinstellungen"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
 msgid "Start Page"
@@ -478,25 +478,25 @@ msgid "Adjust Document"
 msgstr "Passe Dokument an"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
-msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "Ändere, ob das Dokumentenlayout an die Pdf angepasst werden soll"
+msgid "Whether the document layout should be adjusted to the PDF"
+msgstr "Ändere, ob das Dokumentenlayout an die PDF angepasst werden soll"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
 msgid "Page Width (%)"
 msgstr "Seitenbreite (%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
-msgid "Set the width of imported Pdf's in percentage to the format width"
+msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr ""
-"Ändere die Breite importierter Pdf's in Prozent relativ zur Formatbreite"
+"Ändere die Breite importierter PDF's in Prozent relativ zur Formatbreite"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
 msgid "Page Spacing"
 msgstr "Seitenabstand"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
-msgid "How Pdf pages are spaced"
-msgstr "Wie Pdf Seiten platziert werden"
+msgid "How PDF pages are spaced"
+msgstr "Wie PDF Seiten platziert werden"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
 msgid "Continuous"
@@ -511,8 +511,8 @@ msgid "Pages Type"
 msgstr "Seitentyp"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
-msgstr "Wählt, ob Pdf's als Bitmap- oder Vektorbilder importiert werden"
+msgid "Set whether PDF's should be imported as vector or bitmap images"
+msgstr "Wählt, ob PDF's als Bitmap- oder Vektorbilder importiert werden"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:144
 msgid "Vector"
@@ -1951,8 +1951,8 @@ msgid "Open File"
 msgstr "Datei öffnen"
 
 #: crates/rnote-ui/src/dialogs/import.rs:86
-msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
+msgid "Jpg, PDF, Png, SVG, XOPP, Txt"
+msgstr "Jpg, PDF, Png, SVG, XOPP, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
 msgid "- no file name -"
@@ -2542,8 +2542,8 @@ msgstr "weiss"
 #~ msgid "Lecture Note 1"
 #~ msgstr "Vorlesungsnotizen 1"
 
-#~ msgid "A Pdf annotation"
-#~ msgstr "Eine Pdf Anmerkung"
+#~ msgid "A PDF annotation"
+#~ msgstr "Eine PDF Anmerkung"
 
 #~ msgid "Lecture Note 2"
 #~ msgstr "Vorlesungsnotizen 2"
@@ -2576,8 +2576,8 @@ msgstr "weiss"
 #~ msgid "Opening Xournal++ file failed"
 #~ msgstr "Xournal++ Dateiöffnung gescheitert"
 
-#~ msgid "Opening Pdf file failed"
-#~ msgstr "Pdf Dateiöffnung gescheitert"
+#~ msgid "Opening PDF file failed"
+#~ msgstr "PDF Dateiöffnung gescheitert"
 
 #~ msgid "Failed to open file, tried to open folder as file"
 #~ msgstr "Dateiöffnung gescheitert, versucht Ordner als Datei zu öffnen"
@@ -2789,8 +2789,8 @@ msgstr "weiss"
 #~ msgid "Selecting apiece"
 #~ msgstr "Einzeln auswählen"
 
-#~ msgid "Xopp, PNG, SVG, JPG, PDF"
-#~ msgstr "Xopp, PNG, SVG, JPG, PDF"
+#~ msgid "XOPP, PNG, SVG, JPG, PDF"
+#~ msgstr "XOPP, PNG, SVG, JPG, PDF"
 
 #~ msgid "Drag stroke elements based on proximity"
 #~ msgstr "Ziehe Strichelemente in der Nähe"

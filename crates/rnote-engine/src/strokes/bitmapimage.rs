@@ -2,7 +2,7 @@
 use super::resize::{calculate_resize_ratio, ImageSizeOption};
 use super::{Content, Stroke};
 use crate::document::Format;
-use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
+use crate::engine::import::{PDFImportPageSpacing, PDFImportPrefs};
 use crate::render;
 use crate::Drawable;
 use anyhow::Context;
@@ -128,7 +128,7 @@ impl BitmapImage {
 
     pub fn from_pdf_bytes(
         to_be_read: &[u8],
-        pdf_import_prefs: PdfImportPrefs,
+        pdf_import_prefs: PDFImportPrefs,
         insert_pos: na::Vector2<f64>,
         page_range: Option<Range<u32>>,
         format: &Format,
@@ -216,10 +216,10 @@ impl BitmapImage {
                     y += height
                 } else {
                     y += match pdf_import_prefs.page_spacing {
-                        PdfImportPageSpacing::Continuous => {
+                        PDFImportPageSpacing::Continuous => {
                             height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5
                         }
-                        PdfImportPageSpacing::OnePerDocumentPage => format.height(),
+                        PDFImportPageSpacing::OnePerDocumentPage => format.height(),
                     };
                 }
 

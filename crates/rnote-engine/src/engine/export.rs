@@ -30,16 +30,16 @@ use tracing::error;
 #[serde(rename = "doc_export_format")]
 pub enum DocExportFormat {
     #[serde(rename = "svg")]
-    Svg,
+    SVG,
     #[serde(rename = "pdf")]
-    Pdf,
+    PDF,
     #[serde(rename = "xopp")]
-    Xopp,
+    XOPP,
 }
 
 impl Default for DocExportFormat {
     fn default() -> Self {
-        Self::Pdf
+        Self::PDF
     }
 }
 
@@ -60,9 +60,9 @@ impl DocExportFormat {
     /// File extension for the format.
     pub fn file_ext(self) -> String {
         match self {
-            DocExportFormat::Svg => String::from("svg"),
-            DocExportFormat::Pdf => String::from("pdf"),
-            DocExportFormat::Xopp => String::from("xopp"),
+            DocExportFormat::SVG => String::from("svg"),
+            DocExportFormat::PDF => String::from("pdf"),
+            DocExportFormat::XOPP => String::from("xopp"),
         }
     }
 }
@@ -122,7 +122,7 @@ impl DocExportPrefs {
 #[serde(rename = "doc_pages_export_format")]
 pub enum DocPagesExportFormat {
     #[serde(rename = "svg")]
-    Svg,
+    SVG,
     #[serde(rename = "png")]
     Png,
     #[serde(rename = "jpeg")]
@@ -131,7 +131,7 @@ pub enum DocPagesExportFormat {
 
 impl Default for DocPagesExportFormat {
     fn default() -> Self {
-        Self::Svg
+        Self::SVG
     }
 }
 
@@ -151,7 +151,7 @@ impl TryFrom<u32> for DocPagesExportFormat {
 impl DocPagesExportFormat {
     pub fn file_ext(self) -> String {
         match self {
-            Self::Svg => String::from("svg"),
+            Self::SVG => String::from("svg"),
             Self::Png => String::from("png"),
             Self::Jpeg => String::from("jpg"),
         }
@@ -221,7 +221,7 @@ impl Default for DocPagesExportPrefs {
 #[serde(rename = "selection_export_format")]
 pub enum SelectionExportFormat {
     #[serde(rename = "svg")]
-    Svg,
+    SVG,
     #[serde(rename = "png")]
     Png,
     #[serde(rename = "jpeg")]
@@ -230,14 +230,14 @@ pub enum SelectionExportFormat {
 
 impl Default for SelectionExportFormat {
     fn default() -> Self {
-        Self::Svg
+        Self::SVG
     }
 }
 
 impl SelectionExportFormat {
     pub fn file_ext(self) -> String {
         match self {
-            SelectionExportFormat::Svg => String::from("svg"),
+            SelectionExportFormat::SVG => String::from("svg"),
             SelectionExportFormat::Png => String::from("png"),
             SelectionExportFormat::Jpeg => String::from("jpg"),
         }
@@ -289,7 +289,7 @@ impl Default for SelectionExportPrefs {
             with_background: true,
             with_pattern: false,
             optimize_printing: false,
-            export_format: SelectionExportFormat::Svg,
+            export_format: SelectionExportFormat::SVG,
             bitmap_scalefactor: 1.8,
             jpeg_quality: 85,
             margin: 12.0,
@@ -423,15 +423,15 @@ impl Engine {
             doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
 
         match doc_export_prefs.export_format {
-            DocExportFormat::Svg => self.export_doc_as_svg_bytes(doc_export_prefs_override),
-            DocExportFormat::Pdf => self.export_doc_as_pdf_bytes(title, doc_export_prefs_override),
-            DocExportFormat::Xopp => {
+            DocExportFormat::SVG => self.export_doc_as_svg_bytes(doc_export_prefs_override),
+            DocExportFormat::PDF => self.export_doc_as_pdf_bytes(title, doc_export_prefs_override),
+            DocExportFormat::XOPP => {
                 self.export_doc_as_xopp_bytes(title, doc_export_prefs_override)
             }
         }
     }
 
-    /// Export the doc with the strokes as Svg.
+    /// Export the doc with the strokes as SVG.
     fn export_doc_as_svg_bytes(
         &self,
         doc_export_prefs_override: Option<DocExportPrefs>,
@@ -464,14 +464,14 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver failed while exporting document as Svg bytes. Receiver already dropped.");
+                error!("Sending result to receiver failed while exporting document as SVG bytes. Receiver already dropped.");
             }
         });
 
         oneshot_receiver
     }
 
-    /// Export the doc with the strokes as Pdf.
+    /// Export the doc with the strokes as PDF.
     fn export_doc_as_pdf_bytes(
         &self,
         title: String,
@@ -486,15 +486,15 @@ impl Engine {
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
                 let target_surface =
-                    cairo::PdfSurface::for_stream(format_size[0], format_size[1], Vec::<u8>::new())
-                        .context("Creating Pdf target surface failed.")?;
+                    cairo::PDFSurface::for_stream(format_size[0], format_size[1], Vec::<u8>::new())
+                        .context("Creating PDF target surface failed.")?;
 
                 target_surface
-                    .set_metadata(cairo::PdfMetadata::Title, title.as_str())
+                    .set_metadata(cairo::PDFMetadata::Title, title.as_str())
                     .context("Set pdf surface title metadata failed.")?;
                 target_surface
                     .set_metadata(
-                        cairo::PdfMetadata::CreateDate,
+                        cairo::PDFMetadata::CreateDate,
                         crate::utils::now_formatted_string().as_str(),
                     )
                     .context("Set pdf surface date metadata failed.")?;
@@ -538,7 +538,7 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver failed while exporting document as Pdf bytes. Receiver already dropped.");
+                error!("Sending result to receiver failed while exporting document as PDF bytes. Receiver already dropped.");
             }
         });
 
@@ -560,11 +560,11 @@ impl Engine {
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
                 // Only one background for all pages
-                let xopp_background = xoppformat::XoppBackground {
+                let xopp_background = xoppformat::XOPPBackground {
                     name: None,
-                    bg_type: xoppformat::XoppBackgroundType::Solid {
+                    bg_type: xoppformat::XOPPBackgroundType::Solid {
                         color: crate::utils::xoppcolor_from_color(document.background.color),
-                        style: xoppformat::XoppBackgroundSolidStyle::Plain,
+                        style: xoppformat::XOPPBackgroundSolidStyle::Plain,
                     },
                 };
 
@@ -574,7 +574,7 @@ impl Engine {
                     .into_iter()
                     .filter_map(|page_content| {
                         let page_bounds = page_content.bounds()?;
-                        // Translate strokes to to page mins and convert to XoppStrokStyle
+                        // Translate strokes to to page mins and convert to XOPPStrokStyle
                         let xopp_strokestyles = page_content
                             .strokes
                             .into_iter()
@@ -583,54 +583,54 @@ impl Engine {
                                 stroke.translate(-page_bounds.mins.coords);
                                 stroke.into_xopp(document.format.dpi())
                             })
-                            .collect::<Vec<xoppformat::XoppStrokeType>>();
+                            .collect::<Vec<xoppformat::XOPPStrokeType>>();
 
                         // Extract the strokes
                         let xopp_strokes = xopp_strokestyles
                             .iter()
                             .filter_map(|stroke| {
-                                if let xoppformat::XoppStrokeType::XoppStroke(xoppstroke) = stroke {
+                                if let xoppformat::XOPPStrokeType::XOPPStroke(xoppstroke) = stroke {
                                     Some(xoppstroke.clone())
                                 } else {
                                     None
                                 }
                             })
-                            .collect::<Vec<xoppformat::XoppStroke>>();
+                            .collect::<Vec<xoppformat::XOPPStroke>>();
 
                         // Extract the texts
                         let xopp_texts = xopp_strokestyles
                             .iter()
                             .filter_map(|stroke| {
-                                if let xoppformat::XoppStrokeType::XoppText(xopptext) = stroke {
+                                if let xoppformat::XOPPStrokeType::XOPPText(xopptext) = stroke {
                                     Some(xopptext.clone())
                                 } else {
                                     None
                                 }
                             })
-                            .collect::<Vec<xoppformat::XoppText>>();
+                            .collect::<Vec<xoppformat::XOPPText>>();
 
                         // Extract the images
                         let xopp_images = xopp_strokestyles
                             .iter()
                             .filter_map(|stroke| {
-                                if let xoppformat::XoppStrokeType::XoppImage(xoppstroke) = stroke {
+                                if let xoppformat::XOPPStrokeType::XOPPImage(xoppstroke) = stroke {
                                     Some(xoppstroke.clone())
                                 } else {
                                     None
                                 }
                             })
-                            .collect::<Vec<xoppformat::XoppImage>>();
+                            .collect::<Vec<xoppformat::XOPPImage>>();
 
                         // In Rnote images are always rendered below strokes and text.
                         // To match this behaviour accurately, images are separated into another layer.
-                        let image_layer = xoppformat::XoppLayer {
+                        let image_layer = xoppformat::XOPPLayer {
                             name: None,
                             strokes: vec![],
                             texts: vec![],
                             images: xopp_images,
                         };
 
-                        let strokes_layer = xoppformat::XoppLayer {
+                        let strokes_layer = xoppformat::XOPPLayer {
                             name: None,
                             strokes: xopp_strokes,
                             texts: xopp_texts,
@@ -640,29 +640,29 @@ impl Engine {
                         let page_dimensions = crate::utils::convert_coord_dpi(
                             page_bounds.extents(),
                             document.format.dpi(),
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         );
 
-                        Some(xoppformat::XoppPage {
+                        Some(xoppformat::XOPPPage {
                             width: page_dimensions[0],
                             height: page_dimensions[1],
                             background: xopp_background.clone(),
                             layers: vec![image_layer, strokes_layer],
                         })
                     })
-                    .collect::<Vec<xoppformat::XoppPage>>();
+                    .collect::<Vec<xoppformat::XOPPPage>>();
 
                 let xopp_title = String::from(
                     "Xournal++ document - see https://github.com/xournalpp/xournalpp (exported from Rnote - see https://github.com/flxzt/rnote)"
                 );
 
-                let xopp_root = xoppformat::XoppRoot {
+                let xopp_root = xoppformat::XOPPRoot {
                     title: xopp_title,
                     fileversion: String::from("4"),
                     preview: String::from(""),
                     pages,
                 };
-                let xopp_file = xoppformat::XoppFile { xopp_root };
+                let xopp_file = xoppformat::XOPPFile { xopp_root };
 
                 xopp_file.save_as_bytes(&title)
             };
@@ -686,7 +686,7 @@ impl Engine {
             doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
 
         match doc_pages_export_prefs.export_format {
-            DocPagesExportFormat::Svg => {
+            DocPagesExportFormat::SVG => {
                 self.export_doc_pages_as_svgs_bytes(doc_pages_export_prefs_override)
             }
             DocPagesExportFormat::Png | DocPagesExportFormat::Jpeg => {
@@ -695,7 +695,7 @@ impl Engine {
         }
     }
 
-    /// Export the document as Svg.
+    /// Export the document as SVG.
     fn export_doc_pages_as_svgs_bytes(
         &self,
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
@@ -719,7 +719,7 @@ impl Engine {
                                 DocPagesExportPrefs::MARGIN,
                             )?
                             .ok_or(anyhow::anyhow!(
-                                "Generating Svg for page {i} failed, returned None."
+                                "Generating SVG for page {i} failed, returned None."
                             ))?;
                         Ok(rnote_compose::utils::add_xml_header(
                             rnote_compose::utils::wrap_svg_root(
@@ -737,7 +737,7 @@ impl Engine {
 
             if oneshot_sender.send(result()).is_err() {
                 error!(
-                    "Sending result to receiver failed while exporting document pages as Svg bytes. Receiver already dropped."
+                    "Sending result to receiver failed while exporting document pages as SVG bytes. Receiver already dropped."
                 );
             }
         });
@@ -760,7 +760,7 @@ impl Engine {
         rayon::spawn(move || {
             let result = || -> Result<Vec<Vec<u8>>, anyhow::Error> {
                 let image_format = match doc_pages_export_prefs.export_format {
-                    DocPagesExportFormat::Svg => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
+                    DocPagesExportFormat::SVG => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
                     DocPagesExportFormat::Png => image::ImageFormat::Png,
                     DocPagesExportFormat::Jpeg => image::ImageFormat::Jpeg,
                 };
@@ -776,7 +776,7 @@ impl Engine {
                                 DocPagesExportPrefs::MARGIN,
                             )?
                             .ok_or(anyhow::anyhow!(
-                                "Generating Svg for page {i} failed, returned None."
+                                "Generating SVG for page {i} failed, returned None."
                             ))?
                             .gen_image(doc_pages_export_prefs.bitmap_scalefactor)?
                             .into_encoded_bytes(
@@ -803,7 +803,7 @@ impl Engine {
             selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
 
         match selection_export_prefs.export_format {
-            SelectionExportFormat::Svg => {
+            SelectionExportFormat::SVG => {
                 self.export_selection_as_svg_bytes(selection_export_prefs_override)
             }
             SelectionExportFormat::Png | SelectionExportFormat::Jpeg => {
@@ -812,7 +812,7 @@ impl Engine {
         }
     }
 
-    /// Exports the selection as Svg.
+    /// Exports the selection as SVG.
     fn export_selection_as_svg_bytes(
         &self,
         selection_export_prefs_override: Option<SelectionExportPrefs>,
@@ -852,7 +852,7 @@ impl Engine {
                 ))
             };
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver failed while exporting selection as Svg bytes. Receiver already dropped.");
+                error!("Sending result to receiver failed while exporting selection as SVG bytes. Receiver already dropped.");
             }
         });
 
@@ -887,7 +887,7 @@ impl Engine {
                     return Ok(None);
                 };
                 let image_format = match selection_export_prefs.export_format {
-                    SelectionExportFormat::Svg => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
+                    SelectionExportFormat::SVG => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
                     SelectionExportFormat::Png => image::ImageFormat::Png,
                     SelectionExportFormat::Jpeg => image::ImageFormat::Jpeg
                 };

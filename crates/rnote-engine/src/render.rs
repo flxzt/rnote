@@ -397,16 +397,16 @@ impl Image {
     }
 }
 
-/// A Svg image.
+/// A SVG image.
 #[derive(Debug, Clone)]
-pub struct Svg {
-    /// Svg data String.
+pub struct SVG {
+    /// SVG data String.
     pub svg_data: String,
-    /// Bounds of the Svg.
+    /// Bounds of the SVG.
     pub bounds: Aabb,
 }
 
-impl Svg {
+impl SVG {
     pub const MIME_TYPE: &'static str = "image/svg+xml";
 
     pub fn merge<T>(&mut self, other: T)
@@ -444,7 +444,7 @@ impl Svg {
         self.svg_data = rnote_compose::utils::remove_xml_header(&self.svg_data);
     }
 
-    /// Simplify the Svg by passing it through [usvg].
+    /// Simplify the SVG by passing it through [usvg].
     ///
     /// Also moves the bounds to mins: [0., 0.], maxs: extents
     pub fn simplify(&mut self) -> anyhow::Result<()> {
@@ -482,7 +482,7 @@ impl Svg {
         Ok(())
     }
 
-    /// Generate an Svg through cairo's SvgSurface.
+    /// Generate an SVG through cairo's SVGSurface.
     pub fn gen_with_cairo<F>(draw_func: F, mut bounds: Aabb) -> anyhow::Result<Self>
     where
         F: FnOnce(&cairo::Context) -> anyhow::Result<()>,
@@ -493,12 +493,12 @@ impl Svg {
         let width = bounds.extents()[0];
         let height = bounds.extents()[1];
         let mut svg_surface =
-            cairo::SvgSurface::for_stream(width, height, Vec::new()).map_err(|e| {
+            cairo::SVGSurface::for_stream(width, height, Vec::new()).map_err(|e| {
                 anyhow::anyhow!(
                     "Creating svg surface with dimensions ({width}, {height}) failed, Err: {e:?}"
                 )
             })?;
-        svg_surface.set_document_unit(cairo::SvgUnit::Px);
+        svg_surface.set_document_unit(cairo::SVGUnit::Px);
 
         {
             let cairo_cx = cairo::Context::new(&svg_surface)?;
@@ -512,11 +512,11 @@ impl Svg {
             *svg_surface
                 .finish_output_stream()
                 .map_err(|e| {
-                    anyhow::anyhow!("Finishing Svg surface output stream failed, Err: {e:?}")
+                    anyhow::anyhow!("Finishing SVG surface output stream failed, Err: {e:?}")
                 })?
                 .downcast::<Vec<u8>>()
                 .map_err(|e| {
-                    anyhow::anyhow!("Downcasting Svg surface content failed, Err: {e:?}")
+                    anyhow::anyhow!("Downcasting SVG surface content failed, Err: {e:?}")
                 })?,
         )?;
         let svg_data = rnote_compose::utils::remove_xml_header(&content);
@@ -533,7 +533,7 @@ impl Svg {
         })
     }
 
-    /// Generate an Svg with piet, using the `piet_cairo` backend and cairo's SvgSurface.
+    /// Generate an SVG with piet, using the `piet_cairo` backend and cairo's SVGSurface.
     ///
     /// This might be preferable to the `piet_svg` backend, because especially text alignment and sizes can be different
     /// with it.
@@ -580,7 +580,7 @@ impl Svg {
         Ok(())
     }
 
-    /// Generate an image from an Svg.
+    /// Generate an image from an SVG.
     ///
     /// Using rsvg for rendering.
     pub fn gen_image(&self, image_scale: f64) -> Result<Image, anyhow::Error> {

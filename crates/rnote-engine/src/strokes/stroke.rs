@@ -5,7 +5,7 @@ use super::content::GeneratedContentImages;
 use super::shapestroke::ShapeStroke;
 use super::vectorimage::VectorImage;
 use super::{Content, TextStroke};
-use crate::fileformats::xoppformat::{self, XoppColor};
+use crate::fileformats::xoppformat::{self, XOPPColor};
 use crate::store::chrono_comp::StrokeLayer;
 use crate::{render, Engine};
 use crate::{utils, Drawable};
@@ -36,7 +36,7 @@ pub enum Stroke {
 }
 
 impl Content for Stroke {
-    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
+    fn gen_svg(&self) -> Result<render::SVG, anyhow::Error> {
         match self {
             Stroke::BrushStroke(brushstroke) => brushstroke.gen_svg(),
             Stroke::ShapeStroke(shapestroke) => shapestroke.gen_svg(),
@@ -302,14 +302,14 @@ impl Stroke {
     }
 
     pub fn from_xoppstroke(
-        stroke: xoppformat::XoppStroke,
+        stroke: xoppformat::XOPPStroke,
         offset: na::Vector2<f64>,
         target_dpi: f64,
     ) -> Result<(Self, StrokeLayer), anyhow::Error> {
         let mut widths: Vec<f64> = stroke
             .width
             .into_iter()
-            .map(|w| crate::utils::convert_value_dpi(w, xoppformat::XoppFile::DPI, target_dpi))
+            .map(|w| crate::utils::convert_value_dpi(w, xoppformat::XOPPFile::DPI, target_dpi))
             .collect();
 
         let coords: Vec<na::Vector2<f64>> = stroke
@@ -317,8 +317,8 @@ impl Stroke {
             .into_iter()
             .map(|c| {
                 na::vector![
-                    crate::utils::convert_value_dpi(c[0], xoppformat::XoppFile::DPI, target_dpi),
-                    crate::utils::convert_value_dpi(c[1], xoppformat::XoppFile::DPI, target_dpi)
+                    crate::utils::convert_value_dpi(c[0], xoppformat::XOPPFile::DPI, target_dpi),
+                    crate::utils::convert_value_dpi(c[1], xoppformat::XOPPFile::DPI, target_dpi)
                 ]
             })
             .collect();
@@ -330,11 +330,11 @@ impl Stroke {
         let mut smooth_options = SmoothOptions::default();
 
         let layer = match stroke.tool {
-            xoppformat::XoppTool::Pen => {
+            xoppformat::XOPPTool::Pen => {
                 smooth_options.stroke_color = Some(crate::utils::color_from_xopp(stroke.color));
                 StrokeLayer::UserLayer(0)
             }
-            xoppformat::XoppTool::Highlighter => {
+            xoppformat::XOPPTool::Highlighter => {
                 let mut color = crate::utils::color_from_xopp(stroke.color);
                 // the highlighter always has alpha 0.5
                 color.a = 0.5;
@@ -342,7 +342,7 @@ impl Stroke {
                 smooth_options.stroke_color = Some(color);
                 StrokeLayer::Highlighter
             }
-            xoppformat::XoppTool::Eraser => {
+            xoppformat::XOPPTool::Eraser => {
                 smooth_options.stroke_color = Some(Color::WHITE);
                 StrokeLayer::UserLayer(0)
             }
@@ -383,7 +383,7 @@ impl Stroke {
     }
 
     pub fn from_xoppimage(
-        xopp_image: xoppformat::XoppImage,
+        xopp_image: xoppformat::XOPPImage,
         offset: na::Vector2<f64>,
         target_dpi: f64,
     ) -> Result<Self, anyhow::Error> {
@@ -391,24 +391,24 @@ impl Stroke {
             na::point![
                 crate::utils::convert_value_dpi(
                     xopp_image.left,
-                    xoppformat::XoppFile::DPI,
+                    xoppformat::XOPPFile::DPI,
                     target_dpi
                 ),
                 crate::utils::convert_value_dpi(
                     xopp_image.top,
-                    xoppformat::XoppFile::DPI,
+                    xoppformat::XOPPFile::DPI,
                     target_dpi
                 )
             ],
             na::point![
                 crate::utils::convert_value_dpi(
                     xopp_image.right,
-                    xoppformat::XoppFile::DPI,
+                    xoppformat::XOPPFile::DPI,
                     target_dpi
                 ),
                 crate::utils::convert_value_dpi(
                     xopp_image.bottom,
-                    xoppformat::XoppFile::DPI,
+                    xoppformat::XOPPFile::DPI,
                     target_dpi
                 )
             ],
@@ -427,10 +427,10 @@ impl Stroke {
         Ok(Stroke::BitmapImage(BitmapImage { image, rectangle }))
     }
 
-    pub fn into_xopp(self, current_dpi: f64) -> Option<xoppformat::XoppStrokeType> {
+    pub fn into_xopp(self, current_dpi: f64) -> Option<xoppformat::XOPPStrokeType> {
         match self {
             Stroke::BrushStroke(brushstroke) => {
-                let (stroke_width, color): (f64, XoppColor) = match &brushstroke.style {
+                let (stroke_width, color): (f64, XOPPColor) = match &brushstroke.style {
                     // Return early if color is None
                     Style::Smooth(options) => (
                         options.stroke_width,
@@ -446,13 +446,13 @@ impl Stroke {
                     ),
                 };
 
-                let tool = xoppformat::XoppTool::Pen;
+                let tool = xoppformat::XOPPTool::Pen;
                 let elements_vec = brushstroke.path.into_elements();
                 let stroke_style = &brushstroke.style;
                 let stroke_width =
-                    utils::convert_value_dpi(stroke_width, current_dpi, xoppformat::XoppFile::DPI);
+                    utils::convert_value_dpi(stroke_width, current_dpi, xoppformat::XOPPFile::DPI);
 
-                // in Xopp's format the first width element is the absolute width of the stroke
+                // in XOPP's format the first width element is the absolute width of the stroke
                 let mut width_vec = vec![stroke_width];
 
                 // the rest are pressures between 0.0 and 1.0
@@ -467,7 +467,7 @@ impl Stroke {
                     .collect();
                 width_vec.append(&mut pressures);
 
-                // Xopp expects at least 4 coordinates, so strokes with elements < 2 aren't exported
+                // XOPP expects at least 4 coordinates, so strokes with elements < 2 aren't exported
                 if elements_vec.len() < 2 {
                     return None;
                 }
@@ -478,13 +478,13 @@ impl Stroke {
                         utils::convert_coord_dpi(
                             element.pos,
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         )
                     })
                     .collect::<Vec<na::Vector2<f64>>>();
 
-                Some(xoppformat::XoppStrokeType::XoppStroke(
-                    xoppformat::XoppStroke {
+                Some(xoppformat::XOPPStrokeType::XOPPStroke(
+                    xoppformat::XOPPStroke {
                         tool,
                         color,
                         width: width_vec,
@@ -502,33 +502,33 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        error!("Converting ShapeStroke to XoppImage failed, Err: {e:?}");
+                        error!("Converting ShapeStroke to XOPPImage failed, Err: {e:?}");
                         return None;
                     }
                 };
                 let shapestroke_bounds = shapestroke.bounds();
 
-                Some(xoppformat::XoppStrokeType::XoppImage(
-                    xoppformat::XoppImage {
+                Some(xoppformat::XOPPStrokeType::XOPPImage(
+                    xoppformat::XOPPImage {
                         left: utils::convert_value_dpi(
                             shapestroke_bounds.mins[0],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         top: utils::convert_value_dpi(
                             shapestroke_bounds.mins[1],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         right: utils::convert_value_dpi(
                             shapestroke_bounds.maxs[0],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         bottom: utils::convert_value_dpi(
                             shapestroke_bounds.maxs[1],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         data: base64::Engine::encode(
                             &base64::engine::general_purpose::STANDARD,
@@ -546,33 +546,33 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        error!("Converting TextStroke to XoppImage failed, Err: {e:?}");
+                        error!("Converting TextStroke to XOPPImage failed, Err: {e:?}");
                         return None;
                     }
                 };
                 let vectorimage_bounds = textstroke.bounds();
 
-                Some(xoppformat::XoppStrokeType::XoppImage(
-                    xoppformat::XoppImage {
+                Some(xoppformat::XOPPStrokeType::XOPPImage(
+                    xoppformat::XOPPImage {
                         left: utils::convert_value_dpi(
                             vectorimage_bounds.mins[0],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         top: utils::convert_value_dpi(
                             vectorimage_bounds.mins[1],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         right: utils::convert_value_dpi(
                             vectorimage_bounds.maxs[0],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         bottom: utils::convert_value_dpi(
                             vectorimage_bounds.maxs[1],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         data: base64::Engine::encode(
                             &base64::engine::general_purpose::STANDARD,
@@ -589,34 +589,34 @@ impl Stroke {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
                         error!(
-                            "Exporting VectorImage to image bytes failed while converting Stroke to Xopp, Err: {e:?}"
+                            "Exporting VectorImage to image bytes failed while converting Stroke to XOPP, Err: {e:?}"
                         );
                         return None;
                     }
                 };
                 let vectorimage_bounds = vectorimage.bounds();
 
-                Some(xoppformat::XoppStrokeType::XoppImage(
-                    xoppformat::XoppImage {
+                Some(xoppformat::XOPPStrokeType::XOPPImage(
+                    xoppformat::XOPPImage {
                         left: utils::convert_value_dpi(
                             vectorimage_bounds.mins[0],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         top: utils::convert_value_dpi(
                             vectorimage_bounds.mins[1],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         right: utils::convert_value_dpi(
                             vectorimage_bounds.maxs[0],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         bottom: utils::convert_value_dpi(
                             vectorimage_bounds.maxs[1],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         data: base64::Engine::encode(
                             &base64::engine::general_purpose::STANDARD,
@@ -633,7 +633,7 @@ impl Stroke {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
                         error!(
-                            "Exporting BitmapImage to image bytes failed while converting Stroke to Xopp, Err: {e:?}"
+                            "Exporting BitmapImage to image bytes failed while converting Stroke to XOPP, Err: {e:?}"
                         );
                         return None;
                     }
@@ -641,27 +641,27 @@ impl Stroke {
 
                 let bounds = bitmapimage.bounds();
 
-                Some(xoppformat::XoppStrokeType::XoppImage(
-                    xoppformat::XoppImage {
+                Some(xoppformat::XOPPStrokeType::XOPPImage(
+                    xoppformat::XOPPImage {
                         left: utils::convert_value_dpi(
                             bounds.mins[0],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         top: utils::convert_value_dpi(
                             bounds.mins[1],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         right: utils::convert_value_dpi(
                             bounds.maxs[0],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         bottom: utils::convert_value_dpi(
                             bounds.maxs[1],
                             current_dpi,
-                            xoppformat::XoppFile::DPI,
+                            xoppformat::XOPPFile::DPI,
                         ),
                         data: base64::Engine::encode(
                             &base64::engine::general_purpose::STANDARD,

@@ -311,18 +311,18 @@ msgstr "Dışa aktarma biçimi"
 #: crates/rnote-ui/src/dialogs/export.rs:304
 #: crates/rnote-ui/src/dialogs/export.rs:635
 #: crates/rnote-ui/src/dialogs/export.rs:954
-msgid "Svg"
-msgstr "Svg"
+msgid "SVG"
+msgstr "SVG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:315
-msgid "Pdf"
-msgstr "Pdf"
+msgid "PDF"
+msgstr "PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:326
-msgid "Xopp"
-msgstr "Xopp"
+msgid "XOPP"
+msgstr "XOPP"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
 #: crates/rnote-ui/data/ui/dialogs/export.ui:356
@@ -465,7 +465,7 @@ msgid "Set the margin around the selected area"
 msgstr "Seçilen alanın etrafındaki kenar boşluğunu ayarla"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
-msgid "Import Pdf"
+msgid "Import PDF"
 msgstr "PDF İçe Aktar"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
@@ -479,7 +479,7 @@ msgid "Info"
 msgstr "Bilgi"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
-msgid "Pdf Import Preferences"
+msgid "PDF Import Preferences"
 msgstr "PDF İçe Aktarma Tercihleri"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
@@ -495,7 +495,7 @@ msgid "Adjust Document"
 msgstr "Belgeyi Düzenle"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
-msgid "Whether the document layout should be adjusted to the Pdf"
+msgid "Whether the document layout should be adjusted to the PDF"
 msgstr "Belge düzeninin PDF'ye uydurulma durumu"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
@@ -503,7 +503,7 @@ msgid "Page Width (%)"
 msgstr "Sayfa Genişliği (%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
-msgid "Set the width of imported Pdf's in percentage to the format width"
+msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr ""
 "İçe aktarılan PDFʼlerin genişliğini biçim genişliğine yüzde olarak ayarla"
 
@@ -512,7 +512,7 @@ msgid "Page Spacing"
 msgstr "Sayfa Boşluğu"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
-msgid "How Pdf pages are spaced"
+msgid "How PDF pages are spaced"
 msgstr "PDF sayfaları nasıl boşluklu"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
@@ -528,7 +528,7 @@ msgid "Pages Type"
 msgstr "Sayfa Türü"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgid "Set whether PDF's should be imported as vector or bitmap images"
 msgstr ""
 "PDFʼlerin vektör olarak mı yoksa biteşlem görüntüleri olarak mı içe "
 "aktarılacağını ayarla"
@@ -1972,8 +1972,8 @@ msgid "Open File"
 msgstr "Dosya Aç"
 
 #: crates/rnote-ui/src/dialogs/import.rs:86
-msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
+msgid "Jpg, PDF, Png, SVG, XOPP, Txt"
+msgstr "Jpg, PDF, Png, SVG, XOPP, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
 msgid "- no file name -"
@@ -2565,7 +2565,7 @@ msgstr "beyaz"
 #~ msgid "Lecture Note 1"
 #~ msgstr "Ders Notu 1"
 
-#~ msgid "A Pdf annotation"
+#~ msgid "A PDF annotation"
 #~ msgstr "PDF açıklaması"
 
 #~ msgid "Lecture Note 2"
@@ -2599,7 +2599,7 @@ msgstr "beyaz"
 #~ msgid "Opening Xournal++ file failed"
 #~ msgstr "Xournal++ dosyası açılamadı"
 
-#~ msgid "Opening Pdf file failed"
+#~ msgid "Opening PDF file failed"
 #~ msgstr "PDF dosyası açılamadı"
 
 #~ msgid "Failed to open file, tried to open folder as file"
@@ -2831,8 +2831,8 @@ msgstr "beyaz"
 #~ msgid "Selecting apiece"
 #~ msgstr "Parça seçimi"
 
-#~ msgid "Xopp, PNG, SVG, JPG, PDF"
-#~ msgstr "Xopp, PNG, SVG, JPG, PDF"
+#~ msgid "XOPP, PNG, SVG, JPG, PDF"
+#~ msgstr "XOPP, PNG, SVG, JPG, PDF"
 
 #~ msgid "Drag stroke elements based on proximity"
 #~ msgstr "Yakınlığa bağlı olarak darbe öğelerini sürükle"

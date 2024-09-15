@@ -11,7 +11,7 @@ use gtk4::{
     Shortcut, ShortcutController, ShortcutTrigger, ToggleButton,
 };
 use num_traits::ToPrimitive;
-use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
+use rnote_engine::engine::import::{PDFImportPageSpacing, PDFImportPagesType};
 use tracing::{debug, error};
 
 /// Opens a new rnote save file in a new tab
@@ -82,7 +82,7 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
     filter.add_suffix("jpg");
     filter.add_suffix("jpeg");
     filter.add_suffix("txt");
-    filter.set_name(Some(&gettext("Jpg, Pdf, Png, Svg, Xopp, Txt")));
+    filter.set_name(Some(&gettext("Jpg, PDF, Png, SVG, XOPP, Txt")));
 
     let filter_list = gio::ListStore::new::<FileFilter>();
     filter_list.append(&filter);
@@ -111,7 +111,7 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
     }
 }
 
-/// Imports the file as Pdf with an import dialog.
+/// Imports the file as PDF with an import dialog.
 ///
 /// Returns true when the file was imported, else false.
 pub(crate) async fn dialog_import_pdf_w_prefs(
@@ -159,11 +159,11 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     // Set the widget state from the pdf import prefs
     pdf_import_width_row.set_value(pdf_import_prefs.page_width_perc);
     match pdf_import_prefs.pages_type {
-        PdfImportPagesType::Bitmap => {
+        PDFImportPagesType::Bitmap => {
             pdf_import_as_bitmap_toggle.set_active(true);
             pdf_import_bitmap_scalefactor_row.set_sensitive(true);
         }
-        PdfImportPagesType::Vector => {
+        PDFImportPagesType::Vector => {
             pdf_import_as_vector_toggle.set_active(true);
             pdf_import_bitmap_scalefactor_row.set_sensitive(false);
         }
@@ -186,7 +186,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     pdf_import_as_vector_toggle.connect_toggled(
         clone!(@weak pdf_import_bitmap_scalefactor_row, @weak canvas, @weak appwindow => move |toggle| {
             if toggle.is_active() {
-                canvas.engine_mut().import_prefs.pdf_import_prefs.pages_type = PdfImportPagesType::Vector;
+                canvas.engine_mut().import_prefs.pdf_import_prefs.pages_type = PDFImportPagesType::Vector;
                 pdf_import_bitmap_scalefactor_row.set_sensitive(false);
             }
         }),
@@ -195,7 +195,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     pdf_import_as_bitmap_toggle.connect_toggled(
         clone!(@weak pdf_import_bitmap_scalefactor_row, @weak canvas, @weak appwindow => move |toggle| {
             if toggle.is_active() {
-                canvas.engine_mut().import_prefs.pdf_import_prefs.pages_type = PdfImportPagesType::Bitmap;
+                canvas.engine_mut().import_prefs.pdf_import_prefs.pages_type = PDFImportPagesType::Bitmap;
                 pdf_import_bitmap_scalefactor_row.set_sensitive(true);
             }
         }),
@@ -209,7 +209,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
 
     pdf_import_page_spacing_row.connect_selected_notify(
         clone!(@weak canvas, @weak appwindow => move |row| {
-            let page_spacing = PdfImportPageSpacing::try_from(row.selected()).unwrap();
+            let page_spacing = PDFImportPageSpacing::try_from(row.selected()).unwrap();
 
             canvas.engine_mut().import_prefs.pdf_import_prefs.page_spacing = page_spacing;
         }),
@@ -354,7 +354,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     }
 }
 
-/// Imports the file as Xopp with an import dialog.
+/// Imports the file as XOPP with an import dialog.
 ///
 /// Returns true when the file was imported, else false.
 pub(crate) async fn dialog_import_xopp_w_prefs(

@@ -17,7 +17,7 @@
 > Sketch and take handwritten notes.  
 
 Rnote is an open-source vector-based drawing app for sketching, handwritten notes and to annotate documents and pictures.
-It is targeted at students, teachers and those who own a drawing tablet and provides features like Pdf and picture import and export,
+It is targeted at students, teachers and those who own a drawing tablet and provides features like PDF and picture import and export,
 an infinite canvas and an adaptive UI for big and small screens.
 
 Written in Rust and GTK4.
@@ -35,8 +35,8 @@ Written in Rust and GTK4.
 - Reconfigurable stylus button shortcuts
 - An integrated workspace browser for quick access to related files
 - Drag & Drop, clipboard support
-- Pdf, Bitmap and Svg image import
-- Documents can be exported to Svg, Pdf and Xopp. Document pages and selections to Svg, Png and Jpeg.
+- PDF, Bitmap and SVG image import
+- Documents can be exported to SVG, PDF and XOPP. Document pages and selections to SVG, Png and Jpeg.
 - Save and load the documents in the native `.rnote` file format
 - Tabs to work on multiple documents at the same time
 - Autosave, printing

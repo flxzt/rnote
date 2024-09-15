@@ -9,7 +9,7 @@ pub const fn crate_version() -> &'static str {
     env!("CARGO_PKG_VERSION")
 }
 
-pub fn color_from_xopp(xopp_color: xoppformat::XoppColor) -> Color {
+pub fn color_from_xopp(xopp_color: xoppformat::XOPPColor) -> Color {
     Color {
         r: f64::from(xopp_color.red) / 255.0,
         g: f64::from(xopp_color.green) / 255.0,
@@ -18,8 +18,8 @@ pub fn color_from_xopp(xopp_color: xoppformat::XoppColor) -> Color {
     }
 }
 
-pub fn xoppcolor_from_color(color: Color) -> xoppformat::XoppColor {
-    xoppformat::XoppColor {
+pub fn xoppcolor_from_color(color: Color) -> xoppformat::XOPPColor {
+    xoppformat::XOPPColor {
         red: (color.r * 255.0).floor() as u8,
         green: (color.g * 255.0).floor() as u8,
         blue: (color.b * 255.0).floor() as u8,

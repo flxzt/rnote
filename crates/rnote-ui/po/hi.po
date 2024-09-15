@@ -311,17 +311,17 @@ msgstr "निर्यात प्रारूप"
 #: crates/rnote-ui/src/dialogs/export.rs:304
 #: crates/rnote-ui/src/dialogs/export.rs:635
 #: crates/rnote-ui/src/dialogs/export.rs:954
-msgid "Svg"
+msgid "SVG"
 msgstr "SVG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:315
-msgid "Pdf"
+msgid "PDF"
 msgstr "PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:326
-msgid "Xopp"
+msgid "XOPP"
 msgstr "XOPP"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
@@ -447,7 +447,7 @@ msgid "Set the margin around the selected area"
 msgstr "चयनित क्षेत्र के आसपास मार्जिन तय करें"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
-msgid "Import Pdf"
+msgid "Import PDF"
 msgstr "PDF आयात करें"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
@@ -461,7 +461,7 @@ msgid "Info"
 msgstr "जानकारी"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
-msgid "Pdf Import Preferences"
+msgid "PDF Import Preferences"
 msgstr "PDF आयात प्राथमिकताएं"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
@@ -477,7 +477,7 @@ msgid "Adjust Document"
 msgstr "दस्तावेज समायोजित करें"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
-msgid "Whether the document layout should be adjusted to the Pdf"
+msgid "Whether the document layout should be adjusted to the PDF"
 msgstr "क्या दस्तावेज अभिन्यास को PDF में समायोजित किया जाना चाहिए"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
@@ -485,7 +485,7 @@ msgid "Page Width (%)"
 msgstr "पृष्ठ की चौड़ाई (%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
-msgid "Set the width of imported Pdf's in percentage to the format width"
+msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr "आयातित PDF की चौड़ाई को प्रारूप की चौड़ाई के प्रतिशत में निर्धारित करें"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
@@ -493,7 +493,7 @@ msgid "Page Spacing"
 msgstr "पृष्ठ रिक्ति"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
-msgid "How Pdf pages are spaced"
+msgid "How PDF pages are spaced"
 msgstr "PDF पृष्ठों में अंतर कैसे रखा जाता है"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
@@ -509,7 +509,7 @@ msgid "Pages Type"
 msgstr "पृष्ठ प्रकार"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgid "Set whether PDF's should be imported as vector or bitmap images"
 msgstr ""
 "निर्धारित करें कि क्या PDF को वेक्टर या बिटमैप छवियों के रूप में आयात किया जाना चाहिए"
 
@@ -1948,8 +1948,8 @@ msgid "Open File"
 msgstr "फाइल खोलें"
 
 #: crates/rnote-ui/src/dialogs/import.rs:86
-msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
+msgid "Jpg, PDF, Png, SVG, XOPP, Txt"
+msgstr "Jpg, PDF, Png, SVG, XOPP, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
 msgid "- no file name -"
@@ -2536,7 +2536,7 @@ msgstr "सफेद"
 #~ msgid "Lecture Note 1"
 #~ msgstr "लेकचर नोट १"
 
-#~ msgid "A Pdf annotation"
+#~ msgid "A PDF annotation"
 #~ msgstr "एक पीडीएफ एनोटेशन"
 
 #~ msgid "Lecture Note 2"

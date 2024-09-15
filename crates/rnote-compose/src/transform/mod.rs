@@ -120,7 +120,7 @@ impl Transform {
         .unwrap();
     }
 
-    /// Convert the transform to a Svg attribute string, insertable into svg elements.
+    /// Convert the transform to a SVG attribute string, insertable into svg elements.
     pub fn to_svg_transform_attr_str(&self) -> String {
         let matrix = self.affine;
 

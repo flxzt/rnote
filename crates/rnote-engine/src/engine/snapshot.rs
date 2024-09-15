@@ -1,6 +1,6 @@
 // Imports
 use crate::document::background;
-use crate::engine::import::XoppImportPrefs;
+use crate::engine::import::XOPPImportPrefs;
 use crate::fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::Stroke;
@@ -68,13 +68,13 @@ impl EngineSnapshot {
     /// To import this snapshot into the current engine, use [`Engine::load_snapshot()`].
     pub async fn load_from_xopp_bytes(
         bytes: Vec<u8>,
-        xopp_import_prefs: XoppImportPrefs,
+        xopp_import_prefs: XOPPImportPrefs,
     ) -> anyhow::Result<Self> {
         let (snapshot_sender, snapshot_receiver) = oneshot::channel::<anyhow::Result<Self>>();
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Self> {
-                let xopp_file = xoppformat::XoppFile::load_from_bytes(&bytes)?;
+                let xopp_file = xoppformat::XOPPFile::load_from_bytes(&bytes)?;
 
                 // Extract the largest width of all pages, add together all heights
                 let (doc_width, doc_height) = xopp_file
@@ -90,19 +90,19 @@ impl EngineSnapshot {
 
                 let mut engine = Engine::default();
 
-                // We convert all values from the hardcoded 72 DPI of Xopp files to the preferred dpi
+                // We convert all values from the hardcoded 72 DPI of XOPP files to the preferred dpi
                 engine.document.format.set_dpi(xopp_import_prefs.dpi);
 
                 engine.document.x = 0.0;
                 engine.document.y = 0.0;
                 engine.document.width = crate::utils::convert_value_dpi(
                     doc_width,
-                    xoppformat::XoppFile::DPI,
+                    xoppformat::XOPPFile::DPI,
                     xopp_import_prefs.dpi,
                 );
                 engine.document.height = crate::utils::convert_value_dpi(
                     doc_height,
-                    xoppformat::XoppFile::DPI,
+                    xoppformat::XOPPFile::DPI,
                     xopp_import_prefs.dpi,
                 );
 
@@ -111,7 +111,7 @@ impl EngineSnapshot {
                     .format
                     .set_width(crate::utils::convert_value_dpi(
                         doc_width,
-                        xoppformat::XoppFile::DPI,
+                        xoppformat::XOPPFile::DPI,
                         xopp_import_prefs.dpi,
                     ));
                 engine
@@ -119,17 +119,17 @@ impl EngineSnapshot {
                     .format
                     .set_height(crate::utils::convert_value_dpi(
                         doc_height / (no_pages as f64),
-                        xoppformat::XoppFile::DPI,
+                        xoppformat::XOPPFile::DPI,
                         xopp_import_prefs.dpi,
                     ));
 
                 if let Some(first_page) = xopp_file.xopp_root.pages.first() {
-                    if let xoppformat::XoppBackgroundType::Solid {
+                    if let xoppformat::XOPPBackgroundType::Solid {
                         color: _color,
                         style: _style,
                     } = &first_page.background.bg_type
                     {
-                        // Xopp background styles are not compatible with Rnotes, so everything is plain for now
+                        // XOPP background styles are not compatible with Rnotes, so everything is plain for now
                         engine.document.background.pattern = background::PatternStyle::None;
                     }
                 }
@@ -151,7 +151,7 @@ impl EngineSnapshot {
                                 }
                                 Err(e) => {
                                     error!(
-                                        "Creating Stroke from XoppStroke failed while loading Xopp bytess, Err: {e:?}",
+                                        "Creating Stroke from XOPPStroke failed while loading XOPP bytess, Err: {e:?}",
                                     );
                                 }
                             }
@@ -169,7 +169,7 @@ impl EngineSnapshot {
                                 }
                                 Err(e) => {
                                     error!(
-                                        "Creating Stroke from XoppImage failed while loading Xopp bytes, Err: {e:?}",
+                                        "Creating Stroke from XOPPImage failed while loading XOPP bytes, Err: {e:?}",
                                     );
                                 }
                             }
@@ -179,7 +179,7 @@ impl EngineSnapshot {
                     // Only add to y offset, results in vertical pages
                     offset[1] += crate::utils::convert_value_dpi(
                         page.height,
-                        xoppformat::XoppFile::DPI,
+                        xoppformat::XOPPFile::DPI,
                         xopp_import_prefs.dpi,
                     );
                 }
@@ -188,7 +188,7 @@ impl EngineSnapshot {
             };
 
             if snapshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver while loading Xopp bytes failed. Receiver already dropped");
+                error!("Sending result to receiver while loading XOPP bytes failed. Receiver already dropped");
             }
         });
 

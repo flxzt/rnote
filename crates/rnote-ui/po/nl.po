@@ -311,17 +311,17 @@ msgstr "Het export-bestandsformaat"
 #: crates/rnote-ui/src/dialogs/export.rs:304
 #: crates/rnote-ui/src/dialogs/export.rs:635
 #: crates/rnote-ui/src/dialogs/export.rs:954
-msgid "Svg"
+msgid "SVG"
 msgstr "SVG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:315
-msgid "Pdf"
+msgid "PDF"
 msgstr "PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:326
-msgid "Xopp"
+msgid "XOPP"
 msgstr "XOPP"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
@@ -465,7 +465,7 @@ msgid "Set the margin around the selected area"
 msgstr "Stel de marges rondom het selectiegebied in"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
-msgid "Import Pdf"
+msgid "Import PDF"
 msgstr "PDF-bestand importeren"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
@@ -479,7 +479,7 @@ msgid "Info"
 msgstr "Info"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
-msgid "Pdf Import Preferences"
+msgid "PDF Import Preferences"
 msgstr "PDF-importvoorkeuren"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
@@ -495,7 +495,7 @@ msgid "Adjust Document"
 msgstr "Document aan­passen"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
-msgid "Whether the document layout should be adjusted to the Pdf"
+msgid "Whether the document layout should be adjusted to the PDF"
 msgstr "Of de document­opmaak aangepast moet worden aan de PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
@@ -503,7 +503,7 @@ msgid "Page Width (%)"
 msgstr "Paginabreedte (%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
-msgid "Set the width of imported Pdf's in percentage to the format width"
+msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr ""
 "Stelt de breedte in van geïmporteerde PDF-bestanden als percentage van de "
 "formaatbreedte"
@@ -513,7 +513,7 @@ msgid "Page Spacing"
 msgstr "Pagina-opvulling"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
-msgid "How Pdf pages are spaced"
+msgid "How PDF pages are spaced"
 msgstr "Hoe PDF-pagina's van elkaar dienen te worden gescheiden"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
@@ -529,7 +529,7 @@ msgid "Pages Type"
 msgstr "Paginatype"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
-msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgid "Set whether PDF's should be imported as vector or bitmap images"
 msgstr ""
 "Geef aan of PDF-bestanden dienen te worden geïmporteerd als vector- of "
 "bitmap-afbeeldingen"
@@ -1959,7 +1959,7 @@ msgid "Open File"
 msgstr "Bestand openen"
 
 #: crates/rnote-ui/src/dialogs/import.rs:86
-msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
+msgid "Jpg, PDF, Png, SVG, XOPP, Txt"
 msgstr "JPG, PDF, PNG, SVG, XOPP, TXT"
 
 #: crates/rnote-ui/src/dialogs/import.rs:239
@@ -2552,7 +2552,7 @@ msgstr "wit"
 #~ msgid "Lecture Note 1"
 #~ msgstr "College-aantekeningen 1"
 
-#~ msgid "A Pdf annotation"
+#~ msgid "A PDF annotation"
 #~ msgstr "Een PDF-aantekening"
 
 #~ msgid "Lecture Note 2"
@@ -2586,7 +2586,7 @@ msgstr "wit"
 #~ msgid "Opening Xournal++ file failed"
 #~ msgstr "Xournal++-bestand openen mislukt"
 
-#~ msgid "Opening Pdf file failed"
+#~ msgid "Opening PDF file failed"
 #~ msgstr "PDF-bestand openen mislukt"
 
 #~ msgid "Failed to open file, tried to open folder as file"
@@ -2817,8 +2817,8 @@ msgstr "wit"
 #~ msgid "Selecting apiece"
 #~ msgstr "Itemselectie"
 
-#~ msgid "Xopp, PNG, SVG, JPG, PDF"
-#~ msgstr "Xopp, png, svg, jpg, pdf"
+#~ msgid "XOPP, PNG, SVG, JPG, PDF"
+#~ msgstr "XOPP, png, svg, jpg, pdf"
 
 #~ msgid "Drag stroke elements based on proximity"
 #~ msgstr "Penseelstreek-elementen verslepen op basis van afstand"
@@ -2868,7 +2868,7 @@ msgstr "wit"
 #~ msgstr "Document exporteren naar .xopp (Xournal++)"
 
 #~ msgid "SVG file"
-#~ msgstr "Svg-bestand"
+#~ msgstr "SVG-bestand"
 
 #~ msgid "PNG file"
 #~ msgstr "Png-bestand"
@@ -2880,7 +2880,7 @@ msgstr "wit"
 #~ msgstr "De selectie is geëxporteerd."
 
 #~ msgid "PDF file"
-#~ msgstr "Pdf-bestand"
+#~ msgstr "PDF-bestand"
 
 #~ msgid "Export document as PDF failed."
 #~ msgstr "Het exporteren is mislukt."

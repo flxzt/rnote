@@ -894,7 +894,7 @@ impl RnAppWindow {
                                     acc.append(&mut bytes);
                                 }
                                 Err(e) => {
-                                    error!("Failed to read clipboard input stream while pasting as Svg, Err: {e:?}");
+                                    error!("Failed to read clipboard input stream while pasting as SVG, Err: {e:?}");
                                     acc.clear();
                                     break;
                                 }
@@ -906,16 +906,16 @@ impl RnAppWindow {
                                 Ok(text) => {
                                     if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), target_pos, appwindow.respect_borders()).await {
                                         error!(
-                                            "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
+                                            "Loading VectorImage bytes failed while pasting as SVG failed, Err: {e:?}"
                                         );
                                     };
                                 }
-                                Err(e) => error!("Failed to get string from clipboard data while pasting as Svg, Err: {e:?}"),
+                                Err(e) => error!("Failed to get string from clipboard data while pasting as SVG, Err: {e:?}"),
                             }
                         }
                     }
                     Err(e) => {
-                        error!("Failed to read clipboard data while pasting as Svg, Err: {e:?}");
+                        error!("Failed to read clipboard data while pasting as SVG, Err: {e:?}");
                     }
                 };
             }));

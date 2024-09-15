@@ -105,29 +105,39 @@ pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
             new_doc(appwindow, canvas);
         }
         "save" => {
-            glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
-                if let Some(output_file) = canvas.output_file() {
-                    appwindow.overlays().progressbar_start_pulsing();
+            glib::spawn_future_local(clone!(
+                #[weak]
+                canvas,
+                #[weak]
+                appwindow,
+                async move {
+                    if let Some(output_file) = canvas.output_file() {
+                        appwindow.overlays().progressbar_start_pulsing();
 
-                    if let Err(e) = canvas.save_document_to_file(&output_file).await {
-                        error!("Saving document failed before creating new document, Err: {e:?}");
-                        canvas.set_output_file(None);
-                        appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
-                        appwindow.overlays().progressbar_abort();
+                        if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                            error!(
+                                "Saving document failed before creating new document, Err: {e:?}"
+                            );
+                            canvas.set_output_file(None);
+                            appwindow
+                                .overlays()
+                                .dispatch_toast_error(&gettext("Saving document failed"));
+                            appwindow.overlays().progressbar_abort();
+                        } else {
+                            appwindow.overlays().progressbar_finish();
+                        }
+                        // No success toast on saving without dialog, success is already indicated in the header title
+
+                        // only create new document if saving was successful
+                        if !canvas.unsaved_changes() {
+                            new_doc(&appwindow, &canvas);
+                        }
                     } else {
-                        appwindow.overlays().progressbar_finish();
+                        // Open a dialog to choose a save location
+                        export::dialog_save_doc_as(&appwindow, &canvas).await;
                     }
-                    // No success toast on saving without dialog, success is already indicated in the header title
-
-                    // only create new document if saving was successful
-                    if !canvas.unsaved_changes() {
-                        new_doc(&appwindow, &canvas);
-                    }
-                } else {
-                    // Open a dialog to choose a save location
-                    export::dialog_save_doc_as(&appwindow, &canvas).await;
                 }
-            }));
+            ));
         }
         _ => {
             // Cancel
@@ -466,29 +476,43 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     color_button.set_rgba(&initial_entry.color());
     dir_label.set_label(initial_entry.dir().as_str());
 
-    name_entryrow.connect_changed(clone!(@weak preview_row => move |entry| {
-        let text = entry.text().to_string();
-        preview_row.entry().set_name(text);
-    }));
+    name_entryrow.connect_changed(clone!(
+        #[weak]
+        preview_row,
+        move |entry| {
+            let text = entry.text().to_string();
+            preview_row.entry().set_name(text);
+        }
+    ));
 
     icon_picker.connect_notify_local(
         Some("picked"),
-        clone!(@weak icon_menubutton, @weak preview_row, @weak appwindow => move |iconpicker, _| {
-            if let Some(picked) = iconpicker.picked() {
-                icon_menubutton.set_icon_name(&picked);
-                preview_row.entry().set_icon(picked);
+        clone!(
+            #[weak]
+            icon_menubutton,
+            #[weak]
+            preview_row,
+            move |iconpicker, _| {
+                if let Some(picked) = iconpicker.picked() {
+                    icon_menubutton.set_icon_name(&picked);
+                    preview_row.entry().set_icon(picked);
+                }
             }
-        }),
+        ),
     );
 
-    color_button.connect_rgba_notify(clone!(@weak preview_row => move |button| {
-        let color = button.rgba();
-        preview_row.entry().set_color(color);
-    }));
+    color_button.connect_rgba_notify(clone!(
+        #[weak]
+        preview_row,
+        move |button| {
+            let color = button.rgba();
+            preview_row.entry().set_color(color);
+        }
+    ));
 
     dir_button.connect_clicked(
-        clone!(@weak preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => move |_| {
-            glib::spawn_future_local(clone!(@weak preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => async move {
+        clone!(#[weak] preview_row, #[weak] dir_label, #[weak] name_entryrow, #[weak] dialog, #[weak] appwindow , move |_| {
+            glib::spawn_future_local(clone!(#[weak] preview_row, #[weak] dir_label, #[weak] name_entryrow, #[weak] dialog, #[weak] appwindow , async move {
                 dialog.set_sensitive(false);
 
                 let filedialog = FileDialog::builder()
@@ -527,12 +551,22 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
 
     // Listen to responses
 
-    edit_selected_workspace_button_cancel.connect_clicked(clone!(@weak dialog => move |_| {
-        dialog.close();
-    }));
+    edit_selected_workspace_button_cancel.connect_clicked(clone!(
+        #[weak]
+        dialog,
+        move |_| {
+            dialog.close();
+        }
+    ));
 
-    edit_selected_workspace_button_apply.connect_clicked(
-        clone!(@weak preview_row, @weak dialog, @weak appwindow => move |_| {
+    edit_selected_workspace_button_apply.connect_clicked(clone!(
+        #[weak]
+        preview_row,
+        #[weak]
+        dialog,
+        #[weak]
+        appwindow,
+        move |_| {
             dialog.close();
 
             // update the actual selected entry
@@ -546,8 +580,8 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
                 .sidebar()
                 .workspacebrowser()
                 .refresh_dir_list_selected_workspace();
-        }),
-    );
+        }
+    ));
 
     dialog.present(appwindow.root().as_ref());
 }

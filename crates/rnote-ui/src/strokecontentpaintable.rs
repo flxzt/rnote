@@ -142,22 +142,32 @@ mod imp {
             let (tx, mut rx) = futures::channel::mpsc::unbounded::<anyhow::Result<Image>>();
             self.paint_task_tx.set(tx).unwrap();
 
-            let handler = glib::spawn_future_local(clone!(@weak obj as paintable => async move {
-                while let Some(res) = rx.next().await {
-                    match res {
-                        Ok(image) => {
-                            paintable.imp().replace_paint_cache(image);
-                            if paintable.imp().paint_tasks_in_progress.get() <= 1 {
-                                paintable.imp().emit_repaint_in_progress(false);
+            let handler = glib::spawn_future_local(clone!(
+                #[weak(rename_to=paintable)]
+                obj,
+                async move {
+                    while let Some(res) = rx.next().await {
+                        match res {
+                            Ok(image) => {
+                                paintable.imp().replace_paint_cache(image);
+                                if paintable.imp().paint_tasks_in_progress.get() <= 1 {
+                                    paintable.imp().emit_repaint_in_progress(false);
+                                }
+                                paintable.imp().paint_tasks_in_progress.set(
+                                    paintable
+                                        .imp()
+                                        .paint_tasks_in_progress
+                                        .get()
+                                        .saturating_sub(1),
+                                );
                             }
-                            paintable.imp().paint_tasks_in_progress.set(paintable.imp().paint_tasks_in_progress.get().saturating_sub(1));
-                        }
-                        Err(e) => {
-                            error!("StrokeContentPaintable repainting cache image in task failed, Err: {e:?}");
+                            Err(e) => {
+                                error!("StrokeContentPaintable repainting cache image in task failed, Err: {e:?}");
+                            }
                         }
                     }
                 }
-            }));
+            ));
 
             self.paint_task_handler.replace(Some(handler));
         }

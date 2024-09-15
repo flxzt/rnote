@@ -137,13 +137,30 @@ impl RnGroupedIconPicker {
     ) {
         let model = StringList::from_iter(groups.iter().map(|x| x.name.clone()));
 
-        self.imp().listbox.get().bind_model(Some(&model), clone!(@weak self as iconpicker => @default-panic, move |obj| {
-            let group_name = obj.downcast_ref::<StringObject>().expect(
+        self.imp().listbox.get().bind_model(
+            Some(&model),
+            clone!(
+                #[weak(rename_to=iconpicker)]
+                self,
+                #[upgrade_or_panic]
+                move |obj| {
+                    let group_name = obj.downcast_ref::<StringObject>().expect(
                 "Binding IconPickerListFactory model failed, item has to be of type `StringObject`",
             ).string();
-            let icon_names = &groups.iter().find(|x| x.name.as_str() == group_name.as_str()).unwrap().icons;
-            let group = RnGroupedIconPickerGroup::new(&group_name.to_string(), icon_names, &iconpicker, generate_display_name);
-            group.upcast::<Widget>()
-        }));
+                    let icon_names = &groups
+                        .iter()
+                        .find(|x| x.name.as_str() == group_name.as_str())
+                        .unwrap()
+                        .icons;
+                    let group = RnGroupedIconPickerGroup::new(
+                        &group_name.to_string(),
+                        icon_names,
+                        &iconpicker,
+                        generate_display_name,
+                    );
+                    group.upcast::<Widget>()
+                }
+            ),
+        );
     }
 }

@@ -91,11 +91,13 @@ mod imp {
                     .set_selected(unit_entry.unit().to_u32().unwrap());
             });
 
-            self.unit_dropdown.get().connect_selected_notify(
-                clone!(@weak obj as unit_entry => move |unit_dropdown| {
+            self.unit_dropdown.get().connect_selected_notify(clone!(
+                #[weak(rename_to=unit_entry)]
+                obj,
+                move |unit_dropdown| {
                     unit_entry.set_unit(MeasureUnit::try_from(unit_dropdown.selected()).unwrap());
-                }),
-            );
+                }
+            ));
         }
 
         fn dispose(&self) {

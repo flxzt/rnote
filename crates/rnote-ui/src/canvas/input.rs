@@ -71,7 +71,13 @@ pub(crate) fn handle_pointer_controller_event(
                 }
             } else {
                 #[allow(clippy::collapsible_else_if)]
-                if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {
+                if gdk_button == gdk::BUTTON_PRIMARY
+                    || gdk_button == gdk::BUTTON_SECONDARY
+                    // Backward Button
+                    || gdk_button == 8
+                    // Forward Button
+                    || gdk_button == 9
+                {
                     handle_pen_event = true;
                     handle_shortcut_key = true;
                     pen_state = PenState::Down;
@@ -121,7 +127,13 @@ pub(crate) fn handle_pointer_controller_event(
                 }
             } else {
                 #[allow(clippy::collapsible_else_if)]
-                if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {
+                if gdk_button == gdk::BUTTON_PRIMARY
+                    || gdk_button == gdk::BUTTON_SECONDARY
+                    // Backward Button
+                    || gdk_button == 8
+                    // Forward Button
+                    || gdk_button == 9
+                {
                     pen_state = PenState::Up;
                     handle_pen_event = true;
                 }
@@ -423,6 +435,8 @@ pub(crate) fn retrieve_button_shortcut_key(
     match (is_stylus, gdk_button) {
         (_, gdk::BUTTON_PRIMARY) => None,
         (false, gdk::BUTTON_SECONDARY) => Some(ShortcutKey::MouseSecondaryButton),
+        (false, 8) => Some(ShortcutKey::MouseBackwardButton),
+        (false, 9) => Some(ShortcutKey::MouseForwardButton),
         (true, gdk::BUTTON_SECONDARY) => Some(ShortcutKey::StylusPrimaryButton),
         (true, gdk::BUTTON_MIDDLE) => Some(ShortcutKey::StylusSecondaryButton),
         (_, _) => None,

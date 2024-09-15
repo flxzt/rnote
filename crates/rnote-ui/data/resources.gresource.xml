@@ -84,6 +84,8 @@
         <file compressed="true">icons/scalable/actions/misc-menu-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/mouse-button-primary-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/mouse-button-secondary-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/mouse-button-backward-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/mouse-button-forward-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-brush-style-marker-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-brush-style-solid-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-brush-style-symbolic.svg</file>

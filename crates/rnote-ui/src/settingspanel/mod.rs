@@ -102,6 +102,10 @@ mod imp {
         #[template_child]
         pub(crate) penshortcut_mouse_button_secondary_row: TemplateChild<RnPenShortcutRow>,
         #[template_child]
+        pub(crate) penshortcut_mouse_button_backward_row: TemplateChild<RnPenShortcutRow>,
+        #[template_child]
+        pub(crate) penshortcut_mouse_button_forward_row: TemplateChild<RnPenShortcutRow>,
+        #[template_child]
         pub(crate) penshortcut_touch_two_finger_long_press_row: TemplateChild<RnPenShortcutRow>,
         #[template_child]
         pub(crate) penshortcut_keyboard_ctrl_space_row: TemplateChild<RnPenShortcutRow>,
@@ -430,6 +434,12 @@ impl RnSettingsPanel {
                 ShortcutKey::MouseSecondaryButton => {
                     imp.penshortcut_mouse_button_secondary_row
                         .set_action(action);
+                }
+                ShortcutKey::MouseBackwardButton => {
+                    imp.penshortcut_mouse_button_backward_row.set_action(action);
+                }
+                ShortcutKey::MouseForwardButton => {
+                    imp.penshortcut_mouse_button_forward_row.set_action(action);
                 }
                 ShortcutKey::TouchTwoFingerLongPress => {
                     imp.penshortcut_touch_two_finger_long_press_row
@@ -765,6 +775,8 @@ impl RnSettingsPanel {
             imp.penshortcut_stylus_button_secondary_row.get();
         let penshortcut_mouse_button_secondary_row =
             imp.penshortcut_mouse_button_secondary_row.get();
+        let penshortcut_mouse_button_backward_row = imp.penshortcut_mouse_button_backward_row.get();
+        let penshortcut_mouse_button_forward_row = imp.penshortcut_mouse_button_forward_row.get();
         let penshortcut_touch_two_finger_long_press_row =
             imp.penshortcut_touch_two_finger_long_press_row.get();
         let penshortcut_keyboard_ctrl_space_row = imp.penshortcut_keyboard_ctrl_space_row.get();
@@ -788,6 +800,18 @@ impl RnSettingsPanel {
         imp.penshortcut_mouse_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_mouse_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_mouse_button_secondary_row.action();
             appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::MouseSecondaryButton, action);
+            None
+        }));
+
+        imp.penshortcut_mouse_button_backward_row.connect_local("action-changed", false, clone!(@weak penshortcut_mouse_button_backward_row, @weak appwindow => @default-return None, move |_values| {
+            let action = penshortcut_mouse_button_backward_row.action();
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::MouseBackwardButton, action);
+            None
+        }));
+
+        imp.penshortcut_mouse_button_forward_row.connect_local("action-changed", false, clone!(@weak penshortcut_mouse_button_forward_row, @weak appwindow => @default-return None, move |_values| {
+            let action = penshortcut_mouse_button_forward_row.action();
+            appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::MouseForwardButton, action);
             None
         }));
 

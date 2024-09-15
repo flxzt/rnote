@@ -10,11 +10,13 @@ use p2d::bounding_volume::BoundingVolume;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_compose::SplitOrder;
 use rnote_engine::engine::StrokeContent;
+use rnote_engine::pens::PenMode;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::strokes::resize::{ImageSizeOption, Resize};
 use rnote_engine::{Camera, Engine};
 use std::path::PathBuf;
 use std::str::FromStr;
+use std::time::Duration;
 use std::time::Instant;
 use tracing::{debug, error};
 
@@ -92,6 +94,11 @@ impl RnAppWindow {
             &String::from("brush").to_variant(),
         );
         self.add_action(&action_pen_style);
+        let action_change_pen_styles = gio::SimpleAction::new(
+            "pen-styles",
+            Some(&<(String, String)>::static_variant_type()),
+        );
+        self.add_action(&action_change_pen_styles);
         let action_undo_stroke = gio::SimpleAction::new("undo", None);
         self.add_action(&action_undo_stroke);
         let action_redo_stroke = gio::SimpleAction::new("redo", None);
@@ -335,13 +342,66 @@ impl RnAppWindow {
                 // don't change the style if the current style with override is already the same
                 // (e.g. when switched to from the pen button, not by clicking the pen page)
                 if pen_style != canvas.engine_ref().penholder.current_pen_style_w_override() {
-                    let mut widget_flags = canvas.engine_mut().change_pen_style(pen_style);
+                    let lock_out = canvas.engine_ref().penholder.pen_mode_state().get_lock();
+                    let active_pen = canvas.engine_ref().penholder.pen_mode_state().pen_mode();
+                    if lock_out {
+                        // display a popup that can unlock the pen tool
+                        appwindow.overlays().dispatch_toast_w_button_singleton(
+                        &gettext("Tool Locked"),
+                        &gettext("Unlock"),
+                        clone!(@weak canvas, @weak appwindow =>  move |_reload_toast | {
+                                canvas.engine_mut().penholder.pen_mode_state_mut().unlock_pen(active_pen);
+                                appwindow.sidebar().settings_panel().set_lock_state(active_pen,false);
+                                appwindow.sidebar().settings_panel().refresh_ui(&appwindow.active_tab_wrapper());
+                            }
+                        ),
+                        Some(Duration::from_secs(2)),
+                        &mut None);
+                        // refresh the ui
+                        appwindow.refresh_ui_from_engine(&appwindow.active_tab_wrapper());
+                } else {
+                    let mut widget_flags = canvas.engine_mut().change_pen_style(pen_style, Some(active_pen));
                     widget_flags |= canvas.engine_mut().change_pen_style_override(None);
                     appwindow.handle_widget_flags(widget_flags, &canvas);
-                }
+                    action.set_state(&pen_style_str.to_variant());
+            }
+        }}),
+        );
 
-                action.set_state(&pen_style_str.to_variant());
-            }),
+        // action to change pen or eraser style (activated from the settings panel)
+        action_change_pen_styles.connect_activate(
+            clone!(@weak self as appwindow => move |_action,target| {
+                let (pen_type_str,tool_str) = target.unwrap().get::<(String,String)>().unwrap();
+
+                let pen_mode = match pen_type_str.as_str() {
+                    "pen" => PenMode::Pen,
+                    "eraser" => PenMode::Eraser,
+                    other => {
+                        tracing::error!("the pen style does not exist (either `pen` or `eraser` should be given as string, got {other:}");
+                        return;
+                    }
+                };
+
+                let pen_style = match PenStyle::from_str(tool_str.as_str()) {
+                    Ok(s) => s,
+                    Err(e) => {
+                        tracing::error!("Activated pen-style action with invalid target, Err: {e:}");
+                        return;
+                    }
+                };
+                let canvas = appwindow.active_tab_wrapper().canvas();
+
+                // Changes the underlying values only if they are different from the current ones
+                // This prevents circular calls between the settings panel and the canvas
+                let current_pen = canvas.engine_ref().penholder.pen_mode_state().get_style(pen_mode);
+                if current_pen != pen_style {
+                    let mut widget_flags = canvas.engine_mut().change_pen_style(pen_style,Some(pen_mode));
+                    widget_flags |= canvas.engine_mut().change_pen_style_override(None);
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                } else {
+                    tracing::debug!("same pen as the current one, aborting");
+                }
+            })
         );
 
         // Tab actions

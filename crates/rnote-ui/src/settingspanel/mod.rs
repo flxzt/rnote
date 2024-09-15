@@ -1,10 +1,14 @@
 // Modules
+mod penmoderow;
 mod penshortcutmodels;
 mod penshortcutrow;
 
 // Re-exports
+pub(crate) use penmoderow::RnPenModeRow;
 pub(crate) use penshortcutrow::RnPenShortcutRow;
+
 use rnote_compose::ext::Vector2Ext;
+use rnote_engine::pens::PenMode;
 
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
@@ -113,6 +117,10 @@ mod imp {
         pub(crate) penshortcut_drawing_pad_button_2: TemplateChild<RnPenShortcutRow>,
         #[template_child]
         pub(crate) penshortcut_drawing_pad_button_3: TemplateChild<RnPenShortcutRow>,
+        #[template_child]
+        pub(crate) lock_pen_mode: TemplateChild<RnPenModeRow>,
+        #[template_child]
+        pub(crate) lock_eraser_mode: TemplateChild<RnPenModeRow>,
     }
 
     #[glib::object_subclass]
@@ -344,6 +352,13 @@ impl RnSettingsPanel {
         self.imp().general_inertial_scrolling_row.clone()
     }
 
+    pub(crate) fn set_lock_state(&self, pen_mode: PenMode, state: bool) {
+        match pen_mode {
+            PenMode::Pen => self.imp().lock_pen_mode.get().set_lock_state(state),
+            PenMode::Eraser => self.imp().lock_eraser_mode.get().set_lock_state(state),
+        }
+    }
+
     pub(crate) fn document_layout(&self) -> Layout {
         Layout::try_from(self.imp().doc_document_layout_row.get().selected()).unwrap()
     }
@@ -359,6 +374,7 @@ impl RnSettingsPanel {
         self.refresh_format_ui(active_tab);
         self.refresh_doc_ui(active_tab);
         self.refresh_shortcuts_ui(active_tab);
+        self.refresh_locks_ui(active_tab);
     }
 
     fn refresh_general_ui(&self, active_tab: &RnCanvasWrapper) {
@@ -451,6 +467,27 @@ impl RnSettingsPanel {
                     imp.penshortcut_drawing_pad_button_3.set_action(action);
                 }
             });
+    }
+
+    fn refresh_locks_ui(&self, active_tab: &RnCanvasWrapper) {
+        let imp = self.imp();
+        let canvas = active_tab.canvas();
+
+        imp.lock_pen_mode.set_action(
+            canvas
+                .engine_ref()
+                .penholder
+                .pen_mode_state()
+                .get_style(PenMode::Pen),
+        );
+
+        imp.lock_eraser_mode.set_action(
+            canvas
+                .engine_ref()
+                .penholder
+                .pen_mode_state()
+                .get_style(PenMode::Eraser),
+        );
     }
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
@@ -573,6 +610,48 @@ impl RnSettingsPanel {
                         &mut settingspanel.imp().app_restart_toast_singleton.borrow_mut()
                     );
                 }
+            }),
+        );
+
+        // lock pen
+        imp.lock_pen_mode
+            .imp()
+            .mode
+            .bind_property("active", appwindow, "lock-pen")
+            .sync_create()
+            .bidirectional()
+            .build();
+
+        imp.lock_pen_mode.imp().mode.connect_active_notify(
+            clone!(@weak appwindow => move |switch| {
+                appwindow
+                    .active_tab_wrapper()
+                    .canvas()
+                    .engine_mut()
+                    .penholder
+                    .pen_mode_state_mut()
+                    .set_lock(rnote_engine::pens::PenMode::Pen,switch.is_active());
+            }),
+        );
+
+        // lock eraser
+        imp.lock_eraser_mode
+            .imp()
+            .mode
+            .bind_property("active", appwindow, "lock-eraser")
+            .sync_create()
+            .bidirectional()
+            .build();
+
+        imp.lock_eraser_mode.imp().mode.connect_active_notify(
+            clone!(@weak appwindow => move |switch| {
+                appwindow
+                    .active_tab_wrapper()
+                    .canvas()
+                    .engine_mut()
+                    .penholder
+                    .pen_mode_state_mut()
+                    .set_lock(rnote_engine::pens::PenMode::Eraser,switch.is_active());
             }),
         );
     }
@@ -825,6 +904,28 @@ impl RnSettingsPanel {
             let action = penshortcut_drawing_pad_button_3.action();
             appwindow.active_tab_wrapper().canvas().engine_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton3, action);
             None
+        }));
+
+        let lock_pen = imp.lock_pen_mode.get();
+        let lock_eraser = imp.lock_eraser_mode.get();
+
+        imp.lock_pen_mode.connect_local(
+            "action-changed",
+            false,
+            clone!(@weak lock_pen, @weak appwindow => @default-return None, move |_values| {
+                let action = lock_pen.get_action();
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-styles", Some(&("pen",action.to_string()).to_variant()));
+                None
+            }),
+        );
+
+        imp.lock_eraser_mode.connect_local(
+            "action-changed",
+            false,
+             clone!(@weak lock_eraser, @weak appwindow => @default-return None, move |_values| {
+                let action = lock_eraser.get_action();
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-styles", Some(&("eraser",action.to_string()).to_variant()));
+                None
         }));
     }
 

@@ -28,6 +28,12 @@ pub struct PenModeState {
     #[serde(rename = "penmode_eraser_style")]
     penmode_eraser_style: PenStyle,
 
+    //lock styles
+    #[serde(rename = "lock_pen")]
+    penmode_pen_lock: bool,
+    #[serde(rename = "lock_eraser")]
+    penmode_eraser_lock: bool,
+
     #[serde(skip)]
     penmode_pen_style_override: Option<PenStyle>,
     #[serde(skip)]
@@ -41,6 +47,9 @@ impl Default for PenModeState {
             penmode_pen_style: PenStyle::Brush,
             penmode_eraser_style: PenStyle::Eraser,
 
+            penmode_pen_lock: false,
+            penmode_eraser_lock: true,
+
             penmode_pen_style_override: None,
             penmode_eraser_style_override: None,
         }
@@ -53,12 +62,35 @@ impl CloneConfig for PenModeState {
             pen_mode: self.pen_mode,
             penmode_pen_style: self.penmode_pen_style,
             penmode_eraser_style: self.penmode_eraser_style,
+            penmode_pen_lock: self.penmode_pen_lock,
+            penmode_eraser_lock: self.penmode_eraser_lock,
             ..Default::default()
         }
     }
 }
 
 impl PenModeState {
+    pub fn get_lock(&self) -> bool {
+        match self.pen_mode {
+            PenMode::Pen => self.penmode_pen_lock,
+            PenMode::Eraser => self.penmode_eraser_lock,
+        }
+    }
+
+    pub fn unlock_pen(&mut self, pen_mode: PenMode) {
+        match pen_mode {
+            PenMode::Pen => self.penmode_pen_lock = false,
+            PenMode::Eraser => self.penmode_eraser_lock = false,
+        }
+    }
+
+    pub fn set_lock(&mut self, pen_mode: PenMode, state: bool) {
+        match pen_mode {
+            PenMode::Pen => self.penmode_pen_lock = state,
+            PenMode::Eraser => self.penmode_eraser_lock = state,
+        }
+    }
+
     pub fn current_style_w_override(&self) -> PenStyle {
         match self.pen_mode {
             PenMode::Pen => self
@@ -82,8 +114,15 @@ impl PenModeState {
         }
     }
 
-    pub fn set_style(&mut self, style: PenStyle) {
-        match self.pen_mode {
+    pub fn get_style(&self, penmode: PenMode) -> PenStyle {
+        match penmode {
+            PenMode::Pen => self.penmode_pen_style,
+            PenMode::Eraser => self.penmode_eraser_style,
+        }
+    }
+
+    pub fn set_style(&mut self, style: PenStyle, mode: Option<PenMode>) {
+        match mode.unwrap_or(self.pen_mode) {
             PenMode::Pen => self.penmode_pen_style = style,
             PenMode::Eraser => self.penmode_eraser_style = style,
         }

@@ -121,6 +121,11 @@ impl PenHolder {
         self.pen_mode_state = pen_mode_state;
     }
 
+    /// mutable pen mode state
+    pub fn pen_mode_state_mut(&mut self) -> &mut PenModeState {
+        &mut self.pen_mode_state
+    }
+
     pub fn backlog_policy(&self) -> BacklogPolicy {
         self.backlog_policy
     }
@@ -152,9 +157,10 @@ impl PenHolder {
     pub fn change_style(
         &mut self,
         new_style: PenStyle,
+        mode: Option<PenMode>,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
-        let widget_flags = self.change_style_int(new_style, engine_view);
+        let widget_flags = self.change_style_int(new_style, mode, engine_view);
         // When the style is changed externally, the toggle mode / internal states are reset
         self.toggle_pen_style = None;
         self.prev_shortcut_key = None;
@@ -277,7 +283,7 @@ impl PenHolder {
                     }
                     ShortcutMode::Permanent => {
                         self.toggle_pen_style = None;
-                        widget_flags |= self.change_style_int(style, engine_view);
+                        widget_flags |= self.change_style_int(style, None, engine_view);
                     }
                     ShortcutMode::Toggle => {
                         if let Some(toggle_pen_style) = self.toggle_pen_style {
@@ -288,15 +294,15 @@ impl PenHolder {
                                 .map(|k| k != shortcut_key)
                                 .unwrap_or(true)
                             {
-                                widget_flags |= self.change_style_int(style, engine_view);
+                                widget_flags |= self.change_style_int(style, None, engine_view);
                             } else {
                                 self.toggle_pen_style = None;
                                 widget_flags |=
-                                    self.change_style_int(toggle_pen_style, engine_view);
+                                    self.change_style_int(toggle_pen_style, None, engine_view);
                             }
                         } else {
                             self.toggle_pen_style = Some(self.current_pen_style());
-                            widget_flags |= self.change_style_int(style, engine_view);
+                            widget_flags |= self.change_style_int(style, None, engine_view);
                         }
                     }
                     ShortcutMode::Disabled => {}
@@ -335,6 +341,7 @@ impl PenHolder {
     fn change_style_int(
         &mut self,
         new_style: PenStyle,
+        mode: Option<PenMode>,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
@@ -344,7 +351,7 @@ impl PenHolder {
             let all_strokes = engine_view.store.selection_keys_as_rendered();
             engine_view.store.set_selected_keys(&all_strokes, false);
 
-            self.pen_mode_state.set_style(new_style);
+            self.pen_mode_state.set_style(new_style, mode);
             widget_flags |= self.reinstall_pen_current_style(engine_view);
             widget_flags.refresh_ui = true;
         }

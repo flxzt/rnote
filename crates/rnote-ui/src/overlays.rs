@@ -292,7 +292,7 @@ impl RnOverlays {
             #[weak]
             appwindow,
             #[upgrade_or]
-            glib::Propagation::Proceed,
+            glib::Propagation::Stop,
             move |_, page| {
                 glib::spawn_future_local(clone!(
                     #[weak]
@@ -316,7 +316,7 @@ impl RnOverlays {
                     }
                 ));
 
-                glib::Propagation::Proceed
+                glib::Propagation::Stop
             }
         ));
 

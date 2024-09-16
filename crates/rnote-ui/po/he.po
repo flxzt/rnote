@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-09-16 15:01+0000\n"
+"PO-Revision-Date: 2024-09-16 15:10+0000\n"
 "Last-Translator: Yosef Or Boczko <yoseforb@gnome.org>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
 "Language: he\n"
@@ -735,10 +735,8 @@ msgid "Tools"
 msgstr "כלים"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:22
-#, fuzzy
-#| msgid "Selecting with a polygon"
 msgid "Select With a Polygon"
-msgstr "בחירה עם מצולע"
+msgstr "בחירה באמצעות מצולע"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:32
 msgid "Select With a Rectangle"
@@ -859,14 +857,14 @@ msgid "Enabled"
 msgstr "מאופשר"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:320
-#, fuzzy
 msgid ""
 "Hold Ctrl to temporarily\n"
 "enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
-"יש להחזיק Ctrl כדי לאפשר/להשבית\\n"
-"מגבלות באופן זמני\\n"
+"יש להחזיק את המקש Ctrl\n"
+"כדי לאפשר/להשבית\n"
+"מגבלות באופן זמני\n"
 "כשמתג זה כבוי/דולק"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:327
@@ -1051,9 +1049,8 @@ msgid "_Export…"
 msgstr "_ייצוא…"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:115
-#, fuzzy
 msgid "Export _Document"
-msgstr "מסמך חדש"
+msgstr "_ייצוא מסמך"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:119
 #, fuzzy
@@ -1077,10 +1074,8 @@ msgid "_Donate 💝"
 msgstr "_תרומה 💝"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:142
-#, fuzzy
-#| msgid "About Rnote"
 msgid "A_bout Rnote"
-msgstr "על rnote"
+msgstr "_על rnote"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:173
 msgid "Sidebar on the Left Side"
@@ -1154,30 +1149,27 @@ msgid "Zoom to Page Width"
 msgstr "התאמת התקריב לרוחב העמוד"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:138
-#, fuzzy
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
-"הסרת עמוד.\\n"
+"הסרת עמוד.\n"
 "זמין בפריסת מסמך בגודל קבוע."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:147
-#, fuzzy
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
-"הוספת עמוד.\\n"
+"הוספת עמוד.\n"
 "זמין בפריסת מסמך בגודל קבוע."
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:156
-#, fuzzy
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
-"שינוי גודל המסמך להתאמת התוכן.\\n"
+"שינוי גודל המסמך להתאמת התוכן.\n"
 "זמין בפריסת מסמך בגודל קבוע."
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:23
@@ -1296,12 +1288,11 @@ msgid "Optimize for E-Paper Displays"
 msgstr "מיטוב לתצוגות דיו אלקטרוני"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:65
-#, fuzzy
 msgid ""
 "Changes certain UI elements and modifies behaviour\n"
 "of tools for optimized usage on E-Paper displays"
 msgstr ""
-"שינוי רכיבי ממשק מסוימים והתאמת התנהגות\\n"
+"שינוי רכיבי ממשק מסוימים והתאמת התנהגות\n"
 "הכלים לשימוש מיטבי בתצוגות דיו אלקטרוני"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:71
@@ -1309,14 +1300,13 @@ msgid "Inertial Touch Scrolling"
 msgstr "גלילת מגע מתמשכת"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:72
-#, fuzzy
 msgid ""
 "Set whether touch scrolling on the canvas is inertial.\n"
 "An application restart is required when this option\n"
 "gets disabled."
 msgstr ""
-"הגדרה אם גלילת המגע על הקנבס היא מתמשכת.\\n"
-"נדרשת הפעלה מחדש של היישום כאשר אפשרות זו\\n"
+"הגדרה אם גלילת המגע על הקנבס היא מתמשכת.\n"
+"נדרשת הפעלה מחדש של היישום כאשר אפשרות זו\n"
 "מושבתת."
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:79
@@ -1421,13 +1411,11 @@ msgstr "הגדרת גובה התצורה"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:221
 msgid "Dpi"
-msgstr ""
+msgstr "הבחנה (DPI)"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:222
-#, fuzzy
-#| msgid "Set the DPI (dots per inch). Defaults to 96"
 msgid "Set the Dpi (dots per inch). Defaults to 96."
-msgstr "הגדרת ה־DPI (נק׳ לאינץ׳). ברירת המחדל היא 96"
+msgstr "הגדרת ה־DPI (נק׳ לאינץ׳). ברירת המחדל היא 96."
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:232
 msgid "Revert"
@@ -1546,36 +1534,36 @@ msgid "Stylus Primary Button Action"
 msgstr "פעולת הלחצן הראשי של העט האלקטרוני"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:406
-#, fuzzy
-#| msgid "Set the action for the primary stylus button"
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
-msgstr "הגדרת הפעולה לכפתור העיקרי בעט האלקטרוני"
+msgstr ""
+"הגדרת הפעולה לכפתור\n"
+"העיקרי בעט האלקטרוני"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:418
 msgid "Stylus Secondary Button Action"
 msgstr "פעולת הלחצן המשני של העט האלקטרוני"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:419
-#, fuzzy
-#| msgid "Set the action for the secondary stylus button"
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
-msgstr "הגדרת הפעולה לכפתור המשני בעט האלקטרוני"
+msgstr ""
+"הגדרת הפעולה לכפתור\n"
+"המשני בעט האלקטרוני"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:431
 msgid "Mouse Secondary Button Action"
 msgstr "פעולת הלחצן המשני של העכבר"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:432
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
-msgstr "הגדרת פעולת הכפתור המשני בעכבר"
+msgstr ""
+"הגדרת פעולת הכפתור\n"
+"המשני בעכבר"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:444
 msgid "Touch Two-Finger Long-Press Action"
@@ -1594,24 +1582,23 @@ msgid "Keyboard Ctrl-Space Action"
 msgstr "פעולת Ctrl-רווח במקלדת"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:458
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
 msgid ""
 "Set the action for the keyboard\n"
 "Ctrl plus Space shortcut"
-msgstr "הגדרת פעולת הכפתור המשני בעכבר"
+msgstr ""
+"הגדרת פעולת צירוף המקשים\n"
+"‏Ctrl+רווח"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:470
 msgid "Drawing Pad Button 1 Action"
 msgstr "פעולת לחצן 1 בלוח ציור"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:471
-#, fuzzy
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
-"הגדרת הפעולה\\n"
+"הגדרת הפעולה\n"
 "ללחצן 1 בלוח ציור"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:483
@@ -1619,12 +1606,11 @@ msgid "Drawing Pad Button 2 Action"
 msgstr "פעולת לחצן 2 בלוח ציור"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:484
-#, fuzzy
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
-"הגדרת הפעולה\\n"
+"הגדרת הפעולה\n"
 "ללחצן 2 בלוח ציור"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:496
@@ -1632,12 +1618,11 @@ msgid "Drawing Pad Button 3 Action"
 msgstr "פעולת לחצן 3 בלוח ציור"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:497
-#, fuzzy
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
-"הגדרת הפעולה\\n"
+"הגדרת הפעולה\n"
 "ללחצן 3 בלוח ציור"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:509
@@ -1645,12 +1630,11 @@ msgid "Drawing Pad Button 4 Action"
 msgstr "פעולת לחצן 4 בלוח ציור"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:510
-#, fuzzy
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
 msgstr ""
-"הגדרת הפעולה\\n"
+"הגדרת הפעולה\n"
 "ללחצן 4 בלוח ציור"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:14

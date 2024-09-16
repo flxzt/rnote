@@ -134,36 +134,58 @@ impl RnPensSideBar {
         self.imp()
             .sidebar_stack
             .get()
-            .connect_visible_child_name_notify(clone!(@weak appwindow => move |sidebar_stack| {
-                if let Some(child_name) = sidebar_stack.visible_child_name() {
-                    match child_name.to_value().get::<String>().unwrap().as_str() {
-                        "brush_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                                Some(&PenStyle::Brush.to_string().to_variant()));
-                        },
-                        "shaper_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                                Some(&PenStyle::Shaper.to_string().to_variant()));
-                        },
-                        "typewriter_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                                Some(&PenStyle::Typewriter.to_string().to_variant()));
-                        },
-                        "eraser_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                                Some(&PenStyle::Eraser.to_string().to_variant()));
-                        }
-                        "selector_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                                Some(&PenStyle::Selector.to_string().to_variant()));
-                        }
-                        "tools_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                                Some(&PenStyle::Tools.to_string().to_variant()));
-                        }
-                        _ => {}
+            .connect_visible_child_name_notify(clone!(
+                #[weak]
+                appwindow,
+                move |sidebar_stack| {
+                    if let Some(child_name) = sidebar_stack.visible_child_name() {
+                        match child_name.to_value().get::<String>().unwrap().as_str() {
+                            "brush_page" => {
+                                adw::prelude::ActionGroupExt::activate_action(
+                                    &appwindow,
+                                    "pen-style",
+                                    Some(&PenStyle::Brush.to_string().to_variant()),
+                                );
+                            }
+                            "shaper_page" => {
+                                adw::prelude::ActionGroupExt::activate_action(
+                                    &appwindow,
+                                    "pen-style",
+                                    Some(&PenStyle::Shaper.to_string().to_variant()),
+                                );
+                            }
+                            "typewriter_page" => {
+                                adw::prelude::ActionGroupExt::activate_action(
+                                    &appwindow,
+                                    "pen-style",
+                                    Some(&PenStyle::Typewriter.to_string().to_variant()),
+                                );
+                            }
+                            "eraser_page" => {
+                                adw::prelude::ActionGroupExt::activate_action(
+                                    &appwindow,
+                                    "pen-style",
+                                    Some(&PenStyle::Eraser.to_string().to_variant()),
+                                );
+                            }
+                            "selector_page" => {
+                                adw::prelude::ActionGroupExt::activate_action(
+                                    &appwindow,
+                                    "pen-style",
+                                    Some(&PenStyle::Selector.to_string().to_variant()),
+                                );
+                            }
+                            "tools_page" => {
+                                adw::prelude::ActionGroupExt::activate_action(
+                                    &appwindow,
+                                    "pen-style",
+                                    Some(&PenStyle::Tools.to_string().to_variant()),
+                                );
+                            }
+                            _ => {}
+                        };
                     };
-                };
-            }));
+                }
+            ));
     }
 }

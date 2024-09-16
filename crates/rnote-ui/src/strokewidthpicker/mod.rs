@@ -94,42 +94,50 @@ mod imp {
             self.setter_2.set_stroke_width(8.0);
             self.setter_3.set_stroke_width(16.0);
 
-            self.setter_1.connect_active_notify(
-                clone!(@weak obj as strokewidthpicker => move |setter| {
+            self.setter_1.connect_active_notify(clone!(
+                #[weak(rename_to=strokewidthpicker)]
+                obj,
+                move |setter| {
                     if setter.is_active() {
                         strokewidthpicker.setter_2().set_active(false);
                         strokewidthpicker.setter_3().set_active(false);
                         // Must come after setting the other toggles inactive
                         strokewidthpicker.set_stroke_width(setter.stroke_width());
                     }
-                }),
-            );
+                }
+            ));
 
-            self.setter_2.connect_active_notify(
-                clone!(@weak obj as strokewidthpicker => move |setter| {
+            self.setter_2.connect_active_notify(clone!(
+                #[weak(rename_to=strokewidthpicker)]
+                obj,
+                move |setter| {
                     if setter.is_active() {
                         strokewidthpicker.setter_1().set_active(false);
                         strokewidthpicker.setter_3().set_active(false);
                         strokewidthpicker.set_stroke_width(setter.stroke_width());
                     }
-                }),
-            );
+                }
+            ));
 
-            self.setter_3.connect_active_notify(
-                clone!(@weak obj as strokewidthpicker => move |setter| {
+            self.setter_3.connect_active_notify(clone!(
+                #[weak(rename_to=strokewidthpicker)]
+                obj,
+                move |setter| {
                     if setter.is_active() {
                         strokewidthpicker.setter_1().set_active(false);
                         strokewidthpicker.setter_2().set_active(false);
                         strokewidthpicker.set_stroke_width(setter.stroke_width());
                     }
-                }),
-            );
+                }
+            ));
 
-            self.spinbutton.connect_value_changed(
-                clone!(@weak obj as strokewidthpicker => move |spinbutton| {
+            self.spinbutton.connect_value_changed(clone!(
+                #[weak(rename_to=strokewidthpicker)]
+                obj,
+                move |spinbutton| {
                     strokewidthpicker.set_active_setter_stroke_width(spinbutton.value());
-                }),
-            );
+                }
+            ));
         }
 
         fn dispose(&self) {

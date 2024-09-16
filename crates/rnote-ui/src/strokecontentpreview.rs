@@ -66,54 +66,78 @@ mod imp {
             self.paintable.connect_local(
                 "repaint-in-progress",
                 false,
-                clone!(@weak obj as strokecontentpreview => @default-return None, move |vals| {
-                    let in_progress = vals[1].get::<bool>().unwrap();
-                    let current_page = strokecontentpreview.current_page();
-                    let n_pages = strokecontentpreview.n_pages();
+                clone!(
+                    #[weak(rename_to=strokecontentpreview)]
+                    obj,
+                    #[upgrade_or]
+                    None,
+                    move |vals| {
+                        let in_progress = vals[1].get::<bool>().unwrap();
+                        let current_page = strokecontentpreview.current_page();
+                        let n_pages = strokecontentpreview.n_pages();
 
-                    if in_progress {
-                        strokecontentpreview.progressbar_start_pulsing();
-                        strokecontentpreview.imp().prev_page_button.set_sensitive(false);
-                        strokecontentpreview.imp().next_page_button.set_sensitive(false);
-                    } else {
-                        strokecontentpreview.progressbar_finish();
-                        strokecontentpreview.imp().prev_page_button.set_sensitive(current_page > 0);
-                        strokecontentpreview.imp().next_page_button
-                            .set_sensitive(current_page < n_pages.saturating_sub(1));
+                        if in_progress {
+                            strokecontentpreview.progressbar_start_pulsing();
+                            strokecontentpreview
+                                .imp()
+                                .prev_page_button
+                                .set_sensitive(false);
+                            strokecontentpreview
+                                .imp()
+                                .next_page_button
+                                .set_sensitive(false);
+                        } else {
+                            strokecontentpreview.progressbar_finish();
+                            strokecontentpreview
+                                .imp()
+                                .prev_page_button
+                                .set_sensitive(current_page > 0);
+                            strokecontentpreview
+                                .imp()
+                                .next_page_button
+                                .set_sensitive(current_page < n_pages.saturating_sub(1));
+                        }
+                        None
                     }
-                    None
-                }),
+                ),
             );
 
-            self.page_entry.connect_changed(
-                clone!(@weak obj as stroke_content_preview => move |entry| {
-                    let n_pages = stroke_content_preview.n_pages();
+            self.page_entry.connect_changed(clone!(
+                #[weak(rename_to=strokecontentpreview)]
+                obj,
+                move |entry| {
+                    let n_pages = strokecontentpreview.n_pages();
                     match parse_page_text(&entry.text(), n_pages) {
                         Ok(page) => {
                             entry.remove_css_class("error");
-                            stroke_content_preview.set_current_page(page);
+                            strokecontentpreview.set_current_page(page);
                         }
                         _ => {
                             entry.add_css_class("error");
                         }
                     }
-                }),
-            );
+                }
+            ));
 
-            self.prev_page_button.connect_clicked(
-                clone!(@weak obj as strokecontentpreview => move |_| {
+            self.prev_page_button.connect_clicked(clone!(
+                #[weak(rename_to=strokecontentpreview)]
+                obj,
+                move |_| {
                     let current_page = strokecontentpreview.current_page();
                     strokecontentpreview.set_current_page(current_page.saturating_sub(1));
-                }),
-            );
+                }
+            ));
 
-            self.next_page_button.connect_clicked(
-                clone!(@weak obj as strokecontentpreview => move |_| {
+            self.next_page_button.connect_clicked(clone!(
+                #[weak(rename_to=strokecontentpreview)]
+                obj,
+                move |_| {
                     let current_page = strokecontentpreview.current_page();
                     let n_pages = strokecontentpreview.n_pages();
-                    strokecontentpreview.set_current_page(current_page.saturating_add(1).min(n_pages - 1));
-                }),
-            );
+                    strokecontentpreview
+                        .set_current_page(current_page.saturating_add(1).min(n_pages - 1));
+                }
+            ));
         }
 
         fn dispose(&self) {
@@ -281,14 +305,24 @@ impl RnStrokeContentPreview {
 
     pub(crate) fn progressbar_start_pulsing(&self) {
         const PULSE_INTERVAL: std::time::Duration = std::time::Duration::from_millis(100);
-        if let Some(src) = self.imp().progresspulse_id.replace(Some(glib::source::timeout_add_local(
-            PULSE_INTERVAL,
-            clone!(@weak self as strokecontentpreview => @default-return glib::ControlFlow::Break, move || {
-                strokecontentpreview.imp().progressbar.pulse();
+        if let Some(src) =
+            self.imp()
+                .progresspulse_id
+                .replace(Some(glib::source::timeout_add_local(
+                    PULSE_INTERVAL,
+                    clone!(
+                        #[weak(rename_to=strokecontentpreview)]
+                        self,
+                        #[upgrade_or]
+                        glib::ControlFlow::Break,
+                        move || {
+                            strokecontentpreview.imp().progressbar.pulse();
 
-                glib::ControlFlow::Continue
-            })),
-        )) {
+                            glib::ControlFlow::Continue
+                        }
+                    ),
+                )))
+        {
             src.remove();
         }
     }
@@ -301,9 +335,13 @@ impl RnStrokeContentPreview {
         self.imp().progressbar.set_fraction(1.);
         glib::source::timeout_add_local_once(
             FINISH_TIMEOUT,
-            clone!(@weak self as strokecontentpreview => move || {
-                strokecontentpreview.imp().progressbar.set_fraction(0.);
-            }),
+            clone!(
+                #[weak(rename_to=strokecontentpreview)]
+                self,
+                move || {
+                    strokecontentpreview.imp().progressbar.set_fraction(0.);
+                }
+            ),
         );
     }
 

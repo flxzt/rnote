@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-09-16 15:26+0000\n"
+"PO-Revision-Date: 2024-09-16 15:47+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
 "Language: he\n"
@@ -1845,7 +1845,7 @@ msgstr "טעינה מחדש"
 
 #: crates/rnote-ui/src/canvas/mod.rs:903
 msgid "Reloading .rnote file from disk failed"
-msgstr "טעינה מחדש של קובץ .rnote מהכונן נכשלה"
+msgstr "טעינה מחדש של קובץ ‎.rnote מהכונן נכשלה"
 
 #: crates/rnote-ui/src/canvas/mod.rs:969
 msgid "Opened file was renamed or moved."
@@ -2289,7 +2289,7 @@ msgstr "עקומת בזייה מעוקבת"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:437
 msgid "Polyline"
-msgstr "קו רב-קטעים"
+msgstr "קו שבור"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:438
 msgid "Polygon"

@@ -35,8 +35,8 @@ static DUP_REGEX: Lazy<Regex> = Lazy::new(|| {
 pub(crate) fn duplicate(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleAction {
     let action = gio::SimpleAction::new("duplicate", None);
 
-    action.connect_activate(clone!(@weak filerow, @weak appwindow => move |_, _| {
-        glib::spawn_future_local(clone!(@weak filerow, @weak appwindow => async move {
+    action.connect_activate(clone!(#[weak] filerow, #[weak] appwindow , move |_, _| {
+        glib::spawn_future_local(clone!(#[weak] filerow, #[weak] appwindow , async move {
             let Some(current_path) = filerow.current_file().and_then(|f| f.path()) else {
                 appwindow.overlays().dispatch_toast_error(&gettext("Can't duplicate an unsaved document"));
                 debug!("Could not duplicate file, current file is None.");

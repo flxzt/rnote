@@ -39,20 +39,28 @@ impl RnApp {
             .build();
 
         // Quit App
-        action_quit.connect_activate(clone!(@weak self as app => move |_, _| {
-            // Request closing all windows. They then get the chance to display a save dialog on unsaved changes
-            for appwindow in app.windows() {
-                appwindow.close();
-            }
+        action_quit.connect_activate(clone!(
+            #[weak(rename_to = app)]
+            self,
+            move |_, _| {
+                // Request closing all windows. They then get the chance to display a save dialog on unsaved changes
+                for appwindow in app.windows() {
+                    appwindow.close();
+                }
 
-            if app.windows().is_empty() {
-                app.quit();
+                if app.windows().is_empty() {
+                    app.quit();
+                }
             }
-        }));
+        ));
 
-        action_new_window.connect_activate(clone!(@weak self as app => move |_, _| {
-            app.new_appwindow_init_show();
-        }));
+        action_new_window.connect_activate(clone!(
+            #[weak(rename_to = app)]
+            self,
+            move |_, _| {
+                app.new_appwindow_init_show();
+            }
+        ));
     }
 
     // Accelerators / Keyboard Shortcuts

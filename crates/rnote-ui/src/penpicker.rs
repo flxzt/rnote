@@ -108,55 +108,88 @@ impl RnPenPicker {
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
-        imp.brush_toggle
-            .connect_toggled(clone!(@weak appwindow => move |brush_toggle| {
+        imp.brush_toggle.connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |brush_toggle| {
                 if brush_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Brush.to_string().to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(
+                        &appwindow,
+                        "pen-style",
+                        Some(&PenStyle::Brush.to_string().to_variant()),
+                    );
                 }
-            }));
+            }
+        ));
 
-        imp.shaper_toggle
-            .connect_toggled(clone!(@weak appwindow => move |shaper_toggle| {
+        imp.shaper_toggle.connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |shaper_toggle| {
                 if shaper_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Shaper.to_string().to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(
+                        &appwindow,
+                        "pen-style",
+                        Some(&PenStyle::Shaper.to_string().to_variant()),
+                    );
                 }
-            }));
+            }
+        ));
 
-        imp.typewriter_toggle
-            .connect_toggled(clone!(@weak appwindow => move |typewriter_toggle| {
+        imp.typewriter_toggle.connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |typewriter_toggle| {
                 if typewriter_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Typewriter.to_string().to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(
+                        &appwindow,
+                        "pen-style",
+                        Some(&PenStyle::Typewriter.to_string().to_variant()),
+                    );
                 }
-            }));
+            }
+        ));
 
-        imp.eraser_toggle
-            .get()
-            .connect_toggled(clone!(@weak appwindow => move |eraser_toggle| {
+        imp.eraser_toggle.get().connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |eraser_toggle| {
                 if eraser_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Eraser.to_string().to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(
+                        &appwindow,
+                        "pen-style",
+                        Some(&PenStyle::Eraser.to_string().to_variant()),
+                    );
                 }
-            }));
+            }
+        ));
 
-        imp.selector_toggle.get().connect_toggled(
-            clone!(@weak appwindow => move |selector_toggle| {
+        imp.selector_toggle.get().connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |selector_toggle| {
                 if selector_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Selector.to_string().to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(
+                        &appwindow,
+                        "pen-style",
+                        Some(&PenStyle::Selector.to_string().to_variant()),
+                    );
                 }
-            }),
-        );
+            }
+        ));
 
-        imp.tools_toggle
-            .get()
-            .connect_toggled(clone!(@weak appwindow => move |tools_toggle| {
+        imp.tools_toggle.get().connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |tools_toggle| {
                 if tools_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style",
-                        Some(&PenStyle::Tools.to_string().to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(
+                        &appwindow,
+                        "pen-style",
+                        Some(&PenStyle::Tools.to_string().to_variant()),
+                    );
                 }
-            }));
+            }
+        ));
     }
 }

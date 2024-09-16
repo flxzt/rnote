@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
 "PO-Revision-Date: 2024-09-16 15:26+0000\n"
-"Last-Translator: Yosef Or Boczko <yoseforb@gnome.org>\n"
+"Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
@@ -1849,7 +1849,7 @@ msgstr "טעינה מחדש של קובץ .rnote מהכונן נכשלה"
 
 #: crates/rnote-ui/src/canvas/mod.rs:969
 msgid "Opened file was renamed or moved."
-msgstr "הקובץ שנפתח שונה שמו או הועבר."
+msgstr "שם הקובץ שנפתח השתנה או שהוא הועבר."
 
 #: crates/rnote-ui/src/canvas/mod.rs:983
 msgid "Opened file was removed."

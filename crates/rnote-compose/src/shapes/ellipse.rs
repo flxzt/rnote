@@ -98,7 +98,7 @@ impl Ellipse {
         let mut lines = Vec::new();
         let mut prev = kurbo::Point::new(0.0, 0.0);
 
-        self.outline_path().flatten(0.25, |el| match el {
+        kurbo::flatten(self.outline_path(), 0.25, |el| match el {
             kurbo::PathEl::MoveTo(point) => prev = point,
             kurbo::PathEl::LineTo(next) => {
                 lines.push(Line {

@@ -43,7 +43,7 @@ image = "0.25.2"
 indicatif = "0.17.8"
 ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "84d311e9b0d034dcd955a1f353d37f54b2bda70f" }
 itertools = "0.13.0"
-kurbo = "0.10.4"
+kurbo = "0.11.1"
 librsvg = "2.59.0"
 nalgebra = { version = "0.33.0", features = ["serde-serialize"] }
 notify-debouncer-full = "0.3.1"
@@ -88,8 +88,8 @@ poppler-rs = { version = "0.24.1", features = ["v20_9"] }
 
 [patch.crates-io]
 # once a new piet (current v0.6.2) is released with updated cairo and kurbo deps, this can be removed.
-piet = { git = "https://github.com/flxzt/piet", rev = "a480bc20bd0d235928d46b009dae54e52e32767a" }
-piet-cairo = { git = "https://github.com/flxzt/piet", rev = "a480bc20bd0d235928d46b009dae54e52e32767a" }
+piet = { git = "https://github.com/flxzt/piet", rev = "17fd59f260db3c54029a8288178e32f9f1742be2" }
+piet-cairo = { git = "https://github.com/flxzt/piet", rev = "17fd59f260db3c54029a8288178e32f9f1742be2" }
 # the latest commit in rough depends on nightly-only features
 roughr = { git = "https://github.com/orhanbalci/rough-rs", rev = "0701ce0b874061707ef726533b43e1806af8b666" }
 rough_piet = { git = "https://github.com/orhanbalci/rough-rs", rev = "0701ce0b874061707ef726533b43e1806af8b666" }

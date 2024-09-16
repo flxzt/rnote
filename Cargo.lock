@@ -1660,9 +1660,9 @@ checksum = "fbf6a919d6cf397374f7dfeeea91d974c7c0a7221d0d0f4f20d859d329e53fcc"
 
 [[package]]
 name = "iana-time-zone"
-version = "0.1.60"
+version = "0.1.61"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7ffbb5a1b541ea2561f8c41c087286cc091e21e556a4f09a8f6cbf17b69b141"
+checksum = "235e081f3925a06703c2d0117ea8b91f042756fd6e7a6e5d901e8ca1a996b220"
 dependencies = [
  "android_system_properties",
  "core-foundation-sys",
@@ -1956,16 +1956,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bd85a5776cd9500c2e2059c8c76c3b01528566b7fcbaf8098b55a33fc298849b"
 dependencies = [
  "arrayvec",
-]
-
-[[package]]
-name = "kurbo"
-version = "0.10.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1618d4ebd923e97d67e7cd363d80aef35fe961005cbbbb3d2dad8bdd1bc63440"
-dependencies = [
- "arrayvec",
- "smallvec",
 ]
 
 [[package]]
@@ -2857,16 +2847,16 @@ checksum = "5be167a7af36ee22fe3115051bc51f6e6c7054c9348e28deb4f49bd6f705a315"
 [[package]]
 name = "piet"
 version = "0.6.2"
-source = "git+https://github.com/flxzt/piet?rev=a480bc20bd0d235928d46b009dae54e52e32767a#a480bc20bd0d235928d46b009dae54e52e32767a"
+source = "git+https://github.com/flxzt/piet?rev=17fd59f260db3c54029a8288178e32f9f1742be2#17fd59f260db3c54029a8288178e32f9f1742be2"
 dependencies = [
- "kurbo 0.10.4",
+ "kurbo 0.11.1",
  "unic-bidi",
 ]
 
 [[package]]
 name = "piet-cairo"
 version = "0.6.2"
-source = "git+https://github.com/flxzt/piet?rev=a480bc20bd0d235928d46b009dae54e52e32767a#a480bc20bd0d235928d46b009dae54e52e32767a"
+source = "git+https://github.com/flxzt/piet?rev=17fd59f260db3c54029a8288178e32f9f1742be2#17fd59f260db3c54029a8288178e32f9f1742be2"
 dependencies = [
  "cairo-rs",
  "pango",
@@ -3260,7 +3250,7 @@ dependencies = [
  "ijson",
  "image",
  "itertools 0.13.0",
- "kurbo 0.10.4",
+ "kurbo 0.11.1",
  "libadwaita",
  "nalgebra",
  "notify-debouncer-full",
@@ -3322,7 +3312,7 @@ dependencies = [
  "base64",
  "clap",
  "ink-stroke-modeler-rs",
- "kurbo 0.10.4",
+ "kurbo 0.11.1",
  "nalgebra",
  "num-derive",
  "num-traits",
@@ -3361,7 +3351,7 @@ dependencies = [
  "ijson",
  "image",
  "itertools 0.13.0",
- "kurbo 0.10.4",
+ "kurbo 0.11.1",
  "librsvg",
  "nalgebra",
  "num-derive",

@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
 "PO-Revision-Date: 2024-09-16 15:10+0000\n"
-"Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
+"Last-Translator: Yosef Or Boczko <yoseforb@gnome.org>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
@@ -1849,7 +1849,7 @@ msgstr "טעינה מחדש של קובץ .rnote מהכונן נכשלה"
 
 #: crates/rnote-ui/src/canvas/mod.rs:969
 msgid "Opened file was renamed or moved."
-msgstr "שם הקובץ שנפתח השתנה או שהוא הועבר."
+msgstr "הקובץ שנפתח שונה שמו או הועבר."
 
 #: crates/rnote-ui/src/canvas/mod.rs:983
 msgid "Opened file was removed."
@@ -1865,10 +1865,8 @@ msgstr "הוספת הטקסט נכשלה"
 
 #: crates/rnote-ui/src/dialogs/export.rs:33
 #: crates/rnote-ui/src/dialogs/import.rs:28
-#, fuzzy
-#| msgid ".rnote file"
 msgid ".rnote"
-msgstr "קובץ ‎.rnote"
+msgstr ".rnote"
 
 #: crates/rnote-ui/src/dialogs/export.rs:66
 msgid "Saved document successfully"
@@ -1935,7 +1933,7 @@ msgstr "הבחירה יוצאה בהצלחה"
 #: crates/rnote-ui/src/dialogs/export.rs:1011
 #: crates/rnote-ui/src/dialogs/export.rs:1074
 msgid "Json"
-msgstr ""
+msgstr "Json"
 
 #: crates/rnote-ui/src/dialogs/export.rs:1023
 msgid "Export Engine State"
@@ -2078,7 +2076,7 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/mod.rs:629
 msgctxt "as in plant"
 msgid "Crop"
-msgstr "יבול"
+msgstr "חיתוך"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:630
 msgid "Dictionary"
@@ -2161,8 +2159,6 @@ msgid "Nature"
 msgstr "טבע"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:651
-#, fuzzy
-#| msgid "Open"
 msgid "Open Book"
 msgstr "פתיחת ספר"
 

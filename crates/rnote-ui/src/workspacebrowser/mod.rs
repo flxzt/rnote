@@ -197,8 +197,8 @@ impl RnWorkspaceBrowser {
             .add_action(&workspaceactions::create_folder(self, appwindow));
     }
 
-    fn setup_dir_controls(&self, appwindow: &RnAppWindow) {
-        self.imp().dir_controls_dir_up_button.connect_clicked(clone!(@weak self as workspacebrowser, @weak appwindow => move |_| {
+    fn setup_dir_controls(&self, _appwindow: &RnAppWindow) {
+        self.imp().dir_controls_dir_up_button.connect_clicked(clone!(#[weak(rename_to=workspacebrowser)] self , move |_| {
             if let Some(mut dir) = workspacebrowser.workspacesbar().selected_workspacelistentry().map(|e| PathBuf::from(e.dir())) {
                 // don't canonicalize on windows, because that would convert the path to one with extended length syntax
                 if !cfg!(target_os = "windows") {
@@ -271,36 +271,65 @@ impl RnWorkspaceBrowser {
             .set_header_factory(Some(&create_files_list_header_factory(appwindow)));
 
         self.imp().dir_list.connect_items_changed(clone!(
-            @weak self as workspacebrowser,
-            @weak folders_filter,
-            @weak folders_sorter,
-            @weak notes_filter,
-            @weak notes_sorter,
-            @weak files_filter,
-            @weak files_sorter
-            => move |_, _, _, _| {
+            #[weak]
+            folders_filter,
+            #[weak]
+            folders_sorter,
+            #[weak]
+            notes_filter,
+            #[weak]
+            notes_sorter,
+            #[weak]
+            files_filter,
+            #[weak]
+            files_sorter,
+            move |_, _, _, _| {
                 folders_filter.changed(FilterChange::Different);
                 folders_sorter.changed(SorterChange::Different);
                 notes_filter.changed(FilterChange::Different);
                 notes_sorter.changed(SorterChange::Different);
                 files_filter.changed(FilterChange::Different);
                 files_sorter.changed(SorterChange::Different);
-        }));
+            }
+        ));
 
-        imp.files_listview.get().connect_activate(clone!(@weak self as workspacebrowser,
-            @weak appwindow,
-            @weak folders_filter,
-            @weak folders_sorter,
-            @weak notes_filter,
-            @weak notes_sorter,
-            @weak files_filter,
-            @weak files_sorter
-            => move |listview, position| {
-                let file_info = listview.model().unwrap().item(position).unwrap().downcast::<gio::FileInfo>().unwrap();
+        imp.files_listview.get().connect_activate(clone!(
+            #[weak]
+            appwindow,
+            #[weak]
+            folders_filter,
+            #[weak]
+            folders_sorter,
+            #[weak]
+            notes_filter,
+            #[weak]
+            notes_sorter,
+            #[weak]
+            files_filter,
+            #[weak]
+            files_sorter,
+            move |listview, position| {
+                let file_info = listview
+                    .model()
+                    .unwrap()
+                    .item(position)
+                    .unwrap()
+                    .downcast::<gio::FileInfo>()
+                    .unwrap();
                 if let Some(input_file) = file_info.attribute_object("standard::file") {
-                    glib::spawn_future_local(clone!(@weak appwindow => async move {
-                        appwindow.open_file_w_dialogs(input_file.downcast::<gio::File>().unwrap(), None, true).await;
-                    }));
+                    glib::spawn_future_local(clone!(
+                        #[weak]
+                        appwindow,
+                        async move {
+                            appwindow
+                                .open_file_w_dialogs(
+                                    input_file.downcast::<gio::File>().unwrap(),
+                                    None,
+                                    true,
+                                )
+                                .await;
+                        }
+                    ));
                 };
                 folders_filter.changed(FilterChange::Different);
                 folders_sorter.changed(SorterChange::Different);
@@ -308,17 +337,20 @@ impl RnWorkspaceBrowser {
                 notes_sorter.changed(SorterChange::Different);
                 files_filter.changed(FilterChange::Different);
                 files_sorter.changed(SorterChange::Different);
-        }));
+            }
+        ));
 
-        self.imp().dir_list.connect_file_notify(
-            clone!(@weak self as workspacebrowser => move |dir_list| {
+        self.imp().dir_list.connect_file_notify(clone!(
+            #[weak(rename_to=workspacebrowser)]
+            self,
+            move |dir_list| {
                 // Disable the dir up row when no file is set or has no parent.
                 workspacebrowser
                     .imp()
                     .dir_controls_dir_up_button
                     .set_sensitive(dir_list.file().and_then(|f| f.parent()).is_some());
-            }),
-        );
+            }
+        ));
     }
 
     /// Set the selected file in the files list with its position.
@@ -332,7 +364,10 @@ impl RnWorkspaceBrowser {
 fn create_files_list_row_factory(appwindow: &RnAppWindow) -> SignalListItemFactory {
     let factory = SignalListItemFactory::new();
 
-    factory.connect_setup(clone!(@weak appwindow => move |_, list_item| {
+    factory.connect_setup(clone!(
+        #[weak]
+        appwindow,
+        move |_, list_item| {
             let list_item = list_item.downcast_ref::<ListItem>().unwrap();
 
             let filerow = RnFileRow::new();
@@ -380,7 +415,12 @@ fn create_files_list_row_factory(appwindow: &RnAppWindow) -> SignalListItemFacto
                 ));
 
             let icon_name_expr =
-                fileinfo_expr.chain_closure::<gio::ThemedIcon>(closure!(|_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
+                fileinfo_expr.chain_closure::<gio::ThemedIcon>(closure!(|_: Option<
+                    glib::Object,
+                >,
+                                                                         fileinfo_obj: Option<
+                    glib::Object,
+                >| {
                     if let Some(fileinfo_obj) = fileinfo_obj {
                         if let Some(themed_icon) = fileinfo_obj
                             .downcast::<gio::FileInfo>()
@@ -398,7 +438,10 @@ fn create_files_list_row_factory(appwindow: &RnAppWindow) -> SignalListItemFacto
                 }));
 
             let basename_expr =
-                fileinfo_expr.chain_closure::<String>(closure!(|_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
+                fileinfo_expr.chain_closure::<String>(closure!(|_: Option<glib::Object>,
+                                                                fileinfo_obj: Option<
+                    glib::Object,
+                >| {
                     if let Some(fileinfo_obj) = fileinfo_obj {
                         if let Some(file) = fileinfo_obj
                             .downcast::<gio::FileInfo>()
@@ -422,15 +465,16 @@ fn create_files_list_row_factory(appwindow: &RnAppWindow) -> SignalListItemFacto
             basename_expr.bind(&filerow.file_label(), "label", Widget::NONE);
             icon_name_expr.bind(&filerow.file_image(), "gicon", Widget::NONE);
             content_provider_expr.bind(&filerow.drag_source(), "content", Widget::NONE);
-        }));
+        }
+    ));
 
     factory
 }
 
-fn create_files_list_header_factory(appwindow: &RnAppWindow) -> SignalListItemFactory {
+fn create_files_list_header_factory(_appwindow: &RnAppWindow) -> SignalListItemFactory {
     let factory = SignalListItemFactory::new();
 
-    factory.connect_setup(clone!(@weak appwindow => move |_, list_header| {
+    factory.connect_setup(clone!(move |_, list_header| {
         let list_header = list_header.downcast_ref::<ListHeader>().unwrap();
         let separator = Separator::builder()
             .orientation(gtk4::Orientation::Horizontal)

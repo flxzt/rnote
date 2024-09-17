@@ -77,24 +77,32 @@ mod imp {
                 row.emit_by_name::<()>("action-changed", &[]);
             });
 
-            self.mode_dropdown.get().connect_selected_notify(
-                clone!(@weak obj as penshortcutrow => move |_| {
+            self.mode_dropdown.get().connect_selected_notify(clone!(
+                #[weak(rename_to=penshortcutrow)]
+                obj,
+                move |_| {
                     match &mut *penshortcutrow.imp().action.borrow_mut() {
                         ShortcutAction::ChangePenStyle { mode, .. } => {
                             *mode = penshortcutrow.shortcut_mode();
                         }
                     }
                     penshortcutrow.emit_by_name::<()>("action-changed", &[]);
-                }),
-            );
+                }
+            ));
 
             obj.connect_local(
                 "action-changed",
                 false,
-                clone!(@weak obj as penshortcutrow => @default-return None, move |_values| {
-                    penshortcutrow.update_ui();
-                    None
-                }),
+                clone!(
+                    #[weak(rename_to=penshortcutrow)]
+                    obj,
+                    #[upgrade_or]
+                    None,
+                    move |_values| {
+                        penshortcutrow.update_ui();
+                        None
+                    }
+                ),
             );
         }
 

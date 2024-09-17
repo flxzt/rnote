@@ -946,20 +946,33 @@ impl RnSettingsPanel {
                     widget_flags.refresh_ui = true;
                     widget_flags.store_modified = true;
                     appwindow.handle_widget_flags(widget_flags, &canvas);
-                }),
-            );
+                }
+            ));
 
-        imp.doc_compression_level_row.get().connect_selected_item_notify(clone!(
-            #[weak(rename_to=settings_panel]
-            self,
-            #[weak]
-            appwindow,
-            move |_| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
-                let compression_level = CompressionLevel::try_from(settings_panel.imp().doc_compression_level_row.get().selected()).unwrap();
-                canvas.engine_mut().save_prefs.compression.set_compression_level(compression_level);
-            }),
-        );
+        imp.doc_compression_level_row
+            .get()
+            .connect_selected_item_notify(clone!(
+                #[weak(rename_to=settings_panel)]
+                self,
+                #[weak]
+                appwindow,
+                move |_| {
+                    let canvas = appwindow.active_tab_wrapper().canvas();
+                    let compression_level = CompressionLevel::try_from(
+                        settings_panel
+                            .imp()
+                            .doc_compression_level_row
+                            .get()
+                            .selected(),
+                    )
+                    .unwrap();
+                    canvas
+                        .engine_mut()
+                        .save_prefs
+                        .compression
+                        .set_compression_level(compression_level);
+                }
+            ));
     }
 
     fn setup_shortcuts(&self, appwindow: &RnAppWindow) {

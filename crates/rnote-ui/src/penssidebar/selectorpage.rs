@@ -99,33 +99,85 @@ impl RnSelectorPage {
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
-        imp.selectorstyle_polygon_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_polygon_toggle| {
-            if selectorstyle_polygon_toggle.is_active() {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.selector_config.style = SelectorStyle::Polygon;
+        imp.selectorstyle_polygon_toggle.connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |selectorstyle_polygon_toggle| {
+                if selectorstyle_polygon_toggle.is_active() {
+                    appwindow
+                        .active_tab_wrapper()
+                        .canvas()
+                        .engine_mut()
+                        .pens_config
+                        .selector_config
+                        .style = SelectorStyle::Polygon;
+                }
             }
-        }));
+        ));
 
-        imp.selectorstyle_rect_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_rect_toggle| {
-            if selectorstyle_rect_toggle.is_active() {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.selector_config.style = SelectorStyle::Rectangle;
+        imp.selectorstyle_rect_toggle.connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |selectorstyle_rect_toggle| {
+                if selectorstyle_rect_toggle.is_active() {
+                    appwindow
+                        .active_tab_wrapper()
+                        .canvas()
+                        .engine_mut()
+                        .pens_config
+                        .selector_config
+                        .style = SelectorStyle::Rectangle;
+                }
             }
-        }));
+        ));
 
-        imp.selectorstyle_single_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_single_toggle| {
-            if selectorstyle_single_toggle.is_active() {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.selector_config.style = SelectorStyle::Single;
+        imp.selectorstyle_single_toggle.connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |selectorstyle_single_toggle| {
+                if selectorstyle_single_toggle.is_active() {
+                    appwindow
+                        .active_tab_wrapper()
+                        .canvas()
+                        .engine_mut()
+                        .pens_config
+                        .selector_config
+                        .style = SelectorStyle::Single;
+                }
             }
-        }));
+        ));
 
-        imp.selectorstyle_intersectingpath_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_intersectingpath_toggle| {
-            if selectorstyle_intersectingpath_toggle.is_active() {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.selector_config.style = SelectorStyle::IntersectingPath;
-            }
-        }));
+        imp.selectorstyle_intersectingpath_toggle
+            .connect_toggled(clone!(
+                #[weak]
+                appwindow,
+                move |selectorstyle_intersectingpath_toggle| {
+                    if selectorstyle_intersectingpath_toggle.is_active() {
+                        appwindow
+                            .active_tab_wrapper()
+                            .canvas()
+                            .engine_mut()
+                            .pens_config
+                            .selector_config
+                            .style = SelectorStyle::IntersectingPath;
+                    }
+                }
+            ));
 
-        imp.resize_lock_aspectratio_togglebutton.connect_toggled(clone!(@weak appwindow = > move |resize_lock_aspectratio_togglebutton| {
-            appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.selector_config.resize_lock_aspectratio = resize_lock_aspectratio_togglebutton.is_active();
-        }));
+        imp.resize_lock_aspectratio_togglebutton
+            .connect_toggled(clone!(
+                #[weak]
+                appwindow,
+                move |resize_lock_aspectratio_togglebutton| {
+                    appwindow
+                        .active_tab_wrapper()
+                        .canvas()
+                        .engine_mut()
+                        .pens_config
+                        .selector_config
+                        .resize_lock_aspectratio = resize_lock_aspectratio_togglebutton.is_active();
+                }
+            ));
     }
 
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {

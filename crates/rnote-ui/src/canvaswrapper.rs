@@ -192,11 +192,15 @@ mod imp {
 
             let canvas_touch_drawing_handler = self.canvas.connect_notify_local(
                 Some("touch-drawing"),
-                clone!(@weak obj as canvaswrapper => move |_canvas, _pspec| {
-                    // Disable the zoom gesture and kinetic scrolling when touch drawing is enabled.
-                    canvaswrapper.imp().canvas_kinetic_scrolling_update();
-                    canvaswrapper.imp().canvas_zoom_gesture_update();
-                }),
+                clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |_canvas, _pspec| {
+                        // Disable the zoom gesture and kinetic scrolling when touch drawing is enabled.
+                        canvaswrapper.imp().canvas_kinetic_scrolling_update();
+                        canvaswrapper.imp().canvas_zoom_gesture_update();
+                    }
+                ),
             );
 
             self.canvas_touch_drawing_handler
@@ -300,68 +304,92 @@ mod imp {
             let obj = self.obj();
 
             {
-                self.pointer_motion_controller.connect_motion(
-                    clone!(@weak obj as canvaswrapper => move |_, x, y| {
+                self.pointer_motion_controller.connect_motion(clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |_, x, y| {
                         canvaswrapper.imp().pointer_pos.set(Some(na::vector![x, y]));
-                    }),
-                );
+                    }
+                ));
 
-                self.pointer_motion_controller.connect_leave(
-                    clone!(@weak obj as canvaswrapper => move |_| {
+                self.pointer_motion_controller.connect_leave(clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |_| {
                         canvaswrapper.imp().pointer_pos.set(None);
-                    }),
-                );
+                    }
+                ));
             }
 
             // Actions when moving view with controls provided by the scroller ScrolledWindow.
             // e.g. touch scrolling when inertial-scrolling is enabled.
             {
-                self.scroller.connect_edge_overshot(
-                    clone!(@weak obj as canvaswrapper => move |_, _| {
+                self.scroller.connect_edge_overshot(clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |_, _| {
                         let canvas = canvaswrapper.canvas();
                         let widget_flags = canvas.engine_mut().doc_expand_autoexpand();
                         canvas.emit_handle_widget_flags(widget_flags);
-                    }),
-                );
+                    }
+                ));
             }
 
             // zoom scrolling with <ctrl> + scroll
             {
-                self.canvas_zoom_scroll_controller.connect_scroll(
-                    clone!(@weak obj as canvaswrapper => @default-return glib::Propagation::Proceed, move |controller, _, dy| {
-                    if controller.current_event_state() != gdk::ModifierType::CONTROL_MASK {
-                        return glib::Propagation::Proceed;
+                self.canvas_zoom_scroll_controller.connect_scroll(clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    #[upgrade_or]
+                    glib::Propagation::Proceed,
+                    move |controller, _, dy| {
+                        if controller.current_event_state() != gdk::ModifierType::CONTROL_MASK {
+                            return glib::Propagation::Proceed;
+                        }
+                        let canvas = canvaswrapper.canvas();
+                        let old_zoom = canvas.engine_ref().camera.total_zoom();
+                        let new_zoom = old_zoom * (1.0 - dy * RnCanvas::ZOOM_SCROLL_STEP);
+
+                        if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
+                            let camera_offset = canvas.engine_ref().camera.offset();
+                            let camera_size = canvas.engine_ref().camera.size();
+                            let screen_offset = canvaswrapper
+                                .imp()
+                                .pointer_pos
+                                .get()
+                                .map(|p| {
+                                    let p = canvaswrapper
+                                        .compute_point(&canvas, &graphene::Point::from_na_vec(p))
+                                        .unwrap();
+                                    p.to_na_vec()
+                                })
+                                .unwrap_or_else(|| camera_size * 0.5);
+                            let new_camera_offset = (((camera_offset + screen_offset) / old_zoom)
+                                * new_zoom)
+                                - screen_offset;
+
+                            let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
+                            widget_flags |= canvas
+                                .engine_mut()
+                                .camera_set_offset_expand(new_camera_offset);
+                            canvas.emit_handle_widget_flags(widget_flags);
+                        }
+
+                        glib::Propagation::Stop
                     }
-                    let canvas = canvaswrapper.canvas();
-                    let old_zoom = canvas.engine_ref().camera.total_zoom();
-                    let new_zoom = old_zoom * (1.0 - dy * RnCanvas::ZOOM_SCROLL_STEP);
-
-                    if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
-                        let camera_offset = canvas.engine_ref().camera.offset();
-                        let camera_size = canvas.engine_ref().camera.size();
-                        let screen_offset = canvaswrapper.imp().pointer_pos.get()
-                            .map(|p| {
-                                let p = canvaswrapper.compute_point(&canvas, &graphene::Point::from_na_vec(p)).unwrap();
-                                p.to_na_vec()
-                            })
-                            .unwrap_or_else(|| camera_size * 0.5);
-                        let new_camera_offset = (((camera_offset + screen_offset) / old_zoom) * new_zoom) - screen_offset;
-
-                        let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-                        widget_flags |= canvas.engine_mut().camera_set_offset_expand(new_camera_offset);
-                        canvas.emit_handle_widget_flags(widget_flags);
-                    }
-
-                    glib::Propagation::Stop
-                }));
+                ));
             }
 
             // Drag canvas gesture
             {
                 let touch_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
-                self.canvas_drag_gesture.connect_drag_begin(
-                    clone!(@strong touch_drag_start, @weak obj as canvaswrapper => move |_, _, _| {
+                self.canvas_drag_gesture.connect_drag_begin(clone!(
+                    #[strong]
+                    touch_drag_start,
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |_, _, _| {
                         // We don't claim the sequence, because we we want to allow touch zooming.
                         // When the zoom gesture is recognized, it claims it and denies this touch drag gesture.
 
@@ -369,47 +397,78 @@ mod imp {
                             canvaswrapper.canvas().hadjustment().unwrap().value(),
                             canvaswrapper.canvas().vadjustment().unwrap().value()
                         ]);
-                    }),
-                );
-                self.canvas_drag_gesture.connect_drag_update(
-                    clone!(@strong touch_drag_start, @weak obj as canvaswrapper => move |_, x, y| {
+                    }
+                ));
+                self.canvas_drag_gesture.connect_drag_update(clone!(
+                    #[strong]
+                    touch_drag_start,
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |_, x, y| {
                         let canvas = canvaswrapper.canvas();
-                        let new_offset = touch_drag_start.get() - na::vector![x,y];
+                        let new_offset = touch_drag_start.get() - na::vector![x, y];
                         let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
                         canvas.emit_handle_widget_flags(widget_flags);
-                    }),
-                );
-                self.canvas_drag_gesture.connect_drag_end(
-                    clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
-                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
-                    }),
-                );
+                    }
+                ));
+                self.canvas_drag_gesture.connect_drag_end(clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |_, _, _| {
+                        let widget_flags = canvaswrapper
+                            .canvas()
+                            .engine_mut()
+                            .update_rendering_current_viewport();
+                        canvaswrapper
+                            .canvas()
+                            .emit_handle_widget_flags(widget_flags);
+                    }
+                ));
             }
 
             // Move Canvas with middle mouse button
             {
                 let mouse_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
-                self.canvas_mouse_drag_middle_gesture.connect_drag_begin(
-                    clone!(@strong mouse_drag_start, @weak obj as canvaswrapper => move |_, _, _| {
-                        mouse_drag_start.set(canvaswrapper.canvas().engine_ref().camera.offset());
-                    }),
-                );
-                self.canvas_mouse_drag_middle_gesture.connect_drag_update(
-                    clone!(@strong mouse_drag_start, @weak obj as canvaswrapper => move |_, x, y| {
-                        let canvas = canvaswrapper.canvas();
-                        let new_offset = mouse_drag_start.get() - na::vector![x,y];
-                        let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
-                        canvas.emit_handle_widget_flags(widget_flags);
-                    }),
-                );
-                self.canvas_mouse_drag_middle_gesture.connect_drag_end(
-                    clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
-                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
-                    }),
-                );
+                self.canvas_mouse_drag_middle_gesture
+                    .connect_drag_begin(clone!(
+                        #[strong]
+                        mouse_drag_start,
+                        #[weak(rename_to=canvaswrapper)]
+                        obj,
+                        move |_, _, _| {
+                            mouse_drag_start
+                                .set(canvaswrapper.canvas().engine_ref().camera.offset());
+                        }
+                    ));
+                self.canvas_mouse_drag_middle_gesture
+                    .connect_drag_update(clone!(
+                        #[strong]
+                        mouse_drag_start,
+                        #[weak(rename_to=canvaswrapper)]
+                        obj,
+                        move |_, x, y| {
+                            let canvas = canvaswrapper.canvas();
+                            let new_offset = mouse_drag_start.get() - na::vector![x, y];
+                            let widget_flags =
+                                canvas.engine_mut().camera_set_offset_expand(new_offset);
+                            canvas.emit_handle_widget_flags(widget_flags);
+                        }
+                    ));
+                self.canvas_mouse_drag_middle_gesture
+                    .connect_drag_end(clone!(
+                        #[weak(rename_to=canvaswrapper)]
+                        obj,
+                        move |_, _, _| {
+                            let widget_flags = canvaswrapper
+                                .canvas()
+                                .engine_mut()
+                                .update_rendering_current_viewport();
+                            canvaswrapper
+                                .canvas()
+                                .emit_handle_widget_flags(widget_flags);
+                        }
+                    ));
             }
 
             // Canvas gesture zooming with dragging
@@ -421,12 +480,19 @@ mod imp {
                 let offset_begin = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
                 self.canvas_zoom_gesture.connect_begin(clone!(
-                    @strong zoom_begin,
-                    @strong new_zoom,
-                    @strong prev_scale,
-                    @strong bbcenter_begin,
-                    @strong offset_begin,
-                    @weak obj as canvaswrapper => move |gesture, _| {
+                    #[strong]
+                    zoom_begin,
+                    #[strong]
+                    new_zoom,
+                    #[strong]
+                    prev_scale,
+                    #[strong]
+                    bbcenter_begin,
+                    #[strong]
+                    offset_begin,
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |gesture, _| {
                         gesture.set_state(EventSequenceState::Claimed);
                         let current_zoom = canvaswrapper.canvas().engine_ref().camera.total_zoom();
 
@@ -434,59 +500,92 @@ mod imp {
                         new_zoom.set(current_zoom);
                         prev_scale.set(1.0);
 
-                        bbcenter_begin.set(gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]));
+                        bbcenter_begin.set(
+                            gesture
+                                .bounding_box_center()
+                                .map(|coords| na::vector![coords.0, coords.1]),
+                        );
                         offset_begin.set(canvaswrapper.canvas().engine_ref().camera.offset());
-                    })
-                );
+                    }
+                ));
 
                 self.canvas_zoom_gesture.connect_scale_changed(clone!(
-                    @strong zoom_begin,
-                    @strong new_zoom,
-                    @strong prev_scale,
-                    @strong bbcenter_begin,
-                    @strong offset_begin,
-                    @weak obj as canvaswrapper => move |gesture, scale| {
+                    #[strong]
+                    zoom_begin,
+                    #[strong]
+                    new_zoom,
+                    #[strong]
+                    prev_scale,
+                    #[strong]
+                    bbcenter_begin,
+                    #[strong]
+                    offset_begin,
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |gesture, scale| {
                         let canvas = canvaswrapper.canvas();
 
-                        if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&(zoom_begin.get() * scale)) {
+                        if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX)
+                            .contains(&(zoom_begin.get() * scale))
+                        {
                             new_zoom.set(zoom_begin.get() * scale);
                             prev_scale.set(scale);
                         }
 
                         let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom.get());
 
-                        if let Some(bbcenter_current) = gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]) {
-                            let bbcenter_begin = if let Some(bbcenter_begin) = bbcenter_begin.get() {
+                        if let Some(bbcenter_current) = gesture
+                            .bounding_box_center()
+                            .map(|coords| na::vector![coords.0, coords.1])
+                        {
+                            let bbcenter_begin = if let Some(bbcenter_begin) = bbcenter_begin.get()
+                            {
                                 bbcenter_begin
                             } else {
                                 // Set the center if not set by gesture begin handler
                                 bbcenter_begin.set(Some(bbcenter_current));
                                 bbcenter_current
                             };
-                            let bbcenter_delta = bbcenter_current - bbcenter_begin * prev_scale.get();
+                            let bbcenter_delta =
+                                bbcenter_current - bbcenter_begin * prev_scale.get();
                             let new_offset = offset_begin.get() * prev_scale.get() - bbcenter_delta;
-                            widget_flags |= canvas.engine_mut().camera_set_offset_expand(new_offset);
+                            widget_flags |=
+                                canvas.engine_mut().camera_set_offset_expand(new_offset);
                         }
 
                         canvas.emit_handle_widget_flags(widget_flags);
-                    })
-                );
+                    }
+                ));
 
-                self.canvas_zoom_gesture.connect_end(
-                    clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
+                self.canvas_zoom_gesture.connect_end(clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
-                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
-                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
-                    }),
-                );
+                        let widget_flags = canvaswrapper
+                            .canvas()
+                            .engine_mut()
+                            .update_rendering_current_viewport();
+                        canvaswrapper
+                            .canvas()
+                            .emit_handle_widget_flags(widget_flags);
+                    }
+                ));
 
-                self.canvas_zoom_gesture.connect_cancel(
-                    clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
+                self.canvas_zoom_gesture.connect_cancel(clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
-                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
-                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
-                    }),
-                );
+                        let widget_flags = canvaswrapper
+                            .canvas()
+                            .engine_mut()
+                            .update_rendering_current_viewport();
+                        canvaswrapper
+                            .canvas()
+                            .emit_handle_widget_flags(widget_flags);
+                    }
+                ));
             }
 
             // Pan with alt + drag
@@ -494,8 +593,11 @@ mod imp {
                 let offset_start = Rc::new(Cell::new(na::Vector2::<f64>::zeros()));
 
                 self.canvas_alt_drag_gesture.connect_drag_begin(clone!(
-                    @strong offset_start,
-                    @weak obj as canvaswrapper => move |gesture, _, _| {
+                    #[strong]
+                    offset_start,
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |gesture, _, _| {
                         let modifiers = gesture.current_event_state();
 
                         // At the start BUTTON1_MASK is not included
@@ -505,23 +607,35 @@ mod imp {
                         } else {
                             gesture.set_state(EventSequenceState::Denied);
                         }
-                }));
+                    }
+                ));
 
-                self.canvas_alt_drag_gesture.connect_drag_update(
-                    clone!(@strong offset_start, @weak obj as canvaswrapper => move |_, offset_x, offset_y| {
+                self.canvas_alt_drag_gesture.connect_drag_update(clone!(
+                    #[strong]
+                    offset_start,
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |_, offset_x, offset_y| {
                         let canvas = canvaswrapper.canvas();
                         let new_offset = offset_start.get() - na::vector![offset_x, offset_y];
                         let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
                         canvas.emit_handle_widget_flags(widget_flags);
-                    })
-                );
+                    }
+                ));
 
-                self.canvas_alt_drag_gesture.connect_drag_end(
-                    clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
-                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
-                    }),
-                );
+                self.canvas_alt_drag_gesture.connect_drag_end(clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |_, _, _| {
+                        let widget_flags = canvaswrapper
+                            .canvas()
+                            .engine_mut()
+                            .update_rendering_current_viewport();
+                        canvaswrapper
+                            .canvas()
+                            .emit_handle_widget_flags(widget_flags);
+                    }
+                ));
             }
 
             // Zoom with alt + shift + drag
@@ -529,78 +643,117 @@ mod imp {
                 let zoom_begin = Rc::new(Cell::new(1_f64));
                 let prev_offset = Rc::new(Cell::new(na::Vector2::<f64>::zeros()));
 
-                self
-                .canvas_alt_shift_drag_gesture
-                .connect_drag_begin(clone!(
-                    @strong zoom_begin,
-                    @strong prev_offset,
-                    @weak obj as canvaswrapper => move |gesture, _, _| {
-                        let modifiers = gesture.current_event_state();
+                self.canvas_alt_shift_drag_gesture
+                    .connect_drag_begin(clone!(
+                        #[strong]
+                        zoom_begin,
+                        #[strong]
+                        prev_offset,
+                        #[weak(rename_to=canvaswrapper)]
+                        obj,
+                        move |gesture, _, _| {
+                            let modifiers = gesture.current_event_state();
 
-                        // At the start BUTTON1_MASK is not included
-                        if modifiers == (gdk::ModifierType::SHIFT_MASK | gdk::ModifierType::ALT_MASK) {
-                            gesture.set_state(EventSequenceState::Claimed);
-                            let current_zoom = canvaswrapper.canvas().engine_ref().camera.total_zoom();
-                            zoom_begin.set(current_zoom);
-                            prev_offset.set(na::Vector2::<f64>::zeros());
-                        } else {
-                            gesture.set_state(EventSequenceState::Denied);
+                            // At the start BUTTON1_MASK is not included
+                            if modifiers
+                                == (gdk::ModifierType::SHIFT_MASK | gdk::ModifierType::ALT_MASK)
+                            {
+                                gesture.set_state(EventSequenceState::Claimed);
+                                let current_zoom =
+                                    canvaswrapper.canvas().engine_ref().camera.total_zoom();
+                                zoom_begin.set(current_zoom);
+                                prev_offset.set(na::Vector2::<f64>::zeros());
+                            } else {
+                                gesture.set_state(EventSequenceState::Denied);
+                            }
                         }
-                    })
-                );
+                    ));
 
-                self.canvas_alt_shift_drag_gesture.connect_drag_update(clone!(
-                    @strong zoom_begin,
-                    @strong prev_offset,
-                    @weak obj as canvaswrapper => move |_, offset_x, offset_y| {
-                        let canvas = canvaswrapper.canvas();
-                        let new_offset = na::vector![offset_x, offset_y];
-                        let current_total_zoom = canvaswrapper.canvas().engine_ref().camera.total_zoom();
-                        // drag down zooms out, drag up zooms in
-                        let new_zoom = current_total_zoom
-                            * (1.0 - (new_offset[1] - prev_offset.get()[1]) * Camera::DRAG_ZOOM_MAGN_ZOOM_FACTOR);
+                self.canvas_alt_shift_drag_gesture
+                    .connect_drag_update(clone!(
+                        #[strong]
+                        prev_offset,
+                        #[weak(rename_to=canvaswrapper)]
+                        obj,
+                        move |_, offset_x, offset_y| {
+                            let canvas = canvaswrapper.canvas();
+                            let new_offset = na::vector![offset_x, offset_y];
+                            let current_total_zoom =
+                                canvaswrapper.canvas().engine_ref().camera.total_zoom();
+                            // drag down zooms out, drag up zooms in
+                            let new_zoom = current_total_zoom
+                                * (1.0
+                                    - (new_offset[1] - prev_offset.get()[1])
+                                        * Camera::DRAG_ZOOM_MAGN_ZOOM_FACTOR);
 
-                        if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
-                            let viewport_center = canvas.engine_ref().camera.viewport_center();
+                            if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
+                                let viewport_center = canvas.engine_ref().camera.viewport_center();
 
-                            let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-                            widget_flags |= canvas.engine_mut().camera.set_viewport_center(viewport_center);
-                            widget_flags |= canvas.engine_mut().doc_expand_autoexpand();
-                            canvas.emit_handle_widget_flags(widget_flags);
+                                let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
+                                widget_flags |= canvas
+                                    .engine_mut()
+                                    .camera
+                                    .set_viewport_center(viewport_center);
+                                widget_flags |= canvas.engine_mut().doc_expand_autoexpand();
+                                canvas.emit_handle_widget_flags(widget_flags);
+                            }
+
+                            prev_offset.set(new_offset);
                         }
+                    ));
 
-                        prev_offset.set(new_offset);
-                    })
-                );
-
-                self.canvas_alt_shift_drag_gesture.connect_drag_end(
-                    clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        let widget_flags = canvaswrapper.canvas().engine_mut().update_rendering_current_viewport();
-                        canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
-                    }),
-                );
+                self.canvas_alt_shift_drag_gesture.connect_drag_end(clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |_, _, _| {
+                        let widget_flags = canvaswrapper
+                            .canvas()
+                            .engine_mut()
+                            .update_rendering_current_viewport();
+                        canvaswrapper
+                            .canvas()
+                            .emit_handle_widget_flags(widget_flags);
+                    }
+                ));
             }
 
             {
                 // Shortcut with touch two-finger long-press.
-                self.touch_two_finger_long_press_gesture.connect_pressed(clone!(@weak obj as canvaswrapper => move |_gesture, _, _| {
-                    let (_, widget_flags) = canvaswrapper.canvas()
-                        .engine_mut()
-                        .handle_pressed_shortcut_key(ShortcutKey::TouchTwoFingerLongPress, Instant::now());
-                    canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
-                }));
+                self.touch_two_finger_long_press_gesture
+                    .connect_pressed(clone!(
+                        #[weak(rename_to=canvaswrapper)]
+                        obj,
+                        move |_gesture, _, _| {
+                            let (_, widget_flags) = canvaswrapper
+                                .canvas()
+                                .engine_mut()
+                                .handle_pressed_shortcut_key(
+                                    ShortcutKey::TouchTwoFingerLongPress,
+                                    Instant::now(),
+                                );
+                            canvaswrapper
+                                .canvas()
+                                .emit_handle_widget_flags(widget_flags);
+                        }
+                    ));
             }
 
             {
                 // Context menu
-                self.touch_long_press_gesture.connect_pressed(
-                    clone!(@weak obj as canvaswrapper => move |_gesture, x, y| {
+                self.touch_long_press_gesture.connect_pressed(clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |_gesture, x, y| {
                         let popover = canvaswrapper.contextmenu().popover();
-                        canvaswrapper.imp().last_contextmenu_pos.set(Some(na::vector![x, y]));
-                        popover.set_pointing_to(Some(&gdk::Rectangle::new(x as i32, y as i32, 4, 4)));
+                        canvaswrapper
+                            .imp()
+                            .last_contextmenu_pos
+                            .set(Some(na::vector![x, y]));
+                        popover
+                            .set_pointing_to(Some(&gdk::Rectangle::new(x as i32, y as i32, 4, 4)));
                         popover.popup();
-                    }),
-                );
+                    }
+                ));
             }
         }
     }

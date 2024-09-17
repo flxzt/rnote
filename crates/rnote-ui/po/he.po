@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-09-16 18:29+0000\n"
-"Last-Translator: Yosef Or Boczko <yoseforb@gnome.org>\n"
+"PO-Revision-Date: 2024-09-17 10:12+0000\n"
+"Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
@@ -164,7 +164,7 @@ msgstr "מסמכים לא שמורים"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:59
 msgid "Discard All"
-msgstr "השלכת הכל"
+msgstr "השלכה של הכול"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:65
 msgid "Edit Workspace"
@@ -819,9 +819,8 @@ msgid "Choose a fill style"
 msgstr "בחירת סגנון מילוי"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:202
-#, fuzzy
 msgid "Hachure"
-msgstr "קוקוו"
+msgstr "קווקוו"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:203
 msgid "Zig-Zag"
@@ -934,15 +933,15 @@ msgstr "מילוי"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:60
 msgid "Move Selected Workspace Up"
-msgstr "העברת סביבת העבודה הנבחרת מעלה"
+msgstr "העלאת סביבת העבודה הנבחרת מעלה"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:69
 msgid "Move Selected Workspace Down"
-msgstr "העברת סביבת העבודה הנבחרת מטה"
+msgstr "הורדת סביבת העבודה הנבחרת מטה"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:80
 msgid "Add Workspace"
-msgstr "הוספת מרחב עבודה"
+msgstr "הוספת סביבת עבודה"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:89
 msgid "Remove Selected Workspace"
@@ -958,7 +957,7 @@ msgstr "_ערכת צבעים"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _System Colors"
-msgstr "שימוש בצבעי _מערכת"
+msgstr "שימוש בצבעי מ_ערכת"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:31
 msgid "Use _Light Colors"
@@ -1220,7 +1219,7 @@ msgstr "שמירת מסמך"
 
 #: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
-msgstr "העברת ל_ימין"
+msgstr "העברה ל_ימין"
 
 #: crates/rnote-ui/data/ui/overlays.ui:102
 msgid "Move _Right"
@@ -1433,7 +1432,7 @@ msgstr "אנכית רציפה"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:263
 msgid "Semi Infinite"
-msgstr "דמוית אינסוף"
+msgstr "דמויית אינסוף"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:264
 msgid "Infinite"

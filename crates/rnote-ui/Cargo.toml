@@ -58,7 +58,10 @@ url = { workspace = true }
 
 [build-dependencies]
 anyhow = { workspace = true }
-glib-build-tools = { workspace = true }
+glib-build-tools = { workspace = true, optional = true }
+
+[features]
+use_glib_build_tools = ["glib-build-tools"]
 
 [target.'cfg(windows)'.build-dependencies]
 winresource = { workspace = true }

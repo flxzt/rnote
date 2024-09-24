@@ -52,8 +52,13 @@ impl EraserConfig {
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
     pub const WIDTH_DEFAULT: f64 = 12.0;
+    pub const SPEED_SCALING: f64 = 0.001;
 
-    pub(crate) fn eraser_bounds(&self, element: Element) -> Aabb {
-        Aabb::from_half_extents(element.pos.into(), na::Vector2::repeat(self.width * 0.5))
+    pub(crate) fn eraser_bounds(&self, element: Element, speed: f64) -> Aabb {
+        let speed_scale = 1.0 + speed * Self::SPEED_SCALING;
+        Aabb::from_half_extents(
+            element.pos.into(),
+            na::Vector2::repeat(self.width * speed_scale * 0.5),
+        )
     }
 }

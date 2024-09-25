@@ -24,7 +24,6 @@ pub(crate) fn trash(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::Simple
                     dialogs::dialog_trash_file(&appwindow, &current_file).await;
                 }
             ));
-            filerow.set_current_file(None);
         }
     ));
     action

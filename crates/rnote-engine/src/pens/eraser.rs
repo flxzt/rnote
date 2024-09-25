@@ -28,13 +28,16 @@ pub struct EraserMotion {
 }
 
 impl EraserMotion {
+    pub const SMOOTHING_FACTOR: f64 = 3.0;
+
     fn update(&mut self, element: Element) {
         if let Some(last_element) = self.last_element {
             if let Some(last_element_time) = self.last_element_time {
                 let delta = element.pos - last_element.pos;
                 let delta_time = Instant::now() - last_element_time;
                 let new_speed = delta.norm() / delta_time.as_secs_f64();
-                self.speed = (self.speed * 3.0 + new_speed) / 4.0;
+                self.speed = (self.speed * Self::SMOOTHING_FACTOR + new_speed)
+                    / (Self::SMOOTHING_FACTOR + 1.0);
             }
         }
         self.last_element = Some(element);

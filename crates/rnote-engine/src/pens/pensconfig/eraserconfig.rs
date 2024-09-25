@@ -37,6 +37,8 @@ pub struct EraserConfig {
     pub width: f64,
     #[serde(rename = "style")]
     pub style: EraserStyle,
+    #[serde(rename = "speed_scale")]
+    pub speed_scaling: bool,
 }
 
 impl Default for EraserConfig {
@@ -44,6 +46,7 @@ impl Default for EraserConfig {
         Self {
             width: Self::WIDTH_DEFAULT,
             style: EraserStyle::default(),
+            speed_scaling: true,
         }
     }
 }
@@ -55,10 +58,14 @@ impl EraserConfig {
     pub const SPEED_SCALING: f64 = 0.001;
 
     pub(crate) fn eraser_bounds(&self, element: Element, speed: f64) -> Aabb {
-        let speed_scale = 1.0 + speed * Self::SPEED_SCALING;
-        Aabb::from_half_extents(
-            element.pos.into(),
-            na::Vector2::repeat(self.width * speed_scale * 0.5),
-        )
+        if self.speed_scaling {
+            let speed_scale = 1.0 + speed * Self::SPEED_SCALING;
+            Aabb::from_half_extents(
+                element.pos.into(),
+                na::Vector2::repeat(self.width * speed_scale * 0.5),
+            )
+        } else {
+            Aabb::from_half_extents(element.pos.into(), na::Vector2::repeat(self.width * 0.5))
+        }
     }
 }

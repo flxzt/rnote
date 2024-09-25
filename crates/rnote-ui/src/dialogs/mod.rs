@@ -586,6 +586,34 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     dialog.present(appwindow.root().as_ref());
 }
 
+pub(crate) async fn dialog_trash_file(appwindow: &RnAppWindow, current_file: &gio::File) -> () {
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
+    );
+    let dialog: adw::AlertDialog = builder.object("dialog_trash_file").unwrap();
+
+    match dialog.choose_future(appwindow).await.as_str() {
+        "trash" => {
+            glib::spawn_future_local(clone!(@weak appwindow, @strong current_file => async move {
+                current_file.trash_async(
+                    glib::source::Priority::DEFAULT,
+                    None::<&gio::Cancellable>,
+                    clone!(@weak appwindow, @strong current_file => move |res| {
+                        if let Err(e) = res {
+                            appwindow.overlays().dispatch_toast_error(&gettext("Trashing file failed"));
+                            error!("Trash filerow file `{current_file:?}` failed , Err: {e:?}");
+                            return;
+                        }
+                    }),
+                );
+            }));
+        }
+        _ => {
+            // Cancel
+        }
+    }
+}
+
 const WORKSPACELISTENTRY_ICONS_LIST: &[&str] = &[
     "workspacelistentryicon-bandaid-symbolic",
     "workspacelistentryicon-bank-symbolic",

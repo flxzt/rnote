@@ -43,12 +43,12 @@ pacman -S mingw-w64-clang-aarch64-rust
 
 ### Configuration
 
-Add the following line to the end of the `C:\msys64\home\ZhouZhiwu\.bashrc` file to add the Rust binary directory to MSYS2's `PATH`:
+Add the following line to the end of the `C:\msys64\home\<user>\.bashrc` file to add the Rust binary directory to MSYS2's `PATH`:
 
 ```
 export PATH=$PATH:/c/msys64/clangarm64/bin
 ```
-If you have installed Inno Setup, add the following line to the end of the `C:\msys64\home\ZhouZhiwu\.bashrc` file:
+If you have installed Inno Setup, add the following line to the end of the `C:\msys64\home\<user>\.bashrc` file:
 
 ```
 export PATH=$PATH:/c/msys64/clangarm64/bin:/c/Program\ Files\ \(x86\)/Inno\ Setup\ 6

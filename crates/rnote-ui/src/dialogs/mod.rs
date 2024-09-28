@@ -586,7 +586,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     dialog.present(appwindow.root().as_ref());
 }
 
-pub(crate) async fn dialog_trash_file(appwindow: &RnAppWindow, current_file: &gio::File) -> () {
+pub(crate) async fn dialog_trash_file(appwindow: &RnAppWindow, current_file: &gio::File) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );

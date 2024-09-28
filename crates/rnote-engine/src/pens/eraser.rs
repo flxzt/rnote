@@ -22,8 +22,7 @@ pub enum EraserState {
 
 #[derive(Debug, Default, Clone, Copy)]
 pub struct EraserMotion {
-    last_element: Option<Element>,
-    last_element_time: Option<Instant>,
+    last_element: Option<(Element, Instant)>,
     pub speed: f64,
 }
 
@@ -31,22 +30,18 @@ impl EraserMotion {
     pub const SMOOTHING_FACTOR: f64 = 3.0;
 
     fn update(&mut self, element: Element) {
-        if let Some(last_element) = self.last_element {
-            if let Some(last_element_time) = self.last_element_time {
-                let delta = element.pos - last_element.pos;
-                let delta_time = Instant::now() - last_element_time;
-                let new_speed = delta.norm() / delta_time.as_secs_f64();
-                self.speed = (self.speed * Self::SMOOTHING_FACTOR + new_speed)
-                    / (Self::SMOOTHING_FACTOR + 1.0);
-            }
+        if let Some((last_element, last_element_time)) = self.last_element {
+            let delta = element.pos - last_element.pos;
+            let delta_time = Instant::now() - last_element_time;
+            let new_speed = delta.norm() / delta_time.as_secs_f64();
+            self.speed =
+                (self.speed * Self::SMOOTHING_FACTOR + new_speed) / (Self::SMOOTHING_FACTOR + 1.0);
         }
-        self.last_element = Some(element);
-        self.last_element_time = Some(Instant::now());
+        self.last_element = Some((element, Instant::now()));
     }
 
     fn reset(&mut self) {
         self.last_element = None;
-        self.last_element_time = None;
         self.speed = 0.0;
     }
 }

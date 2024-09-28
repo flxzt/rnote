@@ -84,7 +84,10 @@ usvg = "0.43.0"
 winresource = "0.1.17"
 xmlwriter = "0.1.0"
 # Enabling feature > v20_9 causes linker errors on mingw
-poppler-rs = { version = "0.24.1", features = ["v20_9"] }
+# using a custom patched version to work on windows
+# as long as https://gitlab.gnome.org/World/Rust/poppler-rs/-/issues/1
+# is not fixed
+poppler-rs = { git = "https://github.com/Doublonmousse/poppler-patch", features = ["v20_9"] }
 
 [patch.crates-io]
 # once a new piet (current v0.6.2) is released with updated cairo and kurbo deps, this can be removed.

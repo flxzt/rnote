@@ -2935,8 +2935,7 @@ dependencies = [
 [[package]]
 name = "poppler-rs"
 version = "0.24.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "45b1f21ffe55c78cbe3b301950cf15a143c8ff2a0f05a2b9e8e9c80605347206"
+source = "git+https://github.com/Doublonmousse/poppler-patch#4df44c415267f06e218af43ae471ce871cf43dba"
 dependencies = [
  "cairo-rs",
  "gio",

@@ -176,53 +176,78 @@ impl RnAppWindow {
         self.add_action(&action_drawing_pad_pressed_button_3);
 
         // Open settings
-        action_open_settings.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            appwindow.sidebar().sidebar_stack().set_visible_child_name("settings_page");
-            appwindow.split_view().set_show_sidebar(true);
-        }));
+        action_open_settings.connect_activate(clone!(
+            #[weak(rename_to = appwindow)]
+            self,
+            move |_, _| {
+                appwindow
+                    .sidebar()
+                    .sidebar_stack()
+                    .set_visible_child_name("settings_page");
+                appwindow.split_view().set_show_sidebar(true);
+            }
+        ));
 
         // About Dialog
-        action_about.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::dialog_about(&appwindow);
-        }));
+        action_about.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                dialogs::dialog_about(&appwindow);
+            }
+        ));
 
         // Donate
-        action_donate.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            UriLauncher::new(config::APP_DONATE_URL).launch(None::<&Window>, gio::Cancellable::NONE, |res| {
-                if let Err(e) = res {
-                    error!("Launching donate URL failed, Err: {e:?}");
-                }
-            })
+        action_donate.connect_activate(clone!(move |_, _| {
+            UriLauncher::new(config::APP_DONATE_URL).launch(
+                None::<&Window>,
+                gio::Cancellable::NONE,
+                |res| {
+                    if let Err(e) = res {
+                        error!("Launching donate URL failed, Err: {e:?}");
+                    }
+                },
+            )
         }));
 
         // Keyboard shortcuts
-        action_keyboard_shortcuts_dialog.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
+        action_keyboard_shortcuts_dialog.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
                 dialogs::dialog_keyboard_shortcuts(&appwindow);
-            }),
-        );
+            }
+        ));
 
         // Open Canvas Menu
-        action_open_canvasmenu.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            if appwindow.split_view().shows_sidebar() && appwindow.split_view().is_collapsed() {
-                appwindow.split_view().set_show_sidebar(false);
+        action_open_canvasmenu.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                if appwindow.split_view().shows_sidebar() && appwindow.split_view().is_collapsed() {
+                    appwindow.split_view().set_show_sidebar(false);
+                }
+                appwindow.main_header().canvasmenu().popovermenu().popup();
             }
-            appwindow.main_header().canvasmenu().popovermenu().popup();
-        }));
+        ));
 
         // Open App Menu
-        action_open_appmenu.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            if !appwindow.split_view().shows_sidebar() {
-                appwindow.main_header().appmenu().popovermenu().popup();
-                return
+        action_open_appmenu.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                if !appwindow.split_view().shows_sidebar() {
+                    appwindow.main_header().appmenu().popovermenu().popup();
+                    return;
+                }
+                if appwindow.split_view().is_collapsed() {
+                    appwindow.split_view().set_show_sidebar(false);
+                    appwindow.main_header().appmenu().popovermenu().popup();
+                } else {
+                    appwindow.sidebar().appmenu().popovermenu().popup();
+                }
             }
-            if appwindow.split_view().is_collapsed() {
-                appwindow.split_view().set_show_sidebar(false);
-                appwindow.main_header().appmenu().popovermenu().popup();
-            } else {
-                appwindow.sidebar().appmenu().popovermenu().popup();
-            }
-        }));
+        ));
 
         // Toggle Tabs Overview
         action_toggle_overview.connect_activate(clone!(@weak self as appwindow => move |_,_| {
@@ -231,8 +256,12 @@ impl RnAppWindow {
         }));
 
         // Developer mode
-        action_devel_mode.connect_activate(
-            clone!(@weak self as appwindow, @weak action_devel_menu, @weak action_visual_debug => move |action, _| {
+        action_devel_mode.connect_activate(clone!(
+            #[weak]
+            action_devel_menu,
+            #[weak]
+            action_visual_debug,
+            move |action, _| {
                 let state = action.state().unwrap().get::<bool>().unwrap();
 
                 // Enable the devel menu action to reveal it in the app menu
@@ -244,8 +273,8 @@ impl RnAppWindow {
                     action_visual_debug.change_state(&false.to_variant());
                 }
                 action.change_state(&(!state).to_variant());
-            }),
-        );
+            }
+        ));
 
         // Developer settings
         // Its enabled state toggles the visibility of the developer settings menu entry.
@@ -253,83 +282,128 @@ impl RnAppWindow {
         action_devel_menu.set_enabled(false);
 
         // Visual debugging
-        action_visual_debug.connect_change_state(
-            clone!(@weak self as appwindow => move |action, state_request| {
+        action_visual_debug.connect_change_state(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |action, state_request| {
                 let visual_debug = state_request.unwrap().get::<bool>().unwrap();
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().set_visual_debug(visual_debug);
                 appwindow.handle_widget_flags(widget_flags, &canvas);
                 action.set_state(&visual_debug.to_variant());
-            }),
-        );
+            }
+        ));
 
         // Create page
-        action_new_tab.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            let wrapper = appwindow.new_canvas_wrapper();
-            appwindow.append_wrapper_new_tab(&wrapper);
-        }));
+        action_new_tab.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let wrapper = appwindow.new_canvas_wrapper();
+                appwindow.append_wrapper_new_tab(&wrapper);
+            }
+        ));
 
         // Export engine state
-        action_debug_export_engine_state.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
-                glib::spawn_future_local(clone!(@weak appwindow => async move {
-                    dialogs::export::filechooser_export_engine_state(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
-                }));
-            }),
-        );
+        action_debug_export_engine_state.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    appwindow,
+                    async move {
+                        dialogs::export::filechooser_export_engine_state(
+                            &appwindow,
+                            &appwindow.active_tab_wrapper().canvas(),
+                        )
+                        .await;
+                    }
+                ));
+            }
+        ));
 
         // Export engine config
-        action_debug_export_engine_config.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
-                glib::spawn_future_local(clone!(@weak appwindow => async move {
-                    dialogs::export::filechooser_export_engine_config(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
-                }));
-            }),
-        );
+        action_debug_export_engine_config.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    appwindow,
+                    async move {
+                        dialogs::export::filechooser_export_engine_config(
+                            &appwindow,
+                            &appwindow.active_tab_wrapper().canvas(),
+                        )
+                        .await;
+                    }
+                ));
+            }
+        ));
 
         // Pen sounds
-        action_pen_sounds.connect_change_state(
-            clone!(@weak self as appwindow => move |action, state_request| {
+        action_pen_sounds.connect_change_state(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |action, state_request| {
                 let pen_sounds = state_request.unwrap().get::<bool>().unwrap();
-                appwindow.active_tab_wrapper().canvas().engine_mut().set_pen_sounds(pen_sounds, crate::env::pkg_data_dir().ok());
+                appwindow
+                    .active_tab_wrapper()
+                    .canvas()
+                    .engine_mut()
+                    .set_pen_sounds(pen_sounds, crate::env::pkg_data_dir().ok());
                 action.set_state(&pen_sounds.to_variant());
-            }),
-        );
+            }
+        ));
 
         // Snap positions
-        action_snap_positions.connect_change_state(
-            clone!(@weak self as appwindow => move |action, state_request| {
+        action_snap_positions.connect_change_state(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |action, state_request| {
                 let snap_positions = state_request.unwrap().get::<bool>().unwrap();
-                appwindow.active_tab_wrapper().canvas().engine_mut().document.snap_positions = snap_positions;
+                appwindow
+                    .active_tab_wrapper()
+                    .canvas()
+                    .engine_mut()
+                    .document
+                    .snap_positions = snap_positions;
                 action.set_state(&snap_positions.to_variant());
-            }),
-        );
+            }
+        ));
 
         // Show format borders
-        action_show_format_borders.connect_change_state(
-            clone!(@weak self as appwindow => move |action, state_request| {
+        action_show_format_borders.connect_change_state(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |action, state_request| {
                 let show_format_borders = state_request.unwrap().get::<bool>().unwrap();
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 canvas.engine_mut().document.format.show_borders = show_format_borders;
                 canvas.queue_draw();
                 action.set_state(&show_format_borders.to_variant());
-            }),
-        );
+            }
+        ));
 
         // Show origin indicator
-        action_show_origin_indicator.connect_change_state(
-            clone!(@weak self as appwindow => move |action, state_request| {
+        action_show_origin_indicator.connect_change_state(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |action, state_request| {
                 let show_origin_indicator = state_request.unwrap().get::<bool>().unwrap();
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 canvas.engine_mut().document.format.show_origin_indicator = show_origin_indicator;
                 canvas.queue_draw();
                 action.set_state(&show_origin_indicator.to_variant());
-            }),
-        );
+            }
+        ));
 
         // Pen style
-        action_pen_style.connect_activate(
-            clone!(@weak self as appwindow => move |action, target| {
+        action_pen_style.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |action, target| {
                 let pen_style_str = target.unwrap().str().unwrap();
                 let pen_style = match PenStyle::from_str(pen_style_str) {
                     Ok(s) => s,
@@ -349,337 +423,545 @@ impl RnAppWindow {
                 }
 
                 action.set_state(&pen_style_str.to_variant());
-            }),
-        );
+            }
+        ));
 
         // Tab actions
-        action_active_tab_move_left.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
+        action_active_tab_move_left.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
                 let active_tab_page = appwindow.active_tab_page();
-                appwindow.overlays().tabview().reorder_backward(&active_tab_page);
-            }),
-        );
-        action_active_tab_move_right.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
+                appwindow
+                    .overlays()
+                    .tabview()
+                    .reorder_backward(&active_tab_page);
+            }
+        ));
+        action_active_tab_move_right.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
                 let active_tab_page = appwindow.active_tab_page();
-                appwindow.overlays().tabview().reorder_forward(&active_tab_page);
-            }),
-        );
-        action_active_tab_close.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            let active_tab_page = appwindow.active_tab_page();
-            appwindow.close_tab_request(&active_tab_page);
-        }));
+                appwindow
+                    .overlays()
+                    .tabview()
+                    .reorder_forward(&active_tab_page);
+            }
+        ));
+        action_active_tab_close.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let active_tab_page = appwindow.active_tab_page();
+                appwindow.close_tab_request(&active_tab_page);
+            }
+        ));
 
         // Drawing pad buttons
-        action_drawing_pad_pressed_button_0.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
+        action_drawing_pad_pressed_button_0.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
                 debug!("Pressed drawing pad button 0");
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let (_, widget_flags) = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton0, Instant::now());
+                let (_, widget_flags) = canvas
+                    .engine_mut()
+                    .handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton0, Instant::now());
                 appwindow.handle_widget_flags(widget_flags, &canvas);
-            }),
-        );
+            }
+        ));
 
-        action_drawing_pad_pressed_button_1.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
+        action_drawing_pad_pressed_button_1.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
                 debug!("Pressed drawing pad button 1");
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let (_, widget_flags) = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton1, Instant::now());
+                let (_, widget_flags) = canvas
+                    .engine_mut()
+                    .handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton1, Instant::now());
                 appwindow.handle_widget_flags(widget_flags, &canvas);
-            }),
-        );
+            }
+        ));
 
-        action_drawing_pad_pressed_button_2.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
+        action_drawing_pad_pressed_button_2.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
                 debug!("Pressed drawing pad button 2");
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let (_, widget_flags) = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton2, Instant::now());
+                let (_, widget_flags) = canvas
+                    .engine_mut()
+                    .handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton2, Instant::now());
                 appwindow.handle_widget_flags(widget_flags, &canvas);
-            }),
-        );
+            }
+        ));
 
-        action_drawing_pad_pressed_button_3.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
+        action_drawing_pad_pressed_button_3.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
                 debug!("Pressed drawing pad button 3");
                 let canvas = appwindow.active_tab_wrapper().canvas();
-                let (_, widget_flags) = canvas.engine_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton3, Instant::now());
+                let (_, widget_flags) = canvas
+                    .engine_mut()
+                    .handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton3, Instant::now());
                 appwindow.handle_widget_flags(widget_flags, &canvas);
-            }),
-        );
+            }
+        ));
 
         // Trash Selection
-        action_selection_trash.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            let canvas = appwindow.active_tab_wrapper().canvas();
-            let widget_flags = canvas.engine_mut().trash_selection();
-            appwindow.handle_widget_flags(widget_flags, &canvas);
-        }));
+        action_selection_trash.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let canvas = appwindow.active_tab_wrapper().canvas();
+                let widget_flags = canvas.engine_mut().trash_selection();
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }
+        ));
 
         // Duplicate Selection
-        action_selection_duplicate.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
+        action_selection_duplicate.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().duplicate_selection();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
-            }),
-        );
+            }
+        ));
 
         // invert color brightness of selection
-        action_selection_invert_color.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
+        action_selection_invert_color.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().invert_selection_colors();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
-            }),
-        );
+            }
+        ));
 
         // select all strokes
-        action_selection_select_all.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
+        action_selection_select_all.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().select_all_strokes();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
-            }),
-        );
+            }
+        ));
 
         // deselect all strokes
-        action_selection_deselect_all.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
+        action_selection_deselect_all.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().deselect_all_strokes();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
-            }),
-        );
+            }
+        ));
 
         // Clear doc
-        action_clear_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::spawn_future_local(clone!(@weak appwindow => async move {
-                dialogs::dialog_clear_doc(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
-            }));
-        }));
+        action_clear_doc.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    appwindow,
+                    async move {
+                        dialogs::dialog_clear_doc(
+                            &appwindow,
+                            &appwindow.active_tab_wrapper().canvas(),
+                        )
+                        .await;
+                    }
+                ));
+            }
+        ));
 
         // Undo stroke
-        action_undo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let canvas = appwindow.active_tab_wrapper().canvas();
-            let widget_flags = canvas.engine_mut().undo(Instant::now());
-            appwindow.handle_widget_flags(widget_flags, &canvas);
-        }));
+        action_undo_stroke.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let canvas = appwindow.active_tab_wrapper().canvas();
+                let widget_flags = canvas.engine_mut().undo(Instant::now());
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }
+        ));
 
         // Redo stroke
-        action_redo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let canvas = appwindow.active_tab_wrapper().canvas();
-            let widget_flags = canvas.engine_mut().redo(Instant::now());
-            appwindow.handle_widget_flags(widget_flags, &canvas);
-        }));
+        action_redo_stroke.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let canvas = appwindow.active_tab_wrapper().canvas();
+                let widget_flags = canvas.engine_mut().redo(Instant::now());
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }
+        ));
 
         // Zoom reset
-        action_zoom_reset.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let canvas = appwindow.active_tab_wrapper().canvas();
-            let viewport_center = canvas.engine_ref().camera.viewport_center();
-            let new_zoom = Camera::ZOOM_DEFAULT;
-            let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-            widget_flags |= canvas.engine_mut().camera.set_viewport_center(viewport_center);
-            appwindow.handle_widget_flags(widget_flags, &canvas)
-        }));
+        action_zoom_reset.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let canvas = appwindow.active_tab_wrapper().canvas();
+                let viewport_center = canvas.engine_ref().camera.viewport_center();
+                let new_zoom = Camera::ZOOM_DEFAULT;
+                let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
+                widget_flags |= canvas
+                    .engine_mut()
+                    .camera
+                    .set_viewport_center(viewport_center);
+                appwindow.handle_widget_flags(widget_flags, &canvas)
+            }
+        ));
 
         // Zoom fit to width
-        action_zoom_fit_width.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let canvaswrapper = appwindow.active_tab_wrapper();
-            let canvas = canvaswrapper.canvas();
-            let viewport_center = canvas.engine_ref().camera.viewport_center();
-            let new_zoom = f64::from(canvaswrapper.scroller().width())
-                / (canvaswrapper.canvas().engine_ref().document.format.width() + 2.0 * Camera::OVERSHOOT_HORIZONTAL);
-            let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-            widget_flags |= canvas.engine_mut().camera.set_viewport_center(viewport_center);
-            appwindow.handle_widget_flags(widget_flags, &canvas)
-        }));
+        action_zoom_fit_width.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let canvaswrapper = appwindow.active_tab_wrapper();
+                let canvas = canvaswrapper.canvas();
+                let viewport_center = canvas.engine_ref().camera.viewport_center();
+                let new_zoom = f64::from(canvaswrapper.scroller().width())
+                    / (canvaswrapper.canvas().engine_ref().document.format.width()
+                        + 2.0 * Camera::OVERSHOOT_HORIZONTAL);
+                let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
+                widget_flags |= canvas
+                    .engine_mut()
+                    .camera
+                    .set_viewport_center(viewport_center);
+                appwindow.handle_widget_flags(widget_flags, &canvas)
+            }
+        ));
 
         // Zoom in
-        action_zoomin.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let canvas = appwindow.active_tab_wrapper().canvas();
-            let viewport_center = canvas.engine_ref().camera.viewport_center();
-            let new_zoom = canvas.engine_ref().camera.total_zoom() * (1.0 + RnCanvas::ZOOM_SCROLL_STEP);
-            let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-            widget_flags |= canvas.engine_mut().camera.set_viewport_center(viewport_center);
-            appwindow.handle_widget_flags(widget_flags, &canvas)
-        }));
+        action_zoomin.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let canvas = appwindow.active_tab_wrapper().canvas();
+                let viewport_center = canvas.engine_ref().camera.viewport_center();
+                let new_zoom =
+                    canvas.engine_ref().camera.total_zoom() * (1.0 + RnCanvas::ZOOM_SCROLL_STEP);
+                let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
+                widget_flags |= canvas
+                    .engine_mut()
+                    .camera
+                    .set_viewport_center(viewport_center);
+                appwindow.handle_widget_flags(widget_flags, &canvas)
+            }
+        ));
 
         // Zoom out
-        action_zoomout.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let canvas = appwindow.active_tab_wrapper().canvas();
-            let viewport_center = canvas.engine_ref().camera.viewport_center();
-            let new_zoom = canvas.engine_ref().camera.total_zoom() * (1.0 - RnCanvas::ZOOM_SCROLL_STEP);
-            let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-            widget_flags |= canvas.engine_mut().camera.set_viewport_center(viewport_center);
-            appwindow.handle_widget_flags(widget_flags, &canvas)
-        }));
+        action_zoomout.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let canvas = appwindow.active_tab_wrapper().canvas();
+                let viewport_center = canvas.engine_ref().camera.viewport_center();
+                let new_zoom =
+                    canvas.engine_ref().camera.total_zoom() * (1.0 - RnCanvas::ZOOM_SCROLL_STEP);
+                let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
+                widget_flags |= canvas
+                    .engine_mut()
+                    .camera
+                    .set_viewport_center(viewport_center);
+                appwindow.handle_widget_flags(widget_flags, &canvas)
+            }
+        ));
 
         // Add page to doc in fixed size mode
-        action_add_page_to_doc.connect_activate(
-            clone!(@weak self as appwindow => move |_action_add_page_to_doc, _| {
+        action_add_page_to_doc.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_action_add_page_to_doc, _| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().doc_add_page_fixed_size();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
-            }),
-        );
+            }
+        ));
 
         // Remove page from doc in fixed size mode
-        action_remove_page_from_doc.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
+        action_remove_page_from_doc.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().doc_remove_page_fixed_size();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
-            }),
-        );
+            }
+        ));
 
         // Resize to fit content
-        action_resize_to_fit_content.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
+        action_resize_to_fit_content.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().doc_resize_to_fit_content();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
-            }),
-        );
+            }
+        ));
 
         // Return to the origin page
-        action_return_origin_page.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let canvas = appwindow.active_tab_wrapper().canvas();
+        action_return_origin_page.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let canvas = appwindow.active_tab_wrapper().canvas();
 
-            let widget_flags = canvas.engine_mut().return_to_origin(canvas.parent().map(|p| p.width() as f64));
-            appwindow.handle_widget_flags(widget_flags, &canvas);
-        }));
+                let widget_flags = canvas
+                    .engine_mut()
+                    .return_to_origin(canvas.parent().map(|p| p.width() as f64));
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }
+        ));
 
         // New doc
-        action_new_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::spawn_future_local(clone!(@weak appwindow => async move {
-                dialogs::dialog_new_doc(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
-            }));
-        }));
+        action_new_doc.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    appwindow,
+                    async move {
+                        dialogs::dialog_new_doc(
+                            &appwindow,
+                            &appwindow.active_tab_wrapper().canvas(),
+                        )
+                        .await;
+                    }
+                ));
+            }
+        ));
 
         // Open doc
-        action_open_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::spawn_future_local(clone!(@weak appwindow => async move {
-                dialogs::import::filedialog_open_doc(&appwindow).await;
-            }));
-        }));
+        action_open_doc.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    appwindow,
+                    async move {
+                        dialogs::import::filedialog_open_doc(&appwindow).await;
+                    }
+                ));
+            }
+        ));
 
         // Save doc
-        action_save_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::spawn_future_local(clone!(@weak appwindow => async move {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+        action_save_doc.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    appwindow,
+                    async move {
+                        let canvas = appwindow.active_tab_wrapper().canvas();
 
-                if let Some(output_file) = canvas.output_file() {
-                    appwindow.overlays().progressbar_start_pulsing();
+                        if let Some(output_file) = canvas.output_file() {
+                            appwindow.overlays().progressbar_start_pulsing();
 
-                    if let Err(e) = canvas.save_document_to_file(&output_file).await {
-                        error!("Saving document failed, Err: `{e:?}`");
-                        canvas.set_output_file(None);
-                        appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
-                        appwindow.overlays().progressbar_abort();
-                    } else {
-                        appwindow.overlays().progressbar_finish();
-                        // No success toast on saving without dialog, success is already indicated in the header title
+                            if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                                error!("Saving document failed, Err: `{e:?}`");
+                                canvas.set_output_file(None);
+                                appwindow
+                                    .overlays()
+                                    .dispatch_toast_error(&gettext("Saving document failed"));
+                                appwindow.overlays().progressbar_abort();
+                            } else {
+                                appwindow.overlays().progressbar_finish();
+                                // No success toast on saving without dialog, success is already indicated in the header title
+                            }
+                        } else {
+                            // Open a dialog to choose a save location
+                            dialogs::export::dialog_save_doc_as(&appwindow, &canvas).await;
+                        }
                     }
-                } else {
-                    // Open a dialog to choose a save location
-                    dialogs::export::dialog_save_doc_as(&appwindow, &canvas).await;
-                }
-            }));
-        }));
+                ));
+            }
+        ));
 
         // Save doc as
-        action_save_doc_as.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::spawn_future_local(clone!(@weak appwindow => async move {
-                dialogs::export::dialog_save_doc_as(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
-            }));
-        }));
+        action_save_doc_as.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    appwindow,
+                    async move {
+                        dialogs::export::dialog_save_doc_as(
+                            &appwindow,
+                            &appwindow.active_tab_wrapper().canvas(),
+                        )
+                        .await;
+                    }
+                ));
+            }
+        ));
 
         // Print doc
-        action_print_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            // TODO: Expose these variables as options in the print dialog
-            let draw_background = true;
-            let draw_pattern = true;
-            let optimize_printing = false;
-            let page_order = SplitOrder::default();
-            let margin = 0.0;
+        action_print_doc.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                // TODO: Expose these variables as options in the print dialog
+                let draw_background = true;
+                let draw_pattern = true;
+                let optimize_printing = false;
+                let page_order = SplitOrder::default();
+                let margin = 0.0;
 
-            let canvas = appwindow.active_tab_wrapper().canvas();
-            let pages_content = canvas.engine_ref().extract_pages_content(page_order);
-            let n_pages = pages_content.len();
+                let canvas = appwindow.active_tab_wrapper().canvas();
+                let pages_content = canvas.engine_ref().extract_pages_content(page_order);
+                let n_pages = pages_content.len();
 
-            appwindow.overlays().progressbar_start_pulsing();
+                appwindow.overlays().progressbar_start_pulsing();
 
-            let print_op = PrintOperation::builder()
-                .unit(Unit::None)
-                .build();
+                let print_op = PrintOperation::builder().unit(Unit::None).build();
 
-            print_op.connect_begin_print(clone!(@weak appwindow => move |print_op, _print_cx| {
-                print_op.set_n_pages(n_pages as i32);
-            }));
+                print_op.connect_begin_print(clone!(move |print_op, _print_cx| {
+                    print_op.set_n_pages(n_pages as i32);
+                }));
 
-            print_op.connect_draw_page(clone!(@weak appwindow, @weak canvas => move |_print_op, print_cx, page_no| {
-                let page_content = &pages_content[page_no as usize];
-                let page_bounds = page_content.bounds.unwrap().loosened(margin);
-                let print_scale = (print_cx.width() / page_bounds.extents()[0]).min(print_cx.height() / page_bounds.extents()[1]);
-                let cairo_cx = print_cx.cairo_context();
+                print_op.connect_draw_page(clone!(move |_print_op, print_cx, page_no| {
+                    let page_content = &pages_content[page_no as usize];
+                    let page_bounds = page_content.bounds.unwrap().loosened(margin);
+                    let print_scale = (print_cx.width() / page_bounds.extents()[0])
+                        .min(print_cx.height() / page_bounds.extents()[1]);
+                    let cairo_cx = print_cx.cairo_context();
 
-                cairo_cx.scale(print_scale, print_scale);
-                cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
-                if let Err(e) = page_content.draw_to_cairo(&cairo_cx, draw_background, draw_pattern, optimize_printing, margin, Engine::STROKE_EXPORT_IMAGE_SCALE) {
-                    error!("Drawing page no: {page_no} while printing failed, Err: {e:?}");
+                    cairo_cx.scale(print_scale, print_scale);
+                    cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
+                    if let Err(e) = page_content.draw_to_cairo(
+                        &cairo_cx,
+                        draw_background,
+                        draw_pattern,
+                        optimize_printing,
+                        margin,
+                        Engine::STROKE_EXPORT_IMAGE_SCALE,
+                    ) {
+                        error!("Drawing page no: {page_no} while printing failed, Err: {e:?}");
+                    }
+                }));
+
+                print_op.connect_status_changed(clone!(move |print_op| {
+                    debug!(
+                        "Print operation status has changed to: {:?}",
+                        print_op.status()
+                    );
+                }));
+
+                // Run the print op
+                if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)) {
+                    error!("Running print operation failed , Err: {e:?}");
+                    appwindow
+                        .overlays()
+                        .dispatch_toast_error(&gettext("Printing document failed"));
+                    appwindow.overlays().progressbar_abort();
+                } else {
+                    appwindow.overlays().progressbar_finish();
                 }
-            }));
-
-            print_op.connect_status_changed(clone!(@weak appwindow => move |print_op| {
-                debug!("Print operation status has changed to: {:?}", print_op.status());
-            }));
-
-            // Run the print op
-            if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
-                error!("Running print operation failed , Err: {e:?}");
-                appwindow.overlays().dispatch_toast_error(&gettext("Printing document failed"));
-                appwindow.overlays().progressbar_abort();
-            } else {
-                appwindow.overlays().progressbar_finish();
             }
-        }));
+        ));
 
         // Import
-        action_import_file.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            glib::spawn_future_local(clone!(@weak appwindow => async move {
-                dialogs::import::filedialog_import_file(&appwindow).await;
-            }));
-        }));
+        action_import_file.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    appwindow,
+                    async move {
+                        dialogs::import::filedialog_import_file(&appwindow).await;
+                    }
+                ));
+            }
+        ));
 
         // Export document
-        action_export_doc.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            glib::spawn_future_local(clone!(@weak appwindow => async move {
-                dialogs::export::dialog_export_doc_w_prefs(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
-            }));
-        }));
+        action_export_doc.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    appwindow,
+                    async move {
+                        dialogs::export::dialog_export_doc_w_prefs(
+                            &appwindow,
+                            &appwindow.active_tab_wrapper().canvas(),
+                        )
+                        .await;
+                    }
+                ));
+            }
+        ));
 
         // Export document pages
-        action_export_doc_pages.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            glib::spawn_future_local(clone!(@weak appwindow => async move {
-                dialogs::export::dialog_export_doc_pages_w_prefs(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
-            }));
-        }));
+        action_export_doc_pages.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    appwindow,
+                    async move {
+                        dialogs::export::dialog_export_doc_pages_w_prefs(
+                            &appwindow,
+                            &appwindow.active_tab_wrapper().canvas(),
+                        )
+                        .await;
+                    }
+                ));
+            }
+        ));
 
         // Export selection
-        action_export_selection.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            glib::spawn_future_local(clone!(@weak appwindow => async move {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+        action_export_selection.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    appwindow,
+                    async move {
+                        let canvas = appwindow.active_tab_wrapper().canvas();
 
-                if !canvas.engine_ref().nothing_selected() {
-                    dialogs::export::dialog_export_selection_w_prefs(&appwindow, &appwindow.active_tab_wrapper().canvas()).await;
-                } else {
-                    appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed, nothing selected"));
-                }
-            }));
-        }));
+                        if !canvas.engine_ref().nothing_selected() {
+                            dialogs::export::dialog_export_selection_w_prefs(
+                                &appwindow,
+                                &appwindow.active_tab_wrapper().canvas(),
+                            )
+                            .await;
+                        } else {
+                            appwindow.overlays().dispatch_toast_error(&gettext(
+                                "Exporting selection failed, nothing selected",
+                            ));
+                        }
+                    }
+                ));
+            }
+        ));
 
         // Clipboard copy
-        action_clipboard_copy.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::spawn_future_local(clone!(@weak appwindow => async move {
+        action_clipboard_copy.connect_activate(clone!(#[weak(rename_to=appwindow)] self, move |_, _| {
+            glib::spawn_future_local(clone!(#[weak] appwindow, async move {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let receiver = canvas.engine_ref().fetch_clipboard_content();
                 let (content, widget_flags) = match receiver.await {
@@ -707,8 +989,8 @@ impl RnAppWindow {
         }));
 
         // Clipboard cut
-        action_clipboard_cut.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::spawn_future_local(clone!(@weak appwindow => async move {
+        action_clipboard_cut.connect_activate(clone!(#[weak(rename_to=appwindow)] self, move |_, _| {
+            glib::spawn_future_local(clone!(#[weak] appwindow, async move {
                 let canvas = appwindow.active_tab_wrapper().canvas();
                 let receiver = canvas.engine_mut().cut_clipboard_content();
                 let (content, widget_flags) = match receiver.await {
@@ -735,12 +1017,18 @@ impl RnAppWindow {
         }));
 
         // Clipboard paste
-        action_clipboard_paste.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            appwindow.clipboard_paste(None);
-        }));
+        action_clipboard_paste.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                appwindow.clipboard_paste(None);
+            }
+        ));
 
-        action_clipboard_paste_contextmenu.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
+        action_clipboard_paste_contextmenu.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
                 let canvas_wrapper = appwindow.active_tab_wrapper();
                 let canvas = canvas_wrapper.canvas();
 
@@ -752,8 +1040,8 @@ impl RnAppWindow {
                 });
 
                 appwindow.clipboard_paste(last_contextmenu_pos);
-            }),
-        );
+            }
+        ));
     }
 
     pub(crate) fn setup_action_accels(&self) {
@@ -802,61 +1090,91 @@ impl RnAppWindow {
 
         // Order matters here, we want to go from specific -> generic, mostly because `text/plain` is contained in other text based formats
         if content_formats.contain_mime_type("text/uri-list") {
-            glib::spawn_future_local(clone!(@weak self as appwindow => async move {
-                debug!("Recognized clipboard content format: files list");
+            glib::spawn_future_local(clone!(
+                #[weak(rename_to=appwindow)]
+                self,
+                async move {
+                    debug!("Recognized clipboard content format: files list");
 
-                match appwindow.clipboard().read_text_future().await {
-                    Ok(Some(text)) => {
-                        let file_paths = text.lines().filter_map(|line| {
-                            let file_path = if let Ok(path_uri) = url::Url::parse(line) {
-                                path_uri.to_file_path().ok()?
-                            } else {
-                                PathBuf::from(&line)
-                            };
+                    match appwindow.clipboard().read_text_future().await {
+                        Ok(Some(text)) => {
+                            let file_paths = text
+                                .lines()
+                                .filter_map(|line| {
+                                    let file_path = if let Ok(path_uri) = url::Url::parse(line) {
+                                        path_uri.to_file_path().ok()?
+                                    } else {
+                                        PathBuf::from(&line)
+                                    };
 
-                            if file_path.exists() {
-                                Some(file_path)
-                            } else {
-                                None
+                                    if file_path.exists() {
+                                        Some(file_path)
+                                    } else {
+                                        None
+                                    }
+                                })
+                                .collect::<Vec<PathBuf>>();
+
+                            for file_path in file_paths {
+                                appwindow
+                                    .open_file_w_dialogs(
+                                        gio::File::for_path(&file_path),
+                                        target_pos,
+                                        true,
+                                    )
+                                    .await;
                             }
-                        }).collect::<Vec<PathBuf>>();
-
-                        for file_path in file_paths {
-                            appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), target_pos, true).await;
                         }
-                    }
-                    Ok(None) => {}
-                    Err(e) => {
-                        error!("Reading clipboard text while pasting clipboard from path failed, Err: {e:?}");
-
+                        Ok(None) => {}
+                        Err(e) => {
+                            error!("Reading clipboard text while pasting clipboard from path failed, Err: {e:?}");
+                        }
                     }
                 }
-            }));
+            ));
         } else if content_formats.contain_mime_type(StrokeContent::MIME_TYPE) {
-            glib::spawn_future_local(clone!(@weak canvas, @weak self as appwindow => async move {
-                debug!("Recognized clipboard content format: {}", StrokeContent::MIME_TYPE);
+            glib::spawn_future_local(clone!(
+                #[weak]
+                canvas,
+                #[weak(rename_to=appwindow)]
+                self,
+                async move {
+                    debug!(
+                        "Recognized clipboard content format: {}",
+                        StrokeContent::MIME_TYPE
+                    );
 
-                match appwindow.clipboard().read_future(&[StrokeContent::MIME_TYPE], glib::source::Priority::DEFAULT).await {
-                    Ok((input_stream, _)) => {
-                        let mut acc = Vec::new();
-                        loop {
-                            match input_stream.read_future(vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE], glib::source::Priority::DEFAULT).await {
-                                Ok((mut bytes, n)) => {
-                                    if n == 0 {
+                    match appwindow
+                        .clipboard()
+                        .read_future(&[StrokeContent::MIME_TYPE], glib::source::Priority::DEFAULT)
+                        .await
+                    {
+                        Ok((input_stream, _)) => {
+                            let mut acc = Vec::new();
+                            loop {
+                                match input_stream
+                                    .read_future(
+                                        vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE],
+                                        glib::source::Priority::DEFAULT,
+                                    )
+                                    .await
+                                {
+                                    Ok((mut bytes, n)) => {
+                                        if n == 0 {
+                                            break;
+                                        }
+                                        acc.append(&mut bytes);
+                                    }
+                                    Err(e) => {
+                                        error!("Failed to read clipboard input stream, Err: {e:?}");
+                                        acc.clear();
                                         break;
                                     }
-                                    acc.append(&mut bytes);
-                                }
-                                Err(e) => {
-                                    error!("Failed to read clipboard input stream, Err: {e:?}");
-                                    acc.clear();
-                                    break;
                                 }
                             }
-                        }
 
-                        if !acc.is_empty() {
-                            match crate::utils::str_from_u8_nul_utf8(&acc) {
+                            if !acc.is_empty() {
+                                match crate::utils::str_from_u8_nul_utf8(&acc) {
                                 Ok(json_string) => {
                                         let resize_argument = ImageSizeOption::ResizeImage(Resize {
                                             width: canvas.engine_ref().document.format.width(),
@@ -872,41 +1190,55 @@ impl RnAppWindow {
                                 }
                                 Err(e) => error!("Failed to read stroke content &str from clipboard data, Err: {e:?}"),
                             }
-                        }
-                    }
-                    Err(e) => {
-                        error!(
-                            "Reading clipboard failed while pasting as `{}`, Err: {e:?}",
-                            StrokeContent::MIME_TYPE
-                        );
-                    }
-                };
-            }));
-        } else if content_formats.contain_mime_type("image/svg+xml") {
-            glib::spawn_future_local(clone!(@weak self as appwindow => async move {
-                debug!("Recognized clipboard content: svg image");
-
-                match appwindow.clipboard().read_future(&["image/svg+xml"], glib::source::Priority::DEFAULT).await {
-                    Ok((input_stream, _)) => {
-                        let mut acc = Vec::new();
-                        loop {
-                            match input_stream.read_future(vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE], glib::source::Priority::DEFAULT).await {
-                                Ok((mut bytes, n)) => {
-                                    if n == 0 {
-                                        break;
-                                    }
-                                    acc.append(&mut bytes);
-                                }
-                                Err(e) => {
-                                    error!("Failed to read clipboard input stream while pasting as Svg, Err: {e:?}");
-                                    acc.clear();
-                                    break;
-                                }
                             }
                         }
+                        Err(e) => {
+                            error!(
+                                "Reading clipboard failed while pasting as `{}`, Err: {e:?}",
+                                StrokeContent::MIME_TYPE
+                            );
+                        }
+                    };
+                }
+            ));
+        } else if content_formats.contain_mime_type("image/svg+xml") {
+            glib::spawn_future_local(clone!(
+                #[weak(rename_to=appwindow)]
+                self,
+                async move {
+                    debug!("Recognized clipboard content: svg image");
 
-                        if !acc.is_empty() {
-                            match crate::utils::str_from_u8_nul_utf8(&acc) {
+                    match appwindow
+                        .clipboard()
+                        .read_future(&["image/svg+xml"], glib::source::Priority::DEFAULT)
+                        .await
+                    {
+                        Ok((input_stream, _)) => {
+                            let mut acc = Vec::new();
+                            loop {
+                                match input_stream
+                                    .read_future(
+                                        vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE],
+                                        glib::source::Priority::DEFAULT,
+                                    )
+                                    .await
+                                {
+                                    Ok((mut bytes, n)) => {
+                                        if n == 0 {
+                                            break;
+                                        }
+                                        acc.append(&mut bytes);
+                                    }
+                                    Err(e) => {
+                                        error!("Failed to read clipboard input stream while pasting as Svg, Err: {e:?}");
+                                        acc.clear();
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if !acc.is_empty() {
+                                match crate::utils::str_from_u8_nul_utf8(&acc) {
                                 Ok(text) => {
                                     if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), target_pos, appwindow.respect_borders()).await {
                                         error!(
@@ -916,13 +1248,16 @@ impl RnAppWindow {
                                 }
                                 Err(e) => error!("Failed to get string from clipboard data while pasting as Svg, Err: {e:?}"),
                             }
+                            }
                         }
-                    }
-                    Err(e) => {
-                        error!("Failed to read clipboard data while pasting as Svg, Err: {e:?}");
-                    }
-                };
-            }));
+                        Err(e) => {
+                            error!(
+                                "Failed to read clipboard data while pasting as Svg, Err: {e:?}"
+                            );
+                        }
+                    };
+                }
+            ));
         } else if content_formats.contain_mime_type("image/png")
             || content_formats.contain_mime_type("image/jpeg")
             || content_formats.contain_mime_type("image/jpg")
@@ -940,13 +1275,24 @@ impl RnAppWindow {
                 .into_iter()
                 .find(|&mime| content_formats.contain_mime_type(mime))
             {
-                glib::spawn_future_local(
-                    clone!(@weak canvas, @weak self as appwindow => async move {
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    canvas,
+                    #[weak(rename_to=appwindow)]
+                    self,
+                    async move {
                         debug!("Recognized clipboard content: bitmap image");
 
                         match appwindow.clipboard().read_texture_future().await {
                             Ok(Some(texture)) => {
-                                if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), target_pos, appwindow.respect_borders()).await {
+                                if let Err(e) = canvas
+                                    .load_in_bitmapimage_bytes(
+                                        texture.save_to_png_bytes().to_vec(),
+                                        target_pos,
+                                        appwindow.respect_borders(),
+                                    )
+                                    .await
+                                {
                                     error!(
                                         "Loading bitmap image bytes failed while pasting clipboard as {mime_type}, Err: {e:?}"
                                     );
@@ -959,29 +1305,35 @@ impl RnAppWindow {
                                 );
                             }
                         };
-                    }),
-                );
+                    }
+                ));
             }
         } else if content_formats.contain_mime_type("text/plain")
             || content_formats.contain_mime_type("text/plain;charset=utf-8")
         {
-            glib::spawn_future_local(clone!(@weak canvas, @weak self as appwindow => async move {
-                debug!("Recognized clipboard content: plain text");
+            glib::spawn_future_local(clone!(
+                #[weak]
+                canvas,
+                #[weak(rename_to=appwindow)]
+                self,
+                async move {
+                    debug!("Recognized clipboard content: plain text");
 
-                match appwindow.clipboard().read_text_future().await {
-                    Ok(Some(text)) => {
-                        if let Err(e) = canvas.load_in_text(text.to_string(), target_pos) {
-                            error!("Failed to paste clipboard text, Err: {e:?}");
+                    match appwindow.clipboard().read_text_future().await {
+                        Ok(Some(text)) => {
+                            if let Err(e) = canvas.load_in_text(text.to_string(), target_pos) {
+                                error!("Failed to paste clipboard text, Err: {e:?}");
+                            }
                         }
-                    }
-                    Ok(None) => {}
-                    Err(e) => {
-                        error!(
+                        Ok(None) => {}
+                        Err(e) => {
+                            error!(
                             "Reading clipboard text failed while pasting clipboard as plain text, Err: {e:?}"
                         );
+                        }
                     }
                 }
-            }));
+            ));
         } else {
             debug!(
                 "Failed to paste clipboard, unsupported MIME-type(s): {:?}",

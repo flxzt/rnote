@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-06-17 09:16+0000\n"
+"PO-Revision-Date: 2024-08-01 15:09+0000\n"
 "Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/rnote/repo/hi/>\n"
 "Language: hi\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -330,11 +330,6 @@ msgid "Page Order"
 msgstr "पृष्ठ क्रम"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
@@ -392,19 +387,14 @@ msgid "Jpeg"
 msgstr "JPEG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "    that expand in horizontal and vertical directions\n"
 "    are cut into pages"
 msgstr ""
 "पृष्ठ क्रम जब क्षैतिज और ऊर्ध्वाधर दिशाओं में\n"
-"विस्तारित अभिन्यास वाले दस्तावेज़ों को पृष्ठों\n"
-"में काटा जाता है"
+"    विस्तारित अभिन्यास वाले दस्तावेज़ों को पृष्ठों\n"
+"    में काटा जाता है"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
@@ -414,16 +404,12 @@ msgstr "बिटमैप स्केल-कारक"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "    to the actual size on the document"
 msgstr ""
 "दस्तावेज पर वास्तविक आकार के संबंध में बिटमैप\n"
-"स्केल कारक निर्धारित करें"
+"    स्केल कारक निर्धारित करें"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
@@ -445,10 +431,6 @@ msgid "The export image format"
 msgstr "निर्यात छवि प्रारूप"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
@@ -1799,10 +1781,8 @@ msgid "Exporting selection failed, nothing selected"
 msgstr "निर्यात चयन विफल, कुछ भी चयनित नहीं"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
-#, fuzzy
-#| msgid "Saves are in progress"
 msgid "Saves are in progress, waiting before closing.."
-msgstr "सहेजे जाने का कार्य प्रगति पर है"
+msgstr "सहेजना प्रगति पर है, बंद होने से पहले प्रतीक्षा की जा रही है।"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:336
 msgid "Button 1"

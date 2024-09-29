@@ -12,26 +12,31 @@ use tracing::debug;
 
 /// The regex used to search for duplicated files
 /// ```text
-/// - Look for delimiter
+/// - Look for original filename lazily
 /// |         - Look for `<delim>1`/`<delim>2`/`<delim>123`/...
-/// |         |        - Look for the rest after the `<delim><num>` part
+/// |         |        - Look for the file extension after the `<delim><num>` part
 /// |         |       |       - At the end of the file name
 /// |         |       |       |
-/// |        \d*      |       $
+/// |         (?<delim>{}\d+) $
 /// |                 |
-/// DELIM       (?P<rest>(.*))
+/// (?<filename>.*?)  (?<extension>\.\w+)
 /// ```
 static DUP_REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(&(crate::utils::FILE_DUP_SUFFIX_DELIM_REGEX.to_string() + r"\d*(?P<rest>(.*))$"))
-        .unwrap()
+    // Incorporate FILE_DUP_SUFFIX_DELIM_REGEX dynamically into the regex pattern
+    let regex_pattern: String = format!(
+        r"^(?<filename>.*?)(?<delim>{}\d*)?(?<extension>\.\w+)?$",
+        crate::utils::FILE_DUP_SUFFIX_DELIM_REGEX
+    );
+
+    Regex::new(&regex_pattern).unwrap()
 });
 
 /// Create a new `duplicate` action.
 pub(crate) fn duplicate(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleAction {
     let action = gio::SimpleAction::new("duplicate", None);
 
-    action.connect_activate(clone!(@weak filerow, @weak appwindow => move |_, _| {
-        glib::spawn_future_local(clone!(@weak filerow, @weak appwindow => async move {
+    action.connect_activate(clone!(#[weak] filerow, #[weak] appwindow , move |_, _| {
+        glib::spawn_future_local(clone!(#[weak] filerow, #[weak] appwindow , async move {
             let Some(current_path) = filerow.current_file().and_then(|f| f.path()) else {
                 appwindow.overlays().dispatch_toast_error(&gettext("Can't duplicate an unsaved document"));
                 debug!("Could not duplicate file, current file is None.");
@@ -99,10 +104,14 @@ fn generate_destination_path(source: impl AsRef<Path>) -> anyhow::Result<PathBuf
             "file of source path '{adjusted_source_path:?}' does not have a file stem."
         ));
     };
+
+    let source_extension = adjusted_source_path.extension();
+
+    // Loop to find the next available duplicate filename
     loop {
         destination_path.set_file_name(generate_duplicate_filename(
             source_stem,
-            adjusted_source_path.extension(),
+            source_extension,
             duplicate_index,
         ));
 
@@ -118,7 +127,7 @@ fn generate_destination_path(source: impl AsRef<Path>) -> anyhow::Result<PathBuf
 /// Creates the duplicate-filename by the given information about the source.
 ///
 /// For example:
-/// "test.txt" => "test-1.txt" => "test-2.txt"
+/// "test.txt" => "test - 1.txt" => "test - 2.txt"
 fn generate_duplicate_filename(
     source_stem: &OsStr,
     source_extension: Option<&OsStr>,
@@ -136,15 +145,13 @@ fn generate_duplicate_filename(
 
 /// Recursively removes found file-name suffixes that match with the above regex from the given file path.
 fn remove_dup_suffix(source: impl AsRef<Path>) -> PathBuf {
-    let mut removed = source.as_ref().to_string_lossy().to_string();
-    loop {
-        let new = DUP_REGEX.replace(&removed, "$rest").to_string();
-        if removed == new {
-            break;
-        }
-        removed = new;
-    }
-    PathBuf::from(removed)
+    let original = source.as_ref().to_string_lossy().to_string();
+    // Preserve the base and extension, remove duplicate suffix
+    let new = DUP_REGEX
+        .replace(&original, "$filename$extension")
+        .to_string();
+
+    PathBuf::from(new)
 }
 
 #[cfg(test)]
@@ -187,6 +194,18 @@ mod tests {
         {
             let source = PathBuf::from(String::from("normal_folder") + suf);
             let expected = PathBuf::from("normal_folder");
+            assert_eq!(expected, remove_dup_suffix(&source));
+        }
+
+        {
+            let source = PathBuf::from("normal - file.rnote");
+            let expected = source.clone();
+            assert_eq!(expected, remove_dup_suffix(&source));
+        }
+
+        {
+            let source = PathBuf::from("normal - file - 1.rnote");
+            let expected = PathBuf::from("normal - file.rnote");
             assert_eq!(expected, remove_dup_suffix(&source));
         }
     }

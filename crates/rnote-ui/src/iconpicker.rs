@@ -203,22 +203,26 @@ impl RnIconPicker {
         let generate_display_name = generate_display_name_option.unwrap_or(|_| String::new());
 
         self.imp().selected_handlerid.borrow_mut().replace(
-            single_selection.connect_selected_item_notify(
-                clone!(@weak self as iconpicker => move |_| {
+            single_selection.connect_selected_item_notify(clone!(
+                #[weak(rename_to=iconpicker)]
+                self,
+                move |_| {
                     let pick = iconpicker.picked_intern();
 
                     if show_display_name && show_selection_label {
                         if let Some(icon_name) = &pick {
                             iconpicker.set_selection_label_visible(true);
-                            iconpicker.set_selection_label_text(generate_display_name(icon_name.as_str()));
+                            iconpicker.set_selection_label_text(generate_display_name(
+                                icon_name.as_str(),
+                            ));
                         } else {
                             iconpicker.set_selection_label_visible(false);
                         }
                     }
 
                     iconpicker.set_picked(pick);
-                }),
-            ),
+                }
+            )),
         );
 
         // Factory

@@ -133,7 +133,7 @@ To update to the latest version again, unpin and run `flatpak update`.
 
 * One of the stylus buttons shortcut mapping does not work as intended -  
 On some devices one stylus button is mapped to a dedicated "Eraser" mode (which is the back-side on other styli). The buttons in the shortcuts settings could then be inconsistent ( the secondary / upper button is actually the primary / lower button , or reverse ). To change the tool that is mapped to this "Eraser" mode, do the following:  
-    * Hover over the canvas, and press and hold the button that that is suspected to be mapped to the "Eraser" mode
+    * Hover over the canvas, and press and hold the button that is suspected to be mapped to the "Eraser" mode
     * Switch to the desired pen style while keeping the button pressed
     * When releasing the pressed button, it should switch back to the previous pen style
     * The pen style in the "Eraser" mode should now be remembered
@@ -144,11 +144,8 @@ On some devices one stylus button is mapped to a dedicated "Eraser" mode (which 
 <img src="https://hosted.weblate.org/widgets/rnote/-/repo/multi-auto.svg" alt="Translation status" />
 </a><br><br>
 
-A great way to contribute to the project without writing code is adding a new or start maintaining an existing translation language. The translations files are located in `crates/rnote-ui/po/`.
-
- Creating translations for new languages or updating existing ones can be done in multiple ways:
-- take the `rnote.pot` file and generate a new `.po` translation file from it, for example with "Poedit". Add the new translation language to `LINGUAS` and submit a PR with the changed files.
-- use [weblate](https://hosted.weblate.org/projects/rnote/repo/) for an easy way to translate in the browser without having to deal with git.
+If you want to start contribute by translating, take a look into the [translations section](./CONTRIBUTING.md#Translations)
+of the CONTRIBUTING document.
 
 ## Fonts
 

@@ -49,9 +49,13 @@ pub(crate) fn create_entry_dialog(entry: &Entry, label: &Label) -> (Button, Popo
         .build();
     popover.set_child(Some(&grid));
 
-    cancel_button.connect_clicked(clone!(@weak popover => move |_| {
-        popover.popdown();
-    }));
+    cancel_button.connect_clicked(clone!(
+        #[weak]
+        popover,
+        move |_| {
+            popover.popdown();
+        }
+    ));
 
     (apply_button, popover)
 }

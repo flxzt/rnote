@@ -382,12 +382,15 @@ impl RnAppWindow {
         let obj = self.obj();
 
         // Create new tab via tab overview
-        self.overview.connect_create_tab(
-            clone!(@weak obj as appwindow => @default-panic, move |_| {
+        self.overview.connect_create_tab(clone!(
+            #[weak(rename_to=appwindow)]
+            obj,
+            #[upgrade_or_panic]
+            move |_| {
                 let wrapper = appwindow.new_canvas_wrapper();
                 appwindow.append_wrapper_new_tab(&wrapper)
-            }),
-        );
+            }
+        ));
     }
 
     fn setup_tabbar(&self) {

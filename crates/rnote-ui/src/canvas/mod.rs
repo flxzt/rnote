@@ -1447,10 +1447,16 @@ impl RnCanvas {
         let tab_page_invalidate_thumbnail = self.connect_local(
             "invalidate-thumbnail",
             false,
-            clone!(@weak page => @default-return None, move |_| {
-                page.invalidate_thumbnail();
-                None
-            }),
+            clone!(
+                #[weak]
+                page,
+                #[upgrade_or]
+                None,
+                move |_| {
+                    page.invalidate_thumbnail();
+                    None
+                }
+            ),
         );
 
         let mut connections = self.imp().connections.borrow_mut();

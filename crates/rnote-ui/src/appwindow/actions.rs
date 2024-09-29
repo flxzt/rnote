@@ -250,10 +250,14 @@ impl RnAppWindow {
         ));
 
         // Toggle Tabs Overview
-        action_toggle_overview.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let overview = appwindow.overview();
-            overview.set_open(!overview.is_open());
-        }));
+        action_toggle_overview.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let overview = appwindow.overview();
+                overview.set_open(!overview.is_open());
+            }
+        ));
 
         // Developer mode
         action_devel_mode.connect_activate(clone!(

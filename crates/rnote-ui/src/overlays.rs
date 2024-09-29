@@ -304,14 +304,12 @@ impl RnOverlays {
                     #[weak]
                     page,
                     async move {
-                        let close_finish_confirm = if overlays.tabview().n_pages() <= 1
-                        {
+                        let close_finish_confirm = if overlays.tabview().n_pages() <= 1 {
                             // If there is only one tab left, request to close the entire window.
                             appwindow.close();
 
                             false
-                        }
-                        else if page
+                        } else if page
                             .child()
                             .downcast::<RnCanvasWrapper>()
                             .unwrap()

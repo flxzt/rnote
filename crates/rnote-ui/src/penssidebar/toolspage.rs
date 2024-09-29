@@ -118,14 +118,12 @@ impl RnToolsPage {
             #[weak]
             appwindow,
             move |toggle| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
                 if toggle.is_active() {
-                    appwindow
-                        .active_tab_wrapper()
-                        .canvas()
-                        .engine_mut()
-                        .pens_config
-                        .tools_config
-                        .style = ToolStyle::VerticalSpace;
+                    canvas.engine_mut().pens_config.tools_config.style = ToolStyle::VerticalSpace;
                 }
             }
         ));
@@ -134,14 +132,12 @@ impl RnToolsPage {
             #[weak]
             appwindow,
             move |toggle| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
                 if toggle.is_active() {
-                    appwindow
-                        .active_tab_wrapper()
-                        .canvas()
-                        .engine_mut()
-                        .pens_config
-                        .tools_config
-                        .style = ToolStyle::OffsetCamera;
+                    canvas.engine_mut().pens_config.tools_config.style = ToolStyle::OffsetCamera;
                 }
             }
         ));
@@ -150,14 +146,12 @@ impl RnToolsPage {
             #[weak]
             appwindow,
             move |toggle| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
                 if toggle.is_active() {
-                    appwindow
-                        .active_tab_wrapper()
-                        .canvas()
-                        .engine_mut()
-                        .pens_config
-                        .tools_config
-                        .style = ToolStyle::Zoom;
+                    canvas.engine_mut().pens_config.tools_config.style = ToolStyle::Zoom;
                 }
             }
         ));
@@ -187,9 +181,11 @@ impl RnToolsPage {
                 #[weak]
                 appwindow,
                 move |row| {
-                    appwindow
-                        .active_tab_wrapper()
-                        .canvas()
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+
+                    canvas
                         .engine_mut()
                         .pens_config
                         .tools_config
@@ -203,9 +199,11 @@ impl RnToolsPage {
                 #[weak]
                 appwindow,
                 move |row| {
-                    appwindow
-                        .active_tab_wrapper()
-                        .canvas()
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+
+                    canvas
                         .engine_mut()
                         .pens_config
                         .tools_config

@@ -454,9 +454,9 @@ impl RnAppWindow {
 
         {
             // Save engine config of the current active tab
-            self.active_tab_wrapper()
-                .canvas()
-                .save_engine_config(&app_settings)?;
+            if let Some(canvas) = self.active_tab_canvas() {
+                canvas.save_engine_config(&app_settings)?;
+            }
         }
 
         {
@@ -490,11 +490,10 @@ impl RnAppWindow {
                     #[upgrade_or]
                     glib::ControlFlow::Break,
                     move || {
-                        if let Err(e) = appwindow
-                            .active_tab_wrapper()
-                            .canvas()
-                            .save_engine_config(&app_settings)
-                        {
+                        let Some(canvas) = appwindow.active_tab_canvas() else {
+                            return glib::ControlFlow::Continue;
+                        };
+                        if let Err(e) = canvas.save_engine_config(&app_settings) {
                             error!(
                                 "Saving engine config in periodic save task failed , Err: {e:?}"
                             );

@@ -29,15 +29,15 @@ pub struct EraserMotion {
 impl EraserMotion {
     pub const SMOOTHING_FACTOR: f64 = 3.0;
 
-    fn update(&mut self, element: Element) {
+    fn update(&mut self, element: Element, time: Instant) {
         if let Some((last_element, last_element_time)) = self.last_element {
             let delta = element.pos - last_element.pos;
-            let delta_time = Instant::now() - last_element_time;
+            let delta_time = time - last_element_time;
             let new_speed = delta.norm() / delta_time.as_secs_f64();
             self.speed =
                 (self.speed * Self::SMOOTHING_FACTOR + new_speed) / (Self::SMOOTHING_FACTOR + 1.0);
         }
-        self.last_element = Some((element, Instant::now()));
+        self.last_element = Some((element, time));
     }
 
     fn reset(&mut self) {
@@ -81,13 +81,13 @@ impl PenBehaviour for Eraser {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        _now: Instant,
+        now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
         let event_result = match (&mut self.state, event) {
             (EraserState::Up | EraserState::Proximity { .. }, PenEvent::Down { element, .. }) => {
-                self.motion.update(element);
+                self.motion.update(element, now);
                 widget_flags |= erase(element, self.motion.speed, engine_view);
                 self.state = EraserState::Down(element);
                 EventResult {
@@ -97,7 +97,7 @@ impl PenBehaviour for Eraser {
                 }
             }
             (EraserState::Up | EraserState::Down { .. }, PenEvent::Proximity { element, .. }) => {
-                self.motion.update(element);
+                self.motion.update(element, now);
                 self.state = EraserState::Proximity(element);
                 EventResult {
                     handled: false,
@@ -114,7 +114,7 @@ impl PenBehaviour for Eraser {
                 progress: PenProgress::Idle,
             },
             (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
-                self.motion.update(element);
+                self.motion.update(element, now);
                 widget_flags |= erase(element, self.motion.speed, engine_view);
                 *current_element = element;
                 EventResult {
@@ -149,7 +149,7 @@ impl PenBehaviour for Eraser {
                 }
             }
             (EraserState::Proximity(current_element), PenEvent::Proximity { element, .. }) => {
-                self.motion.update(element);
+                self.motion.update(element, now);
                 *current_element = element;
                 EventResult {
                     handled: false,

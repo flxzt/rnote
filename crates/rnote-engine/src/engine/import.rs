@@ -310,8 +310,6 @@ impl Engine {
     /// Generate image strokes for each page for the bytes.
     ///
     /// The bytes are expected to be from a valid Pdf.
-    ///
-    /// Note: `insert_pos` does not have an effect when the `adjust_document` import pref is set true.
     #[allow(clippy::type_complexity)]
     pub fn generate_pdf_pages_from_bytes(
         &self,
@@ -323,11 +321,6 @@ impl Engine {
             oneshot::channel::<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>>();
         let pdf_import_prefs = self.import_prefs.pdf_import_prefs;
         let format = self.document.format;
-        let insert_pos = if self.import_prefs.pdf_import_prefs.adjust_document {
-            na::Vector2::<f64>::zeros()
-        } else {
-            insert_pos
-        };
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>> {

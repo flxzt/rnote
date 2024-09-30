@@ -470,7 +470,12 @@ impl RnAppWindow {
                 let Some(active_tab_page) = appwindow.active_tab_page() else {
                     return;
                 };
-                appwindow.close_tab_request(&active_tab_page);
+                if appwindow.overlays().tabview().n_pages() <= 1 {
+                    // If there is only one tab left, request to close the entire window.
+                    appwindow.close();
+                } else {
+                    appwindow.close_tab_request(&active_tab_page);
+                }
             }
         ));
 

@@ -295,8 +295,6 @@ impl RnOverlays {
         ));
 
         imp.tabview.connect_close_page(clone!(
-            #[weak(rename_to=overlays)]
-            self,
             #[weak]
             appwindow,
             #[upgrade_or]
@@ -304,25 +302,17 @@ impl RnOverlays {
             move |_, page| {
                 glib::spawn_future_local(clone!(
                     #[weak]
-                    overlays,
-                    #[weak]
                     appwindow,
                     #[weak]
                     page,
                     async move {
-                        let close_finish_confirm = if overlays.tabview().n_pages() <= 1 {
-                            // If there is only one tab left, request to close the entire window.
-                            appwindow.close();
-
-                            false
-                        } else if page
+                        let close_finish_confirm = if page
                             .child()
                             .downcast::<RnCanvasWrapper>()
                             .unwrap()
                             .canvas()
                             .unsaved_changes()
                         {
-                            // NOTE: If there was only one tab, the previous case will implicitly handle this.
                             dialogs::dialog_close_tab(&appwindow, &page).await
                         } else {
                             true

@@ -161,8 +161,10 @@ impl RnOverlays {
                 #[weak]
                 appwindow,
                 move |colorpicker, _paramspec| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
                     let stroke_color = colorpicker.stroke_color().into_compose_color();
-                    let canvas = appwindow.active_tab_wrapper().canvas();
                     let current_pen_style =
                         canvas.engine_ref().penholder.current_pen_style_w_override();
 
@@ -196,8 +198,10 @@ impl RnOverlays {
                 #[weak]
                 appwindow,
                 move |colorpicker, _paramspec| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
                     let fill_color = colorpicker.fill_color().into_compose_color();
-                    let canvas = appwindow.active_tab_wrapper().canvas();
                     let stroke_style = canvas.engine_ref().penholder.current_pen_style_w_override();
 
                     match stroke_style {
@@ -232,7 +236,9 @@ impl RnOverlays {
             #[weak]
             appwindow,
             move |_| {
-                let active_tab_page = appwindow.active_tab_page();
+                let Some(active_tab_page) = appwindow.active_tab_page() else {
+                    return;
+                };
                 let active_canvaswrapper = active_tab_page
                     .child()
                     .downcast::<RnCanvasWrapper>()

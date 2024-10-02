@@ -12,41 +12,46 @@
       </object>
     </child>
     <property name="content">
-      <object class="AdwOverlaySplitView" id="split_view">
-        <property name="pin-sidebar">true</property>
-        <property name="min-sidebar-width">500</property>
-        <property name="max-sidebar-width">550</property>
-        <property name="sidebar-width-fraction">0.3</property>
-        <!-- sidebar -->
-        <property name="sidebar">
-          <object class="RnSidebar" id="sidebar">
-          </object>
-        </property>
-        <!-- main view -->
-        <property name="content">
-          <object class="AdwToolbarView">
-            <property name="top-bar-style">raised</property>
-            <child type="top">
-              <object class="RnMainHeader" id="main_header">
+      <object class="AdwTabOverview" id="overview">
+        <property name="enable-new-tab">true</property>
+        <child>
+          <object class="AdwOverlaySplitView" id="split_view">
+            <property name="pin-sidebar">true</property>
+            <property name="min-sidebar-width">500</property>
+            <property name="max-sidebar-width">550</property>
+            <property name="sidebar-width-fraction">0.3</property>
+            <!-- sidebar -->
+            <property name="sidebar">
+              <object class="RnSidebar" id="sidebar">
               </object>
-            </child>
+            </property>
+            <!-- main view -->
             <property name="content">
-              <object class="GtkBox">
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="AdwTabBar" id="tabbar">
+              <object class="AdwToolbarView">
+                <property name="top-bar-style">raised</property>
+                <child type="top">
+                  <object class="RnMainHeader" id="main_header">
                   </object>
                 </child>
-                <child>
-                  <object class="RnOverlays" id="overlays">
-                    <property name="hexpand">true</property>
-                    <property name="vexpand">true</property>
+                <property name="content">
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="AdwTabBar" id="tabbar">
+                      </object>
+                    </child>
+                    <child>
+                      <object class="RnOverlays" id="overlays">
+                        <property name="hexpand">true</property>
+                        <property name="vexpand">true</property>
+                      </object>
+                    </child>
                   </object>
-                </child>
+                </property>
               </object>
             </property>
           </object>
-        </property>
+        </child>
       </object>
     </property>
   </template>

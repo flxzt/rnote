@@ -6,139 +6,236 @@
 //! Then [TryFrom] can be implemented to allow conversions and chaining from older to newer versions.
 
 // Modules
-pub(crate) mod maj0min5patch8;
-pub(crate) mod maj0min5patch9;
-pub(crate) mod maj0min6;
-pub(crate) mod maj0min9;
+pub(crate) mod legacy;
+pub(crate) mod maj0min12;
+pub(crate) mod methods;
+
+// Re-exports
+pub use methods::{CompressionMethod, SerializationMethod};
 
 // Imports
-use self::maj0min5patch8::RnoteFileMaj0Min5Patch8;
-use self::maj0min5patch9::RnoteFileMaj0Min5Patch9;
-use self::maj0min6::RnoteFileMaj0Min6;
-use self::maj0min9::RnoteFileMaj0Min9;
 use super::{FileFormatLoader, FileFormatSaver};
+use crate::engine::{save::SavePrefs, EngineSnapshot};
 use anyhow::Context;
-use serde::{Deserialize, Serialize};
-use std::io::{Read, Write};
+use legacy::LegacyRnoteFile;
+use maj0min12::RnoteFileMaj0Min12;
 
-/// Compress bytes with gzip.
-fn compress_to_gzip(to_compress: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
-    let mut encoder = flate2::write::GzEncoder::new(Vec::<u8>::new(), flate2::Compression::new(5));
-    encoder.write_all(to_compress)?;
-    Ok(encoder.finish()?)
-}
+pub type RnoteFile = maj0min12::RnoteFileMaj0Min12;
+pub type RnoteHeader = maj0min12::RnoteHeaderMaj0Min12;
 
-/// Decompress from gzip.
-fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
-    // Optimization for the gzip format, defined by RFC 1952
-    // capacity of the vector defined by the size of the uncompressed data
-    // given in little endian format, by the last 4 bytes of "compressed"
-    //
-    //   ISIZE (Input SIZE)
-    //     This contains the size of the original (uncompressed) input data modulo 2^32.
-    let mut bytes: Vec<u8> = {
-        let mut decompressed_size: [u8; 4] = [0; 4];
-        let idx_start = compressed
-            .len()
-            .checked_sub(4)
-            // only happens if the file has less than 4 bytes
-            .ok_or_else(|| {
-                anyhow::anyhow!("Invalid file")
-                    .context("Failed to get the size of the decompressed data")
-            })?;
-        decompressed_size.copy_from_slice(&compressed[idx_start..]);
-        // u32 -> usize to avoid issues on 32-bit architectures
-        // also more reasonable since the uncompressed size is given by 4 bytes
-        Vec::with_capacity(u32::from_le_bytes(decompressed_size) as usize)
-    };
-
-    let mut decoder = flate2::read::MultiGzDecoder::new(compressed);
-    decoder.read_to_end(&mut bytes)?;
-    Ok(bytes)
-}
-
-/// The rnote file wrapper.
-///
-/// Used to extract and match the version up front, before deserializing the data.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "rnotefile_wrapper")]
-struct RnotefileWrapper {
-    #[serde(rename = "version")]
-    version: semver::Version,
-    #[serde(rename = "data")]
-    data: ijson::IValue,
-}
-
-/// The Rnote file in the newest format version.
-///
-/// This struct exists to allow for upgrading older versions before loading the file in.
-pub type RnoteFile = RnoteFileMaj0Min9;
-
-impl RnoteFile {
+impl RnoteFileMaj0Min12 {
+    // ideally, this should never change
+    pub const MAGIC_NUMBER: [u8; 9] = [0x52, 0x4e, 0x4f, 0x54, 0x45, 0xce, 0xa6, 0xce, 0x9b];
     pub const SEMVER: &'static str = crate::utils::crate_version();
-}
-
-impl FileFormatLoader for RnoteFile {
-    fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self> {
-        let wrapper = serde_json::from_slice::<RnotefileWrapper>(
-            &decompress_from_gzip(bytes).context("decompressing bytes failed.")?,
-        )
-        .context("deserializing RnotefileWrapper from bytes failed.")?;
-
-        // Conversions for older file format versions happen here
-        if semver::VersionReq::parse(">=0.9.0")
-            .unwrap()
-            .matches(&wrapper.version)
-        {
-            ijson::from_value::<RnoteFileMaj0Min9>(&wrapper.data)
-                .context("deserializing RnoteFileMaj0Min9 failed.")
-        } else if semver::VersionReq::parse(">=0.5.10")
-            .unwrap()
-            .matches(&wrapper.version)
-        {
-            ijson::from_value::<RnoteFileMaj0Min6>(&wrapper.data)
-                .context("deserializing RnoteFileMaj0Min6 failed.")
-                .and_then(RnoteFileMaj0Min9::try_from)
-                .context("converting RnoteFileMaj0Min6 to newest file version failed.")
-        } else if semver::VersionReq::parse(">=0.5.9")
-            .unwrap()
-            .matches(&wrapper.version)
-        {
-            ijson::from_value::<RnoteFileMaj0Min5Patch9>(&wrapper.data)
-                .context("deserializing RnoteFileMaj0Min5Patch9 failed.")
-                .and_then(RnoteFileMaj0Min6::try_from)
-                .and_then(RnoteFileMaj0Min9::try_from)
-                .context("converting RnoteFileMaj0Min5Patch9 to newest file version failed.")
-        } else if semver::VersionReq::parse(">=0.5.0")
-            .unwrap()
-            .matches(&wrapper.version)
-        {
-            ijson::from_value::<RnoteFileMaj0Min5Patch8>(&wrapper.data)
-                .context("deserializing RnoteFileMaj0Min5Patch8 failed")
-                .and_then(RnoteFileMaj0Min5Patch9::try_from)
-                .and_then(RnoteFileMaj0Min6::try_from)
-                .and_then(RnoteFileMaj0Min9::try_from)
-                .context("converting RnoteFileMaj0Min5Patch8 to newest file version failed.")
-        } else {
-            Err(anyhow::anyhow!(
-                "failed to load rnote file from bytes, unsupported version: {}.",
-                wrapper.version
-            ))
-        }
-    }
 }
 
 impl FileFormatSaver for RnoteFile {
     fn save_as_bytes(&self, _file_name: &str) -> anyhow::Result<Vec<u8>> {
-        let wrapper = RnotefileWrapper {
-            version: semver::Version::parse(Self::SEMVER).unwrap(),
-            data: ijson::to_value(self).context("converting RnoteFile to JSON value failed.")?,
-        };
-        let compressed = compress_to_gzip(
-            &serde_json::to_vec(&wrapper).context("Serializing RnoteFileWrapper failed.")?,
-        )
-        .context("compressing bytes failed.")?;
+        let version = semver::Version::parse(Self::SEMVER)?;
+        let pre_release = version.pre.as_str();
+        let build_metadata = version.build.as_str();
 
-        Ok(compressed)
+        let header = serde_json::to_vec(&ijson::to_value(&self.header)?)?;
+        let head = [
+            &Self::MAGIC_NUMBER[..],
+            &version.major.to_le_bytes(),
+            &version.minor.to_le_bytes(),
+            &version.patch.to_le_bytes(),
+            &u16::try_from(pre_release.len())
+                .context("Prerelease exceeds max size (u16::MAX)")?
+                .to_le_bytes(),
+            pre_release.as_bytes(),
+            &u16::try_from(build_metadata.len())
+                .context("BuildMetadata exceeds max size (u16::MAX)")?
+                .to_le_bytes(),
+            build_metadata.as_bytes(),
+            &u32::try_from(header.len())
+                .context("Serialized RnoteHeader exceeds max size (u32::MAX)")?
+                .to_le_bytes(),
+            &header,
+        ]
+        .concat();
+
+        // .concat is absurdly fast
+        // much faster than Vec::apend or Vec::extend
+        Ok([head.as_slice(), self.body.as_slice()].concat())
+    }
+}
+
+impl FileFormatLoader for RnoteFile {
+    fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self>
+    where
+        Self: Sized,
+    {
+        let mut cursor: usize = 0;
+
+        let magic_number = bytes
+            .get(cursor..9)
+            .ok_or_else(|| anyhow::anyhow!("Failed to get magic number"))?;
+        cursor += 9;
+
+        if magic_number != Self::MAGIC_NUMBER {
+            // Gzip magic number
+            // The legacy file is generally caught first in Snapshot::load_from_rnote_bytes
+            // howver this less efficient catch is necessary for rnote-cli mutate
+            if magic_number[..2] == [0x1f, 0x8b] {
+                return RnoteFile::try_from(LegacyRnoteFile::load_from_bytes(bytes)?);
+            } else {
+                return Err(anyhow::anyhow!("Unrecognized file format"));
+            }
+        }
+
+        let mut major: [u8; 8] = [0; 8];
+        major.copy_from_slice(
+            bytes.get(cursor..cursor + 8).ok_or_else(|| {
+                anyhow::anyhow!("Failed to get version.major, insufficient bytes")
+            })?,
+        );
+        cursor += 8;
+        let major = u64::from_le_bytes(major);
+
+        let mut minor: [u8; 8] = [0; 8];
+        minor.copy_from_slice(
+            bytes.get(cursor..cursor + 8).ok_or_else(|| {
+                anyhow::anyhow!("Failed to get version.minor, insufficient bytes")
+            })?,
+        );
+        cursor += 8;
+        let minor = u64::from_le_bytes(minor);
+
+        let mut patch: [u8; 8] = [0; 8];
+        patch.copy_from_slice(
+            bytes.get(cursor..cursor + 8).ok_or_else(|| {
+                anyhow::anyhow!("Failed to get version.patch, insufficient bytes")
+            })?,
+        );
+        cursor += 8;
+        let patch = u64::from_le_bytes(patch);
+
+        let mut pre_release_size: [u8; 2] = [0; 2];
+        pre_release_size.copy_from_slice(bytes.get(cursor..cursor + 2).ok_or_else(|| {
+            anyhow::anyhow!("Failed to get size of version.pre, insufficient bytes")
+        })?);
+        cursor += 2;
+        let pre_release_size = usize::from(u16::from_le_bytes(pre_release_size));
+
+        let pre_release = if pre_release_size == 0 {
+            semver::Prerelease::EMPTY
+        } else {
+            let text =
+                core::str::from_utf8(bytes.get(cursor..cursor + pre_release_size).ok_or_else(
+                    || anyhow::anyhow!("Failed to get version.pre, insufficient bytes"),
+                )?)?;
+            cursor += pre_release_size;
+            semver::Prerelease::new(text)?
+        };
+
+        let mut build_metadata_size: [u8; 2] = [0; 2];
+        build_metadata_size.copy_from_slice(bytes.get(cursor..cursor + 2).ok_or_else(|| {
+            anyhow::anyhow!("Failed to get size of version.build, insufficient bytes")
+        })?);
+        cursor += 2;
+        let build_metadata_size = usize::from(u16::from_le_bytes(build_metadata_size));
+
+        let build_metadata = if build_metadata_size == 0 {
+            semver::BuildMetadata::EMPTY
+        } else {
+            let text =
+                core::str::from_utf8(bytes.get(cursor..cursor + build_metadata_size).ok_or_else(
+                    || anyhow::anyhow!("Failed to get version.build, insufficient bytes"),
+                )?)?;
+            cursor += build_metadata_size;
+            semver::BuildMetadata::new(text)?
+        };
+
+        let version = semver::Version {
+            major,
+            minor,
+            patch,
+            pre: pre_release,
+            build: build_metadata,
+        };
+
+        let mut header_size: [u8; 4] = [0; 4];
+        header_size.copy_from_slice(
+            bytes
+                .get(cursor..cursor + 4)
+                .ok_or_else(|| anyhow::anyhow!("Failed to get header size, insufficient bytes"))?,
+        );
+        cursor += 4;
+        let header_size = usize::try_from(u32::from_le_bytes(header_size))
+            .context("Serialized RnoteHeader exceeds max size (usize::MAX)")?;
+
+        let header_slice = bytes
+            .get(cursor..cursor + header_size)
+            .ok_or_else(|| anyhow::anyhow!("Failed to get RnoteHeader, insufficient bytes"))?;
+        cursor += header_size;
+
+        let body_slice = bytes
+            .get(cursor..)
+            .ok_or_else(|| anyhow::anyhow!("Failed to get body, insufficient bytes"))?;
+
+        Ok(Self {
+            header: RnoteHeader::load_from_slice(header_slice, &version)?,
+            // faster than draining bytes
+            body: body_slice.to_vec(),
+        })
+    }
+}
+
+impl RnoteHeader {
+    fn load_from_slice(slice: &[u8], version: &semver::Version) -> anyhow::Result<Self> {
+        if semver::VersionReq::parse(">=0.11.0")
+            .unwrap()
+            .matches(version)
+        {
+            Ok(ijson::from_value(&serde_json::from_slice(slice)?)?)
+        } else {
+            Err(anyhow::anyhow!("Unsupported version: '{}'", version))
+        }
+    }
+}
+
+impl TryFrom<RnoteFile> for EngineSnapshot {
+    type Error = anyhow::Error;
+
+    fn try_from(value: RnoteFile) -> Result<Self, Self::Error> {
+        let uc_size = usize::try_from(value.header.uc_size).unwrap_or(usize::MAX);
+        let uc_body = value.header.compression.decompress(uc_size, value.body)?;
+        let mut engine_snapshot = value.header.serialization.deserialize(&uc_body)?;
+
+        // save preferences are only kept if method_lock is true or both the ser. method and comp. method are "defaults"
+        let save_prefs = SavePrefs::from(value.header);
+        if save_prefs.method_lock | save_prefs.conforms_to_default() {
+            engine_snapshot.save_prefs = save_prefs;
+        }
+
+        Ok(engine_snapshot)
+    }
+}
+
+impl TryFrom<&EngineSnapshot> for RnoteFile {
+    type Error = anyhow::Error;
+
+    fn try_from(value: &EngineSnapshot) -> Result<Self, Self::Error> {
+        let save_prefs = value.save_prefs.clone_config();
+
+        let compression = save_prefs.compression;
+        let serialization = save_prefs.serialization;
+
+        let uc_data = serialization.serialize(value)?;
+        let uc_size = uc_data.len() as u64;
+        let data = compression.compress(uc_data)?;
+        let method_lock = save_prefs.method_lock;
+
+        Ok(Self {
+            header: RnoteHeader {
+                compression,
+                serialization,
+                uc_size,
+                method_lock,
+            },
+            body: data,
+        })
     }
 }

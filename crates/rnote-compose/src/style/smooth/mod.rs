@@ -9,7 +9,8 @@ use super::Composer;
 use crate::ext::Vector2Ext;
 use crate::penpath::{self, Segment};
 use crate::shapes::{
-    Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
+    Arrow, CubicBezier, Ellipse, Line, Parabola, Polygon, Polyline, QuadraticBezier, Rectangle,
+    Shapeable,
 };
 use crate::PenPath;
 use kurbo::Shape;
@@ -344,6 +345,7 @@ impl Composer<SmoothOptions> for crate::Shape {
             crate::Shape::CubicBezier(cubbez) => cubbez.composed_bounds(options),
             crate::Shape::Polyline(polyline) => polyline.composed_bounds(options),
             crate::Shape::Polygon(polygon) => polygon.composed_bounds(options),
+            crate::Shape::Parabola(parabola) => parabola.composed_bounds(options),
         }
     }
 
@@ -357,7 +359,30 @@ impl Composer<SmoothOptions> for crate::Shape {
             crate::Shape::CubicBezier(cubbez) => cubbez.draw_composed(cx, options),
             crate::Shape::Polyline(polyline) => polyline.draw_composed(cx, options),
             crate::Shape::Polygon(polygon) => polygon.draw_composed(cx, options),
+            crate::Shape::Parabola(parabola) => parabola.draw_composed(cx, options),
         }
+    }
+}
+
+impl Composer<SmoothOptions> for Parabola {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
+        self.bounds().loosened(options.stroke_width * 0.5)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
+        let parabola = self.outline_path();
+
+        if let Some(fill_color) = options.fill_color {
+            let fill_brush = cx.solid_brush(fill_color.into());
+            cx.fill(&parabola, &fill_brush);
+        }
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+            cx.stroke(parabola, &stroke_brush, options.stroke_width);
+        }
+        cx.restore().unwrap();
     }
 }
 

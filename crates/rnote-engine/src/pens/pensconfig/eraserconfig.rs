@@ -55,13 +55,16 @@ impl EraserConfig {
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
     pub const WIDTH_DEFAULT: f64 = 12.0;
-    pub const SPEED_SCALING: f64 = 0.001;
+    pub const SPEED_SCALING_STEP_SIZE: f64 = 10.0;
+    pub const SPEED_SCALING: f64 = 0.01;
 
     fn width_from_speed(&self, speed: f64) -> f64 {
         if !self.speed_scaling {
             return self.width;
         }
-        self.width + Self::SPEED_SCALING * speed
+        let size_increase = Self::SPEED_SCALING * speed;
+        let step = size_increase - (size_increase % Self::SPEED_SCALING_STEP_SIZE);
+        self.width + step
     }
 
     pub(crate) fn eraser_bounds(&self, element: Element, speed: f64) -> Aabb {

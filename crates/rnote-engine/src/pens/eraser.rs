@@ -27,7 +27,8 @@ pub struct EraserMotion {
 }
 
 impl EraserMotion {
-    pub const SMOOTHING_FACTOR: f64 = 3.0;
+    pub const SMOOTHING_FACTOR_ACCEL: f64 = 3.0;
+    pub const SMOOTHING_FACTOR_DECEL: f64 = 10.0;
     pub const SPEED_LIMIT: f64 = 10000.0;
 
     fn update(&mut self, element: Element, time: Instant) {
@@ -35,9 +36,17 @@ impl EraserMotion {
             let delta = element.pos - last_element.pos;
             let delta_time = time - last_element_time;
             let new_speed = delta.norm() / delta_time.as_secs_f64();
-            self.speed = Self::SPEED_LIMIT.min(
-                (self.speed * Self::SMOOTHING_FACTOR + new_speed) / (Self::SMOOTHING_FACTOR + 1.0),
-            );
+            if new_speed > self.speed {
+                self.speed = Self::SPEED_LIMIT.min(
+                    (self.speed * Self::SMOOTHING_FACTOR_ACCEL + new_speed)
+                        / (Self::SMOOTHING_FACTOR_ACCEL + 1.0),
+                );
+            } else {
+                self.speed = Self::SPEED_LIMIT.min(
+                    (self.speed * Self::SMOOTHING_FACTOR_DECEL + new_speed)
+                        / (Self::SMOOTHING_FACTOR_DECEL + 1.0),
+                );
+            }
         }
         self.last_element = Some((element, time));
     }

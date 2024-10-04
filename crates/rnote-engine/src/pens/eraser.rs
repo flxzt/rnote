@@ -54,7 +54,14 @@ impl EraserMotion {
         self.last_element = Some((element, time));
 
         let size_increase = Self::SPEED_SCALING * self.speed;
-        self.added_width = size_increase - (size_increase % Self::SPEED_SCALING_STEP_SIZE);
+        let lower_bound = self.added_width - Self::SPEED_SCALING_STEP_SIZE;
+        let upper_bound = self.added_width + Self::SPEED_SCALING_STEP_SIZE;
+        if size_increase < lower_bound {
+            self.added_width -= Self::SPEED_SCALING_STEP_SIZE;
+        }
+        if size_increase > upper_bound {
+            self.added_width += Self::SPEED_SCALING_STEP_SIZE;
+        }
     }
 
     fn reset(&mut self) {

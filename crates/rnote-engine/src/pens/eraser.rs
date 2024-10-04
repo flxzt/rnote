@@ -23,13 +23,16 @@ pub enum EraserState {
 #[derive(Debug, Default, Clone, Copy)]
 pub struct EraserMotion {
     last_element: Option<(Element, Instant)>,
-    pub speed: f64,
+    speed: f64,
+    pub added_width: f64,
 }
 
 impl EraserMotion {
     pub const SMOOTHING_FACTOR_ACCEL: f64 = 3.0;
     pub const SMOOTHING_FACTOR_DECEL: f64 = 10.0;
     pub const SPEED_LIMIT: f64 = 10000.0;
+    pub const SPEED_SCALING: f64 = 0.01;
+    pub const SPEED_SCALING_STEP_SIZE: f64 = 10.0;
 
     fn update(&mut self, element: Element, time: Instant) {
         if let Some((last_element, last_element_time)) = self.last_element {
@@ -49,6 +52,9 @@ impl EraserMotion {
             }
         }
         self.last_element = Some((element, time));
+
+        let size_increase = Self::SPEED_SCALING * self.speed;
+        self.added_width = size_increase - (size_increase % Self::SPEED_SCALING_STEP_SIZE);
     }
 
     fn reset(&mut self) {
@@ -126,7 +132,7 @@ impl PenBehaviour for Eraser {
             },
             (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
                 self.motion.update(element, now);
-                widget_flags |= erase(element, self.motion.speed, engine_view);
+                widget_flags |= erase(element, self.motion.added_width, engine_view);
                 *current_element = element;
                 EventResult {
                     handled: true,
@@ -234,7 +240,7 @@ impl DrawableOnDoc for Eraser {
                 let bounds = engine_view
                     .pens_config
                     .eraser_config
-                    .eraser_bounds(*current_element, self.motion.speed);
+                    .eraser_bounds(*current_element, self.motion.added_width);
 
                 let fill_rect = bounds.to_kurbo_rect();
                 let outline_rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
@@ -246,7 +252,7 @@ impl DrawableOnDoc for Eraser {
                 let bounds = engine_view
                     .pens_config
                     .eraser_config
-                    .eraser_bounds(*current_element, self.motion.speed);
+                    .eraser_bounds(*current_element, self.motion.added_width);
 
                 let fill_rect = bounds.to_kurbo_rect();
                 let outline_rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
@@ -261,7 +267,7 @@ impl DrawableOnDoc for Eraser {
     }
 }
 
-fn erase(element: Element, speed: f64, engine_view: &mut EngineViewMut) -> WidgetFlags {
+fn erase(element: Element, added_width: f64, engine_view: &mut EngineViewMut) -> WidgetFlags {
     // the widget_flags.store_modified flag is set in the `.trash_..()` methods
     let mut widget_flags = WidgetFlags::default();
 
@@ -271,7 +277,7 @@ fn erase(element: Element, speed: f64, engine_view: &mut EngineViewMut) -> Widge
                 engine_view
                     .pens_config
                     .eraser_config
-                    .eraser_bounds(element, speed),
+                    .eraser_bounds(element, added_width),
                 engine_view.camera.viewport(),
             );
         }
@@ -280,7 +286,7 @@ fn erase(element: Element, speed: f64, engine_view: &mut EngineViewMut) -> Widge
                 engine_view
                     .pens_config
                     .eraser_config
-                    .eraser_bounds(element, speed),
+                    .eraser_bounds(element, added_width),
                 engine_view.camera.viewport(),
             );
             widget_flags |= wf;

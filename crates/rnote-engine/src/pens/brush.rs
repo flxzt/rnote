@@ -2,6 +2,7 @@
 use super::pensconfig::brushconfig::BrushStyle;
 use super::PenBehaviour;
 use super::PenStyle;
+use crate::engine::EngineTask;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
@@ -17,7 +18,26 @@ use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::Constraints;
+use std::collections::VecDeque;
+use std::time::Duration;
 use std::time::Instant;
+
+#[derive(Debug, Copy, Clone)]
+pub struct PosTimeDict {
+    pub pos: na::Vector2<f64>,
+    distance_to_previous: f64,
+    time: Instant,
+}
+
+impl Default for PosTimeDict {
+    fn default() -> Self {
+        Self {
+            pos: na::Vector2::new(0.0, 0.0),
+            distance_to_previous: 0.0,
+            time: Instant::now(),
+        }
+    }
+}
 
 #[derive(Debug)]
 enum BrushState {
@@ -28,15 +48,93 @@ enum BrushState {
     },
 }
 
+#[derive(Debug, Default)]
+pub struct LongPressDetector {
+    distance: f64,
+    total_distance: f64,
+    pub last_strokes: VecDeque<PosTimeDict>,
+}
+
+impl LongPressDetector {
+    fn clear(&mut self) {
+        self.last_strokes.clear();
+    }
+
+    fn total_distance(&self) -> f64 {
+        self.total_distance
+    }
+
+    fn distance(&self) -> f64 {
+        self.distance
+    }
+
+    fn reset(&mut self, element: Element, now: Instant) {
+        self.clear();
+        self.last_strokes.push_front(PosTimeDict {
+            pos: element.pos,
+            distance_to_previous: 0.0,
+            time: now,
+        });
+        self.distance = 0.0;
+        self.total_distance = 0.0;
+    }
+
+    fn add_event(&mut self, element: Element, now: Instant) {
+        // add event to the front of the vecdeque
+        let latest_pos = self.last_strokes.front().unwrap().pos;
+        let dist_delta = latest_pos.metric_distance(&element.pos);
+
+        self.last_strokes.push_front(PosTimeDict {
+            pos: element.pos,
+            distance_to_previous: dist_delta,
+            time: now,
+        });
+        self.distance += dist_delta;
+
+        //println!("adding {:?}", dist_delta);
+
+        self.total_distance += dist_delta;
+
+        while self.last_strokes.back().is_some()
+            && self.last_strokes.back().unwrap().time
+                < now - Duration::from_secs_f64(Brush::LONGPRESS_TIMEOUT)
+        {
+            // remove the last element
+            let back_element = self.last_strokes.pop_back().unwrap();
+            self.distance -= back_element.distance_to_previous;
+            //println!("removing {:?}", back_element.distance_to_previous);
+        }
+    }
+
+    pub fn get_latest_pos(&self) -> na::Vector2<f64> {
+        self.last_strokes.front().unwrap().pos
+    }
+}
+
 #[derive(Debug)]
 pub struct Brush {
     state: BrushState,
+    /// handle for the separate task that makes it possible to
+    /// trigger long press for input with no jitter (where a long press
+    /// hold wouldn't trigger any new event)
+    longpress_handle: Option<crate::tasks::OneOffTaskHandle>,
+    /// stroke key in progress when a long press occurs
+    pub current_stroke_key: Option<StrokeKey>,
+    /// save the start position for the current stroke
+    /// This prevents long press from happening on a point
+    /// We create a deadzone around the start position
+    pub start_position: Option<PosTimeDict>,
+    pub long_press_detector: LongPressDetector,
 }
 
 impl Default for Brush {
     fn default() -> Self {
         Self {
             state: BrushState::Idle,
+            current_stroke_key: None,
+            longpress_handle: None,
+            start_position: None,
+            long_press_detector: LongPressDetector::default(),
         }
     }
 }
@@ -47,6 +145,7 @@ impl PenBehaviour for Brush {
     }
 
     fn deinit(&mut self) -> WidgetFlags {
+        self.longpress_handle = None;
         WidgetFlags::default()
     }
 
@@ -114,6 +213,18 @@ impl PenBehaviour for Brush {
                         current_stroke_key,
                     };
 
+                    self.start_position = Some(PosTimeDict {
+                        pos: element.pos,
+                        distance_to_previous: 0.0,
+                        time: now,
+                    });
+                    let tasks_tx = engine_view.tasks_tx.clone();
+                    self.longpress_handle = Some(crate::tasks::OneOffTaskHandle::new(
+                        move || tasks_tx.send(EngineTask::LongPressStatic),
+                        Duration::from_secs_f64(Self::LONGPRESS_TIMEOUT),
+                    ));
+                    self.long_press_detector.reset(element, now);
+
                     EventResult {
                         handled: true,
                         propagate: EventPropagation::Stop,
@@ -153,6 +264,10 @@ impl PenBehaviour for Brush {
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = BrushState::Idle;
+                self.current_stroke_key = None;
+                self.start_position = None;
+                self.long_press_detector.clear();
+                self.cancel_handle_long_press();
 
                 widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.store_modified = true;
@@ -171,7 +286,7 @@ impl PenBehaviour for Brush {
                 pen_event,
             ) => {
                 let builder_result =
-                    path_builder.handle_event(pen_event, now, Constraints::default());
+                    path_builder.handle_event(pen_event.clone(), now, Constraints::default());
                 let handled = builder_result.handled;
                 let propagate = builder_result.propagate;
 
@@ -207,6 +322,69 @@ impl PenBehaviour for Brush {
                             );
                         }
 
+                        // first send the event
+                        if let Some(handle) = self.longpress_handle.as_mut() {
+                            let _ = handle.reset_timeout();
+                            // only send pen down event to the detector
+                            match pen_event {
+                                PenEvent::Down { element, .. } => {
+                                    self.long_press_detector.add_event(element, now)
+                                }
+                                _ => (),
+                            }
+                        } else {
+                            // recreate the handle if it was dropped
+                            // errors from not using a refcell like the other use ?
+                            // this happens when we sent a long_hold event and cancelled the long
+                            // press.
+                            // We have to restart he handle and the long press detector
+                            let tasks_tx = engine_view.tasks_tx.clone();
+                            self.longpress_handle = Some(crate::tasks::OneOffTaskHandle::new(
+                                move || tasks_tx.send(EngineTask::LongPressStatic),
+                                Duration::from_secs_f64(Self::LONGPRESS_TIMEOUT),
+                            ));
+
+                            match pen_event {
+                                PenEvent::Down { element, .. } => {
+                                    self.start_position = Some(PosTimeDict {
+                                        pos: element.pos,
+                                        distance_to_previous: 0.0,
+                                        time: now,
+                                    });
+                                    self.current_stroke_key = None;
+                                    self.long_press_detector.reset(element, now);
+                                }
+                                _ => {
+                                    // we are drawing only if the pen is down...
+                                }
+                            }
+                        }
+                        // then test : do we have a long press ?
+                        let is_deadzone = self.long_press_detector.total_distance()
+                            > 4.0 * engine_view.pens_config.brush_config.get_stroke_width();
+                        let is_static = self.long_press_detector.distance()
+                            < 0.1 * engine_view.pens_config.brush_config.get_stroke_width();
+                        let time_delta =
+                            now - self.start_position.unwrap_or(PosTimeDict::default()).time;
+
+                        println!("static distance  {:?}", self.long_press_detector.distance());
+                        println!(
+                            "deadzone : {:?}, static {:?}, {:?}",
+                            is_deadzone, is_static, time_delta
+                        );
+
+                        if time_delta > Duration::from_secs_f64(Self::LONGPRESS_TIMEOUT)
+                            && is_static
+                            && is_deadzone
+                        {
+                            //save the key for potentially deleting it and replacing it with a shape
+                            self.current_stroke_key = Some(current_stroke_key.clone());
+                            widget_flags.long_hold = true;
+
+                            // quit the handle. Either recognition is successful and we are right
+                            // or we aren't and a new handle will be created on the next event
+                            self.cancel_handle_long_press();
+                        }
                         PenProgress::InProgress
                     }
                     BuilderProgress::Finished(segments) => {
@@ -244,6 +422,7 @@ impl PenBehaviour for Brush {
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = BrushState::Idle;
+                        self.cancel_handle_long_press();
 
                         widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
@@ -311,6 +490,37 @@ impl DrawableOnDoc for Brush {
 
 impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
+    const LONGPRESS_TIMEOUT: f64 = 1.5;
+
+    pub fn cancel_handle_long_press(&mut self) {
+        // cancel the long press handle
+        if let Some(handle) = self.longpress_handle.as_mut() {
+            let _ = handle.quit();
+        }
+    }
+
+    pub fn reset_long_press(&mut self, element: Element, now: Instant) {
+        self.start_position = None;
+        self.current_stroke_key = None;
+        self.cancel_handle_long_press();
+        self.longpress_handle = None;
+        self.long_press_detector.reset(element, now);
+    }
+
+    pub fn add_stroke_key(&mut self) -> Result<(), ()> {
+        // extract the content of the stroke for recognition purposes
+        match &mut self.state {
+            BrushState::Drawing {
+                path_builder: _,
+                current_stroke_key,
+            } => {
+                //save the key
+                self.current_stroke_key = Some(current_stroke_key.clone());
+                Ok(())
+            }
+            _ => Err(()),
+        }
+    }
 }
 
 fn play_marker_sound(engine_view: &mut EngineViewMut) {

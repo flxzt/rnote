@@ -31,8 +31,9 @@ impl EraserMotion {
     pub const SMOOTHING_FACTOR_ACCEL: f64 = 3.0;
     pub const SMOOTHING_FACTOR_DECEL: f64 = 10.0;
     pub const SPEED_LIMIT: f64 = 10000.0;
+    pub const MIN_SPEED: f64 = 100.0;
     pub const SPEED_SCALING: f64 = 0.01;
-    pub const SPEED_SCALING_STEP_SIZE: f64 = 10.0;
+    pub const SPEED_SCALING_STEP_SIZE: f64 = 25.0;
 
     fn update(&mut self, element: Element, time: Instant) {
         if let Some((last_element, last_element_time)) = self.last_element {
@@ -53,20 +54,25 @@ impl EraserMotion {
         }
         self.last_element = Some((element, time));
 
-        let size_increase = Self::SPEED_SCALING * self.speed;
-        let lower_bound = self.added_width - Self::SPEED_SCALING_STEP_SIZE;
-        let upper_bound = self.added_width + Self::SPEED_SCALING_STEP_SIZE;
-        if size_increase < lower_bound {
-            self.added_width -= Self::SPEED_SCALING_STEP_SIZE;
-        }
-        if size_increase > upper_bound {
-            self.added_width += Self::SPEED_SCALING_STEP_SIZE;
+        if self.speed > Self::MIN_SPEED {
+            let size_increase = Self::SPEED_SCALING * self.speed;
+            let lower_bound = self.added_width - 0.5 * Self::SPEED_SCALING_STEP_SIZE;
+            let upper_bound = self.added_width + 1.0 * Self::SPEED_SCALING_STEP_SIZE;
+            if size_increase < lower_bound {
+                self.added_width -= Self::SPEED_SCALING_STEP_SIZE;
+            }
+            if size_increase > upper_bound {
+                self.added_width += Self::SPEED_SCALING_STEP_SIZE;
+            }
+        } else {
+            self.added_width = 0.0;
         }
     }
 
     fn reset(&mut self) {
         self.last_element = None;
         self.speed = 0.0;
+        self.added_width = 0.0;
     }
 }
 

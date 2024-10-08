@@ -164,7 +164,9 @@ impl RnAppWindow {
             .penpicker()
             .redo_button()
             .set_sensitive(false);
-        self.refresh_ui_from_engine(&self.active_tab_wrapper());
+        if let Some(wrapper) = self.active_tab_wrapper() {
+            self.refresh_ui_from_engine(&wrapper);
+        }
     }
 
     fn setup_icon_theme(&self) {
@@ -210,7 +212,9 @@ impl RnAppWindow {
             canvas.queue_resize();
         }
         if widget_flags.refresh_ui {
-            self.refresh_ui_from_engine(&self.active_tab_wrapper());
+            if let Some(wrapper) = self.active_tab_wrapper() {
+                self.refresh_ui_from_engine(&wrapper);
+            }
         }
         if widget_flags.store_modified {
             canvas.set_unsaved_changes(true);
@@ -263,15 +267,8 @@ impl RnAppWindow {
     }
 
     /// Get the active (selected) tab page.
-    ///
-    /// Panics if there is none, but this should never be the case,
-    /// since a first one is added initially and the UI hides closing the last tab.
-    pub(crate) fn active_tab_page(&self) -> adw::TabPage {
-        self.imp()
-            .overlays
-            .tabview()
-            .selected_page()
-            .expect("there must always be one active tab")
+    pub(crate) fn active_tab_page(&self) -> Option<adw::TabPage> {
+        self.imp().overlays.tabview().selected_page()
     }
 
     pub(crate) fn n_tabs_open(&self) -> usize {
@@ -302,11 +299,14 @@ impl RnAppWindow {
     }
 
     /// Get the active (selected) tab page child.
-    pub(crate) fn active_tab_wrapper(&self) -> RnCanvasWrapper {
+    pub(crate) fn active_tab_wrapper(&self) -> Option<RnCanvasWrapper> {
         self.active_tab_page()
-            .child()
-            .downcast::<RnCanvasWrapper>()
-            .unwrap()
+            .map(|c| c.child().downcast::<RnCanvasWrapper>().unwrap())
+    }
+
+    /// Get the active (selected) tab page canvas.
+    pub(crate) fn active_tab_canvas(&self) -> Option<RnCanvas> {
+        self.active_tab_wrapper().map(|w| w.canvas())
     }
 
     /// adds the initial tab to the tabview
@@ -329,9 +329,8 @@ impl RnAppWindow {
     pub(crate) fn new_canvas_wrapper(&self) -> RnCanvasWrapper {
         let engine_config = self
             .active_tab_wrapper()
-            .canvas()
-            .engine_ref()
-            .extract_engine_config();
+            .map(|w| w.canvas().engine_ref().extract_engine_config())
+            .unwrap_or_default();
         let wrapper = RnCanvasWrapper::new();
         let widget_flags = wrapper
             .canvas()
@@ -465,9 +464,7 @@ impl RnAppWindow {
             .close_page_finish(tab_page, confirm);
     }
 
-    pub(crate) fn refresh_titles(&self, active_tab: &RnCanvasWrapper) {
-        let canvas = active_tab.canvas();
-
+    pub(crate) fn refresh_titles(&self, canvas: &RnCanvas) {
         // Titles
         let title = canvas.doc_title_display();
         let subtitle = canvas.doc_folderpath_display();
@@ -531,7 +528,7 @@ impl RnAppWindow {
         &self,
         input_file: gio::File,
         target_pos: Option<na::Vector2<f64>>,
-        rnote_file_new_tab: bool,
+        mut rnote_file_new_tab: bool,
     ) -> anyhow::Result<bool> {
         let file_imported = match FileType::lookup_file_type(&input_file) {
             FileType::RnoteFile => {
@@ -544,20 +541,16 @@ impl RnAppWindow {
                     self.overlays().tabview().set_selected_page(&page);
                     false
                 } else {
-                    let rnote_file_new_tab = if self.active_tab_wrapper().canvas().empty()
-                        && self.active_tab_wrapper().canvas().output_file().is_none()
-                    {
-                        false
+                    let wrapper = if let Some(wrapper) = self.active_tab_wrapper() {
+                        wrapper
                     } else {
-                        rnote_file_new_tab
-                    };
-
-                    let wrapper = if rnote_file_new_tab {
-                        // a new tab for rnote files
+                        rnote_file_new_tab = true;
                         self.new_canvas_wrapper()
-                    } else {
-                        self.active_tab_wrapper()
                     };
+                    if !wrapper.canvas().empty() || wrapper.canvas().output_file().is_some() {
+                        rnote_file_new_tab = true;
+                    }
+
                     let (bytes, _) = input_file.load_bytes_future().await?;
                     let widget_flags = wrapper
                         .canvas()
@@ -571,7 +564,10 @@ impl RnAppWindow {
                 }
             }
             FileType::VectorImageFile => {
-                let canvas = self.active_tab_wrapper().canvas();
+                let canvas = self
+                    .active_tab_wrapper()
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
+                    .canvas();
                 let (bytes, _) = input_file.load_bytes_future().await?;
                 canvas
                     .load_in_vectorimage_bytes(bytes.to_vec(), target_pos, self.respect_borders())
@@ -579,7 +575,10 @@ impl RnAppWindow {
                 true
             }
             FileType::BitmapImageFile => {
-                let canvas = self.active_tab_wrapper().canvas();
+                let canvas = self
+                    .active_tab_wrapper()
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
+                    .canvas();
                 let (bytes, _) = input_file.load_bytes_future().await?;
                 canvas
                     .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos, self.respect_borders())
@@ -598,12 +597,18 @@ impl RnAppWindow {
                 file_imported
             }
             FileType::PdfFile => {
-                let canvas = self.active_tab_wrapper().canvas();
+                let canvas = self
+                    .active_tab_wrapper()
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
+                    .canvas();
                 dialogs::import::dialog_import_pdf_w_prefs(self, &canvas, input_file, target_pos)
                     .await?
             }
             FileType::PlaintextFile => {
-                let canvas = self.active_tab_wrapper().canvas();
+                let canvas = self
+                    .active_tab_wrapper()
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
+                    .canvas();
                 let (bytes, _) = input_file.load_bytes_future().await?;
                 canvas.load_in_text(String::from_utf8(bytes.to_vec())?, target_pos)?;
                 true
@@ -873,7 +878,7 @@ impl RnAppWindow {
             .tools_page()
             .refresh_ui(active_tab);
         self.sidebar().settings_panel().refresh_ui(active_tab);
-        self.refresh_titles(active_tab);
+        self.refresh_titles(&canvas);
     }
 
     /// Sync the state from the previous active tab and the current one. Used when the selected tab changes.

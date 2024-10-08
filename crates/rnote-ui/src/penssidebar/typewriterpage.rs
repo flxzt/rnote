@@ -126,10 +126,12 @@ impl RnTypewriterPage {
             glib::spawn_future_local(clone!(#[weak] typewriterpage, #[weak] appwindow , async move {
                 let dialog = FontDialog::builder().modal(false).build();
                 let prev_picked_font_family = typewriterpage.imp().prev_picked_font_family.borrow().clone();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
 
                 match dialog.choose_family_future(Some(&appwindow), prev_picked_font_family.as_ref()).await {
                     Ok(new_font_family) => {
-                        let canvas = appwindow.active_tab_wrapper().canvas();
                         let font_family_name = new_font_family.name().to_string();
 
                         typewriterpage.imp().prev_picked_font_family.borrow_mut().replace(new_font_family);
@@ -154,7 +156,9 @@ impl RnTypewriterPage {
             appwindow,
             move |spinbutton| {
                 let font_size = spinbutton.value();
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
 
                 canvas
                     .engine_mut()
@@ -174,7 +178,9 @@ impl RnTypewriterPage {
             #[weak]
             appwindow,
             move |_, emoji_str| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas.engine_mut().insert_text(emoji_str.to_string(), None);
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
@@ -185,7 +191,9 @@ impl RnTypewriterPage {
             #[weak]
             appwindow,
             move |_| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas.engine_mut().text_selection_remove_attributes();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
@@ -196,7 +204,9 @@ impl RnTypewriterPage {
             #[weak]
             appwindow,
             move |_| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags =
                     canvas
                         .engine_mut()
@@ -212,7 +222,9 @@ impl RnTypewriterPage {
             #[weak]
             appwindow,
             move |_| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas
                     .engine_mut()
                     .text_selection_toggle_attribute(TextAttribute::Style(FontStyle::Italic));
@@ -225,7 +237,9 @@ impl RnTypewriterPage {
             #[weak]
             appwindow,
             move |_| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas
                     .engine_mut()
                     .text_selection_toggle_attribute(TextAttribute::Underline(true));
@@ -238,7 +252,9 @@ impl RnTypewriterPage {
             #[weak]
             appwindow,
             move |_| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas
                     .engine_mut()
                     .text_selection_toggle_attribute(TextAttribute::Strikethrough(true));
@@ -255,7 +271,9 @@ impl RnTypewriterPage {
                     if !togglebutton.is_active() {
                         return;
                     }
-                    let canvas = appwindow.active_tab_wrapper().canvas();
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
                     canvas
                         .engine_mut()
                         .pens_config
@@ -277,7 +295,9 @@ impl RnTypewriterPage {
                     if !togglebutton.is_active() {
                         return;
                     }
-                    let canvas = appwindow.active_tab_wrapper().canvas();
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
                     canvas
                         .engine_mut()
                         .pens_config
@@ -299,7 +319,9 @@ impl RnTypewriterPage {
                     if !togglebutton.is_active() {
                         return;
                     }
-                    let canvas = appwindow.active_tab_wrapper().canvas();
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
                     canvas
                         .engine_mut()
                         .pens_config
@@ -321,7 +343,9 @@ impl RnTypewriterPage {
                     if !togglebutton.is_active() {
                         return;
                     }
-                    let canvas = appwindow.active_tab_wrapper().canvas();
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
                     canvas
                         .engine_mut()
                         .pens_config

@@ -249,7 +249,7 @@ impl RnShaperPage {
                                 .shaper_config
                                 .smooth_options
                                 .shape_style
-                                .update_inner_strokedash(stroke_width);
+                                .update_inner(stroke_width);
                         }
                         ShaperStyle::Rough => {
                             canvas

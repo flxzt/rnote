@@ -12,11 +12,12 @@ pub struct ShapeStyle {
     pub line_cap: LineCap,
     /// Line style
     pub line_style: LineStyle,
-    inner: piet::StrokeStyle,
+    /// Represents the dash pattern
+    inner: Vec<f64>,
 }
 
-/// Required as piet::Linestyle cannot be serialized and requires stroke_width to be correctly calculated
-/// Nonetheless this keeps the impact on file sizes minimal
+/// This struct is a subset of ShapeStyle, its goal is to keep the filesize increase to a minimum
+/// as the dash pattern (inner) is calculated from the width of the stroke, the line_cap, and the line_style
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "shape_style")]
@@ -36,11 +37,6 @@ impl From<ShapeStyle> for ShapeStylePrecursor {
     }
 }
 
-// In theory this should be safe, as all stroke elements adhere to the borrow checker's rules
-// e.g. one mutable borrow at a time, will not be read after being freed
-unsafe impl Send for ShapeStyle {}
-unsafe impl Sync for ShapeStyle {}
-
 impl ShapeStyle {
     /// The ratio between the length of a dash and the width of the stroke
     const DASH_LENGTH_TO_WIDTH_RATIO: f64 = 3.0;
@@ -50,22 +46,20 @@ impl ShapeStyle {
         if self.line_style.is_dotted() && line_cap != LineCap::Rounded {
             self.line_style = LineStyle::Solid;
         }
-        self.inner.set_line_cap(line_cap.into());
         self.line_cap = line_cap;
-        self.update_inner_strokedash(stroke_width);
+        self.update_inner(stroke_width);
     }
     /// Updates the line style
     pub fn update_line_style(&mut self, line_style: LineStyle, stroke_width: f64) {
         // Dotted style requires a round LineCap
         if line_style.is_dotted() {
             self.line_cap = LineCap::Rounded;
-            self.inner.set_line_cap(piet::LineCap::Round);
         }
         self.line_style = line_style;
-        self.update_inner_strokedash(stroke_width);
+        self.update_inner(stroke_width);
     }
     /// Updates the inner strokedash
-    pub fn update_inner_strokedash(&mut self, stroke_width: f64) {
+    pub fn update_inner(&mut self, stroke_width: f64) {
         let mut dash_pattern = self.line_style.as_unscaled_vector();
         match self.line_cap {
             LineCap::Straight => dash_pattern
@@ -83,24 +77,21 @@ impl ShapeStyle {
                 }
             }),
         }
-        self.inner.set_dash_pattern(dash_pattern);
+        self.inner = dash_pattern;
     }
     pub(crate) fn from_precursor(precursor: ShapeStylePrecursor, stroke_width: f64) -> Self {
         let mut shape_style = Self {
             line_cap: precursor.line_cap,
             line_style: precursor.line_style,
-            inner: piet::StrokeStyle {
-                line_join: piet::LineJoin::default(),
-                line_cap: precursor.line_cap.into(),
-                dash_pattern: piet::StrokeDash::default(),
-                dash_offset: 0.0,
-            },
+            inner: Vec::with_capacity(0),
         };
-        shape_style.update_inner_strokedash(stroke_width);
+        shape_style.update_inner(stroke_width);
         shape_style
     }
-    pub(crate) fn get(&self) -> &piet::StrokeStyle {
-        &self.inner
+    pub(crate) fn get(&self) -> piet::StrokeStyle {
+        let mut style = piet::StrokeStyle::new().line_cap(self.line_cap.into());
+        style.set_dash_pattern(self.inner.as_slice());
+        style
     }
 }
 
@@ -109,11 +100,7 @@ impl Default for ShapeStyle {
         Self {
             line_cap: LineCap::Straight,
             line_style: LineStyle::Solid,
-            inner: piet::StrokeStyle::new()
-                .line_join(piet::LineJoin::default())
-                .line_cap(piet::LineCap::Butt)
-                .dash_pattern(&[])
-                .dash_offset(0.0),
+            inner: Vec::with_capacity(0),
         }
     }
 }

@@ -1,5 +1,8 @@
 // Modules
+
+/// The module for the shape style
 pub mod shapestyle;
+/// The module for the smooth style
 pub mod smoothoptions;
 
 // Re-exports
@@ -31,7 +34,7 @@ impl Composer<SmoothOptions> for Line {
                 line,
                 &stroke_brush,
                 options.stroke_width,
-                options.shape_style.get(),
+                &options.shape_style.get(),
             );
         }
         cx.restore().unwrap();
@@ -53,7 +56,7 @@ impl Composer<SmoothOptions> for Arrow {
                 arrow,
                 &Into::<piet::Color>::into(stroke_color),
                 options.stroke_width,
-                options.shape_style.get(),
+                &options.shape_style.get(),
             );
         }
 
@@ -81,7 +84,7 @@ impl Composer<SmoothOptions> for Rectangle {
                 shape,
                 &stroke_brush,
                 options.stroke_width,
-                options.shape_style.get(),
+                &options.shape_style.get(),
             );
         }
         cx.restore().unwrap();
@@ -108,7 +111,7 @@ impl Composer<SmoothOptions> for Ellipse {
                 ellipse,
                 &stroke_brush,
                 options.stroke_width,
-                options.shape_style.get(),
+                &options.shape_style.get(),
             );
         }
         cx.restore().unwrap();
@@ -135,7 +138,7 @@ impl Composer<SmoothOptions> for QuadraticBezier {
                 quadbez,
                 &stroke_brush,
                 options.stroke_width,
-                options.shape_style.get(),
+                &options.shape_style.get(),
             );
         }
         cx.restore().unwrap();
@@ -162,7 +165,7 @@ impl Composer<SmoothOptions> for CubicBezier {
                 cubbez,
                 &stroke_brush,
                 options.stroke_width,
-                options.shape_style.get(),
+                &options.shape_style.get(),
             );
         }
         cx.restore().unwrap();

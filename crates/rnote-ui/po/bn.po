@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-09-04 18:09+0000\n"
+"PO-Revision-Date: 2024-10-09 11:16+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.7.2-rc\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -330,18 +330,13 @@ msgid "Page Order"
 msgstr "পৃষ্ঠার ক্রম"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
-"পৃষ্ঠার ক্রম যখন লেআউট সহ নথি\n"
-"যেটি অনুভূমিক এবং উল্লম্ব দিকগুলিতে প্রসারিত হয়\n"
+"পৃষ্ঠার ক্রম যখন নথি যার লেআউট\n"
+"অনুভূমিক এবং উল্লম্ব দিকগুলিতে প্রসারিত হয়\n"
 "পৃষ্ঠায় কাটা হয়"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:152
@@ -392,19 +387,14 @@ msgid "Jpeg"
 msgstr "জেপিজি/জেপেগ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "    that expand in horizontal and vertical directions\n"
 "    are cut into pages"
 msgstr ""
-"পৃষ্ঠার ক্রম যখন লেআউট সহ নথি\n"
-"যেটি অনুভূমিক এবং উল্লম্ব দিকগুলিতে প্রসারিত হয়\n"
-"পৃষ্ঠায় কাটা হয়"
+"পৃষ্ঠার ক্রম যখন নথি যার লেয়াউট\n"
+"    অনুভূমিক এবং উল্লম্ব দিকগুলিতে প্রসারিত হয়\n"
+"    পৃষ্ঠায় কাটা হয়"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
@@ -414,16 +404,12 @@ msgstr "বিটম্যাপ স্কেল ফ্যাক্টর"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "    to the actual size on the document"
 msgstr ""
-"বিটম্যাপ স্কেল ফ্যাক্টর এর সাপেক্ষে সেট করুন\n"
-"নথির প্রকৃত আকার"
+"বিটম্যাপ স্কেল ফ্যাক্টর এর সাপেক্ষে\n"
+"    নথির প্রকৃত আকার সেট করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
@@ -445,16 +431,12 @@ msgid "The export image format"
 msgstr "রপ্তানি চিত্র বিন্যাস"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
-"বিটম্যাপ স্কেল ফ্যাক্টর এর সাপেক্ষে সেট করুন\n"
-"নথির প্রকৃত আকার"
+"বিটম্যাপ স্কেল ফ্যাক্টর এর সাপেক্ষে\n"
+"নথির প্রকৃত আকার সেট করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"
@@ -1798,9 +1780,8 @@ msgid "Exporting selection failed, nothing selected"
 msgstr "নির্বাচন রপ্তানি করতে ব্যর্থ হয়েছে, কোনকিছু নির্বাচিত হয়নি"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
-#, fuzzy
 msgid "Saves are in progress, waiting before closing.."
-msgstr "সংরক্ষণ চলছে, বন্ধ্য করার আগে অপেক্ষা করুন…"
+msgstr "সংরক্ষণ চলছে, বন্ধ্য করার আগে অপেক্ষা করুন.।"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:336
 msgid "Button 1"

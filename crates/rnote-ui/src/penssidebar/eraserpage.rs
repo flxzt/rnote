@@ -172,13 +172,12 @@ impl RnEraserPage {
             #[weak]
             appwindow,
             move |speed_scaling_toggle| {
-                appwindow
-                    .active_tab_wrapper()
-                    .canvas()
-                    .engine_mut()
-                    .pens_config
-                    .eraser_config
-                    .speed_scaling = speed_scaling_toggle.is_active();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
+                canvas.engine_mut().pens_config.eraser_config.speed_scaling =
+                    speed_scaling_toggle.is_active();
             }
         ));
     }

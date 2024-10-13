@@ -47,5 +47,15 @@
         <property name="preview-style">rounded-rect</property>
       </object>
     </child>
+    <child>
+      <object class="GtkToggleButton" id="speed_scaling_toggle">
+        <property name="group">speed_scaling_toggle</property>
+        <property name="tooltip_text" translatable="yes">Scale eraser size with speed</property>
+        <property name="icon_name">workspacelistentryicon-speedometer-symbolic</property>
+        <style>
+          <class name="sidebar_action_button" />
+        </style>
+      </object>
+    </child>
   </template>
 </interface>

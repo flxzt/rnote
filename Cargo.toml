@@ -13,7 +13,7 @@ edition = "2021"
 homepage = "https://rnote.flxzt.net"
 license = "GPL-3.0-or-later"
 repository = "https://github.com/flxzt/rnote"
-rust-version = "1.74"
+rust-version = "1.81"
 version = "0.11.0"
 
 [workspace.dependencies]

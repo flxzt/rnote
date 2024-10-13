@@ -528,7 +528,7 @@ impl RnAppWindow {
         &self,
         input_file: gio::File,
         target_pos: Option<na::Vector2<f64>>,
-        mut rnote_file_new_tab: bool,
+        rnote_file_new_tab: bool,
     ) -> anyhow::Result<bool> {
         let file_imported = match FileType::lookup_file_type(&input_file) {
             FileType::RnoteFile => {
@@ -541,15 +541,21 @@ impl RnAppWindow {
                     self.overlays().tabview().set_selected_page(&page);
                     false
                 } else {
-                    let wrapper = if let Some(wrapper) = self.active_tab_wrapper() {
-                        wrapper
-                    } else {
-                        rnote_file_new_tab = true;
-                        self.new_canvas_wrapper()
-                    };
-                    if !wrapper.canvas().empty() || wrapper.canvas().output_file().is_some() {
-                        rnote_file_new_tab = true;
-                    }
+                    let (rnote_file_new_tab, wrapper) =
+                        match (rnote_file_new_tab, self.active_tab_wrapper()) {
+                            (true, None) => (true, self.new_canvas_wrapper()),
+                            // Create a new tab when the existing is already used
+                            (true, Some(active_wrapper))
+                                if !active_wrapper.canvas().empty()
+                                    || active_wrapper.canvas().output_file().is_some() =>
+                            {
+                                (true, self.new_canvas_wrapper())
+                            }
+                            // Re-use the existing empty tab otherwise
+                            (true, Some(active_wrapper)) => (false, active_wrapper),
+                            (false, None) => (true, self.new_canvas_wrapper()),
+                            (false, Some(active_wrapper)) => (false, active_wrapper),
+                        };
 
                     let (bytes, _) = input_file.load_bytes_future().await?;
                     let widget_flags = wrapper

@@ -104,6 +104,10 @@ impl RnAppWindow {
         self.application().unwrap().downcast::<RnApp>().unwrap()
     }
 
+    pub(crate) fn overview(&self) -> adw::TabOverview {
+        self.imp().overview.get()
+    }
+
     pub(crate) fn main_header(&self) -> RnMainHeader {
         self.imp().main_header.get()
     }

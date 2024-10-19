@@ -65,8 +65,8 @@ regex = "1.10"
 rodio = { version = "0.19.0", default-features = false, features = [
     "symphonia-wav",
 ] }
-rough_piet = "0.6.0"
-roughr = "0.6.0"
+rough_piet = "0.7.0"
+roughr = "0.7.0"
 roxmltree = "0.20.0"
 rstar = "0.12.0"
 semver = { version = "1.0", features = ["serde"] }
@@ -88,11 +88,8 @@ poppler-rs = { version = "0.24.1", features = ["v20_9"] }
 
 [patch.crates-io]
 # once a new piet (current v0.6.2) is released with updated cairo and kurbo deps, this can be removed.
-piet = { git = "https://github.com/flxzt/piet", rev = "17fd59f260db3c54029a8288178e32f9f1742be2" }
-piet-cairo = { git = "https://github.com/flxzt/piet", rev = "17fd59f260db3c54029a8288178e32f9f1742be2" }
-# the latest commit in rough depends on nightly-only features
-roughr = { git = "https://github.com/orhanbalci/rough-rs", rev = "0701ce0b874061707ef726533b43e1806af8b666" }
-rough_piet = { git = "https://github.com/orhanbalci/rough-rs", rev = "0701ce0b874061707ef726533b43e1806af8b666" }
+piet = { git = "https://github.com/linebender/piet", rev = "8b06c7bb00482462e5d24ebca79d9404e8807772" }
+piet-cairo = { git = "https://github.com/linebender/piet", rev = "8b06c7bb00482462e5d24ebca79d9404e8807772" }
 
 [profile.dev]
 debug = true

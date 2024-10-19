@@ -6,7 +6,7 @@ runtime-version: "47"
 sdk: org.gnome.Sdk
 sdk-extensions:
     - org.freedesktop.Sdk.Extension.rust-stable
-    - org.freedesktop.Sdk.Extension.llvm18
+    - org.freedesktop.Sdk.Extension.llvm19
 command: rnote
 finish-args:
     - "--socket=wayland"
@@ -25,7 +25,7 @@ finish-args:
     - "--env=GTK_PATH=/app/lib/gtk-4.0"
     - "--env=GST_DEBUG=3"
 build-options:
-    append-path: "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm18/bin"
+    append-path: "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm19/bin"
     env:
         CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: clang
         CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS: "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold"
@@ -36,7 +36,7 @@ build-options:
     test-args:
         - "--socket=x11"
         - "--share=network"
-    prepend-ld-library-path: /usr/lib/sdk/llvm18/lib
+    prepend-ld-library-path: /usr/lib/sdk/llvm19/lib
 modules:
     - name: poppler
       buildsystem: cmake-ninja

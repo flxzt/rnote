@@ -18,6 +18,7 @@ pub use penbehaviour::PenBehaviour;
 pub use penholder::PenHolder;
 pub use penmode::PenMode;
 pub use pensconfig::PensConfig;
+use rnote_compose::penpath::Element;
 pub use selector::Selector;
 pub use shaper::Shaper;
 pub use shortcuts::Shortcuts;
@@ -49,6 +50,26 @@ pub enum Pen {
 impl Default for Pen {
     fn default() -> Self {
         Self::Brush(Brush::default())
+    }
+}
+
+impl Pen {
+    // intermediary function for mutability
+    pub fn reset_long_press(&mut self, now: Instant) -> Result<(), ()> {
+        match self {
+            Pen::Brush(brush) => {
+                // get the last element stored in the recognizer
+                brush.reset_long_press(
+                    Element {
+                        pos: brush.long_press_detector.get_latest_pos(),
+                        pressure: 1.0,
+                    },
+                    now,
+                );
+                Ok(())
+            }
+            _ => Err(()),
+        }
     }
 }
 

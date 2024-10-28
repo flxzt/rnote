@@ -525,7 +525,7 @@ impl Selector {
 
                 EventResult {
                     handled: true,
-                    propagate: EventPropagation::Stop,
+                    propagate: EventPropagation::Proceed,
                     progress: PenProgress::InProgress,
                 }
             }

@@ -114,48 +114,103 @@ impl RnToolsPage {
         // for now doesn't do anything but for the close button later
         let verticalspace_popover = imp.verticalspace_popover.get();
 
-        imp.toolstyle_verticalspace_toggle.connect_toggled(clone!(@weak appwindow => move |toggle| {
-            if toggle.is_active() {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.style = ToolStyle::VerticalSpace;
-            }
-        }));
+        imp.toolstyle_verticalspace_toggle.connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |toggle| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
 
-        imp.toolstyle_offsetcamera_toggle.connect_toggled(clone!(@weak appwindow => move |toggle| {
-            if toggle.is_active() {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.style = ToolStyle::OffsetCamera;
+                if toggle.is_active() {
+                    canvas.engine_mut().pens_config.tools_config.style = ToolStyle::VerticalSpace;
+                }
             }
-        }));
+        ));
 
-        imp.toolstyle_zoom_toggle.connect_toggled(clone!(@weak appwindow => move |toggle| {
-            if toggle.is_active() {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.style = ToolStyle::Zoom;
+        imp.toolstyle_offsetcamera_toggle.connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |toggle| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
+                if toggle.is_active() {
+                    canvas.engine_mut().pens_config.tools_config.style = ToolStyle::OffsetCamera;
+                }
             }
-        }));
+        ));
 
-        imp.verticalspace_menubutton.connect_active_notify(
-            clone!(@weak self as toolspage => move |menubutton| {
+        imp.toolstyle_zoom_toggle.connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |toggle| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
+                if toggle.is_active() {
+                    canvas.engine_mut().pens_config.tools_config.style = ToolStyle::Zoom;
+                }
+            }
+        ));
+
+        imp.verticalspace_menubutton.connect_active_notify(clone!(
+            #[weak(rename_to=toolspage)]
+            self,
+            move |menubutton| {
                 if menubutton.is_active() {
                     toolspage.set_tool_style(ToolStyle::VerticalSpace);
                 }
-            }),
-        );
+            }
+        ));
 
-        imp.verticalspace_popover_close_button.connect_clicked(
-            clone!(@weak verticalspace_popover => move |_| {
-                verticalspace_popover.popdown();
-            }),
-        );
+        imp.verticalspace_popover_close_button
+            .connect_clicked(clone!(
+                #[weak]
+                verticalspace_popover,
+                move |_| {
+                    verticalspace_popover.popdown();
+                }
+            ));
 
         imp.verticalspace_limit_movement_vertical_bordersrow
             .get()
-            .connect_active_notify(clone!(@weak appwindow => move |row| {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.verticalspace_tool_config.limit_movement_vertical_borders = row.is_active();
-            }));
+            .connect_active_notify(clone!(
+                #[weak]
+                appwindow,
+                move |row| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+
+                    canvas
+                        .engine_mut()
+                        .pens_config
+                        .tools_config
+                        .verticalspace_tool_config
+                        .limit_movement_vertical_borders = row.is_active();
+                }
+            ));
         imp.verticalspace_limit_movement_horizontal_bordersrow
             .get()
-            .connect_active_notify(clone!(@weak appwindow => move |row| {
-                appwindow.active_tab_wrapper().canvas().engine_mut().pens_config.tools_config.verticalspace_tool_config.limit_movement_horizontal_borders = row.is_active();
-            }));
+            .connect_active_notify(clone!(
+                #[weak]
+                appwindow,
+                move |row| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+
+                    canvas
+                        .engine_mut()
+                        .pens_config
+                        .tools_config
+                        .verticalspace_tool_config
+                        .limit_movement_horizontal_borders = row.is_active();
+                }
+            ));
     }
 
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {

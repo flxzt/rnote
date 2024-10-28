@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-04-20 14:07+0000\n"
+"PO-Revision-Date: 2024-09-07 18:09+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -331,11 +331,6 @@ msgid "Page Order"
 msgstr "Oldalsorrend"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
@@ -393,19 +388,14 @@ msgid "Jpeg"
 msgstr "JPEG-fájl"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "    that expand in horizontal and vertical directions\n"
 "    are cut into pages"
 msgstr ""
 "Az az oldalsorrend, amikor a vízszintes és függőleges\n"
-"irányban bővülő elrendezésű dokumentumokat\n"
-"lapokra vágja"
+"    irányban bővülő elrendezésű dokumentumokat\n"
+"    lapokra vágja"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
@@ -415,16 +405,12 @@ msgstr "Pontkép-méretezési tényező"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "    to the actual size on the document"
 msgstr ""
 "Állítsa be a pontkép-méretezési tényezőt a dokumentum\n"
-"tényleges méretéhez viszonyítva"
+"    tényleges méretéhez viszonyítva"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
@@ -446,10 +432,6 @@ msgid "The export image format"
 msgstr "Az export képformátum"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
@@ -1129,7 +1111,7 @@ msgstr "_Nagyításhoz blokkolja az összecsípést"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:64
 msgid "Respect Borders When Pasting"
-msgstr ""
+msgstr "Tartsa tiszteletben a szegélyeket beillesztéskor"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:95
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
@@ -1256,10 +1238,8 @@ msgid "Toggle"
 msgstr "Váltás"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:14
-#, fuzzy
-#| msgid "Enabled"
 msgid "Disabled"
-msgstr "Engedélyezve"
+msgstr "Letiltva"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:41
 #: crates/rnote-ui/data/ui/shortcuts.ui:11
@@ -1291,16 +1271,16 @@ msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "Állítsa be, hogy megjelenjenek-e a görgetősávok a vásznon"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:64
-#, fuzzy
-#| msgid "Optimize for Printing"
 msgid "Optimize for E-Paper Displays"
-msgstr "Nyomtatás optimalizálása"
+msgstr "E-papír kijelzőének optimalizálása"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:65
 msgid ""
 "Changes certain UI elements and modifies behaviour\n"
 "of tools for optimized usage on E-Paper displays"
 msgstr ""
+"Bizonyos felhasználói felület elemei és az eszközök viselkedésének\n"
+"módosítása az optimalizált használat érdekében az e-papír kijelzőkön"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:71
 msgid "Inertial Touch Scrolling"
@@ -1793,7 +1773,7 @@ msgstr "Nem sikerült a kijelölés exportálása, nincs kijelölve semmi"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
 msgid "Saves are in progress, waiting before closing.."
-msgstr ""
+msgstr "A mentés folyamatban van, vár a bezárás előtt…"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:336
 msgid "Button 1"
@@ -2424,135 +2404,127 @@ msgstr "Új mappa"
 #: crates/rnote-ui/src/utils.rs:159
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
-msgstr ""
+msgstr "szürke"
 
 #: crates/rnote-ui/src/utils.rs:161 crates/rnote-ui/src/utils.rs:196
 msgctxt "part of string representation of a color"
 msgid "rose"
-msgstr ""
+msgstr "rózsaszín"
 
 #: crates/rnote-ui/src/utils.rs:163
-#, fuzzy
-#| msgid "Bread"
 msgctxt "part of string representation of a color"
 msgid "red"
-msgstr "Kenyér"
+msgstr "vörös"
 
 #: crates/rnote-ui/src/utils.rs:166
 msgctxt "part of string representation of a color"
 msgid "orange"
-msgstr ""
+msgstr "narancssárga"
 
 #: crates/rnote-ui/src/utils.rs:169
 msgctxt "part of string representation of a color"
 msgid "yellow"
-msgstr ""
+msgstr "citromsárga"
 
 #: crates/rnote-ui/src/utils.rs:173
 msgctxt "part of string representation of a color"
 msgid "chartreuse-green"
-msgstr ""
+msgstr "karthauzi zöld"
 
 #: crates/rnote-ui/src/utils.rs:176
 msgctxt "part of string representation of a color"
 msgid "green"
-msgstr ""
+msgstr "zöld"
 
 #: crates/rnote-ui/src/utils.rs:179
 msgctxt "part of string representation of a color"
 msgid "spring-green"
-msgstr ""
+msgstr "tavaszi zöld"
 
 #: crates/rnote-ui/src/utils.rs:182
 msgctxt "part of string representation of a color"
 msgid "cyan"
-msgstr ""
+msgstr "cián"
 
 #: crates/rnote-ui/src/utils.rs:185
 msgctxt "part of string representation of a color"
 msgid "azure"
-msgstr ""
+msgstr "égszínkék"
 
 #: crates/rnote-ui/src/utils.rs:188
 msgctxt "part of string representation of a color"
 msgid "blue"
-msgstr ""
+msgstr "kék"
 
 #: crates/rnote-ui/src/utils.rs:191
 msgctxt "part of string representation of a color"
 msgid "violet"
-msgstr ""
+msgstr "ibolya"
 
 #: crates/rnote-ui/src/utils.rs:194
 msgctxt "part of string representation of a color"
 msgid "magenta"
-msgstr ""
+msgstr "bíborvörös"
 
 #: crates/rnote-ui/src/utils.rs:201
 msgctxt "part of string representation of a color"
 msgid "greyish"
-msgstr ""
+msgstr "szürkés"
 
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "vivid"
-msgstr ""
+msgstr "élénk"
 
 #: crates/rnote-ui/src/utils.rs:208
 msgctxt "part of string representation of a color"
 msgid "very-dark"
-msgstr ""
+msgstr "nagyon sötét"
 
 #: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
 msgid "dark"
-msgstr ""
+msgstr "sötét"
 
 #: crates/rnote-ui/src/utils.rs:213
 msgctxt "part of string representation of a color"
 msgid "mid"
-msgstr ""
+msgstr "közép"
 
 #: crates/rnote-ui/src/utils.rs:215
-#, fuzzy
-#| msgid "Height"
 msgctxt "part of string representation of a color"
 msgid "bright"
-msgstr "Magasság"
+msgstr "fényes"
 
 #: crates/rnote-ui/src/utils.rs:219
-#, fuzzy
-#| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "transparent"
-msgstr "Óvári"
+msgstr "átlátszó"
 
 #: crates/rnote-ui/src/utils.rs:221
-#, fuzzy
-#| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "translucent"
-msgstr "Óvári"
+msgstr "áttetsző"
 
 #: crates/rnote-ui/src/utils.rs:225
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
-msgstr ""
+msgstr "enyhén áttetsző"
 
 #: crates/rnote-ui/src/utils.rs:234
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
-msgstr ""
+msgstr "teljesen átlátszó"
 
 #: crates/rnote-ui/src/utils.rs:237
 msgctxt "part of string representation of a color"
 msgid "black"
-msgstr ""
+msgstr "fekete"
 
 #: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "white"
-msgstr ""
+msgstr "fehér"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "A megnyitott fájl át lett helyezve vagy törölve lett a lemezről"

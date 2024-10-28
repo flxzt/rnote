@@ -254,9 +254,13 @@ impl WindowImpl for RnAppWindow {
                             toast.dismiss();
                         }
 
-                        glib::spawn_future_local(clone!(@weak appwindow => async move {
-                            dialogs::dialog_close_window(&appwindow).await;
-                        }));
+                        glib::spawn_future_local(clone!(
+                            #[weak]
+                            appwindow,
+                            async move {
+                                dialogs::dialog_close_window(&appwindow).await;
+                            }
+                        ));
                     } else {
                         appwindow.close_force();
                     }
@@ -271,9 +275,13 @@ impl WindowImpl for RnAppWindow {
                 &mut self.save_in_progress_toast.borrow_mut(),
             );
         } else if obj.tabs_any_unsaved_changes() {
-            glib::spawn_future_local(clone!(@weak obj as appwindow => async move {
-                dialogs::dialog_close_window(&appwindow).await;
-            }));
+            glib::spawn_future_local(clone!(
+                #[weak(rename_to=appwindow)]
+                obj,
+                async move {
+                    dialogs::dialog_close_window(&appwindow).await;
+                }
+            ));
         } else {
             obj.close_force();
         }
@@ -294,7 +302,7 @@ impl RnAppWindow {
         if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(
             glib::source::timeout_add_seconds_local(
                 self.autosave_interval_secs.get(),
-                clone!(@weak obj as appwindow => @default-return glib::ControlFlow::Break, move || {
+                clone!(#[weak(rename_to=appwindow)] obj, #[upgrade_or] glib::ControlFlow::Break, move || {
                     // save for all tabs opened in the current window that have unsaved changes
                     let tabs = appwindow.get_all_tabs();
 
@@ -305,7 +313,7 @@ impl RnAppWindow {
                                 trace!(
                                     "there are unsaved changes on the tab {:?} with a file on disk, saving",i
                                 );
-                                glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
+                                glib::spawn_future_local(clone!(#[weak] canvas, #[weak] appwindow ,async move {
                                     if let Err(e) = canvas.save_document_to_file(&output_file).await {
                                         error!("Saving document failed, Err: `{e:?}`");
                                         canvas.set_output_file(None);
@@ -443,23 +451,33 @@ impl RnAppWindow {
 
         let sidebar_expanded_shown = Rc::new(Cell::new(false));
 
-        self.split_view.connect_show_sidebar_notify(
-            clone!(@strong sidebar_expanded_shown, @weak obj as appwindow => move |split_view| {
+        self.split_view.connect_show_sidebar_notify(clone!(
+            #[strong]
+            sidebar_expanded_shown,
+            #[weak(rename_to=appwindow)]
+            obj,
+            move |split_view| {
                 if !split_view.is_collapsed() {
                     sidebar_expanded_shown.set(split_view.shows_sidebar());
                 }
                 update_widgets(split_view, &appwindow);
-            }),
-        );
+            }
+        ));
 
-        self.split_view.connect_sidebar_position_notify(
-            clone!(@weak obj as appwindow => move |split_view| {
+        self.split_view.connect_sidebar_position_notify(clone!(
+            #[weak(rename_to=appwindow)]
+            obj,
+            move |split_view| {
                 update_widgets(split_view, &appwindow);
-            }),
-        );
+            }
+        ));
 
-        self.split_view.connect_collapsed_notify(
-            clone!(@strong sidebar_expanded_shown, @weak obj as appwindow => move |split_view| {
+        self.split_view.connect_collapsed_notify(clone!(
+            #[strong]
+            sidebar_expanded_shown,
+            #[weak(rename_to=appwindow)]
+            obj,
+            move |split_view| {
                 if split_view.is_collapsed() {
                     // Always hide sidebar when transitioning from non-collapsed to collapsed.
                     split_view.set_show_sidebar(false);
@@ -472,8 +490,8 @@ impl RnAppWindow {
                     sidebar_expanded_shown.set(split_view.shows_sidebar());
                 }
                 update_widgets(split_view, &appwindow);
-            }),
-        );
+            }
+        ));
     }
 
     fn handle_righthanded_property(&self, righthanded: bool) {
@@ -535,22 +553,22 @@ impl RnAppWindow {
             obj.sidebar()
                 .workspacebrowser()
                 .files_scroller()
-                .set_window_placement(CornerType::TopRight);
+                .set_placement(CornerType::TopRight);
             obj.sidebar()
                 .workspacebrowser()
                 .workspacesbar()
                 .workspaces_scroller()
-                .set_window_placement(CornerType::TopRight);
+                .set_placement(CornerType::TopRight);
 
             obj.sidebar()
                 .settings_panel()
                 .settings_scroller()
-                .set_window_placement(CornerType::TopRight);
+                .set_placement(CornerType::TopRight);
 
             obj.overlays().sidebar_box().set_halign(Align::Start);
             obj.overlays()
                 .sidebar_scroller()
-                .set_window_placement(CornerType::TopRight);
+                .set_placement(CornerType::TopRight);
             obj.overlays()
                 .penssidebar()
                 .brush_page()
@@ -662,22 +680,22 @@ impl RnAppWindow {
             obj.sidebar()
                 .workspacebrowser()
                 .files_scroller()
-                .set_window_placement(CornerType::TopLeft);
+                .set_placement(CornerType::TopLeft);
             obj.sidebar()
                 .workspacebrowser()
                 .workspacesbar()
                 .workspaces_scroller()
-                .set_window_placement(CornerType::TopLeft);
+                .set_placement(CornerType::TopLeft);
 
             obj.sidebar()
                 .settings_panel()
                 .settings_scroller()
-                .set_window_placement(CornerType::TopLeft);
+                .set_placement(CornerType::TopLeft);
 
             obj.overlays().sidebar_box().set_halign(Align::End);
             obj.overlays()
                 .sidebar_scroller()
-                .set_window_placement(CornerType::TopLeft);
+                .set_placement(CornerType::TopLeft);
             obj.overlays()
                 .penssidebar()
                 .brush_page()

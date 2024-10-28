@@ -74,9 +74,13 @@ mod imp {
                 .map(|w| w.downcast::<RnAppWindow>().unwrap())
             {
                 if let Some(input_file) = input_file {
-                    glib::spawn_future_local(clone!(@weak appwindow => async move {
-                        appwindow.open_file_w_dialogs(input_file, None, true).await;
-                    }));
+                    glib::spawn_future_local(clone!(
+                        #[weak]
+                        appwindow,
+                        async move {
+                            appwindow.open_file_w_dialogs(input_file, None, true).await;
+                        }
+                    ));
                 }
             } else {
                 self.new_appwindow_init_show(input_file);
@@ -133,9 +137,13 @@ mod imp {
 
             // Loading in input file in the first tab, if Some
             if let Some(input_file) = input_file {
-                glib::spawn_future_local(clone!(@weak appwindow => async move {
-                    appwindow.open_file_w_dialogs(input_file, None, false).await;
-                }));
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    appwindow,
+                    async move {
+                        appwindow.open_file_w_dialogs(input_file, None, false).await;
+                    }
+                ));
             }
         }
     }

@@ -1229,4 +1229,58 @@ impl Typewriter {
 
         (event_result, widget_flags)
     }
+
+    pub fn select_closest_word(&mut self, engine_view: &mut EngineViewMut) {
+        match &mut self.state {
+            TypewriterState::Modifying {
+                modify_state,
+                stroke_key,
+                cursor,
+                pen_down: _,
+            } => {
+                if let Some(Stroke::TextStroke(ref mut textstroke)) =
+                    engine_view.store.get_stroke_mut(*stroke_key)
+                {
+                    textstroke.move_cursor_word_forward(cursor);
+
+                    *modify_state = ModifyState::Selecting {
+                        selection_cursor: GraphemeCursor::new(
+                            textstroke.get_prev_word_start_index(cursor.cur_cursor()),
+                            textstroke.text.len(),
+                            true,
+                        ),
+                        finished: true,
+                    };
+                }
+            }
+            _ => {}
+        }
+    }
+
+    pub fn select_closest_line(&mut self, engine_view: &mut EngineViewMut) {
+        match &mut self.state {
+            TypewriterState::Modifying {
+                modify_state,
+                stroke_key,
+                cursor,
+                pen_down: _,
+            } => {
+                if let Some(Stroke::TextStroke(ref mut textstroke)) =
+                    engine_view.store.get_stroke_mut(*stroke_key)
+                {
+                    textstroke.move_cursor_line_start(cursor);
+
+                    *modify_state = ModifyState::Selecting {
+                        selection_cursor: GraphemeCursor::new(
+                            textstroke.get_line_end_index(cursor),
+                            textstroke.text.len(),
+                            true,
+                        ),
+                        finished: true,
+                    };
+                }
+            }
+            _ => {}
+        }
+    }
 }

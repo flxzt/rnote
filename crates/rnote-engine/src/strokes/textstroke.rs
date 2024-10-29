@@ -830,7 +830,7 @@ impl TextStroke {
         selection_cursor.set_cursor(0);
     }
 
-    fn get_prev_word_start_index(&self, current_char_index: usize) -> usize {
+    pub fn get_prev_word_start_index(&self, current_char_index: usize) -> usize {
         for (start_index, _) in self.text.unicode_word_indices().rev() {
             if start_index < current_char_index {
                 return start_index;
@@ -892,7 +892,7 @@ impl TextStroke {
         }
     }
 
-    pub fn move_cursor_line_end(&self, cursor: &mut GraphemeCursor) {
+    pub fn get_line_end_index(&self, cursor: &GraphemeCursor) -> usize {
         if let (Ok(lines), Ok(hittest_position)) = (
             self.text_style
                 .lines(&mut piet_cairo::CairoText::new(), self.text.clone()),
@@ -926,8 +926,14 @@ impl TextStroke {
                 offset -= 1;
             }
 
-            cursor.set_cursor(offset);
+            return offset;
         }
+
+        0
+    }
+
+    pub fn move_cursor_line_end(&self, cursor: &mut GraphemeCursor) {
+        cursor.set_cursor(self.get_line_end_index(cursor));
     }
 
     pub fn move_cursor_line_down(&self, cursor: &mut GraphemeCursor) {

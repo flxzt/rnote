@@ -845,6 +845,32 @@ impl Engine {
         widget_flags
     }
 
+    pub fn text_select_closest_word(&mut self) {
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            typewriter.select_closest_word(&mut EngineViewMut {
+                tasks_tx: self.tasks_tx.clone(),
+                pens_config: &mut self.pens_config,
+                document: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            })
+        }
+    }
+
+    pub fn text_select_closest_line(&mut self) {
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            typewriter.select_closest_line(&mut EngineViewMut {
+                tasks_tx: self.tasks_tx.clone(),
+                pens_config: &mut self.pens_config,
+                document: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            })
+        }
+    }
+
     pub fn text_selection_toggle_attribute(
         &mut self,
         text_attribute: TextAttribute,

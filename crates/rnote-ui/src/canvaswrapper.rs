@@ -3,7 +3,7 @@ use crate::{RnAppWindow, RnCanvas, RnContextMenu};
 use gtk4::{
     gdk, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, CompositeTemplate,
     CornerType, EventControllerMotion, EventControllerScroll, EventControllerScrollFlags,
-    EventSequenceState, GestureDrag, GestureLongPress, GestureZoom, PropagationPhase,
+    EventSequenceState, GestureClick, GestureDrag, GestureLongPress, GestureZoom, PropagationPhase,
     ScrolledWindow, Widget,
 };
 use once_cell::sync::Lazy;
@@ -39,6 +39,7 @@ mod imp {
         pub(crate) pointer_motion_controller: EventControllerMotion,
         pub(crate) canvas_drag_gesture: GestureDrag,
         pub(crate) canvas_zoom_gesture: GestureZoom,
+        pub(crate) canvas_multi_press_gesture: GestureClick,
         pub(crate) canvas_zoom_scroll_controller: EventControllerScroll,
         pub(crate) canvas_mouse_drag_middle_gesture: GestureDrag,
         pub(crate) canvas_alt_drag_gesture: GestureDrag,
@@ -72,6 +73,13 @@ mod imp {
 
             let canvas_zoom_gesture = GestureZoom::builder()
                 .name("canvas_zoom_gesture")
+                .propagation_phase(PropagationPhase::Capture)
+                .build();
+
+            let canvas_multi_press_gesture = GestureClick::builder()
+                .name("canvas_multi_press_gesture")
+                .button(gdk::BUTTON_PRIMARY)
+                .exclusive(true)
                 .propagation_phase(PropagationPhase::Capture)
                 .build();
 
@@ -130,6 +138,7 @@ mod imp {
                 pointer_motion_controller,
                 canvas_drag_gesture,
                 canvas_zoom_gesture,
+                canvas_multi_press_gesture,
                 canvas_zoom_scroll_controller,
                 canvas_mouse_drag_middle_gesture,
                 canvas_alt_drag_gesture,
@@ -171,6 +180,8 @@ mod imp {
                 .add_controller(self.canvas_drag_gesture.clone());
             self.scroller
                 .add_controller(self.canvas_zoom_gesture.clone());
+            self.scroller
+                .add_controller(self.canvas_multi_press_gesture.clone());
             self.scroller
                 .add_controller(self.canvas_zoom_scroll_controller.clone());
             self.scroller
@@ -638,6 +649,33 @@ mod imp {
                         canvaswrapper
                             .canvas()
                             .emit_handle_widget_flags(widget_flags);
+                    }
+                ));
+            }
+
+            // Double press to select word, triple press to select line
+            {
+                self.canvas_multi_press_gesture.connect_pressed(clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |signal, n_press, _, _| {
+                        let action = (n_press - 1) % 3;
+
+                        if action == 1 {
+                            canvaswrapper
+                                .canvas()
+                                .engine_mut()
+                                .text_select_closest_word();
+                        } else if action == 2 {
+                            canvaswrapper
+                                .canvas()
+                                .engine_mut()
+                                .text_select_closest_line();
+                        } else {
+                            return;
+                        }
+
+                        signal.set_state(EventSequenceState::Claimed);
                     }
                 ));
             }

@@ -830,7 +830,7 @@ impl TextStroke {
         selection_cursor.set_cursor(0);
     }
 
-    pub fn get_prev_word_start_index(&self, current_char_index: usize) -> usize {
+    fn get_prev_word_start_index(&self, current_char_index: usize) -> usize {
         for (start_index, _) in self.text.unicode_word_indices().rev() {
             if start_index < current_char_index {
                 return start_index;

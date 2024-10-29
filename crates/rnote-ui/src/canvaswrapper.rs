@@ -1,5 +1,5 @@
 // Imports
-use crate::{RnAppWindow, RnCanvas, RnContextMenu};
+use crate::{canvas::reject_pointer_input, RnAppWindow, RnCanvas, RnContextMenu};
 use gtk4::{
     gdk, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, CompositeTemplate,
     CornerType, EventControllerMotion, EventControllerScroll, EventControllerScrollFlags,
@@ -659,23 +659,30 @@ mod imp {
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |signal, n_press, _, _| {
+                        // cycle through 0, 1, 2 - single, double, triple press
                         let action = (n_press - 1) % 3;
 
-                        if action == 1 {
-                            canvaswrapper
-                                .canvas()
-                                .engine_mut()
-                                .text_select_closest_word();
-                        } else if action == 2 {
-                            canvaswrapper
-                                .canvas()
-                                .engine_mut()
-                                .text_select_closest_line();
-                        } else {
+                        if action <= 0 {
+                            // Single press or invalid press count
                             return;
                         }
 
-                        signal.set_state(EventSequenceState::Claimed);
+                        let canvas = canvaswrapper.canvas();
+
+                        if signal.current_event().is_none_or(|event| {
+                            reject_pointer_input(&event, canvas.touch_drawing())
+                        }) {
+                            // Reject certain kinds of input (same behavior as canvas)
+                            return;
+                        }
+
+                        match action {
+                            // Double press
+                            1 => canvas.engine_mut().text_select_closest_word(),
+                            // Triple press
+                            2 => canvas.engine_mut().text_select_closest_line(),
+                            _ => unreachable!(),
+                        }
                     }
                 ));
             }

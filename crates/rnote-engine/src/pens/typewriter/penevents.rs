@@ -1,5 +1,5 @@
 // Imports
-use super::{ModifyState, Typewriter, TypewriterState};
+use super::{ModifyState, SelectionMode, Typewriter, TypewriterState};
 use crate::engine::EngineViewMut;
 use crate::pens::PenBehaviour;
 use crate::strokes::{Stroke, TextStroke};
@@ -150,6 +150,7 @@ impl Typewriter {
                                             self.state = TypewriterState::Modifying {
                                                 modify_state: ModifyState::Selecting {
                                                     selection_cursor: cursor.clone(),
+                                                    mode: SelectionMode::Caret,
                                                     finished: false,
                                                 },
                                                 stroke_key: *stroke_key,
@@ -176,7 +177,11 @@ impl Typewriter {
                             progress,
                         }
                     }
-                    ModifyState::Selecting { finished, .. } => {
+                    ModifyState::Selecting {
+                        selection_cursor,
+                        mode,
+                        finished,
+                    } => {
                         let mut progress = PenProgress::InProgress;
 
                         if let Some(typewriter_bounds) = typewriter_bounds {
@@ -215,6 +220,39 @@ impl Typewriter {
                                             textstroke.get_cursor_for_global_coord(element.pos)
                                         {
                                             *cursor = new_cursor;
+
+                                            match mode {
+                                                SelectionMode::Word(start, end) => {
+                                                    let mouse_position = cursor.cur_cursor();
+
+                                                    if mouse_position < *start {
+                                                        selection_cursor.set_cursor(*end);
+                                                        textstroke.move_cursor_word_back(cursor);
+                                                    } else if mouse_position > *end {
+                                                        selection_cursor.set_cursor(*start);
+                                                        textstroke.move_cursor_word_forward(cursor);
+                                                    } else {
+                                                        selection_cursor.set_cursor(*start);
+                                                        cursor.set_cursor(*end);
+                                                    }
+                                                }
+                                                SelectionMode::Line(start, end) => {
+                                                    let mouse_position = cursor.cur_cursor();
+
+                                                    if mouse_position < *start {
+                                                        selection_cursor.set_cursor(*end);
+                                                        textstroke.move_cursor_line_start(cursor);
+                                                    } else if mouse_position > *end {
+                                                        selection_cursor.set_cursor(*start);
+                                                        textstroke.move_cursor_line_end(cursor);
+                                                    } else {
+                                                        selection_cursor.set_cursor(*start);
+                                                        cursor.set_cursor(*end);
+                                                    }
+                                                }
+                                                SelectionMode::Caret => {}
+                                            }
+
                                             self.reset_blink();
                                         }
                                     }
@@ -590,6 +628,7 @@ impl Typewriter {
                                                 textstroke.text.len(),
                                                 true,
                                             ),
+                                            mode: SelectionMode::Caret,
                                             finished: true,
                                         };
                                     } else {
@@ -665,6 +704,7 @@ impl Typewriter {
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
+                                            mode: SelectionMode::Caret,
                                             finished: false,
                                         }
                                     } else {
@@ -693,6 +733,7 @@ impl Typewriter {
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
+                                            mode: SelectionMode::Caret,
                                             finished: false,
                                         };
                                     } else {
@@ -717,6 +758,7 @@ impl Typewriter {
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
+                                            mode: SelectionMode::Caret,
                                             finished: false,
                                         };
                                     } else {
@@ -736,6 +778,7 @@ impl Typewriter {
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
+                                            mode: SelectionMode::Caret,
                                             finished: false,
                                         };
                                     } else {
@@ -759,6 +802,7 @@ impl Typewriter {
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
+                                            mode: SelectionMode::Caret,
                                             finished: false,
                                         };
                                     } else {
@@ -787,6 +831,7 @@ impl Typewriter {
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
+                                            mode: SelectionMode::Caret,
                                             finished: false,
                                         };
                                     } else {
@@ -821,6 +866,7 @@ impl Typewriter {
                     ModifyState::Selecting {
                         selection_cursor,
                         finished,
+                        ..
                     } => {
                         super::play_sound(Some(keyboard_key), engine_view.audioplayer);
 
@@ -1150,6 +1196,7 @@ impl Typewriter {
                     ModifyState::Selecting {
                         selection_cursor,
                         finished,
+                        ..
                     } => {
                         super::play_sound(None, engine_view.audioplayer);
 
@@ -1243,13 +1290,16 @@ impl Typewriter {
                 {
                     textstroke.move_cursor_word_forward(cursor);
 
+                    let mut selection_cursor = cursor.clone();
+                    textstroke.move_cursor_word_back(&mut selection_cursor);
+
                     *modify_state = ModifyState::Selecting {
-                        selection_cursor: GraphemeCursor::new(
-                            textstroke.get_prev_word_start_index(cursor.cur_cursor()),
-                            textstroke.text.len(),
-                            true,
+                        mode: SelectionMode::Word(
+                            selection_cursor.cur_cursor(),
+                            cursor.cur_cursor(),
                         ),
-                        finished: true,
+                        selection_cursor,
+                        finished: false,
                     };
                 }
             }
@@ -1268,15 +1318,18 @@ impl Typewriter {
                 if let Some(Stroke::TextStroke(ref mut textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
-                    textstroke.move_cursor_line_start(cursor);
+                    textstroke.move_cursor_line_end(cursor);
+
+                    let mut selection_cursor = cursor.clone();
+                    textstroke.move_cursor_line_start(&mut selection_cursor);
 
                     *modify_state = ModifyState::Selecting {
-                        selection_cursor: GraphemeCursor::new(
-                            textstroke.get_line_end_index(cursor),
-                            textstroke.text.len(),
-                            true,
+                        mode: SelectionMode::Line(
+                            selection_cursor.cur_cursor(),
+                            cursor.cur_cursor(),
                         ),
-                        finished: true,
+                        selection_cursor,
+                        finished: false,
                     };
                 }
             }

@@ -892,7 +892,7 @@ impl TextStroke {
         }
     }
 
-    pub fn get_line_end_index(&self, cursor: &GraphemeCursor) -> usize {
+    pub fn move_cursor_line_end(&self, cursor: &mut GraphemeCursor) {
         if let (Ok(lines), Ok(hittest_position)) = (
             self.text_style
                 .lines(&mut piet_cairo::CairoText::new(), self.text.clone()),
@@ -926,14 +926,8 @@ impl TextStroke {
                 offset -= 1;
             }
 
-            return offset;
+            cursor.set_cursor(offset);
         }
-
-        0
-    }
-
-    pub fn move_cursor_line_end(&self, cursor: &mut GraphemeCursor) {
-        cursor.set_cursor(self.get_line_end_index(cursor));
     }
 
     pub fn move_cursor_line_down(&self, cursor: &mut GraphemeCursor) {

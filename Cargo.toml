@@ -38,6 +38,7 @@ gio = "0.20.1"
 glib = "0.20.3"
 glib-build-tools = "0.20.0"
 gtk4 = { version = "0.9.1", features = ["v4_16"] }
+libspelling = "0.3.0"
 ijson = "0.1.3"
 image = "0.25.2"
 indicatif = "0.17.8"

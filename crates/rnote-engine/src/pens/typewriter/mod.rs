@@ -203,6 +203,29 @@ impl DrawableOnDoc for Typewriter {
                         );
                     }
 
+                    // Draw error ranges
+                    for (start_index, length) in &textstroke.error_words {
+                        // TODO: modify underlying functions to take a range/indices instead of cursors
+
+                        let start_cursor =
+                            GraphemeCursor::new(*start_index, textstroke.text.len(), true);
+
+                        let end_cursor = GraphemeCursor::new(
+                            start_cursor.cur_cursor() + *length,
+                            textstroke.text.len(),
+                            true,
+                        );
+
+                        textstroke.text_style.draw_text_error(
+                            cx,
+                            textstroke.text.clone(),
+                            &start_cursor,
+                            &end_cursor,
+                            &textstroke.transform,
+                            engine_view.camera,
+                        );
+                    }
+
                     // Draw the cursor
                     if self.cursor_visible {
                         textstroke.text_style.draw_cursor(
@@ -495,6 +518,7 @@ impl PenBehaviour for Typewriter {
                                 cursor,
                                 selection_cursor,
                                 String::from("").as_str(),
+                                engine_view.spellchecker,
                             );
 
                             // Update stroke
@@ -667,7 +691,7 @@ impl Typewriter {
                 let text_len = text.len();
                 text_style.ranged_text_attributes.clear();
                 text_style.set_max_width(Some(text_width));
-                let textstroke = TextStroke::new(text, pos, text_style);
+                let textstroke = TextStroke::new(text, pos, text_style, engine_view.spellchecker);
                 let cursor = GraphemeCursor::new(text_len, textstroke.text.len(), true);
 
                 let stroke_key = engine_view
@@ -694,7 +718,7 @@ impl Typewriter {
                 let text_len = text.len();
                 text_style.ranged_text_attributes.clear();
                 text_style.set_max_width(Some(text_width));
-                let textstroke = TextStroke::new(text, *pos, text_style);
+                let textstroke = TextStroke::new(text, *pos, text_style, engine_view.spellchecker);
                 let cursor = GraphemeCursor::new(text_len, textstroke.text.len(), true);
 
                 let stroke_key = engine_view
@@ -733,6 +757,7 @@ impl Typewriter {
                             cursor,
                             selection_cursor,
                             text.as_str(),
+                            engine_view.spellchecker,
                         );
                         engine_view.store.update_geometry_for_stroke(*stroke_key);
                         engine_view.store.regenerate_rendering_for_stroke(
@@ -759,7 +784,12 @@ impl Typewriter {
                     if let Some(Stroke::TextStroke(textstroke)) =
                         engine_view.store.get_stroke_mut(*stroke_key)
                     {
-                        textstroke.insert_text_after_cursor(text.as_str(), cursor);
+                        textstroke.insert_text_after_cursor(
+                            text.as_str(),
+                            cursor,
+                            engine_view.spellchecker,
+                        );
+
                         engine_view.store.update_geometry_for_stroke(*stroke_key);
                         engine_view.store.regenerate_rendering_for_stroke(
                             *stroke_key,

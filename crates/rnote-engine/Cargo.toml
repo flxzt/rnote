@@ -22,6 +22,7 @@ futures = { workspace = true }
 geo = { workspace = true }
 gio = { workspace = true }
 glib = { workspace = true }
+libspelling = { workspace = true }
 ijson = { workspace = true }
 image = { workspace = true }
 itertools = { workspace = true }

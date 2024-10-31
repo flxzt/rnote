@@ -36,6 +36,11 @@ use std::sync::Arc;
 use std::time::Instant;
 use tracing::{debug, error};
 
+#[derive(Debug)]
+pub struct Spellchecker {
+    pub libspelling: libspelling::Checker,
+}
+
 /// An immutable view into the engine, excluding the penholder.
 #[derive(Debug)]
 pub struct EngineView<'a> {
@@ -46,6 +51,7 @@ pub struct EngineView<'a> {
     pub camera: &'a Camera,
     pub audioplayer: &'a Option<AudioPlayer>,
     pub animation: &'a Animation,
+    pub spellchecker: &'a Spellchecker,
 }
 
 /// Constructs an `EngineView` from an identifier containing an `Engine` instance.
@@ -60,6 +66,7 @@ macro_rules! engine_view {
             camera: &$engine.camera,
             audioplayer: &$engine.audioplayer,
             animation: &$engine.animation,
+            spellchecker: &$engine.spellchecker,
         }
     };
 }
@@ -74,6 +81,7 @@ pub struct EngineViewMut<'a> {
     pub camera: &'a mut Camera,
     pub audioplayer: &'a mut Option<AudioPlayer>,
     pub animation: &'a mut Animation,
+    pub spellchecker: &'a mut Spellchecker,
 }
 
 /// Constructs an `EngineViewMut` from an identifier containing an `Engine` instance.
@@ -88,6 +96,7 @@ macro_rules! engine_view_mut {
             camera: &mut $engine.camera,
             audioplayer: &mut $engine.audioplayer,
             animation: &mut $engine.animation,
+            spellchecker: &mut $engine.spellchecker,
         }
     };
 }
@@ -103,6 +112,7 @@ impl EngineViewMut<'_> {
             camera: self.camera,
             audioplayer: self.audioplayer,
             animation: self.animation,
+            spellchecker: self.spellchecker,
         }
     }
 }
@@ -245,6 +255,8 @@ pub struct Engine {
     #[serde(skip)]
     pub animation: Animation,
     #[serde(skip)]
+    pub spellchecker: Spellchecker,
+    #[serde(skip)]
     visual_debug: bool,
     // the task sender. Must not be modified, only cloned.
     #[serde(skip)]
@@ -282,6 +294,9 @@ impl Default for Engine {
 
             audioplayer: None,
             animation: Animation::default(),
+            spellchecker: Spellchecker {
+                libspelling: libspelling::Checker::default(),
+            },
             visual_debug: false,
             tasks_tx: EngineTaskSender(tasks_tx),
             tasks_rx: Some(EngineTaskReceiver(tasks_rx)),

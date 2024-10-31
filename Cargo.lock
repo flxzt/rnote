@@ -945,6 +945,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "enchant"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dafd018f9ff5933b0cf9d89a095c31125890f2246952749cbaad230b537644db"
+dependencies = [
+ "enchant-sys",
+]
+
+[[package]]
+name = "enchant-sys"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "97af59f7a6d8a217695598f23dc12051734322e60b58e5ca2f3a2fffa59ba34f"
+dependencies = [
+ "pkg-config",
+]
+
+[[package]]
 name = "encode_unicode"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2303,35 +2321,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "libspelling"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1cbd36b794de5725e0b2be4cc90c57c5e3c7a5a3e5c317436e9e667305274c34"
-dependencies = [
- "gio",
- "glib",
- "gtk4",
- "libc",
- "libspelling-sys",
- "sourceview5",
-]
-
-[[package]]
-name = "libspelling-sys"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2d2ec120461981daf9d0c5a8b0bc55ebf350292280e93fd6d063895593754484"
-dependencies = [
- "gio-sys",
- "glib-sys",
- "gobject-sys",
- "gtk4-sys",
- "libc",
- "sourceview5-sys",
- "system-deps 7.0.3",
-]
-
-[[package]]
 name = "linux-raw-sys"
 version = "0.4.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3605,6 +3594,7 @@ dependencies = [
  "cairo-rs",
  "chrono",
  "clap",
+ "enchant",
  "flate2",
  "futures",
  "geo",
@@ -3616,7 +3606,6 @@ dependencies = [
  "itertools 0.14.0",
  "kurbo 0.11.1",
  "librsvg",
- "libspelling",
  "nalgebra",
  "num-derive",
  "num-traits",
@@ -3995,41 +3984,6 @@ dependencies = [
  "async-process",
  "blocking",
  "futures-lite",
-]
-
-[[package]]
-name = "sourceview5"
-version = "0.9.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0e07d99b15f12767aa1c84870c45667f42bf24fd6a989dc70088e32854ef56e"
-dependencies = [
- "futures-channel",
- "futures-core",
- "gdk-pixbuf",
- "gdk4",
- "gio",
- "glib",
- "gtk4",
- "libc",
- "pango",
- "sourceview5-sys",
-]
-
-[[package]]
-name = "sourceview5-sys"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4a3759467713554a8063faa380237ee2c753e89026bbe1b8e9611d991cb106ff"
-dependencies = [
- "gdk-pixbuf-sys",
- "gdk4-sys",
- "gio-sys",
- "glib-sys",
- "gobject-sys",
- "gtk4-sys",
- "libc",
- "pango-sys",
- "system-deps 7.0.3",
 ]
 
 [[package]]

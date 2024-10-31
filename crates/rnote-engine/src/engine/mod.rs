@@ -31,14 +31,42 @@ use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::{PenEvent, ShortcutKey};
 use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
+use std::fmt::Debug;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
 use tracing::{debug, error};
 
-#[derive(Debug)]
 pub struct Spellchecker {
-    pub libspelling: libspelling::Checker,
+    pub broker: enchant::Broker,
+    pub dict: Option<enchant::Dict>,
+}
+
+impl Default for Spellchecker {
+    fn default() -> Self {
+        let mut enchant_broker = enchant::Broker::new();
+        let enchant_dict = enchant_broker.request_dict(glib::language_names().first().unwrap());
+
+        Self {
+            broker: enchant_broker,
+            dict: enchant_dict.ok(),
+        }
+    }
+}
+
+impl Debug for Spellchecker {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Spellchecker")
+            .field(
+                "dict",
+                &self
+                    .dict
+                    .as_ref()
+                    .map(|dict| format!("Some({})", dict.get_lang()))
+                    .unwrap_or(String::from("None")),
+            )
+            .finish()
+    }
 }
 
 /// An immutable view into the engine, excluding the penholder.
@@ -294,9 +322,7 @@ impl Default for Engine {
 
             audioplayer: None,
             animation: Animation::default(),
-            spellchecker: Spellchecker {
-                libspelling: libspelling::Checker::default(),
-            },
+            spellchecker: Spellchecker::default(),
             visual_debug: false,
             tasks_tx: EngineTaskSender(tasks_tx),
             tasks_rx: Some(EngineTaskReceiver(tasks_rx)),

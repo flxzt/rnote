@@ -62,15 +62,6 @@ modules:
           - type: archive
             url: "https://poppler.freedesktop.org/poppler-data-0.4.12.tar.gz"
             sha256: c835b640a40ce357e1b83666aabd95edffa24ddddd49b8daff63adb851cdab74
-    - name: libspelling
-      buildsystem: meson
-      config-opts:
-          - "-Dintrospection=disabled"
-          - "-Ddocs=false"
-      sources:
-          - type: archive
-            url: "https://download.gnome.org/sources/libspelling/0.4/libspelling-0.4.4.tar.xz"
-            sha256: ac9132c634bb9df911e35b52345aa12126f7ec95e5f07179a980861819787150
     - name: rnote
       buildsystem: meson
       run-tests: true

@@ -645,29 +645,33 @@ impl TextStroke {
         end_index: usize,
         spellchecker: &Spellchecker,
     ) {
-        let words = self.get_surrounding_words(start_index, end_index);
+        if let Some(dict) = &spellchecker.dict {
+            let words = self.get_surrounding_words(start_index, end_index);
 
-        for (word_start_index, word) in words {
-            let valid_word = spellchecker.libspelling.check_word(word.as_str());
+            for (word_start_index, word) in words {
+                if let Ok(valid_word) = dict.check(word.as_str()) {
+                    let word_end_index = word_start_index + word.len();
+                    let word_range = word_start_index..word_end_index;
 
-            let word_end_index = word_start_index + word.len();
-            let word_range = word_start_index..word_end_index;
+                    self.error_words.retain(|key, _| !word_range.contains(key));
 
-            self.error_words.retain(|key, _| !word_range.contains(key));
+                    // TODO: maybe faster for large texts
+                    // let keys_to_remove = self
+                    //     .error_words
+                    //     .range(word_range)
+                    //     .map(|(&key, _)| key)
+                    //     .collect_vec();
 
-            // TODO: maybe faster for large texts
-            // let keys_to_remove = self
-            //     .error_words
-            //     .range(word_range)
-            //     .map(|(&key, _)| key)
-            //     .collect_vec();
+                    // for existing_word in keys_to_remove {
+                    //     self.error_words.remove(&existing_word);
+                    // }
 
-            // for existing_word in keys_to_remove {
-            //     self.error_words.remove(&existing_word);
-            // }
-
-            if !valid_word {
-                self.error_words.insert(word_start_index, word.len());
+                    if !valid_word {
+                        self.error_words.insert(word_start_index, word.len());
+                    }
+                } else {
+                    error!("Failed to check spelling for word '{word}'");
+                }
             }
         }
     }

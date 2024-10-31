@@ -1140,8 +1140,7 @@ impl RnCanvas {
                         canvas.clear_output_file_watcher();
                         canvas.dismiss_output_file_modified_toast();
                     }
-
-                    appwindow.refresh_titles(&appwindow.active_tab_wrapper());
+                    appwindow.refresh_titles(canvas);
                 }
             ),
         );
@@ -1181,8 +1180,8 @@ impl RnCanvas {
             clone!(
                 #[weak]
                 appwindow,
-                move |_, _| {
-                    appwindow.refresh_titles(&appwindow.active_tab_wrapper());
+                move |canvas, _| {
+                    appwindow.refresh_titles(canvas);
                 }
             ),
         );

@@ -4,11 +4,11 @@
     "development"
   ],
   "runtime": "org.gnome.Platform",
-  "runtime-version": "46",
+  "runtime-version": "47",
   "sdk": "org.gnome.Sdk",
   "sdk-extensions": [
     "org.freedesktop.Sdk.Extension.rust-stable",
-    "org.freedesktop.Sdk.Extension.llvm17"
+    "org.freedesktop.Sdk.Extension.llvm19"
   ],
   "command": "rnote",
   "finish-args": [
@@ -29,7 +29,7 @@
     "--env=GST_DEBUG=3"
   ],
   "build-options": {
-    "append-path": "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm17/bin",
+    "append-path": "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm19/bin",
     "env": {
       "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": "clang",
       "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS": "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold",
@@ -43,7 +43,7 @@
       "--socket=x11",
       "--share=network"
     ],
-    "prepend-ld-library-path": "/usr/lib/sdk/llvm17/lib"
+    "prepend-ld-library-path": "/usr/lib/sdk/llvm19/lib"
   },
   "modules": [
     {

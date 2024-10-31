@@ -112,14 +112,13 @@ impl RnEraserPage {
                 #[weak]
                 appwindow,
                 move |eraserstyle_trash_colliding_strokes_toggle| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+
                     if eraserstyle_trash_colliding_strokes_toggle.is_active() {
-                        appwindow
-                            .active_tab_wrapper()
-                            .canvas()
-                            .engine_mut()
-                            .pens_config
-                            .eraser_config
-                            .style = EraserStyle::TrashCollidingStrokes;
+                        canvas.engine_mut().pens_config.eraser_config.style =
+                            EraserStyle::TrashCollidingStrokes;
                     }
                 }
             ));
@@ -129,14 +128,13 @@ impl RnEraserPage {
                 #[weak]
                 appwindow,
                 move |eraserstyle_split_colliding_strokes_toggle| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+
                     if eraserstyle_split_colliding_strokes_toggle.is_active() {
-                        appwindow
-                            .active_tab_wrapper()
-                            .canvas()
-                            .engine_mut()
-                            .pens_config
-                            .eraser_config
-                            .style = EraserStyle::SplitCollidingStrokes;
+                        canvas.engine_mut().pens_config.eraser_config.style =
+                            EraserStyle::SplitCollidingStrokes;
                     }
                 }
             ));
@@ -160,13 +158,10 @@ impl RnEraserPage {
                 appwindow,
                 move |picker, _| {
                     let stroke_width = picker.stroke_width();
-                    appwindow
-                        .active_tab_wrapper()
-                        .canvas()
-                        .engine_mut()
-                        .pens_config
-                        .eraser_config
-                        .width = stroke_width;
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+                    canvas.engine_mut().pens_config.eraser_config.width = stroke_width;
                 }
             ),
         );

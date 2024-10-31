@@ -13,7 +13,7 @@ use rnote_compose::{Color, Transform, color};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::ops::Range;
-use tracing::{debug, error};
+use tracing::error;
 use unicode_segmentation::{GraphemeCursor, UnicodeSegmentation};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -339,20 +339,20 @@ impl TextStyle {
         Ok(text_layout.hit_test_text_position(cursor.cur_cursor()))
     }
 
-    pub fn get_selection_rects_for_cursors(
+    pub fn get_rects_for_indices(
         &self,
         text: String,
-        cursor: &GraphemeCursor,
-        selection_cursor: &GraphemeCursor,
+        start_index: usize,
+        end_index: usize,
     ) -> anyhow::Result<Vec<kurbo::Rect>> {
         let text_layout = self
             .build_text_layout(&mut piet_cairo::CairoText::new(), text)
             .map_err(|e| anyhow::anyhow!("Building text layout failed, Err: {e:?}"))?;
 
-        let range = if selection_cursor.cur_cursor() >= cursor.cur_cursor() {
-            cursor.cur_cursor()..selection_cursor.cur_cursor()
+        let range = if end_index >= start_index {
+            start_index..end_index
         } else {
-            selection_cursor.cur_cursor()..cursor.cur_cursor()
+            end_index..start_index
         };
 
         Ok(text_layout.rects_for_range(range))
@@ -409,8 +409,8 @@ impl TextStyle {
         &self,
         cx: &mut impl piet::RenderContext,
         text: String,
-        cursor: &GraphemeCursor,
-        selection_cursor: &GraphemeCursor,
+        start_index: usize,
+        end_index: usize,
         transform: &Transform,
         camera: &Camera,
     ) {
@@ -418,23 +418,32 @@ impl TextStyle {
         let outline_width = 1.5 / camera.total_zoom();
 
         if let Ok(selection_rects) =
-            self.get_selection_rects_for_cursors(text, cursor, selection_cursor)
+            self.get_rects_for_indices(text.clone(), start_index, end_index)
         {
-            for selection_rect in selection_rects {
-                // FIXME: determine baseline using metrics instead of hardcoding 6.0
-                let bottom_line = kurbo::Line::new(
-                    kurbo::Point::new(selection_rect.x0, selection_rect.y1 - 6.0),
-                    kurbo::Point::new(selection_rect.x1, selection_rect.y1 - 6.0),
-                );
+            // Get baseline for the current line. Really unnecessary to do this for every error since the font size is uniform,
+            // but piet does not provide any other way to get the baseline.
 
-                let path = transform.to_kurbo() * bottom_line.to_path(0.5);
+            if let Ok(line_metric) = self.cursor_line_metric(cx.text(), text, start_index) {
+                for selection_rect in selection_rects {
+                    let bottom_line = transform.to_kurbo()
+                        * kurbo::Line::new(
+                            kurbo::Point::new(
+                                selection_rect.x0,
+                                selection_rect.y0 + line_metric.baseline + 2.0,
+                            ),
+                            kurbo::Point::new(
+                                selection_rect.x1,
+                                selection_rect.y0 + line_metric.baseline + 2.0,
+                            ),
+                        );
 
-                cx.stroke_styled(
-                    &path,
-                    &OUTLINE_COLOR,
-                    outline_width,
-                    &piet::StrokeStyle::new().dash_pattern(&[4.0, 2.0]),
-                );
+                    cx.stroke_styled(
+                        &bottom_line,
+                        &OUTLINE_COLOR,
+                        outline_width,
+                        &piet::StrokeStyle::new().dash_pattern(&[4.0, 2.0]),
+                    );
+                }
             }
         }
     }
@@ -453,7 +462,7 @@ impl TextStyle {
         let outline_width = 1.5 / camera.total_zoom();
 
         if let Ok(selection_rects) =
-            self.get_selection_rects_for_cursors(text, cursor, selection_cursor)
+            self.get_rects_for_indices(text, cursor.cur_cursor(), selection_cursor.cur_cursor())
         {
             for selection_rect in selection_rects {
                 let outline = transform.to_kurbo() * selection_rect.to_path(0.5);

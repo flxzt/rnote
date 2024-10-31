@@ -205,22 +205,11 @@ impl DrawableOnDoc for Typewriter {
 
                     // Draw error ranges
                     for (start_index, length) in &textstroke.error_words {
-                        // TODO: modify underlying functions to take a range/indices instead of cursors
-
-                        let start_cursor =
-                            GraphemeCursor::new(*start_index, textstroke.text.len(), true);
-
-                        let end_cursor = GraphemeCursor::new(
-                            start_cursor.cur_cursor() + *length,
-                            textstroke.text.len(),
-                            true,
-                        );
-
                         textstroke.text_style.draw_text_error(
                             cx,
                             textstroke.text.clone(),
-                            &start_cursor,
-                            &end_cursor,
+                            *start_index,
+                            *start_index + *length,
                             &textstroke.transform,
                             engine_view.camera,
                         );

@@ -394,6 +394,16 @@ gets disabled.</property>
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="AdwComboRow" id="doc_spellcheck_language_row">
+                        <property name="title" translatable="yes">Spellcheck Language</property>
+                        <property name="subtitle" translatable="yes">Disable or choose the language for spellchecking</property>
+                        <property name="enable-search">true</property>
+                        <property name="expression">
+                          <lookup type="GtkStringObject" name="string"></lookup>
+                        </property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <!-- Button Shortcuts Group -->

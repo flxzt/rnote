@@ -38,18 +38,31 @@ use std::time::Instant;
 use tracing::{debug, error};
 
 pub struct Spellchecker {
-    pub broker: enchant::Broker,
+    broker: enchant::Broker,
     pub dict: Option<enchant::Dict>,
+}
+
+impl Spellchecker {
+    pub fn default_language() -> Option<String> {
+        glib::language_names()
+            .get(0)
+            .map(|language| language.to_string())
+    }
+
+    pub fn available_languages() -> Vec<String> {
+        enchant::Broker::new()
+            .list_dicts()
+            .iter()
+            .map(|dict| dict.lang.to_owned())
+            .collect()
+    }
 }
 
 impl Default for Spellchecker {
     fn default() -> Self {
-        let mut enchant_broker = enchant::Broker::new();
-        let enchant_dict = enchant_broker.request_dict(glib::language_names().first().unwrap());
-
         Self {
-            broker: enchant_broker,
-            dict: enchant_dict.ok(),
+            broker: enchant::Broker::new(),
+            dict: None,
         }
     }
 }
@@ -375,6 +388,31 @@ impl Engine {
             }
         } else {
             self.audioplayer.take();
+        }
+    }
+
+    pub fn refresh_spellcheck_language(&mut self) {
+        self.spellchecker.dict = self
+            .document
+            .spellcheck_language
+            .as_ref()
+            .and_then(|language| {
+                self.spellchecker
+                    .broker
+                    .request_dict(language.as_str())
+                    .ok()
+            });
+
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_ref() {
+            typewriter.refresh_spellcheck_cache_in_modifying_stroke(&mut EngineViewMut {
+                tasks_tx: self.tasks_tx.clone(),
+                pens_config: &mut self.pens_config,
+                document: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+                spellchecker: &mut self.spellchecker,
+            });
         }
     }
 

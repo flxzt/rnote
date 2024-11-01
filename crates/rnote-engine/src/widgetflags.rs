@@ -10,6 +10,8 @@ pub struct WidgetFlags {
     pub refresh_ui: bool,
     /// Indicates that the store was modified, i.e. new strokes inserted, modified, etc. .
     pub store_modified: bool,
+    /// Indicates that the spellcheck language was modified.
+    pub spellcheck_language_modified: bool,
     /// Update the current view offsets and size.
     pub view_modified: bool,
     /// Indicates that the camera has changed it's temporary zoom.
@@ -35,6 +37,7 @@ impl Default for WidgetFlags {
             resize: false,
             refresh_ui: false,
             store_modified: false,
+            spellcheck_language_modified: false,
             view_modified: false,
             zoomed_temporarily: false,
             zoomed: false,
@@ -61,6 +64,7 @@ impl std::ops::BitOrAssign for WidgetFlags {
         self.resize |= rhs.resize;
         self.refresh_ui |= rhs.refresh_ui;
         self.store_modified |= rhs.store_modified;
+        self.spellcheck_language_modified |= rhs.spellcheck_language_modified;
         self.view_modified |= rhs.view_modified;
         self.zoomed_temporarily |= rhs.zoomed_temporarily;
         self.zoomed |= rhs.zoomed;

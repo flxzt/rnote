@@ -7,6 +7,7 @@ pub use background::Background;
 pub use format::Format;
 
 // Imports
+use crate::engine::Spellchecker;
 use crate::{Camera, CloneConfig, StrokeStore, WidgetFlags};
 use core::fmt::Display;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -107,6 +108,8 @@ pub struct Document {
     pub layout: Layout,
     #[serde(rename = "snap_positions")]
     pub snap_positions: bool,
+    #[serde(rename = "spellcheck_language")]
+    pub spellcheck_language: Option<String>,
 }
 
 impl Default for Document {
@@ -120,6 +123,7 @@ impl Default for Document {
             background: Background::default(),
             layout: Layout::default(),
             snap_positions: false,
+            spellcheck_language: Spellchecker::default_language(),
         }
     }
 }

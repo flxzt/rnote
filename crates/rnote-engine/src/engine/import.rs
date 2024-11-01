@@ -174,6 +174,7 @@ impl Engine {
         widget_flags |= self.doc_resize_to_fit_content();
         widget_flags.redraw = true;
         widget_flags.refresh_ui = true;
+        widget_flags.spellcheck_language_modified = true;
         widget_flags
     }
 

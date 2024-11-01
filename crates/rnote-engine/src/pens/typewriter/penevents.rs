@@ -38,7 +38,7 @@ impl Typewriter {
                 {
                     // When clicked on a textstroke, we start modifying it
                     if let Some(Stroke::TextStroke(textstroke)) =
-                        engine_view.store.get_stroke_ref(stroke_key)
+                        engine_view.store.get_stroke_mut(stroke_key)
                     {
                         let cursor = if let Ok(new_cursor) =
                             // get the cursor for the current position
@@ -49,6 +49,7 @@ impl Typewriter {
                             GraphemeCursor::new(0, textstroke.text.len(), true)
                         };
 
+                        textstroke.check_spelling_refresh_cache(&engine_view.spellchecker);
                         engine_view.store.update_chrono_to_last(stroke_key);
 
                         new_state = TypewriterState::Modifying {
@@ -536,12 +537,9 @@ impl Typewriter {
                         text_style.ranged_text_attributes.clear();
                         text_style.set_max_width(Some(text_width));
 
-                        let textstroke = TextStroke::new(
-                            String::from(keychar),
-                            *pos,
-                            text_style,
-                            engine_view.spellchecker,
-                        );
+                        let mut textstroke =
+                            TextStroke::new(String::from(keychar), *pos, text_style);
+                        textstroke.check_spelling_refresh_cache(engine_view.spellchecker);
 
                         let mut cursor = GraphemeCursor::new(0, textstroke.text.len(), true);
 
@@ -1147,7 +1145,10 @@ impl Typewriter {
                 text_style.ranged_text_attributes.clear();
                 text_style.set_max_width(Some(text_width));
                 let text_len = text.len();
-                let textstroke = TextStroke::new(text, *pos, text_style, engine_view.spellchecker);
+
+                let mut textstroke = TextStroke::new(text, *pos, text_style);
+                textstroke.check_spelling_refresh_cache(engine_view.spellchecker);
+
                 let cursor = GraphemeCursor::new(text_len, text_len, true);
 
                 let stroke_key = engine_view

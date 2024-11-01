@@ -224,6 +224,10 @@ impl RnAppWindow {
             canvas.set_unsaved_changes(true);
             canvas.set_empty(false);
         }
+        if widget_flags.spellcheck_language_modified {
+            canvas.engine_mut().refresh_spellcheck_language();
+            canvas.queue_draw();
+        }
         if widget_flags.view_modified {
             let widget_size = canvas.widget_size();
             let offset_mins_maxs = canvas.engine_ref().camera_offset_mins_maxs();

@@ -474,6 +474,12 @@ impl TextStyle {
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct SpellcheckResult {
+    pub language: Option<String>,
+    pub errors: BTreeMap<usize, usize>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "textstroke")]
 pub struct TextStroke {
@@ -487,7 +493,7 @@ pub struct TextStroke {
     #[serde(rename = "text_style")]
     pub text_style: TextStyle,
     #[serde(skip)]
-    pub error_words: BTreeMap<usize, usize>,
+    pub spellcheck_result: SpellcheckResult,
 }
 
 impl Default for TextStroke {
@@ -496,7 +502,7 @@ impl Default for TextStroke {
             text: String::default(),
             transform: Transform::default(),
             text_style: TextStyle::default(),
-            error_words: BTreeMap::new(),
+            spellcheck_result: SpellcheckResult::default(),
         }
     }
 }
@@ -588,24 +594,13 @@ impl Drawable for TextStroke {
 }
 
 impl TextStroke {
-    pub fn new(
-        text: String,
-        upper_left_pos: na::Vector2<f64>,
-        text_style: TextStyle,
-        spellchecker: &Spellchecker,
-    ) -> Self {
-        let text_length = text.len();
-
-        let mut textstroke = Self {
+    pub fn new(text: String, upper_left_pos: na::Vector2<f64>, text_style: TextStyle) -> Self {
+        Self {
             text,
             transform: Transform::new_w_isometry(na::Isometry2::new(upper_left_pos, 0.0)),
             text_style,
-            error_words: BTreeMap::new(),
-        };
-
-        textstroke.check_spelling(0, text_length, spellchecker);
-
-        textstroke
+            spellcheck_result: SpellcheckResult::default(),
+        }
     }
 
     pub fn get_text_slice_for_range(&self, range: Range<usize>) -> &str {
@@ -639,7 +634,67 @@ impl TextStroke {
         ))
     }
 
-    pub fn check_spelling(
+    fn check_spelling_words(&mut self, words: Vec<(usize, String)>, dict: &enchant::Dict) {
+        for (word_start_index, word) in words {
+            if let Ok(valid_word) = dict.check(word.as_str()) {
+                let word_end_index = word_start_index + word.len();
+                let word_range = word_start_index..word_end_index;
+
+                self.spellcheck_result
+                    .errors
+                    .retain(|key, _| !word_range.contains(key));
+
+                // TODO: maybe faster for large texts
+                // let keys_to_remove = self
+                //     .error_words
+                //     .range(word_range)
+                //     .map(|(&key, _)| key)
+                //     .collect_vec();
+
+                // for existing_word in keys_to_remove {
+                //     self.error_words.remove(&existing_word);
+                // }
+
+                if !valid_word {
+                    self.spellcheck_result
+                        .errors
+                        .insert(word_start_index, word.len());
+                }
+            } else {
+                error!("Failed to check spelling for word '{word}'");
+            }
+        }
+    }
+
+    pub fn check_spelling_refresh_cache(&mut self, spellchecker: &Spellchecker) {
+        if let Some(dict) = &spellchecker.dict {
+            let language = dict.get_lang();
+
+            let language_changed = self
+                .spellcheck_result
+                .language
+                .clone()
+                .is_none_or(|cached_language| cached_language != language);
+
+            if language_changed {
+                self.spellcheck_result.errors.clear();
+                self.spellcheck_result.language = Some(language.to_owned());
+
+                let words = self
+                    .text
+                    .unicode_word_indices()
+                    .map(|(index, word)| (index, word.to_owned()))
+                    .collect_vec();
+
+                self.check_spelling_words(words, dict);
+            }
+        } else {
+            self.spellcheck_result.errors.clear();
+            self.spellcheck_result.language = None;
+        }
+    }
+
+    pub fn check_spelling_range(
         &mut self,
         start_index: usize,
         end_index: usize,
@@ -647,32 +702,7 @@ impl TextStroke {
     ) {
         if let Some(dict) = &spellchecker.dict {
             let words = self.get_surrounding_words(start_index, end_index);
-
-            for (word_start_index, word) in words {
-                if let Ok(valid_word) = dict.check(word.as_str()) {
-                    let word_end_index = word_start_index + word.len();
-                    let word_range = word_start_index..word_end_index;
-
-                    self.error_words.retain(|key, _| !word_range.contains(key));
-
-                    // TODO: maybe faster for large texts
-                    // let keys_to_remove = self
-                    //     .error_words
-                    //     .range(word_range)
-                    //     .map(|(&key, _)| key)
-                    //     .collect_vec();
-
-                    // for existing_word in keys_to_remove {
-                    //     self.error_words.remove(&existing_word);
-                    // }
-
-                    if !valid_word {
-                        self.error_words.insert(word_start_index, word.len());
-                    }
-                } else {
-                    error!("Failed to check spelling for word '{word}'");
-                }
-            }
+            self.check_spelling_words(words, dict);
         }
     }
 
@@ -690,7 +720,7 @@ impl TextStroke {
         // translate the text attributes
         self.translate_attrs_after_cursor(cur_pos, text.len() as i32);
 
-        self.check_spelling(cur_pos, next_pos, spellchecker);
+        self.check_spelling_range(cur_pos, next_pos, spellchecker);
 
         *cursor = GraphemeCursor::new(next_pos, self.text.len(), true);
     }
@@ -712,7 +742,7 @@ impl TextStroke {
                     prev_pos as i32 - cur_pos as i32 + "".len() as i32,
                 );
 
-                self.check_spelling(prev_pos, cur_pos, spellchecker);
+                self.check_spelling_range(prev_pos, cur_pos, spellchecker);
             }
 
             // New text length, new cursor
@@ -737,7 +767,7 @@ impl TextStroke {
                     -(next_pos as i32 - cur_pos as i32) + "".len() as i32,
                 );
 
-                self.check_spelling(cur_pos, next_pos, spellchecker);
+                self.check_spelling_range(cur_pos, next_pos, spellchecker);
             }
 
             // New text length, new cursor
@@ -762,7 +792,7 @@ impl TextStroke {
                 prev_pos as i32 - cur_pos as i32 + "".len() as i32,
             );
 
-            self.check_spelling(prev_pos, cur_pos, spellchecker);
+            self.check_spelling_range(prev_pos, cur_pos, spellchecker);
 
             // New text length, new cursor
             *cursor = GraphemeCursor::new(prev_pos, self.text.len(), true);
@@ -786,7 +816,7 @@ impl TextStroke {
                 -(next_pos as i32 - cur_pos as i32) + "".len() as i32,
             );
 
-            self.check_spelling(cur_pos, next_pos, spellchecker);
+            self.check_spelling_range(cur_pos, next_pos, spellchecker);
 
             // New text length, new cursor
             *cursor = GraphemeCursor::new(cur_pos, self.text.len(), true);
@@ -827,7 +857,7 @@ impl TextStroke {
             -(cursor_range.end as i32 - cursor_range.start as i32) + replace_text.len() as i32,
         );
 
-        self.check_spelling(
+        self.check_spelling_range(
             cursor_range.start,
             cursor_range.start + replace_text.len(),
             spellchecker,
@@ -840,16 +870,21 @@ impl TextStroke {
     fn translate_attrs_after_cursor(&mut self, from_pos: usize, offset: i32) {
         let translated_words = if offset < 0 {
             let to_pos = from_pos.saturating_add_signed(offset as isize);
-            self.error_words.split_off(&to_pos).split_off(&from_pos)
+            self.spellcheck_result
+                .errors
+                .split_off(&to_pos)
+                .split_off(&from_pos)
         } else {
-            self.error_words.split_off(&from_pos)
+            self.spellcheck_result.errors.split_off(&from_pos)
         };
 
         for (word_start, word_length) in translated_words {
             let new_word_start = word_start.saturating_add_signed(offset as isize);
 
             if new_word_start >= from_pos {
-                self.error_words.insert(new_word_start, word_length);
+                self.spellcheck_result
+                    .errors
+                    .insert(new_word_start, word_length);
             }
         }
 

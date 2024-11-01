@@ -204,7 +204,7 @@ impl DrawableOnDoc for Typewriter {
                     }
 
                     // Draw error ranges
-                    for (start_index, length) in &textstroke.error_words {
+                    for (start_index, length) in &textstroke.spellcheck_result.errors {
                         textstroke.text_style.draw_text_error(
                             cx,
                             textstroke.text.clone(),
@@ -680,7 +680,10 @@ impl Typewriter {
                 let text_len = text.len();
                 text_style.ranged_text_attributes.clear();
                 text_style.set_max_width(Some(text_width));
-                let textstroke = TextStroke::new(text, pos, text_style, engine_view.spellchecker);
+
+                let mut textstroke = TextStroke::new(text, pos, text_style);
+                textstroke.check_spelling_refresh_cache(engine_view.spellchecker);
+
                 let cursor = GraphemeCursor::new(text_len, textstroke.text.len(), true);
 
                 let stroke_key = engine_view
@@ -707,7 +710,10 @@ impl Typewriter {
                 let text_len = text.len();
                 text_style.ranged_text_attributes.clear();
                 text_style.set_max_width(Some(text_width));
-                let textstroke = TextStroke::new(text, *pos, text_style, engine_view.spellchecker);
+
+                let mut textstroke = TextStroke::new(text, *pos, text_style);
+                textstroke.check_spelling_refresh_cache(engine_view.spellchecker);
+
                 let cursor = GraphemeCursor::new(text_len, textstroke.text.len(), true);
 
                 let stroke_key = engine_view
@@ -832,6 +838,19 @@ impl Typewriter {
         }
 
         widget_flags
+    }
+
+    pub(crate) fn refresh_spellcheck_cache_in_modifying_stroke(
+        &self,
+        engine_view: &mut EngineViewMut,
+    ) {
+        if let TypewriterState::Modifying { stroke_key, .. } = self.state {
+            if let Some(Stroke::TextStroke(textstroke)) =
+                engine_view.store.get_stroke_mut(stroke_key)
+            {
+                textstroke.check_spelling_refresh_cache(engine_view.spellchecker);
+            }
+        }
     }
 
     pub(crate) fn toggle_text_attribute_current_selection(

@@ -14,12 +14,15 @@ use gtk4::{
     Adjustment, Button, ColorDialogButton, CompositeTemplate, MenuButton, ScrolledWindow,
     StringList, ToggleButton, Widget, gdk, glib, glib::clone, subclass::prelude::*,
 };
+use itertools::Itertools;
 use num_traits::ToPrimitive;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::document::Layout;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
+use rnote_engine::engine::Spellchecker;
 use rnote_engine::ext::GdkRGBAExt;
+use rnote_engine::WidgetFlags;
 use std::cell::RefCell;
 
 mod imp {
@@ -30,6 +33,8 @@ mod imp {
     pub(crate) struct RnSettingsPanel {
         pub(crate) temporary_format: RefCell<Format>,
         pub(crate) app_restart_toast_singleton: RefCell<Option<adw::Toast>>,
+        /// 0 = None, 1.. = available languages
+        pub(crate) available_spellcheck_languages: RefCell<Vec<String>>,
 
         #[template_child]
         pub(crate) settings_scroller: TemplateChild<ScrolledWindow>,
@@ -93,6 +98,8 @@ mod imp {
         pub(crate) doc_background_pattern_width_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
         pub(crate) doc_background_pattern_height_unitentry: TemplateChild<RnUnitEntry>,
+        #[template_child]
+        pub(crate) doc_spellcheck_language_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(crate) background_pattern_invert_color_button: TemplateChild<Button>,
         #[template_child]
@@ -337,6 +344,40 @@ impl RnSettingsPanel {
             .set_selected(position);
     }
 
+    pub(crate) fn spellcheck_language(&self) -> Option<String> {
+        let position = self.imp().doc_spellcheck_language_row.selected();
+
+        if position == 0 {
+            return None;
+        }
+
+        self.imp()
+            .available_spellcheck_languages
+            .borrow()
+            .get(position as usize)
+            .cloned()
+    }
+
+    pub(crate) fn set_spellcheck_language(&self, language: Option<String>) {
+        if let Some(language) = language {
+            if let Some(position) = self
+                .imp()
+                .available_spellcheck_languages
+                .borrow()
+                .iter()
+                .position(|l| l == &language)
+            {
+                self.imp()
+                    .doc_spellcheck_language_row
+                    .set_selected(position as u32);
+
+                return;
+            }
+        }
+
+        self.imp().doc_spellcheck_language_row.set_selected(0);
+    }
+
     #[allow(unused)]
     pub(crate) fn format_orientation(&self) -> format::Orientation {
         if self.imp().format_orientation_portrait_toggle.is_active() {
@@ -433,6 +474,7 @@ impl RnSettingsPanel {
         let background = canvas.engine_ref().document.background;
         let format = canvas.engine_ref().document.format;
         let document_layout = canvas.engine_ref().document.layout;
+        let spellcheck_language = canvas.engine_ref().document.spellcheck_language.clone();
 
         imp.doc_background_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
@@ -448,6 +490,7 @@ impl RnSettingsPanel {
         imp.doc_background_pattern_height_unitentry
             .set_value_in_px(background.pattern_size[1]);
         self.set_document_layout(&document_layout);
+        self.set_spellcheck_language(spellcheck_language);
     }
 
     fn refresh_shortcuts_ui(&self, active_tab: &RnCanvasWrapper) {
@@ -913,6 +956,45 @@ impl RnSettingsPanel {
                     }
                 ),
             );
+
+        imp.available_spellcheck_languages.replace(
+            [gettext("None")]
+                .into_iter()
+                .chain(Spellchecker::available_languages())
+                .collect(),
+        );
+
+        imp.doc_spellcheck_language_row
+            .get()
+            .set_model(Some(&StringList::new(
+                &imp.available_spellcheck_languages
+                    .borrow()
+                    .iter()
+                    .map(|s| s.as_str())
+                    .collect_vec(),
+            )));
+
+        imp.doc_spellcheck_language_row
+            .get()
+            .connect_selected_item_notify(clone!(
+                #[weak(rename_to=settings_panel)]
+                self,
+                #[weak]
+                appwindow,
+                move |_| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+
+                    let language = settings_panel.spellcheck_language();
+                    canvas.engine_mut().document.spellcheck_language = language;
+
+                    let mut widget_flags = WidgetFlags::default();
+                    widget_flags.spellcheck_language_modified = true;
+
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                }
+            ));
 
         imp.background_pattern_invert_color_button
             .get()

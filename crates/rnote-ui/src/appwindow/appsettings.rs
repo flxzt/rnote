@@ -137,16 +137,8 @@ impl RnAppWindow {
 
         // colorpicker palette
         let gdk_color_mapping = |var: &glib::Variant, _: glib::Type| {
-            let color = var.get::<(f64, f64, f64, f64)>()?;
-            Some(
-                gdk::RGBA::new(
-                    color.0 as f32,
-                    color.1 as f32,
-                    color.2 as f32,
-                    color.3 as f32,
-                )
-                .to_value(),
-            )
+            let (red, green, blue, alpha) = var.get::<(f64, f64, f64, f64)>()?;
+            Some(gdk::RGBA::new(red as f32, green as f32, blue as f32, alpha as f32).to_value())
         };
         let gdk_color_set_mapping = |val: &glib::Value, _: glib::VariantType| {
             let color = val.get::<gdk::RGBA>().ok()?;

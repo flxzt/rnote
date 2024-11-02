@@ -19,7 +19,7 @@ use gtk4::{
 };
 use notify::event::{AccessKind, AccessMode, ModifyKind, RenameMode};
 use notify::EventKind;
-use notify_debouncer_full::notify::{self, Watcher};
+use notify_debouncer_full::notify;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
@@ -1087,18 +1087,12 @@ impl RnCanvas {
                         return;
                     }
                 };
-                if let Err(e) = debouncer
-                    .watcher()
-                    .watch(parent_path, notify::RecursiveMode::NonRecursive)
-                {
+                if let Err(e) = debouncer.watch(parent_path, notify::RecursiveMode::NonRecursive) {
                     error!(
                         "Failed to start watching directory '{}', Err: {e:?}",
                         parent_path.display()
                     );
                 }
-                debouncer
-                    .cache()
-                    .add_root(parent_path, notify::RecursiveMode::NonRecursive);
                 while let Some(res) = rx.next().await {
                     match res {
                         Ok(events) => {

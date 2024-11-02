@@ -54,10 +54,8 @@ pub static SPELLCHECK_AVAILABLE_LANGUAGES: Lazy<Vec<String>> = Lazy::new(|| {
 });
 
 pub static SPELLCHECK_DEFAULT_LANGUAGE: Lazy<Option<String>> = Lazy::new(|| {
-    let available_languages = SPELLCHECK_AVAILABLE_LANGUAGES.clone();
-
     for system_language in glib::language_names() {
-        for available_language in &available_languages {
+        for available_language in SPELLCHECK_AVAILABLE_LANGUAGES.iter() {
             if system_language.contains(available_language) {
                 debug!(
                     "found default spellcheck language: {:?}",

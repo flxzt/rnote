@@ -204,8 +204,12 @@ if build_ui == true
         ui_cargo_options += ['--release']
     endif
 
+    rust_flags = ['']
     if host_machine.system() == 'windows'
         ui_output = app_name + '.exe'
+        if host_machine.cpu_family() == 'aarch64'
+            rust_flags += ['-C linker=clang']
+        endif
     else
         ui_output = app_name
     endif
@@ -261,6 +265,7 @@ if build_ui == true
             ' '.join(ui_cargo_options),
             cargo_target_dir / rust_target_folder / app_name,
             meson.project_build_root() / '@OUTPUT@',
+            rust_flags,
         ],
     )
 
@@ -343,11 +348,16 @@ if build_cli == true
         cli_cargo_options += ['--release']
     endif
 
+    rust_flags = ['']
     if host_machine.system() == 'windows'
         cli_output = cli_name + '.exe'
+        if host_machine.cpu_family() == 'aarch64'
+            rust_flags += ['-C linker=clang']
+        endif
     else
         cli_output = cli_name
     endif
+
 
     cli_sources = [
         rnote_compose_sources,
@@ -413,6 +423,7 @@ if build_cli == true
             ' '.join(cli_cargo_options),
             cargo_target_dir / rust_target_folder / cli_name,
             meson.project_build_root() / '@OUTPUT@',
+            rust_flags,
         ],
     )
 endif

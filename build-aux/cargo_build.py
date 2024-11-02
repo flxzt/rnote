@@ -11,6 +11,7 @@ cargo_cmd = sys.argv[4]
 cargo_options = sys.argv[5]
 bin_output = sys.argv[6]
 output_file = sys.argv[7]
+rustflags = sys.argv[8]
 
 print(f"""
 ### executing cargo build script with arguments: ###
@@ -21,16 +22,8 @@ print(f"""
     cargo_options: {cargo_options}
     bin_output: {bin_output}
     output_file: {output_file}
+    rustflags: {rustflags}
 """, file=sys.stderr)
-
-# Detecting architecture
-if sys.platform == 'win32':
-    if platform.machine().lower() == 'arm64':
-        rustflags = '-C linker=clang'
-    else:
-        rustflags = ''
-else:
-    rustflags = ''
 
 cargo_call = f"env {cargo_env} RUSTFLAGS='{rustflags}' {cargo_cmd} build {cargo_options}"
 cp_call = f"cp {bin_output} {output_file}"

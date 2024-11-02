@@ -108,6 +108,7 @@ impl Composer<TexturedOptions> for PenPath {
 
         for seg in self.segments.iter() {
             if seg.end().pos == self.start.pos {
+                options.advance_seed();
                 continue;
             }
 

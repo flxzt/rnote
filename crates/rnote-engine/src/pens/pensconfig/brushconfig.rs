@@ -132,14 +132,14 @@ impl BrushConfig {
     pub(crate) fn style_for_current_options(&self) -> Style {
         match &self.style {
             BrushStyle::Marker => {
-                let options = self.marker_options.clone();
+                let MarkerOptions(options) = self.marker_options.clone();
 
-                Style::Smooth(options.0)
+                Style::Smooth(options)
             }
             BrushStyle::Solid => {
-                let options = self.solid_options.clone();
+                let SolidOptions(options) = self.solid_options.clone();
 
-                Style::Smooth(options.0)
+                Style::Smooth(options)
             }
             BrushStyle::Textured => {
                 let options = self.textured_options.clone();

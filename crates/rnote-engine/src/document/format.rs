@@ -64,12 +64,12 @@ impl PredefinedFormat {
             PredefinedFormat::UsLegal => Some((215.9, 355.6)),
             PredefinedFormat::Custom => None,
         };
-        if let Some(size_portrait) = &mut size_portrait {
+        if let Some((mut width, mut height)) = &mut size_portrait {
             if orientation == Orientation::Landscape {
-                std::mem::swap(&mut size_portrait.0, &mut size_portrait.1);
+                std::mem::swap(&mut width, &mut height);
             }
         }
-        size_portrait.map(|s| na::vector![s.0, s.1])
+        size_portrait.map(|(width, height)| na::vector![width, height])
     }
 }
 

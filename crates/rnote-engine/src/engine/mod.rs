@@ -31,10 +31,10 @@ use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::{KeyboardKey, PenEvent, ShortcutKey};
 use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
-use std::collections::HashSet;
 use tracing::error;
 
 /// An immutable view into the engine, excluding the penholder.

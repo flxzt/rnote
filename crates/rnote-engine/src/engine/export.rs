@@ -10,6 +10,7 @@ use rnote_compose::transform::Transformable;
 use rnote_compose::SplitOrder;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
+use tracing::error;
 
 /// Document export format.
 #[derive(
@@ -336,7 +337,7 @@ impl Engine {
                 rnote_file.save_as_bytes(&file_name)
             };
             if oneshot_sender.send(result()).is_err() {
-                tracing::error!(
+                error!(
                     "Sending result to receiver failed while saving document as rnote bytes. Receiver already dropped."
                 );
             }
@@ -463,7 +464,7 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                tracing::error!("Sending result to receiver failed while exporting document as Svg bytes. Receiver already dropped.");
+                error!("Sending result to receiver failed while exporting document as Svg bytes. Receiver already dropped.");
             }
         });
 
@@ -537,7 +538,7 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                tracing::error!("Sending result to receiver failed while exporting document as Pdf bytes. Receiver already dropped.");
+                error!("Sending result to receiver failed while exporting document as Pdf bytes. Receiver already dropped.");
             }
         });
 
@@ -667,7 +668,7 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                tracing::error!(
+                error!(
                     "Sending result to receiver failed while exporting document as xopp bytes. Receiver already dropped."
                 );
             }
@@ -735,7 +736,7 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                tracing::error!(
+                error!(
                     "Sending result to receiver failed while exporting document pages as Svg bytes. Receiver already dropped."
                 );
             }
@@ -786,7 +787,7 @@ impl Engine {
                     .collect()
             };
             if oneshot_sender.send(result()).is_err() {
-                tracing::error!("Sending result to receiver failed while exporting document pages as bitmap bytes. Receiver already dropped.");
+                error!("Sending result to receiver failed while exporting document pages as bitmap bytes. Receiver already dropped.");
             }
         });
 
@@ -851,7 +852,7 @@ impl Engine {
                 ))
             };
             if oneshot_sender.send(result()).is_err() {
-                tracing::error!("Sending result to receiver failed while exporting selection as Svg bytes. Receiver already dropped.");
+                error!("Sending result to receiver failed while exporting selection as Svg bytes. Receiver already dropped.");
             }
         });
 
@@ -900,7 +901,7 @@ impl Engine {
                 ))
             };
             if oneshot_sender.send(result()).is_err() {
-                tracing::error!("Sending result to receiver failed while exporting selection as bitmap image bytes. Receiver already dropped");
+                error!("Sending result to receiver failed while exporting selection as bitmap image bytes. Receiver already dropped");
             }
         });
 

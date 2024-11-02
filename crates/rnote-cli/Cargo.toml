@@ -13,7 +13,6 @@ rnote-compose = { workspace = true, features = ["clap-derive"] }
 rnote-engine = { workspace = true, features = ["cli"] }
 
 anyhow = { workspace = true }
-atty = { workspace = true }
 clap = { workspace = true }
 dialoguer = { workspace = true }
 indicatif = { workspace = true }

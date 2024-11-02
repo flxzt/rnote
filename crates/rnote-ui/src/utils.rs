@@ -7,7 +7,7 @@ use palette::convert::IntoColor;
 use path_absolutize::Absolutize;
 use rnote_compose::Color;
 use std::cell::Ref;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::slice::Iter;
 
 /// The suffix delimiter when duplicating/renaming already existing files
@@ -240,4 +240,15 @@ pub(crate) fn color_to_hsv_label_string(color: Color) -> String {
     } else {
         format!("{alpha_str} {saturation_str} {value_str} {hue_str}")
     }
+}
+
+pub(crate) fn path_walk_up_until_exists(path: impl AsRef<Path>) -> anyhow::Result<PathBuf> {
+    let mut path = path.as_ref().absolutize()?.to_path_buf();
+    while !path.exists() {
+        path = path
+            .parent()
+            .map(|p| p.to_path_buf())
+            .ok_or_else(|| anyhow::anyhow!("Path {} has no parent", path.display()))?;
+    }
+    Ok(path)
 }

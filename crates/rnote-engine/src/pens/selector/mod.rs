@@ -22,7 +22,9 @@ use rnote_compose::penpath::Element;
 use rnote_compose::style::indicators;
 use rnote_compose::EventResult;
 use rnote_compose::{color, Color};
+use std::collections::HashSet;
 use std::time::Instant;
+use tracing::error;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum ResizeCorner {
@@ -201,7 +203,7 @@ impl PenBehaviour for Selector {
                 Ok((clipboard_content, widget_flags))
             };
             if sender.send(result()).is_err() {
-                tracing::error!(
+                error!(
                     "Sending fetched selector clipboard content failed, receiver already dropped."
                 );
             }
@@ -262,9 +264,7 @@ impl PenBehaviour for Selector {
                 Ok((clipboard_content, widget_flags))
             };
             if sender.send(result()).is_err() {
-                tracing::error!(
-                    "Sending cut selector clipboard content failed, receiver already dropped."
-                );
+                error!("Sending cut selector clipboard content failed, receiver already dropped.");
             }
         });
 
@@ -422,7 +422,7 @@ impl DrawableOnDoc for Selector {
                 // Draw the highlight for the selected strokes
                 for stroke in engine_view.store.get_strokes_ref(selection) {
                     if let Err(e) = stroke.draw_highlight(cx, engine_view.camera.total_zoom()) {
-                        tracing::error!("Failed to draw stroke highlight, Err: {e:?}");
+                        error!("Failed to draw stroke highlight, Err: {e:?}");
                     }
                 }
 
@@ -777,7 +777,7 @@ impl Selector {
 
     fn select_all(
         &mut self,
-        modifier_keys: Vec<ModifierKey>,
+        modifier_keys: HashSet<ModifierKey>,
         engine_view: &mut EngineViewMut,
         widget_flags: &mut WidgetFlags,
     ) {

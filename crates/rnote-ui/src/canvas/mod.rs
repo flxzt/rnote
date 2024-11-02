@@ -17,7 +17,9 @@ use gtk4::{
     DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext, PropagationPhase,
     Scrollable, ScrollablePolicy, Widget,
 };
-use notify_debouncer_full::notify::{self, Watcher};
+use notify::event::{AccessKind, AccessMode, ModifyKind, RenameMode};
+use notify::EventKind;
+use notify_debouncer_full::notify;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
@@ -29,6 +31,7 @@ use rnote_engine::{Engine, WidgetFlags};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 use std::path::Path;
 use std::time::Duration;
+use tracing::{debug, error, warn};
 
 #[derive(Debug, Default)]
 struct Connections {
@@ -36,6 +39,7 @@ struct Connections {
     vadjustment: Option<glib::SignalHandlerId>,
     tab_page_output_file: Option<glib::Binding>,
     tab_page_unsaved_changes: Option<glib::Binding>,
+    tab_page_invalidate_thumbnail: Option<glib::SignalHandlerId>,
     appwindow_output_file: Option<glib::SignalHandlerId>,
     appwindow_scalefactor: Option<glib::SignalHandlerId>,
     appwindow_save_in_progress: Option<glib::SignalHandlerId>,
@@ -74,7 +78,7 @@ mod imp {
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_watcher_task: RefCell<Option<glib::JoinHandle<()>>>,
-        pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
+        pub(crate) output_file_modified_toast_singleton: glib::WeakRef<adw::Toast>,
         pub(crate) output_file_expect_write: Cell<bool>,
         pub(crate) save_in_progress: Cell<bool>,
         pub(crate) unsaved_changes: Cell<bool>,
@@ -168,7 +172,7 @@ mod imp {
                 output_file: RefCell::new(None),
                 output_file_watcher_task: RefCell::new(None),
                 // is automatically updated whenever the output file changes.
-                output_file_modified_toast_singleton: RefCell::new(None),
+                output_file_modified_toast_singleton: glib::WeakRef::new(),
                 output_file_expect_write: Cell::new(false),
                 save_in_progress: Cell::new(false),
                 unsaved_changes: Cell::new(false),
@@ -215,10 +219,14 @@ mod imp {
             obj.add_controller(self.drop_target.clone());
 
             // receive and handle engine tasks
-            let engine_task_handler_handle = glib::spawn_future_local(
-                clone!(@weak obj as canvas => async move {
+            let engine_task_handler_handle = glib::spawn_future_local(clone!(
+                #[weak(rename_to=canvas)]
+                obj,
+                async move {
                     let Some(mut task_rx) = canvas.engine_mut().take_engine_tasks_rx() else {
-                        tracing::error!("Installing the engine task handler failed, taken tasks_rx is None.");
+                        error!(
+                            "Installing the engine task handler failed, taken tasks_rx is None."
+                        );
                         return;
                     };
 
@@ -232,8 +240,8 @@ mod imp {
                             }
                         }
                     }
-                }),
-            );
+                }
+            ));
 
             *self.engine_task_handler_handle.borrow_mut() = Some(engine_task_handler_handle);
 
@@ -414,9 +422,12 @@ mod imp {
 
         fn signals() -> &'static [glib::subclass::Signal] {
             static SIGNALS: Lazy<Vec<glib::subclass::Signal>> = Lazy::new(|| {
-                vec![glib::subclass::Signal::builder("handle-widget-flags")
-                    .param_types([WidgetFlagsBoxed::static_type()])
-                    .build()]
+                vec![
+                    glib::subclass::Signal::builder("handle-widget-flags")
+                        .param_types([WidgetFlagsBoxed::static_type()])
+                        .build(),
+                    glib::subclass::Signal::builder("invalidate-thumbnail").build(),
+                ]
             });
             SIGNALS.as_ref()
         }
@@ -452,7 +463,7 @@ mod imp {
                 snapshot.pop();
                 Ok(())
             }() {
-                tracing::error!("Snapshot canvas failed , Err: {e:?}");
+                error!("Snapshot canvas failed , Err: {e:?}");
             }
         }
     }
@@ -465,29 +476,51 @@ mod imp {
 
             // Pointer controller
             let pen_state = Cell::new(PenState::Up);
-            self.pointer_controller.connect_event(clone!(@strong pen_state, @weak obj as canvas => @default-return glib::Propagation::Proceed, move |_, event| {
-                let (propagation, new_state) = super::input::handle_pointer_controller_event(&canvas, event, pen_state.get());
-                pen_state.set(new_state);
-                propagation
-            }));
+            self.pointer_controller.connect_event(clone!(
+                #[strong]
+                pen_state,
+                #[weak(rename_to=canvas)]
+                obj,
+                #[upgrade_or]
+                glib::Propagation::Proceed,
+                move |_, event| {
+                    let (propagation, new_state) = super::input::handle_pointer_controller_event(
+                        &canvas,
+                        event,
+                        pen_state.get(),
+                    );
+                    pen_state.set(new_state);
+                    propagation
+                }
+            ));
 
             // For unicode text the input is committed from the IM context, and won't trigger the key_pressed signal
-            self.key_controller_im_context.connect_commit(
-                clone!(@weak obj as canvas => move |_cx, text| {
+            self.key_controller_im_context.connect_commit(clone!(
+                #[weak(rename_to=canvas)]
+                obj,
+                move |_cx, text| {
                     super::input::handle_imcontext_text_commit(&canvas, text);
-                }),
-            );
+                }
+            ));
 
             // Key controller
-            self.key_controller.connect_key_pressed(clone!(@weak obj as canvas => @default-return glib::Propagation::Proceed, move |_, key, _raw, modifier| {
-                super::input::handle_key_controller_key_pressed(&canvas, key, modifier)
-            }));
+            self.key_controller.connect_key_pressed(clone!(
+                #[weak(rename_to=canvas)]
+                obj,
+                #[upgrade_or]
+                glib::Propagation::Proceed,
+                move |_, key, _raw, modifier| {
+                    super::input::handle_key_controller_key_pressed(&canvas, key, modifier)
+                }
+            ));
 
-            self.key_controller.connect_key_released(
-                clone!(@weak obj as canvas => move |_key_controller, key, _raw, modifier| {
+            self.key_controller.connect_key_released(clone!(
+                #[weak(rename_to=canvas)]
+                obj,
+                move |_key_controller, key, _raw, modifier| {
                     super::input::handle_key_controller_key_released(&canvas, key, modifier)
-                }),
-            );
+                }
+            ));
         }
 
         fn set_hadjustment_prop(&self, hadj: Option<Adjustment>) {
@@ -514,12 +547,15 @@ mod imp {
             }
 
             if let Some(ref hadj) = hadj {
-                let signal_id =
-                    hadj.connect_value_changed(clone!(@weak obj as canvas => move |_| {
+                let signal_id = hadj.connect_value_changed(clone!(
+                    #[weak(rename_to=canvas)]
+                    obj,
+                    move |_| {
                         // this triggers a canvaslayout allocate() call,
                         // where the camera and content rendering is updated based on some conditions
                         canvas.queue_resize();
-                    }));
+                    }
+                ));
 
                 self.connections.borrow_mut().hadjustment.replace(signal_id);
             }
@@ -556,12 +592,15 @@ mod imp {
             }
 
             if let Some(ref vadj) = vadj {
-                let signal_id =
-                    vadj.connect_value_changed(clone!(@weak obj as canvas => move |_| {
+                let signal_id = vadj.connect_value_changed(clone!(
+                    #[weak(rename_to=canvas)]
+                    obj,
+                    move |_| {
                         // this triggers a canvaslayout allocate() call,
                         // where the camera and content rendering is updated based on some conditions
                         canvas.queue_resize();
-                    }));
+                    }
+                ));
 
                 self.connections.borrow_mut().vadjustment.replace(signal_id);
             }
@@ -709,6 +748,10 @@ impl RnCanvas {
         );
     }
 
+    pub(super) fn emit_invalidate_thumbnail(&self) {
+        self.emit_by_name::<()>("invalidate-thumbnail", &[]);
+    }
+
     pub(crate) fn last_export_dir(&self) -> Option<gio::File> {
         self.imp().last_export_dir.borrow().clone()
     }
@@ -813,7 +856,7 @@ impl RnCanvas {
             Err(e) => {
                 if engine_config.is_empty() {
                     // On first app startup the engine config is empty, so we don't log an error
-                    tracing::debug!("Did not load `engine-config` from settings, was empty");
+                    debug!("Did not load `engine-config` from settings, was empty");
                 } else {
                     return Err(e);
                 }
@@ -881,7 +924,7 @@ impl RnCanvas {
 
     pub(crate) fn dismiss_output_file_modified_toast(&self) {
         if let Some(output_file_modified_toast) =
-            self.imp().output_file_modified_toast_singleton.take()
+            self.imp().output_file_modified_toast_singleton.upgrade()
         {
             output_file_modified_toast.dismiss();
         }
@@ -892,33 +935,44 @@ impl RnCanvas {
             canvas.set_unsaved_changes(true);
 
             appwindow.overlays().dispatch_toast_w_button_singleton(
-                        &gettext("Opened file was modified on disk"),
-                        &gettext("Reload"),
-                        clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
-                            glib::spawn_future_local(clone!(@weak appwindow => async move {
+                &gettext("Opened file was modified on disk"),
+                &gettext("Reload"),
+                clone!(
+                    #[weak]
+                    canvas,
+                    #[weak]
+                    appwindow,
+                    move |_reload_toast| {
+                        glib::spawn_future_local(clone!(
+                            #[weak]
+                            appwindow,
+                            async move {
                                 appwindow.overlays().progressbar_start_pulsing();
 
                                 if let Err(e) = canvas.reload_from_disk().await {
-                                    tracing::error!("Failed to reload current output file, Err: {e:?}");
-                                    appwindow.overlays().dispatch_toast_error(&gettext("Reloading .rnote file from disk failed"));
+                                    error!("Failed to reload current output file, Err: {e:?}");
+                                    appwindow.overlays().dispatch_toast_error(&gettext(
+                                        "Reloading .rnote file from disk failed",
+                                    ));
                                     appwindow.overlays().progressbar_abort();
                                 } else {
                                     appwindow.overlays().progressbar_finish();
+                                    canvas.emit_invalidate_thumbnail();
                                 }
-                            }));
-                        }),
-                        None,
-                    &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
+                            }
+                        ));
+                    }
+                ),
+                None,
+                &canvas.imp().output_file_modified_toast_singleton,
+            );
         };
 
         let event_handler = move |appwindow: &RnAppWindow,
                                   canvas: &RnCanvas,
                                   event: notify_debouncer_full::DebouncedEvent,
                                   file_path: &Path| {
-            use notify::event::{AccessKind, AccessMode, ModifyKind, RenameMode};
-            use notify::EventKind;
-
-            tracing::trace!("file parent directory watcher - received event: {event:?}");
+            debug!(?event, expect_write=?canvas.output_file_expect_write(), msg="output file parent directory watcher event received");
 
             match event.kind {
                 EventKind::Create(_create_kind) => {}
@@ -1000,35 +1054,45 @@ impl RnCanvas {
             }
         };
 
-        let new_watcher_task = glib::spawn_future_local(
-            glib::clone!(@strong file, @weak self as canvas, @weak appwindow => async move {
+        let new_watcher_task = glib::spawn_future_local(glib::clone!(
+            #[strong]
+            file,
+            #[weak(rename_to=canvas)]
+            self,
+            #[weak]
+            appwindow,
+            async move {
                 let (tx, mut rx) = futures::channel::mpsc::unbounded();
                 let Some(file_path) = file.path() else {
-                    tracing::warn!("Can't create watcher for file that has no path");
+                    warn!("Can't create watcher for file that has no path");
                     return;
                 };
                 let Some(parent_path) = file_path.parent() else {
-                    tracing::warn!("Can't create watcher for file that has no parent directory");
+                    warn!("Can't create watcher for file that has no parent directory");
                     return;
                 };
 
-                let mut debouncer = match notify_debouncer_full::new_debouncer(Duration::from_millis(1000), None, move |res| {
-                    if let Err(e) = tx.unbounded_send(res) {
-                        tracing::error!("File watcher reported change, but failed to send it through channel. Err: {e:?}");
-                    }
-                }) {
-                    Ok(w) => {
-                        w
+                let mut debouncer = match notify_debouncer_full::new_debouncer(
+                    Duration::from_millis(1000),
+                    None,
+                    move |res| {
+                        if let Err(e) = tx.unbounded_send(res) {
+                            error!("File watcher reported change, but failed to send it through channel. Err: {e:?}");
+                        }
                     },
+                ) {
+                    Ok(w) => w,
                     Err(e) => {
-                        tracing::error!("Failed to create file watcher, Err: {e:?}");
+                        error!("Failed to create file watcher, Err: {e:?}");
                         return;
                     }
                 };
-                if let Err(e) = debouncer.watcher().watch(parent_path, notify::RecursiveMode::NonRecursive) {
-                    tracing::error!("Failed to start watching directory '{}', Err: {e:?}", parent_path.display());
+                if let Err(e) = debouncer.watch(parent_path, notify::RecursiveMode::NonRecursive) {
+                    error!(
+                        "Failed to start watching directory '{}', Err: {e:?}",
+                        parent_path.display()
+                    );
                 }
-                debouncer.cache().add_root(parent_path, notify::RecursiveMode::NonRecursive);
                 while let Some(res) = rx.next().await {
                     match res {
                         Ok(events) => {
@@ -1036,11 +1100,11 @@ impl RnCanvas {
                                 event_handler(&appwindow, &canvas, event, &file_path);
                             }
                         }
-                        Err(e) => tracing::error!("File watcher sent error message, Err: {e:?}"),
+                        Err(e) => error!("File watcher sent error message, Err: {e:?}"),
                     }
                 }
-            }),
-        );
+            }
+        ));
 
         if let Some(old_watcher_task) = self
             .imp()
@@ -1069,16 +1133,19 @@ impl RnCanvas {
 
         let appwindow_output_file = self.connect_notify_local(
             Some("output-file"),
-            clone!(@weak appwindow => move |canvas, _pspec| {
-                if let Some(output_file) = canvas.output_file(){
-                    canvas.create_output_file_watcher(&output_file, &appwindow);
-                } else {
-                    canvas.clear_output_file_watcher();
-                    canvas.dismiss_output_file_modified_toast();
+            clone!(
+                #[weak]
+                appwindow,
+                move |canvas, _pspec| {
+                    if let Some(output_file) = canvas.output_file() {
+                        canvas.create_output_file_watcher(&output_file, &appwindow);
+                    } else {
+                        canvas.clear_output_file_watcher();
+                        canvas.dismiss_output_file_modified_toast();
+                    }
+                    appwindow.refresh_titles(canvas);
                 }
-
-                appwindow.refresh_titles(&appwindow.active_tab_wrapper());
-            }),
+            ),
         );
 
         // set scale factor initially
@@ -1097,21 +1164,29 @@ impl RnCanvas {
         // Reset
         let appwindow_save_in_progress = self.connect_notify_local(
             Some("save-in-progress"),
-            clone!(@weak appwindow => move |canvas, _| {
-                if canvas.save_in_progress() {
-                    appwindow.set_save_in_progress(true);
-                } else if !appwindow.tabs_any_saves_in_progress() {
-                    appwindow.set_save_in_progress(false);
+            clone!(
+                #[weak]
+                appwindow,
+                move |canvas, _| {
+                    if canvas.save_in_progress() {
+                        appwindow.set_save_in_progress(true);
+                    } else if !appwindow.tabs_any_saves_in_progress() {
+                        appwindow.set_save_in_progress(false);
+                    }
                 }
-            }),
+            ),
         );
 
         // Update titles when there are changes
         let appwindow_unsaved_changes = self.connect_notify_local(
             Some("unsaved-changes"),
-            clone!(@weak appwindow => move |_, _| {
-                appwindow.refresh_titles(&appwindow.active_tab_wrapper());
-            }),
+            clone!(
+                #[weak]
+                appwindow,
+                move |canvas, _| {
+                    appwindow.refresh_titles(canvas);
+                }
+            ),
         );
 
         // one per-appwindow property for touch-drawing
@@ -1149,53 +1224,75 @@ impl RnCanvas {
             .build();
 
         // Drop Target
-        let appwindow_drop_target = self.imp().drop_target.connect_drop(
-            clone!(@weak self as canvas, @weak appwindow => @default-return false, move |_, value, x, y| {
-                let pos = (canvas.engine_ref().camera.transform().inverse() *
-                    na::point![x,y]).coords;
+        let appwindow_drop_target = self.imp().drop_target.connect_drop(clone!(
+            #[weak(rename_to=canvas)]
+            self,
+            #[weak]
+            appwindow,
+            #[upgrade_or]
+            false,
+            move |_, value, x, y| {
+                let pos =
+                    (canvas.engine_ref().camera.transform().inverse() * na::point![x, y]).coords;
                 let mut accept_drop = false;
 
                 if value.is::<gio::File>() {
                     // In some scenarios, get() can fail with `UnexpectedNone` even though is() returned true, e.g. when dealing with trashed files.
                     match value.get::<gio::File>() {
                         Ok(file) => {
-                            glib::spawn_future_local(clone!(@weak appwindow => async move {
-                                appwindow.open_file_w_dialogs(file, Some(pos), true).await;
-                            }));
+                            glib::spawn_future_local(clone!(
+                                #[weak]
+                                appwindow,
+                                async move {
+                                    appwindow.open_file_w_dialogs(file, Some(pos), true).await;
+                                }
+                            ));
                             accept_drop = true;
-                        },
+                        }
                         Err(e) => {
-                            tracing::error!("Failed to get dropped in file, Err: {e:?}");
-                            appwindow.overlays().dispatch_toast_error(&gettext("Inserting file failed"));
-                        },
+                            error!("Failed to get dropped in file, Err: {e:?}");
+                            appwindow
+                                .overlays()
+                                .dispatch_toast_error(&gettext("Inserting file failed"));
+                        }
                     };
                 } else if value.is::<String>() {
                     match canvas.load_in_text(value.get::<String>().unwrap(), Some(pos)) {
                         Ok(_) => {
                             accept_drop = true;
-                        },
+                        }
                         Err(e) => {
-                            tracing::error!("Failed to insert dropped in text, Err: {e:?}");
-                            appwindow.overlays().dispatch_toast_error(&gettext("Inserting text failed"));
+                            error!("Failed to insert dropped in text, Err: {e:?}");
+                            appwindow
+                                .overlays()
+                                .dispatch_toast_error(&gettext("Inserting text failed"));
                         }
                     };
                 }
 
                 accept_drop
-            }),
-        );
+            }
+        ));
 
         // handle widget flags
         let appwindow_handle_widget_flags = self.connect_local(
             "handle-widget-flags",
             false,
-            clone!(@weak self as canvas, @weak appwindow => @default-return None, move |args| {
-                // first argument is the widget, second is widget flags
-                let widget_flags = args[1].get::<WidgetFlagsBoxed>().unwrap().inner();
+            clone!(
+                #[weak(rename_to=canvas)]
+                self,
+                #[weak]
+                appwindow,
+                #[upgrade_or]
+                None,
+                move |args| {
+                    // first argument is the widget, second is widget flags
+                    let widget_flags = args[1].get::<WidgetFlagsBoxed>().unwrap().inner();
 
-                appwindow.handle_widget_flags(widget_flags, &canvas);
-                None
-            }),
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                    None
+                }
+            ),
         );
 
         // Replace connections
@@ -1307,6 +1404,9 @@ impl RnCanvas {
         if let Some(old) = connections.tab_page_unsaved_changes.take() {
             old.unbind();
         }
+        if let Some(old) = connections.tab_page_invalidate_thumbnail.take() {
+            self.disconnect(old);
+        }
     }
 
     /// When the widget is the child of a tab page, we want to connect their titles, icons, ..
@@ -1336,6 +1436,22 @@ impl RnCanvas {
             .sync_create()
             .build();
 
+        // handle invalidating cached thumbnail in the tabs overview panel
+        let tab_page_invalidate_thumbnail = self.connect_local(
+            "invalidate-thumbnail",
+            false,
+            clone!(
+                #[weak]
+                page,
+                #[upgrade_or]
+                None,
+                move |_| {
+                    page.invalidate_thumbnail();
+                    None
+                }
+            ),
+        );
+
         let mut connections = self.imp().connections.borrow_mut();
         if let Some(old) = connections
             .tab_page_output_file
@@ -1348,6 +1464,12 @@ impl RnCanvas {
             .replace(tab_page_unsaved_changes)
         {
             old.unbind();
+        }
+        if let Some(old) = connections
+            .tab_page_invalidate_thumbnail
+            .replace(tab_page_invalidate_thumbnail)
+        {
+            self.disconnect(old);
         }
     }
 

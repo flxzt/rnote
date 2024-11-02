@@ -4,6 +4,7 @@ use super::{FileFormatLoader, FileFormatSaver, ToXmlAttributeValue, XmlLoadable,
 use roxmltree::{Node, NodeType};
 use serde::{Deserialize, Serialize};
 use std::io::{Read, Write};
+use tracing::{error, trace};
 
 /// The decimal places when serializing values.
 pub const VALS_DEC_PLACES: usize = 3;
@@ -370,7 +371,7 @@ impl XmlLoadable for XoppBackground {
                 })?) {
                     Ok(s) => s,
                     Err(e) => {
-                        tracing::error!("Failed to retrieve the XoppBackgroundSolidStyle from `style` attribute, Err: {e:?}");
+                        error!("Failed to retrieve the XoppBackgroundSolidStyle from `style` attribute, Err: {e:?}");
                         XoppBackgroundSolidStyle::Plain
                     }
                 };
@@ -477,10 +478,10 @@ impl XmlWritable for XoppLayer {
         // Fix for #985
         let is_empty = self.strokes.is_empty() && self.texts.is_empty() && self.images.is_empty();
         if is_empty {
-            tracing::trace!("empty layer, skipped")
+            trace!("empty layer, skipped")
         } else {
             w.start_element("layer");
-            tracing::trace!("layer element opened");
+            trace!("layer element opened");
 
             if let Some(name) = self.name.as_ref() {
                 w.write_attribute("name", name.as_str());

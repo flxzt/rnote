@@ -1,0 +1,23 @@
+name: Nightly
+
+on:
+  schedule:
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  flatpak:
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:gnome-47
+      options: --privileged
+    steps:
+    - uses: actions/checkout@v4
+    - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+      with:
+        manifest-path: build-aux/com.github.flxzt.rnote.Devel.yaml
+        cache-key: flatpak-builder-${{ github.sha }}
+        arch: x86_64
+        build-bundle: true
+        bundle: com.github.flxzt.rnote.Devel.flatpak

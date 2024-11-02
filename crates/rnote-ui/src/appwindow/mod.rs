@@ -18,6 +18,7 @@ use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::{engine::EngineTask, WidgetFlags};
 use std::path::Path;
+use tracing::{error, warn};
 
 glib::wrapper! {
     pub(crate) struct RnAppWindow(ObjectSubclass<imp::RnAppWindow>)
@@ -103,6 +104,10 @@ impl RnAppWindow {
         self.application().unwrap().downcast::<RnApp>().unwrap()
     }
 
+    pub(crate) fn overview(&self) -> adw::TabOverview {
+        self.imp().overview.get()
+    }
+
     pub(crate) fn main_header(&self) -> RnMainHeader {
         self.imp().main_header.get()
     }
@@ -142,13 +147,13 @@ impl RnAppWindow {
             ));
         } else {
             if let Err(e) = self.setup_settings_binds() {
-                tracing::error!("Failed to setup settings binds, Err: {e:?}");
+                error!("Failed to setup settings binds, Err: {e:?}");
             }
             if let Err(e) = self.setup_periodic_save() {
-                tracing::error!("Failed to setup periodic save, Err: {e:?}");
+                error!("Failed to setup periodic save, Err: {e:?}");
             }
             if let Err(e) = self.load_settings() {
-                tracing::error!("Failed to load initial settings, Err: {e:?}");
+                error!("Failed to load initial settings, Err: {e:?}");
             }
         }
 
@@ -163,7 +168,9 @@ impl RnAppWindow {
             .penpicker()
             .redo_button()
             .set_sensitive(false);
-        self.refresh_ui_from_engine(&self.active_tab_wrapper());
+        if let Some(wrapper) = self.active_tab_wrapper() {
+            self.refresh_ui_from_engine(&wrapper);
+        }
     }
 
     fn setup_icon_theme(&self) {
@@ -178,7 +185,7 @@ impl RnAppWindow {
         if self.app().settings_schema_found() {
             // Saving all state
             if let Err(e) = self.save_to_settings() {
-                tracing::error!("Failed to save appwindow to settings, Err: {e:?}");
+                error!("Failed to save appwindow to settings, Err: {e:?}");
             }
         }
 
@@ -200,7 +207,7 @@ impl RnAppWindow {
 
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
     pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags, canvas: &RnCanvas) {
-        //tracing::debug!("handling widget flags: '{widget_flags:?}'");
+        //debug!("handling widget flags: '{widget_flags:?}'");
 
         if widget_flags.redraw {
             canvas.queue_draw();
@@ -209,7 +216,9 @@ impl RnAppWindow {
             canvas.queue_resize();
         }
         if widget_flags.refresh_ui {
-            self.refresh_ui_from_engine(&self.active_tab_wrapper());
+            if let Some(wrapper) = self.active_tab_wrapper() {
+                self.refresh_ui_from_engine(&wrapper);
+            }
         }
         if widget_flags.store_modified {
             canvas.set_unsaved_changes(true);
@@ -262,15 +271,8 @@ impl RnAppWindow {
     }
 
     /// Get the active (selected) tab page.
-    ///
-    /// Panics if there is none, but this should never be the case,
-    /// since a first one is added initially and the UI hides closing the last tab.
-    pub(crate) fn active_tab_page(&self) -> adw::TabPage {
-        self.imp()
-            .overlays
-            .tabview()
-            .selected_page()
-            .expect("there must always be one active tab")
+    pub(crate) fn active_tab_page(&self) -> Option<adw::TabPage> {
+        self.imp().overlays.tabview().selected_page()
     }
 
     pub(crate) fn n_tabs_open(&self) -> usize {
@@ -301,11 +303,14 @@ impl RnAppWindow {
     }
 
     /// Get the active (selected) tab page child.
-    pub(crate) fn active_tab_wrapper(&self) -> RnCanvasWrapper {
+    pub(crate) fn active_tab_wrapper(&self) -> Option<RnCanvasWrapper> {
         self.active_tab_page()
-            .child()
-            .downcast::<RnCanvasWrapper>()
-            .unwrap()
+            .map(|c| c.child().downcast::<RnCanvasWrapper>().unwrap())
+    }
+
+    /// Get the active (selected) tab page canvas.
+    pub(crate) fn active_tab_canvas(&self) -> Option<RnCanvas> {
+        self.active_tab_wrapper().map(|w| w.canvas())
     }
 
     /// adds the initial tab to the tabview
@@ -316,10 +321,10 @@ impl RnAppWindow {
                 .canvas()
                 .load_engine_config_from_settings(&app_settings)
             {
-                tracing::error!("Failed to load engine config for initial tab, Err: {e:?}");
+                error!("Failed to load engine config for initial tab, Err: {e:?}");
             }
         } else {
-            tracing::warn!("Could not load settings for initial tab. Settings schema not found.");
+            warn!("Could not load settings for initial tab. Settings schema not found.");
         }
         self.append_wrapper_new_tab(&wrapper)
     }
@@ -328,9 +333,8 @@ impl RnAppWindow {
     pub(crate) fn new_canvas_wrapper(&self) -> RnCanvasWrapper {
         let engine_config = self
             .active_tab_wrapper()
-            .canvas()
-            .engine_ref()
-            .extract_engine_config();
+            .map(|w| w.canvas().engine_ref().extract_engine_config())
+            .unwrap_or_default();
         let wrapper = RnCanvasWrapper::new();
         let widget_flags = wrapper
             .canvas()
@@ -464,9 +468,7 @@ impl RnAppWindow {
             .close_page_finish(tab_page, confirm);
     }
 
-    pub(crate) fn refresh_titles(&self, active_tab: &RnCanvasWrapper) {
-        let canvas = active_tab.canvas();
-
+    pub(crate) fn refresh_titles(&self, canvas: &RnCanvas) {
         // Titles
         let title = canvas.doc_title_display();
         let subtitle = canvas.doc_folderpath_display();
@@ -514,7 +516,7 @@ impl RnAppWindow {
                 self.overlays().progressbar_abort();
             }
             Err(e) => {
-                tracing::error!("Opening file with dialogs failed, Err: {e:?}");
+                error!("Opening file with dialogs failed, Err: {e:?}");
 
                 self.overlays()
                     .dispatch_toast_error(&gettext("Opening file failed"));
@@ -543,20 +545,22 @@ impl RnAppWindow {
                     self.overlays().tabview().set_selected_page(&page);
                     false
                 } else {
-                    let rnote_file_new_tab = if self.active_tab_wrapper().canvas().empty()
-                        && self.active_tab_wrapper().canvas().output_file().is_none()
-                    {
-                        false
-                    } else {
-                        rnote_file_new_tab
-                    };
+                    let (rnote_file_new_tab, wrapper) =
+                        match (rnote_file_new_tab, self.active_tab_wrapper()) {
+                            (true, None) => (true, self.new_canvas_wrapper()),
+                            // Create a new tab when the existing is already used
+                            (true, Some(active_wrapper))
+                                if !active_wrapper.canvas().empty()
+                                    || active_wrapper.canvas().output_file().is_some() =>
+                            {
+                                (true, self.new_canvas_wrapper())
+                            }
+                            // Re-use the existing empty tab otherwise
+                            (true, Some(active_wrapper)) => (false, active_wrapper),
+                            (false, None) => (true, self.new_canvas_wrapper()),
+                            (false, Some(active_wrapper)) => (false, active_wrapper),
+                        };
 
-                    let wrapper = if rnote_file_new_tab {
-                        // a new tab for rnote files
-                        self.new_canvas_wrapper()
-                    } else {
-                        self.active_tab_wrapper()
-                    };
                     let (bytes, _) = input_file.load_bytes_future().await?;
                     let widget_flags = wrapper
                         .canvas()
@@ -570,7 +574,10 @@ impl RnAppWindow {
                 }
             }
             FileType::VectorImageFile => {
-                let canvas = self.active_tab_wrapper().canvas();
+                let canvas = self
+                    .active_tab_wrapper()
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
+                    .canvas();
                 let (bytes, _) = input_file.load_bytes_future().await?;
                 canvas
                     .load_in_vectorimage_bytes(bytes.to_vec(), target_pos, self.respect_borders())
@@ -578,7 +585,10 @@ impl RnAppWindow {
                 true
             }
             FileType::BitmapImageFile => {
-                let canvas = self.active_tab_wrapper().canvas();
+                let canvas = self
+                    .active_tab_wrapper()
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
+                    .canvas();
                 let (bytes, _) = input_file.load_bytes_future().await?;
                 canvas
                     .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos, self.respect_borders())
@@ -597,12 +607,18 @@ impl RnAppWindow {
                 file_imported
             }
             FileType::PdfFile => {
-                let canvas = self.active_tab_wrapper().canvas();
+                let canvas = self
+                    .active_tab_wrapper()
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
+                    .canvas();
                 dialogs::import::dialog_import_pdf_w_prefs(self, &canvas, input_file, target_pos)
                     .await?
             }
             FileType::PlaintextFile => {
-                let canvas = self.active_tab_wrapper().canvas();
+                let canvas = self
+                    .active_tab_wrapper()
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
+                    .canvas();
                 let (bytes, _) = input_file.load_bytes_future().await?;
                 canvas.load_in_text(String::from_utf8(bytes.to_vec())?, target_pos)?;
                 true
@@ -872,7 +888,7 @@ impl RnAppWindow {
             .tools_page()
             .refresh_ui(active_tab);
         self.sidebar().settings_panel().refresh_ui(active_tab);
-        self.refresh_titles(active_tab);
+        self.refresh_titles(&canvas);
     }
 
     /// Sync the state from the previous active tab and the current one. Used when the selected tab changes.

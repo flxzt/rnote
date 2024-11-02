@@ -1,12 +1,13 @@
 // Imports
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DropDown, SpinButton,
-    Widget,
+    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DropDown,
+    EventControllerScroll, PropagationPhase, SpinButton, Widget,
 };
 use num_traits::ToPrimitive;
 use once_cell::sync::Lazy;
 use rnote_engine::document::format::MeasureUnit;
 use std::cell::Cell;
+use tracing::error;
 
 mod imp {
     use super::*;
@@ -59,6 +60,23 @@ mod imp {
             self.configure_spinner(self.unit.get(), self.dpi.get());
             self.value_spinner.set_value(10.0);
 
+            // Disable scrolling entirely,
+            // fixing unexpected scrolling issue when the unit entry is inside a scrolled window
+            //
+            // taken from the implementation libadwaita's SpinRow
+            // see: https://gitlab.gnome.org/GNOME/libadwaita/-/blob/44543013d76c37da6f8bbf558ea2d6b57f0bd692/src/adw-spin-row.c#L483
+            if let Some(scroll_controller) = self.value_spinner.observe_controllers().into_iter().find(|controller| {
+                let Ok(controller) = controller else {
+
+                        error!("Unable to get scroll controller in RnUnitEntry, controller ListModel mutated while fetching");
+                        return false;
+                };
+                controller.downcast_ref::<EventControllerScroll>().is_some()
+            }) {
+                let scroll_controller = scroll_controller.unwrap().downcast::<EventControllerScroll>().unwrap();
+                scroll_controller.set_propagation_phase(PropagationPhase::None);
+            }
+
             obj.bind_property("value", &self.value_spinner.get(), "value")
                 .transform_to(|_, val: f64| Some(val))
                 .transform_from(|_, val: f64| Some(val))
@@ -73,11 +91,13 @@ mod imp {
                     .set_selected(unit_entry.unit().to_u32().unwrap());
             });
 
-            self.unit_dropdown.get().connect_selected_notify(
-                clone!(@weak obj as unit_entry => move |unit_dropdown| {
+            self.unit_dropdown.get().connect_selected_notify(clone!(
+                #[weak(rename_to=unit_entry)]
+                obj,
+                move |unit_dropdown| {
                     unit_entry.set_unit(MeasureUnit::try_from(unit_dropdown.selected()).unwrap());
-                }),
-            );
+                }
+            ));
         }
 
         fn dispose(&self) {

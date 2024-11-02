@@ -2,6 +2,7 @@
 use crate::appwindow::RnAppWindow;
 use adw::{prelude::*, subclass::prelude::*};
 use gtk4::{gdk, glib, glib::clone};
+use tracing::error;
 
 impl RnAppWindow {
     /// Setup settings binds.
@@ -11,8 +12,10 @@ impl RnAppWindow {
             .app_settings()
             .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
 
-        app.style_manager().connect_color_scheme_notify(
-            clone!(@weak app_settings, @weak app, @weak self as appwindow => move |style_manager| {
+        app.style_manager().connect_color_scheme_notify(clone!(
+            #[weak]
+            app_settings,
+            move |style_manager| {
                 let color_scheme = match style_manager.color_scheme() {
                     adw::ColorScheme::Default => String::from("default"),
                     adw::ColorScheme::ForceLight => String::from("force-light"),
@@ -20,12 +23,11 @@ impl RnAppWindow {
                     _ => String::from("default"),
                 };
 
-                if let Err(e) = app_settings
-                    .set_string("color-scheme", &color_scheme) {
-                        tracing::error!("Failed to set setting `color-scheme`, Err: {e:?}");
-                    }
-            }),
-        );
+                if let Err(e) = app_settings.set_string("color-scheme", &color_scheme) {
+                    error!("Failed to set setting `color-scheme`, Err: {e:?}");
+                }
+            }
+        ));
 
         app_settings
             .bind("sidebar-show", &self.split_view(), "show-sidebar")
@@ -135,16 +137,8 @@ impl RnAppWindow {
 
         // colorpicker palette
         let gdk_color_mapping = |var: &glib::Variant, _: glib::Type| {
-            let color = var.get::<(f64, f64, f64, f64)>()?;
-            Some(
-                gdk::RGBA::new(
-                    color.0 as f32,
-                    color.1 as f32,
-                    color.2 as f32,
-                    color.3 as f32,
-                )
-                .to_value(),
-            )
+            let (red, green, blue, alpha) = var.get::<(f64, f64, f64, f64)>()?;
+            Some(gdk::RGBA::new(red as f32, green as f32, blue as f32, alpha as f32).to_value())
         };
         let gdk_color_set_mapping = |val: &glib::Value, _: glib::VariantType| {
             let color = val.get::<gdk::RGBA>().ok()?;
@@ -452,9 +446,9 @@ impl RnAppWindow {
 
         {
             // Save engine config of the current active tab
-            self.active_tab_wrapper()
-                .canvas()
-                .save_engine_config(&app_settings)?;
+            if let Some(canvas) = self.active_tab_canvas() {
+                canvas.save_engine_config(&app_settings)?;
+            }
         }
 
         {
@@ -474,15 +468,34 @@ impl RnAppWindow {
             .app_settings()
             .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
 
-        if let Some(removed_id) = self.imp().periodic_configsave_source_id.borrow_mut().replace(
-            glib::source::timeout_add_seconds_local(
-                Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak app_settings, @weak self as appwindow => @default-return glib::ControlFlow::Break, move || {
-                    if let Err(e) = appwindow.active_tab_wrapper().canvas().save_engine_config(&app_settings) {
-                        tracing::error!("Saving engine config in periodic save task failed , Err: {e:?}");
-                    }
+        if let Some(removed_id) = self
+            .imp()
+            .periodic_configsave_source_id
+            .borrow_mut()
+            .replace(glib::source::timeout_add_seconds_local(
+                Self::PERIODIC_CONFIGSAVE_INTERVAL,
+                clone!(
+                    #[weak]
+                    app_settings,
+                    #[weak(rename_to=appwindow)]
+                    self,
+                    #[upgrade_or]
+                    glib::ControlFlow::Break,
+                    move || {
+                        let Some(canvas) = appwindow.active_tab_canvas() else {
+                            return glib::ControlFlow::Continue;
+                        };
+                        if let Err(e) = canvas.save_engine_config(&app_settings) {
+                            error!(
+                                "Saving engine config in periodic save task failed , Err: {e:?}"
+                            );
+                        }
 
-                    glib::ControlFlow::Continue
-        }))) {
+                        glib::ControlFlow::Continue
+                    }
+                ),
+            ))
+        {
             removed_id.remove();
         }
 

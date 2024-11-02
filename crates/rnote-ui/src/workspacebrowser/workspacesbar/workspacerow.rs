@@ -102,30 +102,46 @@ mod imp {
 
             self.entry.borrow().connect_notify_local(
                 Some("dir"),
-                clone!(@weak obj as workspacerow => move |_, _| {
-                    workspacerow.imp().update_apearance();
-                }),
+                clone!(
+                    #[weak(rename_to=workspacerow)]
+                    obj,
+                    move |_, _| {
+                        workspacerow.imp().update_apearance();
+                    }
+                ),
             );
 
             self.entry.borrow().connect_notify_local(
                 Some("icon"),
-                clone!(@weak obj as workspacerow => move |_, _| {
-                    workspacerow.imp().update_apearance();
-                }),
+                clone!(
+                    #[weak(rename_to=workspacerow)]
+                    obj,
+                    move |_, _| {
+                        workspacerow.imp().update_apearance();
+                    }
+                ),
             );
 
             self.entry.borrow().connect_notify_local(
                 Some("color"),
-                clone!(@weak obj as workspacerow => move |_, _| {
-                    workspacerow.imp().update_apearance();
-                }),
+                clone!(
+                    #[weak(rename_to=workspacerow)]
+                    obj,
+                    move |_, _| {
+                        workspacerow.imp().update_apearance();
+                    }
+                ),
             );
 
             self.entry.borrow().connect_notify_local(
                 Some("name"),
-                clone!(@weak obj as workspacerow => move |_, _| {
-                    workspacerow.imp().update_apearance();
-                }),
+                clone!(
+                    #[weak(rename_to=workspacerow)]
+                    obj,
+                    move |_, _| {
+                        workspacerow.imp().update_apearance();
+                    }
+                ),
             );
         }
 
@@ -192,7 +208,7 @@ impl Default for RnWorkspaceRow {
 impl RnWorkspaceRow {
     pub(crate) fn new(entry: &RnWorkspaceListEntry) -> Self {
         glib::Object::builder()
-            .property("entry", &entry.to_value())
+            .property("entry", entry.to_value())
             .build()
     }
 

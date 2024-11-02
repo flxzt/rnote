@@ -1,5 +1,6 @@
 // Imports
 use gtk4::{gio, prelude::*};
+use tracing::warn;
 
 /// File types supported by Rnote.
 #[derive(Debug)]
@@ -51,16 +52,12 @@ impl FileType {
                     return Self::Folder;
                 }
                 file_type => {
-                    tracing::warn!(
-                        "Looking up file type failed, unsupported file type `{file_type:?}`"
-                    );
+                    warn!("Looking up file type failed, unsupported file type `{file_type:?}`");
                     return Self::Unsupported;
                 }
             }
         } else {
-            tracing::warn!(
-                "Looking up file type failed, failed to query FileInfo from file `{file:?}`."
-            );
+            warn!("Looking up file type failed, failed to query FileInfo from file `{file:?}`.");
         }
 
         // match on file extensions as fallback
@@ -89,7 +86,7 @@ impl FileType {
                 }
             }
         } else {
-            tracing::warn!("Looking up file type failed, no path for file `{file:?}`.");
+            warn!("Looking up file type failed, no path for file `{file:?}`.");
         };
 
         Self::Unsupported

@@ -7,6 +7,8 @@ use gtk4::{
     Align, Box, FlowBox, FlowBoxChild, IconSize, Image, Label, StringList, StringObject,
     TemplateChild, Widget,
 };
+use once_cell::sync::Lazy;
+use std::cell::RefCell;
 
 pub(crate) struct GroupedIconPickerGroupData {
     pub(crate) name: String,
@@ -15,8 +17,6 @@ pub(crate) struct GroupedIconPickerGroupData {
 
 mod imp {
     use super::*;
-    use once_cell::sync::Lazy;
-    use std::cell::RefCell;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/groupediconpicker/groupediconpickergroup.ui")]
@@ -160,7 +160,7 @@ impl RnGroupedIconPickerGroup {
         });
 
         imp.flowbox.connect_child_activated(
-            clone!(@weak grouped_icon_picker => move |_flowbox: &FlowBox, flowbox_child: &FlowBoxChild| {
+            clone!(#[weak] grouped_icon_picker , move |_flowbox: &FlowBox, flowbox_child: &FlowBoxChild| {
                 let icon_name = flowbox_child
                     .child()
                     .expect("GroupIconPickerFlowBox child activated signal callback failed, child has to exist")
@@ -176,32 +176,37 @@ impl RnGroupedIconPickerGroup {
         // Icon has been picked, update selection and label text.
         grouped_icon_picker.connect_notify_local(
             Some("picked"),
-            clone!(@weak self as group => move |grouped_icon_picker, _| {
-                let flowbox = group.imp().flowbox.get();
+            clone!(
+                #[weak(rename_to=group)]
+                self,
+                move |grouped_icon_picker, _| {
+                    let flowbox = group.imp().flowbox.get();
 
-                if let Some(picked) = grouped_icon_picker.picked() {
-                    let item = group
-                        .icon_list()
-                        .snapshot()
-                        .into_iter()
-                        .map(|o| o.downcast::<StringObject>().unwrap().string())
-                        .enumerate()
-                        .find(|(_, s)| s == &picked);
+                    if let Some(picked) = grouped_icon_picker.picked() {
+                        let item = group
+                            .icon_list()
+                            .snapshot()
+                            .into_iter()
+                            .map(|o| o.downcast::<StringObject>().unwrap().string())
+                            .enumerate()
+                            .find(|(_, s)| s == &picked);
 
-                    if let Some((i, _)) = item {
-                        // Current group contains child, select it.
-                        let child = flowbox.child_at_index(i as i32).unwrap();
-                        flowbox.select_child(&child);
-                        grouped_icon_picker.set_selection_label_text(generate_display_name(picked.as_str()));
+                        if let Some((i, _)) = item {
+                            // Current group contains child, select it.
+                            let child = flowbox.child_at_index(i as i32).unwrap();
+                            flowbox.select_child(&child);
+                            grouped_icon_picker
+                                .set_selection_label_text(generate_display_name(picked.as_str()));
+                        } else {
+                            // Current group does not contain child, unselect all children.
+                            flowbox.unselect_all();
+                        }
                     } else {
-                        // Current group does not contain child, unselect all children.
+                        // Selection is None, unselect all children.
                         flowbox.unselect_all();
                     }
-                } else {
-                    // Selection is None, unselect all children.
-                    flowbox.unselect_all();
                 }
-            }),
+            ),
         );
     }
 }

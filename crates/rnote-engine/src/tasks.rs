@@ -4,6 +4,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{mpsc, Arc};
 use std::time::Duration;
 use thiserror::Error;
+use tracing::error;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 enum PeriodicTaskMsg {
@@ -26,9 +27,7 @@ pub struct PeriodicTaskHandle {
 impl Drop for PeriodicTaskHandle {
     fn drop(&mut self) {
         if let Err(e) = self.quit() {
-            tracing::error!(
-                "Could not quit periodic task while handle is being dropped, Err: {e:?}"
-            );
+            error!("Could not quit periodic task while handle is being dropped, Err: {e:?}");
         }
     }
 }
@@ -51,7 +50,7 @@ impl PeriodicTaskHandle {
                         break;
                     }
                     Err(e @ mpsc::RecvTimeoutError::Disconnected) => {
-                        tracing::error!("Periodic task channel sending half became disconnected, now quitting. Err: {e:?}");
+                        error!("Periodic task channel sending half became disconnected, now quitting. Err: {e:?}");
                         break;
                     }
                     Err(mpsc::RecvTimeoutError::Timeout) => {}
@@ -126,9 +125,7 @@ impl Drop for OneOffTaskHandle {
         match self.quit() {
             Ok(()) | Err(OneOffTaskError::TimeoutReached) => {}
             Err(e) => {
-                tracing::error!(
-                    "Could not quit one off task while handle is being dropped, Err: {e:?}"
-                )
+                error!("Could not quit one off task while handle is being dropped, Err: {e:?}")
             }
         }
     }
@@ -162,7 +159,7 @@ impl OneOffTaskHandle {
                         break;
                     }
                     Err(e @ mpsc::RecvTimeoutError::Disconnected) => {
-                        tracing::error!("One off task channel sending half became disconnected, now quitting. Err: {e:?}");
+                        error!("One off task channel sending half became disconnected, now quitting. Err: {e:?}");
                         break;
                     }
                     Err(mpsc::RecvTimeoutError::Timeout) => {}

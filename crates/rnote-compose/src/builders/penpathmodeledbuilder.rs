@@ -14,6 +14,7 @@ use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use std::time::Instant;
+use tracing::{debug, error};
 
 /// Pen path modeled builder.
 pub struct PenPathModeledBuilder {
@@ -173,9 +174,9 @@ impl PenPathModeledBuilder {
 
         match self.stroke_modeler.update(modeler_input) {
             Ok(results) => self.buffer.extend(results.into_iter().map(|r| {
-                let pos = r.pos;
+                let (x, y) = r.pos;
                 let pressure = r.pressure;
-                Element::new(na::vector![pos.0, pos.1], pressure)
+                Element::new(na::vector![x, y], pressure)
             })),
             Err(e) => {
                 match e {
@@ -189,7 +190,7 @@ impl PenPathModeledBuilder {
                         src: ElementError::TooFarApart,
                     } => {
                         self.last_element = element;
-                        tracing::debug!(
+                        debug!(
                             "PenpathModeledBuilder: updating modeler with element failed,
             n_steps exceeds configured max outputs per call."
                         );
@@ -199,10 +200,10 @@ impl PenPathModeledBuilder {
                         src: ElementError::Order { src: _ },
                     } => {
                         self.last_element = element;
-                        tracing::error!("Updating stroke modeler with element failed, Err: {e:?}")
+                        error!("Updating stroke modeler with element failed, Err: {e:?}")
                     }
                     _ => {
-                        tracing::error!("Updating stroke modeler with element failed, Err: {e:?}");
+                        error!("Updating stroke modeler with element failed, Err: {e:?}");
                         return;
                     }
                 };
@@ -223,13 +224,13 @@ impl PenPathModeledBuilder {
                 Ok(results) => results
                     .into_iter()
                     .map(|r| {
-                        let pos = r.pos;
+                        let (x, y) = r.pos;
                         let pressure = r.pressure;
-                        Element::new(na::vector![pos.0, pos.1], pressure)
+                        Element::new(na::vector![x, y], pressure)
                     })
                     .collect::<Vec<Element>>(),
                 Err(e) => {
-                    tracing::error!("Stroke modeler predict failed, Err: {e:?}");
+                    error!("Stroke modeler predict failed, Err: {e:?}");
                     Vec::new()
                 }
             }
@@ -243,7 +244,7 @@ impl PenPathModeledBuilder {
         self.last_element_time = now;
         self.last_element = element;
         if let Err(e) = self.stroke_modeler.reset_w_params(*MODELER_PARAMS) {
-            tracing::error!("Resetting stroke modeler failed while restarting, Err: {e:?}");
+            error!("Resetting stroke modeler failed while restarting, Err: {e:?}");
             return;
         }
 
@@ -255,13 +256,13 @@ impl PenPathModeledBuilder {
         }) {
             Ok(results) => {
                 self.buffer.extend(results.into_iter().map(|r| {
-                    let pos = r.pos;
+                    let (x, y) = r.pos;
                     let pressure = r.pressure;
-                    Element::new(na::vector![pos.0, pos.1], pressure)
+                    Element::new(na::vector![x, y], pressure)
                 }));
             }
             Err(e) => {
-                tracing::error!("Updating stroke modeler failed while restarting, Err: {e:?}")
+                error!("Updating stroke modeler failed while restarting, Err: {e:?}")
             }
         }
     }

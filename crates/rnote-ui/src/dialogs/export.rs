@@ -16,6 +16,7 @@ use rnote_engine::engine::export::{
 };
 use std::cell::RefCell;
 use std::rc::Rc;
+use tracing::{debug, error};
 
 pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     // note : mimetypes are not supported with the native file picker on windows
@@ -73,7 +74,7 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
                     appwindow.overlays().progressbar_finish();
                 }
                 Err(e) => {
-                    tracing::error!("Saving document failed, Err: {e:?}");
+                    error!("Saving document failed, Err: {e:?}");
 
                     canvas.set_output_file(None);
                     appwindow
@@ -84,7 +85,7 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
             }
         }
         Err(e) => {
-            tracing::debug!(
+            debug!(
                 "no file selected in save doc as dialog (Error or dialog dismissed by user), Err: {e:?}"
             )
         }
@@ -136,8 +137,8 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     // Update prefs
 
     export_file_button.connect_clicked(
-        clone!(@strong selected_file, @weak export_file_label, @weak button_confirm, @weak dialog, @weak canvas, @weak appwindow => move |_| {
-            glib::spawn_future_local(clone!(@strong selected_file, @weak export_file_label, @weak button_confirm, @weak dialog, @weak canvas, @weak appwindow => async move {
+        clone!(#[strong] selected_file, #[weak] export_file_label, #[weak] button_confirm, #[weak] dialog, #[weak] canvas, #[weak] appwindow , move |_| {
+            glib::spawn_future_local(clone!(#[strong] selected_file, #[weak] export_file_label, #[weak] button_confirm, #[weak] dialog, #[weak] canvas, #[weak] appwindow,  async move {
                 dialog.set_sensitive(false);
 
                 let doc_export_prefs = canvas.engine_mut().export_prefs.doc_export_prefs;
@@ -156,7 +157,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
                         }
                     }
                     Err(e) => {
-                        tracing::debug!("Did not export document (Error or dialog dismissed by user), Err: {e:?}");
+                        debug!("Did not export document (Error or dialog dismissed by user), Err: {e:?}");
                         export_file_label.set_label(&gettext("- no file selected -"));
                         button_confirm.set_sensitive(false);
                         selected_file.replace(None);
@@ -173,107 +174,151 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         .sync_create()
         .build();
 
-    with_background_row.connect_active_notify(
-        clone!(@weak preview, @weak canvas, @weak appwindow => move |with_background_row| {
+    with_background_row.connect_active_notify(clone!(
+        #[weak]
+        preview,
+        #[weak]
+        canvas,
+        move |with_background_row| {
             let active = with_background_row.is_active();
-            canvas.engine_mut().export_prefs.doc_export_prefs.with_background = active;
+            canvas
+                .engine_mut()
+                .export_prefs
+                .doc_export_prefs
+                .with_background = active;
             preview.set_draw_background(active);
-        }),
-    );
+        }
+    ));
 
-    with_pattern_row.connect_active_notify(
-        clone!(@weak preview, @weak canvas, @weak appwindow => move |with_pattern_row| {
+    with_pattern_row.connect_active_notify(clone!(
+        #[weak]
+        preview,
+        #[weak]
+        canvas,
+        move |with_pattern_row| {
             let active = with_pattern_row.is_active();
-            canvas.engine_mut().export_prefs.doc_export_prefs.with_pattern = active;
+            canvas
+                .engine_mut()
+                .export_prefs
+                .doc_export_prefs
+                .with_pattern = active;
             preview.set_draw_pattern(active);
-        }),
-    );
+        }
+    ));
 
-    optimize_printing_row.connect_active_notify(
-        clone!(@weak preview, @weak canvas, @weak appwindow => move |optimize_printing_row| {
+    optimize_printing_row.connect_active_notify(clone!(
+        #[weak]
+        preview,
+        #[weak]
+        canvas,
+        move |optimize_printing_row| {
             let active = optimize_printing_row.is_active();
-            canvas.engine_mut().export_prefs.doc_export_prefs.optimize_printing = active;
+            canvas
+                .engine_mut()
+                .export_prefs
+                .doc_export_prefs
+                .optimize_printing = active;
             preview.set_optimize_printing(active);
-        }),
-    );
+        }
+    ));
 
-    export_format_row.connect_selected_notify(clone!(@strong selected_file, @weak export_file_label, @weak page_order_row, @weak button_confirm, @weak canvas, @weak appwindow => move |row| {
-        let export_format = DocExportFormat::try_from(row.selected()).unwrap();
-        canvas.engine_mut().export_prefs.doc_export_prefs.export_format = export_format;
+    export_format_row.connect_selected_notify(clone!(
+        #[strong]
+        selected_file,
+        #[weak]
+        export_file_label,
+        #[weak]
+        button_confirm,
+        #[weak]
+        canvas,
+        move |row| {
+            let export_format = DocExportFormat::try_from(row.selected()).unwrap();
+            canvas
+                .engine_mut()
+                .export_prefs
+                .doc_export_prefs
+                .export_format = export_format;
 
-        // force the user to pick another file
-        export_file_label.set_label(&gettext("- no file selected -"));
-        button_confirm.set_sensitive(false);
-        selected_file.replace(None);
-    }));
+            // force the user to pick another file
+            export_file_label.set_label(&gettext("- no file selected -"));
+            button_confirm.set_sensitive(false);
+            selected_file.replace(None);
+        }
+    ));
 
-    page_order_row.connect_selected_notify(
-        clone!(@weak preview, @weak canvas, @weak appwindow => move |row| {
+    page_order_row.connect_selected_notify(clone!(
+        #[weak]
+        preview,
+        #[weak]
+        canvas,
+        move |row| {
             let page_order = SplitOrder::try_from(row.selected()).unwrap();
             canvas.engine_mut().export_prefs.doc_export_prefs.page_order = page_order;
-            preview.set_contents(
-                canvas
-                    .engine_ref()
-                    .extract_pages_content(page_order),
-            );
-        }),
-    );
+            preview.set_contents(canvas.engine_ref().extract_pages_content(page_order));
+        }
+    ));
 
     // Listen to responses
 
-    export_doc_button_cancel.connect_clicked(clone!(@weak dialog => move |_| {
+    export_doc_button_cancel.connect_clicked(clone!(
+        #[weak]
+        dialog,
+        move |_| {
+            dialog.close();
+        }
+    ));
+
+    export_doc_button_confirm.connect_clicked(clone!(#[weak] dialog, #[weak] canvas, #[weak] appwindow , move |_| {
         dialog.close();
-    }));
 
-    export_doc_button_confirm.connect_clicked(clone!(@weak dialog, @weak canvas, @weak appwindow => move |_| {
-        dialog.close();
-
-        if let Some(file) = selected_file.take() {
-            glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
-                appwindow.overlays().progressbar_start_pulsing();
-
-                let file_title = crate::utils::default_file_title_for_export(
-                    Some(file.clone()),
-                    Some(&canvas::OUTPUT_FILE_NEW_TITLE),
-                    None,
-                );
-                if let Err(e) = canvas.export_doc(&file, file_title, None).await {
-                    tracing::error!("Exporting document failed, Err: `{e:?}`");
-
-                    appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
-                    appwindow.overlays().progressbar_abort();
-                } else {
-                    appwindow.overlays().dispatch_toast_w_button_singleton(
-                        &gettext("Exported document successfully"),
-                        &gettext("View in file manager"),
-                        clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
-                            let Some(folder_path_string) = file
-                                .parent()
-                                .and_then(|p|
-                                    p.path())
-                                .and_then(|p| p.into_os_string().into_string().ok()) else {
-                                    tracing::error!("Failed to get the parent folder of the output file `{file:?}.");
-                                    appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
-                                    return;
-                            };
-
-                            if let Err(e) = open::that(&folder_path_string) {
-                                tracing::error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the file in the file manager"));
-                            }
-                        }
-                    ), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT, &mut None);
-                    appwindow.overlays().progressbar_finish();
-                }
-            }));
-        } else {
+        let Some(file) = selected_file.take() else {
             appwindow
                 .overlays()
                 .dispatch_toast_error(&gettext("Exporting document failed, no file selected"));
-        }
+            return;
+        };
+
+        glib::spawn_future_local(clone!(#[weak] canvas, #[weak] appwindow , async move {
+            appwindow.overlays().progressbar_start_pulsing();
+
+            let file_title = crate::utils::default_file_title_for_export(
+                Some(file.clone()),
+                Some(&canvas::OUTPUT_FILE_NEW_TITLE),
+                None,
+            );
+
+            if let Err(e) = canvas.export_doc(&file, file_title, None).await {
+                error!("Exporting document failed, Err: `{e:?}`");
+                appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
+                appwindow.overlays().progressbar_abort();
+                return
+            }
+
+            appwindow.overlays().dispatch_toast_w_button(
+                &gettext("Exported document successfully"),
+                &gettext("View in file manager"),
+                clone!(#[weak] appwindow , move |_reload_toast| {
+                    let Some(folder_path_string) = file
+                        .parent()
+                        .and_then(|p|
+                            p.path())
+                        .and_then(|p| p.into_os_string().into_string().ok()) else {
+                            error!("Failed to get the parent folder of the output file `{file:?}.");
+                            appwindow.overlays().dispatch_toast_error(&gettext("Failed to view the file in the file manager"));
+                            return;
+                    };
+
+                    if let Err(e) = open::that(&folder_path_string) {
+                        error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
+                        appwindow.overlays().dispatch_toast_error(&gettext("Failed to view the file in the file manager"));
+                    }
+                }
+            ), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
+            appwindow.overlays().progressbar_finish();
+        }));
     }));
 
-    dialog.present(appwindow);
+    dialog.present(appwindow.root().as_ref());
 }
 
 fn create_filedialog_export_doc(
@@ -434,8 +479,8 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
     // Update prefs
 
     export_dir_button.connect_clicked(
-        clone!(@strong selected_file, @weak export_dir_label, @weak button_confirm, @weak dialog, @weak canvas, @weak appwindow => move |_| {
-            glib::spawn_future_local(clone!(@strong selected_file, @weak export_dir_label, @weak button_confirm, @weak dialog, @weak canvas, @weak appwindow => async move {
+        clone!(#[strong] selected_file, #[weak] export_dir_label, #[weak] button_confirm, #[weak] dialog, #[weak] canvas, #[weak] appwindow,  move |_| {
+            glib::spawn_future_local(clone!(#[strong] selected_file, #[weak] export_dir_label, #[weak] button_confirm, #[weak] dialog, #[weak] canvas, #[weak] appwindow ,async move {
                 dialog.set_sensitive(false);
 
                 let doc_pages_export_prefs = canvas.engine_mut().export_prefs.doc_pages_export_prefs;
@@ -457,7 +502,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
                         }
                     }
                     Err(e) => {
-                        tracing::debug!("Did not export document pages (Error or dialog dismissed by user), Err: {e:?}");
+                        debug!("Did not export document pages (Error or dialog dismissed by user), Err: {e:?}");
 
                         export_dir_label.set_label(&gettext("- no directory selected -"));
                         button_confirm.set_sensitive(false);
@@ -475,135 +520,213 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         .sync_create()
         .build();
 
-    with_background_row.connect_active_notify(
-        clone!(@weak preview, @weak canvas, @weak appwindow => move |with_background_row| {
+    with_background_row.connect_active_notify(clone!(
+        #[weak]
+        preview,
+        #[weak]
+        canvas,
+        move |with_background_row| {
             let active = with_background_row.is_active();
-            canvas.engine_mut().export_prefs.doc_pages_export_prefs.with_background = active;
+            canvas
+                .engine_mut()
+                .export_prefs
+                .doc_pages_export_prefs
+                .with_background = active;
             preview.set_draw_background(active);
-        }),
-    );
+        }
+    ));
 
-    with_pattern_row.connect_active_notify(
-        clone!(@weak preview, @weak canvas, @weak appwindow => move |row| {
+    with_pattern_row.connect_active_notify(clone!(
+        #[weak]
+        preview,
+        #[weak]
+        canvas,
+        move |row| {
             let active = row.is_active();
-            canvas.engine_mut().export_prefs.doc_pages_export_prefs.with_pattern = active;
+            canvas
+                .engine_mut()
+                .export_prefs
+                .doc_pages_export_prefs
+                .with_pattern = active;
             preview.set_draw_pattern(active);
-        }),
-    );
+        }
+    ));
 
-    optimize_printing_row.connect_active_notify(
-        clone!(@weak preview, @weak canvas, @weak appwindow => move |optimize_printing_row| {
+    optimize_printing_row.connect_active_notify(clone!(
+        #[weak]
+        preview,
+        #[weak]
+        canvas,
+        move |optimize_printing_row| {
             let active = optimize_printing_row.is_active();
-            canvas.engine_mut().export_prefs.doc_pages_export_prefs.optimize_printing = active;
+            canvas
+                .engine_mut()
+                .export_prefs
+                .doc_pages_export_prefs
+                .optimize_printing = active;
             preview.set_optimize_printing(active);
-        }),
-    );
+        }
+    ));
 
     export_format_row.connect_selected_notify(clone!(
-        @strong selected_file,
-        @weak page_files_naming_info_label,
-        @weak export_files_stemname_entryrow,
-        @weak bitmap_scalefactor_row,
-        @weak jpeg_quality_row,
-        @weak export_dir_label,
-        @weak button_confirm,
-        @weak canvas,
-        @weak appwindow => move |row| {
+        #[weak]
+        page_files_naming_info_label,
+        #[weak]
+        export_files_stemname_entryrow,
+        #[weak]
+        bitmap_scalefactor_row,
+        #[weak]
+        jpeg_quality_row,
+        #[weak]
+        canvas,
+        move |row| {
             let export_format = DocPagesExportFormat::try_from(row.selected()).unwrap();
-            canvas.engine_mut().export_prefs.doc_pages_export_prefs.export_format = export_format;
+            canvas
+                .engine_mut()
+                .export_prefs
+                .doc_pages_export_prefs
+                .export_format = export_format;
 
             // Set the bitmap scalefactor sensitive only when exporting to a bitmap image
-            bitmap_scalefactor_row.set_sensitive(export_format == DocPagesExportFormat::Png || export_format == DocPagesExportFormat::Jpeg);
+            bitmap_scalefactor_row.set_sensitive(
+                export_format == DocPagesExportFormat::Png
+                    || export_format == DocPagesExportFormat::Jpeg,
+            );
             // Set the jpeg quality pref only sensitive when jpeg is actually selected
             jpeg_quality_row.set_sensitive(export_format == DocPagesExportFormat::Jpeg);
             // update file naming preview
-            page_files_naming_info_label.set_text(&(
-                rnote_engine::utils::doc_pages_files_names(export_files_stemname_entryrow.text().to_string(), 1)
-                    + "."
-                    + &canvas.engine_mut().export_prefs.doc_pages_export_prefs.export_format.file_ext()
-            ));
-    }));
-
-    page_order_row.connect_selected_notify(
-        clone!(@weak preview, @weak canvas, @weak appwindow => move |row| {
-            let page_order = SplitOrder::try_from(row.selected()).unwrap();
-            canvas.engine_mut().export_prefs.doc_pages_export_prefs.page_order = page_order;
-            preview.set_contents(
-                canvas
-                    .engine_ref()
-                    .extract_pages_content(page_order),
+            page_files_naming_info_label.set_text(
+                &(rnote_engine::utils::doc_pages_files_names(
+                    export_files_stemname_entryrow.text().to_string(),
+                    1,
+                ) + "."
+                    + &canvas
+                        .engine_mut()
+                        .export_prefs
+                        .doc_pages_export_prefs
+                        .export_format
+                        .file_ext()),
             );
-        }),
-    );
+        }
+    ));
 
-    bitmap_scalefactor_row.connect_changed(clone!(@weak canvas, @weak appwindow => move |bitmap_scalefactor_row| {
-        canvas.engine_mut().export_prefs.doc_pages_export_prefs.bitmap_scalefactor = bitmap_scalefactor_row.value();
-    }));
+    page_order_row.connect_selected_notify(clone!(
+        #[weak]
+        preview,
+        #[weak]
+        canvas,
+        move |row| {
+            let page_order = SplitOrder::try_from(row.selected()).unwrap();
+            canvas
+                .engine_mut()
+                .export_prefs
+                .doc_pages_export_prefs
+                .page_order = page_order;
+            preview.set_contents(canvas.engine_ref().extract_pages_content(page_order));
+        }
+    ));
 
-    jpeg_quality_row.connect_changed(clone!(@weak canvas, @weak appwindow => move |jpeg_quality_row| {
-        canvas.engine_mut().export_prefs.doc_pages_export_prefs.jpeg_quality = jpeg_quality_row.value().clamp(1.0, 100.0) as u8;
-    }));
+    bitmap_scalefactor_row.connect_changed(clone!(
+        #[weak]
+        canvas,
+        move |bitmap_scalefactor_row| {
+            canvas
+                .engine_mut()
+                .export_prefs
+                .doc_pages_export_prefs
+                .bitmap_scalefactor = bitmap_scalefactor_row.value();
+        }
+    ));
 
-    export_files_stemname_entryrow.connect_changed(
-        clone!(@weak page_files_naming_info_label, @weak button_confirm, @weak dialog, @weak canvas, @weak appwindow => move |entryrow| {
+    jpeg_quality_row.connect_changed(clone!(
+        #[weak]
+        canvas,
+        move |jpeg_quality_row| {
+            canvas
+                .engine_mut()
+                .export_prefs
+                .doc_pages_export_prefs
+                .jpeg_quality = jpeg_quality_row.value().clamp(1.0, 100.0) as u8;
+        }
+    ));
+
+    export_files_stemname_entryrow.connect_changed(clone!(
+        #[weak]
+        page_files_naming_info_label,
+        #[weak]
+        button_confirm,
+        #[weak]
+        canvas,
+        move |entryrow| {
             button_confirm.set_sensitive(!entryrow.text().is_empty());
 
             // update file naming preview
-            page_files_naming_info_label.set_text(&(
-                rnote_engine::utils::doc_pages_files_names(entryrow.text().to_string(), 1)
+            page_files_naming_info_label.set_text(
+                &(rnote_engine::utils::doc_pages_files_names(entryrow.text().to_string(), 1)
                     + "."
-                    + &canvas.engine_mut().export_prefs.doc_pages_export_prefs.export_format.file_ext()
-            ));
-        }),
-    );
+                    + &canvas
+                        .engine_mut()
+                        .export_prefs
+                        .doc_pages_export_prefs
+                        .export_format
+                        .file_ext()),
+            );
+        }
+    ));
 
     // Listen to responses
 
-    export_doc_pages_button_cancel.connect_clicked(clone!(@weak dialog => move |_| {
+    export_doc_pages_button_cancel.connect_clicked(clone!(
+        #[weak]
+        dialog,
+        move |_| {
+            dialog.close();
+        }
+    ));
+
+    export_doc_pages_button_confirm.connect_clicked(clone!(#[weak] export_files_stemname_entryrow, #[weak] dialog, #[weak] canvas, #[weak] appwindow,  move |_| {
         dialog.close();
-    }));
 
-    export_doc_pages_button_confirm.connect_clicked(clone!(@weak export_files_stemname_entryrow, @weak dialog, @weak canvas, @weak appwindow => move |_| {
-        dialog.close();
-
-        if let Some(dir) = selected_file.take() {
-            glib::spawn_future_local(clone!(@weak export_files_stemname_entryrow, @weak canvas, @weak appwindow => async move {
-                appwindow.overlays().progressbar_start_pulsing();
-
-                let file_stem_name = export_files_stemname_entryrow.text().to_string();
-                if let Err(e) = canvas.export_doc_pages(&dir, file_stem_name, None).await {
-                    tracing::error!("Exporting document pages failed, Err: {e:?}");
-
-                    appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed"));
-                    appwindow.overlays().progressbar_abort();
-                } else {
-                    appwindow.overlays().dispatch_toast_w_button_singleton(
-                        &gettext("Exported document pages successfully"),
-                        &gettext("View in file manager"),
-                        clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
-                            let Some(folder_path_string) = dir.path().and_then(|p| p.into_os_string().into_string().ok()) else {
-                                tracing::error!("Failed to get the path of the parent folder");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
-                                return;
-                            };
-
-                            if let Err(e) = open::that(&folder_path_string) {
-                                tracing::error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the file in the file manager"));
-                            }
-                        }
-                    ), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT, &mut None);
-                    appwindow.overlays().progressbar_finish();
-                }
-            }));
-        } else {
+        let Some(dir) = selected_file.take() else {
             appwindow.overlays().dispatch_toast_error(&gettext(
                 "Exporting document pages failed, no directory selected",
             ));
-        }
+            return;
+        };
+
+        glib::spawn_future_local(clone!(#[weak] export_files_stemname_entryrow, #[weak] canvas, #[weak] appwindow,  async move {
+            appwindow.overlays().progressbar_start_pulsing();
+
+            let file_stem_name = export_files_stemname_entryrow.text().to_string();
+
+            if let Err(e) = canvas.export_doc_pages(&dir, file_stem_name, None).await {
+                error!("Exporting document pages failed, Err: {e:?}");
+                appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed"));
+                appwindow.overlays().progressbar_abort();
+                return
+            }
+
+            appwindow.overlays().dispatch_toast_w_button(
+                &gettext("Exported document pages successfully"),
+                &gettext("View in file manager"),
+                clone!(#[weak] appwindow,  move |_reload_toast| {
+                    let Some(folder_path_string) = dir.path().and_then(|p| p.into_os_string().into_string().ok()) else {
+                        error!("Failed to get the path of the parent folder");
+                        appwindow.overlays().dispatch_toast_error(&gettext("Failed to view the file in the file manager"));
+                        return;
+                    };
+
+                    if let Err(e) = open::that(&folder_path_string) {
+                        error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
+                        appwindow.overlays().dispatch_toast_error(&gettext("Failed to view the file in the file manager"));
+                    }
+                }
+            ), crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
+            appwindow.overlays().progressbar_finish();
+        }));
     }));
 
-    dialog.present(appwindow);
+    dialog.present(appwindow.root().as_ref());
 }
 
 fn create_filedialog_export_doc_pages(
@@ -739,8 +862,8 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
     // Update prefs
 
     export_file_button.connect_clicked(
-        clone!(@strong selected_file, @weak export_file_label, @weak button_confirm, @weak dialog, @weak canvas, @weak appwindow => move |_| {
-            glib::spawn_future_local(clone!(@strong selected_file, @weak export_file_label, @weak button_confirm, @weak dialog, @weak canvas, @weak appwindow => async move {
+        clone!(#[strong] selected_file, #[weak] export_file_label, #[weak] button_confirm, #[weak] dialog, #[weak] canvas, #[weak] appwindow , move |_| {
+            glib::spawn_future_local(clone!(#[strong] selected_file, #[weak] export_file_label, #[weak] button_confirm, #[weak] dialog, #[weak] canvas, #[weak] appwindow , async move {
                 dialog.set_sensitive(false);
 
                 let selection_export_prefs = canvas
@@ -765,7 +888,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
                         }
                     }
                     Err(e) => {
-                        tracing::debug!("Did not export selection (Error or dialog dismissed by user), Err: {e:?}");
+                        debug!("Did not export selection (Error or dialog dismissed by user), Err: {e:?}");
                         export_file_label.set_label(&gettext("- no file selected -"));
                         button_confirm.set_sensitive(false);
                         selected_file.replace(None);
@@ -782,39 +905,72 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         .sync_create()
         .build();
 
-    with_background_row.connect_active_notify(
-        clone!(@weak preview, @weak canvas, @weak appwindow => move |row| {
+    with_background_row.connect_active_notify(clone!(
+        #[weak]
+        preview,
+        #[weak]
+        canvas,
+        move |row| {
             let active = row.is_active();
-            canvas.engine_mut().export_prefs.selection_export_prefs.with_background = active;
+            canvas
+                .engine_mut()
+                .export_prefs
+                .selection_export_prefs
+                .with_background = active;
             preview.set_draw_background(active);
-        }),
-    );
+        }
+    ));
 
-    with_pattern_row.connect_active_notify(
-        clone!(@weak preview, @weak canvas, @weak appwindow => move |row| {
+    with_pattern_row.connect_active_notify(clone!(
+        #[weak]
+        preview,
+        #[weak]
+        canvas,
+        move |row| {
             let active = row.is_active();
-            canvas.engine_mut().export_prefs.selection_export_prefs.with_pattern = active;
+            canvas
+                .engine_mut()
+                .export_prefs
+                .selection_export_prefs
+                .with_pattern = active;
             preview.set_draw_pattern(active);
-        }),
-    );
+        }
+    ));
 
-    optimize_printing_row.connect_active_notify(
-        clone!(@weak preview, @weak canvas, @weak appwindow => move |optimize_printing_row| {
+    optimize_printing_row.connect_active_notify(clone!(
+        #[weak]
+        preview,
+        #[weak]
+        canvas,
+        move |optimize_printing_row| {
             let active = optimize_printing_row.is_active();
-            canvas.engine_mut().export_prefs.selection_export_prefs.optimize_printing = active;
+            canvas
+                .engine_mut()
+                .export_prefs
+                .selection_export_prefs
+                .optimize_printing = active;
             preview.set_optimize_printing(active);
-        }),
-    );
+        }
+    ));
 
     export_format_row.connect_selected_notify(clone!(
-        @strong selected_file,
-        @weak bitmap_scalefactor_row,
-        @weak jpeg_quality_row,
-        @weak export_file_label,
-        @weak canvas,
-        @weak appwindow => move |row| {
+        #[strong]
+        selected_file,
+        #[weak]
+        bitmap_scalefactor_row,
+        #[weak]
+        jpeg_quality_row,
+        #[weak]
+        export_file_label,
+        #[weak]
+        canvas,
+        move |row| {
             let export_format = SelectionExportFormat::try_from(row.selected()).unwrap();
-            canvas.engine_mut().export_prefs.selection_export_prefs.export_format = export_format;
+            canvas
+                .engine_mut()
+                .export_prefs
+                .selection_export_prefs
+                .export_format = export_format;
 
             // force the user to pick another file
             export_file_label.set_label(&gettext("- no file selected -"));
@@ -822,81 +978,113 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
             selected_file.replace(None);
 
             // Set the bitmap scalefactor sensitive only when exporting to a bitmap image
-            bitmap_scalefactor_row.set_sensitive(export_format == SelectionExportFormat::Png || export_format == SelectionExportFormat::Jpeg);
+            bitmap_scalefactor_row.set_sensitive(
+                export_format == SelectionExportFormat::Png
+                    || export_format == SelectionExportFormat::Jpeg,
+            );
             // Set the jpeg quality pref only sensitive when jpeg is actually selected
             jpeg_quality_row.set_sensitive(export_format == SelectionExportFormat::Jpeg);
-    }));
+        }
+    ));
 
-    bitmap_scalefactor_row.connect_changed(clone!(@weak canvas, @weak appwindow => move |bitmap_scalefactor_row| {
-        canvas.engine_mut().export_prefs.selection_export_prefs.bitmap_scalefactor = bitmap_scalefactor_row.value();
-    }));
+    bitmap_scalefactor_row.connect_changed(clone!(
+        #[weak]
+        canvas,
+        move |bitmap_scalefactor_row| {
+            canvas
+                .engine_mut()
+                .export_prefs
+                .selection_export_prefs
+                .bitmap_scalefactor = bitmap_scalefactor_row.value();
+        }
+    ));
 
-    jpeg_quality_row.connect_changed(clone!(@weak canvas, @weak appwindow => move |jpeg_quality_row| {
-        canvas.engine_mut().export_prefs.selection_export_prefs.jpeg_quality = jpeg_quality_row.value().clamp(1.0, 100.0) as u8;
-    }));
+    jpeg_quality_row.connect_changed(clone!(
+        #[weak]
+        canvas,
+        move |jpeg_quality_row| {
+            canvas
+                .engine_mut()
+                .export_prefs
+                .selection_export_prefs
+                .jpeg_quality = jpeg_quality_row.value().clamp(1.0, 100.0) as u8;
+        }
+    ));
 
-    margin_row.connect_changed(
-        clone!(@weak preview, @weak canvas, @weak appwindow => move |margin_row| {
+    margin_row.connect_changed(clone!(
+        #[weak]
+        preview,
+        #[weak]
+        canvas,
+        move |margin_row| {
             let value = margin_row.value();
-            canvas.engine_mut().export_prefs.selection_export_prefs.margin = value;
+            canvas
+                .engine_mut()
+                .export_prefs
+                .selection_export_prefs
+                .margin = value;
             preview.set_margin(value);
-        }),
-    );
+        }
+    ));
 
     // Listen to responses
 
-    export_selection_button_cancel.connect_clicked(clone!(@weak dialog => move |_| {
-        dialog.close();
-    }));
+    export_selection_button_cancel.connect_clicked(clone!(
+        #[weak]
+        dialog,
+        move |_| {
+            dialog.close();
+        }
+    ));
 
-    export_selection_button_confirm.connect_clicked(clone!(@weak selected_file, @weak dialog, @weak canvas, @weak appwindow => move |_| {
+    export_selection_button_confirm.connect_clicked(clone!(#[weak] dialog, #[weak] canvas, #[weak] appwindow , move |_| {
         dialog.close();
 
-        glib::spawn_future_local(clone!(@weak selected_file, @weak canvas, @weak appwindow => async move {
-            let Some(file) = selected_file.take() else {
-                appwindow
-                    .overlays()
-                    .dispatch_toast_error(&gettext("Exporting selection failed, no file selected"));
-                return;
-            };
+        let Some(file) = selected_file.take() else {
+            appwindow
+                .overlays()
+                .dispatch_toast_error(&gettext("Exporting selection failed, no file selected"));
+            return;
+        };
+
+        glib::spawn_future_local(clone!(#[weak] canvas, #[weak] appwindow , async move {
             appwindow.overlays().progressbar_start_pulsing();
 
             if let Err(e) = canvas.export_selection(&file, None).await {
-                tracing::error!("Exporting selection failed, Err: {e:?}");
-
+                error!("Exporting selection failed, Err: {e:?}");
                 appwindow
                     .overlays()
                     .dispatch_toast_error(&gettext("Exporting selection failed"));
                 appwindow.overlays().progressbar_abort();
-            } else {
-                appwindow.overlays().dispatch_toast_w_button_singleton(
-                    &gettext("Exported selection successfully"),
-                    &gettext("View in file manager"),
-                    clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
-                                let Some(folder_path_string) = file
-                                    .parent()
-                                    .and_then(|p|
-                                        p.path())
-                                    .and_then(|p| p.into_os_string().into_string().ok()) else {
-                                        tracing::error!("Failed to get the parent folder of the output file `{file:?}.");
-                                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
-                                        return;
-                                };
-
-                                if let Err(e) = open::that(&folder_path_string) {
-                                    tracing::error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
-                                    appwindow.overlays().dispatch_toast_error(&gettext("Failed to open the file in the file manager"));
-                                }
-                    }),
-                    crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
-                    &mut None,
-                );
-                appwindow.overlays().progressbar_finish();
+                return;
             }
-            }));
+
+            appwindow.overlays().dispatch_toast_w_button(
+                &gettext("Exported selection successfully"),
+                &gettext("View in file manager"),
+                clone!(#[weak] appwindow , move |_| {
+                    let Some(folder_path_string) = file
+                        .parent()
+                        .and_then(|p|
+                            p.path())
+                        .and_then(|p| p.into_os_string().into_string().ok()) else {
+                            error!("Failed to get the parent folder of the output file `{file:?}.");
+                            appwindow.overlays().dispatch_toast_error(&gettext("Failed to view the file in the file manager"));
+                            return;
+                    };
+
+                    if let Err(e) = open::that(&folder_path_string) {
+                        error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
+                        appwindow.overlays().dispatch_toast_error(&gettext("Failed to view the file in the file manager"));
+                    }
+                }),
+                crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
+            );
+            appwindow.overlays().progressbar_finish();
+        }));
     }));
 
-    dialog.present(appwindow);
+    dialog.present(appwindow.root().as_ref());
 }
 
 /// Returns (if possible) a "reasonable" folder for export operations
@@ -1035,7 +1223,7 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
             appwindow.overlays().progressbar_start_pulsing();
 
             if let Err(e) = canvas.export_engine_state(&selected_file).await {
-                tracing::error!("Exporting engine state failed, Err: {e:?}");
+                error!("Exporting engine state failed, Err: {e:?}");
 
                 appwindow
                     .overlays()
@@ -1050,9 +1238,7 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
             }
         }
         Err(e) => {
-            tracing::debug!(
-                "Did not export engine state (Error or dialog dismissed by user), Err: {e:?}"
-            );
+            debug!("Did not export engine state (Error or dialog dismissed by user), Err: {e:?}");
         }
     }
 }
@@ -1098,7 +1284,7 @@ pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, ca
             appwindow.overlays().progressbar_start_pulsing();
 
             if let Err(e) = canvas.export_engine_config(&selected_file).await {
-                tracing::error!("Exporting engine state failed, Err: {e:?}");
+                error!("Exporting engine state failed, Err: {e:?}");
 
                 appwindow
                     .overlays()
@@ -1113,9 +1299,7 @@ pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, ca
             }
         }
         Err(e) => {
-            tracing::debug!(
-                "Did not export engine config (Error or dialog dismissed by user), Err: {e:?}"
-            );
+            debug!("Did not export engine config (Error or dialog dismissed by user), Err: {e:?}");
         }
     }
 }

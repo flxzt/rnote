@@ -17,6 +17,7 @@ use gtk4::{
     ListBox, ScrolledWindow, Widget,
 };
 use std::path::PathBuf;
+use tracing::{error, warn};
 
 mod imp {
     use super::*;
@@ -250,14 +251,14 @@ impl RnWorkspacesBar {
 
     pub(crate) fn save_to_settings(&self, settings: &gio::Settings) {
         if let Err(e) = settings.set("workspace-list", self.imp().workspace_list.to_variant()) {
-            tracing::error!("Saving `workspace-list` to settings failed , Err: {e:?}");
+            error!("Saving `workspace-list` to settings failed , Err: {e:?}");
         }
 
         if let Err(e) = settings.set(
             "selected-workspace-index",
             self.selected_workspace_index().unwrap_or(0),
         ) {
-            tracing::error!("Saving `selected-workspace-index` to settings failed , Err: {e:?}");
+            error!("Saving `selected-workspace-index` to settings failed , Err: {e:?}");
         }
     }
 
@@ -269,11 +270,12 @@ impl RnWorkspacesBar {
         // don't canonicalize on windows, because that would convert the path to one with extended length syntax
         if !cfg!(target_os = "windows") {
             for entry in &workspace_list.iter() {
-                if let Err(e) = entry.canonicalize_dir() {
-                    tracing::warn!(
-                        "Failed to canonicalize dir {:?} for workspacelistentry with name: {}, Err: {e:?}",
-                        entry.dir(),
-                        entry.name()
+                if let Err(err) = entry.ensure_dir() {
+                    warn!(
+                        dir = entry.dir(),
+                        name = entry.name(),
+                        ?err,
+                        "Failed to ensure dir",
                     );
                 }
             }
@@ -286,65 +288,144 @@ impl RnWorkspacesBar {
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.setup_actions(appwindow);
 
-        self.imp().workspace_list.connect_items_changed(
-            clone!(@weak self as workspacesbar, @weak appwindow => move |list, _, _, _| {
-                workspacesbar.imp().remove_selected_workspace_button.get().set_sensitive(list.n_items() > 1);
-                workspacesbar.imp().edit_selected_workspace_button.get().set_sensitive(list.n_items() > 0);
-            }),
-        );
+        self.imp().workspace_list.connect_items_changed(clone!(
+            #[weak(rename_to=workspacesbar)]
+            self,
+            move |list, _, _, _| {
+                workspacesbar
+                    .imp()
+                    .remove_selected_workspace_button
+                    .get()
+                    .set_sensitive(list.n_items() > 1);
+                workspacesbar
+                    .imp()
+                    .edit_selected_workspace_button
+                    .get()
+                    .set_sensitive(list.n_items() > 0);
+            }
+        ));
 
         let workspace_listbox = self.imp().workspaces_listbox.get();
-        workspace_listbox.connect_selected_rows_changed(
-            clone!(@weak appwindow, @weak self as workspacesbar => move |_| {
+        workspace_listbox.connect_selected_rows_changed(clone!(
+            #[weak]
+            appwindow,
+            #[weak(rename_to=workspacesbar)]
+            self,
+            move |_| {
                 if let Some(entry) = workspacesbar.selected_workspacelistentry() {
                     let dir = entry.dir();
                     let name = entry.name();
-                    appwindow.sidebar().workspacebrowser().active_workspace_name_label().set_label(&name);
-                    appwindow.sidebar().workspacebrowser().active_workspace_dir_label().set_label(&dir);
-                    appwindow.sidebar().workspacebrowser().set_dir_list_file(Some(&gio::File::for_path(dir)));
+                    appwindow
+                        .sidebar()
+                        .workspacebrowser()
+                        .active_workspace_name_label()
+                        .set_label(&name);
+                    appwindow
+                        .sidebar()
+                        .workspacebrowser()
+                        .active_workspace_dir_label()
+                        .set_label(&dir);
+                    appwindow
+                        .sidebar()
+                        .workspacebrowser()
+                        .set_dir_list_file(Some(&gio::File::for_path(dir)));
                 }
-
-            }),
-        );
+            }
+        ));
 
         workspace_listbox.bind_model(
             Some(&self.imp().workspace_list),
-            clone!(@weak appwindow => @default-panic, move |obj| {
-                let entry = obj.to_owned().downcast::<RnWorkspaceListEntry>().unwrap();
-                let workspacerow = RnWorkspaceRow::new(&entry);
-                workspacerow.init(&appwindow);
+            clone!(
+                #[weak]
+                appwindow,
+                #[upgrade_or_panic]
+                move |obj| {
+                    let entry = obj.to_owned().downcast::<RnWorkspaceListEntry>().unwrap();
+                    let workspacerow = RnWorkspaceRow::new(&entry);
+                    workspacerow.init(&appwindow);
 
-                let entry_expr = ConstantExpression::new(&entry);
-                entry_expr.bind(&workspacerow, "entry", None::<&glib::Object>);
+                    let entry_expr = ConstantExpression::new(&entry);
+                    entry_expr.bind(&workspacerow, "entry", None::<&glib::Object>);
 
-                workspacerow.upcast::<Widget>()
-            }),
+                    workspacerow.upcast::<Widget>()
+                }
+            ),
         );
 
-        self.imp().move_selected_workspace_up_button.get().connect_clicked(
-            clone!(@weak self as workspacesbar, @weak appwindow => move |_| {
-                adw::prelude::ActionGroupExt::activate_action(&workspacesbar.action_group(), "move-selected-workspace-up", None);
-            }));
+        self.imp()
+            .move_selected_workspace_up_button
+            .get()
+            .connect_clicked(clone!(
+                #[weak(rename_to=workspacesbar)]
+                self,
+                move |_| {
+                    adw::prelude::ActionGroupExt::activate_action(
+                        &workspacesbar.action_group(),
+                        "move-selected-workspace-up",
+                        None,
+                    );
+                }
+            ));
 
-        self.imp().move_selected_workspace_down_button.get().connect_clicked(
-            clone!(@weak self as workspacesbar, @weak appwindow => move |_| {
-                adw::prelude::ActionGroupExt::activate_action(&workspacesbar.action_group(), "move-selected-workspace-down", None);
-            }));
+        self.imp()
+            .move_selected_workspace_down_button
+            .get()
+            .connect_clicked(clone!(
+                #[weak(rename_to=workspacesbar)]
+                self,
+                move |_| {
+                    adw::prelude::ActionGroupExt::activate_action(
+                        &workspacesbar.action_group(),
+                        "move-selected-workspace-down",
+                        None,
+                    );
+                }
+            ));
 
-        self.imp().add_workspace_button.get().connect_clicked(
-            clone!(@weak self as workspacesbar, @weak appwindow => move |_| {
-                adw::prelude::ActionGroupExt::activate_action(&workspacesbar.action_group(), "add-workspace", None);
-            }));
+        self.imp()
+            .add_workspace_button
+            .get()
+            .connect_clicked(clone!(
+                #[weak(rename_to=workspacesbar)]
+                self,
+                move |_| {
+                    adw::prelude::ActionGroupExt::activate_action(
+                        &workspacesbar.action_group(),
+                        "add-workspace",
+                        None,
+                    );
+                }
+            ));
 
-        self.imp().remove_selected_workspace_button.get().connect_clicked(
-            clone!(@weak self as workspacesbar, @weak appwindow => move |_| {
-                adw::prelude::ActionGroupExt::activate_action(&workspacesbar.action_group(), "remove-selected-workspace", None);
-            }));
+        self.imp()
+            .remove_selected_workspace_button
+            .get()
+            .connect_clicked(clone!(
+                #[weak(rename_to=workspacesbar)]
+                self,
+                move |_| {
+                    adw::prelude::ActionGroupExt::activate_action(
+                        &workspacesbar.action_group(),
+                        "remove-selected-workspace",
+                        None,
+                    );
+                }
+            ));
 
-        self.imp().edit_selected_workspace_button.get().connect_clicked(
-            clone!(@weak self as workspacesbar, @weak appwindow => move |_| {
-                adw::prelude::ActionGroupExt::activate_action(&workspacesbar.action_group(), "edit-selected-workspace", None);
-            }));
+        self.imp()
+            .edit_selected_workspace_button
+            .get()
+            .connect_clicked(clone!(
+                #[weak(rename_to=workspacesbar)]
+                self,
+                move |_| {
+                    adw::prelude::ActionGroupExt::activate_action(
+                        &workspacesbar.action_group(),
+                        "edit-selected-workspace",
+                        None,
+                    );
+                }
+            ));
 
         // Add initial entry
         self.insert_workspace_entry(0, RnWorkspaceListEntry::default());
@@ -372,44 +453,70 @@ impl RnWorkspacesBar {
         imp.action_group.add_action(&action_edit_selected_workspace);
 
         // Move selected workspace up
-        action_move_selected_workspace_up.connect_activate(
-            clone!(@weak self as workspacesbar, @weak appwindow => move |_, _| {
+        action_move_selected_workspace_up.connect_activate(clone!(
+            #[weak(rename_to=workspacesbar)]
+            self,
+            move |_, _| {
                 workspacesbar.move_selected_workspace_up();
-            }),
-        );
+            }
+        ));
 
         // Move selected workspace down
-        action_move_selected_workspace_down.connect_activate(
-            clone!(@weak self as workspacesbar, @weak appwindow => move |_, _| {
+        action_move_selected_workspace_down.connect_activate(clone!(
+            #[weak(rename_to=workspacesbar)]
+            self,
+            move |_, _| {
                 workspacesbar.move_selected_workspace_down();
-            }),
-        );
+            }
+        ));
 
         // Add workspace
-        action_add_workspace.connect_activate(
-            clone!(@weak self as workspacesbar, @weak appwindow => move |_, _| {
-                glib::spawn_future_local(clone!(@weak workspacesbar, @weak appwindow => async move {
-                    let entry = workspacesbar.selected_workspacelistentry().unwrap_or_default();
-                    workspacesbar.push_workspace(entry);
+        action_add_workspace.connect_activate(clone!(
+            #[weak(rename_to=workspacesbar)]
+            self,
+            #[weak]
+            appwindow,
+            move |_, _| {
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    workspacesbar,
+                    #[weak]
+                    appwindow,
+                    async move {
+                        let entry = workspacesbar
+                            .selected_workspacelistentry()
+                            .unwrap_or_default();
+                        workspacesbar.push_workspace(entry);
 
-                    // Popup the edit dialog after creation
-                    dialogs::dialog_edit_selected_workspace(&appwindow).await;
-                }));
-            }),
-        );
+                        // Popup the edit dialog after creation
+                        dialogs::dialog_edit_selected_workspace(&appwindow).await;
+                    }
+                ));
+            }
+        ));
 
         // Remove selected workspace
-        action_remove_selected_workspace.connect_activate(
-            clone!(@weak self as workspacesbar, @weak appwindow => move |_, _| {
-                    workspacesbar.remove_selected_workspace();
-            }),
-        );
+        action_remove_selected_workspace.connect_activate(clone!(
+            #[weak(rename_to=workspacesbar)]
+            self,
+            move |_, _| {
+                workspacesbar.remove_selected_workspace();
+            }
+        ));
 
         // Edit selected workspace
-        action_edit_selected_workspace.connect_activate(clone!(@weak appwindow => move |_, _| {
-            glib::spawn_future_local(clone!(@weak appwindow => async move {
-                dialogs::dialog_edit_selected_workspace(&appwindow).await;
-            }));
-        }));
+        action_edit_selected_workspace.connect_activate(clone!(
+            #[weak]
+            appwindow,
+            move |_, _| {
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    appwindow,
+                    async move {
+                        dialogs::dialog_edit_selected_workspace(&appwindow).await;
+                    }
+                ));
+            }
+        ));
     }
 }

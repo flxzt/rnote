@@ -17,6 +17,7 @@ use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use std::sync::Arc;
+use tracing::error;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "vectorimage")]
@@ -230,23 +231,23 @@ impl VectorImage {
         let svgs = page_range
             .filter_map(|page_i| {
                 let page = doc.page(page_i as i32)?;
-                let intrinsic_size = page.size();
-                let width = intrinsic_size.0 * page_zoom;
-                let height = intrinsic_size.1 * page_zoom;
+                let (intrinsic_width, intrinsic_height) = page.size();
+                let width = intrinsic_width * page_zoom;
+                let height = intrinsic_height * page_zoom;
 
                 let res = move || -> anyhow::Result<String> {
                     let svg_stream: Vec<u8> = vec![];
 
                     let mut svg_surface = cairo::SvgSurface::for_stream(
-                        intrinsic_size.0,
-                        intrinsic_size.1,
+                        intrinsic_width,
+                        intrinsic_height,
                         svg_stream,
                     )
                     .map_err(|e| {
                         anyhow::anyhow!(
                             "Creating SvgSurface with dimensions ({}, {}) failed, Err: {e:?}",
-                            intrinsic_size.0,
-                            intrinsic_size.1
+                            intrinsic_width,
+                            intrinsic_height
                         )
                     })?;
 
@@ -267,20 +268,16 @@ impl VectorImage {
 
                         if pdf_import_prefs.page_borders {
                             // Draw outline around page
-                            cx.set_source_rgba(
-                                color::GNOME_REDS[4].as_rgba().0,
-                                color::GNOME_REDS[4].as_rgba().1,
-                                color::GNOME_REDS[4].as_rgba().2,
-                                1.0,
-                            );
+                            let (red, green, blue, _) = color::GNOME_REDS[4].as_rgba();
+                            cx.set_source_rgba(red, green, blue, 1.0);
 
                             let line_width = 1.0;
                             cx.set_line_width(line_width);
                             cx.rectangle(
                                 line_width * 0.5,
                                 line_width * 0.5,
-                                intrinsic_size.0 - line_width,
-                                intrinsic_size.1 - line_width,
+                                intrinsic_width - line_width,
+                                intrinsic_height - line_width,
                             );
                             cx.stroke()?;
                         }
@@ -321,7 +318,7 @@ impl VectorImage {
                 match res() {
                     Ok(svg_data) => Some(render::Svg { svg_data, bounds }),
                     Err(e) => {
-                        tracing::error!("Importing page {page_i} from pdf failed, Err: {e:?}");
+                        error!("Importing page {page_i} from pdf failed, Err: {e:?}");
                         None
                     }
                 }

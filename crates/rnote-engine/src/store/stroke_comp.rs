@@ -12,6 +12,8 @@ use rnote_compose::shapes::Shapeable;
 use rnote_compose::transform::Transformable;
 use rnote_compose::Color;
 use std::sync::Arc;
+#[cfg(feature = "ui")]
+use tracing::error;
 
 /// Systems that are related to the stroke components.
 impl StrokeStore {
@@ -224,7 +226,7 @@ impl StrokeStore {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
-                    Err(e) => tracing::error!(
+                    Err(e) => error!(
                         "Generating rendernodes from images failed while translating stroke images , Err: {e:?}"
                     ),
                 }
@@ -384,7 +386,7 @@ impl StrokeStore {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
-                    Err(e) => tracing::error!(
+                    Err(e) => error!(
                         "Generating rendernodes from images failed while rotating stroke images , Err: {e:?}"
                     ),
                 }
@@ -427,7 +429,7 @@ impl StrokeStore {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
-                    Err(e) => tracing::error!(
+                    Err(e) => error!(
                         "Generating rendernodes from images failed while scaling stroke images, Err: {e:?}"
                     ),
                 }
@@ -638,6 +640,38 @@ impl StrokeStore {
                 }
             })
             .collect::<Vec<StrokeKey>>()
+    }
+
+    pub(crate) fn keys_between(
+        &self,
+        y_start: f64,
+        y_end: f64,
+        x_lims: (f64, f64),
+        limit_movement_vertical_border: bool,
+        limit_movement_horizontal_border: bool,
+    ) -> Vec<StrokeKey> {
+        self.key_tree.keys_intersecting_bounds(Aabb::new(
+            na::point![
+                if limit_movement_vertical_border {
+                    x_lims.0
+                } else {
+                    f64::NEG_INFINITY
+                },
+                y_start
+            ],
+            na::point![
+                if limit_movement_vertical_border {
+                    x_lims.1
+                } else {
+                    f64::INFINITY
+                },
+                if limit_movement_horizontal_border {
+                    y_end
+                } else {
+                    f64::INFINITY
+                }
+            ],
+        ))
     }
 
     pub(crate) fn filter_keys_intersecting_bounds<'a, I: IntoIterator<Item = &'a StrokeKey>>(

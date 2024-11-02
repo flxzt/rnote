@@ -12,6 +12,7 @@ use gtk4::{
 };
 use num_traits::ToPrimitive;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
+use tracing::{debug, error};
 
 /// Opens a new rnote save file in a new tab
 pub(crate) async fn filedialog_open_doc(appwindow: &RnAppWindow) {
@@ -49,9 +50,7 @@ pub(crate) async fn filedialog_open_doc(appwindow: &RnAppWindow) {
                 .await;
         }
         Err(e) => {
-            tracing::debug!(
-                "Did not open document (Error or dialog dismissed by user), Err: {e:?}"
-            );
+            debug!("Did not open document (Error or dialog dismissed by user), Err: {e:?}");
         }
     }
 }
@@ -107,7 +106,7 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
                 .await;
         }
         Err(e) => {
-            tracing::debug!("Did not import file (Error or dialog dismissed by user), Err: {e:?}");
+            debug!("Did not import file (Error or dialog dismissed by user), Err: {e:?}");
         }
     }
 }
@@ -184,53 +183,95 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         .build();
 
     // Update preferences
-    pdf_import_as_vector_toggle.connect_toggled(
-        clone!(@weak pdf_import_bitmap_scalefactor_row, @weak canvas, @weak appwindow => move |toggle| {
+    pdf_import_as_vector_toggle.connect_toggled(clone!(
+        #[weak]
+        pdf_import_bitmap_scalefactor_row,
+        #[weak]
+        canvas,
+        move |toggle| {
             if toggle.is_active() {
-                canvas.engine_mut().import_prefs.pdf_import_prefs.pages_type = PdfImportPagesType::Vector;
+                canvas.engine_mut().import_prefs.pdf_import_prefs.pages_type =
+                    PdfImportPagesType::Vector;
                 pdf_import_bitmap_scalefactor_row.set_sensitive(false);
             }
-        }),
-    );
+        }
+    ));
 
-    pdf_import_as_bitmap_toggle.connect_toggled(
-        clone!(@weak pdf_import_bitmap_scalefactor_row, @weak canvas, @weak appwindow => move |toggle| {
+    pdf_import_as_bitmap_toggle.connect_toggled(clone!(
+        #[weak]
+        pdf_import_bitmap_scalefactor_row,
+        #[weak]
+        canvas,
+        move |toggle| {
             if toggle.is_active() {
-                canvas.engine_mut().import_prefs.pdf_import_prefs.pages_type = PdfImportPagesType::Bitmap;
+                canvas.engine_mut().import_prefs.pdf_import_prefs.pages_type =
+                    PdfImportPagesType::Bitmap;
                 pdf_import_bitmap_scalefactor_row.set_sensitive(true);
             }
-        }),
-    );
+        }
+    ));
 
-    pdf_import_bitmap_scalefactor_row.connect_changed(
-        clone!(@weak canvas, @weak appwindow => move |row| {
-            canvas.engine_mut().import_prefs.pdf_import_prefs.bitmap_scalefactor = row.value();
-        }),
-    );
+    pdf_import_bitmap_scalefactor_row.connect_changed(clone!(
+        #[weak]
+        canvas,
+        move |row| {
+            canvas
+                .engine_mut()
+                .import_prefs
+                .pdf_import_prefs
+                .bitmap_scalefactor = row.value();
+        }
+    ));
 
-    pdf_import_page_spacing_row.connect_selected_notify(
-        clone!(@weak canvas, @weak appwindow => move |row| {
+    pdf_import_page_spacing_row.connect_selected_notify(clone!(
+        #[weak]
+        canvas,
+        move |row| {
             let page_spacing = PdfImportPageSpacing::try_from(row.selected()).unwrap();
 
-            canvas.engine_mut().import_prefs.pdf_import_prefs.page_spacing = page_spacing;
-        }),
-    );
+            canvas
+                .engine_mut()
+                .import_prefs
+                .pdf_import_prefs
+                .page_spacing = page_spacing;
+        }
+    ));
 
-    pdf_import_width_row.connect_changed(clone!(@weak canvas, @weak appwindow => move |row| {
-            canvas.engine_mut().import_prefs.pdf_import_prefs.page_width_perc = row.value();
-    }));
+    pdf_import_width_row.connect_changed(clone!(
+        #[weak]
+        canvas,
+        move |row| {
+            canvas
+                .engine_mut()
+                .import_prefs
+                .pdf_import_prefs
+                .page_width_perc = row.value();
+        }
+    ));
 
-    pdf_import_page_borders_row.connect_active_notify(
-        clone!(@weak canvas, @weak appwindow => move |row| {
-            canvas.engine_mut().import_prefs.pdf_import_prefs.page_borders = row.is_active();
-        }),
-    );
+    pdf_import_page_borders_row.connect_active_notify(clone!(
+        #[weak]
+        canvas,
+        move |row| {
+            canvas
+                .engine_mut()
+                .import_prefs
+                .pdf_import_prefs
+                .page_borders = row.is_active();
+        }
+    ));
 
-    pdf_import_adjust_document_row.connect_active_notify(
-        clone!(@weak canvas, @weak appwindow => move |row| {
-            canvas.engine_mut().import_prefs.pdf_import_prefs.adjust_document = row.is_active();
-        }),
-    );
+    pdf_import_adjust_document_row.connect_active_notify(clone!(
+        #[weak]
+        canvas,
+        move |row| {
+            canvas
+                .engine_mut()
+                .import_prefs
+                .pdf_import_prefs
+                .adjust_document = row.is_active();
+        }
+    ));
 
     if let Ok(poppler_doc) =
         poppler::Document::from_gfile(&input_file, None, None::<&gio::Cancellable>)
@@ -291,22 +332,26 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     let tx_cancel = tx.clone();
     let tx_confirm = tx.clone();
 
-    import_pdf_button_cancel.connect_clicked(clone!(@weak dialog => move |_| {
-        dialog.close();
+    import_pdf_button_cancel.connect_clicked(clone!(
+        #[weak]
+        dialog,
+        move |_| {
+            dialog.close();
 
-        if let Err(e) = tx_cancel.unbounded_send(Ok(false)) {
-            tracing::error!(
+            if let Err(e) = tx_cancel.unbounded_send(Ok(false)) {
+                error!(
                 "PDF import dialog closed, but failed to send signal through channel. Err: {e:?}"
             );
+            }
         }
-    }));
+    ));
 
-    import_pdf_button_confirm.connect_clicked(clone!(@weak pdf_page_start_row, @weak pdf_page_end_row, @weak input_file, @weak dialog, @weak canvas => move |_| {
+    import_pdf_button_confirm.connect_clicked(clone!(#[weak] pdf_page_start_row, #[weak] pdf_page_end_row, #[weak] input_file, #[weak] dialog, #[weak] canvas , move |_| {
         dialog.close();
 
         let inner_tx_confirm = tx_confirm.clone();
 
-        glib::spawn_future_local(clone!(@weak pdf_page_start_row, @weak pdf_page_end_row, @weak input_file, @weak canvas => async move {
+        glib::spawn_future_local(clone!(#[weak] pdf_page_start_row, #[weak] pdf_page_end_row, #[weak] input_file, #[weak] canvas , async move {
             let page_range =
                 (pdf_page_start_row.value() as u32 - 1)..pdf_page_end_row.value() as u32;
 
@@ -314,20 +359,20 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
                 Ok(res) => {res}
                 Err(err) => {
                     if let Err(e) = inner_tx_confirm.unbounded_send(Err(err.into())) {
-                        tracing::error!("Failed to load file, but failed to send signal through channel. Err: {e:?}");
+                        error!("Failed to load file, but failed to send signal through channel. Err: {e:?}");
                     }
                     return;
                 }
             };
             if let Err(e) = canvas.load_in_pdf_bytes(bytes.to_vec(), target_pos, Some(page_range)).await {
                 if let Err(e) = inner_tx_confirm.unbounded_send(Err(e)) {
-                    tracing::error!("Failed to load PDF, but failed to send signal through channel. Err: {e:?}");
+                    error!("Failed to load PDF, but failed to send signal through channel. Err: {e:?}");
                 }
                 return;
             }
 
             if let Err(e) = inner_tx_confirm.unbounded_send(Ok(true)) {
-                tracing::error!("PDF file imported, but failed to send signal through channel. Err: {e:?}");
+                error!("PDF file imported, but failed to send signal through channel. Err: {e:?}");
             }
         }));
     }));
@@ -335,17 +380,23 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     // Overwrite builtin close shortcut
     let controller = ShortcutController::new();
     controller.add_shortcut(Shortcut::new(
-        Some(ShortcutTrigger:: parse_string("Escape").unwrap()),
-        Some(CallbackAction::new(clone!(@weak import_pdf_button_cancel => @default-return glib::Propagation::Stop, move |_, _| {
-            import_pdf_button_cancel.emit_clicked();
+        Some(ShortcutTrigger::parse_string("Escape").unwrap()),
+        Some(CallbackAction::new(clone!(
+            #[weak]
+            import_pdf_button_cancel,
+            #[upgrade_or]
+            glib::Propagation::Stop,
+            move |_, _| {
+                import_pdf_button_cancel.emit_clicked();
 
-            glib::Propagation::Stop
-        }))),
+                glib::Propagation::Stop
+            }
+        ))),
     ));
     dialog.add_controller(controller);
 
     // Present than wait for a response from the dialog
-    dialog.present(appwindow);
+    dialog.present(appwindow.root().as_ref());
 
     match rx.next().await {
         Some(res) => res,
@@ -376,9 +427,13 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
     dpi_row.set_value(xopp_import_prefs.dpi);
 
     // Update preferences
-    dpi_row.connect_changed(clone!(@weak canvas, @weak appwindow => move |row| {
-        canvas.engine_mut().import_prefs.xopp_import_prefs.dpi = row.value();
-    }));
+    dpi_row.connect_changed(clone!(
+        #[weak]
+        canvas,
+        move |row| {
+            canvas.engine_mut().import_prefs.xopp_import_prefs.dpi = row.value();
+        }
+    ));
 
     // Listen to responses
 
@@ -386,40 +441,44 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
     let tx_cancel = tx.clone();
     let tx_confirm = tx.clone();
 
-    import_xopp_button_cancel.connect_clicked(clone!(@weak dialog => move |_| {
-        dialog.close();
+    import_xopp_button_cancel.connect_clicked(clone!(
+        #[weak]
+        dialog,
+        move |_| {
+            dialog.close();
 
-        if let Err(e) = tx_cancel.unbounded_send(Ok(false)) {
-            tracing::error!(
+            if let Err(e) = tx_cancel.unbounded_send(Ok(false)) {
+                error!(
                 "XOPP import dialog closed, but failed to send signal through channel. Err: {e:?}"
             );
+            }
         }
-    }));
+    ));
 
-    import_xopp_button_confirm.connect_clicked(clone!(@weak input_file, @weak dialog, @weak canvas => move |_| {
+    import_xopp_button_confirm.connect_clicked(clone!(#[weak] input_file, #[weak] dialog, #[weak] canvas , move |_| {
         dialog.close();
 
         let inner_tx_confirm = tx_confirm.clone();
 
-        glib::spawn_future_local(clone!(@weak input_file, @weak canvas => async move {
+        glib::spawn_future_local(clone!(#[weak] input_file, #[weak] canvas , async move {
             let (bytes, _) = match input_file.load_bytes_future().await {
                 Ok(res) => {res}
                 Err(err) => {
                     if let Err(e) = inner_tx_confirm.unbounded_send(Err(err.into())) {
-                        tracing::error!("Failed to load file, but failed to send signal through channel. Err: {e:?}");
+                        error!("Failed to load file, but failed to send signal through channel. Err: {e:?}");
                     }
                     return;
                 }
             };
             if let Err(e) = canvas.load_in_xopp_bytes(bytes.to_vec()).await {
                 if let Err(e) = inner_tx_confirm.unbounded_send(Err(e)) {
-                    tracing::error!("Failed to load XOPP, but failed to send signal through channel. Err: {e:?}");
+                    error!("Failed to load XOPP, but failed to send signal through channel. Err: {e:?}");
                 }
                 return;
             };
 
             if let Err(e) = inner_tx_confirm.unbounded_send(Ok(true)) {
-                tracing::error!("XOPP file imported, but failed to send signal through channel. Err: {e:?}");
+                error!("XOPP file imported, but failed to send signal through channel. Err: {e:?}");
             }
         }));
     }));
@@ -428,16 +487,22 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
     let controller = ShortcutController::new();
     controller.add_shortcut(Shortcut::new(
         Some(ShortcutTrigger::parse_string("Escape").unwrap()),
-        Some(CallbackAction::new(clone!(@weak import_xopp_button_cancel => @default-return glib::Propagation::Stop, move |_, _| {
-            import_xopp_button_cancel.emit_clicked();
+        Some(CallbackAction::new(clone!(
+            #[weak]
+            import_xopp_button_cancel,
+            #[upgrade_or]
+            glib::Propagation::Stop,
+            move |_, _| {
+                import_xopp_button_cancel.emit_clicked();
 
-            glib::Propagation::Stop
-        }))),
+                glib::Propagation::Stop
+            }
+        ))),
     ));
     dialog.add_controller(controller);
 
     // Present than wait for a response from the dialog
-    dialog.present(appwindow);
+    dialog.present(appwindow.root().as_ref());
 
     match rx.next().await {
         Some(res) => res,

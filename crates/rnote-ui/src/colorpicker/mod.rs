@@ -16,6 +16,7 @@ use once_cell::sync::Lazy;
 use rnote_compose::{color, Color};
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
+use tracing::debug;
 
 mod imp {
     use super::*;
@@ -115,14 +116,16 @@ mod imp {
                 .bidirectional()
                 .build();
 
-            self.stroke_color_pad.connect_active_notify(
-                clone!(@weak obj as colorpicker => move |_| {
+            self.stroke_color_pad.connect_active_notify(clone!(
+                #[weak(rename_to=colorpicker)]
+                obj,
+                move |_| {
                     colorpicker.deselect_setters();
                     colorpicker
                         .imp()
                         .update_color_label_string(colorpicker.stroke_color().into_compose_color());
-                }),
-            );
+                }
+            ));
 
             self.fill_color_pad
                 .bind_property("color", &*obj, "fill-color")
@@ -130,14 +133,16 @@ mod imp {
                 .bidirectional()
                 .build();
 
-            self.fill_color_pad.connect_active_notify(
-                clone!(@weak obj as colorpicker => move |_| {
+            self.fill_color_pad.connect_active_notify(clone!(
+                #[weak(rename_to=colorpicker)]
+                obj,
+                move |_| {
                     colorpicker.deselect_setters();
                     colorpicker
                         .imp()
                         .update_color_label_string(colorpicker.fill_color().into_compose_color());
-                }),
-            );
+                }
+            ));
         }
 
         fn dispose(&self) {
@@ -202,8 +207,10 @@ mod imp {
             self.setter_8.set_color(Self::default_color(7));
             self.setter_9.set_color(Self::default_color(8));
 
-            self.setter_1
-                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
+            self.setter_1.connect_active_notify(clone!(
+                #[weak(rename_to=colorpicker)]
+                obj,
+                move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_2().set_active(false);
                         colorpicker.setter_3().set_active(false);
@@ -216,10 +223,13 @@ mod imp {
                         // Must come after setting the other setters inactive
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }));
+                }
+            ));
 
-            self.setter_2
-                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
+            self.setter_2.connect_active_notify(clone!(
+                #[weak(rename_to=colorpicker)]
+                obj,
+                move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_1().set_active(false);
                         colorpicker.setter_3().set_active(false);
@@ -231,10 +241,13 @@ mod imp {
                         colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }));
+                }
+            ));
 
-            self.setter_3
-                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
+            self.setter_3.connect_active_notify(clone!(
+                #[weak(rename_to=colorpicker)]
+                obj,
+                move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_1().set_active(false);
                         colorpicker.setter_2().set_active(false);
@@ -246,10 +259,13 @@ mod imp {
                         colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }));
+                }
+            ));
 
-            self.setter_4
-                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
+            self.setter_4.connect_active_notify(clone!(
+                #[weak(rename_to=colorpicker)]
+                obj,
+                move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_1().set_active(false);
                         colorpicker.setter_2().set_active(false);
@@ -261,10 +277,13 @@ mod imp {
                         colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }));
+                }
+            ));
 
-            self.setter_5
-                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
+            self.setter_5.connect_active_notify(clone!(
+                #[weak(rename_to=colorpicker)]
+                obj,
+                move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_1().set_active(false);
                         colorpicker.setter_2().set_active(false);
@@ -276,10 +295,13 @@ mod imp {
                         colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }));
+                }
+            ));
 
-            self.setter_6
-                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
+            self.setter_6.connect_active_notify(clone!(
+                #[weak(rename_to=colorpicker)]
+                obj,
+                move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_1().set_active(false);
                         colorpicker.setter_2().set_active(false);
@@ -291,10 +313,13 @@ mod imp {
                         colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }));
+                }
+            ));
 
-            self.setter_7
-                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
+            self.setter_7.connect_active_notify(clone!(
+                #[weak(rename_to=colorpicker)]
+                obj,
+                move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_1().set_active(false);
                         colorpicker.setter_2().set_active(false);
@@ -305,10 +330,13 @@ mod imp {
                         colorpicker.setter_8().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }));
+                }
+            ));
 
-            self.setter_8
-                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
+            self.setter_8.connect_active_notify(clone!(
+                #[weak(rename_to=colorpicker)]
+                obj,
+                move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_1().set_active(false);
                         colorpicker.setter_2().set_active(false);
@@ -320,10 +348,13 @@ mod imp {
                         colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }));
+                }
+            ));
 
-            self.setter_9
-                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
+            self.setter_9.connect_active_notify(clone!(
+                #[weak(rename_to=colorpicker)]
+                obj,
+                move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_1().set_active(false);
                         colorpicker.setter_2().set_active(false);
@@ -335,7 +366,8 @@ mod imp {
                         colorpicker.setter_8().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }));
+                }
+            ));
 
             obj.connect_notify_local(Some("stroke-color"), move |colorpicker, _| {
                 if colorpicker.stroke_color_pad_active() {
@@ -460,11 +492,11 @@ impl RnColorPicker {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.imp().colordialog_button.connect_clicked(
-            clone!(@weak self as colorpicker, @weak appwindow => move |_| {
+            clone!(#[weak(rename_to=colorpicker)] self, #[weak] appwindow , move |_| {
                 if colorpicker.imp().color_dialog.upgrade().is_some() {
                     // Unfortunately Gtk currently does not have API to make the dialog the active window.
                 } else {
-                    glib::spawn_future_local(clone!(@weak colorpicker, @weak appwindow => async move {
+                    glib::spawn_future_local(clone!(#[weak] colorpicker, #[weak] appwindow , async move {
                         let dialog = ColorDialog::builder().modal(false).with_alpha(true).build();
                         colorpicker.imp().color_dialog.set(Some(&dialog));
 
@@ -480,7 +512,7 @@ impl RnColorPicker {
                             },
                             // this reports as error if the dialog is dismissed by the user.
                             // The API is a bit odd, expected would be Result<Option<RGBA>>
-                            Err(e) => tracing::debug!("Did not choose new color (Error or dialog dismissed by user), Err: {e:?}"),
+                            Err(e) => debug!("Did not choose new color (Error or dialog dismissed by user), Err: {e:?}"),
                         }
 
                         colorpicker.imp().color_dialog.set(None);

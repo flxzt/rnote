@@ -4,6 +4,7 @@ use crate::{Engine, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::color;
+use tracing::error;
 
 impl Engine {
     /// Update the background rendering for the current viewport.
@@ -27,9 +28,7 @@ impl Engine {
                 let new_texture = match image.to_memtexture() {
                     Ok(t) => t,
                     Err(e) => {
-                        tracing::error!(
-                            "failed to generate memory-texture of background tile image, {e:?}"
-                        );
+                        error!("Failed to generate memory-texture of background tile image, Err: {e:?}");
                         return widget_flags;
                     }
                 };
@@ -63,8 +62,8 @@ impl Engine {
                 let new_texture = match image.to_memtexture() {
                     Ok(t) => t,
                     Err(e) => {
-                        tracing::error!(
-                            "failed to generate memory-texture of origin indicator image, {e:?}"
+                        error!(
+                            "Failed to generate memory-texture of origin indicator image, Err: {e:?}"
                         );
                         return widget_flags;
                     }
@@ -134,7 +133,7 @@ impl Engine {
                 self.background_tile_image = Some(image);
             }
             Err(e) => {
-                tracing::error!("Regenerating background tile image failed, Err: {e:?}");
+                error!("Regenerating background tile image failed, Err: {e:?}");
                 return widget_flags;
             }
         }
@@ -144,7 +143,7 @@ impl Engine {
                 self.origin_indicator_image = Some(image);
             }
             Err(e) => {
-                tracing::error!("Regenerating origin indicator image failed, Err: {e:?}");
+                error!("Regenerating origin indicator image failed, Err: {e:?}");
                 widget_flags.redraw = true;
                 return widget_flags;
             }
@@ -257,7 +256,7 @@ impl Engine {
 
         // Fill with background color just in case there is any space left between the tiles
         snapshot.append_node(
-            &gsk::ColorNode::new(
+            gsk::ColorNode::new(
                 &gdk::RGBA::from_compose_color(self.document.background.color),
                 //&gdk::RGBA::RED,
                 &graphene::Rect::from_p2d_aabb(doc_bounds),

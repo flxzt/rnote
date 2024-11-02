@@ -40,9 +40,19 @@ impl TryFrom<u32> for ToolStyle {
     }
 }
 
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename = "verticalspace_tool_config")]
+pub struct VerticalSpaceToolConfig {
+    /// horizontal limit
+    pub limit_movement_horizontal_borders: bool,
+    /// vertical limit
+    pub limit_movement_vertical_borders: bool,
+}
+
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(default, rename = "tools_config")]
 pub struct ToolsConfig {
     #[serde(rename = "style")]
     pub style: ToolStyle,
+    pub verticalspace_tool_config: VerticalSpaceToolConfig,
 }

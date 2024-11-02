@@ -14,8 +14,8 @@ rnote-compose = { workspace = true }
 rnote-engine = { workspace = true, features = ["ui"] }
 
 adw = { workspace = true }
-approx = { workspace = true }
 anyhow = { workspace = true }
+approx = { workspace = true }
 async-fs = { workspace = true }
 base64 = { workspace = true }
 cairo-rs = { workspace = true }

@@ -10,6 +10,7 @@ use gtk4::{
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::PenStyle;
 use std::cell::{Cell, RefCell};
+use tracing::error;
 
 mod imp {
     use super::*;
@@ -155,142 +156,207 @@ impl RnOverlays {
         let imp = self.imp();
 
         imp.colorpicker.connect_notify_local(
-                Some("stroke-color"),
-                clone!(@weak appwindow => move |colorpicker, _paramspec| {
+            Some("stroke-color"),
+            clone!(
+                #[weak]
+                appwindow,
+                move |colorpicker, _paramspec| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
                     let stroke_color = colorpicker.stroke_color().into_compose_color();
-                    let canvas = appwindow.active_tab_wrapper().canvas();
-                    let current_pen_style = canvas.engine_ref().penholder.current_pen_style_w_override();
+                    let current_pen_style =
+                        canvas.engine_ref().penholder.current_pen_style_w_override();
 
                     match current_pen_style {
                         PenStyle::Typewriter => {
-                            if canvas.engine_ref().pens_config.typewriter_config.text_style.color != stroke_color {
-                                let widget_flags = canvas.engine_mut().text_selection_change_style(|style| {style.color = stroke_color});
-                                appwindow.handle_widget_flags(widget_flags, &canvas);
-                            }
-                        }
-                        PenStyle::Selector => {
-                            let widget_flags = canvas.engine_mut().change_selection_stroke_colors(stroke_color);
+                            let widget_flags = canvas.engine_mut().text_change_color(stroke_color);
                             appwindow.handle_widget_flags(widget_flags, &canvas);
                         }
-                        PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
+                        PenStyle::Selector => {
+                            let widget_flags = canvas
+                                .engine_mut()
+                                .change_selection_stroke_colors(stroke_color);
+                            appwindow.handle_widget_flags(widget_flags, &canvas);
+                        }
+                        PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {
+                        }
                     }
 
                     // We have a global colorpicker, so we apply it to all styles
-                    canvas.engine_mut().pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
-                    canvas.engine_mut().pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
-                    canvas.engine_mut().pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
-                    canvas.engine_mut().pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
-                    canvas.engine_mut().pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
-                    canvas.engine_mut().pens_config.typewriter_config.text_style.color = stroke_color;
-                }),
-            );
+                    canvas
+                        .engine_mut()
+                        .pens_config
+                        .set_all_stroke_colors(stroke_color);
+                }
+            ),
+        );
 
         imp.colorpicker.connect_notify_local(
             Some("fill-color"),
-            clone!(@weak appwindow => move |colorpicker, _paramspec| {
-                let fill_color = colorpicker.fill_color().into_compose_color();
-                let canvas = appwindow.active_tab_wrapper().canvas();
-                let stroke_style = canvas.engine_ref().penholder.current_pen_style_w_override();
+            clone!(
+                #[weak]
+                appwindow,
+                move |colorpicker, _paramspec| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+                    let fill_color = colorpicker.fill_color().into_compose_color();
+                    let stroke_style = canvas.engine_ref().penholder.current_pen_style_w_override();
 
-                match stroke_style {
-                    PenStyle::Selector => {
-                        let widget_flags = canvas.engine_mut().change_selection_fill_colors(fill_color);
-                        appwindow.handle_widget_flags(widget_flags, &canvas);
+                    match stroke_style {
+                        PenStyle::Selector => {
+                            let widget_flags =
+                                canvas.engine_mut().change_selection_fill_colors(fill_color);
+                            appwindow.handle_widget_flags(widget_flags, &canvas);
+                        }
+                        PenStyle::Typewriter
+                        | PenStyle::Brush
+                        | PenStyle::Shaper
+                        | PenStyle::Eraser
+                        | PenStyle::Tools => {}
                     }
-                    PenStyle::Typewriter | PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
-                }
 
-                // We have a global colorpicker, so we apply it to all styles
-                canvas.engine_mut().pens_config.brush_config.marker_options.fill_color = Some(fill_color);
-                canvas.engine_mut().pens_config.brush_config.solid_options.fill_color = Some(fill_color);
-                canvas.engine_mut().pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
-                canvas.engine_mut().pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
-            }),
+                    // We have a global colorpicker, so we apply it to all styles
+                    canvas
+                        .engine_mut()
+                        .pens_config
+                        .set_all_fill_colors(fill_color);
+                }
+            ),
         );
     }
 
     fn setup_tabview(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
-        imp.tabview
-            .connect_selected_page_notify(clone!(@weak self as overlays, @weak appwindow => move |_| {
-                let active_tab_page = appwindow.active_tab_page();
-                let active_canvaswrapper = active_tab_page.child().downcast::<RnCanvasWrapper>().unwrap();
+        imp.tabview.connect_selected_page_notify(clone!(
+            #[weak(rename_to=overlays)]
+            self,
+            #[weak]
+            appwindow,
+            move |_| {
+                let Some(active_tab_page) = appwindow.active_tab_page() else {
+                    return;
+                };
+                let active_canvaswrapper = active_tab_page
+                    .child()
+                    .downcast::<RnCanvasWrapper>()
+                    .unwrap();
                 appwindow.tabs_set_unselected_inactive();
 
                 if let Some(prev_active_tab_page) = overlays.imp().prev_active_tab_page.upgrade() {
-                        if prev_active_tab_page != active_tab_page {
-                            appwindow.sync_state_between_tabs(&prev_active_tab_page, &active_tab_page);
-                        }
+                    if prev_active_tab_page != active_tab_page {
+                        appwindow.sync_state_between_tabs(&prev_active_tab_page, &active_tab_page);
+                    }
                 }
-                overlays.imp().prev_active_tab_page.set(Some(&active_tab_page));
+                overlays
+                    .imp()
+                    .prev_active_tab_page
+                    .set(Some(&active_tab_page));
 
                 let widget_flags = active_canvaswrapper.canvas().engine_mut().set_active(true);
                 appwindow.handle_widget_flags(widget_flags, &active_canvaswrapper.canvas());
                 appwindow.refresh_ui_from_engine(&active_canvaswrapper);
-            }));
+            }
+        ));
 
-        imp.tabview.connect_page_attached(
-            clone!(@weak self as overlays, @weak appwindow => move |_tabview, page, _| {
+        imp.tabview.connect_page_attached(clone!(
+            #[weak]
+            appwindow,
+            move |_, page, _| {
                 let canvaswrapper = page.child().downcast::<RnCanvasWrapper>().unwrap();
                 canvaswrapper.init_reconnect(&appwindow);
                 canvaswrapper.connect_to_tab_page(page);
                 let widget_flags = canvaswrapper.canvas().engine_mut().set_active(true);
                 appwindow.handle_widget_flags(widget_flags, &canvaswrapper.canvas());
-            }),
-        );
+            }
+        ));
 
-        imp.tabview.connect_page_detached(
-            clone!(@weak self as overlays, @weak appwindow => move |_, page, _| {
+        imp.tabview.connect_page_detached(clone!(
+            #[weak(rename_to=overlays)]
+            self,
+            move |_, page, _| {
                 let canvaswrapper = page.child().downcast::<RnCanvasWrapper>().unwrap();
 
                 // if the to be detached page was the active (selected), remove it.
-                if overlays.imp().prev_active_tab_page.upgrade().map_or(true, |prev| prev == *page) {
+                if overlays
+                    .imp()
+                    .prev_active_tab_page
+                    .upgrade()
+                    .map_or(true, |prev| prev == *page)
+                {
                     overlays.imp().prev_active_tab_page.set(None);
                 }
 
                 let _ = canvaswrapper.canvas().engine_mut().set_active(false);
                 canvaswrapper.disconnect_connections();
-            }),
-        );
-
-        imp.tabview.connect_close_page(
-            clone!(@weak self as overlays, @weak appwindow => @default-return true, move |_, page| {
-                    glib::spawn_future_local(clone!(@weak overlays, @weak appwindow, @weak page => async move {
-                    let close_finish_confirm = if page
-                        .child()
-                        .downcast::<RnCanvasWrapper>()
-                        .unwrap()
-                        .canvas()
-                        .unsaved_changes()
-                    {
-                        dialogs::dialog_close_tab(&appwindow, &page).await
-                    } else {
-                        true
-                    };
-
-                    appwindow.close_tab_finish(&page, close_finish_confirm);
-                }));
-
-                true
-            }),
-        );
-
-        imp.tabview.connect_setup_menu(clone!(@weak appwindow => move |tabview, page| {
-            if let Some(page) = page {
-                let action_active_tab_move_left = appwindow.lookup_action("active-tab-move-left").unwrap().downcast::<gio::SimpleAction>().unwrap();
-                let action_active_tab_move_right = appwindow.lookup_action("active-tab-move-right").unwrap().downcast::<gio::SimpleAction>().unwrap();
-                let action_active_tab_close = appwindow.lookup_action("active-tab-close").unwrap().downcast::<gio::SimpleAction>().unwrap();
-
-                tabview.set_selected_page(page);
-
-                let n_pages = tabview.n_pages();
-                let pos = tabview.page_position(page);
-                action_active_tab_move_left.set_enabled(pos > 0);
-                action_active_tab_move_right.set_enabled(pos + 1 < n_pages);
-                action_active_tab_close.set_enabled(n_pages > 1);
             }
-        }));
+        ));
+
+        imp.tabview.connect_close_page(clone!(
+            #[weak]
+            appwindow,
+            #[upgrade_or]
+            glib::Propagation::Stop,
+            move |_, page| {
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    appwindow,
+                    #[weak]
+                    page,
+                    async move {
+                        let close_finish_confirm = if page
+                            .child()
+                            .downcast::<RnCanvasWrapper>()
+                            .unwrap()
+                            .canvas()
+                            .unsaved_changes()
+                        {
+                            dialogs::dialog_close_tab(&appwindow, &page).await
+                        } else {
+                            true
+                        };
+
+                        appwindow.close_tab_finish(&page, close_finish_confirm);
+                    }
+                ));
+
+                glib::Propagation::Stop
+            }
+        ));
+
+        imp.tabview.connect_setup_menu(clone!(
+            #[weak]
+            appwindow,
+            move |tabview, page| {
+                if let Some(page) = page {
+                    let action_active_tab_move_left = appwindow
+                        .lookup_action("active-tab-move-left")
+                        .unwrap()
+                        .downcast::<gio::SimpleAction>()
+                        .unwrap();
+                    let action_active_tab_move_right = appwindow
+                        .lookup_action("active-tab-move-right")
+                        .unwrap()
+                        .downcast::<gio::SimpleAction>()
+                        .unwrap();
+                    let action_active_tab_close = appwindow
+                        .lookup_action("active-tab-close")
+                        .unwrap()
+                        .downcast::<gio::SimpleAction>()
+                        .unwrap();
+
+                    tabview.set_selected_page(page);
+
+                    let n_pages = tabview.n_pages();
+                    let pos = tabview.page_position(page);
+                    action_active_tab_move_left.set_enabled(pos > 0);
+                    action_active_tab_move_right.set_enabled(pos + 1 < n_pages);
+                    action_active_tab_close.set_enabled(n_pages > 1);
+                }
+            }
+        ));
     }
 
     pub(crate) fn progressbar_start_pulsing(&self) {
@@ -300,14 +366,24 @@ impl RnOverlays {
             .progresspulses_active
             .set(self.imp().progresspulses_active.get().saturating_add(1));
 
-        if let Some(src) = self.imp().progresspulse_id.replace(Some(glib::source::timeout_add_local(
-            PULSE_INTERVAL,
-            clone!(@weak self as appwindow => @default-return glib::ControlFlow::Break, move || {
-                appwindow.progressbar().pulse();
+        if let Some(src) =
+            self.imp()
+                .progresspulse_id
+                .replace(Some(glib::source::timeout_add_local(
+                    PULSE_INTERVAL,
+                    clone!(
+                        #[weak(rename_to=appwindow)]
+                        self,
+                        #[upgrade_or]
+                        glib::ControlFlow::Break,
+                        move || {
+                            appwindow.progressbar().pulse();
 
-                glib::ControlFlow::Continue
-            })),
-        )) {
+                            glib::ControlFlow::Continue
+                        }
+                    ),
+                )))
+        {
             src.remove();
         }
     }
@@ -326,9 +402,13 @@ impl RnOverlays {
             }
             glib::source::timeout_add_local_once(
                 FINISH_TIMEOUT,
-                clone!(@weak self as appwindow => move || {
-                    appwindow.progressbar().set_fraction(0.);
-                }),
+                clone!(
+                    #[weak(rename_to=appwindow)]
+                    self,
+                    move || {
+                        appwindow.progressbar().set_fraction(0.);
+                    }
+                ),
             );
         }
     }
@@ -353,7 +433,7 @@ impl RnOverlays {
         button_label: &str,
         button_callback: F,
         timeout: Option<Duration>,
-    ) -> adw::Toast {
+    ) -> glib::WeakRef<adw::Toast> {
         let toast = adw::Toast::builder()
             .title(text)
             .priority(adw::ToastPriority::High)
@@ -361,27 +441,33 @@ impl RnOverlays {
             .timeout(timeout.map(|t| t.as_secs() as u32).unwrap_or(0))
             .build();
         toast.connect_button_clicked(button_callback);
-        self.toast_overlay().add_toast(toast.clone());
-        toast
+        let toast_ref = glib::WeakRef::new();
+        toast_ref.set(Some(&toast));
+        self.toast_overlay().add_toast(toast);
+        toast_ref
     }
 
     /// Ensures that only one toast per `singleton_toast` is queued at the same time by dismissing the previous toast.
     ///
-    /// `singleton_toast` is a mutable reference to an `Option<Toast>`. It will always hold the most recently dispatched toast
-    /// and it should not be modified, because it's used to keep track of previous toasts.
+    /// `singleton_toast` is a weak reference to a `Toast` which should be held somewhere by the caller.
+    /// On subsequent calls the held reference will be replaced by one of the new dispatched toast.
+    /// The caller should not modifiy this weak reference themselves.
     pub(crate) fn dispatch_toast_w_button_singleton<F: Fn(&adw::Toast) + 'static>(
         &self,
         text: &str,
         button_label: &str,
         button_callback: F,
         timeout: Option<Duration>,
-        singleton_toast: &mut Option<adw::Toast>,
+        singleton_toast: &glib::WeakRef<adw::Toast>,
     ) {
-        if let Some(previous_toast) = singleton_toast {
+        if let Some(previous_toast) = singleton_toast.upgrade() {
             previous_toast.dismiss();
         }
-        *singleton_toast =
-            Some(self.dispatch_toast_w_button(text, button_label, button_callback, timeout));
+        singleton_toast.set(
+            self.dispatch_toast_w_button(text, button_label, button_callback, timeout)
+                .upgrade()
+                .as_ref(),
+        );
     }
 
     pub(crate) fn dispatch_toast_text(&self, text: &str, timeout: Option<Duration>) -> adw::Toast {
@@ -406,14 +492,14 @@ impl RnOverlays {
         *singleton_toast = Some(self.dispatch_toast_text(text, timeout));
     }
 
-    pub(crate) fn dispatch_toast_error(&self, error: &str) -> adw::Toast {
+    pub(crate) fn dispatch_toast_error(&self, err: &str) -> adw::Toast {
         let toast = adw::Toast::builder()
-            .title(error)
+            .title(err)
             .priority(adw::ToastPriority::High)
             .timeout(0)
             .build();
         self.toast_overlay().add_toast(toast.clone());
-        tracing::error!("{error}");
+        error!("{err}");
         toast
     }
 }

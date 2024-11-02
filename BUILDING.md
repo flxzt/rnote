@@ -7,6 +7,25 @@ cd rnote
 git submodule update --init --recursive
 ```
 
+# Nightlies
+
+If you just want to test the latest build,
+you can download the latest nightly flatpak (actually currently a weekly build) built from the `nightly` CI workflow.
+
+Go to:
+
+https://github.com/flxzt/rnote/actions/workflows/nightly.yml
+
+Click on the most recent workflow run and navigate to the bottom.
+There is a link to the nightly flatpak artifact which you can download.
+
+Unzip, then install and run the nightly with:
+
+```bash
+flatpak install --user com.github.flxzt.rnote.Devel.flatpak
+flatpak run com.github.flxzt.rnote.Devel
+```
+
 # Building with Flatpak vs Meson
 This project can be compiled in two different ways depending on your needs: flatpak or meson.
 
@@ -40,8 +59,8 @@ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.f
 The flatpak Gnome Runtime, SDK and some extensions are needed:
 
 ```bash
-flatpak install org.gnome.Platform//46 org.gnome.Sdk//46 org.freedesktop.Sdk.Extension.rust-stable//23.08 \
-org.freedesktop.Sdk.Extension.llvm17//23.08
+flatpak install org.gnome.Platform//47 org.gnome.Sdk//47 org.freedesktop.Sdk.Extension.rust-stable//24.08 \
+org.freedesktop.Sdk.Extension.llvm19//24.08
 ```
 
 Use Gnome Builder or VSCode with the
@@ -63,17 +82,13 @@ the application for you. **This is the easiest and recommended way.**
 If you don't have an IDE or extension to handle building flatpaks, you can also do it manually:
 
 ### Build
-Building the app by executing:
-
-```bash
-flatpak-builder --user flatpak-app build-aux/com.github.flxzt.rnote.Devel.yaml
-```
-
-Create a repo:
+Build and create a local flatpak app repo:
 
 ```bash
 flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.flxzt.rnote.Devel.yaml
 ```
+
+You might have to pass the `--force-clean` flag as well to clean previous builds.
 
 ### Install
 Install to the system as user with:
@@ -95,6 +110,13 @@ Or if it is installed:
 flatpak run com.github.flxzt.rnote
 ```
 
+### Bundle
+Alternatively after building and creating the local repo you can also create a single-file `.flatpak` bundle:
+
+```bash
+flatpak build-bundle flatpak-repo com.github.flxzt.rnote.Devel.flatpak com.github.flxzt.rnote.Devel --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
+```
+
 # Build with Meson
 The flatpak manifest calls the meson build system to build the application.
 If a native build on the host is wanted, meson can be called directly.
@@ -103,15 +125,16 @@ If a native build on the host is wanted, meson can be called directly.
 Install all needed dependencies and build tools, e.g. for Fedora:
 
 ```bash
-sudo dnf install gcc gcc-c++ clang clang-devel python3 make cmake meson git appstream-util gettext desktop-file-utils \
-shared-mime-info kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
+sudo dnf install gcc gcc-c++ clang clang-devel python3 make cmake meson git appstream gettext desktop-file-utils \
+    shared-mime-info kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel \
+    appstream-devel
 ```
 
-For debian based distros:
+For Debian based distros:
 
 ```bash
-sudo apt install build-essential clang libclang-dev python3 make cmake meson git appstream-util gettext \
-desktop-file-utils shared-mime-info libgtk-4-dev libadwaita-1-dev libpoppler-glib-dev libasound2-dev
+sudo apt install build-essential clang libclang-dev python3 make cmake meson git appstream gettext desktop-file-utils \
+    shared-mime-info libgtk-4-dev libadwaita-1-dev libpoppler-glib-dev libasound2-dev libappstream-dev
 ```
 
 Also make sure `rustc` and `cargo` are installed ( see [https://www.rust-lang.org/](https://www.rust-lang.org/) ).

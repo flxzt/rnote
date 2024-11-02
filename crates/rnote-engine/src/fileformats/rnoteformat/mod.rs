@@ -23,18 +23,37 @@ use std::io::{Read, Write};
 
 /// Compress bytes with gzip.
 fn compress_to_gzip(to_compress: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
-    let mut encoder =
-        flate2::write::GzEncoder::new(Vec::<u8>::new(), flate2::Compression::default());
+    let mut encoder = flate2::write::GzEncoder::new(Vec::<u8>::new(), flate2::Compression::new(5));
     encoder.write_all(to_compress)?;
     Ok(encoder.finish()?)
 }
 
 /// Decompress from gzip.
 fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
-    let mut decoder = flate2::read::MultiGzDecoder::new(compressed);
-    let mut bytes: Vec<u8> = Vec::new();
-    decoder.read_to_end(&mut bytes)?;
+    // Optimization for the gzip format, defined by RFC 1952
+    // capacity of the vector defined by the size of the uncompressed data
+    // given in little endian format, by the last 4 bytes of "compressed"
+    //
+    //   ISIZE (Input SIZE)
+    //     This contains the size of the original (uncompressed) input data modulo 2^32.
+    let mut bytes: Vec<u8> = {
+        let mut decompressed_size: [u8; 4] = [0; 4];
+        let idx_start = compressed
+            .len()
+            .checked_sub(4)
+            // only happens if the file has less than 4 bytes
+            .ok_or_else(|| {
+                anyhow::anyhow!("Invalid file")
+                    .context("Failed to get the size of the decompressed data")
+            })?;
+        decompressed_size.copy_from_slice(&compressed[idx_start..]);
+        // u32 -> usize to avoid issues on 32-bit architectures
+        // also more reasonable since the uncompressed size is given by 4 bytes
+        Vec::with_capacity(u32::from_le_bytes(decompressed_size) as usize)
+    };
 
+    let mut decoder = flate2::read::MultiGzDecoder::new(compressed);
+    decoder.read_to_end(&mut bytes)?;
     Ok(bytes)
 }
 
@@ -56,7 +75,7 @@ struct RnotefileWrapper {
 pub type RnoteFile = RnoteFileMaj0Min9;
 
 impl RnoteFile {
-    pub const SEMVER: &'static str = "0.10.2";
+    pub const SEMVER: &'static str = crate::utils::crate_version();
 }
 
 impl FileFormatLoader for RnoteFile {
@@ -116,9 +135,7 @@ impl FileFormatSaver for RnoteFile {
             data: ijson::to_value(self).context("converting RnoteFile to JSON value failed.")?,
         };
         let compressed = compress_to_gzip(
-            serde_json::to_string(&wrapper)
-                .context("Serializing RnoteFileWrapper failed.")?
-                .as_bytes(),
+            &serde_json::to_vec(&wrapper).context("Serializing RnoteFileWrapper failed.")?,
         )
         .context("compressing bytes failed.")?;
 

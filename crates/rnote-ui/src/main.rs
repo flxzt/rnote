@@ -66,6 +66,7 @@ extern crate parry2d_f64 as p2d;
 // Imports
 use anyhow::Context;
 use gtk4::{gio, glib, prelude::*};
+use tracing::debug;
 
 fn main() -> glib::ExitCode {
     if let Err(e) = setup_tracing() {
@@ -86,11 +87,15 @@ fn main() -> glib::ExitCode {
 }
 
 fn setup_tracing() -> anyhow::Result<()> {
+    let timer = tracing_subscriber::fmt::time::Uptime::default();
+
     tracing_subscriber::fmt()
+        .compact()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .with_timer(timer)
         .try_init()
         .map_err(|e| anyhow::anyhow!(e))?;
-    tracing::debug!(".. tracing subscriber initialized.");
+    debug!(".. tracing subscriber initialized.");
     Ok(())
 }
 

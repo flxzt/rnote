@@ -10,6 +10,7 @@ use rnote_engine::render::Image;
 use rnote_engine::tasks::{OneOffTaskError, OneOffTaskHandle};
 use std::cell::{Cell, OnceCell, RefCell};
 use std::time::Duration;
+use tracing::error;
 
 mod imp {
     use super::*;
@@ -141,22 +142,32 @@ mod imp {
             let (tx, mut rx) = futures::channel::mpsc::unbounded::<anyhow::Result<Image>>();
             self.paint_task_tx.set(tx).unwrap();
 
-            let handler = glib::spawn_future_local(clone!(@weak obj as paintable => async move {
-                while let Some(res) = rx.next().await {
-                    match res {
-                        Ok(image) => {
-                            paintable.imp().replace_paint_cache(image);
-                            if paintable.imp().paint_tasks_in_progress.get() <= 1 {
-                                paintable.imp().emit_repaint_in_progress(false);
+            let handler = glib::spawn_future_local(clone!(
+                #[weak(rename_to=paintable)]
+                obj,
+                async move {
+                    while let Some(res) = rx.next().await {
+                        match res {
+                            Ok(image) => {
+                                paintable.imp().replace_paint_cache(image);
+                                if paintable.imp().paint_tasks_in_progress.get() <= 1 {
+                                    paintable.imp().emit_repaint_in_progress(false);
+                                }
+                                paintable.imp().paint_tasks_in_progress.set(
+                                    paintable
+                                        .imp()
+                                        .paint_tasks_in_progress
+                                        .get()
+                                        .saturating_sub(1),
+                                );
                             }
-                            paintable.imp().paint_tasks_in_progress.set(paintable.imp().paint_tasks_in_progress.get().saturating_sub(1));
-                        }
-                        Err(e) => {
-                            tracing::error!("StrokeContentPaintable repainting cache image in task failed, Err: {e:?}");
+                            Err(e) => {
+                                error!("StrokeContentPaintable repainting cache image in task failed, Err: {e:?}");
+                            }
                         }
                     }
                 }
-            }));
+            ));
 
             self.paint_task_handler.replace(Some(handler));
         }
@@ -235,7 +246,7 @@ mod imp {
                     self.obj().invalidate_size();
                 }
                 Err(e) => {
-                    tracing::error!("StrokeContentPaintable creating memory texture from new cache image failed, Err: {e:?}");
+                    error!("StrokeContentPaintable creating memory texture from new cache image failed, Err: {e:?}");
                 }
             }
         }
@@ -423,11 +434,11 @@ impl StrokeContentPaintable {
                     self.invalidate_size();
                 }
                 Err(e) => {
-                    tracing::error!("StrokeContentPaintable creating memory texture from repainted cache image failed, Err: {e:?}");
+                    error!("StrokeContentPaintable creating memory texture from repainted cache image failed, Err: {e:?}");
                 }
             },
             Err(e) => {
-                tracing::error!("Repainting StrokeContentPaintable cache image failed, Err: {e:?}");
+                error!("Repainting StrokeContentPaintable cache image failed, Err: {e:?}");
             }
         }
 
@@ -466,7 +477,7 @@ impl StrokeContentPaintable {
                 optimize_printing,
                 margin,
             )) {
-                tracing::error!("StrokeContentPaintable failed to send painted cache image through channel, Err: {e:?}");
+                error!("StrokeContentPaintable failed to send painted cache image through channel, Err: {e:?}");
             };
         });
     }
@@ -502,7 +513,7 @@ impl StrokeContentPaintable {
                 optimize_printing,
                 margin,
             )) {
-                tracing::error!("StrokeContentPaintable failed to send painted cache image through channel, Err: {e:?}");
+                error!("StrokeContentPaintable failed to send painted cache image through channel, Err: {e:?}");
             };
         };
 
@@ -513,7 +524,7 @@ impl StrokeContentPaintable {
                     reinstall_task = true;
                 }
                 Err(e) => {
-                    tracing::error!("Could not replace task for one off paint task, Err: {e:?}");
+                    error!("Could not replace task for one off paint task, Err: {e:?}");
                     reinstall_task = true;
                 }
             }

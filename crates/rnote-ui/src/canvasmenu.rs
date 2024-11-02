@@ -8,6 +8,7 @@ use rnote_engine::Camera;
 
 mod imp {
     use super::*;
+
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/canvasmenu.ui")]
     pub(crate) struct RnCanvasMenu {

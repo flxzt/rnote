@@ -28,7 +28,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**  
  - OS: [e.g. Fedora 39, Windows 11 23H2, ...]
- - App Version: [e.g. Rnote v0.10.2]
+ - App Version: [e.g. Rnote v0.11.0]
  - Installation Source: [e.g. Flatpak, Archlinux Community Repo, ...]
  - Desktop Environment: [e.g. Gnome 45.2]
  - Display Server: [e.g. Wayland or X11]

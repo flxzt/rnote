@@ -13,8 +13,8 @@ impl From<WidgetFlags> for WidgetFlagsBoxed {
 }
 
 impl From<WidgetFlagsBoxed> for WidgetFlags {
-    fn from(value: WidgetFlagsBoxed) -> Self {
-        value.0
+    fn from(WidgetFlagsBoxed(value): WidgetFlagsBoxed) -> Self {
+        value
     }
 }
 

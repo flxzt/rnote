@@ -174,9 +174,9 @@ impl PenPathModeledBuilder {
 
         match self.stroke_modeler.update(modeler_input) {
             Ok(results) => self.buffer.extend(results.into_iter().map(|r| {
-                let pos = r.pos;
+                let (x, y) = r.pos;
                 let pressure = r.pressure;
-                Element::new(na::vector![pos.0, pos.1], pressure)
+                Element::new(na::vector![x, y], pressure)
             })),
             Err(e) => {
                 match e {
@@ -224,9 +224,9 @@ impl PenPathModeledBuilder {
                 Ok(results) => results
                     .into_iter()
                     .map(|r| {
-                        let pos = r.pos;
+                        let (x, y) = r.pos;
                         let pressure = r.pressure;
-                        Element::new(na::vector![pos.0, pos.1], pressure)
+                        Element::new(na::vector![x, y], pressure)
                     })
                     .collect::<Vec<Element>>(),
                 Err(e) => {
@@ -256,9 +256,9 @@ impl PenPathModeledBuilder {
         }) {
             Ok(results) => {
                 self.buffer.extend(results.into_iter().map(|r| {
-                    let pos = r.pos;
+                    let (x, y) = r.pos;
                     let pressure = r.pressure;
-                    Element::new(na::vector![pos.0, pos.1], pressure)
+                    Element::new(na::vector![x, y], pressure)
                 }));
             }
             Err(e) => {

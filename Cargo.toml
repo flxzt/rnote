@@ -55,8 +55,8 @@ open = "5.3"
 palette = "0.7.6"
 parry2d-f64 = { version = "0.17.0", features = ["serde-serialize"] }
 path-absolutize = "3.1"
-piet = "0.6.2"
-piet-cairo = "0.6.2"
+piet = "0.7.0"
+piet-cairo = "0.7.0"
 rand = "0.8.5"
 rand_distr = "0.4.3"
 rand_pcg = "0.3.1"
@@ -65,8 +65,8 @@ regex = "1.10"
 rodio = { version = "0.19.0", default-features = false, features = [
     "symphonia-wav",
 ] }
-rough_piet = "0.7.0"
-roughr = "0.7.0"
+rough_piet = "0.8.0"
+roughr = "0.8.0"
 roxmltree = "0.20.0"
 rstar = "0.12.0"
 semver = { version = "1.0", features = ["serde"] }
@@ -87,9 +87,6 @@ xmlwriter = "0.1.0"
 poppler-rs = { version = "0.24.1", features = ["v20_9"] }
 
 [patch.crates-io]
-# once a new piet (current v0.6.2) is released with updated cairo and kurbo deps, this can be removed.
-piet = { git = "https://github.com/linebender/piet", rev = "8b06c7bb00482462e5d24ebca79d9404e8807772" }
-piet-cairo = { git = "https://github.com/linebender/piet", rev = "8b06c7bb00482462e5d24ebca79d9404e8807772" }
 
 [profile.dev]
 debug = true

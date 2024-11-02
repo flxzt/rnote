@@ -42,16 +42,16 @@
                 </child>
                 <child>
                   <object class="GtkButton">
-                    <property name="icon-name">view-grid-symbolic</property>
-                    <property name="action-name">overview.open</property>
-                    <property name="tooltip-text" translatable="yes">View Open Tabs</property>
+                    <property name="icon-name">tab-new-symbolic</property>
+                    <property name="action-name">win.new-tab</property>
+                    <property name="tooltip-text" translatable="yes">New Tab</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkButton">
-                    <property name="icon-name">tab-new-symbolic</property>
-                    <property name="action-name">win.new-tab</property>
-                    <property name="tooltip-text" translatable="yes">New Tab</property>
+                    <property name="icon-name">view-grid-symbolic</property>
+                    <property name="action-name">overview.open</property>
+                    <property name="tooltip-text" translatable="yes">View Open Tabs</property>
                   </object>
                 </child>
                 <child>

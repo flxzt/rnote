@@ -34,6 +34,7 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
+use std::collections::HashSet;
 use tracing::error;
 
 /// An immutable view into the engine, excluding the penholder.
@@ -875,7 +876,7 @@ impl Engine {
             let (_, widget_flags) = self.handle_pen_event(
                 rnote_compose::PenEvent::KeyPressed {
                     keyboard_key: KeyboardKey::Delete,
-                    modifier_keys: vec![],
+                    modifier_keys: HashSet::new(),
                 },
                 None,
                 Instant::now(),

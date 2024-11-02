@@ -49,7 +49,7 @@ impl Typewriter {
                             GraphemeCursor::new(0, textstroke.text.len(), true)
                         };
 
-                        textstroke.check_spelling_refresh_cache(&engine_view.spellcheck);
+                        textstroke.check_spelling_refresh_cache(engine_view.spellcheck);
                         engine_view.store.update_chrono_to_last(stroke_key);
 
                         new_state = TypewriterState::Modifying {

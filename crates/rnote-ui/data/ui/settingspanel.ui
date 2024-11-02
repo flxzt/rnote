@@ -399,6 +399,7 @@ gets disabled.</property>
                         <property name="title" translatable="yes">Spellcheck Language</property>
                         <property name="subtitle" translatable="yes">Disable or choose the language for spellchecking</property>
                         <property name="enable-search">true</property>
+                        <property name="search-match-mode">substring</property>
                         <property name="expression">
                           <lookup type="GtkStringObject" name="string"></lookup>
                         </property>

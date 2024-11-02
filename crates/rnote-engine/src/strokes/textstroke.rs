@@ -438,7 +438,7 @@ impl TextStyle {
                         );
 
                     cx.stroke_styled(
-                        &bottom_line,
+                        bottom_line,
                         &OUTLINE_COLOR,
                         outline_width,
                         &piet::StrokeStyle::new().dash_pattern(&[4.0, 2.0]),

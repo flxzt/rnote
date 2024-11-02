@@ -42,6 +42,15 @@ impl Default for Brush {
     }
 }
 
+impl Brush {
+    /// Threshold for the ratio of stroke bounds volume over
+    /// stroke width**2 over which we consider that strokes
+    /// or shapes that are left by pressing the pen down when
+    /// cancelling a selection should be kept. Smaller ratio
+    /// are deleted
+    const VOLUME_RATIO_THRESHOLD: f64 = 5.0;
+}
+
 impl PenBehaviour for Brush {
     fn init(&mut self, _engine_view: &EngineView) -> WidgetFlags {
         WidgetFlags::default()
@@ -241,14 +250,13 @@ impl PenBehaviour for Brush {
                             .volume();
                         if engine_view.store.get_cancelled_state()
                             && volume
-                                < 4.0
+                                < Self::VOLUME_RATIO_THRESHOLD
                                     * engine_view
                                         .pens_config
                                         .brush_config
                                         .get_stroke_width()
                                         .powi(2)
                         {
-                            tracing::debug!("VOLUME {volume}");
                             engine_view.store.remove_stroke(*current_stroke_key);
                         }
 

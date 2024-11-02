@@ -25,64 +25,61 @@ use crate::strokes::textstroke::{TextAttribute, TextStyle};
 use crate::{AudioPlayer, CloneConfig, SelectionCollision, WidgetFlags, render};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use futures::channel::{mpsc, oneshot};
+use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::{PenEvent, ShortcutKey};
 use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
+use std::cell::RefCell;
 use std::fmt::Debug;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
 use tracing::{debug, error};
 
-pub struct Spellchecker {
-    broker: enchant::Broker,
-    pub dict: Option<enchant::Dict>,
+thread_local! {
+    static SPELLCHECK_BROKER: RefCell<enchant::Broker> = RefCell::new(enchant::Broker::new());
 }
 
-impl Spellchecker {
-    pub fn default_language() -> Option<String> {
-        let available_languages = Self::available_languages();
-
-        for system_language in glib::language_names() {
-            for available_language in &available_languages {
-                if system_language.contains(available_language) {
-                    debug!(
-                        "found default spellcheck language: {:?}",
-                        available_language
-                    );
-
-                    return Some(available_language.to_string());
-                }
-            }
-        }
-
-        None
-    }
-
-    pub fn available_languages() -> Vec<String> {
-        enchant::Broker::new()
+pub static SPELLCHECK_AVAILABLE_LANGUAGES: Lazy<Vec<String>> = Lazy::new(|| {
+    SPELLCHECK_BROKER.with_borrow_mut(|broker| {
+        broker
             .list_dicts()
             .iter()
             .map(|dict| dict.lang.to_owned())
             .collect()
-    }
-}
+    })
+});
 
-impl Default for Spellchecker {
-    fn default() -> Self {
-        Self {
-            broker: enchant::Broker::new(),
-            dict: None,
+pub static SPELLCHECK_DEFAULT_LANGUAGE: Lazy<Option<String>> = Lazy::new(|| {
+    let available_languages = SPELLCHECK_AVAILABLE_LANGUAGES.clone();
+
+    for system_language in glib::language_names() {
+        for available_language in &available_languages {
+            if system_language.contains(available_language) {
+                debug!(
+                    "found default spellcheck language: {:?}",
+                    available_language
+                );
+
+                return Some(available_language.to_string());
+            }
         }
     }
+
+    None
+});
+
+#[derive(Default)]
+pub struct Spellcheck {
+    pub dict: Option<enchant::Dict>,
 }
 
-impl Debug for Spellchecker {
+impl Debug for Spellcheck {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Spellchecker")
+        f.debug_struct("Spellcheck")
             .field(
                 "dict",
                 &self
@@ -105,7 +102,7 @@ pub struct EngineView<'a> {
     pub camera: &'a Camera,
     pub audioplayer: &'a Option<AudioPlayer>,
     pub animation: &'a Animation,
-    pub spellchecker: &'a Spellchecker,
+    pub spellcheck: &'a Spellcheck,
 }
 
 /// Constructs an `EngineView` from an identifier containing an `Engine` instance.
@@ -120,7 +117,7 @@ macro_rules! engine_view {
             camera: &$engine.camera,
             audioplayer: &$engine.audioplayer,
             animation: &$engine.animation,
-            spellchecker: &$engine.spellchecker,
+            spellcheck: &$engine.spellcheck,
         }
     };
 }
@@ -135,7 +132,7 @@ pub struct EngineViewMut<'a> {
     pub camera: &'a mut Camera,
     pub audioplayer: &'a mut Option<AudioPlayer>,
     pub animation: &'a mut Animation,
-    pub spellchecker: &'a mut Spellchecker,
+    pub spellcheck: &'a mut Spellcheck,
 }
 
 /// Constructs an `EngineViewMut` from an identifier containing an `Engine` instance.
@@ -150,7 +147,7 @@ macro_rules! engine_view_mut {
             camera: &mut $engine.camera,
             audioplayer: &mut $engine.audioplayer,
             animation: &mut $engine.animation,
-            spellchecker: &mut $engine.spellchecker,
+            spellcheck: &mut $engine.spellcheck,
         }
     };
 }
@@ -166,7 +163,7 @@ impl EngineViewMut<'_> {
             camera: self.camera,
             audioplayer: self.audioplayer,
             animation: self.animation,
-            spellchecker: self.spellchecker,
+            spellcheck: self.spellcheck,
         }
     }
 }
@@ -309,7 +306,7 @@ pub struct Engine {
     #[serde(skip)]
     pub animation: Animation,
     #[serde(skip)]
-    pub spellchecker: Spellchecker,
+    spellcheck: Spellcheck,
     #[serde(skip)]
     visual_debug: bool,
     // the task sender. Must not be modified, only cloned.
@@ -348,7 +345,7 @@ impl Default for Engine {
 
             audioplayer: None,
             animation: Animation::default(),
-            spellchecker: Spellchecker::default(),
+            spellcheck: Spellcheck::default(),
             visual_debug: false,
             tasks_tx: EngineTaskSender(tasks_tx),
             tasks_rx: Some(EngineTaskReceiver(tasks_rx)),
@@ -405,15 +402,13 @@ impl Engine {
     }
 
     pub fn refresh_spellcheck_language(&mut self) {
-        self.spellchecker.dict = self
+        self.spellcheck.dict = self
             .document
             .spellcheck_language
             .as_ref()
             .and_then(|language| {
-                self.spellchecker
-                    .broker
-                    .request_dict(language.as_str())
-                    .ok()
+                SPELLCHECK_BROKER
+                    .with_borrow_mut(|broker| broker.request_dict(language.as_str()).ok())
             });
 
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_ref() {
@@ -424,7 +419,7 @@ impl Engine {
                 store: &mut self.store,
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
-                spellchecker: &mut self.spellchecker,
+                spellcheck: &mut self.spellcheck,
             });
         }
     }

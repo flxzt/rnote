@@ -507,7 +507,7 @@ impl PenBehaviour for Typewriter {
                                 cursor,
                                 selection_cursor,
                                 String::from("").as_str(),
-                                engine_view.spellchecker,
+                                engine_view.spellcheck,
                             );
 
                             // Update stroke
@@ -682,7 +682,7 @@ impl Typewriter {
                 text_style.set_max_width(Some(text_width));
 
                 let mut textstroke = TextStroke::new(text, pos, text_style);
-                textstroke.check_spelling_refresh_cache(engine_view.spellchecker);
+                textstroke.check_spelling_refresh_cache(engine_view.spellcheck);
 
                 let cursor = GraphemeCursor::new(text_len, textstroke.text.len(), true);
 
@@ -712,7 +712,7 @@ impl Typewriter {
                 text_style.set_max_width(Some(text_width));
 
                 let mut textstroke = TextStroke::new(text, *pos, text_style);
-                textstroke.check_spelling_refresh_cache(engine_view.spellchecker);
+                textstroke.check_spelling_refresh_cache(engine_view.spellcheck);
 
                 let cursor = GraphemeCursor::new(text_len, textstroke.text.len(), true);
 
@@ -752,7 +752,7 @@ impl Typewriter {
                             cursor,
                             selection_cursor,
                             text.as_str(),
-                            engine_view.spellchecker,
+                            engine_view.spellcheck,
                         );
                         engine_view.store.update_geometry_for_stroke(*stroke_key);
                         engine_view.store.regenerate_rendering_for_stroke(
@@ -782,7 +782,7 @@ impl Typewriter {
                         textstroke.insert_text_after_cursor(
                             text.as_str(),
                             cursor,
-                            engine_view.spellchecker,
+                            engine_view.spellcheck,
                         );
 
                         engine_view.store.update_geometry_for_stroke(*stroke_key);
@@ -848,7 +848,7 @@ impl Typewriter {
             if let Some(Stroke::TextStroke(textstroke)) =
                 engine_view.store.get_stroke_mut(stroke_key)
             {
-                textstroke.check_spelling_refresh_cache(engine_view.spellchecker);
+                textstroke.check_spelling_refresh_cache(engine_view.spellcheck);
             }
         }
     }

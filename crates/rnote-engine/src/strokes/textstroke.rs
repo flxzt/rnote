@@ -1,6 +1,6 @@
 // Imports
 use super::Content;
-use crate::engine::Spellchecker;
+use crate::engine::Spellcheck;
 use crate::{Camera, Drawable};
 use itertools::Itertools;
 use kurbo::Shape;
@@ -666,8 +666,8 @@ impl TextStroke {
         }
     }
 
-    pub fn check_spelling_refresh_cache(&mut self, spellchecker: &Spellchecker) {
-        if let Some(dict) = &spellchecker.dict {
+    pub fn check_spelling_refresh_cache(&mut self, spellcheck: &Spellcheck) {
+        if let Some(dict) = &spellcheck.dict {
             let language = dict.get_lang();
 
             let language_changed = self
@@ -698,9 +698,9 @@ impl TextStroke {
         &mut self,
         start_index: usize,
         end_index: usize,
-        spellchecker: &Spellchecker,
+        spellcheck: &Spellcheck,
     ) {
-        if let Some(dict) = &spellchecker.dict {
+        if let Some(dict) = &spellcheck.dict {
             let words = self.get_surrounding_words(start_index, end_index);
             self.check_spelling_words(words, dict);
         }
@@ -710,7 +710,7 @@ impl TextStroke {
         &mut self,
         text: &str,
         cursor: &mut GraphemeCursor,
-        spellchecker: &Spellchecker,
+        spellcheck: &Spellcheck,
     ) {
         let cur_pos = cursor.cur_cursor();
         let next_pos = cur_pos + text.len();
@@ -720,7 +720,7 @@ impl TextStroke {
         // translate the text attributes
         self.translate_attrs_after_cursor(cur_pos, text.len() as i32);
 
-        self.check_spelling_range(cur_pos, next_pos, spellchecker);
+        self.check_spelling_range(cur_pos, next_pos, spellcheck);
 
         *cursor = GraphemeCursor::new(next_pos, self.text.len(), true);
     }
@@ -728,7 +728,7 @@ impl TextStroke {
     pub fn remove_grapheme_before_cursor(
         &mut self,
         cursor: &mut GraphemeCursor,
-        spellchecker: &Spellchecker,
+        spellcheck: &Spellcheck,
     ) {
         if !self.text.is_empty() && self.text.len() >= cursor.cur_cursor() {
             let cur_pos = cursor.cur_cursor();
@@ -742,7 +742,7 @@ impl TextStroke {
                     prev_pos as i32 - cur_pos as i32 + "".len() as i32,
                 );
 
-                self.check_spelling_range(prev_pos, cur_pos, spellchecker);
+                self.check_spelling_range(prev_pos, cur_pos, spellcheck);
             }
 
             // New text length, new cursor
@@ -753,7 +753,7 @@ impl TextStroke {
     pub fn remove_grapheme_after_cursor(
         &mut self,
         cursor: &mut GraphemeCursor,
-        spellchecker: &Spellchecker,
+        spellcheck: &Spellcheck,
     ) {
         if !self.text.is_empty() && self.text.len() > cursor.cur_cursor() {
             let cur_pos = cursor.cur_cursor();
@@ -767,7 +767,7 @@ impl TextStroke {
                     -(next_pos as i32 - cur_pos as i32) + "".len() as i32,
                 );
 
-                self.check_spelling_range(cur_pos, next_pos, spellchecker);
+                self.check_spelling_range(cur_pos, next_pos, spellcheck);
             }
 
             // New text length, new cursor
@@ -778,7 +778,7 @@ impl TextStroke {
     pub fn remove_word_before_cursor(
         &mut self,
         cursor: &mut GraphemeCursor,
-        spellchecker: &Spellchecker,
+        spellcheck: &Spellcheck,
     ) {
         let cur_pos = cursor.cur_cursor();
         let prev_pos = self.get_prev_word_start_index(cur_pos);
@@ -792,7 +792,7 @@ impl TextStroke {
                 prev_pos as i32 - cur_pos as i32 + "".len() as i32,
             );
 
-            self.check_spelling_range(prev_pos, cur_pos, spellchecker);
+            self.check_spelling_range(prev_pos, cur_pos, spellcheck);
 
             // New text length, new cursor
             *cursor = GraphemeCursor::new(prev_pos, self.text.len(), true);
@@ -802,7 +802,7 @@ impl TextStroke {
     pub fn remove_word_after_cursor(
         &mut self,
         cursor: &mut GraphemeCursor,
-        spellchecker: &Spellchecker,
+        spellcheck: &Spellcheck,
     ) {
         let cur_pos = cursor.cur_cursor();
         let next_pos = self.get_next_word_end_index(cur_pos);
@@ -816,7 +816,7 @@ impl TextStroke {
                 -(next_pos as i32 - cur_pos as i32) + "".len() as i32,
             );
 
-            self.check_spelling_range(cur_pos, next_pos, spellchecker);
+            self.check_spelling_range(cur_pos, next_pos, spellcheck);
 
             // New text length, new cursor
             *cursor = GraphemeCursor::new(cur_pos, self.text.len(), true);
@@ -828,7 +828,7 @@ impl TextStroke {
         cursor: &mut GraphemeCursor,
         selection_cursor: &mut GraphemeCursor,
         replace_text: &str,
-        spellchecker: &Spellchecker,
+        spellcheck: &Spellcheck,
     ) {
         let cursor_pos = cursor.cur_cursor();
         let selection_cursor_pos = selection_cursor.cur_cursor();
@@ -860,7 +860,7 @@ impl TextStroke {
         self.check_spelling_range(
             cursor_range.start,
             cursor_range.start + replace_text.len(),
-            spellchecker,
+            spellcheck,
         );
     }
 

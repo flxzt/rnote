@@ -7,7 +7,7 @@ pub use background::Background;
 pub use format::Format;
 
 // Imports
-use crate::engine::Spellchecker;
+use crate::engine::SPELLCHECK_DEFAULT_LANGUAGE;
 use crate::{Camera, CloneConfig, StrokeStore, WidgetFlags};
 use core::fmt::Display;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -123,7 +123,7 @@ impl Default for Document {
             background: Background::default(),
             layout: Layout::default(),
             snap_positions: false,
-            spellcheck_language: Spellchecker::default_language(),
+            spellcheck_language: SPELLCHECK_DEFAULT_LANGUAGE.clone(),
         }
     }
 }

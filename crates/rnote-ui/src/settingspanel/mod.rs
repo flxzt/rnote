@@ -20,7 +20,7 @@ use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::document::Layout;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
-use rnote_engine::engine::Spellchecker;
+use rnote_engine::engine::SPELLCHECK_AVAILABLE_LANGUAGES;
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::WidgetFlags;
 use std::cell::RefCell;
@@ -960,7 +960,7 @@ impl RnSettingsPanel {
         imp.available_spellcheck_languages.replace(
             [gettext("None")]
                 .into_iter()
-                .chain(Spellchecker::available_languages())
+                .chain(SPELLCHECK_AVAILABLE_LANGUAGES.clone())
                 .collect(),
         );
 

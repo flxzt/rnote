@@ -44,9 +44,22 @@ pub struct Spellchecker {
 
 impl Spellchecker {
     pub fn default_language() -> Option<String> {
-        glib::language_names()
-            .get(0)
-            .map(|language| language.to_string())
+        let available_languages = Self::available_languages();
+
+        for system_language in glib::language_names() {
+            for available_language in &available_languages {
+                if system_language.contains(available_language) {
+                    debug!(
+                        "found default spellcheck language: {:?}",
+                        available_language
+                    );
+
+                    return Some(available_language.to_string());
+                }
+            }
+        }
+
+        None
     }
 
     pub fn available_languages() -> Vec<String> {

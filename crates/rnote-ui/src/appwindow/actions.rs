@@ -45,6 +45,8 @@ impl RnAppWindow {
         self.add_action(&action_open_canvasmenu);
         let action_open_appmenu = gio::SimpleAction::new("open-appmenu", None);
         self.add_action(&action_open_appmenu);
+        let action_toggle_overview = gio::SimpleAction::new("toggle-overview", None);
+        self.add_action(&action_toggle_overview);
         let action_devel_mode =
             gio::SimpleAction::new_stateful("devel-mode", None, &false.to_variant());
         self.add_action(&action_devel_mode);
@@ -244,6 +246,16 @@ impl RnAppWindow {
                 } else {
                     appwindow.sidebar().appmenu().popovermenu().popup();
                 }
+            }
+        ));
+
+        // Toggle Tabs Overview
+        action_toggle_overview.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let overview = appwindow.overview();
+                overview.set_open(!overview.is_open());
             }
         ));
 
@@ -1101,6 +1113,7 @@ impl RnAppWindow {
         app.set_accels_for_action("win.active-tab-close", &["<Ctrl>w"]);
         app.set_accels_for_action("win.fullscreen", &["F11"]);
         app.set_accels_for_action("win.keyboard-shortcuts", &["<Ctrl>question"]);
+        app.set_accels_for_action("win.toggle-overview", &["<Ctrl><Shift>o"]);
         app.set_accels_for_action("win.open-canvasmenu", &["F9"]);
         app.set_accels_for_action("win.open-appmenu", &["F10"]);
         app.set_accels_for_action("win.open-doc", &["<Ctrl>o"]);

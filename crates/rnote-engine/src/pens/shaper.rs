@@ -17,7 +17,6 @@ use rnote_compose::builders::{
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenProgress};
 use rnote_compose::penpath::Element;
-use rnote_compose::shapes::Shapeable;
 use std::time::Instant;
 
 #[derive(Debug)]

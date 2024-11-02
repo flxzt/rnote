@@ -28,9 +28,10 @@ use futures::channel::{mpsc, oneshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::AabbExt;
-use rnote_compose::penevent::{PenEvent, ShortcutKey};
+use rnote_compose::penevent::{KeyboardKey, PenEvent, ShortcutKey};
 use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
@@ -844,12 +845,26 @@ impl Engine {
     }
 
     pub fn trash_selection(&mut self) -> WidgetFlags {
-        let selection_keys = self.store.selection_keys_as_rendered();
-        self.store.set_trashed_keys(&selection_keys, true);
-        self.current_pen_update_state()
-            | self.doc_resize_autoexpand()
-            | self.record(Instant::now())
-            | self.update_rendering_current_viewport()
+        // check if we have a selector as a temporary tool and need to change the pen
+        let cancel_selection = self.cancel_selection_temporary_pen();
+        if cancel_selection {
+            let (_, widget_flags) = self.handle_pen_event(
+                rnote_compose::PenEvent::KeyPressed {
+                    keyboard_key: KeyboardKey::Delete,
+                    modifier_keys: HashSet::new(),
+                },
+                None,
+                Instant::now(),
+            );
+            widget_flags
+        } else {
+            let selection_keys = self.store.selection_keys_as_rendered();
+            self.store.set_trashed_keys(&selection_keys, true);
+            self.current_pen_update_state()
+                | self.doc_resize_autoexpand()
+                | self.record(Instant::now())
+                | self.update_rendering_current_viewport()
+        }
     }
 
     pub fn nothing_selected(&self) -> bool {

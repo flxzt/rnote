@@ -202,10 +202,8 @@ impl Selector {
                             engine_view.store.set_selected_keys(selection, false);
                             self.state = SelectorState::Idle;
 
-                            // we create a new engine variable that indicates that the pen event is one from the same
-                            // event sequence that the one that cancelled the selection
-                            // this is done by setting this variable to true here and
-                            // removing it on a pen up event (and doing more things if this variable is true on a pen up)
+                            // This event is in the same sequence than the one that
+                            // cancelled the selection. We thus set the variable to true here
                             engine_view.store.set_cancelled_state(true);
 
                             progress = PenProgress::Finished;

@@ -3,6 +3,7 @@ bn
 bs
 cs
 de
+enm
 es
 fa
 fi
@@ -23,6 +24,7 @@ nl
 pl
 pt
 pt_BR
+ro
 ru
 sv
 ta
@@ -30,7 +32,9 @@ th
 tr
 uk
 vi
+zh_CN
+zh_HK
 zh_Hans
 zh_Hant
-enm
-ro
+zh_SG
+zh_TW

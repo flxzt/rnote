@@ -3,7 +3,7 @@ use super::Content;
 use crate::engine::Spellcheck;
 use crate::{Camera, Drawable};
 use itertools::Itertools;
-use kurbo::Shape;
+use kurbo::{BezPath, Shape};
 use p2d::bounding_volume::Aabb;
 use piet::{RenderContext, TextLayout, TextLayoutBuilder};
 use rnote_compose::ext::{AabbExt, Affine2Ext, Vector2Ext};
@@ -414,8 +414,8 @@ impl TextStyle {
         transform: &Transform,
         camera: &Camera,
     ) {
-        const OUTLINE_COLOR: piet::Color = color::GNOME_REDS[2];
-        let outline_width = 1.5 / camera.total_zoom();
+        const ERROR_COLOR: piet::Color = color::GNOME_REDS[2];
+        let scale = 1.0 / camera.total_zoom();
 
         if let Ok(selection_rects) =
             self.get_rects_for_indices(text.clone(), start_index, end_index)
@@ -425,24 +425,15 @@ impl TextStyle {
 
             if let Ok(line_metric) = self.cursor_line_metric(cx.text(), text, start_index) {
                 for selection_rect in selection_rects {
-                    let bottom_line = transform.to_kurbo()
-                        * kurbo::Line::new(
-                            kurbo::Point::new(
-                                selection_rect.x0,
-                                selection_rect.y0 + line_metric.baseline + 2.0,
-                            ),
-                            kurbo::Point::new(
-                                selection_rect.x1,
-                                selection_rect.y0 + line_metric.baseline + 2.0,
-                            ),
+                    let width = selection_rect.width();
+                    let origin = transform.to_kurbo()
+                        * kurbo::Point::new(
+                            selection_rect.x0,
+                            selection_rect.y0 + line_metric.baseline + 2.0,
                         );
 
-                    cx.stroke_styled(
-                        bottom_line,
-                        &OUTLINE_COLOR,
-                        outline_width,
-                        &piet::StrokeStyle::new().dash_pattern(&[4.0, 2.0]),
-                    );
+                    let path = create_wavy_line(origin, width, scale);
+                    cx.stroke(path, &ERROR_COLOR, 1.5 * scale);
                 }
             }
         }
@@ -1259,4 +1250,36 @@ fn remove_intersecting_attrs_in_range(
         // Filter out any that became empty or are contained in the given range
         .filter(|attr| !attr.range.is_empty())
         .collect::<Vec<RangedTextAttribute>>()
+}
+
+fn create_wavy_line(origin: kurbo::Point, max_width: f64, scale: f64) -> BezPath {
+    const WIDTH: f64 = 3.5;
+    const HEIGHT: f64 = 4.0;
+
+    if !max_width.is_finite() {
+        return BezPath::new();
+    }
+
+    let width = WIDTH * scale;
+    let half_height = (HEIGHT / 2.0) * scale;
+
+    let mut path = BezPath::new();
+    path.move_to(origin + (0.0, half_height));
+
+    let mut x = 0.0;
+    let mut direction = 1.0;
+
+    while x < max_width {
+        let center_point = origin + (x, half_height);
+
+        let stationary_point = center_point + (width / 2.0, half_height * direction);
+        let next_center_point = center_point + (width, 0.0);
+
+        path.quad_to(stationary_point, next_center_point);
+
+        x += width;
+        direction = -direction;
+    }
+
+    path
 }

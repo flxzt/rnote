@@ -19,7 +19,7 @@ use gtk4::{
 };
 use notify::event::{AccessKind, AccessMode, ModifyKind, RenameMode};
 use notify::EventKind;
-use notify_debouncer_full::notify::{self, Watcher};
+use notify_debouncer_full::notify;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
@@ -39,6 +39,7 @@ struct Connections {
     vadjustment: Option<glib::SignalHandlerId>,
     tab_page_output_file: Option<glib::Binding>,
     tab_page_unsaved_changes: Option<glib::Binding>,
+    tab_page_invalidate_thumbnail: Option<glib::SignalHandlerId>,
     appwindow_output_file: Option<glib::SignalHandlerId>,
     appwindow_scalefactor: Option<glib::SignalHandlerId>,
     appwindow_save_in_progress: Option<glib::SignalHandlerId>,
@@ -421,9 +422,12 @@ mod imp {
 
         fn signals() -> &'static [glib::subclass::Signal] {
             static SIGNALS: Lazy<Vec<glib::subclass::Signal>> = Lazy::new(|| {
-                vec![glib::subclass::Signal::builder("handle-widget-flags")
-                    .param_types([WidgetFlagsBoxed::static_type()])
-                    .build()]
+                vec![
+                    glib::subclass::Signal::builder("handle-widget-flags")
+                        .param_types([WidgetFlagsBoxed::static_type()])
+                        .build(),
+                    glib::subclass::Signal::builder("invalidate-thumbnail").build(),
+                ]
             });
             SIGNALS.as_ref()
         }
@@ -744,6 +748,10 @@ impl RnCanvas {
         );
     }
 
+    pub(super) fn emit_invalidate_thumbnail(&self) {
+        self.emit_by_name::<()>("invalidate-thumbnail", &[]);
+    }
+
     pub(crate) fn last_export_dir(&self) -> Option<gio::File> {
         self.imp().last_export_dir.borrow().clone()
     }
@@ -949,6 +957,7 @@ impl RnCanvas {
                                     appwindow.overlays().progressbar_abort();
                                 } else {
                                     appwindow.overlays().progressbar_finish();
+                                    canvas.emit_invalidate_thumbnail();
                                 }
                             }
                         ));
@@ -1078,18 +1087,12 @@ impl RnCanvas {
                         return;
                     }
                 };
-                if let Err(e) = debouncer
-                    .watcher()
-                    .watch(parent_path, notify::RecursiveMode::NonRecursive)
-                {
+                if let Err(e) = debouncer.watch(parent_path, notify::RecursiveMode::NonRecursive) {
                     error!(
                         "Failed to start watching directory '{}', Err: {e:?}",
                         parent_path.display()
                     );
                 }
-                debouncer
-                    .cache()
-                    .add_root(parent_path, notify::RecursiveMode::NonRecursive);
                 while let Some(res) = rx.next().await {
                     match res {
                         Ok(events) => {
@@ -1401,6 +1404,9 @@ impl RnCanvas {
         if let Some(old) = connections.tab_page_unsaved_changes.take() {
             old.unbind();
         }
+        if let Some(old) = connections.tab_page_invalidate_thumbnail.take() {
+            self.disconnect(old);
+        }
     }
 
     /// When the widget is the child of a tab page, we want to connect their titles, icons, ..
@@ -1430,6 +1436,22 @@ impl RnCanvas {
             .sync_create()
             .build();
 
+        // handle invalidating cached thumbnail in the tabs overview panel
+        let tab_page_invalidate_thumbnail = self.connect_local(
+            "invalidate-thumbnail",
+            false,
+            clone!(
+                #[weak]
+                page,
+                #[upgrade_or]
+                None,
+                move |_| {
+                    page.invalidate_thumbnail();
+                    None
+                }
+            ),
+        );
+
         let mut connections = self.imp().connections.borrow_mut();
         if let Some(old) = connections
             .tab_page_output_file
@@ -1442,6 +1464,12 @@ impl RnCanvas {
             .replace(tab_page_unsaved_changes)
         {
             old.unbind();
+        }
+        if let Some(old) = connections
+            .tab_page_invalidate_thumbnail
+            .replace(tab_page_invalidate_thumbnail)
+        {
+            self.disconnect(old);
         }
     }
 

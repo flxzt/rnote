@@ -22,7 +22,6 @@ use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
 use rnote_engine::engine::SPELLCHECK_AVAILABLE_LANGUAGES;
 use rnote_engine::ext::GdkRGBAExt;
-use rnote_engine::WidgetFlags;
 use std::cell::RefCell;
 
 mod imp {
@@ -989,9 +988,7 @@ impl RnSettingsPanel {
                     let language = settings_panel.spellcheck_language();
                     canvas.engine_mut().document.spellcheck_language = language;
 
-                    let mut widget_flags = WidgetFlags::default();
-                    widget_flags.spellcheck_language_modified = true;
-
+                    let widget_flags = canvas.engine_mut().refresh_spellcheck_language();
                     appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
             ));

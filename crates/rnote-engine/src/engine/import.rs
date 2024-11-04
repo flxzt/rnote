@@ -172,9 +172,9 @@ impl Engine {
             .penholder
             .reinstall_pen_current_style(&mut engine_view_mut!(self));
         widget_flags |= self.doc_resize_to_fit_content();
+        widget_flags |= self.refresh_spellcheck_language();
         widget_flags.redraw = true;
         widget_flags.refresh_ui = true;
-        widget_flags.spellcheck_language_modified = true;
         widget_flags
     }
 

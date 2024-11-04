@@ -1,5 +1,4 @@
 #![warn(missing_debug_implementations)]
-#![allow(clippy::field_reassign_with_default)]
 #![allow(clippy::single_match)]
 // Turns off console window on Windows, but not when building with dev profile.
 #![cfg_attr(

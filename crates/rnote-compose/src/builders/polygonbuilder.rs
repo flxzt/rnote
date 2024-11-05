@@ -91,7 +91,7 @@ impl Buildable for PolygonBuilder {
                 }
                 _ => BuilderProgress::InProgress,
             },
-            PenEvent::Text { .. } => BuilderProgress::InProgress,
+            PenEvent::Text { .. } | PenEvent::AnimationFrame => BuilderProgress::InProgress,
             PenEvent::Cancel => {
                 self.pen_state = PenState::Up;
                 self.finish = false;
@@ -103,6 +103,7 @@ impl Buildable for PolygonBuilder {
             handled: true,
             propagate: EventPropagation::Stop,
             progress,
+            request_animation_frame: false,
         }
     }
 

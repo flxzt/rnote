@@ -152,6 +152,7 @@ impl PenBehaviour for Selector {
                 modifier_keys,
             } => self.handle_pen_event_keypressed(keyboard_key, modifier_keys, now, engine_view),
             PenEvent::Text { text } => self.handle_pen_event_text(text, now, engine_view),
+            PenEvent::AnimationFrame => self.handle_pen_event_animation_frame(now, engine_view),
             PenEvent::Cancel => self.handle_pen_event_cancel(now, engine_view),
         }
     }

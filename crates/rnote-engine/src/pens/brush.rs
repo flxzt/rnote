@@ -118,12 +118,14 @@ impl PenBehaviour for Brush {
                         handled: true,
                         propagate: EventPropagation::Stop,
                         progress: PenProgress::InProgress,
+                        request_animation_frame: false,
                     }
                 } else {
                     EventResult {
                         handled: false,
                         propagate: EventPropagation::Proceed,
                         progress: PenProgress::Idle,
+                        request_animation_frame: false,
                     }
                 }
             }
@@ -131,6 +133,7 @@ impl PenBehaviour for Brush {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::Idle,
+                request_animation_frame: false,
             },
             (
                 BrushState::Drawing {
@@ -161,6 +164,7 @@ impl PenBehaviour for Brush {
                     handled: true,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::Finished,
+                    request_animation_frame: false,
                 }
             }
             (
@@ -256,6 +260,7 @@ impl PenBehaviour for Brush {
                     handled,
                     propagate,
                     progress,
+                    request_animation_frame: false,
                 }
             }
         };

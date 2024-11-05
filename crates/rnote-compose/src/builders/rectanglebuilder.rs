@@ -54,6 +54,7 @@ impl Buildable for RectangleBuilder {
             handled: true,
             propagate: EventPropagation::Stop,
             progress,
+            request_animation_frame: false,
         }
     }
 

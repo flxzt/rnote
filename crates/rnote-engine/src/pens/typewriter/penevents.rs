@@ -89,6 +89,7 @@ impl Typewriter {
                     handled: true,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::InProgress,
+                    request_animation_frame: false,
                 }
             }
             TypewriterState::Modifying {
@@ -174,6 +175,7 @@ impl Typewriter {
                             handled: true,
                             propagate: EventPropagation::Stop,
                             progress,
+                            request_animation_frame: false,
                         }
                     }
                     ModifyState::Selecting { finished, .. } => {
@@ -230,6 +232,7 @@ impl Typewriter {
                             handled: true,
                             propagate: EventPropagation::Stop,
                             progress,
+                            request_animation_frame: false,
                         }
                     }
                     ModifyState::Translating { current_pos, .. } => {
@@ -276,6 +279,7 @@ impl Typewriter {
                             handled: true,
                             propagate: EventPropagation::Stop,
                             progress: PenProgress::InProgress,
+                            request_animation_frame: false,
                         }
                     }
                     ModifyState::AdjustTextWidth {
@@ -314,6 +318,7 @@ impl Typewriter {
                             handled: true,
                             propagate: EventPropagation::Stop,
                             progress: PenProgress::InProgress,
+                            request_animation_frame: false,
                         }
                     }
                 }
@@ -338,11 +343,13 @@ impl Typewriter {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::Idle,
+                request_animation_frame: false,
             },
             TypewriterState::Start(_) => EventResult {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::InProgress,
+                request_animation_frame: false,
             },
             TypewriterState::Modifying {
                 modify_state,
@@ -421,6 +428,7 @@ impl Typewriter {
                     handled: true,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::InProgress,
+                    request_animation_frame: false,
                 }
             }
         };
@@ -443,11 +451,13 @@ impl Typewriter {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::Idle,
+                request_animation_frame: false,
             },
             TypewriterState::Start(_) => EventResult {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::InProgress,
+                request_animation_frame: false,
             },
             TypewriterState::Modifying {
                 modify_state,
@@ -469,6 +479,7 @@ impl Typewriter {
                     handled: true,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::InProgress,
+                    request_animation_frame: false,
                 }
             }
         };
@@ -493,6 +504,7 @@ impl Typewriter {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::Idle,
+                request_animation_frame: false,
             },
             TypewriterState::Start(pos) => {
                 super::play_sound(Some(keyboard_key), engine_view.audioplayer);
@@ -531,12 +543,14 @@ impl Typewriter {
                             handled: true,
                             propagate: EventPropagation::Stop,
                             progress: PenProgress::InProgress,
+                            request_animation_frame: false,
                         }
                     }
                     _ => EventResult {
                         handled: false,
                         propagate: EventPropagation::Proceed,
                         progress: PenProgress::InProgress,
+                        request_animation_frame: false,
                     },
                 }
             }
@@ -604,6 +618,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::BackSpace => {
@@ -618,6 +633,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::HorizontalTab => {
@@ -628,6 +644,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
@@ -638,6 +655,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::Delete => {
@@ -652,6 +670,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::NavLeft => {
@@ -680,6 +699,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::NavRight => {
@@ -708,6 +728,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::NavUp => {
@@ -727,6 +748,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::NavDown => {
@@ -746,6 +768,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::Home => {
@@ -774,6 +797,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::End => {
@@ -802,12 +826,14 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 _ => EventResult {
                                     handled: false,
                                     propagate: EventPropagation::Proceed,
                                     progress: PenProgress::InProgress,
+                                    request_animation_frame: false,
                                 },
                             }
                         } else {
@@ -815,6 +841,7 @@ impl Typewriter {
                                 handled: false,
                                 propagate: EventPropagation::Proceed,
                                 progress: PenProgress::InProgress,
+                                request_animation_frame: false,
                             }
                         }
                     }
@@ -864,6 +891,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::NavLeft => {
@@ -883,6 +911,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::NavRight => {
@@ -902,6 +931,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::NavUp => {
@@ -913,6 +943,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::NavDown => {
@@ -924,6 +955,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::Home => {
@@ -939,6 +971,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::End => {
@@ -954,6 +987,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
@@ -968,6 +1002,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::BackSpace | KeyboardKey::Delete => {
@@ -982,6 +1017,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::HorizontalTab => {
@@ -996,6 +1032,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                                 KeyboardKey::CtrlLeft
@@ -1005,6 +1042,7 @@ impl Typewriter {
                                     handled: false,
                                     propagate: EventPropagation::Proceed,
                                     progress: PenProgress::InProgress,
+                                    request_animation_frame: false,
                                 },
                                 _ => {
                                     quit_selecting = true;
@@ -1012,6 +1050,7 @@ impl Typewriter {
                                         handled: true,
                                         propagate: EventPropagation::Stop,
                                         progress: PenProgress::InProgress,
+                                        request_animation_frame: false,
                                     }
                                 }
                             };
@@ -1031,6 +1070,7 @@ impl Typewriter {
                                 handled: false,
                                 propagate: EventPropagation::Proceed,
                                 progress: PenProgress::InProgress,
+                                request_animation_frame: false,
                             }
                         }
                     }
@@ -1038,6 +1078,7 @@ impl Typewriter {
                         handled: false,
                         propagate: EventPropagation::Proceed,
                         progress: PenProgress::InProgress,
+                        request_animation_frame: false,
                     },
                 }
             }
@@ -1066,6 +1107,7 @@ impl Typewriter {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::Idle,
+                request_animation_frame: false,
             },
             TypewriterState::Start(pos) => {
                 super::play_sound(None, engine_view.audioplayer);
@@ -1100,6 +1142,7 @@ impl Typewriter {
                     handled: true,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::InProgress,
+                    request_animation_frame: false,
                 }
             }
             TypewriterState::Modifying {
@@ -1145,6 +1188,7 @@ impl Typewriter {
                             handled: true,
                             propagate: EventPropagation::Stop,
                             progress: PenProgress::InProgress,
+                            request_animation_frame: false,
                         }
                     }
                     ModifyState::Selecting {
@@ -1189,15 +1233,42 @@ impl Typewriter {
                             handled: true,
                             propagate: EventPropagation::Stop,
                             progress: PenProgress::InProgress,
+                            request_animation_frame: false,
                         }
                     }
                     _ => EventResult {
                         handled: false,
                         propagate: EventPropagation::Proceed,
                         progress: PenProgress::InProgress,
+                        request_animation_frame: false,
                     },
                 }
             }
+        };
+
+        (event_result, widget_flags)
+    }
+
+    pub(super) fn handle_pen_event_animation_frame(
+        &mut self,
+        _now: Instant,
+        _engine_view: &mut EngineViewMut,
+    ) -> (EventResult<PenProgress>, WidgetFlags) {
+        let widget_flags = WidgetFlags::default();
+
+        let event_result = match &mut self.state {
+            TypewriterState::Idle => EventResult {
+                handled: false,
+                propagate: EventPropagation::Proceed,
+                progress: PenProgress::Idle,
+                request_animation_frame: false,
+            },
+            _ => EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress: PenProgress::Finished,
+                request_animation_frame: false,
+            },
         };
 
         (event_result, widget_flags)
@@ -1215,6 +1286,7 @@ impl Typewriter {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::Idle,
+                request_animation_frame: false,
             },
             _ => {
                 self.state = TypewriterState::Idle;
@@ -1223,6 +1295,7 @@ impl Typewriter {
                     handled: true,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::Finished,
+                    request_animation_frame: false,
                 }
             }
         };

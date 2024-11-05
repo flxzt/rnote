@@ -86,9 +86,10 @@ impl Buildable for PenPathModeledBuilder {
 
                 BuilderProgress::Finished(segments)
             }
-            PenEvent::Proximity { .. } | PenEvent::KeyPressed { .. } | PenEvent::Text { .. } => {
-                BuilderProgress::InProgress
-            }
+            PenEvent::Proximity { .. }
+            | PenEvent::KeyPressed { .. }
+            | PenEvent::Text { .. }
+            | PenEvent::AnimationFrame => BuilderProgress::InProgress,
             PenEvent::Cancel => BuilderProgress::Finished(vec![]),
         };
 
@@ -96,6 +97,7 @@ impl Buildable for PenPathModeledBuilder {
             handled: true,
             propagate: EventPropagation::Stop,
             progress,
+            request_animation_frame: false,
         }
     }
 

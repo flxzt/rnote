@@ -66,6 +66,7 @@ impl PenBehaviour for Eraser {
                     handled: true,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::InProgress,
+                    request_animation_frame: false,
                 }
             }
             (EraserState::Up | EraserState::Down { .. }, PenEvent::Proximity { element, .. }) => {
@@ -74,6 +75,7 @@ impl PenBehaviour for Eraser {
                     handled: false,
                     propagate: EventPropagation::Proceed,
                     progress: PenProgress::Idle,
+                    request_animation_frame: false,
                 }
             }
             (
@@ -83,6 +85,7 @@ impl PenBehaviour for Eraser {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::Idle,
+                request_animation_frame: false,
             },
             (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
                 widget_flags |= erase(element, engine_view);
@@ -91,6 +94,7 @@ impl PenBehaviour for Eraser {
                     handled: true,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::InProgress,
+                    request_animation_frame: false,
                 }
             }
             (EraserState::Down { .. }, PenEvent::Up { element, .. }) => {
@@ -101,12 +105,14 @@ impl PenBehaviour for Eraser {
                     handled: true,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::Finished,
+                    request_animation_frame: false,
                 }
             }
             (EraserState::Down(_), PenEvent::KeyPressed { .. }) => EventResult {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::InProgress,
+                request_animation_frame: false,
             },
             (EraserState::Proximity(_), PenEvent::Up { .. }) => {
                 self.state = EraserState::Up;
@@ -114,6 +120,7 @@ impl PenBehaviour for Eraser {
                     handled: false,
                     propagate: EventPropagation::Proceed,
                     progress: PenProgress::Idle,
+                    request_animation_frame: false,
                 }
             }
             (EraserState::Proximity(current_element), PenEvent::Proximity { element, .. }) => {
@@ -122,6 +129,7 @@ impl PenBehaviour for Eraser {
                     handled: false,
                     propagate: EventPropagation::Proceed,
                     progress: PenProgress::Idle,
+                    request_animation_frame: false,
                 }
             }
             (EraserState::Proximity { .. } | EraserState::Down { .. }, PenEvent::Cancel) => {
@@ -131,28 +139,37 @@ impl PenBehaviour for Eraser {
                     handled: true,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::Finished,
+                    request_animation_frame: false,
                 }
             }
             (EraserState::Proximity(_), PenEvent::KeyPressed { .. }) => EventResult {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::Idle,
+                request_animation_frame: false,
             },
-            (EraserState::Up, PenEvent::Text { .. }) => EventResult {
+            (EraserState::Up, PenEvent::Text { .. } | PenEvent::AnimationFrame) => EventResult {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::Idle,
+                request_animation_frame: false,
             },
-            (EraserState::Proximity(_), PenEvent::Text { .. }) => EventResult {
-                handled: false,
-                propagate: EventPropagation::Proceed,
-                progress: PenProgress::Idle,
-            },
-            (EraserState::Down(_), PenEvent::Text { .. }) => EventResult {
-                handled: false,
-                propagate: EventPropagation::Proceed,
-                progress: PenProgress::InProgress,
-            },
+            (EraserState::Proximity(_), PenEvent::Text { .. } | PenEvent::AnimationFrame) => {
+                EventResult {
+                    handled: false,
+                    propagate: EventPropagation::Proceed,
+                    progress: PenProgress::Idle,
+                    request_animation_frame: false,
+                }
+            }
+            (EraserState::Down(_), PenEvent::Text { .. } | PenEvent::AnimationFrame) => {
+                EventResult {
+                    handled: false,
+                    propagate: EventPropagation::Proceed,
+                    progress: PenProgress::InProgress,
+                    request_animation_frame: false,
+                }
+            }
         };
 
         (event_result, widget_flags)

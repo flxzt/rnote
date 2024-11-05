@@ -114,6 +114,7 @@ impl Buildable for FociEllipseBuilder {
             handled: true,
             propagate: EventPropagation::Stop,
             progress,
+            request_animation_frame: false,
         }
     }
 

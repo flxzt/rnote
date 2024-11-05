@@ -234,7 +234,7 @@ impl PenHolder {
         pen_mode: Option<PenMode>,
         now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventPropagation, WidgetFlags) {
+    ) -> (EventPropagation, WidgetFlags, bool) {
         let mut widget_flags = WidgetFlags::default();
 
         if let Some(pen_mode) = pen_mode {
@@ -248,15 +248,22 @@ impl PenHolder {
         widget_flags |= wf | self.handle_pen_progress(event_result.progress, engine_view);
 
         if !event_result.handled {
-            let (propagate, wf) = self.handle_pen_event_global(event, now, engine_view);
+            let (propagate, wf, request_animation_frame) =
+                self.handle_pen_event_global(event, now, engine_view);
+
             event_result.propagate |= propagate;
+            event_result.request_animation_frame |= request_animation_frame;
             widget_flags |= wf;
         }
 
         // Always redraw after handling a pen event
         widget_flags.redraw = true;
 
-        (event_result.propagate, widget_flags)
+        (
+            event_result.propagate,
+            widget_flags,
+            event_result.request_animation_frame,
+        )
     }
 
     /// Handle a pressed shortcut key.
@@ -360,7 +367,7 @@ impl PenHolder {
         event: PenEvent,
         _now: Instant,
         engine_view: &mut EngineViewMut,
-    ) -> (EventPropagation, WidgetFlags) {
+    ) -> (EventPropagation, WidgetFlags, bool) {
         const MOVE_VIEW_FACTOR: f64 = 0.33;
         let mut widget_flags = WidgetFlags::default();
 
@@ -369,6 +376,7 @@ impl PenHolder {
             | PenEvent::Up { .. }
             | PenEvent::Proximity { .. }
             | PenEvent::Text { .. }
+            | PenEvent::AnimationFrame
             | PenEvent::Cancel => EventPropagation::Proceed,
             PenEvent::KeyPressed {
                 keyboard_key,
@@ -458,7 +466,7 @@ impl PenHolder {
             },
         };
 
-        (propagate, widget_flags)
+        (propagate, widget_flags, false)
     }
 
     fn handle_pen_progress(

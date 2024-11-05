@@ -44,6 +44,8 @@ pub enum PenEvent {
         /// The committed text.
         text: String,
     },
+    /// Animation frame event.
+    AnimationFrame,
     /// Cancel event when the pen vanishes unexpected.
     ///
     /// Should finish all current actions and reset all state.

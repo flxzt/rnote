@@ -81,12 +81,14 @@ impl PenBehaviour for Shaper {
                     handled: true,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::InProgress,
+                    request_animation_frame: false,
                 }
             }
             (ShaperState::Idle, _) => EventResult {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::Idle,
+                request_animation_frame: false,
             },
             (ShaperState::BuildShape { .. }, PenEvent::Cancel) => {
                 self.state = ShaperState::Idle;
@@ -95,6 +97,7 @@ impl PenBehaviour for Shaper {
                     handled: false,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::Finished,
+                    request_animation_frame: false,
                 }
             }
             (ShaperState::BuildShape { builder }, event) => {
@@ -113,7 +116,7 @@ impl PenBehaviour for Shaper {
                     | PenEvent::KeyPressed {
                         ref modifier_keys, ..
                     } => constraints.enabled ^ modifier_keys.contains(&ModifierKey::KeyboardCtrl),
-                    PenEvent::Text { .. } | PenEvent::Cancel => false,
+                    PenEvent::Text { .. } | PenEvent::AnimationFrame | PenEvent::Cancel => false,
                 };
                 let builder_result = builder.handle_event(event.clone(), now, constraints);
                 let handled = builder_result.handled;
@@ -196,6 +199,7 @@ impl PenBehaviour for Shaper {
                     handled,
                     propagate,
                     progress,
+                    request_animation_frame: false,
                 }
             }
         };

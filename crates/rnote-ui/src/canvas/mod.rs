@@ -6,6 +6,9 @@ mod widgetflagsboxed;
 
 // Re-exports
 pub(crate) use canvaslayout::RnCanvasLayout;
+use rnote_compose::eventresult::EventPropagation;
+use rnote_compose::PenEvent;
+use rnote_engine::pens::PenMode;
 pub(crate) use widgetflagsboxed::WidgetFlagsBoxed;
 
 // Imports
@@ -30,7 +33,7 @@ use rnote_engine::Camera;
 use rnote_engine::{Engine, WidgetFlags};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 use std::path::Path;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use tracing::{debug, error, warn};
 
 #[derive(Debug, Default)]
@@ -1471,6 +1474,33 @@ impl RnCanvas {
         {
             self.disconnect(old);
         }
+    }
+
+    pub(crate) fn handle_pen_event(
+        &self,
+        event: PenEvent,
+        pen_mode: Option<PenMode>,
+        now: Instant,
+    ) -> (EventPropagation, WidgetFlags) {
+        let (propagation, widget_flags, request_animation_frame) =
+            self.engine_mut().handle_pen_event(event, pen_mode, now);
+
+        if request_animation_frame && self.engine_mut().animation.claim_frame() {
+            glib::source::idle_add_local_once(clone!(
+                #[weak(rename_to = canvas)]
+                self,
+                move || {
+                    canvas.engine_mut().animation.reset();
+
+                    let (_, widget_flags) =
+                        canvas.handle_pen_event(PenEvent::AnimationFrame, None, Instant::now());
+
+                    canvas.emit_handle_widget_flags(widget_flags);
+                }
+            ));
+        }
+
+        (propagation, widget_flags)
     }
 
     pub(crate) fn bounds(&self) -> Aabb {

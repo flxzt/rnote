@@ -182,7 +182,7 @@ pub(crate) fn handle_pointer_controller_event(
                 PenState::Up => {
                     canvas.enable_drawing_cursor(false);
 
-                    let (ep, wf) = canvas.engine_mut().handle_pen_event(
+                    let (ep, wf) = canvas.handle_pen_event(
                         PenEvent::Up {
                             element,
                             modifier_keys: modifier_keys.clone(),
@@ -196,7 +196,7 @@ pub(crate) fn handle_pointer_controller_event(
                 PenState::Proximity => {
                     canvas.enable_drawing_cursor(false);
 
-                    let (ep, wf) = canvas.engine_mut().handle_pen_event(
+                    let (ep, wf) = canvas.handle_pen_event(
                         PenEvent::Proximity {
                             element,
                             modifier_keys: modifier_keys.clone(),
@@ -211,7 +211,7 @@ pub(crate) fn handle_pointer_controller_event(
                     canvas.grab_focus();
                     canvas.enable_drawing_cursor(true);
 
-                    let (ep, wf) = canvas.engine_mut().handle_pen_event(
+                    let (ep, wf) = canvas.handle_pen_event(
                         PenEvent::Down {
                             element,
                             modifier_keys: modifier_keys.clone(),
@@ -248,7 +248,7 @@ pub(crate) fn handle_key_controller_key_pressed(
             .engine_mut()
             .handle_pressed_shortcut_key(shortcut_key, now)
     } else {
-        canvas.engine_mut().handle_pen_event(
+        canvas.handle_pen_event(
             PenEvent::KeyPressed {
                 keyboard_key,
                 modifier_keys,
@@ -273,7 +273,7 @@ pub(crate) fn handle_key_controller_key_released(
 pub(crate) fn handle_imcontext_text_commit(canvas: &RnCanvas, text: &str) {
     let now = Instant::now();
 
-    let (_ep, widget_flags) = canvas.engine_mut().handle_pen_event(
+    let (_ep, widget_flags) = canvas.handle_pen_event(
         PenEvent::Text {
             text: text.to_string(),
         },

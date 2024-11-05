@@ -56,6 +56,7 @@ impl Buildable for CoordSystem3DBuilder {
             handled: true,
             propagate: EventPropagation::Stop,
             progress,
+            request_animation_frame: false,
         }
     }
 

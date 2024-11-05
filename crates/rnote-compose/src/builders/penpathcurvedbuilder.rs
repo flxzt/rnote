@@ -75,7 +75,8 @@ impl Buildable for PenPathCurvedBuilder {
             }
             (_, PenEvent::Proximity { .. })
             | (_, PenEvent::KeyPressed { .. })
-            | (_, PenEvent::Text { .. }) => BuilderProgress::InProgress,
+            | (_, PenEvent::Text { .. })
+            | (_, PenEvent::AnimationFrame) => BuilderProgress::InProgress,
             (_, PenEvent::Cancel) => {
                 self.reset();
 
@@ -87,6 +88,7 @@ impl Buildable for PenPathCurvedBuilder {
             handled: true,
             propagate: EventPropagation::Stop,
             progress,
+            request_animation_frame: false,
         }
     }
 

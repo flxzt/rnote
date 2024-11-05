@@ -377,12 +377,14 @@ impl PenBehaviour for Tools {
                     handled: true,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::InProgress,
+                    request_animation_frame: false,
                 }
             }
-            (ToolsState::Idle, _) => EventResult {
+            (ToolsState::Idle, _) | (_, PenEvent::AnimationFrame) => EventResult {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::Idle,
+                request_animation_frame: false,
             },
             (ToolsState::Active, PenEvent::Down { element, .. }) => {
                 match engine_view.pens_config.tools_config.style {
@@ -489,6 +491,7 @@ impl PenBehaviour for Tools {
                     handled: true,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::InProgress,
+                    request_animation_frame: false,
                 }
             }
             (ToolsState::Active, PenEvent::Up { .. }) => {
@@ -520,17 +523,20 @@ impl PenBehaviour for Tools {
                     handled: true,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::Finished,
+                    request_animation_frame: false,
                 }
             }
             (ToolsState::Active, PenEvent::Proximity { .. }) => EventResult {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::InProgress,
+                request_animation_frame: false,
             },
             (ToolsState::Active, PenEvent::KeyPressed { .. }) => EventResult {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::InProgress,
+                request_animation_frame: false,
             },
             (ToolsState::Active, PenEvent::Cancel) => {
                 widget_flags |= engine_view
@@ -549,12 +555,14 @@ impl PenBehaviour for Tools {
                     handled: true,
                     propagate: EventPropagation::Stop,
                     progress: PenProgress::Finished,
+                    request_animation_frame: false,
                 }
             }
             (ToolsState::Active, PenEvent::Text { .. }) => EventResult {
                 handled: false,
                 propagate: EventPropagation::Proceed,
                 progress: PenProgress::InProgress,
+                request_animation_frame: false,
             },
         };
 

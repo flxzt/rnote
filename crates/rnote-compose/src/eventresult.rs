@@ -13,6 +13,8 @@ where
     pub propagate: EventPropagation,
     /// The pen progress.
     pub progress: T,
+    /// Whether an animated frame should be requested.
+    pub request_animation_frame: bool,
 }
 
 /// Whether the event should be propagated further.

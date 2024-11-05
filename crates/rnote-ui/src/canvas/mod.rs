@@ -6,9 +6,6 @@ mod widgetflagsboxed;
 
 // Re-exports
 pub(crate) use canvaslayout::RnCanvasLayout;
-use rnote_compose::eventresult::EventPropagation;
-use rnote_compose::PenEvent;
-use rnote_engine::pens::PenMode;
 pub(crate) use widgetflagsboxed::WidgetFlagsBoxed;
 
 // Imports
@@ -25,10 +22,13 @@ use notify::EventKind;
 use notify_debouncer_full::notify;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
+use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::PenState;
+use rnote_compose::PenEvent;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::ext::GrapheneRectExt;
+use rnote_engine::pens::PenMode;
 use rnote_engine::Camera;
 use rnote_engine::{Engine, WidgetFlags};
 use std::cell::{Cell, Ref, RefCell, RefMut};

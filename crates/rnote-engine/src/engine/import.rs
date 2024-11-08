@@ -318,6 +318,7 @@ impl Engine {
         bytes: Vec<u8>,
         insert_pos: na::Vector2<f64>,
         page_range: Option<Range<u32>>,
+        password: Option<String>,
     ) -> oneshot::Receiver<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>>();
@@ -339,6 +340,7 @@ impl Engine {
                             insert_pos,
                             page_range,
                             &format,
+                            password,
                         )?
                         .into_iter()
                         .map(|s| (Stroke::BitmapImage(s), Some(StrokeLayer::Document)))
@@ -352,6 +354,7 @@ impl Engine {
                             insert_pos,
                             page_range,
                             &format,
+                            password,
                         )?
                         .into_iter()
                         .map(|s| (Stroke::VectorImage(s), Some(StrokeLayer::Document)))

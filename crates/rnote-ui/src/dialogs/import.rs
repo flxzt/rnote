@@ -7,8 +7,8 @@ use adw::prelude::*;
 use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{
-    gio, glib, glib::clone, Builder, Button, CallbackAction, FileDialog, FileFilter, Label,
-    Shortcut, ShortcutController, ShortcutTrigger, ToggleButton, graphene, gsk,
+    gio, glib, glib::clone, graphene, gsk, Builder, Button, CallbackAction, FileDialog, FileFilter,
+    Label, Shortcut, ShortcutController, ShortcutTrigger, ToggleButton,
 };
 use num_traits::ToPrimitive;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};

@@ -269,4 +269,26 @@
     <property name="lower">1</property>
     <property name="value">96</property>
   </object>
+  <object class="AdwAlertDialog" id="dialog_import_pdf_password">
+    <property name="body" translatable="yes">is password protected</property>
+    <property name="default-response">unlock</property>
+    <property name="close-response">cancel</property>
+    <property name="heading" translatable="yes">Encrypted PDF</property>
+    <property name="follows-content-size">False</property>
+    <responses>
+      <response id="cancel" translatable="yes">_Cancel</response>
+      <response id="unlock" translatable="yes" appearance="suggested">_Unlock</response>
+    </responses>
+    <property name="extra-child">
+    <object class="GtkBox">
+      <property name="homogeneous">true</property>
+      <child>
+        <object class="AdwPasswordEntryRow" id="pdf_password_entry">
+          <property name="activates-default">True</property>
+          <property name="title" translatable="yes">Enter the PDF password</property>
+        </object>
+      </child>
+    </object>
+    </property>
+  </object>
 </interface>

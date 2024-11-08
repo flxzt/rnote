@@ -8,7 +8,7 @@ use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{
     gio, glib, glib::clone, Builder, Button, CallbackAction, FileDialog, FileFilter, Label,
-    Shortcut, ShortcutController, ShortcutTrigger, ToggleButton,
+    Shortcut, ShortcutController, ShortcutTrigger, ToggleButton, graphene, gsk,
 };
 use num_traits::ToPrimitive;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
@@ -111,6 +111,84 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
     }
 }
 
+/// Check for a pdf encryption and request a password if needed from the user
+///
+/// Returns a password Option and a boolean weather the user canceled the file import or not
+pub(crate) async fn pdf_encryption_check_and_dialog(
+    appwindow: &RnAppWindow,
+    input_file: &gio::File,
+) -> (Option<String>, bool) {
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
+    );
+
+    let dialog_import_pdf_password: adw::AlertDialog =
+        builder.object("dialog_import_pdf_password").unwrap();
+    let pdf_password_entry: adw::PasswordEntryRow = builder.object("pdf_password_entry").unwrap();
+
+    let (tx, mut rx) = futures::channel::mpsc::unbounded::<(Option<String>, bool)>();
+    let tx_cancel = tx.clone();
+    let tx_unlock = tx.clone();
+
+    dialog_import_pdf_password.connect_response(
+        Some("unlock"),
+        clone!(
+            #[weak]
+            pdf_password_entry,
+            move |_, _| {
+                tx_unlock
+                    .unbounded_send((Some(pdf_password_entry.text().to_string()), false))
+                    .unwrap();
+            }
+        ),
+    );
+
+    dialog_import_pdf_password.connect_response(Some("cancel"), move |_, _| {
+        tx_cancel.unbounded_send((None, true)).unwrap();
+    });
+
+    let file_name = input_file.basename().map_or_else(
+        || gettext("- no file name -"),
+        |s| s.to_string_lossy().to_string(),
+    );
+    let dialog_body = dialog_import_pdf_password.body();
+    let dialog_body = file_name.clone() + " " + &dialog_body;
+    dialog_import_pdf_password.set_body(&dialog_body);
+
+    let mut password: Option<String> = None;
+
+    loop {
+        match poppler::Document::from_gfile(
+            input_file,
+            password.as_deref(),
+            None::<&gio::Cancellable>,
+        ) {
+            Ok(_) => return (password, false),
+            Err(e) => {
+                if e.matches(poppler::Error::Encrypted) {
+                    dialog_import_pdf_password.present(appwindow.root().as_ref());
+                    pdf_password_entry.grab_focus();
+
+                    match rx.next().await {
+                        Some((new_password, cancel)) => {
+                            password = new_password;
+                            if cancel {
+                                return (None, true);
+                            }
+                        }
+                        None => {
+                            return (None, true);
+                        }
+                    }
+                    pdf_password_entry.set_text("");
+                } else {
+                    return (None, true);
+                }
+            }
+        };
+    }
+}
+
 /// Imports the file as Pdf with an import dialog.
 ///
 /// Returns true when the file was imported, else false.
@@ -120,6 +198,11 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     input_file: gio::File,
     target_pos: Option<na::Vector2<f64>>,
 ) -> anyhow::Result<bool> {
+    let (password, cancel) = pdf_encryption_check_and_dialog(appwindow, &input_file).await;
+    if cancel {
+        return Ok(false);
+    }
+
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );
@@ -274,7 +357,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     ));
 
     if let Ok(poppler_doc) =
-        poppler::Document::from_gfile(&input_file, None, None::<&gio::Cancellable>)
+        poppler::Document::from_gfile(&input_file, password.as_deref(), None::<&gio::Cancellable>)
     {
         let file_name = input_file.basename().map_or_else(
             || gettext("- no file name -"),
@@ -346,12 +429,12 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }
     ));
 
-    import_pdf_button_confirm.connect_clicked(clone!(#[weak] pdf_page_start_row, #[weak] pdf_page_end_row, #[weak] input_file, #[weak] dialog, #[weak] canvas , move |_| {
+    import_pdf_button_confirm.connect_clicked(clone!(#[weak] pdf_page_start_row, #[weak] pdf_page_end_row, #[weak] input_file, #[weak] dialog, #[weak] canvas, #[strong] password, move |_| {
         dialog.close();
 
         let inner_tx_confirm = tx_confirm.clone();
 
-        glib::spawn_future_local(clone!(#[weak] pdf_page_start_row, #[weak] pdf_page_end_row, #[weak] input_file, #[weak] canvas , async move {
+        glib::spawn_future_local(clone!(#[weak] pdf_page_start_row, #[weak] pdf_page_end_row, #[weak] input_file, #[weak] canvas, #[strong] password , async move {
             let page_range =
                 (pdf_page_start_row.value() as u32 - 1)..pdf_page_end_row.value() as u32;
 
@@ -364,7 +447,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
                     return;
                 }
             };
-            if let Err(e) = canvas.load_in_pdf_bytes(bytes.to_vec(), target_pos, Some(page_range)).await {
+            if let Err(e) = canvas.load_in_pdf_bytes(bytes.to_vec(), target_pos, Some(page_range), password).await {
                 if let Err(e) = inner_tx_confirm.unbounded_send(Err(e)) {
                     error!("Failed to load PDF, but failed to send signal through channel. Err: {e:?}");
                 }

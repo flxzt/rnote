@@ -126,6 +126,35 @@ pub(crate) async fn pdf_encryption_check_and_dialog(
         builder.object("dialog_import_pdf_password").unwrap();
     let pdf_password_entry: adw::PasswordEntryRow = builder.object("pdf_password_entry").unwrap();
 
+    let target = adw::CallbackAnimationTarget::new(clone!(
+        #[weak]
+        pdf_password_entry,
+        move |value| {
+            let x = adw::lerp(0., 40.0, value);
+            let p = graphene::Point::new(x as f32, 0.);
+            let transform = gsk::Transform::new().translate(&p);
+            pdf_password_entry.allocate(
+                pdf_password_entry.width(),
+                pdf_password_entry.height(),
+                -1,
+                Some(transform),
+            );
+        }
+    ));
+
+    let params = adw::SpringParams::new(0.2, 0.5, 500.0);
+
+    let animation = adw::SpringAnimation::builder()
+        .widget(&pdf_password_entry)
+        .value_from(0.0)
+        .value_to(0.0)
+        .spring_params(&params)
+        .target(&target)
+        .initial_velocity(10.0)
+        .epsilon(0.001) // If amplitude of oscillation < epsilon, animation stops
+        .clamp(false)
+        .build();
+
     let (tx, mut rx) = futures::channel::mpsc::unbounded::<(Option<String>, bool)>();
     let tx_cancel = tx.clone();
     let tx_unlock = tx.clone();
@@ -180,6 +209,7 @@ pub(crate) async fn pdf_encryption_check_and_dialog(
                             return (None, true);
                         }
                     }
+                    animation.play();
                     pdf_password_entry.set_text("");
                 } else {
                     return (None, true);

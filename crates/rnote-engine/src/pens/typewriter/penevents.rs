@@ -454,15 +454,22 @@ impl Typewriter {
                 pen_down,
                 ..
             } => {
-                // detect hover state
-                *modify_state = if typewriter_bounds
-                    .map(|b| b.contains_local_point(&element.pos.into()))
-                    .unwrap_or(false)
-                {
-                    ModifyState::Hover(element.pos)
-                } else {
-                    ModifyState::Up
-                };
+                match modify_state {
+                    ModifyState::Selecting { .. } => {
+                        // do nothing in this case : this keeps the text selected when using a pen
+                    }
+                    _ => {
+                        // detect hover state
+                        *modify_state = if typewriter_bounds
+                            .map(|b| b.contains_local_point(&element.pos.into()))
+                            .unwrap_or(false)
+                        {
+                            ModifyState::Hover(element.pos)
+                        } else {
+                            ModifyState::Up
+                        };
+                    }
+                }
                 *pen_down = false;
 
                 EventResult {

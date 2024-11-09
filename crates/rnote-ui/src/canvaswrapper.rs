@@ -348,7 +348,11 @@ mod imp {
                         }
                         let canvas = canvaswrapper.canvas();
                         let old_zoom = canvas.engine_ref().camera.total_zoom();
-                        let new_zoom = old_zoom * (1.0 - dy * RnCanvas::ZOOM_SCROLL_STEP);
+                        let new_zoom = if dy < 0.0 {
+                            old_zoom * (1.0 - dy * RnCanvas::ZOOM_SCROLL_STEP)
+                        } else {
+                            old_zoom * (1.0/(1.0 + dy * RnCanvas::ZOOM_SCROLL_STEP))
+                        };
 
                         if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
                             let camera_offset = canvas.engine_ref().camera.offset();

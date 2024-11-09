@@ -5,8 +5,8 @@ msgstr ""
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
 "PO-Revision-Date: 2024-08-31 10:09+0000\n"
 "Last-Translator: Bezruchenko Simon <worcposj44@gmail.com>\n"
-"Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/>"
-"\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
+">\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2539,6 +2539,30 @@ msgstr "чорний"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "білий"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+msgid "is password protected"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:276
+msgid "Encrypted PDF"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:279
+#, fuzzy
+#| msgid "Cancel"
+msgid "_Cancel"
+msgstr "Скасувати"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:280
+#, fuzzy
+#| msgid "Clock"
+msgid "_Unlock"
+msgstr "Годинник"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:287
+msgid "Enter the PDF password"
+msgstr ""
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "Відкритий файл було переміщено або видалено на диску"

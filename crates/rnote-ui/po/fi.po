@@ -2526,3 +2526,27 @@ msgstr "musta"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "valkoinen"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+msgid "is password protected"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:276
+msgid "Encrypted PDF"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:279
+#, fuzzy
+#| msgid "Cancel"
+msgid "_Cancel"
+msgstr "Peru"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:280
+#, fuzzy
+#| msgid "Clock"
+msgid "_Unlock"
+msgstr "Kello"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:287
+msgid "Enter the PDF password"
+msgstr ""

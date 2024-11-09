@@ -280,8 +280,11 @@
       <response id="unlock" translatable="yes" appearance="suggested">_Unlock</response>
     </responses>
     <property name="extra-child">
-    <object class="GtkBox">
-      <property name="homogeneous">true</property>
+    <object class="GtkListBox" id="pdf_password_entry_box">
+      <property name="selection-mode">none</property>
+      <style>
+        <class name="boxed-list"/>
+      </style>
       <child>
         <object class="AdwPasswordEntryRow" id="pdf_password_entry">
           <property name="activates-default">True</property>

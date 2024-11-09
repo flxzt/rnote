@@ -125,17 +125,18 @@ pub(crate) async fn pdf_encryption_check_and_dialog(
     let dialog_import_pdf_password: adw::AlertDialog =
         builder.object("dialog_import_pdf_password").unwrap();
     let pdf_password_entry: adw::PasswordEntryRow = builder.object("pdf_password_entry").unwrap();
+    let pdf_password_entry_box: gtk4::ListBox = builder.object("pdf_password_entry_box").unwrap();
 
     let target = adw::CallbackAnimationTarget::new(clone!(
         #[weak]
-        pdf_password_entry,
+        pdf_password_entry_box,
         move |value| {
             let x = adw::lerp(0., 40.0, value);
             let p = graphene::Point::new(x as f32, 0.);
             let transform = gsk::Transform::new().translate(&p);
-            pdf_password_entry.allocate(
-                pdf_password_entry.width(),
-                pdf_password_entry.height(),
+            pdf_password_entry_box.allocate(
+                pdf_password_entry_box.width(),
+                pdf_password_entry_box.height(),
                 -1,
                 Some(transform),
             );
@@ -145,7 +146,7 @@ pub(crate) async fn pdf_encryption_check_and_dialog(
     let params = adw::SpringParams::new(0.2, 0.5, 500.0);
 
     let animation = adw::SpringAnimation::builder()
-        .widget(&pdf_password_entry)
+        .widget(&pdf_password_entry_box)
         .value_from(0.0)
         .value_to(0.0)
         .spring_params(&params)

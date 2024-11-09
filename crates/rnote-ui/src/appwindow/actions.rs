@@ -722,6 +722,7 @@ impl RnAppWindow {
                 let new_zoom =
                     canvas.engine_ref().camera.total_zoom() * (1.0 - RnCanvas::ZOOM_SCROLL_STEP);
                 let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
+                    canvas.engine_ref().camera.total_zoom() * (1.0/(1.0 + RnCanvas::ZOOM_SCROLL_STEP));
                 widget_flags |= canvas
                     .engine_mut()
                     .camera

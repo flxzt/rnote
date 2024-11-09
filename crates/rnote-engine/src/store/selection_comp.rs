@@ -95,7 +95,11 @@ impl StrokeStore {
     /// Duplicate the selected keys.
     ///
     /// The returned, duplicated strokes then need to update their geometry and rendering.
-    pub(crate) fn duplicate_selection(&mut self, pattern_size:na::Vector2<f64>, snap_mode:bool) -> Vec<StrokeKey> {
+    pub(crate) fn duplicate_selection(
+        &mut self,
+        pattern_size: na::Vector2<f64>,
+        snap_mode: bool,
+    ) -> Vec<StrokeKey> {
         let old_selected = self.selection_keys_as_rendered();
         self.set_selected_keys(&old_selected, false);
 

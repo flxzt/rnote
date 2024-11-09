@@ -973,7 +973,9 @@ impl RnSettingsPanel {
                 #[weak]
                 appwindow,
                 move |_| {
-                    let canvas = appwindow.active_tab_wrapper().canvas();
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
                     let compression_level = CompressionLevel::try_from(
                         settings_panel
                             .imp()

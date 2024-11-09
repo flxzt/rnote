@@ -163,6 +163,10 @@
             <attribute name="label" translatable="yes">Create new Folder</attribute>
             <attribute name="action">workspacebrowser.create-folder</attribute>
           </item>
+          <item>
+            <attribute name="label" translatable="yes">Open Workspace Folder</attribute>
+            <attribute name="action">workspacebrowser.open-folder</attribute>
+          </item>
         </section>
       </menu>
     </object>

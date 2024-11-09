@@ -95,7 +95,7 @@ impl StrokeStore {
     /// Duplicate the selected keys.
     ///
     /// The returned, duplicated strokes then need to update their geometry and rendering.
-    pub(crate) fn duplicate_selection(&mut self) -> Vec<StrokeKey> {
+    pub(crate) fn duplicate_selection(&mut self, pattern_size:na::Vector2<f64>, snap_mode:bool) -> Vec<StrokeKey> {
         let old_selected = self.selection_keys_as_rendered();
         self.set_selected_keys(&old_selected, false);
 
@@ -126,8 +126,14 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>();
 
         // Offsetting the new selected stroke to make the duplication apparent
-        self.translate_strokes(&new_selected, Stroke::IMPORT_OFFSET_DEFAULT);
-        self.translate_strokes_images(&new_selected, Stroke::IMPORT_OFFSET_DEFAULT);
+        // check if snap position is activated or not here
+        let offset = if snap_mode {
+            pattern_size
+        } else {
+            Stroke::IMPORT_OFFSET_DEFAULT
+        };
+        self.translate_strokes(&new_selected, offset);
+        self.translate_strokes_images(&new_selected, offset);
 
         new_selected
     }

@@ -628,7 +628,10 @@ impl Selector {
                     KeyboardKey::Unicode('d') => {
                         //Duplicate selection
                         if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
-                            let duplicated = engine_view.store.duplicate_selection();
+                            let duplicated = engine_view.store.duplicate_selection(
+                                engine_view.document.background.pattern_size,
+                                engine_view.document.snap_positions,
+                            );
                             engine_view.store.update_geometry_for_strokes(&duplicated);
                             engine_view.store.regenerate_rendering_for_strokes_threaded(
                                 engine_view.tasks_tx.clone(),

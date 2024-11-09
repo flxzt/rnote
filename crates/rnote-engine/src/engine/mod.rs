@@ -850,7 +850,10 @@ impl Engine {
     }
 
     pub fn duplicate_selection(&mut self) -> WidgetFlags {
-        let new_selected = self.store.duplicate_selection();
+        let new_selected = self.store.duplicate_selection(
+            self.document.background.pattern_size,
+            self.document.snap_positions,
+        );
         self.store.update_geometry_for_strokes(&new_selected);
         self.current_pen_update_state()
             | self.doc_resize_autoexpand()

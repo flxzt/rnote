@@ -210,8 +210,9 @@ impl VectorImage {
         insert_pos: na::Vector2<f64>,
         page_range: Option<Range<u32>>,
         format: &Format,
+        password: Option<String>,
     ) -> Result<Vec<Self>, anyhow::Error> {
-        let doc = poppler::Document::from_bytes(&glib::Bytes::from(bytes), None)?;
+        let doc = poppler::Document::from_bytes(&glib::Bytes::from(bytes), password.as_deref())?;
         let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
 
         let page_width = if pdf_import_prefs.adjust_document {

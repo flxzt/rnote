@@ -1126,20 +1126,21 @@ impl RnAppWindow {
         app.set_accels_for_action("win.print-doc", &["<Ctrl>p"]);
         app.set_accels_for_action("win.add-page-to-doc", &["<Ctrl><Shift>a"]);
         app.set_accels_for_action("win.remove-page-from-doc", &["<Ctrl><Shift>r"]);
-        app.set_accels_for_action("win.zoom-in", &["<Ctrl>plus"]);
-        app.set_accels_for_action("win.zoom-out", &["<Ctrl>minus"]);
+        app.set_accels_for_action("win.zoom-in", &["<Ctrl>plus","<Ctrl>equal","<Ctrl>KP_Add"]);
+        app.set_accels_for_action("win.zoom-reset",&["<Ctrl>0","<Ctrl>KP_0"]);
+        app.set_accels_for_action("win.zoom-out", &["<Ctrl>minus","<Ctrl>KP_Subtract"]);
         app.set_accels_for_action("win.import-file", &["<Ctrl>i"]);
         app.set_accels_for_action("win.undo", &["<Ctrl>z"]);
         app.set_accels_for_action("win.redo", &["<Ctrl><Shift>z"]);
         app.set_accels_for_action("win.clipboard-copy", &["<Ctrl>c"]);
         app.set_accels_for_action("win.clipboard-cut", &["<Ctrl>x"]);
         app.set_accels_for_action("win.clipboard-paste", &["<Ctrl>v"]);
-        app.set_accels_for_action("win.pen-style::brush", &["<Ctrl>1"]);
-        app.set_accels_for_action("win.pen-style::shaper", &["<Ctrl>2"]);
-        app.set_accels_for_action("win.pen-style::typewriter", &["<Ctrl>3"]);
-        app.set_accels_for_action("win.pen-style::eraser", &["<Ctrl>4"]);
-        app.set_accels_for_action("win.pen-style::selector", &["<Ctrl>5"]);
-        app.set_accels_for_action("win.pen-style::tools", &["<Ctrl>6"]);
+        app.set_accels_for_action("win.pen-style::brush", &["<Ctrl>1","<Ctrl>KP_1"]);
+        app.set_accels_for_action("win.pen-style::shaper", &["<Ctrl>2","<Ctrl>KP_2"]);
+        app.set_accels_for_action("win.pen-style::typewriter", &["<Ctrl>3","<Ctrl>KP_3"]);
+        app.set_accels_for_action("win.pen-style::eraser", &["<Ctrl>4","<Ctrl>KP_4"]);
+        app.set_accels_for_action("win.pen-style::selector", &["<Ctrl>5","<Ctrl>KP_5"]);
+        app.set_accels_for_action("win.pen-style::tools", &["<Ctrl>6","<Ctrl>KP_6"]);
 
         // shortcuts for devel build
         if config::PROFILE.to_lowercase().as_str() == "devel" {

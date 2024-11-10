@@ -226,12 +226,16 @@ impl Typewriter {
                                                 SelectionMode::Word(start, end) => {
                                                     let mouse_position = cursor.cur_cursor();
 
-                                                    if mouse_position < *start {
+                                                    if mouse_position <= *start {
                                                         selection_cursor.set_cursor(*end);
-                                                        textstroke.move_cursor_word_back(cursor);
-                                                    } else if mouse_position > *end {
+                                                        textstroke
+                                                            .move_cursor_word_boundary_back(cursor);
+                                                    } else if mouse_position >= *end {
                                                         selection_cursor.set_cursor(*start);
-                                                        textstroke.move_cursor_word_forward(cursor);
+                                                        textstroke
+                                                            .move_cursor_word_boundary_forward(
+                                                                cursor,
+                                                            );
                                                     } else {
                                                         selection_cursor.set_cursor(*start);
                                                         cursor.set_cursor(*end);
@@ -1291,10 +1295,10 @@ impl Typewriter {
                 if let Some(Stroke::TextStroke(ref mut textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
-                    textstroke.move_cursor_word_forward(cursor);
+                    textstroke.move_cursor_word_boundary_forward(cursor);
 
                     let mut selection_cursor = cursor.clone();
-                    textstroke.move_cursor_word_back(&mut selection_cursor);
+                    textstroke.move_cursor_word_boundary_back(&mut selection_cursor);
 
                     *modify_state = ModifyState::Selecting {
                         mode: SelectionMode::Word(

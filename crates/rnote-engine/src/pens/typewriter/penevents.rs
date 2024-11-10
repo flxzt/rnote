@@ -219,6 +219,7 @@ impl Typewriter {
                                         if let Ok(new_cursor) =
                                             textstroke.get_cursor_for_global_coord(element.pos)
                                         {
+                                            let previous_cursor_position = cursor.cur_cursor();
                                             *cursor = new_cursor;
 
                                             match mode {
@@ -253,7 +254,9 @@ impl Typewriter {
                                                 SelectionMode::Caret => {}
                                             }
 
-                                            self.reset_blink();
+                                            if previous_cursor_position != cursor.cur_cursor() {
+                                                self.reset_blink();
+                                            }
                                         }
                                     }
                                 }

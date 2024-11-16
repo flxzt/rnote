@@ -88,8 +88,7 @@ impl Selector {
                             )
                             .pop();
 
-                        if (engine_view.pens_config.selector_config.style == SelectorStyle::Single
-                            || modifier_keys.contains(&ModifierKey::KeyboardShift))
+                        if (modifier_keys.contains(&ModifierKey::KeyboardShift))
                             && key_to_add
                                 .and_then(|key| engine_view.store.selected(key).map(|s| !s))
                                 .unwrap_or(false)
@@ -168,6 +167,22 @@ impl Selector {
                                 start_bounds: *selection_bounds,
                                 start_pos: element.pos,
                                 last_rendered_bounds: *selection_bounds,
+                            }
+                        } else if engine_view.pens_config.selector_config.style
+                            == SelectorStyle::Single
+                            && key_to_add
+                                .and_then(|key| engine_view.store.selected(key).map(|s| !s))
+                                .unwrap_or(false)
+                        {
+                            // defer the [SelectorStyle::Single] after checking whether we are
+                            // clicking on a selection node
+                            let key_to_add = key_to_add.unwrap();
+                            engine_view.store.set_selected(key_to_add, true);
+                            selection.push(key_to_add);
+                            if let Some(new_bounds) =
+                                engine_view.store.bounds_for_strokes(selection)
+                            {
+                                *selection_bounds = new_bounds;
                             }
                         } else if selection_bounds.contains_local_point(&element.pos.into()) {
                             let snap_corner =

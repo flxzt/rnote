@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-10-07 14:16+0000\n"
+"PO-Revision-Date: 2024-11-16 11:01+0000\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/rnote/repo/fi/>\n"
 "Language: fi\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8-dev\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -48,8 +48,8 @@ msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"Vastuuvapautuslauseke: Tiedostomuoto on edelleen epävakaa. Se saattaa "
-"muuttua ja rikkoa yhteensopivuuden versioiden välillä."
+"Vastuuvapauslauseke: Tiedostomuoto on edelleen epävakaa. Se saattaa muuttua "
+"ja rikkoa yhteensopivuuden versioiden välillä."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An overview"
@@ -2529,24 +2529,20 @@ msgstr "valkoinen"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:273
 msgid "is password protected"
-msgstr ""
+msgstr "on salasanasuojattu"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:276
 msgid "Encrypted PDF"
-msgstr ""
+msgstr "Salattu PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:279
-#, fuzzy
-#| msgid "Cancel"
 msgid "_Cancel"
-msgstr "Peru"
+msgstr "_Peru"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:280
-#, fuzzy
-#| msgid "Clock"
 msgid "_Unlock"
-msgstr "Kello"
+msgstr "_Avaa lukitus"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:287
 msgid "Enter the PDF password"
-msgstr ""
+msgstr "Kirjoita PDF:n salasana"

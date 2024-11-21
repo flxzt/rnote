@@ -17,7 +17,7 @@ jobs:
       - name: Set installer name
         id: set_installer_name
         shell: bash
-        run: echo "name=rnote-win-installer-$(echo ${GITHUB_REF_NAME#v})-x86_64" >> $GITHUB_OUTPUT
+        run: echo "name=rnote-win-installer-$(echo ${GITHUB_REF_NAME#v} | sed -e 's/[^A-Za-z0-9._-]/_/g')-x86_64" >> $GITHUB_OUTPUT
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
         with:
@@ -48,7 +48,7 @@ jobs:
       - name: Build installer
         run: meson compile build-installer -C _mesonbuild
       - name: Upload installer (Workflow Artifact)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: rnote-win-installer-artifact
           path: _mesonbuild/${{ steps.set_installer_name.outputs.name }}.exe

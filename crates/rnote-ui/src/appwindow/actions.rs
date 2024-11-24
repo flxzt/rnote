@@ -1,6 +1,7 @@
 // Imports
 use crate::{config, dialogs, RnAppWindow, RnCanvas};
 use gettextrs::gettext;
+use gtk4::gio::InputStream;
 use gtk4::graphene;
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit,
@@ -1166,28 +1167,7 @@ impl RnAppWindow {
                         .await
                     {
                         Ok((input_stream, _)) => {
-                            let mut acc = Vec::new();
-                            loop {
-                                match input_stream
-                                    .read_future(
-                                        vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE],
-                                        glib::source::Priority::DEFAULT,
-                                    )
-                                    .await
-                                {
-                                    Ok((mut bytes, n)) => {
-                                        if n == 0 {
-                                            break;
-                                        }
-                                        acc.append(&mut bytes);
-                                    }
-                                    Err(e) => {
-                                        error!("Failed to read clipboard input stream while pasting as files list, Err: {e:?}");
-                                        acc.clear();
-                                        break;
-                                    }
-                                }
-                            }
+                            let acc = collect_clipboard_data(input_stream).await;
                             if !acc.is_empty() {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
                                     Ok(text) => {
@@ -1249,28 +1229,7 @@ impl RnAppWindow {
                         .await
                     {
                         Ok((input_stream, _)) => {
-                            let mut acc = Vec::new();
-                            loop {
-                                match input_stream
-                                    .read_future(
-                                        vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE],
-                                        glib::source::Priority::DEFAULT,
-                                    )
-                                    .await
-                                {
-                                    Ok((mut bytes, n)) => {
-                                        if n == 0 {
-                                            break;
-                                        }
-                                        acc.append(&mut bytes);
-                                    }
-                                    Err(e) => {
-                                        error!("Failed to read clipboard input stream, Err: {e:?}");
-                                        acc.clear();
-                                        break;
-                                    }
-                                }
-                            }
+                            let acc = collect_clipboard_data(input_stream).await;
 
                             if !acc.is_empty() {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
@@ -1313,28 +1272,7 @@ impl RnAppWindow {
                         .await
                     {
                         Ok((input_stream, _)) => {
-                            let mut acc = Vec::new();
-                            loop {
-                                match input_stream
-                                    .read_future(
-                                        vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE],
-                                        glib::source::Priority::DEFAULT,
-                                    )
-                                    .await
-                                {
-                                    Ok((mut bytes, n)) => {
-                                        if n == 0 {
-                                            break;
-                                        }
-                                        acc.append(&mut bytes);
-                                    }
-                                    Err(e) => {
-                                        error!("Failed to read clipboard input stream while pasting as Svg, Err: {e:?}");
-                                        acc.clear();
-                                        break;
-                                    }
-                                }
-                            }
+                            let acc = collect_clipboard_data(input_stream).await;
 
                             if !acc.is_empty() {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
@@ -1440,4 +1378,30 @@ impl RnAppWindow {
             );
         }
     }
+}
+
+async fn collect_clipboard_data(input_stream: InputStream) -> Vec<u8> {
+    let mut acc = Vec::new();
+    loop {
+        match input_stream
+            .read_future(
+                vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE],
+                glib::source::Priority::DEFAULT,
+            )
+            .await
+        {
+            Ok((mut bytes, n)) => {
+                if n == 0 {
+                    break;
+                }
+                acc.append(&mut bytes);
+            }
+            Err(e) => {
+                error!("Failed to read clipboard input stream, Err: {e:?}");
+                acc.clear();
+                break;
+            }
+        }
+    }
+    acc
 }

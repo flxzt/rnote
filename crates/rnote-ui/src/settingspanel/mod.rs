@@ -14,7 +14,6 @@ use gtk4::{
     Adjustment, Button, ColorDialogButton, CompositeTemplate, MenuButton, ScrolledWindow,
     StringList, ToggleButton, Widget, gdk, glib, glib::clone, subclass::prelude::*,
 };
-use itertools::Itertools;
 use num_traits::ToPrimitive;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::document::Layout;
@@ -963,15 +962,13 @@ impl RnSettingsPanel {
                 .collect(),
         );
 
-        imp.doc_spellcheck_language_row
-            .get()
-            .set_model(Some(&StringList::new(
-                &imp.available_spellcheck_languages
-                    .borrow()
-                    .iter()
-                    .map(|s| s.as_str())
-                    .collect_vec(),
-            )));
+        imp.doc_spellcheck_language_row.get().set_model(Some(
+            &imp.available_spellcheck_languages
+                .borrow()
+                .iter()
+                .cloned()
+                .collect::<StringList>(),
+        ));
 
         imp.doc_spellcheck_language_row
             .get()

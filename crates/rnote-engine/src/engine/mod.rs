@@ -428,6 +428,41 @@ impl Engine {
         widget_flags
     }
 
+    pub fn get_spellcheck_corrections(&self) -> Option<Vec<String>> {
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_ref() {
+            return typewriter.get_spellcheck_correction_in_modifying_stroke(&mut EngineView {
+                tasks_tx: self.tasks_tx.clone(),
+                pens_config: &self.pens_config,
+                document: &self.document,
+                store: &self.store,
+                camera: &self.camera,
+                audioplayer: &self.audioplayer,
+                spellcheck: &self.spellcheck,
+            });
+        }
+
+        None
+    }
+
+    pub fn apply_spellcheck_correction(&mut self, correction: &str) -> WidgetFlags {
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            return typewriter.apply_spellcheck_correction_in_modifying_stroke(
+                correction,
+                &mut EngineViewMut {
+                    tasks_tx: self.tasks_tx.clone(),
+                    pens_config: &mut self.pens_config,
+                    document: &mut self.document,
+                    store: &mut self.store,
+                    camera: &mut self.camera,
+                    audioplayer: &mut self.audioplayer,
+                    spellcheck: &mut self.spellcheck,
+                },
+            );
+        }
+
+        WidgetFlags::default()
+    }
+
     pub fn optimize_epd(&self) -> bool {
         self.optimize_epd
     }

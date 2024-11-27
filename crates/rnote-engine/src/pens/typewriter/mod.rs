@@ -853,6 +853,59 @@ impl Typewriter {
         }
     }
 
+    pub(crate) fn get_spellcheck_correction_in_modifying_stroke(
+        &self,
+        engine_view: &EngineView,
+    ) -> Option<Vec<String>> {
+        if let TypewriterState::Modifying {
+            stroke_key, cursor, ..
+        } = &self.state
+        {
+            if let Some(Stroke::TextStroke(textstroke)) =
+                engine_view.store.get_stroke_ref(*stroke_key)
+            {
+                return textstroke.get_spellcheck_corrections_at_index(
+                    engine_view.spellcheck,
+                    cursor.cur_cursor(),
+                );
+            }
+        }
+
+        None
+    }
+
+    pub(crate) fn apply_spellcheck_correction_in_modifying_stroke(
+        &mut self,
+        correction: &str,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if let TypewriterState::Modifying {
+            stroke_key, cursor, ..
+        } = &mut self.state
+        {
+            if let Some(Stroke::TextStroke(textstroke)) =
+                engine_view.store.get_stroke_mut(*stroke_key)
+            {
+                textstroke.apply_spellcheck_correction_at_cursor(cursor, correction);
+
+                engine_view.store.update_geometry_for_stroke(*stroke_key);
+                engine_view.store.regenerate_rendering_for_stroke(
+                    *stroke_key,
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
+                );
+
+                widget_flags |= engine_view.store.record(Instant::now());
+                widget_flags.redraw = true;
+                widget_flags.store_modified = true;
+            }
+        }
+
+        widget_flags
+    }
+
     pub(crate) fn toggle_text_attribute_current_selection(
         &mut self,
         text_attribute: TextAttribute,

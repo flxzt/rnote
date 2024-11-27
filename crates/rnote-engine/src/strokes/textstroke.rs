@@ -415,6 +415,8 @@ impl TextStyle {
         camera: &Camera,
     ) {
         const ERROR_COLOR: piet::Color = color::GNOME_REDS[2];
+        const STYLE: piet::StrokeStyle = piet::StrokeStyle::new().line_cap(piet::LineCap::Round);
+
         let scale = 1.0 / camera.total_zoom();
 
         if let Ok(selection_rects) =
@@ -433,7 +435,7 @@ impl TextStyle {
                         );
 
                     let path = create_wavy_line(origin, width, scale);
-                    cx.stroke(path, &ERROR_COLOR, 1.5 * scale);
+                    cx.stroke_styled(path, &ERROR_COLOR, 1.5 * scale, &STYLE);
                 }
             }
         }
@@ -685,6 +687,52 @@ impl TextStroke {
         }
     }
 
+    pub fn get_spellcheck_corrections_at_index(
+        &self,
+        spellcheck: &Spellcheck,
+        index: usize,
+    ) -> Option<Vec<String>> {
+        let Some(dict) = &spellcheck.dict else {
+            return None;
+        };
+
+        let start_index = self.get_prev_word_start_index(index);
+
+        if let Some(length) = self.spellcheck_result.errors.get(&start_index) {
+            let word = self.get_text_slice_for_range(start_index..start_index + length);
+            return Some(dict.suggest(word));
+        }
+
+        None
+    }
+
+    pub fn apply_spellcheck_correction_at_cursor(
+        &mut self,
+        cursor: &mut GraphemeCursor,
+        correction: &str,
+    ) {
+        let cur_pos = cursor.cur_cursor();
+        let start_index = self.get_prev_word_start_index(cur_pos);
+
+        if let Some(length) = self.spellcheck_result.errors.get(&start_index) {
+            let old_length = *length;
+            let new_length = correction.len();
+
+            self.text
+                .replace_range(start_index..start_index + old_length, correction);
+
+            self.spellcheck_result.errors.remove(&start_index);
+
+            // translate the text attributes
+            self.translate_attrs_after_cursor(
+                start_index + old_length,
+                (new_length as i32) - (old_length as i32),
+            );
+
+            *cursor = GraphemeCursor::new(start_index + new_length, self.text.len(), true);
+        }
+    }
+
     pub fn check_spelling_range(
         &mut self,
         start_index: usize,
@@ -870,7 +918,9 @@ impl TextStroke {
         };
 
         for (word_start, word_length) in translated_words {
-            let new_word_start = word_start.saturating_add_signed(offset as isize);
+            let Some(new_word_start) = word_start.checked_add_signed(offset as isize) else {
+                continue;
+            };
 
             if new_word_start >= from_pos {
                 self.spellcheck_result

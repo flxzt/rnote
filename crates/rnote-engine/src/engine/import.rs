@@ -1,6 +1,7 @@
 // Imports
-use super::{EngineConfig, EngineViewMut, StrokeContent};
+use super::{EngineConfig, StrokeContent};
 use crate::document::Layout;
+use crate::engine_view_mut;
 use crate::pens::Pen;
 use crate::pens::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
@@ -169,14 +170,7 @@ impl Engine {
 
         widget_flags |= self
             .penholder
-            .reinstall_pen_current_style(&mut EngineViewMut {
-                tasks_tx: self.tasks_tx.clone(),
-                pens_config: &mut self.pens_config,
-                document: &mut self.document,
-                store: &mut self.store,
-                camera: &mut self.camera,
-                audioplayer: &mut self.audioplayer,
-            });
+            .reinstall_pen_current_style(&mut engine_view_mut!(self));
         widget_flags |= self.doc_resize_to_fit_content();
         widget_flags.redraw = true;
         widget_flags.refresh_ui = true;
@@ -203,14 +197,7 @@ impl Engine {
 
         widget_flags |= self
             .penholder
-            .reinstall_pen_current_style(&mut EngineViewMut {
-                tasks_tx: self.tasks_tx.clone(),
-                pens_config: &mut self.pens_config,
-                document: &mut self.document,
-                store: &mut self.store,
-                camera: &mut self.camera,
-                audioplayer: &mut self.audioplayer,
-            });
+            .reinstall_pen_current_style(&mut engine_view_mut!(self));
         widget_flags |= self.doc_resize_to_fit_content();
         widget_flags.redraw = true;
         widget_flags.refresh_ui = true;
@@ -433,18 +420,7 @@ impl Engine {
         widget_flags |= self.change_pen_style(PenStyle::Typewriter);
 
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
-            widget_flags |= typewriter.insert_text(
-                text,
-                pos,
-                &mut EngineViewMut {
-                    tasks_tx: self.tasks_tx.clone(),
-                    pens_config: &mut self.pens_config,
-                    document: &mut self.document,
-                    store: &mut self.store,
-                    camera: &mut self.camera,
-                    audioplayer: &mut self.audioplayer,
-                },
-            );
+            widget_flags |= typewriter.insert_text(text, pos, &mut engine_view_mut!(self));
         }
 
         widget_flags |= self.store.record(Instant::now());
@@ -487,14 +463,9 @@ impl Engine {
             self.camera.image_scale(),
         );
 
-        widget_flags |= self.penholder.current_pen_update_state(&mut EngineViewMut {
-            tasks_tx: self.tasks_tx.clone(),
-            pens_config: &mut self.pens_config,
-            document: &mut self.document,
-            store: &mut self.store,
-            camera: &mut self.camera,
-            audioplayer: &mut self.audioplayer,
-        });
+        widget_flags |= self
+            .penholder
+            .current_pen_update_state(&mut engine_view_mut!(self));
 
         widget_flags |= self.store.record(Instant::now());
         widget_flags.redraw = true;

@@ -163,7 +163,7 @@ impl Engine {
     ) -> anyhow::Result<()> {
         use crate::drawable::DrawableOnDoc;
         use crate::engine::visual_debug;
-        use crate::engine::EngineView;
+        use crate::engine_view;
         use gtk4::prelude::*;
 
         let doc_bounds = self.document.bounds();
@@ -190,17 +190,8 @@ impl Engine {
                    self.camera.image_scale(),
                );
         */
-        self.penholder.draw_on_doc_to_gtk_snapshot(
-            snapshot,
-            &EngineView {
-                tasks_tx: self.engine_tasks_tx(),
-                pens_config: &self.pens_config,
-                document: &self.document,
-                store: &self.store,
-                camera: &self.camera,
-                audioplayer: &self.audioplayer,
-            },
-        )?;
+        self.penholder
+            .draw_on_doc_to_gtk_snapshot(snapshot, &engine_view!(self))?;
 
         if self.visual_debug {
             snapshot.save();

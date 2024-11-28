@@ -134,8 +134,6 @@ pub enum EngineTask {
     },
     /// Requests that the typewriter cursor should be blinked/toggled
     BlinkTypewriterCursor,
-    /// Emits an animation frame event.
-    // EmitAnimationFrame,
     /// Change the permanent zoom to the given value
     Zoom(f64),
     /// Indicates that the application is quitting. Sent to quit the handler which receives the tasks.
@@ -488,13 +486,6 @@ impl Engine {
                     widget_flags.redraw = true;
                 }
             }
-            // EngineTask::EmitAnimationFrame => {
-            //     self.animation.reset();
-
-            //     widget_flags |= self
-            //         .handle_pen_event(PenEvent::AnimationFrame, None, Instant::now())
-            //         .1;
-            // }
             EngineTask::Zoom(zoom) => {
                 widget_flags |= self.camera.zoom_temporarily_to(1.0) | self.camera.zoom_to(zoom);
 

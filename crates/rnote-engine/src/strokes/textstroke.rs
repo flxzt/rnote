@@ -906,13 +906,16 @@ impl TextStroke {
     /// Translate the ranged text attributes after the given cursor.
     ///
     /// Overlapping ranges are extended / shrunk
+    ///
+    /// * `from_pos` is always the start of the range to translate.
+    /// * `offset` is the translation. The end of the range is calculated by adding the **absolute** value of the offset.
     fn translate_attrs_after_cursor(&mut self, from_pos: usize, offset: i32) {
         let translated_words = if offset < 0 {
-            let to_pos = from_pos.saturating_add_signed(offset as isize);
+            let to_pos = from_pos.saturating_add(offset.unsigned_abs() as usize);
             self.spellcheck_result
                 .errors
-                .split_off(&to_pos)
                 .split_off(&from_pos)
+                .split_off(&to_pos)
         } else {
             self.spellcheck_result.errors.split_off(&from_pos)
         };

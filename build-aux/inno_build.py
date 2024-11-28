@@ -57,6 +57,12 @@ for loader in glob.glob(f"{build_environment_path}/lib/gdk-pixbuf-2.0/2.10.0/loa
         f"Collecting pixbuf-loader ({loader}) DLLs failed"
     )
 
+for enchant_provider in glob.glob(f"{build_environment_path}/lib/enchant-2/*.dll"):
+    run_command(
+        f"ldd {enchant_provider} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+        f"Collecting enchant provider ({enchant_provider}) DLLs failed",
+    )
+
 for angle_dll in itertools.chain(
     glob.glob(f"{build_environment_path}/bin/libEGL*.dll"),
     glob.glob(f"{build_environment_path}/bin/libGLES*.dll"),

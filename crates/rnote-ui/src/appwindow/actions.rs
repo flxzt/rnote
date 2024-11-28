@@ -1,6 +1,7 @@
 // Imports
 use crate::{config, dialogs, RnAppWindow, RnCanvas};
 use gettextrs::gettext;
+use gtk4::gio::InputStream;
 use gtk4::graphene;
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit,
@@ -1164,38 +1165,52 @@ impl RnAppWindow {
                 async move {
                     debug!("Recognized clipboard content format: files list");
 
-                    match appwindow.clipboard().read_text_future().await {
-                        Ok(Some(text)) => {
-                            let file_paths = text
-                                .lines()
-                                .filter_map(|line| {
-                                    let file_path = if let Ok(path_uri) = url::Url::parse(line) {
-                                        path_uri.to_file_path().ok()?
-                                    } else {
-                                        PathBuf::from(&line)
-                                    };
+                    match appwindow
+                        .clipboard()
+                        .read_future(&["text/uri-list"], glib::source::Priority::DEFAULT)
+                        .await
+                    {
+                        Ok((input_stream, _)) => {
+                            let acc = collect_clipboard_data(input_stream).await;
+                            if !acc.is_empty() {
+                                match crate::utils::str_from_u8_nul_utf8(&acc) {
+                                    Ok(text) => {
+                                        debug!("files uri list : {:?}", text);
+                                        let file_paths = text
+                                            .lines()
+                                            .filter_map(|line| {
+                                                let file_path = if let Ok(path_uri) = url::Url::parse(line) {
+                                                    path_uri.to_file_path().ok()?
+                                                } else {
+                                                    PathBuf::from(&line)
+                                                };
 
-                                    if file_path.exists() {
-                                        Some(file_path)
-                                    } else {
-                                        None
+                                                if file_path.exists() {
+                                                    Some(file_path)
+                                                } else {
+                                                    None
+                                                }
+                                            })
+                                            .collect::<Vec<PathBuf>>();
+
+                                        for file_path in file_paths {
+                                            appwindow
+                                                .open_file_w_dialogs(
+                                                    gio::File::for_path(&file_path),
+                                                    target_pos,
+                                                    true,
+                                                )
+                                                .await;
+                                        }
                                     }
-                                })
-                                .collect::<Vec<PathBuf>>();
-
-                            for file_path in file_paths {
-                                appwindow
-                                    .open_file_w_dialogs(
-                                        gio::File::for_path(&file_path),
-                                        target_pos,
-                                        true,
-                                    )
-                                    .await;
+                                    Err(e) => error!("Failed to read `text/uri-list` from clipboard data, Err: {e:?}"),
+                                    }
                             }
                         }
-                        Ok(None) => {}
                         Err(e) => {
-                            error!("Reading clipboard text while pasting clipboard from path failed, Err: {e:?}");
+                            error!(
+                                "Reading clipboard failed while pasting as `text/uri-list`, Err: {e:?}",
+                            );
                         }
                     }
                 }
@@ -1218,28 +1233,7 @@ impl RnAppWindow {
                         .await
                     {
                         Ok((input_stream, _)) => {
-                            let mut acc = Vec::new();
-                            loop {
-                                match input_stream
-                                    .read_future(
-                                        vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE],
-                                        glib::source::Priority::DEFAULT,
-                                    )
-                                    .await
-                                {
-                                    Ok((mut bytes, n)) => {
-                                        if n == 0 {
-                                            break;
-                                        }
-                                        acc.append(&mut bytes);
-                                    }
-                                    Err(e) => {
-                                        error!("Failed to read clipboard input stream, Err: {e:?}");
-                                        acc.clear();
-                                        break;
-                                    }
-                                }
-                            }
+                            let acc = collect_clipboard_data(input_stream).await;
 
                             if !acc.is_empty() {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
@@ -1282,28 +1276,7 @@ impl RnAppWindow {
                         .await
                     {
                         Ok((input_stream, _)) => {
-                            let mut acc = Vec::new();
-                            loop {
-                                match input_stream
-                                    .read_future(
-                                        vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE],
-                                        glib::source::Priority::DEFAULT,
-                                    )
-                                    .await
-                                {
-                                    Ok((mut bytes, n)) => {
-                                        if n == 0 {
-                                            break;
-                                        }
-                                        acc.append(&mut bytes);
-                                    }
-                                    Err(e) => {
-                                        error!("Failed to read clipboard input stream while pasting as Svg, Err: {e:?}");
-                                        acc.clear();
-                                        break;
-                                    }
-                                }
-                            }
+                            let acc = collect_clipboard_data(input_stream).await;
 
                             if !acc.is_empty() {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
@@ -1409,4 +1382,30 @@ impl RnAppWindow {
             );
         }
     }
+}
+
+async fn collect_clipboard_data(input_stream: InputStream) -> Vec<u8> {
+    let mut acc = Vec::new();
+    loop {
+        match input_stream
+            .read_future(
+                vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE],
+                glib::source::Priority::DEFAULT,
+            )
+            .await
+        {
+            Ok((mut bytes, n)) => {
+                if n == 0 {
+                    break;
+                }
+                acc.append(&mut bytes);
+            }
+            Err(e) => {
+                error!("Failed to read clipboard input stream, Err: {e:?}");
+                acc.clear();
+                break;
+            }
+        }
+    }
+    acc
 }

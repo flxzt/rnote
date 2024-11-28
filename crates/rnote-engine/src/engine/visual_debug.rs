@@ -204,7 +204,7 @@ pub(crate) fn draw_stroke_debug_to_gtk_snapshot(
     surface_bounds: p2d::bounding_volume::Aabb,
 ) -> anyhow::Result<()> {
     use crate::drawable::DrawableOnDoc;
-    use crate::engine::EngineView;
+    use crate::engine_view;
     use p2d::bounding_volume::BoundingVolume;
 
     let viewport = engine.camera.viewport();
@@ -228,14 +228,7 @@ pub(crate) fn draw_stroke_debug_to_gtk_snapshot(
         .draw_debug_to_gtk_snapshot(snapshot, engine, surface_bounds)?;
 
     // Draw the current pen bounds
-    if let Some(bounds) = engine.penholder.bounds_on_doc(&EngineView {
-        tasks_tx: engine.engine_tasks_tx(),
-        pens_config: &engine.pens_config,
-        document: &engine.document,
-        store: &engine.store,
-        camera: &engine.camera,
-        audioplayer: &engine.audioplayer,
-    }) {
+    if let Some(bounds) = engine.penholder.bounds_on_doc(&engine_view!(engine)) {
         draw_bounds_to_gtk_snapshot(bounds, COLOR_SELECTOR_BOUNDS, snapshot, border_widths);
     }
 

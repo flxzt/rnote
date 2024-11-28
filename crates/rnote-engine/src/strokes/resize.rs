@@ -30,7 +30,7 @@ pub struct Resize {
     pub respect_borders: bool,
 }
 
-/// helper functions for calculating resizing factors
+// helper functions for calculating resizing factors
 
 /// Calculate where the next border of the page is
 /// based on the current `position` and the `size` of

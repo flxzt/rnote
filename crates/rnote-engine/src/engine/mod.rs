@@ -88,7 +88,7 @@ macro_rules! engine_view_mut {
     };
 }
 
-impl<'a> EngineViewMut<'a> {
+impl EngineViewMut<'_> {
     // Converts itself to the immutable view.
     pub(crate) fn as_im<'m>(&'m self) -> EngineView<'m> {
         EngineView::<'m> {
@@ -403,7 +403,7 @@ impl Engine {
     ///        if let Some(task) = task_rx.next().await {
     ///            let (widget_flags, quit) = canvas.engine_mut().handle_engine_task(task);
     ///            canvas.emit_handle_widget_flags(widget_flags);
-
+    ///
     ///            if quit {
     ///                break;
     ///            }

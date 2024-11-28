@@ -180,7 +180,7 @@ pub fn draw_rectangular_node(
     );
 }
 
-/// Circular Node
+// Circular Node
 
 /// Circular node outline width.
 pub const CIRCULAR_NODE_OUTLINE_WIDTH: f64 = 1.5;

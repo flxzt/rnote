@@ -14,11 +14,15 @@ use gtk4::{
     Adjustment, Button, ColorDialogButton, CompositeTemplate, MenuButton, ScrolledWindow,
     StringList, ToggleButton, Widget, gdk, glib, glib::clone, subclass::prelude::*,
 };
+use icu_experimental::displaynames::{
+    DisplayNamesOptions, LanguageDisplay, LocaleDisplayNamesFormatter,
+};
+use icu_locale::Locale;
 use num_traits::ToPrimitive;
 use rnote_compose::penevent::ShortcutKey;
-use rnote_engine::document::Layout;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
+use rnote_engine::document::{Layout, SpellcheckOptions};
 use rnote_engine::engine::SPELLCHECK_AVAILABLE_LANGUAGES;
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
@@ -96,6 +100,8 @@ mod imp {
         pub(crate) doc_background_pattern_width_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
         pub(crate) doc_background_pattern_height_unitentry: TemplateChild<RnUnitEntry>,
+        #[template_child]
+        pub(crate) doc_spellcheck_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(crate) doc_spellcheck_language_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -345,10 +351,6 @@ impl RnSettingsPanel {
     pub(crate) fn spellcheck_language(&self) -> Option<String> {
         let position = self.imp().doc_spellcheck_language_row.selected();
 
-        if position == 0 {
-            return None;
-        }
-
         self.imp()
             .available_spellcheck_languages
             .borrow()
@@ -356,24 +358,29 @@ impl RnSettingsPanel {
             .cloned()
     }
 
-    pub(crate) fn set_spellcheck_language(&self, language: Option<String>) {
+    pub(crate) fn set_spellcheck_language(&self, language: &Option<String>) {
         if let Some(language) = language {
             if let Some(position) = self
                 .imp()
                 .available_spellcheck_languages
                 .borrow()
                 .iter()
-                .position(|l| l == &language)
+                .position(|l| l == language)
             {
                 self.imp()
                     .doc_spellcheck_language_row
                     .set_selected(position as u32);
-
-                return;
             }
         }
+    }
 
-        self.imp().doc_spellcheck_language_row.set_selected(0);
+    pub(crate) fn set_spellcheck_enabled(&self, enabled: bool) {
+        self.imp().doc_spellcheck_row.set_active(enabled);
+    }
+
+    pub(crate) fn set_spellcheck_options(&self, options: &SpellcheckOptions) {
+        self.set_spellcheck_enabled(options.enabled);
+        self.set_spellcheck_language(&options.language);
     }
 
     #[allow(unused)]
@@ -472,7 +479,7 @@ impl RnSettingsPanel {
         let background = canvas.engine_ref().document.background;
         let format = canvas.engine_ref().document.format;
         let document_layout = canvas.engine_ref().document.layout;
-        let spellcheck_language = canvas.engine_ref().document.spellcheck_language.clone();
+        let spellcheck_options = canvas.engine_ref().document.spellcheck_options.clone();
 
         imp.doc_background_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
@@ -488,7 +495,7 @@ impl RnSettingsPanel {
         imp.doc_background_pattern_height_unitentry
             .set_value_in_px(background.pattern_size[1]);
         self.set_document_layout(&document_layout);
-        self.set_spellcheck_language(spellcheck_language);
+        self.set_spellcheck_options(&spellcheck_options);
     }
 
     fn refresh_shortcuts_ui(&self, active_tab: &RnCanvasWrapper) {
@@ -955,18 +962,57 @@ impl RnSettingsPanel {
                 ),
             );
 
-        imp.available_spellcheck_languages.replace(
-            [gettext("None")]
-                .into_iter()
-                .chain(SPELLCHECK_AVAILABLE_LANGUAGES.clone())
-                .collect(),
-        );
+        imp.doc_spellcheck_row
+            .get()
+            .bind_property("active", &*imp.doc_spellcheck_language_row, "sensitive")
+            .sync_create()
+            .build();
+
+        imp.doc_spellcheck_row.get().connect_active_notify(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
+                canvas.engine_mut().document.spellcheck_options.enabled = row.is_active();
+
+                let widget_flags = canvas.engine_mut().refresh_spellcheck_language();
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }
+        ));
+
+        let current_locale = glib::language_names()
+            .into_iter()
+            .find_map(|l| Locale::try_from_str(l.as_str()).ok());
+
+        let mut locale_name_formatter_options = DisplayNamesOptions::default();
+        locale_name_formatter_options.language_display = LanguageDisplay::Standard;
+
+        let locale_name_formatter = current_locale.and_then(|l| {
+            LocaleDisplayNamesFormatter::try_new(l.into(), locale_name_formatter_options).ok()
+        });
+
+        imp.available_spellcheck_languages
+            .replace(SPELLCHECK_AVAILABLE_LANGUAGES.clone());
 
         imp.doc_spellcheck_language_row.get().set_model(Some(
             &imp.available_spellcheck_languages
                 .borrow()
                 .iter()
                 .cloned()
+                .map(|l| {
+                    let Some(locale_name_formatter) = &locale_name_formatter else {
+                        return l;
+                    };
+
+                    if let Ok(locale) = Locale::try_from_str(l.as_str()) {
+                        locale_name_formatter.of(&locale).to_string()
+                    } else {
+                        l
+                    }
+                })
                 .collect::<StringList>(),
         ));
 
@@ -983,7 +1029,7 @@ impl RnSettingsPanel {
                     };
 
                     let language = settings_panel.spellcheck_language();
-                    canvas.engine_mut().document.spellcheck_language = language;
+                    canvas.engine_mut().document.spellcheck_options.language = language;
 
                     let widget_flags = canvas.engine_mut().refresh_spellcheck_language();
                     appwindow.handle_widget_flags(widget_flags, &canvas);

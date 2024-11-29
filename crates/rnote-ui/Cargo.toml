@@ -23,6 +23,8 @@ fs_extra = { workspace = true }
 futures = { workspace = true }
 gettext-rs = { workspace = true }
 gtk4 = { workspace = true }
+icu_experimental = { workspace = true }
+icu_locale = { workspace = true }
 ijson = { workspace = true }
 image = { workspace = true }
 itertools = { workspace = true }

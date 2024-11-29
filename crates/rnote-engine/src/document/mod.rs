@@ -90,6 +90,35 @@ impl Layout {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SpellcheckOptions {
+    pub enabled: bool,
+    pub language: Option<String>,
+}
+
+impl Default for SpellcheckOptions {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            language: SPELLCHECK_DEFAULT_LANGUAGE.clone(),
+        }
+    }
+}
+
+impl SpellcheckOptions {
+    pub fn dictionary(&self, broker: &mut enchant::Broker) -> Option<enchant::Dict> {
+        if self.enabled {
+            if let Some(language) = &self.language {
+                broker.request_dict(language).ok()
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "document")]
 pub struct Document {
     #[serde(rename = "x", with = "rnote_compose::serialize::f64_dp3")]
@@ -108,8 +137,8 @@ pub struct Document {
     pub layout: Layout,
     #[serde(rename = "snap_positions")]
     pub snap_positions: bool,
-    #[serde(rename = "spellcheck_language")]
-    pub spellcheck_language: Option<String>,
+    #[serde(rename = "spellcheck_options")]
+    pub spellcheck_options: SpellcheckOptions,
 }
 
 impl Default for Document {
@@ -123,7 +152,7 @@ impl Default for Document {
             background: Background::default(),
             layout: Layout::default(),
             snap_positions: false,
-            spellcheck_language: SPELLCHECK_DEFAULT_LANGUAGE.clone(),
+            spellcheck_options: SpellcheckOptions::default(),
         }
     }
 }

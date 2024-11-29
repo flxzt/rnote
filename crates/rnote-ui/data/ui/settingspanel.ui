@@ -395,9 +395,15 @@ gets disabled.</property>
                       </object>
                     </child>
                     <child>
+                      <object class="AdwSwitchRow" id="doc_spellcheck_row">
+                        <property name="title" translatable="yes">Spellcheck</property>
+                        <property name="subtitle" translatable="yes">Enable or disable spellcheck</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="AdwComboRow" id="doc_spellcheck_language_row">
                         <property name="title" translatable="yes">Spellcheck Language</property>
-                        <property name="subtitle" translatable="yes">Disable or choose the language for spellchecking</property>
+                        <property name="subtitle" translatable="yes">Choose the language used by spellcheck</property>
                         <property name="enable-search">true</property>
                         <property name="search-match-mode">substring</property>
                         <property name="expression">

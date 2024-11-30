@@ -564,8 +564,7 @@ mod imp {
                 self.canvas_zoom_gesture.connect_end(clone!(
                     #[weak(rename_to=canvaswrapper)]
                     obj,
-                    move |gesture, _event_sequence| {
-                        gesture.set_state(EventSequenceState::Denied);
+                    move |_gesture, _event_sequence| {
                         let widget_flags = canvaswrapper
                             .canvas()
                             .engine_mut()

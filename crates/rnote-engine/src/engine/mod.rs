@@ -190,17 +190,20 @@ pub struct Animation {
 }
 
 impl Animation {
+    /// Claim an animation frame.
+    ///
+    /// Returns whether an animation frame was already claimed.
     pub fn claim_frame(&mut self) -> bool {
         if self.frame_in_flight {
             debug!("Animation frame already in flight, skipping");
-            false
+            true
         } else {
             self.frame_in_flight = true;
-            true
+            false
         }
     }
 
-    pub fn frame_claimed(&self) -> bool {
+    pub fn frame_in_flight(&self) -> bool {
         self.frame_in_flight
     }
 
@@ -919,7 +922,7 @@ impl Engine {
         widget_flags
     }
 
-    /// Request a animation frame.
+    /// Request an animation frame.
     ///
     /// Returns whether an animation frame was already requested.
     pub fn request_animation_frame(&mut self) -> bool {
@@ -927,11 +930,11 @@ impl Engine {
     }
 
     /// Drive animations forward.
-    /// Only an operation if a animation frame was previously requested.
+    /// Only an operation if an animation frame was previously requested.
     ///
     /// Returns true if another frame is requested.
     pub fn drive_animation_frame(&mut self) -> bool {
-        if self.animation.frame_claimed() {
+        if self.animation.frame_in_flight() {
             if self
                 .penholder
                 .handle_animation_frame(&mut engine_view_mut!(self))

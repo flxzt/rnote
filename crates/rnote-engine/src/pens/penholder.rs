@@ -253,10 +253,19 @@ impl PenHolder {
             widget_flags |= wf;
         }
 
-        // Always redraw after handling a pen event
+        // Always redraw after handling a pen event.
+        //
+        // This is also needed because pens might have claimed/requested an animation frame.
         widget_flags.redraw = true;
 
         (event_result.propagate, widget_flags)
+    }
+
+    /// Handle a requested animation frame.
+    ///
+    /// Returns true if another frame is requested.
+    pub fn handle_animation_frame(&mut self, engine_view: &mut EngineViewMut) -> bool {
+        self.current_pen.handle_animation_frame(engine_view)
     }
 
     /// Handle a pressed shortcut key.

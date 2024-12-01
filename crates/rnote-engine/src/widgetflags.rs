@@ -26,6 +26,8 @@ pub struct WidgetFlags {
     /// Meaning, when enabled instead of key events, text events are then emitted
     /// for regular unicode text. Used when writing text with the typewriter.
     pub enable_text_preprocessing: Option<bool>,
+    /// Whether an animation frame is requested
+    pub request_animation_frame: bool,
 }
 
 impl Default for WidgetFlags {
@@ -42,6 +44,7 @@ impl Default for WidgetFlags {
             hide_undo: None,
             hide_redo: None,
             enable_text_preprocessing: None,
+            request_animation_frame: false,
         }
     }
 }
@@ -74,5 +77,6 @@ impl std::ops::BitOrAssign for WidgetFlags {
         if rhs.enable_text_preprocessing.is_some() {
             self.enable_text_preprocessing = rhs.enable_text_preprocessing;
         }
+        self.request_animation_frame |= rhs.request_animation_frame;
     }
 }

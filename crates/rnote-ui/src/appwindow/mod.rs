@@ -268,6 +268,9 @@ impl RnAppWindow {
         if let Some(enable_text_preprocessing) = widget_flags.enable_text_preprocessing {
             canvas.set_text_preprocessing(enable_text_preprocessing);
         }
+        if widget_flags.request_animation_frame {
+            canvas.queue_draw();
+        }
     }
 
     /// Get the active (selected) tab page.

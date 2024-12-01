@@ -439,6 +439,10 @@ mod imp {
         fn snapshot(&self, snapshot: &gtk4::Snapshot) {
             let obj = self.obj();
 
+            if obj.engine_mut().drive_animation_frame() {
+                obj.queue_draw();
+            }
+
             if let Err(e) = || -> anyhow::Result<()> {
                 let clip_bounds = if let Some(parent) = obj.parent() {
                     Aabb::new_positive(

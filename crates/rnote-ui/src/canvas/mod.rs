@@ -439,8 +439,16 @@ mod imp {
         fn snapshot(&self, snapshot: &gtk4::Snapshot) {
             let obj = self.obj();
 
-            if obj.engine_mut().drive_animation_frame() {
-                obj.queue_draw();
+            if obj.engine_ref().animation.frame_in_flight() {
+                glib::idle_add_local_once(clone!(
+                    #[weak]
+                    obj,
+                    move || {
+                        obj.engine_mut().animation.reset();
+                        obj.engine_mut().handle_animation_frame();
+                        obj.queue_draw();
+                    }
+                ));
             }
 
             if let Err(e) = || -> anyhow::Result<()> {

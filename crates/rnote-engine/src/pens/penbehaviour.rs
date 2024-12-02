@@ -34,10 +34,8 @@ pub trait PenBehaviour: DrawableOnDoc {
 
     /// Handle a requested animation frame.
     ///
-    /// Returns true if another frame is requested.
-    fn handle_animation_frame(&mut self, _engine_view: &mut EngineViewMut) -> bool {
-        false
-    }
+    /// Can request another frame using `ÈngineViewMut#animation.claim_frame()`.
+    fn handle_animation_frame(&mut self, _engine_view: &mut EngineViewMut) {}
 
     /// Fetch clipboard content from the pen.
     ///

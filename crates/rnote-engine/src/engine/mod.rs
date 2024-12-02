@@ -922,28 +922,11 @@ impl Engine {
         widget_flags
     }
 
-    /// Request an animation frame.
+    /// Handle a requested animation frame.
     ///
-    /// Returns whether an animation frame was already requested.
-    pub fn request_animation_frame(&mut self) -> bool {
-        self.animation.claim_frame()
-    }
-
-    /// Drive animations forward.
-    /// Only an operation if an animation frame was previously requested.
-    ///
-    /// Returns true if another frame is requested.
-    pub fn drive_animation_frame(&mut self) -> bool {
-        if self.animation.frame_in_flight() {
-            if self
-                .penholder
-                .handle_animation_frame(&mut engine_view_mut!(self))
-            {
-                self.animation.claim_frame();
-            }
-            true
-        } else {
-            false
-        }
+    /// Can request another frame using `ÈngineViewMut#animation.claim_frame()`.
+    pub fn handle_animation_frame(&mut self) {
+        self.penholder
+            .handle_animation_frame(&mut engine_view_mut!(self));
     }
 }

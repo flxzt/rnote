@@ -207,8 +207,13 @@ impl Animation {
         self.frame_in_flight
     }
 
-    pub fn reset(&mut self) {
-        self.frame_in_flight = false;
+    pub fn process_frame(&mut self) -> bool {
+        if self.frame_in_flight {
+            self.frame_in_flight = false;
+            true
+        } else {
+            false
+        }
     }
 }
 

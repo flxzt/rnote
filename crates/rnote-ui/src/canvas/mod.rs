@@ -254,8 +254,14 @@ mod imp {
                 glib::ControlFlow::Break,
                 move |_widget, _frame_clock| {
                     if canvas.engine_mut().animation.process_frame() {
-                        canvas.engine_mut().handle_animation_frame();
-                        canvas.queue_draw();
+                        let optimize_epd = canvas.engine_ref().optimize_epd();
+                        canvas.engine_mut().handle_animation_frame(optimize_epd);
+
+                        // if optimize_epd is enabled, we only redraw the canvas
+                        // when no follow-up frame has been requested (i.e. the animation is done)
+                        if !optimize_epd || !canvas.engine_ref().animation.frame_in_flight() {
+                            canvas.queue_draw();
+                        }
                     }
 
                     glib::ControlFlow::Continue

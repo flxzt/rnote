@@ -178,6 +178,10 @@ impl ZoomTool {
 
 impl DrawableOnDoc for ZoomTool {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+        if matches!(self.state, ToolsState::Idle) {
+            return None;
+        }
+
         let start_circle_center = engine_view
             .camera
             .transform()

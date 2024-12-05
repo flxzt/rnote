@@ -149,6 +149,10 @@ impl OffsetCameraTool {
 
 impl DrawableOnDoc for OffsetCameraTool {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+        if matches!(self.state, ToolsState::Idle) {
+            return None;
+        }
+
         Some(Aabb::from_half_extents(
             self.start.into(),
             ((Self::CURSOR_SIZE + na::Vector2::repeat(Self::CURSOR_STROKE_WIDTH)) * 0.5)

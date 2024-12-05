@@ -219,6 +219,10 @@ impl VerticalSpaceTool {
 
 impl DrawableOnDoc for VerticalSpaceTool {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+        if matches!(self.state, ToolsState::Idle) {
+            return None;
+        }
+
         let viewport = engine_view.camera.viewport();
 
         let x = viewport.mins[0];

@@ -314,7 +314,7 @@ impl StrokeStore {
     /// Optionally a desired layer can be specified, or the default stroke layer is used.
     ///
     /// The stroke then needs to update its rendering.
-    pub(crate) fn insert_stroke(
+    pub fn insert_stroke(
         &mut self,
         stroke: Stroke,
         layer: Option<StrokeLayer>,

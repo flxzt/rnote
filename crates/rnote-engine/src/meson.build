@@ -35,6 +35,7 @@ rnote_engine_sources = files(
     'pens/shaper.rs',
     'pens/shortcuts.rs',
     'pens/tools/mod.rs',
+    'pens/tools/laser.rs',
     'pens/tools/offsetcamera.rs',
     'pens/tools/verticalspace.rs',
     'pens/tools/zoom.rs',

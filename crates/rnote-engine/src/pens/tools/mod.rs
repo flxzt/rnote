@@ -1,9 +1,11 @@
 // Modules
+mod laser;
 mod offsetcamera;
 mod verticalspace;
 mod zoom;
 
 // Re-Exports
+use laser::LaserTool;
 use offsetcamera::OffsetCameraTool;
 use verticalspace::VerticalSpaceTool;
 use zoom::ZoomTool;
@@ -32,11 +34,12 @@ impl Default for ToolsState {
     }
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Debug, Default)]
 pub struct Tools {
     verticalspace_tool: VerticalSpaceTool,
     offsetcamera_tool: OffsetCameraTool,
     zoom_tool: ZoomTool,
+    laser_tool: LaserTool,
 }
 
 impl PenBehaviour for Tools {
@@ -69,6 +72,16 @@ impl PenBehaviour for Tools {
             }
             ToolStyle::OffsetCamera => self.offsetcamera_tool.handle_event(event, now, engine_view),
             ToolStyle::Zoom => self.zoom_tool.handle_event(event, now, engine_view),
+            ToolStyle::Laser => self.laser_tool.handle_event(event, now, engine_view),
+        }
+    }
+
+    fn handle_animation_frame(&mut self, engine_view: &mut EngineViewMut, optimize_epd: bool) {
+        match engine_view.pens_config.tools_config.style {
+            ToolStyle::Laser => self
+                .laser_tool
+                .handle_animation_frame(engine_view, optimize_epd),
+            _ => {}
         }
     }
 }
@@ -79,6 +92,7 @@ impl DrawableOnDoc for Tools {
             ToolStyle::VerticalSpace => self.verticalspace_tool.bounds_on_doc(engine_view),
             ToolStyle::OffsetCamera => self.offsetcamera_tool.bounds_on_doc(engine_view),
             ToolStyle::Zoom => self.zoom_tool.bounds_on_doc(engine_view),
+            ToolStyle::Laser => self.laser_tool.bounds_on_doc(engine_view),
         }
     }
 
@@ -98,6 +112,9 @@ impl DrawableOnDoc for Tools {
             }
             ToolStyle::Zoom => {
                 self.zoom_tool.draw_on_doc(cx, engine_view)?;
+            }
+            ToolStyle::Laser => {
+                self.laser_tool.draw_on_doc(cx, engine_view)?;
             }
         }
 

@@ -34,7 +34,7 @@ rnote_engine_sources = files(
     'pens/selector/penevents.rs',
     'pens/shaper.rs',
     'pens/shortcuts.rs',
-    'pens/tools.rs',
+    'pens/tools/mod.rs',
     'pens/typewriter/mod.rs',
     'pens/typewriter/penevents.rs',
     'store/chrono_comp.rs',

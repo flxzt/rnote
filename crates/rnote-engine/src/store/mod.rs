@@ -314,11 +314,7 @@ impl StrokeStore {
     /// Optionally a desired layer can be specified, or the default stroke layer is used.
     ///
     /// The stroke then needs to update its rendering.
-    pub fn insert_stroke(
-        &mut self,
-        stroke: Stroke,
-        layer: Option<StrokeLayer>,
-    ) -> StrokeKey {
+    pub fn insert_stroke(&mut self, stroke: Stroke, layer: Option<StrokeLayer>) -> StrokeKey {
         let bounds = stroke.bounds();
         let layer = layer.unwrap_or_else(|| stroke.extract_default_layer());
 

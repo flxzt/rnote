@@ -131,6 +131,10 @@ pub enum EngineTask {
     BlinkTypewriterCursor,
     /// Change the permanent zoom to the given value
     Zoom(f64),
+    /// Task for a pen that's held down at the same position for a long time
+    /// We do that through a task to take into account the case of a mouse that's
+    /// held down at the same position without giving any new event
+    LongPressStatic,
     /// Indicates that the application is quitting. Sent to quit the handler which receives the tasks.
     Quit,
 }
@@ -456,6 +460,21 @@ impl Engine {
                     typewriter.toggle_cursor_visibility();
                     widget_flags.redraw = true;
                 }
+            }
+            EngineTask::LongPressStatic => {
+                println!("long press event, engine task");
+                // when we are here, we know this is a long press event
+                widget_flags |= self.penholder.handle_long_press(
+                    Instant::now(),
+                    &mut EngineViewMut {
+                        tasks_tx: self.engine_tasks_tx(),
+                        pens_config: &mut self.pens_config,
+                        document: &mut self.document,
+                        store: &mut self.store,
+                        camera: &mut self.camera,
+                        audioplayer: &mut self.audioplayer,
+                    },
+                );
             }
             EngineTask::Zoom(zoom) => {
                 widget_flags |= self.camera.zoom_temporarily_to(1.0) | self.camera.zoom_to(zoom);

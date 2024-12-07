@@ -75,6 +75,7 @@ mod imp {
 
         pub(crate) engine: RefCell<Engine>,
         pub(crate) engine_task_handler_handle: RefCell<Option<glib::JoinHandle<()>>>,
+        pub(crate) animation_callback_id: RefCell<Option<gtk4::TickCallbackId>>,
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_watcher_task: RefCell<Option<glib::JoinHandle<()>>>,
@@ -168,6 +169,7 @@ mod imp {
 
                 engine: RefCell::new(engine),
                 engine_task_handler_handle: RefCell::new(None),
+                animation_callback_id: RefCell::new(None),
 
                 output_file: RefCell::new(None),
                 output_file_watcher_task: RefCell::new(None),
@@ -244,6 +246,29 @@ mod imp {
             ));
 
             *self.engine_task_handler_handle.borrow_mut() = Some(engine_task_handler_handle);
+
+            let animation_callback_id = obj.add_tick_callback(clone!(
+                #[weak(rename_to=canvas)]
+                obj,
+                #[upgrade_or]
+                glib::ControlFlow::Break,
+                move |_widget, _frame_clock| {
+                    if canvas.engine_mut().animation.process_frame() {
+                        let optimize_epd = canvas.engine_ref().optimize_epd();
+                        canvas.engine_mut().handle_animation_frame(optimize_epd);
+
+                        // if optimize_epd is enabled, we only redraw the canvas
+                        // when no follow-up frame has been requested (i.e. the animation is done)
+                        if !optimize_epd || !canvas.engine_ref().animation.frame_in_flight() {
+                            canvas.queue_draw();
+                        }
+                    }
+
+                    glib::ControlFlow::Continue
+                }
+            ));
+
+            *self.animation_callback_id.borrow_mut() = Some(animation_callback_id);
 
             self.setup_input();
         }

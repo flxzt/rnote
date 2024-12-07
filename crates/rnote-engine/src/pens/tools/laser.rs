@@ -225,15 +225,21 @@ impl LaserTool {
 
 impl DrawableOnDoc for LaserTool {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
-        if self.has_fully_faded().is_some_and(|faded| faded) {
+        if self.has_fully_faded() == Some(true) {
             return None;
         }
 
         let strokes = self.pen_paths.iter();
 
         strokes
-            .map(|path| path.bounds())
-            .reduce(|acc, path| acc.merged(&path))
+            .fold(None, |acc: Option<Aabb>, stroke| {
+                let bounds = stroke.bounds();
+
+                match acc {
+                    Some(acc) => Some(acc.merged(&bounds)),
+                    None => Some(bounds),
+                }
+            })
             .map(|bounds| {
                 bounds.extend_by(na::Vector2::repeat(
                     Self::OUTER_STROKE_WIDTH / engine_view.camera.total_zoom(),

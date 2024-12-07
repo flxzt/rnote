@@ -8,10 +8,7 @@ use piet::RenderContext;
 use rnote_compose::builders::buildable::Buildable;
 use rnote_compose::builders::buildable::BuilderCreator;
 use rnote_compose::builders::buildable::BuilderProgress;
-use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::builders::PenPathCurvedBuilder;
-use rnote_compose::builders::PenPathModeledBuilder;
-use rnote_compose::builders::PenPathSimpleBuilder;
 use rnote_compose::color;
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::ext::AabbExt;
@@ -101,18 +98,7 @@ impl LaserTool {
             (ToolsState::Idle, PenEvent::Down { element, .. }) => {
                 self.add_new_stroke(*element);
 
-                self.path_builder = Some(match engine_view.pens_config.brush_config.builder_type {
-                    PenPathBuilderType::Simple => {
-                        Box::new(PenPathSimpleBuilder::start(*element, now))
-                    }
-                    PenPathBuilderType::Curved => {
-                        Box::new(PenPathCurvedBuilder::start(*element, now))
-                    }
-                    PenPathBuilderType::Modeled => {
-                        Box::new(PenPathModeledBuilder::start(*element, now))
-                    }
-                });
-
+                self.path_builder = Some(Box::new(PenPathCurvedBuilder::start(*element, now)));
                 self.state = ToolsState::Active;
 
                 EventResult {

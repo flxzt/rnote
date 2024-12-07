@@ -929,7 +929,7 @@ impl Engine {
 
     /// Handle a requested animation frame.
     ///
-    /// Can request another frame using `ÈngineViewMut#animation.claim_frame()`.
+    /// Can request another frame using `EngineViewMut#animation.claim_frame()`.
     pub fn handle_animation_frame(&mut self, optimize_epd: bool) {
         self.penholder
             .handle_animation_frame(&mut engine_view_mut!(self), optimize_epd);

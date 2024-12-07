@@ -263,7 +263,7 @@ impl PenHolder {
 
     /// Handle a requested animation frame.
     ///
-    /// Can request another frame using `ÈngineViewMut#animation.claim_frame()`.
+    /// Can request another frame using `EngineViewMut#animation.claim_frame()`.
     pub fn handle_animation_frame(&mut self, engine_view: &mut EngineViewMut, optimize_epd: bool) {
         self.current_pen
             .handle_animation_frame(engine_view, optimize_epd);

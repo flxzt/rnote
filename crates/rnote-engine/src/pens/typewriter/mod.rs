@@ -26,8 +26,7 @@ use unicode_segmentation::GraphemeCursor;
 
 #[derive(Debug, Clone)]
 pub(super) enum ModifyState {
-    Up,
-    Hover(na::Vector2<f64>),
+    Idle,
     Selecting {
         selection_cursor: GraphemeCursor,
         /// Whether selecting is finished.
@@ -60,6 +59,7 @@ pub(super) enum TypewriterState {
 #[derive(Debug, Clone)]
 pub struct Typewriter {
     state: TypewriterState,
+    pos: Option<na::Vector2<f64>>,
     blink_task_handle: Option<crate::tasks::PeriodicTaskHandle>,
     cursor_visible: bool,
 }
@@ -68,6 +68,7 @@ impl Default for Typewriter {
     fn default() -> Self {
         Self {
             state: TypewriterState::Idle,
+            pos: None,
             blink_task_handle: None,
             cursor_visible: true,
         }
@@ -205,15 +206,20 @@ impl DrawableOnDoc for Typewriter {
                     );
                     let adjust_text_width_node_state = match modify_state {
                         ModifyState::AdjustTextWidth { .. } => PenState::Down,
-                        ModifyState::Hover(pos) => {
-                            if adjust_text_width_node_bounds.contains_local_point(&(*pos).into()) {
-                                PenState::Proximity
+                        ModifyState::Idle => {
+                            if let Some(pos) = self.pos {
+                                if adjust_text_width_node_bounds.contains_local_point(&pos.into()) {
+                                    PenState::Proximity
+                                } else {
+                                    PenState::Up
+                                }
                             } else {
                                 PenState::Up
                             }
                         }
                         _ => PenState::Up,
                     };
+
                     indicators::draw_triangular_node(
                         cx,
                         adjust_text_width_node_state,
@@ -232,15 +238,20 @@ impl DrawableOnDoc for Typewriter {
                             Self::translate_node_bounds(typewriter_bounds, engine_view.camera);
                         let translate_node_state = match modify_state {
                             ModifyState::Translating { .. } => PenState::Down,
-                            ModifyState::Hover(pos) => {
-                                if translate_node_bounds.contains_local_point(&(*pos).into()) {
-                                    PenState::Proximity
+                            ModifyState::Idle => {
+                                if let Some(pos) = self.pos {
+                                    if translate_node_bounds.contains_local_point(&pos.into()) {
+                                        PenState::Proximity
+                                    } else {
+                                        PenState::Up
+                                    }
                                 } else {
                                     PenState::Up
                                 }
                             }
                             _ => PenState::Up,
                         };
+
                         indicators::draw_rectangular_node(
                             cx,
                             translate_node_state,
@@ -316,8 +327,7 @@ impl PenBehaviour for Typewriter {
                         widget_flags.refresh_ui = true;
                     }
                 }
-                ModifyState::Up
-                | ModifyState::Hover(_)
+                ModifyState::Idle
                 | ModifyState::Translating { .. }
                 | ModifyState::AdjustTextWidth { .. } => {
                     if let Some(Stroke::TextStroke(textstroke)) =
@@ -484,7 +494,7 @@ impl PenBehaviour for Typewriter {
 
                             // Back to modifying state
                             self.state = TypewriterState::Modifying {
-                                modify_state: ModifyState::Up,
+                                modify_state: ModifyState::Idle,
                                 stroke_key: *stroke_key,
                                 cursor: cursor.clone(),
                                 pen_down: false,
@@ -654,7 +664,7 @@ impl Typewriter {
                 );
 
                 self.state = TypewriterState::Modifying {
-                    modify_state: ModifyState::Up,
+                    modify_state: ModifyState::Idle,
                     stroke_key,
                     cursor,
                     pen_down: false,
@@ -681,7 +691,7 @@ impl Typewriter {
                 );
 
                 self.state = TypewriterState::Modifying {
-                    modify_state: ModifyState::Up,
+                    modify_state: ModifyState::Idle,
                     stroke_key,
                     cursor,
                     pen_down: false,
@@ -719,7 +729,7 @@ impl Typewriter {
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
-                            modify_state: ModifyState::Up,
+                            modify_state: ModifyState::Idle,
                             stroke_key: *stroke_key,
                             cursor: cursor.clone(),
                             pen_down: false,

@@ -36,8 +36,7 @@ pub(super) enum ResizeCorner {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum ModifyState {
-    Up,
-    Hover(na::Vector2<f64>),
+    Idle,
     Translate {
         start_pos: na::Vector2<f64>,
         current_pos: na::Vector2<f64>,
@@ -58,7 +57,7 @@ pub(super) enum ModifyState {
 
 impl Default for ModifyState {
     fn default() -> Self {
-        Self::Up
+        Self::Idle
     }
 }
 
@@ -84,12 +83,14 @@ impl Default for SelectorState {
 #[derive(Clone, Debug)]
 pub struct Selector {
     pub(super) state: SelectorState,
+    pos: Option<na::Vector2<f64>>,
 }
 
 impl Default for Selector {
     fn default() -> Self {
         Self {
-            state: SelectorState::default(),
+            state: Default::default(),
+            pos: None,
         }
     }
 }
@@ -430,6 +431,7 @@ impl DrawableOnDoc for Selector {
                     cx,
                     *selection_bounds,
                     modify_state,
+                    self.pos,
                     engine_view.camera,
                 )?;
 
@@ -540,90 +542,103 @@ impl Selector {
         piet_cx: &mut impl RenderContext,
         selection_bounds: Aabb,
         modify_state: &ModifyState,
+        pos: Option<na::Vector2<f64>>,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let total_zoom = camera.total_zoom();
 
         let rotate_node_sphere = Self::rotate_node_sphere(selection_bounds, camera);
-        let rotate_node_state = match modify_state {
-            ModifyState::Rotate { .. } => PenState::Down,
-            ModifyState::Hover(pos) => {
-                if rotate_node_sphere.contains_local_point(&(*pos).into()) {
-                    PenState::Proximity
-                } else {
-                    PenState::Up
-                }
+        let rotate_node_state = if matches!(modify_state, ModifyState::Rotate { .. }) {
+            PenState::Down
+        } else if let Some(pos) = pos {
+            if rotate_node_sphere.contains_local_point(&pos.into()) {
+                PenState::Proximity
+            } else {
+                PenState::Up
             }
-            _ => PenState::Up,
+        } else {
+            PenState::Up
         };
 
         let resize_tl_node_bounds =
             Self::resize_node_bounds(ResizeCorner::TopLeft, selection_bounds, camera);
-        let resize_tl_node_state = match modify_state {
+        let resize_tl_node_state = if matches!(
+            modify_state,
             ModifyState::Resize {
                 from_corner: ResizeCorner::TopLeft,
                 ..
-            } => PenState::Down,
-            ModifyState::Hover(pos) => {
-                if resize_tl_node_bounds.contains_local_point(&(*pos).into()) {
-                    PenState::Proximity
-                } else {
-                    PenState::Up
-                }
             }
-            _ => PenState::Up,
+        ) {
+            PenState::Down
+        } else if let Some(pos) = pos {
+            if resize_tl_node_bounds.contains_local_point(&pos.into()) {
+                PenState::Proximity
+            } else {
+                PenState::Up
+            }
+        } else {
+            PenState::Up
         };
 
         let resize_tr_node_bounds =
             Self::resize_node_bounds(ResizeCorner::TopRight, selection_bounds, camera);
-        let resize_tr_node_state = match modify_state {
+        let resize_tr_node_state = if matches!(
+            modify_state,
             ModifyState::Resize {
                 from_corner: ResizeCorner::TopRight,
                 ..
-            } => PenState::Down,
-            ModifyState::Hover(pos) => {
-                if resize_tr_node_bounds.contains_local_point(&(*pos).into()) {
-                    PenState::Proximity
-                } else {
-                    PenState::Up
-                }
             }
-            _ => PenState::Up,
+        ) {
+            PenState::Down
+        } else if let Some(pos) = pos {
+            if resize_tr_node_bounds.contains_local_point(&pos.into()) {
+                PenState::Proximity
+            } else {
+                PenState::Up
+            }
+        } else {
+            PenState::Up
         };
 
         let resize_bl_node_bounds =
             Self::resize_node_bounds(ResizeCorner::BottomLeft, selection_bounds, camera);
-        let resize_bl_node_state = match modify_state {
+        let resize_bl_node_state = if matches!(
+            modify_state,
             ModifyState::Resize {
                 from_corner: ResizeCorner::BottomLeft,
                 ..
-            } => PenState::Down,
-            ModifyState::Hover(pos) => {
-                if resize_bl_node_bounds.contains_local_point(&(*pos).into()) {
-                    PenState::Proximity
-                } else {
-                    PenState::Up
-                }
             }
-            _ => PenState::Up,
+        ) {
+            PenState::Down
+        } else if let Some(pos) = pos {
+            if resize_bl_node_bounds.contains_local_point(&pos.into()) {
+                PenState::Proximity
+            } else {
+                PenState::Up
+            }
+        } else {
+            PenState::Up
         };
 
         let resize_br_node_bounds =
             Self::resize_node_bounds(ResizeCorner::BottomRight, selection_bounds, camera);
-        let resize_br_node_state = match modify_state {
+        let resize_br_node_state = if matches!(
+            modify_state,
             ModifyState::Resize {
                 from_corner: ResizeCorner::BottomRight,
                 ..
-            } => PenState::Down,
-            ModifyState::Hover(pos) => {
-                if resize_br_node_bounds.contains_local_point(&(*pos).into()) {
-                    PenState::Proximity
-                } else {
-                    PenState::Up
-                }
             }
-            _ => PenState::Up,
+        ) {
+            PenState::Down
+        } else if let Some(pos) = pos {
+            if resize_br_node_bounds.contains_local_point(&pos.into()) {
+                PenState::Proximity
+            } else {
+                PenState::Up
+            }
+        } else {
+            PenState::Up
         };
 
         // Selection rect

@@ -4,7 +4,7 @@ use crate::engine::EngineViewMut;
 use crate::pens::pensconfig::selectorconfig::SelectorStyle;
 use crate::snap::SnapCorner;
 use crate::store::StrokeKey;
-use crate::{DrawableOnDoc, WidgetFlags};
+use crate::WidgetFlags;
 use p2d::bounding_volume::Aabb;
 use p2d::query::PointQuery;
 use rnote_compose::eventresult::{EventPropagation, EventResult};
@@ -23,6 +23,7 @@ impl Selector {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
+        self.pos = Some(element.pos);
 
         let event_result = match &mut self.state {
             SelectorState::Idle => {
@@ -77,7 +78,7 @@ impl Selector {
                 let mut progress = PenProgress::InProgress;
 
                 match modify_state {
-                    ModifyState::Up | ModifyState::Hover(_) => {
+                    ModifyState::Idle => {
                         // If we click on another, not-already selected stroke while in separate style or
                         // while pressing Shift, we add it to the selection
                         let key_to_add = engine_view
@@ -414,7 +415,7 @@ impl Selector {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
-        let selector_bounds = self.bounds_on_doc(&engine_view.as_im());
+        self.pos = Some(element.pos);
 
         let event_result = match &mut self.state {
             SelectorState::Idle => EventResult {
@@ -529,14 +530,7 @@ impl Selector {
                     _ => {}
                 }
 
-                *modify_state = if selector_bounds
-                    .map(|b| b.contains_local_point(&element.pos.into()))
-                    .unwrap_or(false)
-                {
-                    ModifyState::Hover(element.pos)
-                } else {
-                    ModifyState::Up
-                };
+                *modify_state = ModifyState::Idle;
 
                 EventResult {
                     handled: true,
@@ -554,10 +548,10 @@ impl Selector {
         element: Element,
         _modifier_keys: HashSet<ModifierKey>,
         _now: Instant,
-        engine_view: &mut EngineViewMut,
+        _engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
-        let selector_bounds = self.bounds_on_doc(&engine_view.as_im());
+        self.pos = Some(element.pos);
 
         let event_result = match &mut self.state {
             SelectorState::Idle => EventResult {
@@ -571,14 +565,8 @@ impl Selector {
                 progress: PenProgress::InProgress,
             },
             SelectorState::ModifySelection { modify_state, .. } => {
-                *modify_state = if selector_bounds
-                    .map(|b| b.contains_local_point(&element.pos.into()))
-                    .unwrap_or(false)
-                {
-                    ModifyState::Hover(element.pos)
-                } else {
-                    ModifyState::Up
-                };
+                *modify_state = ModifyState::Idle;
+
                 EventResult {
                     handled: true,
                     propagate: EventPropagation::Stop,
@@ -598,6 +586,7 @@ impl Selector {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
+        self.pos = None;
 
         let event_result = match &mut self.state {
             SelectorState::Idle => match keyboard_key {
@@ -700,6 +689,7 @@ impl Selector {
         _engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
+        self.pos = None;
 
         let event_result = match &mut self.state {
             SelectorState::Idle => EventResult {
@@ -728,6 +718,7 @@ impl Selector {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
+        self.pos = None;
 
         let event_result = match &mut self.state {
             SelectorState::Idle => EventResult {

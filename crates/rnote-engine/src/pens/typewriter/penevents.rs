@@ -1,5 +1,5 @@
 // Imports
-use super::{ModifyState, Typewriter, TypewriterState};
+use super::{ModifyState, SelectionMode, Typewriter, TypewriterState};
 use crate::engine::EngineViewMut;
 use crate::pens::PenBehaviour;
 use crate::strokes::{Stroke, TextStroke};
@@ -150,6 +150,7 @@ impl Typewriter {
                                             self.state = TypewriterState::Modifying {
                                                 modify_state: ModifyState::Selecting {
                                                     selection_cursor: cursor.clone(),
+                                                    mode: SelectionMode::Caret,
                                                     finished: false,
                                                 },
                                                 stroke_key: *stroke_key,
@@ -176,7 +177,11 @@ impl Typewriter {
                             progress,
                         }
                     }
-                    ModifyState::Selecting { finished, .. } => {
+                    ModifyState::Selecting {
+                        selection_cursor,
+                        mode,
+                        finished,
+                    } => {
                         let mut progress = PenProgress::InProgress;
 
                         if let Some(typewriter_bounds) = typewriter_bounds {
@@ -214,8 +219,48 @@ impl Typewriter {
                                         if let Ok(new_cursor) =
                                             textstroke.get_cursor_for_global_coord(element.pos)
                                         {
+                                            let previous_cursor_position = cursor.cur_cursor();
                                             *cursor = new_cursor;
-                                            self.reset_blink();
+
+                                            match mode {
+                                                SelectionMode::Word(start, end) => {
+                                                    let mouse_position = cursor.cur_cursor();
+
+                                                    if mouse_position <= *start {
+                                                        selection_cursor.set_cursor(*end);
+                                                        textstroke
+                                                            .move_cursor_word_boundary_back(cursor);
+                                                    } else if mouse_position >= *end {
+                                                        selection_cursor.set_cursor(*start);
+                                                        textstroke
+                                                            .move_cursor_word_boundary_forward(
+                                                                cursor,
+                                                            );
+                                                    } else {
+                                                        selection_cursor.set_cursor(*start);
+                                                        cursor.set_cursor(*end);
+                                                    }
+                                                }
+                                                SelectionMode::Line(start, end) => {
+                                                    let mouse_position = cursor.cur_cursor();
+
+                                                    if mouse_position < *start {
+                                                        selection_cursor.set_cursor(*end);
+                                                        textstroke.move_cursor_line_start(cursor);
+                                                    } else if mouse_position > *end {
+                                                        selection_cursor.set_cursor(*start);
+                                                        textstroke.move_cursor_line_end(cursor);
+                                                    } else {
+                                                        selection_cursor.set_cursor(*start);
+                                                        cursor.set_cursor(*end);
+                                                    }
+                                                }
+                                                SelectionMode::Caret => {}
+                                            }
+
+                                            if previous_cursor_position != cursor.cur_cursor() {
+                                                self.reset_blink();
+                                            }
                                         }
                                     }
                                 }
@@ -590,6 +635,7 @@ impl Typewriter {
                                                 textstroke.text.len(),
                                                 true,
                                             ),
+                                            mode: SelectionMode::Caret,
                                             finished: true,
                                         };
                                     } else {
@@ -665,6 +711,7 @@ impl Typewriter {
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
+                                            mode: SelectionMode::Caret,
                                             finished: false,
                                         }
                                     } else {
@@ -693,6 +740,7 @@ impl Typewriter {
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
+                                            mode: SelectionMode::Caret,
                                             finished: false,
                                         };
                                     } else {
@@ -717,6 +765,7 @@ impl Typewriter {
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
+                                            mode: SelectionMode::Caret,
                                             finished: false,
                                         };
                                     } else {
@@ -736,6 +785,7 @@ impl Typewriter {
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
+                                            mode: SelectionMode::Caret,
                                             finished: false,
                                         };
                                     } else {
@@ -759,6 +809,7 @@ impl Typewriter {
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
+                                            mode: SelectionMode::Caret,
                                             finished: false,
                                         };
                                     } else {
@@ -787,6 +838,7 @@ impl Typewriter {
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
+                                            mode: SelectionMode::Caret,
                                             finished: false,
                                         };
                                     } else {
@@ -821,6 +873,7 @@ impl Typewriter {
                     ModifyState::Selecting {
                         selection_cursor,
                         finished,
+                        ..
                     } => {
                         super::play_sound(Some(keyboard_key), engine_view.audioplayer);
 
@@ -1150,6 +1203,7 @@ impl Typewriter {
                     ModifyState::Selecting {
                         selection_cursor,
                         finished,
+                        ..
                     } => {
                         super::play_sound(None, engine_view.audioplayer);
 
@@ -1228,5 +1282,65 @@ impl Typewriter {
         };
 
         (event_result, widget_flags)
+    }
+
+    pub fn select_closest_word(&mut self, engine_view: &mut EngineViewMut) {
+        match &mut self.state {
+            TypewriterState::Modifying {
+                modify_state,
+                stroke_key,
+                cursor,
+                pen_down: _,
+            } => {
+                if let Some(Stroke::TextStroke(ref mut textstroke)) =
+                    engine_view.store.get_stroke_mut(*stroke_key)
+                {
+                    textstroke.move_cursor_word_boundary_forward(cursor);
+
+                    let mut selection_cursor = cursor.clone();
+                    textstroke.move_cursor_word_boundary_back(&mut selection_cursor);
+
+                    *modify_state = ModifyState::Selecting {
+                        mode: SelectionMode::Word(
+                            selection_cursor.cur_cursor(),
+                            cursor.cur_cursor(),
+                        ),
+                        selection_cursor,
+                        finished: false,
+                    };
+                }
+            }
+            _ => {}
+        }
+    }
+
+    pub fn select_closest_line(&mut self, engine_view: &mut EngineViewMut) {
+        match &mut self.state {
+            TypewriterState::Modifying {
+                modify_state,
+                stroke_key,
+                cursor,
+                pen_down: _,
+            } => {
+                if let Some(Stroke::TextStroke(ref mut textstroke)) =
+                    engine_view.store.get_stroke_mut(*stroke_key)
+                {
+                    textstroke.move_cursor_line_end(cursor);
+
+                    let mut selection_cursor = cursor.clone();
+                    textstroke.move_cursor_line_start(&mut selection_cursor);
+
+                    *modify_state = ModifyState::Selecting {
+                        mode: SelectionMode::Line(
+                            selection_cursor.cur_cursor(),
+                            cursor.cur_cursor(),
+                        ),
+                        selection_cursor,
+                        finished: false,
+                    };
+                }
+            }
+            _ => {}
+        }
     }
 }

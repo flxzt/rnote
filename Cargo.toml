@@ -84,7 +84,10 @@ usvg = "0.44.0"
 winresource = "0.1.17"
 xmlwriter = "0.1.0"
 # Enabling feature > v20_9 causes linker errors on mingw
-poppler-rs = { version = "0.24.1", features = ["v20_9"] }
+poppler-rs = { git = "https://github.com/Doublonmousse/poppler-patch", features = ["v20_9"] }
+# inkml parser/writer
+writer_inkml = {git = "https://github.com/Doublonmousse/writer_reader_inkml"}
+
 
 [patch.crates-io]
 

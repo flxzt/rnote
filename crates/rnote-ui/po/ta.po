@@ -2535,6 +2535,30 @@ msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "வெள்ளை"
 
+#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+msgid "is password protected"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:276
+msgid "Encrypted PDF"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:279
+#, fuzzy
+#| msgid "Cancel"
+msgid "_Cancel"
+msgstr "ரத்துசெய்"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:280
+#, fuzzy
+#| msgid "Clock"
+msgid "_Unlock"
+msgstr "கடிகாரம்"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:287
+msgid "Enter the PDF password"
+msgstr ""
+
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "திறக்கப்பட்ட கோப்பு வட்டில் நகர்த்தப்பட்டது அல்லது நீக்கப்பட்டது"
 

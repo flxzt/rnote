@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-09-07 18:09+0000\n"
+"PO-Revision-Date: 2024-11-10 20:00+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
 "\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8-dev\n"
+"X-Generator: Weblate 5.8.2\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -2525,6 +2525,26 @@ msgstr "fekete"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "fehér"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+msgid "is password protected"
+msgstr "jelszóvédett"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:276
+msgid "Encrypted PDF"
+msgstr "Titkosított PDF"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:279
+msgid "_Cancel"
+msgstr "_Mégse"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:280
+msgid "_Unlock"
+msgstr "Zár_feloldás"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:287
+msgid "Enter the PDF password"
+msgstr "Adja meg a PDF jelszót"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "A megnyitott fájl át lett helyezve vagy törölve lett a lemezről"

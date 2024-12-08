@@ -778,21 +778,14 @@ impl Selector {
         // Select all keys
         let all_strokes = engine_view.store.stroke_keys_as_rendered();
 
-        if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&all_strokes) {
+        if !all_strokes.is_empty() {
             engine_view.store.set_selected_keys(&all_strokes, true);
-            *widget_flags |= engine_view
-                .document
-                .resize_autoexpand(engine_view.store, engine_view.camera);
-
-            self.state = SelectorState::ModifySelection {
-                modify_state: ModifyState::default(),
-                selection: all_strokes,
-                selection_bounds: new_bounds,
-            };
 
             widget_flags.store_modified = true;
             widget_flags.deselect_color_setters = true;
         }
+
+        *widget_flags |= self.update_state(engine_view);
     }
 }
 

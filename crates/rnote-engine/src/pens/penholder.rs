@@ -485,9 +485,8 @@ impl PenHolder {
                 // take the style override when pen is finished
                 if self.pen_mode_state.take_style_override().is_some() {
                     widget_flags.refresh_ui = true;
+                    widget_flags |= self.reinstall_pen_current_style(engine_view);
                 }
-
-                widget_flags |= self.reinstall_pen_current_style(engine_view);
             }
         }
 

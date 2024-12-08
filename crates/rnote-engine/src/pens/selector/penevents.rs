@@ -2,6 +2,7 @@
 use super::{ModifyState, ResizeCorner, Selector, SelectorState};
 use crate::engine::EngineViewMut;
 use crate::pens::pensconfig::selectorconfig::SelectorStyle;
+use crate::pens::PenBehaviour;
 use crate::snap::SnapCorner;
 use crate::store::StrokeKey;
 use crate::{DrawableOnDoc, WidgetFlags};
@@ -475,21 +476,17 @@ impl Selector {
                         }
                     }
                 };
+
                 if !new_selection.is_empty() {
                     engine_view.store.set_selected_keys(&new_selection, true);
+
                     widget_flags.store_modified = true;
                     widget_flags.deselect_color_setters = true;
 
-                    if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&new_selection) {
-                        // Change to the modify state
-                        self.state = SelectorState::ModifySelection {
-                            modify_state: ModifyState::default(),
-                            selection: new_selection,
-                            selection_bounds: new_bounds,
-                        };
-                        progress = PenProgress::InProgress;
-                    }
+                    progress = PenProgress::InProgress;
                 }
+
+                widget_flags |= self.update_state(engine_view);
 
                 EventResult {
                     handled: true,
@@ -602,11 +599,20 @@ impl Selector {
         let event_result = match &mut self.state {
             SelectorState::Idle => match keyboard_key {
                 KeyboardKey::Unicode('a') => {
-                    self.select_all(modifier_keys, engine_view, &mut widget_flags);
-                    EventResult {
-                        handled: true,
-                        propagate: EventPropagation::Stop,
-                        progress: PenProgress::InProgress,
+                    if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                        self.select_all(engine_view, &mut widget_flags);
+
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::InProgress,
+                        }
+                    } else {
+                        EventResult {
+                            handled: false,
+                            propagate: EventPropagation::Proceed,
+                            progress: PenProgress::InProgress,
+                        }
                     }
                 }
                 _ => EventResult {
@@ -617,11 +623,20 @@ impl Selector {
             },
             SelectorState::Selecting { .. } => match keyboard_key {
                 KeyboardKey::Unicode('a') => {
-                    self.select_all(modifier_keys, engine_view, &mut widget_flags);
-                    EventResult {
-                        handled: true,
-                        propagate: EventPropagation::Stop,
-                        progress: PenProgress::InProgress,
+                    if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                        self.select_all(engine_view, &mut widget_flags);
+
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::InProgress,
+                        }
+                    } else {
+                        EventResult {
+                            handled: false,
+                            propagate: EventPropagation::Proceed,
+                            progress: PenProgress::InProgress,
+                        }
                     }
                 }
                 _ => EventResult {
@@ -633,11 +648,20 @@ impl Selector {
             SelectorState::ModifySelection { selection, .. } => {
                 match keyboard_key {
                     KeyboardKey::Unicode('a') => {
-                        self.select_all(modifier_keys, engine_view, &mut widget_flags);
-                        EventResult {
-                            handled: true,
-                            propagate: EventPropagation::Stop,
-                            progress: PenProgress::InProgress,
+                        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                            self.select_all(engine_view, &mut widget_flags);
+
+                            EventResult {
+                                handled: true,
+                                propagate: EventPropagation::Stop,
+                                progress: PenProgress::InProgress,
+                            }
+                        } else {
+                            EventResult {
+                                handled: false,
+                                propagate: EventPropagation::Proceed,
+                                progress: PenProgress::InProgress,
+                            }
                         }
                     }
                     KeyboardKey::Unicode('d') => {
@@ -655,11 +679,20 @@ impl Selector {
                             widget_flags |= engine_view.store.record(Instant::now());
                             widget_flags.resize = true;
                             widget_flags.store_modified = true;
-                        }
-                        EventResult {
-                            handled: true,
-                            propagate: EventPropagation::Stop,
-                            progress: PenProgress::Finished,
+
+                            widget_flags |= self.update_state(engine_view);
+
+                            EventResult {
+                                handled: true,
+                                propagate: EventPropagation::Stop,
+                                progress: PenProgress::InProgress,
+                            }
+                        } else {
+                            EventResult {
+                                handled: false,
+                                propagate: EventPropagation::Proceed,
+                                progress: PenProgress::InProgress,
+                            }
                         }
                     }
                     KeyboardKey::Delete | KeyboardKey::BackSpace => {

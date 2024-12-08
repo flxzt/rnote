@@ -72,6 +72,7 @@ mod imp {
         pub(crate) key_controller_im_context: IMMulticontext,
         pub(crate) drop_target: DropTarget,
         pub(crate) drawing_cursor_enabled: Cell<bool>,
+        pub(crate) pen_input_source: Cell<Option<gdk::InputSource>>,
 
         pub(crate) engine: RefCell<Engine>,
         pub(crate) engine_task_handler_handle: RefCell<Option<glib::JoinHandle<()>>>,
@@ -166,6 +167,7 @@ mod imp {
                 key_controller_im_context,
                 drop_target,
                 drawing_cursor_enabled: Cell::new(false),
+                pen_input_source: Cell::new(None),
 
                 engine: RefCell::new(engine),
                 engine_task_handler_handle: RefCell::new(None),
@@ -751,6 +753,16 @@ impl RnCanvas {
         if self.imp().touch_drawing.get() != touch_drawing {
             self.set_property("touch-drawing", touch_drawing.to_value());
         }
+    }
+
+    #[allow(unused)]
+    pub(crate) fn pen_input_source(&self) -> Option<gdk::InputSource> {
+        self.imp().pen_input_source.get()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_pen_input_source(&self, pen_input_source: Option<gdk::InputSource>) {
+        self.imp().pen_input_source.set(pen_input_source);
     }
 
     #[allow(unused)]

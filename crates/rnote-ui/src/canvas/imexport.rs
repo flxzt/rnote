@@ -180,7 +180,7 @@ impl RnCanvas {
     /// Deserializes the stroke content and inserts it into the engine.
     ///
     /// The data is usually coming from the clipboard, drop source, etc.
-    pub(crate) async fn insert_stroke_content(
+    pub(crate) async fn deserialize_and_insert_stroke_content(
         &self,
         json_string: String,
         resize_option: ImageSizeOption,
@@ -204,6 +204,25 @@ impl RnCanvas {
         let widget_flags = self
             .engine_mut()
             .insert_stroke_content(content, pos, resize_option);
+
+        self.emit_handle_widget_flags(widget_flags);
+        Ok(())
+    }
+
+    /// Take stroke content and inserts it into the engine.
+    ///
+    /// The data is usually coming from the clipboard, drop source, etc.
+    pub(crate) async fn insert_stroke_content(
+        &self,
+        stroke_content: StrokeContent,
+        resize_option: ImageSizeOption,
+        target_pos: Option<na::Vector2<f64>>,
+    ) -> anyhow::Result<()> {
+        let pos = self.determine_stroke_import_pos(target_pos);
+
+        let widget_flags =
+            self.engine_mut()
+                .insert_stroke_content(stroke_content, pos, resize_option);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())

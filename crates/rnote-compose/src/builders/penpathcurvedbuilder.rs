@@ -71,7 +71,10 @@ impl Buildable for PenPathCurvedBuilder {
             (_, PenEvent::Up { element, .. }) => {
                 self.buffer.push(element);
 
-                BuilderProgress::Finished(self.try_build_segments_end())
+                let segments = self.try_build_segments_end();
+                self.reset();
+
+                BuilderProgress::Finished(segments)
             }
             (_, PenEvent::Proximity { .. })
             | (_, PenEvent::KeyPressed { .. })

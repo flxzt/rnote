@@ -331,9 +331,7 @@ impl Engine {
         let engine_snapshot = self.take_snapshot();
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
-                let rnote_file = RnoteFile {
-                    engine_snapshot: ijson::to_value(&engine_snapshot)?,
-                };
+                let rnote_file = RnoteFile::try_from(&engine_snapshot)?;
                 rnote_file.save_as_bytes(&file_name)
             };
             if oneshot_sender.send(result()).is_err() {
@@ -353,6 +351,7 @@ impl Engine {
             penholder: self.penholder.clone_config(),
             import_prefs: self.import_prefs.clone_config(),
             export_prefs: self.export_prefs.clone_config(),
+            save_prefs: self.save_prefs.clone_conformed_config(),
             pen_sounds: self.pen_sounds(),
             optimize_epd: self.optimize_epd(),
         }

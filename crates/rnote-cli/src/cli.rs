@@ -1,6 +1,7 @@
 // Imports
-use crate::{export, import, test};
+use crate::{export, import, mutate, test};
 use anyhow::Context;
+use clap::builder::PossibleValuesParser;
 use clap::Parser;
 use rnote_compose::SplitOrder;
 use rnote_engine::engine::export::{
@@ -8,6 +9,7 @@ use rnote_engine::engine::export::{
     SelectionExportPrefs,
 };
 use rnote_engine::engine::import::XoppImportPrefs;
+use rnote_engine::fileformats::rnoteformat;
 use rnote_engine::SelectionCollision;
 use smol::fs::File;
 use smol::io::{AsyncReadExt, AsyncWriteExt};
@@ -68,6 +70,27 @@ pub(crate) enum Command {
         /// Opens output folder when using "doc-pages" sub-command.
         #[arg(long, action = clap::ArgAction::SetTrue, global = true)]
         open: bool,
+    },
+    /// Mutates one or more of the following for the specified Rnote file(s):{n}
+    /// compression method, compression level, serialization method, method lock
+    Mutate {
+        /// The rnote save file(s) to mutate
+        rnote_files: Vec<PathBuf>,
+        /// Keep the original rnote save file(s)
+        #[arg(long = "not-in-place", alias = "nip", action = clap::ArgAction::SetTrue)]
+        not_in_place: bool,
+        /// Sets method_lock to true, allowing a rnote save file to keep using non-default methods to serialize and compress itself
+        #[arg(short = 'l', long, action = clap::ArgAction::SetTrue, conflicts_with = "unlock")]
+        lock: bool,
+        /// Sets method_lock to false, coercing the file to use default methods on the next save
+        #[arg(short = 'u', long, action = clap::ArgAction::SetTrue, conflicts_with = "lock")]
+        unlock: bool,
+        #[arg(short = 's', long, action = clap::ArgAction::Set, value_parser = PossibleValuesParser::new(rnoteformat::SerializationMethod::VALID_STR_ARRAY))]
+        serialization_method: Option<String>,
+        #[arg(short = 'c', long, action = clap::ArgAction::Set, value_parser = PossibleValuesParser::new(rnoteformat::CompressionMethod::VALID_STR_ARRAY))]
+        compression_method: Option<String>,
+        #[arg(short = 'v', long, action = clap::ArgAction::Set)]
+        compression_level: Option<u8>,
     },
 }
 
@@ -241,6 +264,28 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             )
             .await?;
             println!("Export finished!");
+        }
+        Command::Mutate {
+            rnote_files,
+            not_in_place,
+            lock,
+            unlock,
+            serialization_method,
+            compression_method,
+            compression_level,
+        } => {
+            println!("Mutating..\n");
+            mutate::run_mutate(
+                rnote_files,
+                not_in_place,
+                lock,
+                unlock,
+                serialization_method,
+                compression_method,
+                compression_level,
+            )
+            .await?;
+            println!("Mutate finished!");
         }
     }
 

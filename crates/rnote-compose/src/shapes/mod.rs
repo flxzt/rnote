@@ -7,6 +7,8 @@ pub mod cubbez;
 pub mod ellipse;
 /// Line
 pub mod line;
+/// Parabola
+pub mod parabola;
 /// Polygon
 pub mod polygon;
 /// Polyline
@@ -25,6 +27,7 @@ pub use arrow::Arrow;
 pub use cubbez::CubicBezier;
 pub use ellipse::Ellipse;
 pub use line::Line;
+pub use parabola::Parabola;
 pub use polygon::Polygon;
 pub use polyline::Polyline;
 pub use quadbez::QuadraticBezier;

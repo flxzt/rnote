@@ -3624,6 +3624,7 @@ dependencies = [
  "tracing",
  "unicode-segmentation",
  "usvg",
+ "writer_inkml",
  "xmlwriter",
 ]
 

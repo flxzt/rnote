@@ -14,6 +14,7 @@ use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::{Rectangle, Shapeable};
 use rnote_compose::style::smooth::SmoothOptions;
+use rnote_compose::style::PressureCurve;
 use rnote_compose::transform::Transform;
 use rnote_compose::transform::Transformable;
 use rnote_compose::{Color, PenPath, Style};
@@ -670,6 +671,65 @@ impl Stroke {
                     },
                 ))
             }
+        }
+    }
+
+    /// converts a stroke into the input format used by the inkml writer
+    pub fn into_inkml(
+        &self,
+        current_dpi: f64,
+    ) -> Option<(writer_inkml::FormattedStroke, writer_inkml::Brush)> {
+        let pixel_to_cm_factor = 2.54 / current_dpi;
+        match self {
+            Stroke::BrushStroke(brushstroke) => {
+                // remark : style is not preserved here, we will always get a smooth
+                // version
+                let fill_color = brushstroke.style.stroke_color().unwrap_or_default();
+                let elements = brushstroke.path.clone().into_elements();
+                let ignore_pressure = match &brushstroke.style {
+                    Style::Smooth(smooth_options) => match smooth_options.pressure_curve {
+                        PressureCurve::Const => false,
+                        _ => true,
+                    },
+                    Style::Rough(_) => false,
+                    Style::Textured(_) => false,
+                };
+                tracing::debug!("formatting strokes");
+                Some((
+                    writer_inkml::FormattedStroke {
+                        x: elements
+                            .iter()
+                            .map(|element| pixel_to_cm_factor * element.pos.x)
+                            .collect(), // need the scale !
+                        y: elements
+                            .iter()
+                            .map(|element| pixel_to_cm_factor * element.pos.y)
+                            .collect(),
+                        f: elements
+                            .iter()
+                            .map(|element| pixel_to_cm_factor * element.pressure)
+                            .collect(),
+                    },
+                    writer_inkml::Brush::init(
+                        String::from(""),
+                        (
+                            (fill_color.r * 255.0) as u8,
+                            (fill_color.g * 255.0) as u8,
+                            (fill_color.b * 255.0) as u8,
+                        ),
+                        ignore_pressure,
+                        ((1.0 - fill_color.a) * 255.0) as u8,
+                        brushstroke.style.stroke_width() * pixel_to_cm_factor,
+                    ),
+                ))
+            }
+            Stroke::ShapeStroke(_) => {
+                // could be done : relatively easy to do for lines, the rest would have to be discretized
+                None
+            }
+            Stroke::TextStroke(_) => None,
+            Stroke::VectorImage(_) => None,
+            Stroke::BitmapImage(_) => None,
         }
     }
 }

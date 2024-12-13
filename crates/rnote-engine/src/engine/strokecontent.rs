@@ -174,4 +174,15 @@ impl StrokeContent {
 
         Ok(())
     }
+
+    pub fn to_inkml(&self, current_dpi: f64) -> Result<Vec<u8>, std::io::Error> {
+        writer_inkml::writer(
+            self.strokes
+                .iter()
+                .map(|stroke| stroke.into_inkml(current_dpi))
+                .filter(|x| x.is_some())
+                .map(|x| x.unwrap())
+                .collect(),
+        )
+    }
 }

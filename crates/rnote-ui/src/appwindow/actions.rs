@@ -18,6 +18,7 @@ use rnote_compose::style::smooth::SmoothOptions;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::pens::PenStyle;
+use rnote_engine::strokes::resize::{ImageSizeOption, Resize};
 use rnote_engine::strokes::BrushStroke;
 use rnote_engine::strokes::Stroke;
 use rnote_engine::strokes::resize::{ImageSizeOption, Resize};

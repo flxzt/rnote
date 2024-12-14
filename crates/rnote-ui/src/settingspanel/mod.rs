@@ -5,6 +5,7 @@ mod penshortcutrow;
 // Re-exports
 pub(crate) use penshortcutrow::RnPenShortcutRow;
 use rnote_compose::ext::Vector2Ext;
+use rnote_engine::fileformats::rnoteformat::CompressionMethod;
 
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
@@ -19,6 +20,7 @@ use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
 use rnote_engine::document::Layout;
+use rnote_engine::engine::CompressionLevel;
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
 
@@ -94,7 +96,9 @@ mod imp {
         #[template_child]
         pub(crate) doc_background_pattern_height_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
-        pub(crate) background_pattern_invert_color_button: TemplateChild<Button>,
+        pub(crate) doc_background_pattern_invert_color_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) doc_compression_level_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(crate) penshortcut_stylus_button_primary_row: TemplateChild<RnPenShortcutRow>,
         #[template_child]
@@ -433,6 +437,7 @@ impl RnSettingsPanel {
         let background = canvas.engine_ref().document.background;
         let format = canvas.engine_ref().document.format;
         let document_layout = canvas.engine_ref().document.layout;
+        let compression = canvas.engine_ref().save_prefs.compression;
 
         imp.doc_background_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
@@ -448,6 +453,16 @@ impl RnSettingsPanel {
         imp.doc_background_pattern_height_unitentry
             .set_value_in_px(background.pattern_size[1]);
         self.set_document_layout(&document_layout);
+        // set the compression level row to invisible if CompressionMethod is None
+        imp.doc_compression_level_row
+            .set_visible(!matches!(compression, CompressionMethod::None));
+
+        match compression.get_compression_level() {
+            CompressionLevel::None => (),
+            other => imp
+                .doc_compression_level_row
+                .set_selected(other.to_u32().unwrap()),
+        }
     }
 
     fn refresh_shortcuts_ui(&self, active_tab: &RnCanvasWrapper) {
@@ -914,7 +929,7 @@ impl RnSettingsPanel {
                 ),
             );
 
-        imp.background_pattern_invert_color_button
+        imp.doc_background_pattern_invert_color_button
             .get()
             .connect_clicked(clone!(
                 #[weak]
@@ -947,6 +962,31 @@ impl RnSettingsPanel {
                     widget_flags.refresh_ui = true;
                     widget_flags.store_modified = true;
                     appwindow.handle_widget_flags(widget_flags, &canvas);
+                }
+            ));
+
+        imp.doc_compression_level_row
+            .get()
+            .connect_selected_item_notify(clone!(
+                #[weak(rename_to=settings_panel)]
+                self,
+                #[weak]
+                appwindow,
+                move |_| {
+                    let canvas = appwindow.active_tab_wrapper().canvas();
+                    let compression_level = CompressionLevel::try_from(
+                        settings_panel
+                            .imp()
+                            .doc_compression_level_row
+                            .get()
+                            .selected(),
+                    )
+                    .unwrap();
+                    canvas
+                        .engine_mut()
+                        .save_prefs
+                        .compression
+                        .set_compression_level(compression_level);
                 }
             ));
     }

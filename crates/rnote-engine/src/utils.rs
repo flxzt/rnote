@@ -1,5 +1,7 @@
 // Imports
 use crate::fileformats::xoppformat;
+use anyhow::Context;
+use futures::{AsyncReadExt, AsyncWriteExt};
 use geo::line_string;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
@@ -95,4 +97,92 @@ pub mod glib_bytes_base64 {
     pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<glib::Bytes, D::Error> {
         rnote_compose::serialize::sliceu8_base64::deserialize(d).map(glib::Bytes::from_owned)
     }
+}
+
+pub async fn atomic_save_to_file<Q>(filepath: Q, bytes: &[u8]) -> anyhow::Result<()>
+where
+    Q: AsRef<std::path::Path>,
+{
+    let filepath = filepath.as_ref().to_owned();
+
+    // checks that the extension is not already 'tmp'
+    if filepath
+        .extension()
+        .ok_or_else(|| anyhow::anyhow!("Specified filepath does not have an extension"))?
+        .to_str()
+        .ok_or_else(|| anyhow::anyhow!("The extension of the specified filepath is invalid"))?
+        == "tmp"
+    {
+        Err(anyhow::anyhow!("The extension of the file cannot be 'tmp'"))?;
+    }
+
+    let tmp_filepath = filepath.with_extension("tmp");
+
+    let file_write_operation = async {
+        let mut write_file = async_fs::OpenOptions::new()
+            .create(true)
+            .write(true)
+            .truncate(true)
+            .open(&tmp_filepath)
+            .await
+            .with_context(|| {
+                format!(
+                    "Failed to create/open/truncate tmp file with path '{}'",
+                    tmp_filepath.display()
+                )
+            })?;
+        write_file.write_all(bytes).await.with_context(|| {
+            format!(
+                "Failed to write to tmp file with path '{}'",
+                tmp_filepath.display()
+            )
+        })?;
+        write_file.sync_all().await.with_context(|| {
+            format!(
+                "Failed to sync tmp file with path '{}'",
+                tmp_filepath.display()
+            )
+        })?;
+
+        Ok::<(), anyhow::Error>(())
+    };
+    file_write_operation.await?;
+
+    let file_check_operation = async {
+        let internal_checksum = crc32fast::hash(bytes);
+
+        let mut read_file = async_fs::OpenOptions::new()
+            .read(true)
+            .open(&tmp_filepath)
+            .await
+            .with_context(|| {
+                format!(
+                    "Failed to open/read tmp file with path '{}'",
+                    &tmp_filepath.display()
+                )
+            })?;
+        let mut data: Vec<u8> = Vec::with_capacity(bytes.len());
+        read_file.read_to_end(&mut data).await?;
+        let external_checksum = crc32fast::hash(&data);
+
+        if internal_checksum != external_checksum {
+            return Err(anyhow::anyhow!(
+                "Mismatch between the internal and external checksums, temporary file most likely corrupted"
+            ));
+        }
+
+        Ok::<(), anyhow::Error>(())
+    };
+    file_check_operation.await?;
+
+    let file_swap_operation = async {
+        async_fs::rename(&tmp_filepath, &filepath)
+            .await
+            .context("Failed to rename the temporary file into the original one")?;
+
+        Ok::<(), anyhow::Error>(())
+    };
+    file_swap_operation.await?;
+
+    Ok(())
 }

@@ -206,7 +206,7 @@ impl DrawableOnDoc for Typewriter {
                     );
                     let adjust_text_width_node_state = match modify_state {
                         ModifyState::AdjustTextWidth { .. } => PenState::Down,
-                        ModifyState::Idle => {
+                        ModifyState::Idle | ModifyState::Selecting { .. } => {
                             if let Some(pos) = self.pos {
                                 if adjust_text_width_node_bounds.contains_local_point(&pos.into()) {
                                     PenState::Proximity
@@ -238,7 +238,7 @@ impl DrawableOnDoc for Typewriter {
                             Self::translate_node_bounds(typewriter_bounds, engine_view.camera);
                         let translate_node_state = match modify_state {
                             ModifyState::Translating { .. } => PenState::Down,
-                            ModifyState::Idle => {
+                            ModifyState::Idle | ModifyState::Selecting { .. } => {
                                 if let Some(pos) = self.pos {
                                     if translate_node_bounds.contains_local_point(&pos.into()) {
                                         PenState::Proximity

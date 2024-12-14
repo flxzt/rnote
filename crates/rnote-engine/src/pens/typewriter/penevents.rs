@@ -445,7 +445,12 @@ impl Typewriter {
                 pen_down,
                 ..
             } => {
-                *modify_state = ModifyState::Idle;
+                if !matches!(modify_state, ModifyState::Selecting { .. }) {
+                    // do nothing if the state is selected
+                    // This prevents text from becoming deselected when hovering the pen
+                    // see issue #1222
+                    *modify_state = ModifyState::Idle;
+                }
                 *pen_down = false;
 
                 EventResult {

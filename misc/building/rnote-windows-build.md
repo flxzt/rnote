@@ -46,9 +46,17 @@ in Windows is enabled. It doesn't say it, but it enables permissions for users t
 Finally, clone the repository somewhere and initialize the submodules.
 
 ```bash
-git clone https://github.com/flxzt/rnote
+git clone -c core.symlinks=true https://github.com/flxzt/rnote
 git submodule update --init --recursive
 ```
+
+Or (from the mingw64 terminal)
+```bash
+MSYS=winsymlinks:native git clone https://github.com/flxzt/rnote.git
+git submodule update --init --recursive
+```
+Verify that you see in `/crates/rnote-ui/po` the four files zh_CN.po, zh_HK.po, zh_SG.po and zh_TW.po as symlinks (and not as a text file with a single line inside).   
+
 
 For unknown reasons, `libpthread.a` **and** `libpthread.dll.a` exist in `/mingw64/lib/` and rustc apparently wants to
 link with both, resulting in "multiple definitions of pthread\_..." linker errors.

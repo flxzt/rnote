@@ -11,6 +11,7 @@ use crate::snap::SnapCorner;
 use crate::store::StrokeKey;
 use crate::strokes::Content;
 use crate::{Camera, DrawableOnDoc, Engine, WidgetFlags};
+use core::str;
 use futures::channel::oneshot;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
@@ -24,6 +25,7 @@ use rnote_compose::EventResult;
 use rnote_compose::{color, Color};
 use std::collections::HashSet;
 use std::time::Instant;
+use tracing::debug;
 use tracing::error;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -172,6 +174,8 @@ impl PenBehaviour for Selector {
             None
         };
 
+        let dpi = engine_view.document.format.dpi();
+
         rayon::spawn(move || {
             let result = move || {
                 if let Some(stroke_content) = stroke_content {
@@ -187,6 +191,20 @@ impl PenBehaviour for Selector {
                         serde_json::to_string(&stroke_content)?.into_bytes(),
                         StrokeContent::MIME_TYPE.to_string(),
                     ));
+
+                    // add inkml content
+                    let inkml_contents = stroke_content.to_inkml(dpi);
+                    match inkml_contents {
+                        Ok(inkml_bytes) => {
+                            println!("generated inkml :  {:?}", str::from_utf8(&inkml_bytes));
+                            clipboard_content.push((
+                                inkml_bytes,
+                                "application/x.windows.InkML Format".to_string(),
+                            ));
+                        }
+                        _ => (),
+                    }
+
                     if let Some(stroke_content_svg) = stroke_content_svg {
                         // Add generated Svg
                         clipboard_content.push((

@@ -17,12 +17,11 @@ use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevent::{ModifierKey, PenEvent, PenProgress, PenState};
+use rnote_compose::penevent::{PenEvent, PenProgress, PenState};
 use rnote_compose::penpath::Element;
 use rnote_compose::style::indicators;
 use rnote_compose::EventResult;
 use rnote_compose::{color, Color};
-use std::collections::HashSet;
 use std::time::Instant;
 use tracing::error;
 
@@ -790,32 +789,18 @@ impl Selector {
         Ok(())
     }
 
-    fn select_all(
-        &mut self,
-        modifier_keys: HashSet<ModifierKey>,
-        engine_view: &mut EngineViewMut,
-        widget_flags: &mut WidgetFlags,
-    ) {
-        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
-            // Select all keys
-            let all_strokes = engine_view.store.stroke_keys_as_rendered();
+    fn select_all(&mut self, engine_view: &mut EngineViewMut, widget_flags: &mut WidgetFlags) {
+        // Select all keys
+        let all_strokes = engine_view.store.stroke_keys_as_rendered();
 
-            if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&all_strokes) {
-                engine_view.store.set_selected_keys(&all_strokes, true);
-                *widget_flags |= engine_view
-                    .document
-                    .resize_autoexpand(engine_view.store, engine_view.camera);
+        if !all_strokes.is_empty() {
+            engine_view.store.set_selected_keys(&all_strokes, true);
 
-                self.state = SelectorState::ModifySelection {
-                    modify_state: ModifyState::default(),
-                    selection: all_strokes,
-                    selection_bounds: new_bounds,
-                };
-
-                widget_flags.store_modified = true;
-                widget_flags.deselect_color_setters = true;
-            }
+            widget_flags.store_modified = true;
+            widget_flags.deselect_color_setters = true;
         }
+
+        *widget_flags |= self.update_state(engine_view);
     }
 }
 

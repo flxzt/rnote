@@ -649,8 +649,10 @@ fn doc_page_determine_output_file(
     // user facing number is one-indexed
     page_i += 1;
     let leading_zeros = pages_amount.to_string().len();
-    let number = format!("{page_i:0fill$}", fill = leading_zeros);
-    let mut out = output_dir.join(format!("{output_file_stem} - page {number}.{out_ext}"));
+    let mut out = output_dir.join(format!(
+        "{output_file_stem} - page {number}.{out_ext}",
+        number = format_args!("{page_i:0fill$}", fill = leading_zeros)
+    ));
     if let Some(new_out) =
         file_conflict_prompt_action(out.as_ref(), on_conflict, on_conflict_overwrite)?
     {

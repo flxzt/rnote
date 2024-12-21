@@ -151,20 +151,12 @@ mod imp {
             let color = self.entry.borrow().color().into_compose_color();
             let name = self.entry.borrow().name();
 
-            let workspacerow_color = format!(
-                "rgba({0}, {1}, {2}, {3:.3})",
-                (color.r * 255.0) as i32,
-                (color.g * 255.0) as i32,
-                (color.b * 255.0) as i32,
-                (color.a * 1000.0).round() / 1000.0,
-            );
-
             let workspacerow_fg_color = if color == Color::TRANSPARENT {
-                String::from("@window_fg_color")
+                "@window_fg_color"
             } else if color.luma() < color::FG_LUMINANCE_THRESHOLD {
-                String::from("@light_1")
+                "@light_1"
             } else {
-                String::from("@dark_5")
+                "@dark_5"
             };
 
             let css = CssProvider::new();
@@ -177,7 +169,14 @@ mod imp {
             self.folder_image.set_icon_name(Some(&icon));
 
             let custom_css = format!(
-                "@define-color workspacerow_color {workspacerow_color};@define-color workspacerow_fg_color {workspacerow_fg_color};",
+                "@define-color workspacerow_color {};@define-color workspacerow_fg_color {workspacerow_fg_color};",
+                format_args!(
+                    "rgba({0}, {1}, {2}, {3:.3})",
+                        (color.r * 255.0) as i32,
+                        (color.g * 255.0) as i32,
+                        (color.b * 255.0) as i32,
+                        (color.a * 1000.0).round() / 1000.0,
+                )
             );
 
             css.load_from_string(&custom_css);

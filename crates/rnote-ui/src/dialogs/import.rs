@@ -408,28 +408,12 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
 
         // pdf info
         pdf_info_label.set_label(
-            (String::from("")
-                + "<b>"
-                + &gettext("File name:")
-                + "  </b>"
-                + &format!("{file_name}\n")
-                + "<b>"
-                + &gettext("Title:")
-                + "  </b>"
-                + &format!("{title}\n")
-                + "<b>"
-                + &gettext("Author:")
-                + "  </b>"
-                + &format!("{author}\n")
-                + "<b>"
-                + &gettext("Modification date:")
-                + "  </b>"
-                + &format!("{mod_date}\n")
-                + "<b>"
-                + &gettext("Pages:")
-                + "  </b>"
-                + &format!("{n_pages}\n"))
-                .as_str(),
+            &format!("<b>{}  </b>{file_name}\n<b>{}  </b>{title}\n<b>{}  </b>{author}\n<b>{}  </b>{mod_date}\n<b>{}  </b>{n_pages}\n",
+                &gettext("File name:"),
+                &gettext("Title:"),
+                &gettext("Author:"),
+                &gettext("Modification date:"),
+                &gettext("Pages:"))
         );
 
         // Configure pages spinners

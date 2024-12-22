@@ -807,6 +807,10 @@ impl RnCanvasWrapper {
         self.set_property("inertial-scrolling", inertial_scrolling);
     }
 
+    pub(crate) fn pointer_pos(&self) -> Option<na::Vector2<f64>> {
+        self.imp().pointer_pos.get()
+    }
+
     pub(crate) fn last_contextmenu_pos(&self) -> Option<na::Vector2<f64>> {
         self.imp().last_contextmenu_pos.get()
     }

@@ -11,6 +11,7 @@ use p2d::bounding_volume::BoundingVolume;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_compose::SplitOrder;
 use rnote_engine::engine::StrokeContent;
+use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::strokes::resize::{ImageSizeOption, Resize};
 use rnote_engine::{Camera, Engine};
@@ -1083,7 +1084,33 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                appwindow.clipboard_paste(None);
+                let Some(wrapper) = appwindow.active_tab_wrapper() else {
+                    return;
+                };
+                let canvas = wrapper.canvas();
+
+                let pointer_pos = wrapper.pointer_pos().and_then(|wrapper_point| {
+                    let canvas_point = wrapper
+                        .compute_point(&canvas, &graphene::Point::from_na_vec(wrapper_point));
+
+                    if let Some(point) = canvas_point {
+                        let x = point.x() as f64;
+                        let y = point.y() as f64;
+
+                        if canvas.contains(x, y) {
+                            let transformed_point =
+                                (canvas.engine_ref().camera.transform().inverse()
+                                    * na::point![x, y])
+                                .coords;
+
+                            return Some(transformed_point);
+                        }
+                    }
+
+                    return None;
+                });
+
+                appwindow.clipboard_paste(pointer_pos);
             }
         ));
 

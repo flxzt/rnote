@@ -62,7 +62,7 @@ rand_distr = "0.4.3"
 rand_pcg = "0.3.1"
 rayon = "1.10"
 regex = "1.10"
-rodio = { version = "0.19.0", default-features = false, features = [
+rodio = { version = "0.20.1", default-features = false, features = [
     "symphonia-wav",
 ] }
 rough_piet = "0.8.0"
@@ -75,7 +75,7 @@ serde_json = "1.0"
 slotmap = { version = "1.0", features = ["serde"] }
 smol = "2.0"
 svg = "0.18.0"
-thiserror = "1.0"
+thiserror = "2.0.9"
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 unicode-segmentation = "1.12"

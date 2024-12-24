@@ -879,7 +879,7 @@ dependencies = [
  "console",
  "shell-words",
  "tempfile",
- "thiserror",
+ "thiserror 1.0.66",
  "zeroize",
 ]
 
@@ -1827,7 +1827,7 @@ name = "ink-stroke-modeler-rs"
 version = "0.1.0"
 source = "git+https://github.com/flxzt/ink-stroke-modeler-rs?rev=84d311e9b0d034dcd955a1f353d37f54b2bda70f#84d311e9b0d034dcd955a1f353d37f54b2bda70f"
 dependencies = [
- "thiserror",
+ "thiserror 1.0.66",
 ]
 
 [[package]]
@@ -1939,7 +1939,7 @@ dependencies = [
  "combine",
  "jni-sys",
  "log",
- "thiserror",
+ "thiserror 1.0.66",
  "walkdir",
  "windows-sys 0.45.0",
 ]
@@ -2350,7 +2350,7 @@ dependencies = [
  "log",
  "ndk-sys",
  "num_enum",
- "thiserror",
+ "thiserror 1.0.66",
 ]
 
 [[package]]
@@ -2754,7 +2754,7 @@ dependencies = [
  "slab",
  "smallvec",
  "spade",
- "thiserror",
+ "thiserror 1.0.66",
 ]
 
 [[package]]
@@ -3168,7 +3168,7 @@ dependencies = [
  "rand_chacha",
  "simd_helpers",
  "system-deps 6.2.2",
- "thiserror",
+ "thiserror 1.0.66",
  "v_frame",
  "wasm-bindgen",
 ]
@@ -3325,7 +3325,7 @@ dependencies = [
  "serde",
  "serde_json",
  "svg",
- "thiserror",
+ "thiserror 2.0.9",
  "tracing",
  "tracing-subscriber",
  "unicode-segmentation",
@@ -3425,7 +3425,7 @@ dependencies = [
  "serde_json",
  "slotmap",
  "svg",
- "thiserror",
+ "thiserror 2.0.9",
  "tracing",
  "unicode-segmentation",
  "usvg",
@@ -3440,13 +3440,12 @@ checksum = "cbf4a6aa5f6d6888f39e980649f3ad6b666acdce1d78e95b8a2cb076e687ae30"
 
 [[package]]
 name = "rodio"
-version = "0.19.0"
+version = "0.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6006a627c1a38d37f3d3a85c6575418cfe34a5392d60a686d0071e1c8d427acb"
+checksum = "e7ceb6607dd738c99bc8cb28eff249b7cd5c8ec88b9db96c0608c1480d140fb1"
 dependencies = [
  "cpal",
  "symphonia",
- "thiserror",
 ]
 
 [[package]]
@@ -4038,7 +4037,16 @@ version = "1.0.66"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d171f59dbaa811dbbb1aee1e73db92ec2b122911a48e1390dfe327a821ddede"
 dependencies = [
- "thiserror-impl",
+ "thiserror-impl 1.0.66",
+]
+
+[[package]]
+name = "thiserror"
+version = "2.0.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f072643fd0190df67a8bab670c20ef5d8737177d6ac6b2e9a236cb096206b2cc"
+dependencies = [
+ "thiserror-impl 2.0.9",
 ]
 
 [[package]]
@@ -4046,6 +4054,17 @@ name = "thiserror-impl"
 version = "1.0.66"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b08be0f17bd307950653ce45db00cd31200d82b624b36e181337d9c7d92765b5"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.87",
+]
+
+[[package]]
+name = "thiserror-impl"
+version = "2.0.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7b50fa271071aae2e6ee85f842e2e28ba8cd2c5fb67f11fcb1fd70b276f9e7d4"
 dependencies = [
  "proc-macro2",
  "quote",

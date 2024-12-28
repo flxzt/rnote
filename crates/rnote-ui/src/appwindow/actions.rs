@@ -1107,7 +1107,7 @@ impl RnAppWindow {
                         }
                     }
 
-                    return None;
+                    None
                 });
 
                 appwindow.clipboard_paste(pointer_pos);

@@ -37,7 +37,7 @@ impl std::fmt::Debug for PenPathModeledBuilder {
             .field("start_time", &self.start_time)
             .field("last_element", &self.last_element)
             .field("last_element_time", &self.last_element_time)
-            .field("stroke_modeler", &"- no debug impl -")
+            .field("stroke_modeler", &"{.. no debug impl ..}")
             .finish()
     }
 }

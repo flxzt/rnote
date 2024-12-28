@@ -126,8 +126,6 @@ impl LaserTool {
                 }
             }
             (ToolsState::Active, PenEvent::Up { .. }) => {
-                let mut progress = PenProgress::Finished;
-
                 if let Some(builder) = &mut self.path_builder {
                     let builder_result = builder.handle_event(event, now, Constraints::default());
 
@@ -135,7 +133,6 @@ impl LaserTool {
                     self.start_fade(now);
 
                     engine_view.animation.claim_frame();
-                    progress = PenProgress::InProgress;
                 }
 
                 self.reset(false);
@@ -143,7 +140,7 @@ impl LaserTool {
                 EventResult {
                     handled: true,
                     propagate: EventPropagation::Stop,
-                    progress,
+                    progress: PenProgress::Finished,
                 }
             }
             (ToolsState::Active, PenEvent::Proximity { .. }) => EventResult {

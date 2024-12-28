@@ -99,7 +99,7 @@ impl std::fmt::Debug for OneOffTaskMsg {
             Self::ResetTimeout => write!(f, "ResetTimeout"),
             Self::ReplaceTask(_) => f
                 .debug_tuple("ReplaceTask")
-                .field(&String::from(".. no debug impl .."))
+                .field(&String::from("{.. no debug impl ..}"))
                 .finish(),
             Self::Quit => write!(f, "Quit"),
         }

@@ -168,13 +168,11 @@ impl StrokeContent {
         Ok(())
     }
 
-    pub fn to_inkml(&self, current_dpi: f64) -> Result<Vec<u8>, std::io::Error> {
+    pub fn to_inkml(&self, current_dpi: f64) -> anyhow::Result<Vec<u8>> {
         writer_inkml::writer(
             self.strokes
                 .iter()
-                .map(|stroke| stroke.into_inkml(current_dpi))
-                .filter(|x| x.is_some())
-                .map(|x| x.unwrap())
+                .filter_map(|stroke| stroke.into_inkml(current_dpi))
                 .collect(),
         )
     }

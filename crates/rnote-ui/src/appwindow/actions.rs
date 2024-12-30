@@ -8,30 +8,21 @@ use gtk4::{
     prelude::*,
 };
 use p2d::bounding_volume::BoundingVolume;
-use rnote_compose::Color;
-use rnote_compose::PenPath;
 use rnote_compose::SplitOrder;
 use rnote_compose::penevent::ShortcutKey;
-use rnote_compose::penpath::Element;
-use rnote_compose::style::PressureCurve;
-use rnote_compose::style::smooth::SmoothOptions;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::pens::PenStyle;
-use rnote_engine::strokes::resize::{ImageSizeOption, Resize};
-use rnote_engine::strokes::BrushStroke;
-use rnote_engine::strokes::Stroke;
 use rnote_engine::strokes::resize::{ImageSizeOption, Resize};
 use rnote_engine::strokes::textstroke::TextAttribute;
 use rnote_engine::{Camera, Engine};
 use std::path::PathBuf;
 use std::str::FromStr;
-use std::sync::Arc;
 use std::time::Instant;
 use tracing::{debug, error};
+use rnote_engine::fileformats::inkmlformat;
 
 const CLIPBOARD_INPUT_STREAM_BUFSIZE: usize = 4096;
-const MM_TO_PX: f64 = 1. / (10.0 * 2.54);
 
 impl RnAppWindow {
     /// Boolean actions have no target, and a boolean state. They have a default implementation for the activate signal,
@@ -1336,63 +1327,22 @@ impl RnAppWindow {
                                     Ok(text) => {
                                         let stroke_result =
                                             writer_inkml::parse_formatted(text.as_bytes());
+                                        let dpi = canvas.engine_ref().document.config.format.dpi();
+
                                         debug!("stroke result {:?}", stroke_result);
 
                                         if let Ok(strokes) = stroke_result {
-                                            let mut generated_strokes: Vec<Arc<Stroke>> = vec![];
-                                            for (formatted_stroke, brush) in strokes {
-                                                let dpi = canvas
-                                                    .engine_ref()
-                                                    .document
-                                                    .config
-                                                    .format
-                                                    .dpi();
+                                            let generated_strokes = strokes
+                                                .into_iter()
+                                                .filter_map(|(formatted_stroke, brush)| {
+                                                    inkmlformat::inkml_to_stroke(
+                                                        formatted_stroke,
+                                                        brush,
+                                                        &dpi,
+                                                    )
+                                                })
+                                                .collect();
 
-                                                let smooth_options = SmoothOptions {
-                                                    stroke_color: Some(Color::new(
-                                                        brush.color.0 as f64 / 255.0,
-                                                        brush.color.1 as f64 / 255.0,
-                                                        brush.color.2 as f64 / 255.0,
-                                                        1.0 - brush.transparency as f64 / 255.0,
-                                                    )),
-                                                    // stroke width in px
-                                                    stroke_width: dpi
-                                                        * brush.stroke_width
-                                                        * MM_TO_PX,
-                                                    pressure_curve: if brush.ignorepressure {
-                                                        PressureCurve::Const
-                                                    } else {
-                                                        PressureCurve::Linear
-                                                    },
-                                                    ..Default::default()
-                                                };
-
-                                                let penpath = PenPath::try_from_elements(
-                                                    formatted_stroke
-                                                        .x
-                                                        .into_iter()
-                                                        .zip(formatted_stroke.y)
-                                                        .zip(formatted_stroke.f)
-                                                        .map(|((x, y), f)| {
-                                                            Element::new(
-                                                                dpi * na::vector![x, y] / 2.54,
-                                                                f,
-                                                            )
-                                                        }),
-                                                );
-                                                if let Some(path) = penpath {
-                                                    let new_stroke = BrushStroke::from_penpath(
-                                                        path,
-                                                        rnote_compose::Style::Smooth(
-                                                            smooth_options,
-                                                        ),
-                                                    );
-                                                    generated_strokes.push(Arc::new(
-                                                        Stroke::BrushStroke(new_stroke),
-                                                    ));
-                                                }
-                                            }
-                                            // then push
                                             let mut stroke_content = StrokeContent {
                                                 strokes: generated_strokes,
                                                 bounds: None,

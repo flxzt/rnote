@@ -5103,7 +5103,7 @@ checksum = "1e9df38ee2d2c3c5948ea468a8406ff0db0b29ae1ffde1bcf20ef305bcc95c51"
 [[package]]
 name = "writer_inkml"
 version = "0.1.0"
-source = "git+https://github.com/Doublonmousse/writer_reader_inkml#9498471ca978be417fb104e015151c1f8ade2f6a"
+source = "git+https://github.com/Doublonmousse/writer_reader_inkml?rev=9498471ca978be417fb104e015151c1f8ade2f6a#9498471ca978be417fb104e015151c1f8ade2f6a"
 dependencies = [
  "anyhow",
  "tracing",

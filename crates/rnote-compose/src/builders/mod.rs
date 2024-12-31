@@ -9,6 +9,7 @@ mod ellipsebuilder;
 mod fociellipsebuilder;
 mod gridbuilder;
 mod linebuilder;
+mod parabolabuilder;
 mod penpathcurvedbuilder;
 mod penpathmodeledbuilder;
 mod penpathsimplebuilder;
@@ -27,6 +28,7 @@ pub use ellipsebuilder::EllipseBuilder;
 pub use fociellipsebuilder::FociEllipseBuilder;
 pub use gridbuilder::GridBuilder;
 pub use linebuilder::LineBuilder;
+pub use parabolabuilder::ParabolaBuilder;
 pub use penpathcurvedbuilder::PenPathCurvedBuilder;
 pub use penpathmodeledbuilder::PenPathModeledBuilder;
 pub use penpathsimplebuilder::PenPathSimpleBuilder;
@@ -85,6 +87,9 @@ pub enum ShapeBuilderType {
     /// A polygon builder
     #[serde(rename = "polygon")]
     Polygon,
+    /// A parabola
+    #[serde(rename = "parabola")]
+    Parabola,
 }
 
 impl ShapeBuilderType {
@@ -104,6 +109,7 @@ impl ShapeBuilderType {
             "shapebuilder-cubbez-symbolic" => Some(Self::CubBez),
             "shapebuilder-polyline-symbolic" => Some(Self::Polyline),
             "shapebuilder-polygon-symbolic" => Some(Self::Polygon),
+            "shapebuilder-parabola-symbolic" => Some(Self::Parabola),
             _ => None,
         }
     }
@@ -126,6 +132,7 @@ impl ShapeBuilderType {
             Self::CubBez => String::from("shapebuilder-cubbez-symbolic"),
             Self::Polyline => String::from("shapebuilder-polyline-symbolic"),
             Self::Polygon => String::from("shapebuilder-polygon-symbolic"),
+            Self::Parabola => String::from("shapebuilder-parabola-symbolic"),
         }
     }
 }

@@ -70,6 +70,8 @@ cpp_compiler = meson.get_compiler('cpp')
 dependency('glib-2.0', version: '>= 2.76')
 dependency('gio-2.0', version: '>= 2.76')
 dependency('cairo', version: '>= 1.18')
+dependency('gtk4', version: '>= 4.16.0')
+dependency('poppler', version: '>= 20.09')
 
 cargo = find_program('cargo', required: true)
 # cmake is needed by the "ink-stroke-modeler-rs" bindings crate to build the C++ library

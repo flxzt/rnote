@@ -1,5 +1,9 @@
 // Modules
-mod smoothoptions;
+
+/// The module for the shape style
+pub mod shapestyle;
+/// The module for the smooth style
+pub mod smoothoptions;
 
 // Re-exports
 pub use smoothoptions::SmoothOptions;
@@ -26,7 +30,12 @@ impl Composer<SmoothOptions> for Line {
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(line, &stroke_brush, options.stroke_width);
+            cx.stroke_styled(
+                line,
+                &stroke_brush,
+                options.stroke_width,
+                &options.shape_style.get(),
+            );
         }
         cx.restore().unwrap();
     }
@@ -43,10 +52,11 @@ impl Composer<SmoothOptions> for Arrow {
 
         if let Some(stroke_color) = options.stroke_color {
             let arrow = self.to_kurbo(Some(options.stroke_width));
-            cx.stroke(
+            cx.stroke_styled(
                 arrow,
                 &Into::<piet::Color>::into(stroke_color),
                 options.stroke_width,
+                &options.shape_style.get(),
             );
         }
 
@@ -70,7 +80,12 @@ impl Composer<SmoothOptions> for Rectangle {
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(shape, &stroke_brush, options.stroke_width);
+            cx.stroke_styled(
+                shape,
+                &stroke_brush,
+                options.stroke_width,
+                &options.shape_style.get(),
+            );
         }
         cx.restore().unwrap();
     }
@@ -92,7 +107,12 @@ impl Composer<SmoothOptions> for Ellipse {
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(ellipse, &stroke_brush, options.stroke_width);
+            cx.stroke_styled(
+                ellipse,
+                &stroke_brush,
+                options.stroke_width,
+                &options.shape_style.get(),
+            );
         }
         cx.restore().unwrap();
     }
@@ -114,7 +134,12 @@ impl Composer<SmoothOptions> for QuadraticBezier {
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(quadbez, &stroke_brush, options.stroke_width);
+            cx.stroke_styled(
+                quadbez,
+                &stroke_brush,
+                options.stroke_width,
+                &options.shape_style.get(),
+            );
         }
         cx.restore().unwrap();
     }
@@ -136,7 +161,12 @@ impl Composer<SmoothOptions> for CubicBezier {
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(cubbez, &stroke_brush, options.stroke_width);
+            cx.stroke_styled(
+                cubbez,
+                &stroke_brush,
+                options.stroke_width,
+                &options.shape_style.get(),
+            );
         }
         cx.restore().unwrap();
     }
@@ -197,13 +227,15 @@ impl Composer<SmoothOptions> for Polygon {
                 cx.fill(&outline_path, &Into::<piet::Color>::into(fill_color));
             }
 
+            let mut style = options.shape_style.get().clone();
+            style.set_line_cap(piet::LineCap::Butt);
+            style.set_line_join(piet::LineJoin::Bevel);
+
             cx.stroke_styled(
                 &outline_path,
                 &Into::<piet::Color>::into(color),
                 options.stroke_width,
-                &piet::StrokeStyle::default()
-                    .line_cap(piet::LineCap::Butt)
-                    .line_join(piet::LineJoin::Bevel),
+                &style,
             );
         }
     }

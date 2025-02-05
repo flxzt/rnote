@@ -20,6 +20,7 @@ rnote_engine_sources = files(
     'fileformats/rnoteformat/mod.rs',
     'fileformats/rnoteformat/methods.rs',
     'fileformats/rnoteformat/maj0min12.rs',
+    'fileformats/rnoteformat/prelude.rs',
     'fileformats/xoppformat.rs',
     'pens/brush.rs',
     'pens/eraser.rs',

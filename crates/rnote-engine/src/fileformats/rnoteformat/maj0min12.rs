@@ -23,9 +23,10 @@ use serde::{Deserialize, Serialize};
 /// the body contains the serialized and (potentially) compressed engine snapshot
 #[derive(Debug, Clone)]
 pub struct RnoteFileMaj0Min12 {
-    /// called header and not head because head = prelude + header
+    /// The file's head is composed of the prelude plus the header (below).
+    /// Contains the necessary information to efficiently compress/decompress, serialize/deserialize the rnote file.
     pub header: RnoteHeaderMaj0Min12,
-    /// A serialized and (potentially) compressed engine snapshot
+    /// The serialized and (potentially) compressed engine snapshot.
     pub body: Vec<u8>,
 }
 
@@ -47,6 +48,7 @@ pub struct RnoteHeaderMaj0Min12 {
 
 impl TryFrom<RnoteFileMaj0Min9> for RnoteFileMaj0Min12 {
     type Error = anyhow::Error;
+    /// Inefficient conversion, as the legacy struct stores the ijson EngineSnapshot and not the compressed and serialized bytes, thankfully bypassed in EngineSnapshot::load_from_rnote_bytes. Therefore in general this would only be used by rnote-cli mutate.
     fn try_from(value: RnoteFileMaj0Min9) -> Result<Self, Self::Error> {
         Ok(Self {
             header: RnoteHeaderMaj0Min12 {

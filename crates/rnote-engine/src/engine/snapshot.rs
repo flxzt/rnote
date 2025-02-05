@@ -55,8 +55,7 @@ impl EngineSnapshot {
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Self> {
-                // support for legacy files
-                // gzip magic number
+                // Efficient support for legacy rnote files, by checking the existence of the gzip magic number at the start of the file, avoids the costly try_from conversion.
                 if bytes
                     .get(..2)
                     .ok_or_else(|| anyhow::anyhow!("Not an Rnote file"))?

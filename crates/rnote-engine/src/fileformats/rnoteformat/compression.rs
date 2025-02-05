@@ -1,5 +1,4 @@
 // Imports
-use crate::engine::EngineSnapshot;
 use serde::{Deserialize, Serialize};
 use std::{
     io::{Read, Write},
@@ -18,16 +17,38 @@ pub enum CompressionMethod {
     Zstd(u8),
 }
 
-/// Serialization methods that can be applied to a snapshot of the engine
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SerializationMethod {
-    #[serde(rename = "bitcode")]
-    Bitcode,
-    #[serde(rename = "json")]
-    Json,
+impl Default for CompressionMethod {
+    fn default() -> Self {
+        Self::Zstd(9)
+    }
+}
+
+#[derive(Debug, Clone, Copy, num_derive::FromPrimitive, num_derive::ToPrimitive)]
+pub enum CompressionLevel {
+    VeryHigh,
+    High,
+    Medium,
+    Low,
+    VeryLow,
+    None,
+}
+
+impl TryFrom<u32> for CompressionLevel {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "CompressionLevel try_from::<u32>() for value {} failed",
+                value
+            )
+        })
+    }
 }
 
 impl CompressionMethod {
+    pub const VALID_STR_ARRAY: [&'static str; 6] = ["None", "none", "Gzip", "gzip", "Zstd", "zstd"];
+
     pub fn compress(&self, data: Vec<u8>) -> anyhow::Result<Vec<u8>> {
         match self {
             Self::None => Ok(data),
@@ -95,12 +116,52 @@ impl CompressionMethod {
             }
         }
     }
-    pub const VALID_STR_ARRAY: [&'static str; 6] = ["None", "none", "Gzip", "gzip", "Zstd", "zstd"];
-}
+    pub fn get_compression_level(&self) -> CompressionLevel {
+        match self {
+            Self::None => CompressionLevel::None,
+            Self::Gzip(val) => match *val {
+                0..=1 => CompressionLevel::VeryLow,
+                2..=3 => CompressionLevel::Low,
+                4..=5 => CompressionLevel::Medium,
+                6..=7 => CompressionLevel::High,
+                8..=9 => CompressionLevel::VeryHigh,
+                _ => unreachable!(),
+            },
+            Self::Zstd(val) => match *val {
+                0..=4 => CompressionLevel::VeryLow,
+                5..=8 => CompressionLevel::Low,
+                9..=12 => CompressionLevel::Medium,
+                13..=16 => CompressionLevel::High,
+                17..=22 => CompressionLevel::VeryHigh,
+                _ => unreachable!(),
+            },
+        }
+    }
 
-impl Default for CompressionMethod {
-    fn default() -> Self {
-        Self::Zstd(9)
+    pub fn set_compression_level(&mut self, level: CompressionLevel) {
+        match self {
+            Self::None => (),
+            Self::Gzip(ref mut val) => {
+                *val = match level {
+                    CompressionLevel::VeryHigh => 8,
+                    CompressionLevel::High => 6,
+                    CompressionLevel::Medium => 5,
+                    CompressionLevel::Low => 3,
+                    CompressionLevel::VeryLow => 1,
+                    CompressionLevel::None => unreachable!(),
+                }
+            }
+            Self::Zstd(ref mut val) => {
+                *val = match level {
+                    CompressionLevel::VeryHigh => 17,
+                    CompressionLevel::High => 13,
+                    CompressionLevel::Medium => 9,
+                    CompressionLevel::Low => 5,
+                    CompressionLevel::VeryLow => 1,
+                    CompressionLevel::None => unreachable!(),
+                }
+            }
+        }
     }
 }
 
@@ -112,39 +173,6 @@ impl FromStr for CompressionMethod {
             "Gzip" | "gzip" => Ok(Self::Gzip(5)),
             "Zstd" | "zstd" => Ok(Self::Zstd(9)),
             _ => Err("Unknown compression method"),
-        }
-    }
-}
-
-impl SerializationMethod {
-    pub fn serialize(&self, engine_snapshot: &EngineSnapshot) -> anyhow::Result<Vec<u8>> {
-        match self {
-            Self::Bitcode => Ok(bitcode::serialize(engine_snapshot)?),
-            Self::Json => Ok(serde_json::to_vec(&ijson::to_value(engine_snapshot)?)?),
-        }
-    }
-    pub fn deserialize(&self, data: &[u8]) -> anyhow::Result<EngineSnapshot> {
-        match self {
-            Self::Bitcode => Ok(bitcode::deserialize(data)?),
-            Self::Json => Ok(ijson::from_value(&serde_json::from_slice(data)?)?),
-        }
-    }
-    pub const VALID_STR_ARRAY: [&'static str; 5] = ["Bitcode", "bitcode", "Json", "JSON", "json"];
-}
-
-impl Default for SerializationMethod {
-    fn default() -> Self {
-        Self::Bitcode
-    }
-}
-
-impl FromStr for SerializationMethod {
-    type Err = &'static str;
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "Bitcode" | "bitcode" => Ok(Self::Bitcode),
-            "Json" | "JSON" | "json" => Ok(Self::Json),
-            _ => Err("Unknown serialization method"),
         }
     }
 }

@@ -6,13 +6,15 @@
 //! Then [TryFrom] can be implemented to allow conversions and chaining from older to newer versions.
 
 // Modules
+pub(crate) mod compression;
 pub(crate) mod legacy;
 pub(crate) mod maj0min12;
-pub(crate) mod methods;
 pub(crate) mod prelude;
+pub(crate) mod serialization;
 
 // Re-exports
-pub use methods::{CompressionMethod, SerializationMethod};
+pub use compression::CompressionMethod;
+pub use serialization::SerializationMethod;
 
 // Imports
 use super::{FileFormatLoader, FileFormatSaver};
@@ -34,7 +36,7 @@ impl FileFormatSaver for RnoteFile {
         let header = serde_json::to_vec(&ijson::to_value(&self.header)?)?;
         let prelude = Prelude::new(version, header.len()).try_to_bytes()?;
 
-        // From testing, using ".concat" seems to be the best choice, it's much faster than Vec::apend or Vec::extend.
+        // From running simple tests, using ".concat" seems to be the best choice, it's much faster than Vec::apend or Vec::extend.
         Ok([prelude.as_slice(), header.as_slice(), self.body.as_slice()].concat())
     }
 }
@@ -94,7 +96,7 @@ impl TryFrom<RnoteFile> for EngineSnapshot {
         let uc_body = value.header.compression.decompress(uc_size, value.body)?;
         let mut engine_snapshot = value.header.serialization.deserialize(&uc_body)?;
 
-        // save preferences are only kept if method_lock is true or both the ser. method and comp. method are "defaults"
+        // Save preferences are only kept if method_lock is true or both the ser. method and comp. method are "defaults".
         let save_prefs = SavePrefs::from(value.header);
         if save_prefs.method_lock | save_prefs.conforms_to_default() {
             engine_snapshot.save_prefs = save_prefs;

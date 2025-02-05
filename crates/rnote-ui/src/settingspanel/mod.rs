@@ -19,8 +19,8 @@ use num_traits::ToPrimitive;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
+use rnote_engine::document::CompressionLevel;
 use rnote_engine::document::Layout;
-use rnote_engine::engine::CompressionLevel;
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
 

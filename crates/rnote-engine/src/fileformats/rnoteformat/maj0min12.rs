@@ -1,6 +1,6 @@
 use super::{
-    legacy::maj0min9::RnoteFileMaj0Min9,
-    methods::{CompressionMethod, SerializationMethod},
+    compression::CompressionMethod, legacy::maj0min9::RnoteFileMaj0Min9,
+    serialization::SerializationMethod,
 };
 use serde::{Deserialize, Serialize};
 

@@ -12,7 +12,6 @@ pub use export::ExportPrefs;
 use futures::channel::mpsc::UnboundedReceiver;
 use futures::StreamExt;
 pub use import::ImportPrefs;
-pub use save::CompressionLevel;
 pub use snapshot::EngineSnapshot;
 pub use strokecontent::StrokeContent;
 

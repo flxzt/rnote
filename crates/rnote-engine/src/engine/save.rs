@@ -1,7 +1,6 @@
 // Imports
 use crate::fileformats::rnoteformat::{
-    methods::{CompressionMethod, SerializationMethod},
-    RnoteHeader,
+    compression::CompressionMethod, serialization::SerializationMethod, RnoteHeader,
 };
 use serde::{Deserialize, Serialize};
 use std::mem::discriminant;
@@ -65,78 +64,6 @@ impl From<RnoteHeader> for SavePrefs {
             serialization: value.serialization,
             compression: value.compression,
             method_lock: value.method_lock,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, num_derive::FromPrimitive, num_derive::ToPrimitive)]
-pub enum CompressionLevel {
-    VeryHigh,
-    High,
-    Medium,
-    Low,
-    VeryLow,
-    None,
-}
-
-impl TryFrom<u32> for CompressionLevel {
-    type Error = anyhow::Error;
-
-    fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!(
-                "CompressionLevel try_from::<u32>() for value {} failed",
-                value
-            )
-        })
-    }
-}
-
-impl CompressionMethod {
-    pub fn get_compression_level(&self) -> CompressionLevel {
-        match self {
-            Self::None => CompressionLevel::None,
-            Self::Gzip(val) => match *val {
-                0..=1 => CompressionLevel::VeryLow,
-                2..=3 => CompressionLevel::Low,
-                4..=5 => CompressionLevel::Medium,
-                6..=7 => CompressionLevel::High,
-                8..=9 => CompressionLevel::VeryHigh,
-                _ => unreachable!(),
-            },
-            Self::Zstd(val) => match *val {
-                0..=4 => CompressionLevel::VeryLow,
-                5..=8 => CompressionLevel::Low,
-                9..=12 => CompressionLevel::Medium,
-                13..=16 => CompressionLevel::High,
-                17..=22 => CompressionLevel::VeryHigh,
-                _ => unreachable!(),
-            },
-        }
-    }
-    pub fn set_compression_level(&mut self, level: CompressionLevel) {
-        match self {
-            Self::None => (),
-            Self::Gzip(ref mut val) => {
-                *val = match level {
-                    CompressionLevel::VeryHigh => 8,
-                    CompressionLevel::High => 6,
-                    CompressionLevel::Medium => 5,
-                    CompressionLevel::Low => 3,
-                    CompressionLevel::VeryLow => 1,
-                    CompressionLevel::None => unreachable!(),
-                }
-            }
-            Self::Zstd(ref mut val) => {
-                *val = match level {
-                    CompressionLevel::VeryHigh => 17,
-                    CompressionLevel::High => 13,
-                    CompressionLevel::Medium => 9,
-                    CompressionLevel::Low => 5,
-                    CompressionLevel::VeryLow => 1,
-                    CompressionLevel::None => unreachable!(),
-                }
-            }
         }
     }
 }

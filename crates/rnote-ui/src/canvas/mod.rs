@@ -19,7 +19,7 @@ use gtk4::{
 };
 use notify::event::{AccessKind, AccessMode, ModifyKind, RenameMode};
 use notify::EventKind;
-use notify_debouncer_full::notify::{self, Watcher};
+use notify_debouncer_full::notify;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
@@ -39,6 +39,7 @@ struct Connections {
     vadjustment: Option<glib::SignalHandlerId>,
     tab_page_output_file: Option<glib::Binding>,
     tab_page_unsaved_changes: Option<glib::Binding>,
+    tab_page_invalidate_thumbnail: Option<glib::SignalHandlerId>,
     appwindow_output_file: Option<glib::SignalHandlerId>,
     appwindow_scalefactor: Option<glib::SignalHandlerId>,
     appwindow_save_in_progress: Option<glib::SignalHandlerId>,
@@ -74,6 +75,7 @@ mod imp {
 
         pub(crate) engine: RefCell<Engine>,
         pub(crate) engine_task_handler_handle: RefCell<Option<glib::JoinHandle<()>>>,
+        pub(crate) animation_callback_id: RefCell<Option<gtk4::TickCallbackId>>,
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_watcher_task: RefCell<Option<glib::JoinHandle<()>>>,
@@ -167,6 +169,7 @@ mod imp {
 
                 engine: RefCell::new(engine),
                 engine_task_handler_handle: RefCell::new(None),
+                animation_callback_id: RefCell::new(None),
 
                 output_file: RefCell::new(None),
                 output_file_watcher_task: RefCell::new(None),
@@ -243,6 +246,29 @@ mod imp {
             ));
 
             *self.engine_task_handler_handle.borrow_mut() = Some(engine_task_handler_handle);
+
+            let animation_callback_id = obj.add_tick_callback(clone!(
+                #[weak(rename_to=canvas)]
+                obj,
+                #[upgrade_or]
+                glib::ControlFlow::Break,
+                move |_widget, _frame_clock| {
+                    if canvas.engine_mut().animation.process_frame() {
+                        let optimize_epd = canvas.engine_ref().optimize_epd();
+                        canvas.engine_mut().handle_animation_frame(optimize_epd);
+
+                        // if optimize_epd is enabled, we only redraw the canvas
+                        // when no follow-up frame has been requested (i.e. the animation is done)
+                        if !optimize_epd || !canvas.engine_ref().animation.frame_in_flight() {
+                            canvas.queue_draw();
+                        }
+                    }
+
+                    glib::ControlFlow::Continue
+                }
+            ));
+
+            *self.animation_callback_id.borrow_mut() = Some(animation_callback_id);
 
             self.setup_input();
         }
@@ -421,9 +447,12 @@ mod imp {
 
         fn signals() -> &'static [glib::subclass::Signal] {
             static SIGNALS: Lazy<Vec<glib::subclass::Signal>> = Lazy::new(|| {
-                vec![glib::subclass::Signal::builder("handle-widget-flags")
-                    .param_types([WidgetFlagsBoxed::static_type()])
-                    .build()]
+                vec![
+                    glib::subclass::Signal::builder("handle-widget-flags")
+                        .param_types([WidgetFlagsBoxed::static_type()])
+                        .build(),
+                    glib::subclass::Signal::builder("invalidate-thumbnail").build(),
+                ]
             });
             SIGNALS.as_ref()
         }
@@ -744,6 +773,10 @@ impl RnCanvas {
         );
     }
 
+    pub(super) fn emit_invalidate_thumbnail(&self) {
+        self.emit_by_name::<()>("invalidate-thumbnail", &[]);
+    }
+
     pub(crate) fn last_export_dir(&self) -> Option<gio::File> {
         self.imp().last_export_dir.borrow().clone()
     }
@@ -949,6 +982,7 @@ impl RnCanvas {
                                     appwindow.overlays().progressbar_abort();
                                 } else {
                                     appwindow.overlays().progressbar_finish();
+                                    canvas.emit_invalidate_thumbnail();
                                 }
                             }
                         ));
@@ -1078,18 +1112,12 @@ impl RnCanvas {
                         return;
                     }
                 };
-                if let Err(e) = debouncer
-                    .watcher()
-                    .watch(parent_path, notify::RecursiveMode::NonRecursive)
-                {
+                if let Err(e) = debouncer.watch(parent_path, notify::RecursiveMode::NonRecursive) {
                     error!(
                         "Failed to start watching directory '{}', Err: {e:?}",
                         parent_path.display()
                     );
                 }
-                debouncer
-                    .cache()
-                    .add_root(parent_path, notify::RecursiveMode::NonRecursive);
                 while let Some(res) = rx.next().await {
                     match res {
                         Ok(events) => {
@@ -1401,6 +1429,9 @@ impl RnCanvas {
         if let Some(old) = connections.tab_page_unsaved_changes.take() {
             old.unbind();
         }
+        if let Some(old) = connections.tab_page_invalidate_thumbnail.take() {
+            self.disconnect(old);
+        }
     }
 
     /// When the widget is the child of a tab page, we want to connect their titles, icons, ..
@@ -1430,6 +1461,22 @@ impl RnCanvas {
             .sync_create()
             .build();
 
+        // handle invalidating cached thumbnail in the tabs overview panel
+        let tab_page_invalidate_thumbnail = self.connect_local(
+            "invalidate-thumbnail",
+            false,
+            clone!(
+                #[weak]
+                page,
+                #[upgrade_or]
+                None,
+                move |_| {
+                    page.invalidate_thumbnail();
+                    None
+                }
+            ),
+        );
+
         let mut connections = self.imp().connections.borrow_mut();
         if let Some(old) = connections
             .tab_page_output_file
@@ -1442,6 +1489,12 @@ impl RnCanvas {
             .replace(tab_page_unsaved_changes)
         {
             old.unbind();
+        }
+        if let Some(old) = connections
+            .tab_page_invalidate_thumbnail
+            .replace(tab_page_invalidate_thumbnail)
+        {
+            self.disconnect(old);
         }
     }
 

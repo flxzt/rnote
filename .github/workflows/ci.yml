@@ -15,8 +15,8 @@ env:
 jobs:
   check:
     if: github.event.pull_request.draft == false
-    runs-on: ubuntu-22.04
-    container: fedora:40
+    runs-on: ubuntu-24.04
+    container: fedora:41
     steps:
       - name: Install core dependencies
         run: |

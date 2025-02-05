@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-09-16 18:29+0000\n"
-"Last-Translator: Yosef Or Boczko <yoseforb@gnome.org>\n"
+"PO-Revision-Date: 2024-11-10 20:00+0000\n"
+"Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n == 1) ? 0 : ((n == 2) ? 1 : ((n > 10 && "
 "n % 10 == 0) ? 2 : 3));\n"
-"X-Generator: Weblate 5.8-dev\n"
+"X-Generator: Weblate 5.8.2\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -29,8 +29,8 @@ msgstr "ציור וכתיבת הערות בכתב יד"
 #: crates/rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
 msgstr ""
-"‫GNOME;GTK;כלים משרדיים;אופיס;גרפיקה;הערות;פנקס;רישומים;תרשימים;פתקיות;כתב "
-"יד;הערות;"
+"‫GNOME;GTK;כלים משרדיים;אופיס;גרפיקה;הערות;פנקס;רישומים;תרשימים;פתקיות;כתב יד;"
+"הערות;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:20
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
@@ -164,7 +164,7 @@ msgstr "מסמכים לא שמורים"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:59
 msgid "Discard All"
-msgstr "השלכת הכל"
+msgstr "השלכה של הכול"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:65
 msgid "Edit Workspace"
@@ -370,11 +370,10 @@ msgid "Select the export directory"
 msgstr "בחירת התיקייה לייצוא"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:312
-#, fuzzy
 msgctxt ""
 "When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
-msgstr "ייצוא גיליון"
+msgstr "שם השורש של הקבצים המיוצאים"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:347
 #: crates/rnote-ui/data/ui/dialogs/export.ui:545
@@ -600,7 +599,7 @@ msgstr "מצייר קווים ללא שינוי מהקלט הגולמי.\n"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "Curved"
-msgstr "חלק"
+msgstr "מעוקל"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Produces smooth, curved segments.\n"
@@ -819,9 +818,8 @@ msgid "Choose a fill style"
 msgstr "בחירת סגנון מילוי"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:202
-#, fuzzy
 msgid "Hachure"
-msgstr "קוקוו"
+msgstr "קווקוו"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:203
 msgid "Zig-Zag"
@@ -864,8 +862,7 @@ msgid ""
 msgstr ""
 "יש להחזיק את המקש Ctrl\n"
 "כדי לאפשר/להשבית\n"
-"מגבלות באופן זמני\n"
-"כשמתג זה כבוי/דולק"
+"מגבלות כשמתג זה כבוי/דולק"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:327
 msgid "1:1"
@@ -934,15 +931,15 @@ msgstr "מילוי"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:60
 msgid "Move Selected Workspace Up"
-msgstr "העברת סביבת העבודה הנבחרת מעלה"
+msgstr "העלאת סביבת העבודה הנבחרת מעלה"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:69
 msgid "Move Selected Workspace Down"
-msgstr "העברת סביבת העבודה הנבחרת מטה"
+msgstr "הורדת סביבת העבודה הנבחרת מטה"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:80
 msgid "Add Workspace"
-msgstr "הוספת מרחב עבודה"
+msgstr "הוספת סביבת עבודה"
 
 #: crates/rnote-ui/data/ui/workspacesbar/workspacesbar.ui:89
 msgid "Remove Selected Workspace"
@@ -958,7 +955,7 @@ msgstr "_ערכת צבעים"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _System Colors"
-msgstr "שימוש בצבעי _מערכת"
+msgstr "שימוש בצבעי מ_ערכת"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:31
 msgid "Use _Light Colors"
@@ -977,14 +974,12 @@ msgid "Visual _Debugging"
 msgstr "ניפוי _שגיאות חזותי"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:51
-#, fuzzy
 msgid "Export Engine _State"
-msgstr "ייצוא גיליון"
+msgstr "ייצוא מצב מ_נוע"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:55
-#, fuzzy
 msgid "Export Engine _Config"
-msgstr "יצוא הבחירה"
+msgstr "ייצוא ה_גדרות מנוע"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:61
 msgid "De_veloper Mode"
@@ -1220,7 +1215,7 @@ msgstr "שמירת מסמך"
 
 #: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
-msgstr "העברת ל_ימין"
+msgstr "העברה ל_ימין"
 
 #: crates/rnote-ui/data/ui/overlays.ui:102
 msgid "Move _Right"
@@ -1433,7 +1428,7 @@ msgstr "אנכית רציפה"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:263
 msgid "Semi Infinite"
-msgstr "דמוית אינסוף"
+msgstr "דמויית אינסוף"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:264
 msgid "Infinite"
@@ -2064,7 +2059,7 @@ msgstr "קוד"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:628
 msgid "Compose"
-msgstr ""
+msgstr "חיבור"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:629
 msgctxt "as in plant"
@@ -2542,6 +2537,26 @@ msgstr "שחור"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "לבן"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+msgid "is password protected"
+msgstr "מוגן בסיסמה"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:276
+msgid "Encrypted PDF"
+msgstr "PDF מוצפן"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:279
+msgid "_Cancel"
+msgstr "_ביטול"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:280
+msgid "_Unlock"
+msgstr "_שחרור"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:287
+msgid "Enter the PDF password"
+msgstr "נא למלא את סיסמת ה־PDF"
 
 #~ msgid "Lecture Note 1"
 #~ msgstr "הרצאה 1"

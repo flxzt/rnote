@@ -30,7 +30,7 @@ pub struct Resize {
     pub respect_borders: bool,
 }
 
-/// helper functions for calculating resizing factors
+// helper functions for calculating resizing factors
 
 /// Calculate where the next border of the page is
 /// based on the current `position` and the `size` of
@@ -107,7 +107,7 @@ pub fn calculate_resize_ratio(
     ratios
         .iter()
         .zip(apply_ratios)
-        .filter(|x| x.1)
-        .fold(1.0f64, |acc, x| acc.min(*x.0))
+        .filter(|(_, x)| *x)
+        .fold(1.0f64, |acc, (x, _)| acc.min(*x))
         .max(1e-15f64) //force the value to be positive as a zero would make transforms crash
 }

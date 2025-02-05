@@ -132,8 +132,10 @@ impl BitmapImage {
         insert_pos: na::Vector2<f64>,
         page_range: Option<Range<u32>>,
         format: &Format,
+        password: Option<String>,
     ) -> Result<Vec<Self>, anyhow::Error> {
-        let doc = poppler::Document::from_bytes(&glib::Bytes::from(to_be_read), None)?;
+        let doc =
+            poppler::Document::from_bytes(&glib::Bytes::from(to_be_read), password.as_deref())?;
         let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
         let page_width = if pdf_import_prefs.adjust_document {
             format.width()
@@ -154,9 +156,9 @@ impl BitmapImage {
                 let page = doc
                     .page(page_i as i32)
                     .ok_or_else(|| anyhow::anyhow!("no page at index '{page_i}"))?;
-                let intrinsic_size = page.size();
-                let width = intrinsic_size.0 * page_zoom;
-                let height = intrinsic_size.1 * page_zoom;
+                let (intrinsic_width, intrinsic_height) = page.size();
+                let width = intrinsic_width * page_zoom;
+                let height = intrinsic_height * page_zoom;
                 let surface_width = (width * pdf_import_prefs.bitmap_scalefactor).round() as i32;
                 let surface_height = (height * pdf_import_prefs.bitmap_scalefactor).round() as i32;
                 let surface = cairo::ImageSurface::create(
@@ -188,20 +190,16 @@ impl BitmapImage {
 
                     if pdf_import_prefs.page_borders {
                         // Draw outline around page
-                        cx.set_source_rgba(
-                            color::GNOME_REDS[4].as_rgba().0,
-                            color::GNOME_REDS[4].as_rgba().1,
-                            color::GNOME_REDS[4].as_rgba().2,
-                            1.0,
-                        );
+                        let (red, green, blue, _) = color::GNOME_REDS[4].as_rgba();
+                        cx.set_source_rgba(red, green, blue, 1.0);
 
                         let line_width = 1.0;
                         cx.set_line_width(line_width);
                         cx.rectangle(
                             line_width * 0.5,
                             line_width * 0.5,
-                            intrinsic_size.0 - line_width,
-                            intrinsic_size.1 - line_width,
+                            intrinsic_width - line_width,
+                            intrinsic_height - line_width,
                         );
                         cx.stroke()?;
                     }

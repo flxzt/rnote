@@ -127,6 +127,7 @@ impl RnCanvas {
         bytes: Vec<u8>,
         target_pos: Option<na::Vector2<f64>>,
         page_range: Option<Range<u32>>,
+        password: Option<String>,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
         let adjust_document = self
@@ -137,7 +138,7 @@ impl RnCanvas {
 
         let strokes_receiver = self
             .engine_mut()
-            .generate_pdf_pages_from_bytes(bytes, pos, page_range);
+            .generate_pdf_pages_from_bytes(bytes, pos, page_range, password);
         let strokes = strokes_receiver.await??;
         let widget_flags = self
             .engine_mut()

@@ -8,62 +8,61 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2022-11-29 06:32+0000\n"
-"Last-Translator: izz dakwat 0.5 <izzirfan1337@gmail.com>\n"
-"Language-Team: Malay <https://hosted.weblate.org/projects/rnote/repo/ms/>\n"
-"Language: ms\n"
+"PO-Revision-Date: 2024-11-28 17:05+0000\n"
+"Last-Translator: Andrea Andre <andrea.tsg19@slmail.me>\n"
+"Language-Team: Romanian <https://hosted.weblate.org/projects/rnote/repo/ro/>"
+"\n"
+"Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
 #: crates/rnote-ui/src/dialogs/mod.rs:33
 msgid "Sketch and take handwritten notes"
-msgstr "Lakar dan ambil nota bertulis tangan"
+msgstr "Desenează și ia notițe scrise de mână"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:15
-#, fuzzy
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;Office;Graphics;Notes;"
+msgstr "Gnome;GTK;Office;Graphics;Notes;Birou;Grafică;Notițe;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:20
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
 msgid "New Window"
-msgstr "Tetingkap Baharu"
+msgstr "Fereastră nouă"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"RNote merupakan aplikasi berasaskan vektor bagi tujuan melakar, menulis "
-"nota, dan menganotasi dokumen dan gambar."
+"Rnote este o aplicație de desen vectorial pentru schițe, notițe scrise de "
+"mână și pentru adnotarea documentelor și imaginilor."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"Penafian: Format fail masih tidak stabil. Fail tersebut mungkin berubah dan "
-"hilang keserasian di antara versi-versinya."
+"Avertisment: Formatul de fișier este încă instabil. Acesta poate fi schimbat "
+"și poate întrerupe compatibilitatea între versiuni."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An overview"
-msgstr ""
+msgstr "Prezentare generală"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:40
-#, fuzzy
-#| msgid "A selection"
 msgid "A selection"
-msgstr "Pilihan"
+msgstr "O selecție"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "Write text with the typewriter"
-msgstr ""
+msgstr "Scrie un text cu mașina de scris"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"
@@ -75,7 +74,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
-msgstr ""
+msgstr "Modifică parametrii documentului"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
 msgid "Configure action shortcuts"
@@ -102,7 +101,7 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/import.ui:213
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
-msgstr ""
+msgstr "Renunță"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
@@ -112,25 +111,27 @@ msgstr ""
 #: crates/rnote-ui/data/ui/mainheader.ui:22
 #: crates/rnote-ui/src/canvas/mod.rs:592
 msgid "New Document"
-msgstr ""
+msgstr "Document nou"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:17
 msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
 msgstr ""
+"Crearea unui document nou va elimina orice modificări nesalvate.\n"
+"Vrei să salvezi documentul actual?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Discard"
-msgstr ""
+msgstr "Nu salva"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:42
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:60
 #: crates/rnote-ui/src/dialogs/export.rs:42
 msgid "Save"
-msgstr ""
+msgstr "Salvează"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:29
 msgid "Close Tab"
@@ -143,10 +144,8 @@ msgid ""
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
-#, fuzzy
-#| msgid "New Window"
 msgid "Close Window"
-msgstr "Tetingkap Baharu"
+msgstr "Închide fereastra"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:48
 msgid ""
@@ -156,33 +155,33 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
-msgstr ""
+msgstr "Documente nesalvate"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:59
 msgid "Discard All"
-msgstr ""
+msgstr "Elimină tot"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:65
 msgid "Edit Workspace"
-msgstr ""
+msgstr "Modifică spațiul de lucru"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:79
 #: crates/rnote-ui/data/ui/settingspanel.ui:241
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:36
 msgid "Apply"
-msgstr ""
+msgstr "Aplică"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:119
 msgid "Workspace Name"
-msgstr ""
+msgstr "Numele spațiului de lucru"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:124
 msgid "Icon"
-msgstr ""
+msgstr "Simbol"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:125
 msgid "Change the workspace icon"
-msgstr ""
+msgstr "Schimbă simbolul spațiului de lucru"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:145
 #: crates/rnote-ui/data/ui/settingspanel.ui:293
@@ -414,10 +413,8 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:414
 #: crates/rnote-ui/src/dialogs/export.rs:933
-#, fuzzy
-#| msgid "A selection"
 msgid "Export Selection"
-msgstr "Pilihan"
+msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
@@ -753,16 +750,12 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 #: crates/rnote-ui/data/ui/shortcuts.ui:236
-#, fuzzy
-#| msgid "A selection"
 msgid "Duplicate Selection"
-msgstr "Pilihan"
+msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:127
-#, fuzzy
-#| msgid "A selection"
 msgid "Delete Selection"
-msgstr "Pilihan"
+msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:19
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:248
@@ -937,24 +930,20 @@ msgid "Edit Selected Workspace"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
 msgid "Co_lor Scheme"
-msgstr "_Color scheme"
+msgstr ""
 
 #: crates/rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
 msgid "Use _System Colors"
-msgstr "Use _system colors"
+msgstr ""
 
 #: crates/rnote-ui/data/ui/appmenu.ui:31
-#, fuzzy
 msgid "Use _Light Colors"
-msgstr "Use _light colors"
+msgstr ""
 
 #: crates/rnote-ui/data/ui/appmenu.ui:36
-#, fuzzy
 msgid "Use _Dark Colors"
-msgstr "Use _dark colors"
+msgstr ""
 
 #: crates/rnote-ui/data/ui/appmenu.ui:42
 msgid "Developer _Menu"
@@ -977,10 +966,8 @@ msgid "De_veloper Mode"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
-#, fuzzy
-#| msgid "New Window"
 msgid "New _Window"
-msgstr "Tetingkap Baharu"
+msgstr ""
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
@@ -1038,10 +1025,8 @@ msgid "Export Document _Pages"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/appmenu.ui:123
-#, fuzzy
-#| msgid "A selection"
 msgid "Export _Selection"
-msgstr "Pilihan"
+msgstr ""
 
 #: crates/rnote-ui/data/ui/appmenu.ui:130
 msgid "Se_ttings"
@@ -1594,10 +1579,8 @@ msgid "Show Keyboard Shortcuts"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:32
-#, fuzzy
-#| msgid "New Window"
 msgid "Close the Active Tab"
-msgstr "Tetingkap Baharu"
+msgstr ""
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:38
 msgid "Quit the Application"
@@ -1715,7 +1698,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/sidebar.ui:61
 msgid "Settings"
-msgstr ""
+msgstr "Reglări"
 
 #: crates/rnote-ui/data/ui/strokecontentpreview.ui:79
 msgid "Page"
@@ -1731,7 +1714,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:163
 msgid "Create new Folder"
-msgstr ""
+msgstr "Creează un dosar nou"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:573
 #: crates/rnote-ui/src/appwindow/imp.rs:313
@@ -1775,6 +1758,8 @@ msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
 msgstr ""
+"Schema de reglări nu este instalată. Reglările aplicației nu au putut fi "
+"încărcate și nu vor fi salvate."
 
 #: crates/rnote-ui/src/appwindow/mod.rs:520
 msgid "Opening file failed"
@@ -1783,11 +1768,11 @@ msgstr ""
 #: crates/rnote-ui/src/canvas/mod.rs:858 crates/rnote-ui/src/dialogs/mod.rs:195
 #: crates/rnote-ui/src/dialogs/mod.rs:331
 msgid "- invalid file name -"
-msgstr ""
+msgstr "- nume greșit al fișierului -"
 
 #: crates/rnote-ui/src/canvas/mod.rs:871
 msgid "- invalid folder path -"
-msgstr ""
+msgstr "- cale greșită a dosarului -"
 
 #: crates/rnote-ui/src/canvas/mod.rs:895
 msgid "Opened file was modified on disk"
@@ -1810,16 +1795,12 @@ msgid "Opened file was removed."
 msgstr ""
 
 #: crates/rnote-ui/src/canvas/mod.rs:1169
-#, fuzzy
-#| msgid "A selection"
 msgid "Inserting file failed"
-msgstr "Pilihan"
+msgstr ""
 
 #: crates/rnote-ui/src/canvas/mod.rs:1179
-#, fuzzy
-#| msgid "A selection"
 msgid "Inserting text failed"
-msgstr "Pilihan"
+msgstr ""
 
 #: crates/rnote-ui/src/dialogs/export.rs:33
 #: crates/rnote-ui/src/dialogs/import.rs:28
@@ -1881,16 +1862,12 @@ msgid "Exporting selection failed, no file selected"
 msgstr ""
 
 #: crates/rnote-ui/src/dialogs/export.rs:869
-#, fuzzy
-#| msgid "A selection"
 msgid "Exporting selection failed"
-msgstr "Pilihan"
+msgstr ""
 
 #: crates/rnote-ui/src/dialogs/export.rs:873
-#, fuzzy
-#| msgid "A selection"
 msgid "Exported selection successfully"
-msgstr "Pilihan"
+msgstr ""
 
 #: crates/rnote-ui/src/dialogs/export.rs:1011
 #: crates/rnote-ui/src/dialogs/export.rs:1074
@@ -1973,7 +1950,7 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/mod.rs:202
 #: crates/rnote-ui/src/dialogs/mod.rs:338
 msgid "- invalid save folder name -"
-msgstr ""
+msgstr "- nume greșit al dosarului de salvare -"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:218
 #: crates/rnote-ui/src/dialogs/mod.rs:353
@@ -2053,7 +2030,7 @@ msgstr ""
 
 #: crates/rnote-ui/src/dialogs/mod.rs:634
 msgid "Folder"
-msgstr ""
+msgstr "Dosar"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:635
 msgid "Footprints"
@@ -2355,16 +2332,12 @@ msgid "Can't duplicate an unsaved document"
 msgstr ""
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:45
-#, fuzzy
-#| msgid "A selection"
 msgid "Duplicating the file failed"
-msgstr "Pilihan"
+msgstr ""
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
-#, fuzzy
-#| msgid "A selection"
 msgid "Duplicating the directory failed"
-msgstr "Pilihan"
+msgstr ""
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:18
 msgid "Open the file in the default app failed"
@@ -2375,24 +2348,20 @@ msgid "Renaming file failed, target file already exists"
 msgstr ""
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:46
-#, fuzzy
-#| msgid "A selection"
 msgid "Renaming file failed"
-msgstr "Pilihan"
+msgstr ""
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/trash.rs:20
-#, fuzzy
-#| msgid "A selection"
 msgid "Trashing file failed"
-msgstr "Pilihan"
+msgstr ""
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:67
 msgid "Folder Name"
-msgstr ""
+msgstr "Numele dosarului"
 
 #: crates/rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:75
 msgid "New Folder"
-msgstr ""
+msgstr "Dosar nou"
 
 #: crates/rnote-ui/src/utils.rs:159
 msgctxt "used in string representation of the current selected color"
@@ -2529,7 +2498,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:279
 msgid "_Cancel"
-msgstr ""
+msgstr "_Renunță"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:280
 msgid "_Unlock"
@@ -2538,30 +2507,3 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/import.ui:287
 msgid "Enter the PDF password"
 msgstr ""
-
-#, fuzzy
-#~| msgid "A PDF annotation"
-#~ msgid "A Pdf annotation"
-#~ msgstr "Anotasi PDF"
-
-#, fuzzy
-#~| msgid "New Window"
-#~ msgid "Close the Folded Flap"
-#~ msgstr "Tetingkap Baharu"
-
-#~ msgid "Main window in light colors"
-#~ msgstr "Tetingkap utama dalam warna yang cerah"
-
-#, fuzzy
-#~| msgid "A selection"
-#~ msgctxt "shortcut window"
-#~ msgid "Duplicate Selection"
-#~ msgstr "Pilihan"
-
-#~ msgid "Main window in dark colors"
-#~ msgstr "Tetingkap utama dalam warna yang gelap"
-
-#, fuzzy
-#~| msgid "New Window"
-#~ msgid "Close all _other tabs"
-#~ msgstr "Tetingkap Baharu"

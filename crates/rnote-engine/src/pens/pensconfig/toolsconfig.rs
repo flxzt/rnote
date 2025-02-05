@@ -22,6 +22,8 @@ pub enum ToolStyle {
     OffsetCamera,
     #[serde(rename = "zoom")]
     Zoom,
+    #[serde(rename = "laser")]
+    Laser,
 }
 
 impl Default for ToolStyle {

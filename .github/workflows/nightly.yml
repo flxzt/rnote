@@ -10,11 +10,11 @@ jobs:
   flatpak:
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-47
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-47
       options: --privileged
     steps:
     - uses: actions/checkout@v4
-    - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+    - uses: flathub-infra/flatpak-github-actions/flatpak-builder@4388a4c5fc8bab58e1dfb7fc63267dca0f7b4976
       with:
         manifest-path: build-aux/com.github.flxzt.rnote.Devel.yaml
         cache-key: flatpak-builder-${{ github.sha }}

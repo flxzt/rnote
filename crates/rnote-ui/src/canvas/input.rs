@@ -300,7 +300,7 @@ fn trace_gdk_event(event: &gdk::Event) {
 }
 
 /// Returns true if input should be rejected
-fn reject_pointer_input(event: &gdk::Event, touch_drawing: bool) -> bool {
+pub(crate) fn reject_pointer_input(event: &gdk::Event, touch_drawing: bool) -> bool {
     if touch_drawing {
         if event.device().unwrap().num_touches() > 1 {
             return true;

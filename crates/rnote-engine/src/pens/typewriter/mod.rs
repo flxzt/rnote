@@ -25,10 +25,25 @@ use tracing::error;
 use unicode_segmentation::GraphemeCursor;
 
 #[derive(Debug, Clone)]
+pub(super) enum SelectionMode {
+    /// Select individual characters.
+    Caret,
+    /// Select whole words.
+    ///
+    /// The values represent the start and end of the initially selected word.
+    Word(usize, usize),
+    /// Select whole lines.
+    ///
+    /// The values represent the start and end of the initially selected line.
+    Line(usize, usize),
+}
+
+#[derive(Debug, Clone)]
 pub(super) enum ModifyState {
     Idle,
     Selecting {
         selection_cursor: GraphemeCursor,
+        mode: SelectionMode,
         /// Whether selecting is finished.
         ///
         /// If true, the state will get reset on the next click.

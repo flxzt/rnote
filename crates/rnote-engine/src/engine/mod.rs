@@ -2,6 +2,7 @@
 pub mod export;
 pub mod import;
 pub mod rendering;
+pub mod save;
 pub mod snapshot;
 pub mod strokecontent;
 pub mod visual_debug;
@@ -11,6 +12,7 @@ pub use export::ExportPrefs;
 use futures::channel::mpsc::UnboundedReceiver;
 use futures::StreamExt;
 pub use import::ImportPrefs;
+pub use save::SavePrefs;
 pub use snapshot::EngineSnapshot;
 pub use strokecontent::StrokeContent;
 
@@ -154,6 +156,8 @@ pub struct EngineConfig {
     import_prefs: ImportPrefs,
     #[serde(rename = "export_prefs")]
     export_prefs: ExportPrefs,
+    #[serde(rename = "save_prefs")]
+    save_prefs: SavePrefs,
     #[serde(rename = "pen_sounds")]
     pen_sounds: bool,
     #[serde(rename = "optimize_epd")]
@@ -235,6 +239,8 @@ pub struct Engine {
     pub import_prefs: ImportPrefs,
     #[serde(rename = "export_prefs")]
     pub export_prefs: ExportPrefs,
+    #[serde(rename = "save_prefs")]
+    pub save_prefs: SavePrefs,
     #[serde(rename = "pen_sounds")]
     pen_sounds: bool,
     #[serde(rename = "optimize_epd")]
@@ -277,6 +283,7 @@ impl Default for Engine {
             penholder: PenHolder::default(),
             import_prefs: ImportPrefs::default(),
             export_prefs: ExportPrefs::default(),
+            save_prefs: SavePrefs::default(),
             pen_sounds: false,
             optimize_epd: false,
 
@@ -375,6 +382,7 @@ impl Engine {
             stroke_components: Arc::clone(&store_history_entry.stroke_components),
             chrono_components: Arc::clone(&store_history_entry.chrono_components),
             chrono_counter: store_history_entry.chrono_counter,
+            save_prefs: self.save_prefs.clone(),
         }
     }
 
@@ -382,6 +390,8 @@ impl Engine {
     pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) -> WidgetFlags {
         self.document = snapshot.document.clone_config();
         self.camera = snapshot.camera.clone_config();
+        self.save_prefs.merge(&snapshot.save_prefs);
+
         let mut widget_flags = self.store.import_from_snapshot(&snapshot)
             | self.doc_resize_autoexpand()
             | self.current_pen_update_state()

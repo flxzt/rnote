@@ -3,7 +3,6 @@ pub mod background;
 pub mod format;
 
 // Re-exports
-pub use crate::fileformats::rnoteformat::compression::CompressionLevel;
 pub use background::Background;
 pub use format::Format;
 

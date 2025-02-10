@@ -55,7 +55,7 @@ pub(crate) async fn run_mutate(
         };
 
         if let Some(lvl) = compression_level {
-            compression.update_compression_level(lvl)?;
+            compression.update_compression_integer(lvl)?;
         }
 
         let method_lock = (rnote_file.header.method_lock | lock) && !unlock;

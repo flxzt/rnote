@@ -5,6 +5,7 @@ mod penshortcutrow;
 // Re-exports
 pub(crate) use penshortcutrow::RnPenShortcutRow;
 use rnote_compose::ext::Vector2Ext;
+use rnote_engine::engine::SavePrefs;
 use rnote_engine::fileformats::rnoteformat::CompressionMethod;
 
 // Imports
@@ -19,8 +20,8 @@ use num_traits::ToPrimitive;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
-use rnote_engine::document::CompressionLevel;
 use rnote_engine::document::Layout;
+use rnote_engine::engine::save::CompressionLevel;
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
 
@@ -98,7 +99,7 @@ mod imp {
         #[template_child]
         pub(crate) doc_background_pattern_invert_color_button: TemplateChild<Button>,
         #[template_child]
-        pub(crate) doc_compression_level_row: TemplateChild<adw::ComboRow>,
+        pub(crate) file_compression_level_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(crate) penshortcut_stylus_button_primary_row: TemplateChild<RnPenShortcutRow>,
         #[template_child]
@@ -396,10 +397,37 @@ impl RnSettingsPanel {
             .set_selected(layout.to_u32().unwrap());
     }
 
+    fn refresh_file_compression_level_row(&self, save_prefs: &SavePrefs) {
+        let mut subtitle = format!(
+            "{:?}, {:?}",
+            save_prefs.serialization, save_prefs.compression
+        );
+        let mut display_compression_level = save_prefs.compression.get_compression_level();
+
+        if let Some((next_serialization, next_compression)) = save_prefs.on_next_save {
+            subtitle.push_str(&format!(
+                " → {:?}, {:?}",
+                next_serialization, next_compression
+            ));
+            display_compression_level = next_compression.get_compression_level();
+        }
+
+        self.imp()
+            .file_compression_level_row
+            .set_subtitle(&subtitle);
+
+        if display_compression_level.eq(&CompressionLevel::None) {
+            self.imp()
+                .file_compression_level_row
+                .set_selected(display_compression_level.to_u32().unwrap());
+        }
+    }
+
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
         self.refresh_general_ui(active_tab);
         self.refresh_format_ui(active_tab);
         self.refresh_doc_ui(active_tab);
+        self.refresh_file_ui(active_tab);
         self.refresh_shortcuts_ui(active_tab);
     }
 
@@ -437,7 +465,6 @@ impl RnSettingsPanel {
         let background = canvas.engine_ref().document.background;
         let format = canvas.engine_ref().document.format;
         let document_layout = canvas.engine_ref().document.layout;
-        let compression = canvas.engine_ref().save_prefs.compression;
 
         imp.doc_background_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
@@ -453,16 +480,17 @@ impl RnSettingsPanel {
         imp.doc_background_pattern_height_unitentry
             .set_value_in_px(background.pattern_size[1]);
         self.set_document_layout(&document_layout);
-        // set the compression level row to invisible if CompressionMethod is None
-        imp.doc_compression_level_row
-            .set_visible(!matches!(compression, CompressionMethod::None));
+    }
 
-        match compression.get_compression_level() {
-            CompressionLevel::None => (),
-            other => imp
-                .doc_compression_level_row
-                .set_selected(other.to_u32().unwrap()),
-        }
+    fn refresh_file_ui(&self, active_tab: &RnCanvasWrapper) {
+        let imp = self.imp();
+        let canvas = active_tab.canvas();
+        let save_prefs = canvas.engine_ref().save_prefs.clone();
+
+        imp.file_compression_level_row
+            .set_sensitive(!matches!(save_prefs.compression, CompressionMethod::None));
+
+        self.refresh_file_compression_level_row(&save_prefs);
     }
 
     fn refresh_shortcuts_ui(&self, active_tab: &RnCanvasWrapper) {
@@ -510,6 +538,7 @@ impl RnSettingsPanel {
         self.setup_general(appwindow);
         self.setup_format(appwindow);
         self.setup_doc(appwindow);
+        self.setup_file(appwindow);
         self.setup_shortcuts(appwindow);
     }
 
@@ -964,8 +993,11 @@ impl RnSettingsPanel {
                     appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
             ));
+    }
 
-        imp.doc_compression_level_row
+    fn setup_file(&self, appwindow: &RnAppWindow) {
+        let imp = self.imp();
+        imp.file_compression_level_row
             .get()
             .connect_selected_item_notify(clone!(
                 #[weak(rename_to=settings_panel)]
@@ -979,16 +1011,20 @@ impl RnSettingsPanel {
                     let compression_level = CompressionLevel::try_from(
                         settings_panel
                             .imp()
-                            .doc_compression_level_row
+                            .file_compression_level_row
                             .get()
                             .selected(),
                     )
                     .unwrap();
+                    println!("prev: {:#?}", canvas.engine_ref().save_prefs);
                     canvas
                         .engine_mut()
                         .save_prefs
-                        .compression
-                        .set_compression_level(compression_level);
+                        .update_compression_level(compression_level);
+                    println!("curr: {:#?}", canvas.engine_ref().save_prefs);
+                    settings_panel.refresh_file_compression_level_row(
+                        &canvas.engine_ref().save_prefs.clone(),
+                    );
                 }
             ));
     }

@@ -231,8 +231,10 @@ impl RnCanvas {
             return Err(e);
         }
 
+        // required by atomic file saving
         self.set_output_file(Some(gio::File::for_path(&filepath)));
         debug!("Saving file has finished successfully");
+        self.engine_mut().save_prefs.finished_saving();
         self.set_unsaved_changes(false);
         self.set_save_in_progress(false);
 

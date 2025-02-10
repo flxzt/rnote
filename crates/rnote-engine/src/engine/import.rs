@@ -162,7 +162,7 @@ impl Engine {
         self.penholder = engine_config.penholder;
         self.import_prefs = engine_config.import_prefs;
         self.export_prefs = engine_config.export_prefs;
-        self.save_prefs = engine_config.save_prefs;
+        self.save_prefs = engine_config.save_prefs.to_valid_engineconfig_to_engine();
 
         // Set the pen sounds to update the audioplayer
         self.set_pen_sounds(engine_config.pen_sounds, data_dir);

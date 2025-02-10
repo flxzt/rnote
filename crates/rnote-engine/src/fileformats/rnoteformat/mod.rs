@@ -95,12 +95,7 @@ impl TryFrom<RnoteFile> for EngineSnapshot {
         let uc_size = usize::try_from(value.header.uc_size).unwrap_or(usize::MAX);
         let uc_body = value.header.compression.decompress(uc_size, value.body)?;
         let mut engine_snapshot = value.header.serialization.deserialize(&uc_body)?;
-
-        // Save preferences are only kept if method_lock is true or both the ser. method and comp. method are "defaults".
-        let save_prefs = SavePrefs::from(value.header);
-        if save_prefs.method_lock | save_prefs.conforms_to_default() {
-            engine_snapshot.save_prefs = save_prefs;
-        }
+        engine_snapshot.save_prefs = SavePrefs::from(value.header);
 
         Ok(engine_snapshot)
     }
@@ -110,7 +105,7 @@ impl TryFrom<&EngineSnapshot> for RnoteFile {
     type Error = anyhow::Error;
 
     fn try_from(value: &EngineSnapshot) -> Result<Self, Self::Error> {
-        let save_prefs = value.save_prefs.clone_config();
+        let save_prefs = value.save_prefs.clone();
 
         let compression = save_prefs.compression;
         let serialization = save_prefs.serialization;

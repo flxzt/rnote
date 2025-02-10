@@ -394,8 +394,14 @@ gets disabled.</property>
                         </child>
                       </object>
                     </child>
+                  </object>
+                </child>
+                <!-- File Group -->
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title" translatable="yes">File</property>
                     <child>
-                      <object class="AdwComboRow" id="doc_compression_level_row">
+                      <object class="AdwComboRow" id="file_compression_level_row">
                         <property name="title" translatable="yes">Compression Level</property>
                         <property name="model">
                           <object class="GtkStringList">

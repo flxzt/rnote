@@ -14,20 +14,23 @@ pub enum SerializationMethod {
 
 impl Default for SerializationMethod {
     fn default() -> Self {
-        Self::Bitcode
+        Self::Json
     }
 }
 
 impl SerializationMethod {
     pub const VALID_STR_ARRAY: [&'static str; 5] = ["Bitcode", "bitcode", "Json", "JSON", "json"];
 
+    /// Keeping this function to mimic the behaviour of CompressionMethod and forward-comptability
+    pub fn is_similar_to(&self, other: &Self) -> bool {
+        std::mem::discriminant(self) == std::mem::discriminant(other)
+    }
     pub fn serialize(&self, engine_snapshot: &EngineSnapshot) -> anyhow::Result<Vec<u8>> {
         match self {
             Self::Bitcode => Ok(bitcode::serialize(engine_snapshot)?),
             Self::Json => Ok(serde_json::to_vec(&ijson::to_value(engine_snapshot)?)?),
         }
     }
-
     pub fn deserialize(&self, data: &[u8]) -> anyhow::Result<EngineSnapshot> {
         match self {
             Self::Bitcode => Ok(bitcode::deserialize(data)?),

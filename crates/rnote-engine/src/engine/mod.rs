@@ -12,6 +12,7 @@ pub use export::ExportPrefs;
 use futures::channel::mpsc::UnboundedReceiver;
 use futures::StreamExt;
 pub use import::ImportPrefs;
+pub use save::SavePrefs;
 pub use snapshot::EngineSnapshot;
 pub use strokecontent::StrokeContent;
 
@@ -31,7 +32,6 @@ use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::{PenEvent, ShortcutKey};
 use rnote_compose::{Color, SplitOrder};
-use save::SavePrefs;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -382,7 +382,7 @@ impl Engine {
             stroke_components: Arc::clone(&store_history_entry.stroke_components),
             chrono_components: Arc::clone(&store_history_entry.chrono_components),
             chrono_counter: store_history_entry.chrono_counter,
-            save_prefs: self.save_prefs.clone_config(),
+            save_prefs: self.save_prefs.clone(),
         }
     }
 
@@ -390,7 +390,7 @@ impl Engine {
     pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) -> WidgetFlags {
         self.document = snapshot.document.clone_config();
         self.camera = snapshot.camera.clone_config();
-        self.save_prefs = snapshot.save_prefs.clone_config();
+        self.save_prefs.merge(&snapshot.save_prefs);
 
         let mut widget_flags = self.store.import_from_snapshot(&snapshot)
             | self.doc_resize_autoexpand()

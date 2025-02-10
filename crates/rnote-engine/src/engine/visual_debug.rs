@@ -147,7 +147,7 @@ pub(crate) fn draw_statistics_to_gtk_snapshot(
             ],
             na::point![
                 surface_bounds.maxs[0] - 20.0,
-                surface_bounds.mins[1] + 120.0
+                surface_bounds.mins[1] + 420.0
             ],
         );
         let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(text_bounds));
@@ -166,12 +166,13 @@ pub(crate) fn draw_statistics_to_gtk_snapshot(
             .count();
 
         let statistics_text_string = format!(
-            "strokes in store:   {}\nstrokes in current viewport:   {}\nstrokes selected: {}\nstroke trashed: {}\nstrokes holding images: {}",
+            "strokes in store:   {}\nstrokes in current viewport:   {}\nstrokes selected: {}\nstroke trashed: {}\nstrokes holding images: {}\n\n {:?}",
             strokes_total.len(),
             strokes_in_viewport.len(),
             selected_strokes.len(),
             trashed_strokes.len(),
             strokes_hold_image,
+            engine.save_prefs,
         );
         let text_layout = piet_cx
             .text()

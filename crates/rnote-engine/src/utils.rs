@@ -8,7 +8,9 @@ use p2d::bounding_volume::Aabb;
 use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
 use rnote_compose::Color;
-use std::{io::Write, ops::Range};
+use std::collections::HashSet;
+use std::ops::Range;
+use std::io::prelude::Write;
 
 pub const fn crate_version() -> &'static str {
     env!("CARGO_PKG_VERSION")
@@ -160,6 +162,8 @@ where
         // On UNIX systems, we also sync the parent directory after the persist operation.
         // Not required for Windows systems, not possible either (you can't open directories as files in the first place).
         // Note that this might not even be enough, file management on UNIX seems to be a bit of a nightmare.
+
+        use anyhow::Context;
         std::fs::File::open(parent_directory)
             .with_context(|| "Failed to open the parent directory")?
             .sync_all()
@@ -167,4 +171,14 @@ where
     }
 
     Ok(())
+}
+
+pub fn iterators_contain_same_items<T: Eq + std::hash::Hash>(
+    first: impl Iterator<Item = T>,
+    second: impl Iterator<Item = T>,
+) -> bool {
+    let first: HashSet<T> = first.collect();
+    let second: HashSet<T> = second.collect();
+
+    first.iter().all(|item| second.contains(item)) && second.iter().all(|item| first.contains(item))
 }

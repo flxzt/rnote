@@ -886,6 +886,18 @@ impl Engine {
         widget_flags
     }
 
+    pub fn text_select_closest_word(&mut self) {
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            typewriter.select_closest_word(&mut engine_view_mut!(self))
+        }
+    }
+
+    pub fn text_select_closest_line(&mut self) {
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            typewriter.select_closest_line(&mut engine_view_mut!(self))
+        }
+    }
+
     pub fn text_selection_toggle_attribute(
         &mut self,
         text_attribute: TextAttribute,

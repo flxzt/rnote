@@ -6,6 +6,7 @@ mod widgetflagsboxed;
 
 // Re-exports
 pub(crate) use canvaslayout::RnCanvasLayout;
+pub(crate) use input::reject_pointer_input;
 pub(crate) use widgetflagsboxed::WidgetFlagsBoxed;
 
 // Imports

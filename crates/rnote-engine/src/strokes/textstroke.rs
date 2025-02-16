@@ -840,11 +840,43 @@ impl TextStroke {
         current_char_index
     }
 
+    fn get_prev_word_boundary_index(&self, current_char_index: usize) -> usize {
+        for (start_index, word) in self.text.unicode_word_indices().rev() {
+            let end_index = start_index + word.len();
+
+            if end_index < current_char_index {
+                return end_index;
+            }
+
+            if start_index < current_char_index {
+                return start_index;
+            }
+        }
+
+        current_char_index
+    }
+
     fn get_next_word_end_index(&self, current_char_index: usize) -> usize {
         for (start_index, word) in self.text.unicode_word_indices() {
             let end_index = start_index + word.len();
 
             if end_index > current_char_index {
+                return end_index;
+            }
+        }
+
+        current_char_index
+    }
+
+    fn get_next_word_boundary_index(&self, current_char_index: usize) -> usize {
+        for (start_index, word) in self.text.unicode_word_indices() {
+            if start_index >= current_char_index {
+                return start_index;
+            }
+
+            let end_index = start_index + word.len();
+
+            if end_index >= current_char_index {
                 return end_index;
             }
         }
@@ -866,8 +898,16 @@ impl TextStroke {
         cursor.set_cursor(self.get_prev_word_start_index(cursor.cur_cursor()));
     }
 
+    pub fn move_cursor_word_boundary_back(&self, cursor: &mut GraphemeCursor) {
+        cursor.set_cursor(self.get_prev_word_boundary_index(cursor.cur_cursor()));
+    }
+
     pub fn move_cursor_word_forward(&self, cursor: &mut GraphemeCursor) {
         cursor.set_cursor(self.get_next_word_end_index(cursor.cur_cursor()));
+    }
+
+    pub fn move_cursor_word_boundary_forward(&self, cursor: &mut GraphemeCursor) {
+        cursor.set_cursor(self.get_next_word_boundary_index(cursor.cur_cursor()));
     }
 
     pub fn move_cursor_text_start(&self, cursor: &mut GraphemeCursor) {

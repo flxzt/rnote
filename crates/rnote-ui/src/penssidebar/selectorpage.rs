@@ -1,6 +1,8 @@
 // Imports
 use crate::RnAppWindow;
-use gtk4::{CompositeTemplate, ToggleButton, glib, glib::clone, prelude::*, subclass::prelude::*};
+use gtk4::{
+    Button, CompositeTemplate, ToggleButton, glib, glib::clone, prelude::*, subclass::prelude::*,
+};
 use rnote_engine::pens::pensconfig::selectorconfig::SelectorStyle;
 
 mod imp {
@@ -19,6 +21,14 @@ mod imp {
         pub(crate) selectorstyle_intersectingpath_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) resize_lock_aspectratio_togglebutton: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) layer_highest_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) layer_up_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) layer_down_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) layer_lowest_button: TemplateChild<Button>,
     }
 
     #[glib::object_subclass]
@@ -177,6 +187,58 @@ impl RnSelectorPage {
                         .resize_lock_aspectratio = toggle.is_active();
                 }
             ));
+
+        imp.layer_highest_button.connect_clicked(clone!(
+            #[weak]
+            appwindow,
+            move |_| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
+                let widget_flags = canvas.engine_mut().selection_move_layer_highest();
+                canvas.emit_handle_widget_flags(widget_flags);
+            }
+        ));
+
+        imp.layer_up_button.connect_clicked(clone!(
+            #[weak]
+            appwindow,
+            move |_| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
+                let widget_flags = canvas.engine_mut().selection_move_layer_up();
+                canvas.emit_handle_widget_flags(widget_flags);
+            }
+        ));
+
+        imp.layer_down_button.connect_clicked(clone!(
+            #[weak]
+            appwindow,
+            move |_| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
+                let widget_flags = canvas.engine_mut().selection_move_layer_down();
+                canvas.emit_handle_widget_flags(widget_flags);
+            }
+        ));
+
+        imp.layer_lowest_button.connect_clicked(clone!(
+            #[weak]
+            appwindow,
+            move |_| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
+                let widget_flags = canvas.engine_mut().selection_move_layer_lowest();
+                canvas.emit_handle_widget_flags(widget_flags);
+            }
+        ));
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnAppWindow) {

@@ -3,6 +3,7 @@ use crate::fileformats::xoppformat;
 use geo::line_string;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
+use std::collections::HashSet;
 use std::ops::Range;
 
 pub const fn crate_version() -> &'static str {
@@ -95,4 +96,14 @@ pub mod glib_bytes_base64 {
     pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<glib::Bytes, D::Error> {
         rnote_compose::serialize::sliceu8_base64::deserialize(d).map(glib::Bytes::from_owned)
     }
+}
+
+pub fn iterators_contain_same_items<T: Eq + std::hash::Hash>(
+    first: impl Iterator<Item = T>,
+    second: impl Iterator<Item = T>,
+) -> bool {
+    let first: HashSet<T> = first.collect();
+    let second: HashSet<T> = second.collect();
+
+    first.iter().all(|item| second.contains(item)) && second.iter().all(|item| first.contains(item))
 }

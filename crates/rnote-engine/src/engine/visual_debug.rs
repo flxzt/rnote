@@ -160,13 +160,14 @@ pub(crate) fn draw_statistics_to_gtk_snapshot(
             .keys_unordered_intersecting_bounds(engine.camera.viewport());
         let selected_strokes = engine.store.selection_keys_unordered();
         let trashed_strokes = engine.store.trashed_keys_unordered();
+        let selected_stroke_layers = engine.store.debug_layers(&selected_strokes).join(" ");
         let strokes_hold_image = strokes_total
             .iter()
             .filter(|&&key| engine.store.holds_images(key))
             .count();
 
         let statistics_text_string = format!(
-            "strokes in store:   {}\nstrokes in current viewport:   {}\nstrokes selected: {}\nstroke trashed: {}\nstrokes holding images: {}",
+            "strokes in store:   {}\nstrokes in current viewport:   {}\nstrokes selected: {}\nstroke trashed: {}\nstrokes holding images: {}\nselection layers: {selected_stroke_layers}",
             strokes_total.len(),
             strokes_in_viewport.len(),
             selected_strokes.len(),

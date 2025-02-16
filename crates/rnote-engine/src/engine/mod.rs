@@ -905,4 +905,40 @@ impl Engine {
         self.penholder
             .current_pen_style_w_override(&engine_view!(self))
     }
+
+    pub fn selection_move_layer_up(&mut self) -> WidgetFlags {
+        let widget_flags = WidgetFlags::default();
+        self.store
+            .move_layer_up(&self.store.selection_keys_as_rendered());
+        widget_flags
+            | self.record(Instant::now())
+            | self.update_content_rendering_current_viewport()
+    }
+
+    pub fn selection_move_layer_down(&mut self) -> WidgetFlags {
+        let widget_flags = WidgetFlags::default();
+        self.store
+            .move_layer_down(&self.store.selection_keys_as_rendered());
+        widget_flags
+            | self.record(Instant::now())
+            | self.update_content_rendering_current_viewport()
+    }
+
+    pub fn selection_move_layer_highest(&mut self) -> WidgetFlags {
+        let widget_flags = WidgetFlags::default();
+        self.store
+            .move_layer_highest(&self.store.selection_keys_as_rendered());
+        widget_flags
+            | self.record(Instant::now())
+            | self.update_content_rendering_current_viewport()
+    }
+
+    pub fn selection_move_layer_lowest(&mut self) -> WidgetFlags {
+        let widget_flags = WidgetFlags::default();
+        self.store
+            .move_layer_lowest(&self.store.selection_keys_as_rendered());
+        widget_flags
+            | self.record(Instant::now())
+            | self.update_content_rendering_current_viewport()
+    }
 }

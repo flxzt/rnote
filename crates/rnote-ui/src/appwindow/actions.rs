@@ -1193,15 +1193,15 @@ impl RnAppWindow {
         app.set_accels_for_action("win.pen-style::eraser", &["<Ctrl>4", "<Ctrl>KP_4"]);
         app.set_accels_for_action("win.pen-style::selector", &["<Ctrl>5", "<Ctrl>KP_5"]);
         app.set_accels_for_action("win.pen-style::tools", &["<Ctrl>6", "<Ctrl>KP_6"]);
-        app.set_accels_for_action("win.set-color-1", &["1", "KP_1"]);
-        app.set_accels_for_action("win.set-color-2", &["2", "KP_2"]);
-        app.set_accels_for_action("win.set-color-3", &["3", "KP_3"]);
-        app.set_accels_for_action("win.set-color-4", &["4", "KP_4"]);
-        app.set_accels_for_action("win.set-color-5", &["5", "KP_5"]);
-        app.set_accels_for_action("win.set-color-6", &["6", "KP_6"]);
-        app.set_accels_for_action("win.set-color-7", &["7", "KP_7"]);
-        app.set_accels_for_action("win.set-color-8", &["8", "KP_8"]);
-        app.set_accels_for_action("win.set-color-9", &["9", "KP_9"]);
+        app.set_accels_for_action("win.set-color-1", &["<Alt>1", "<Alt>KP_1"]);
+        app.set_accels_for_action("win.set-color-2", &["<Alt>2", "<Alt>KP_2"]);
+        app.set_accels_for_action("win.set-color-3", &["<Alt>3", "<Alt>KP_3"]);
+        app.set_accels_for_action("win.set-color-4", &["<Alt>4", "<Alt>KP_4"]);
+        app.set_accels_for_action("win.set-color-5", &["<Alt>5", "<Alt>KP_5"]);
+        app.set_accels_for_action("win.set-color-6", &["<Alt>6", "<Alt>KP_6"]);
+        app.set_accels_for_action("win.set-color-7", &["<Alt>7", "<Alt>KP_7"]);
+        app.set_accels_for_action("win.set-color-8", &["<Alt>8", "<Alt>KP_8"]);
+        app.set_accels_for_action("win.set-color-9", &["<Alt>9", "<Alt>KP_9"]);
 
         // shortcuts for devel build
         if config::PROFILE.to_lowercase().as_str() == "devel" {

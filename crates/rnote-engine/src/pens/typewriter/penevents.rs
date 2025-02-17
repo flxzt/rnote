@@ -23,6 +23,7 @@ impl Typewriter {
         let mut widget_flags = WidgetFlags::default();
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
         let text_width = engine_view.pens_config.typewriter_config.text_width();
+        self.pos = Some(element.pos);
 
         let event_result = match &mut self.state {
             TypewriterState::Idle | TypewriterState::Start { .. } => {
@@ -51,7 +52,7 @@ impl Typewriter {
                         engine_view.store.update_chrono_to_last(stroke_key);
 
                         new_state = TypewriterState::Modifying {
-                            modify_state: ModifyState::Up,
+                            modify_state: ModifyState::Idle,
                             stroke_key,
                             cursor,
                             pen_down: true,
@@ -98,7 +99,7 @@ impl Typewriter {
                 pen_down,
             } => {
                 match modify_state {
-                    ModifyState::Up | ModifyState::Hover(_) => {
+                    ModifyState::Idle => {
                         let mut progress = PenProgress::InProgress;
 
                         if let (Some(typewriter_bounds), Some(Stroke::TextStroke(textstroke))) = (
@@ -202,7 +203,7 @@ impl Typewriter {
                                         {
                                             // If selecting is finished, return to modifying with the current pen position as cursor
                                             self.state = TypewriterState::Modifying {
-                                                modify_state: ModifyState::Up,
+                                                modify_state: ModifyState::Idle,
                                                 stroke_key: *stroke_key,
                                                 cursor: new_cursor,
                                                 pen_down: true,
@@ -331,7 +332,7 @@ impl Typewriter {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
-        let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
+        self.pos = Some(element.pos);
 
         let event_result = match &mut self.state {
             TypewriterState::Idle => EventResult {
@@ -354,17 +355,7 @@ impl Typewriter {
                 *pen_down = false;
 
                 match modify_state {
-                    ModifyState::Up | ModifyState::Hover(_) => {
-                        // detect hover state
-                        *modify_state = if typewriter_bounds
-                            .map(|b| b.contains_local_point(&element.pos.into()))
-                            .unwrap_or(false)
-                        {
-                            ModifyState::Hover(element.pos)
-                        } else {
-                            ModifyState::Up
-                        }
-                    }
+                    ModifyState::Idle => {}
                     ModifyState::Selecting { finished, .. } => {
                         // finished when drag ended
                         *finished = true;
@@ -383,7 +374,7 @@ impl Typewriter {
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
-                            modify_state: ModifyState::Up,
+                            modify_state: ModifyState::Idle,
                             stroke_key: *stroke_key,
                             cursor: cursor.clone(),
                             pen_down: false,
@@ -406,7 +397,7 @@ impl Typewriter {
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
-                            modify_state: ModifyState::Up,
+                            modify_state: ModifyState::Idle,
                             stroke_key: *stroke_key,
                             cursor: cursor.clone(),
                             pen_down: false,
@@ -433,10 +424,10 @@ impl Typewriter {
         element: Element,
         _modifier_keys: HashSet<ModifierKey>,
         _now: Instant,
-        engine_view: &mut EngineViewMut,
+        _engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
-        let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
+        self.pos = Some(element.pos);
 
         let event_result = match &mut self.state {
             TypewriterState::Idle => EventResult {
@@ -454,15 +445,12 @@ impl Typewriter {
                 pen_down,
                 ..
             } => {
-                // detect hover state
-                *modify_state = if typewriter_bounds
-                    .map(|b| b.contains_local_point(&element.pos.into()))
-                    .unwrap_or(false)
-                {
-                    ModifyState::Hover(element.pos)
-                } else {
-                    ModifyState::Up
-                };
+                if !matches!(modify_state, ModifyState::Selecting { .. }) {
+                    // do nothing if the state is selected
+                    // This prevents text from becoming deselected when hovering the pen
+                    // see issue #1222
+                    *modify_state = ModifyState::Idle;
+                }
                 *pen_down = false;
 
                 EventResult {
@@ -484,6 +472,7 @@ impl Typewriter {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
+        self.pos = None;
 
         let text_width = engine_view.pens_config.typewriter_config.text_width();
         let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
@@ -518,7 +507,7 @@ impl Typewriter {
                         );
 
                         self.state = TypewriterState::Modifying {
-                            modify_state: ModifyState::Up,
+                            modify_state: ModifyState::Idle,
                             stroke_key,
                             cursor,
                             pen_down: false,
@@ -547,7 +536,7 @@ impl Typewriter {
                 pen_down,
             } => {
                 match modify_state {
-                    ModifyState::Up | ModifyState::Hover(_) => {
+                    ModifyState::Idle => {
                         super::play_sound(Some(keyboard_key), engine_view.audioplayer);
 
                         if let Some(Stroke::TextStroke(ref mut textstroke)) =
@@ -1018,7 +1007,7 @@ impl Typewriter {
 
                             if quit_selecting {
                                 self.state = TypewriterState::Modifying {
-                                    modify_state: ModifyState::Up,
+                                    modify_state: ModifyState::Idle,
                                     stroke_key: *stroke_key,
                                     cursor: cursor.clone(),
                                     pen_down: false,
@@ -1055,10 +1044,10 @@ impl Typewriter {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
-
         let text_width = engine_view.pens_config.typewriter_config.text_width();
         let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
 
+        self.pos = None;
         self.reset_blink();
 
         let event_result = match &mut self.state {
@@ -1086,7 +1075,7 @@ impl Typewriter {
                 );
 
                 self.state = TypewriterState::Modifying {
-                    modify_state: ModifyState::Up,
+                    modify_state: ModifyState::Idle,
                     stroke_key,
                     cursor,
                     pen_down: false,
@@ -1109,7 +1098,7 @@ impl Typewriter {
                 pen_down,
             } => {
                 match modify_state {
-                    ModifyState::Up | ModifyState::Hover(_) => {
+                    ModifyState::Idle => {
                         super::play_sound(None, engine_view.audioplayer);
 
                         if let Some(Stroke::TextStroke(ref mut textstroke)) =
@@ -1209,6 +1198,7 @@ impl Typewriter {
         _engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
+        self.pos = None;
 
         let event_result = match &mut self.state {
             TypewriterState::Idle => EventResult {

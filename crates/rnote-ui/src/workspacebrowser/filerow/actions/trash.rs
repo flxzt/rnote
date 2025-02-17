@@ -1,9 +1,7 @@
 // Imports
-use crate::workspacebrowser::RnFileRow;
 use crate::RnAppWindow;
-use gettextrs::gettext;
-use gtk4::{gio, glib, glib::clone, prelude::FileExt};
-use tracing::debug;
+use crate::{dialogs, workspacebrowser::RnFileRow};
+use gtk4::{gio, glib, glib::clone};
 
 /// Create a new `trash` action.
 pub(crate) fn trash(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleAction {
@@ -13,30 +11,19 @@ pub(crate) fn trash(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::Simple
         filerow,
         #[weak]
         appwindow,
-        move |_action_trash_file, _| {
+        move |_, _| {
             let Some(current_file) = filerow.current_file() else {
                 return;
             };
-            current_file.trash_async(
-                glib::source::Priority::DEFAULT,
-                None::<&gio::Cancellable>,
-                clone!(
-                    #[weak]
-                    filerow,
-                    #[strong]
-                    current_file,
-                    move |res| {
-                        if let Err(e) = res {
-                            appwindow
-                                .overlays()
-                                .dispatch_toast_error(&gettext("Trashing file failed"));
-                            debug!("Trash filerow file `{current_file:?}` failed , Err: {e:?}");
-                            return;
-                        }
-                        filerow.set_current_file(None);
-                    }
-                ),
-            );
+            glib::spawn_future_local(clone!(
+                #[weak]
+                appwindow,
+                #[strong]
+                current_file,
+                async move {
+                    dialogs::dialog_trash_file(&appwindow, &current_file).await;
+                }
+            ));
         }
     ));
     action

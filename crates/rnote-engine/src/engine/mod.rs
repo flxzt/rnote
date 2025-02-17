@@ -34,7 +34,7 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
-use tracing::error;
+use tracing::{debug, error};
 
 /// An immutable view into the engine, excluding the penholder.
 #[derive(Debug)]
@@ -45,6 +45,23 @@ pub struct EngineView<'a> {
     pub store: &'a StrokeStore,
     pub camera: &'a Camera,
     pub audioplayer: &'a Option<AudioPlayer>,
+    pub animation: &'a Animation,
+}
+
+/// Constructs an `EngineView` from an identifier containing an `Engine` instance.
+#[macro_export]
+macro_rules! engine_view {
+    ($engine:ident) => {
+        $crate::engine::EngineView {
+            tasks_tx: $engine.tasks_tx.clone(),
+            pens_config: &$engine.pens_config,
+            document: &$engine.document,
+            store: &$engine.store,
+            camera: &$engine.camera,
+            audioplayer: &$engine.audioplayer,
+            animation: &$engine.animation,
+        }
+    };
 }
 
 /// A mutable view into the engine, excluding the penholder.
@@ -56,9 +73,26 @@ pub struct EngineViewMut<'a> {
     pub store: &'a mut StrokeStore,
     pub camera: &'a mut Camera,
     pub audioplayer: &'a mut Option<AudioPlayer>,
+    pub animation: &'a mut Animation,
 }
 
-impl<'a> EngineViewMut<'a> {
+/// Constructs an `EngineViewMut` from an identifier containing an `Engine` instance.
+#[macro_export]
+macro_rules! engine_view_mut {
+    ($engine:ident) => {
+        $crate::engine::EngineViewMut {
+            tasks_tx: $engine.tasks_tx.clone(),
+            pens_config: &mut $engine.pens_config,
+            document: &mut $engine.document,
+            store: &mut $engine.store,
+            camera: &mut $engine.camera,
+            audioplayer: &mut $engine.audioplayer,
+            animation: &mut $engine.animation,
+        }
+    };
+}
+
+impl EngineViewMut<'_> {
     // Converts itself to the immutable view.
     pub(crate) fn as_im<'m>(&'m self) -> EngineView<'m> {
         EngineView::<'m> {
@@ -68,6 +102,7 @@ impl<'a> EngineViewMut<'a> {
             store: self.store,
             camera: self.camera,
             audioplayer: self.audioplayer,
+            animation: self.animation,
         }
     }
 }
@@ -149,6 +184,39 @@ impl EngineTaskReceiver {
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct Animation {
+    frame_in_flight: bool,
+}
+
+impl Animation {
+    /// Claim an animation frame.
+    ///
+    /// Returns whether an animation frame was already claimed.
+    pub fn claim_frame(&mut self) -> bool {
+        if self.frame_in_flight {
+            debug!("Animation frame already in flight, skipping");
+            true
+        } else {
+            self.frame_in_flight = true;
+            false
+        }
+    }
+
+    pub fn frame_in_flight(&self) -> bool {
+        self.frame_in_flight
+    }
+
+    pub fn process_frame(&mut self) -> bool {
+        if self.frame_in_flight {
+            self.frame_in_flight = false;
+            true
+        } else {
+            false
+        }
+    }
+}
+
 /// The engine.
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "engine")]
@@ -174,6 +242,8 @@ pub struct Engine {
 
     #[serde(skip)]
     audioplayer: Option<AudioPlayer>,
+    #[serde(skip)]
+    pub animation: Animation,
     #[serde(skip)]
     visual_debug: bool,
     // the task sender. Must not be modified, only cloned.
@@ -211,6 +281,7 @@ impl Default for Engine {
             optimize_epd: false,
 
             audioplayer: None,
+            animation: Animation::default(),
             visual_debug: false,
             tasks_tx: EngineTaskSender(tasks_tx),
             tasks_rx: Some(EngineTaskReceiver(tasks_rx)),
@@ -233,30 +304,6 @@ impl Engine {
 
     pub fn take_engine_tasks_rx(&mut self) -> Option<EngineTaskReceiver> {
         self.tasks_rx.take()
-    }
-
-    #[allow(unused)]
-    pub(crate) fn view(&self) -> EngineView {
-        EngineView {
-            tasks_tx: self.tasks_tx.clone(),
-            pens_config: &self.pens_config,
-            document: &self.document,
-            store: &self.store,
-            camera: &self.camera,
-            audioplayer: &self.audioplayer,
-        }
-    }
-
-    #[allow(unused)]
-    pub(crate) fn view_mut(&mut self) -> EngineViewMut {
-        EngineViewMut {
-            tasks_tx: self.tasks_tx.clone(),
-            pens_config: &mut self.pens_config,
-            document: &mut self.document,
-            store: &mut self.store,
-            camera: &mut self.camera,
-            audioplayer: &mut self.audioplayer,
-        }
     }
 
     /// Whether pen sounds are enabled.
@@ -397,7 +444,7 @@ impl Engine {
     ///        if let Some(task) = task_rx.next().await {
     ///            let (widget_flags, quit) = canvas.engine_mut().handle_engine_task(task);
     ///            canvas.emit_handle_widget_flags(widget_flags);
-
+    ///
     ///            if quit {
     ///                break;
     ///            }
@@ -476,19 +523,8 @@ impl Engine {
         pen_mode: Option<PenMode>,
         now: Instant,
     ) -> (EventPropagation, WidgetFlags) {
-        self.penholder.handle_pen_event(
-            event,
-            pen_mode,
-            now,
-            &mut EngineViewMut {
-                tasks_tx: self.engine_tasks_tx(),
-                pens_config: &mut self.pens_config,
-                document: &mut self.document,
-                store: &mut self.store,
-                camera: &mut self.camera,
-                audioplayer: &mut self.audioplayer,
-            },
-        )
+        self.penholder
+            .handle_pen_event(event, pen_mode, now, &mut engine_view_mut!(self))
     }
 
     /// Handle a pressed shortcut key.
@@ -497,33 +533,14 @@ impl Engine {
         shortcut_key: ShortcutKey,
         now: Instant,
     ) -> (EventPropagation, WidgetFlags) {
-        self.penholder.handle_pressed_shortcut_key(
-            shortcut_key,
-            now,
-            &mut EngineViewMut {
-                tasks_tx: self.engine_tasks_tx(),
-                pens_config: &mut self.pens_config,
-                document: &mut self.document,
-                store: &mut self.store,
-                camera: &mut self.camera,
-                audioplayer: &mut self.audioplayer,
-            },
-        )
+        self.penholder
+            .handle_pressed_shortcut_key(shortcut_key, now, &mut engine_view_mut!(self))
     }
 
     /// Change the pen style.
     pub fn change_pen_style(&mut self, new_style: PenStyle) -> WidgetFlags {
-        self.penholder.change_style(
-            new_style,
-            &mut EngineViewMut {
-                tasks_tx: self.engine_tasks_tx(),
-                pens_config: &mut self.pens_config,
-                document: &mut self.document,
-                store: &mut self.store,
-                camera: &mut self.camera,
-                audioplayer: &mut self.audioplayer,
-            },
-        )
+        self.penholder
+            .change_style(new_style, &mut engine_view_mut!(self))
     }
 
     /// Change the pen style (temporary) override.
@@ -531,45 +548,20 @@ impl Engine {
         &mut self,
         new_style_override: Option<PenStyle>,
     ) -> WidgetFlags {
-        self.penholder.change_style_override(
-            new_style_override,
-            &mut EngineViewMut {
-                tasks_tx: self.engine_tasks_tx(),
-                pens_config: &mut self.pens_config,
-                document: &mut self.document,
-                store: &mut self.store,
-                camera: &mut self.camera,
-                audioplayer: &mut self.audioplayer,
-            },
-        )
+        self.penholder
+            .change_style_override(new_style_override, &mut engine_view_mut!(self))
     }
 
     /// Change the pen mode. Relevant for stylus input.
     pub fn change_pen_mode(&mut self, pen_mode: PenMode) -> WidgetFlags {
-        self.penholder.change_pen_mode(
-            pen_mode,
-            &mut EngineViewMut {
-                tasks_tx: self.engine_tasks_tx(),
-                pens_config: &mut self.pens_config,
-                document: &mut self.document,
-                store: &mut self.store,
-                camera: &mut self.camera,
-                audioplayer: &mut self.audioplayer,
-            },
-        )
+        self.penholder
+            .change_pen_mode(pen_mode, &mut engine_view_mut!(self))
     }
 
     /// Reinstall the pen in the current style.
     pub fn reinstall_pen_current_style(&mut self) -> WidgetFlags {
         self.penholder
-            .reinstall_pen_current_style(&mut EngineViewMut {
-                tasks_tx: self.engine_tasks_tx(),
-                pens_config: &mut self.pens_config,
-                document: &mut self.document,
-                store: &mut self.store,
-                camera: &mut self.camera,
-                audioplayer: &mut self.audioplayer,
-            })
+            .reinstall_pen_current_style(&mut engine_view_mut!(self))
     }
 
     /// Set the engine active or inactive.
@@ -761,14 +753,8 @@ impl Engine {
     /// Needs to be called when the engine state was changed outside of pen events.
     /// ( e.g. trash all strokes, set strokes selected, etc. )
     pub fn current_pen_update_state(&mut self) -> WidgetFlags {
-        self.penholder.current_pen_update_state(&mut EngineViewMut {
-            tasks_tx: self.tasks_tx.clone(),
-            pens_config: &mut self.pens_config,
-            document: &mut self.document,
-            store: &mut self.store,
-            camera: &mut self.camera,
-            audioplayer: &mut self.audioplayer,
-        })
+        self.penholder
+            .current_pen_update_state(&mut engine_view_mut!(self))
     }
 
     /// Fetch clipboard content from the current pen.
@@ -776,14 +762,7 @@ impl Engine {
     pub fn fetch_clipboard_content(
         &self,
     ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
-        self.penholder.fetch_clipboard_content(&EngineView {
-            tasks_tx: self.engine_tasks_tx(),
-            pens_config: &self.pens_config,
-            document: &self.document,
-            store: &self.store,
-            camera: &self.camera,
-            audioplayer: &self.audioplayer,
-        })
+        self.penholder.fetch_clipboard_content(&engine_view!(self))
     }
 
     /// Cut clipboard content from the current pen.
@@ -791,14 +770,8 @@ impl Engine {
     pub fn cut_clipboard_content(
         &mut self,
     ) -> oneshot::Receiver<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>> {
-        self.penholder.cut_clipboard_content(&mut EngineViewMut {
-            tasks_tx: self.engine_tasks_tx(),
-            pens_config: &mut self.pens_config,
-            document: &mut self.document,
-            store: &mut self.store,
-            camera: &mut self.camera,
-            audioplayer: &mut self.audioplayer,
-        })
+        self.penholder
+            .cut_clipboard_content(&mut engine_view_mut!(self))
     }
 
     pub fn set_doc_layout(&mut self, layout: Layout) -> WidgetFlags {
@@ -898,17 +871,8 @@ impl Engine {
     {
         let mut widget_flags = WidgetFlags::default();
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
-            widget_flags |= typewriter.change_text_style_in_modifying_stroke(
-                modify_func,
-                &mut EngineViewMut {
-                    tasks_tx: self.tasks_tx.clone(),
-                    pens_config: &mut self.pens_config,
-                    document: &mut self.document,
-                    store: &mut self.store,
-                    camera: &mut self.camera,
-                    audioplayer: &mut self.audioplayer,
-                },
-            )
+            widget_flags |= typewriter
+                .change_text_style_in_modifying_stroke(modify_func, &mut engine_view_mut!(self))
         }
         widget_flags
     }
@@ -917,14 +881,7 @@ impl Engine {
         let mut widget_flags = WidgetFlags::default();
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
             widget_flags |=
-                typewriter.remove_text_attributes_current_selection(&mut EngineViewMut {
-                    tasks_tx: self.tasks_tx.clone(),
-                    pens_config: &mut self.pens_config,
-                    document: &mut self.document,
-                    store: &mut self.store,
-                    camera: &mut self.camera,
-                    audioplayer: &mut self.audioplayer,
-                })
+                typewriter.remove_text_attributes_current_selection(&mut engine_view_mut!(self))
         }
         widget_flags
     }
@@ -937,14 +894,7 @@ impl Engine {
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
             widget_flags |= typewriter.toggle_text_attribute_current_selection(
                 text_attribute,
-                &mut EngineViewMut {
-                    tasks_tx: self.tasks_tx.clone(),
-                    pens_config: &mut self.pens_config,
-                    document: &mut self.document,
-                    store: &mut self.store,
-                    camera: &mut self.camera,
-                    audioplayer: &mut self.audioplayer,
-                },
+                &mut engine_view_mut!(self),
             )
         }
         widget_flags
@@ -953,17 +903,8 @@ impl Engine {
     pub fn text_selection_add_attribute(&mut self, text_attribute: TextAttribute) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
-            widget_flags |= typewriter.add_text_attribute_current_selection(
-                text_attribute,
-                &mut EngineViewMut {
-                    tasks_tx: self.tasks_tx.clone(),
-                    pens_config: &mut self.pens_config,
-                    document: &mut self.document,
-                    store: &mut self.store,
-                    camera: &mut self.camera,
-                    audioplayer: &mut self.audioplayer,
-                },
-            )
+            widget_flags |= typewriter
+                .add_text_attribute_current_selection(text_attribute, &mut engine_view_mut!(self))
         }
         widget_flags
     }
@@ -974,29 +915,23 @@ impl Engine {
             if typewriter.selection_range().is_some() {
                 widget_flags |= typewriter.replace_text_attribute_current_selection(
                     TextAttribute::TextColor(color),
-                    &mut EngineViewMut {
-                        tasks_tx: self.tasks_tx.clone(),
-                        pens_config: &mut self.pens_config,
-                        document: &mut self.document,
-                        store: &mut self.store,
-                        camera: &mut self.camera,
-                        audioplayer: &mut self.audioplayer,
-                    },
+                    &mut engine_view_mut!(self),
                 )
             } else {
                 widget_flags |= typewriter.change_text_style_in_modifying_stroke(
                     |style| style.color = color,
-                    &mut EngineViewMut {
-                        tasks_tx: self.tasks_tx.clone(),
-                        pens_config: &mut self.pens_config,
-                        document: &mut self.document,
-                        store: &mut self.store,
-                        camera: &mut self.camera,
-                        audioplayer: &mut self.audioplayer,
-                    },
+                    &mut engine_view_mut!(self),
                 )
             }
         }
         widget_flags
+    }
+
+    /// Handle a requested animation frame.
+    ///
+    /// Can request another frame using `EngineViewMut#animation.claim_frame()`.
+    pub fn handle_animation_frame(&mut self, optimize_epd: bool) {
+        self.penholder
+            .handle_animation_frame(&mut engine_view_mut!(self), optimize_epd);
     }
 }

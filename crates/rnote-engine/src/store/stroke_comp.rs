@@ -12,6 +12,7 @@ use rnote_compose::shapes::Shapeable;
 use rnote_compose::transform::Transformable;
 use rnote_compose::Color;
 use std::sync::Arc;
+#[cfg(feature = "ui")]
 use tracing::error;
 
 /// Systems that are related to the stroke components.

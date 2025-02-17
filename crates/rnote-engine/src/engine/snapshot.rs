@@ -82,10 +82,12 @@ impl EngineSnapshot {
                     .pages
                     .iter()
                     .map(|page| (page.width, page.height))
-                    .fold((0_f64, 0_f64), |prev, next| {
-                        // Max of width, sum heights
-                        (prev.0.max(next.0), prev.1 + next.1)
-                    });
+                    .fold(
+                        (0_f64, 0_f64),
+                        |(prev_width, prev_height), (next_width, next_height)| {
+                            (prev_width.max(next_width), prev_height + next_height)
+                        },
+                    );
                 let no_pages = xopp_file.xopp_root.pages.len() as u32;
 
                 let mut engine = Engine::default();

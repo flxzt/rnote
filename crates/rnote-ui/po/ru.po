@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-08-21 03:09+0000\n"
+"PO-Revision-Date: 2024-12-03 23:00+0000\n"
 "Last-Translator: Pavel Ovchinnikov <opavel@internet.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
 "Language: ru\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.7\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -331,11 +331,6 @@ msgid "Page Order"
 msgstr "Порядок страниц"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
@@ -437,10 +432,6 @@ msgid "The export image format"
 msgstr "Формат экспортируемого изображения"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
@@ -1796,7 +1787,7 @@ msgstr "Не удалось экспортировать выделение, н�
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
 msgid "Saves are in progress, waiting before closing.."
-msgstr "Сохранения в прогрессе, не закрывайте до завершения"
+msgstr "Сохранения в прогрессе, не закрывайте до завершения..."
 
 #: crates/rnote-ui/src/appwindow/imp.rs:336
 msgid "Button 1"
@@ -2548,6 +2539,26 @@ msgstr "чёрный"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "белый"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+msgid "is password protected"
+msgstr "защищено паролем"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:276
+msgid "Encrypted PDF"
+msgstr "Зашифрованный PDF"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:279
+msgid "_Cancel"
+msgstr "Отмена"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:280
+msgid "_Unlock"
+msgstr "Разблокировать"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:287
+msgid "Enter the PDF password"
+msgstr "Введите пароль для PDF файла"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "Открытый файл был перемещен или удален на диске"

@@ -178,8 +178,8 @@ impl RnWorkspaceListEntry {
         self.set_property("name", name.to_value());
     }
 
-    pub(crate) fn canonicalize_dir(&self) -> anyhow::Result<()> {
-        let p = PathBuf::from(self.dir()).canonicalize()?;
+    pub(crate) fn ensure_dir(&self) -> anyhow::Result<()> {
+        let p = crate::utils::path_walk_up_until_exists(self.dir())?;
         self.set_dir(p.to_string_lossy().to_string());
         Ok(())
     }

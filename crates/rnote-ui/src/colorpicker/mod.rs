@@ -328,6 +328,7 @@ mod imp {
                         colorpicker.setter_5().set_active(false);
                         colorpicker.setter_6().set_active(false);
                         colorpicker.setter_8().set_active(false);
+                        colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
                 }

@@ -103,7 +103,7 @@ pub struct Image {
 impl Debug for Image {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Image")
-            .field("data", &String::from("- no debug impl -"))
+            .field("data", &String::from("{.. no debug impl ..}"))
             .field("rect", &self.rect)
             .field("pixel_width", &self.pixel_width)
             .field("pixel_height", &self.pixel_height)

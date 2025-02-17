@@ -348,7 +348,11 @@ mod imp {
                         }
                         let canvas = canvaswrapper.canvas();
                         let old_zoom = canvas.engine_ref().camera.total_zoom();
-                        let new_zoom = old_zoom * (1.0 - dy * RnCanvas::ZOOM_SCROLL_STEP);
+                        let new_zoom = if dy < 0.0 {
+                            old_zoom * (1.0 - dy * RnCanvas::ZOOM_SCROLL_STEP)
+                        } else {
+                            old_zoom * (1.0 / (1.0 + dy * RnCanvas::ZOOM_SCROLL_STEP))
+                        };
 
                         if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
                             let camera_offset = canvas.engine_ref().camera.offset();
@@ -503,7 +507,7 @@ mod imp {
                         bbcenter_begin.set(
                             gesture
                                 .bounding_box_center()
-                                .map(|coords| na::vector![coords.0, coords.1]),
+                                .map(|(x, y)| na::vector![x, y]),
                         );
                         offset_begin.set(canvaswrapper.canvas().engine_ref().camera.offset());
                     }
@@ -536,7 +540,7 @@ mod imp {
 
                         if let Some(bbcenter_current) = gesture
                             .bounding_box_center()
-                            .map(|coords| na::vector![coords.0, coords.1])
+                            .map(|(x, y)| na::vector![x, y])
                         {
                             let bbcenter_begin = if let Some(bbcenter_begin) = bbcenter_begin.get()
                             {
@@ -560,8 +564,7 @@ mod imp {
                 self.canvas_zoom_gesture.connect_end(clone!(
                     #[weak(rename_to=canvaswrapper)]
                     obj,
-                    move |gesture, _event_sequence| {
-                        gesture.set_state(EventSequenceState::Denied);
+                    move |_gesture, _event_sequence| {
                         let widget_flags = canvaswrapper
                             .canvas()
                             .engine_mut()
@@ -802,6 +805,10 @@ impl RnCanvasWrapper {
     #[allow(unused)]
     pub(crate) fn set_inertial_scrolling(&self, inertial_scrolling: bool) {
         self.set_property("inertial-scrolling", inertial_scrolling);
+    }
+
+    pub(crate) fn pointer_pos(&self) -> Option<na::Vector2<f64>> {
+        self.imp().pointer_pos.get()
     }
 
     pub(crate) fn last_contextmenu_pos(&self) -> Option<na::Vector2<f64>> {

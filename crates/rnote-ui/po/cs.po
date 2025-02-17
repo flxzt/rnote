@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-07-28 10:46+0000\n"
+"PO-Revision-Date: 2024-11-12 09:00+0000\n"
 "Last-Translator: Fjuro <fjuro@alius.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.8.2\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -705,7 +705,7 @@ msgstr "Rozdělené tahy"
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:17
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:81
 msgid "Brush"
-msgstr "Kartáček"
+msgstr "Štětec"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:33
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:82
@@ -1090,7 +1090,7 @@ msgstr "_Zpět na původní stránku"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:38
 msgid "C_lear Document"
-msgstr "Vyčistit dokument"
+msgstr "Vy_mazat dokument"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:44
 msgid "Show _Format Borders"
@@ -1373,11 +1373,11 @@ msgstr "Nastavit orientaci formátu"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:171
 msgid "Portrait"
-msgstr "Portrét"
+msgstr "Na výšku"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:177
 msgid "Landscape"
-msgstr "Krajina"
+msgstr "Na šířku"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:187
 msgid "Width"
@@ -2536,6 +2536,26 @@ msgstr "černá"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "bílá"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+msgid "is password protected"
+msgstr "je chráněno heslem"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:276
+msgid "Encrypted PDF"
+msgstr "Šifrované PDF"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:279
+msgid "_Cancel"
+msgstr "_Zrušit"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:280
+msgid "_Unlock"
+msgstr "_Odemknout"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:287
+msgid "Enter the PDF password"
+msgstr "Zadejte heslo dokumentu PDF"
 
 #~ msgid "Lecture Note 1"
 #~ msgstr "Čtení Poznámka 1"

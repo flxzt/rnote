@@ -164,6 +164,28 @@ impl RnAppWindow {
         let action_active_tab_close = gio::SimpleAction::new("active-tab-close", None);
         self.add_action(&action_active_tab_close);
 
+        let color_setters = {
+            let p = self.overlays().colorpicker();
+            [
+                p.setter_1(),
+                p.setter_2(),
+                p.setter_3(),
+                p.setter_4(),
+                p.setter_5(),
+                p.setter_6(),
+                p.setter_7(),
+                p.setter_8(),
+                p.setter_9(),
+            ]
+        };
+        for (i, setter) in color_setters.into_iter().enumerate() {
+            let action = gio::SimpleAction::new(&format!("set-color-{}", i + 1), None);
+            self.add_action(&action);
+            action.connect_activate(clone!(move |_, _| {
+                setter.set_active(true);
+            }));
+        }
+
         let action_drawing_pad_pressed_button_0 =
             gio::SimpleAction::new("drawing-pad-pressed-button-0", None);
         self.add_action(&action_drawing_pad_pressed_button_0);
@@ -1171,6 +1193,15 @@ impl RnAppWindow {
         app.set_accels_for_action("win.pen-style::eraser", &["<Ctrl>4", "<Ctrl>KP_4"]);
         app.set_accels_for_action("win.pen-style::selector", &["<Ctrl>5", "<Ctrl>KP_5"]);
         app.set_accels_for_action("win.pen-style::tools", &["<Ctrl>6", "<Ctrl>KP_6"]);
+        app.set_accels_for_action("win.set-color-1", &["1", "KP_1"]);
+        app.set_accels_for_action("win.set-color-2", &["2", "KP_2"]);
+        app.set_accels_for_action("win.set-color-3", &["3", "KP_3"]);
+        app.set_accels_for_action("win.set-color-4", &["4", "KP_4"]);
+        app.set_accels_for_action("win.set-color-5", &["5", "KP_5"]);
+        app.set_accels_for_action("win.set-color-6", &["6", "KP_6"]);
+        app.set_accels_for_action("win.set-color-7", &["7", "KP_7"]);
+        app.set_accels_for_action("win.set-color-8", &["8", "KP_8"]);
+        app.set_accels_for_action("win.set-color-9", &["9", "KP_9"]);
 
         // shortcuts for devel build
         if config::PROFILE.to_lowercase().as_str() == "devel" {

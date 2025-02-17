@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-07-04 17:09+0000\n"
-"Last-Translator: Vincent <vincentzhangz@outlook.com>\n"
+"PO-Revision-Date: 2025-01-16 13:00+0000\n"
+"Last-Translator: Darnivo <darrenivano04@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/rnote/repo/id/"
 ">\n"
 "Language: id\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -567,7 +567,7 @@ msgstr "Atur DPI pilihan untuk file Xournal++"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
-msgstr ""
+msgstr "Gaya Kuas"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:149
@@ -575,8 +575,9 @@ msgid "Brush Configuration"
 msgstr "Konfigurasi Kuas"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:66
+#, fuzzy
 msgid "Brush Styles"
-msgstr ""
+msgstr "Gaya-gaya Kuas"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:95
 msgid "Marker"
@@ -589,7 +590,7 @@ msgstr "Tandai di bawah goresan lainnya"
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:107
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:201
 msgid "Solid"
-msgstr ""
+msgstr "Padat"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:108
 msgid "Draw solid color strokes"
@@ -597,7 +598,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:119
 msgid "Textured"
-msgstr ""
+msgstr "Bertekstur"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:120
 msgid "Draw textured strokes"
@@ -639,47 +640,47 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:214
 msgid "Pressure Curve"
-msgstr ""
+msgstr "Kurva Tekanan"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:215
 msgid "Choose a pressure curve"
-msgstr ""
+msgstr "Pilih sebuah kurva tekanan"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:219
 msgid "Constant"
-msgstr ""
+msgstr "Konstan"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:220
 msgid "Linear"
-msgstr ""
+msgstr "Linier"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:221
 msgid "Square root"
-msgstr ""
+msgstr "Akar kuadrat"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:222
 msgid "Cubic root"
-msgstr ""
+msgstr "Akar kubik"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:223
 msgid "Quadratic Parabola"
-msgstr ""
+msgstr "Parabola Kuadratik"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:224
 msgid "Cubic Parabola"
-msgstr ""
+msgstr "Parabola Kubik"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:235
 msgid "Textured Style"
-msgstr ""
+msgstr "Gaya bertekstur"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:238
 msgid "Density"
-msgstr ""
+msgstr "Kepadatan"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:239
 msgid "The density is the amount of dots per 10x10 area"
-msgstr ""
+msgstr "Kepadatannya adalah jumlah titik per daerah 10x10"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
 msgctxt ""
@@ -689,7 +690,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:249
 msgid "Choose a dots position probability distribution"
-msgstr ""
+msgstr "Pilih sebuah distribusi kemungkinan posisi titik-titik"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
 msgctxt "A variant of the textured pen texture distribution"
@@ -704,12 +705,12 @@ msgstr "Normal"
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
-msgstr ""
+msgstr "Eksponensial"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
-msgstr ""
+msgstr "Eksponensial Terbalik"
 
 #: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:21
 msgid "Trash Strokes"
@@ -815,11 +816,11 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:130
 msgid "Smooth"
-msgstr ""
+msgstr "Halus"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
 msgid "Rough"
-msgstr ""
+msgstr "Kasar"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:192
 msgid "Rough style"
@@ -830,8 +831,9 @@ msgid "Fill Style"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:197
+#, fuzzy
 msgid "Choose a fill style"
-msgstr ""
+msgstr "Pilih sebuah gaya pemenuhan"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:202
 msgid "Hachure"
@@ -839,11 +841,11 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:203
 msgid "Zig-Zag"
-msgstr ""
+msgstr "Zig-Zag"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:204
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "Garis Zig-Zag"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:205
 msgid "Crosshatch"
@@ -852,11 +854,12 @@ msgstr ""
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:206
 #: crates/rnote-ui/data/ui/settingspanel.ui:322
 msgid "Dots"
-msgstr ""
+msgstr "Titik-titik"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:207
+#, fuzzy
 msgid "Dashed"
-msgstr ""
+msgstr "Putus-putus"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:215
 msgid "Hachure Angle"
@@ -887,7 +890,7 @@ msgstr "3:2"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:337
 msgid "Golden Ratio (1:1.618)"
-msgstr ""
+msgstr "Rasio Emas (1:1.618)"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:19
 msgid "Insert Vertical Space"
@@ -900,7 +903,7 @@ msgstr "Pindahkan Tampilan"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:40
 msgid "Zoom In/Out"
-msgstr ""
+msgstr "Perbesar/Perkecil"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:43
 msgid "Pick And Insert Emoji"
@@ -1009,8 +1012,9 @@ msgid "New _Window"
 msgstr "Jendela_Baru"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
+#, fuzzy
 msgid "_New"
-msgstr ""
+msgstr "_Baru"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:76
 msgid "_Open"
@@ -1018,7 +1022,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/appmenu.ui:80
 msgid "_Save"
-msgstr ""
+msgstr "_Simpan"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:84
 #, fuzzy
@@ -1028,7 +1032,7 @@ msgstr "Simpan"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:90
 msgid "_Print"
-msgstr ""
+msgstr "_Cetak"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import File"
@@ -1041,7 +1045,7 @@ msgstr ""
 #: crates/rnote-ui/data/ui/appmenu.ui:100
 #: crates/rnote-ui/data/ui/contextmenu.ui:10
 msgid "_Copy"
-msgstr ""
+msgstr "_Salin"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:104
 #: crates/rnote-ui/data/ui/contextmenu.ui:14
@@ -1051,7 +1055,7 @@ msgstr ""
 #: crates/rnote-ui/data/ui/appmenu.ui:108
 #: crates/rnote-ui/data/ui/contextmenu.ui:18
 msgid "_Paste"
-msgstr ""
+msgstr "_Tempel"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:113
 msgid "_Export…"
@@ -1062,12 +1066,13 @@ msgid "Export _Document"
 msgstr "Ekspor_Dokumen"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:119
+#, fuzzy
 msgid "Export Document _Pages"
-msgstr ""
+msgstr "Ekspor Halaman_Dokumen"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:123
 msgid "Export _Selection"
-msgstr ""
+msgstr "Ekspor_Pilihan"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:130
 msgid "Se_ttings"

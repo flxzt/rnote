@@ -7,15 +7,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-07-12 06:09+0000\n"
-"Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
+"PO-Revision-Date: 2025-01-30 23:56+0000\n"
+"Last-Translator: Pavel Ovchinnikov <opavel@internet.ru>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -330,19 +330,14 @@ msgid "Page Order"
 msgstr "Paginavolgorde"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
 "De paginavolgorde voor documenten met indelingen\n"
-"die horizontaal en verticaal uitgebreid zijn worden\n"
-"opgedeeld in paginas"
+"die horizontaal en verticaal uitgebreid zijn\n"
+"worden opgedeeld in pagina's"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:152
 #: crates/rnote-ui/data/ui/dialogs/export.ui:363
@@ -392,19 +387,14 @@ msgid "Jpeg"
 msgstr "JPEG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "    that expand in horizontal and vertical directions\n"
 "    are cut into pages"
 msgstr ""
 "De paginavolgorde voor documenten met indelingen\n"
-"die horizontaal en verticaal uitgebreid zijn worden\n"
-"opgedeeld in paginas"
+"    die horizontaal en verticaal uitgebreid zijn worden\n"
+"    opgedeeld in paginas"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
@@ -414,16 +404,12 @@ msgstr "Bitmap-schaalfactor"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "    to the actual size on the document"
 msgstr ""
 "Stel de bitmapfactor in verhouding\n"
-"tot de ware grootte van het document in"
+"    tot de ware grootte van het document in"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
@@ -445,10 +431,6 @@ msgid "The export image format"
 msgstr "Het export-afbeeldingsbestand"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
@@ -1300,8 +1282,8 @@ msgid ""
 "Changes certain UI elements and modifies behaviour\n"
 "of tools for optimized usage on E-Paper displays"
 msgstr ""
-"Verandert bepaalde interface-elementen en wĳzigt het gedrag van gereedschap "
-"voor geoptimaliseerd gebruik op E-paper-schermen"
+"Verandert bepaalde interface-elementen en wĳzigt het gedrag\n"
+"van gereedschap voor geoptimaliseerd gebruik op E-paper-schermen"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:71
 msgid "Inertial Touch Scrolling"
@@ -1544,7 +1526,9 @@ msgstr "Primaire penknop"
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
-msgstr "Ken een actie toe aan de primaire penknop"
+msgstr ""
+"Ken een actie toe aan de\n"
+"primaire penknop"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:418
 msgid "Stylus Secondary Button Action"
@@ -1554,7 +1538,9 @@ msgstr "Secundaire penknop"
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
-msgstr "Ken een actie toe aan de secundaire penknop"
+msgstr ""
+"Ken een actie toe aan de\n"
+"secundaire penknop"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:431
 msgid "Mouse Secondary Button Action"
@@ -1564,7 +1550,9 @@ msgstr "Secundaire muisknop"
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
-msgstr "Ken een actie toe aan de secundaire muisknop"
+msgstr ""
+"Ken een actie toe aan de\n"
+"secundaire muisknop"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:444
 msgid "Touch Two-Finger Long-Press Action"
@@ -1574,7 +1562,9 @@ msgstr "Actie bij lang indrukken met twee vingers"
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
-msgstr "Stelt de actie in wanneer met 2 vingers lang wordt vast­gehouden"
+msgstr ""
+"Stelt de actie in wanneer\n"
+"met 2 vingers lang wordt vastgehouden"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:457
 msgid "Keyboard Ctrl-Space Action"
@@ -1596,7 +1586,9 @@ msgstr "Tekenblok – Actie knop 1"
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
-msgstr "De actie van knop 1 op een teken­blok"
+msgstr ""
+"De actie van knop 1\n"
+"op een tekenblok"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:483
 msgid "Drawing Pad Button 2 Action"
@@ -1606,7 +1598,9 @@ msgstr "Tekenblok – Actie knop 2"
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
-msgstr "De actie van knop 2 op een teken­blok"
+msgstr ""
+"De actie van knop 2\n"
+"op een tekenblok"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:496
 msgid "Drawing Pad Button 3 Action"
@@ -1616,7 +1610,9 @@ msgstr "Tekenblok – Actie knop 3"
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
-msgstr "De actie van knop 3 op een teken­blok"
+msgstr ""
+"De actie van knop 3\n"
+"op een tekenblok"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:509
 msgid "Drawing Pad Button 4 Action"
@@ -1626,7 +1622,9 @@ msgstr "Tekenblok – Actie knop 4"
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
-msgstr "De actie van knop 4 op een teken­blok"
+msgstr ""
+"De actie van knop 4\n"
+"op een tekenblok"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"
@@ -1788,10 +1786,8 @@ msgid "Exporting selection failed, nothing selected"
 msgstr "Het exporteren is mislukt omdat er geen keuze gemaakt is"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:268
-#, fuzzy
-#| msgid "Saves are in progress"
 msgid "Saves are in progress, waiting before closing.."
-msgstr "Bezig met opslaan"
+msgstr "Bezig met opslaan, wacht voordat u sluit.."
 
 #: crates/rnote-ui/src/appwindow/imp.rs:336
 msgid "Button 1"
@@ -2003,7 +1999,8 @@ msgstr "Aantal pagina's:"
 msgid "translator-credits"
 msgstr ""
 "Heimen Stoffels <vistausss@fastmail.com>\n"
-"Philip Goto https://flipflop97.github.io/"
+"Philip Goto https://flipflop97.github.io/\n"
+"Pavel Ovchinnikov <opavel@internet.ru>"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:202
 #: crates/rnote-ui/src/dialogs/mod.rs:338
@@ -2548,27 +2545,23 @@ msgstr "wit"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:273
 msgid "is password protected"
-msgstr ""
+msgstr "is wachtwoordbeveiligd"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:276
 msgid "Encrypted PDF"
-msgstr ""
+msgstr "Gecodeerd PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:279
-#, fuzzy
-#| msgid "Cancel"
 msgid "_Cancel"
-msgstr "Annuleren"
+msgstr "_Annuleren"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:280
-#, fuzzy
-#| msgid "Clock"
 msgid "_Unlock"
-msgstr "Klok"
+msgstr "_Klok"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:287
 msgid "Enter the PDF password"
-msgstr ""
+msgstr "Voer het wachtwoord van PDF in"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "Het geopende bestand is verplaatst of verwijderd"

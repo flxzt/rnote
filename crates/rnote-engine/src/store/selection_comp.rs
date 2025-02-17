@@ -104,7 +104,6 @@ impl StrokeStore {
             .filter_map(|&old_key| {
                 let new_key =
                     self.insert_stroke((**self.stroke_components.get(old_key)?).clone(), None);
-                self.set_selected(new_key, true);
 
                 // duplicate and insert the render images of the old stroke to avoid flickering
                 if let Some(render_comp) = self.render_components.get(old_key) {
@@ -121,6 +120,9 @@ impl StrokeStore {
                         );
                     }
                 }
+
+                self.set_selected(new_key, true);
+
                 Some(new_key)
             })
             .collect::<Vec<StrokeKey>>();

@@ -103,8 +103,30 @@
               </child>
             </object>
           </child>
+
+          <!-- General options -->
           <child>
-            <!-- Smooth options -->
+            <object class="AdwPreferencesGroup">
+              <property name="title" translatable="yes">General</property>
+              <child>
+                <object class="AdwComboRow" id="general_brush_type_row">
+                  <property name="title" translatable="yes">Brush type</property>
+                  <property name="subtitle" translatable="yes">Choose a brush type</property>
+                  <property name="model">
+                    <object class="GtkStringList">
+                      <items>
+                        <item translatable="yes">Solid</item>
+                        <item translatable="yes">Marker</item>
+                      </items>
+                    </object>
+                  </property>
+                </object>
+              </child>
+            </object>
+          </child>
+
+          <!-- Smooth options -->
+          <child>
             <object class="AdwPreferencesGroup">
               <property name="title" translatable="yes">Smooth Style</property>
               <child>
@@ -123,46 +145,46 @@
               </child>
               <child>
                 <object class="AdwComboRow" id="smoothstyle_line_style_row">
-                    <property name="title" translatable="yes">Line Style</property>
-                    <property name="subtitle" translatable="yes">Choose a line style</property>
-                    <property name="model">
-                      <object class="GtkStringList">
-                        <items>
-                          <item translatable="yes">Solid</item>
-                          <item translatable="yes">Dotted</item>
-                          <item translatable="yes">Dashed (narrow)</item>
-                          <item translatable="yes">Dashed (equidistant)</item>
-                          <item translatable="yes">Dashed (wide)</item>
-                        </items>
-                      </object>
-                    </property>
-                  </object>
+                  <property name="title" translatable="yes">Line Style</property>
+                  <property name="subtitle" translatable="yes">Choose a line style</property>
+                  <property name="model">
+                    <object class="GtkStringList">
+                      <items>
+                        <item translatable="yes">Solid</item>
+                        <item translatable="yes">Dotted</item>
+                        <item translatable="yes">Dashed (narrow)</item>
+                        <item translatable="yes">Dashed (equidistant)</item>
+                        <item translatable="yes">Dashed (wide)</item>
+                      </items>
+                    </object>
+                  </property>
+                </object>
               </child>
             </object>
           </child>
 
+          <!-- Rough options -->
           <child>
-            <!-- Rough options -->
             <object class="AdwPreferencesGroup">
               <property name="title" translatable="yes">Rough Style</property>
               <child>
                 <object class="AdwComboRow" id="roughstyle_fillstyle_row">
-                    <property name="title" translatable="yes">Fill Style</property>
-                    <property name="subtitle" translatable="yes">Choose a fill style</property>
-                    <property name="model">
-                      <object class="GtkStringList">
-                        <items>
-                          <item translatable="yes">Solid</item>
-                          <item translatable="yes">Hachure</item>
-                          <item translatable="yes">Zig-Zag</item>
-                          <item translatable="yes">Zig-Zag Line</item>
-                          <item translatable="yes">Crosshatch</item>
-                          <item translatable="yes">Dots</item>
-                          <item translatable="yes">Dashed</item>
-                        </items>
-                      </object>
-                    </property>
-                  </object>
+                  <property name="title" translatable="yes">Fill Style</property>
+                  <property name="subtitle" translatable="yes">Choose a fill style</property>
+                  <property name="model">
+                    <object class="GtkStringList">
+                      <items>
+                        <item translatable="yes">Solid</item>
+                        <item translatable="yes">Hachure</item>
+                        <item translatable="yes">Zig-Zag</item>
+                        <item translatable="yes">Zig-Zag Line</item>
+                        <item translatable="yes">Crosshatch</item>
+                        <item translatable="yes">Dots</item>
+                        <item translatable="yes">Dashed</item>
+                      </items>
+                    </object>
+                  </property>
+                </object>
               </child>
               <child>
                 <object class="AdwSpinRow" id="roughstyle_hachure_angle_row">
@@ -175,8 +197,9 @@
               </child>
             </object>
           </child>
+
+          <!-- Constraints -->
           <child>
-            <!-- Constraints -->
             <object class="GtkLabel">
               <property name="label" translatable="yes">Constraints</property>
               <property name="halign">start</property>

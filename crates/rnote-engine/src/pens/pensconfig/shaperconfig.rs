@@ -4,9 +4,12 @@ use rnote_compose::builders::ShapeBuilderType;
 use rnote_compose::constraints::ConstraintRatio;
 use rnote_compose::style::rough::RoughOptions;
 use rnote_compose::style::smooth::SmoothOptions;
+use rnote_compose::Color;
 use rnote_compose::Constraints;
 use rnote_compose::Style;
 use serde::{Deserialize, Serialize};
+
+use crate::store::chrono_comp::StrokeLayer;
 
 #[derive(
     Copy, Clone, Debug, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
@@ -35,6 +38,36 @@ impl TryFrom<u32> for ShaperStyle {
     }
 }
 
+#[derive(
+    Copy, Clone, Debug, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+)]
+#[serde(rename = "shaper_brush_style")]
+pub enum ShaperBrushType {
+    #[serde(rename = "solid")]
+    Solid = 0,
+    #[serde(rename = "marker")]
+    Marker,
+}
+
+impl Default for ShaperBrushType {
+    fn default() -> Self {
+        Self::Solid
+    }
+}
+
+impl TryFrom<u32> for ShaperBrushType {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "ShaperBrushType try_from::<u32>() for value {} failed",
+                value
+            )
+        })
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "shaper_config")]
 pub struct ShaperConfig {
@@ -42,6 +75,8 @@ pub struct ShaperConfig {
     pub builder_type: ShapeBuilderType,
     #[serde(rename = "style")]
     pub style: ShaperStyle,
+    #[serde(rename = "brush_style")]
+    pub brush_type: ShaperBrushType,
     #[serde(rename = "smooth_options")]
     pub smooth_options: SmoothOptions,
     #[serde(rename = "rough_options")]
@@ -60,6 +95,7 @@ impl Default for ShaperConfig {
         Self {
             builder_type: ShapeBuilderType::default(),
             style: ShaperStyle::default(),
+            brush_type: ShaperBrushType::default(),
             smooth_options: SmoothOptions::default(),
             rough_options: RoughOptions::default(),
             constraints,
@@ -70,6 +106,13 @@ impl Default for ShaperConfig {
 impl ShaperConfig {
     pub const STROKE_WIDTH_MIN: f64 = 0.1;
     pub const STROKE_WIDTH_MAX: f64 = 500.0;
+
+    pub(crate) fn layer_for_current_options(&self) -> StrokeLayer {
+        match &self.brush_type {
+            ShaperBrushType::Marker => StrokeLayer::Highlighter,
+            ShaperBrushType::Solid => StrokeLayer::UserLayer(0),
+        }
+    }
 
     /// A new seed for new shapes
     pub(crate) fn new_style_seeds(&mut self) {

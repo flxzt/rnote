@@ -1,5 +1,5 @@
 // Modules
-pub mod smoothoptions;
+mod smoothoptions;
 
 // Re-exports
 pub use smoothoptions::{LineCap, LineStyle, SmoothOptions};

@@ -13,7 +13,7 @@ use rnote_compose::builders::ShapeBuilderType;
 use rnote_compose::constraints::ConstraintRatio;
 use rnote_compose::style::rough::roughoptions::FillStyle;
 use rnote_compose::style::smooth::{LineCap, LineStyle, SmoothOptions};
-use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
+use rnote_engine::pens::pensconfig::shaperconfig::{ShaperBrushType, ShaperStyle};
 use rnote_engine::pens::pensconfig::ShaperConfig;
 
 mod imp {
@@ -37,6 +37,8 @@ mod imp {
         pub(crate) shapeconfig_popover: TemplateChild<Popover>,
         #[template_child]
         pub(crate) shapeconfig_popover_close_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) general_brush_type_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(crate) smoothstyle_line_cap_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -156,6 +158,10 @@ impl RnShaperPage {
         self.imp()
             .shapebuildertype_picker
             .set_picked(Some(builder_type.to_icon_name()));
+    }
+
+    pub(crate) fn brush_type(&self) -> ShaperBrushType {
+        ShaperBrushType::try_from(self.imp().general_brush_type_row.get().selected()).unwrap()
     }
 
     pub(crate) fn smoothstyle_line_cap(&self) -> LineCap {
@@ -311,6 +317,24 @@ impl RnShaperPage {
                 }
             }
         ));
+        // General
+        // Brush type
+        imp.general_brush_type_row
+            .get()
+            .connect_selected_notify(clone!(
+                #[weak(rename_to=shaperpage)]
+                self,
+                #[weak]
+                appwindow,
+                move |_| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+                    canvas.engine_mut().pens_config.shaper_config.brush_type =
+                        shaperpage.brush_type();
+                }
+            ));
+
         // Smooth style
         // Line cap
         imp.smoothstyle_line_cap_row
@@ -325,6 +349,8 @@ impl RnShaperPage {
                         return;
                     };
                     let line_cap = shaperpage.smoothstyle_line_cap();
+
+                    // If the user has selected a straight line cap while the line style was dotted, then we update the line style to be straight
                     if line_cap == LineCap::Straight
                         && shaperpage.smoothstyle_line_style().is_dotted()
                     {
@@ -355,11 +381,13 @@ impl RnShaperPage {
                         return;
                     };
                     let line_style = shaperpage.smoothstyle_line_style();
+
+                    // If the user has selected a dotted line style, then we update the line cap to be rounded
                     if line_style.is_dotted() {
                         shaperpage
                             .imp()
                             .smoothstyle_line_cap_row
-                            .set_selected(line_style.to_u32().unwrap());
+                            .set_selected(LineCap::Rounded.to_u32().unwrap());
                     }
                     canvas
                         .engine_mut()
@@ -584,6 +612,10 @@ impl RnShaperPage {
 
         // builder type
         self.set_shapebuildertype(shaper_config.builder_type);
+
+        // General
+        imp.general_brush_type_row
+            .set_selected(shaper_config.brush_type.to_u32().unwrap());
 
         // Smooth style
         imp.smoothstyle_line_cap_row

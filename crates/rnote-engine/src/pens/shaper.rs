@@ -131,7 +131,12 @@ impl PenBehaviour for Shaper {
                         for shape in shapes {
                             let key = engine_view.store.insert_stroke(
                                 Stroke::ShapeStroke(ShapeStroke::new(shape, style.clone())),
-                                None,
+                                Some(
+                                    engine_view
+                                        .pens_config
+                                        .shaper_config
+                                        .layer_for_current_options(),
+                                ),
                             );
                             style.advance_seed();
                             engine_view.store.regenerate_rendering_for_stroke(
@@ -157,7 +162,12 @@ impl PenBehaviour for Shaper {
                         for shape in shapes {
                             let key = engine_view.store.insert_stroke(
                                 Stroke::ShapeStroke(ShapeStroke::new(shape, style.clone())),
-                                None,
+                                Some(
+                                    engine_view
+                                        .pens_config
+                                        .shaper_config
+                                        .layer_for_current_options(),
+                                ),
                             );
                             style.advance_seed();
                             engine_view.store.regenerate_rendering_for_stroke(

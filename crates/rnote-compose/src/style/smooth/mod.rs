@@ -1,12 +1,8 @@
 // Modules
-
-/// The module for the shape style
-pub mod shapestyle;
-/// The module for the smooth style
 pub mod smoothoptions;
 
 // Re-exports
-pub use smoothoptions::SmoothOptions;
+pub use smoothoptions::{LineCap, LineStyle, SmoothOptions};
 
 // Imports
 use super::Composer;
@@ -34,7 +30,7 @@ impl Composer<SmoothOptions> for Line {
                 line,
                 &stroke_brush,
                 options.stroke_width,
-                &options.shape_style.get(),
+                &options.piet_stroke_style,
             );
         }
         cx.restore().unwrap();
@@ -56,7 +52,7 @@ impl Composer<SmoothOptions> for Arrow {
                 arrow,
                 &Into::<piet::Color>::into(stroke_color),
                 options.stroke_width,
-                &options.shape_style.get(),
+                &options.piet_stroke_style,
             );
         }
 
@@ -84,7 +80,7 @@ impl Composer<SmoothOptions> for Rectangle {
                 shape,
                 &stroke_brush,
                 options.stroke_width,
-                &options.shape_style.get(),
+                &options.piet_stroke_style,
             );
         }
         cx.restore().unwrap();
@@ -111,7 +107,7 @@ impl Composer<SmoothOptions> for Ellipse {
                 ellipse,
                 &stroke_brush,
                 options.stroke_width,
-                &options.shape_style.get(),
+                &options.piet_stroke_style,
             );
         }
         cx.restore().unwrap();
@@ -138,7 +134,7 @@ impl Composer<SmoothOptions> for QuadraticBezier {
                 quadbez,
                 &stroke_brush,
                 options.stroke_width,
-                &options.shape_style.get(),
+                &options.piet_stroke_style,
             );
         }
         cx.restore().unwrap();
@@ -165,7 +161,7 @@ impl Composer<SmoothOptions> for CubicBezier {
                 cubbez,
                 &stroke_brush,
                 options.stroke_width,
-                &options.shape_style.get(),
+                &options.piet_stroke_style,
             );
         }
         cx.restore().unwrap();
@@ -227,7 +223,7 @@ impl Composer<SmoothOptions> for Polygon {
                 cx.fill(&outline_path, &Into::<piet::Color>::into(fill_color));
             }
 
-            let mut style = options.shape_style.get().clone();
+            let mut style = options.piet_stroke_style.clone();
             style.set_line_cap(piet::LineCap::Butt);
             style.set_line_join(piet::LineJoin::Bevel);
 

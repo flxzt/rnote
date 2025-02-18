@@ -12,8 +12,7 @@ use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::ShapeBuilderType;
 use rnote_compose::constraints::ConstraintRatio;
 use rnote_compose::style::rough::roughoptions::FillStyle;
-use rnote_compose::style::smooth::shapestyle::{LineCap, LineStyle};
-use rnote_compose::style::smooth::SmoothOptions;
+use rnote_compose::style::smooth::{LineCap, LineStyle, SmoothOptions};
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::pensconfig::ShaperConfig;
 
@@ -239,19 +238,10 @@ impl RnShaperPage {
 
                     match shaper_style {
                         ShaperStyle::Smooth => {
-                            canvas
-                                .engine_mut()
-                                .pens_config
-                                .shaper_config
-                                .smooth_options
-                                .stroke_width = stroke_width;
-                            canvas
-                                .engine_mut()
-                                .pens_config
-                                .shaper_config
-                                .smooth_options
-                                .shape_style
-                                .update_inner(stroke_width);
+                            let smooth_options: &mut SmoothOptions =
+                                &mut canvas.engine_mut().pens_config.shaper_config.smooth_options;
+                            smooth_options.stroke_width = stroke_width;
+                            smooth_options.update_piet_stroke_style();
                         }
                         ShaperStyle::Rough => {
                             canvas
@@ -331,13 +321,9 @@ impl RnShaperPage {
                 #[weak]
                 appwindow,
                 move |_| {
-                    let canvas = appwindow.active_tab_wrapper().canvas();
-                    let stroke_width = canvas
-                        .engine_ref()
-                        .pens_config
-                        .shaper_config
-                        .smooth_options
-                        .stroke_width;
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
                     let line_cap = shaperpage.smoothstyle_line_cap();
                     if line_cap == LineCap::Straight
                         && shaperpage.smoothstyle_line_style().is_dotted()
@@ -352,8 +338,7 @@ impl RnShaperPage {
                         .pens_config
                         .shaper_config
                         .smooth_options
-                        .shape_style
-                        .update_line_cap(line_cap, stroke_width);
+                        .update_line_cap(line_cap);
                 }
             ));
 
@@ -366,13 +351,9 @@ impl RnShaperPage {
                 #[weak]
                 appwindow,
                 move |_| {
-                    let canvas = appwindow.active_tab_wrapper().canvas();
-                    let stroke_width = canvas
-                        .engine_ref()
-                        .pens_config
-                        .shaper_config
-                        .smooth_options
-                        .stroke_width;
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
                     let line_style = shaperpage.smoothstyle_line_style();
                     if line_style.is_dotted() {
                         shaperpage
@@ -385,8 +366,7 @@ impl RnShaperPage {
                         .pens_config
                         .shaper_config
                         .smooth_options
-                        .shape_style
-                        .update_line_style(line_style, stroke_width);
+                        .update_line_style(line_style);
                 }
             ));
 
@@ -606,22 +586,10 @@ impl RnShaperPage {
         self.set_shapebuildertype(shaper_config.builder_type);
 
         // Smooth style
-        imp.smoothstyle_line_cap_row.set_selected(
-            shaper_config
-                .smooth_options
-                .shape_style
-                .line_cap
-                .to_u32()
-                .unwrap(),
-        );
-        imp.smoothstyle_line_style_row.set_selected(
-            shaper_config
-                .smooth_options
-                .shape_style
-                .line_style
-                .to_u32()
-                .unwrap(),
-        );
+        imp.smoothstyle_line_cap_row
+            .set_selected(shaper_config.smooth_options.line_cap.to_u32().unwrap());
+        imp.smoothstyle_line_style_row
+            .set_selected(shaper_config.smooth_options.line_style.to_u32().unwrap());
 
         // Rough style
         self.set_roughstyle_fillstyle(shaper_config.rough_options.fill_style);

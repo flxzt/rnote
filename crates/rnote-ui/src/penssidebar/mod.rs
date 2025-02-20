@@ -18,8 +18,8 @@ pub(crate) use typewriterpage::RnTypewriterPage;
 // Imports
 use crate::RnAppWindow;
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Stack, StackPage,
-    Widget,
+    CompositeTemplate, Stack, StackPage, Widget, glib, glib::clone, prelude::*,
+    subclass::prelude::*,
 };
 
 mod imp {

@@ -1,8 +1,8 @@
 // Imports
 use super::render_comp::RenderCompState;
 use super::{StrokeKey, StrokeStore};
-use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::Stroke;
+use crate::strokes::content::GeneratedContentImages;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;

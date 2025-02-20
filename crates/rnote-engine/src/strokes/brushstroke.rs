@@ -1,6 +1,6 @@
 // Imports
-use super::content::GeneratedContentImages;
 use super::Content;
+use super::content::GeneratedContentImages;
 use crate::Drawable;
 use crate::{
     render::{self},

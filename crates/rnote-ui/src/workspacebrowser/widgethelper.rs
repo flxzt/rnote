@@ -1,7 +1,7 @@
 // Imports
 use gettextrs::gettext;
 use gtk4::{
-    glib, glib::clone, prelude::*, Align, Button, Entry, Grid, Label, Popover, PositionType,
+    Align, Button, Entry, Grid, Label, Popover, PositionType, glib, glib::clone, prelude::*,
 };
 
 /// A template-function to create a simple dialog widget for an action:

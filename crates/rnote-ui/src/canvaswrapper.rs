@@ -1,15 +1,15 @@
 // Imports
-use crate::{canvas::reject_pointer_input, RnAppWindow, RnCanvas, RnContextMenu};
+use crate::{RnAppWindow, RnCanvas, RnContextMenu, canvas::reject_pointer_input};
 use gtk4::{
-    gdk, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, CompositeTemplate,
-    CornerType, EventControllerMotion, EventControllerScroll, EventControllerScrollFlags,
-    EventSequenceState, GestureClick, GestureDrag, GestureLongPress, GestureZoom, PropagationPhase,
-    ScrolledWindow, Widget,
+    CompositeTemplate, CornerType, EventControllerMotion, EventControllerScroll,
+    EventControllerScrollFlags, EventSequenceState, GestureClick, GestureDrag, GestureLongPress,
+    GestureZoom, PropagationPhase, ScrolledWindow, Widget, gdk, glib, glib::clone, graphene,
+    prelude::*, subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::penevent::ShortcutKey;
-use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::Camera;
+use rnote_engine::ext::GraphenePointExt;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::time::Instant;

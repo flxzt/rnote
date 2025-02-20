@@ -1,9 +1,9 @@
 // Imports
 use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
+use crate::PenEvent;
 use crate::eventresult::EventPropagation;
 use crate::penpath::{Element, Segment};
 use crate::style::Composer;
-use crate::PenEvent;
 use crate::{Constraints, EventResult};
 use crate::{PenPath, Style};
 use p2d::bounding_volume::Aabb;

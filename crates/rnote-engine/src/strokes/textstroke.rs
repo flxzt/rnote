@@ -8,7 +8,7 @@ use piet::{RenderContext, TextLayout, TextLayoutBuilder};
 use rnote_compose::ext::{AabbExt, Affine2Ext, Vector2Ext};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::transform::Transformable;
-use rnote_compose::{color, Color, Transform};
+use rnote_compose::{Color, Transform, color};
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use tracing::error;
@@ -947,21 +947,13 @@ impl TextStroke {
 
             // Move cursor in front of new line characters if they exist.
             if offset > line_metric.start_offset
-                && self
-                    .text
-                    .chars()
-                    .nth(offset - 1)
-                    .map_or(false, |c| c == '\n')
+                && (self.text.chars().nth(offset - 1) == Some('\n'))
             {
                 offset -= 1;
             }
 
             if offset > line_metric.start_offset
-                && self
-                    .text
-                    .chars()
-                    .nth(offset - 1)
-                    .map_or(false, |c| c == '\r')
+                && (self.text.chars().nth(offset - 1) == Some('\r'))
             {
                 offset -= 1;
             }

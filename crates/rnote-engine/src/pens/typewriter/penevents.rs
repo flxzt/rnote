@@ -584,7 +584,7 @@ impl Typewriter {
                     ModifyState::Idle => {
                         super::play_sound(Some(keyboard_key), engine_view.audioplayer);
 
-                        if let Some(Stroke::TextStroke(ref mut textstroke)) =
+                        if let Some(Stroke::TextStroke(textstroke)) =
                             engine_view.store.get_stroke_mut(*stroke_key)
                         {
                             let mut update_stroke =
@@ -1154,7 +1154,7 @@ impl Typewriter {
                     ModifyState::Idle => {
                         super::play_sound(None, engine_view.audioplayer);
 
-                        if let Some(Stroke::TextStroke(ref mut textstroke)) =
+                        if let Some(Stroke::TextStroke(textstroke)) =
                             engine_view.store.get_stroke_mut(*stroke_key)
                         {
                             textstroke.insert_text_after_cursor(&text, cursor);
@@ -1282,7 +1282,7 @@ impl Typewriter {
                 cursor,
                 pen_down: _,
             } => {
-                if let Some(Stroke::TextStroke(ref mut textstroke)) =
+                if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
                     textstroke.move_cursor_word_boundary_forward(cursor);
@@ -1312,7 +1312,7 @@ impl Typewriter {
                 cursor,
                 pen_down: _,
             } => {
-                if let Some(Stroke::TextStroke(ref mut textstroke)) =
+                if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
                     textstroke.move_cursor_line_end(cursor);

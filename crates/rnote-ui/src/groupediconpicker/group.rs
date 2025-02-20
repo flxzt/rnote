@@ -1,12 +1,12 @@
 // Imports
 use crate::RnGroupedIconPicker;
 use cairo::glib::clone;
-use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
-use gtk4::{subclass::prelude::ObjectSubclass, ListBoxRow};
 use gtk4::{
     Align, Box, FlowBox, FlowBoxChild, IconSize, Image, Label, StringList, StringObject,
     TemplateChild, Widget,
 };
+use gtk4::{CompositeTemplate, glib, prelude::*, subclass::prelude::*};
+use gtk4::{ListBoxRow, subclass::prelude::ObjectSubclass};
 use once_cell::sync::Lazy;
 use std::cell::RefCell;
 

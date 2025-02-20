@@ -4,8 +4,8 @@ mod actions;
 // Imports
 use crate::RnAppWindow;
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DragSource,
-    GestureClick, GestureLongPress, Image, Label, MenuButton, PopoverMenu, Widget,
+    CompositeTemplate, DragSource, GestureClick, GestureLongPress, Image, Label, MenuButton,
+    PopoverMenu, Widget, gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
 use std::cell::{Cell, RefCell};

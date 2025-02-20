@@ -1,7 +1,7 @@
 // Imports
 use crate::{RnAppMenu, RnAppWindow, RnSettingsPanel, RnWorkspaceBrowser};
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Widget,
+    Button, CompositeTemplate, Widget, glib, glib::clone, prelude::*, subclass::prelude::*,
 };
 
 mod imp {

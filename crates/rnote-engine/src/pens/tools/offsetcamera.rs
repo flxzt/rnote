@@ -7,7 +7,7 @@ use piet::RenderContext;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::Vector2Ext;
 use rnote_compose::penevent::PenProgress;
-use rnote_compose::{color, EventResult, PenEvent};
+use rnote_compose::{EventResult, PenEvent, color};
 use std::time::Instant;
 
 #[derive(Clone, Debug)]

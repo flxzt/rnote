@@ -1,8 +1,8 @@
 // Imports
+use crate::Drawable;
 use crate::document::Background;
 use crate::render::Svg;
 use crate::strokes::Stroke;
-use crate::Drawable;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};

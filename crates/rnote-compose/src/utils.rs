@@ -100,14 +100,14 @@ pub fn new_rng_default_pcg64(seed: Option<u64>) -> rand_pcg::Pcg64 {
     if let Some(seed) = seed {
         rand_pcg::Pcg64::seed_from_u64(seed)
     } else {
-        rand_pcg::Pcg64::from_entropy()
+        rand_pcg::Pcg64::from_os_rng()
     }
 }
 
 /// Generate a alphanumeric random prefix for Svg Id's to avoid Id collisions.
 pub fn svg_random_id_prefix() -> String {
-    rand::thread_rng()
-        .sample_iter(&rand::distributions::Alphanumeric)
+    rand::rng()
+        .sample_iter(&rand::distr::Alphanumeric)
         .take(8)
         .map(char::from)
         .collect::<String>()
@@ -116,5 +116,5 @@ pub fn svg_random_id_prefix() -> String {
 /// Generate a new seed by generating a random value seeded from the old seed using the Pcg algorithm.
 pub fn seed_advance(seed: u64) -> u64 {
     let mut rng = rand_pcg::Pcg64::seed_from_u64(seed);
-    rng.gen()
+    rng.random()
 }

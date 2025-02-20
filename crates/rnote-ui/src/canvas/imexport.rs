@@ -1,15 +1,15 @@
 // Imports
 use super::RnCanvas;
 use anyhow::Context;
-use futures::channel::oneshot;
 use futures::AsyncWriteExt;
+use futures::channel::oneshot;
 use gtk4::{gio, prelude::*};
 use rnote_compose::ext::Vector2Ext;
+use rnote_engine::WidgetFlags;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
 use rnote_engine::engine::{EngineSnapshot, StrokeContent};
-use rnote_engine::strokes::resize::ImageSizeOption;
 use rnote_engine::strokes::Stroke;
-use rnote_engine::WidgetFlags;
+use rnote_engine::strokes::resize::ImageSizeOption;
 use std::ops::Range;
 use std::path::Path;
 use tracing::{debug, error};

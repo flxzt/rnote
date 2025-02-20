@@ -1,5 +1,5 @@
 // Imports
-use rnote_compose::{color, Color};
+use rnote_compose::{Color, color};
 use serde::{Deserialize, Serialize};
 
 #[derive(
@@ -64,9 +64,9 @@ impl PredefinedFormat {
             PredefinedFormat::UsLegal => Some((215.9, 355.6)),
             PredefinedFormat::Custom => None,
         };
-        if let Some((mut width, mut height)) = &mut size_portrait {
+        if let Some((width, height)) = &mut size_portrait {
             if orientation == Orientation::Landscape {
-                std::mem::swap(&mut width, &mut height);
+                std::mem::swap(width, height);
             }
         }
         size_portrait.map(|(width, height)| na::vector![width, height])

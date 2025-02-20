@@ -1,9 +1,9 @@
 // Imports
 use super::Line;
+use crate::Transform;
 use crate::ext::{Affine2Ext, Vector2Ext};
 use crate::shapes::Shapeable;
 use crate::transform::Transformable;
-use crate::Transform;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};

@@ -10,8 +10,8 @@ pub(crate) use strokewidthsetter::RnStrokeWidthSetter;
 
 // Imports
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, BoxLayout, CompositeTemplate, Orientation,
-    PositionType, SpinButton, Widget,
+    BoxLayout, CompositeTemplate, Orientation, PositionType, SpinButton, Widget, glib, glib::clone,
+    prelude::*, subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
 use std::cell::Cell;

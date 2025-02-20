@@ -1,13 +1,13 @@
 // Imports
 use super::{Engine, EngineConfig, StrokeContent};
-use crate::fileformats::rnoteformat::RnoteFile;
-use crate::fileformats::{xoppformat, FileFormatSaver};
 use crate::CloneConfig;
+use crate::fileformats::rnoteformat::RnoteFile;
+use crate::fileformats::{FileFormatSaver, xoppformat};
 use anyhow::Context;
 use futures::channel::oneshot;
 use rayon::prelude::*;
-use rnote_compose::transform::Transformable;
 use rnote_compose::SplitOrder;
+use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tracing::error;
@@ -464,7 +464,9 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver failed while exporting document as Svg bytes. Receiver already dropped.");
+                error!(
+                    "Sending result to receiver failed while exporting document as Svg bytes. Receiver already dropped."
+                );
             }
         });
 
@@ -538,7 +540,9 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver failed while exporting document as Pdf bytes. Receiver already dropped.");
+                error!(
+                    "Sending result to receiver failed while exporting document as Pdf bytes. Receiver already dropped."
+                );
             }
         });
 
@@ -653,7 +657,7 @@ impl Engine {
                     .collect::<Vec<xoppformat::XoppPage>>();
 
                 let xopp_title = String::from(
-                    "Xournal++ document - see https://github.com/xournalpp/xournalpp (exported from Rnote - see https://github.com/flxzt/rnote)"
+                    "Xournal++ document - see https://github.com/xournalpp/xournalpp (exported from Rnote - see https://github.com/flxzt/rnote)",
                 );
 
                 let xopp_root = xoppformat::XoppRoot {
@@ -760,7 +764,11 @@ impl Engine {
         rayon::spawn(move || {
             let result = || -> Result<Vec<Vec<u8>>, anyhow::Error> {
                 let image_format = match doc_pages_export_prefs.export_format {
-                    DocPagesExportFormat::Svg => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
+                    DocPagesExportFormat::Svg => {
+                        return Err(anyhow::anyhow!(
+                            "Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format."
+                        ));
+                    }
                     DocPagesExportFormat::Png => image::ImageFormat::Png,
                     DocPagesExportFormat::Jpeg => image::ImageFormat::Jpeg,
                 };
@@ -787,7 +795,9 @@ impl Engine {
                     .collect()
             };
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver failed while exporting document pages as bitmap bytes. Receiver already dropped.");
+                error!(
+                    "Sending result to receiver failed while exporting document pages as bitmap bytes. Receiver already dropped."
+                );
             }
         });
 
@@ -852,7 +862,9 @@ impl Engine {
                 ))
             };
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver failed while exporting selection as Svg bytes. Receiver already dropped.");
+                error!(
+                    "Sending result to receiver failed while exporting selection as Svg bytes. Receiver already dropped."
+                );
             }
         });
 
@@ -887,9 +899,13 @@ impl Engine {
                     return Ok(None);
                 };
                 let image_format = match selection_export_prefs.export_format {
-                    SelectionExportFormat::Svg => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
+                    SelectionExportFormat::Svg => {
+                        return Err(anyhow::anyhow!(
+                            "Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format."
+                        ));
+                    }
                     SelectionExportFormat::Png => image::ImageFormat::Png,
-                    SelectionExportFormat::Jpeg => image::ImageFormat::Jpeg
+                    SelectionExportFormat::Jpeg => image::ImageFormat::Jpeg,
                 };
 
                 Ok(Some(
@@ -901,7 +917,9 @@ impl Engine {
                 ))
             };
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver failed while exporting selection as bitmap image bytes. Receiver already dropped");
+                error!(
+                    "Sending result to receiver failed while exporting selection as bitmap image bytes. Receiver already dropped"
+                );
             }
         });
 

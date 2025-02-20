@@ -1,7 +1,7 @@
 // Imports
 use crate::document::background;
 use crate::engine::import::XoppImportPrefs;
-use crate::fileformats::{rnoteformat, xoppformat, FileFormatLoader};
+use crate::fileformats::{FileFormatLoader, rnoteformat, xoppformat};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::Stroke;
 use crate::{Camera, Document, Engine};
@@ -190,7 +190,9 @@ impl EngineSnapshot {
             };
 
             if snapshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver while loading Xopp bytes failed. Receiver already dropped");
+                error!(
+                    "Sending result to receiver while loading Xopp bytes failed. Receiver already dropped"
+                );
             }
         });
 

@@ -1,7 +1,7 @@
 // Imports
-use super::pensconfig::eraserconfig::EraserStyle;
 use super::PenBehaviour;
 use super::PenStyle;
+use super::pensconfig::eraserconfig::EraserStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};

@@ -4,10 +4,10 @@ use crate::document::Layout;
 use crate::engine_view_mut;
 use crate::pens::Pen;
 use crate::pens::PenStyle;
-use crate::store::chrono_comp::StrokeLayer;
 use crate::store::StrokeKey;
-use crate::strokes::{resize::calculate_resize_ratio, resize::ImageSizeOption, Resize};
+use crate::store::chrono_comp::StrokeLayer;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
+use crate::strokes::{Resize, resize::ImageSizeOption, resize::calculate_resize_ratio};
 use crate::{CloneConfig, Engine, WidgetFlags};
 use futures::channel::oneshot;
 use rnote_compose::ext::Vector2Ext;
@@ -352,7 +352,9 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver while importing Pdf bytes failed. Receiver already dropped");
+                error!(
+                    "Sending result to receiver while importing Pdf bytes failed. Receiver already dropped"
+                );
             }
         });
 

@@ -3,15 +3,15 @@ mod appactions;
 
 // Imports
 use crate::{
+    RnAppMenu, RnAppWindow, RnCanvas, RnCanvasMenu, RnCanvasWrapper, RnColorPicker, RnIconPicker,
+    RnMainHeader, RnOverlays, RnPenPicker, RnPensSideBar, RnSettingsPanel, RnSidebar,
+    RnStrokeContentPreview, RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
     colorpicker::RnColorPad, colorpicker::RnColorSetter, config, penssidebar::RnBrushPage,
     penssidebar::RnEraserPage, penssidebar::RnSelectorPage, penssidebar::RnShaperPage,
     penssidebar::RnToolsPage, penssidebar::RnTypewriterPage, settingspanel::RnPenShortcutRow,
     strokewidthpicker::RnStrokeWidthPreview, strokewidthpicker::RnStrokeWidthSetter,
-    strokewidthpicker::StrokeWidthPreviewStyle, workspacebrowser::workspacesbar::RnWorkspaceRow,
-    workspacebrowser::RnFileRow, workspacebrowser::RnWorkspacesBar, RnAppMenu, RnAppWindow,
-    RnCanvas, RnCanvasMenu, RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays,
-    RnPenPicker, RnPensSideBar, RnSettingsPanel, RnSidebar, RnStrokeContentPreview,
-    RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
+    strokewidthpicker::StrokeWidthPreviewStyle, workspacebrowser::RnFileRow,
+    workspacebrowser::RnWorkspacesBar, workspacebrowser::workspacesbar::RnWorkspaceRow,
 };
 use adw::subclass::prelude::AdwApplicationImpl;
 use gtk4::{gio, glib, glib::clone, prelude::*, subclass::prelude::*};

@@ -2,13 +2,13 @@
 
 // Imports
 use crate::canvas::RnCanvas;
-use crate::{config, RnAppWindow};
+use crate::{RnAppWindow, config};
 use adw::prelude::*;
 use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{
-    gio, glib, glib::clone, graphene, gsk, Builder, Button, CallbackAction, FileDialog, FileFilter,
-    Label, Shortcut, ShortcutController, ShortcutTrigger, ToggleButton,
+    Builder, Button, CallbackAction, FileDialog, FileFilter, Label, Shortcut, ShortcutController,
+    ShortcutTrigger, ToggleButton, gio, glib, glib::clone, graphene, gsk,
 };
 use num_traits::ToPrimitive;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};

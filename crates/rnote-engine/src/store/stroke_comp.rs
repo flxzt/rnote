@@ -1,16 +1,16 @@
 // Imports
-use super::render_comp::RenderCompState;
 use super::StrokeKey;
+use super::render_comp::RenderCompState;
 use crate::engine::StrokeContent;
 use crate::strokes::{Content, Stroke};
 use crate::{StrokeStore, WidgetFlags};
 use geo::intersects::Intersects;
 use geo::prelude::Contains;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use rnote_compose::Color;
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::transform::Transformable;
-use rnote_compose::Color;
 use std::sync::Arc;
 #[cfg(feature = "ui")]
 use tracing::error;

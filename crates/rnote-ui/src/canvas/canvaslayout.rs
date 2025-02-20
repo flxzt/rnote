@@ -1,11 +1,11 @@
 // Imports
 use crate::canvas::RnCanvas;
 use gtk4::{
-    glib, prelude::*, subclass::prelude::*, LayoutManager, Orientation, SizeRequestMode, Widget,
+    LayoutManager, Orientation, SizeRequestMode, Widget, glib, prelude::*, subclass::prelude::*,
 };
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::AabbExt;
-use rnote_engine::{render, Camera};
+use rnote_engine::{Camera, render};
 use std::cell::Cell;
 
 mod imp {

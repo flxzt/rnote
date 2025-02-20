@@ -2,15 +2,15 @@
 use crate::{RnAppWindow, RnCanvasWrapper, RnStrokeWidthPicker};
 use adw::prelude::*;
 use gtk4::{
-    glib, glib::clone, subclass::prelude::*, Button, CompositeTemplate, ListBox, MenuButton,
-    Popover,
+    Button, CompositeTemplate, ListBox, MenuButton, Popover, glib, glib::clone,
+    subclass::prelude::*,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::PenPathBuilderType;
-use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
 use rnote_compose::style::PressureCurve;
-use rnote_engine::pens::pensconfig::brushconfig::{BrushStyle, SolidOptions};
+use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
 use rnote_engine::pens::pensconfig::BrushConfig;
+use rnote_engine::pens::pensconfig::brushconfig::{BrushStyle, SolidOptions};
 
 mod imp {
     use super::*;

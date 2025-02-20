@@ -1,7 +1,7 @@
 // Imports
 use crate::appwindow::RnAppWindow;
 use adw::{prelude::*, subclass::prelude::*};
-use gtk4::{gio, glib, CompositeTemplate, MenuButton, PopoverMenu, ToggleButton, Widget};
+use gtk4::{CompositeTemplate, MenuButton, PopoverMenu, ToggleButton, Widget, gio, glib};
 
 mod imp {
     use super::*;

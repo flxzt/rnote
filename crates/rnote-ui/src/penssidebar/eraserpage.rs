@@ -2,9 +2,9 @@
 use crate::RnStrokeWidthPicker;
 use crate::{RnAppWindow, RnCanvasWrapper};
 use adw::prelude::*;
-use gtk4::{glib, glib::clone, subclass::prelude::*, CompositeTemplate, ToggleButton};
-use rnote_engine::pens::pensconfig::eraserconfig::EraserStyle;
+use gtk4::{CompositeTemplate, ToggleButton, glib, glib::clone, subclass::prelude::*};
 use rnote_engine::pens::pensconfig::EraserConfig;
+use rnote_engine::pens::pensconfig::eraserconfig::EraserStyle;
 
 mod imp {
     use super::*;

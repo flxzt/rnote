@@ -1,10 +1,10 @@
 // Imports
-use crate::{config, dialogs, RnMainHeader, RnOverlays, RnSidebar};
+use crate::{RnMainHeader, RnOverlays, RnSidebar, config, dialogs};
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    gdk, glib, glib::clone, Align, ArrowType, CompositeTemplate, CornerType, CssProvider, PackType,
-    PadActionType, PadController, PositionType,
+    Align, ArrowType, CompositeTemplate, CornerType, CssProvider, PackType, PadActionType,
+    PadController, PositionType, gdk, glib, glib::clone,
 };
 use once_cell::sync::Lazy;
 use std::cell::{Cell, RefCell};

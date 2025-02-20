@@ -1,13 +1,13 @@
 // Imports
 use super::Content;
-use crate::{strokes::content, Drawable};
+use crate::{Drawable, strokes::content};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use rnote_compose::Style;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Shape;
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::Composer;
 use rnote_compose::transform::Transformable;
-use rnote_compose::Style;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]

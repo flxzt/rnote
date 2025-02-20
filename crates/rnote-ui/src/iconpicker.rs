@@ -1,9 +1,9 @@
 // Imports
 use cairo::glib::closure;
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, Align, CompositeTemplate,
-    ConstantExpression, GridView, IconSize, Image, Label, ListItem, PropertyExpression,
-    SignalListItemFactory, SingleSelection, StringList, StringObject, Widget,
+    Align, CompositeTemplate, ConstantExpression, GridView, IconSize, Image, Label, ListItem,
+    PropertyExpression, SignalListItemFactory, SingleSelection, StringList, StringObject, Widget,
+    glib, glib::clone, prelude::*, subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
 use std::cell::RefCell;
@@ -69,9 +69,11 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 // we can use it to represent Option<String>
-                vec![glib::ParamSpecString::builder("picked")
-                    .default_value(None)
-                    .build()]
+                vec![
+                    glib::ParamSpecString::builder("picked")
+                        .default_value(None)
+                        .build(),
+                ]
             });
             PROPERTIES.as_ref()
         }

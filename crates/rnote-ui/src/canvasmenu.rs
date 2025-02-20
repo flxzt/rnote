@@ -1,8 +1,8 @@
 // Imports
 use crate::appwindow::RnAppWindow;
 use gtk4::{
-    gio, glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, MenuButton,
-    PopoverMenu, Widget,
+    Button, CompositeTemplate, MenuButton, PopoverMenu, Widget, gio, glib, prelude::*,
+    subclass::prelude::*,
 };
 use rnote_engine::Camera;
 

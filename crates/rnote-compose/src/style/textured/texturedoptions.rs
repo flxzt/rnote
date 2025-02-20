@@ -1,7 +1,7 @@
 // Imports
 use super::textureddotsdistribution::TexturedDotsDistribution;
-use crate::style::PressureCurve;
 use crate::Color;
+use crate::style::PressureCurve;
 use serde::{Deserialize, Serialize};
 
 /// Options for shapes that can be drawn in a textured style.

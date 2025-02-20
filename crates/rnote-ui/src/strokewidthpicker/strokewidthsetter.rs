@@ -1,6 +1,6 @@
 // Imports
 use super::RnStrokeWidthPreview;
-use gtk4::{glib, prelude::*, subclass::prelude::*, Button, Overflow, ToggleButton, Widget};
+use gtk4::{Button, Overflow, ToggleButton, Widget, glib, prelude::*, subclass::prelude::*};
 use once_cell::sync::Lazy;
 use std::cell::Cell;
 
@@ -45,11 +45,13 @@ mod imp {
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![glib::ParamSpecDouble::builder("stroke-width")
-                    .minimum(0.1)
-                    .maximum(500.0)
-                    .default_value(1.0)
-                    .build()]
+                vec![
+                    glib::ParamSpecDouble::builder("stroke-width")
+                        .minimum(0.1)
+                        .maximum(500.0)
+                        .default_value(1.0)
+                        .build(),
+                ]
             });
             PROPERTIES.as_ref()
         }

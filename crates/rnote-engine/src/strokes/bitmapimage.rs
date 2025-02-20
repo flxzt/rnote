@@ -1,10 +1,10 @@
 // Imports
-use super::resize::{calculate_resize_ratio, ImageSizeOption};
+use super::resize::{ImageSizeOption, calculate_resize_ratio};
 use super::{Content, Stroke};
+use crate::Drawable;
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::render;
-use crate::Drawable;
 use anyhow::Context;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;

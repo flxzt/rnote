@@ -1,10 +1,10 @@
 // Imports
 use gettextrs::gettext;
-use gtk4::{
-    glib::prelude::*, prelude::*, Image, Label, ListItem, Orientation, SignalListItemFactory,
-    StringList,
-};
 use gtk4::{Align, StringObject};
+use gtk4::{
+    Image, Label, ListItem, Orientation, SignalListItemFactory, StringList, glib::prelude::*,
+    prelude::*,
+};
 use rnote_engine::pens::PenStyle;
 use std::ops::{Deref, DerefMut};
 use std::str::FromStr;

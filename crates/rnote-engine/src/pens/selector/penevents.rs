@@ -1,11 +1,11 @@
 // Imports
 use super::{ModifyState, ResizeCorner, Selector, SelectorState};
+use crate::WidgetFlags;
 use crate::engine::EngineViewMut;
-use crate::pens::pensconfig::selectorconfig::SelectorStyle;
 use crate::pens::PenBehaviour;
+use crate::pens::pensconfig::selectorconfig::SelectorStyle;
 use crate::snap::SnapCorner;
 use crate::store::StrokeKey;
-use crate::WidgetFlags;
 use p2d::bounding_volume::Aabb;
 use p2d::query::PointQuery;
 use rnote_compose::eventresult::{EventPropagation, EventResult};

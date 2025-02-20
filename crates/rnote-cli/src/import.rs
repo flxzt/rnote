@@ -1,7 +1,7 @@
 // Imports
 use crate::{cli, validators};
-use rnote_engine::engine::EngineSnapshot;
 use rnote_engine::Engine;
+use rnote_engine::engine::EngineSnapshot;
 use std::path::Path;
 
 pub(crate) async fn run_import(

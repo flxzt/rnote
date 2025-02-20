@@ -1,7 +1,7 @@
 // Imports
 use anyhow::Context;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{mpsc, Arc};
+use std::sync::{Arc, mpsc};
 use std::time::Duration;
 use thiserror::Error;
 use tracing::error;
@@ -50,7 +50,9 @@ impl PeriodicTaskHandle {
                         break;
                     }
                     Err(e @ mpsc::RecvTimeoutError::Disconnected) => {
-                        error!("Periodic task channel sending half became disconnected, now quitting. Err: {e:?}");
+                        error!(
+                            "Periodic task channel sending half became disconnected, now quitting. Err: {e:?}"
+                        );
                         break;
                     }
                     Err(mpsc::RecvTimeoutError::Timeout) => {}
@@ -159,7 +161,9 @@ impl OneOffTaskHandle {
                         break;
                     }
                     Err(e @ mpsc::RecvTimeoutError::Disconnected) => {
-                        error!("One off task channel sending half became disconnected, now quitting. Err: {e:?}");
+                        error!(
+                            "One off task channel sending half became disconnected, now quitting. Err: {e:?}"
+                        );
                         break;
                     }
                     Err(mpsc::RecvTimeoutError::Timeout) => {}

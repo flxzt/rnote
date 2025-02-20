@@ -2,7 +2,7 @@
 use crate::workspacebrowser::widgethelper;
 use crate::{RnAppWindow, RnWorkspaceBrowser};
 use gettextrs::gettext;
-use gtk4::{gio, glib, glib::clone, pango, prelude::*, Align, Entry, Label};
+use gtk4::{Align, Entry, Label, gio, glib, glib::clone, pango, prelude::*};
 use tracing::{debug, warn};
 
 /// Create a new `create_folder` action.

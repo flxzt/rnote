@@ -2,11 +2,11 @@
 use super::RnWorkspaceListEntry;
 use crate::RnAppWindow;
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, CssProvider, Image,
-    Label, Widget,
+    CompositeTemplate, CssProvider, Image, Label, Widget, glib, glib::clone, prelude::*,
+    subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
-use rnote_compose::{color, Color};
+use rnote_compose::{Color, color};
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
 use unicode_segmentation::UnicodeSegmentation;
@@ -172,10 +172,10 @@ mod imp {
                 "@define-color workspacerow_color {};@define-color workspacerow_fg_color {workspacerow_fg_color};",
                 format_args!(
                     "rgba({0}, {1}, {2}, {3:.3})",
-                        (color.r * 255.0) as i32,
-                        (color.g * 255.0) as i32,
-                        (color.b * 255.0) as i32,
-                        (color.a * 1000.0).round() / 1000.0,
+                    (color.r * 255.0) as i32,
+                    (color.g * 255.0) as i32,
+                    (color.b * 255.0) as i32,
+                    (color.a * 1000.0).round() / 1000.0,
                 )
             );
 

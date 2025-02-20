@@ -8,10 +8,10 @@ pub use texturedoptions::TexturedOptions;
 
 // Imports
 use super::Composer;
+use crate::PenPath;
 use crate::ext::Vector2Ext;
 use crate::penpath::Segment;
 use crate::shapes::{Line, Shapeable};
-use crate::PenPath;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rand_distr::{Distribution, Uniform};
@@ -47,10 +47,10 @@ impl Composer<TexturedOptions> for Line {
             let range_dots_rx = dots_radii[0] * 0.8..dots_radii[0] * 1.25;
             let range_dots_ry = dots_radii[1] * 0.8..dots_radii[1] * 1.25;
 
-            let distr_x = Uniform::from(range_x);
-            let distr_dots_rot = Uniform::from(range_dots_rot);
-            let distr_dots_rx = Uniform::from(range_dots_rx);
-            let distr_dots_ry = Uniform::from(range_dots_ry);
+            let distr_x = Uniform::try_from(range_x).unwrap();
+            let distr_dots_rot = Uniform::try_from(range_dots_rot).unwrap();
+            let distr_dots_rx = Uniform::try_from(range_dots_rx).unwrap();
+            let distr_dots_ry = Uniform::try_from(range_dots_ry).unwrap();
 
             let n_dots = (area * 0.1 * options.density).round() as i32;
 

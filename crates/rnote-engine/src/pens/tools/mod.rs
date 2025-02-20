@@ -11,9 +11,9 @@ use verticalspace::VerticalSpaceTool;
 use zoom::ZoomTool;
 
 // Imports
-use super::pensconfig::toolsconfig::ToolStyle;
 use super::PenBehaviour;
 use super::PenStyle;
+use super::pensconfig::toolsconfig::ToolStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;

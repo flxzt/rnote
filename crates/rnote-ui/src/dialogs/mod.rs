@@ -8,12 +8,12 @@ use crate::canvas::RnCanvas;
 use crate::canvaswrapper::RnCanvasWrapper;
 use crate::config;
 use crate::workspacebrowser::workspacesbar::RnWorkspaceRow;
-use crate::{globals, RnIconPicker};
+use crate::{RnIconPicker, globals};
 use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
 use gtk4::{
-    gio, glib, glib::clone, Builder, Button, CheckButton, ColorDialogButton, FileDialog, Label,
-    MenuButton, ShortcutsWindow, StringList,
+    Builder, Button, CheckButton, ColorDialogButton, FileDialog, Label, MenuButton,
+    ShortcutsWindow, StringList, gio, glib, glib::clone,
 };
 use tracing::{debug, error, warn};
 

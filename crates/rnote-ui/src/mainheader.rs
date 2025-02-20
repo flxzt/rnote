@@ -1,8 +1,8 @@
 // Imports
 use crate::{appmenu::RnAppMenu, appwindow::RnAppWindow, canvasmenu::RnCanvasMenu};
 use gtk4::{
-    glib, prelude::*, subclass::prelude::*, Box, CompositeTemplate, EventControllerLegacy, Label,
-    ToggleButton, Widget,
+    Box, CompositeTemplate, EventControllerLegacy, Label, ToggleButton, Widget, glib, prelude::*,
+    subclass::prelude::*,
 };
 
 mod imp {

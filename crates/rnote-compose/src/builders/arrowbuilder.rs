@@ -5,7 +5,7 @@ use crate::eventresult::EventPropagation;
 use crate::penevent::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Arrow;
-use crate::style::{indicators, Composer};
+use crate::style::{Composer, indicators};
 use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};

@@ -1,8 +1,8 @@
 // Imports
 use crate::StrokeContentPaintable;
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Entry, Overlay,
-    Picture, ProgressBar, ScrolledWindow, Widget,
+    Button, CompositeTemplate, Entry, Overlay, Picture, ProgressBar, ScrolledWindow, Widget, glib,
+    glib::clone, prelude::*, subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
 use rnote_engine::engine::StrokeContent;
@@ -149,9 +149,11 @@ mod imp {
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![glib::ParamSpecUInt::builder("current-page")
-                    .default_value(0)
-                    .build()]
+                vec![
+                    glib::ParamSpecUInt::builder("current-page")
+                        .default_value(0)
+                        .build(),
+                ]
             });
             PROPERTIES.as_ref()
         }

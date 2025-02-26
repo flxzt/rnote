@@ -3,12 +3,12 @@ use super::penshortcutmodels::{
     ChangePenStyleIconFactory, ChangePenStyleListFactory, ChangePenStyleListModel,
 };
 use adw::{prelude::*, subclass::prelude::*};
-use gtk4::{glib, glib::clone, glib::subclass::*, CompositeTemplate, DropDown};
+use gtk4::{CompositeTemplate, DropDown, glib, glib::clone, glib::subclass::*};
 use num_traits::ToPrimitive;
 use once_cell::sync::Lazy;
+use rnote_engine::pens::PenStyle;
 use rnote_engine::pens::shortcuts::ShortcutAction;
 use rnote_engine::pens::shortcuts::ShortcutMode;
-use rnote_engine::pens::PenStyle;
 use std::cell::RefCell;
 
 mod imp {

@@ -1,10 +1,10 @@
 // Imports
 use gtk4::{
-    gdk, glib, prelude::*, subclass::prelude::*, Align, Button, CssProvider, PositionType,
-    ToggleButton, Widget,
+    Align, Button, CssProvider, PositionType, ToggleButton, Widget, gdk, glib, prelude::*,
+    subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
-use rnote_compose::{color, Color};
+use rnote_compose::{Color, color};
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::Cell;
 

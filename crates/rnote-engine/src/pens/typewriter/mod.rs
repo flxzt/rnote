@@ -2,9 +2,9 @@
 mod penevents;
 
 // Imports
-use super::pensconfig::TypewriterConfig;
 use super::PenBehaviour;
 use super::PenStyle;
+use super::pensconfig::TypewriterConfig;
 use crate::engine::{EngineTask, EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
@@ -13,12 +13,12 @@ use crate::{AudioPlayer, Camera, DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
+use rnote_compose::EventResult;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevent::{KeyboardKey, PenEvent, PenProgress, PenState};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::indicators;
-use rnote_compose::EventResult;
-use rnote_compose::{color, Transform};
+use rnote_compose::{Transform, color};
 use std::ops::Range;
 use std::time::{Duration, Instant};
 use tracing::error;
@@ -59,6 +59,7 @@ pub(super) enum ModifyState {
     },
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone)]
 pub(super) enum TypewriterState {
     Idle,

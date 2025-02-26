@@ -1,10 +1,10 @@
 // Imports
 use super::content::GeneratedContentImages;
-use super::resize::{calculate_resize_ratio, ImageSizeOption};
+use super::resize::{ImageSizeOption, calculate_resize_ratio};
 use super::{Content, Stroke};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
-use crate::{render, Drawable};
+use crate::{Drawable, render};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};

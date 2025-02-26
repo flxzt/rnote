@@ -3,8 +3,8 @@ use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
-use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::EventResult;
+use rnote_compose::penevent::{PenEvent, PenProgress};
 use std::time::Instant;
 use tracing::error;
 
@@ -50,7 +50,9 @@ pub trait PenBehaviour: DrawableOnDoc {
             oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
         rayon::spawn(move || {
             if sender.send(Ok((vec![], WidgetFlags::default()))).is_err() {
-                error!("Sending (empty) clipboard content in `fetch_clipboard_content()` default impl failed, receiver already dropped.")
+                error!(
+                    "Sending (empty) clipboard content in `fetch_clipboard_content()` default impl failed, receiver already dropped."
+                )
             }
         });
         receiver
@@ -69,7 +71,9 @@ pub trait PenBehaviour: DrawableOnDoc {
             oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
         rayon::spawn(move || {
             if sender.send(Ok((vec![], WidgetFlags::default()))).is_err() {
-                error!("Sending (empty) clipboard content in `cut_clipboard_content()` default impl failed, receiver already dropped")
+                error!(
+                    "Sending (empty) clipboard content in `cut_clipboard_content()` default impl failed, receiver already dropped"
+                )
             }
         });
         receiver

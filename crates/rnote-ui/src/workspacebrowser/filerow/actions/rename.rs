@@ -1,8 +1,8 @@
 // Imports
-use crate::workspacebrowser::{widgethelper, RnFileRow};
 use crate::RnAppWindow;
+use crate::workspacebrowser::{RnFileRow, widgethelper};
 use gettextrs::gettext;
-use gtk4::{gio, glib, glib::clone, pango, prelude::*, Align, Entry, Label};
+use gtk4::{Align, Entry, Label, gio, glib, glib::clone, pango, prelude::*};
 use std::path::Path;
 use tracing::{debug, error};
 

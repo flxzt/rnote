@@ -1,6 +1,6 @@
 // Imports
-use crate::workspacebrowser::RnFileRow;
 use crate::RnAppWindow;
+use crate::workspacebrowser::RnFileRow;
 use gtk4::{gio, glib, glib::clone};
 
 /// Create a new `open` action.

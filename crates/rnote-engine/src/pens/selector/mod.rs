@@ -2,9 +2,9 @@
 mod penevents;
 
 // Imports
-use super::pensconfig::selectorconfig::SelectorStyle;
 use super::PenBehaviour;
 use super::PenStyle;
+use super::pensconfig::selectorconfig::SelectorStyle;
 use crate::engine::{EngineView, EngineViewMut, StrokeContent};
 use crate::render::Svg;
 use crate::snap::SnapCorner;
@@ -16,12 +16,12 @@ use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use p2d::query::PointQuery;
 use piet::RenderContext;
+use rnote_compose::EventResult;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevent::{PenEvent, PenProgress, PenState};
 use rnote_compose::penpath::Element;
 use rnote_compose::style::indicators;
-use rnote_compose::EventResult;
-use rnote_compose::{color, Color};
+use rnote_compose::{Color, color};
 use std::time::Instant;
 use tracing::error;
 

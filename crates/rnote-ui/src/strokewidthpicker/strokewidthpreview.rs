@@ -1,8 +1,8 @@
 // Imports
 use super::StrokeWidthPreviewStyle;
 use gtk4::{
-    gdk, glib, graphene, prelude::*, subclass::prelude::*, Align, Orientation, Overflow,
-    SizeRequestMode, Widget,
+    Align, Orientation, Overflow, SizeRequestMode, Widget, gdk, glib, graphene, prelude::*,
+    subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
 use std::cell::Cell;

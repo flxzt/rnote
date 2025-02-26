@@ -17,8 +17,8 @@ impl Engine {
         {
             use crate::ext::GrapheneRectExt;
             use gtk4::{graphene, gsk, prelude::*};
-            use rnote_compose::ext::AabbExt;
             use rnote_compose::SplitOrder;
+            use rnote_compose::ext::AabbExt;
 
             let viewport = self.camera.viewport();
             let mut rendernodes: Vec<gsk::RenderNode> = vec![];
@@ -28,7 +28,9 @@ impl Engine {
                 let new_texture = match image.to_memtexture() {
                     Ok(t) => t,
                     Err(e) => {
-                        error!("Failed to generate memory-texture of background tile image, Err: {e:?}");
+                        error!(
+                            "Failed to generate memory-texture of background tile image, Err: {e:?}"
+                        );
                         return widget_flags;
                     }
                 };
@@ -207,8 +209,8 @@ impl Engine {
 
     #[cfg(feature = "ui")]
     fn draw_document_shadow_to_gtk_snapshot(&self, snapshot: &gtk4::Snapshot) {
-        use crate::ext::{GdkRGBAExt, GrapheneRectExt};
         use crate::Document;
+        use crate::ext::{GdkRGBAExt, GrapheneRectExt};
         use gtk4::{gdk, graphene, gsk, prelude::*};
 
         let shadow_width = Document::SHADOW_WIDTH;
@@ -268,8 +270,8 @@ impl Engine {
         use crate::ext::{GdkRGBAExt, GrapheneRectExt};
         use gtk4::{gdk, graphene, gsk, prelude::*};
         use p2d::bounding_volume::BoundingVolume;
-        use rnote_compose::ext::AabbExt;
         use rnote_compose::SplitOrder;
+        use rnote_compose::ext::AabbExt;
 
         if self.document.format.show_borders {
             let total_zoom = self.camera.total_zoom();

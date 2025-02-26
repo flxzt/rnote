@@ -1,7 +1,7 @@
 // Imports
-use super::pensconfig::brushconfig::BrushStyle;
 use super::PenBehaviour;
 use super::PenStyle;
+use super::pensconfig::brushconfig::BrushStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
@@ -9,6 +9,7 @@ use crate::strokes::Stroke;
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
+use rnote_compose::Constraints;
 use rnote_compose::builders::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use rnote_compose::builders::{
     PenPathBuilderType, PenPathCurvedBuilder, PenPathModeledBuilder, PenPathSimpleBuilder,
@@ -16,7 +17,6 @@ use rnote_compose::builders::{
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::{Element, Segment};
-use rnote_compose::Constraints;
 use std::time::Instant;
 
 #[derive(Debug)]

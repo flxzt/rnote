@@ -1,7 +1,7 @@
 // Imports
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DropDown,
-    EventControllerScroll, PropagationPhase, SpinButton, Widget,
+    CompositeTemplate, DropDown, EventControllerScroll, PropagationPhase, SpinButton, Widget, glib,
+    glib::clone, prelude::*, subclass::prelude::*,
 };
 use num_traits::ToPrimitive;
 use once_cell::sync::Lazy;

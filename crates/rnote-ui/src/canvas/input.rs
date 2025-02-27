@@ -1,13 +1,13 @@
 // Imports
 use super::RnCanvas;
-use gtk4::{gdk, glib, graphene, prelude::*, Native};
+use gtk4::{Native, gdk, glib, graphene, prelude::*};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenState, ShortcutKey};
 use rnote_compose::penpath::Element;
+use rnote_engine::WidgetFlags;
 use rnote_engine::ext::EventPropagationExt;
 use rnote_engine::ext::GraphenePointExt;
-use rnote_engine::pens::penholder::BacklogPolicy;
 use rnote_engine::pens::PenMode;
-use rnote_engine::WidgetFlags;
+use rnote_engine::pens::penholder::BacklogPolicy;
 use std::collections::HashSet;
 use std::time::{Duration, Instant};
 use tracing::trace;

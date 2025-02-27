@@ -1,5 +1,5 @@
 // Imports
-use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate, PopoverMenu, Widget};
+use gtk4::{CompositeTemplate, PopoverMenu, Widget, glib, prelude::*, subclass::prelude::*};
 
 mod imp {
     use super::*;

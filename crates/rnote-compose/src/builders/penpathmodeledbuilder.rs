@@ -1,14 +1,14 @@
 // Imports
 use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
+use crate::PenEvent;
 use crate::eventresult::EventPropagation;
 use crate::penpath::{Element, Segment};
 use crate::style::Composer;
-use crate::PenEvent;
 use crate::{Constraints, EventResult};
 use crate::{PenPath, Style};
 use ink_stroke_modeler_rs::{
-    error::ElementError, error::ModelerError, ModelerInput, ModelerInputEventType, ModelerParams,
-    StrokeModeler,
+    ModelerInput, ModelerInputEventType, ModelerParams, StrokeModeler, error::ElementError,
+    error::ModelerError,
 };
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;

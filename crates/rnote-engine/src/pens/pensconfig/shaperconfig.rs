@@ -1,5 +1,6 @@
 // Imports
 use rand::{Rng, SeedableRng};
+use rnote_compose::Color;
 use rnote_compose::Constraints;
 use rnote_compose::Style;
 use rnote_compose::builders::ShapeBuilderType;
@@ -7,8 +8,6 @@ use rnote_compose::constraints::ConstraintRatio;
 use rnote_compose::style::rough::RoughOptions;
 use rnote_compose::style::smooth::SmoothOptions;
 use serde::{Deserialize, Serialize};
-
-use crate::store::chrono_comp::StrokeLayer;
 
 #[derive(
     Copy, Clone, Debug, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
@@ -44,8 +43,8 @@ impl TryFrom<u32> for ShaperStyle {
 pub enum ShaperBrushType {
     #[serde(rename = "solid")]
     Solid = 0,
-    #[serde(rename = "marker")]
-    Marker,
+    #[serde(rename = "highlighter")]
+    Highlighter,
 }
 
 impl Default for ShaperBrushType {
@@ -67,6 +66,11 @@ impl TryFrom<u32> for ShaperBrushType {
     }
 }
 
+impl ShaperBrushType {
+    pub(crate) const HIGHLIGHTER_STROKE_COLOR_ALPHA: f64 = 0.45;
+    pub(crate) const HIGHLIGHTER_FILL_COLOR_ALPHA: f64 = 0.5;
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "shaper_config")]
 pub struct ShaperConfig {
@@ -74,7 +78,7 @@ pub struct ShaperConfig {
     pub builder_type: ShapeBuilderType,
     #[serde(rename = "style")]
     pub style: ShaperStyle,
-    #[serde(rename = "brush_style")]
+    #[serde(rename = "brush_type")]
     pub brush_type: ShaperBrushType,
     #[serde(rename = "smooth_options")]
     pub smooth_options: SmoothOptions,
@@ -106,13 +110,6 @@ impl ShaperConfig {
     pub const STROKE_WIDTH_MIN: f64 = 0.1;
     pub const STROKE_WIDTH_MAX: f64 = 500.0;
 
-    pub(crate) fn layer_for_current_options(&self) -> StrokeLayer {
-        match &self.brush_type {
-            ShaperBrushType::Marker => StrokeLayer::Highlighter,
-            ShaperBrushType::Solid => StrokeLayer::UserLayer(0),
-        }
-    }
-
     /// A new seed for new shapes
     pub(crate) fn new_style_seeds(&mut self) {
         let seed = Some(rand_pcg::Pcg64::from_os_rng().random());
@@ -122,12 +119,28 @@ impl ShaperConfig {
     pub(crate) fn gen_style_for_current_options(&self) -> Style {
         match &self.style {
             ShaperStyle::Smooth => {
-                let options = self.smooth_options.clone();
+                let mut options = self.smooth_options.clone();
+                if matches!(&self.brush_type, ShaperBrushType::Highlighter) {
+                    if let Some(ref mut color) = options.stroke_color {
+                        color.a = ShaperBrushType::HIGHLIGHTER_STROKE_COLOR_ALPHA
+                    }
+                    if let Some(ref mut color) = options.fill_color {
+                        color.a = ShaperBrushType::HIGHLIGHTER_FILL_COLOR_ALPHA
+                    }
+                }
 
                 Style::Smooth(options)
             }
             ShaperStyle::Rough => {
-                let options = self.rough_options.clone();
+                let mut options = self.rough_options.clone();
+                if matches!(&self.brush_type, ShaperBrushType::Highlighter) {
+                    if let Some(ref mut color) = options.stroke_color {
+                        color.a = ShaperBrushType::HIGHLIGHTER_STROKE_COLOR_ALPHA
+                    }
+                    if let Some(ref mut color) = options.fill_color {
+                        color.a = ShaperBrushType::HIGHLIGHTER_FILL_COLOR_ALPHA
+                    }
+                }
 
                 Style::Rough(options)
             }

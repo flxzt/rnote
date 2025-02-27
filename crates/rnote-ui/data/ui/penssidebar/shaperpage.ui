@@ -116,7 +116,7 @@
                     <object class="GtkStringList">
                       <items>
                         <item translatable="yes">Solid</item>
-                        <item translatable="yes">Marker</item>
+                        <item translatable="yes">Highlighter</item>
                       </items>
                     </object>
                   </property>

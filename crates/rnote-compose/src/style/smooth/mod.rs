@@ -6,12 +6,12 @@ pub use smoothoptions::{LineCap, LineStyle, SmoothOptions};
 
 // Imports
 use super::Composer;
+use crate::PenPath;
 use crate::ext::Vector2Ext;
 use crate::penpath::{self, Segment};
 use crate::shapes::{
     Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
 };
-use crate::PenPath;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 

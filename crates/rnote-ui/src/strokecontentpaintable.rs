@@ -162,7 +162,9 @@ mod imp {
                                 );
                             }
                             Err(e) => {
-                                error!("StrokeContentPaintable repainting cache image in task failed, Err: {e:?}");
+                                error!(
+                                    "StrokeContentPaintable repainting cache image in task failed, Err: {e:?}"
+                                );
                             }
                         }
                     }
@@ -181,9 +183,11 @@ mod imp {
 
         fn signals() -> &'static [glib::subclass::Signal] {
             static SIGNALS: Lazy<Vec<glib::subclass::Signal>> = Lazy::new(|| {
-                vec![glib::subclass::Signal::builder("repaint-in-progress")
-                    .param_types([bool::static_type()])
-                    .build()]
+                vec![
+                    glib::subclass::Signal::builder("repaint-in-progress")
+                        .param_types([bool::static_type()])
+                        .build(),
+                ]
             });
             SIGNALS.as_ref()
         }
@@ -246,7 +250,9 @@ mod imp {
                     self.obj().invalidate_size();
                 }
                 Err(e) => {
-                    error!("StrokeContentPaintable creating memory texture from new cache image failed, Err: {e:?}");
+                    error!(
+                        "StrokeContentPaintable creating memory texture from new cache image failed, Err: {e:?}"
+                    );
                 }
             }
         }
@@ -434,7 +440,9 @@ impl StrokeContentPaintable {
                     self.invalidate_size();
                 }
                 Err(e) => {
-                    error!("StrokeContentPaintable creating memory texture from repainted cache image failed, Err: {e:?}");
+                    error!(
+                        "StrokeContentPaintable creating memory texture from repainted cache image failed, Err: {e:?}"
+                    );
                 }
             },
             Err(e) => {
@@ -477,7 +485,9 @@ impl StrokeContentPaintable {
                 optimize_printing,
                 margin,
             )) {
-                error!("StrokeContentPaintable failed to send painted cache image through channel, Err: {e:?}");
+                error!(
+                    "StrokeContentPaintable failed to send painted cache image through channel, Err: {e:?}"
+                );
             };
         });
     }
@@ -513,7 +523,9 @@ impl StrokeContentPaintable {
                 optimize_printing,
                 margin,
             )) {
-                error!("StrokeContentPaintable failed to send painted cache image through channel, Err: {e:?}");
+                error!(
+                    "StrokeContentPaintable failed to send painted cache image through channel, Err: {e:?}"
+                );
             };
         };
 

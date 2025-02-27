@@ -1,12 +1,11 @@
 // Imports
 use rand::{Rng, SeedableRng};
+use rnote_compose::Constraints;
+use rnote_compose::Style;
 use rnote_compose::builders::ShapeBuilderType;
 use rnote_compose::constraints::ConstraintRatio;
 use rnote_compose::style::rough::RoughOptions;
 use rnote_compose::style::smooth::SmoothOptions;
-use rnote_compose::Color;
-use rnote_compose::Constraints;
-use rnote_compose::Style;
 use serde::{Deserialize, Serialize};
 
 use crate::store::chrono_comp::StrokeLayer;
@@ -116,7 +115,7 @@ impl ShaperConfig {
 
     /// A new seed for new shapes
     pub(crate) fn new_style_seeds(&mut self) {
-        let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
+        let seed = Some(rand_pcg::Pcg64::from_os_rng().random());
         self.rough_options.seed = seed;
     }
 

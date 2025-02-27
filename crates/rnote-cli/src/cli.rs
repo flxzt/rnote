@@ -3,12 +3,12 @@ use crate::{export, import, test};
 use anyhow::Context;
 use clap::Parser;
 use rnote_compose::SplitOrder;
+use rnote_engine::SelectionCollision;
 use rnote_engine::engine::export::{
     DocExportFormat, DocPagesExportFormat, DocPagesExportPrefs, SelectionExportFormat,
     SelectionExportPrefs,
 };
 use rnote_engine::engine::import::XoppImportPrefs;
-use rnote_engine::SelectionCollision;
 use smol::fs::File;
 use smol::io::{AsyncReadExt, AsyncWriteExt};
 use std::path::{Path, PathBuf};

@@ -1,6 +1,6 @@
 // Imports
-use crate::style::PressureCurve;
 use crate::Color;
+use crate::style::PressureCurve;
 use anyhow::Context;
 use num_derive::{FromPrimitive, ToPrimitive};
 use serde::{Deserialize, Serialize};

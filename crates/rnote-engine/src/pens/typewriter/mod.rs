@@ -2,9 +2,9 @@
 mod penevents;
 
 // Imports
-use super::pensconfig::TypewriterConfig;
 use super::PenBehaviour;
 use super::PenStyle;
+use super::pensconfig::TypewriterConfig;
 use crate::engine::{EngineTask, EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
@@ -13,22 +13,37 @@ use crate::{AudioPlayer, Camera, DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
+use rnote_compose::EventResult;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevent::{KeyboardKey, PenEvent, PenProgress, PenState};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::indicators;
-use rnote_compose::EventResult;
-use rnote_compose::{color, Transform};
+use rnote_compose::{Transform, color};
 use std::ops::Range;
 use std::time::{Duration, Instant};
 use tracing::error;
 use unicode_segmentation::GraphemeCursor;
 
 #[derive(Debug, Clone)]
+pub(super) enum SelectionMode {
+    /// Select individual characters.
+    Caret,
+    /// Select whole words.
+    ///
+    /// The values represent the start and end of the initially selected word.
+    Word(usize, usize),
+    /// Select whole lines.
+    ///
+    /// The values represent the start and end of the initially selected line.
+    Line(usize, usize),
+}
+
+#[derive(Debug, Clone)]
 pub(super) enum ModifyState {
     Idle,
     Selecting {
         selection_cursor: GraphemeCursor,
+        mode: SelectionMode,
         /// Whether selecting is finished.
         ///
         /// If true, the state will get reset on the next click.
@@ -44,6 +59,7 @@ pub(super) enum ModifyState {
     },
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone)]
 pub(super) enum TypewriterState {
     Idle,

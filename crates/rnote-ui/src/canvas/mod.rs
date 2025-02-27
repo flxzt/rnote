@@ -6,27 +6,28 @@ mod widgetflagsboxed;
 
 // Re-exports
 pub(crate) use canvaslayout::RnCanvasLayout;
+pub(crate) use input::reject_pointer_input;
 pub(crate) use widgetflagsboxed::WidgetFlagsBoxed;
 
 // Imports
-use crate::{config, RnAppWindow};
+use crate::{RnAppWindow, config};
 use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{
-    gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, Adjustment,
-    DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext, PropagationPhase,
-    Scrollable, ScrollablePolicy, Widget,
+    Adjustment, DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext,
+    PropagationPhase, Scrollable, ScrollablePolicy, Widget, gdk, gio, glib, glib::clone, graphene,
+    prelude::*, subclass::prelude::*,
 };
-use notify::event::{AccessKind, AccessMode, ModifyKind, RenameMode};
 use notify::EventKind;
+use notify::event::{AccessKind, AccessMode, ModifyKind, RenameMode};
 use notify_debouncer_full::notify;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::PenState;
+use rnote_engine::Camera;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::ext::GrapheneRectExt;
-use rnote_engine::Camera;
 use rnote_engine::{Engine, WidgetFlags};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 use std::path::Path;
@@ -1102,7 +1103,9 @@ impl RnCanvas {
                     None,
                     move |res| {
                         if let Err(e) = tx.unbounded_send(res) {
-                            error!("File watcher reported change, but failed to send it through channel. Err: {e:?}");
+                            error!(
+                                "File watcher reported change, but failed to send it through channel. Err: {e:?}"
+                            );
                         }
                     },
                 ) {

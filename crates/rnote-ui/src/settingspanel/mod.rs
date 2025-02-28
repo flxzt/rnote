@@ -14,10 +14,8 @@ use gtk4::{
     Adjustment, Button, ColorDialogButton, CompositeTemplate, MenuButton, ScrolledWindow,
     StringList, ToggleButton, Widget, gdk, glib, glib::clone, subclass::prelude::*,
 };
-use icu_experimental::displaynames::{
-    DisplayNamesOptions, LanguageDisplay, LocaleDisplayNamesFormatter,
-};
-use icu_locale::Locale;
+use icu_displaynames::{DisplayNamesOptions, LanguageDisplay, LocaleDisplayNamesFormatter};
+use icu_locid::Locale;
 use num_traits::ToPrimitive;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::document::background::PatternStyle;
@@ -26,6 +24,7 @@ use rnote_engine::document::{Layout, SpellcheckOptions};
 use rnote_engine::engine::SPELLCHECK_AVAILABLE_LANGUAGES;
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
+use std::str::FromStr;
 
 mod imp {
     use super::*;
@@ -985,13 +984,13 @@ impl RnSettingsPanel {
 
         let current_locale = glib::language_names()
             .into_iter()
-            .find_map(|l| Locale::try_from_str(l.as_str()).ok());
+            .find_map(|l| Locale::from_str(l.as_str()).ok());
 
         let mut locale_name_formatter_options = DisplayNamesOptions::default();
         locale_name_formatter_options.language_display = LanguageDisplay::Standard;
 
         let locale_name_formatter = current_locale.and_then(|l| {
-            LocaleDisplayNamesFormatter::try_new(l.into(), locale_name_formatter_options).ok()
+            LocaleDisplayNamesFormatter::try_new(&l.into(), locale_name_formatter_options).ok()
         });
 
         imp.available_spellcheck_languages
@@ -1007,7 +1006,7 @@ impl RnSettingsPanel {
                         return l;
                     };
 
-                    if let Ok(locale) = Locale::try_from_str(l.as_str()) {
+                    if let Ok(locale) = Locale::from_str(l.as_str()) {
                         locale_name_formatter.of(&locale).to_string()
                     } else {
                         l

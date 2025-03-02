@@ -1,5 +1,5 @@
 // Imports
-use crate::{export, import, test};
+use crate::{export, import, test, thumbnail};
 use anyhow::Context;
 use clap::Parser;
 use rnote_compose::SplitOrder;
@@ -68,6 +68,13 @@ pub(crate) enum Command {
         /// Opens output folder when using "doc-pages" sub-command.
         #[arg(long, action = clap::ArgAction::SetTrue, global = true)]
         open: bool,
+    },
+    /// Generate rnote thumbail from a given file
+    Thumbnail {
+        rnote_file: PathBuf,
+        #[arg(short, long, default_value_t = 256)]
+        size: u32,
+        output: std::ffi::OsString,
     },
 }
 
@@ -241,6 +248,14 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             )
             .await?;
             println!("Export finished!");
+        }
+        Command::Thumbnail {
+            rnote_file,
+            size,
+            output,
+        } => {
+            println!("Thumbnail...");
+            thumbnail::run_thumbnail(rnote_file, size, output).await?;
         }
     }
 

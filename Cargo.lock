@@ -3526,6 +3526,7 @@ dependencies = [
  "anyhow",
  "clap",
  "dialoguer",
+ "image",
  "indicatif",
  "nalgebra",
  "open",

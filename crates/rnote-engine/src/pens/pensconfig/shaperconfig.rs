@@ -39,7 +39,6 @@ impl TryFrom<u32> for ShaperStyle {
 #[derive(
     Copy, Clone, Debug, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
 )]
-#[serde(rename = "shaper_brush_style")]
 pub enum ShaperBrushType {
     #[serde(rename = "solid")]
     Solid = 0,
@@ -66,9 +65,21 @@ impl TryFrom<u32> for ShaperBrushType {
     }
 }
 
-impl ShaperBrushType {
-    pub(crate) const HIGHLIGHTER_STROKE_COLOR_ALPHA: f64 = 0.45;
-    pub(crate) const HIGHLIGHTER_FILL_COLOR_ALPHA: f64 = 0.5;
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct HighlighterOptions {
+    #[serde(with = "rnote_compose::serialize::f64_dp3")]
+    pub stroke_alpha: f64,
+    #[serde(with = "rnote_compose::serialize::f64_dp3")]
+    pub fill_alpha: f64,
+}
+
+impl Default for HighlighterOptions {
+    fn default() -> Self {
+        HighlighterOptions {
+            stroke_alpha: 0.45,
+            fill_alpha: 0.35,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -84,6 +95,8 @@ pub struct ShaperConfig {
     pub smooth_options: SmoothOptions,
     #[serde(rename = "rough_options")]
     pub rough_options: RoughOptions,
+    #[serde(rename = "highlighter_options")]
+    pub highlighter_options: HighlighterOptions,
     #[serde(rename = "constraints")]
     pub constraints: Constraints,
 }
@@ -101,6 +114,7 @@ impl Default for ShaperConfig {
             brush_type: ShaperBrushType::default(),
             smooth_options: SmoothOptions::default(),
             rough_options: RoughOptions::default(),
+            highlighter_options: HighlighterOptions::default(),
             constraints,
         }
     }
@@ -122,10 +136,10 @@ impl ShaperConfig {
                 let mut options = self.smooth_options.clone();
                 if matches!(&self.brush_type, ShaperBrushType::Highlighter) {
                     if let Some(ref mut color) = options.stroke_color {
-                        color.a = ShaperBrushType::HIGHLIGHTER_STROKE_COLOR_ALPHA
+                        color.a = self.highlighter_options.stroke_alpha;
                     }
                     if let Some(ref mut color) = options.fill_color {
-                        color.a = ShaperBrushType::HIGHLIGHTER_FILL_COLOR_ALPHA
+                        color.a = self.highlighter_options.fill_alpha;
                     }
                 }
 
@@ -135,10 +149,10 @@ impl ShaperConfig {
                 let mut options = self.rough_options.clone();
                 if matches!(&self.brush_type, ShaperBrushType::Highlighter) {
                     if let Some(ref mut color) = options.stroke_color {
-                        color.a = ShaperBrushType::HIGHLIGHTER_STROKE_COLOR_ALPHA
+                        color.a = self.highlighter_options.stroke_alpha;
                     }
                     if let Some(ref mut color) = options.fill_color {
-                        color.a = ShaperBrushType::HIGHLIGHTER_FILL_COLOR_ALPHA
+                        color.a = self.highlighter_options.fill_alpha;
                     }
                 }
 

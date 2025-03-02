@@ -38,7 +38,11 @@ mod imp {
         #[template_child]
         pub(crate) shapeconfig_popover_close_button: TemplateChild<Button>,
         #[template_child]
-        pub(crate) general_brush_type_row: TemplateChild<adw::ComboRow>,
+        pub(crate) brushtype_listbox: TemplateChild<ListBox>,
+        #[template_child]
+        pub(crate) brushtype_solid_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub(crate) brushtype_highlighter_row: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub(crate) smoothstyle_line_cap_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -136,6 +140,23 @@ impl RnShaperPage {
         ShaperStyle::try_from(self.imp().shaperstyle_listbox.selected_row()?.index() as u32).ok()
     }
 
+    pub(crate) fn shaper_brush_type(&self) -> Option<ShaperBrushType> {
+        ShaperBrushType::try_from(self.imp().brushtype_listbox.selected_row()?.index() as u32).ok()
+    }
+
+    pub(crate) fn set_shaper_brush_type(&self, shaper_brush_type: ShaperBrushType) {
+        match shaper_brush_type {
+            ShaperBrushType::Solid => self
+                .imp()
+                .brushtype_listbox
+                .select_row(Some(&*self.imp().brushtype_solid_row)),
+            ShaperBrushType::Highlighter => self
+                .imp()
+                .brushtype_listbox
+                .select_row(Some(&*self.imp().brushtype_highlighter_row)),
+        }
+    }
+
     pub(crate) fn set_shaper_style(&self, style: ShaperStyle) {
         match style {
             ShaperStyle::Smooth => self
@@ -158,10 +179,6 @@ impl RnShaperPage {
         self.imp()
             .shapebuildertype_picker
             .set_picked(Some(builder_type.to_icon_name()));
-    }
-
-    pub(crate) fn brush_type(&self) -> ShaperBrushType {
-        ShaperBrushType::try_from(self.imp().general_brush_type_row.get().selected()).unwrap()
     }
 
     pub(crate) fn smoothstyle_line_cap(&self) -> LineCap {
@@ -317,23 +334,21 @@ impl RnShaperPage {
                 }
             }
         ));
-        // General
         // Brush type
-        imp.general_brush_type_row
-            .get()
-            .connect_selected_notify(clone!(
-                #[weak(rename_to=shaperpage)]
-                self,
-                #[weak]
-                appwindow,
-                move |_| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-                    canvas.engine_mut().pens_config.shaper_config.brush_type =
-                        shaperpage.brush_type();
+        imp.brushtype_listbox.connect_row_selected(clone!(
+            #[weak(rename_to=shaperpage)]
+            self,
+            #[weak]
+            appwindow,
+            move |_, _| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                if let Some(brush_type) = shaperpage.shaper_brush_type() {
+                    canvas.engine_mut().pens_config.shaper_config.brush_type = brush_type;
                 }
-            ));
+            }
+        ));
 
         // Smooth style
         // Line cap
@@ -613,9 +628,8 @@ impl RnShaperPage {
         // builder type
         self.set_shapebuildertype(shaper_config.builder_type);
 
-        // General
-        imp.general_brush_type_row
-            .set_selected(shaper_config.brush_type.to_u32().unwrap());
+        // Brush type
+        self.set_shaper_brush_type(shaper_config.brush_type);
 
         // Smooth style
         imp.smoothstyle_line_cap_row

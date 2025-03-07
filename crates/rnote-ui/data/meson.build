@@ -276,6 +276,7 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/text-indent-less-symbolic.svg',
     'icons/scalable/actions/text-indent-more-symbolic.svg',
     'icons/scalable/actions/text-italic-symbolic.svg',
+    'icons/scalable/actions/text-squiggly-symbolic.svg',
     'icons/scalable/actions/text-strikethrough-symbolic.svg',
     'icons/scalable/actions/text-underline-symbolic.svg',
     'icons/scalable/actions/touch-two-finger-long-press-symbolic.svg',

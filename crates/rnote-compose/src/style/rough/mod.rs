@@ -10,7 +10,8 @@ use super::Composer;
 use crate::Color;
 use crate::ext::Vector2Ext;
 use crate::shapes::{
-    Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
+    Arrow, CubicBezier, Ellipse, Line, Parabola, Polygon, Polyline, QuadraticBezier, Rectangle,
+    Shapeable,
 };
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use roughr::Point2D;
@@ -262,6 +263,7 @@ impl Composer<RoughOptions> for crate::Shape {
             crate::Shape::CubicBezier(cubbez) => cubbez.composed_bounds(options),
             crate::Shape::Polyline(polyline) => polyline.composed_bounds(options),
             crate::Shape::Polygon(polygon) => polygon.composed_bounds(options),
+            crate::Shape::Parabola(parabola) => parabola.composed_bounds(options),
         }
     }
 
@@ -275,6 +277,35 @@ impl Composer<RoughOptions> for crate::Shape {
             crate::Shape::CubicBezier(cubbez) => cubbez.draw_composed(cx, options),
             crate::Shape::Polyline(polyline) => polyline.draw_composed(cx, options),
             crate::Shape::Polygon(polygon) => polygon.draw_composed(cx, options),
+            crate::Shape::Parabola(parabola) => parabola.draw_composed(cx, options),
         }
+    }
+}
+
+impl Composer<RoughOptions> for Parabola {
+    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::Aabb {
+        self.bounds()
+            .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        cx.save().unwrap();
+
+        let tl = self.transform.affine
+            * na::point![-self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];
+        let tr = self.transform.affine
+            * na::point![self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];
+        let bm = self.transform.affine * na::point![0.0, 3.0 * self.cuboid.half_extents[1]];
+
+        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options))
+            .bezier_quadratic(
+                roughr::Point2D::new(tl[0] as f32, tl[1] as f32),
+                roughr::Point2D::new(bm[0] as f32, bm[1] as f32),
+                roughr::Point2D::new(tr[0] as f32, tr[1] as f32),
+            );
+
+        drawable.draw(cx);
+
+        cx.restore().unwrap();
     }
 }

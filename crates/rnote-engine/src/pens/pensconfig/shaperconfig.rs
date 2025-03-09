@@ -35,6 +35,35 @@ impl TryFrom<u32> for ShaperStyle {
     }
 }
 
+#[derive(
+    Copy, Clone, Debug, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+)]
+pub enum ShaperBrushType {
+    #[serde(rename = "solid")]
+    Solid = 0,
+    #[serde(rename = "highlighter")]
+    Highlighter,
+}
+
+impl Default for ShaperBrushType {
+    fn default() -> Self {
+        Self::Solid
+    }
+}
+
+impl TryFrom<u32> for ShaperBrushType {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "ShaperBrushType try_from::<u32>() for value {} failed",
+                value
+            )
+        })
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "shaper_config")]
 pub struct ShaperConfig {
@@ -42,10 +71,17 @@ pub struct ShaperConfig {
     pub builder_type: ShapeBuilderType,
     #[serde(rename = "style")]
     pub style: ShaperStyle,
+    #[serde(rename = "brush_type")]
+    pub brush_type: ShaperBrushType,
     #[serde(rename = "smooth_options")]
     pub smooth_options: SmoothOptions,
     #[serde(rename = "rough_options")]
     pub rough_options: RoughOptions,
+    #[serde(
+        rename = "highlighter_opacity",
+        with = "rnote_compose::serialize::f64_dp3"
+    )]
+    pub highlighter_opacity: f64,
     #[serde(rename = "constraints")]
     pub constraints: Constraints,
 }
@@ -60,8 +96,10 @@ impl Default for ShaperConfig {
         Self {
             builder_type: ShapeBuilderType::default(),
             style: ShaperStyle::default(),
+            brush_type: ShaperBrushType::default(),
             smooth_options: SmoothOptions::default(),
             rough_options: RoughOptions::default(),
+            highlighter_opacity: 0.45,
             constraints,
         }
     }
@@ -80,12 +118,28 @@ impl ShaperConfig {
     pub(crate) fn gen_style_for_current_options(&self) -> Style {
         match &self.style {
             ShaperStyle::Smooth => {
-                let options = self.smooth_options.clone();
+                let mut options = self.smooth_options.clone();
+                if matches!(&self.brush_type, ShaperBrushType::Highlighter) {
+                    if let Some(ref mut color) = options.stroke_color {
+                        color.a = self.highlighter_opacity;
+                    }
+                    if let Some(ref mut color) = options.fill_color {
+                        color.a = self.highlighter_opacity;
+                    }
+                }
 
                 Style::Smooth(options)
             }
             ShaperStyle::Rough => {
-                let options = self.rough_options.clone();
+                let mut options = self.rough_options.clone();
+                if matches!(&self.brush_type, ShaperBrushType::Highlighter) {
+                    if let Some(ref mut color) = options.stroke_color {
+                        color.a = self.highlighter_opacity;
+                    }
+                    if let Some(ref mut color) = options.fill_color {
+                        color.a = self.highlighter_opacity;
+                    }
+                }
 
                 Style::Rough(options)
             }

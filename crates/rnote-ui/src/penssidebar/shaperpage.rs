@@ -42,7 +42,7 @@ mod imp {
         #[template_child]
         pub(crate) brushtype_solid_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub(crate) brushtype_highlighter_row: TemplateChild<adw::ActionRow>,
+        pub(crate) brushtype_highlighter_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(crate) smoothstyle_line_cap_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -350,6 +350,21 @@ impl RnShaperPage {
             }
         ));
 
+        imp.brushtype_highlighter_row.connect_changed(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                canvas
+                    .engine_mut()
+                    .pens_config
+                    .shaper_config
+                    .highlighter_opacity = row.value().round() / 100.0;
+            }
+        ));
+
         // Smooth style
         // Line cap
         imp.smoothstyle_line_cap_row
@@ -630,6 +645,8 @@ impl RnShaperPage {
 
         // Brush type
         self.set_shaper_brush_type(shaper_config.brush_type);
+        imp.brushtype_highlighter_row
+            .set_value((shaper_config.highlighter_opacity * 100.0).round());
 
         // Smooth style
         imp.smoothstyle_line_cap_row

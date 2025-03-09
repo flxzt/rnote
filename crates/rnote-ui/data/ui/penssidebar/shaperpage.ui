@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <interface>
   <template class="RnShaperPage" parent="GtkWidget">
     <property name="layout-manager">
@@ -123,9 +123,19 @@
                     </object>
                   </child>
                   <child>
-                    <object class="AdwActionRow" id="brushtype_highlighter_row">
+                    <object class="AdwSpinRow" id="brushtype_highlighter_row">
                       <property name="title" translatable="yes">Highlighter</property>
                       <property name="subtitle" translatable="yes">Draw translucent color strokes</property>
+                      <property name="adjustment">
+                        <object class="GtkAdjustment">
+                          <property name="lower">0</property>
+                          <property name="upper">100</property>
+                          <property name="value">50</property>
+                          <property name="step-increment">1</property>
+                        </object>
+                      </property>
+                      <property name="numeric">true</property>
+                      <property name="digits">0</property>
                     </object>
                   </child>
                 </object>

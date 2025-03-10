@@ -18,7 +18,7 @@ pub(crate) fn handle_pointer_controller_event(
     event: &gdk::Event,
     mut pen_state: PenState,
 ) -> (glib::Propagation, PenState) {
-    let now = Instant::now();
+    let now = canvas.get_time(event.time());
     let mut widget_flags = WidgetFlags::default();
     let touch_drawing = canvas.touch_drawing();
     let gdk_event_type = event.event_type();
@@ -370,9 +370,7 @@ fn retrieve_pointer_elements(
             }
 
             let entry_delta = Duration::from_millis(event_time.saturating_sub(entry.time()) as u64);
-            let Some(entry_time) = now.checked_sub(entry_delta) else {
-                continue;
-            };
+            let entry_time = canvas.get_time(event_time);
 
             if let BacklogPolicy::Limit(delta_limit) = backlog_policy {
                 // We go back in time, so `entry_delta` will increase

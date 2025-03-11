@@ -1,7 +1,7 @@
 use rnote_engine::engine::EngineSnapshot;
-use rnote_engine::fileformats::rnoteformat::RnoteHeader;
 use rnote_engine::fileformats::FileFormatSaver;
-use rnote_engine::fileformats::{rnoteformat::RnoteFile, FileFormatLoader};
+use rnote_engine::fileformats::rnoteformat::RnoteHeader;
+use rnote_engine::fileformats::{FileFormatLoader, rnoteformat::RnoteFile};
 use smol::{fs::OpenOptions, io::AsyncReadExt};
 use std::path::PathBuf;
 use std::str::FromStr;

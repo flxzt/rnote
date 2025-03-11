@@ -1,6 +1,6 @@
 // Imports
 use crate::fileformats::rnoteformat::{
-    compression::CompressionMethod, serialization::SerializationMethod, RnoteHeader,
+    RnoteHeader, compression::CompressionMethod, serialization::SerializationMethod,
 };
 use serde::{Deserialize, Serialize};
 
@@ -115,11 +115,9 @@ impl SavePrefs {
                 }
             }
         }
-        else {
-            if let Some((serialization, compression)) = self.on_next_save {
-                if self.serialization.is_similar_to(&serialization) && self.compression.is_similar_to(&compression) {
-                    self.on_next_save = None
-                }
+        else if let Some((serialization, compression)) = self.on_next_save {
+            if self.serialization.is_similar_to(&serialization) && self.compression.is_similar_to(&compression) {
+                self.on_next_save = None
             }
         }
     }

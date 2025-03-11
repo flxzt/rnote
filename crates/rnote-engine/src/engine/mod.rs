@@ -9,8 +9,8 @@ pub mod visual_debug;
 
 // Re-exports
 pub use export::ExportPrefs;
-use futures::channel::mpsc::UnboundedReceiver;
 use futures::StreamExt;
+use futures::channel::mpsc::UnboundedReceiver;
 pub use import::ImportPrefs;
 pub use save::SavePrefs;
 pub use snapshot::EngineSnapshot;
@@ -20,11 +20,11 @@ pub use strokecontent::StrokeContent;
 use crate::document::Layout;
 use crate::pens::{Pen, PenStyle};
 use crate::pens::{PenMode, PensConfig};
-use crate::store::render_comp::{self, RenderCompState};
 use crate::store::StrokeKey;
+use crate::store::render_comp::{self, RenderCompState};
 use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::textstroke::{TextAttribute, TextStyle};
-use crate::{render, AudioPlayer, CloneConfig, SelectionCollision, WidgetFlags};
+use crate::{AudioPlayer, CloneConfig, SelectionCollision, WidgetFlags, render};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use futures::channel::{mpsc, oneshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -331,7 +331,9 @@ impl Engine {
                     self.audioplayer = match AudioPlayer::new_init(pkg_data_dir) {
                         Ok(audioplayer) => Some(audioplayer),
                         Err(e) => {
-                            error!("Creating a new audioplayer failed while enabling pen sounds, Err: {e:?}");
+                            error!(
+                                "Creating a new audioplayer failed while enabling pen sounds, Err: {e:?}"
+                            );
                             None
                         }
                     }
@@ -894,6 +896,18 @@ impl Engine {
                 typewriter.remove_text_attributes_current_selection(&mut engine_view_mut!(self))
         }
         widget_flags
+    }
+
+    pub fn text_select_closest_word(&mut self) {
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            typewriter.select_closest_word(&mut engine_view_mut!(self))
+        }
+    }
+
+    pub fn text_select_closest_line(&mut self) {
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            typewriter.select_closest_line(&mut engine_view_mut!(self))
+        }
     }
 
     pub fn text_selection_toggle_attribute(

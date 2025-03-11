@@ -4,8 +4,8 @@ use anyhow::Context;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
 use serde::{Deserialize, Serialize};
-use svg::node::element;
 use svg::Node;
+use svg::node::element;
 
 #[derive(
     Debug,

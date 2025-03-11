@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-11-28 17:05+0000\n"
-"Last-Translator: Andrea Andre <andrea.tsg19@slmail.me>\n"
+"PO-Revision-Date: 2024-12-09 10:00+0000\n"
+"Last-Translator: Matteo Ballabio <matteo@ballabio.dev>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -2542,25 +2542,23 @@ msgstr "bianco"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:273
 msgid "is password protected"
-msgstr ""
+msgstr "è protetto da password"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:276
 msgid "Encrypted PDF"
-msgstr ""
+msgstr "PDF Criptato"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:279
 msgid "_Cancel"
 msgstr "_Annulla"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:280
-#, fuzzy
-#| msgid "Clock"
 msgid "_Unlock"
-msgstr "Orologio"
+msgstr "_Sblocca"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:287
 msgid "Enter the PDF password"
-msgstr ""
+msgstr "Inserire la password del PDF"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "Il file aperto è stato spostato o cancellato"

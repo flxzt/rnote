@@ -1,15 +1,15 @@
 // Imports
-use crate::{config, dialogs, RnAppWindow, RnCanvas};
+use crate::{RnAppWindow, RnCanvas, config, dialogs};
 use gettextrs::gettext;
 use gtk4::gio::InputStream;
 use gtk4::graphene;
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit,
-    UriLauncher, Window,
+    PrintOperation, PrintOperationAction, Unit, UriLauncher, Window, gdk, gio, glib, glib::clone,
+    prelude::*,
 };
 use p2d::bounding_volume::BoundingVolume;
-use rnote_compose::penevent::ShortcutKey;
 use rnote_compose::SplitOrder;
+use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::pens::PenStyle;
@@ -1206,11 +1206,12 @@ impl RnAppWindow {
                                         let file_paths = text
                                             .lines()
                                             .filter_map(|line| {
-                                                let file_path = if let Ok(path_uri) = url::Url::parse(line) {
-                                                    path_uri.to_file_path().ok()?
-                                                } else {
-                                                    PathBuf::from(&line)
-                                                };
+                                                let file_path =
+                                                    if let Ok(path_uri) = url::Url::parse(line) {
+                                                        path_uri.to_file_path().ok()?
+                                                    } else {
+                                                        PathBuf::from(&line)
+                                                    };
 
                                                 if file_path.exists() {
                                                     Some(file_path)
@@ -1230,8 +1231,10 @@ impl RnAppWindow {
                                                 .await;
                                         }
                                     }
-                                    Err(e) => error!("Failed to read `text/uri-list` from clipboard data, Err: {e:?}"),
-                                    }
+                                    Err(e) => error!(
+                                        "Failed to read `text/uri-list` from clipboard data, Err: {e:?}"
+                                    ),
+                                }
                             }
                         }
                         Err(e) => {
@@ -1264,21 +1267,42 @@ impl RnAppWindow {
 
                             if !acc.is_empty() {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
-                                Ok(json_string) => {
-                                        let resize_argument = ImageSizeOption::ResizeImage(Resize {
-                                            width: canvas.engine_ref().document.format.width(),
-                                            height: canvas.engine_ref().document.format.height(),
-                                            layout_fixed_width: canvas.engine_ref().document.layout.is_fixed_width(),
-                                            max_viewpoint: None,
-                                            restrain_to_viewport: false,
-                                            respect_borders: appwindow.respect_borders(),
-                                        });
-                                    if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), resize_argument, target_pos).await {
-                                        error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
+                                    Ok(json_string) => {
+                                        let resize_argument =
+                                            ImageSizeOption::ResizeImage(Resize {
+                                                width: canvas.engine_ref().document.format.width(),
+                                                height: canvas
+                                                    .engine_ref()
+                                                    .document
+                                                    .format
+                                                    .height(),
+                                                layout_fixed_width: canvas
+                                                    .engine_ref()
+                                                    .document
+                                                    .layout
+                                                    .is_fixed_width(),
+                                                max_viewpoint: None,
+                                                restrain_to_viewport: false,
+                                                respect_borders: appwindow.respect_borders(),
+                                            });
+                                        if let Err(e) = canvas
+                                            .insert_stroke_content(
+                                                json_string.to_string(),
+                                                resize_argument,
+                                                target_pos,
+                                            )
+                                            .await
+                                        {
+                                            error!(
+                                                "Failed to insert stroke content while pasting as `{}`, Err: {e:?}",
+                                                StrokeContent::MIME_TYPE
+                                            );
+                                        }
                                     }
+                                    Err(e) => error!(
+                                        "Failed to read stroke content &str from clipboard data, Err: {e:?}"
+                                    ),
                                 }
-                                Err(e) => error!("Failed to read stroke content &str from clipboard data, Err: {e:?}"),
-                            }
                             }
                         }
                         Err(e) => {
@@ -1307,15 +1331,24 @@ impl RnAppWindow {
 
                             if !acc.is_empty() {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
-                                Ok(text) => {
-                                    if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), target_pos, appwindow.respect_borders()).await {
-                                        error!(
-                                            "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
-                                        );
-                                    };
+                                    Ok(text) => {
+                                        if let Err(e) = canvas
+                                            .load_in_vectorimage_bytes(
+                                                text.as_bytes().to_vec(),
+                                                target_pos,
+                                                appwindow.respect_borders(),
+                                            )
+                                            .await
+                                        {
+                                            error!(
+                                                "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
+                                            );
+                                        };
+                                    }
+                                    Err(e) => error!(
+                                        "Failed to get string from clipboard data while pasting as Svg, Err: {e:?}"
+                                    ),
                                 }
-                                Err(e) => error!("Failed to get string from clipboard data while pasting as Svg, Err: {e:?}"),
-                            }
                             }
                         }
                         Err(e) => {
@@ -1396,8 +1429,8 @@ impl RnAppWindow {
                         Ok(None) => {}
                         Err(e) => {
                             error!(
-                            "Reading clipboard text failed while pasting clipboard as plain text, Err: {e:?}"
-                        );
+                                "Reading clipboard text failed while pasting clipboard as plain text, Err: {e:?}"
+                            );
                         }
                     }
                 }

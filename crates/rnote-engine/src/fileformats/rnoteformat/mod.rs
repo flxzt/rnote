@@ -18,7 +18,7 @@ pub use serialization::SerializationMethod;
 
 // Imports
 use super::{FileFormatLoader, FileFormatSaver};
-use crate::engine::{save::SavePrefs, EngineSnapshot};
+use crate::engine::{EngineSnapshot, save::SavePrefs};
 use legacy::LegacyRnoteFile;
 use maj0min12::RnoteFileMaj0Min12;
 use prelude::{Prelude, PreludeError};

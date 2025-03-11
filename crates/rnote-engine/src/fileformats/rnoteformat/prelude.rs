@@ -1,5 +1,5 @@
 // Imports
-use anyhow::{anyhow, bail, Context};
+use anyhow::{Context, anyhow, bail};
 use thiserror::Error;
 
 /// # Prelude

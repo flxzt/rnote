@@ -13,14 +13,14 @@ use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
 use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
 use gtk4::{
-    gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorDialogButton,
-    CompositeTemplate, MenuButton, ScrolledWindow, StringList, ToggleButton, Widget,
+    Adjustment, Button, ColorDialogButton, CompositeTemplate, MenuButton, ScrolledWindow,
+    StringList, ToggleButton, Widget, gdk, glib, glib::clone, subclass::prelude::*,
 };
 use num_traits::ToPrimitive;
 use rnote_compose::penevent::ShortcutKey;
+use rnote_engine::document::Layout;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
-use rnote_engine::document::Layout;
 use rnote_engine::engine::save::CompressionLevel;
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;

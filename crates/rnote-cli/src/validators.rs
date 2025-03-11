@@ -31,6 +31,6 @@ pub(crate) fn file_has_ext(path: &Path, expected_ext: &str) -> anyhow::Result<()
         None => Err(anyhow::anyhow!(
             "Expected file with extension \"{expected_ext}\", no extension found for file \"{}\".",
             path.display()
-        ))
+        )),
     }
 }

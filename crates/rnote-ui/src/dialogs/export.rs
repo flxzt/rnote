@@ -1,12 +1,12 @@
 //adw::ToolbarView is a replacement for adw::Dialog but not suitable for an async flow
 
 // Imports
-use crate::canvas::{self, RnCanvas};
 use crate::RnStrokeContentPreview;
-use crate::{config, RnAppWindow};
+use crate::canvas::{self, RnCanvas};
+use crate::{RnAppWindow, config};
 use adw::prelude::*;
 use gettextrs::gettext;
-use gtk4::{gio, glib, glib::clone, Builder, Button, FileDialog, FileFilter, Label};
+use gtk4::{Builder, Button, FileDialog, FileFilter, Label, gio, glib, glib::clone};
 use num_traits::ToPrimitive;
 use rnote_compose::SplitOrder;
 use rnote_engine::document::Layout;

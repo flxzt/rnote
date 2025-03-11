@@ -75,7 +75,7 @@ impl CompressionMethod {
                 tracing::warn!("Cannot update the compression level of 'None'");
                 Ok(())
             }
-            Self::Gzip(ref mut curr) => {
+            Self::Gzip(curr) => {
                 if !(0..=9).contains(&new) {
                     Err(anyhow::anyhow!(
                         "Invalid compression level for Gzip, expected a value between 0 and 9"
@@ -85,7 +85,7 @@ impl CompressionMethod {
                     Ok(())
                 }
             }
-            Self::Zstd(ref mut curr) => {
+            Self::Zstd(curr) => {
                 if !zstd::compression_level_range().contains(&i32::from(new)) {
                     Err(anyhow::anyhow!(
                         "Invalid compression level for Zstd, expected a value between 1 and 22"
@@ -134,28 +134,28 @@ impl CompressionMethod {
         match self {
             Self::None => 0,
             Self::Gzip(..) => match level {
-                &CompressionLevel::VeryHigh => 8,
-                &CompressionLevel::High => 6,
-                &CompressionLevel::Medium => 5,
-                &CompressionLevel::Low => 3,
-                &CompressionLevel::VeryLow => 1,
-                &CompressionLevel::None => unreachable!(),
+                CompressionLevel::VeryHigh => 8,
+                CompressionLevel::High => 6,
+                CompressionLevel::Medium => 5,
+                CompressionLevel::Low => 3,
+                CompressionLevel::VeryLow => 1,
+                CompressionLevel::None => unreachable!(),
             },
             Self::Zstd(..) => match level {
-                &CompressionLevel::VeryHigh => 20,
-                &CompressionLevel::High => 16,
-                &CompressionLevel::Medium => 12,
-                &CompressionLevel::Low => 8,
-                &CompressionLevel::VeryLow => 3,
-                &CompressionLevel::None => unreachable!(),
+                CompressionLevel::VeryHigh => 20,
+                CompressionLevel::High => 16,
+                CompressionLevel::Medium => 12,
+                CompressionLevel::Low => 8,
+                CompressionLevel::VeryLow => 3,
+                CompressionLevel::None => unreachable!(),
             },
         }
     }
     pub fn set_compression_level(&mut self, level: &CompressionLevel) {
-        let new_integer = self.get_compression_integer_from_compression_level(&level);
+        let new_integer = self.get_compression_integer_from_compression_level(level);
         match self {
             Self::None => unreachable!(),
-            Self::Gzip(ref mut integer) | Self::Zstd(ref mut integer) => *integer = new_integer,
+            Self::Gzip(integer) | Self::Zstd(integer) => *integer = new_integer,
         }
     }
 

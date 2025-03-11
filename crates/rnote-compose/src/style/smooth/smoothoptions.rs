@@ -223,9 +223,9 @@ impl LineStyle {
         match self {
             Self::Solid => Vec::new(),
             Self::Dotted => vec![0.0, 0.0], // LineCap must be set to 'Rounded'
-            Self::DashedNarrow => vec![1.0, 0.618],
+            Self::DashedNarrow => vec![1.0, 0.618], // golden ratio, the longer segment is the dash itself
             Self::DashedEquidistant => vec![1.0, 1.0],
-            Self::DashedWide => vec![1.0, 1.618],
+            Self::DashedWide => vec![1.0, 1.618], // golden ratio, the longer segment is the space between dashes
         }
     }
     /// Indicates whether or not the LineStyle is dotted

@@ -9,21 +9,29 @@ use std::{
     ops::{AddAssign, MulAssign},
 };
 
-/// Options for shapes that can be drawn in a smooth style.
+/// Options for shapes that can be drawn in a smooth style. Ensure the precursor struct used in deserialization matches this one.
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename = "smooth_options")]
 pub struct SmoothOptions {
     /// Stroke width.
+    #[serde(rename = "stroke_width", with = "crate::serialize::f64_dp3")]
     pub stroke_width: f64,
     /// Stroke color. When set to None, the stroke outline is not drawn.
+    #[serde(rename = "stroke_color")]
     pub stroke_color: Option<Color>,
     /// Fill color. When set to None, the fill is not drawn.
+    #[serde(rename = "fill_color")]
     pub fill_color: Option<Color>,
     /// Pressure curve.
+    #[serde(rename = "pressure_curve")]
     pub pressure_curve: PressureCurve,
     /// Line style.
+    #[serde(rename = "line_style")]
     pub line_style: LineStyle,
     /// Line cap.
+    #[serde(rename = "line_cap")]
     pub line_cap: LineCap,
+    /// The inner piet::StrokeStyle, computed using the stroke_width, line_style, and line_cap.
     #[serde(skip)]
     pub piet_stroke_style: piet::StrokeStyle,
 }
@@ -40,7 +48,7 @@ impl Default for SmoothOptions {
             pressure_curve: PressureCurve::default(),
             line_style,
             line_cap,
-            piet_stroke_style: Self::generate_piet_stroke_style(stroke_width, line_style, line_cap),
+            piet_stroke_style: Self::compute_piet_stroke_style(stroke_width, line_style, line_cap),
         }
     }
 }
@@ -49,7 +57,7 @@ impl SmoothOptions {
     /// The ratio between the length of a dash and the width of the stroke
     const DASH_LENGTH_TO_WIDTH_RATIO: f64 = f64::consts::E;
 
-    fn generate_piet_stroke_style(
+    fn compute_piet_stroke_style(
         stroke_width: f64,
         line_style: LineStyle,
         line_cap: LineCap,
@@ -75,9 +83,10 @@ impl SmoothOptions {
         stroke_style
     }
 
+    /// Updates the inner piet::Strokestyle
     pub fn update_piet_stroke_style(&mut self) {
         self.piet_stroke_style =
-            Self::generate_piet_stroke_style(self.stroke_width, self.line_style, self.line_cap);
+            Self::compute_piet_stroke_style(self.stroke_width, self.line_style, self.line_cap);
     }
 
     /// Updates the line cap
@@ -109,11 +118,17 @@ impl<'de> Deserialize<'de> for SmoothOptions {
         #[derive(Deserialize)]
         #[serde(default, rename = "smooth_options")]
         struct SmoothOptionsPrecursor {
+            #[serde(rename = "stroke_width", with = "crate::serialize::f64_dp3")]
             pub stroke_width: f64,
+            #[serde(rename = "stroke_color")]
             pub stroke_color: Option<Color>,
+            #[serde(rename = "fill_color")]
             pub fill_color: Option<Color>,
+            #[serde(rename = "pressure_curve")]
             pub pressure_curve: PressureCurve,
+            #[serde(rename = "line_style")]
             pub line_style: LineStyle,
+            #[serde(rename = "line_cap")]
             pub line_cap: LineCap,
         }
 
@@ -145,7 +160,7 @@ impl<'de> Deserialize<'de> for SmoothOptions {
             pressure_curve: precursor.pressure_curve,
             line_style: precursor.line_style,
             line_cap: precursor.line_cap,
-            piet_stroke_style: Self::generate_piet_stroke_style(
+            piet_stroke_style: Self::compute_piet_stroke_style(
                 precursor.stroke_width,
                 precursor.line_style,
                 precursor.line_cap,
@@ -203,7 +218,7 @@ pub enum LineStyle {
 }
 
 impl LineStyle {
-    /// Returns the baseline dash pattern
+    /// Returns the baseline (meaning unscaled) dash pattern
     fn as_unscaled_vector(&self) -> Vec<f64> {
         match self {
             Self::Solid => Vec::new(),

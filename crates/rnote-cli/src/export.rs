@@ -433,12 +433,6 @@ pub(crate) fn file_conflict_prompt_action(
     if !output_file.exists() {
         return Ok(None);
     }
-    if !io::stdout().is_terminal() {
-        return Err(anyhow::anyhow!(
-            "File conflict for file \"{}\" detected and terminal is not interactive. Option \"--on-conflict\" needs to be supplied.",
-            output_file.display()
-        ));
-    }
     match on_conflict_overwrite {
         Some(o) => on_conflict = *o,
         None => {
@@ -452,6 +446,12 @@ pub(crate) fn file_conflict_prompt_action(
                 OnConflict::AlwaysSuffix,
             ];
             while matches!(on_conflict, OnConflict::Ask) {
+                if !io::stdout().is_terminal() {
+                    return Err(anyhow::anyhow!(
+                        "File conflict for file \"{}\" detected and terminal is not interactive. Option \"--on-conflict\" needs to be supplied.",
+                        output_file.display()
+                    ));
+                }
                 match dialoguer::Select::new()
                     .with_prompt(format!(
                         "File \"{}\" already exists:",

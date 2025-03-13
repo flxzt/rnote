@@ -15,6 +15,7 @@ rnote-engine = { workspace = true, features = ["cli"] }
 anyhow = { workspace = true }
 clap = { workspace = true }
 dialoguer = { workspace = true }
+image = { workspace = true }
 indicatif = { workspace = true }
 nalgebra = { workspace = true }
 open = { workspace = true }

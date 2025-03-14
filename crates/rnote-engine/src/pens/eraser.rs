@@ -20,15 +20,73 @@ pub enum EraserState {
     Down(Element),
 }
 
+#[derive(Debug, Default, Clone, Copy)]
+pub struct EraserMotion {
+    last_element: Option<(Element, Instant)>,
+    speed: f64,
+    pub added_width: f64,
+}
+
+impl EraserMotion {
+    pub const SMOOTHING_FACTOR_ACCEL: f64 = 3.0;
+    pub const SMOOTHING_FACTOR_DECEL: f64 = 10.0;
+    pub const SPEED_LIMIT: f64 = 10000.0;
+    pub const MIN_SPEED: f64 = 100.0;
+    pub const SPEED_SCALING: f64 = 0.01;
+    pub const SPEED_SCALING_STEP_SIZE: f64 = 25.0;
+
+    fn update(&mut self, element: Element, time: Instant) {
+        if let Some((last_element, last_element_time)) = self.last_element {
+            let delta = element.pos - last_element.pos;
+            let delta_time = time - last_element_time;
+            let new_speed = delta.norm() / delta_time.as_secs_f64();
+            if new_speed > self.speed {
+                self.speed = Self::SPEED_LIMIT.min(
+                    (self.speed * Self::SMOOTHING_FACTOR_ACCEL + new_speed)
+                        / (Self::SMOOTHING_FACTOR_ACCEL + 1.0),
+                );
+            } else {
+                self.speed = Self::SPEED_LIMIT.min(
+                    (self.speed * Self::SMOOTHING_FACTOR_DECEL + new_speed)
+                        / (Self::SMOOTHING_FACTOR_DECEL + 1.0),
+                );
+            }
+        }
+        self.last_element = Some((element, time));
+
+        if self.speed > Self::MIN_SPEED {
+            let size_increase = Self::SPEED_SCALING * self.speed;
+            let lower_bound = self.added_width - 0.5 * Self::SPEED_SCALING_STEP_SIZE;
+            let upper_bound = self.added_width + 1.0 * Self::SPEED_SCALING_STEP_SIZE;
+            if size_increase < lower_bound {
+                self.added_width -= Self::SPEED_SCALING_STEP_SIZE;
+            }
+            if size_increase > upper_bound {
+                self.added_width += Self::SPEED_SCALING_STEP_SIZE;
+            }
+        } else {
+            self.added_width = 0.0;
+        }
+    }
+
+    fn reset(&mut self) {
+        self.last_element = None;
+        self.speed = 0.0;
+        self.added_width = 0.0;
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Eraser {
     pub(crate) state: EraserState,
+    pub(crate) motion: EraserMotion,
 }
 
 impl Default for Eraser {
     fn default() -> Self {
         Self {
             state: EraserState::Up,
+            motion: EraserMotion::default(),
         }
     }
 }
@@ -53,14 +111,14 @@ impl PenBehaviour for Eraser {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        _now: Instant,
+        now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
-
         let event_result = match (&mut self.state, event) {
             (EraserState::Up | EraserState::Proximity { .. }, PenEvent::Down { element, .. }) => {
-                widget_flags |= erase(element, engine_view);
+                self.motion.update(element, now);
+                widget_flags |= erase(element, self.motion.speed, engine_view);
                 self.state = EraserState::Down(element);
                 EventResult {
                     handled: true,
@@ -69,6 +127,7 @@ impl PenBehaviour for Eraser {
                 }
             }
             (EraserState::Up | EraserState::Down { .. }, PenEvent::Proximity { element, .. }) => {
+                self.motion.update(element, now);
                 self.state = EraserState::Proximity(element);
                 EventResult {
                     handled: false,
@@ -85,7 +144,8 @@ impl PenBehaviour for Eraser {
                 progress: PenProgress::Idle,
             },
             (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
-                widget_flags |= erase(element, engine_view);
+                self.motion.update(element, now);
+                widget_flags |= erase(element, self.motion.added_width, engine_view);
                 *current_element = element;
                 EventResult {
                     handled: true,
@@ -94,8 +154,9 @@ impl PenBehaviour for Eraser {
                 }
             }
             (EraserState::Down { .. }, PenEvent::Up { element, .. }) => {
-                widget_flags |=
-                    erase(element, engine_view) | engine_view.store.record(Instant::now());
+                self.motion.reset();
+                widget_flags |= erase(element, self.motion.speed, engine_view)
+                    | engine_view.store.record(Instant::now());
                 self.state = EraserState::Up;
                 EventResult {
                     handled: true,
@@ -109,6 +170,7 @@ impl PenBehaviour for Eraser {
                 progress: PenProgress::InProgress,
             },
             (EraserState::Proximity(_), PenEvent::Up { .. }) => {
+                self.motion.reset();
                 self.state = EraserState::Up;
                 EventResult {
                     handled: false,
@@ -117,6 +179,7 @@ impl PenBehaviour for Eraser {
                 }
             }
             (EraserState::Proximity(current_element), PenEvent::Proximity { element, .. }) => {
+                self.motion.update(element, now);
                 *current_element = element;
                 EventResult {
                     handled: false,
@@ -167,7 +230,7 @@ impl DrawableOnDoc for Eraser {
                 engine_view
                     .pens_config
                     .eraser_config
-                    .eraser_bounds(*current_element),
+                    .eraser_bounds(*current_element, self.motion.speed),
             ),
         }
     }
@@ -190,7 +253,7 @@ impl DrawableOnDoc for Eraser {
                 let bounds = engine_view
                     .pens_config
                     .eraser_config
-                    .eraser_bounds(*current_element);
+                    .eraser_bounds(*current_element, self.motion.added_width);
 
                 let fill_rect = bounds.to_kurbo_rect();
                 let outline_rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
@@ -202,7 +265,7 @@ impl DrawableOnDoc for Eraser {
                 let bounds = engine_view
                     .pens_config
                     .eraser_config
-                    .eraser_bounds(*current_element);
+                    .eraser_bounds(*current_element, self.motion.added_width);
 
                 let fill_rect = bounds.to_kurbo_rect();
                 let outline_rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
@@ -217,20 +280,26 @@ impl DrawableOnDoc for Eraser {
     }
 }
 
-fn erase(element: Element, engine_view: &mut EngineViewMut) -> WidgetFlags {
+fn erase(element: Element, added_width: f64, engine_view: &mut EngineViewMut) -> WidgetFlags {
     // the widget_flags.store_modified flag is set in the `.trash_..()` methods
     let mut widget_flags = WidgetFlags::default();
 
     match &engine_view.pens_config.eraser_config.style {
         EraserStyle::TrashCollidingStrokes => {
             widget_flags |= engine_view.store.trash_colliding_strokes(
-                engine_view.pens_config.eraser_config.eraser_bounds(element),
+                engine_view
+                    .pens_config
+                    .eraser_config
+                    .eraser_bounds(element, added_width),
                 engine_view.camera.viewport(),
             );
         }
         EraserStyle::SplitCollidingStrokes => {
             let (modified_strokes, wf) = engine_view.store.split_colliding_strokes(
-                engine_view.pens_config.eraser_config.eraser_bounds(element),
+                engine_view
+                    .pens_config
+                    .eraser_config
+                    .eraser_bounds(element, added_width),
                 engine_view.camera.viewport(),
             );
             widget_flags |= wf;

@@ -1,6 +1,7 @@
 // Imports
 use super::{
-    Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
+    Arrow, CubicBezier, Ellipse, Line, Parabola, Polygon, Polyline, QuadraticBezier, Rectangle,
+    Shapeable,
 };
 use crate::transform::Transformable;
 use p2d::bounding_volume::Aabb;
@@ -34,6 +35,9 @@ pub enum Shape {
     /// A polygon shape.
     #[serde(rename = "polygon")]
     Polygon(Polygon),
+    /// A parabola shape
+    #[serde(rename = "parabola")]
+    Parabola(Parabola),
 }
 
 impl Default for Shape {
@@ -69,6 +73,9 @@ impl Transformable for Shape {
             Self::Polygon(polygon) => {
                 polygon.translate(offset);
             }
+            Self::Parabola(parabola) => {
+                parabola.translate(offset);
+            }
         }
     }
 
@@ -97,6 +104,9 @@ impl Transformable for Shape {
             }
             Self::Polygon(polygon) => {
                 polygon.rotate(angle, center);
+            }
+            Self::Parabola(parabola) => {
+                parabola.rotate(angle, center);
             }
         }
     }
@@ -127,6 +137,9 @@ impl Transformable for Shape {
             Self::Polygon(polygon) => {
                 polygon.scale(scale);
             }
+            Self::Parabola(parabola) => {
+                parabola.scale(scale);
+            }
         }
     }
 }
@@ -142,6 +155,7 @@ impl Shapeable for Shape {
             Self::CubicBezier(cubbez) => cubbez.bounds(),
             Self::Polyline(polyline) => polyline.bounds(),
             Self::Polygon(polygon) => polygon.bounds(),
+            Self::Parabola(parabola) => parabola.bounds(),
         }
     }
 
@@ -155,6 +169,7 @@ impl Shapeable for Shape {
             Self::CubicBezier(cubbez) => cubbez.hitboxes(),
             Self::Polyline(polyline) => polyline.hitboxes(),
             Self::Polygon(polygon) => polygon.hitboxes(),
+            Self::Parabola(parabola) => parabola.hitboxes(),
         }
     }
 
@@ -168,6 +183,7 @@ impl Shapeable for Shape {
             Self::CubicBezier(cubbez) => cubbez.outline_path(),
             Self::Polyline(polyline) => polyline.outline_path(),
             Self::Polygon(polygon) => polygon.outline_path(),
+            Self::Parabola(parabola) => parabola.outline_path(),
         }
     }
 }

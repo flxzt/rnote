@@ -2,11 +2,11 @@
 // Author: ayykamp <kamp@ayyy.dev>
 
 use anyhow::Context;
-use image::imageops::FilterType;
 use image::DynamicImage;
-use rnote_engine::engine::export::{SelectionExportFormat, SelectionExportPrefs};
-use rnote_engine::engine::EngineSnapshot;
+use image::imageops::FilterType;
 use rnote_engine::Engine;
+use rnote_engine::engine::EngineSnapshot;
+use rnote_engine::engine::export::{SelectionExportFormat, SelectionExportPrefs};
 use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;

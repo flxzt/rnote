@@ -1189,7 +1189,7 @@ impl RnAppWindow {
         (1..=9).for_each(|i| {
             app.set_accels_for_action(
                 &format!("win.set-color-{i}"),
-                &[&format!("<Alt>{i}"), &format!("<Alt>KP_{i}")],
+                &[&format!("<Ctrl><Shift>{i}"), &format!("<Alt>KP_{i}")],
             )
         });
 

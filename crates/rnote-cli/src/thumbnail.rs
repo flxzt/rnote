@@ -14,7 +14,7 @@ use std::path::PathBuf;
 pub(crate) async fn run_thumbnail(
     rnote_file: PathBuf,
     output_size: u32,
-    output: std::ffi::OsString,
+    output: PathBuf,
 ) -> anyhow::Result<()> {
     let mut engine = Engine::default();
     let mut rnote_file_bytes = vec![];

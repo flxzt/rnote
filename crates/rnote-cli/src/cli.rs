@@ -74,7 +74,7 @@ pub(crate) enum Command {
         rnote_file: PathBuf,
         #[arg(short, long, default_value_t = 256)]
         size: u32,
-        output: std::ffi::OsString,
+        output: PathBuf,
     },
 }
 

@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          sudo dnf install --refresh -y git opencc-tools
+          sudo dnf install --refresh -y just git opencc-tools
 
       - name: Setup repository
         run: |
@@ -37,7 +37,7 @@ jobs:
 
       - name: Update translations
         run: |
-          bash ./build-aux/update-translations.sh
+          just update-translations
 
       - name: Commit changes
         id: commit-changes

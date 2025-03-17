@@ -40,13 +40,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup
-        run: meson setup --prefix=C:/msys64/mingw64 -Dwin-installer-name='${{ steps.set_installer_name.outputs.name }}' _mesonbuild
-      - name: Generate locale files
-        run: meson compile rnote-gmo -C _mesonbuild
-      - name: Compile
-        run: meson compile -v -C _mesonbuild
+        run: just ci=true setup-win-installer '${{ steps.set_installer_name.outputs.name }}'
+      - name: Build
+        run: just ci=true build
       - name: Build installer
-        run: meson compile build-installer -C _mesonbuild
+        run: just ci=true build-installer
       - name: Upload installer (Workflow Artifact)
         uses: actions/upload-artifact@v4
         with:

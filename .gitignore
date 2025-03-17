@@ -3,8 +3,8 @@
 /builddir
 /target
 /vendor
-/flatpak-repo
-/flatpak-app
+/_flatpak_repo
+/_flatpak_app
 /_build
 /_mesonbuild
 /_mesoninstall

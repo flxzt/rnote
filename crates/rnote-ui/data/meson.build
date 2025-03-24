@@ -165,6 +165,11 @@ configure_file(
 #   install_dir: datadir / 'dbus-1' / 'services',
 # )
 
+# Thumbnail
+if build_cli
+    install_data('rnote.thumbnailer', install_dir: datadir / 'thumbnailers')
+endif
+
 rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/add-page-symbolic.svg',
     'icons/scalable/actions/appwindow-fullscreen-symbolic.svg',

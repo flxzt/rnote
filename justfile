@@ -101,21 +101,21 @@ prerequisites-win:
         https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
     cargo binstall -y cargo-nextest
 
-setup-dev *ARGS:
+setup-dev *MESON_ARGS:
     meson setup \
         --wipe \
         --prefix=/usr \
         -Dprofile=devel \
         -Dci={{ ci }} \
-        {{ ARGS }} \
+        {{ MESON_ARGS }} \
         {{ build_folder }}
 
-setup-release *ARGS:
+setup-release *MESON_ARGS:
     meson setup \
         --wipe \
         --prefix=/usr \
         -Dci={{ ci }} \
-        {{ ARGS }} \
+        {{ MESON_ARGS }} \
         {{ build_folder }}
 
 setup-win installer_name="rnote-win-installer":
@@ -128,8 +128,8 @@ setup-win installer_name="rnote-win-installer":
 clean:
     rm -rf {{ build_folder }}
 
-configure *ARGS:
-    meson configure {{ ARGS }} {{ build_folder }}
+configure *MESON_ARGS:
+    meson configure {{ MESON_ARGS }} {{ build_folder }}
 
 fmt-check:
     meson compile cargo-fmt-check -C {{ build_folder }}

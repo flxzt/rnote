@@ -71,9 +71,12 @@ pub(crate) enum Command {
     },
     /// Generate rnote thumbail from a given file
     Thumbnail {
+        /// Input rnote file
         rnote_file: PathBuf,
+        /// Size of the thumbnail in bits
         #[arg(short, long, default_value_t = 256)]
         size: u32,
+        /// Output path of the thumbnail
         output: PathBuf,
     },
 }

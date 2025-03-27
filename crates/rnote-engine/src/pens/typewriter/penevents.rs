@@ -38,7 +38,7 @@ impl Typewriter {
                 {
                     // When clicked on a textstroke, we start modifying it
                     if let Some(Stroke::TextStroke(textstroke)) =
-                        engine_view.store.get_stroke_ref(stroke_key)
+                        engine_view.store.get_stroke_mut(stroke_key)
                     {
                         let cursor = if let Ok(new_cursor) =
                             // get the cursor for the current position
@@ -49,6 +49,7 @@ impl Typewriter {
                             GraphemeCursor::new(0, textstroke.text.len(), true)
                         };
 
+                        textstroke.check_spelling_refresh_cache(engine_view.spellcheck);
                         engine_view.store.update_chrono_to_last(stroke_key);
 
                         new_state = TypewriterState::Modifying {
@@ -535,7 +536,11 @@ impl Typewriter {
                     KeyboardKey::Unicode(keychar) => {
                         text_style.ranged_text_attributes.clear();
                         text_style.set_max_width(Some(text_width));
-                        let textstroke = TextStroke::new(String::from(keychar), *pos, text_style);
+
+                        let mut textstroke =
+                            TextStroke::new(String::from(keychar), *pos, text_style);
+                        textstroke.check_spelling_refresh_cache(engine_view.spellcheck);
+
                         let mut cursor = GraphemeCursor::new(0, textstroke.text.len(), true);
 
                         textstroke.move_cursor_forward(&mut cursor);
@@ -631,6 +636,7 @@ impl Typewriter {
                                         textstroke.insert_text_after_cursor(
                                             keychar.to_string().as_str(),
                                             cursor,
+                                            engine_view.spellcheck,
                                         );
                                         update_stroke(engine_view.store, keychar.is_whitespace());
                                     }
@@ -643,9 +649,15 @@ impl Typewriter {
                                 }
                                 KeyboardKey::BackSpace => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
-                                        textstroke.remove_word_before_cursor(cursor);
+                                        textstroke.remove_word_before_cursor(
+                                            cursor,
+                                            engine_view.spellcheck,
+                                        );
                                     } else {
-                                        textstroke.remove_grapheme_before_cursor(cursor);
+                                        textstroke.remove_grapheme_before_cursor(
+                                            cursor,
+                                            engine_view.spellcheck,
+                                        );
                                     }
                                     update_stroke(engine_view.store, false);
 
@@ -656,7 +668,11 @@ impl Typewriter {
                                     }
                                 }
                                 KeyboardKey::HorizontalTab => {
-                                    textstroke.insert_text_after_cursor("\t", cursor);
+                                    textstroke.insert_text_after_cursor(
+                                        "\t",
+                                        cursor,
+                                        engine_view.spellcheck,
+                                    );
                                     update_stroke(engine_view.store, false);
 
                                     EventResult {
@@ -666,7 +682,11 @@ impl Typewriter {
                                     }
                                 }
                                 KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
-                                    textstroke.insert_text_after_cursor("\n", cursor);
+                                    textstroke.insert_text_after_cursor(
+                                        "\n",
+                                        cursor,
+                                        engine_view.spellcheck,
+                                    );
                                     update_stroke(engine_view.store, true);
 
                                     EventResult {
@@ -677,9 +697,15 @@ impl Typewriter {
                                 }
                                 KeyboardKey::Delete => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
-                                        textstroke.remove_word_after_cursor(cursor);
+                                        textstroke.remove_word_after_cursor(
+                                            cursor,
+                                            engine_view.spellcheck,
+                                        );
                                     } else {
-                                        textstroke.remove_grapheme_after_cursor(cursor);
+                                        textstroke.remove_grapheme_after_cursor(
+                                            cursor,
+                                            engine_view.spellcheck,
+                                        );
                                     }
                                     update_stroke(engine_view.store, false);
 
@@ -898,6 +924,7 @@ impl Typewriter {
                                             cursor,
                                             selection_cursor,
                                             String::from(keychar).as_str(),
+                                            engine_view.spellcheck,
                                         );
                                         update_stroke(engine_view.store);
                                         quit_selecting = true;
@@ -1003,6 +1030,7 @@ impl Typewriter {
                                         cursor,
                                         selection_cursor,
                                         "\n",
+                                        engine_view.spellcheck,
                                     );
                                     update_stroke(engine_view.store);
                                     quit_selecting = true;
@@ -1017,6 +1045,7 @@ impl Typewriter {
                                         cursor,
                                         selection_cursor,
                                         "",
+                                        engine_view.spellcheck,
                                     );
                                     update_stroke(engine_view.store);
                                     quit_selecting = true;
@@ -1031,6 +1060,7 @@ impl Typewriter {
                                         cursor,
                                         selection_cursor,
                                         "\t",
+                                        engine_view.spellcheck,
                                     );
                                     update_stroke(engine_view.store);
                                     quit_selecting = true;
@@ -1115,7 +1145,10 @@ impl Typewriter {
                 text_style.ranged_text_attributes.clear();
                 text_style.set_max_width(Some(text_width));
                 let text_len = text.len();
-                let textstroke = TextStroke::new(text, *pos, text_style);
+
+                let mut textstroke = TextStroke::new(text, *pos, text_style);
+                textstroke.check_spelling_refresh_cache(engine_view.spellcheck);
+
                 let cursor = GraphemeCursor::new(text_len, text_len, true);
 
                 let stroke_key = engine_view
@@ -1157,7 +1190,12 @@ impl Typewriter {
                         if let Some(Stroke::TextStroke(textstroke)) =
                             engine_view.store.get_stroke_mut(*stroke_key)
                         {
-                            textstroke.insert_text_after_cursor(&text, cursor);
+                            textstroke.insert_text_after_cursor(
+                                &text,
+                                cursor,
+                                engine_view.spellcheck,
+                            );
+
                             engine_view.store.update_geometry_for_stroke(*stroke_key);
                             engine_view.store.regenerate_rendering_for_stroke(
                                 *stroke_key,
@@ -1203,6 +1241,7 @@ impl Typewriter {
                                 cursor,
                                 selection_cursor,
                                 text.as_str(),
+                                engine_view.spellcheck,
                             );
                             engine_view.store.update_geometry_for_stroke(*stroke_key);
                             engine_view.store.regenerate_rendering_for_stroke(

@@ -1,8 +1,11 @@
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper};
+use gtk4::ListView;
+use gtk4::Popover;
 use gtk4::{
-    Button, CompositeTemplate, EmojiChooser, FontDialog, MenuButton, SpinButton, ToggleButton,
-    glib, glib::clone, pango, prelude::*, subclass::prelude::*,
+    Button, CompositeTemplate, ConstantExpression, EmojiChooser, FontDialog, ListItem, MenuButton,
+    NoSelection, PropertyExpression, SignalListItemFactory, SpinButton, StringList, StringObject,
+    ToggleButton, Widget, glib, glib::clone, pango, prelude::*, subclass::prelude::*,
 };
 use rnote_engine::strokes::textstroke::{FontStyle, TextAlignment, TextAttribute, TextStyle};
 use std::cell::RefCell;
@@ -24,6 +27,16 @@ mod imp {
         pub(crate) emojichooser_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub(crate) emojichooser: TemplateChild<EmojiChooser>,
+        #[template_child]
+        pub(crate) spellcheck_corrections_menubutton: TemplateChild<MenuButton>,
+        #[template_child]
+        pub(crate) spellcheck_corrections_empty: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) spellcheck_corrections_unavailable: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) spellcheck_corrections: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) spellcheck_corrections_listview: TemplateChild<ListView>,
         #[template_child]
         pub(crate) text_reset_button: TemplateChild<Button>,
         #[template_child]
@@ -93,6 +106,10 @@ impl RnTypewriterPage {
 
     pub(crate) fn emojichooser_menubutton(&self) -> MenuButton {
         self.imp().emojichooser_menubutton.get()
+    }
+
+    pub(crate) fn spellcheck_corrections_menubutton(&self) -> MenuButton {
+        self.imp().spellcheck_corrections_menubutton.get()
     }
 
     #[allow(unused)]
@@ -185,6 +202,92 @@ impl RnTypewriterPage {
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
         ));
+
+        {
+            let factory = SignalListItemFactory::new();
+
+            factory.connect_setup(move |_, list_item| {
+                let list_item = list_item.downcast_ref::<ListItem>().unwrap();
+
+                let label: gtk4::Label = gtk4::Label::new(None);
+                list_item.set_child(Some(&label));
+
+                let list_item_expr = ConstantExpression::new(list_item);
+
+                let label_expr =
+                    PropertyExpression::new(ListItem::static_type(), Some(&list_item_expr), "item")
+                        .chain_property::<StringObject>("string");
+
+                label_expr.bind(&label, "label", Widget::NONE);
+            });
+
+            imp.spellcheck_corrections_listview
+                .set_factory(Some(&factory));
+
+            imp.spellcheck_corrections_menubutton
+                .set_create_popup_func(clone!(
+                    #[weak]
+                    appwindow,
+                    #[weak(rename_to = listview)]
+                    imp.spellcheck_corrections_listview,
+                    #[weak(rename_to = popover_corrections)]
+                    imp.spellcheck_corrections,
+                    #[weak(rename_to = popover_empty)]
+                    imp.spellcheck_corrections_empty,
+                    #[weak(rename_to = popover_unavailable)]
+                    imp.spellcheck_corrections_unavailable,
+                    move |menubutton| {
+                        let Some(canvas) = appwindow.active_tab_canvas() else {
+                            return;
+                        };
+
+                        let spellcheck_corrections =
+                            canvas.engine_ref().get_spellcheck_corrections();
+
+                        if let Some(corrections) = spellcheck_corrections {
+                            if !corrections.is_empty() {
+                                listview.set_model(Some(&NoSelection::new(Some(
+                                    corrections.into_iter().collect::<StringList>(),
+                                ))));
+
+                                menubutton.set_popover(Some(&popover_corrections));
+                            } else {
+                                menubutton.set_popover(Some(&popover_empty));
+                            }
+                        } else {
+                            menubutton.set_popover(Some(&popover_unavailable));
+                        }
+                    }
+                ));
+
+            imp.spellcheck_corrections_listview.connect_activate(clone!(
+                #[weak]
+                appwindow,
+                #[weak(rename_to = menubutton)]
+                imp.spellcheck_corrections_menubutton,
+                move |listview, position| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+
+                    let correction = listview
+                        .model()
+                        .unwrap()
+                        .item(position)
+                        .unwrap()
+                        .downcast::<StringObject>()
+                        .unwrap()
+                        .string();
+
+                    let widget_flags = canvas
+                        .engine_mut()
+                        .apply_spellcheck_correction(correction.as_str());
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+
+                    menubutton.set_active(false);
+                }
+            ));
+        }
 
         // reset
         imp.text_reset_button.connect_clicked(clone!(

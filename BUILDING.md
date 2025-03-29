@@ -85,7 +85,7 @@ If you don't have an IDE or extension to handle building flatpaks, you can also 
 Build and create a local flatpak app repo:
 
 ```bash
-flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.flxzt.rnote.Devel.yaml
+flatpak-builder --user --repo=_flatpak_repo _flatpak_app build-aux/com.github.flxzt.rnote.Devel.yaml
 ```
 
 You might have to pass the `--force-clean` flag as well to clean previous builds.
@@ -94,14 +94,14 @@ You might have to pass the `--force-clean` flag as well to clean previous builds
 Install to the system as user with:
 
 ```bash
-flatpak-builder --user --install flatpak-app build-aux/com.github.flxzt.rnote.Devel.yaml
+flatpak-builder --user --install _flatpak_app build-aux/com.github.flxzt.rnote.Devel.yaml
 ```
 
 ### Run
 Then it can be run. From the build directory:
 
 ```bash
-flatpak-builder --run flatpak-app build-aux/com.github.flxzt.rnote.Devel.yaml rnote
+flatpak-builder --run _flatpak_app build-aux/com.github.flxzt.rnote.Devel.yaml rnote
 ```
 
 Or if it is installed:
@@ -114,7 +114,11 @@ flatpak run com.github.flxzt.rnote
 Alternatively after building and creating the local repo you can also create a single-file `.flatpak` bundle:
 
 ```bash
-flatpak build-bundle flatpak-repo com.github.flxzt.rnote.Devel.flatpak com.github.flxzt.rnote.Devel --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
+flatpak build-bundle \
+    _flatpak_repo \
+    com.github.flxzt.rnote.Devel.flatpak \
+    com.github.flxzt.rnote.Devel \
+    --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
 ```
 
 # Build with Meson
@@ -229,6 +233,21 @@ meson compile <custom target> -C _mesonbuild
 | cli-cargo-doc | Generate docs for the cli package (also checks documentation formatting) |
 | cli-cargo-build | Build the cli |
 | build-installer | Build the installer (only functional on windows-msys2 and when the ui option is enabled) |
+
+# Just Recipes
+
+Most of the mentioned commands (and others) are available as `justfile` recipes.
+First install the `just` command-runner.
+To get a list of available commands execute:
+
+```bash
+just --list
+```
+and invoke recipes with:
+
+```bash
+just <recipe-name>
+```
 
 # Debugging
 For a native meson build:

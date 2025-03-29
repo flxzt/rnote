@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+echo "### Running pre-commit hook"
+
+just fmt-check
+if test $? != 0; then
+    echo "### Format-check failed ###"
+    exit 1
+else
+    echo "### Format-check passed ###"
+fi
+
+just check
+if test $? != 0; then
+    echo "### Check failed ###"
+    exit 1
+else
+    echo "### Check passed ###"
+fi

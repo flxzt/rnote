@@ -86,9 +86,10 @@ prerequisites-dev: prerequisites
 
     cp -f build-aux/git-hooks/pre-commit.hook .git/hooks/pre-commit
 
+# in MSYS2 shell
 prerequisites-win:
     pacman -S \
-        git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang \
+        unzip git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang \
         mingw-w64-x86_64-toolchain mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake \
         mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils mingw-w64-x86_64-appstream \
         mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-poppler mingw-w64-x86_64-poppler-data \
@@ -97,9 +98,7 @@ prerequisites-win:
     mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
 
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    curl -L --proto '=https' --tlsv1.2 -sSf \
-        https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-    cargo binstall -y cargo-nextest
+    cargo install --locked cargo-nextest
 
 setup-dev *MESON_ARGS:
     meson setup \
@@ -118,6 +117,7 @@ setup-release *MESON_ARGS:
         {{ MESON_ARGS }} \
         {{ build_folder }}
 
+# in MINGW64 shell
 setup-win installer_name="rnote-win-installer":
     meson setup \
         --prefix={{ mingw64_prefix_path }} \
@@ -161,7 +161,7 @@ build-flatpak-bundle:
         com.github.flxzt.rnote.Devel \
         --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
 
-build-win-installer:
+build-win-installer: build
     meson compile rnote-gmo -C {{ build_folder }}
     meson compile build-installer -C {{ build_folder }}
 

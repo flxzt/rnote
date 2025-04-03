@@ -1,15 +1,15 @@
 // Imports
 use super::RnCanvas;
 use anyhow::Context;
-use futures::channel::oneshot;
 use futures::AsyncWriteExt;
+use futures::channel::oneshot;
 use gtk4::{gio, prelude::*};
 use rnote_compose::ext::Vector2Ext;
+use rnote_engine::WidgetFlags;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
 use rnote_engine::engine::{EngineSnapshot, StrokeContent};
-use rnote_engine::strokes::resize::ImageSizeOption;
 use rnote_engine::strokes::Stroke;
-use rnote_engine::WidgetFlags;
+use rnote_engine::strokes::resize::ImageSizeOption;
 use std::ops::Range;
 use std::path::Path;
 use tracing::{debug, error};
@@ -129,6 +129,7 @@ impl RnCanvas {
         bytes: Vec<u8>,
         target_pos: Option<na::Vector2<f64>>,
         page_range: Option<Range<u32>>,
+        password: Option<String>,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
         let adjust_document = self
@@ -139,7 +140,7 @@ impl RnCanvas {
 
         let strokes_receiver = self
             .engine_mut()
-            .generate_pdf_pages_from_bytes(bytes, pos, page_range);
+            .generate_pdf_pages_from_bytes(bytes, pos, page_range, password);
         let strokes = strokes_receiver.await??;
         let widget_flags = self
             .engine_mut()

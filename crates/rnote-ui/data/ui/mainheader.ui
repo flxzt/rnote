@@ -48,6 +48,13 @@
                   </object>
                 </child>
                 <child>
+                  <object class="GtkButton">
+                    <property name="icon-name">view-grid-symbolic</property>
+                    <property name="action-name">overview.open</property>
+                    <property name="tooltip-text" translatable="yes">View Open Tabs</property>
+                  </object>
+                </child>
+                <child>
                   <object class="GtkToggleButton">
                     <property name="icon-name">focus-mode-symbolic</property>
                     <property name="action-name">win.focus-mode</property>

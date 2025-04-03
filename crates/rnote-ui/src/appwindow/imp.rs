@@ -1,10 +1,10 @@
 // Imports
-use crate::{config, dialogs, RnMainHeader, RnOverlays, RnSidebar};
+use crate::{RnMainHeader, RnOverlays, RnSidebar, config, dialogs};
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    gdk, glib, glib::clone, Align, ArrowType, CompositeTemplate, CornerType, CssProvider, PackType,
-    PadActionType, PadController, PositionType,
+    Align, ArrowType, CompositeTemplate, CornerType, CssProvider, PackType, PadActionType,
+    PadController, PositionType, gdk, glib, glib::clone,
 };
 use once_cell::sync::Lazy;
 use std::cell::{Cell, RefCell};
@@ -29,6 +29,8 @@ pub(crate) struct RnAppWindow {
     pub(crate) focus_mode: Cell<bool>,
     pub(crate) close_in_progress: Cell<bool>,
 
+    #[template_child]
+    pub(crate) overview: TemplateChild<adw::TabOverview>,
     #[template_child]
     pub(crate) main_header: TemplateChild<RnMainHeader>,
     #[template_child]
@@ -59,6 +61,7 @@ impl Default for RnAppWindow {
             focus_mode: Cell::new(false),
             close_in_progress: Cell::new(false),
 
+            overview: TemplateChild::<adw::TabOverview>::default(),
             main_header: TemplateChild::<RnMainHeader>::default(),
             split_view: TemplateChild::<adw::OverlaySplitView>::default(),
             sidebar: TemplateChild::<RnSidebar>::default(),
@@ -105,6 +108,7 @@ impl ObjectImpl for RnAppWindow {
         );
 
         self.setup_input();
+        self.setup_overview();
         self.setup_split_view();
         self.setup_tabbar();
     }
@@ -370,6 +374,23 @@ impl RnAppWindow {
         obj.add_controller(drawing_pad_controller.clone());
         self.drawing_pad_controller
             .replace(Some(drawing_pad_controller));
+    }
+
+    fn setup_overview(&self) {
+        self.overview.set_view(Some(&self.overlays.tabview()));
+
+        let obj = self.obj();
+
+        // Create new tab via tab overview
+        self.overview.connect_create_tab(clone!(
+            #[weak(rename_to=appwindow)]
+            obj,
+            #[upgrade_or_panic]
+            move |_| {
+                let wrapper = appwindow.new_canvas_wrapper();
+                appwindow.append_wrapper_new_tab(&wrapper)
+            }
+        ));
     }
 
     fn setup_tabbar(&self) {

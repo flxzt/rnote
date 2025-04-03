@@ -9,11 +9,11 @@ pub(crate) use colorsetter::RnColorSetter;
 // Imports
 use crate::RnAppWindow;
 use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, Button, ColorDialog,
-    CompositeTemplate, Label, Widget,
+    Button, ColorDialog, CompositeTemplate, Label, Widget, gdk, glib, glib::clone, prelude::*,
+    subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
-use rnote_compose::{color, Color};
+use rnote_compose::{Color, color};
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
 use tracing::debug;
@@ -328,6 +328,7 @@ mod imp {
                         colorpicker.setter_5().set_active(false);
                         colorpicker.setter_6().set_active(false);
                         colorpicker.setter_8().set_active(false);
+                        colorpicker.setter_9().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
                 }

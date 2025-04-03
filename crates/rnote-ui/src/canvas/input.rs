@@ -1,13 +1,13 @@
 // Imports
 use super::RnCanvas;
-use gtk4::{gdk, glib, graphene, prelude::*, Native};
+use gtk4::{Native, gdk, glib, graphene, prelude::*};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenState, ShortcutKey};
 use rnote_compose::penpath::Element;
+use rnote_engine::WidgetFlags;
 use rnote_engine::ext::EventPropagationExt;
 use rnote_engine::ext::GraphenePointExt;
-use rnote_engine::pens::penholder::BacklogPolicy;
 use rnote_engine::pens::PenMode;
-use rnote_engine::WidgetFlags;
+use rnote_engine::pens::penholder::BacklogPolicy;
 use std::collections::HashSet;
 use std::time::{Duration, Instant};
 use tracing::trace;
@@ -300,7 +300,7 @@ fn trace_gdk_event(event: &gdk::Event) {
 }
 
 /// Returns true if input should be rejected
-fn reject_pointer_input(event: &gdk::Event, touch_drawing: bool) -> bool {
+pub(crate) fn reject_pointer_input(event: &gdk::Event, touch_drawing: bool) -> bool {
     if touch_drawing {
         if event.device().unwrap().num_touches() > 1 {
             return true;
@@ -470,23 +470,36 @@ pub(crate) fn retrieve_keyboard_key(gdk_key: gdk::Key) -> KeyboardKey {
     if let Some(keychar) = gdk_key.to_unicode() {
         KeyboardKey::Unicode(keychar).filter_convert_unicode_control_chars()
     } else {
+        // Mapping based on https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
         match gdk_key {
             gdk::Key::BackSpace => KeyboardKey::BackSpace,
             gdk::Key::Tab => KeyboardKey::HorizontalTab,
+            gdk::Key::KP_Tab => KeyboardKey::HorizontalTab,
+            gdk::Key::ISO_Left_Tab => KeyboardKey::HorizontalTab,
             gdk::Key::Linefeed => KeyboardKey::Linefeed,
             gdk::Key::Return => KeyboardKey::CarriageReturn,
+            gdk::Key::KP_Enter => KeyboardKey::CarriageReturn,
+            gdk::Key::ISO_Enter => KeyboardKey::CarriageReturn,
+            gdk::Key::_3270_Enter => KeyboardKey::CarriageReturn,
             gdk::Key::Escape => KeyboardKey::Escape,
             gdk::Key::Delete => KeyboardKey::Delete,
+            gdk::Key::KP_Delete => KeyboardKey::Delete,
             gdk::Key::Down => KeyboardKey::NavDown,
+            gdk::Key::KP_Down => KeyboardKey::NavDown,
             gdk::Key::Up => KeyboardKey::NavUp,
+            gdk::Key::KP_Up => KeyboardKey::NavUp,
             gdk::Key::Left => KeyboardKey::NavLeft,
+            gdk::Key::KP_Left => KeyboardKey::NavLeft,
             gdk::Key::Right => KeyboardKey::NavRight,
+            gdk::Key::KP_Right => KeyboardKey::NavRight,
             gdk::Key::Shift_L => KeyboardKey::ShiftLeft,
             gdk::Key::Shift_R => KeyboardKey::ShiftRight,
             gdk::Key::Control_L => KeyboardKey::CtrlLeft,
             gdk::Key::Control_R => KeyboardKey::CtrlRight,
             gdk::Key::Home => KeyboardKey::Home,
+            gdk::Key::KP_Home => KeyboardKey::Home,
             gdk::Key::End => KeyboardKey::End,
+            gdk::Key::KP_End => KeyboardKey::End,
             _ => KeyboardKey::Unsupported,
         }
     }

@@ -59,8 +59,8 @@ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.f
 The flatpak Gnome Runtime, SDK and some extensions are needed:
 
 ```bash
-flatpak install org.gnome.Platform//46 org.gnome.Sdk//46 org.freedesktop.Sdk.Extension.rust-stable//23.08 \
-org.freedesktop.Sdk.Extension.llvm17//23.08
+flatpak install org.gnome.Platform//48 org.gnome.Sdk//48 org.freedesktop.Sdk.Extension.rust-stable//24.08 \
+org.freedesktop.Sdk.Extension.llvm19//24.08
 ```
 
 Use Gnome Builder or VSCode with the
@@ -126,14 +126,15 @@ Install all needed dependencies and build tools, e.g. for Fedora:
 
 ```bash
 sudo dnf install gcc gcc-c++ clang clang-devel python3 make cmake meson git appstream gettext desktop-file-utils \
-shared-mime-info kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
+    shared-mime-info kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel \
+    appstream-devel
 ```
 
-For debian based distros:
+For Debian based distros:
 
 ```bash
-sudo apt install build-essential clang libclang-dev python3 make cmake meson git appstream gettext \
-desktop-file-utils shared-mime-info libgtk-4-dev libadwaita-1-dev libpoppler-glib-dev libasound2-dev
+sudo apt install build-essential clang libclang-dev python3 make cmake meson git appstream gettext desktop-file-utils \
+    shared-mime-info libgtk-4-dev libadwaita-1-dev libpoppler-glib-dev libasound2-dev libappstream-dev
 ```
 
 Also make sure `rustc` and `cargo` are installed ( see [https://www.rust-lang.org/](https://www.rust-lang.org/) ).

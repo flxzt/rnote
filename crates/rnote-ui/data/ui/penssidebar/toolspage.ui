@@ -71,6 +71,22 @@
             </style>
           </object>
         </child>
+        <child>
+          <object class="GtkSeparator">
+            <property name="orientation">vertical</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="toolstyle_laser_toggle">
+            <property name="tooltip_text" translatable="yes">Laser</property>
+            <property name="icon-name">pen-tools-laser-symbolic</property>
+            <property name="group">toolstyle_verticalspace_toggle</property>
+            <style>
+              <class name="flat" />
+              <class name="sidebar_action_button" />
+            </style>
+          </object>
+        </child>
       </object>
     </child>
 

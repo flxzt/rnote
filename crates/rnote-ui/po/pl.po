@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2024-08-28 10:59+0200\n"
-"Last-Translator: Michał Mnich <m.mnich@proton.me>\n"
+"PO-Revision-Date: 2024-12-02 00:00+0000\n"
+"Last-Translator: Piotr Michalak <piotrmic05@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:5
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -154,7 +154,7 @@ msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"Niektóre otwarte pliki zawierają niezapisane zmiany.\n"
+"Niektóre otwarte pliki zawierają niezapisane zmiany. \n"
 "Zmiany, które nie zostaną zapisane, zostaną na zawsze utracone."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
@@ -2537,6 +2537,26 @@ msgstr "czarny"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "biały"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+msgid "is password protected"
+msgstr "czy hasło jest chronione"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:276
+msgid "Encrypted PDF"
+msgstr "Zaszyfrowany PDF"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:279
+msgid "_Cancel"
+msgstr "_Anuluj"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:280
+msgid "_Unlock"
+msgstr "Odblokuj"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:287
+msgid "Enter the PDF password"
+msgstr "Wprowadź hasło do PDF"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "Otwarty plik został przeniesiony lub usunięty z dysku"

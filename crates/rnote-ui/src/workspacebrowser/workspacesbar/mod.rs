@@ -13,8 +13,8 @@ pub(crate) use workspacerow::RnWorkspaceRow;
 use crate::appwindow::RnAppWindow;
 use crate::dialogs;
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
-    ListBox, ScrolledWindow, Widget,
+    Button, CompositeTemplate, ListBox, ScrolledWindow, Widget, gdk, gio, glib, glib::clone,
+    prelude::*, subclass::prelude::*,
 };
 use std::path::PathBuf;
 use tracing::{error, warn};
@@ -270,11 +270,12 @@ impl RnWorkspacesBar {
         // don't canonicalize on windows, because that would convert the path to one with extended length syntax
         if !cfg!(target_os = "windows") {
             for entry in &workspace_list.iter() {
-                if let Err(e) = entry.canonicalize_dir() {
+                if let Err(err) = entry.ensure_dir() {
                     warn!(
-                        "Failed to canonicalize dir {:?} for workspacelistentry with name: {}, Err: {e:?}",
-                        entry.dir(),
-                        entry.name()
+                        dir = entry.dir(),
+                        name = entry.name(),
+                        ?err,
+                        "Failed to ensure dir",
                     );
                 }
             }

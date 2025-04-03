@@ -2559,6 +2559,30 @@ msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "beyaz"
 
+#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+msgid "is password protected"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:276
+msgid "Encrypted PDF"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:279
+#, fuzzy
+#| msgid "Cancel"
+msgid "_Cancel"
+msgstr "İptal"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:280
+#, fuzzy
+#| msgid "Clock"
+msgid "_Unlock"
+msgstr "Saat"
+
+#: crates/rnote-ui/data/ui/dialogs/import.ui:287
+msgid "Enter the PDF password"
+msgstr ""
+
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "Açılan dosya diskte taşınmış veya silinmiş"
 

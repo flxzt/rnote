@@ -1,10 +1,10 @@
 // Imports
 use super::content::GeneratedContentImages;
-use super::resize::{calculate_resize_ratio, ImageSizeOption};
+use super::resize::{ImageSizeOption, calculate_resize_ratio};
 use super::{Content, Stroke};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
-use crate::{render, Drawable};
+use crate::{Drawable, render};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
@@ -210,8 +210,9 @@ impl VectorImage {
         insert_pos: na::Vector2<f64>,
         page_range: Option<Range<u32>>,
         format: &Format,
+        password: Option<String>,
     ) -> Result<Vec<Self>, anyhow::Error> {
-        let doc = poppler::Document::from_bytes(&glib::Bytes::from(bytes), None)?;
+        let doc = poppler::Document::from_bytes(&glib::Bytes::from(bytes), password.as_deref())?;
         let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
 
         let page_width = if pdf_import_prefs.adjust_document {
@@ -231,23 +232,23 @@ impl VectorImage {
         let svgs = page_range
             .filter_map(|page_i| {
                 let page = doc.page(page_i as i32)?;
-                let intrinsic_size = page.size();
-                let width = intrinsic_size.0 * page_zoom;
-                let height = intrinsic_size.1 * page_zoom;
+                let (intrinsic_width, intrinsic_height) = page.size();
+                let width = intrinsic_width * page_zoom;
+                let height = intrinsic_height * page_zoom;
 
                 let res = move || -> anyhow::Result<String> {
                     let svg_stream: Vec<u8> = vec![];
 
                     let mut svg_surface = cairo::SvgSurface::for_stream(
-                        intrinsic_size.0,
-                        intrinsic_size.1,
+                        intrinsic_width,
+                        intrinsic_height,
                         svg_stream,
                     )
                     .map_err(|e| {
                         anyhow::anyhow!(
                             "Creating SvgSurface with dimensions ({}, {}) failed, Err: {e:?}",
-                            intrinsic_size.0,
-                            intrinsic_size.1
+                            intrinsic_width,
+                            intrinsic_height
                         )
                     })?;
 
@@ -268,20 +269,16 @@ impl VectorImage {
 
                         if pdf_import_prefs.page_borders {
                             // Draw outline around page
-                            cx.set_source_rgba(
-                                color::GNOME_REDS[4].as_rgba().0,
-                                color::GNOME_REDS[4].as_rgba().1,
-                                color::GNOME_REDS[4].as_rgba().2,
-                                1.0,
-                            );
+                            let (red, green, blue, _) = color::GNOME_REDS[4].as_rgba();
+                            cx.set_source_rgba(red, green, blue, 1.0);
 
                             let line_width = 1.0;
                             cx.set_line_width(line_width);
                             cx.rectangle(
                                 line_width * 0.5,
                                 line_width * 0.5,
-                                intrinsic_size.0 - line_width,
-                                intrinsic_size.1 - line_width,
+                                intrinsic_width - line_width,
+                                intrinsic_height - line_width,
                             );
                             cx.stroke()?;
                         }

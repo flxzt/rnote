@@ -1,11 +1,11 @@
 // Imports
-use crate::canvaswrapper::RnCanvasWrapper;
 use crate::RnPensSideBar;
-use crate::{dialogs, RnAppWindow, RnColorPicker, RnPenPicker};
+use crate::canvaswrapper::RnCanvasWrapper;
+use crate::{RnAppWindow, RnColorPicker, RnPenPicker, dialogs};
 use core::time::Duration;
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Overlay,
-    ProgressBar, ScrolledWindow, Widget,
+    CompositeTemplate, Overlay, ProgressBar, ScrolledWindow, Widget, gio, glib, glib::clone,
+    prelude::*, subclass::prelude::*,
 };
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::PenStyle;
@@ -161,8 +161,10 @@ impl RnOverlays {
                 #[weak]
                 appwindow,
                 move |colorpicker, _paramspec| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
                     let stroke_color = colorpicker.stroke_color().into_compose_color();
-                    let canvas = appwindow.active_tab_wrapper().canvas();
                     let current_pen_style =
                         canvas.engine_ref().penholder.current_pen_style_w_override();
 
@@ -196,8 +198,10 @@ impl RnOverlays {
                 #[weak]
                 appwindow,
                 move |colorpicker, _paramspec| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
                     let fill_color = colorpicker.fill_color().into_compose_color();
-                    let canvas = appwindow.active_tab_wrapper().canvas();
                     let stroke_style = canvas.engine_ref().penholder.current_pen_style_w_override();
 
                     match stroke_style {
@@ -232,7 +236,9 @@ impl RnOverlays {
             #[weak]
             appwindow,
             move |_| {
-                let active_tab_page = appwindow.active_tab_page();
+                let Some(active_tab_page) = appwindow.active_tab_page() else {
+                    return;
+                };
                 let active_canvaswrapper = active_tab_page
                     .child()
                     .downcast::<RnCanvasWrapper>()
@@ -278,7 +284,7 @@ impl RnOverlays {
                     .imp()
                     .prev_active_tab_page
                     .upgrade()
-                    .map_or(true, |prev| prev == *page)
+                    .is_none_or(|prev| prev == *page)
                 {
                     overlays.imp().prev_active_tab_page.set(None);
                 }

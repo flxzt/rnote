@@ -1,8 +1,8 @@
 // Imports
 use super::StrokeWidthPreviewStyle;
 use gtk4::{
-    gdk, glib, graphene, prelude::*, subclass::prelude::*, Align, Orientation, Overflow,
-    SizeRequestMode, Widget,
+    Align, Orientation, Overflow, SizeRequestMode, Widget, gdk, glib, graphene, prelude::*,
+    subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
 use std::cell::Cell;
@@ -103,8 +103,8 @@ mod imp {
 
         fn snapshot(&self, snapshot: &gtk4::Snapshot) {
             let obj = self.obj();
-            let size = (obj.width() as f32, obj.height() as f32);
-            let center = (size.0 * 0.5, size.1 * 0.5);
+            let (width, height) = (obj.width() as f32, obj.height() as f32);
+            let (center_x, center_y) = (width * 0.5, height * 0.5);
             let stroke_width = self.stroke_width.get();
 
             // accessing colors through the style context is deprecated,
@@ -125,7 +125,7 @@ mod imp {
                         (MAX_RADIUS * stroke_width * 0.5) / (MAX_RADIUS * 0.5 + stroke_width * 0.5);
 
                     let cairo_cx =
-                        snapshot.append_cairo(&graphene::Rect::new(0.0, 0.0, size.0, size.1));
+                        snapshot.append_cairo(&graphene::Rect::new(0.0, 0.0, width, height));
                     cairo_cx.set_source_rgba(
                         window_fg_color.red() as f64,
                         window_fg_color.green() as f64,
@@ -133,8 +133,8 @@ mod imp {
                         window_fg_color.alpha() as f64,
                     );
                     cairo_cx.arc(
-                        center.0 as f64,
-                        center.1 as f64,
+                        center_x as f64,
+                        center_y as f64,
                         circle_radius,
                         0.0,
                         std::f64::consts::PI * 2.0,
@@ -151,7 +151,7 @@ mod imp {
                         / (MAX_HALF_EXTENTS * 0.5 + stroke_width * 0.5);
 
                     let cairo_cx =
-                        snapshot.append_cairo(&graphene::Rect::new(0.0, 0.0, size.0, size.1));
+                        snapshot.append_cairo(&graphene::Rect::new(0.0, 0.0, width, height));
                     cairo_cx.set_source_rgba(
                         window_fg_color.red() as f64,
                         window_fg_color.green() as f64,
@@ -160,8 +160,8 @@ mod imp {
                     );
                     cairo_rounded_rect(
                         &cairo_cx,
-                        size.0 as f64 * 0.5 - square_half_extents,
-                        size.1 as f64 * 0.5 - square_half_extents,
+                        width as f64 * 0.5 - square_half_extents,
+                        height as f64 * 0.5 - square_half_extents,
                         square_half_extents * 2.0,
                         square_half_extents * 2.0,
                         3.0,

@@ -137,16 +137,8 @@ impl RnAppWindow {
 
         // colorpicker palette
         let gdk_color_mapping = |var: &glib::Variant, _: glib::Type| {
-            let color = var.get::<(f64, f64, f64, f64)>()?;
-            Some(
-                gdk::RGBA::new(
-                    color.0 as f32,
-                    color.1 as f32,
-                    color.2 as f32,
-                    color.3 as f32,
-                )
-                .to_value(),
-            )
+            let (red, green, blue, alpha) = var.get::<(f64, f64, f64, f64)>()?;
+            Some(gdk::RGBA::new(red as f32, green as f32, blue as f32, alpha as f32).to_value())
         };
         let gdk_color_set_mapping = |val: &glib::Value, _: glib::VariantType| {
             let color = val.get::<gdk::RGBA>().ok()?;
@@ -454,9 +446,9 @@ impl RnAppWindow {
 
         {
             // Save engine config of the current active tab
-            self.active_tab_wrapper()
-                .canvas()
-                .save_engine_config(&app_settings)?;
+            if let Some(canvas) = self.active_tab_canvas() {
+                canvas.save_engine_config(&app_settings)?;
+            }
         }
 
         {
@@ -490,11 +482,10 @@ impl RnAppWindow {
                     #[upgrade_or]
                     glib::ControlFlow::Break,
                     move || {
-                        if let Err(e) = appwindow
-                            .active_tab_wrapper()
-                            .canvas()
-                            .save_engine_config(&app_settings)
-                        {
+                        let Some(canvas) = appwindow.active_tab_canvas() else {
+                            return glib::ControlFlow::Continue;
+                        };
+                        if let Err(e) = canvas.save_engine_config(&app_settings) {
                             error!(
                                 "Saving engine config in periodic save task failed , Err: {e:?}"
                             );

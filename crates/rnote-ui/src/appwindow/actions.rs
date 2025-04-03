@@ -1,15 +1,17 @@
 // Imports
-use crate::{config, dialogs, RnAppWindow, RnCanvas};
+use crate::{RnAppWindow, RnCanvas, config, dialogs};
 use gettextrs::gettext;
+use gtk4::gio::InputStream;
 use gtk4::graphene;
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit,
-    UriLauncher, Window,
+    PrintOperation, PrintOperationAction, Unit, UriLauncher, Window, gdk, gio, glib, glib::clone,
+    prelude::*,
 };
 use p2d::bounding_volume::BoundingVolume;
-use rnote_compose::penevent::ShortcutKey;
 use rnote_compose::SplitOrder;
+use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::engine::StrokeContent;
+use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::strokes::resize::{ImageSizeOption, Resize};
 use rnote_engine::{Camera, Engine};
@@ -45,6 +47,8 @@ impl RnAppWindow {
         self.add_action(&action_open_canvasmenu);
         let action_open_appmenu = gio::SimpleAction::new("open-appmenu", None);
         self.add_action(&action_open_appmenu);
+        let action_toggle_overview = gio::SimpleAction::new("toggle-overview", None);
+        self.add_action(&action_toggle_overview);
         let action_devel_mode =
             gio::SimpleAction::new_stateful("devel-mode", None, &false.to_variant());
         self.add_action(&action_devel_mode);
@@ -247,6 +251,16 @@ impl RnAppWindow {
             }
         ));
 
+        // Toggle Tabs Overview
+        action_toggle_overview.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let overview = appwindow.overview();
+                overview.set_open(!overview.is_open());
+            }
+        ));
+
         // Developer mode
         action_devel_mode.connect_activate(clone!(
             #[weak]
@@ -278,8 +292,10 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |action, state_request| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let visual_debug = state_request.unwrap().get::<bool>().unwrap();
-                let canvas = appwindow.active_tab_wrapper().canvas();
                 let widget_flags = canvas.engine_mut().set_visual_debug(visual_debug);
                 appwindow.handle_widget_flags(widget_flags, &canvas);
                 action.set_state(&visual_debug.to_variant());
@@ -305,11 +321,10 @@ impl RnAppWindow {
                     #[weak]
                     appwindow,
                     async move {
-                        dialogs::export::filechooser_export_engine_state(
-                            &appwindow,
-                            &appwindow.active_tab_wrapper().canvas(),
-                        )
-                        .await;
+                        let Some(canvas) = appwindow.active_tab_canvas() else {
+                            return;
+                        };
+                        dialogs::export::filechooser_export_engine_state(&appwindow, &canvas).await;
                     }
                 ));
             }
@@ -324,11 +339,11 @@ impl RnAppWindow {
                     #[weak]
                     appwindow,
                     async move {
-                        dialogs::export::filechooser_export_engine_config(
-                            &appwindow,
-                            &appwindow.active_tab_wrapper().canvas(),
-                        )
-                        .await;
+                        let Some(canvas) = appwindow.active_tab_canvas() else {
+                            return;
+                        };
+                        dialogs::export::filechooser_export_engine_config(&appwindow, &canvas)
+                            .await;
                     }
                 ));
             }
@@ -340,9 +355,10 @@ impl RnAppWindow {
             self,
             move |action, state_request| {
                 let pen_sounds = state_request.unwrap().get::<bool>().unwrap();
-                appwindow
-                    .active_tab_wrapper()
-                    .canvas()
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                canvas
                     .engine_mut()
                     .set_pen_sounds(pen_sounds, crate::env::pkg_data_dir().ok());
                 action.set_state(&pen_sounds.to_variant());
@@ -355,12 +371,10 @@ impl RnAppWindow {
             self,
             move |action, state_request| {
                 let snap_positions = state_request.unwrap().get::<bool>().unwrap();
-                appwindow
-                    .active_tab_wrapper()
-                    .canvas()
-                    .engine_mut()
-                    .document
-                    .snap_positions = snap_positions;
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                canvas.engine_mut().document.snap_positions = snap_positions;
                 action.set_state(&snap_positions.to_variant());
             }
         ));
@@ -371,7 +385,9 @@ impl RnAppWindow {
             self,
             move |action, state_request| {
                 let show_format_borders = state_request.unwrap().get::<bool>().unwrap();
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 canvas.engine_mut().document.format.show_borders = show_format_borders;
                 canvas.queue_draw();
                 action.set_state(&show_format_borders.to_variant());
@@ -384,7 +400,9 @@ impl RnAppWindow {
             self,
             move |action, state_request| {
                 let show_origin_indicator = state_request.unwrap().get::<bool>().unwrap();
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 canvas.engine_mut().document.format.show_origin_indicator = show_origin_indicator;
                 canvas.queue_draw();
                 action.set_state(&show_origin_indicator.to_variant());
@@ -404,7 +422,9 @@ impl RnAppWindow {
                         return;
                     }
                 };
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
 
                 // don't change the style if the current style with override is already the same
                 // (e.g. when switched to from the pen button, not by clicking the pen page)
@@ -423,7 +443,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let active_tab_page = appwindow.active_tab_page();
+                let Some(active_tab_page) = appwindow.active_tab_page() else {
+                    return;
+                };
                 appwindow
                     .overlays()
                     .tabview()
@@ -434,7 +456,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let active_tab_page = appwindow.active_tab_page();
+                let Some(active_tab_page) = appwindow.active_tab_page() else {
+                    return;
+                };
                 appwindow
                     .overlays()
                     .tabview()
@@ -445,7 +469,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let active_tab_page = appwindow.active_tab_page();
+                let Some(active_tab_page) = appwindow.active_tab_page() else {
+                    return;
+                };
                 if appwindow.overlays().tabview().n_pages() <= 1 {
                     // If there is only one tab left, request to close the entire window.
                     appwindow.close();
@@ -461,7 +487,9 @@ impl RnAppWindow {
             self,
             move |_, _| {
                 debug!("Pressed drawing pad button 0");
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let (_, widget_flags) = canvas
                     .engine_mut()
                     .handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton0, Instant::now());
@@ -474,7 +502,9 @@ impl RnAppWindow {
             self,
             move |_, _| {
                 debug!("Pressed drawing pad button 1");
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let (_, widget_flags) = canvas
                     .engine_mut()
                     .handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton1, Instant::now());
@@ -487,7 +517,9 @@ impl RnAppWindow {
             self,
             move |_, _| {
                 debug!("Pressed drawing pad button 2");
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let (_, widget_flags) = canvas
                     .engine_mut()
                     .handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton2, Instant::now());
@@ -500,7 +532,9 @@ impl RnAppWindow {
             self,
             move |_, _| {
                 debug!("Pressed drawing pad button 3");
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let (_, widget_flags) = canvas
                     .engine_mut()
                     .handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton3, Instant::now());
@@ -513,7 +547,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas.engine_mut().trash_selection();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
@@ -524,7 +560,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas.engine_mut().duplicate_selection();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
@@ -535,7 +573,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas.engine_mut().invert_selection_colors();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
@@ -546,7 +586,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas.engine_mut().select_all_strokes();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
@@ -557,7 +599,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas.engine_mut().deselect_all_strokes();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
@@ -572,11 +616,10 @@ impl RnAppWindow {
                     #[weak]
                     appwindow,
                     async move {
-                        dialogs::dialog_clear_doc(
-                            &appwindow,
-                            &appwindow.active_tab_wrapper().canvas(),
-                        )
-                        .await;
+                        let Some(canvas) = appwindow.active_tab_canvas() else {
+                            return;
+                        };
+                        dialogs::dialog_clear_doc(&appwindow, &canvas).await;
                     }
                 ));
             }
@@ -587,7 +630,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas.engine_mut().undo(Instant::now());
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
@@ -598,7 +643,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas.engine_mut().redo(Instant::now());
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
@@ -609,7 +656,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let viewport_center = canvas.engine_ref().camera.viewport_center();
                 let new_zoom = Camera::ZOOM_DEFAULT;
                 let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
@@ -626,11 +675,13 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let canvaswrapper = appwindow.active_tab_wrapper();
-                let canvas = canvaswrapper.canvas();
+                let Some(wrapper) = appwindow.active_tab_wrapper() else {
+                    return;
+                };
+                let canvas = wrapper.canvas();
                 let viewport_center = canvas.engine_ref().camera.viewport_center();
-                let new_zoom = f64::from(canvaswrapper.scroller().width())
-                    / (canvaswrapper.canvas().engine_ref().document.format.width()
+                let new_zoom = f64::from(wrapper.scroller().width())
+                    / (wrapper.canvas().engine_ref().document.format.width()
                         + 2.0 * Camera::OVERSHOOT_HORIZONTAL);
                 let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
                 widget_flags |= canvas
@@ -646,7 +697,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let viewport_center = canvas.engine_ref().camera.viewport_center();
                 let new_zoom =
                     canvas.engine_ref().camera.total_zoom() * (1.0 + RnCanvas::ZOOM_SCROLL_STEP);
@@ -664,10 +717,12 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let viewport_center = canvas.engine_ref().camera.viewport_center();
-                let new_zoom =
-                    canvas.engine_ref().camera.total_zoom() * (1.0 - RnCanvas::ZOOM_SCROLL_STEP);
+                let new_zoom = canvas.engine_ref().camera.total_zoom()
+                    * (1.0 / (1.0 + RnCanvas::ZOOM_SCROLL_STEP));
                 let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
                 widget_flags |= canvas
                     .engine_mut()
@@ -682,7 +737,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_action_add_page_to_doc, _| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas.engine_mut().doc_add_page_fixed_size();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
@@ -693,7 +750,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas.engine_mut().doc_remove_page_fixed_size();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
@@ -704,7 +763,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas.engine_mut().doc_resize_to_fit_content();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
@@ -715,8 +776,9 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let canvas = appwindow.active_tab_wrapper().canvas();
-
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let widget_flags = canvas
                     .engine_mut()
                     .return_to_origin(canvas.parent().map(|p| p.width() as f64));
@@ -733,11 +795,10 @@ impl RnAppWindow {
                     #[weak]
                     appwindow,
                     async move {
-                        dialogs::dialog_new_doc(
-                            &appwindow,
-                            &appwindow.active_tab_wrapper().canvas(),
-                        )
-                        .await;
+                        let Some(canvas) = appwindow.active_tab_canvas() else {
+                            return;
+                        };
+                        dialogs::dialog_new_doc(&appwindow, &canvas).await;
                     }
                 ));
             }
@@ -767,7 +828,9 @@ impl RnAppWindow {
                     #[weak]
                     appwindow,
                     async move {
-                        let canvas = appwindow.active_tab_wrapper().canvas();
+                        let Some(canvas) = appwindow.active_tab_canvas() else {
+                            return;
+                        };
 
                         if let Some(output_file) = canvas.output_file() {
                             appwindow.overlays().progressbar_start_pulsing();
@@ -801,11 +864,10 @@ impl RnAppWindow {
                     #[weak]
                     appwindow,
                     async move {
-                        dialogs::export::dialog_save_doc_as(
-                            &appwindow,
-                            &appwindow.active_tab_wrapper().canvas(),
-                        )
-                        .await;
+                        let Some(canvas) = appwindow.active_tab_canvas() else {
+                            return;
+                        };
+                        dialogs::export::dialog_save_doc_as(&appwindow, &canvas).await;
                     }
                 ));
             }
@@ -822,8 +884,9 @@ impl RnAppWindow {
                 let optimize_printing = false;
                 let page_order = SplitOrder::default();
                 let margin = 0.0;
-
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
                 let pages_content = canvas.engine_ref().extract_pages_content(page_order);
                 let n_pages = pages_content.len();
 
@@ -900,11 +963,10 @@ impl RnAppWindow {
                     #[weak]
                     appwindow,
                     async move {
-                        dialogs::export::dialog_export_doc_w_prefs(
-                            &appwindow,
-                            &appwindow.active_tab_wrapper().canvas(),
-                        )
-                        .await;
+                        let Some(canvas) = appwindow.active_tab_canvas() else {
+                            return;
+                        };
+                        dialogs::export::dialog_export_doc_w_prefs(&appwindow, &canvas).await;
                     }
                 ));
             }
@@ -919,11 +981,10 @@ impl RnAppWindow {
                     #[weak]
                     appwindow,
                     async move {
-                        dialogs::export::dialog_export_doc_pages_w_prefs(
-                            &appwindow,
-                            &appwindow.active_tab_wrapper().canvas(),
-                        )
-                        .await;
+                        let Some(canvas) = appwindow.active_tab_canvas() else {
+                            return;
+                        };
+                        dialogs::export::dialog_export_doc_pages_w_prefs(&appwindow, &canvas).await;
                     }
                 ));
             }
@@ -938,14 +999,13 @@ impl RnAppWindow {
                     #[weak]
                     appwindow,
                     async move {
-                        let canvas = appwindow.active_tab_wrapper().canvas();
+                        let Some(canvas) = appwindow.active_tab_canvas() else {
+                            return;
+                        };
 
                         if !canvas.engine_ref().nothing_selected() {
-                            dialogs::export::dialog_export_selection_w_prefs(
-                                &appwindow,
-                                &appwindow.active_tab_wrapper().canvas(),
-                            )
-                            .await;
+                            dialogs::export::dialog_export_selection_w_prefs(&appwindow, &canvas)
+                                .await;
                         } else {
                             appwindow.overlays().dispatch_toast_error(&gettext(
                                 "Exporting selection failed, nothing selected",
@@ -959,7 +1019,10 @@ impl RnAppWindow {
         // Clipboard copy
         action_clipboard_copy.connect_activate(clone!(#[weak(rename_to=appwindow)] self, move |_, _| {
             glib::spawn_future_local(clone!(#[weak] appwindow, async move {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas()
+                else {
+                    return;
+                };
                 let receiver = canvas.engine_ref().fetch_clipboard_content();
                 let (content, widget_flags) = match receiver.await {
                     Ok(Ok((content, widget_flags))) => (content,widget_flags),
@@ -988,7 +1051,10 @@ impl RnAppWindow {
         // Clipboard cut
         action_clipboard_cut.connect_activate(clone!(#[weak(rename_to=appwindow)] self, move |_, _| {
             glib::spawn_future_local(clone!(#[weak] appwindow, async move {
-                let canvas = appwindow.active_tab_wrapper().canvas();
+                let Some(canvas) = appwindow.active_tab_canvas()
+                else {
+                    return;
+                };
                 let receiver = canvas.engine_mut().cut_clipboard_content();
                 let (content, widget_flags) = match receiver.await {
                     Ok(Ok((content, widget_flags))) => (content,widget_flags),
@@ -1018,7 +1084,33 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                appwindow.clipboard_paste(None);
+                let Some(wrapper) = appwindow.active_tab_wrapper() else {
+                    return;
+                };
+                let canvas = wrapper.canvas();
+
+                let pointer_pos = wrapper.pointer_pos().and_then(|wrapper_point| {
+                    let canvas_point = wrapper
+                        .compute_point(&canvas, &graphene::Point::from_na_vec(wrapper_point));
+
+                    if let Some(point) = canvas_point {
+                        let x = point.x() as f64;
+                        let y = point.y() as f64;
+
+                        if canvas.contains(x, y) {
+                            let transformed_point =
+                                (canvas.engine_ref().camera.transform().inverse()
+                                    * na::point![x, y])
+                                .coords;
+
+                            return Some(transformed_point);
+                        }
+                    }
+
+                    None
+                });
+
+                appwindow.clipboard_paste(pointer_pos);
             }
         ));
 
@@ -1026,10 +1118,12 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let canvas_wrapper = appwindow.active_tab_wrapper();
-                let canvas = canvas_wrapper.canvas();
+                let Some(wrapper) = appwindow.active_tab_wrapper() else {
+                    return;
+                };
+                let canvas = wrapper.canvas();
 
-                let last_contextmenu_pos = canvas_wrapper.last_contextmenu_pos().map(|vec2| {
+                let last_contextmenu_pos = wrapper.last_contextmenu_pos().map(|vec2| {
                     let p = graphene::Point::new(vec2.x as f32, vec2.y as f32);
                     (canvas.engine_ref().camera.transform().inverse()
                         * na::point![p.x() as f64, p.y() as f64])
@@ -1047,6 +1141,7 @@ impl RnAppWindow {
         app.set_accels_for_action("win.active-tab-close", &["<Ctrl>w"]);
         app.set_accels_for_action("win.fullscreen", &["F11"]);
         app.set_accels_for_action("win.keyboard-shortcuts", &["<Ctrl>question"]);
+        app.set_accels_for_action("win.toggle-overview", &["<Ctrl><Shift>o"]);
         app.set_accels_for_action("win.open-canvasmenu", &["F9"]);
         app.set_accels_for_action("win.open-appmenu", &["F10"]);
         app.set_accels_for_action("win.open-doc", &["<Ctrl>o"]);
@@ -1058,20 +1153,24 @@ impl RnAppWindow {
         app.set_accels_for_action("win.print-doc", &["<Ctrl>p"]);
         app.set_accels_for_action("win.add-page-to-doc", &["<Ctrl><Shift>a"]);
         app.set_accels_for_action("win.remove-page-from-doc", &["<Ctrl><Shift>r"]);
-        app.set_accels_for_action("win.zoom-in", &["<Ctrl>plus"]);
-        app.set_accels_for_action("win.zoom-out", &["<Ctrl>minus"]);
+        app.set_accels_for_action(
+            "win.zoom-in",
+            &["<Ctrl>plus", "<Ctrl>equal", "<Ctrl>KP_Add"],
+        );
+        app.set_accels_for_action("win.zoom-reset", &["<Ctrl>0", "<Ctrl>KP_0"]);
+        app.set_accels_for_action("win.zoom-out", &["<Ctrl>minus", "<Ctrl>KP_Subtract"]);
         app.set_accels_for_action("win.import-file", &["<Ctrl>i"]);
         app.set_accels_for_action("win.undo", &["<Ctrl>z"]);
         app.set_accels_for_action("win.redo", &["<Ctrl><Shift>z"]);
         app.set_accels_for_action("win.clipboard-copy", &["<Ctrl>c"]);
         app.set_accels_for_action("win.clipboard-cut", &["<Ctrl>x"]);
         app.set_accels_for_action("win.clipboard-paste", &["<Ctrl>v"]);
-        app.set_accels_for_action("win.pen-style::brush", &["<Ctrl>1"]);
-        app.set_accels_for_action("win.pen-style::shaper", &["<Ctrl>2"]);
-        app.set_accels_for_action("win.pen-style::typewriter", &["<Ctrl>3"]);
-        app.set_accels_for_action("win.pen-style::eraser", &["<Ctrl>4"]);
-        app.set_accels_for_action("win.pen-style::selector", &["<Ctrl>5"]);
-        app.set_accels_for_action("win.pen-style::tools", &["<Ctrl>6"]);
+        app.set_accels_for_action("win.pen-style::brush", &["<Ctrl>1", "<Ctrl>KP_1"]);
+        app.set_accels_for_action("win.pen-style::shaper", &["<Ctrl>2", "<Ctrl>KP_2"]);
+        app.set_accels_for_action("win.pen-style::typewriter", &["<Ctrl>3", "<Ctrl>KP_3"]);
+        app.set_accels_for_action("win.pen-style::eraser", &["<Ctrl>4", "<Ctrl>KP_4"]);
+        app.set_accels_for_action("win.pen-style::selector", &["<Ctrl>5", "<Ctrl>KP_5"]);
+        app.set_accels_for_action("win.pen-style::tools", &["<Ctrl>6", "<Ctrl>KP_6"]);
 
         // shortcuts for devel build
         if config::PROFILE.to_lowercase().as_str() == "devel" {
@@ -1080,9 +1179,10 @@ impl RnAppWindow {
     }
 
     fn clipboard_paste(&self, target_pos: Option<na::Vector2<f64>>) {
-        let canvas_wrapper = self.active_tab_wrapper();
-        let canvas = canvas_wrapper.canvas();
         let content_formats = self.clipboard().formats();
+        let Some(canvas) = self.active_tab_canvas() else {
+            return;
+        };
 
         // Order matters here, we want to go from specific -> generic, mostly because `text/plain` is contained in other text based formats
         if content_formats.contain_mime_type("text/uri-list") {
@@ -1092,38 +1192,55 @@ impl RnAppWindow {
                 async move {
                     debug!("Recognized clipboard content format: files list");
 
-                    match appwindow.clipboard().read_text_future().await {
-                        Ok(Some(text)) => {
-                            let file_paths = text
-                                .lines()
-                                .filter_map(|line| {
-                                    let file_path = if let Ok(path_uri) = url::Url::parse(line) {
-                                        path_uri.to_file_path().ok()?
-                                    } else {
-                                        PathBuf::from(&line)
-                                    };
+                    match appwindow
+                        .clipboard()
+                        .read_future(&["text/uri-list"], glib::source::Priority::DEFAULT)
+                        .await
+                    {
+                        Ok((input_stream, _)) => {
+                            let acc = collect_clipboard_data(input_stream).await;
+                            if !acc.is_empty() {
+                                match crate::utils::str_from_u8_nul_utf8(&acc) {
+                                    Ok(text) => {
+                                        debug!("files uri list : {:?}", text);
+                                        let file_paths = text
+                                            .lines()
+                                            .filter_map(|line| {
+                                                let file_path =
+                                                    if let Ok(path_uri) = url::Url::parse(line) {
+                                                        path_uri.to_file_path().ok()?
+                                                    } else {
+                                                        PathBuf::from(&line)
+                                                    };
 
-                                    if file_path.exists() {
-                                        Some(file_path)
-                                    } else {
-                                        None
+                                                if file_path.exists() {
+                                                    Some(file_path)
+                                                } else {
+                                                    None
+                                                }
+                                            })
+                                            .collect::<Vec<PathBuf>>();
+
+                                        for file_path in file_paths {
+                                            appwindow
+                                                .open_file_w_dialogs(
+                                                    gio::File::for_path(&file_path),
+                                                    target_pos,
+                                                    true,
+                                                )
+                                                .await;
+                                        }
                                     }
-                                })
-                                .collect::<Vec<PathBuf>>();
-
-                            for file_path in file_paths {
-                                appwindow
-                                    .open_file_w_dialogs(
-                                        gio::File::for_path(&file_path),
-                                        target_pos,
-                                        true,
-                                    )
-                                    .await;
+                                    Err(e) => error!(
+                                        "Failed to read `text/uri-list` from clipboard data, Err: {e:?}"
+                                    ),
+                                }
                             }
                         }
-                        Ok(None) => {}
                         Err(e) => {
-                            error!("Reading clipboard text while pasting clipboard from path failed, Err: {e:?}");
+                            error!(
+                                "Reading clipboard failed while pasting as `text/uri-list`, Err: {e:?}",
+                            );
                         }
                     }
                 }
@@ -1146,46 +1263,46 @@ impl RnAppWindow {
                         .await
                     {
                         Ok((input_stream, _)) => {
-                            let mut acc = Vec::new();
-                            loop {
-                                match input_stream
-                                    .read_future(
-                                        vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE],
-                                        glib::source::Priority::DEFAULT,
-                                    )
-                                    .await
-                                {
-                                    Ok((mut bytes, n)) => {
-                                        if n == 0 {
-                                            break;
-                                        }
-                                        acc.append(&mut bytes);
-                                    }
-                                    Err(e) => {
-                                        error!("Failed to read clipboard input stream, Err: {e:?}");
-                                        acc.clear();
-                                        break;
-                                    }
-                                }
-                            }
+                            let acc = collect_clipboard_data(input_stream).await;
 
                             if !acc.is_empty() {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
-                                Ok(json_string) => {
-                                        let resize_argument = ImageSizeOption::ResizeImage(Resize {
-                                            width: canvas.engine_ref().document.format.width(),
-                                            height: canvas.engine_ref().document.format.height(),
-                                            layout_fixed_width: canvas.engine_ref().document.layout.is_fixed_width(),
-                                            max_viewpoint: None,
-                                            restrain_to_viewport: false,
-                                            respect_borders: appwindow.respect_borders(),
-                                        });
-                                    if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), resize_argument, target_pos).await {
-                                        error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
+                                    Ok(json_string) => {
+                                        let resize_argument =
+                                            ImageSizeOption::ResizeImage(Resize {
+                                                width: canvas.engine_ref().document.format.width(),
+                                                height: canvas
+                                                    .engine_ref()
+                                                    .document
+                                                    .format
+                                                    .height(),
+                                                layout_fixed_width: canvas
+                                                    .engine_ref()
+                                                    .document
+                                                    .layout
+                                                    .is_fixed_width(),
+                                                max_viewpoint: None,
+                                                restrain_to_viewport: false,
+                                                respect_borders: appwindow.respect_borders(),
+                                            });
+                                        if let Err(e) = canvas
+                                            .insert_stroke_content(
+                                                json_string.to_string(),
+                                                resize_argument,
+                                                target_pos,
+                                            )
+                                            .await
+                                        {
+                                            error!(
+                                                "Failed to insert stroke content while pasting as `{}`, Err: {e:?}",
+                                                StrokeContent::MIME_TYPE
+                                            );
+                                        }
                                     }
+                                    Err(e) => error!(
+                                        "Failed to read stroke content &str from clipboard data, Err: {e:?}"
+                                    ),
                                 }
-                                Err(e) => error!("Failed to read stroke content &str from clipboard data, Err: {e:?}"),
-                            }
                             }
                         }
                         Err(e) => {
@@ -1210,40 +1327,28 @@ impl RnAppWindow {
                         .await
                     {
                         Ok((input_stream, _)) => {
-                            let mut acc = Vec::new();
-                            loop {
-                                match input_stream
-                                    .read_future(
-                                        vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE],
-                                        glib::source::Priority::DEFAULT,
-                                    )
-                                    .await
-                                {
-                                    Ok((mut bytes, n)) => {
-                                        if n == 0 {
-                                            break;
-                                        }
-                                        acc.append(&mut bytes);
-                                    }
-                                    Err(e) => {
-                                        error!("Failed to read clipboard input stream while pasting as Svg, Err: {e:?}");
-                                        acc.clear();
-                                        break;
-                                    }
-                                }
-                            }
+                            let acc = collect_clipboard_data(input_stream).await;
 
                             if !acc.is_empty() {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
-                                Ok(text) => {
-                                    if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), target_pos, appwindow.respect_borders()).await {
-                                        error!(
-                                            "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
-                                        );
-                                    };
+                                    Ok(text) => {
+                                        if let Err(e) = canvas
+                                            .load_in_vectorimage_bytes(
+                                                text.as_bytes().to_vec(),
+                                                target_pos,
+                                                appwindow.respect_borders(),
+                                            )
+                                            .await
+                                        {
+                                            error!(
+                                                "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
+                                            );
+                                        };
+                                    }
+                                    Err(e) => error!(
+                                        "Failed to get string from clipboard data while pasting as Svg, Err: {e:?}"
+                                    ),
                                 }
-                                Err(e) => error!("Failed to get string from clipboard data while pasting as Svg, Err: {e:?}"),
-                            }
                             }
                         }
                         Err(e) => {
@@ -1324,8 +1429,8 @@ impl RnAppWindow {
                         Ok(None) => {}
                         Err(e) => {
                             error!(
-                            "Reading clipboard text failed while pasting clipboard as plain text, Err: {e:?}"
-                        );
+                                "Reading clipboard text failed while pasting clipboard as plain text, Err: {e:?}"
+                            );
                         }
                     }
                 }
@@ -1337,4 +1442,30 @@ impl RnAppWindow {
             );
         }
     }
+}
+
+async fn collect_clipboard_data(input_stream: InputStream) -> Vec<u8> {
+    let mut acc = Vec::new();
+    loop {
+        match input_stream
+            .read_future(
+                vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE],
+                glib::source::Priority::DEFAULT,
+            )
+            .await
+        {
+            Ok((mut bytes, n)) => {
+                if n == 0 {
+                    break;
+                }
+                acc.append(&mut bytes);
+            }
+            Err(e) => {
+                error!("Failed to read clipboard input stream, Err: {e:?}");
+                acc.clear();
+                break;
+            }
+        }
+    }
+    acc
 }

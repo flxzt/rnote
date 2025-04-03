@@ -1,7 +1,7 @@
 // Imports
 use palette::{
-    convert::{FromColorUnclamped, IntoColorUnclamped},
     IntoColor,
+    convert::{FromColorUnclamped, IntoColorUnclamped},
 };
 use serde::{Deserialize, Serialize};
 
@@ -168,13 +168,8 @@ impl Color {
 
 impl From<piet::Color> for Color {
     fn from(piet_color: piet::Color) -> Self {
-        let piet_rgba = piet_color.as_rgba();
-        Self {
-            r: piet_rgba.0,
-            g: piet_rgba.1,
-            b: piet_rgba.2,
-            a: piet_rgba.3,
-        }
+        let (r, g, b, a) = piet_color.as_rgba();
+        Self { r, g, b, a }
     }
 }
 
@@ -185,13 +180,8 @@ impl From<Color> for piet::Color {
 }
 
 impl From<(f64, f64, f64, f64)> for Color {
-    fn from(tuple: (f64, f64, f64, f64)) -> Self {
-        Self {
-            r: tuple.0,
-            g: tuple.1,
-            b: tuple.2,
-            a: tuple.3,
-        }
+    fn from((r, g, b, a): (f64, f64, f64, f64)) -> Self {
+        Self { r, g, b, a }
     }
 }
 

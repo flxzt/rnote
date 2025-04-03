@@ -253,10 +253,20 @@ impl PenHolder {
             widget_flags |= wf;
         }
 
-        // Always redraw after handling a pen event
+        // Always redraw after handling a pen event.
+        //
+        // This is also needed because pens might have claimed/requested an animation frame.
         widget_flags.redraw = true;
 
         (event_result.propagate, widget_flags)
+    }
+
+    /// Handle a requested animation frame.
+    ///
+    /// Can request another frame using `EngineViewMut#animation.claim_frame()`.
+    pub fn handle_animation_frame(&mut self, engine_view: &mut EngineViewMut, optimize_epd: bool) {
+        self.current_pen
+            .handle_animation_frame(engine_view, optimize_epd);
     }
 
     /// Handle a pressed shortcut key.
@@ -475,9 +485,8 @@ impl PenHolder {
                 // take the style override when pen is finished
                 if self.pen_mode_state.take_style_override().is_some() {
                     widget_flags.refresh_ui = true;
+                    widget_flags |= self.reinstall_pen_current_style(engine_view);
                 }
-
-                widget_flags |= self.reinstall_pen_current_style(engine_view);
             }
         }
 

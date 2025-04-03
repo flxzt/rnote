@@ -12,11 +12,11 @@ pub(crate) use workspacesbar::RnWorkspacesBar;
 // Imports
 use crate::appwindow::RnAppWindow;
 use gtk4::{
-    gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
-    CompositeTemplate, ConstantExpression, CustomFilter, CustomSorter, DirectoryList, FileFilter,
-    FilterChange, FilterListModel, Grid, Label, ListItem, ListView, MultiSorter,
+    Button, CompositeTemplate, ConstantExpression, CustomFilter, CustomSorter, DirectoryList,
+    FileFilter, FilterChange, FilterListModel, Grid, Label, ListItem, ListView, MultiSorter,
     PropertyExpression, ScrolledWindow, Separator, SignalListItemFactory, SingleSelection,
-    SortListModel, SorterChange, Widget,
+    SortListModel, SorterChange, Widget, gdk, gio, glib, glib::clone, glib::closure, prelude::*,
+    subclass::prelude::*,
 };
 use std::path::PathBuf;
 use tracing::warn;
@@ -195,6 +195,9 @@ impl RnWorkspaceBrowser {
         self.imp()
             .action_group
             .add_action(&workspaceactions::create_folder(self, appwindow));
+        self.imp()
+            .action_group
+            .add_action(&workspaceactions::open_folder(self, appwindow));
     }
 
     fn setup_dir_controls(&self, _appwindow: &RnAppWindow) {

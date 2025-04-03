@@ -8,12 +8,12 @@ use crate::canvas::RnCanvas;
 use crate::canvaswrapper::RnCanvasWrapper;
 use crate::config;
 use crate::workspacebrowser::workspacesbar::RnWorkspaceRow;
-use crate::{globals, RnIconPicker};
+use crate::{RnIconPicker, globals};
 use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
 use gtk4::{
-    gio, glib, glib::clone, Builder, Button, CheckButton, ColorDialogButton, FileDialog, Label,
-    MenuButton, ShortcutsWindow, StringList,
+    Builder, Button, CheckButton, ColorDialogButton, FileDialog, Label, MenuButton,
+    ShortcutsWindow, StringList, gio, glib, glib::clone,
 };
 use tracing::{debug, error, warn};
 
@@ -584,6 +584,50 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     ));
 
     dialog.present(appwindow.root().as_ref());
+}
+
+pub(crate) async fn dialog_trash_file(appwindow: &RnAppWindow, current_file: &gio::File) {
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
+    );
+    let dialog: adw::AlertDialog = builder.object("dialog_trash_file").unwrap();
+
+    match dialog.choose_future(appwindow).await.as_str() {
+        "trash" => {
+            glib::spawn_future_local(clone!(
+                #[weak]
+                appwindow,
+                #[strong]
+                current_file,
+                async move {
+                    current_file.trash_async(
+                        glib::source::Priority::DEFAULT,
+                        None::<&gio::Cancellable>,
+                        clone!(
+                            #[weak]
+                            appwindow,
+                            #[strong]
+                            current_file,
+                            move |res| {
+                                if let Err(e) = res {
+                                    appwindow
+                                        .overlays()
+                                        .dispatch_toast_error(&gettext("Trashing file failed"));
+                                    error!(
+                                        "Trash filerow file `{current_file:?}` failed , Err: {e:?}"
+                                    );
+                                    return;
+                                }
+                            }
+                        ),
+                    );
+                }
+            ));
+        }
+        _ => {
+            // Cancel
+        }
+    }
 }
 
 const WORKSPACELISTENTRY_ICONS_LIST: &[&str] = &[

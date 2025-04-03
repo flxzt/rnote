@@ -1,6 +1,6 @@
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper};
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
+use gtk4::{CompositeTemplate, ToggleButton, glib, glib::clone, prelude::*, subclass::prelude::*};
 use rnote_engine::pens::pensconfig::selectorconfig::SelectorStyle;
 
 mod imp {
@@ -103,14 +103,12 @@ impl RnSelectorPage {
             #[weak]
             appwindow,
             move |selectorstyle_polygon_toggle| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
                 if selectorstyle_polygon_toggle.is_active() {
-                    appwindow
-                        .active_tab_wrapper()
-                        .canvas()
-                        .engine_mut()
-                        .pens_config
-                        .selector_config
-                        .style = SelectorStyle::Polygon;
+                    canvas.engine_mut().pens_config.selector_config.style = SelectorStyle::Polygon;
                 }
             }
         ));
@@ -119,14 +117,13 @@ impl RnSelectorPage {
             #[weak]
             appwindow,
             move |selectorstyle_rect_toggle| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
                 if selectorstyle_rect_toggle.is_active() {
-                    appwindow
-                        .active_tab_wrapper()
-                        .canvas()
-                        .engine_mut()
-                        .pens_config
-                        .selector_config
-                        .style = SelectorStyle::Rectangle;
+                    canvas.engine_mut().pens_config.selector_config.style =
+                        SelectorStyle::Rectangle;
                 }
             }
         ));
@@ -135,14 +132,12 @@ impl RnSelectorPage {
             #[weak]
             appwindow,
             move |selectorstyle_single_toggle| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
                 if selectorstyle_single_toggle.is_active() {
-                    appwindow
-                        .active_tab_wrapper()
-                        .canvas()
-                        .engine_mut()
-                        .pens_config
-                        .selector_config
-                        .style = SelectorStyle::Single;
+                    canvas.engine_mut().pens_config.selector_config.style = SelectorStyle::Single;
                 }
             }
         ));
@@ -152,14 +147,13 @@ impl RnSelectorPage {
                 #[weak]
                 appwindow,
                 move |selectorstyle_intersectingpath_toggle| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+
                     if selectorstyle_intersectingpath_toggle.is_active() {
-                        appwindow
-                            .active_tab_wrapper()
-                            .canvas()
-                            .engine_mut()
-                            .pens_config
-                            .selector_config
-                            .style = SelectorStyle::IntersectingPath;
+                        canvas.engine_mut().pens_config.selector_config.style =
+                            SelectorStyle::IntersectingPath;
                     }
                 }
             ));
@@ -169,9 +163,11 @@ impl RnSelectorPage {
                 #[weak]
                 appwindow,
                 move |resize_lock_aspectratio_togglebutton| {
-                    appwindow
-                        .active_tab_wrapper()
-                        .canvas()
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+
+                    canvas
                         .engine_mut()
                         .pens_config
                         .selector_config

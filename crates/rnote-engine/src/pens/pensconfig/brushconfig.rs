@@ -1,11 +1,11 @@
 // Imports
 use crate::store::chrono_comp::StrokeLayer;
 use rand::{Rng, SeedableRng};
+use rnote_compose::Style;
 use rnote_compose::builders::PenPathBuilderType;
+use rnote_compose::style::PressureCurve;
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::style::textured::TexturedOptions;
-use rnote_compose::style::PressureCurve;
-use rnote_compose::Style;
 use serde::{Deserialize, Serialize};
 
 #[derive(
@@ -125,21 +125,21 @@ impl BrushConfig {
 
     /// A new seed for new shapes
     pub(crate) fn new_style_seeds(&mut self) {
-        let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
+        let seed = Some(rand_pcg::Pcg64::from_os_rng().random());
         self.textured_options.seed = seed;
     }
 
     pub(crate) fn style_for_current_options(&self) -> Style {
         match &self.style {
             BrushStyle::Marker => {
-                let options = self.marker_options.clone();
+                let MarkerOptions(options) = self.marker_options.clone();
 
-                Style::Smooth(options.0)
+                Style::Smooth(options)
             }
             BrushStyle::Solid => {
-                let options = self.solid_options.clone();
+                let SolidOptions(options) = self.solid_options.clone();
 
-                Style::Smooth(options.0)
+                Style::Smooth(options)
             }
             BrushStyle::Textured => {
                 let options = self.textured_options.clone();

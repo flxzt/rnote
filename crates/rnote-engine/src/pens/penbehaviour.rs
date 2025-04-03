@@ -3,8 +3,8 @@ use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
-use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::EventResult;
+use rnote_compose::penevent::{PenEvent, PenProgress};
 use std::time::Instant;
 use tracing::error;
 
@@ -32,6 +32,11 @@ pub trait PenBehaviour: DrawableOnDoc {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags);
 
+    /// Handle a requested animation frame.
+    ///
+    /// Can request another frame using `EngineViewMut#animation.claim_frame()`.
+    fn handle_animation_frame(&mut self, _engine_view: &mut EngineViewMut, _optimize_epd: bool) {}
+
     /// Fetch clipboard content from the pen.
     ///
     /// The fetched content can be available in multiple formats,
@@ -45,7 +50,9 @@ pub trait PenBehaviour: DrawableOnDoc {
             oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
         rayon::spawn(move || {
             if sender.send(Ok((vec![], WidgetFlags::default()))).is_err() {
-                error!("Sending (empty) clipboard content in `fetch_clipboard_content()` default impl failed, receiver already dropped.")
+                error!(
+                    "Sending (empty) clipboard content in `fetch_clipboard_content()` default impl failed, receiver already dropped."
+                )
             }
         });
         receiver
@@ -64,7 +71,9 @@ pub trait PenBehaviour: DrawableOnDoc {
             oneshot::channel::<anyhow::Result<(Vec<(Vec<u8>, String)>, WidgetFlags)>>();
         rayon::spawn(move || {
             if sender.send(Ok((vec![], WidgetFlags::default()))).is_err() {
-                error!("Sending (empty) clipboard content in `cut_clipboard_content()` default impl failed, receiver already dropped")
+                error!(
+                    "Sending (empty) clipboard content in `cut_clipboard_content()` default impl failed, receiver already dropped"
+                )
             }
         });
         receiver

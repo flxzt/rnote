@@ -1,7 +1,7 @@
 // Imports
 use crate::document::background;
 use crate::engine::import::XoppImportPrefs;
-use crate::fileformats::{rnoteformat, xoppformat, FileFormatLoader};
+use crate::fileformats::{FileFormatLoader, rnoteformat, xoppformat};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::Stroke;
 use crate::{Camera, Document, Engine};
@@ -82,10 +82,12 @@ impl EngineSnapshot {
                     .pages
                     .iter()
                     .map(|page| (page.width, page.height))
-                    .fold((0_f64, 0_f64), |prev, next| {
-                        // Max of width, sum heights
-                        (prev.0.max(next.0), prev.1 + next.1)
-                    });
+                    .fold(
+                        (0_f64, 0_f64),
+                        |(prev_width, prev_height), (next_width, next_height)| {
+                            (prev_width.max(next_width), prev_height + next_height)
+                        },
+                    );
                 let no_pages = xopp_file.xopp_root.pages.len() as u32;
 
                 let mut engine = Engine::default();
@@ -188,7 +190,9 @@ impl EngineSnapshot {
             };
 
             if snapshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver while loading Xopp bytes failed. Receiver already dropped");
+                error!(
+                    "Sending result to receiver while loading Xopp bytes failed. Receiver already dropped"
+                );
             }
         });
 

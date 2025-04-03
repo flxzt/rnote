@@ -1,6 +1,6 @@
 // Imports
-use super::line::Line;
 use super::CubicBezier;
+use super::line::Line;
 use crate::ext::{KurboShapeExt, Vector2Ext};
 use crate::shapes::Shapeable;
 use crate::transform::Transformable;

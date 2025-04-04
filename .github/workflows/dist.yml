@@ -12,24 +12,26 @@ jobs:
     permissions:
       contents: write # needed for uploading release artifact
     steps:
-      - name: Install dependencies
+      - name: System dependencies
         run: |
-          sudo dnf upgrade --refresh -y
-          sudo dnf install -y gcc gcc-c++ clang python3 make cmake meson git gh kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel appstream-devel desktop-file-utils
-      - name: Install toolchain
-        id: toolchain
-        uses: dtolnay/rust-toolchain@stable
+          sudo dnf install -y git
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Install rust toolchain
+        id: toolchain
+        uses: dtolnay/rust-toolchain@stable
       - name: Add workspace as git safe directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - name: Setup
+      - name: Prerequisites
         run: |
-          meson setup --prefix=/usr _mesonbuild
-      - name: Run meson dist
-        run: meson dist --no-tests -C _mesonbuild
+          dnf install -y just lsb_release
+          just ci=true prerequisites
+      - name: Setup
+        run: just ci=true setup-release
+      - name: Create tarball
+        run: just ci=true create-tarball
       - name: Register archive file names
         id: register_archive_file_names
         run: |

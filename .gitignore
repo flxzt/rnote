@@ -1,14 +1,8 @@
 /tmp
-/build
-/builddir
 /target
-/vendor
-/flatpak-repo
-/flatpak-app
-/_build
+/_flatpak_repo
+/_flatpak_app
 /_mesonbuild
-/_mesoninstall
-/.flatpak
 /.flatpak-builder
 /.editorconfig
 /.vscode

@@ -9,11 +9,7 @@ flatpak_app_folder := "_flatpak_app"
 flatpak_repo_folder := "_flatpak_repo"
 mingw64_prefix_path := "C:/msys64/mingw64"
 
-sudo_cmd := if ci == "true" {
-    ""
-} else {
-    "sudo"
-}
+sudo_cmd := "sudo"
 
 export LANG := "C"
 export RUST_BACKTRACE := "1"

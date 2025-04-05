@@ -22,6 +22,7 @@ export RUST_LOG := \
     "rnote-cli=" + log_level + "," + \
     "rnote-engine=" + log_level + "," + \
     "rnote-compose=" + log_level
+#export G_MESSAGES_DEBUG := "all"
 
 default:
     just --list
@@ -137,7 +138,6 @@ configure *MESON_ARGS:
 fmt-check:
     meson compile cargo-fmt-check -C {{ build_folder }}
     find . -name 'meson.build' | xargs meson format -q
-    yamllint .
 
 fmt:
     cargo fmt
@@ -150,6 +150,7 @@ check:
 lint:
     meson compile ui-cargo-clippy -C {{ build_folder }}
     meson compile cli-cargo-clippy -C {{ build_folder }}
+    yamllint .
 
 build:
     meson compile ui-cargo-build -C {{ build_folder }}

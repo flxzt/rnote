@@ -1,6 +1,8 @@
+---
+
 name: Generate Dist Archive
 
-on:
+"on":
   release:
     types: [published]
   workflow_dispatch:
@@ -10,33 +12,43 @@ jobs:
     runs-on: ubuntu-24.04
     container: fedora:41
     permissions:
-      contents: write # needed for uploading release artifact
+      # needed for uploading release artifact
+      contents: write
     steps:
-      - name: System dependencies
-        run: |
-          sudo dnf install -y git
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: System dependencies
+        run: |
+          sudo dnf install -y git
+
+      - name: Add workspace as git safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: Install rust toolchain
         id: toolchain
         uses: dtolnay/rust-toolchain@stable
-      - name: Add workspace as git safe directory
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: Prerequisites
         run: |
           dnf install -y just lsb_release
           just ci=true prerequisites
+
       - name: Setup
         run: just ci=true setup-release
+
       - name: Create tarball
         run: just ci=true create-tarball
+
       - name: Register archive file names
         id: register_archive_file_names
         run: |
           echo "archive=$(basename _mesonbuild/meson-dist/rnote-*.tar.xz | tail -n1)" >> $GITHUB_OUTPUT
           echo "sha=$(basename _mesonbuild/meson-dist/rnote-*.tar.xz.sha256sum | tail -n1)" >> $GITHUB_OUTPUT
+
       - name: Upload dist archive (Workflow Artifact)
         uses: actions/upload-artifact@v4
         with:
@@ -46,10 +58,13 @@ jobs:
             _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.sha }}
           include-hidden-files: true
           if-no-files-found: error
+
       - name: Upload dist archive (Release Asset)
         if: ${{ github.event_name == 'release' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${{ github.ref_name }} _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.archive }}
-          gh release upload ${{ github.ref_name }} _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.sha }}
+          gh release upload ${{ github.ref_name }} \
+            _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.archive }}
+          gh release upload ${{ github.ref_name }} \
+            _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.sha }}

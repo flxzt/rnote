@@ -75,11 +75,11 @@ prerequisites-dev: prerequisites
 
     if [[ ('{{linux_distr}}' =~ 'fedora') || ('{{linux_distr}}' =~ 'rhel') || ('{{linux_distr}}' =~ 'alma') ]]; then
         {{sudo_cmd}} dnf install -y \
-            opencc-tools yq
+            yamllint yq opencc-tools
     elif [[ '{{linux_distr}}' =~ 'debian' || '{{linux_distr}}' =~ 'ubuntu' ]]; then
         {{sudo_cmd}} apt-get update
         {{sudo_cmd}} apt-get install -y \
-            opencc yq
+            yamllint yq opencc
     else
         echo "Unable to install system dependencies, unsupported distro."
         exit 1
@@ -133,6 +133,7 @@ configure *MESON_ARGS:
 fmt-check:
     meson compile cargo-fmt-check -C {{ build_folder }}
     find . -name 'meson.build' | xargs meson format -q
+    yamllint .
 
 fmt:
     cargo fmt

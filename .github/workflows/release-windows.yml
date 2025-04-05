@@ -1,6 +1,8 @@
+---
+
 name: Release Windows
 
-on:
+"on":
   release:
     types: [published]
   workflow_dispatch:
@@ -9,15 +11,20 @@ jobs:
   build:
     runs-on: windows-2022
     permissions:
-      contents: write # needed for uploading release artifact
+      # needed for uploading release artifact
+      contents: write
     defaults:
       run:
         shell: msys2 {0}
     steps:
+
       - name: Set installer name
         id: set_installer_name
         shell: bash
-        run: echo "name=rnote-win-installer-$(echo ${GITHUB_REF_NAME#v} | sed -e 's/[^A-Za-z0-9._-]/_/g')-x86_64" >> $GITHUB_OUTPUT
+        run: |
+          echo "name=rnote-win-installer-$(echo ${GITHUB_REF_NAME#v} \
+            | sed -e 's/[^A-Za-z0-9._-]/_/g')-x86_64" >> $GITHUB_OUTPUT
+
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
         with:
@@ -25,30 +32,39 @@ jobs:
           update: true
           install: |
             mingw-w64-x86_64-binutils
-      - name: Install toolchain
+
+      - name: Install rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable-gnu
+
       - name: Configure PATH
         run: echo "export PATH=$PATH:/c/Users/$USER/.cargo/bin:/c/Program\ Files\ \(x86\)/Inno\ Setup\ 6" > ~/.bashrc
+
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Prerequisites
         run: |
           cargo install --locked just
           just ci=true prerequisites-win
+
       - name: Setup
         run: just ci=true setup-win '${{ steps.set_installer_name.outputs.name }}'
+
       - name: Build
         run: just ci=true build
+
       - name: Build installer
         run: just ci=true build-win-installer
+
       - name: Upload installer (Workflow Artifact)
         uses: actions/upload-artifact@v4
         with:
           name: rnote-win-installer-artifact
           path: _mesonbuild/${{ steps.set_installer_name.outputs.name }}.exe
           if-no-files-found: error
+
       - name: Upload installer (Release Asset)
         if: ${{ github.event_name == 'release' }}
         shell: powershell

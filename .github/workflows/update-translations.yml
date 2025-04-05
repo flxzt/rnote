@@ -1,6 +1,8 @@
+---
+
 name: Update Translations
 
-on:
+"on":
   push:
     branches:
       - 'main'
@@ -12,8 +14,8 @@ on:
   workflow_call:
 
 concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   i18n_zh_Hans2zh_Hant:
@@ -21,8 +23,10 @@ jobs:
     runs-on: ubuntu-22.04
     container: fedora:39
     permissions:
-      contents: write # needed for pushing the changes
+      # needed for pushing the changes
+      contents: write
     steps:
+
       - name: Install dependencies
         run: |
           sudo dnf install --refresh -y just git opencc-tools
@@ -53,7 +57,7 @@ jobs:
           else
             exit $failure
           fi
-      
+
       - name: Push changes
         if: ${{ steps.commit-changes.outputs.status == 'true' }}
         uses: ad-m/github-push-action@v0.8.0

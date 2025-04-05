@@ -1,6 +1,8 @@
+---
+
 name: CI
 
-on:
+"on":
   push:
     branches:
       - main
@@ -18,17 +20,21 @@ jobs:
     runs-on: ubuntu-24.04
     container: fedora:41
     steps:
+
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Install rust toolchain
         id: toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
+
       - name: Prerequisites
         run: |
           dnf install -y just lsb_release
-          just ci=true prerequisites
+          just ci=true prerequisites-dev
+
       - name: Cache
         uses: actions/cache@v4
         env:
@@ -40,21 +46,29 @@ jobs:
             _mesonbuild/cargo-home/registry/cache/
             _mesonbuild/cargo-home/git/db/
             _mesonbuild/target/
-          key: cargo-${{ runner.os }}-${{ steps.toolchain.outputs.cachekey }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.workflow_sha }}
+          key: "cargo-${{ runner.os }}-${{ steps.toolchain.outputs.cachekey }}-
+            ${{ hashFiles('**/Cargo.lock') }}-${{ github.workflow_sha }}"
           restore-keys: cargo-${{ runner.os }}-${{ steps.toolchain.outputs.cachekey }}
+
       - name: Setup
         run: just ci=true setup-dev
+
       - name: Run fmt check
         run: just ci=true fmt-check
+
       - name: Build
         run: just ci=true build
+
       - name: Install
         run: just ci=true install
+
       - name: Test
         run: just ci=true test
+
       - name: Lint
         run: just ci=true lint
         continue-on-error: true
+
       - name: Upload test report
         uses: actions/upload-artifact@v4
         if: success() || failure()

@@ -112,7 +112,7 @@ fn create_entry(current_path: impl AsRef<Path>) -> Entry {
 
 fn entry_text_select_stem(entry: &Entry) {
     let entry_text = entry.text();
-    let stem_end = entry_text.match_indices('.').map(|(i, _)| i).last();
+    let stem_end = entry_text.match_indices('.').map(|(i, _)| i).next_back();
 
     // Select entire text first
     entry.grab_focus();

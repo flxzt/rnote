@@ -10,11 +10,9 @@
 - Commit the changes and push
 - Release commit: Update the changelog in the appdata file, replace all version numbers in the project and build,
     install and run all tests:
-    - `meson install -C _mesonbuild`
-    - `meson compile ui-cargo-clippy -C _mesonbuild`
-    - `meson compile cli-cargo-clippy -C _mesonbuild`
-    - `meson compile cargo-test -C _mesonbuild`
-    - `meson test -C _mesonbuild`
+    - `just install`
+    - `just lint`
+    - `just test`
 - Wait for CI to run successfully
 - Create a release with tag `vX.Y.Z` on Github - the installer and tarball will be created by Github Actions CD
 - For Flathub: create a new release branch, update the Flathub flatpak manifest with the new tarball download Url and
@@ -25,22 +23,23 @@
 
 # Create a Tarball Manually
 
-Create a tarball by running `meson dist`. Add the `--no-tests` flag to skip tests and building when it has been made
-sure that it would build successfully.
+Create a tarball by running:
 
 ```bash
-meson dist -C _mesonbuild
+just create-tarball
 ```
 
-or
+This recipe uses the `meson dist` command.
+Pass the `--no-tests` flag to skip tests and building when it has been made sure that it would build successfully.
 
 ```bash
-meson dist --no-tests -C _mesonbuild
+just create-tarball --no-tests
 ```
 
-The source tarball and checksum file should now be in `_mesonbuild/meson-dist/`.
+A source tarball and checksum file should now be in directory `_mesonbuild/meson-dist/`.
 
 # Create a Beta Release for Flathub
+
 - Do the same first steps as for a regular release
 - Add the suffix `-beta.<x>` to the app version suffix in meson and commit this to main.
 - Checkout and rebase/merge the `beta` branch with `main`.
@@ -68,10 +67,10 @@ flatpak mask --remove com.github.flxzt.rnote
 # Flatpak Devel Manifest
 
 A manifest `.json` is maintained in addition to the `.yaml`, because Gnome Builder currently only supports Json Flatpak
-manifests. To update the Json from Yaml automatically, [yq](https://github.com/mikefarah/yq) is used. Run:
+manifests. To generate the Json from Yaml, [yq](https://github.com/mikefarah/yq) is used. Run:
 
 ```bash
-yq -o=json build-aux/com.github.flxzt.rnote.Devel.yaml > build-aux/com.github.flxzt.rnote.Devel.json
+just generate-json-flatpak-manifest
 ```
 
 # Translations
@@ -98,13 +97,14 @@ unlock the weblate repo to resynchronize with upstream.
 
 The package providing the `opencc` tool (`opencc-tools` on Fedora) needs to be installed to regenerate the translation.
 
-To autogenerate chinese traditional translation (`zh_Hant`) from chinese simplified (`zh_Hans`), use opencc:
+To autogenerate chinese traditional translation (`zh_Hant`) from chinese simplified (`zh_Hans`)
+use the following recipe:
 
 ```bash
-./build-aux/update-translations.sh
+just update-translations
 ```
 
-discussed in [issue 220](https://github.com/flxzt/rnote/issues/220)
+This is discussed in [issue 220](https://github.com/flxzt/rnote/issues/220)
 
 # Check outdated dependencies
 
@@ -113,7 +113,7 @@ Install [cargo-edit](https://github.com/killercup/cargo-edit)
 Show outdated dependencies with:
 
 ```bash
-cargo upgrade --dry-run --verbose
+just check-outdated-dependencies
 ```
 
 With this output, update the dependencies manually in `Cargo.toml` where it makes sense.

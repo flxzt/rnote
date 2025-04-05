@@ -103,7 +103,6 @@ prerequisites-win:
 
 setup-dev *MESON_ARGS:
     meson setup \
-        --wipe \
         --prefix=/usr \
         -Dprofile=devel \
         -Dci={{ ci }} \
@@ -112,7 +111,6 @@ setup-dev *MESON_ARGS:
 
 setup-release *MESON_ARGS:
     meson setup \
-        --wipe \
         --prefix=/usr \
         -Dci={{ ci }} \
         {{ MESON_ARGS }} \

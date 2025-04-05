@@ -10,9 +10,9 @@
             {
                 "args": [],
                 "env": {
-                    "G_MESSAGES_DEBUG": "all",
+                    //"G_MESSAGES_DEBUG": "all",
                     "LANG": "C",
-                    "RUST_BACKTRACE": "full",
+                    "RUST_BACKTRACE": "1",
                     "RUST_LOG": "rnote=debug,rnote-cli=debug,rnote-engine=debug,rnote-compose=debug"
                 },
                 "name": "debug ui",

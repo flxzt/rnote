@@ -14,7 +14,7 @@ use rnote_compose::constraints::ConstraintRatio;
 use rnote_compose::style::rough::roughoptions::FillStyle;
 use rnote_compose::style::smooth::{LineCap, LineStyle, SmoothOptions};
 use rnote_engine::pens::pensconfig::ShaperConfig;
-use rnote_engine::pens::pensconfig::shaperconfig::{ShaperBrushType, ShaperStyle};
+use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 
 mod imp {
     use super::*;
@@ -38,11 +38,13 @@ mod imp {
         #[template_child]
         pub(crate) shapeconfig_popover_close_button: TemplateChild<Button>,
         #[template_child]
-        pub(crate) brushtype_listbox: TemplateChild<ListBox>,
+        pub(crate) shaperstyle_listbox: TemplateChild<ListBox>,
         #[template_child]
-        pub(crate) brushtype_solid_row: TemplateChild<adw::ActionRow>,
+        pub(crate) shaperstyle_smooth_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub(crate) brushtype_highlighter_row: TemplateChild<adw::SpinRow>,
+        pub(crate) shaperstyle_rough_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub(crate) shaperstyle_highlighter_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(crate) smoothstyle_line_cap_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -62,19 +64,6 @@ mod imp {
 
         #[template_child]
         pub(crate) stroke_width_picker: TemplateChild<RnStrokeWidthPicker>,
-
-        #[template_child]
-        pub(crate) shaperstyle_menubutton: TemplateChild<MenuButton>,
-        #[template_child]
-        pub(crate) shaperstyle_popover: TemplateChild<Popover>,
-        #[template_child]
-        pub(crate) shaperstyle_popover_close_button: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) shaperstyle_listbox: TemplateChild<ListBox>,
-        #[template_child]
-        pub(crate) shaperstyle_smooth_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shaperstyle_rough_row: TemplateChild<adw::ActionRow>,
     }
 
     #[glib::object_subclass]
@@ -124,10 +113,6 @@ impl RnShaperPage {
         glib::Object::new()
     }
 
-    pub(crate) fn shaperstyle_menubutton(&self) -> MenuButton {
-        self.imp().shaperstyle_menubutton.get()
-    }
-
     pub(crate) fn shapeconfig_menubutton(&self) -> MenuButton {
         self.imp().shapeconfig_menubutton.get()
     }
@@ -140,23 +125,6 @@ impl RnShaperPage {
         ShaperStyle::try_from(self.imp().shaperstyle_listbox.selected_row()?.index() as u32).ok()
     }
 
-    pub(crate) fn shaper_brush_type(&self) -> Option<ShaperBrushType> {
-        ShaperBrushType::try_from(self.imp().brushtype_listbox.selected_row()?.index() as u32).ok()
-    }
-
-    pub(crate) fn set_shaper_brush_type(&self, shaper_brush_type: ShaperBrushType) {
-        match shaper_brush_type {
-            ShaperBrushType::Solid => self
-                .imp()
-                .brushtype_listbox
-                .select_row(Some(&*self.imp().brushtype_solid_row)),
-            ShaperBrushType::Highlighter => self
-                .imp()
-                .brushtype_listbox
-                .select_row(Some(&*self.imp().brushtype_highlighter_row)),
-        }
-    }
-
     pub(crate) fn set_shaper_style(&self, style: ShaperStyle) {
         match style {
             ShaperStyle::Smooth => self
@@ -167,6 +135,10 @@ impl RnShaperPage {
                 .imp()
                 .shaperstyle_listbox
                 .select_row(Some(&*self.imp().shaperstyle_rough_row)),
+            ShaperStyle::Highlighter => self
+                .imp()
+                .shaperstyle_listbox
+                .select_row(Some(&*self.imp().shaperstyle_highlighter_row)),
         }
     }
 
@@ -208,19 +180,10 @@ impl RnShaperPage {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        let shaperstyle_popover = imp.shaperstyle_popover.get();
         let shapeconfig_popover = imp.shapeconfig_popover.get();
         let shapebuildertype_popover = imp.shapebuildertype_popover.get();
 
         // Popovers
-        imp.shaperstyle_popover_close_button.connect_clicked(clone!(
-            #[weak]
-            shaperstyle_popover,
-            move |_| {
-                shaperstyle_popover.popdown();
-            }
-        ));
-
         imp.shapeconfig_popover_close_button.connect_clicked(clone!(
             #[weak]
             shapeconfig_popover,
@@ -260,7 +223,7 @@ impl RnShaperPage {
                     let shaper_style = canvas.engine_ref().pens_config.shaper_config.style;
 
                     match shaper_style {
-                        ShaperStyle::Smooth => {
+                        ShaperStyle::Smooth | ShaperStyle::Highlighter => {
                             let smooth_options: &mut SmoothOptions =
                                 &mut canvas.engine_mut().pens_config.shaper_config.smooth_options;
                             smooth_options.stroke_width = stroke_width;
@@ -294,7 +257,7 @@ impl RnShaperPage {
                     shaperpage.stroke_width_picker().deselect_setters();
 
                     match shaper_style {
-                        ShaperStyle::Smooth => {
+                        ShaperStyle::Smooth | ShaperStyle::Highlighter => {
                             let stroke_width = canvas
                                 .engine_mut()
                                 .pens_config
@@ -305,15 +268,8 @@ impl RnShaperPage {
                                 .imp()
                                 .stroke_width_picker
                                 .set_stroke_width(stroke_width);
-                            shaperpage
-                                .imp()
-                                .shaperstyle_menubutton
-                                .set_icon_name("pen-shaper-style-smooth-symbolic");
                         }
                         ShaperStyle::Rough => {
-                            let Some(canvas) = appwindow.active_tab_canvas() else {
-                                return;
-                            };
                             let stroke_width = canvas
                                 .engine_mut()
                                 .pens_config
@@ -325,32 +281,13 @@ impl RnShaperPage {
                                 .imp()
                                 .stroke_width_picker
                                 .set_stroke_width(stroke_width);
-                            shaperpage
-                                .imp()
-                                .shaperstyle_menubutton
-                                .set_icon_name("pen-shaper-style-rough-symbolic");
                         }
                     }
                 }
             }
         ));
-        // Brush type
-        imp.brushtype_listbox.connect_row_selected(clone!(
-            #[weak(rename_to=shaperpage)]
-            self,
-            #[weak]
-            appwindow,
-            move |_, _| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
-                    return;
-                };
-                if let Some(brush_type) = shaperpage.shaper_brush_type() {
-                    canvas.engine_mut().pens_config.shaper_config.brush_type = brush_type;
-                }
-            }
-        ));
 
-        imp.brushtype_highlighter_row.connect_changed(clone!(
+        imp.shaperstyle_highlighter_row.connect_changed(clone!(
             #[weak]
             appwindow,
             move |row| {
@@ -630,7 +567,7 @@ impl RnShaperPage {
         self.set_shaper_style(shaper_config.style);
 
         match shaper_config.style {
-            ShaperStyle::Smooth => {
+            ShaperStyle::Smooth | ShaperStyle::Highlighter => {
                 imp.stroke_width_picker
                     .set_stroke_width(shaper_config.smooth_options.stroke_width);
             }
@@ -643,11 +580,6 @@ impl RnShaperPage {
         // builder type
         self.set_shapebuildertype(shaper_config.builder_type);
 
-        // Brush type
-        self.set_shaper_brush_type(shaper_config.brush_type);
-        imp.brushtype_highlighter_row
-            .set_value((shaper_config.highlighter_opacity * 100.0).round());
-
         // Smooth style
         imp.smoothstyle_line_cap_row
             .set_selected(shaper_config.smooth_options.line_cap.to_u32().unwrap());
@@ -659,7 +591,11 @@ impl RnShaperPage {
         imp.roughstyle_hachure_angle_row
             .set_value(shaper_config.rough_options.hachure_angle.to_degrees());
 
-        // constraints
+        // Highlighter opacity
+        imp.shaperstyle_highlighter_row
+            .set_value((shaper_config.highlighter_opacity * 100.0).round());
+
+        // Constraints
         imp.constraint_enabled_row
             .set_active(shaper_config.constraints.enabled);
         imp.constraint_one_to_one_row.set_active(

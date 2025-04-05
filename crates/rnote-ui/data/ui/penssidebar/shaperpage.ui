@@ -106,38 +106,49 @@
 
           <!-- Brush type options -->
           <child>
-            <object class="AdwPreferencesGroup">
-              <property name="title" translatable="yes">Brush type</property>
+            <object class="GtkListBox" id="shaperstyle_listbox">
+              <property name="width-request">300</property>
+              <property name="selection-mode">browse</property>
+              <style>
+                <class name="content" />
+                <class name="large" />
+              </style>
               <child>
-                <object class="GtkListBox" id="brushtype_listbox">
-                  <property name="width-request">300</property>
-                  <property name="selection-mode">browse</property>
-                  <style>
-                    <class name="content" />
-                    <class name="large" />
-                  </style>
-                  <child>
-                    <object class="AdwActionRow" id="brushtype_solid_row">
-                      <property name="title" translatable="yes">Solid</property>
-                      <property name="subtitle" translatable="yes">Draw solid color strokes</property>
+                <object class="AdwActionRow" id="shaperstyle_smooth_row">
+                  <property name="title" translatable="yes">Smooth</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">pen-shaper-style-smooth-symbolic</property>
+                      <property name="icon-size">large</property>
                     </object>
                   </child>
-                  <child>
-                    <object class="AdwSpinRow" id="brushtype_highlighter_row">
-                      <property name="title" translatable="yes">Highlighter</property>
-                      <property name="subtitle" translatable="yes">Draw translucent color strokes</property>
-                      <property name="adjustment">
-                        <object class="GtkAdjustment">
-                          <property name="lower">0</property>
-                          <property name="upper">100</property>
-                          <property name="value">50</property>
-                          <property name="step-increment">1</property>
-                        </object>
-                      </property>
-                      <property name="numeric">true</property>
-                      <property name="digits">0</property>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow" id="shaperstyle_rough_row">
+                  <property name="title" translatable="yes">Rough</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">pen-shaper-style-rough-symbolic</property>
+                      <property name="icon-size">large</property>
                     </object>
                   </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwSpinRow" id="shaperstyle_highlighter_row">
+                  <property name="title" translatable="yes">Highlighter</property>
+                  <property name="subtitle" translatable="yes">Draw translucent color strokes</property>
+                  <property name="adjustment">
+                    <object class="GtkAdjustment">
+                      <property name="lower">0</property>
+                      <property name="upper">100</property>
+                      <property name="value">50</property>
+                      <property name="step-increment">1</property>
+                    </object>
+                  </property>
+                  <property name="numeric">true</property>
+                  <property name="digits">0</property>
                 </object>
               </child>
             </object>
@@ -237,9 +248,8 @@
               <child>
                 <object class="AdwSwitchRow" id="constraint_enabled_row">
                   <property name="title" translatable="yes">Enabled</property>
-                  <property name="subtitle" translatable="yes">Hold Ctrl to temporarily
-enable/disable constraints
-when this switch is off/on</property>
+                  <property name="subtitle" translatable="yes">Hold Ctrl to temporarily enable/disable
+constraints when this switch is off/on</property>
                 </object>
               </child>
               <child>
@@ -298,38 +308,6 @@ when this switch is off/on</property>
                     <class name="flat" />
                     <class name="circular" />
                   </style>
-                </object>
-              </child>
-            </object>
-          </child>
-          <child>
-            <object class="GtkListBox" id="shaperstyle_listbox">
-              <property name="width-request">300</property>
-              <property name="selection-mode">browse</property>
-              <style>
-                <class name="content" />
-                <class name="large" />
-              </style>
-              <child>
-                <object class="AdwActionRow" id="shaperstyle_smooth_row">
-                  <property name="title" translatable="yes">Smooth</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">pen-shaper-style-smooth-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="shaperstyle_rough_row">
-                  <property name="title" translatable="yes">Rough</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">pen-shaper-style-rough-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
                 </object>
               </child>
             </object>

@@ -26,6 +26,7 @@
     </child>
     <child>
       <object class="GtkSpinButton" id="font_size_spinbutton">
+        <property name="tooltip-text" translatable="yes">Edit Font Size</property>
         <property name="orientation">vertical</property>
         <property name="numeric">true</property>
         <property name="digits">0</property>

@@ -79,7 +79,7 @@ pub(crate) fn setup_env() -> anyhow::Result<()> {
                 lib_dir.join("gdk-pixbuf-2.0\\2.10.0\\loaders"),
             );
 
-            //std::env::set_var("RUST_LOG", "rnote=debug");
+            //std::env::set_var("RUST_LOG", "rnote=debug,rnote-cli=debug,rnote-engine=debug,rnote-compose=debug");
         }
     } else if cfg!(target_os = "macos") {
         let canonicalized_exec_dir = exec_parent_dir()?.canonicalize()?;

@@ -85,7 +85,9 @@ prerequisites-dev: prerequisites
         exit 1
     fi
 
-    cp -f build-aux/git-hooks/pre-commit.hook .git/hooks/pre-commit
+    if [[ "{{ci}}" != "true" ]]; then
+        cp -f build-aux/git-hooks/pre-commit.hook .git/hooks/pre-commit
+    fi
 
 # in MSYS2 shell
 prerequisites-win:

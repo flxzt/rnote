@@ -89,7 +89,7 @@ prerequisites-dev: prerequisites
     fi
 
     if [[ "{{ci}}" != "true" ]]; then
-        cp -f build-aux/git-hooks/pre-commit.hook .git/hooks/pre-commit
+        ln -sf build-aux/git-hooks/pre-commit.hook .git/hooks/pre-commit
     fi
 
 # in MSYS2 shell

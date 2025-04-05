@@ -27,11 +27,7 @@ desktop_file = i18n.merge_file(
 
 # Validate Desktop file
 if desktop_file_validate.found()
-    test(
-        'validate-desktop',
-        desktop_file_validate,
-        args: [desktop_file],
-    )
+    test('validate-desktop', desktop_file_validate, args: [desktop_file])
 endif
 
 # GSchema
@@ -54,10 +50,7 @@ if glib_compile_schemas.found()
     test(
         'validate-gschema',
         glib_compile_schemas,
-        args: [
-            '--dry-run',
-            datadir / 'glib-2.0' / 'schemas',
-        ],
+        args: ['--dry-run', datadir / 'glib-2.0' / 'schemas'],
     )
 endif
 
@@ -348,11 +341,23 @@ rnote_ui_gresources_icons_files = files(
 )
 
 rnote_ui_gresources_ui_files = files(
+    'ui/appmenu.ui',
+    'ui/appwindow.ui',
+    'ui/canvasmenu.ui',
+    'ui/canvaswrapper.ui',
+    'ui/colorpicker.ui',
+    'ui/contextmenu.ui',
     'ui/dialogs/dialogs.ui',
     'ui/dialogs/export.ui',
     'ui/dialogs/import.ui',
+    'ui/filerow.ui',
     'ui/groupediconpicker/groupediconpicker.ui',
     'ui/groupediconpicker/groupediconpickergroup.ui',
+    'ui/iconpicker.ui',
+    'ui/mainheader.ui',
+    'ui/overlays.ui',
+    'ui/penpicker.ui',
+    'ui/penshortcutrow.ui',
     'ui/penssidebar/brushpage.ui',
     'ui/penssidebar/eraserpage.ui',
     'ui/penssidebar/penssidebar.ui',
@@ -360,20 +365,6 @@ rnote_ui_gresources_ui_files = files(
     'ui/penssidebar/shaperpage.ui',
     'ui/penssidebar/toolspage.ui',
     'ui/penssidebar/typewriterpage.ui',
-    'ui/workspacesbar/workspacerow.ui',
-    'ui/workspacesbar/workspacesbar.ui',
-    'ui/appmenu.ui',
-    'ui/appwindow.ui',
-    'ui/canvasmenu.ui',
-    'ui/canvaswrapper.ui',
-    'ui/colorpicker.ui',
-    'ui/contextmenu.ui',
-    'ui/filerow.ui',
-    'ui/iconpicker.ui',
-    'ui/mainheader.ui',
-    'ui/overlays.ui',
-    'ui/penpicker.ui',
-    'ui/penshortcutrow.ui',
     'ui/settingspanel.ui',
     'ui/shortcuts.ui',
     'ui/sidebar.ui',
@@ -382,12 +373,12 @@ rnote_ui_gresources_ui_files = files(
     'ui/style.css',
     'ui/unitentry.ui',
     'ui/workspacebrowser.ui',
+    'ui/workspacesbar/workspacerow.ui',
+    'ui/workspacesbar/workspacesbar.ui',
 )
 
 rnote_ui_gresources_files = [
     rnote_ui_gresources_icons_files,
     rnote_ui_gresources_ui_files,
-    files(
-        'resources.gresource.xml',
-    ),
+    files('resources.gresource.xml'),
 ]

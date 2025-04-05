@@ -1,9 +1,4 @@
-project(
-    'rnote',
-    ['rust', 'cpp'],
-    version: '0.11.0',
-    meson_version: '>= 1.0',
-)
+project('rnote', ['rust', 'cpp'], version: '0.11.0', meson_version: '>= 1.0')
 # add a patch suffix for alpha or beta versions in format '-<alpha|beta>.<x>'.
 patch = ''
 
@@ -91,18 +86,6 @@ meson.add_dist_script(
     meson.project_source_root(),
 )
 
-if profile == 'devel'
-    # Setup pre-commit hook for ensuring coding style is always consistent
-    message('Setting up git pre-commit hook..')
-    run_command(
-        'cp',
-        '-f',
-        'hooks/pre-commit.hook',
-        '.git/hooks/pre-commit',
-        check: false,
-    )
-endif
-
 # core crates
 subdir('crates/rnote-compose')
 subdir('crates/rnote-engine')
@@ -113,13 +96,7 @@ run_target(
     'cargo-fmt-check',
     command: [
         cargo,
-        [
-            'fmt',
-            '--all',
-            '--check',
-            '--manifest-path',
-            cargo_manifest_path,
-        ],
+        ['fmt', '--all', '--check', '--manifest-path', cargo_manifest_path],
     ],
     env: cargo_env,
 )
@@ -136,19 +113,9 @@ if cargo_nextest.found()
         cargo_target_dir,
     ]
     if ci == true
-        nextest_args += [
-            '--profile',
-            'ci',
-        ]
+        nextest_args += ['--profile', 'ci']
     endif
-    run_target(
-        'cargo-test',
-        command: [
-            cargo,
-            nextest_args
-        ],
-        env: cargo_env,
-    )
+    run_target('cargo-test', command: [cargo, nextest_args], env: cargo_env)
 endif
 
 # cargo clean
@@ -169,7 +136,7 @@ run_target(
 
 # build/install the ui
 if build_ui == true
-    # ui dependencies
+# ui dependencies
     dependency('appstream')
     dependency('poppler-glib', version: '>= 22.02')
     dependency('gtk4', version: '>= 4.12')
@@ -210,33 +177,21 @@ if build_ui == true
     # ui cargo check
     run_target(
         'ui-cargo-check',
-        command: [
-            cargo,
-            'check',
-            ui_cargo_options,
-        ],
+        command: [cargo, 'check', ui_cargo_options],
         env: cargo_env,
     )
 
     # ui cargo clippy
     run_target(
         'ui-cargo-clippy',
-        command: [
-            cargo,
-            'clippy',
-            ui_cargo_options,
-        ],
+        command: [cargo, 'clippy', ui_cargo_options],
         env: cargo_env,
     )
 
     # ui cargo doc
     run_target(
         'ui-cargo-doc',
-        command: [
-            cargo,
-            'doc',
-            ui_cargo_options,
-        ],
+        command: [cargo, 'doc', ui_cargo_options],
         env: cargo_env,
     )
 
@@ -283,7 +238,10 @@ if build_ui == true
     inno_script_conf = configuration_data()
     inno_script_conf.set_quoted('MESON_SOURCE_ROOT', meson.project_source_root())
     inno_script_conf.set_quoted('MESON_BUILD_ROOT', meson.project_build_root())
-    inno_script_conf.set_quoted('BUILD_ENVIRONMENT_PATH', win_build_environment_path)
+    inno_script_conf.set_quoted(
+        'BUILD_ENVIRONMENT_PATH',
+        win_build_environment_path,
+    )
     inno_script_conf.set_quoted('APP_NAME', app_name)
     inno_script_conf.set_quoted('APP_NAME_CAPITALIZED', app_name_capitalized)
     inno_script_conf.set_quoted('APP_ID', app_id)
@@ -305,7 +263,7 @@ if build_ui == true
     )
 
     if host_machine.system() == 'windows'
-        # build installer
+# build installer
         custom_target(
             'build-installer',
             input: inno_script,
@@ -329,7 +287,7 @@ endif
 
 # build/install the cli
 if build_cli == true
-    # cli crate
+# cli crate
     subdir('crates/rnote-cli')
 
     cli_cargo_options = ['--manifest-path', cargo_manifest_path]
@@ -362,33 +320,21 @@ if build_cli == true
     # cli cargo check
     run_target(
         'cli-cargo-check',
-        command: [
-            cargo,
-            'check',
-            cli_cargo_options,
-        ],
+        command: [cargo, 'check', cli_cargo_options],
         env: cargo_env,
     )
 
     # cli cargo clippy
     run_target(
         'cli-cargo-clippy',
-        command: [
-            cargo,
-            'clippy',
-            cli_cargo_options,
-        ],
+        command: [cargo, 'clippy', cli_cargo_options],
         env: cargo_env,
     )
 
     # cli cargo doc
     run_target(
         'cli-cargo-doc',
-        command: [
-            cargo,
-            'doc',
-            cli_cargo_options,
-        ],
+        command: [cargo, 'doc', cli_cargo_options],
         env: cargo_env,
     )
 

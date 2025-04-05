@@ -44,11 +44,17 @@ mod imp {
         #[template_child]
         pub(crate) shaperstyle_rough_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub(crate) shaperstyle_highlighter_row: TemplateChild<adw::SpinRow>,
+        pub(crate) highlight_mode_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(crate) highlight_opacity_row: TemplateChild<adw::SpinRow>,
+        #[template_child]
+        pub(crate) smoothstyle_group: TemplateChild<adw::PreferencesGroup>,
         #[template_child]
         pub(crate) smoothstyle_line_cap_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(crate) smoothstyle_line_style_row: TemplateChild<adw::ComboRow>,
+        #[template_child]
+        pub(crate) roughstyle_group: TemplateChild<adw::PreferencesGroup>,
         #[template_child]
         pub(crate) roughstyle_fillstyle_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -135,10 +141,6 @@ impl RnShaperPage {
                 .imp()
                 .shaperstyle_listbox
                 .select_row(Some(&*self.imp().shaperstyle_rough_row)),
-            ShaperStyle::Highlighter => self
-                .imp()
-                .shaperstyle_listbox
-                .select_row(Some(&*self.imp().shaperstyle_highlighter_row)),
         }
     }
 
@@ -223,7 +225,7 @@ impl RnShaperPage {
                     let shaper_style = canvas.engine_ref().pens_config.shaper_config.style;
 
                     match shaper_style {
-                        ShaperStyle::Smooth | ShaperStyle::Highlighter => {
+                        ShaperStyle::Smooth => {
                             let smooth_options: &mut SmoothOptions =
                                 &mut canvas.engine_mut().pens_config.shaper_config.smooth_options;
                             smooth_options.stroke_width = stroke_width;
@@ -257,17 +259,17 @@ impl RnShaperPage {
                     shaperpage.stroke_width_picker().deselect_setters();
 
                     match shaper_style {
-                        ShaperStyle::Smooth | ShaperStyle::Highlighter => {
+                        ShaperStyle::Smooth => {
                             let stroke_width = canvas
                                 .engine_mut()
                                 .pens_config
                                 .shaper_config
                                 .smooth_options
                                 .stroke_width;
-                            shaperpage
-                                .imp()
-                                .stroke_width_picker
-                                .set_stroke_width(stroke_width);
+                            let page = shaperpage.imp();
+                            page.roughstyle_group.set_visible(false);
+                            page.smoothstyle_group.set_visible(true);
+                            page.stroke_width_picker.set_stroke_width(stroke_width);
                         }
                         ShaperStyle::Rough => {
                             let stroke_width = canvas
@@ -276,18 +278,29 @@ impl RnShaperPage {
                                 .shaper_config
                                 .rough_options
                                 .stroke_width;
-
-                            shaperpage
-                                .imp()
-                                .stroke_width_picker
-                                .set_stroke_width(stroke_width);
+                            let page = shaperpage.imp();
+                            page.smoothstyle_group.set_visible(false);
+                            page.roughstyle_group.set_visible(true);
+                            page.stroke_width_picker.set_stroke_width(stroke_width);
                         }
                     }
                 }
             }
         ));
 
-        imp.shaperstyle_highlighter_row.connect_changed(clone!(
+        // Highlighter options
+        imp.highlight_mode_row.connect_active_notify(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                canvas.engine_mut().pens_config.shaper_config.highlight_mode = row.is_active();
+            }
+        ));
+
+        imp.highlight_opacity_row.connect_changed(clone!(
             #[weak]
             appwindow,
             move |row| {
@@ -298,7 +311,7 @@ impl RnShaperPage {
                     .engine_mut()
                     .pens_config
                     .shaper_config
-                    .highlighter_opacity = row.value().round() / 100.0;
+                    .highlight_opacity = row.value().round() / 100.0;
             }
         ));
 
@@ -567,7 +580,7 @@ impl RnShaperPage {
         self.set_shaper_style(shaper_config.style);
 
         match shaper_config.style {
-            ShaperStyle::Smooth | ShaperStyle::Highlighter => {
+            ShaperStyle::Smooth => {
                 imp.stroke_width_picker
                     .set_stroke_width(shaper_config.smooth_options.stroke_width);
             }
@@ -592,8 +605,10 @@ impl RnShaperPage {
             .set_value(shaper_config.rough_options.hachure_angle.to_degrees());
 
         // Highlighter opacity
-        imp.shaperstyle_highlighter_row
-            .set_value((shaper_config.highlighter_opacity * 100.0).round());
+        imp.highlight_mode_row
+            .set_active(shaper_config.highlight_mode);
+        imp.highlight_opacity_row
+            .set_value((shaper_config.highlight_opacity * 100.0).round());
 
         // Constraints
         imp.constraint_enabled_row

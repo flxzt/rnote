@@ -52,23 +52,6 @@
         <property name="orientation">vertical</property>
       </object>
     </child>
-    <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkMenuButton" id="shaperstyle_menubutton">
-            <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Shaper Style</property>
-            <property name="popover">shaperstyle_popover</property>
-            <property name="icon-name">pen-shaper-style-smooth-symbolic</property>
-            <style>
-              <class name="flat" />
-              <class name="sidebar_action_button" />
-            </style>
-          </object>
-        </child>
-      </object>
-    </child>
 
     <!-- Shape config -->
     <object class="GtkPopover" id="shapeconfig_popover">
@@ -80,6 +63,7 @@
           <property name="margin-start">6</property>
           <property name="margin-end">6</property>
           <property name="spacing">12</property>
+          <property name="width-request">330</property>
           <child>
             <object class="GtkBox">
               <child>
@@ -104,41 +88,58 @@
             </object>
           </child>
 
-          <!-- Brush type options -->
+          <!-- Shaper Style -->
           <child>
-            <object class="GtkListBox" id="shaperstyle_listbox">
-              <property name="width-request">300</property>
-              <property name="selection-mode">browse</property>
-              <style>
-                <class name="content" />
-                <class name="large" />
-              </style>
+            <object class="AdwPreferencesGroup">
+              <property name="title" translatable="yes">Shaper Style</property>
               <child>
-                <object class="AdwActionRow" id="shaperstyle_smooth_row">
-                  <property name="title" translatable="yes">Smooth</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">pen-shaper-style-smooth-symbolic</property>
-                      <property name="icon-size">large</property>
+                <object class="GtkListBox" id="shaperstyle_listbox">
+                  <property name="selection-mode">browse</property>
+                  <style>
+                    <class name="content" />
+                    <class name="large" />
+                  </style>
+                  <child>
+                    <object class="AdwActionRow" id="shaperstyle_smooth_row">
+                      <property name="title" translatable="yes">Smooth</property>
+                      <child type="prefix">
+                        <object class="GtkImage">
+                          <property name="icon-name">pen-shaper-style-smooth-symbolic</property>
+                          <property name="icon-size">large</property>
+                        </object>
+                      </child>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="AdwActionRow" id="shaperstyle_rough_row">
+                      <property name="title" translatable="yes">Rough</property>
+                      <child type="prefix">
+                        <object class="GtkImage">
+                          <property name="icon-name">pen-shaper-style-rough-symbolic</property>
+                          <property name="icon-size">large</property>
+                        </object>
+                      </child>
                     </object>
                   </child>
                 </object>
               </child>
+            </object>
+          </child>
+
+          <!-- Highlighting -->
+          <child>
+            <object class="AdwPreferencesGroup">
+              <property name="title" translatable="yes">Highlighting</property>
               <child>
-                <object class="AdwActionRow" id="shaperstyle_rough_row">
-                  <property name="title" translatable="yes">Rough</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">pen-shaper-style-rough-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
+                <object class="AdwSwitchRow" id="highlight_mode_row">
+                  <property name="title" translatable="yes">Highlight mode</property>
+                  <property name="subtitle" translatable="yes">Fade active color</property>
                 </object>
               </child>
               <child>
-                <object class="AdwSpinRow" id="shaperstyle_highlighter_row">
-                  <property name="title" translatable="yes">Highlighter</property>
-                  <property name="subtitle" translatable="yes">Draw translucent color strokes</property>
+                <object class="AdwSpinRow" id="highlight_opacity_row">
+                  <property name="title" translatable="yes">Highlight Opacity</property>
+                  <property name="subtitle" translatable="yes">Modify the highlight opacity (%)</property>
                   <property name="adjustment">
                     <object class="GtkAdjustment">
                       <property name="lower">0</property>
@@ -156,7 +157,7 @@
 
           <!-- Smooth options -->
           <child>
-            <object class="AdwPreferencesGroup">
+            <object class="AdwPreferencesGroup" id="smoothstyle_group">
               <property name="title" translatable="yes">Smooth Style</property>
               <child>
                 <object class="AdwComboRow" id="smoothstyle_line_cap_row">
@@ -194,7 +195,7 @@
 
           <!-- Rough options -->
           <child>
-            <object class="AdwPreferencesGroup">
+            <object class="AdwPreferencesGroup" id="roughstyle_group">
               <property name="title" translatable="yes">Rough Style</property>
               <child>
                 <object class="AdwComboRow" id="roughstyle_fillstyle_row">
@@ -219,7 +220,14 @@
                 <object class="AdwSpinRow" id="roughstyle_hachure_angle_row">
                   <property name="title" translatable="yes">Hachure Angle</property>
                   <property name="subtitle" translatable="yes">Set the angle of hachure fills</property>
-                  <property name="adjustment">roughstyle_hachure_angle_adj</property>
+                  <property name="adjustment">
+                    <object class="GtkAdjustment">
+                      <property name="step-increment">2</property>
+                      <property name="upper">180.0</property>
+                      <property name="lower">-180.0</property>
+                      <property name="value">90.0</property>
+                    </object>
+                  </property>
                   <property name="numeric">true</property>
                   <property name="digits">0</property>
                 </object>
@@ -229,92 +237,46 @@
 
           <!-- Constraints -->
           <child>
-            <object class="GtkLabel">
-              <property name="label" translatable="yes">Constraints</property>
-              <property name="halign">start</property>
-              <style>
-                <class name="heading" />
-              </style>
-            </object>
-          </child>
-          <child>
-            <object class="GtkListBox">
-              <property name="width-request">300</property>
-              <property name="selection-mode">none</property>
-              <style>
-                <class name="content" />
-                <class name="medium" />
-              </style>
+            <object class="AdwPreferencesGroup">
+              <property name="title" translatable="yes">Constraints</property>
               <child>
-                <object class="AdwSwitchRow" id="constraint_enabled_row">
-                  <property name="title" translatable="yes">Enabled</property>
-                  <property name="subtitle" translatable="yes">Hold Ctrl to temporarily enable/disable
+                <object class="GtkListBox">
+                  <property name="width-request">300</property>
+                  <property name="selection-mode">none</property>
+                  <style>
+                    <class name="content" />
+                    <class name="medium" />
+                  </style>
+                  <child>
+                    <object class="AdwSwitchRow" id="constraint_enabled_row">
+                      <property name="title" translatable="yes">Enabled</property>
+                      <property name="subtitle" translatable="yes">Hold Ctrl to temporarily enable/disable
 constraints when this switch is off/on</property>
-                </object>
-              </child>
-              <child>
-                <object class="AdwSwitchRow" id="constraint_one_to_one_row">
-                  <property name="title" translatable="yes">1:1</property>
-                </object>
-              </child>
-              <child>
-                <object class="AdwSwitchRow" id="constraint_three_to_two_row">
-                  <property name="title" translatable="yes">3:2</property>
-                </object>
-              </child>
-              <child>
-                <object class="AdwSwitchRow" id="constraint_golden_row">
-                  <property name="title" translatable="yes">Golden Ratio (1:1.618)</property>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="AdwSwitchRow" id="constraint_one_to_one_row">
+                      <property name="title" translatable="yes">1:1</property>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="AdwSwitchRow" id="constraint_three_to_two_row">
+                      <property name="title" translatable="yes">3:2</property>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="AdwSwitchRow" id="constraint_golden_row">
+                      <property name="title" translatable="yes">Golden Ratio (1:1.618)</property>
+                    </object>
+                  </child>
                 </object>
               </child>
             </object>
           </child>
         </object>
       </child>
-    </object>
-    <object class="GtkAdjustment" id="roughstyle_hachure_angle_adj">
-      <property name="step-increment">2</property>
-      <property name="upper">180.0</property>
-      <property name="lower">-180.0</property>
-      <property name="value">90.0</property>
     </object>
 
-    <!-- Shape style -->
-    <object class="GtkPopover" id="shaperstyle_popover">
-      <child>
-        <object class="GtkBox">
-          <property name="orientation">vertical</property>
-          <property name="margin-top">6</property>
-          <property name="margin-bottom">6</property>
-          <property name="margin-start">6</property>
-          <property name="margin-end">6</property>
-          <property name="spacing">12</property>
-          <child>
-            <object class="GtkBox">
-              <child>
-                <object class="GtkLabel">
-                  <property name="label" translatable="yes">Shape Style</property>
-                  <property name="hexpand">true</property>
-                  <property name="halign">center</property>
-                  <style>
-                    <class name="title-3" />
-                  </style>
-                </object>
-              </child>
-              <child>
-                <object class="GtkButton" id="shaperstyle_popover_close_button">
-                  <property name="icon-name">window-close-symbolic</property>
-                  <style>
-                    <class name="flat" />
-                    <class name="circular" />
-                  </style>
-                </object>
-              </child>
-            </object>
-          </child>
-        </object>
-      </child>
-    </object>
     <!-- Shape builder type -->
     <object class="GtkPopover" id="shapebuildertype_popover">
       <child>

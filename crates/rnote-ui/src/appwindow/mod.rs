@@ -771,7 +771,7 @@ impl RnAppWindow {
 
                 let style = canvas.engine_ref().pens_config.shaper_config.style;
                 match style {
-                    ShaperStyle::Smooth | ShaperStyle::Highlighter => {
+                    ShaperStyle::Smooth => {
                         let stroke_color = canvas
                             .engine_ref()
                             .pens_config

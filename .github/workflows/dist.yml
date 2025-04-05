@@ -16,14 +16,15 @@ jobs:
       contents: write
     steps:
 
+      # Necessary so that 'Checkout' will clone as repository, which the `meson dist` commands needs.
+      - name: Install git
+        run: |
+          dnf install -y git
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: System dependencies
-        run: |
-          sudo dnf install -y git
 
       - name: Add workspace as git safe directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"

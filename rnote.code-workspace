@@ -25,6 +25,8 @@
         "version": "0.2.0"
     },
     "settings": {
+        "C_Cpp.default.compileCommands": "/mnt/Daten/source/rnote/_mesonbuild/compile_commands.json",
+        "C_Cpp.default.configurationProvider": "mesonbuild.mesonbuild",
         "files.watcherExclude": {
             "_flatpak_app/**": true,
             "_flatpak_repo/**": true,

@@ -7,7 +7,6 @@
 /.editorconfig
 /.vscode
 *.mo
-*.code-workspace
 .idea/
 .toggletasks.json
 *.flatpak

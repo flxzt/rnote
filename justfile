@@ -15,10 +15,12 @@ sudo_cmd := if ci == "true" {
     "sudo"
 }
 
+export LANG := "C"
+export RUST_BACKTRACE := "1"
 export RUST_LOG := \
-    "rnote-ui=" + log_level + \
-    "rnote-cli=" + log_level + \
-    "rnote-engine=" + log_level + \
+    "rnote-ui=" + log_level + "," + \
+    "rnote-cli=" + log_level + "," + \
+    "rnote-engine=" + log_level + "," + \
     "rnote-compose=" + log_level
 
 default:
@@ -177,6 +179,12 @@ install:
 
 install-flatpak:
     flatpak-builder --user --install {{ flatpak_app_folder }} build-aux/com.github.flxzt.rnote.Devel.yaml
+
+run-ui:
+    {{ build_folder }}/target/debug/rnote
+
+run-cli:
+    {{ build_folder }}/target/debug/rnote-cli
 
 run-flatpak:
     flatpak-builder --run {{ flatpak_app_folder }} build-aux/com.github.flxzt.rnote.Devel.yaml rnote

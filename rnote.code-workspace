@@ -1,0 +1,161 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "launch": {
+        "compounds": [],
+        "configurations": [
+            {
+                "args": [],
+                "env": {
+                    "G_MESSAGES_DEBUG": "all",
+                    "LANG": "C",
+                    "RUST_BACKTRACE": "full",
+                    "RUST_LOG": "rnote=debug,rnote-cli=debug,rnote-engine=debug,rnote-compose=debug"
+                },
+                "name": "debug ui",
+                "preLaunchTask": "build",
+                "program": "${workspaceFolder}/_mesonbuild/rnote",
+                "request": "launch",
+                "type": "lldb"
+            },
+        ],
+        "version": "0.2.0"
+    },
+    "settings": {
+        "files.watcherExclude": {
+            "_flatpak_app/**": true,
+            "_flatpak_repo/**": true,
+            "_mesonbuild/**": true,
+            ".flatpak-builder/**": true,
+            "**/.git/objects/**": true,
+            "**/.git/subtree-cache/**": true
+        },
+        "mesonbuild.buildFolder": "_mesonbuild",
+        "mesonbuild.configureOnOpen": false
+    },
+    "tasks": {
+        "tasks": [
+            {
+                "command": "just prerequisites-dev",
+                "label": "prerequisites",
+                "type": "shell"
+            },
+            {
+                "command": "just setup-dev",
+                "label": "setup",
+                "type": "shell"
+            },
+            {
+                "command": "just clean",
+                "label": "clean",
+                "type": "shell"
+            },
+            {
+                "command": "just fmt-check",
+                "label": "fmt-check",
+                "type": "shell"
+            },
+            {
+                "command": "just fmt",
+                "label": "fmt",
+                "type": "shell"
+            },
+            {
+                "command": "just check",
+                "label": "check",
+                "type": "shell"
+            },
+            {
+                "command": "just lint",
+                "label": "lint",
+                "type": "shell"
+            },
+            {
+                "command": "just build",
+                "label": "build",
+                "type": "shell"
+            },
+            {
+                "command": "just build-flatpak",
+                "label": "build flatpak",
+                "type": "shell"
+            },
+            {
+                "command": "just build-flatpak-bundle",
+                "label": "build flatpak bundle",
+                "type": "shell"
+            },
+            {
+                "command": "just build-win-installer",
+                "label": "build win installer",
+                "type": "shell"
+            },
+            {
+                "command": "just install",
+                "label": "install",
+                "type": "shell"
+            },
+            {
+                "command": "just install-flatpak",
+                "label": "install flatpak",
+                "type": "shell"
+            },
+            {
+                "command": "just run-ui",
+                "dependsOn": "build",
+                "label": "run ui",
+                "type": "shell"
+            },
+            {
+                "command": "just run-cli",
+                "dependsOn": "build",
+                "label": "run cli",
+                "type": "shell"
+            },
+            {
+                "command": "just run-flatpak",
+                "label": "run flatpak",
+                "type": "shell"
+            },
+            {
+                "command": "just test",
+                "label": "test",
+                "type": "shell"
+            },
+            {
+                "command": "just test-file-compatibility",
+                "label": "test file compatibility",
+                "type": "shell"
+            },
+            {
+                "command": "just generate-docs",
+                "label": "generate docs",
+                "type": "shell"
+            },
+            {
+                "command": "just check-outdated-dependencies",
+                "label": "check outdated dependencies",
+                "type": "shell"
+            },
+            {
+                "command": "just update-translations",
+                "label": "update translations",
+                "type": "shell"
+            },
+            {
+                "command": "just create-tarball",
+                "label": "create tarball",
+                "type": "shell"
+            },
+            {
+                "command": "just generate-json-flatpak-manifest",
+                "label": "generate json flatpak manifest",
+                "type": "shell"
+            },
+        ],
+        "version": "2.0.0"
+    }
+}

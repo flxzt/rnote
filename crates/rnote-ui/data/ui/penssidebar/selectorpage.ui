@@ -70,7 +70,7 @@
 
         <child>
           <object class="GtkToggleButton" id="resize_lock_aspectratio_togglebutton">
-            <property name="tooltip_text" translatable="yes">Lock Aspectratio While Resizing the Selection</property>
+            <property name="tooltip_text" translatable="yes">Lock Aspect Ratio While Resizing the Selection</property>
             <property name="icon_name">selection-resize-lock-aspectratio-symbolic</property>
             <style>
               <class name="flat" />

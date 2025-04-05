@@ -263,55 +263,10 @@ Be sure to configure meson with option `-Dprofile=devel` to have a build that in
 Then configure, compile and install the meson project as outlined above. 
 
 ## With VSCode
-With the `CodeLLDB` extension can be used to debug, set breakpoints etc. from within the editor.
+With the `CodeLLDB` extension can be used to debug from within the editor.
 
-Create a `tasks.json` file similar to this:
+A `.code-workspace` workspace file is provided in the repository root
+that contains various debug configurations, tasks, etc.
 
-```json
-{
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "meson compile",
-            "type": "shell",
-            "command": "meson compile -C _mesonbuild"
-        },
-        {
-            "label": "meson install",
-            "type": "shell",
-            "command": "meson install -C _mesonbuild"
-        }
-    ]
-}
-```
-
-and a `launch.json` entry:
-
-```json
-{
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "compile and launch debug build of 'rnote'",
-            "args": [],
-            "program": "${workspaceFolder}/_mesonbuild/target/debug/rnote",
-            "preLaunchTask": "meson compile",
-            "env": {"RUST_LOG": "rnote=debug"}
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "install and launch debug build of 'rnote'",
-            "args": [],
-            "program": "${workspaceFolder}/_mesonbuild/target/debug/rnote",
-            "preLaunchTask": "meson install",
-            "env": {"RUST_LOG": "rnote=debug"}
-        }
-    ]
-}
-```
-
-These configurations can then be selected in the `Run and Debug` panel and launched there or through
-`Run -> Start Debugging`.
+Open the repository as workspace and then select "debug ui" in the "Run and Debug" panel to debug with lldb.
+Then it is possible to set breakpoints, inspect variables, and so on while the app is running.

@@ -253,9 +253,8 @@ impl PenHolder {
             widget_flags |= wf;
         }
         // reset the cancelled state as we just handled a pen tool (and not a selection tool) event
-        match event {
-            PenEvent::Up { .. } => engine_view.store.set_cancelled_state(false),
-            _ => (),
+        if matches!(event, PenEvent::Up { .. }) {
+            engine_view.store.set_cancelled_state(false);
         }
 
         // Always redraw after handling a pen event.

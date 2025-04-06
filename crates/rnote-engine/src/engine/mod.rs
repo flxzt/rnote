@@ -848,6 +848,8 @@ impl Engine {
         // check if we have a selector as a temporary tool and need to change the pen
         let cancel_selection = self.cancel_selection_temporary_pen();
         if cancel_selection {
+            // we trigger a delete press event as this reset the pen back to its
+            // original mode and deletes the content
             let (_, widget_flags) = self.handle_pen_event(
                 rnote_compose::PenEvent::KeyPressed {
                     keyboard_key: KeyboardKey::Delete,

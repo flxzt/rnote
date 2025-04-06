@@ -554,7 +554,8 @@ impl RnAppWindow {
                 // check if we have a selector as a temporary tool and need to change the pen
                 let cancel_selection = canvas.engine_ref().cancel_selection_temporary_pen();
                 let widget_flags = if cancel_selection {
-                    // trigger an event for a KeyboardPress::Delete
+                    // trigger an event for a KeyboardPress::Delete : this both deletes the selection
+                    // and resets the pen back to its previous mode
                     let (_, widget_flags) = canvas.engine_mut().handle_pen_event(
                         rnote_compose::PenEvent::KeyPressed {
                             keyboard_key: KeyboardKey::Delete,

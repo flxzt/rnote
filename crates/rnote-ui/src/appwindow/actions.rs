@@ -176,7 +176,27 @@ impl RnAppWindow {
         for (i, setter) in color_setters.into_iter().enumerate() {
             let action = gio::SimpleAction::new(&format!("set-color-{}", i + 1), None);
             self.add_action(&action);
-            action.connect_activate(move |_, _| setter.set_active(true));
+            action.connect_activate(clone!(
+                #[weak(rename_to=appwindow)]
+                self,
+                move |_, _| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+                    let en = canvas.engine_ref();
+                    let condition = en.penholder.current_pen_style() != PenStyle::Typewriter
+                        || en.penholder.current_pen_progress()
+                            != rnote_compose::penevent::PenProgress::InProgress;
+                    drop(en);
+                    if condition {
+                        setter.set_active(true);
+                    } else {
+                        let widget_flags =
+                            canvas.engine_mut().text_insert(format!("{}", i + 1), None);
+                        appwindow.handle_widget_flags(widget_flags, &canvas);
+                    }
+                }
+            ));
         }
 
         let action_drawing_pad_pressed_button_0 =
@@ -1189,10 +1209,7 @@ impl RnAppWindow {
         (1..=9).for_each(|i| {
             app.set_accels_for_action(
                 &format!("win.set-color-{i}"),
-                &[
-                    &format!("<Ctrl><Shift>{i}"),
-                    &format!("<Ctrl><Shift>KP_{i}"),
-                ],
+                &[&format!("{i}"), &format!("KP_{i}")],
             )
         });
 

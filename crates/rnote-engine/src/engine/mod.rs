@@ -946,4 +946,12 @@ impl Engine {
         self.penholder
             .handle_animation_frame(&mut engine_view_mut!(self), optimize_epd);
     }
+
+    pub fn text_insert(&mut self, text: String, pos: Option<na::Vector2<f64>>) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            widget_flags |= typewriter.insert_text(text, pos, &mut engine_view_mut!(self));
+        }
+        widget_flags
+    }
 }

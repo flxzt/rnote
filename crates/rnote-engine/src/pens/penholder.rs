@@ -257,7 +257,7 @@ impl PenHolder {
             PenEvent::Up { .. } => engine_view.store.set_cancelled_state(false),
             _ => (),
         }
-        
+
         // Always redraw after handling a pen event.
         //
         // This is also needed because pens might have claimed/requested an animation frame.

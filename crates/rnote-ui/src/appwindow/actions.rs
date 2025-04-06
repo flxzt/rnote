@@ -8,9 +8,9 @@ use gtk4::{
     prelude::*,
 };
 use p2d::bounding_volume::BoundingVolume;
-use rnote_compose::penevent::{KeyboardKey, ShortcutKey};
 use rnote_compose::SplitOrder;
 use rnote_compose::penevent::ShortcutKey;
+use rnote_compose::penevent::{KeyboardKey, ShortcutKey};
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::pens::PenStyle;
@@ -555,10 +555,17 @@ impl RnAppWindow {
                 let cancel_selection = canvas.engine_ref().cancel_selection_temporary_pen();
                 let widget_flags = if cancel_selection {
                     // trigger an event for a KeyboardPress::Delete
-                    let (_, widget_flags) = canvas.engine_mut().handle_pen_event(rnote_compose::PenEvent::KeyPressed { keyboard_key: KeyboardKey::Delete, modifier_keys: vec![] }, None, Instant::now());
+                    let (_, widget_flags) = canvas.engine_mut().handle_pen_event(
+                        rnote_compose::PenEvent::KeyPressed {
+                            keyboard_key: KeyboardKey::Delete,
+                            modifier_keys: vec![],
+                        },
+                        None,
+                        Instant::now(),
+                    );
                     widget_flags
                 } else {
-                    canvas.engine_mut().trash_selection()                    
+                    canvas.engine_mut().trash_selection()
                 };
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }

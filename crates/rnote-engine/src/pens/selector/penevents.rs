@@ -198,8 +198,13 @@ impl Selector {
                             };
                         } else {
                             // when clicking outside the selection bounds, reset
+                            tracing::debug!("cancelling the selection");
                             engine_view.store.set_selected_keys(selection, false);
                             self.state = SelectorState::Idle;
+
+                            // This event is in the same sequence than the one that
+                            // cancelled the selection. We thus set the variable to true here
+                            engine_view.store.set_cancelled_state(true);
 
                             progress = PenProgress::Finished;
                         }

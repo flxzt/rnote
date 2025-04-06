@@ -248,11 +248,15 @@ impl PenHolder {
         widget_flags |= wf | self.handle_pen_progress(event_result.progress, engine_view);
 
         if !event_result.handled {
-            let (propagate, wf) = self.handle_pen_event_global(event, now, engine_view);
+            let (propagate, wf) = self.handle_pen_event_global(event.clone(), now, engine_view);
             event_result.propagate |= propagate;
             widget_flags |= wf;
         }
-
+        // reset the state
+        match event {
+            PenEvent::Up { .. } => engine_view.store.set_cancelled_state(false),
+            _ => (),
+        }
         // Always redraw after handling a pen event.
         //
         // This is also needed because pens might have claimed/requested an animation frame.

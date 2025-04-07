@@ -180,6 +180,14 @@ impl RnAppWindow {
                 #[weak(rename_to=appwindow)]
                 self,
                 move |_, _| {
+                    if let Some(widget) = GtkWindowExt::focus(&appwindow)
+                        .and_then(|w| w.dynamic_cast::<gtk4::Editable>().ok())
+                    {
+                        let mut p = widget.position();
+                        widget.insert_text(&format!("{}", i + 1), &mut p);
+                        widget.set_position(p);
+                        return;
+                    }
                     let Some(canvas) = appwindow.active_tab_canvas() else {
                         return;
                     };

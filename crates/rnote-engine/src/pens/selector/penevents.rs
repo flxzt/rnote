@@ -22,6 +22,7 @@ impl Selector {
         modifier_keys: HashSet<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
+        temporary_tool: bool,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
         self.pos = Some(element.pos);
@@ -200,13 +201,22 @@ impl Selector {
                             // when clicking outside the selection bounds, reset
                             tracing::debug!("cancelling the selection");
                             engine_view.store.set_selected_keys(selection, false);
-                            self.state = SelectorState::Idle;
 
-                            // This event is in the same sequence than the one that
-                            // cancelled the selection. We thus set the variable to true here
-                            engine_view.store.set_cancelled_state(true);
+                            if temporary_tool {
+                                // we had a selection active then for the next sequence
+                                // we activated the temporary mode for the selector and
+                                // clicked outside the selection. We expect to be able
+                                // to do another selection
+                                self.state = SelectorState::Selecting { path: Vec::new() };
+                                progress = PenProgress::InProgress;
+                            } else {
+                                self.state = SelectorState::Idle;
+                                progress = PenProgress::Finished;
 
-                            progress = PenProgress::Finished;
+                                // This event is in the same sequence than the one that
+                                // cancelled the selection. We thus set the variable to true here
+                                engine_view.store.set_cancelled_state(true);
+                            }
                         }
                     }
                     ModifyState::Translate {

@@ -382,6 +382,7 @@ impl PenBehaviour for Typewriter {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
+        _temporary_tool: bool,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let (event_result, widget_flags) = match event {
             PenEvent::Down {

@@ -55,6 +55,7 @@ impl PenBehaviour for Eraser {
         event: PenEvent,
         _now: Instant,
         engine_view: &mut EngineViewMut,
+        _temporary_tool: bool,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 

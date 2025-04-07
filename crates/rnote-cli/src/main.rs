@@ -8,6 +8,7 @@ pub(crate) mod export;
 pub(crate) mod import;
 pub(crate) mod mutate;
 pub(crate) mod test;
+pub(crate) mod thumbnail;
 pub(crate) mod validators;
 
 // Renames

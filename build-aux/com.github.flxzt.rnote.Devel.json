@@ -4,7 +4,7 @@
     "development"
   ],
   "runtime": "org.gnome.Platform",
-  "runtime-version": "47",
+  "runtime-version": "48",
   "sdk": "org.gnome.Sdk",
   "sdk-extensions": [
     "org.freedesktop.Sdk.Extension.rust-stable",
@@ -22,11 +22,9 @@
     "--filesystem=xdg-desktop",
     "--talk-name=org.gtk.vfs.*",
     "--filesystem=xdg-run/gvfsd",
-    "--env=RUST_BACKTRACE=full",
-    "--env=RUST_LOG=rnote=debug",
-    "--env=G_MESSAGES_DEBUG=all",
-    "--env=GTK_PATH=/app/lib/gtk-4.0",
-    "--env=GST_DEBUG=3"
+    "--env=RUST_BACKTRACE=1",
+    "--env=RUST_LOG=rnote=debug,rnote-cli=debug,rnote-engine=debug,rnote-compose=debug",
+    "--env=GTK_PATH=/app/lib/gtk-4.0"
   ],
   "build-options": {
     "append-path": "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm19/bin",

@@ -85,10 +85,14 @@
               <object class="GtkBox">
                 <property name="spacing">3</property>
                 <child>
-                  <object class="RnCanvasMenu" id="canvasmenu"></object>
+                  <object class="RnCanvasMenu" id="canvasmenu">
+                    <property name="tooltip-text" translatable="yes">Canvas Menu</property>
+                  </object> 
                 </child>
                 <child>
-                  <object class="RnAppMenu" id="appmenu"></object>
+                  <object class="RnAppMenu" id="appmenu">
+                    <property name="tooltip-text" translatable="yes">App Menu</property>
+                  </object>
                 </child>
               </object>
             </child>

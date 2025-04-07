@@ -1,6 +1,7 @@
 // Imports
 use crate::document::background;
 use crate::engine::import::XoppImportPrefs;
+use crate::fileformats::rnoteformat::SerializationMethod;
 use crate::fileformats::{FileFormatLoader, rnoteformat, xoppformat};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::Stroke;
@@ -47,7 +48,11 @@ impl Default for EngineSnapshot {
 }
 
 impl EngineSnapshot {
-    /// Loads a snapshot from the bytes of a .rnote file.
+    pub fn with_save_prefs(mut self, save_prefs: SavePrefs) -> Self {
+        self.save_prefs = save_prefs;
+        self
+    }
+    /// Loads a snapshot from the bytes of a Rnote file.
     ///
     /// To import this snapshot into the current engine, use [`Engine::load_snapshot()`].
     pub async fn load_from_rnote_bytes(bytes: Vec<u8>) -> anyhow::Result<Self> {
@@ -55,14 +60,18 @@ impl EngineSnapshot {
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Self> {
-                // Efficient support for legacy rnote files, by checking the existence of the gzip magic number at the start of the file, avoids the costly try_from conversion.
+                // Efficient support for legacy Rnote files, by checking the existence of the gzip magic number at the start of the file, avoids the costly try_from conversion.
                 if bytes
                     .get(..2)
-                    .ok_or_else(|| anyhow::anyhow!("Not an Rnote file"))?
+                    .ok_or_else(|| anyhow::anyhow!("File is empty"))?
                     == [0x1f, 0x8b]
                 {
                     let legacy = rnoteformat::legacy::LegacyRnoteFile::load_from_bytes(&bytes)?;
-                    return Ok(ijson::from_value(&legacy.engine_snapshot)?);
+                    return Ok(ijson::from_value::<Self>(&legacy.engine_snapshot)?
+                        .with_save_prefs(SavePrefs::new_simple(
+                            SerializationMethod::Json,
+                            rnoteformat::CompressionMethod::Gzip(5),
+                        )));
                 }
 
                 let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)

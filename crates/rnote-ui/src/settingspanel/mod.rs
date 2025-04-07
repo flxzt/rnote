@@ -397,29 +397,38 @@ impl RnSettingsPanel {
             .set_selected(layout.to_u32().unwrap());
     }
 
-    fn refresh_file_compression_level_row(&self, save_prefs: &SavePrefs) {
-        let mut subtitle = format!(
-            "{:?}, {:?}",
-            save_prefs.serialization, save_prefs.compression
-        );
-        let mut display_compression_level = save_prefs.compression.get_compression_level();
-
-        if let Some((next_serialization, next_compression)) = save_prefs.on_next_save {
-            subtitle.push_str(&format!(
-                " → {:?}, {:?}",
-                next_serialization, next_compression
-            ));
-            display_compression_level = next_compression.get_compression_level();
-        }
+    pub(crate) fn refresh_file_compression_level_row(&self, save_prefs: &SavePrefs) {
+        let (subtitle, display_level) = match save_prefs.on_next_save.as_ref() {
+            Some((next_ser, next_comp)) => (
+                format!(
+                    "{:?}, {:?} → {:?}, {:?}",
+                    save_prefs.serialization, save_prefs.compression, next_ser, next_comp
+                ),
+                next_comp.get_compression_level(),
+            ),
+            None => (
+                format!(
+                    "{:?}, {:?}",
+                    save_prefs.serialization, save_prefs.compression
+                ),
+                save_prefs.compression.get_compression_level(),
+            ),
+        };
 
         self.imp()
             .file_compression_level_row
             .set_subtitle(&subtitle);
 
-        if display_compression_level.eq(&CompressionLevel::None) {
+        self.imp().file_compression_level_row.set_sensitive(
+            !save_prefs
+                .compression
+                .is_similar_to(&CompressionMethod::None),
+        );
+
+        if display_level.ne(&CompressionLevel::None) {
             self.imp()
                 .file_compression_level_row
-                .set_selected(display_compression_level.to_u32().unwrap());
+                .set_selected(display_level.to_u32().unwrap());
         }
     }
 
@@ -483,13 +492,7 @@ impl RnSettingsPanel {
     }
 
     fn refresh_file_ui(&self, active_tab: &RnCanvasWrapper) {
-        let imp = self.imp();
-        let canvas = active_tab.canvas();
-        let save_prefs = canvas.engine_ref().save_prefs.clone();
-
-        imp.file_compression_level_row
-            .set_sensitive(!matches!(save_prefs.compression, CompressionMethod::None));
-
+        let save_prefs = active_tab.canvas().engine_ref().save_prefs;
         self.refresh_file_compression_level_row(&save_prefs);
     }
 

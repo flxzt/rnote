@@ -384,7 +384,7 @@ impl Engine {
             stroke_components: Arc::clone(&store_history_entry.stroke_components),
             chrono_components: Arc::clone(&store_history_entry.chrono_components),
             chrono_counter: store_history_entry.chrono_counter,
-            save_prefs: self.save_prefs.clone(),
+            save_prefs: self.save_prefs.clone_from_engine_to_enginesnapshot(),
         }
     }
 

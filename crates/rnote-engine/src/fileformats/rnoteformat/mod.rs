@@ -36,7 +36,7 @@ impl FileFormatSaver for RnoteFile {
         let header = serde_json::to_vec(&ijson::to_value(&self.header)?)?;
         let prelude = Prelude::new(version, header.len()).try_to_bytes()?;
 
-        // From running simple tests, using ".concat" seems to be the best choice, it's much faster than Vec::apend or Vec::extend.
+        // From running simple tests, using concat seems to be the best choice, it's much faster than either append extend.
         Ok([prelude.as_slice(), header.as_slice(), self.body.as_slice()].concat())
     }
 }
@@ -105,7 +105,7 @@ impl TryFrom<&EngineSnapshot> for RnoteFile {
     type Error = anyhow::Error;
 
     fn try_from(value: &EngineSnapshot) -> Result<Self, Self::Error> {
-        let save_prefs = value.save_prefs.clone();
+        let save_prefs = value.save_prefs;
 
         let compression = save_prefs.compression;
         let serialization = save_prefs.serialization;

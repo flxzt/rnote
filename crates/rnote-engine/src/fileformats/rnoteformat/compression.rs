@@ -24,9 +24,11 @@ impl Default for CompressionMethod {
 
 impl CompressionMethod {
     pub const VALID_STR_ARRAY: [&'static str; 6] = ["None", "none", "Gzip", "gzip", "Zstd", "zstd"];
+
     pub fn is_similar_to(&self, other: &Self) -> bool {
         std::mem::discriminant(self) == std::mem::discriminant(other)
     }
+
     pub fn compress(&self, data: Vec<u8>) -> anyhow::Result<Vec<u8>> {
         match self {
             Self::None => Ok(data),
@@ -52,6 +54,7 @@ impl CompressionMethod {
             }
         }
     }
+
     pub fn decompress(&self, uc_size: usize, data: Vec<u8>) -> anyhow::Result<Vec<u8>> {
         match self {
             Self::None => Ok(data),
@@ -69,6 +72,7 @@ impl CompressionMethod {
             }
         }
     }
+
     pub fn update_compression_integer(&mut self, new: u8) -> anyhow::Result<()> {
         match self {
             Self::None => {
@@ -98,7 +102,6 @@ impl CompressionMethod {
         }
     }
 
-    // Uses unreachable!() as this function is only used by rnote-ui in a coherent way.
     pub fn get_compression_level(&self) -> CompressionLevel {
         match self {
             Self::None => CompressionLevel::None,
@@ -130,6 +133,7 @@ impl CompressionMethod {
             },
         }
     }
+
     fn get_compression_integer_from_compression_level(&self, level: &CompressionLevel) -> u8 {
         match self {
             Self::None => 0,
@@ -139,7 +143,7 @@ impl CompressionMethod {
                 CompressionLevel::Medium => 5,
                 CompressionLevel::Low => 3,
                 CompressionLevel::VeryLow => 1,
-                CompressionLevel::None => unreachable!(),
+                CompressionLevel::None => 0,
             },
             Self::Zstd(..) => match level {
                 CompressionLevel::VeryHigh => 20,
@@ -147,14 +151,16 @@ impl CompressionMethod {
                 CompressionLevel::Medium => 12,
                 CompressionLevel::Low => 8,
                 CompressionLevel::VeryLow => 3,
-                CompressionLevel::None => unreachable!(),
+                CompressionLevel::None => 0,
             },
         }
     }
     pub fn set_compression_level(&mut self, level: &CompressionLevel) {
         let new_integer = self.get_compression_integer_from_compression_level(level);
         match self {
-            Self::None => unreachable!(),
+            Self::None => tracing::warn!(
+                "Attempting to set the compression level for `CompressionMethod::None` "
+            ),
             Self::Gzip(integer) | Self::Zstd(integer) => *integer = new_integer,
         }
     }
@@ -175,7 +181,7 @@ impl FromStr for CompressionMethod {
         match s {
             "None" | "none" => Ok(Self::None),
             "Gzip" | "gzip" => Ok(Self::Gzip(5)),
-            "Zstd" | "zstd" => Ok(Self::Zstd(9)),
+            "Zstd" | "zstd" => Ok(Self::Zstd(12)),
             _ => Err("Unknown compression method"),
         }
     }

@@ -844,6 +844,11 @@ impl RnAppWindow {
                                 appwindow.overlays().progressbar_abort();
                             } else {
                                 appwindow.overlays().progressbar_finish();
+                                let save_prefs = canvas.engine_ref().save_prefs;
+                                appwindow
+                                    .sidebar()
+                                    .settings_panel()
+                                    .refresh_file_compression_level_row(&save_prefs);
                                 // No success toast on saving without dialog, success is already indicated in the header title
                             }
                         } else {

@@ -1,6 +1,7 @@
 // Imports
 use crate::document::background;
 use crate::engine::import::XoppImportPrefs;
+use crate::fileformats::rnoteformat::SerializationMethod;
 use crate::fileformats::{FileFormatLoader, rnoteformat, xoppformat};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::Stroke;
@@ -11,6 +12,8 @@ use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 use std::sync::Arc;
 use tracing::error;
+
+use super::save::SavePrefs;
 
 // An engine snapshot, used when loading/saving the current document from/into a file.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -26,6 +29,9 @@ pub struct EngineSnapshot {
     pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
     #[serde(rename = "chrono_counter")]
     pub chrono_counter: u32,
+    // save_prefs is skipped as it is extracted and incorporated into the header when saving
+    #[serde(skip, default)]
+    pub save_prefs: SavePrefs,
 }
 
 impl Default for EngineSnapshot {
@@ -36,12 +42,17 @@ impl Default for EngineSnapshot {
             stroke_components: Arc::new(HopSlotMap::with_key()),
             chrono_components: Arc::new(SecondaryMap::new()),
             chrono_counter: 0,
+            save_prefs: SavePrefs::default(),
         }
     }
 }
 
 impl EngineSnapshot {
-    /// Loads a snapshot from the bytes of a .rnote file.
+    pub fn with_save_prefs(mut self, save_prefs: SavePrefs) -> Self {
+        self.save_prefs = save_prefs;
+        self
+    }
+    /// Loads a snapshot from the bytes of a Rnote file.
     ///
     /// To import this snapshot into the current engine, use [`Engine::load_snapshot()`].
     pub async fn load_from_rnote_bytes(bytes: Vec<u8>) -> anyhow::Result<Self> {
@@ -49,9 +60,23 @@ impl EngineSnapshot {
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Self> {
+                // Efficient support for legacy Rnote files, by checking the existence of the gzip magic number at the start of the file, avoids the costly try_from conversion.
+                if bytes
+                    .get(..2)
+                    .ok_or_else(|| anyhow::anyhow!("File is empty"))?
+                    == [0x1f, 0x8b]
+                {
+                    let legacy = rnoteformat::legacy::LegacyRnoteFile::load_from_bytes(&bytes)?;
+                    return Ok(ijson::from_value::<Self>(&legacy.engine_snapshot)?
+                        .with_save_prefs(SavePrefs::new_simple(
+                            SerializationMethod::Json,
+                            rnoteformat::CompressionMethod::Gzip(5),
+                        )));
+                }
+
                 let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
-                    .context("loading RnoteFile from bytes failed.")?;
-                Ok(ijson::from_value(&rnote_file.engine_snapshot)?)
+                    .context("Loading RnoteFile from bytes failed.")?;
+                Self::try_from(rnote_file)
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {

@@ -5,6 +5,8 @@ mod penshortcutrow;
 // Re-exports
 pub(crate) use penshortcutrow::RnPenShortcutRow;
 use rnote_compose::ext::Vector2Ext;
+use rnote_engine::engine::SavePrefs;
+use rnote_engine::fileformats::rnoteformat::CompressionMethod;
 
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
@@ -19,6 +21,7 @@ use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::document::Layout;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
+use rnote_engine::engine::save::CompressionLevel;
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
 
@@ -94,7 +97,9 @@ mod imp {
         #[template_child]
         pub(crate) doc_background_pattern_height_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
-        pub(crate) background_pattern_invert_color_button: TemplateChild<Button>,
+        pub(crate) doc_background_pattern_invert_color_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) file_compression_level_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(crate) penshortcut_stylus_button_primary_row: TemplateChild<RnPenShortcutRow>,
         #[template_child]
@@ -392,10 +397,46 @@ impl RnSettingsPanel {
             .set_selected(layout.to_u32().unwrap());
     }
 
+    pub(crate) fn refresh_file_compression_level_row(&self, save_prefs: &SavePrefs) {
+        let (subtitle, display_level) = match save_prefs.on_next_save.as_ref() {
+            Some((next_ser, next_comp)) => (
+                format!(
+                    "{:?}, {:?} → {:?}, {:?}",
+                    save_prefs.serialization, save_prefs.compression, next_ser, next_comp
+                ),
+                next_comp.get_compression_level(),
+            ),
+            None => (
+                format!(
+                    "{:?}, {:?}",
+                    save_prefs.serialization, save_prefs.compression
+                ),
+                save_prefs.compression.get_compression_level(),
+            ),
+        };
+
+        self.imp()
+            .file_compression_level_row
+            .set_subtitle(&subtitle);
+
+        self.imp().file_compression_level_row.set_sensitive(
+            !save_prefs
+                .compression
+                .is_similar_to(&CompressionMethod::None),
+        );
+
+        if display_level.ne(&CompressionLevel::None) {
+            self.imp()
+                .file_compression_level_row
+                .set_selected(display_level.to_u32().unwrap());
+        }
+    }
+
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
         self.refresh_general_ui(active_tab);
         self.refresh_format_ui(active_tab);
         self.refresh_doc_ui(active_tab);
+        self.refresh_file_ui(active_tab);
         self.refresh_shortcuts_ui(active_tab);
     }
 
@@ -450,6 +491,11 @@ impl RnSettingsPanel {
         self.set_document_layout(&document_layout);
     }
 
+    fn refresh_file_ui(&self, active_tab: &RnCanvasWrapper) {
+        let save_prefs = active_tab.canvas().engine_ref().save_prefs;
+        self.refresh_file_compression_level_row(&save_prefs);
+    }
+
     fn refresh_shortcuts_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
@@ -495,6 +541,7 @@ impl RnSettingsPanel {
         self.setup_general(appwindow);
         self.setup_format(appwindow);
         self.setup_doc(appwindow);
+        self.setup_file(appwindow);
         self.setup_shortcuts(appwindow);
     }
 
@@ -914,7 +961,7 @@ impl RnSettingsPanel {
                 ),
             );
 
-        imp.background_pattern_invert_color_button
+        imp.doc_background_pattern_invert_color_button
             .get()
             .connect_clicked(clone!(
                 #[weak]
@@ -947,6 +994,40 @@ impl RnSettingsPanel {
                     widget_flags.refresh_ui = true;
                     widget_flags.store_modified = true;
                     appwindow.handle_widget_flags(widget_flags, &canvas);
+                }
+            ));
+    }
+
+    fn setup_file(&self, appwindow: &RnAppWindow) {
+        let imp = self.imp();
+        imp.file_compression_level_row
+            .get()
+            .connect_selected_item_notify(clone!(
+                #[weak(rename_to=settings_panel)]
+                self,
+                #[weak]
+                appwindow,
+                move |_| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+                    let compression_level = CompressionLevel::try_from(
+                        settings_panel
+                            .imp()
+                            .file_compression_level_row
+                            .get()
+                            .selected(),
+                    )
+                    .unwrap();
+                    println!("prev: {:#?}", canvas.engine_ref().save_prefs);
+                    canvas
+                        .engine_mut()
+                        .save_prefs
+                        .update_compression_level(compression_level);
+                    println!("curr: {:#?}", canvas.engine_ref().save_prefs);
+                    settings_panel.refresh_file_compression_level_row(
+                        &canvas.engine_ref().save_prefs.clone(),
+                    );
                 }
             ));
     }

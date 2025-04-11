@@ -68,6 +68,11 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
                         crate::overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
                     );
                     appwindow.overlays().progressbar_finish();
+                    let save_prefs = canvas.engine_ref().save_prefs;
+                    appwindow
+                        .sidebar()
+                        .settings_panel()
+                        .refresh_file_compression_level_row(&save_prefs);
                 }
                 Ok(false) => {
                     // Saving was already in progress

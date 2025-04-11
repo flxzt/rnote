@@ -317,19 +317,29 @@ impl RnAppWindow {
                                 trace!(
                                     "there are unsaved changes on the tab {:?} with a file on disk, saving",i
                                 );
-                                glib::spawn_future_local(clone!(#[weak] canvas, #[weak] appwindow ,async move {
-                                    if let Err(e) = canvas.save_document_to_file(&output_file).await {
-                                        error!("Saving document failed, Err: `{e:?}`");
-                                        canvas.set_output_file(None);
-                                        appwindow
-                                            .overlays()
-                                            .dispatch_toast_error(&gettext("Saving document failed"));
-                                    };
+                                glib::spawn_future_local(clone!(#[weak] canvas, #[weak] appwindow, async move {
+                                    match canvas.save_document_to_file(&output_file).await {
+                                        Ok(sucess) => {
+                                            if sucess {
+                                                let save_prefs = canvas.engine_ref().save_prefs;
+                                                appwindow
+                                                    .sidebar()
+                                                    .settings_panel()
+                                                    .refresh_file_compression_level_row(&save_prefs);
+                                            }
+                                        },
+                                        Err(e) => {
+                                            error!("Saving document failed, Err: `{e:?}`");
+                                            canvas.set_output_file(None);
+                                            appwindow
+                                                .overlays()
+                                                .dispatch_toast_error(&gettext("Saving document failed"));
+                                        }
+                                    }
                                 }));
                             }
                         }
                     }
-
                     glib::ControlFlow::Continue
                 }),
             ),

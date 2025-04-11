@@ -15,10 +15,10 @@ permissions:
 
 jobs:
   report:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
 
-      - name: Report Test Results
+      - name: Report test results
         uses: dorny/test-reporter@v1
         with:
           artifact: test-results

@@ -44,9 +44,6 @@ prerequisites:
 
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     . "$HOME/.cargo/env"
-    curl -L --proto '=https' --tlsv1.2 -sSf \
-        https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-    cargo binstall -y cargo-nextest
 
 prerequisites-flatpak: prerequisites
     #!/usr/bin/env bash
@@ -87,6 +84,10 @@ prerequisites-dev: prerequisites
     if [[ "{{ci}}" != "true" ]]; then
         ln -sf build-aux/git-hooks/pre-commit.hook .git/hooks/pre-commit
     fi
+
+    curl -L --proto '=https' --tlsv1.2 -sSf \
+        https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+    cargo binstall -y cargo-nextest cargo-edit
 
 # in MSYS2 shell
 prerequisites-win:
@@ -203,7 +204,7 @@ generate-docs:
     meson compile cli-cargo-doc -C {{ build_folder }}
 
 check-outdated-dependencies:
-    cargo upgrade --dry-run --verbose
+    cargo upgrade --dry-run -vv
 
 update-translations:
     #!/usr/bin/env bash

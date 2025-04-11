@@ -10,7 +10,7 @@ name: Generate Dist Archive
 jobs:
   dist:
     runs-on: ubuntu-24.04
-    container: fedora:41
+    container: fedora:42
     permissions:
       # needed for uploading release artifact
       contents: write

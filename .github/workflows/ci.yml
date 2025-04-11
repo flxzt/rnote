@@ -18,7 +18,7 @@ jobs:
   check:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-24.04
-    container: fedora:41
+    container: fedora:42
     steps:
 
       - name: Checkout

@@ -9,7 +9,7 @@ name: Release Windows
 
 jobs:
   build:
-    runs-on: windows-2022
+    runs-on: windows-2025
     permissions:
       # needed for uploading release artifact
       contents: write

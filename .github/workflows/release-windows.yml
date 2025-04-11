@@ -58,14 +58,14 @@ jobs:
       - name: Build installer
         run: just ci=true build-win-installer
 
-      - name: Upload installer (Workflow Artifact)
+      - name: Upload installer (workflow artifact)
         uses: actions/upload-artifact@v4
         with:
           name: rnote-win-installer-artifact
           path: _mesonbuild/${{ steps.set_installer_name.outputs.name }}.exe
           if-no-files-found: error
 
-      - name: Upload installer (Release Asset)
+      - name: Upload installer (release asset)
         if: ${{ github.event_name == 'release' }}
         shell: powershell
         env:

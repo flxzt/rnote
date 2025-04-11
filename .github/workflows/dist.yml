@@ -50,7 +50,7 @@ jobs:
           echo "archive=$(basename _mesonbuild/meson-dist/rnote-*.tar.xz | tail -n1)" >> $GITHUB_OUTPUT
           echo "sha=$(basename _mesonbuild/meson-dist/rnote-*.tar.xz.sha256sum | tail -n1)" >> $GITHUB_OUTPUT
 
-      - name: Upload dist archive (Workflow Artifact)
+      - name: Upload dist archive (workflow artifact)
         uses: actions/upload-artifact@v4
         with:
           name: rnote-dist-archive-artifact
@@ -60,7 +60,7 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
 
-      - name: Upload dist archive (Release Asset)
+      - name: Upload dist archive (release asset)
         if: ${{ github.event_name == 'release' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

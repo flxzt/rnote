@@ -65,6 +65,9 @@ jobs:
       - name: Test
         run: just ci=true test
 
+      - name: Test file compatibility
+        run: just ci=true test-file-compatibility
+
       - name: Lint
         run: just ci=true lint
         continue-on-error: true

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-26 10:39+0200\n"
-"PO-Revision-Date: 2025-03-22 17:18+0000\n"
+"PO-Revision-Date: 2025-04-10 07:38+0000\n"
 "Last-Translator: Conner McKay <connermckay927@proton.me>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/rnote/repo/eo/>"
 "\n"
@@ -53,7 +53,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An overview"
-msgstr ""
+msgstr "Superrigardo"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "A selection"
@@ -61,7 +61,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "Write text with the typewriter"
-msgstr ""
+msgstr "Verku tekston per la skribmaŝino"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"

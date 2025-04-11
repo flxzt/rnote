@@ -20,8 +20,7 @@ concurrency:
 jobs:
   i18n_zh_Hans2zh_Hant:
     name: zh_Hans -> zh_Hant
-    runs-on: ubuntu-22.04
-    container: fedora:39
+    runs-on: ubuntu-24.04
     permissions:
       # needed for pushing the changes
       contents: write

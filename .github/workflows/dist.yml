@@ -19,7 +19,7 @@ jobs:
       # Necessary so that 'Checkout' will clone as repository, which the `meson dist` commands needs.
       - name: Install git
         run: |
-          dnf install -y git
+          dnf install -y git gh
 
       - name: Checkout
         uses: actions/checkout@v4

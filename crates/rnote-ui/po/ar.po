@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 11:44+0200\n"
+"POT-Creation-Date: 2025-04-12 11:59+0200\n"
 "PO-Revision-Date: 2024-08-11 23:46+0000\n"
 "Last-Translator: lokman2k5 <luqman.23hm421@student.uomosul.edu.iq>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
@@ -944,7 +944,7 @@ msgstr "أدرج مسافةً عموديةً"
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #, fuzzy
 #| msgid "Shape Configuration"
-msgid "Vertical Toolspace Configuration"
+msgid "Vertical-Space Tool Configuration"
 msgstr "تكوين الشكل"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49

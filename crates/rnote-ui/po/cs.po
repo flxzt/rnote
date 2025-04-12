@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 11:44+0200\n"
+"POT-Creation-Date: 2025-04-12 11:59+0200\n"
 "PO-Revision-Date: 2024-11-12 09:00+0000\n"
 "Last-Translator: Fjuro <fjuro@alius.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
@@ -919,7 +919,7 @@ msgstr "Vložení vertikálního prostoru"
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #, fuzzy
 #| msgid "Shape Configuration"
-msgid "Vertical Toolspace Configuration"
+msgid "Vertical-Space Tool Configuration"
 msgstr "Konfigurace tvarování"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49

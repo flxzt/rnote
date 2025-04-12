@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 11:44+0200\n"
+"POT-Creation-Date: 2025-04-12 11:59+0200\n"
 "PO-Revision-Date: 2025-03-17 12:30+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -917,7 +917,7 @@ msgstr "উল্লম্ব স্থান সন্নিবেশ করু
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #, fuzzy
 #| msgid "Shape Configuration"
-msgid "Vertical Toolspace Configuration"
+msgid "Vertical-Space Tool Configuration"
 msgstr "আকৃতি কনফিগারেশন"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49

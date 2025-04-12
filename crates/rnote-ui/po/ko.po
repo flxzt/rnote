@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 11:44+0200\n"
+"POT-Creation-Date: 2025-04-12 11:59+0200\n"
 "PO-Revision-Date: 2023-02-09 20:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
@@ -968,7 +968,7 @@ msgstr "수직 공간 삽입하기"
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #, fuzzy
 #| msgid "Shape Configuration"
-msgid "Vertical Toolspace Configuration"
+msgid "Vertical-Space Tool Configuration"
 msgstr "모형 구성"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49

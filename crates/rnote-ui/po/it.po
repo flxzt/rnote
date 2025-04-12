@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 11:44+0200\n"
+"POT-Creation-Date: 2025-04-12 11:59+0200\n"
 "PO-Revision-Date: 2024-12-09 10:00+0000\n"
 "Last-Translator: Matteo Ballabio <matteo@ballabio.dev>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
@@ -921,7 +921,7 @@ msgstr "Inserisci Spazio Verticale"
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #, fuzzy
 #| msgid "Shape Configuration"
-msgid "Vertical Toolspace Configuration"
+msgid "Vertical-Space Tool Configuration"
 msgstr "Configurazioni Forme"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49

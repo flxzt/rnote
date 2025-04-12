@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 11:44+0200\n"
+"POT-Creation-Date: 2025-04-12 11:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -884,7 +884,7 @@ msgid "Insert Vertical Space"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
-msgid "Vertical Toolspace Configuration"
+msgid "Vertical-Space Tool Configuration"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 11:40+0200\n"
+"POT-Creation-Date: 2025-04-12 11:44+0200\n"
 "PO-Revision-Date: 2022-11-29 06:32+0000\n"
 "Last-Translator: izz dakwat 0.5 <izzirfan1337@gmail.com>\n"
 "Language-Team: Malay <https://hosted.weblate.org/projects/rnote/repo/ms/>\n"
@@ -17,11 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 4.15-dev\n"
-
-#. Translators: This is the App name, don't translate this.
-#: crates/rnote-ui/data/app.desktop.in.in:3
-msgid "@DESKTOP_FILE_NAME_ENTRY@"
-msgstr ""
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 11:40+0200\n"
+"POT-Creation-Date: 2025-04-12 11:44+0200\n"
 "PO-Revision-Date: 2025-01-23 10:36+0000\n"
 "Last-Translator: Adrien Lesage <adrienlesage2005@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -18,11 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 5.10-dev\n"
-
-#. Translators: This is the App name, don't translate this.
-#: crates/rnote-ui/data/app.desktop.in.in:3
-msgid "@DESKTOP_FILE_NAME_ENTRY@"
-msgstr ""
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9

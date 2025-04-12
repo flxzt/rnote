@@ -30,7 +30,7 @@
               <object class="GtkMenuButton" id="verticalspace_menubutton">
                 <property name="icon-name">settings-symbolic</property>
                 <property name="direction">left</property>
-                <property name="tooltip_text" translatable="yes">Vertical Toolspace Configuration</property>
+                <property name="tooltip_text" translatable="yes">Vertical-Space Tool Configuration</property>
                 <property name="popover">verticalspace_popover</property>
                 <style>
                   <class name="flat" />

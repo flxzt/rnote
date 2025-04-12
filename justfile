@@ -206,6 +206,9 @@ generate-docs:
 check-outdated-dependencies:
     cargo upgrade --dry-run -vv
 
+update-translations-template:
+    meson compile rnote-pot -C {{ build_folder }}
+
 update-translations:
     #!/usr/bin/env bash
     set -euxo pipefail

@@ -917,7 +917,7 @@ msgid ""
 "when this switch is off/on"
 msgstr ""
 "按住Ctrl鍵可暫時\n"
-"啟用/禁用約束條件\n"
+"啟用/停用約束條件\n"
 "當此開關被關閉/開啟時"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:327
@@ -1184,7 +1184,7 @@ msgstr "使用觸控繪製 [_T]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Block Pinch to _Zoom"
-msgstr "禁用雙指縮放 [_Z]"
+msgstr "停用雙指縮放 [_Z]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:64
 msgid "Respect Borders When Pasting"
@@ -1386,7 +1386,7 @@ msgid ""
 "gets disabled."
 msgstr ""
 "設定畫布上的觸控滾動是否為慣性滾動。\n"
-"當這個選項被禁用時，\n"
+"當這個選項被停用時，\n"
 "應用程式需要重新啟動。"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:79

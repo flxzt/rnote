@@ -35,10 +35,6 @@ msgstr "جنوم;GTK;مكتب;رسوميات;ملاحظات;"
 msgid "New Window"
 msgstr "نافذة جديدة"
 
-#: crates/rnote-ui/data/app.metainfo.xml.in.in:7
-msgid "@APP_NAME_CAPITALIZED@"
-msgstr "@APP_NAME_CAPITALIZED@"
-
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
@@ -2686,6 +2682,9 @@ msgstr "أسود"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "أبيض"
+
+#~ msgid "@APP_NAME_CAPITALIZED@"
+#~ msgstr "@APP_NAME_CAPITALIZED@"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "نُقل الملفُّ المفتوح أو حُذف من القرص"

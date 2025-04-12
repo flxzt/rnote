@@ -35,10 +35,6 @@ msgstr ""
 msgid "New Window"
 msgstr "Nytt vindu"
 
-#: crates/rnote-ui/data/app.metainfo.xml.in.in:7
-msgid "@APP_NAME_CAPITALIZED@"
-msgstr ""
-
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 #, fuzzy
 msgid ""

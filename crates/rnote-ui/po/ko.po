@@ -34,10 +34,6 @@ msgstr "Gnome;GTK;Office;Graphics;Notes;그놈;오피스;그래픽;메모;"
 msgid "New Window"
 msgstr "새 창"
 
-#: crates/rnote-ui/data/app.metainfo.xml.in.in:7
-msgid "@APP_NAME_CAPITALIZED@"
-msgstr ""
-
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "

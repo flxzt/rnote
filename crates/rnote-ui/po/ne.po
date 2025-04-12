@@ -34,10 +34,6 @@ msgstr "नोम; जि टि के; कार्यालय; ग्रा�
 msgid "New Window"
 msgstr "नयाँ विन्डो"
 
-#: crates/rnote-ui/data/app.metainfo.xml.in.in:7
-msgid "@APP_NAME_CAPITALIZED@"
-msgstr ""
-
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "

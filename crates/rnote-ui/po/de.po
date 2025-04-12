@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-12 12:03+0200\n"
-"PO-Revision-Date: 2025-04-12 10:00+0000\n"
+"PO-Revision-Date: 2025-04-12 10:05+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -914,10 +914,8 @@ msgstr "Vertikalraum einfügen"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-#, fuzzy
-#| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
-msgstr "Formenkonfiguration"
+msgstr "Vertikalraum Werkzeug Konfiguration"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49
 #: crates/rnote-ui/data/ui/shortcuts.ui:114

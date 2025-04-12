@@ -102,6 +102,7 @@ prerequisites-win:
 
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
+# in MSYS2 shell
 prerequisites-win-dev: prerequisites-win
     cargo install --locked cargo-nextest
 

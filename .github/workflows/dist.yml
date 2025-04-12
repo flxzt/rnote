@@ -16,8 +16,9 @@ jobs:
       contents: write
     steps:
 
-      # Necessary so that 'Checkout' will clone as repository, which the `meson dist` commands needs.
-      - name: Install git
+      # Necessary so that 'Checkout' will clone as repository, which the `meson dist` commands needs,
+      # and that the artifact can be uploaded to github as release asset
+      - name: Install dependencies
         run: |
           dnf install -y git gh
 

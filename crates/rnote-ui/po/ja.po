@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 11:59+0200\n"
+"POT-Creation-Date: 2025-04-12 12:03+0200\n"
 "PO-Revision-Date: 2024-05-11 08:21+0000\n"
 "Last-Translator: Ryo Nakano <ryonakaknock3@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/"
@@ -939,6 +939,7 @@ msgid "Insert Vertical Space"
 msgstr "垂直方向の空白を挿入"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
 #, fuzzy
 #| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
@@ -958,10 +959,6 @@ msgstr "拡大/縮小"
 #| msgid "Eraser"
 msgid "Laser"
 msgstr "消しゴム"
-
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-msgid "Vertical-Space Tool Options"
-msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"

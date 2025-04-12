@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 11:59+0200\n"
+"POT-Creation-Date: 2025-04-12 12:03+0200\n"
 "PO-Revision-Date: 2025-01-29 13:02+0000\n"
 "Last-Translator: Pedro Wasconcelos <pedro.wasconcelos@proton.me>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/rnote/repo/pt/"
@@ -954,6 +954,7 @@ msgid "Insert Vertical Space"
 msgstr "Inserir Espaço Vertical"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
 #, fuzzy
 #| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
@@ -975,10 +976,6 @@ msgstr "Ampliar"
 #| msgid "Eraser"
 msgid "Laser"
 msgstr "Apagador"
-
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-msgid "Vertical-Space Tool Options"
-msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"

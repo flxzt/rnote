@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 11:59+0200\n"
+"POT-Creation-Date: 2025-04-12 12:03+0200\n"
 "PO-Revision-Date: 2025-04-12 10:00+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
@@ -913,6 +913,7 @@ msgid "Insert Vertical Space"
 msgstr "Vertikalraum einfügen"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
 #, fuzzy
 #| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
@@ -930,10 +931,6 @@ msgstr "Zoome Hinein/Heraus"
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
 msgid "Laser"
 msgstr "Laser"
-
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-msgid "Vertical-Space Tool Options"
-msgstr "Vertikalraum Werkzeug Optionen"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"
@@ -2615,6 +2612,9 @@ msgstr "schwarz"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "weiss"
+
+#~ msgid "Vertical-Space Tool Options"
+#~ msgstr "Vertikalraum Werkzeug Optionen"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "Geöffnete Datei wurde auf dem Datenträger verschoben oder gelöscht"

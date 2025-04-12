@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 11:59+0200\n"
+"POT-Creation-Date: 2025-04-12 12:03+0200\n"
 "PO-Revision-Date: 2025-01-10 09:10+0545\n"
 "Last-Translator: Manish Goyal <manishgoyal016@gmail.com>\n"
 "Language-Team: Nepali <https://hosted.weblate.org/projects/rnote/repo/ne/>\n"
@@ -913,6 +913,7 @@ msgid "Insert Vertical Space"
 msgstr "ठाडो ठाउँ हाल्नुहोस्"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
 #, fuzzy
 #| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
@@ -932,10 +933,6 @@ msgstr "ठूलो/सानो पार्नुहोस्"
 #| msgid "Eraser"
 msgid "Laser"
 msgstr "इरेजर"
-
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-msgid "Vertical-Space Tool Options"
-msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"

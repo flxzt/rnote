@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 11:59+0200\n"
+"POT-Creation-Date: 2025-04-12 12:03+0200\n"
 "PO-Revision-Date: 2024-03-14 07:01+0000\n"
 "Last-Translator: mohammedbilalns <bilalnsmuhammed@gmail.com>\n"
 "Language-Team: Malayalam <https://hosted.weblate.org/projects/rnote/repo/ml/"
@@ -911,6 +911,7 @@ msgid "Insert Vertical Space"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
 msgid "Vertical-Space Tool Configuration"
 msgstr ""
 
@@ -925,10 +926,6 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
 msgid "Laser"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-msgid "Vertical-Space Tool Options"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14

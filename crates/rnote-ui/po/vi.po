@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 11:59+0200\n"
+"POT-Creation-Date: 2025-04-12 12:03+0200\n"
 "PO-Revision-Date: 2023-10-24 04:15+0000\n"
 "Last-Translator: Rickey Ho <rickey.ho2020@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/rnote/repo/vi/"
@@ -929,6 +929,7 @@ msgid "Insert Vertical Space"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
 msgid "Vertical-Space Tool Configuration"
 msgstr ""
 
@@ -948,10 +949,6 @@ msgstr "Thu nhỏ"
 #| msgid "Eraser"
 msgid "Laser"
 msgstr "Tẩy"
-
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-msgid "Vertical-Space Tool Options"
-msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"

@@ -50,7 +50,7 @@ jobs:
           just ci=true prerequisites-win
 
       - name: Setup
-        run: just ci=true setup-win '${{ steps.set_installer_name.outputs.name }}'
+        run: just ci=true setup-win-installer '${{ steps.set_installer_name.outputs.name }}'
 
       - name: Build
         run: just ci=true build

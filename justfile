@@ -101,7 +101,8 @@ prerequisites-win:
     mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
 
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    . "$HOME/.cargo/env"
+
+prerequisites-win-dev: prerequisites-win
     cargo install --locked cargo-nextest
 
 setup-dev *MESON_ARGS:

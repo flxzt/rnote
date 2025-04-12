@@ -14,11 +14,11 @@ homepage = "https://rnote.flxzt.net"
 license = "GPL-3.0-or-later"
 repository = "https://github.com/flxzt/rnote"
 rust-version = "1.85"
-version = "0.11.0"
+version = "0.12.0"
 
 [workspace.dependencies]
-rnote-compose = { version = "0.11.0", path = "crates/rnote-compose" }
-rnote-engine = { version = "0.11.0", path = "crates/rnote-engine" }
+rnote-compose = { version = "0.12.0", path = "crates/rnote-compose" }
+rnote-engine = { version = "0.12.0", path = "crates/rnote-engine" }
 
 adw = { version = "0.7.0", package = "libadwaita", features = ["v1_7"] }
 anyhow = "1.0"

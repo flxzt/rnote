@@ -13,6 +13,7 @@
     - `just install`
     - `just lint`
     - `just test`
+    - `just test-file-compatibility`
 - Wait for CI to run successfully
 - Create a release with tag `vX.Y.Z` on Github - the installer and tarball will be created by Github Actions CD
 - For Flathub: create a new release branch, update the Flathub flatpak manifest with the new tarball download Url and

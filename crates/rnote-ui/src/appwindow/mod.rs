@@ -570,6 +570,7 @@ impl RnAppWindow {
                         self.append_wrapper_new_tab(&wrapper);
                     }
                     self.handle_widget_flags(widget_flags, &wrapper.canvas());
+                    self.present();
                     true
                 }
             }

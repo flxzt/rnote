@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-12 12:03+0200\n"
-"PO-Revision-Date: 2024-11-16 11:01+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"PO-Revision-Date: 2025-04-15 10:27+0000\n"
+"Last-Translator: \"Emilio S.\" <emism.translations@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -176,7 +176,7 @@ msgstr "Aplicar"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:119
 msgid "Workspace Name"
-msgstr "Nombe del área de trabajo"
+msgstr "Nombre del área de trabajo"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:124
 msgid "Icon"
@@ -217,10 +217,8 @@ msgid "Change the directory"
 msgstr "Cambiar el directorio"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
-#, fuzzy
-#| msgid "Trash Strokes"
 msgid "Trash File"
-msgstr "Trazos residuales"
+msgstr "Archivo de papelera"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
@@ -228,7 +226,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "Papelera"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:330
@@ -935,18 +933,16 @@ msgid "Zoom In/Out"
 msgstr "Acercar/Alejar"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
-#, fuzzy
-#| msgid "Eraser"
 msgid "Laser"
-msgstr "Borrador"
+msgstr "Láser"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"
-msgstr ""
+msgstr "Selector de fuente"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:29
 msgid "Edit Font Size"
-msgstr ""
+msgstr "Editar tamaño de fuente"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:45
 msgid "Pick And Insert Emoji"
@@ -1265,7 +1261,7 @@ msgstr "Pestaña nueva"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:54
 msgid "View Open Tabs"
-msgstr ""
+msgstr "Ver las pestañas abiertas"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:61
 msgid "Focus Mode"
@@ -1277,14 +1273,12 @@ msgid "Save Document"
 msgstr "Guardar documento"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:89
-#, fuzzy
-#| msgid "Open the Canvas-Menu"
 msgid "Canvas Menu"
-msgstr "Abrir el menú del lienzo"
+msgstr "Menú de lienzo"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:94
 msgid "App Menu"
-msgstr ""
+msgstr "Menú de aplicación"
 
 #: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
@@ -1833,10 +1827,8 @@ msgid "Page"
 msgstr "Página"
 
 #: crates/rnote-ui/data/ui/strokewidthpicker.ui:20
-#, fuzzy
-#| msgid "Split Strokes"
 msgid "Edit Stroke Size"
-msgstr "Trazos discontinuos"
+msgstr "Editar tamaño de trazo"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
@@ -1851,10 +1843,8 @@ msgid "Create new Folder"
 msgstr "Crear carpeta nueva"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:167
-#, fuzzy
-#| msgid "Workspace Name"
 msgid "Open Workspace Folder"
-msgstr "Nombe del área de trabajo"
+msgstr "Abrir carpeta de área de trabajo"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:843
 #: crates/rnote-ui/src/appwindow/imp.rs:326
@@ -1975,10 +1965,8 @@ msgstr "Ver en el gestor de archivos"
 #: crates/rnote-ui/src/dialogs/export.rs:721
 #: crates/rnote-ui/src/dialogs/export.rs:1072
 #: crates/rnote-ui/src/dialogs/export.rs:1078
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Failed to view the file in the file manager"
-msgstr "Error al abrir el archivo en el gestor de archivos"
+msgstr "Error al abrir el archivo en el administrador de archivos"
 
 #: crates/rnote-ui/src/dialogs/export.rs:332
 #: crates/rnote-ui/src/dialogs/export.rs:740

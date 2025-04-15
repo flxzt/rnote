@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-12 12:03+0200\n"
-"PO-Revision-Date: 2025-01-24 18:02+0000\n"
-"Last-Translator: Tooraj Taraz <tooraj.taraz@yahoo.com>\n"
+"PO-Revision-Date: 2025-04-16 13:30+0000\n"
+"Last-Translator: Sajad Mousavi <s.sajad.mousavi@gmail.com>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/rnote/repo/fa/>\n"
 "Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.10-dev\n"
+"X-Generator: Weblate 5.11.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -224,11 +224,11 @@ msgstr "نقش‌های اضافی"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr ""
+msgstr "آیا از انتقال این پرونده به سطل‌زباله اطمینان دارید؟"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "سطل زباله"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:330
@@ -2528,7 +2528,7 @@ msgstr ""
 #: crates/rnote-ui/src/utils.rs:159
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
-msgstr ""
+msgstr "خاکستری"
 
 #: crates/rnote-ui/src/utils.rs:161 crates/rnote-ui/src/utils.rs:196
 msgctxt "part of string representation of a color"
@@ -2536,21 +2536,19 @@ msgid "rose"
 msgstr ""
 
 #: crates/rnote-ui/src/utils.rs:163
-#, fuzzy
-#| msgid "Curved"
 msgctxt "part of string representation of a color"
 msgid "red"
-msgstr "منحنی"
+msgstr "قرمز"
 
 #: crates/rnote-ui/src/utils.rs:166
 msgctxt "part of string representation of a color"
 msgid "orange"
-msgstr ""
+msgstr "نارنجی"
 
 #: crates/rnote-ui/src/utils.rs:169
 msgctxt "part of string representation of a color"
 msgid "yellow"
-msgstr ""
+msgstr "زرد"
 
 #: crates/rnote-ui/src/utils.rs:173
 msgctxt "part of string representation of a color"
@@ -2560,7 +2558,7 @@ msgstr ""
 #: crates/rnote-ui/src/utils.rs:176
 msgctxt "part of string representation of a color"
 msgid "green"
-msgstr ""
+msgstr "سبز"
 
 #: crates/rnote-ui/src/utils.rs:179
 msgctxt "part of string representation of a color"
@@ -2580,7 +2578,7 @@ msgstr ""
 #: crates/rnote-ui/src/utils.rs:188
 msgctxt "part of string representation of a color"
 msgid "blue"
-msgstr ""
+msgstr "آبی"
 
 #: crates/rnote-ui/src/utils.rs:191
 msgctxt "part of string representation of a color"
@@ -2605,12 +2603,12 @@ msgstr ""
 #: crates/rnote-ui/src/utils.rs:208
 msgctxt "part of string representation of a color"
 msgid "very-dark"
-msgstr ""
+msgstr "بسیار تاریک"
 
 #: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
 msgid "dark"
-msgstr ""
+msgstr "تاریک"
 
 #: crates/rnote-ui/src/utils.rs:213
 msgctxt "part of string representation of a color"
@@ -2620,12 +2618,12 @@ msgstr ""
 #: crates/rnote-ui/src/utils.rs:215
 msgctxt "part of string representation of a color"
 msgid "bright"
-msgstr ""
+msgstr "روشن"
 
 #: crates/rnote-ui/src/utils.rs:219
 msgctxt "part of string representation of a color"
 msgid "transparent"
-msgstr ""
+msgstr "شفافیت"
 
 #: crates/rnote-ui/src/utils.rs:221
 msgctxt "part of string representation of a color"
@@ -2640,17 +2638,17 @@ msgstr ""
 #: crates/rnote-ui/src/utils.rs:234
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
-msgstr ""
+msgstr "تماما شفاف"
 
 #: crates/rnote-ui/src/utils.rs:237
 msgctxt "part of string representation of a color"
 msgid "black"
-msgstr ""
+msgstr "سیاه"
 
 #: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "white"
-msgstr ""
+msgstr "سفید"
 
 #~ msgid "Lecture Note 1"
 #~ msgstr "یادداشت سخنرانی ۱"

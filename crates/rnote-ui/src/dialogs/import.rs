@@ -476,22 +476,13 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     }));
 
     // Overwrite builtin close shortcut
-    let controller = ShortcutController::new();
-    controller.add_shortcut(Shortcut::new(
-        Some(ShortcutTrigger::parse_string("Escape").unwrap()),
-        Some(CallbackAction::new(clone!(
-            #[weak]
-            import_pdf_button_cancel,
-            #[upgrade_or]
-            glib::Propagation::Stop,
-            move |_, _| {
-                import_pdf_button_cancel.emit_clicked();
-
-                glib::Propagation::Stop
-            }
-        ))),
+    dialog.connect_closed(clone!(
+        #[weak]
+        import_pdf_button_cancel,
+        move |_| {
+            import_pdf_button_cancel.emit_clicked();
+        }
     ));
-    dialog.add_controller(controller);
 
     // Present than wait for a response from the dialog
     dialog.present(appwindow.root().as_ref());
@@ -582,22 +573,13 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
     }));
 
     // Overwrite builtin close shortcut
-    let controller = ShortcutController::new();
-    controller.add_shortcut(Shortcut::new(
-        Some(ShortcutTrigger::parse_string("Escape").unwrap()),
-        Some(CallbackAction::new(clone!(
-            #[weak]
-            import_xopp_button_cancel,
-            #[upgrade_or]
-            glib::Propagation::Stop,
-            move |_, _| {
-                import_xopp_button_cancel.emit_clicked();
-
-                glib::Propagation::Stop
-            }
-        ))),
+    dialog.connect_closed(clone!(
+        #[weak]
+        import_xopp_button_cancel,
+        move |_| {
+            import_xopp_button_cancel.emit_clicked();
+        }
     ));
-    dialog.add_controller(controller);
 
     // Present than wait for a response from the dialog
     dialog.present(appwindow.root().as_ref());

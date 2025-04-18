@@ -71,6 +71,8 @@ impl RnAppWindow {
         self.add_action(&action_touch_drawing);
         let action_focus_mode = gio::PropertyAction::new("focus-mode", self, "focus-mode");
         self.add_action(&action_focus_mode);
+        let action_block_touch = gio::PropertyAction::new("block-touch", self, "block-touch");
+        self.add_action(&action_block_touch);
 
         let action_pen_sounds =
             gio::SimpleAction::new_stateful("pen-sounds", None, &false.to_variant());

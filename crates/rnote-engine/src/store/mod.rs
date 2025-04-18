@@ -91,6 +91,12 @@ pub struct StrokeStore {
     /// The index of the current live document in the history stack.
     #[serde(skip)]
     live_index: usize,
+    /// Boolean that indicates the pen event is one from the same
+    /// event sequence than the one that cancelled the selection
+    /// Events that cancel a selection should set this to true
+    /// and this should be set back to false on a pen up event
+    #[serde(skip)]
+    canceled_state: bool,
     /// An rtree backed by the slotmap store, for faster spatial queries.
     ///
     /// Needs to be updated with `update_with_key()` when strokes changed their geometry or position!
@@ -110,6 +116,7 @@ impl Default for StrokeStore {
             // Start off with state in the history
             history: VecDeque::from(vec![HistoryEntry::default()]),
             live_index: 0,
+            canceled_state: false,
 
             key_tree: KeyTree::default(),
 
@@ -367,5 +374,15 @@ impl StrokeStore {
         self.key_tree.clear();
 
         widget_flags
+    }
+
+    /// set the active state for the cancelled selection
+    pub fn set_cancelled_state(&mut self, state: bool) {
+        self.canceled_state = state
+    }
+
+    /// get the active state for the cancelled selection
+    pub fn get_cancelled_state(&self) -> bool {
+        self.canceled_state
     }
 }

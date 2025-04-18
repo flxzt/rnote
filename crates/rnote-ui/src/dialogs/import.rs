@@ -475,7 +475,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }));
     }));
 
-    // Overwrite builtin close shortcut
+    // Send a cancel response when the dialog is closed
     dialog.connect_closed(clone!(
         #[weak]
         import_pdf_button_cancel,
@@ -572,7 +572,7 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
         }));
     }));
 
-    // Overwrite builtin close shortcut
+    // Send a cancel response when the dialog is closed
     dialog.connect_closed(clone!(
         #[weak]
         import_xopp_button_cancel,

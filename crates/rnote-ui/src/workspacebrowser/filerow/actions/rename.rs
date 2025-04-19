@@ -5,6 +5,7 @@ use gettextrs::gettext;
 use gtk4::{Align, Entry, Label, gio, glib, glib::clone, pango, prelude::*};
 use std::path::Path;
 use tracing::{debug, error};
+use unicode_segmentation::UnicodeSegmentation;
 
 /// Create a new `rename` action.
 pub(crate) fn rename(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleAction {
@@ -112,7 +113,13 @@ fn create_entry(current_path: impl AsRef<Path>) -> Entry {
 
 fn entry_text_select_stem(entry: &Entry) {
     let entry_text = entry.text();
-    let stem_end = entry_text.match_indices('.').map(|(i, _)| i).next_back();
+
+    let stem_end = entry_text
+        .graphemes(true)
+        .enumerate()
+        .filter(|(_, g)| *g == ".")
+        .last()
+        .map(|(i, _)| i);
 
     // Select entire text first
     entry.grab_focus();

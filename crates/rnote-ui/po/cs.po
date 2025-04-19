@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-12 12:03+0200\n"
-"PO-Revision-Date: 2024-11-12 09:00+0000\n"
+"PO-Revision-Date: 2025-04-13 11:02+0000\n"
 "Last-Translator: Fjuro <fjuro@alius.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -217,18 +217,16 @@ msgid "Change the directory"
 msgstr "Změnit adresář"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
-#, fuzzy
-#| msgid "Trash Strokes"
 msgid "Trash File"
-msgstr "Tahy koše"
+msgstr "Odstranit soubor"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr ""
+msgstr "Opravdu chcete přesunout tento soubor do koše?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "Odstranit"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:330
@@ -731,7 +729,7 @@ msgstr "Reverzní exponenciála"
 
 #: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:21
 msgid "Trash Strokes"
-msgstr "Tahy koše"
+msgstr "Odstranit tahy"
 
 #: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:31
 msgid "Split Strokes"
@@ -784,10 +782,8 @@ msgid "Select Intersecting Path"
 msgstr "Vybrat křížící se cestu"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
-#, fuzzy
-#| msgid "Lock Aspectratio While Resizing the Selection"
 msgid "Lock Aspect Ratio While Resizing the Selection"
-msgstr "Uzamčení poměru stran při změně velikosti výběru"
+msgstr "Uzamknout poměr stran při změně velikosti výběru"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select All Strokes"
@@ -918,10 +914,8 @@ msgstr "Vložení vertikálního prostoru"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-#, fuzzy
-#| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
-msgstr "Konfigurace tvarování"
+msgstr "Nastavení nástroje vertikálního umístění"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
@@ -933,18 +927,16 @@ msgid "Zoom In/Out"
 msgstr "Přibížit/Oddálit"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
-#, fuzzy
-#| msgid "Eraser"
 msgid "Laser"
-msgstr "Guma"
+msgstr "Laser"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"
-msgstr ""
+msgstr "Výběr písma"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:29
 msgid "Edit Font Size"
-msgstr ""
+msgstr "Upravit velikost písma"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:45
 msgid "Pick And Insert Emoji"
@@ -1263,7 +1255,7 @@ msgstr "Nová karta"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:54
 msgid "View Open Tabs"
-msgstr ""
+msgstr "Zobrazit otevřené karty"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:61
 msgid "Focus Mode"
@@ -1275,14 +1267,12 @@ msgid "Save Document"
 msgstr "Uložit dokument"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:89
-#, fuzzy
-#| msgid "Open the Canvas-Menu"
 msgid "Canvas Menu"
-msgstr "Otevřít nabídku plátna"
+msgstr "Nabídka plátna"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:94
 msgid "App Menu"
-msgstr ""
+msgstr "Nabídka aplikace"
 
 #: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
@@ -1708,7 +1698,7 @@ msgstr "Ukončit aplikaci"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:44
 msgid "Toggle Tabs Overview"
-msgstr ""
+msgstr "Přepnout přehled karet"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:50
 msgid "Open the Canvas-Menu"
@@ -1830,10 +1820,8 @@ msgid "Page"
 msgstr "Stránka"
 
 #: crates/rnote-ui/data/ui/strokewidthpicker.ui:20
-#, fuzzy
-#| msgid "Split Strokes"
 msgid "Edit Stroke Size"
-msgstr "Rozdělené tahy"
+msgstr "Upravit velikost tahu"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
@@ -1848,10 +1836,8 @@ msgid "Create new Folder"
 msgstr "Vytvořit novou složku"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:167
-#, fuzzy
-#| msgid "Workspace Name"
 msgid "Open Workspace Folder"
-msgstr "Název plochy"
+msgstr "Otevřít složku plochy"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:843
 #: crates/rnote-ui/src/appwindow/imp.rs:326
@@ -1972,10 +1958,8 @@ msgstr "Zobrazit ve správci souborů"
 #: crates/rnote-ui/src/dialogs/export.rs:721
 #: crates/rnote-ui/src/dialogs/export.rs:1072
 #: crates/rnote-ui/src/dialogs/export.rs:1078
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Failed to view the file in the file manager"
-msgstr "Otevření souboru ve správci souborů se nezdařilo"
+msgstr "Nepodařilo se zobrazit soubor ve správci souborů"
 
 #: crates/rnote-ui/src/dialogs/export.rs:332
 #: crates/rnote-ui/src/dialogs/export.rs:740

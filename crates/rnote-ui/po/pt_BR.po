@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-12 12:03+0200\n"
-"PO-Revision-Date: 2025-01-20 18:00+0000\n"
+"PO-Revision-Date: 2025-04-16 13:31+0000\n"
 "Last-Translator: Pedro Wasconcelos <pedro.wasconcelos@proton.me>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "rnote/repo/pt_BR/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.10-dev\n"
+"X-Generator: Weblate 5.11.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -33,7 +33,7 @@ msgstr "Gnome;GTK;Office;Gráficos;Notas;"
 #: crates/rnote-ui/data/app.desktop.in.in:19
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
 msgid "New Window"
-msgstr "Nova janela"
+msgstr "Nova Janela"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
@@ -225,11 +225,11 @@ msgstr "Traços ruins"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr ""
+msgstr "Você tem certeza que quer mover esse arquivo para a lixeira?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "Lixeira"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:330
@@ -563,11 +563,11 @@ msgstr "Definir a DPI preferida para o arquivo Xournal++"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:273
 msgid "is password protected"
-msgstr ""
+msgstr "é protegida por senha"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:276
 msgid "Encrypted PDF"
-msgstr ""
+msgstr "PDF Criptografado"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:279
 msgid "_Cancel"
@@ -575,11 +575,11 @@ msgstr "_Cancelar"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:280
 msgid "_Unlock"
-msgstr ""
+msgstr "_Desbloquear"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:291
 msgid "Enter the PDF password"
-msgstr ""
+msgstr "Entre a senha do PDF"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
@@ -799,7 +799,7 @@ msgstr "Desmarcar Todos os Traços"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 msgid "Invert Color Brightness of All Selected Strokes"
-msgstr ""
+msgstr "Inverter brilho de cores em todos os traços selecionados"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 #: crates/rnote-ui/data/ui/shortcuts.ui:242
@@ -944,7 +944,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:29
 msgid "Edit Font Size"
-msgstr ""
+msgstr "Altere o Tamanho da Fonte"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:45
 msgid "Pick And Insert Emoji"
@@ -1044,7 +1044,7 @@ msgstr "Modo de De_senvolvedor"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:66
 msgid "New _Window"
-msgstr "Nova_Janela"
+msgstr "Nova _Janela"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:72
 msgid "_New"
@@ -1060,7 +1060,7 @@ msgstr "_Salvar"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:84
 msgid "Save _As"
-msgstr "Salvar_Como"
+msgstr "Salvar _Como"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:90
 msgid "_Print"
@@ -1205,12 +1205,14 @@ msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
+"Adicionar Pagina.\n"
+"Disponível em layouts de Documento tamanho fixo"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:156
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
-msgstr ""
+msgstr "Disponível em layouts de Documento tamanho fixo"
 
 #: crates/rnote-ui/data/ui/colorpicker.ui:23
 msgid "Stroke Color"
@@ -1259,7 +1261,7 @@ msgstr "Nova aba"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:54
 msgid "View Open Tabs"
-msgstr ""
+msgstr "Veja Abas Abertas"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:61
 msgid "Focus Mode"
@@ -1278,7 +1280,7 @@ msgstr "Abrir o Menu da Tela (\"canvas\")"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:94
 msgid "App Menu"
-msgstr ""
+msgstr "Menu do Aplicativo"
 
 #: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
@@ -1302,7 +1304,7 @@ msgstr "Permanente"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
-msgstr ""
+msgstr "Alternar"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:14
 msgid "Disabled"
@@ -1351,7 +1353,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:71
 msgid "Inertial Touch Scrolling"
-msgstr ""
+msgstr "Rolagem de toque inerte"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:72
 msgid ""
@@ -1641,7 +1643,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:470
 msgid "Drawing Pad Button 1 Action"
-msgstr "Ação do Botão 1 do Tablete"
+msgstr "Ação do Botão 1 do Tablet"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:471
 msgid ""
@@ -1727,7 +1729,7 @@ msgstr "Mudar para a 'Maquina de Escrever'"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:91
 msgid "Switch to the 'Eraser'"
-msgstr ""
+msgstr "Mudar para a \"Boracha\""
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:97
 msgid "Switch to the 'Selector'"
@@ -1735,15 +1737,15 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:103
 msgid "Switch to the 'Tools'"
-msgstr ""
+msgstr "Mudar para as \"Ferramentas\""
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:111
 msgid "View"
-msgstr ""
+msgstr "Visão"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:115
 msgid "Alt + Drag"
-msgstr ""
+msgstr "Alt + Arrastar"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:156
 msgid "Zoom in/out"
@@ -1751,7 +1753,7 @@ msgstr "Diminuir/Aumentar"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:157
 msgid "Alt + Shift + Drag"
-msgstr ""
+msgstr "Alt + Shift + Arrastar"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:167
 msgid "Open Document"
@@ -2000,7 +2002,7 @@ msgstr "Seleção exportada com sucesso"
 #: crates/rnote-ui/src/dialogs/export.rs:1199
 #: crates/rnote-ui/src/dialogs/export.rs:1260
 msgid "Json"
-msgstr ""
+msgstr "Json"
 
 #: crates/rnote-ui/src/dialogs/export.rs:1211
 msgid "Export Engine State"
@@ -2032,7 +2034,7 @@ msgstr "Abrir arquivo"
 
 #: crates/rnote-ui/src/dialogs/import.rs:85
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr ""
+msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:181
 #: crates/rnote-ui/src/dialogs/import.rs:394
@@ -2084,7 +2086,7 @@ msgstr "- nome de diretório invalido -"
 #: crates/rnote-ui/src/dialogs/mod.rs:228
 #: crates/rnote-ui/src/dialogs/mod.rs:360
 msgid "The changes will be saved"
-msgstr ""
+msgstr "As alterações serão salvas"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:233
 #: crates/rnote-ui/src/dialogs/mod.rs:365
@@ -2101,19 +2103,19 @@ msgstr "Falha ao mandar o arquivo para o lixo"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:692
 msgid "Band-Aid"
-msgstr ""
+msgstr "Band-Aid"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:693
 msgid "Bank"
-msgstr ""
+msgstr "Vazio"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:694
 msgid "Bookmark"
-msgstr ""
+msgstr "Favorito"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:695
 msgid "Book"
-msgstr ""
+msgstr "Livro"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:696
 msgid "Bread"
@@ -2121,11 +2123,11 @@ msgstr ""
 
 #: crates/rnote-ui/src/dialogs/mod.rs:697
 msgid "Calendar"
-msgstr ""
+msgstr "Calendário"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:698
 msgid "Camera"
-msgstr ""
+msgstr "Camera"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:699
 msgctxt "as in computer chip"
@@ -2134,15 +2136,15 @@ msgstr ""
 
 #: crates/rnote-ui/src/dialogs/mod.rs:700
 msgid "Clock"
-msgstr ""
+msgstr "Relógio"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:701
 msgid "Code"
-msgstr ""
+msgstr "Código"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:702
 msgid "Compose"
-msgstr ""
+msgstr "Compor"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:703
 msgctxt "as in plant"
@@ -2151,15 +2153,15 @@ msgstr ""
 
 #: crates/rnote-ui/src/dialogs/mod.rs:704
 msgid "Dictionary"
-msgstr ""
+msgstr "Dicionario"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:706
 msgid "Drinks"
-msgstr ""
+msgstr "Bebidas"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:707
 msgid "Flag"
-msgstr ""
+msgstr "Bandeira"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:708
 msgid "Folder"
@@ -2179,27 +2181,27 @@ msgstr ""
 
 #: crates/rnote-ui/src/dialogs/mod.rs:712
 msgid "Globe"
-msgstr ""
+msgstr "Globo"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:713
 msgid "Hammer"
-msgstr ""
+msgstr "Martelo"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:714
 msgid "Heart"
-msgstr ""
+msgstr "Coração"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:715
 msgid "Hourglass"
-msgstr ""
+msgstr "Ampulheta"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:716
 msgid "Key"
-msgstr ""
+msgstr "Chave"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:717
 msgid "Language"
-msgstr ""
+msgstr "Linguagem"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:718
 msgid "Library"
@@ -2235,7 +2237,7 @@ msgstr "Abrir Livro"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:726
 msgid "Paintbrush"
-msgstr ""
+msgstr "Pincel"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:727
 msgid "Pencil and Paper"
@@ -2243,7 +2245,7 @@ msgstr "Lápis e Papel"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:728
 msgid "People"
-msgstr ""
+msgstr "Pessoa"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:729
 msgid "Person"
@@ -2275,16 +2277,16 @@ msgstr ""
 
 #: crates/rnote-ui/src/dialogs/mod.rs:736
 msgid "Speedometer"
-msgstr ""
+msgstr "Velocímetro"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:737
 msgid "Star"
-msgstr ""
+msgstr "Estrela"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:739
 msgctxt "as in terminal software"
 msgid "Terminal"
-msgstr ""
+msgstr "Terminal"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:741
 msgid "Text"
@@ -2292,11 +2294,11 @@ msgstr "Texto"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:742
 msgid "Travel"
-msgstr ""
+msgstr "Viagem"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:743
 msgid "Weather"
-msgstr ""
+msgstr "Clima"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:744
 msgid "Weight"
@@ -2304,11 +2306,11 @@ msgstr "Peso"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:565
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Diversos"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:574
 msgid "Coordinate Systems"
-msgstr ""
+msgstr "Sistema de Coordenadas"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:582
 msgid "Ellipses"
@@ -2316,7 +2318,7 @@ msgstr "Elipses"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:589
 msgid "Curves & Paths"
-msgstr ""
+msgstr "Curvas & Caminhos"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:604
 msgid "Arrow"
@@ -2332,11 +2334,11 @@ msgstr "Retângulo"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:608
 msgid "2D coordinate system"
-msgstr ""
+msgstr "sistema de condenada 2D"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:609
 msgid "3D coordinate system"
-msgstr ""
+msgstr "sistema de coordenada 3D"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:610
 msgid "2D single quadrant coordinate system"
@@ -2364,11 +2366,11 @@ msgstr ""
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:616
 msgid "Polygon"
-msgstr ""
+msgstr "Polígono"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:623
 msgid "Application restart is required"
-msgstr ""
+msgstr "Reinicio da aplicação é necessário"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:1229
 msgctxt "a cursor type"
@@ -2388,17 +2390,17 @@ msgstr ""
 #: crates/rnote-ui/src/settingspanel/mod.rs:1232
 msgctxt "a cursor type"
 msgid "Dot (Small)"
-msgstr ""
+msgstr "Ponto(Pequeno)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:1233
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
-msgstr ""
+msgstr "Ponto(Médio)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:1234
 msgctxt "a cursor type"
 msgid "Dot (Large)"
-msgstr ""
+msgstr "Ponto(Grande)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:1235
 msgctxt "a cursor type"
@@ -2462,7 +2464,7 @@ msgstr ""
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:41
 msgid "Can't duplicate an unsaved document"
-msgstr ""
+msgstr "Não é possível duplicar um documento que não foi salvo"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/duplicate.rs:51
 msgid "Duplicating the file failed"
@@ -2495,12 +2497,12 @@ msgstr "Nova Pasta"
 #: crates/rnote-ui/src/utils.rs:159
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
-msgstr ""
+msgstr "cinza"
 
 #: crates/rnote-ui/src/utils.rs:161 crates/rnote-ui/src/utils.rs:196
 msgctxt "part of string representation of a color"
 msgid "rose"
-msgstr ""
+msgstr "rosa"
 
 #: crates/rnote-ui/src/utils.rs:163
 msgctxt "part of string representation of a color"
@@ -2510,12 +2512,12 @@ msgstr "vermelho"
 #: crates/rnote-ui/src/utils.rs:166
 msgctxt "part of string representation of a color"
 msgid "orange"
-msgstr ""
+msgstr "laranja"
 
 #: crates/rnote-ui/src/utils.rs:169
 msgctxt "part of string representation of a color"
 msgid "yellow"
-msgstr ""
+msgstr "amarelo"
 
 #: crates/rnote-ui/src/utils.rs:173
 msgctxt "part of string representation of a color"
@@ -2525,7 +2527,7 @@ msgstr ""
 #: crates/rnote-ui/src/utils.rs:176
 msgctxt "part of string representation of a color"
 msgid "green"
-msgstr ""
+msgstr "verde"
 
 #: crates/rnote-ui/src/utils.rs:179
 msgctxt "part of string representation of a color"
@@ -2535,7 +2537,7 @@ msgstr ""
 #: crates/rnote-ui/src/utils.rs:182
 msgctxt "part of string representation of a color"
 msgid "cyan"
-msgstr ""
+msgstr "ciano"
 
 #: crates/rnote-ui/src/utils.rs:185
 msgctxt "part of string representation of a color"
@@ -2545,37 +2547,37 @@ msgstr ""
 #: crates/rnote-ui/src/utils.rs:188
 msgctxt "part of string representation of a color"
 msgid "blue"
-msgstr ""
+msgstr "azul"
 
 #: crates/rnote-ui/src/utils.rs:191
 msgctxt "part of string representation of a color"
 msgid "violet"
-msgstr ""
+msgstr "violeta"
 
 #: crates/rnote-ui/src/utils.rs:194
 msgctxt "part of string representation of a color"
 msgid "magenta"
-msgstr ""
+msgstr "magenta"
 
 #: crates/rnote-ui/src/utils.rs:201
 msgctxt "part of string representation of a color"
 msgid "greyish"
-msgstr ""
+msgstr "acinzentado"
 
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "vivid"
-msgstr ""
+msgstr "vivido"
 
 #: crates/rnote-ui/src/utils.rs:208
 msgctxt "part of string representation of a color"
 msgid "very-dark"
-msgstr ""
+msgstr "bem-escuro"
 
 #: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
 msgid "dark"
-msgstr ""
+msgstr "escuro"
 
 #: crates/rnote-ui/src/utils.rs:213
 msgctxt "part of string representation of a color"
@@ -2600,22 +2602,22 @@ msgstr "translúcido"
 #: crates/rnote-ui/src/utils.rs:225
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
-msgstr ""
+msgstr "pouco-transparente"
 
 #: crates/rnote-ui/src/utils.rs:234
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
-msgstr ""
+msgstr "totalmente transparente"
 
 #: crates/rnote-ui/src/utils.rs:237
 msgctxt "part of string representation of a color"
 msgid "black"
-msgstr ""
+msgstr "preto"
 
 #: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "white"
-msgstr ""
+msgstr "branco"
 
 #~ msgid "Lecture Note 1"
 #~ msgstr "Nota da Aula 1"

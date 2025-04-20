@@ -11,6 +11,7 @@
     <property name="vexpand">false</property>
     <child>
       <object class="GtkButton" id="fontdialog_button">
+        <property name="tooltip-text" translatable="yes">Font Chooser</property>
         <property name="icon-name">pen-typewriter-fontchooser-symbolic</property>
         <style>
           <class name="flat" />
@@ -25,6 +26,7 @@
     </child>
     <child>
       <object class="GtkSpinButton" id="font_size_spinbutton">
+        <property name="tooltip-text" translatable="yes">Edit Font Size</property>
         <property name="orientation">vertical</property>
         <property name="numeric">true</property>
         <property name="digits">0</property>

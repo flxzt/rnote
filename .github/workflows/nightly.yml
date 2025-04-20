@@ -1,6 +1,8 @@
+---
+
 name: Nightly
 
-on:
+"on":
   schedule:
     - cron: "0 8 * * 1"
   workflow_dispatch:
@@ -8,16 +10,20 @@ on:
 
 jobs:
   flatpak:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-47
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
       options: --privileged
     steps:
-    - uses: actions/checkout@v4
-    - uses: flathub-infra/flatpak-github-actions/flatpak-builder@4388a4c5fc8bab58e1dfb7fc63267dca0f7b4976
-      with:
-        manifest-path: build-aux/com.github.flxzt.rnote.Devel.yaml
-        cache-key: flatpak-builder-${{ github.sha }}
-        arch: x86_64
-        build-bundle: true
-        bundle: com.github.flxzt.rnote.Devel.flatpak
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build nightly flatpak
+        uses: flathub-infra/flatpak-github-actions/flatpak-builder@5aae0cc1d05f1c1a27c4ff13d6c6acbf2472392d
+        with:
+          manifest-path: build-aux/com.github.flxzt.rnote.Devel.yaml
+          cache-key: flatpak-builder-${{ github.sha }}
+          arch: x86_64
+          build-bundle: true
+          bundle: com.github.flxzt.rnote.Devel.flatpak

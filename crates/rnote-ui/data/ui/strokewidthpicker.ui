@@ -17,6 +17,7 @@
         <property name="value">2.0</property>
       </object>
       <object class="GtkSpinButton" id="spinbutton">
+        <property name="tooltip-text" translatable="yes">Edit Stroke Size</property>
         <property name="orientation">vertical</property>
         <property name="adjustment">adj</property>
         <property name="numeric">true</property>

@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build nightly flatpak
-        uses: flathub-infra/flatpak-github-actions/flatpak-builder@5aae0cc1d05f1c1a27c4ff13d6c6acbf2472392d
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
           manifest-path: build-aux/com.github.flxzt.rnote.Devel.yaml
           cache-key: flatpak-builder-${{ github.sha }}

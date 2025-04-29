@@ -155,7 +155,7 @@ lint:
     yamllint .
 
 lint-dependencies:
-    cargo deny --check
+    cargo deny check
 
 build:
     meson compile ui-cargo-build -C {{ build_folder }}

@@ -154,6 +154,9 @@ lint:
     meson compile cli-cargo-clippy -C {{ build_folder }}
     yamllint .
 
+lint-dependencies:
+    cargo deny --check
+
 build:
     meson compile ui-cargo-build -C {{ build_folder }}
     meson compile cli-cargo-build -C {{ build_folder }}

@@ -4,6 +4,7 @@ Name=@DESKTOP_FILE_NAME_ENTRY@
 Comment=Sketch and take handwritten notes
 # Translators: Do NOT translate or transliterate this text, this is an icon file name!
 Icon=@APP_ID@
+StartupWMClass=@APP_ID@
 #DBusActivatable=true
 Exec=@APP_NAME@ %f
 Terminal=false

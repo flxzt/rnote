@@ -43,7 +43,7 @@ prerequisites:
     fi
 
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    . "$HOME/.cargo/env"
+    export PATH="$HOME/.cargo/bin:$PATH"
 
 prerequisites-flatpak: prerequisites
     #!/usr/bin/env bash
@@ -101,10 +101,7 @@ prerequisites-win:
     mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
 
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-
-# in MSYS2 shell
-prerequisites-win-dev: prerequisites-win
-    cargo install --locked cargo-nextest
+    export PATH="$HOME/.cargo/bin:$PATH"
 
 setup-dev *MESON_ARGS:
     meson setup \

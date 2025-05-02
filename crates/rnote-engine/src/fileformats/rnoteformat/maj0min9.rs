@@ -14,12 +14,12 @@ impl TryFrom<RnoteFileMaj0Min6> for RnoteFileMaj0Min9 {
     type Error = anyhow::Error;
 
     fn try_from(mut value: RnoteFileMaj0Min6) -> Result<Self, Self::Error> {
-        let engine_snapsht = value
+        let engine_snapshot = value
             .engine_snapshot
             .as_object_mut()
             .ok_or_else(|| anyhow::anyhow!("engine snapshot is not a JSON object."))?;
 
-        engine_snapsht.insert("camera", ijson::to_value(Camera::default())?);
+        engine_snapshot.insert("camera", ijson::to_value(Camera::default())?);
 
         Ok(Self {
             engine_snapshot: value.engine_snapshot,

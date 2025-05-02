@@ -676,8 +676,10 @@ impl RnSettingsPanel {
                     .format
                     .set_dpi(doc_config.format.dpi());
 
-                let mut widget_flags = WidgetFlags::default();
-                widget_flags.refresh_ui = true;
+                let widget_flags = WidgetFlags {
+                    refresh_ui: true,
+                    ..Default::default()
+                };
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
         ));
@@ -768,8 +770,10 @@ impl RnSettingsPanel {
                     .background
                     .pattern_color = doc_config.background.pattern_color;
 
-                let mut widget_flags = WidgetFlags::default();
-                widget_flags.refresh_ui = true;
+                let widget_flags = WidgetFlags {
+                    refresh_ui: true,
+                    ..Default::default()
+                };
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
         ));

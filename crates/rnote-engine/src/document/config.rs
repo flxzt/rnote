@@ -11,6 +11,4 @@ pub struct DocumentConfig {
     pub background: Background,
     #[serde(rename = "layout", alias = "expand_mode")]
     pub layout: Layout,
-    #[serde(rename = "snap_positions")]
-    pub snap_positions: bool,
 }

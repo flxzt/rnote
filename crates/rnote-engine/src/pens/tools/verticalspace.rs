@@ -112,9 +112,10 @@ impl VerticalSpaceTool {
                 {
                     self.start_pos_y - self.pos_y
                 } else {
-                    engine_view
-                        .document
-                        .snap_position(element.pos - na::vector![0., self.pos_y])[1]
+                    engine_view.document.snap_position(
+                        element.pos - na::vector![0., self.pos_y],
+                        engine_view.config,
+                    )[1]
                 };
 
                 if y_offset.abs() > VerticalSpaceTool::Y_OFFSET_THRESHOLD {

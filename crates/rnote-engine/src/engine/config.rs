@@ -18,6 +18,8 @@ pub struct EngineConfig {
     pub pen_sounds: bool,
     #[serde(rename = "optimize_epd")]
     pub optimize_epd: bool,
+    #[serde(rename = "snap_positions")]
+    pub snap_positions: bool,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -51,5 +53,6 @@ impl EngineConfigShared {
         write.export_prefs = config.export_prefs;
         write.pen_sounds = config.pen_sounds;
         write.optimize_epd = config.optimize_epd;
+        write.snap_positions = config.snap_positions;
     }
 }

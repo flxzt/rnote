@@ -665,7 +665,7 @@ impl RnAppWindow {
             let pen_sounds = canvas.engine_ref().pen_sounds();
             let doc_format = canvas.engine_ref().document.config.format;
             let total_zoom = canvas.engine_ref().camera.total_zoom();
-            let snap_positions = canvas.engine_ref().document.config.snap_positions;
+            let snap_positions = self.engine_config().read().snap_positions;
             let can_undo = canvas.engine_ref().can_undo();
             let can_redo = canvas.engine_ref().can_redo();
 

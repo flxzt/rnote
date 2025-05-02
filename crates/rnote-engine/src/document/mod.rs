@@ -11,6 +11,7 @@ pub use format::Format;
 pub use layout::Layout;
 
 // Imports
+use crate::engine::EngineConfig;
 use crate::engine::snapshot::Snapshotable;
 use crate::{Camera, StrokeStore, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -326,12 +327,16 @@ impl Document {
     /// Snap the position to the document and pattern grid when `snap_positions` is enabled.
     ///
     /// If not, the original coordinates are returned.
-    pub(crate) fn snap_position(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
+    pub(crate) fn snap_position(
+        &self,
+        pos: na::Vector2<f64>,
+        config: &EngineConfig,
+    ) -> na::Vector2<f64> {
         const DOCUMENT_SNAP_DIST: f64 = 10.;
         let doc_format_size = self.config.format.size();
         let pattern_size = self.config.background.pattern_size;
 
-        if !self.config.snap_positions {
+        if !config.snap_positions {
             return pos;
         }
 

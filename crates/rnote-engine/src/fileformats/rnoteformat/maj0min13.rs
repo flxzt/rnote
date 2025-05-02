@@ -28,7 +28,8 @@ impl TryFrom<RnoteFileMaj0Min9> for RnoteFileMaj0Min13 {
         let layout = engine_snapshot["document"]
             .remove("layout")
             .ok_or_else(|| anyhow!("document has no value `layout`."))?;
-        let snap_positions = engine_snapshot["document"]
+        // discard `snap_positions`, this config is now global.
+        let _ = engine_snapshot["document"]
             .remove("snap_positions")
             .ok_or_else(|| anyhow!("document has no value `snap_positions`."))?;
 
@@ -36,7 +37,6 @@ impl TryFrom<RnoteFileMaj0Min9> for RnoteFileMaj0Min13 {
         document_config.insert("format", format);
         document_config.insert("background", background);
         document_config.insert("layout", layout);
-        document_config.insert("snap_positions", snap_positions);
         engine_snapshot["document"]
             .as_object_mut()
             .ok_or_else(|| anyhow!("document is not a JSON Object."))?

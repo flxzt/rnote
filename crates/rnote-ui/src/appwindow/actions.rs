@@ -371,10 +371,8 @@ impl RnAppWindow {
             self,
             move |action, state_request| {
                 let snap_positions = state_request.unwrap().get::<bool>().unwrap();
-                let Some(canvas) = appwindow.active_tab_canvas() else {
-                    return;
-                };
-                canvas.engine_mut().document.config.snap_positions = snap_positions;
+
+                appwindow.engine_config().write().snap_positions = snap_positions;
                 action.set_state(&snap_positions.to_variant());
             }
         ));

@@ -755,12 +755,18 @@ impl RnSettingsPanel {
                 appwindow.document_config_preset_mut().layout = doc_config.layout;
                 appwindow.document_config_preset_mut().format.border_color =
                     doc_config.format.border_color;
-                appwindow.document_config_preset_mut().background.color = doc_config.background.color;
-                appwindow.document_config_preset_mut().background.pattern = doc_config.background.pattern;
-                appwindow.document_config_preset_mut().background.pattern_size =
-                    doc_config.background.pattern_size;
-                appwindow.document_config_preset_mut().background.pattern_color =
-                    doc_config.background.pattern_color;
+                appwindow.document_config_preset_mut().background.color =
+                    doc_config.background.color;
+                appwindow.document_config_preset_mut().background.pattern =
+                    doc_config.background.pattern;
+                appwindow
+                    .document_config_preset_mut()
+                    .background
+                    .pattern_size = doc_config.background.pattern_size;
+                appwindow
+                    .document_config_preset_mut()
+                    .background
+                    .pattern_color = doc_config.background.pattern_color;
 
                 let mut widget_flags = WidgetFlags::default();
                 widget_flags.refresh_ui = true;

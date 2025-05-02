@@ -917,7 +917,9 @@ impl RnAppWindow {
                 debug!("Did not load `document-config-preset` from settings, was empty");
             } else {
                 let document_config_preset = serde_json::from_str::<DocumentConfig>(&config_str)?;
-                self.imp().document_config_preset.replace(document_config_preset);
+                self.imp()
+                    .document_config_preset
+                    .replace(document_config_preset);
             }
         }
 

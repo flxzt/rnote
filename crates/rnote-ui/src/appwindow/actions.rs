@@ -374,7 +374,7 @@ impl RnAppWindow {
                 let Some(canvas) = appwindow.active_tab_canvas() else {
                     return;
                 };
-                canvas.engine_mut().document.snap_positions = snap_positions;
+                canvas.engine_mut().document.config.snap_positions = snap_positions;
                 action.set_state(&snap_positions.to_variant());
             }
         ));
@@ -388,7 +388,7 @@ impl RnAppWindow {
                 let Some(canvas) = appwindow.active_tab_canvas() else {
                     return;
                 };
-                canvas.engine_mut().document.format.show_borders = show_format_borders;
+                canvas.engine_mut().document.config.format.show_borders = show_format_borders;
                 canvas.queue_draw();
                 action.set_state(&show_format_borders.to_variant());
             }
@@ -403,7 +403,7 @@ impl RnAppWindow {
                 let Some(canvas) = appwindow.active_tab_canvas() else {
                     return;
                 };
-                canvas.engine_mut().document.format.show_origin_indicator = show_origin_indicator;
+                canvas.engine_mut().document.config.format.show_origin_indicator = show_origin_indicator;
                 canvas.queue_draw();
                 action.set_state(&show_origin_indicator.to_variant());
             }
@@ -681,7 +681,7 @@ impl RnAppWindow {
                 let canvas = wrapper.canvas();
                 let viewport_center = canvas.engine_ref().camera.viewport_center();
                 let new_zoom = f64::from(wrapper.scroller().width())
-                    / (wrapper.canvas().engine_ref().document.format.width()
+                    / (wrapper.canvas().engine_ref().document.config.format.width()
                         + 2.0 * Camera::OVERSHOOT_HORIZONTAL);
                 let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
                 widget_flags |= canvas
@@ -1270,16 +1270,16 @@ impl RnAppWindow {
                                     Ok(json_string) => {
                                         let resize_argument =
                                             ImageSizeOption::ResizeImage(Resize {
-                                                width: canvas.engine_ref().document.format.width(),
+                                                width: canvas.engine_ref().document.config.format.width(),
                                                 height: canvas
                                                     .engine_ref()
                                                     .document
-                                                    .format
+                                                    .config.format
                                                     .height(),
                                                 layout_fixed_width: canvas
                                                     .engine_ref()
                                                     .document
-                                                    .layout
+                                                    .config.layout
                                                     .is_fixed_width(),
                                                 max_viewpoint: None,
                                                 restrain_to_viewport: false,

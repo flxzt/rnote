@@ -98,7 +98,7 @@ impl EngineSnapshot {
                 let mut engine = Engine::default();
 
                 // We convert all values from the hardcoded 72 DPI of Xopp files to the preferred dpi
-                engine.document.format.set_dpi(xopp_import_prefs.dpi);
+                engine.document.config.format.set_dpi(xopp_import_prefs.dpi);
 
                 engine.document.x = 0.0;
                 engine.document.y = 0.0;
@@ -115,7 +115,7 @@ impl EngineSnapshot {
 
                 engine
                     .document
-                    .format
+                    .config.format
                     .set_width(crate::utils::convert_value_dpi(
                         doc_width,
                         xoppformat::XoppFile::DPI,
@@ -123,7 +123,7 @@ impl EngineSnapshot {
                     ));
                 engine
                     .document
-                    .format
+                    .config.format
                     .set_height(crate::utils::convert_value_dpi(
                         doc_height / (no_pages as f64),
                         xoppformat::XoppFile::DPI,
@@ -137,7 +137,7 @@ impl EngineSnapshot {
                     } = &first_page.background.bg_type
                     {
                         // Xopp background styles are not compatible with Rnotes, so everything is plain for now
-                        engine.document.background.pattern = background::PatternStyle::None;
+                        engine.document.config.background.pattern = background::PatternStyle::None;
                     }
                 }
 

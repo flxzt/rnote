@@ -154,9 +154,9 @@ impl Engine {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<VectorImage>>();
 
         let resize_struct = Resize {
-            width: self.document.format.width(),
-            height: self.document.format.height(),
-            layout_fixed_width: self.document.layout.is_fixed_width(),
+            width: self.document.config.format.width(),
+            height: self.document.config.format.height(),
+            layout_fixed_width: self.document.config.layout.is_fixed_width(),
             max_viewpoint: Some(self.camera.viewport().maxs),
             restrain_to_viewport: true,
             respect_borders,
@@ -194,9 +194,9 @@ impl Engine {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<BitmapImage>>();
 
         let resize_struct = Resize {
-            width: self.document.format.width(),
-            height: self.document.format.height(),
-            layout_fixed_width: self.document.layout.is_fixed_width(),
+            width: self.document.config.format.width(),
+            height: self.document.config.format.height(),
+            layout_fixed_width: self.document.config.layout.is_fixed_width(),
             max_viewpoint: Some(self.camera.viewport().maxs),
             restrain_to_viewport: true,
             respect_borders,
@@ -236,7 +236,7 @@ impl Engine {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>>();
         let pdf_import_prefs = self.config.read().import_prefs.pdf_import_prefs;
-        let format = self.document.format;
+        let format = self.document.config.format;
         let insert_pos = if self
             .config
             .read()
@@ -319,8 +319,8 @@ impl Engine {
                 .iter()
                 .map(|(stroke, _)| stroke.bounds().extents())
                 .fold(na::Vector2::<f64>::zeros(), |acc, x| acc.maxs(&x));
-            self.document.format.set_width(max_size[0]);
-            self.document.format.set_height(max_size[1]);
+            self.document.config.format.set_width(max_size[0]);
+            self.document.config.format.set_height(max_size[1]);
             widget_flags |= self.set_doc_layout(Layout::FixedSize) | self.doc_resize_autoexpand()
         }
 

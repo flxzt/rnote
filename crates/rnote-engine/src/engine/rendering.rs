@@ -36,7 +36,7 @@ impl Engine {
                 };
 
                 for split_bounds in viewport.split_extended_origin_aligned(
-                    self.document.background.tile_size(),
+                    self.document.config.background.tile_size(),
                     SplitOrder::default(),
                 ) {
                     rendernodes.push(
@@ -130,7 +130,7 @@ impl Engine {
         let image_scale = self.camera.image_scale();
         let scale_factor = self.camera.scale_factor();
 
-        match self.document.background.gen_tile_image(image_scale) {
+        match self.document.config.background.gen_tile_image(image_scale) {
             Ok(image) => {
                 self.background_tile_image = Some(image);
             }
@@ -250,7 +250,7 @@ impl Engine {
         // Fill with background color just in case there is any space left between the tiles
         snapshot.append_node(
             gsk::ColorNode::new(
-                &gdk::RGBA::from_compose_color(self.document.background.color),
+                &gdk::RGBA::from_compose_color(self.document.config.background.color),
                 //&gdk::RGBA::RED,
                 &graphene::Rect::from_p2d_aabb(doc_bounds),
             )
@@ -273,7 +273,7 @@ impl Engine {
         use rnote_compose::SplitOrder;
         use rnote_compose::ext::AabbExt;
 
-        if self.document.format.show_borders {
+        if self.document.config.format.show_borders {
             let total_zoom = self.camera.total_zoom();
             let border_width = 1.0 / total_zoom;
             let viewport = self.camera.viewport();
@@ -282,7 +282,7 @@ impl Engine {
             snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds.loosened(2.0)));
 
             for page_bounds in doc_bounds
-                .split_extended_origin_aligned(self.document.format.size(), SplitOrder::default())
+                .split_extended_origin_aligned(self.document.config.format.size(), SplitOrder::default())
             {
                 if !page_bounds.intersects(&viewport) {
                     continue;
@@ -305,10 +305,10 @@ impl Engine {
                         border_width as f32,
                     ],
                     &[
-                        gdk::RGBA::from_compose_color(self.document.format.border_color),
-                        gdk::RGBA::from_compose_color(self.document.format.border_color),
-                        gdk::RGBA::from_compose_color(self.document.format.border_color),
-                        gdk::RGBA::from_compose_color(self.document.format.border_color),
+                        gdk::RGBA::from_compose_color(self.document.config.format.border_color),
+                        gdk::RGBA::from_compose_color(self.document.config.format.border_color),
+                        gdk::RGBA::from_compose_color(self.document.config.format.border_color),
+                        gdk::RGBA::from_compose_color(self.document.config.format.border_color),
                     ],
                 )
             }
@@ -327,7 +327,7 @@ impl Engine {
     ) -> anyhow::Result<()> {
         use gtk4::prelude::*;
 
-        if self.document.format.show_origin_indicator {
+        if self.document.config.format.show_origin_indicator {
             if let Some(r) = &self.origin_indicator_rendernode {
                 snapshot.append_node(r);
             }

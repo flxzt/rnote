@@ -348,7 +348,7 @@ impl Engine {
                 self.bounds_w_content_extended()
                     .unwrap_or(self.document.bounds()),
             ))
-            .with_background(Some(self.document.background))
+            .with_background(Some(self.document.config.background))
     }
 
     pub fn extract_pages_content(&self, page_order: SplitOrder) -> Vec<StrokeContent> {
@@ -364,7 +364,7 @@ impl Engine {
                         ),
                     )
                     .with_bounds(Some(bounds))
-                    .with_background(Some(self.document.background))
+                    .with_background(Some(self.document.config.background))
             })
             .collect()
     }
@@ -377,7 +377,7 @@ impl Engine {
         Some(
             StrokeContent::default()
                 .with_strokes(self.store.get_strokes_arc(&selection_keys))
-                .with_background(Some(self.document.background)),
+                .with_background(Some(self.document.config.background)),
         )
     }
 
@@ -458,7 +458,7 @@ impl Engine {
         let doc_export_prefs =
             doc_export_prefs_override.unwrap_or(self.config.read().export_prefs.doc_export_prefs);
         let pages_content = self.extract_pages_content(doc_export_prefs.page_order);
-        let format_size = self.document.format.size();
+        let format_size = self.document.config.format.size();
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
@@ -542,7 +542,7 @@ impl Engine {
                 let xopp_background = xoppformat::XoppBackground {
                     name: None,
                     bg_type: xoppformat::XoppBackgroundType::Solid {
-                        color: crate::utils::xoppcolor_from_color(document.background.color),
+                        color: crate::utils::xoppcolor_from_color(document.config.background.color),
                         style: xoppformat::XoppBackgroundSolidStyle::Plain,
                     },
                 };
@@ -560,7 +560,7 @@ impl Engine {
                             .filter_map(|mut stroke| {
                                 let mut stroke = Arc::make_mut(&mut stroke).clone();
                                 stroke.translate(-page_bounds.mins.coords);
-                                stroke.into_xopp(document.format.dpi())
+                                stroke.into_xopp(document.config.format.dpi())
                             })
                             .collect::<Vec<xoppformat::XoppStrokeType>>();
 
@@ -618,7 +618,7 @@ impl Engine {
 
                         let page_dimensions = crate::utils::convert_coord_dpi(
                             page_bounds.extents(),
-                            document.format.dpi(),
+                            document.config.format.dpi(),
                             xoppformat::XoppFile::DPI,
                         );
 

@@ -119,7 +119,7 @@ impl Camera {
     pub fn offset_lower_upper(&self, doc: &Document) -> (na::Vector2<f64>, na::Vector2<f64>) {
         let total_zoom = self.total_zoom();
 
-        let (h_lower, h_upper) = match doc.layout {
+        let (h_lower, h_upper) = match doc.config.layout {
             Layout::FixedSize | Layout::ContinuousVertical => (
                 doc.x * total_zoom - Self::OVERSHOOT_HORIZONTAL,
                 (doc.x + doc.width) * total_zoom + Self::OVERSHOOT_HORIZONTAL,
@@ -130,7 +130,7 @@ impl Camera {
             ),
             Layout::Infinite => (doc.x * total_zoom, (doc.x + doc.width) * total_zoom),
         };
-        let (v_lower, v_upper) = match doc.layout {
+        let (v_lower, v_upper) = match doc.config.layout {
             Layout::FixedSize | Layout::ContinuousVertical => (
                 doc.y * total_zoom - Self::OVERSHOOT_VERTICAL,
                 (doc.y + doc.height) * total_zoom + Self::OVERSHOOT_VERTICAL,

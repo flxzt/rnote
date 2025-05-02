@@ -404,7 +404,7 @@ impl RnSettingsPanel {
         let canvas = appwindow.active_tab_canvas();
 
         if let Some(canvas) = canvas {
-            let format_border_color = canvas.engine_ref().document.format.border_color;
+            let format_border_color = canvas.engine_ref().document.config.format.border_color;
             let optimize_epd = canvas.engine_ref().optimize_epd();
 
             imp.doc_format_border_color_button
@@ -419,7 +419,7 @@ impl RnSettingsPanel {
         let canvas = appwindow.active_tab_canvas();
 
         if let Some(canvas) = canvas {
-            let format = canvas.engine_ref().document.format;
+            let format = canvas.engine_ref().document.config.format;
             *self.imp().temporary_format.borrow_mut() = format;
 
             self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
@@ -438,9 +438,9 @@ impl RnSettingsPanel {
         let canvas = appwindow.active_tab_canvas();
 
         if let Some(canvas) = canvas {
-            let background = canvas.engine_ref().document.background;
-            let format = canvas.engine_ref().document.format;
-            let document_layout = canvas.engine_ref().document.layout;
+            let background = canvas.engine_ref().document.config.background;
+            let format = canvas.engine_ref().document.config.format;
+            let document_layout = canvas.engine_ref().document.config.layout;
 
             imp.doc_background_color_button
                 .set_rgba(&gdk::RGBA::from_compose_color(background.color));
@@ -690,10 +690,10 @@ impl RnSettingsPanel {
                         .temporary_format
                         .borrow_mut()
                         .border_color = format_border_color;
-                    let current_color = canvas.engine_ref().document.format.border_color;
+                    let current_color = canvas.engine_ref().document.config.format.border_color;
 
                     if !current_color.approx_eq_f32(format_border_color) {
-                        canvas.engine_mut().document.format.border_color = format_border_color;
+                        canvas.engine_mut().document.config.format.border_color = format_border_color;
                         let mut widget_flags =
                             canvas.engine_mut().update_rendering_current_viewport();
                         widget_flags.store_modified = true;
@@ -714,11 +714,11 @@ impl RnSettingsPanel {
                 if !canvas
                     .engine_ref()
                     .document
-                    .background
+                    .config.background
                     .color
                     .approx_eq_f32(background_color)
                 {
-                    canvas.engine_mut().document.background.color = background_color;
+                    canvas.engine_mut().document.config.background.color = background_color;
                     let mut widget_flags = canvas.engine_mut().background_rendering_regenerate();
                     widget_flags.store_modified = true;
                     appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -745,7 +745,7 @@ impl RnSettingsPanel {
                         .fixedsize_quickactions_box()
                         .set_sensitive(document_layout == Layout::FixedSize);
 
-                    if canvas.engine_ref().document.layout != document_layout {
+                    if canvas.engine_ref().document.config.layout != document_layout {
                         let mut widget_flags = canvas.engine_mut().set_doc_layout(document_layout);
                         widget_flags.store_modified = true;
                         appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -829,8 +829,8 @@ impl RnSettingsPanel {
                         }
                     }
 
-                    if canvas.engine_ref().document.background.pattern != pattern {
-                        canvas.engine_mut().document.background.pattern = pattern;
+                    if canvas.engine_ref().document.config.background.pattern != pattern {
+                        canvas.engine_mut().document.config.background.pattern = pattern;
                         let mut widget_flags =
                             canvas.engine_mut().background_rendering_regenerate();
                         widget_flags.store_modified = true;
@@ -852,11 +852,11 @@ impl RnSettingsPanel {
                     if !canvas
                         .engine_ref()
                         .document
-                        .background
+                        .config.background
                         .pattern_color
                         .approx_eq_f32(pattern_color)
                     {
-                        canvas.engine_mut().document.background.pattern_color = pattern_color;
+                        canvas.engine_mut().document.config.background.pattern_color = pattern_color;
                         let mut widget_flags =
                             canvas.engine_mut().background_rendering_regenerate();
                         widget_flags.store_modified = true;
@@ -876,17 +876,17 @@ impl RnSettingsPanel {
                         let Some(canvas) = appwindow.active_tab_canvas() else {
                             return;
                         };
-                        let mut pattern_size = canvas.engine_ref().document.background.pattern_size;
+                        let mut pattern_size = canvas.engine_ref().document.config.background.pattern_size;
                         pattern_size[0] = unit_entry.value_in_px();
 
                         if !canvas
                             .engine_ref()
                             .document
-                            .background
+                            .config.background
                             .pattern_size
                             .approx_eq(&pattern_size)
                         {
-                            canvas.engine_mut().document.background.pattern_size = pattern_size;
+                            canvas.engine_mut().document.config.background.pattern_size = pattern_size;
                             let mut widget_flags =
                                 canvas.engine_mut().background_rendering_regenerate();
                             widget_flags.store_modified = true;
@@ -907,17 +907,17 @@ impl RnSettingsPanel {
                         let Some(canvas) = appwindow.active_tab_canvas() else {
                             return;
                         };
-                        let mut pattern_size = canvas.engine_ref().document.background.pattern_size;
+                        let mut pattern_size = canvas.engine_ref().document.config.background.pattern_size;
                         pattern_size[1] = unit_entry.value_in_px();
 
                         if !canvas
                             .engine_ref()
                             .document
-                            .background
+                            .config.background
                             .pattern_size
                             .approx_eq(&pattern_size)
                         {
-                            canvas.engine_mut().document.background.pattern_size = pattern_size;
+                            canvas.engine_mut().document.config.background.pattern_size = pattern_size;
                             let mut widget_flags =
                                 canvas.engine_mut().background_rendering_regenerate();
                             widget_flags.store_modified = true;
@@ -939,19 +939,19 @@ impl RnSettingsPanel {
 
                     let mut widget_flags = {
                         let mut engine = canvas.engine_mut();
-                        engine.document.background.color = engine
+                        engine.document.config.background.color = engine
                             .document
-                            .background
+                            .config.background
                             .color
                             .to_inverted_brightness_color();
-                        engine.document.background.pattern_color = engine
+                        engine.document.config.background.pattern_color = engine
                             .document
-                            .background
+                            .config.background
                             .pattern_color
                             .to_inverted_brightness_color();
-                        engine.document.format.border_color = engine
+                        engine.document.config.format.border_color = engine
                             .document
-                            .format
+                            .config.format
                             .border_color
                             .to_inverted_brightness_color();
                         engine.background_rendering_regenerate()
@@ -1184,8 +1184,8 @@ impl RnSettingsPanel {
         let Some(canvas) = appwindow.active_tab_canvas() else {
             return;
         };
-        *imp.temporary_format.borrow_mut() = canvas.engine_ref().document.format;
-        let revert_format = canvas.engine_ref().document.format;
+        *imp.temporary_format.borrow_mut() = canvas.engine_ref().document.config.format;
+        let revert_format = canvas.engine_ref().document.config.format;
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
         imp.format_dpi_adj.set_value(revert_format.dpi());
@@ -1209,7 +1209,7 @@ impl RnSettingsPanel {
         imp.doc_background_pattern_height_unitentry
             .set_dpi_keep_value(temporary_format.dpi());
 
-        canvas.engine_mut().document.format = temporary_format;
+        canvas.engine_mut().document.config.format = temporary_format;
         let mut widget_flags = canvas.engine_mut().doc_resize_to_fit_content();
         widget_flags.store_modified = true;
         appwindow.handle_widget_flags(widget_flags, &canvas);

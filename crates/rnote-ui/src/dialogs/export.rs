@@ -116,7 +116,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         .read()
         .export_prefs
         .doc_export_prefs;
-    let doc_layout = canvas.engine_ref().document.layout;
+    let doc_layout = canvas.engine_ref().document.config.layout;
 
     // initial widget state with the preferences
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
@@ -449,7 +449,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         .write()
         .export_prefs
         .doc_pages_export_prefs;
-    let doc_layout = canvas.engine_ref().document.layout;
+    let doc_layout = canvas.engine_ref().document.config.layout;
 
     // initial widget state with the preferences
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));

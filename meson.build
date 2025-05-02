@@ -90,7 +90,6 @@ meson.add_dist_script(
 subdir('crates/rnote-compose')
 subdir('crates/rnote-engine')
 
-
 # cargo fmt check
 run_target(
     'cargo-fmt-check',

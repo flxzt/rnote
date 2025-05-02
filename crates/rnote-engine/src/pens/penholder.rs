@@ -2,14 +2,13 @@
 use super::penmode::PenModeState;
 use super::shortcuts::ShortcutMode;
 use super::{
-    Brush, Eraser, Pen, PenBehaviour, PenMode, PenStyle, Selector, Shaper, Shortcuts, Tools,
-    Typewriter,
+    Brush, Eraser, Pen, PenBehaviour, PenMode, PenStyle, Selector, Shaper, Tools, Typewriter,
 };
+use crate::DrawableOnDoc;
 use crate::camera::NudgeDirection;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::pens::shortcuts::ShortcutAction;
 use crate::widgetflags::WidgetFlags;
-use crate::{CloneConfig, DrawableOnDoc};
 use futures::channel::oneshot;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
@@ -29,8 +28,6 @@ pub enum BacklogPolicy {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "penholder")]
 pub struct PenHolder {
-    #[serde(rename = "shortcuts")]
-    shortcuts: Shortcuts,
     #[serde(rename = "pen_mode_state")]
     pen_mode_state: PenModeState,
 
@@ -50,7 +47,6 @@ pub struct PenHolder {
 impl Default for PenHolder {
     fn default() -> Self {
         Self {
-            shortcuts: Shortcuts::default(),
             pen_mode_state: PenModeState::default(),
             backlog_policy: BacklogPolicy::NoLimit,
 
@@ -62,55 +58,7 @@ impl Default for PenHolder {
     }
 }
 
-impl CloneConfig for PenHolder {
-    fn clone_config(&self) -> Self {
-        Self {
-            shortcuts: self.shortcuts.clone(),
-            pen_mode_state: self.pen_mode_state.clone_config(),
-            ..Default::default()
-        }
-    }
-}
-
 impl PenHolder {
-    /// Get the current registered shortcuts.
-    pub fn shortcuts(&self) -> Shortcuts {
-        self.shortcuts.clone()
-    }
-
-    /// Clear all shortcuts
-    pub fn clear_shortcuts(&mut self) {
-        self.shortcuts.clear();
-    }
-
-    /// Replace all shortcuts.
-    pub fn set_shortcuts(&mut self, shortcuts: Shortcuts) {
-        self.shortcuts = shortcuts;
-    }
-
-    /// Register a shortcut key and action.
-    pub fn register_shortcut(&mut self, key: ShortcutKey, action: ShortcutAction) {
-        self.shortcuts.insert(key, action);
-    }
-
-    /// Remove the shortcut action for the given shortcut key, if it is registered.
-    pub fn remove_shortcut(&mut self, key: ShortcutKey) -> Option<ShortcutAction> {
-        self.shortcuts.remove(&key)
-    }
-
-    // Get the current registered action the the given shortcut key.
-    pub fn get_shortcut_action(&self, key: ShortcutKey) -> Option<ShortcutAction> {
-        self.shortcuts.get(&key).cloned()
-    }
-
-    /// List all current registered shortcut keys and their action.
-    pub fn list_current_shortcuts(&self) -> Vec<(ShortcutKey, ShortcutAction)> {
-        self.shortcuts
-            .iter()
-            .map(|(key, action)| (*key, *action))
-            .collect()
-    }
-
     /// Get the current pen mode state.
     pub fn pen_mode_state(&self) -> PenModeState {
         self.pen_mode_state.clone()
@@ -126,13 +74,14 @@ impl PenHolder {
     }
 
     /// Get the style without the temporary override.
-    pub fn current_pen_style(&self) -> PenStyle {
-        self.pen_mode_state.style()
+    pub fn current_pen_style(&self, engine_view: &EngineView) -> PenStyle {
+        self.pen_mode_state.style(&engine_view.config.pens_config)
     }
 
     /// Get the current style, or the override if it is set.
-    pub fn current_pen_style_w_override(&self) -> PenStyle {
-        self.pen_mode_state.current_style_w_override()
+    pub fn current_pen_style_w_override(&self, engine_view: &EngineView) -> PenStyle {
+        self.pen_mode_state
+            .current_style_w_override(&engine_view.config.pens_config)
     }
 
     /// The current pen progress.
@@ -170,12 +119,17 @@ impl PenHolder {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        if self.pen_mode_state.style_override() != new_style_override {
+        if self
+            .pen_mode_state
+            .style_override(&engine_view.config.pens_config)
+            != new_style_override
+        {
             // Deselecting when changing the style override
             let all_strokes = engine_view.store.selection_keys_as_rendered();
             engine_view.store.set_selected_keys(&all_strokes, false);
 
-            self.pen_mode_state.set_style_override(new_style_override);
+            self.pen_mode_state
+                .set_style_override(&engine_view.config.pens_config, new_style_override);
             widget_flags |= self.reinstall_pen_current_style(engine_view);
             widget_flags.refresh_ui = true;
         }
@@ -193,8 +147,13 @@ impl PenHolder {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        if self.pen_mode_state.pen_mode() != new_pen_mode {
-            self.pen_mode_state.set_pen_mode(new_pen_mode);
+        if self
+            .pen_mode_state
+            .pen_mode(&engine_view.config.pens_config)
+            != new_pen_mode
+        {
+            self.pen_mode_state
+                .set_pen_mode(&mut engine_view.config.pens_config, new_pen_mode);
             widget_flags |= self.reinstall_pen_current_style(engine_view);
             widget_flags.refresh_ui = true;
         }
@@ -214,10 +173,10 @@ impl PenHolder {
                 .handle_event(PenEvent::Cancel, Instant::now(), engine_view);
 
         // then reinstall a new pen instance
-        let mut new_pen = new_pen(self.current_pen_style_w_override());
+        let mut new_pen = new_pen(self.current_pen_style_w_override(&engine_view.as_im()));
         widget_flags |= new_pen.init(&engine_view.as_im()) | new_pen.update_state(engine_view);
         self.current_pen = new_pen;
-        widget_flags |= self.handle_changed_pen_style();
+        widget_flags |= self.handle_changed_pen_style(engine_view);
         self.progress = PenProgress::Idle;
 
         widget_flags
@@ -279,7 +238,11 @@ impl PenHolder {
         let mut widget_flags = WidgetFlags::default();
         let mut propagate = EventPropagation::Proceed;
 
-        if let Some(action) = self.get_shortcut_action(shortcut_key) {
+        if let Some(action) = engine_view
+            .config
+            .pens_config
+            .get_shortcut_action(shortcut_key)
+        {
             match action {
                 ShortcutAction::ChangePenStyle { style, mode } => match mode {
                     ShortcutMode::Temporary => {
@@ -305,7 +268,8 @@ impl PenHolder {
                                     self.change_style_int(toggle_pen_style, engine_view);
                             }
                         } else {
-                            self.toggle_pen_style = Some(self.current_pen_style());
+                            self.toggle_pen_style =
+                                Some(self.current_pen_style(&engine_view.as_im()));
                             widget_flags |= self.change_style_int(style, engine_view);
                         }
                     }
@@ -349,12 +313,13 @@ impl PenHolder {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        if self.pen_mode_state.style() != new_style {
+        if self.pen_mode_state.style(&engine_view.config.pens_config) != new_style {
             // Deselecting when changing the style
             let all_strokes = engine_view.store.selection_keys_as_rendered();
             engine_view.store.set_selected_keys(&all_strokes, false);
 
-            self.pen_mode_state.set_style(new_style);
+            self.pen_mode_state
+                .set_style(&mut engine_view.config.pens_config, new_style);
             widget_flags |= self.reinstall_pen_current_style(engine_view);
             widget_flags.refresh_ui = true;
         }
@@ -483,7 +448,11 @@ impl PenHolder {
             PenProgress::InProgress => {}
             PenProgress::Finished => {
                 // take the style override when pen is finished
-                if self.pen_mode_state.take_style_override().is_some() {
+                if self
+                    .pen_mode_state
+                    .take_style_override(&engine_view.config.pens_config)
+                    .is_some()
+                {
                     widget_flags.refresh_ui = true;
                     widget_flags |= self.reinstall_pen_current_style(engine_view);
                 }
@@ -495,9 +464,11 @@ impl PenHolder {
         widget_flags
     }
 
-    fn handle_changed_pen_style(&mut self) -> WidgetFlags {
+    fn handle_changed_pen_style(&mut self, engine_view: &mut EngineViewMut) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        let current_style = self.pen_mode_state.current_style_w_override();
+        let current_style = self
+            .pen_mode_state
+            .current_style_w_override(&engine_view.config.pens_config);
 
         self.backlog_policy = match current_style {
             PenStyle::Brush => BacklogPolicy::Limit(Duration::from_millis(4)),

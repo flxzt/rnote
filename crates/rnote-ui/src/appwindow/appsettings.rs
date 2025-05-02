@@ -425,6 +425,14 @@ impl RnAppWindow {
                 .load_from_settings(&app_settings);
         }
 
+        {
+            if let Err(err) = self.load_engine_config_from_settings(&app_settings) {
+                error!(
+                    "Failed to load engine config from app settings, using defaults. Err: {err:?}"
+                );
+            };
+        }
+
         Ok(())
     }
 
@@ -445,10 +453,8 @@ impl RnAppWindow {
         }
 
         {
-            // Save engine config of the current active tab
-            if let Some(canvas) = self.active_tab_canvas() {
-                canvas.save_engine_config(&app_settings)?;
-            }
+            // Save engine config
+            self.save_engine_config_to_settings(&app_settings)?;
         }
 
         {
@@ -482,10 +488,7 @@ impl RnAppWindow {
                     #[upgrade_or]
                     glib::ControlFlow::Break,
                     move || {
-                        let Some(canvas) = appwindow.active_tab_canvas() else {
-                            return glib::ControlFlow::Continue;
-                        };
-                        if let Err(e) = canvas.save_engine_config(&app_settings) {
+                        if let Err(e) = appwindow.save_engine_config_to_settings(&app_settings) {
                             error!(
                                 "Saving engine config in periodic save task failed , Err: {e:?}"
                             );

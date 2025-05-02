@@ -1,6 +1,5 @@
 // Imports
-use super::{Engine, EngineConfig, StrokeContent};
-use crate::CloneConfig;
+use super::{Engine, StrokeContent};
 use crate::fileformats::rnoteformat::RnoteFile;
 use crate::fileformats::{FileFormatSaver, xoppformat};
 use anyhow::Context;
@@ -312,12 +311,6 @@ pub struct ExportPrefs {
     pub selection_export_prefs: SelectionExportPrefs,
 }
 
-impl CloneConfig for ExportPrefs {
-    fn clone_config(&self) -> Self {
-        *self
-    }
-}
-
 impl Engine {
     /// The used image scale-factor for any strokes that are converted to bitmap images on export.
     pub const STROKE_EXPORT_IMAGE_SCALE: f64 = 1.8;
@@ -343,19 +336,6 @@ impl Engine {
             }
         });
         oneshot_receiver
-    }
-
-    /// Extract the current engine configuration.
-    pub fn extract_engine_config(&self) -> EngineConfig {
-        EngineConfig {
-            document: self.document.clone_config(),
-            pens_config: self.pens_config.clone_config(),
-            penholder: self.penholder.clone_config(),
-            import_prefs: self.import_prefs.clone_config(),
-            export_prefs: self.export_prefs.clone_config(),
-            pen_sounds: self.pen_sounds(),
-            optimize_epd: self.optimize_epd(),
-        }
     }
 
     pub fn extract_document_content(&self) -> StrokeContent {
@@ -401,11 +381,6 @@ impl Engine {
         )
     }
 
-    /// Export the current engine config as Json string.
-    pub fn export_engine_config_as_json(&self) -> anyhow::Result<String> {
-        Ok(serde_json::to_string(&self.extract_engine_config())?)
-    }
-
     /// Export the entire engine state as Json string.
     ///
     /// Only intended to be used for debugging.
@@ -420,7 +395,7 @@ impl Engine {
         doc_export_prefs_override: Option<DocExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<u8>, anyhow::Error>> {
         let doc_export_prefs =
-            doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
+            doc_export_prefs_override.unwrap_or(self.config.read().export_prefs.doc_export_prefs);
 
         match doc_export_prefs.export_format {
             DocExportFormat::Svg => self.export_doc_as_svg_bytes(doc_export_prefs_override),
@@ -438,7 +413,7 @@ impl Engine {
     ) -> oneshot::Receiver<Result<Vec<u8>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
         let doc_export_prefs =
-            doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
+            doc_export_prefs_override.unwrap_or(self.config.read().export_prefs.doc_export_prefs);
         let doc_content = self.extract_document_content();
 
         rayon::spawn(move || {
@@ -481,7 +456,7 @@ impl Engine {
     ) -> oneshot::Receiver<anyhow::Result<Vec<u8>>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
         let doc_export_prefs =
-            doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
+            doc_export_prefs_override.unwrap_or(self.config.read().export_prefs.doc_export_prefs);
         let pages_content = self.extract_pages_content(doc_export_prefs.page_order);
         let format_size = self.document.format.size();
 
@@ -557,7 +532,7 @@ impl Engine {
     ) -> oneshot::Receiver<Result<Vec<u8>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
         let doc_export_prefs =
-            doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
+            doc_export_prefs_override.unwrap_or(self.config.read().export_prefs.doc_export_prefs);
         let pages_content = self.extract_pages_content(doc_export_prefs.page_order);
         let document = self.document.clone();
 
@@ -686,8 +661,8 @@ impl Engine {
         &self,
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
-        let doc_pages_export_prefs =
-            doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
+        let doc_pages_export_prefs = doc_pages_export_prefs_override
+            .unwrap_or(self.config.read().export_prefs.doc_pages_export_prefs);
 
         match doc_pages_export_prefs.export_format {
             DocPagesExportFormat::Svg => {
@@ -705,8 +680,8 @@ impl Engine {
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Vec<u8>>>>();
-        let doc_pages_export_prefs =
-            doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
+        let doc_pages_export_prefs = doc_pages_export_prefs_override
+            .unwrap_or(self.config.read().export_prefs.doc_pages_export_prefs);
         let pages_content = self.extract_pages_content(doc_pages_export_prefs.page_order);
 
         rayon::spawn(move || {
@@ -757,8 +732,8 @@ impl Engine {
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Vec<u8>>>>();
-        let doc_pages_export_prefs =
-            doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
+        let doc_pages_export_prefs = doc_pages_export_prefs_override
+            .unwrap_or(self.config.read().export_prefs.doc_pages_export_prefs);
         let pages_contents = self.extract_pages_content(doc_pages_export_prefs.page_order);
 
         rayon::spawn(move || {
@@ -809,8 +784,8 @@ impl Engine {
         &self,
         selection_export_prefs_override: Option<SelectionExportPrefs>,
     ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
-        let selection_export_prefs =
-            selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
+        let selection_export_prefs = selection_export_prefs_override
+            .unwrap_or(self.config.read().export_prefs.selection_export_prefs);
 
         match selection_export_prefs.export_format {
             SelectionExportFormat::Svg => {
@@ -829,8 +804,8 @@ impl Engine {
     ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<Option<Vec<u8>>>>();
-        let selection_export_prefs =
-            selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
+        let selection_export_prefs = selection_export_prefs_override
+            .unwrap_or(self.config.read().export_prefs.selection_export_prefs);
         let content = self.extract_selection_content();
 
         rayon::spawn(move || {
@@ -880,8 +855,8 @@ impl Engine {
     ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<Option<Vec<u8>>>>();
-        let selection_export_prefs =
-            selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
+        let selection_export_prefs = selection_export_prefs_override
+            .unwrap_or(self.config.read().export_prefs.selection_export_prefs);
         let content = self.extract_selection_content();
 
         rayon::spawn(move || {

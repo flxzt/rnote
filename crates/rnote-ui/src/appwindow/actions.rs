@@ -428,7 +428,7 @@ impl RnAppWindow {
 
                 // don't change the style if the current style with override is already the same
                 // (e.g. when switched to from the pen button, not by clicking the pen page)
-                if pen_style != canvas.engine_ref().penholder.current_pen_style_w_override() {
+                if pen_style != canvas.engine_ref().current_pen_style_w_override() {
                     let mut widget_flags = canvas.engine_mut().change_pen_style(pen_style);
                     widget_flags |= canvas.engine_mut().change_pen_style_override(None);
                     appwindow.handle_widget_flags(widget_flags, &canvas);

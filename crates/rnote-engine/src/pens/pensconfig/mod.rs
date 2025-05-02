@@ -15,8 +15,10 @@ pub use toolsconfig::ToolsConfig;
 pub use typewriterconfig::TypewriterConfig;
 
 // Imports
-use crate::CloneConfig;
+use super::shortcuts::ShortcutAction;
+use super::{PenMode, PenStyle, Shortcuts};
 use rnote_compose::Color;
+use rnote_compose::penevent::ShortcutKey;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -34,12 +36,15 @@ pub struct PensConfig {
     pub selector_config: SelectorConfig,
     #[serde(default, rename = "tools_config")]
     pub tools_config: ToolsConfig,
-}
 
-impl CloneConfig for PensConfig {
-    fn clone_config(&self) -> Self {
-        self.clone()
-    }
+    #[serde(rename = "shortcuts")]
+    pub shortcuts: Shortcuts,
+    #[serde(rename = "penmode")]
+    pub penmode: PenMode,
+    #[serde(rename = "penmode_pen_style")]
+    pub penmode_pen_style: PenStyle,
+    #[serde(rename = "penmode_eraser_style")]
+    pub penmode_eraser_style: PenStyle,
 }
 
 impl PensConfig {
@@ -57,5 +62,43 @@ impl PensConfig {
         self.brush_config.solid_options.fill_color = Some(fill_color);
         self.shaper_config.smooth_options.fill_color = Some(fill_color);
         self.shaper_config.rough_options.fill_color = Some(fill_color);
+    }
+
+    /// Get the current registered shortcuts.
+    pub fn shortcuts(&self) -> Shortcuts {
+        self.shortcuts.clone()
+    }
+
+    /// Clear all shortcuts
+    pub fn clear_shortcuts(&mut self) {
+        self.shortcuts.clear();
+    }
+
+    /// Replace all shortcuts.
+    pub fn set_shortcuts(&mut self, shortcuts: Shortcuts) {
+        self.shortcuts = shortcuts;
+    }
+
+    /// Register a shortcut key and action.
+    pub fn register_shortcut(&mut self, key: ShortcutKey, action: ShortcutAction) {
+        self.shortcuts.insert(key, action);
+    }
+
+    /// Remove the shortcut action for the given shortcut key, if it is registered.
+    pub fn remove_shortcut(&mut self, key: ShortcutKey) -> Option<ShortcutAction> {
+        self.shortcuts.remove(&key)
+    }
+
+    // Get the current registered action the the given shortcut key.
+    pub fn get_shortcut_action(&self, key: ShortcutKey) -> Option<ShortcutAction> {
+        self.shortcuts.get(&key).cloned()
+    }
+
+    /// List all current registered shortcut keys and their action.
+    pub fn list_current_shortcuts(&self) -> Vec<(ShortcutKey, ShortcutAction)> {
+        self.shortcuts
+            .iter()
+            .map(|(key, action)| (*key, *action))
+            .collect()
     }
 }

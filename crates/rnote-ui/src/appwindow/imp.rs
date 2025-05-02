@@ -7,6 +7,7 @@ use gtk4::{
     PadController, PositionType, gdk, glib, glib::clone,
 };
 use once_cell::sync::Lazy;
+use rnote_engine::engine::EngineConfigShared;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use tracing::{error, trace};
@@ -14,6 +15,7 @@ use tracing::{error, trace};
 #[derive(Debug, CompositeTemplate)]
 #[template(resource = "/com/github/flxzt/rnote/ui/appwindow.ui")]
 pub(crate) struct RnAppWindow {
+    pub(crate) engine_config: EngineConfigShared,
     pub(crate) drawing_pad_controller: RefCell<Option<PadController>>,
     pub(crate) autosave_source_id: RefCell<Option<glib::SourceId>>,
     pub(crate) periodic_configsave_source_id: RefCell<Option<glib::SourceId>>,
@@ -46,6 +48,7 @@ pub(crate) struct RnAppWindow {
 impl Default for RnAppWindow {
     fn default() -> Self {
         Self {
+            engine_config: EngineConfigShared::default(),
             drawing_pad_controller: RefCell::new(None),
             autosave_source_id: RefCell::new(None),
             periodic_configsave_source_id: RefCell::new(None),
@@ -170,6 +173,7 @@ impl ObjectImpl for RnAppWindow {
 
     fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
         match pspec.name() {
+            "engine-config" => {}
             "save-in-progress" => {
                 let save_in_progress = value
                     .get::<bool>()

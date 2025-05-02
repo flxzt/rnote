@@ -165,8 +165,7 @@ impl RnOverlays {
                         return;
                     };
                     let stroke_color = colorpicker.stroke_color().into_compose_color();
-                    let current_pen_style =
-                        canvas.engine_ref().penholder.current_pen_style_w_override();
+                    let current_pen_style = canvas.engine_ref().current_pen_style_w_override();
 
                     match current_pen_style {
                         PenStyle::Typewriter => {
@@ -184,8 +183,9 @@ impl RnOverlays {
                     }
 
                     // We have a global colorpicker, so we apply it to all styles
-                    canvas
-                        .engine_mut()
+                    appwindow
+                        .engine_config()
+                        .write()
                         .pens_config
                         .set_all_stroke_colors(stroke_color);
                 }
@@ -202,7 +202,7 @@ impl RnOverlays {
                         return;
                     };
                     let fill_color = colorpicker.fill_color().into_compose_color();
-                    let stroke_style = canvas.engine_ref().penholder.current_pen_style_w_override();
+                    let stroke_style = canvas.engine_ref().current_pen_style_w_override();
 
                     match stroke_style {
                         PenStyle::Selector => {
@@ -218,8 +218,9 @@ impl RnOverlays {
                     }
 
                     // We have a global colorpicker, so we apply it to all styles
-                    canvas
-                        .engine_mut()
+                    appwindow
+                        .engine_config()
+                        .write()
                         .pens_config
                         .set_all_fill_colors(fill_color);
                 }
@@ -257,7 +258,7 @@ impl RnOverlays {
 
                 let widget_flags = active_canvaswrapper.canvas().engine_mut().set_active(true);
                 appwindow.handle_widget_flags(widget_flags, &active_canvaswrapper.canvas());
-                appwindow.refresh_ui_from_engine(&active_canvaswrapper);
+                appwindow.refresh_ui();
             }
         ));
 

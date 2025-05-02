@@ -12,6 +12,11 @@ use slotmap::{HopSlotMap, SecondaryMap};
 use std::sync::Arc;
 use tracing::error;
 
+/// Trait for types which hold configuration needed for engine snapshots
+pub trait Snapshotable {
+    fn extract_snapshot_data(&self) -> Self;
+}
+
 // An engine snapshot, used when loading/saving the current document from/into a file.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "engine_snapshot")]

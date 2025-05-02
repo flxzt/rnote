@@ -47,7 +47,7 @@ impl Selector {
             }
             SelectorState::Selecting { path } => {
                 Self::add_to_select_path(
-                    engine_view.pens_config.selector_config.style,
+                    engine_view.config.pens_config.selector_config.style,
                     path,
                     element,
                 );
@@ -170,7 +170,7 @@ impl Selector {
                                 start_pos: element.pos,
                                 last_rendered_bounds: *selection_bounds,
                             }
-                        } else if engine_view.pens_config.selector_config.style
+                        } else if engine_view.config.pens_config.selector_config.style
                             == SelectorStyle::Single
                             && key_to_add
                                 .and_then(|key| engine_view.store.selected(key).map(|s| !s))
@@ -289,6 +289,7 @@ impl Selector {
                         last_rendered_bounds,
                     } => {
                         let lock_aspectratio = engine_view
+                            .config
                             .pens_config
                             .selector_config
                             .resize_lock_aspectratio
@@ -427,7 +428,7 @@ impl Selector {
             SelectorState::Selecting { path } => {
                 let mut progress = PenProgress::Finished;
 
-                let new_selection = match engine_view.pens_config.selector_config.style {
+                let new_selection = match engine_view.config.pens_config.selector_config.style {
                     SelectorStyle::Polygon => {
                         if path.len() >= 3 {
                             engine_view

@@ -2,14 +2,13 @@
 mod canvaslayout;
 pub(crate) mod imexport;
 mod input;
-mod widgetflagsboxed;
 
 // Re-exports
 pub(crate) use canvaslayout::RnCanvasLayout;
 pub(crate) use input::reject_pointer_input;
-pub(crate) use widgetflagsboxed::WidgetFlagsBoxed;
 
 // Imports
+use crate::boxed::WidgetFlagsBoxed;
 use crate::{RnAppWindow, config};
 use futures::StreamExt;
 use gettextrs::gettext;
@@ -862,40 +861,6 @@ impl RnCanvas {
                 .key_controller
                 .set_im_context(None::<&IMMulticontext>);
         }
-    }
-
-    pub(crate) fn save_engine_config(&self, settings: &gio::Settings) -> anyhow::Result<()> {
-        let engine_config = self.engine_ref().export_engine_config_as_json()?;
-        Ok(settings.set_string("engine-config", engine_config.as_str())?)
-    }
-
-    pub(crate) fn load_engine_config_from_settings(
-        &self,
-        settings: &gio::Settings,
-    ) -> anyhow::Result<()> {
-        // load engine config
-        let engine_config = settings.string("engine-config");
-        let widget_flags = match self
-            .engine_mut()
-            .import_engine_config_from_json(&engine_config, crate::env::pkg_data_dir().ok())
-        {
-            Err(e) => {
-                if engine_config.is_empty() {
-                    // On first app startup the engine config is empty, so we don't log an error
-                    debug!("Did not load `engine-config` from settings, was empty");
-                } else {
-                    return Err(e);
-                }
-                None
-            }
-            Ok(widget_flags) => Some(widget_flags),
-        };
-
-        // Avoiding already borrowed
-        if let Some(widget_flags) = widget_flags {
-            self.emit_handle_widget_flags(widget_flags);
-        }
-        Ok(())
     }
 
     /// Switches between the regular and the drawing cursor

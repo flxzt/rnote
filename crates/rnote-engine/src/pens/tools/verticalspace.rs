@@ -56,11 +56,13 @@ impl VerticalSpaceTool {
                 self.pos_y = element.pos[1];
                 let pos_x = element.pos[0];
                 let limit_movement_horizontal_borders = engine_view
+                    .config
                     .pens_config
                     .tools_config
                     .verticalspace_tool_config
                     .limit_movement_horizontal_borders;
                 let limit_movement_vertical_borders = engine_view
+                    .config
                     .pens_config
                     .tools_config
                     .verticalspace_tool_config

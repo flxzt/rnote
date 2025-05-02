@@ -1,8 +1,9 @@
 // Imports
 use crate::document::Layout;
+use crate::engine::snapshot::Snapshotable;
 use crate::engine::{EngineTask, EngineTaskSender};
 use crate::tasks::{OneOffTaskError, OneOffTaskHandle};
-use crate::{CloneConfig, Document, WidgetFlags};
+use crate::{Document, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use serde::{Deserialize, Serialize};
@@ -60,8 +61,8 @@ impl Default for Camera {
     }
 }
 
-impl CloneConfig for Camera {
-    fn clone_config(&self) -> Self {
+impl Snapshotable for Camera {
+    fn extract_snapshot_data(&self) -> Self {
         Self {
             offset: self.offset,
             size: self.size,

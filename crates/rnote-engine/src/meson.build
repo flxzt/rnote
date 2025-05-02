@@ -2,11 +2,12 @@
 rnote_engine_sources = files(
     'audioplayer.rs',
     'camera.rs',
-    'cloneconfig.rs',
     'document/background.rs',
     'document/format.rs',
     'document/mod.rs',
     'drawable.rs',
+    'engine/animation.rs',
+    'engine/config.rs',
     'engine/export.rs',
     'engine/import.rs',
     'engine/mod.rs',

@@ -6,19 +6,20 @@ mod imp;
 // Imports
 use crate::{
     FileType, RnApp, RnCanvas, RnCanvasWrapper, RnMainHeader, RnOverlays, RnSidebar, config,
-    dialogs,
+    dialogs, env,
 };
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{Application, IconTheme, gdk, gio, glib};
 use rnote_compose::Color;
+use rnote_engine::engine::{EngineConfig, EngineConfigShared};
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::{WidgetFlags, engine::EngineTask};
 use std::path::Path;
-use tracing::{error, warn};
+use tracing::{debug, error};
 
 glib::wrapper! {
     pub(crate) struct RnAppWindow(ObjectSubclass<imp::RnAppWindow>)
@@ -124,6 +125,10 @@ impl RnAppWindow {
         self.imp().overlays.get()
     }
 
+    pub(crate) fn engine_config(&self) -> &EngineConfigShared {
+        &self.imp().engine_config
+    }
+
     /// Must be called after application is associated with the window else the init will panic
     pub(crate) fn init(&self) {
         let imp = self.imp();
@@ -168,9 +173,7 @@ impl RnAppWindow {
             .penpicker()
             .redo_button()
             .set_sensitive(false);
-        if let Some(wrapper) = self.active_tab_wrapper() {
-            self.refresh_ui_from_engine(&wrapper);
-        }
+        self.refresh_ui();
     }
 
     fn setup_icon_theme(&self) {
@@ -216,9 +219,7 @@ impl RnAppWindow {
             canvas.queue_resize();
         }
         if widget_flags.refresh_ui {
-            if let Some(wrapper) = self.active_tab_wrapper() {
-                self.refresh_ui_from_engine(&wrapper);
-            }
+            self.refresh_ui();
         }
         if widget_flags.store_modified {
             canvas.set_unsaved_changes(true);
@@ -315,31 +316,17 @@ impl RnAppWindow {
 
     /// adds the initial tab to the tabview
     fn add_initial_tab(&self) -> adw::TabPage {
-        let wrapper = RnCanvasWrapper::new();
-        if let Some(app_settings) = self.app().app_settings() {
-            if let Err(e) = wrapper
-                .canvas()
-                .load_engine_config_from_settings(&app_settings)
-            {
-                error!("Failed to load engine config for initial tab, Err: {e:?}");
-            }
-        } else {
-            warn!("Could not load settings for initial tab. Settings schema not found.");
-        }
+        let wrapper = self.new_canvas_wrapper();
         self.append_wrapper_new_tab(&wrapper)
     }
 
     /// Creates a new canvas wrapper without attaching it as a tab.
     pub(crate) fn new_canvas_wrapper(&self) -> RnCanvasWrapper {
-        let engine_config = self
-            .active_tab_wrapper()
-            .map(|w| w.canvas().engine_ref().extract_engine_config())
-            .unwrap_or_default();
         let wrapper = RnCanvasWrapper::new();
         let widget_flags = wrapper
             .canvas()
             .engine_mut()
-            .load_engine_config(engine_config, crate::env::pkg_data_dir().ok());
+            .install_config(self.engine_config(), crate::env::pkg_data_dir().ok());
         self.handle_widget_flags(widget_flags, &wrapper.canvas());
         wrapper
     }
@@ -641,255 +628,302 @@ impl RnAppWindow {
         Ok(file_imported)
     }
 
-    /// Refresh the UI from the engine state from the given tab page.
-    pub(crate) fn refresh_ui_from_engine(&self, active_tab: &RnCanvasWrapper) {
-        let canvas = active_tab.canvas();
+    /// Refresh the UI from the global state and from the current active tab page.
+    pub(crate) fn refresh_ui(&self) {
+        let imp = self.imp();
+        let canvas = self.active_tab_canvas();
 
-        // Avoids already borrowed
-        let pen_style = canvas.engine_ref().penholder.current_pen_style_w_override();
-        let pen_sounds = canvas.engine_ref().pen_sounds();
-        let doc_format = canvas.engine_ref().document.format;
-        let total_zoom = canvas.engine_ref().camera.total_zoom();
-        let snap_positions = canvas.engine_ref().document.snap_positions;
-        let can_undo = canvas.engine_ref().can_undo();
-        let can_redo = canvas.engine_ref().can_redo();
-
-        self.overlays()
-            .penpicker()
-            .undo_button()
-            .set_sensitive(can_undo);
-        self.overlays()
-            .penpicker()
-            .redo_button()
-            .set_sensitive(can_redo);
-        self.main_header()
-            .canvasmenu()
-            .refresh_zoom_reset_label(total_zoom);
-
-        // we change the state through the actions, because they themselves hold state.
-        // (for example needed to display ticks in menus for boolean actions)
-        adw::prelude::ActionGroupExt::change_action_state(
-            self,
-            "pen-style",
-            &pen_style.to_string().to_variant(),
-        );
-        adw::prelude::ActionGroupExt::change_action_state(
-            self,
-            "pen-sounds",
-            &pen_sounds.to_variant(),
-        );
-        adw::prelude::ActionGroupExt::change_action_state(
-            self,
-            "snap-positions",
-            &snap_positions.to_variant(),
-        );
-        adw::prelude::ActionGroupExt::change_action_state(
-            self,
-            "show-format-borders",
-            &doc_format.show_borders.to_variant(),
-        );
-        adw::prelude::ActionGroupExt::change_action_state(
-            self,
-            "show-origin-indicator",
-            &doc_format.show_origin_indicator.to_variant(),
-        );
-
-        // Current pen
-        match pen_style {
-            PenStyle::Brush => {
-                self.overlays().penpicker().brush_toggle().set_active(true);
-                self.overlays()
-                    .penssidebar()
-                    .sidebar_stack()
-                    .set_visible_child_name("brush_page");
-
-                let style = canvas.engine_ref().pens_config.brush_config.style;
-                match style {
-                    BrushStyle::Marker => {
-                        let stroke_color = canvas
-                            .engine_ref()
-                            .pens_config
-                            .brush_config
-                            .marker_options
-                            .stroke_color
-                            .unwrap_or(Color::TRANSPARENT);
-                        let fill_color = canvas
-                            .engine_ref()
-                            .pens_config
-                            .brush_config
-                            .marker_options
-                            .fill_color
-                            .unwrap_or(Color::TRANSPARENT);
-                        self.overlays()
-                            .colorpicker()
-                            .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                        self.overlays()
-                            .colorpicker()
-                            .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
-                    }
-                    BrushStyle::Solid => {
-                        let stroke_color = canvas
-                            .engine_ref()
-                            .pens_config
-                            .brush_config
-                            .solid_options
-                            .stroke_color
-                            .unwrap_or(Color::TRANSPARENT);
-                        let fill_color = canvas
-                            .engine_ref()
-                            .pens_config
-                            .brush_config
-                            .solid_options
-                            .fill_color
-                            .unwrap_or(Color::TRANSPARENT);
-                        self.overlays()
-                            .colorpicker()
-                            .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                        self.overlays()
-                            .colorpicker()
-                            .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
-                    }
-                    BrushStyle::Textured => {
-                        let stroke_color = canvas
-                            .engine_ref()
-                            .pens_config
-                            .brush_config
-                            .textured_options
-                            .stroke_color
-                            .unwrap_or(Color::TRANSPARENT);
-                        self.overlays()
-                            .colorpicker()
-                            .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                    }
-                }
-            }
-            PenStyle::Shaper => {
-                self.overlays().penpicker().shaper_toggle().set_active(true);
-                self.overlays()
-                    .penssidebar()
-                    .sidebar_stack()
-                    .set_visible_child_name("shaper_page");
-
-                let style = canvas.engine_ref().pens_config.shaper_config.style;
-                match style {
-                    ShaperStyle::Smooth => {
-                        let stroke_color = canvas
-                            .engine_ref()
-                            .pens_config
-                            .shaper_config
-                            .smooth_options
-                            .stroke_color
-                            .unwrap_or(Color::TRANSPARENT);
-                        let fill_color = canvas
-                            .engine_ref()
-                            .pens_config
-                            .shaper_config
-                            .smooth_options
-                            .fill_color
-                            .unwrap_or(Color::TRANSPARENT);
-                        self.overlays()
-                            .colorpicker()
-                            .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                        self.overlays()
-                            .colorpicker()
-                            .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
-                    }
-                    ShaperStyle::Rough => {
-                        let stroke_color = canvas
-                            .engine_ref()
-                            .pens_config
-                            .shaper_config
-                            .rough_options
-                            .stroke_color
-                            .unwrap_or(Color::TRANSPARENT);
-                        let fill_color = canvas
-                            .engine_ref()
-                            .pens_config
-                            .shaper_config
-                            .rough_options
-                            .fill_color
-                            .unwrap_or(Color::TRANSPARENT);
-                        self.overlays()
-                            .colorpicker()
-                            .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                        self.overlays()
-                            .colorpicker()
-                            .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
-                    }
-                }
-            }
-            PenStyle::Typewriter => {
-                self.overlays()
-                    .penpicker()
-                    .typewriter_toggle()
-                    .set_active(true);
-                self.overlays()
-                    .penssidebar()
-                    .sidebar_stack()
-                    .set_visible_child_name("typewriter_page");
-
-                let text_color = canvas
-                    .engine_ref()
-                    .pens_config
-                    .typewriter_config
-                    .text_style
-                    .color;
-                self.overlays()
-                    .colorpicker()
-                    .set_stroke_color(gdk::RGBA::from_compose_color(text_color));
-            }
-            PenStyle::Eraser => {
-                self.overlays().penpicker().eraser_toggle().set_active(true);
-                self.overlays()
-                    .penssidebar()
-                    .sidebar_stack()
-                    .set_visible_child_name("eraser_page");
-            }
-            PenStyle::Selector => {
-                self.overlays()
-                    .penpicker()
-                    .selector_toggle()
-                    .set_active(true);
-                self.overlays()
-                    .penssidebar()
-                    .sidebar_stack()
-                    .set_visible_child_name("selector_page");
-            }
-            PenStyle::Tools => {
-                self.overlays().penpicker().tools_toggle().set_active(true);
-                self.overlays()
-                    .penssidebar()
-                    .sidebar_stack()
-                    .set_visible_child_name("tools_page");
-            }
-        }
-
-        self.overlays()
-            .penssidebar()
-            .brush_page()
-            .refresh_ui(active_tab);
-        self.overlays()
-            .penssidebar()
-            .shaper_page()
-            .refresh_ui(active_tab);
+        self.overlays().penssidebar().brush_page().refresh_ui(self);
+        self.overlays().penssidebar().shaper_page().refresh_ui(self);
         self.overlays()
             .penssidebar()
             .typewriter_page()
-            .refresh_ui(active_tab);
-        self.overlays()
-            .penssidebar()
-            .eraser_page()
-            .refresh_ui(active_tab);
+            .refresh_ui(self);
+        self.overlays().penssidebar().eraser_page().refresh_ui(self);
         self.overlays()
             .penssidebar()
             .selector_page()
-            .refresh_ui(active_tab);
-        self.overlays()
-            .penssidebar()
-            .tools_page()
-            .refresh_ui(active_tab);
-        self.sidebar().settings_panel().refresh_ui(active_tab);
-        self.refresh_titles(&canvas);
+            .refresh_ui(self);
+        self.overlays().penssidebar().tools_page().refresh_ui(self);
+        self.sidebar().settings_panel().refresh_ui(self);
+
+        if let Some(canvas) = canvas {
+            self.refresh_titles(&canvas);
+
+            // Avoids already borrowed
+            let pen_style = canvas.engine_ref().current_pen_style_w_override();
+            let pen_sounds = canvas.engine_ref().pen_sounds();
+            let doc_format = canvas.engine_ref().document.format;
+            let total_zoom = canvas.engine_ref().camera.total_zoom();
+            let snap_positions = canvas.engine_ref().document.snap_positions;
+            let can_undo = canvas.engine_ref().can_undo();
+            let can_redo = canvas.engine_ref().can_redo();
+
+            self.overlays()
+                .penpicker()
+                .undo_button()
+                .set_sensitive(can_undo);
+            self.overlays()
+                .penpicker()
+                .redo_button()
+                .set_sensitive(can_redo);
+            self.main_header()
+                .canvasmenu()
+                .refresh_zoom_reset_label(total_zoom);
+
+            // we change the state through the actions, because they themselves hold state.
+            // (for example needed to display ticks in menus for boolean actions)
+            adw::prelude::ActionGroupExt::change_action_state(
+                self,
+                "pen-style",
+                &pen_style.to_string().to_variant(),
+            );
+            adw::prelude::ActionGroupExt::change_action_state(
+                self,
+                "pen-sounds",
+                &pen_sounds.to_variant(),
+            );
+            adw::prelude::ActionGroupExt::change_action_state(
+                self,
+                "snap-positions",
+                &snap_positions.to_variant(),
+            );
+            adw::prelude::ActionGroupExt::change_action_state(
+                self,
+                "show-format-borders",
+                &doc_format.show_borders.to_variant(),
+            );
+            adw::prelude::ActionGroupExt::change_action_state(
+                self,
+                "show-origin-indicator",
+                &doc_format.show_origin_indicator.to_variant(),
+            );
+
+            // Current pen
+            match pen_style {
+                PenStyle::Brush => {
+                    self.overlays().penpicker().brush_toggle().set_active(true);
+                    self.overlays()
+                        .penssidebar()
+                        .sidebar_stack()
+                        .set_visible_child_name("brush_page");
+
+                    let style = imp.engine_config.read().pens_config.brush_config.style;
+                    match style {
+                        BrushStyle::Marker => {
+                            let stroke_color = imp
+                                .engine_config
+                                .read()
+                                .pens_config
+                                .brush_config
+                                .marker_options
+                                .stroke_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            let fill_color = imp
+                                .engine_config
+                                .read()
+                                .pens_config
+                                .brush_config
+                                .marker_options
+                                .fill_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            self.overlays()
+                                .colorpicker()
+                                .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            self.overlays()
+                                .colorpicker()
+                                .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                        }
+                        BrushStyle::Solid => {
+                            let stroke_color = imp
+                                .engine_config
+                                .read()
+                                .pens_config
+                                .brush_config
+                                .solid_options
+                                .stroke_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            let fill_color = imp
+                                .engine_config
+                                .read()
+                                .pens_config
+                                .brush_config
+                                .solid_options
+                                .fill_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            self.overlays()
+                                .colorpicker()
+                                .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            self.overlays()
+                                .colorpicker()
+                                .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                        }
+                        BrushStyle::Textured => {
+                            let stroke_color = imp
+                                .engine_config
+                                .read()
+                                .pens_config
+                                .brush_config
+                                .textured_options
+                                .stroke_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            self.overlays()
+                                .colorpicker()
+                                .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                        }
+                    }
+                }
+                PenStyle::Shaper => {
+                    self.overlays().penpicker().shaper_toggle().set_active(true);
+                    self.overlays()
+                        .penssidebar()
+                        .sidebar_stack()
+                        .set_visible_child_name("shaper_page");
+
+                    let style = imp.engine_config.read().pens_config.shaper_config.style;
+                    match style {
+                        ShaperStyle::Smooth => {
+                            let stroke_color = imp
+                                .engine_config
+                                .read()
+                                .pens_config
+                                .shaper_config
+                                .smooth_options
+                                .stroke_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            let fill_color = imp
+                                .engine_config
+                                .read()
+                                .pens_config
+                                .shaper_config
+                                .smooth_options
+                                .fill_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            self.overlays()
+                                .colorpicker()
+                                .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            self.overlays()
+                                .colorpicker()
+                                .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                        }
+                        ShaperStyle::Rough => {
+                            let stroke_color = imp
+                                .engine_config
+                                .read()
+                                .pens_config
+                                .shaper_config
+                                .rough_options
+                                .stroke_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            let fill_color = imp
+                                .engine_config
+                                .read()
+                                .pens_config
+                                .shaper_config
+                                .rough_options
+                                .fill_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            self.overlays()
+                                .colorpicker()
+                                .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            self.overlays()
+                                .colorpicker()
+                                .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                        }
+                    }
+                }
+                PenStyle::Typewriter => {
+                    self.overlays()
+                        .penpicker()
+                        .typewriter_toggle()
+                        .set_active(true);
+                    self.overlays()
+                        .penssidebar()
+                        .sidebar_stack()
+                        .set_visible_child_name("typewriter_page");
+
+                    let text_color = imp
+                        .engine_config
+                        .read()
+                        .pens_config
+                        .typewriter_config
+                        .text_style
+                        .color;
+                    self.overlays()
+                        .colorpicker()
+                        .set_stroke_color(gdk::RGBA::from_compose_color(text_color));
+                }
+                PenStyle::Eraser => {
+                    self.overlays().penpicker().eraser_toggle().set_active(true);
+                    self.overlays()
+                        .penssidebar()
+                        .sidebar_stack()
+                        .set_visible_child_name("eraser_page");
+                }
+                PenStyle::Selector => {
+                    self.overlays()
+                        .penpicker()
+                        .selector_toggle()
+                        .set_active(true);
+                    self.overlays()
+                        .penssidebar()
+                        .sidebar_stack()
+                        .set_visible_child_name("selector_page");
+                }
+                PenStyle::Tools => {
+                    self.overlays().penpicker().tools_toggle().set_active(true);
+                    self.overlays()
+                        .penssidebar()
+                        .sidebar_stack()
+                        .set_visible_child_name("tools_page");
+                }
+            }
+        }
+    }
+
+    pub(crate) fn load_engine_config_from_settings(
+        &self,
+        settings: &gio::Settings,
+    ) -> anyhow::Result<()> {
+        // load engine config
+        let serialized_config = settings.string("engine-config");
+
+        if serialized_config.is_empty() {
+            // On first app startup the engine config is empty, so we don't log an error
+            debug!("Did not load `engine-config` from settings, was empty");
+        }
+        let engine_config = serde_json::from_str::<EngineConfig>(&serialized_config)?;
+        self.engine_config().load_values(engine_config);
+
+        if let Some(canvas) = self.active_tab_canvas() {
+            let widget_flags = canvas
+                .engine_mut()
+                .install_config(self.engine_config(), env::data_dir().ok());
+            self.handle_widget_flags(widget_flags, &canvas);
+        }
+        Ok(())
+    }
+
+    pub(crate) fn save_engine_config_to_settings(
+        &self,
+        settings: &gio::Settings,
+    ) -> anyhow::Result<()> {
+        let engine_config = serde_json::to_string(self.engine_config())?;
+        Ok(settings.set_string("engine-config", engine_config.as_str())?)
+    }
+
+    /// exports and writes the engine config as json into the file.
+    /// Only for debugging!
+    pub(crate) async fn export_engine_config(&self, file: &gio::File) -> anyhow::Result<()> {
+        let config_serialized = serde_json::to_string_pretty(self.engine_config())?;
+
+        crate::utils::create_replace_file_future(config_serialized.into_bytes(), file).await?;
+
+        if let Some(canvas) = self.active_tab_canvas() {
+            canvas.set_last_export_dir(file.parent());
+        }
+
+        Ok(())
     }
 
     /// Sync the state from the previous active tab and the current one. Used when the selected tab changes.
@@ -906,12 +940,8 @@ impl RnAppWindow {
         let active_canvas_wrapper = active_tab.child().downcast::<RnCanvasWrapper>().unwrap();
         let active_canvas = active_canvas_wrapper.canvas();
 
-        let mut widget_flags = active_canvas.engine_mut().load_engine_config_sync_tab(
-            prev_canvas.engine_ref().extract_engine_config(),
-            crate::env::pkg_data_dir().ok(),
-        );
         // The visual-debug field is not saved in the config, but we want to sync its value between tabs.
-        widget_flags |= active_canvas
+        let widget_flags = active_canvas
             .engine_mut()
             .set_visual_debug(prev_canvas.engine_mut().visual_debug());
 

@@ -7,7 +7,7 @@ pub(crate) use penshortcutrow::RnPenShortcutRow;
 use rnote_compose::ext::Vector2Ext;
 
 // Imports
-use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
+use crate::{RnAppWindow, RnIconPicker, RnUnitEntry};
 use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
 use gtk4::{
@@ -392,68 +392,81 @@ impl RnSettingsPanel {
             .set_selected(layout.to_u32().unwrap());
     }
 
-    pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
-        self.refresh_general_ui(active_tab);
-        self.refresh_format_ui(active_tab);
-        self.refresh_doc_ui(active_tab);
-        self.refresh_shortcuts_ui(active_tab);
+    pub(crate) fn refresh_ui(&self, appwindow: &RnAppWindow) {
+        self.refresh_general_ui(appwindow);
+        self.refresh_format_ui(appwindow);
+        self.refresh_doc_ui(appwindow);
+        self.refresh_shortcuts_ui(appwindow);
     }
 
-    fn refresh_general_ui(&self, active_tab: &RnCanvasWrapper) {
+    fn refresh_general_ui(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        let canvas = active_tab.canvas();
+        let canvas = appwindow.active_tab_canvas();
 
-        let format_border_color = canvas.engine_ref().document.format.border_color;
-        let optimize_epd = canvas.engine_ref().optimize_epd();
+        if let Some(canvas) = canvas {
+            let format_border_color = canvas.engine_ref().document.format.border_color;
+            let optimize_epd = canvas.engine_ref().optimize_epd();
 
-        imp.doc_format_border_color_button
-            .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
+            imp.doc_format_border_color_button
+                .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
 
-        imp.general_optimize_epd_row.set_active(optimize_epd);
+            imp.general_optimize_epd_row.set_active(optimize_epd);
+        }
     }
 
-    fn refresh_format_ui(&self, active_tab: &RnCanvasWrapper) {
+    fn refresh_format_ui(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        let canvas = active_tab.canvas();
-        let format = canvas.engine_ref().document.format;
-        *self.imp().temporary_format.borrow_mut() = format;
+        let canvas = appwindow.active_tab_canvas();
 
-        self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
-        self.set_format_orientation(format.orientation());
-        imp.format_dpi_adj.set_value(format.dpi());
-        imp.format_width_unitentry.set_dpi(format.dpi());
-        imp.format_width_unitentry.set_value_in_px(format.width());
-        imp.format_height_unitentry.set_dpi(format.dpi());
-        imp.format_height_unitentry.set_value_in_px(format.height());
+        if let Some(canvas) = canvas {
+            let format = canvas.engine_ref().document.format;
+            *self.imp().temporary_format.borrow_mut() = format;
+
+            self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
+            self.set_format_orientation(format.orientation());
+            imp.format_dpi_adj.set_value(format.dpi());
+            imp.format_width_unitentry.set_dpi(format.dpi());
+            imp.format_width_unitentry.set_value_in_px(format.width());
+            imp.format_height_unitentry.set_dpi(format.dpi());
+            imp.format_height_unitentry.set_value_in_px(format.height());
+        }
+        // TODO: else insensitive  options
     }
 
-    fn refresh_doc_ui(&self, active_tab: &RnCanvasWrapper) {
+    fn refresh_doc_ui(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        let canvas = active_tab.canvas();
-        let background = canvas.engine_ref().document.background;
-        let format = canvas.engine_ref().document.format;
-        let document_layout = canvas.engine_ref().document.layout;
+        let canvas = appwindow.active_tab_canvas();
 
-        imp.doc_background_color_button
-            .set_rgba(&gdk::RGBA::from_compose_color(background.color));
-        self.set_background_pattern(background.pattern);
-        imp.doc_background_pattern_color_button
-            .set_rgba(&gdk::RGBA::from_compose_color(background.pattern_color));
-        imp.doc_background_pattern_width_unitentry
-            .set_dpi(format.dpi());
-        imp.doc_background_pattern_width_unitentry
-            .set_value_in_px(background.pattern_size[0]);
-        imp.doc_background_pattern_height_unitentry
-            .set_dpi(format.dpi());
-        imp.doc_background_pattern_height_unitentry
-            .set_value_in_px(background.pattern_size[1]);
-        self.set_document_layout(&document_layout);
+        if let Some(canvas) = canvas {
+            let background = canvas.engine_ref().document.background;
+            let format = canvas.engine_ref().document.format;
+            let document_layout = canvas.engine_ref().document.layout;
+
+            imp.doc_background_color_button
+                .set_rgba(&gdk::RGBA::from_compose_color(background.color));
+            self.set_background_pattern(background.pattern);
+            imp.doc_background_pattern_color_button
+                .set_rgba(&gdk::RGBA::from_compose_color(background.pattern_color));
+            imp.doc_background_pattern_width_unitentry
+                .set_dpi(format.dpi());
+            imp.doc_background_pattern_width_unitentry
+                .set_value_in_px(background.pattern_size[0]);
+            imp.doc_background_pattern_height_unitentry
+                .set_dpi(format.dpi());
+            imp.doc_background_pattern_height_unitentry
+                .set_value_in_px(background.pattern_size[1]);
+            self.set_document_layout(&document_layout);
+        }
+        // TODO: else insensitive  options
     }
 
-    fn refresh_shortcuts_ui(&self, active_tab: &RnCanvasWrapper) {
+    fn refresh_shortcuts_ui(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        let canvas = active_tab.canvas();
-        let current_shortcuts = canvas.engine_ref().penholder.list_current_shortcuts();
+        let current_shortcuts = appwindow
+            .engine_config()
+            .read()
+            .pens_config
+            .list_current_shortcuts();
 
         current_shortcuts
             .into_iter()
@@ -978,10 +991,10 @@ impl RnSettingsPanel {
                 None,
                 move |_values| {
                     let action = penshortcut_stylus_button_primary_row.action();
-                    let canvas = appwindow.active_tab_canvas()?;
-                    canvas
-                        .engine_mut()
-                        .penholder
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
                         .register_shortcut(ShortcutKey::StylusPrimaryButton, action);
                     None
                 }
@@ -1000,10 +1013,10 @@ impl RnSettingsPanel {
                 None,
                 move |_values| {
                     let action = penshortcut_stylus_button_secondary_row.action();
-                    let canvas = appwindow.active_tab_canvas()?;
-                    canvas
-                        .engine_mut()
-                        .penholder
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
                         .register_shortcut(ShortcutKey::StylusSecondaryButton, action);
                     None
                 }
@@ -1022,10 +1035,10 @@ impl RnSettingsPanel {
                 None,
                 move |_values| {
                     let action = penshortcut_mouse_button_secondary_row.action();
-                    let canvas = appwindow.active_tab_canvas()?;
-                    canvas
-                        .engine_mut()
-                        .penholder
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
                         .register_shortcut(ShortcutKey::MouseSecondaryButton, action);
                     None
                 }
@@ -1045,10 +1058,10 @@ impl RnSettingsPanel {
                     None,
                     move |_values| {
                         let action = penshortcut_touch_two_finger_long_press_row.action();
-                        let canvas = appwindow.active_tab_canvas()?;
-                        canvas
-                            .engine_mut()
-                            .penholder
+                        appwindow
+                            .engine_config()
+                            .write()
+                            .pens_config
                             .register_shortcut(ShortcutKey::TouchTwoFingerLongPress, action);
                         None
                     }
@@ -1067,10 +1080,10 @@ impl RnSettingsPanel {
                 None,
                 move |_values| {
                     let action = penshortcut_keyboard_ctrl_space_row.action();
-                    let canvas = appwindow.active_tab_canvas()?;
-                    canvas
-                        .engine_mut()
-                        .penholder
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
                         .register_shortcut(ShortcutKey::KeyboardCtrlSpace, action);
                     None
                 }
@@ -1089,10 +1102,10 @@ impl RnSettingsPanel {
                 None,
                 move |_values| {
                     let action = penshortcut_drawing_pad_button_0.action();
-                    let canvas = appwindow.active_tab_canvas()?;
-                    canvas
-                        .engine_mut()
-                        .penholder
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
                         .register_shortcut(ShortcutKey::DrawingPadButton0, action);
                     None
                 }
@@ -1111,10 +1124,10 @@ impl RnSettingsPanel {
                 None,
                 move |_values| {
                     let action = penshortcut_drawing_pad_button_1.action();
-                    let canvas = appwindow.active_tab_canvas()?;
-                    canvas
-                        .engine_mut()
-                        .penholder
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
                         .register_shortcut(ShortcutKey::DrawingPadButton1, action);
                     None
                 }
@@ -1133,10 +1146,10 @@ impl RnSettingsPanel {
                 None,
                 move |_values| {
                     let action = penshortcut_drawing_pad_button_2.action();
-                    let canvas = appwindow.active_tab_canvas()?;
-                    canvas
-                        .engine_mut()
-                        .penholder
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
                         .register_shortcut(ShortcutKey::DrawingPadButton2, action);
                     None
                 }
@@ -1155,10 +1168,10 @@ impl RnSettingsPanel {
                 None,
                 move |_values| {
                     let action = penshortcut_drawing_pad_button_3.action();
-                    let canvas = appwindow.active_tab_canvas()?;
-                    canvas
-                        .engine_mut()
-                        .penholder
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
                         .register_shortcut(ShortcutKey::DrawingPadButton3, action);
                     None
                 }

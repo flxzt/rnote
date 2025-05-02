@@ -1,4 +1,6 @@
 // Modules
+pub mod animation;
+pub mod config;
 pub mod export;
 pub mod import;
 pub mod rendering;
@@ -7,23 +9,26 @@ pub mod strokecontent;
 pub mod visual_debug;
 
 // Re-exports
+pub use animation::Animation;
+pub use config::EngineConfig;
+pub use config::EngineConfigShared;
 pub use export::ExportPrefs;
-use futures::StreamExt;
-use futures::channel::mpsc::UnboundedReceiver;
 pub use import::ImportPrefs;
 pub use snapshot::EngineSnapshot;
 pub use strokecontent::StrokeContent;
 
 // Imports
 use crate::document::Layout;
+use crate::pens::PenMode;
 use crate::pens::{Pen, PenStyle};
-use crate::pens::{PenMode, PensConfig};
 use crate::store::StrokeKey;
 use crate::store::render_comp::{self, RenderCompState};
 use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::textstroke::{TextAttribute, TextStyle};
-use crate::{AudioPlayer, CloneConfig, SelectionCollision, WidgetFlags, render};
+use crate::{AudioPlayer, SelectionCollision, WidgetFlags, render};
 use crate::{Camera, Document, PenHolder, StrokeStore};
+use futures::StreamExt;
+use futures::channel::mpsc::UnboundedReceiver;
 use futures::channel::{mpsc, oneshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::eventresult::EventPropagation;
@@ -31,16 +36,17 @@ use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::{PenEvent, ShortcutKey};
 use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
+use snapshot::Snapshotable;
 use std::path::PathBuf;
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 use std::time::Instant;
-use tracing::{debug, error};
+use tracing::error;
 
 /// An immutable view into the engine, excluding the penholder.
 #[derive(Debug)]
 pub struct EngineView<'a> {
     pub tasks_tx: EngineTaskSender,
-    pub pens_config: &'a PensConfig,
+    pub config: &'a EngineConfig,
     pub document: &'a Document,
     pub store: &'a StrokeStore,
     pub camera: &'a Camera,
@@ -54,7 +60,7 @@ macro_rules! engine_view {
     ($engine:ident) => {
         $crate::engine::EngineView {
             tasks_tx: $engine.tasks_tx.clone(),
-            pens_config: &$engine.pens_config,
+            config: &$engine.config.read(),
             document: &$engine.document,
             store: &$engine.store,
             camera: &$engine.camera,
@@ -68,7 +74,7 @@ macro_rules! engine_view {
 #[derive(Debug)]
 pub struct EngineViewMut<'a> {
     pub tasks_tx: EngineTaskSender,
-    pub pens_config: &'a mut PensConfig,
+    pub config: &'a mut EngineConfig,
     pub document: &'a mut Document,
     pub store: &'a mut StrokeStore,
     pub camera: &'a mut Camera,
@@ -82,7 +88,7 @@ macro_rules! engine_view_mut {
     ($engine:ident) => {
         $crate::engine::EngineViewMut {
             tasks_tx: $engine.tasks_tx.clone(),
-            pens_config: &mut $engine.pens_config,
+            config: &mut $engine.config.write(),
             document: &mut $engine.document,
             store: &mut $engine.store,
             camera: &mut $engine.camera,
@@ -97,7 +103,7 @@ impl EngineViewMut<'_> {
     pub(crate) fn as_im<'m>(&'m self) -> EngineView<'m> {
         EngineView::<'m> {
             tasks_tx: self.tasks_tx.clone(),
-            pens_config: self.pens_config,
+            config: self.config,
             document: self.document,
             store: self.store,
             camera: self.camera,
@@ -140,26 +146,6 @@ pub enum EngineTask {
     Quit,
 }
 
-/// The engine configuration. Used when loading/saving the current configuration from/into persistent application settings.
-#[derive(Debug, Default, Serialize, Deserialize)]
-#[serde(default, rename = "engine_config")]
-pub struct EngineConfig {
-    #[serde(rename = "document")]
-    document: Document,
-    #[serde(rename = "pens_config")]
-    pens_config: PensConfig,
-    #[serde(rename = "penholder")]
-    penholder: PenHolder,
-    #[serde(rename = "import_prefs")]
-    import_prefs: ImportPrefs,
-    #[serde(rename = "export_prefs")]
-    export_prefs: ExportPrefs,
-    #[serde(rename = "pen_sounds")]
-    pen_sounds: bool,
-    #[serde(rename = "optimize_epd")]
-    optimize_epd: bool,
-}
-
 #[derive(Debug, Clone)]
 pub struct EngineTaskSender(mpsc::UnboundedSender<EngineTask>);
 
@@ -184,61 +170,20 @@ impl EngineTaskReceiver {
     }
 }
 
-#[derive(Debug, Clone, Default)]
-pub struct Animation {
-    frame_in_flight: bool,
-}
-
-impl Animation {
-    /// Claim an animation frame.
-    ///
-    /// Returns whether an animation frame was already claimed.
-    pub fn claim_frame(&mut self) -> bool {
-        if self.frame_in_flight {
-            debug!("Animation frame already in flight, skipping");
-            true
-        } else {
-            self.frame_in_flight = true;
-            false
-        }
-    }
-
-    pub fn frame_in_flight(&self) -> bool {
-        self.frame_in_flight
-    }
-
-    pub fn process_frame(&mut self) -> bool {
-        if self.frame_in_flight {
-            self.frame_in_flight = false;
-            true
-        } else {
-            false
-        }
-    }
-}
-
 /// The engine.
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "engine")]
 pub struct Engine {
+    #[serde(rename = "config")]
+    pub(crate) config: EngineConfigShared,
     #[serde(rename = "document")]
     pub document: Document,
     #[serde(rename = "store")]
     pub store: StrokeStore,
     #[serde(rename = "camera")]
     pub camera: Camera,
-    #[serde(rename = "pens_config")]
-    pub pens_config: PensConfig,
     #[serde(rename = "penholder")]
     pub penholder: PenHolder,
-    #[serde(rename = "import_prefs")]
-    pub import_prefs: ImportPrefs,
-    #[serde(rename = "export_prefs")]
-    pub export_prefs: ExportPrefs,
-    #[serde(rename = "pen_sounds")]
-    pen_sounds: bool,
-    #[serde(rename = "optimize_epd")]
-    optimize_epd: bool,
 
     #[serde(skip)]
     audioplayer: Option<AudioPlayer>,
@@ -270,15 +215,11 @@ impl Default for Engine {
         let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
 
         Self {
+            config: EngineConfigShared(Arc::new(RwLock::new(EngineConfig::default()))),
             document: Document::default(),
             store: StrokeStore::default(),
             camera: Camera::default(),
-            pens_config: PensConfig::default(),
             penholder: PenHolder::default(),
-            import_prefs: ImportPrefs::default(),
-            export_prefs: ExportPrefs::default(),
-            pen_sounds: false,
-            optimize_epd: false,
 
             audioplayer: None,
             animation: Animation::default(),
@@ -298,6 +239,29 @@ impl Default for Engine {
 impl Engine {
     pub(crate) const STROKE_BOUNDS_INTERSECTION_TOLERANCE: f64 = 1e-3;
 
+    pub fn install_config(
+        &mut self,
+        config: &EngineConfigShared,
+        data_dir: Option<PathBuf>,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        let pen_sounds = config.read().pen_sounds;
+        let optimize_epd = config.read().optimize_epd;
+
+        self.config = config.clone();
+        self.set_pen_sounds(pen_sounds, data_dir);
+        self.set_optimize_epd(optimize_epd);
+
+        widget_flags |= self
+            .penholder
+            .reinstall_pen_current_style(&mut engine_view_mut!(self));
+        widget_flags |= self.doc_resize_to_fit_content();
+        widget_flags.redraw = true;
+        widget_flags.refresh_ui = true;
+        widget_flags
+    }
+
     pub fn engine_tasks_tx(&self) -> EngineTaskSender {
         self.tasks_tx.clone()
     }
@@ -308,14 +272,14 @@ impl Engine {
 
     /// Whether pen sounds are enabled.
     pub fn pen_sounds(&self) -> bool {
-        self.pen_sounds
+        self.config.read().pen_sounds
     }
 
     /// Enables/disables the pen sounds.
     ///
     /// If pen sound should be enabled, the pkg data dir must be provided.
     pub fn set_pen_sounds(&mut self, pen_sounds: bool, pkg_data_dir: Option<PathBuf>) {
-        self.pen_sounds = pen_sounds;
+        self.config.write().pen_sounds = pen_sounds;
 
         if pen_sounds {
             if let Some(pkg_data_dir) = pkg_data_dir {
@@ -338,11 +302,11 @@ impl Engine {
     }
 
     pub fn optimize_epd(&self) -> bool {
-        self.optimize_epd
+        self.config.read().optimize_epd
     }
 
     pub fn set_optimize_epd(&mut self, optimize_epd: bool) {
-        self.optimize_epd = optimize_epd
+        self.config.write().optimize_epd = optimize_epd;
     }
 
     pub fn visual_debug(&self) -> bool {
@@ -372,8 +336,8 @@ impl Engine {
         }
 
         EngineSnapshot {
-            document: self.document.clone_config(),
-            camera: self.camera.clone_config(),
+            document: self.document.extract_snapshot_data(),
+            camera: self.camera.extract_snapshot_data(),
             stroke_components: Arc::clone(&store_history_entry.stroke_components),
             chrono_components: Arc::clone(&store_history_entry.chrono_components),
             chrono_counter: store_history_entry.chrono_counter,
@@ -382,8 +346,8 @@ impl Engine {
 
     /// Imports an engine snapshot. A save file should always be loaded with this method.
     pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) -> WidgetFlags {
-        self.document = snapshot.document.clone_config();
-        self.camera = snapshot.camera.clone_config();
+        self.document = snapshot.document.extract_snapshot_data();
+        self.camera = snapshot.camera.extract_snapshot_data();
         let mut widget_flags = self.store.import_from_snapshot(&snapshot)
             | self.doc_resize_autoexpand()
             | self.current_pen_update_state()
@@ -646,9 +610,10 @@ impl Engine {
     ///
     /// Background rendering then needs to be updated.
     pub fn doc_resize_to_fit_content(&mut self) -> WidgetFlags {
-        self.document
-            .resize_to_fit_content(&self.store, &self.camera)
-            | self.update_rendering_current_viewport()
+        let widget_flags = self
+            .document
+            .resize_to_fit_content(&self.store, &self.camera);
+        widget_flags | self.update_rendering_current_viewport()
     }
 
     pub fn return_to_origin(&mut self, parent_width: Option<f64>) -> WidgetFlags {
@@ -679,8 +644,8 @@ impl Engine {
     ///
     /// Background rendering then needs to be updated.
     pub fn doc_resize_autoexpand(&mut self) -> WidgetFlags {
-        self.document.resize_autoexpand(&self.store, &self.camera)
-            | self.update_rendering_current_viewport()
+        let widget_flags = self.document.resize_autoexpand(&self.store, &self.camera);
+        widget_flags | self.update_rendering_current_viewport()
     }
 
     /// Expand the doc to the camera when in autoexpanding layouts. called e.g. when dragging with touch.
@@ -733,7 +698,8 @@ impl Engine {
     ///
     /// Background and content rendering then need to be updated.
     pub fn camera_set_offset_expand(&mut self, offset: na::Vector2<f64>) -> WidgetFlags {
-        self.camera.set_offset(offset, &self.document) | self.doc_expand_autoexpand()
+        let widget_flags = self.camera.set_offset(offset, &self.document);
+        widget_flags | self.doc_expand_autoexpand()
     }
 
     /// Update the viewport size of the camera.
@@ -947,5 +913,10 @@ impl Engine {
     pub fn handle_animation_frame(&mut self, optimize_epd: bool) {
         self.penholder
             .handle_animation_frame(&mut engine_view_mut!(self), optimize_epd);
+    }
+
+    pub fn current_pen_style_w_override(&self) -> PenStyle {
+        self.penholder
+            .current_pen_style_w_override(&engine_view!(self))
     }
 }

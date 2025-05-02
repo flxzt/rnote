@@ -7,7 +7,8 @@ pub use background::Background;
 pub use format::Format;
 
 // Imports
-use crate::{Camera, CloneConfig, StrokeStore, WidgetFlags};
+use crate::engine::snapshot::Snapshotable;
+use crate::{Camera, StrokeStore, WidgetFlags};
 use core::fmt::Display;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::{AabbExt, Vector2Ext};
@@ -124,8 +125,8 @@ impl Default for Document {
     }
 }
 
-impl CloneConfig for Document {
-    fn clone_config(&self) -> Self {
+impl Snapshotable for Document {
+    fn extract_snapshot_data(&self) -> Self {
         self.clone()
     }
 }

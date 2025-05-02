@@ -1,16 +1,15 @@
-use crate::CloneConfig;
-
 // Imports
-use super::PenStyle;
+use super::{PenStyle, PensConfig};
 use serde::{Deserialize, Serialize};
 
 /// The pen mode.
-#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, Default, Serialize, Deserialize, PartialEq, Eq, Hash)]
 #[serde(rename = "pen_mode")]
 pub enum PenMode {
     /// "Normal" pen mode.
     /// Usually the default "side" of a stylus, when no buttons are pressed.
     #[serde(rename = "pen")]
+    #[default]
     Pen,
     /// Eraser mode.
     #[serde(rename = "eraser")]
@@ -21,13 +20,6 @@ pub enum PenMode {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "pen_mode_state")]
 pub struct PenModeState {
-    #[serde(rename = "pen_mode")]
-    pen_mode: PenMode,
-    #[serde(rename = "penmode_pen_style")]
-    penmode_pen_style: PenStyle,
-    #[serde(rename = "penmode_eraser_style")]
-    penmode_eraser_style: PenStyle,
-
     #[serde(skip)]
     penmode_pen_style_override: Option<PenStyle>,
     #[serde(skip)]
@@ -37,36 +29,21 @@ pub struct PenModeState {
 impl Default for PenModeState {
     fn default() -> Self {
         Self {
-            pen_mode: PenMode::Pen,
-            penmode_pen_style: PenStyle::Brush,
-            penmode_eraser_style: PenStyle::Eraser,
-
             penmode_pen_style_override: None,
             penmode_eraser_style_override: None,
         }
     }
 }
 
-impl CloneConfig for PenModeState {
-    fn clone_config(&self) -> Self {
-        Self {
-            pen_mode: self.pen_mode,
-            penmode_pen_style: self.penmode_pen_style,
-            penmode_eraser_style: self.penmode_eraser_style,
-            ..Default::default()
-        }
-    }
-}
-
 impl PenModeState {
-    pub fn current_style_w_override(&self) -> PenStyle {
-        match self.pen_mode {
+    pub fn current_style_w_override(&self, config: &PensConfig) -> PenStyle {
+        match config.penmode {
             PenMode::Pen => self
                 .penmode_pen_style_override
-                .unwrap_or(self.penmode_pen_style),
+                .unwrap_or(config.penmode_pen_style),
             PenMode::Eraser => self
                 .penmode_eraser_style_override
-                .unwrap_or(self.penmode_eraser_style),
+                .unwrap_or(config.penmode_eraser_style),
         }
     }
 
@@ -75,36 +52,36 @@ impl PenModeState {
         self.penmode_eraser_style_override = None;
     }
 
-    pub fn style(&self) -> PenStyle {
-        match self.pen_mode {
-            PenMode::Pen => self.penmode_pen_style,
-            PenMode::Eraser => self.penmode_eraser_style,
+    pub fn style(&self, config: &PensConfig) -> PenStyle {
+        match config.penmode {
+            PenMode::Pen => config.penmode_pen_style,
+            PenMode::Eraser => config.penmode_eraser_style,
         }
     }
 
-    pub fn set_style(&mut self, style: PenStyle) {
-        match self.pen_mode {
-            PenMode::Pen => self.penmode_pen_style = style,
-            PenMode::Eraser => self.penmode_eraser_style = style,
+    pub fn set_style(&mut self, config: &mut PensConfig, style: PenStyle) {
+        match config.penmode {
+            PenMode::Pen => config.penmode_pen_style = style,
+            PenMode::Eraser => config.penmode_eraser_style = style,
         }
     }
 
-    pub fn set_style_all_modes(&mut self, style: PenStyle) {
-        self.penmode_pen_style = style;
-        self.penmode_eraser_style = style;
+    pub fn set_style_all_modes(&mut self, config: &mut PensConfig, style: PenStyle) {
+        config.penmode_pen_style = style;
+        config.penmode_eraser_style = style;
     }
 
-    pub fn style_override(&self) -> Option<PenStyle> {
-        match self.pen_mode {
+    pub fn style_override(&self, config: &PensConfig) -> Option<PenStyle> {
+        match config.penmode {
             PenMode::Pen => self.penmode_pen_style_override,
             PenMode::Eraser => self.penmode_eraser_style_override,
         }
     }
 
-    pub fn set_style_override(&mut self, style_override: Option<PenStyle>) {
+    pub fn set_style_override(&mut self, config: &PensConfig, style_override: Option<PenStyle>) {
         self.remove_all_overrides();
 
-        match self.pen_mode {
+        match config.penmode {
             PenMode::Pen => {
                 self.penmode_pen_style_override = style_override;
             }
@@ -114,22 +91,22 @@ impl PenModeState {
         }
     }
 
-    pub fn take_style_override(&mut self) -> Option<PenStyle> {
-        match self.pen_mode {
+    pub fn take_style_override(&mut self, config: &PensConfig) -> Option<PenStyle> {
+        match config.penmode {
             PenMode::Pen => self.penmode_pen_style_override.take(),
             PenMode::Eraser => self.penmode_eraser_style_override.take(),
         }
     }
 
-    pub fn pen_mode(&self) -> PenMode {
-        self.pen_mode
+    pub fn pen_mode(&self, config: &PensConfig) -> PenMode {
+        config.penmode
     }
 
-    pub fn set_pen_mode(&mut self, pen_mode: PenMode) {
-        if self.pen_mode != pen_mode {
+    pub fn set_pen_mode(&mut self, config: &mut PensConfig, pen_mode: PenMode) {
+        if config.penmode != pen_mode {
             self.remove_all_overrides();
 
-            self.pen_mode = pen_mode;
+            config.penmode = pen_mode;
         }
     }
 }

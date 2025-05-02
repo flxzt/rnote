@@ -9,9 +9,11 @@ use crate::{
     dialogs, env,
 };
 use adw::{prelude::*, subclass::prelude::*};
+use core::cell::{Ref, RefMut};
 use gettextrs::gettext;
 use gtk4::{Application, IconTheme, gdk, gio, glib};
 use rnote_compose::Color;
+use rnote_engine::document::DocumentConfig;
 use rnote_engine::engine::{EngineConfig, EngineConfigShared};
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::PenStyle;
@@ -127,6 +129,14 @@ impl RnAppWindow {
 
     pub(crate) fn engine_config(&self) -> &EngineConfigShared {
         &self.imp().engine_config
+    }
+
+    pub(crate) fn document_config_preset_ref(&self) -> Ref<DocumentConfig> {
+        self.imp().document_config_preset.borrow()
+    }
+
+    pub(crate) fn document_config_preset_mut(&self) -> RefMut<DocumentConfig> {
+        self.imp().document_config_preset.borrow_mut()
     }
 
     /// Must be called after application is associated with the window else the init will panic
@@ -327,6 +337,7 @@ impl RnAppWindow {
             .canvas()
             .engine_mut()
             .install_config(self.engine_config(), crate::env::pkg_data_dir().ok());
+        wrapper.canvas().engine_mut().document.config = self.document_config_preset_ref().clone();
         self.handle_widget_flags(widget_flags, &wrapper.canvas());
         wrapper
     }
@@ -630,7 +641,6 @@ impl RnAppWindow {
 
     /// Refresh the UI from the global state and from the current active tab page.
     pub(crate) fn refresh_ui(&self) {
-        let imp = self.imp();
         let canvas = self.active_tab_canvas();
 
         self.overlays().penssidebar().brush_page().refresh_ui(self);
@@ -708,19 +718,19 @@ impl RnAppWindow {
                         .sidebar_stack()
                         .set_visible_child_name("brush_page");
 
-                    let style = imp.engine_config.read().pens_config.brush_config.style;
+                    let style = self.engine_config().read().pens_config.brush_config.style;
                     match style {
                         BrushStyle::Marker => {
-                            let stroke_color = imp
-                                .engine_config
+                            let stroke_color = self
+                                .engine_config()
                                 .read()
                                 .pens_config
                                 .brush_config
                                 .marker_options
                                 .stroke_color
                                 .unwrap_or(Color::TRANSPARENT);
-                            let fill_color = imp
-                                .engine_config
+                            let fill_color = self
+                                .engine_config()
                                 .read()
                                 .pens_config
                                 .brush_config
@@ -735,16 +745,16 @@ impl RnAppWindow {
                                 .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
                         }
                         BrushStyle::Solid => {
-                            let stroke_color = imp
-                                .engine_config
+                            let stroke_color = self
+                                .engine_config()
                                 .read()
                                 .pens_config
                                 .brush_config
                                 .solid_options
                                 .stroke_color
                                 .unwrap_or(Color::TRANSPARENT);
-                            let fill_color = imp
-                                .engine_config
+                            let fill_color = self
+                                .engine_config()
                                 .read()
                                 .pens_config
                                 .brush_config
@@ -759,8 +769,8 @@ impl RnAppWindow {
                                 .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
                         }
                         BrushStyle::Textured => {
-                            let stroke_color = imp
-                                .engine_config
+                            let stroke_color = self
+                                .engine_config()
                                 .read()
                                 .pens_config
                                 .brush_config
@@ -780,19 +790,19 @@ impl RnAppWindow {
                         .sidebar_stack()
                         .set_visible_child_name("shaper_page");
 
-                    let style = imp.engine_config.read().pens_config.shaper_config.style;
+                    let style = self.engine_config().read().pens_config.shaper_config.style;
                     match style {
                         ShaperStyle::Smooth => {
-                            let stroke_color = imp
-                                .engine_config
+                            let stroke_color = self
+                                .engine_config()
                                 .read()
                                 .pens_config
                                 .shaper_config
                                 .smooth_options
                                 .stroke_color
                                 .unwrap_or(Color::TRANSPARENT);
-                            let fill_color = imp
-                                .engine_config
+                            let fill_color = self
+                                .engine_config()
                                 .read()
                                 .pens_config
                                 .shaper_config
@@ -807,16 +817,16 @@ impl RnAppWindow {
                                 .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
                         }
                         ShaperStyle::Rough => {
-                            let stroke_color = imp
-                                .engine_config
+                            let stroke_color = self
+                                .engine_config()
                                 .read()
                                 .pens_config
                                 .shaper_config
                                 .rough_options
                                 .stroke_color
                                 .unwrap_or(Color::TRANSPARENT);
-                            let fill_color = imp
-                                .engine_config
+                            let fill_color = self
+                                .engine_config()
                                 .read()
                                 .pens_config
                                 .shaper_config
@@ -842,8 +852,8 @@ impl RnAppWindow {
                         .sidebar_stack()
                         .set_visible_child_name("typewriter_page");
 
-                    let text_color = imp
-                        .engine_config
+                    let text_color = self
+                        .engine_config()
                         .read()
                         .pens_config
                         .typewriter_config
@@ -881,19 +891,35 @@ impl RnAppWindow {
         }
     }
 
-    pub(crate) fn load_engine_config_from_settings(
+    pub(crate) fn load_global_config_from_settings(
         &self,
         settings: &gio::Settings,
     ) -> anyhow::Result<()> {
-        // load engine config
-        let serialized_config = settings.string("engine-config");
+        {
+            // load engine config
+            let config_str = settings.string("engine-config");
 
-        if serialized_config.is_empty() {
-            // On first app startup the engine config is empty, so we don't log an error
-            debug!("Did not load `engine-config` from settings, was empty");
+            if config_str.is_empty() {
+                // On first app startup the engine config is empty, so we don't log an error
+                debug!("Did not load `engine-config` from settings, was empty");
+            } else {
+                let engine_config = serde_json::from_str::<EngineConfig>(&config_str)?;
+                self.engine_config().load_values(engine_config);
+            }
         }
-        let engine_config = serde_json::from_str::<EngineConfig>(&serialized_config)?;
-        self.engine_config().load_values(engine_config);
+
+        {
+            // load document config preset
+            let config_str = settings.string("document-config-preset");
+
+            if config_str.is_empty() {
+                // On first app startup the document config preset is empty, so we don't log an error
+                debug!("Did not load `document-config-preset` from settings, was empty");
+            } else {
+                let document_config_preset = serde_json::from_str::<DocumentConfig>(&config_str)?;
+                self.imp().document_config_preset.replace(document_config_preset);
+            }
+        }
 
         if let Some(canvas) = self.active_tab_canvas() {
             let widget_flags = canvas
@@ -904,12 +930,15 @@ impl RnAppWindow {
         Ok(())
     }
 
-    pub(crate) fn save_engine_config_to_settings(
+    pub(crate) fn save_global_config_to_settings(
         &self,
         settings: &gio::Settings,
     ) -> anyhow::Result<()> {
         let engine_config = serde_json::to_string(self.engine_config())?;
-        Ok(settings.set_string("engine-config", engine_config.as_str())?)
+        settings.set_string("engine-config", engine_config.as_str())?;
+        let document_config_preset = serde_json::to_string(self.engine_config())?;
+        settings.set_string("document-config-preset", document_config_preset.as_str())?;
+        Ok(())
     }
 
     /// exports and writes the engine config as json into the file.

@@ -115,7 +115,8 @@ impl EngineSnapshot {
 
                 engine
                     .document
-                    .config.format
+                    .config
+                    .format
                     .set_width(crate::utils::convert_value_dpi(
                         doc_width,
                         xoppformat::XoppFile::DPI,
@@ -123,7 +124,8 @@ impl EngineSnapshot {
                     ));
                 engine
                     .document
-                    .config.format
+                    .config
+                    .format
                     .set_height(crate::utils::convert_value_dpi(
                         doc_height / (no_pages as f64),
                         xoppformat::XoppFile::DPI,

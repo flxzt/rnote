@@ -403,7 +403,12 @@ impl RnAppWindow {
                 let Some(canvas) = appwindow.active_tab_canvas() else {
                     return;
                 };
-                canvas.engine_mut().document.config.format.show_origin_indicator = show_origin_indicator;
+                canvas
+                    .engine_mut()
+                    .document
+                    .config
+                    .format
+                    .show_origin_indicator = show_origin_indicator;
                 canvas.queue_draw();
                 action.set_state(&show_origin_indicator.to_variant());
             }
@@ -1270,16 +1275,23 @@ impl RnAppWindow {
                                     Ok(json_string) => {
                                         let resize_argument =
                                             ImageSizeOption::ResizeImage(Resize {
-                                                width: canvas.engine_ref().document.config.format.width(),
+                                                width: canvas
+                                                    .engine_ref()
+                                                    .document
+                                                    .config
+                                                    .format
+                                                    .width(),
                                                 height: canvas
                                                     .engine_ref()
                                                     .document
-                                                    .config.format
+                                                    .config
+                                                    .format
                                                     .height(),
                                                 layout_fixed_width: canvas
                                                     .engine_ref()
                                                     .document
-                                                    .config.layout
+                                                    .config
+                                                    .layout
                                                     .is_fixed_width(),
                                                 max_viewpoint: None,
                                                 restrain_to_viewport: false,

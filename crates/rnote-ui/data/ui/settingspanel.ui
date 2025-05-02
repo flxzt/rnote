@@ -133,6 +133,29 @@ gets disabled.</property>
                 <child>
                   <object class="AdwPreferencesGroup">
                     <property name="title" translatable="yes">Page Format</property>
+                    <child type="header-suffix">
+                      <object class="GtkBox">
+                        <property name="spacing">6</property>
+                        <child>
+                          <object class="GtkButton" id="format_save_button">
+                            <property name="icon_name">save-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Save as Preset</property>
+                            <style>
+                              <class name="flat"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="format_restore_button">
+                            <property name="icon_name">restore-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Restore From Preset</property>
+                            <style>
+                              <class name="flat"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                     <child>
                       <object class="AdwComboRow" id="format_predefined_formats_row">
                         <property name="title" translatable="yes">Format</property>
@@ -252,6 +275,29 @@ gets disabled.</property>
                 <child>
                   <object class="AdwPreferencesGroup">
                     <property name="title" translatable="yes">Document</property>
+                    <child type="header-suffix">
+                      <object class="GtkBox">
+                        <property name="spacing">6</property>
+                        <child>
+                          <object class="GtkButton" id="doc_save_button">
+                            <property name="icon_name">save-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Save as Preset</property>
+                            <style>
+                              <class name="flat"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="doc_restore_button">
+                            <property name="icon_name">restore-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Restore From Preset</property>
+                            <style>
+                              <class name="flat"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                     <child>
                       <object class="AdwComboRow" id="doc_document_layout_row">
                         <property name="title" translatable="yes">Document Layout</property>

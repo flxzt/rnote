@@ -67,10 +67,12 @@ impl VerticalSpaceTool {
                     .tools_config
                     .verticalspace_tool_config
                     .limit_movement_vertical_borders;
-                let y_max = ((self.pos_y / engine_view.document.config.format.height()).floor() + 1.0f64)
+                let y_max = ((self.pos_y / engine_view.document.config.format.height()).floor()
+                    + 1.0f64)
                     * engine_view.document.config.format.height();
                 let limit_x = {
-                    let page_number_hor = (pos_x / engine_view.document.config.format.width()).floor();
+                    let page_number_hor =
+                        (pos_x / engine_view.document.config.format.width()).floor();
                     (
                         page_number_hor * engine_view.document.config.format.width(),
                         (page_number_hor + 1.0f64) * engine_view.document.config.format.width(),

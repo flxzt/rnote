@@ -281,9 +281,10 @@ impl Engine {
 
             snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds.loosened(2.0)));
 
-            for page_bounds in doc_bounds
-                .split_extended_origin_aligned(self.document.config.format.size(), SplitOrder::default())
-            {
+            for page_bounds in doc_bounds.split_extended_origin_aligned(
+                self.document.config.format.size(),
+                SplitOrder::default(),
+            ) {
                 if !page_bounds.intersects(&viewport) {
                     continue;
                 }

@@ -18,6 +18,8 @@ mod imp {
         pub(crate) eraserstyle_split_colliding_strokes_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) stroke_width_picker: TemplateChild<RnStrokeWidthPicker>,
+        #[template_child]
+        pub(crate) speed_scaling_toggle: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]
@@ -165,6 +167,19 @@ impl RnEraserPage {
                 }
             ),
         );
+
+        imp.speed_scaling_toggle.connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |speed_scaling_toggle| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
+                canvas.engine_mut().pens_config.eraser_config.speed_scaling =
+                    speed_scaling_toggle.is_active();
+            }
+        ));
     }
 
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {

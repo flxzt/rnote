@@ -197,7 +197,7 @@ test:
     meson compile cargo-test -C {{ build_folder }}
 
 test-file-compatibility:
-    rnote-cli test \
+    {{ build_folder }}/target/debug/rnote-cli test \
         misc/file-tests/v0-5-5-test.rnote \
         misc/file-tests/v0-5-13-test.rnote \
         misc/file-tests/v0-6-0-test.rnote \

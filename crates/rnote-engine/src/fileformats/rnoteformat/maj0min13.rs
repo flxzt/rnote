@@ -18,29 +18,29 @@ impl TryFrom<RnoteFileMaj0Min9> for RnoteFileMaj0Min13 {
             .engine_snapshot
             .as_object_mut()
             .ok_or_else(|| anyhow::anyhow!("engine snapshot is not a JSON object."))?;
+        let document = engine_snapshot
+            .get_mut("document")
+            .ok_or_else(|| anyhow!("`engine_snapshot` has no value `document`."))?
+            .as_object_mut()
+            .ok_or_else(|| anyhow!("`document` is not a JSON object."))?;
 
-        let format = engine_snapshot["document"]
+        let format = document
             .remove("format")
             .ok_or_else(|| anyhow!("document has no value `format`."))?;
-        let background = engine_snapshot["document"]
+        let background = document
             .remove("background")
             .ok_or_else(|| anyhow!("document has no value `background`."))?;
-        let layout = engine_snapshot["document"]
+        let layout = document
             .remove("layout")
             .ok_or_else(|| anyhow!("document has no value `layout`."))?;
         // discard `snap_positions`, this config is now global.
-        let _ = engine_snapshot["document"]
-            .remove("snap_positions")
-            .ok_or_else(|| anyhow!("document has no value `snap_positions`."))?;
+        document.remove("snap_positions");
 
         let mut document_config = ijson::IObject::new();
         document_config.insert("format", format);
         document_config.insert("background", background);
         document_config.insert("layout", layout);
-        engine_snapshot["document"]
-            .as_object_mut()
-            .ok_or_else(|| anyhow!("document is not a JSON Object."))?
-            .insert("config", document_config);
+        document.insert("config", document_config);
 
         Ok(Self {
             engine_snapshot: value.engine_snapshot,

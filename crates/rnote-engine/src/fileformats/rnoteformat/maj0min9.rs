@@ -1,6 +1,7 @@
 // Imports
 use super::maj0min6::RnoteFileMaj0Min6;
 use crate::Camera;
+use anyhow::anyhow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -17,7 +18,7 @@ impl TryFrom<RnoteFileMaj0Min6> for RnoteFileMaj0Min9 {
         let engine_snapshot = value
             .engine_snapshot
             .as_object_mut()
-            .ok_or_else(|| anyhow::anyhow!("engine snapshot is not a JSON object."))?;
+            .ok_or_else(|| anyhow!("engine snapshot is not a JSON object."))?;
 
         engine_snapshot.insert("camera", ijson::to_value(Camera::default())?);
 

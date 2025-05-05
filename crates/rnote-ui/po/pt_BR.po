@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-12 12:03+0200\n"
-"PO-Revision-Date: 2025-04-20 13:02+0000\n"
-"Last-Translator: Adriano Camilo <adrianocamilo055@gmail.com>\n"
+"PO-Revision-Date: 2025-05-06 15:05+0000\n"
+"Last-Translator: Pedro Wasconcelos <pedro.wasconcelos@proton.me>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "rnote/repo/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.11.1-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -219,7 +219,7 @@ msgstr "Alterar o diretório"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
 msgid "Trash File"
-msgstr "Traços ruins"
+msgstr "Mandar arquivo para lixeira"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
@@ -1354,7 +1354,8 @@ msgid ""
 "gets disabled."
 msgstr ""
 "Defina se a rolagem por toque no canvas será inercial.\n"
-" É necessário reiniciar o aplicativo quando essa opção for desativada."
+"É necessário reiniciar o aplicativo\n"
+"quando essa opção for desativada."
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:79
 msgid "Regular Cursor"
@@ -1673,7 +1674,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:509
 msgid "Drawing Pad Button 4 Action"
-msgstr "Ação do Botão 1 da Mesa Digitalizadora"
+msgstr "Ação do Botão 4 da Mesa Digitalizadora"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:510
 msgid ""
@@ -2377,7 +2378,7 @@ msgstr "Ponteiro (Média)"
 #: crates/rnote-ui/src/settingspanel/mod.rs:1231
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
-msgstr "Ponteiro  (Grande)"
+msgstr "Ponteiro (Grande)"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:1232
 msgctxt "a cursor type"

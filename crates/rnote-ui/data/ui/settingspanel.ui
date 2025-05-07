@@ -314,6 +314,12 @@ gets disabled.</property>
                       </object>
                     </child>
                     <child>
+                      <object class="AdwSwitchRow" id="doc_show_format_borders_row">
+                        <property name="title" translatable="yes">Show Format Borders</property>
+                        <property name="subtitle" translatable="yes">Set whether the format borders are shown</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="AdwActionRow" id="doc_format_border_color_row">
                         <property name="title" translatable="yes">Format Border Color</property>
                         <property name="subtitle" translatable="yes">Set the format border color</property>
@@ -426,12 +432,6 @@ gets disabled.</property>
                             <property name="valign">center</property>
                           </object>
                         </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwSwitchRow" id="doc_show_format_borders_row">
-                        <property name="title" translatable="yes">Show Format Borders</property>
-                        <property name="subtitle" translatable="yes">Set whether the format borders are shown</property>
                       </object>
                     </child>
                     <child>

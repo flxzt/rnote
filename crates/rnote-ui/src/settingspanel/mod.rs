@@ -93,6 +93,8 @@ mod imp {
         #[template_child]
         pub(crate) doc_document_layout_row: TemplateChild<adw::ComboRow>,
         #[template_child]
+        pub(crate) doc_show_format_borders_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
         pub(crate) doc_format_border_color_button: TemplateChild<ColorDialogButton>,
         #[template_child]
         pub(crate) doc_background_color_button: TemplateChild<ColorDialogButton>,
@@ -104,8 +106,6 @@ mod imp {
         pub(crate) doc_background_pattern_width_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
         pub(crate) doc_background_pattern_height_unitentry: TemplateChild<RnUnitEntry>,
-        #[template_child]
-        pub(crate) doc_show_format_borders_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(crate) doc_show_origin_indicator_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
@@ -465,11 +465,13 @@ impl RnSettingsPanel {
                 .format
                 .show_origin_indicator;
 
+            imp.doc_show_format_borders_row
+                .set_active(show_format_borders);
+            imp.doc_background_pattern_color_button
+                .set_rgba(&gdk::RGBA::from_compose_color(background.pattern_color));
             imp.doc_background_color_button
                 .set_rgba(&gdk::RGBA::from_compose_color(background.color));
             self.set_background_pattern(background.pattern);
-            imp.doc_background_pattern_color_button
-                .set_rgba(&gdk::RGBA::from_compose_color(background.pattern_color));
             imp.doc_background_pattern_width_unitentry
                 .set_dpi(format.dpi());
             imp.doc_background_pattern_width_unitentry
@@ -479,8 +481,6 @@ impl RnSettingsPanel {
             imp.doc_background_pattern_height_unitentry
                 .set_value_in_px(background.pattern_size[1]);
             self.set_document_layout(&document_layout);
-            imp.doc_show_format_borders_row
-                .set_active(show_format_borders);
             imp.doc_show_origin_indicator_row
                 .set_active(show_origin_indicator);
         }
@@ -838,6 +838,28 @@ impl RnSettingsPanel {
             }
         ));
 
+        imp.doc_show_format_borders_row
+            .connect_active_notify(clone!(
+                #[weak]
+                appwindow,
+                move |row| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+                    canvas.engine_mut().document.config.format.show_borders = row.is_active();
+                    canvas.queue_draw();
+                }
+            ));
+
+        imp.doc_show_format_borders_row
+            .bind_property(
+                "active",
+                &imp.doc_format_border_color_button.get(),
+                "sensitive",
+            )
+            .sync_create()
+            .build();
+
         imp.doc_format_border_color_button
             .connect_rgba_notify(clone!(
                 #[weak(rename_to=settingspanel)]
@@ -1104,18 +1126,6 @@ impl RnSettingsPanel {
                 ),
             );
 
-        imp.doc_show_format_borders_row
-            .connect_active_notify(clone!(
-                #[weak]
-                appwindow,
-                move |row| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-                    canvas.engine_mut().document.config.format.show_borders = row.is_active();
-                    canvas.queue_draw();
-                }
-            ));
         imp.doc_show_origin_indicator_row
             .connect_active_notify(clone!(
                 #[weak]

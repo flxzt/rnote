@@ -358,9 +358,9 @@ impl ObjectImpl for RnAppWindow {
                     .get::<bool>()
                     .expect("The value needs to be of type `bool`");
                 self.visual_debug.replace(visual_debug);
+                self.engine_config.write().visual_debug = visual_debug;
                 if let Some(canvas) = obj.active_tab_canvas() {
-                    let widget_flags = canvas.engine_mut().set_visual_debug(visual_debug);
-                    obj.handle_widget_flags(widget_flags, &canvas);
+                    canvas.queue_draw();
                 }
             }
             "save-in-progress" => {

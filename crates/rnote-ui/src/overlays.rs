@@ -20,7 +20,6 @@ mod imp {
     pub(crate) struct RnOverlays {
         pub(crate) progresspulses_active: Cell<usize>,
         pub(crate) progresspulse_id: RefCell<Option<glib::SourceId>>,
-        pub(super) prev_active_tab_page: glib::WeakRef<adw::TabPage>,
 
         #[template_child]
         pub(crate) toolbar_overlay: TemplateChild<Overlay>,
@@ -232,8 +231,6 @@ impl RnOverlays {
         let imp = self.imp();
 
         imp.tabview.connect_selected_page_notify(clone!(
-            #[weak(rename_to=overlays)]
-            self,
             #[weak]
             appwindow,
             move |_| {
@@ -245,17 +242,6 @@ impl RnOverlays {
                     .downcast::<RnCanvasWrapper>()
                     .unwrap();
                 appwindow.tabs_set_unselected_inactive();
-
-                if let Some(prev_active_tab_page) = overlays.imp().prev_active_tab_page.upgrade() {
-                    if prev_active_tab_page != active_tab_page {
-                        appwindow.sync_state_between_tabs(&prev_active_tab_page, &active_tab_page);
-                    }
-                }
-                overlays
-                    .imp()
-                    .prev_active_tab_page
-                    .set(Some(&active_tab_page));
-
                 let widget_flags = active_canvaswrapper.canvas().engine_mut().set_active(true);
                 appwindow.handle_widget_flags(widget_flags, &active_canvaswrapper.canvas());
                 appwindow.refresh_ui();
@@ -274,26 +260,11 @@ impl RnOverlays {
             }
         ));
 
-        imp.tabview.connect_page_detached(clone!(
-            #[weak(rename_to=overlays)]
-            self,
-            move |_, page, _| {
-                let canvaswrapper = page.child().downcast::<RnCanvasWrapper>().unwrap();
-
-                // if the to be detached page was the active (selected), remove it.
-                if overlays
-                    .imp()
-                    .prev_active_tab_page
-                    .upgrade()
-                    .is_none_or(|prev| prev == *page)
-                {
-                    overlays.imp().prev_active_tab_page.set(None);
-                }
-
-                let _ = canvaswrapper.canvas().engine_mut().set_active(false);
-                canvaswrapper.disconnect_connections();
-            }
-        ));
+        imp.tabview.connect_page_detached(clone!(move |_, page, _| {
+            let canvaswrapper = page.child().downcast::<RnCanvasWrapper>().unwrap();
+            let _ = canvaswrapper.canvas().engine_mut().set_active(false);
+            canvaswrapper.disconnect_connections();
+        }));
 
         imp.tabview.connect_close_page(clone!(
             #[weak]

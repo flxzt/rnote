@@ -195,7 +195,7 @@ impl Engine {
         self.penholder
             .draw_on_doc_to_gtk_snapshot(snapshot, &engine_view!(self))?;
 
-        if self.visual_debug {
+        if self.config.read().visual_debug {
             snapshot.save();
             snapshot.transform(Some(&camera_transform));
             visual_debug::draw_stroke_debug_to_gtk_snapshot(snapshot, self, surface_bounds)?;

@@ -759,7 +759,7 @@ impl RnAppWindow {
             let total_zoom = canvas.engine_ref().camera.total_zoom();
             let can_undo = canvas.engine_ref().can_undo();
             let can_redo = canvas.engine_ref().can_redo();
-            let visual_debug = canvas.engine_ref().visual_debug();
+            let visual_debug = self.engine_config().read().visual_debug;
 
             self.overlays()
                 .penpicker()
@@ -1025,27 +1025,5 @@ impl RnAppWindow {
         }
 
         Ok(())
-    }
-
-    /// Sync the state from the previous active tab and the current one. Used when the selected tab changes.
-    pub(crate) fn sync_state_between_tabs(
-        &self,
-        prev_tab: &adw::TabPage,
-        active_tab: &adw::TabPage,
-    ) {
-        if *prev_tab == *active_tab {
-            return;
-        }
-        let prev_canvas_wrapper = prev_tab.child().downcast::<RnCanvasWrapper>().unwrap();
-        let prev_canvas = prev_canvas_wrapper.canvas();
-        let active_canvas_wrapper = active_tab.child().downcast::<RnCanvasWrapper>().unwrap();
-        let active_canvas = active_canvas_wrapper.canvas();
-
-        // The visual-debug field is not saved in the config, but we want to sync its value between tabs.
-        let widget_flags = active_canvas
-            .engine_mut()
-            .set_visual_debug(prev_canvas.engine_mut().visual_debug());
-
-        self.handle_widget_flags(widget_flags, &active_canvas);
     }
 }

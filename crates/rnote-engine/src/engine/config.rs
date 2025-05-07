@@ -20,6 +20,8 @@ pub struct EngineConfig {
     pub optimize_epd: bool,
     #[serde(rename = "snap_positions")]
     pub snap_positions: bool,
+    #[serde(skip)]
+    pub visual_debug: bool,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]

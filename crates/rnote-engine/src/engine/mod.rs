@@ -189,8 +189,6 @@ pub struct Engine {
     audioplayer: Option<AudioPlayer>,
     #[serde(skip)]
     pub animation: Animation,
-    #[serde(skip)]
-    visual_debug: bool,
     // the task sender. Must not be modified, only cloned.
     #[serde(skip)]
     tasks_tx: EngineTaskSender,
@@ -223,7 +221,6 @@ impl Default for Engine {
 
             audioplayer: None,
             animation: Animation::default(),
-            visual_debug: false,
             tasks_tx: EngineTaskSender(tasks_tx),
             tasks_rx: Some(EngineTaskReceiver(tasks_rx)),
             background_tile_image: None,
@@ -307,17 +304,6 @@ impl Engine {
 
     pub fn set_optimize_epd(&mut self, optimize_epd: bool) {
         self.config.write().optimize_epd = optimize_epd;
-    }
-
-    pub fn visual_debug(&self) -> bool {
-        self.visual_debug
-    }
-
-    pub fn set_visual_debug(&mut self, visual_debug: bool) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-        self.visual_debug = visual_debug;
-        widget_flags.redraw = true;
-        widget_flags
     }
 
     /// Takes a snapshot of the current state.

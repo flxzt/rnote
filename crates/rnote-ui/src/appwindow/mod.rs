@@ -212,9 +212,6 @@ impl RnAppWindow {
         imp.sidebar.get().init(self);
         imp.main_header.get().init(self);
 
-        // An initial tab. Must! come before setting up the settings binds and import
-        self.add_initial_tab();
-
         // actions and settings AFTER widget inits
         self.setup_icon_theme();
         self.setup_actions();
@@ -236,6 +233,9 @@ impl RnAppWindow {
                 error!("Failed to load initial settings, Err: {e:?}");
             }
         }
+
+        // An initial tab (canvas).
+        self.add_initial_tab();
 
         // Anything that needs to be done right before showing the appwindow
 

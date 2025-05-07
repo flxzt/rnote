@@ -39,16 +39,6 @@ impl RnAppWindow {
     }
 
     #[allow(unused)]
-    pub(crate) fn save_in_progress(&self) -> bool {
-        self.property::<bool>("save-in-progress")
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_save_in_progress(&self, save_in_progress: bool) {
-        self.set_property("save-in-progress", save_in_progress.to_value());
-    }
-
-    #[allow(unused)]
     pub(crate) fn autosave(&self) -> bool {
         self.property::<bool>("autosave")
     }
@@ -101,6 +91,21 @@ impl RnAppWindow {
     #[allow(unused)]
     pub(crate) fn respect_borders(&self) -> bool {
         self.property::<bool>("respect-borders")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_respect_borders(&self, respect_borders: bool) {
+        self.set_property("respect-borders", respect_borders.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn save_in_progress(&self) -> bool {
+        self.property::<bool>("save-in-progress")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_save_in_progress(&self, save_in_progress: bool) {
+        self.set_property("save-in-progress", save_in_progress.to_value());
     }
 
     pub(crate) fn app(&self) -> RnApp {

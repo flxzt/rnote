@@ -996,7 +996,7 @@ impl RnAppWindow {
         if let Some(canvas) = self.active_tab_canvas() {
             let widget_flags = canvas
                 .engine_mut()
-                .install_config(self.engine_config(), env::data_dir().ok());
+                .install_config(self.engine_config(), env::pkg_data_dir().ok());
             self.handle_widget_flags(widget_flags, &canvas);
         }
         Ok(())

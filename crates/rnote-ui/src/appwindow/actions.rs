@@ -147,12 +147,6 @@ impl RnAppWindow {
         let action_snap_positions =
             gio::PropertyAction::new("snap-positions", self, "snap-positions");
         self.add_action(&action_snap_positions);
-        let action_show_format_borders =
-            gio::PropertyAction::new("show-format-borders", self, "show-format-borders");
-        self.add_action(&action_show_format_borders);
-        let action_show_origin_indicator =
-            gio::PropertyAction::new("show-origin-indicator", self, "show-origin-indicator");
-        self.add_action(&action_show_origin_indicator);
         let action_block_pinch_zoom =
             gio::PropertyAction::new("block-pinch-zoom", self, "block-pinch-zoom");
         self.add_action(&action_block_pinch_zoom);

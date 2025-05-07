@@ -21,8 +21,6 @@ pub(crate) struct RnAppWindow {
     pub(crate) document_config_preset: RefCell<DocumentConfig>,
     pub(crate) pen_sounds: Cell<bool>,
     pub(crate) snap_positions: Cell<bool>,
-    pub(crate) show_format_borders: Cell<bool>,
-    pub(crate) show_origin_indicator: Cell<bool>,
     pub(crate) pen_style: Cell<PenStyle>,
     pub(crate) autosave: Cell<bool>,
     pub(crate) autosave_interval_secs: Cell<u32>,
@@ -62,8 +60,6 @@ impl Default for RnAppWindow {
             document_config_preset: RefCell::new(DocumentConfig::default()),
             pen_sounds: Cell::new(true),
             snap_positions: Cell::new(true),
-            show_format_borders: Cell::new(true),
-            show_origin_indicator: Cell::new(true),
             pen_style: Cell::new(PenStyle::default()),
             autosave: Cell::new(true),
             autosave_interval_secs: Cell::new(super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
@@ -150,12 +146,6 @@ impl ObjectImpl for RnAppWindow {
                 glib::ParamSpecBoolean::builder("snap-positions")
                     .default_value(false)
                     .build(),
-                glib::ParamSpecBoolean::builder("show-format-borders")
-                    .default_value(true)
-                    .build(),
-                glib::ParamSpecBoolean::builder("show-origin-indicator")
-                    .default_value(true)
-                    .build(),
                 glib::ParamSpecVariant::builder("pen-style", &PenStyle::static_variant_type())
                     .default_value(Some(&PenStyle::default().to_variant()))
                     .build(),
@@ -200,8 +190,6 @@ impl ObjectImpl for RnAppWindow {
         match pspec.name() {
             "pen-sounds" => self.pen_sounds.get().to_value(),
             "snap-positions" => self.snap_positions.get().to_value(),
-            "show-format-borders" => self.show_format_borders.get().to_value(),
-            "show-origin-indicator" => self.show_origin_indicator.get().to_value(),
             "pen-style" => self.pen_style.get().to_variant().to_value(),
             "autosave" => self.autosave.get().to_value(),
             "autosave-interval-secs" => self.autosave_interval_secs.get().to_value(),
@@ -234,30 +222,6 @@ impl ObjectImpl for RnAppWindow {
                     value.get().expect("The value needs to be of type `bool`");
                 self.snap_positions.replace(snap_positions);
                 self.engine_config.write().snap_positions = snap_positions;
-            }
-            "show-format-borders" => {
-                let show_format_borders: bool =
-                    value.get().expect("The value needs to be of type `bool`");
-                self.show_format_borders.replace(show_format_borders);
-                if let Some(canvas) = obj.active_tab_canvas() {
-                    canvas.engine_mut().document.config.format.show_borders = show_format_borders;
-                    canvas.queue_draw();
-                }
-            }
-            "show-origin-indicator" => {
-                let show_origin_indicator: bool =
-                    value.get().expect("The value needs to be of type `bool`");
-                self.show_origin_indicator.replace(show_origin_indicator);
-
-                if let Some(canvas) = obj.active_tab_canvas() {
-                    canvas
-                        .engine_mut()
-                        .document
-                        .config
-                        .format
-                        .show_origin_indicator = show_origin_indicator;
-                    canvas.queue_draw();
-                }
             }
             "pen-style" => {
                 let pen_style = PenStyle::from_variant(

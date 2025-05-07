@@ -131,13 +131,13 @@ gets disabled.</property>
                 </child>
                 <!-- Format Group -->
                 <child>
-                  <object class="AdwPreferencesGroup">
+                  <object class="AdwPreferencesGroup" id="format_preferences_group">
                     <property name="title" translatable="yes">Page Format</property>
                     <child type="header-suffix">
                       <object class="GtkBox">
                         <property name="spacing">6</property>
                         <child>
-                          <object class="GtkButton" id="format_save_button">
+                          <object class="GtkButton" id="format_save_preset_button">
                             <property name="icon_name">save-symbolic</property>
                             <property name="tooltip-text" translatable="yes">Save as Preset</property>
                             <style>
@@ -146,7 +146,7 @@ gets disabled.</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton" id="format_restore_button">
+                          <object class="GtkButton" id="format_restore_preset_button">
                             <property name="icon_name">restore-symbolic</property>
                             <property name="tooltip-text" translatable="yes">Restore From Preset</property>
                             <style>
@@ -273,13 +273,13 @@ gets disabled.</property>
                 </child>
                 <!-- Document Group -->
                 <child>
-                  <object class="AdwPreferencesGroup">
+                  <object class="AdwPreferencesGroup" id="doc_preferences_group">
                     <property name="title" translatable="yes">Document</property>
                     <child type="header-suffix">
                       <object class="GtkBox">
                         <property name="spacing">6</property>
                         <child>
-                          <object class="GtkButton" id="doc_save_button">
+                          <object class="GtkButton" id="doc_save_preset_button">
                             <property name="icon_name">save-symbolic</property>
                             <property name="tooltip-text" translatable="yes">Save as Preset</property>
                             <style>
@@ -288,7 +288,7 @@ gets disabled.</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton" id="doc_restore_button">
+                          <object class="GtkButton" id="doc_restore_preset_button">
                             <property name="icon_name">restore-symbolic</property>
                             <property name="tooltip-text" translatable="yes">Restore From Preset</property>
                             <style>
@@ -426,6 +426,18 @@ gets disabled.</property>
                             <property name="valign">center</property>
                           </object>
                         </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwSwitchRow" id="doc_show_format_borders_row">
+                        <property name="title" translatable="yes">Show Format Borders</property>
+                        <property name="subtitle" translatable="yes">Set whether the format borders are shown</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwSwitchRow" id="doc_show_origin_indicator_row">
+                        <property name="title" translatable="yes">Show Origin Indicator</property>
+                        <property name="subtitle" translatable="yes">Set whether the document origin indicator is shown</property>
                       </object>
                     </child>
                     <child>

@@ -59,9 +59,9 @@ mod imp {
         #[template_child]
         pub(crate) format_predefined_formats_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub(crate) format_save_button: TemplateChild<Button>,
+        pub(crate) format_save_preset_button: TemplateChild<Button>,
         #[template_child]
-        pub(crate) format_restore_button: TemplateChild<Button>,
+        pub(crate) format_restore_preset_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) format_orientation_row: TemplateChild<adw::ActionRow>,
         #[template_child]
@@ -85,9 +85,11 @@ mod imp {
         #[template_child]
         pub(crate) format_apply_button: TemplateChild<Button>,
         #[template_child]
-        pub(crate) doc_save_button: TemplateChild<Button>,
+        pub(crate) doc_preferences_group: TemplateChild<adw::PreferencesGroup>,
         #[template_child]
-        pub(crate) doc_restore_button: TemplateChild<Button>,
+        pub(crate) doc_save_preset_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) doc_restore_preset_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) doc_document_layout_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -102,6 +104,10 @@ mod imp {
         pub(crate) doc_background_pattern_width_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
         pub(crate) doc_background_pattern_height_unitentry: TemplateChild<RnUnitEntry>,
+        #[template_child]
+        pub(crate) doc_show_format_borders_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(crate) doc_show_origin_indicator_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(crate) background_pattern_invert_color_button: TemplateChild<Button>,
         #[template_child]
@@ -445,11 +451,19 @@ impl RnSettingsPanel {
     fn refresh_doc_ui(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
         let canvas = appwindow.active_tab_canvas();
+        imp.doc_preferences_group.set_sensitive(canvas.is_some());
 
         if let Some(canvas) = canvas {
             let background = canvas.engine_ref().document.config.background;
             let format = canvas.engine_ref().document.config.format;
             let document_layout = canvas.engine_ref().document.config.layout;
+            let show_format_borders = canvas.engine_ref().document.config.format.show_borders;
+            let show_origin_indicator = canvas
+                .engine_ref()
+                .document
+                .config
+                .format
+                .show_origin_indicator;
 
             imp.doc_background_color_button
                 .set_rgba(&gdk::RGBA::from_compose_color(background.color));
@@ -465,8 +479,11 @@ impl RnSettingsPanel {
             imp.doc_background_pattern_height_unitentry
                 .set_value_in_px(background.pattern_size[1]);
             self.set_document_layout(&document_layout);
+            imp.doc_show_format_borders_row
+                .set_active(show_format_borders);
+            imp.doc_show_origin_indicator_row
+                .set_active(show_origin_indicator);
         }
-        // TODO: else insensitive  options
     }
 
     fn refresh_shortcuts_ui(&self, appwindow: &RnAppWindow) {
@@ -654,7 +671,7 @@ impl RnSettingsPanel {
     fn setup_format(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
-        imp.format_save_button.get().connect_clicked(clone!(
+        imp.format_save_preset_button.get().connect_clicked(clone!(
             #[weak]
             appwindow,
             move |_| {
@@ -684,40 +701,42 @@ impl RnSettingsPanel {
             }
         ));
 
-        imp.format_restore_button.get().connect_clicked(clone!(
-            #[weak]
-            appwindow,
-            move |_| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
-                    return;
-                };
+        imp.format_restore_preset_button
+            .get()
+            .connect_clicked(clone!(
+                #[weak]
+                appwindow,
+                move |_| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
 
-                let doc_config = appwindow.document_config_preset_ref().clone();
-                canvas
-                    .engine_mut()
-                    .document
-                    .config
-                    .format
-                    .set_width(doc_config.format.width());
-                canvas
-                    .engine_mut()
-                    .document
-                    .config
-                    .format
-                    .set_height(doc_config.format.height());
-                canvas
-                    .engine_mut()
-                    .document
-                    .config
-                    .format
-                    .set_dpi(doc_config.format.dpi());
+                    let doc_config = appwindow.document_config_preset_ref().clone();
+                    canvas
+                        .engine_mut()
+                        .document
+                        .config
+                        .format
+                        .set_width(doc_config.format.width());
+                    canvas
+                        .engine_mut()
+                        .document
+                        .config
+                        .format
+                        .set_height(doc_config.format.height());
+                    canvas
+                        .engine_mut()
+                        .document
+                        .config
+                        .format
+                        .set_dpi(doc_config.format.dpi());
 
-                let mut widget_flags = canvas.engine_mut().update_rendering_current_viewport();
-                widget_flags |= canvas.engine_mut().doc_resize_autoexpand();
-                widget_flags.refresh_ui = true;
-                appwindow.handle_widget_flags(widget_flags, &canvas);
-            }
-        ));
+                    let mut widget_flags = canvas.engine_mut().update_rendering_current_viewport();
+                    widget_flags |= canvas.engine_mut().doc_resize_autoexpand();
+                    widget_flags.refresh_ui = true;
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                }
+            ));
 
         // revert format
         imp.format_revert_button.get().connect_clicked(clone!(
@@ -745,7 +764,7 @@ impl RnSettingsPanel {
     fn setup_doc(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
-        imp.doc_save_button.get().connect_clicked(clone!(
+        imp.doc_save_preset_button.get().connect_clicked(clone!(
             #[weak]
             appwindow,
             move |_| {
@@ -769,6 +788,12 @@ impl RnSettingsPanel {
                     .document_config_preset_mut()
                     .background
                     .pattern_color = doc_config.background.pattern_color;
+                appwindow.document_config_preset_mut().format.show_borders =
+                    doc_config.format.show_borders;
+                appwindow
+                    .document_config_preset_mut()
+                    .format
+                    .show_origin_indicator = doc_config.format.show_origin_indicator;
 
                 let widget_flags = WidgetFlags {
                     refresh_ui: true,
@@ -778,7 +803,7 @@ impl RnSettingsPanel {
             }
         ));
 
-        imp.doc_restore_button.get().connect_clicked(clone!(
+        imp.doc_restore_preset_button.get().connect_clicked(clone!(
             #[weak]
             appwindow,
             move |_| {
@@ -797,6 +822,14 @@ impl RnSettingsPanel {
                     doc_config.background.pattern_size;
                 canvas.engine_mut().document.config.background.pattern_color =
                     doc_config.background.pattern_color;
+                canvas.engine_mut().document.config.format.show_borders =
+                    doc_config.format.show_borders;
+                canvas
+                    .engine_mut()
+                    .document
+                    .config
+                    .format
+                    .show_origin_indicator = doc_config.format.show_origin_indicator;
 
                 let mut widget_flags = canvas.engine_mut().update_rendering_current_viewport();
                 widget_flags |= canvas.engine_mut().doc_resize_autoexpand();
@@ -1070,6 +1103,36 @@ impl RnSettingsPanel {
                     }
                 ),
             );
+
+        imp.doc_show_format_borders_row
+            .connect_active_notify(clone!(
+                #[weak]
+                appwindow,
+                move |row| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+                    canvas.engine_mut().document.config.format.show_borders = row.is_active();
+                    canvas.queue_draw();
+                }
+            ));
+        imp.doc_show_origin_indicator_row
+            .connect_active_notify(clone!(
+                #[weak]
+                appwindow,
+                move |row| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+                    canvas
+                        .engine_mut()
+                        .document
+                        .config
+                        .format
+                        .show_origin_indicator = row.is_active();
+                    canvas.queue_draw();
+                }
+            ));
 
         imp.background_pattern_invert_color_button
             .get()

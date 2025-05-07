@@ -426,8 +426,8 @@ impl RnAppWindow {
         }
 
         {
-            // Engine config
-            if let Err(err) = self.load_engine_config_from_settings(&app_settings) {
+            // Global config
+            if let Err(err) = self.load_global_config_from_settings(&app_settings) {
                 error!(
                     "Failed to load engine configuration from app settings, using defaults. Err: {err:?}"
                 );
@@ -454,9 +454,9 @@ impl RnAppWindow {
         }
 
         {
-            // Save engine config
-            if let Err(err) = self.save_engine_config_to_settings(&app_settings) {
-                error!("Unable to save engine configuration to app settings, Err: {err:?}");
+            // Save global config
+            if let Err(err) = self.save_global_config_to_settings(&app_settings) {
+                error!("Unable to save global configuration to app settings, Err: {err:?}");
             }
         }
 
@@ -491,9 +491,9 @@ impl RnAppWindow {
                     #[upgrade_or]
                     glib::ControlFlow::Break,
                     move || {
-                        if let Err(e) = appwindow.save_engine_config_to_settings(&app_settings) {
+                        if let Err(e) = appwindow.save_global_config_to_settings(&app_settings) {
                             error!(
-                                "Saving engine config in periodic save task failed , Err: {e:?}"
+                                "Saving global config in periodic save task failed , Err: {e:?}"
                             );
                         }
 

@@ -71,26 +71,6 @@ impl RnAppWindow {
     }
 
     #[allow(unused)]
-    pub(crate) fn show_format_borders(&self) -> bool {
-        self.property::<bool>("snap-positions")
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_show_format_borders(&self, show_format_borders: bool) {
-        self.set_property("show-format-borders", show_format_borders.to_value());
-    }
-
-    #[allow(unused)]
-    pub(crate) fn show_origin_indicator(&self) -> bool {
-        self.property::<bool>("show-origin-indicator")
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_show_origin_indicator(&self, show_origin_indicator: bool) {
-        self.set_property("show-origin-indicator", show_origin_indicator.to_value());
-    }
-
-    #[allow(unused)]
     pub(crate) fn pen_style(&self) -> PenStyle {
         PenStyle::from_variant(&self.property::<glib::Variant>("pen-style")).unwrap()
     }
@@ -749,13 +729,6 @@ impl RnAppWindow {
             let pen_style = canvas.engine_ref().current_pen_style_w_override();
             let pen_sounds = canvas.engine_ref().pen_sounds();
             let snap_positions = self.engine_config().read().snap_positions;
-            let show_format_borders = canvas.engine_ref().document.config.format.show_borders;
-            let show_origin_indicator = canvas
-                .engine_ref()
-                .document
-                .config
-                .format
-                .show_origin_indicator;
             let total_zoom = canvas.engine_ref().camera.total_zoom();
             let can_undo = canvas.engine_ref().can_undo();
             let can_redo = canvas.engine_ref().can_redo();
@@ -775,8 +748,6 @@ impl RnAppWindow {
             self.set_pen_style(pen_style);
             self.set_pen_sounds(pen_sounds);
             self.set_snap_positions(snap_positions);
-            self.set_show_format_borders(show_format_borders);
-            self.set_show_origin_indicator(show_origin_indicator);
             self.set_visual_debug(visual_debug);
 
             // Current pen
@@ -961,32 +932,33 @@ impl RnAppWindow {
         }
     }
 
-    pub(crate) fn load_engine_config_from_settings(
+    pub(crate) fn load_global_config_from_settings(
         &self,
         settings: &gio::Settings,
     ) -> anyhow::Result<()> {
         {
             // load engine config
-            let config_str = settings.string("engine-config");
+            let engine_config_str = settings.string("engine-config");
 
-            if config_str.is_empty() {
+            if engine_config_str.is_empty() {
                 // On first app startup the engine config is empty, so we don't log an error
                 debug!("Did not load `engine-config` from settings, was empty");
             } else {
-                let engine_config = serde_json::from_str::<EngineConfig>(&config_str)?;
+                let engine_config = serde_json::from_str::<EngineConfig>(&engine_config_str)?;
                 self.engine_config().load_values(engine_config);
             }
         }
 
         {
             // load document config preset
-            let config_str = settings.string("document-config-preset");
+            let document_config_preset_str = settings.string("document-config-preset");
 
-            if config_str.is_empty() {
+            if document_config_preset_str.is_empty() {
                 // On first app startup the document config preset is empty, so we don't log an error
                 debug!("Did not load `document-config-preset` from settings, was empty");
             } else {
-                let document_config_preset = serde_json::from_str::<DocumentConfig>(&config_str)?;
+                let document_config_preset =
+                    serde_json::from_str::<DocumentConfig>(&document_config_preset_str)?;
                 self.imp()
                     .document_config_preset
                     .replace(document_config_preset);
@@ -1002,14 +974,18 @@ impl RnAppWindow {
         Ok(())
     }
 
-    pub(crate) fn save_engine_config_to_settings(
+    pub(crate) fn save_global_config_to_settings(
         &self,
         settings: &gio::Settings,
     ) -> anyhow::Result<()> {
-        let engine_config = serde_json::to_string(self.engine_config())?;
-        settings.set_string("engine-config", engine_config.as_str())?;
-        let document_config_preset = serde_json::to_string(self.engine_config())?;
-        settings.set_string("document-config-preset", document_config_preset.as_str())?;
+        let engine_config_str = serde_json::to_string(self.engine_config())?;
+        settings.set_string("engine-config", engine_config_str.as_str())?;
+        let document_config_preset_str =
+            serde_json::to_string(&*self.document_config_preset_ref())?;
+        settings.set_string(
+            "document-config-preset",
+            document_config_preset_str.as_str(),
+        )?;
         Ok(())
     }
 

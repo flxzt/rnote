@@ -961,7 +961,7 @@ impl RnAppWindow {
         }
     }
 
-    pub(crate) fn load_global_config_from_settings(
+    pub(crate) fn load_engine_config_from_settings(
         &self,
         settings: &gio::Settings,
     ) -> anyhow::Result<()> {
@@ -1002,7 +1002,7 @@ impl RnAppWindow {
         Ok(())
     }
 
-    pub(crate) fn save_global_config_to_settings(
+    pub(crate) fn save_engine_config_to_settings(
         &self,
         settings: &gio::Settings,
     ) -> anyhow::Result<()> {

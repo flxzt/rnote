@@ -239,15 +239,6 @@ impl RnAppWindow {
 
         // Anything that needs to be done right before showing the appwindow
 
-        // Set undo / redo as not sensitive as default - setting it in .ui file did not work for some reason
-        self.overlays()
-            .penpicker()
-            .undo_button()
-            .set_sensitive(false);
-        self.overlays()
-            .penpicker()
-            .redo_button()
-            .set_sensitive(false);
         self.refresh_ui();
     }
 

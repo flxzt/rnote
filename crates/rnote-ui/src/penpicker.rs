@@ -113,11 +113,7 @@ impl RnPenPicker {
             appwindow,
             move |brush_toggle| {
                 if brush_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(
-                        &appwindow,
-                        "pen-style",
-                        Some(&PenStyle::Brush.to_string().to_variant()),
-                    );
+                    appwindow.set_pen_style(PenStyle::Brush);
                 }
             }
         ));
@@ -127,11 +123,7 @@ impl RnPenPicker {
             appwindow,
             move |shaper_toggle| {
                 if shaper_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(
-                        &appwindow,
-                        "pen-style",
-                        Some(&PenStyle::Shaper.to_string().to_variant()),
-                    );
+                    appwindow.set_pen_style(PenStyle::Shaper);
                 }
             }
         ));
@@ -141,11 +133,7 @@ impl RnPenPicker {
             appwindow,
             move |typewriter_toggle| {
                 if typewriter_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(
-                        &appwindow,
-                        "pen-style",
-                        Some(&PenStyle::Typewriter.to_string().to_variant()),
-                    );
+                    appwindow.set_pen_style(PenStyle::Typewriter);
                 }
             }
         ));
@@ -155,11 +143,7 @@ impl RnPenPicker {
             appwindow,
             move |eraser_toggle| {
                 if eraser_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(
-                        &appwindow,
-                        "pen-style",
-                        Some(&PenStyle::Eraser.to_string().to_variant()),
-                    );
+                    appwindow.set_pen_style(PenStyle::Eraser);
                 }
             }
         ));
@@ -169,11 +153,7 @@ impl RnPenPicker {
             appwindow,
             move |selector_toggle| {
                 if selector_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(
-                        &appwindow,
-                        "pen-style",
-                        Some(&PenStyle::Selector.to_string().to_variant()),
-                    );
+                    appwindow.set_pen_style(PenStyle::Selector);
                 }
             }
         ));
@@ -183,11 +163,7 @@ impl RnPenPicker {
             appwindow,
             move |tools_toggle| {
                 if tools_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(
-                        &appwindow,
-                        "pen-style",
-                        Some(&PenStyle::Tools.to_string().to_variant()),
-                    );
+                    appwindow.set_pen_style(PenStyle::Tools);
                 }
             }
         ));

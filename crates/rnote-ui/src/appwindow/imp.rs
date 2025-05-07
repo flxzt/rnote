@@ -4,20 +4,26 @@ use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
     Align, ArrowType, CompositeTemplate, CornerType, CssProvider, PackType, PadActionType,
-    PadController, PositionType, gdk, glib, glib::clone,
+    PadController, PositionType, gdk, gio, glib, glib::clone,
 };
 use once_cell::sync::Lazy;
 use rnote_engine::document::DocumentConfig;
 use rnote_engine::engine::EngineConfigShared;
+use rnote_engine::pens::PenStyle;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
-use tracing::{error, trace};
+use tracing::{debug, error, trace};
 
 #[derive(Debug, CompositeTemplate)]
 #[template(resource = "/com/github/flxzt/rnote/ui/appwindow.ui")]
 pub(crate) struct RnAppWindow {
     pub(crate) engine_config: EngineConfigShared,
     pub(crate) document_config_preset: RefCell<DocumentConfig>,
+    pub(crate) pen_sounds: Cell<bool>,
+    pub(crate) snap_positions: Cell<bool>,
+    pub(crate) show_format_borders: Cell<bool>,
+    pub(crate) show_origin_indicator: Cell<bool>,
+    pub(crate) pen_style: Cell<PenStyle>,
     pub(crate) autosave: Cell<bool>,
     pub(crate) autosave_interval_secs: Cell<u32>,
     pub(crate) righthanded: Cell<bool>,
@@ -25,6 +31,8 @@ pub(crate) struct RnAppWindow {
     pub(crate) respect_borders: Cell<bool>,
     pub(crate) touch_drawing: Cell<bool>,
     pub(crate) focus_mode: Cell<bool>,
+    pub(crate) devel_mode: Cell<bool>,
+    pub(crate) visual_debug: Cell<bool>,
 
     pub(crate) drawing_pad_controller: RefCell<Option<PadController>>,
     pub(crate) autosave_source_id: RefCell<Option<glib::SourceId>>,
@@ -52,6 +60,11 @@ impl Default for RnAppWindow {
         Self {
             engine_config: EngineConfigShared::default(),
             document_config_preset: RefCell::new(DocumentConfig::default()),
+            pen_sounds: Cell::new(true),
+            snap_positions: Cell::new(true),
+            show_format_borders: Cell::new(true),
+            show_origin_indicator: Cell::new(true),
+            pen_style: Cell::new(PenStyle::default()),
             autosave: Cell::new(true),
             autosave_interval_secs: Cell::new(super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
             righthanded: Cell::new(true),
@@ -59,6 +72,8 @@ impl Default for RnAppWindow {
             respect_borders: Cell::new(false),
             touch_drawing: Cell::new(false),
             focus_mode: Cell::new(false),
+            devel_mode: Cell::new(false),
+            visual_debug: Cell::new(false),
 
             drawing_pad_controller: RefCell::new(None),
             autosave_source_id: RefCell::new(None),
@@ -129,8 +144,20 @@ impl ObjectImpl for RnAppWindow {
     fn properties() -> &'static [glib::ParamSpec] {
         static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
             vec![
-                glib::ParamSpecBoolean::builder("save-in-progress")
+                glib::ParamSpecBoolean::builder("pen-sounds")
                     .default_value(false)
+                    .build(),
+                glib::ParamSpecBoolean::builder("snap-positions")
+                    .default_value(false)
+                    .build(),
+                glib::ParamSpecBoolean::builder("show-format-borders")
+                    .default_value(true)
+                    .build(),
+                glib::ParamSpecBoolean::builder("show-origin-indicator")
+                    .default_value(true)
+                    .build(),
+                glib::ParamSpecVariant::builder("pen-style", &PenStyle::static_variant_type())
+                    .default_value(Some(&PenStyle::default().to_variant()))
                     .build(),
                 glib::ParamSpecBoolean::builder("autosave")
                     .default_value(false)
@@ -146,13 +173,22 @@ impl ObjectImpl for RnAppWindow {
                 glib::ParamSpecBoolean::builder("block-pinch-zoom")
                     .default_value(false)
                     .build(),
-                glib::ParamSpecBoolean::builder("touch-drawing")
-                    .default_value(false)
-                    .build(),
                 glib::ParamSpecBoolean::builder("respect-borders")
                     .default_value(false)
                     .build(),
+                glib::ParamSpecBoolean::builder("touch-drawing")
+                    .default_value(false)
+                    .build(),
                 glib::ParamSpecBoolean::builder("focus-mode")
+                    .default_value(false)
+                    .build(),
+                glib::ParamSpecBoolean::builder("devel-mode")
+                    .default_value(false)
+                    .build(),
+                glib::ParamSpecBoolean::builder("visual-debug")
+                    .default_value(false)
+                    .build(),
+                glib::ParamSpecBoolean::builder("save-in-progress")
                     .default_value(false)
                     .build(),
             ]
@@ -162,6 +198,11 @@ impl ObjectImpl for RnAppWindow {
 
     fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
         match pspec.name() {
+            "pen-sounds" => self.pen_sounds.get().to_value(),
+            "snap-positions" => self.snap_positions.get().to_value(),
+            "show-format-borders" => self.show_format_borders.get().to_value(),
+            "show-origin-indicator" => self.show_origin_indicator.get().to_value(),
+            "pen-style" => self.pen_style.get().to_variant().to_value(),
             "autosave" => self.autosave.get().to_value(),
             "autosave-interval-secs" => self.autosave_interval_secs.get().to_value(),
             "righthanded" => self.righthanded.get().to_value(),
@@ -169,14 +210,73 @@ impl ObjectImpl for RnAppWindow {
             "respect-borders" => self.respect_borders.get().to_value(),
             "touch-drawing" => self.touch_drawing.get().to_value(),
             "focus-mode" => self.focus_mode.get().to_value(),
+            "devel-mode" => self.devel_mode.get().to_value(),
+            "visual-debug" => self.visual_debug.get().to_value(),
             "save-in-progress" => self.save_in_progress.get().to_value(),
             _ => unimplemented!(),
         }
     }
 
     fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
+        let obj = self.obj();
         match pspec.name() {
-            "engine-config" => {}
+            "pen-sounds" => {
+                let pen_sounds: bool = value.get().expect("The value needs to be of type `bool`");
+                self.pen_sounds.replace(pen_sounds);
+                if let Some(canvas) = obj.active_tab_canvas() {
+                    canvas
+                        .engine_mut()
+                        .set_pen_sounds(pen_sounds, crate::env::pkg_data_dir().ok());
+                }
+            }
+            "snap-positions" => {
+                let snap_positions: bool =
+                    value.get().expect("The value needs to be of type `bool`");
+                self.snap_positions.replace(snap_positions);
+                self.engine_config.write().snap_positions = snap_positions;
+            }
+            "show-format-borders" => {
+                let show_format_borders: bool =
+                    value.get().expect("The value needs to be of type `bool`");
+                self.show_format_borders.replace(show_format_borders);
+                if let Some(canvas) = obj.active_tab_canvas() {
+                    canvas.engine_mut().document.config.format.show_borders = show_format_borders;
+                    canvas.queue_draw();
+                }
+            }
+            "show-origin-indicator" => {
+                let show_origin_indicator: bool =
+                    value.get().expect("The value needs to be of type `bool`");
+                self.show_origin_indicator.replace(show_origin_indicator);
+
+                if let Some(canvas) = obj.active_tab_canvas() {
+                    canvas
+                        .engine_mut()
+                        .document
+                        .config
+                        .format
+                        .show_origin_indicator = show_origin_indicator;
+                    canvas.queue_draw();
+                }
+            }
+            "pen-style" => {
+                let pen_style = PenStyle::from_variant(
+                    &value
+                        .get()
+                        .expect("The value needs to be of type `Variant`"),
+                )
+                .unwrap();
+                self.pen_style.replace(pen_style);
+                if let Some(canvas) = obj.active_tab_canvas() {
+                    // don't change the style if the current style with override is already the same
+                    // (e.g. when switched to from the pen button, not by clicking the pen page)
+                    if pen_style != canvas.engine_ref().current_pen_style_w_override() {
+                        let mut widget_flags = canvas.engine_mut().change_pen_style(pen_style);
+                        widget_flags |= canvas.engine_mut().change_pen_style_override(None);
+                        obj.handle_widget_flags(widget_flags, &canvas);
+                    }
+                }
+            }
             "autosave" => {
                 let autosave = value
                     .get::<bool>()
@@ -233,6 +333,35 @@ impl ObjectImpl for RnAppWindow {
                 self.overlays.penpicker().set_visible(!focus_mode);
                 self.overlays.colorpicker().set_visible(!focus_mode);
                 self.overlays.sidebar_box().set_visible(!focus_mode);
+            }
+            "devel-mode" => {
+                let devel_mode = value
+                    .get::<bool>()
+                    .expect("The value needs to be of type `bool`");
+                self.devel_mode.replace(devel_mode);
+                let action_devel_menu = obj
+                    .lookup_action("devel-menu")
+                    .unwrap()
+                    .downcast::<gio::SimpleAction>()
+                    .unwrap();
+                // Enable the devel menu action to reveal it in the app menu
+                action_devel_menu.set_enabled(devel_mode);
+
+                // Always disable visual-debugging when disabling the developer mode
+                if !devel_mode {
+                    debug!("Disabling developer mode, disabling visual debugging.");
+                    obj.set_visual_debug(false);
+                }
+            }
+            "visual-debug" => {
+                let visual_debug = value
+                    .get::<bool>()
+                    .expect("The value needs to be of type `bool`");
+                self.visual_debug.replace(visual_debug);
+                if let Some(canvas) = obj.active_tab_canvas() {
+                    let widget_flags = canvas.engine_mut().set_visual_debug(visual_debug);
+                    obj.handle_widget_flags(widget_flags, &canvas);
+                }
             }
             "save-in-progress" => {
                 let save_in_progress = value

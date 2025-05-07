@@ -38,6 +38,68 @@ impl RnAppWindow {
         glib::Object::builder().property("application", app).build()
     }
 
+    pub(crate) fn engine_config(&self) -> &EngineConfigShared {
+        &self.imp().engine_config
+    }
+
+    pub(crate) fn document_config_preset_ref(&self) -> Ref<DocumentConfig> {
+        self.imp().document_config_preset.borrow()
+    }
+
+    pub(crate) fn document_config_preset_mut(&self) -> RefMut<DocumentConfig> {
+        self.imp().document_config_preset.borrow_mut()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn pen_sounds(&self) -> bool {
+        self.property::<bool>("pen-sounds")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_pen_sounds(&self, pen_sounds: bool) {
+        self.set_property("pen-sounds", pen_sounds.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn snap_positions(&self) -> bool {
+        self.property::<bool>("snap-positions")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_snap_positions(&self, snap_positions: bool) {
+        self.set_property("snap-positions", snap_positions.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn show_format_borders(&self) -> bool {
+        self.property::<bool>("snap-positions")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_show_format_borders(&self, show_format_borders: bool) {
+        self.set_property("show-format-borders", show_format_borders.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn show_origin_indicator(&self) -> bool {
+        self.property::<bool>("show-origin-indicator")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_show_origin_indicator(&self, show_origin_indicator: bool) {
+        self.set_property("show-origin-indicator", show_origin_indicator.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn pen_style(&self) -> PenStyle {
+        PenStyle::from_variant(&self.property::<glib::Variant>("pen-style")).unwrap()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_pen_style(&self, pen_style: PenStyle) {
+        self.set_property("pen-style", pen_style.to_variant().to_value());
+    }
+
     #[allow(unused)]
     pub(crate) fn autosave(&self) -> bool {
         self.property::<bool>("autosave")
@@ -69,6 +131,26 @@ impl RnAppWindow {
     }
 
     #[allow(unused)]
+    pub(crate) fn block_pinch_zoom(&self) -> bool {
+        self.property::<bool>("block-pinch-zoom")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_block_pinch_zoom(&self, block_pinch_zoom: bool) {
+        self.set_property("block-pinch-zoom", block_pinch_zoom.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn respect_borders(&self) -> bool {
+        self.property::<bool>("respect-borders")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_respect_borders(&self, respect_borders: bool) {
+        self.set_property("respect-borders", respect_borders.to_value());
+    }
+
+    #[allow(unused)]
     pub(crate) fn touch_drawing(&self) -> bool {
         self.property::<bool>("touch-drawing")
     }
@@ -89,13 +171,23 @@ impl RnAppWindow {
     }
 
     #[allow(unused)]
-    pub(crate) fn respect_borders(&self) -> bool {
-        self.property::<bool>("respect-borders")
+    pub(crate) fn devel_mode(&self) -> bool {
+        self.property::<bool>("devel-mode")
     }
 
     #[allow(unused)]
-    pub(crate) fn set_respect_borders(&self, respect_borders: bool) {
-        self.set_property("respect-borders", respect_borders.to_value());
+    pub(crate) fn set_devel_mode(&self, devel_mode: bool) {
+        self.set_property("devel-mode", devel_mode.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn visual_debug(&self) -> bool {
+        self.property::<bool>("visual-debug")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_visual_debug(&self, visual_debug: bool) {
+        self.set_property("visual-debug", visual_debug.to_value());
     }
 
     #[allow(unused)]
@@ -130,18 +222,6 @@ impl RnAppWindow {
 
     pub(crate) fn overlays(&self) -> RnOverlays {
         self.imp().overlays.get()
-    }
-
-    pub(crate) fn engine_config(&self) -> &EngineConfigShared {
-        &self.imp().engine_config
-    }
-
-    pub(crate) fn document_config_preset_ref(&self) -> Ref<DocumentConfig> {
-        self.imp().document_config_preset.borrow()
-    }
-
-    pub(crate) fn document_config_preset_mut(&self) -> RefMut<DocumentConfig> {
-        self.imp().document_config_preset.borrow_mut()
     }
 
     /// Must be called after application is associated with the window else the init will panic
@@ -668,11 +748,18 @@ impl RnAppWindow {
             // Avoids already borrowed
             let pen_style = canvas.engine_ref().current_pen_style_w_override();
             let pen_sounds = canvas.engine_ref().pen_sounds();
-            let doc_format = canvas.engine_ref().document.config.format;
-            let total_zoom = canvas.engine_ref().camera.total_zoom();
             let snap_positions = self.engine_config().read().snap_positions;
+            let show_format_borders = canvas.engine_ref().document.config.format.show_borders;
+            let show_origin_indicator = canvas
+                .engine_ref()
+                .document
+                .config
+                .format
+                .show_origin_indicator;
+            let total_zoom = canvas.engine_ref().camera.total_zoom();
             let can_undo = canvas.engine_ref().can_undo();
             let can_redo = canvas.engine_ref().can_redo();
+            let visual_debug = canvas.engine_ref().visual_debug();
 
             self.overlays()
                 .penpicker()
@@ -685,34 +772,12 @@ impl RnAppWindow {
             self.main_header()
                 .canvasmenu()
                 .refresh_zoom_reset_label(total_zoom);
-
-            // we change the state through the actions, because they themselves hold state.
-            // (for example needed to display ticks in menus for boolean actions)
-            adw::prelude::ActionGroupExt::change_action_state(
-                self,
-                "pen-style",
-                &pen_style.to_string().to_variant(),
-            );
-            adw::prelude::ActionGroupExt::change_action_state(
-                self,
-                "pen-sounds",
-                &pen_sounds.to_variant(),
-            );
-            adw::prelude::ActionGroupExt::change_action_state(
-                self,
-                "snap-positions",
-                &snap_positions.to_variant(),
-            );
-            adw::prelude::ActionGroupExt::change_action_state(
-                self,
-                "show-format-borders",
-                &doc_format.show_borders.to_variant(),
-            );
-            adw::prelude::ActionGroupExt::change_action_state(
-                self,
-                "show-origin-indicator",
-                &doc_format.show_origin_indicator.to_variant(),
-            );
+            self.set_pen_style(pen_style);
+            self.set_pen_sounds(pen_sounds);
+            self.set_snap_positions(snap_positions);
+            self.set_show_format_borders(show_format_borders);
+            self.set_show_origin_indicator(show_origin_indicator);
+            self.set_visual_debug(visual_debug);
 
             // Current pen
             match pen_style {

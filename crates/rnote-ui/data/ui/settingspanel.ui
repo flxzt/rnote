@@ -443,7 +443,7 @@ gets disabled.</property>
                     <child>
                       <object class="AdwActionRow" id="background_pattern_invert_color_row">
                         <property name="title" translatable="yes">Invert Color Brightness</property>
-                        <property name="subtitle" translatable="yes">Invert the brightness of all background pattern colors</property>
+                        <property name="subtitle" translatable="yes">Invert the brightness of the background and pattern colors</property>
                         <child type="suffix">
                           <object class="GtkButton" id="background_pattern_invert_color_button">
                             <property name="valign">center</property>

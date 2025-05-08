@@ -9,7 +9,7 @@ pub(crate) use input::reject_pointer_input;
 
 // Imports
 use crate::boxed::WidgetFlagsBoxed;
-use crate::{RnAppWindow, config};
+use crate::{RnAppWindow, config, env};
 use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{
@@ -1350,6 +1350,11 @@ impl RnCanvas {
         {
             self.disconnect(old);
         }
+
+        let widget_flags = self
+            .engine_mut()
+            .install_config(appwindow.engine_config(), env::pkg_data_dir().ok());
+        appwindow.handle_widget_flags(widget_flags, self);
     }
 
     /// Disconnect all connections with references to external objects

@@ -200,7 +200,9 @@ pub(crate) fn color_to_hsv_label_string(color: Color) -> String {
         _ if min_saturated => "".to_string(),
         v if v < 0.25 => pgettext("part of string representation of a color", "greyish"),
         v if (0.25..0.50).contains(&v) => "".to_string(),
-        v if (0.50..0.75).contains(&v) => "strong".to_string(),
+        v if (0.50..0.75).contains(&v) => {
+            pgettext("part of string representation of a color", "strong")
+        }
         v if v >= 0.75 => pgettext("part of string representation of a color", "vivid"),
         _ => unreachable!(),
     };

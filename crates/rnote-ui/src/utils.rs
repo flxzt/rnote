@@ -249,6 +249,7 @@ pub(crate) fn path_walk_up_until_exists(path: impl AsRef<Path>) -> anyhow::Resul
     while !path.exists() {
         path = path
             .parent()
+            .filter(|p| p.parent().is_some())
             .map(|p| p.to_path_buf())
             .ok_or_else(|| anyhow::anyhow!("Path {} has no parent", path.display()))?;
     }

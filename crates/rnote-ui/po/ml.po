@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 12:03+0200\n"
+"POT-Creation-Date: 2025-05-08 08:58+0200\n"
 "PO-Revision-Date: 2024-03-14 07:01+0000\n"
 "Last-Translator: mohammedbilalns <bilalnsmuhammed@gmail.com>\n"
 "Language-Team: Malayalam <https://hosted.weblate.org/projects/rnote/repo/ml/"
@@ -18,6 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.5-dev\n"
+
+#. Translators: This is the App name, don't translate this.
+#: crates/rnote-ui/data/app.desktop.in.in:3
+msgid "@DESKTOP_FILE_NAME_ENTRY@"
+msgstr ""
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -77,6 +82,1552 @@ msgstr "ഡോക്യൂമെന്റിന്റെ സെറ്റിങ�
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
 msgid "Configure action shortcuts"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:92
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:118
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:144
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:158
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:167
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:193
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:205
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:220
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:233
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:250
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:269
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:279
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:301
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:311
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:337
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:360
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:368
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:378
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:386
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:401
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:420
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:444
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:455
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:472
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:488
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:503
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:517
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:539
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:551
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:570
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:578
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:588
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:598
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:616
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:628
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:636
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:644
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:652
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:661
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:670
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:683
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:693
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:704
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:713
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:722
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:731
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:748
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:761
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:774
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:788
+msgid "this release changes:"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:94
+msgid "feat: laser tool with animations (thanks to @Kneemund)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:95
+msgid "feat: tab overviews (thanks to @zefr0x)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:96
+msgid "feat: thumbnailer for .rnote files (thanks to @tiziodcaio)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:97
+msgid ""
+"feat: keyboard clipboard paste at pointer location (thanks to @Kneemund)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:98
+msgid "feat: multi-click selections (thanks to @Kneemund)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:99
+msgid ""
+"feat: new limit movements options for vertical-space tool (thanks to "
+"@Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:100
+msgid ""
+"feat: confirmation prompt for file/folder trash action (thanks to @RayJW)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:101
+msgid "feat: open workspace folder option (thanks to @Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:102
+msgid "feat: import of encrypted PDFs (thanks to @kq98)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:103
+msgid ""
+"improv: support keyboard and uncommon key shortcuts (thanks to @Kneemund)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:104
+msgid ""
+"improv: clipboard pasting on certain platforms like macOS (thanks to "
+"@Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:105
+msgid "fix: selection handle sensitivity in \"single-selection\" mode"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:106
+msgid ""
+"fix: unwanted activation of long-press gesture after zooming (thanks to "
+"@Kneemund)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:107
+msgid "fix: allow view movement while having a selection"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:108
+msgid ""
+"fix: cli file collision resolution in non-interactive settings (thanks to "
+"@LeSnake04)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:109
+msgid "fix: missing tooltips (thanks to @Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:110
+msgid "fix: window shadows on Windows (thanks to @Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:111
+msgid "fix: .rnote file icons in file managers"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:112
+msgid ""
+"fix: selecting colors not working properly in certain cases (thanks to "
+"@Kneemund)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:120
+msgid "feat: add disable option for pen shortcuts (thanks to @Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:121
+msgid ""
+"feat: add respect-borders option, improving size logic when pasting content "
+"(thanks to @Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:122
+msgid ""
+"feat: add improve-for-E-Paper option, showing current selected color as a "
+"string"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:123
+msgid "improv: migrate to libadwaita based dialogs (thanks to @zefr0x)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:124
+msgid ""
+"improv: stroke modeler entirely rewritten in Rust! (thanks to @Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:125
+msgid "improv: zoom tool following the pointer (thanks to @JonathanGodar)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:126
+msgid "improv: developers list in about window (thanks to @zefr0x)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:127
+msgid ""
+"improv: native file dialogs on Windows, macOS (thanks to @Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:128
+msgid ""
+"improv: gzip (de)compression optimizations, reducing file save/load times "
+"(thanks to @anesthetice)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:129
+msgid ""
+"improv: prevent accidental resizes/moves when interacting with buttons in "
+"the titlebar"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:130
+msgid "improv: inhibit app close while saves are in progress"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:131
+msgid ""
+"improv: ability to change text selection colors inside a single text box"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:132
+msgid "fix: pen state becoming incorrect on windows (thanks to @Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:133
+msgid "fix: file extension filters in dialogs (thanks to @Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:134
+msgid ""
+"fix: force the gtk renderer to gl for now, fixing recurring crashes for some "
+"users (thanks to @Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:135
+msgid "fix: two-finger long-press gesture causing crashes for some users"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:136
+msgid "fix: single element stroke not generating hitboxes"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:137
+msgid ""
+"fix: scrolls being captured by unit-entries in settings, causing accidental "
+"value changes"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:138
+msgid "fix: hover state for typewriter move/resize nodes"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:146
+msgid ""
+"improv: put handles outside of selection borders, enable resizing to smaller "
+"sizes (thanks to @Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:147
+msgid ""
+"improv: error notification when file operations fail in workspace browser"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:148
+msgid "metainfo: add brand colors (thanks to @bertob)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:149
+msgid "fix: origin indicator cross size on hi-dpi screens"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:150
+msgid "fix: rendering got out of sync when resizing long-to-render content"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:151
+msgid "fix: selection stroke widths got larger when resizing non-uniformly"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:152
+msgid ""
+"fix: regression which caused excessive rerendering of selection during "
+"resizing"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:160
+msgid ""
+"fix: importing images changed document dimensions when `adjust-document` pdf "
+"import setting is set"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:161
+msgid ""
+"fix: windows installer now includes EGL/GLES libraries, fixing launch error "
+"when they are present elsewhere but in PATH"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:169
+msgid "feat: touch-hold context-menu with basic actions (thanks to @silvasch)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:170
+msgid "feat: added polygon shape and builder"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:171
+msgid ""
+"feat: added adjust-document Pdf import option that configures the document "
+"for improved annotation use-case"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:172
+msgid "improv: additional color button (default: white) (thanks to @silvasch)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:173
+msgid ""
+"improv: new keyboard shortcuts for managing windows and tabs (thanks to "
+"@silvasch)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:174
+msgid ""
+"improv: autosave all tabs, but only ones that are flagged modified (thanks "
+"to @Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:175
+msgid ""
+"improv: don't export empty layers when exporting to xopp (thanks to "
+"@Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:176
+msgid ""
+"improv: workspace browser is now separated into three sections: folders - "
+"rnote notes - other importable files"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:177
+msgid "improv: use start aspect ratio when resizing and locking aspect-ratio"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:178
+msgid ""
+"improv: renaming file in workspace browser selects only file stem initially"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:179
+msgid "improv: move document-layout option from canvas-menu to settings"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:180
+msgid ""
+"improv: reduce repaints - when stroke is finished, cache origin-indicator "
+"rendering"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:181
+msgid "improv: added new-window menu entry"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:182
+msgid ""
+"improv: file watcher implementation and rnote file writing, possibly fixing "
+"\"reload document\" toasts when file is saved on windows"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:183
+msgid ""
+"fix: failing export/clipboard-copy with large images (thanks to "
+"@Doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:184
+msgid ""
+"fix: menus positions when opened through keyboard shortcut (thanks to "
+"@detiam)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:185
+msgid "fix: zoom label not being updated after switching tab"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:186
+msgid "fix: regression where margin is not applied when exporting selection"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:187
+msgid "fix: undo/redo triggering document-modified flag"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:195
+msgid ""
+"ux: increase window threshold width at where the sidebar becomes an overlay"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:196
+msgid ""
+"fix: indicate unsaved when changing document settings (format, colors, "
+"pattern, ..)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:197
+msgid "fix: missing progress pulse when saving existing doc"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:198
+msgid "fix: ui not being refreshed after loading document from file"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:199
+msgid "fix: jumping view when zoomed out and reaching edges"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:207
+msgid ""
+"improvement: add button to export notification to open file location in file-"
+"manager after exporting (thanks to @silvasch)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:208
+msgid ""
+"improvement: initial export file picker folder got improved, now "
+"prioritising the rnote file location and are now remembered between exports "
+"(thanks to @pobrn )"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:209
+msgid "improvement: more readable file row names"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:210
+msgid "improvement: add keyboard shortcut for snap-positions action"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:211
+msgid "improvement: pdf import option to toggle page borders"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:212
+msgid ""
+"fix: don't export empty pages that are adjacent to content that is snapped "
+"to the document grid"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:213
+msgid ""
+"fix: progress pulses getting out of sync when executing multiple operations "
+"in parallel"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:214
+msgid ""
+"fix: typewriter width adjustment button disappearing after setting it to "
+"minimal width"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:222
+msgid ""
+"feature: option to snap positions in different tools to pattern and document "
+"grid"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:223
+msgid ""
+"feature: option to open files with default app from workspace browser list "
+"(thanks to @silvasch)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:224
+msgid ""
+"improvement: sort workspace files and folders in a more intuitive way "
+"(thanks to @doublonmousse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:225
+msgid ""
+"fix: initial documents opened with rnote have blurry rendering when system "
+"scale-factor is larger than 1.0"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:226
+msgid ""
+"fix: selection after nudging view only included strokes in current viewport"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:227
+msgid "fix: text files not appearing in workspacebrowser"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:235
+msgid ""
+"feature: ability to toggle the visibility of the origin indicator cross "
+"(thanks to @silvasch)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:236
+msgid ""
+"improvement: port rows widgets to libadwaita spezialized variants (thanks to "
+"@oscfdezdz)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:237
+msgid ""
+"improvement: text formatting buttons now toggle text attributes (thanks to "
+"@xweskingx)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:238
+msgid ""
+"improvement: load documents into the current tab if it is a draft and empty "
+"(thanks to @silvasch)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:239
+msgid "UI: tweak sidebar width"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:240
+msgid ""
+"fix: don't display reload-file dialog after saving to directories synced "
+"with cloud storage"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:241
+msgid "fix: chinese translations (thanks to @detiam)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:242
+msgid "fix: single position strokes not being rendered"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:243
+msgid ""
+"fix: don't restore maximized window state on macos, fixing inability to "
+"resize the window after launch"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:244
+msgid ""
+"fix: windows installer not including certain dll's, possibly causing crashes "
+"when the missing ones are located elsewhere and present in PATH (thanks to "
+"@mdonoughe)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:252
+msgid "feature: added ctrl plus space as configurable shortcut"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:253
+msgid "feature: added plaintext file import"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:254
+msgid "feature: ability to nudge view while performing certain pen actions"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:255
+msgid ""
+"improvement: port the UI to libadwaita 1.4 with an improved sidebar and "
+"adaptivity"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:256
+msgid ""
+"improvement: scale widths of brush-strokes and shapes when resizing selection"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:257
+msgid ""
+"improvement: added keyboard shortcuts to add/remove pages when in fixed-size "
+"layout"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:258
+msgid ""
+"improvement: the current document view is saved and restored to/from rnote "
+"files"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:259
+msgid ""
+"improvement: orientation toggle usable when using custom document dimensions"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:260
+msgid ""
+"improvement: shape builder picker sidebar location (thanks to @PhilDevProg)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:261
+msgid ""
+"fix: when using the vertical-space tool strokes that came into view were not "
+"initially rendered"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:262
+msgid "fix: color picker dialog could be opened multiple times"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:263
+msgid "fix: default view offset when opening a new tab"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:271
+msgid "fix: button presses not handled as pen events"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:272
+msgid "fix: windows build"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:273
+msgid "fix: bundled fonts not appearing in flatpak"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:281
+msgid "feature: export previews"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:282
+msgid "feature: invert selection color brightness (thanks to @Kneemund)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:283
+msgid "feature: optimize for printing export option (thanks to @Kneemund)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:284
+msgid ""
+"feature: a few handwrite-y,typewriter and dyslexia fonts are now bundled "
+"with the application (check the README for a list of them)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:285
+msgid "feature: polyline shape and builder"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:286
+msgid "improvement: cli export enhancements (thanks to @LeSnake04)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:287
+msgid "improvement: update outdated symbolic icons (thanks to @oscfdezdz)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:288
+msgid "improvement: behaviour when opening files in new tab"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:289
+msgid ""
+"improvement: added close buttons to configuration popovers as a workaround "
+"for the Gtk4 stuck-popover bug"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:290
+msgid "improvement: default view offset when opening documents"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:291
+msgid "enhancement: move view using arrow keys"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:292
+msgid "fix: orientation of some popovers when sidebar is on the left"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:293
+msgid "fix: restore vectorized images (Pdf pages, Svg) export"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:294
+msgid "fix: .rnote file imports that were created pre v0.5.9"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:295
+msgid "fix: rendering of closed shapes from imported xopp file"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:303
+msgid "improvement: more consistent duplicate file naming"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:304
+msgid "UI: more compact sidebar, shape-picker, workspacebrowser"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:305
+msgid ""
+"fix: import dialogs were not shown when importing files or drag-and-drop "
+"from file-managers (thanks to @Kneemund)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:313
+msgid ""
+"installation: windows users - the installer now uses 64-bit mode, and now "
+"(correctly) installs into \"Program Files\" by default. If you are upgrading "
+"from a previous version, you need to uninstall the old version in \"Program "
+"Files (x86)\" manually."
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:315
+msgid "feature: remove page from fixed size document (thanks to @PhilDevProg)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:316
+msgid ""
+"feature: specify page order when exporting documents with layouts that "
+"expand in horizontal and vertical directions (thanks to @Kneemund)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:317
+msgid "feature: inertial touch scrolling (thanks to @Kneemund)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:318
+msgid "feature: ability to toggle drawing cursor visibility"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:319
+msgid ""
+"feature: \"focus mode\" that hides the toolbars, improving the experience on "
+"low-resolution tablets"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:320
+msgid ""
+"feature: dedicated zoom tool, making navigating while touch-drawing is "
+"enabled easier"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:321
+msgid "improvement: selection highlights for brush-strokes"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:322
+msgid "improvement: ctrl + scroll following the pointer"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:323
+msgid ""
+"improvement: scale-ratio when resizing the selection with locked aspect-ratio"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:324
+msgid ""
+"improvement: provide selection content as Svg and Png when copying/cutting "
+"to the clipboard"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:325
+msgid "improvement: save file logic in close tab/window dialogs"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:326
+msgid "improvement: memory consumption when loading rnote files"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:327
+msgid ""
+"UI: page controls for the fixed-size layout were moved into the canvas menu "
+"dropdown"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:328
+msgid "UI: undo/redo buttons were moved to the pen switcher toolbar"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:329
+msgid "fix: apply pressure curves when exporting to xopp"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:330
+msgid "fix: single element/position strokes were not rendered"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:331
+msgid "fix: stop document autoexpanding when scrolling with scrollbars"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:339
+msgid ""
+"orga: Rnote now follows a new versioning scheme - feature updates will "
+"increment x, while patches will increment y in versions 0.x.y . Breakages in "
+"the file format will be explicitly announced (but we'll work as hard as "
+"possible to avoid them!) and are not reflected in the version anymore."
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:341
+msgid ""
+"orga: the app is now available for Windows and MacOS! Check the installation "
+"section on the website / README, you'll find links to the installer and app "
+"bundle there."
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:342
+msgid "feature: arrow shapes (thanks to @TornaxO7 )"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:343
+msgid "feature: ability to recolor selected strokes (thanks to @Kneemund )"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:344
+msgid "feature: isometric background patterns (thanks to @Kneemund )"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:345
+msgid "feature: add option to block pinch zoom (thanks to @LeSnake04 )"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:346
+msgid "improvement: typewriter keyboard navigation (thanks to @Kneemund )"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:347
+msgid "improvement: exiting / closing dialogs and logic (thanks to @adih-20 )"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:348
+msgid "improvement: more icons for workspace list entries"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:349
+msgid "improvement: associated symbolic icon for .rnote files"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:350
+msgid ""
+"improvement: added labels for name and directory of the active workspace"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:351
+msgid "fix: occasional crashes when doing three-finger swipes"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:352
+msgid ""
+"fix: size limits for grid builder, preventing slowdowns and crashes (thanks "
+"to @Kneemund)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:353
+msgid ""
+"fix: strokes not generating hitboxes when pen is being changed mid-stroke"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:354
+msgid "fix: limit chars for dirs in edit-workspace dialog"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:362
+msgid ""
+"fix: panic on app start when color scheme setting is set to \"Use Light "
+"Colors\" / \"Use Dark Colors\""
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:370
+msgid "fix: some users experienced zip-zapping while using stylus"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:371
+msgid "fix: sporadic jumps when view is near document edge"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:372
+msgid "fix: regression where redo button stays insensitive"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:380
+msgid "fix: vector export when bounds are not origin aligned"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:388
+msgid "feature: configurable shortcuts for drawing pad buttons"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:389
+msgid ""
+"improvement: input events for rate-limited devices (E-Paper/ low-frequency "
+"displays)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:390
+msgid "improvement: reduced Svg export size"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:391
+msgid "fix: artifacts when printing"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:392
+msgid "fix: Jpeg images embedded in Pdfs were not rendered"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:393
+msgid "fix: select-all with \"ctrl+a\" included trashed strokes"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:394
+msgid "fix: units in settings kept resetting to \"Px\""
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:395
+msgid "fix: flicker when duplicating large selections"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:403
+msgid "feature: toggle mode for shortcuts"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:404
+msgid "feature: eraser size picker"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:405
+msgid "improvement: reduce toolbar overlays margins when scrollbar is disabled"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:406
+msgid "improvement: indicate hover over nodes in the selector and typewriter"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:407
+msgid "improvement: reduced save and xopp export file sizes"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:408
+msgid ""
+"UI: follow Gnome HIG writing style more closely and fixed string "
+"inconsistencies"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:409
+msgid "fix: Pdf import with different size pages"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:410
+msgid ""
+"fix: image and Pdf import offsets now take the document bounds into account"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:411
+msgid "fix: broken resizing in fixed-size document layout"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:412
+msgid "fix: crash when navigating up/down into non-ASCII text"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:413
+msgid "fix: crash on launch when using a custom stylesheet"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:414
+msgid "fix: rough style fill calculations"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:422
+msgid "feature: tabs!"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:423
+msgid "feature: a global colorpicker"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:424
+msgid "feature: stroke width preset palette"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:425
+msgid "feature: added \"semi-infinite\" canvas layout ( thanks @D0V4HKIIN !)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:426
+msgid ""
+"feature: added two-finger long-press touch gesture that switches the active "
+"pen (like stylus buttons)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:427
+msgid "feature: added pdf import bitmap scaling preference"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:428
+msgid "UI: floating toolbars"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:429
+msgid ""
+"UI: shape builder picker is now a categorized grid (thanks a lot @Kneemund !)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:430
+msgid "improvement: copy, cut and paste selections between tabs and windows"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:431
+msgid "improvement: flap revealed state is now remembered across app launches"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:432
+msgid "fix: svg clipboard paste"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:433
+msgid "fix: lag when panning in \"continuous-vertical\" layout"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:434
+msgid "fix: layers when erasing marker strokes in \"split-stroke\" mode"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:435
+msgid "fix: \"split-stroke\" mode only eraser one segment at a time"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:436
+msgid "fix: freeze when saving multiple times in succession"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:437
+msgid "fix: blurry vector images after zooming in"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:438
+msgid "fix: some blurry icons"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:446
+msgid "UI: minor sidebar tweaks"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:447
+msgid "i18n: updated strings and translations"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:448
+msgid "fix: remove selection bounds margins"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:449
+msgid ""
+"fix: don't overwrite active palette color when start modifying existing text"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:457
+msgid "feature: added a grid builder"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:458
+msgid ""
+"feature: ctrl + pointer drag for panning the canvas, ctrl+shift + pointer "
+"drag for zooming"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:460
+msgid "improvement: added the ability to reorder workspaces"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:461
+msgid "improvement: rough style now supports transparent colors"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:462
+msgid "improvement: full asynchronicity for all import and exports"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:463
+msgid "fix: rough style bezier curves drawing"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:464
+msgid "fix: added missing association for `.xopp` files"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:465
+msgid "fix: ability to select folders in export-doc-pages filechooser"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:466
+msgid "fix: text input with IME's ( thanks @Mr-Spade !)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:474
+msgid "feature: hatched fills for the rough shape style"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:475
+msgid ""
+"improvements to the monitoring and handling of file changes to the currently "
+"opened file (thanks @Kneemund !)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:477
+msgid "simplified textured brush style options"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:478
+msgid "faster start up times"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:479
+msgid "switch to the typewriter when dropping text"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:480
+msgid "more icon improvements (thanks @bertob !)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:481
+msgid "fix: view \"jumps\" when quickly zooming multiple times"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:482
+msgid "fix: typewriter now handles cut (Ctrl + x) properly"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:490
+msgid ""
+"feature: added keyboard shortcuts \"Ctrl+1..6\" to switch between the "
+"different pens"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:491
+msgid "feature: added coordinate system builders (thanks to @Kneemund )"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:492
+msgid "feature: drop text on the canvas"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:493
+msgid "improvement: export preferences, new export dialogs and options"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:494
+msgid ""
+"improvement: UI following Gnome HIG more closely ( with @bertob's help )"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:495
+msgid ""
+"fix: update current document state when the file was modified from the "
+"workspace browser. (thanks @Kneemund )"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:497
+msgid "fix: clearing text attributes for new text fields"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:505
+msgid "improvement: Add zoom buttons to the quick-actions overlay"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:506
+msgid ""
+"improvement: By default use the workspace directory for import and export "
+"dialogs, and document file for save dialogs"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:508
+msgid "fix: Pdf export and print sometimes produced empty pages"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:509
+msgid ""
+"fix: workspace files list not refreshing after modifying the workspace path"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:510
+msgid ""
+"fix: Selector being canceled when attempting to interact with the selection "
+"when \"touch-drawing\" was enabled"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:519
+msgid ""
+"feature: a new brush option to select between different path modelers. Added "
+"a physics-based modelling type (as default) which decreases jitter and "
+"improves handwriting smoothness. It also includes a predictor to minimize "
+"input lag."
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:522
+msgid ""
+"feature: switch between different cursors while hovering and drawing, with "
+"new \"teardrop\", \"crosshair\" and \"beam\" cursors in different variations "
+"and sizes."
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:524
+msgid ""
+"feature: a new `duplicate` file action and a new `create directory` "
+"workspace action (thanks @TornaxO7 !)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:526
+msgid "improved: better palm rejection while drawing with a stylus"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:527
+#, fuzzy
+#| msgid "Select the export file"
+msgid "improved: better export filenames"
+msgstr "എക്സ്പോർട് ചെയ്യേണ്ട ഫയൽ തിരഞ്ഞെടുക്കുക"
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:528
+msgid ""
+"improved: typewriter input now accepts letter accents, improved unicode "
+"support"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:529
+msgid "fix: background pattern tile rendering size"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:530
+msgid ""
+"fix: scrolling with touchpad was not possible when the \"permanent hidden "
+"scrollbars\" option was enabled"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:532
+msgid "fix: broken Svg export"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:533
+msgid "fix: image layers when exporting to .xopp"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:541
+msgid "Port to libadwaita 1.2 with an updated about window, improved dialogs"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:542
+msgid "new feature: \"permanently hide scrollbars\" toggle in the settings"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:543
+msgid "new feature: \"paste from clipboard\" button in the selector page"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:544
+msgid "improved window title, now shows the current document name"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:545
+msgid "tweaked app icon"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:553
+msgid ""
+"A new app icon and symbolic! (based on @bertob's design and with his help. "
+"Thanks a ton!)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:555
+#, fuzzy
+#| msgid "Write text with the typewriter"
+msgid "long awaited: write and edit text with the typewriter"
+msgstr "ടൈപ്പ്റൈറ്റർ ഉപയോഗിച്ച് ടൈപ്പ് ചെയ്യുക"
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:556
+msgid ""
+"pdf import dialog with the added option to import aligned with the document "
+"pages ( one pdf page per document page )"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:558
+msgid ""
+"import bitmap images (e.g. screenshots) from the clipboard (thanks "
+"@RickStanley!)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:559
+msgid "proportial shapes / input constraints (thanks @sei0o!)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:560
+msgid "additional selector modes: single, intersecting path"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:561
+msgid ""
+"improved workspace browser, added sidebar to select between different "
+"workspaces (inspired by the `Paper` app)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:563
+msgid "mark underneath other strokes with the 'Marker' brush style"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:564
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:572
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:582
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:592
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:609
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:622
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:655
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:664
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:677
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:687
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:698
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:707
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:716
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:725
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:742
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:755
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:768
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:782
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:794
+msgid "bug fixes"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:580
+msgid "feature: paste clipboard files ( nautilus support )"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:581
+msgid "stylus eraser mode improvements"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:590
+msgid "feature: setting to change the format border color"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:591
+msgid "UI text improvements"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:600
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:618
+msgid "disclaimer: breaking file format compatibility"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:601
+msgid "more shape types (curves, ellipse with foci)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:602
+msgid "feature: new eraser type: split strokes"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:603
+msgid "feature: autosave"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:604
+msgid "reduced handwriting latency"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:605
+msgid "improved selector"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:606
+msgid "improved undo / redo system"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:607
+msgid "Xournal++ file import: drawn shapes are now imported correctly"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:608
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:754
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:767
+msgid "UI tweaks"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:610
+msgid "a lot of code refactoring"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:619
+msgid "feature: configurable button shortcuts (stylus, mouse)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:620
+msgid "change: moved the marker into the brush pen as a style"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:621
+msgid "improvement: faster Pdf export & fix export with large sheet dimensions"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:630
+msgid "A new feature: infinite mode for expandable sheets in every direction"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:638
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:676
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:686
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:740
+msgid "UI improvements"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:646
+msgid "UX: Adaptive pen buttons (support smaller screens)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:654
+msgid "new feature: Export as Pdf"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:663
+msgid "`Select all` and `Deselect all` selector buttons"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:672
+msgid "file format changes. Breaking to older versions!"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:673
+msgid "Stroke and image rotation"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:674
+msgid "rudimentary import and export to Xournal++ files"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:675
+msgid "more persistent UI state"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:685
+msgid "Textured brush with tweakable parameters"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:695
+msgid "using libadwaita 1.0!"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:696
+msgid ""
+"Tools as new pen type. Expand the sheet vertically, modify stroke elements "
+"by dragging"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:697
+msgid "asynchronous import, export"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:706
+msgid "Pdf import as vector images"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:715
+msgid "selecting with a rectangle"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:724
+msgid "significant rendering speed improvements"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:733
+msgid "an updated icon!"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:734
+msgid ""
+"an updated file format. !!! Breaks compatibility to older versions. Please "
+"export existing files before upgrading / downgrade temporarily (explained "
+"how to downgrade at github.com/flxzt/rnote)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:737
+msgid "new features: Pdf import, clipboard and drag&drop support"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:738
+msgid ""
+"performance improvements in stroke rendering, selecting, erasing by "
+"parallelizing these operations"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:741
+msgid "internal: code refactoring into ECS pattern"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:750
+msgid "introducing dots as background pattern"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:751
+msgid "added undo, redo, close app and close active window shortcuts"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:752
+msgid "added current file as title, with unsaved changes indicator"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:753
+msgid "improved background rendering"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:763
+msgid "introducing background patterns"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:764
+msgid "improved zooming"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:765
+msgid "improved performance"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:766
+msgid "saving and loading more settings"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:776
+msgid "UI improvements: sidebar and settings"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:777
+msgid "set a background color"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:778
+msgid "added ellipse as a rough shape"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:779
+msgid ""
+"new and improved gestures and shortcuts (zoom with \"ctrl+scroll\", drag the "
+"canvas with the middle mouse button)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:781
+msgid "improved strokes algorithms"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:790
+msgid "Introducing rough shapes for a sketched look"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:791
+msgid "fill shapes with a color"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:792
+msgid ""
+"improved shape drawing (broke .rnote file backward compatibility, sorry!)"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:793
+msgid "alpha checkerboard background in the colorpicker"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:800
+msgid "improved zooming, UI tweaks and bug fixes"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:805
+msgid "using native filechooser dialogs"
+msgstr ""
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:810
+msgid "The initial release"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
@@ -1218,7 +2769,7 @@ msgid "Open in Default App"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:130
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:137
 msgid "Rename"
 msgstr ""
 
@@ -2443,11 +3994,11 @@ msgstr "ഡയറക്ടറി മാറ്റുക"
 msgid "Open the file in the default app failed"
 msgstr ""
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:59
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:60
 msgid "Renaming file failed, target file already exists"
 msgstr ""
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:82
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:83
 msgid "Renaming file failed"
 msgstr ""
 
@@ -2531,55 +4082,60 @@ msgstr ""
 
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
-msgid "vivid"
+msgid "strong"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:208
+#: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"
-msgid "very-dark"
+msgid "vivid"
 msgstr ""
 
 #: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
-msgid "dark"
+msgid "very-dark"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:213
+#: crates/rnote-ui/src/utils.rs:212
 msgctxt "part of string representation of a color"
-msgid "mid"
+msgid "dark"
 msgstr ""
 
 #: crates/rnote-ui/src/utils.rs:215
 msgctxt "part of string representation of a color"
-msgid "bright"
+msgid "mid"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:219
+#: crates/rnote-ui/src/utils.rs:217
 msgctxt "part of string representation of a color"
-msgid "transparent"
+msgid "bright"
 msgstr ""
 
 #: crates/rnote-ui/src/utils.rs:221
 msgctxt "part of string representation of a color"
+msgid "transparent"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:223
+msgctxt "part of string representation of a color"
 msgid "translucent"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:225
+#: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:234
+#: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:237
+#: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "black"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:239
+#: crates/rnote-ui/src/utils.rs:241
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr ""

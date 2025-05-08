@@ -8,20 +8,21 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-08 08:58+0200\n"
-"PO-Revision-Date: 2025-04-12 10:05+0000\n"
-"Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
+"PO-Revision-Date: 2025-05-09 10:05+0000\n"
+"Last-Translator: Benjamin Chase <bennypythoncoder@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #. Translators: This is the App name, don't translate this.
 #: crates/rnote-ui/data/app.desktop.in.in:3
+#, fuzzy
 msgid "@DESKTOP_FILE_NAME_ENTRY@"
-msgstr ""
+msgstr "@DESKTOP_FILE_NAME_ENTRY@"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -134,7 +135,7 @@ msgstr "Konfiguriere Aktionskürzel"
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:774
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:788
 msgid "this release changes:"
-msgstr ""
+msgstr "diese Version ändert:"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:94
 msgid "feat: laser tool with animations (thanks to @Kneemund)"
@@ -1754,11 +1755,11 @@ msgstr "Ungespeicherte Dokumente"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:59
 msgid "Discard All"
-msgstr "Alles verwerfen"
+msgstr "Alles Verwerfen"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:65
 msgid "Edit Workspace"
-msgstr "Arbeitsfläche bearbeiten"
+msgstr "Arbeitsfläche Bearbeiten"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:79
 #: crates/rnote-ui/data/ui/settingspanel.ui:241
@@ -1823,7 +1824,7 @@ msgstr "Papierkorb"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:330
 msgid "Export Document"
-msgstr "Dokument exportieren"
+msgstr "Dokument Exportieren"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:19
 #: crates/rnote-ui/data/ui/dialogs/export.ui:188
@@ -1836,7 +1837,7 @@ msgstr "Exportieren"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:74
 #: crates/rnote-ui/data/ui/dialogs/export.ui:483
 msgid "Export File"
-msgstr "Datei exportieren"
+msgstr "Datei Exportieren"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:75
 #: crates/rnote-ui/data/ui/dialogs/export.ui:484
@@ -1947,12 +1948,12 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:152
 #: crates/rnote-ui/data/ui/dialogs/export.ui:363
 msgid "Horizontal First"
-msgstr "Horizontal zuerst"
+msgstr "Horizontal Zuerst"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:153
 #: crates/rnote-ui/data/ui/dialogs/export.ui:364
 msgid "Vertical First"
-msgstr "Vertikal zuerst"
+msgstr "Vertikal Zuerst"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:174
 #: crates/rnote-ui/src/dialogs/export.rs:738
@@ -2029,7 +2030,7 @@ msgstr "Qualitätänderung des Jpeg-Bilds (1 - 100)"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:414
 #: crates/rnote-ui/src/dialogs/export.rs:1121
 msgid "Export Selection"
-msgstr "Auswahl exportieren"
+msgstr "Auswahl Exportieren"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
@@ -2053,7 +2054,7 @@ msgstr "Abstand des Randes zur Auswahl ändern"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Import Pdf"
-msgstr "Pdf importieren"
+msgstr "Pdf Importieren"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:218
@@ -2108,7 +2109,7 @@ msgstr "Kontinuierlich"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:123
 msgid "One per Document Page"
-msgstr "Eine per Dokumentenseite"
+msgstr "Eine pro Dokumentenseite"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:131
 msgid "Pages Type"
@@ -2136,7 +2137,7 @@ msgstr "Ob die Seiten gezeichnete Ränder haben"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:204
 msgid "Import Xournal++ File"
-msgstr "Xournal++ Datei importieren"
+msgstr "Xournal++ Datei Importieren"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:247
 msgid "Xournal++ File Import Preferences"
@@ -2320,11 +2321,11 @@ msgstr "Umgekehrt exponentiell"
 
 #: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:21
 msgid "Trash Strokes"
-msgstr "Striche löschen"
+msgstr "Striche Löschen"
 
 #: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:31
 msgid "Split Strokes"
-msgstr "Striche aufteilen"
+msgstr "Striche Aufteilen"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:17
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:81
@@ -2358,19 +2359,19 @@ msgstr "Werkzeuge"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:22
 msgid "Select With a Polygon"
-msgstr "Mittels Polygon auswählen"
+msgstr "Mittels Polygon Auswählen"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:32
 msgid "Select With a Rectangle"
-msgstr "Mittels Rechteck auswählen"
+msgstr "Mittels Rechteck Auswählen"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:42
 msgid "Select One by One"
-msgstr "Einzeln auswählen"
+msgstr "Einzeln Auswählen"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:52
 msgid "Select Intersecting Path"
-msgstr "Geschlossenen Pfad wählen"
+msgstr "Geschlossenen Pfad Wählen"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
 msgid "Lock Aspect Ratio While Resizing the Selection"
@@ -2378,7 +2379,7 @@ msgstr "Seitenverhältnis bei Größeänderung sperren"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select All Strokes"
-msgstr "Alle Striche auswählen"
+msgstr "Alle Striche Auswählen"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:94
 msgid "Deselect All Strokes"

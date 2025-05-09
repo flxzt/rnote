@@ -76,7 +76,10 @@ just generate-json-flatpak-manifest
 
 # Translations
 
-To regenerate the `.pot`, run:
+Regenerate the .pot file in the translations folder.
+Note that all entries with strings starting and ending like this "@<..>@" must be removed,
+they are templated variables and will be replaced in the build process of the app.
+All changelog entries should be removed as well.
 
 ```bash
 meson compile rnote-pot -C _mesonbuild

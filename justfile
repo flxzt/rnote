@@ -210,6 +210,10 @@ generate-docs:
 check-outdated-dependencies:
     cargo upgrade --dry-run -vv
 
+[doc('Regenerates the .pot file in the translations folder.
+Note that all entries with strings starting and ending like this "@<..>@" must be removed,
+they are templated variables and will be replaced in the build process of the app.
+All changelog entries should be removed as well.')]
 update-translations-template:
     meson compile rnote-pot -C {{ build_folder }}
 

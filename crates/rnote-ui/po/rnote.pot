@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-09 12:03+0200\n"
+"POT-Creation-Date: 2025-05-09 12:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -176,7 +176,7 @@ msgid "Change the workspace icon"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:145
-#: crates/rnote-ui/data/ui/settingspanel.ui:339
+#: crates/rnote-ui/data/ui/settingspanel.ui:345
 msgid "Color"
 msgstr ""
 
@@ -841,7 +841,7 @@ msgid "Crosshatch"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:206
-#: crates/rnote-ui/data/ui/settingspanel.ui:368
+#: crates/rnote-ui/data/ui/settingspanel.ui:374
 msgid "Dots"
 msgstr ""
 
@@ -1459,76 +1459,76 @@ msgid "Infinite"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:318
-msgid "Format Border Color"
+msgid "Show Format Borders"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:319
+msgid "Set whether the format borders are shown"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:324
+msgid "Format Border Color"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:325
 msgid "Set the format border color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:340
+#: crates/rnote-ui/data/ui/settingspanel.ui:346
 msgid "Set the background color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:360
+#: crates/rnote-ui/data/ui/settingspanel.ui:366
 msgid "Pattern"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:361
+#: crates/rnote-ui/data/ui/settingspanel.ui:367
 msgid "Choose a background pattern"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:365
+#: crates/rnote-ui/data/ui/settingspanel.ui:371
 msgid "None"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:366
+#: crates/rnote-ui/data/ui/settingspanel.ui:372
 msgid "Lines"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:367
+#: crates/rnote-ui/data/ui/settingspanel.ui:373
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:598
 msgid "Grid"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:369
+#: crates/rnote-ui/data/ui/settingspanel.ui:375
 msgid "Isometric Grid"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:370
+#: crates/rnote-ui/data/ui/settingspanel.ui:376
 msgid "Isometric Dots"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:378
+#: crates/rnote-ui/data/ui/settingspanel.ui:384
 msgid "Pattern Color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:379
+#: crates/rnote-ui/data/ui/settingspanel.ui:385
 msgid "Set the background pattern color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:399
+#: crates/rnote-ui/data/ui/settingspanel.ui:405
 msgid "Pattern Width"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:400
+#: crates/rnote-ui/data/ui/settingspanel.ui:406
 msgid "Set the background pattern width"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:416
+#: crates/rnote-ui/data/ui/settingspanel.ui:422
 msgid "Pattern Height"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/settingspanel.ui:417
+#: crates/rnote-ui/data/ui/settingspanel.ui:423
 msgid "Set the background pattern height"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/settingspanel.ui:433
-msgid "Show Format Borders"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/settingspanel.ui:434
-msgid "Set whether the format borders are shown"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:439
@@ -2323,92 +2323,92 @@ msgstr ""
 msgid "Application restart is required"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1452
+#: crates/rnote-ui/src/settingspanel/mod.rs:1462
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1453
+#: crates/rnote-ui/src/settingspanel/mod.rs:1463
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1454
+#: crates/rnote-ui/src/settingspanel/mod.rs:1464
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1455
+#: crates/rnote-ui/src/settingspanel/mod.rs:1465
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1456
+#: crates/rnote-ui/src/settingspanel/mod.rs:1466
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1457
+#: crates/rnote-ui/src/settingspanel/mod.rs:1467
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1458
+#: crates/rnote-ui/src/settingspanel/mod.rs:1468
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1459
+#: crates/rnote-ui/src/settingspanel/mod.rs:1469
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1460
+#: crates/rnote-ui/src/settingspanel/mod.rs:1470
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1461
+#: crates/rnote-ui/src/settingspanel/mod.rs:1471
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1462
+#: crates/rnote-ui/src/settingspanel/mod.rs:1472
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1463
+#: crates/rnote-ui/src/settingspanel/mod.rs:1473
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1464
+#: crates/rnote-ui/src/settingspanel/mod.rs:1474
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1465
+#: crates/rnote-ui/src/settingspanel/mod.rs:1475
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1466
+#: crates/rnote-ui/src/settingspanel/mod.rs:1476
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1467
+#: crates/rnote-ui/src/settingspanel/mod.rs:1477
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1468
+#: crates/rnote-ui/src/settingspanel/mod.rs:1478
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1469
+#: crates/rnote-ui/src/settingspanel/mod.rs:1479
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr ""

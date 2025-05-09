@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-09 12:03+0200\n"
-"PO-Revision-Date: 2025-05-09 10:04+0000\n"
+"PO-Revision-Date: 2025-05-10 10:41+0000\n"
 "Last-Translator: Fjuro <fjuro@alius.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
@@ -22,7 +22,7 @@ msgstr ""
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
 #: crates/rnote-ui/src/dialogs/mod.rs:33
 msgid "Sketch and take handwritten notes"
-msgstr "Skicujte a dělejte si ručně psané poznámky"
+msgstr "Skicujte a pořizujte ručně psané poznámky"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:14
@@ -2560,7 +2560,7 @@ msgstr "šedavá"
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "strong"
-msgstr ""
+msgstr "silná"
 
 #: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"

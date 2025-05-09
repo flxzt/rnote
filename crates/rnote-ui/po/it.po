@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-09 12:03+0200\n"
-"PO-Revision-Date: 2025-04-13 14:41+0000\n"
+"PO-Revision-Date: 2025-05-10 10:41+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -2563,7 +2563,7 @@ msgstr "grigiastro"
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "strong"
-msgstr ""
+msgstr "Intenso"
 
 #: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-08 08:58+0200\n"
-"PO-Revision-Date: 2025-04-13 11:02+0000\n"
+"PO-Revision-Date: 2025-05-09 10:04+0000\n"
 "Last-Translator: Fjuro <fjuro@alius.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
@@ -16,12 +16,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #. Translators: This is the App name, don't translate this.
 #: crates/rnote-ui/data/app.desktop.in.in:3
 msgid "@DESKTOP_FILE_NAME_ENTRY@"
-msgstr ""
+msgstr "@DESKTOP_FILE_NAME_ENTRY@"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -134,7 +134,7 @@ msgstr "Konfigurovat zkratky akcí"
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:774
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:788
 msgid "this release changes:"
-msgstr ""
+msgstr "změny v tomto vydání:"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:94
 msgid "feat: laser tool with animations (thanks to @Kneemund)"
@@ -216,10 +216,8 @@ msgid "fix: window shadows on Windows (thanks to @Doublonmousse)"
 msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:111
-#, fuzzy
-#| msgid "Failed to view the file in the file manager"
 msgid "fix: .rnote file icons in file managers"
-msgstr "Nepodařilo se zobrazit soubor ve správci souborů"
+msgstr "oprava: ikony souborů .fnote ve správcích souborů"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:112
 msgid ""

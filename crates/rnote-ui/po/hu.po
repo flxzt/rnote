@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 12:03+0200\n"
-"PO-Revision-Date: 2024-11-10 20:00+0000\n"
+"POT-Creation-Date: 2025-05-09 12:03+0200\n"
+"PO-Revision-Date: 2025-04-28 10:01+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
 ">\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -218,18 +218,16 @@ msgid "Change the directory"
 msgstr "Könyvtár módosítása"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
-#, fuzzy
-#| msgid "Trash Strokes"
 msgid "Trash File"
-msgstr "Szemétvonások"
+msgstr "Fájl kukába helyezése"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr ""
+msgstr "Biztosan áthelyezi ezt a fájlt a kukába?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "Kuka"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:330
@@ -785,8 +783,6 @@ msgid "Select Intersecting Path"
 msgstr "Metsző görbe kijelölése"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
-#, fuzzy
-#| msgid "Lock Aspectratio While Resizing the Selection"
 msgid "Lock Aspect Ratio While Resizing the Selection"
 msgstr "Képarány rögzítése a kijelölés átméretezése közben"
 
@@ -919,10 +915,8 @@ msgstr "Függőleges térköz beszúrása"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-#, fuzzy
-#| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
-msgstr "Alakbeállítás"
+msgstr "Függőleges tér eszközbeállítása"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
@@ -934,18 +928,16 @@ msgid "Zoom In/Out"
 msgstr "Nagyítás/kicsinyítés"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
-#, fuzzy
-#| msgid "Eraser"
 msgid "Laser"
-msgstr "Radír"
+msgstr "Lézer"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"
-msgstr ""
+msgstr "Betűkészlet-kijelölő"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:29
 msgid "Edit Font Size"
-msgstr ""
+msgstr "Betűméret szerkesztése"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:45
 msgid "Pick And Insert Emoji"
@@ -1235,7 +1227,7 @@ msgid "Open in Default App"
 msgstr "Megnyitás az alapértelmezett alkalmazásban"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:130
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:137
 msgid "Rename"
 msgstr "Átnevezés"
 
@@ -1264,7 +1256,7 @@ msgstr "Új lap"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:54
 msgid "View Open Tabs"
-msgstr ""
+msgstr "Megnyitott lapok megtekintése"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:61
 msgid "Focus Mode"
@@ -1276,14 +1268,12 @@ msgid "Save Document"
 msgstr "Dokumentum mentése"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:89
-#, fuzzy
-#| msgid "Open the Canvas-Menu"
 msgid "Canvas Menu"
-msgstr "Vászonmenü megnyitása"
+msgstr "Vászonmenü"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:94
 msgid "App Menu"
-msgstr ""
+msgstr "Alkalmazásmenü"
 
 #: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
@@ -1698,7 +1688,7 @@ msgstr "Kilépés az alkalmazásból"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:44
 msgid "Toggle Tabs Overview"
-msgstr ""
+msgstr "A lapok áttekintése váltása"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:50
 msgid "Open the Canvas-Menu"
@@ -1819,10 +1809,8 @@ msgid "Page"
 msgstr "Oldal"
 
 #: crates/rnote-ui/data/ui/strokewidthpicker.ui:20
-#, fuzzy
-#| msgid "Split Strokes"
 msgid "Edit Stroke Size"
-msgstr "Osztott vonások"
+msgstr "Ecsetvonal méretének szerkesztése"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
@@ -1837,10 +1825,8 @@ msgid "Create new Folder"
 msgstr "Új mappa létrehozása"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:167
-#, fuzzy
-#| msgid "Workspace Name"
 msgid "Open Workspace Folder"
-msgstr "Munkaterület neve"
+msgstr "Munkaterület mappa megnyitása"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:843
 #: crates/rnote-ui/src/appwindow/imp.rs:326
@@ -1961,10 +1947,8 @@ msgstr "Megtekintés a fájlkezelőben"
 #: crates/rnote-ui/src/dialogs/export.rs:721
 #: crates/rnote-ui/src/dialogs/export.rs:1072
 #: crates/rnote-ui/src/dialogs/export.rs:1078
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Failed to view the file in the file manager"
-msgstr "Nem sikerült a fájl megnyitása a fájlkezelőben"
+msgstr "Hiba történt a fájl fájlkezelőben történő megtekintése közben."
 
 #: crates/rnote-ui/src/dialogs/export.rs:332
 #: crates/rnote-ui/src/dialogs/export.rs:740
@@ -2476,11 +2460,11 @@ msgstr "Nem sikerült a könyvtár megkettőzése"
 msgid "Open the file in the default app failed"
 msgstr "Nem sikerült a fájl megnyitása az alapértelmezett alkalmazásban"
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:59
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:60
 msgid "Renaming file failed, target file already exists"
 msgstr "Nem sikerült a fájl átnevezése, a célfájl már létezik"
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:82
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:83
 msgid "Renaming file failed"
 msgstr "Nem sikerült a fájl átnevezése"
 
@@ -2564,58 +2548,160 @@ msgstr "szürkés"
 
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
+msgid "strong"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:206
+msgctxt "part of string representation of a color"
 msgid "vivid"
 msgstr "élénk"
 
-#: crates/rnote-ui/src/utils.rs:208
+#: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
 msgid "very-dark"
 msgstr "nagyon sötét"
 
-#: crates/rnote-ui/src/utils.rs:210
+#: crates/rnote-ui/src/utils.rs:212
 msgctxt "part of string representation of a color"
 msgid "dark"
 msgstr "sötét"
 
-#: crates/rnote-ui/src/utils.rs:213
+#: crates/rnote-ui/src/utils.rs:215
 msgctxt "part of string representation of a color"
 msgid "mid"
 msgstr "közép"
 
-#: crates/rnote-ui/src/utils.rs:215
+#: crates/rnote-ui/src/utils.rs:217
 msgctxt "part of string representation of a color"
 msgid "bright"
 msgstr "fényes"
 
-#: crates/rnote-ui/src/utils.rs:219
+#: crates/rnote-ui/src/utils.rs:221
 msgctxt "part of string representation of a color"
 msgid "transparent"
 msgstr "átlátszó"
 
-#: crates/rnote-ui/src/utils.rs:221
+#: crates/rnote-ui/src/utils.rs:223
 msgctxt "part of string representation of a color"
 msgid "translucent"
 msgstr "áttetsző"
 
-#: crates/rnote-ui/src/utils.rs:225
+#: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
 msgstr "enyhén áttetsző"
 
-#: crates/rnote-ui/src/utils.rs:234
+#: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
 msgstr "teljesen átlátszó"
 
-#: crates/rnote-ui/src/utils.rs:237
+#: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "black"
 msgstr "fekete"
 
-#: crates/rnote-ui/src/utils.rs:239
+#: crates/rnote-ui/src/utils.rs:241
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "fehér"
+
+#, fuzzy
+#~| msgid "Failed to view the file in the file manager"
+#~ msgid "fix: .rnote file icons in file managers"
+#~ msgstr "Hiba történt a fájl fájlkezelőben történő megtekintése közben."
+
+#, fuzzy
+#~| msgid ""
+#~| "The page order when documents with layouts\n"
+#~| "that expand in horizontal and vertical directions\n"
+#~| "are cut into pages"
+#~ msgid ""
+#~ "feature: specify page order when exporting documents with layouts that "
+#~ "expand in horizontal and vertical directions (thanks to @Kneemund)"
+#~ msgstr ""
+#~ "Az az oldalsorrend, amikor a vízszintes és függőleges\n"
+#~ "irányban bővülő elrendezésű dokumentumokat\n"
+#~ "lapokra vágja"
+
+#, fuzzy
+#~| msgid "Set whether the drawing cursor is visible"
+#~ msgid "feature: ability to toggle drawing cursor visibility"
+#~ msgstr "Rajzkurzor láthatóságának beállítása"
+
+#, fuzzy
+#~| msgid ""
+#~| "Remove Page.\n"
+#~| "Available in Fixed-Size Document Layout."
+#~ msgid "fix: broken resizing in fixed-size document layout"
+#~ msgstr ""
+#~ "Oldal eltávolítása.\n"
+#~ "Rögzített méretű dokumentumelrendezésben érhető el."
+
+#, fuzzy
+#~| msgid "Switch to the 'Typewriter'"
+#~ msgid "switch to the typewriter when dropping text"
+#~ msgstr "Írógép kijelölése"
+
+#, fuzzy
+#~| msgid "Select the export file"
+#~ msgid "improved: better export filenames"
+#~ msgstr "Exportfájl kijelölése"
+
+#, fuzzy
+#~| msgid "Set the background pattern height"
+#~ msgid "fix: background pattern tile rendering size"
+#~ msgstr "Állítsa be a háttérminta magasságát"
+
+#, fuzzy
+#~| msgid "Write text with the typewriter"
+#~ msgid "long awaited: write and edit text with the typewriter"
+#~ msgstr "Szövegírás írógéppel"
+
+#, fuzzy
+#~| msgid "Mark underneath other strokes"
+#~ msgid "mark underneath other strokes with the 'Marker' brush style"
+#~ msgstr "Más vonások kiemelése"
+
+#, fuzzy
+#~| msgid "Set the format border color"
+#~ msgid "feature: setting to change the format border color"
+#~ msgstr "A formátum keret színének beállítása"
+
+#, fuzzy
+#~| msgid "Export selection"
+#~ msgid "improved selector"
+#~ msgstr "Kijelölés exportálása"
+
+#, fuzzy
+#~| msgid "Set whether Pdf's should be imported as vector or bitmap images"
+#~ msgid "Pdf import as vector images"
+#~ msgstr "A PDF-ek vektoros vagy pontképes importálása"
+
+#, fuzzy
+#~| msgid "Select With a Rectangle"
+#~ msgid "selecting with a rectangle"
+#~ msgstr "Kijelölés téglalappal"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing dots as background pattern"
+#~ msgstr "Háttérminta kiválasztása"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "improved background rendering"
+#~ msgstr "Háttérminta kiválasztása"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing background patterns"
+#~ msgstr "Háttérminta kiválasztása"
+
+#, fuzzy
+#~| msgid "Set the background color"
+#~ msgid "set a background color"
+#~ msgstr "A háttérszín beállítása"
 
 #~ msgid "@APP_NAME_CAPITALIZED@"
 #~ msgstr "@APP_NAME_CAPITALIZED@"
@@ -2760,9 +2846,6 @@ msgstr "fehér"
 
 #~ msgid "Export document"
 #~ msgstr "Dokumentum exportálása"
-
-#~ msgid "Export selection"
-#~ msgstr "Kijelölés exportálása"
 
 #~ msgid "Export _document"
 #~ msgstr "_Dokumentum exportálása"

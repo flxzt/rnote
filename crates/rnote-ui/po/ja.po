@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 12:03+0200\n"
-"PO-Revision-Date: 2024-05-11 08:21+0000\n"
-"Last-Translator: Ryo Nakano <ryonakaknock3@gmail.com>\n"
+"POT-Creation-Date: 2025-05-09 12:03+0200\n"
+"PO-Revision-Date: 2025-05-08 05:02+0000\n"
+"Last-Translator: Chisa Tanaka <chisa_t@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/"
 ">\n"
 "Language: ja\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.5.4\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -218,18 +218,16 @@ msgid "Change the directory"
 msgstr "ディレクトリを変更"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
-#, fuzzy
-#| msgid "Trash Strokes"
 msgid "Trash File"
-msgstr "ストロークごと消す"
+msgstr "ファイルをゴミ箱に移動"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr ""
+msgstr "このファイルをゴミ箱に移動しますか？"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "ゴミ箱"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:330
@@ -581,27 +579,23 @@ msgstr "Xournal++ ファイルの DPI を選択します"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:273
 msgid "is password protected"
-msgstr ""
+msgstr "はパスワードで保護されています"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:276
 msgid "Encrypted PDF"
-msgstr ""
+msgstr "暗号化された PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:279
-#, fuzzy
-#| msgid "Cancel"
 msgid "_Cancel"
-msgstr "キャンセル"
+msgstr "_キャンセル"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:280
-#, fuzzy
-#| msgid "Clock"
 msgid "_Unlock"
-msgstr "時計"
+msgstr "_解除"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:291
 msgid "Enter the PDF password"
-msgstr ""
+msgstr "PDF のパスワードを入力"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
@@ -955,10 +949,8 @@ msgid "Zoom In/Out"
 msgstr "拡大/縮小"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
-#, fuzzy
-#| msgid "Eraser"
 msgid "Laser"
-msgstr "消しゴム"
+msgstr "レーザー"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"
@@ -1256,7 +1248,7 @@ msgid "Open in Default App"
 msgstr "デフォルトアプリで開く"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:130
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:137
 msgid "Rename"
 msgstr "名前を変更"
 
@@ -1331,10 +1323,8 @@ msgid "Toggle"
 msgstr "切り替え"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:14
-#, fuzzy
-#| msgid "Enabled"
 msgid "Disabled"
-msgstr "有効"
+msgstr "無効"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:41
 #: crates/rnote-ui/data/ui/shortcuts.ui:11
@@ -1366,16 +1356,16 @@ msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "キャンバス上のスクロールバーを表示するかどうかを設定します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:64
-#, fuzzy
-#| msgid "Optimize for Printing"
 msgid "Optimize for E-Paper Displays"
-msgstr "印刷用に最適化"
+msgstr "電子ペーパーディスプレイに最適化"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:65
 msgid ""
 "Changes certain UI elements and modifies behaviour\n"
 "of tools for optimized usage on E-Paper displays"
 msgstr ""
+"電子ペーパーディスプレイでの使用に最適化するため、\n"
+"特定の UI 要素を変更し、ツールの動作を変更します"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:71
 msgid "Inertial Touch Scrolling"
@@ -1977,8 +1967,6 @@ msgstr "ファイルマネージャーで表示"
 #: crates/rnote-ui/src/dialogs/export.rs:721
 #: crates/rnote-ui/src/dialogs/export.rs:1072
 #: crates/rnote-ui/src/dialogs/export.rs:1078
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Failed to view the file in the file manager"
 msgstr "ファイルをファイルマネージャーで表示できませんでした"
 
@@ -2495,11 +2483,11 @@ msgstr "ディレクトリの複製に失敗しました"
 msgid "Open the file in the default app failed"
 msgstr "ファイルをデフォルトアプリで開けませんでした"
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:59
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:60
 msgid "Renaming file failed, target file already exists"
 msgstr "ファイル名の変更に失敗しました。変更先のファイルがすでに存在します"
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:82
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:83
 msgid "Renaming file failed"
 msgstr "ファイル名の変更に失敗しました"
 
@@ -2514,103 +2502,106 @@ msgstr "新しいフォルダー"
 #: crates/rnote-ui/src/utils.rs:159
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
-msgstr ""
+msgstr "灰色"
 
 #: crates/rnote-ui/src/utils.rs:161 crates/rnote-ui/src/utils.rs:196
 msgctxt "part of string representation of a color"
 msgid "rose"
-msgstr ""
+msgstr "ピンク色"
 
 #: crates/rnote-ui/src/utils.rs:163
-#, fuzzy
-#| msgid "Bread"
 msgctxt "part of string representation of a color"
 msgid "red"
-msgstr "パン"
+msgstr "赤色"
 
 #: crates/rnote-ui/src/utils.rs:166
 msgctxt "part of string representation of a color"
 msgid "orange"
-msgstr ""
+msgstr "橙色"
 
 #: crates/rnote-ui/src/utils.rs:169
 msgctxt "part of string representation of a color"
 msgid "yellow"
-msgstr ""
+msgstr "黄色"
 
 #: crates/rnote-ui/src/utils.rs:173
 msgctxt "part of string representation of a color"
 msgid "chartreuse-green"
-msgstr ""
+msgstr "黄緑色"
 
 #: crates/rnote-ui/src/utils.rs:176
 msgctxt "part of string representation of a color"
 msgid "green"
-msgstr ""
+msgstr "緑色"
 
 #: crates/rnote-ui/src/utils.rs:179
 msgctxt "part of string representation of a color"
 msgid "spring-green"
-msgstr ""
+msgstr "青緑色"
 
 #: crates/rnote-ui/src/utils.rs:182
 msgctxt "part of string representation of a color"
 msgid "cyan"
-msgstr ""
+msgstr "水色"
 
 #: crates/rnote-ui/src/utils.rs:185
 msgctxt "part of string representation of a color"
 msgid "azure"
-msgstr ""
+msgstr "空色"
 
 #: crates/rnote-ui/src/utils.rs:188
 msgctxt "part of string representation of a color"
 msgid "blue"
-msgstr ""
+msgstr "青色"
 
 #: crates/rnote-ui/src/utils.rs:191
 msgctxt "part of string representation of a color"
 msgid "violet"
-msgstr ""
+msgstr "紫色"
 
 #: crates/rnote-ui/src/utils.rs:194
 msgctxt "part of string representation of a color"
 msgid "magenta"
-msgstr ""
+msgstr "赤紫色"
 
 #: crates/rnote-ui/src/utils.rs:201
 msgctxt "part of string representation of a color"
 msgid "greyish"
-msgstr ""
+msgstr "グレイッシュな"
 
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
-msgid "vivid"
+msgid "strong"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:208
+#: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"
-msgid "very-dark"
-msgstr ""
+msgid "vivid"
+msgstr "ビビッドな"
 
 #: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
-msgid "dark"
-msgstr ""
+msgid "very-dark"
+msgstr "とても暗い"
 
-#: crates/rnote-ui/src/utils.rs:213
+#: crates/rnote-ui/src/utils.rs:212
 msgctxt "part of string representation of a color"
-msgid "mid"
-msgstr ""
+msgid "dark"
+msgstr "暗い"
 
 #: crates/rnote-ui/src/utils.rs:215
+msgctxt "part of string representation of a color"
+msgid "mid"
+msgstr "中明度の"
+
+#: crates/rnote-ui/src/utils.rs:217
 #, fuzzy
 #| msgid "Height"
 msgctxt "part of string representation of a color"
 msgid "bright"
 msgstr "高さ"
 
-#: crates/rnote-ui/src/utils.rs:219
+#: crates/rnote-ui/src/utils.rs:221
 #, fuzzy
 #| msgid "translator-credits"
 msgctxt "part of string representation of a color"
@@ -2619,7 +2610,7 @@ msgstr ""
 "Seio Inoue <sei0okun@gmail.com>\n"
 "Ryo Nakano<ryonakaknock3@gmail.com>"
 
-#: crates/rnote-ui/src/utils.rs:221
+#: crates/rnote-ui/src/utils.rs:223
 #, fuzzy
 #| msgid "translator-credits"
 msgctxt "part of string representation of a color"
@@ -2628,25 +2619,118 @@ msgstr ""
 "Seio Inoue <sei0okun@gmail.com>\n"
 "Ryo Nakano<ryonakaknock3@gmail.com>"
 
-#: crates/rnote-ui/src/utils.rs:225
+#: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:234
+#: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:237
-msgctxt "part of string representation of a color"
-msgid "black"
-msgstr ""
-
 #: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
+msgid "black"
+msgstr "黒色"
+
+#: crates/rnote-ui/src/utils.rs:241
+msgctxt "part of string representation of a color"
 msgid "white"
-msgstr ""
+msgstr "白色"
+
+#, fuzzy
+#~| msgid "Failed to view the file in the file manager"
+#~ msgid "fix: .rnote file icons in file managers"
+#~ msgstr "ファイルをファイルマネージャーで表示できませんでした"
+
+#, fuzzy
+#~| msgid ""
+#~| "The page order when documents with layouts\n"
+#~| "that expand in horizontal and vertical directions\n"
+#~| "are cut into pages"
+#~ msgid ""
+#~ "feature: specify page order when exporting documents with layouts that "
+#~ "expand in horizontal and vertical directions (thanks to @Kneemund)"
+#~ msgstr ""
+#~ "水平方向や垂直方向に広がるレイアウトの\n"
+#~ "文書が、ページ単位で分割された時の\n"
+#~ "ページの順番"
+
+#, fuzzy
+#~| msgid "Set whether the drawing cursor is visible"
+#~ msgid "feature: ability to toggle drawing cursor visibility"
+#~ msgstr "描画カーソルを表示するかどうかを設定します"
+
+#, fuzzy
+#~| msgid ""
+#~| "Remove Page.\n"
+#~| "Available in Fixed-Size Document Layout."
+#~ msgid "fix: broken resizing in fixed-size document layout"
+#~ msgstr ""
+#~ "ページを削除します。\n"
+#~ "固定サイズの文書レイアウトの場合に利用可能です。"
+
+#, fuzzy
+#~| msgid "Switch to the 'Typewriter'"
+#~ msgid "switch to the typewriter when dropping text"
+#~ msgstr "'文字'に切り替える"
+
+#, fuzzy
+#~| msgid "Select the export file"
+#~ msgid "improved: better export filenames"
+#~ msgstr "エクスポート先のファイルを選択します"
+
+#, fuzzy
+#~| msgid "Set the background pattern height"
+#~ msgid "fix: background pattern tile rendering size"
+#~ msgstr "背景の罫線の高さを設定します"
+
+#, fuzzy
+#~| msgid "Write text with the typewriter"
+#~ msgid "long awaited: write and edit text with the typewriter"
+#~ msgstr "キーボードでテキスト入力"
+
+#, fuzzy
+#~| msgid "Mark underneath other strokes"
+#~ msgid "mark underneath other strokes with the 'Marker' brush style"
+#~ msgstr "ほかのストロークの下にマーカーを引きます"
+
+#, fuzzy
+#~| msgid "Set the format border color"
+#~ msgid "feature: setting to change the format border color"
+#~ msgstr "用紙の枠線の色を設定します"
+
+#, fuzzy
+#~| msgid "Set whether Pdf's should be imported as vector or bitmap images"
+#~ msgid "Pdf import as vector images"
+#~ msgstr ""
+#~ "PDF をベクター画像とビットマップ画像のどちらでインポートするか設定します"
+
+#, fuzzy
+#~| msgid "Select With a Rectangle"
+#~ msgid "selecting with a rectangle"
+#~ msgstr "矩形選択"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing dots as background pattern"
+#~ msgstr "背景の罫線を選択します"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "improved background rendering"
+#~ msgstr "背景の罫線を選択します"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing background patterns"
+#~ msgstr "背景の罫線を選択します"
+
+#, fuzzy
+#~| msgid "Set the background color"
+#~ msgid "set a background color"
+#~ msgstr "背景色を設定します"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "開いているファイルがディスク上で移動または削除されました"

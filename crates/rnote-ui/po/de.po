@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 12:03+0200\n"
-"PO-Revision-Date: 2025-04-12 10:05+0000\n"
+"POT-Creation-Date: 2025-05-09 12:03+0200\n"
+"PO-Revision-Date: 2025-05-09 10:08+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -163,11 +163,11 @@ msgstr "Ungespeicherte Dokumente"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:59
 msgid "Discard All"
-msgstr "Alles verwerfen"
+msgstr "Alles Verwerfen"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:65
 msgid "Edit Workspace"
-msgstr "Arbeitsfläche bearbeiten"
+msgstr "Arbeitsfläche Bearbeiten"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:79
 #: crates/rnote-ui/data/ui/settingspanel.ui:241
@@ -232,7 +232,7 @@ msgstr "Papierkorb"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:330
 msgid "Export Document"
-msgstr "Dokument exportieren"
+msgstr "Dokument Exportieren"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:19
 #: crates/rnote-ui/data/ui/dialogs/export.ui:188
@@ -245,7 +245,7 @@ msgstr "Exportieren"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:74
 #: crates/rnote-ui/data/ui/dialogs/export.ui:483
 msgid "Export File"
-msgstr "Datei exportieren"
+msgstr "Datei Exportieren"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:75
 #: crates/rnote-ui/data/ui/dialogs/export.ui:484
@@ -356,12 +356,12 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:152
 #: crates/rnote-ui/data/ui/dialogs/export.ui:363
 msgid "Horizontal First"
-msgstr "Horizontal zuerst"
+msgstr "Horizontal Zuerst"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:153
 #: crates/rnote-ui/data/ui/dialogs/export.ui:364
 msgid "Vertical First"
-msgstr "Vertikal zuerst"
+msgstr "Vertikal Zuerst"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:174
 #: crates/rnote-ui/src/dialogs/export.rs:738
@@ -438,7 +438,7 @@ msgstr "Qualitätänderung des Jpeg-Bilds (1 - 100)"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:414
 #: crates/rnote-ui/src/dialogs/export.rs:1121
 msgid "Export Selection"
-msgstr "Auswahl exportieren"
+msgstr "Auswahl Exportieren"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
@@ -462,7 +462,7 @@ msgstr "Abstand des Randes zur Auswahl ändern"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Import Pdf"
-msgstr "Pdf importieren"
+msgstr "Pdf Importieren"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:218
@@ -517,7 +517,7 @@ msgstr "Kontinuierlich"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:123
 msgid "One per Document Page"
-msgstr "Eine per Dokumentenseite"
+msgstr "Eine pro Dokumentenseite"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:131
 msgid "Pages Type"
@@ -545,7 +545,7 @@ msgstr "Ob die Seiten gezeichnete Ränder haben"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:204
 msgid "Import Xournal++ File"
-msgstr "Xournal++ Datei importieren"
+msgstr "Xournal++ Datei Importieren"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:247
 msgid "Xournal++ File Import Preferences"
@@ -729,11 +729,11 @@ msgstr "Umgekehrt exponentiell"
 
 #: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:21
 msgid "Trash Strokes"
-msgstr "Striche löschen"
+msgstr "Striche Löschen"
 
 #: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:31
 msgid "Split Strokes"
-msgstr "Striche aufteilen"
+msgstr "Striche Aufteilen"
 
 #: crates/rnote-ui/data/ui/penssidebar/penssidebar.ui:17
 #: crates/rnote-ui/src/settingspanel/penshortcutmodels.rs:81
@@ -767,19 +767,19 @@ msgstr "Werkzeuge"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:22
 msgid "Select With a Polygon"
-msgstr "Mittels Polygon auswählen"
+msgstr "Mittels Polygon Auswählen"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:32
 msgid "Select With a Rectangle"
-msgstr "Mittels Rechteck auswählen"
+msgstr "Mittels Rechteck Auswählen"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:42
 msgid "Select One by One"
-msgstr "Einzeln auswählen"
+msgstr "Einzeln Auswählen"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:52
 msgid "Select Intersecting Path"
-msgstr "Geschlossenen Pfad wählen"
+msgstr "Geschlossenen Pfad Wählen"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
 msgid "Lock Aspect Ratio While Resizing the Selection"
@@ -787,7 +787,7 @@ msgstr "Seitenverhältnis bei Größeänderung sperren"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select All Strokes"
-msgstr "Alle Striche auswählen"
+msgstr "Alle Striche Auswählen"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:94
 msgid "Deselect All Strokes"
@@ -1226,7 +1226,7 @@ msgid "Open in Default App"
 msgstr "Öffne in Standard-App"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:130
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:137
 msgid "Rename"
 msgstr "Umbenennen"
 
@@ -2470,11 +2470,11 @@ msgstr "Verzeichnis duplizieren fehlgeschlagen"
 msgid "Open the file in the default app failed"
 msgstr "Datei mit der Standard-App öffnen fehlgeschlagen"
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:59
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:60
 msgid "Renaming file failed, target file already exists"
 msgstr "Datei umbenennen fehlgeschlagen, Ziel existiert bereits"
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:82
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:83
 msgid "Renaming file failed"
 msgstr "Datei umbenennen fehlgeschlagen"
 
@@ -2558,58 +2558,167 @@ msgstr "gräulich"
 
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
+msgid "strong"
+msgstr "kräftig"
+
+#: crates/rnote-ui/src/utils.rs:206
+msgctxt "part of string representation of a color"
 msgid "vivid"
 msgstr "leuchtend"
 
-#: crates/rnote-ui/src/utils.rs:208
+#: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
 msgid "very-dark"
 msgstr "mitternacht"
 
-#: crates/rnote-ui/src/utils.rs:210
+#: crates/rnote-ui/src/utils.rs:212
 msgctxt "part of string representation of a color"
 msgid "dark"
 msgstr "dunkel"
 
-#: crates/rnote-ui/src/utils.rs:213
+#: crates/rnote-ui/src/utils.rs:215
 msgctxt "part of string representation of a color"
 msgid "mid"
 msgstr "mittel"
 
-#: crates/rnote-ui/src/utils.rs:215
+#: crates/rnote-ui/src/utils.rs:217
 msgctxt "part of string representation of a color"
 msgid "bright"
 msgstr "hell"
 
-#: crates/rnote-ui/src/utils.rs:219
+#: crates/rnote-ui/src/utils.rs:221
 msgctxt "part of string representation of a color"
 msgid "transparent"
 msgstr "transparent"
 
-#: crates/rnote-ui/src/utils.rs:221
+#: crates/rnote-ui/src/utils.rs:223
 msgctxt "part of string representation of a color"
 msgid "translucent"
 msgstr "durchscheinend"
 
-#: crates/rnote-ui/src/utils.rs:225
+#: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
 msgstr "etwas transparent"
 
-#: crates/rnote-ui/src/utils.rs:234
+#: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
 msgstr "komplett transparent"
 
-#: crates/rnote-ui/src/utils.rs:237
+#: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "black"
 msgstr "schwarz"
 
-#: crates/rnote-ui/src/utils.rs:239
+#: crates/rnote-ui/src/utils.rs:241
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "weiss"
+
+#, fuzzy
+#~ msgid "@DESKTOP_FILE_NAME_ENTRY@"
+#~ msgstr "@DESKTOP_FILE_NAME_ENTRY@"
+
+#~ msgid "this release changes:"
+#~ msgstr "diese Version ändert:"
+
+#, fuzzy
+#~| msgid "Failed to view the file in the file manager"
+#~ msgid "fix: .rnote file icons in file managers"
+#~ msgstr "Datei im Dateimanager betrachten gescheitert"
+
+#, fuzzy
+#~| msgid ""
+#~| "The page order when documents with layouts\n"
+#~| "that expand in horizontal and vertical directions\n"
+#~| "are cut into pages"
+#~ msgid ""
+#~ "feature: specify page order when exporting documents with layouts that "
+#~ "expand in horizontal and vertical directions (thanks to @Kneemund)"
+#~ msgstr ""
+#~ "Die Seitenreihenfolge, wenn Dokumente mit Layouts,\n"
+#~ "die in horizontale und vertikale Richtung expandieren\n"
+#~ "in Seiten unterteilt werden"
+
+#, fuzzy
+#~| msgid "Set whether the drawing cursor is visible"
+#~ msgid "feature: ability to toggle drawing cursor visibility"
+#~ msgstr "Sichtbarkeit des Zeichnen-Cursor ändern"
+
+#, fuzzy
+#~| msgid ""
+#~| "Remove Page.\n"
+#~| "Available in Fixed-Size Document Layout."
+#~ msgid "fix: broken resizing in fixed-size document layout"
+#~ msgstr ""
+#~ "Seite entfernen.\n"
+#~ "Verfügbar im Feste-Größe Dokument-Layout."
+
+#, fuzzy
+#~| msgid "Switch to the 'Typewriter'"
+#~ msgid "switch to the typewriter when dropping text"
+#~ msgstr "Zur 'Schreibmaschine' wechseln"
+
+#, fuzzy
+#~| msgid "Select the export file"
+#~ msgid "improved: better export filenames"
+#~ msgstr "Exportdatei auswählen"
+
+#, fuzzy
+#~| msgid "Set the background pattern height"
+#~ msgid "fix: background pattern tile rendering size"
+#~ msgstr "Höhe des Hintergrundmusters ändern"
+
+#, fuzzy
+#~| msgid "Write text with the typewriter"
+#~ msgid "long awaited: write and edit text with the typewriter"
+#~ msgstr "Schreibe Text mit der Schreibmaschine"
+
+#, fuzzy
+#~| msgid "Mark underneath other strokes"
+#~ msgid "mark underneath other strokes with the 'Marker' brush style"
+#~ msgstr "Markiere unter anderen Strichen"
+
+#, fuzzy
+#~| msgid "Set the format border color"
+#~ msgid "feature: setting to change the format border color"
+#~ msgstr "Farbe der Formatränder ändern"
+
+#, fuzzy
+#~| msgid "Export selection"
+#~ msgid "improved selector"
+#~ msgstr "Auswahl exportieren"
+
+#, fuzzy
+#~| msgid "Set whether Pdf's should be imported as vector or bitmap images"
+#~ msgid "Pdf import as vector images"
+#~ msgstr "Wählt, ob Pdf's als Bitmap- oder Vektorbilder importiert werden"
+
+#, fuzzy
+#~| msgid "Select With a Rectangle"
+#~ msgid "selecting with a rectangle"
+#~ msgstr "Mittels Rechteck auswählen"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing dots as background pattern"
+#~ msgstr "Hintergrundmuster wählen"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "improved background rendering"
+#~ msgstr "Hintergrundmuster wählen"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing background patterns"
+#~ msgstr "Hintergrundmuster wählen"
+
+#, fuzzy
+#~| msgid "Set the background color"
+#~ msgid "set a background color"
+#~ msgstr "Hintergrundfarbe ändern"
 
 #~ msgid "Vertical-Space Tool Options"
 #~ msgstr "Vertikalraum Werkzeug Optionen"
@@ -2747,9 +2856,6 @@ msgstr "weiss"
 
 #~ msgid "Export document"
 #~ msgstr "Dokument exportieren"
-
-#~ msgid "Export selection"
-#~ msgstr "Auswahl exportieren"
 
 #~ msgid "Export _document"
 #~ msgstr "_Dokument exportieren"

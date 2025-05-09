@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 12:03+0200\n"
+"POT-Creation-Date: 2025-05-09 12:03+0200\n"
 "PO-Revision-Date: 2025-01-30 23:56+0000\n"
 "Last-Translator: Pavel Ovchinnikov <opavel@internet.ru>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -1236,7 +1236,7 @@ msgid "Open in Default App"
 msgstr "Openen in standaard-app"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:130
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:137
 msgid "Rename"
 msgstr "Naam wĳzigen"
 
@@ -2493,11 +2493,11 @@ msgstr "Map dupliceren mislukt"
 msgid "Open the file in the default app failed"
 msgstr "Openen van het bestand in de standaard-app is mislukt"
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:59
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:60
 msgid "Renaming file failed, target file already exists"
 msgstr "Hernoemen van bestand mislukt, doelbestand bestaat al"
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:82
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:83
 msgid "Renaming file failed"
 msgstr "Bestand hernoemen mislukt"
 
@@ -2581,58 +2581,167 @@ msgstr "grĳs­achtig"
 
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
+msgid "strong"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:206
+msgctxt "part of string representation of a color"
 msgid "vivid"
 msgstr "levendig"
 
-#: crates/rnote-ui/src/utils.rs:208
+#: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
 msgid "very-dark"
 msgstr "erg donker"
 
-#: crates/rnote-ui/src/utils.rs:210
+#: crates/rnote-ui/src/utils.rs:212
 msgctxt "part of string representation of a color"
 msgid "dark"
 msgstr "donker"
 
-#: crates/rnote-ui/src/utils.rs:213
+#: crates/rnote-ui/src/utils.rs:215
 msgctxt "part of string representation of a color"
 msgid "mid"
 msgstr "gemiddeld"
 
-#: crates/rnote-ui/src/utils.rs:215
+#: crates/rnote-ui/src/utils.rs:217
 msgctxt "part of string representation of a color"
 msgid "bright"
 msgstr "helder"
 
-#: crates/rnote-ui/src/utils.rs:219
+#: crates/rnote-ui/src/utils.rs:221
 msgctxt "part of string representation of a color"
 msgid "transparent"
 msgstr "transparant"
 
-#: crates/rnote-ui/src/utils.rs:221
+#: crates/rnote-ui/src/utils.rs:223
 msgctxt "part of string representation of a color"
 msgid "translucent"
 msgstr "doorschĳnend"
 
-#: crates/rnote-ui/src/utils.rs:225
+#: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
 msgstr "licht doorschĳnend"
 
-#: crates/rnote-ui/src/utils.rs:234
+#: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
 msgstr "volledig transparant"
 
-#: crates/rnote-ui/src/utils.rs:237
+#: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "black"
 msgstr "zwart"
 
-#: crates/rnote-ui/src/utils.rs:239
+#: crates/rnote-ui/src/utils.rs:241
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "wit"
+
+#, fuzzy
+#~| msgid "Failed to open the file in the file manager"
+#~ msgid "fix: .rnote file icons in file managers"
+#~ msgstr "Kan het bestand niet openen in de bestands­beheerder"
+
+#, fuzzy
+#~| msgid ""
+#~| "The page order when documents with layouts\n"
+#~| "that expand in horizontal and vertical directions\n"
+#~| "are cut into pages"
+#~ msgid ""
+#~ "feature: specify page order when exporting documents with layouts that "
+#~ "expand in horizontal and vertical directions (thanks to @Kneemund)"
+#~ msgstr ""
+#~ "De paginavolgorde voor documenten met indelingen\n"
+#~ "die horizontaal en verticaal uitgebreid zijn\n"
+#~ "worden opgedeeld in pagina's"
+
+#, fuzzy
+#~| msgid "Set whether the drawing cursor is visible"
+#~ msgid "feature: ability to toggle drawing cursor visibility"
+#~ msgstr "Of de normale aanwijzer zichtbaar is"
+
+#, fuzzy
+#~| msgid ""
+#~| "Remove Page.\n"
+#~| "Available in Fixed-Size Document Layout."
+#~ msgid "fix: broken resizing in fixed-size document layout"
+#~ msgstr ""
+#~ "Verwijder pagina.\n"
+#~ "Beschikbaar in de Vaste-grootte documentindeling."
+
+#, fuzzy
+#~| msgid "Brush styles configuration"
+#~ msgid "fix: rough style fill calculations"
+#~ msgstr "Kwaststijlen instellen"
+
+#, fuzzy
+#~| msgid "Switch to the 'Typewriter'"
+#~ msgid "switch to the typewriter when dropping text"
+#~ msgstr "Overschakelen naar typmachine"
+
+#, fuzzy
+#~| msgid "Select the export file"
+#~ msgid "improved: better export filenames"
+#~ msgstr "Kies het exportbestand"
+
+#, fuzzy
+#~| msgid "Set the background pattern height"
+#~ msgid "fix: background pattern tile rendering size"
+#~ msgstr "Stel de achtergrondpatroonhoogte in"
+
+#, fuzzy
+#~| msgid "Write text with the typewriter"
+#~ msgid "long awaited: write and edit text with the typewriter"
+#~ msgstr "Schrĳf tekst met de typ­machine"
+
+#, fuzzy
+#~| msgid "Mark underneath other strokes"
+#~ msgid "mark underneath other strokes with the 'Marker' brush style"
+#~ msgstr "Markeren onder andere streken"
+
+#, fuzzy
+#~| msgid "Set the format border color"
+#~ msgid "feature: setting to change the format border color"
+#~ msgstr "Kies een formaatkaderkleur"
+
+#, fuzzy
+#~| msgid "Export selection"
+#~ msgid "improved selector"
+#~ msgstr "Selectie exporteren"
+
+#, fuzzy
+#~| msgid "Set whether Pdf's should be imported as vector or bitmap images"
+#~ msgid "Pdf import as vector images"
+#~ msgstr ""
+#~ "Geef aan of PDF-bestanden dienen te worden geïmporteerd als vector- of "
+#~ "bitmap-afbeeldingen"
+
+#, fuzzy
+#~| msgid "Select With a Rectangle"
+#~ msgid "selecting with a rectangle"
+#~ msgstr "Rechthoekselectie"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing dots as background pattern"
+#~ msgstr "Kies een achtergrondpatroon"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "improved background rendering"
+#~ msgstr "Kies een achtergrondpatroon"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing background patterns"
+#~ msgstr "Kies een achtergrondpatroon"
+
+#, fuzzy
+#~| msgid "Set the background color"
+#~ msgid "set a background color"
+#~ msgstr "Stel de achtergrondkleur in"
 
 #~ msgid "@APP_NAME_CAPITALIZED@"
 #~ msgstr "@APP_NAME_CAPITALIZED@"
@@ -2776,9 +2885,6 @@ msgstr "wit"
 
 #~ msgid "Export document"
 #~ msgstr "Document exporteren"
-
-#~ msgid "Export selection"
-#~ msgstr "Selectie exporteren"
 
 #~ msgid "Save _as"
 #~ msgstr "Opslaan _als"
@@ -3099,9 +3205,6 @@ msgstr "wit"
 #~ msgctxt "shortcut window"
 #~ msgid "Print sheet"
 #~ msgstr "Druk het werkblad af"
-
-#~ msgid "Brush styles configuration"
-#~ msgstr "Kwaststijlen instellen"
 
 #~ msgid "Dot Radii"
 #~ msgstr "Puntstraal"

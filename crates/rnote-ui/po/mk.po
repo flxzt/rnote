@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 12:03+0200\n"
+"POT-Creation-Date: 2025-05-09 12:03+0200\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Macedonian <https://hosted.weblate.org/projects/rnote/repo/mk/"
@@ -1463,7 +1463,7 @@ msgid "Open in Default App"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:130
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:137
 msgid "Rename"
 msgstr "Преименувај"
 
@@ -2900,11 +2900,11 @@ msgstr "Промени ја папката на раб. површина"
 msgid "Open the file in the default app failed"
 msgstr "Неуспех: Неподдржан датотечен вид."
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:59
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:60
 msgid "Renaming file failed, target file already exists"
 msgstr ""
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:82
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:83
 #, fuzzy
 #| msgid "Opening file failed."
 msgid "Renaming file failed"
@@ -2994,64 +2994,134 @@ msgstr ""
 
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
-msgid "vivid"
+msgid "strong"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:208
+#: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"
-msgid "very-dark"
+msgid "vivid"
 msgstr ""
 
 #: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
+msgid "very-dark"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:212
+msgctxt "part of string representation of a color"
 msgid "dark"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:213
+#: crates/rnote-ui/src/utils.rs:215
 msgctxt "part of string representation of a color"
 msgid "mid"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:215
+#: crates/rnote-ui/src/utils.rs:217
 #, fuzzy
 #| msgid "Height"
 msgctxt "part of string representation of a color"
 msgid "bright"
 msgstr "Висина"
 
-#: crates/rnote-ui/src/utils.rs:219
+#: crates/rnote-ui/src/utils.rs:221
 #, fuzzy
 #| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "transparent"
 msgstr "Андреј Дам. | Andrej Dam. <andrejdam@protonmail.com>"
 
-#: crates/rnote-ui/src/utils.rs:221
+#: crates/rnote-ui/src/utils.rs:223
 #, fuzzy
 #| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "translucent"
 msgstr "Андреј Дам. | Andrej Dam. <andrejdam@protonmail.com>"
 
-#: crates/rnote-ui/src/utils.rs:225
+#: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:234
+#: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:237
+#: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "black"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:239
+#: crates/rnote-ui/src/utils.rs:241
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Failed to open file: Unsupported file type."
+#~ msgid "fix: .rnote file icons in file managers"
+#~ msgstr "Неуспех: Неподдржан датотечен вид."
+
+#, fuzzy
+#~| msgid "Set the drawing cursor"
+#~ msgid "feature: ability to toggle drawing cursor visibility"
+#~ msgstr "Одбери го покажувачот за цртање"
+
+#, fuzzy
+#~| msgid "Set the format width"
+#~ msgid "improved: better export filenames"
+#~ msgstr "Одбери ја ширината на формата"
+
+#, fuzzy
+#~| msgid "Set the background pattern height"
+#~ msgid "fix: background pattern tile rendering size"
+#~ msgstr "Одреди ја висината на позадинската шара"
+
+#, fuzzy
+#~| msgid "Mark underneath other brush strokes"
+#~ msgid "mark underneath other strokes with the 'Marker' brush style"
+#~ msgstr "Означи под другите потези со четка"
+
+#, fuzzy
+#~| msgid "Set the format border color"
+#~ msgid "feature: setting to change the format border color"
+#~ msgstr "Одбери ја бојата на границите на формата"
+
+#, fuzzy
+#~| msgid "Export Selection"
+#~ msgid "improved selector"
+#~ msgstr "Извади го одбраното"
+
+#, fuzzy
+#~| msgid "Set whether PDFs should be imported as vector or bitmap images"
+#~ msgid "Pdf import as vector images"
+#~ msgstr "Одреди дали PDF треба да се внесува како вектор или слика"
+
+#, fuzzy
+#~| msgid "Selecting with a rectangle"
+#~ msgid "selecting with a rectangle"
+#~ msgstr "Одбирање преку правоаголник"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing dots as background pattern"
+#~ msgstr "Одбери ја позадинската шара"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "improved background rendering"
+#~ msgstr "Одбери ја позадинската шара"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing background patterns"
+#~ msgstr "Одбери ја позадинската шара"
+
+#, fuzzy
+#~| msgid "Set the background color"
+#~ msgid "set a background color"
+#~ msgstr "Одреди ја позадинската боја"
 
 #, fuzzy
 #~| msgid "A PDF annotation"
@@ -3211,11 +3281,6 @@ msgstr ""
 
 #~ msgid "Export document"
 #~ msgstr "Извади документ"
-
-#, fuzzy
-#~| msgid "Export Selection"
-#~ msgid "Export selection"
-#~ msgstr "Извади го одбраното"
 
 #, fuzzy
 #~| msgid "Export document"

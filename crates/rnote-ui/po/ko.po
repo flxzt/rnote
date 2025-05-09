@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 12:03+0200\n"
+"POT-Creation-Date: 2025-05-09 12:03+0200\n"
 "PO-Revision-Date: 2023-02-09 20:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
@@ -1281,7 +1281,7 @@ msgid "Open in Default App"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:130
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:137
 msgid "Rename"
 msgstr "이름 바꾸기"
 
@@ -2606,11 +2606,11 @@ msgstr "디렉터리 변경하기"
 msgid "Open the file in the default app failed"
 msgstr "파일을 열지 못했습니다. 지원되지 않는 파일 형식입니다"
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:59
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:60
 msgid "Renaming file failed, target file already exists"
 msgstr ""
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:82
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:83
 #, fuzzy
 #| msgid "Opening file failed"
 msgid "Renaming file failed"
@@ -2698,64 +2698,139 @@ msgstr ""
 
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
-msgid "vivid"
+msgid "strong"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:208
+#: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"
-msgid "very-dark"
+msgid "vivid"
 msgstr ""
 
 #: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
+msgid "very-dark"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:212
+msgctxt "part of string representation of a color"
 msgid "dark"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:213
+#: crates/rnote-ui/src/utils.rs:215
 msgctxt "part of string representation of a color"
 msgid "mid"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:215
+#: crates/rnote-ui/src/utils.rs:217
 #, fuzzy
 #| msgid "Height"
 msgctxt "part of string representation of a color"
 msgid "bright"
 msgstr "높이"
 
-#: crates/rnote-ui/src/utils.rs:219
+#: crates/rnote-ui/src/utils.rs:221
 #, fuzzy
 #| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "transparent"
 msgstr "이정희 <daemul72@gmail.com>"
 
-#: crates/rnote-ui/src/utils.rs:221
+#: crates/rnote-ui/src/utils.rs:223
 #, fuzzy
 #| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "translucent"
 msgstr "이정희 <daemul72@gmail.com>"
 
-#: crates/rnote-ui/src/utils.rs:225
+#: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:234
+#: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:237
+#: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "black"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:239
+#: crates/rnote-ui/src/utils.rs:241
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Failed to open file, unsupported file type"
+#~ msgid "fix: .rnote file icons in file managers"
+#~ msgstr "파일을 열지 못했습니다. 지원되지 않는 파일 형식입니다"
+
+#, fuzzy
+#~| msgid "Set the drawing cursor"
+#~ msgid "feature: ability to toggle drawing cursor visibility"
+#~ msgstr "드로잉 커서를 설정합니다"
+
+#, fuzzy
+#~| msgid "Switch to the 'Typewriter'"
+#~ msgid "switch to the typewriter when dropping text"
+#~ msgstr "'타이프라이터'로 전환하기"
+
+#, fuzzy
+#~| msgid "Select the export file"
+#~ msgid "improved: better export filenames"
+#~ msgstr "내보내기 파일 선택하기"
+
+#, fuzzy
+#~| msgid "Set the background pattern height"
+#~ msgid "fix: background pattern tile rendering size"
+#~ msgstr "배경 패턴 높이를 설정합니다"
+
+#, fuzzy
+#~| msgid "Switch to the 'Typewriter'"
+#~ msgid "long awaited: write and edit text with the typewriter"
+#~ msgstr "'타이프라이터'로 전환하기"
+
+#, fuzzy
+#~| msgid "Mark underneath other strokes"
+#~ msgid "mark underneath other strokes with the 'Marker' brush style"
+#~ msgstr "다른 자획의 밑에 표시합니다"
+
+#, fuzzy
+#~| msgid "Set the format border color"
+#~ msgid "feature: setting to change the format border color"
+#~ msgstr "형식 테두리 색상을 설정합니다"
+
+#, fuzzy
+#~| msgid "Set whether PDFs should be imported as vector or bitmap images"
+#~ msgid "Pdf import as vector images"
+#~ msgstr "PDF를 벡터 이미지로 가져올지 비트맵 이미지로 가져올지 설정합니다"
+
+#, fuzzy
+#~| msgid "Select With a Rectangle"
+#~ msgid "selecting with a rectangle"
+#~ msgstr "사각형으로 선택하기"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing dots as background pattern"
+#~ msgstr "배경 패턴을 고릅니다"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "improved background rendering"
+#~ msgstr "배경 패턴을 고릅니다"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing background patterns"
+#~ msgstr "배경 패턴을 고릅니다"
+
+#, fuzzy
+#~| msgid "Set the background color"
+#~ msgid "set a background color"
+#~ msgstr "배경 색상을 설정합니다"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "디스크에서 열린 파일이 이동 또는 삭제되었습니다"

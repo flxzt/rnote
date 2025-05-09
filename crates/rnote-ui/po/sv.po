@@ -6,16 +6,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 12:03+0200\n"
-"PO-Revision-Date: 2025-03-04 10:03+0000\n"
-"Last-Translator: KGustafsson <kevin.gustafsson@hotmail.com>\n"
+"POT-Creation-Date: 2025-05-09 12:03+0200\n"
+"PO-Revision-Date: 2025-04-21 15:01+0000\n"
+"Last-Translator: Erik Holmquist <erik.holmquist@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/rnote/repo/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.3-dev\n"
+"X-Generator: Weblate 5.11.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -217,17 +217,16 @@ msgid "Change the directory"
 msgstr "Byt mapp"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
-#, fuzzy
 msgid "Trash File"
-msgstr "Penselformat"
+msgstr "Släng Fil"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr ""
+msgstr "Är du säker på att du vill flytta den här filen till papperskorgen?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "Skräp"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:330
@@ -375,15 +374,12 @@ msgid "Page Files Naming:"
 msgstr "Sidavstånd"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:280
-#, fuzzy
 msgid "Export Directory"
-msgstr "Vektor"
+msgstr "Export Katalog"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:281
-#, fuzzy
-#| msgid "Set the format width"
 msgid "Select the export directory"
-msgstr "Ange formatbredd"
+msgstr "Välj export katalog"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:312
 #, fuzzy
@@ -1354,7 +1350,7 @@ msgid "Open in Default App"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:130
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:137
 msgid "Rename"
 msgstr "Ändra namn"
 
@@ -2716,11 +2712,11 @@ msgstr "Ändra arbetsplats mappen"
 msgid "Open the file in the default app failed"
 msgstr ""
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:59
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:60
 msgid "Renaming file failed, target file already exists"
 msgstr ""
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:82
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:83
 #, fuzzy
 msgid "Renaming file failed"
 msgstr "Öppna fil"
@@ -2807,64 +2803,150 @@ msgstr ""
 
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
-msgid "vivid"
+msgid "strong"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:208
+#: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"
-msgid "very-dark"
+msgid "vivid"
 msgstr ""
 
 #: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
+msgid "very-dark"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:212
+msgctxt "part of string representation of a color"
 msgid "dark"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:213
+#: crates/rnote-ui/src/utils.rs:215
 msgctxt "part of string representation of a color"
 msgid "mid"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:215
+#: crates/rnote-ui/src/utils.rs:217
 #, fuzzy
 #| msgid "Height"
 msgctxt "part of string representation of a color"
 msgid "bright"
 msgstr "Höjd"
 
-#: crates/rnote-ui/src/utils.rs:219
+#: crates/rnote-ui/src/utils.rs:221
 #, fuzzy
 #| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "transparent"
 msgstr "Simon Svensson Thunman https://sastofficial.github.io"
 
-#: crates/rnote-ui/src/utils.rs:221
+#: crates/rnote-ui/src/utils.rs:223
 #, fuzzy
 #| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "translucent"
 msgstr "Simon Svensson Thunman https://sastofficial.github.io"
 
-#: crates/rnote-ui/src/utils.rs:225
+#: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:234
+#: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:237
+#: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "black"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:239
+#: crates/rnote-ui/src/utils.rs:241
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr ""
+
+#, fuzzy
+#~| msgid "- no file name -"
+#~ msgid "fix: .rnote file icons in file managers"
+#~ msgstr "- inget filnamn -"
+
+#, fuzzy
+#~| msgid ""
+#~| "The page order when documents with layouts\n"
+#~| "that expand in horizontal and vertical directions\n"
+#~| "are cut into pages"
+#~ msgid ""
+#~ "feature: specify page order when exporting documents with layouts that "
+#~ "expand in horizontal and vertical directions (thanks to @Kneemund)"
+#~ msgstr ""
+#~ "Ordningen på sidor, när dokument med layout\n"
+#~ "som expanderas horisontellt och vertikalt,\n"
+#~ "delas upp i sidor"
+
+#, fuzzy
+#~ msgid "feature: ability to toggle drawing cursor visibility"
+#~ msgstr "Välj bakrundsfärgen"
+
+#, fuzzy
+#~| msgid "Brush styles configuration"
+#~ msgid "fix: rough style fill calculations"
+#~ msgstr "Konfiguration av penselformat"
+
+#, fuzzy
+#~| msgid "Select the export file"
+#~ msgid "improved: better export filenames"
+#~ msgstr "Välj export filen"
+
+#, fuzzy
+#~| msgid "Set the background pattern height"
+#~ msgid "fix: background pattern tile rendering size"
+#~ msgstr "Ange bakrundsmönsterhöjden"
+
+#, fuzzy
+#~| msgid "Write text with the typewriter"
+#~ msgid "long awaited: write and edit text with the typewriter"
+#~ msgstr "Skriv text med skrivmaskinen"
+
+#, fuzzy
+#~ msgid "feature: setting to change the format border color"
+#~ msgstr "Sätt formatets orientering"
+
+#, fuzzy
+#~| msgid "Export Selection"
+#~ msgid "improved selector"
+#~ msgstr "Exportera markering"
+
+#, fuzzy
+#~| msgid "Set whether PDFs should be imported as vector or bitmap images"
+#~ msgid "Pdf import as vector images"
+#~ msgstr "Ange om PDF-filer ska importeras som vektor- eller bitmappsbilder"
+
+#, fuzzy
+#~| msgid "Selecting with a rectangle"
+#~ msgid "selecting with a rectangle"
+#~ msgstr "Markera med en rektangel"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing dots as background pattern"
+#~ msgstr "Välj ett bakgrundsmönster"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "improved background rendering"
+#~ msgstr "Välj ett bakgrundsmönster"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing background patterns"
+#~ msgstr "Välj ett bakgrundsmönster"
+
+#, fuzzy
+#~| msgid "Set the background color"
+#~ msgid "set a background color"
+#~ msgstr "Välj bakgrundsfärgen"
 
 #, fuzzy
 #~| msgid "A PDF annotation"
@@ -2983,11 +3065,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Export document"
 #~ msgstr "Nytt document"
-
-#, fuzzy
-#~| msgid "Export Selection"
-#~ msgid "Export selection"
-#~ msgstr "Exportera markering"
 
 #, fuzzy
 #~ msgid "Export _document"
@@ -3290,9 +3367,6 @@ msgstr ""
 #~ msgctxt "shortcut window"
 #~ msgid "Redo last stroke"
 #~ msgstr "Gör om sista linjen"
-
-#~ msgid "Brush styles configuration"
-#~ msgstr "Konfiguration av penselformat"
 
 #~ msgid "Dot Radii"
 #~ msgstr "Prick Radier"

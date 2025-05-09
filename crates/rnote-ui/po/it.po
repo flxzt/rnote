@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 12:03+0200\n"
-"PO-Revision-Date: 2024-12-09 10:00+0000\n"
-"Last-Translator: Matteo Ballabio <matteo@ballabio.dev>\n"
+"POT-Creation-Date: 2025-05-09 12:03+0200\n"
+"PO-Revision-Date: 2025-04-13 14:41+0000\n"
+"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -218,18 +218,16 @@ msgid "Change the directory"
 msgstr "Cambia cartella"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
-#, fuzzy
-#| msgid "Trash Strokes"
 msgid "Trash File"
-msgstr "Elimina TrattI"
+msgstr "File nel cestino"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr ""
+msgstr "Vuoi davvero spostare questo file nel cestino?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "Cestino"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:330
@@ -786,8 +784,6 @@ msgid "Select Intersecting Path"
 msgstr "Seleziona Tratti Intersecati"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
-#, fuzzy
-#| msgid "Lock Aspectratio While Resizing the Selection"
 msgid "Lock Aspect Ratio While Resizing the Selection"
 msgstr "Blocca le proporzioni durante il ridimensionamento della selezione"
 
@@ -920,10 +916,8 @@ msgstr "Inserisci Spazio Verticale"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-#, fuzzy
-#| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
-msgstr "Configurazioni Forme"
+msgstr "Configurazione dello strumento dello spazio verticale"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
@@ -935,18 +929,16 @@ msgid "Zoom In/Out"
 msgstr "Zoom avanti/indietro"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
-#, fuzzy
-#| msgid "Eraser"
 msgid "Laser"
-msgstr "Gomma"
+msgstr "Laser"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"
-msgstr ""
+msgstr "Selezione del font"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:29
 msgid "Edit Font Size"
-msgstr ""
+msgstr "Modifica dimensione del font"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:45
 msgid "Pick And Insert Emoji"
@@ -1236,7 +1228,7 @@ msgid "Open in Default App"
 msgstr "Apri nell'app predefinita"
 
 #: crates/rnote-ui/data/ui/filerow.ui:69
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:130
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:137
 msgid "Rename"
 msgstr "Rinomina"
 
@@ -1265,7 +1257,7 @@ msgstr "Nuova Scheda"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:54
 msgid "View Open Tabs"
-msgstr ""
+msgstr "Visualizza le schede aperte"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:61
 msgid "Focus Mode"
@@ -1277,14 +1269,12 @@ msgid "Save Document"
 msgstr "Salva Documento"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:89
-#, fuzzy
-#| msgid "Open the Canvas-Menu"
 msgid "Canvas Menu"
-msgstr "Apri il menu della tela"
+msgstr "Menu della tela"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:94
 msgid "App Menu"
-msgstr ""
+msgstr "Menu App"
 
 #: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
@@ -1710,7 +1700,7 @@ msgstr "Esci dall'applicazione"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:44
 msgid "Toggle Tabs Overview"
-msgstr ""
+msgstr "Attiva panoramica delle schede"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:50
 msgid "Open the Canvas-Menu"
@@ -1831,10 +1821,8 @@ msgid "Page"
 msgstr "pagina"
 
 #: crates/rnote-ui/data/ui/strokewidthpicker.ui:20
-#, fuzzy
-#| msgid "Split Strokes"
 msgid "Edit Stroke Size"
-msgstr "Cancella parte del tratto"
+msgstr "Modifica dimensione tratto"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
@@ -1849,10 +1837,8 @@ msgid "Create new Folder"
 msgstr "Crea nuova Cartella"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:167
-#, fuzzy
-#| msgid "Workspace Name"
 msgid "Open Workspace Folder"
-msgstr "Nome dell'area di lavoro"
+msgstr "Apri la cartella dell'area di lavoro"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:843
 #: crates/rnote-ui/src/appwindow/imp.rs:326
@@ -1973,10 +1959,8 @@ msgstr "Visualizza nel file manager"
 #: crates/rnote-ui/src/dialogs/export.rs:721
 #: crates/rnote-ui/src/dialogs/export.rs:1072
 #: crates/rnote-ui/src/dialogs/export.rs:1078
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Failed to view the file in the file manager"
-msgstr "Impossibile aprire il file nel file manager"
+msgstr "Impossibile visualizzare il file nel gestore file"
 
 #: crates/rnote-ui/src/dialogs/export.rs:332
 #: crates/rnote-ui/src/dialogs/export.rs:740
@@ -2490,11 +2474,11 @@ msgstr "Duplicazione della directory non riuscita"
 msgid "Open the file in the default app failed"
 msgstr "L'apertura del file nell'app predefinita non è riuscita"
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:59
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:60
 msgid "Renaming file failed, target file already exists"
 msgstr "Rinomina del file non riuscita, il file di destinazione esiste già"
 
-#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:82
+#: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:83
 msgid "Renaming file failed"
 msgstr "Rinominazione del file non riuscita"
 
@@ -2578,58 +2562,166 @@ msgstr "grigiastro"
 
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
+msgid "strong"
+msgstr ""
+
+#: crates/rnote-ui/src/utils.rs:206
+msgctxt "part of string representation of a color"
 msgid "vivid"
 msgstr "vivido"
 
-#: crates/rnote-ui/src/utils.rs:208
+#: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
 msgid "very-dark"
 msgstr "molto scuro"
 
-#: crates/rnote-ui/src/utils.rs:210
+#: crates/rnote-ui/src/utils.rs:212
 msgctxt "part of string representation of a color"
 msgid "dark"
 msgstr "scuro"
 
-#: crates/rnote-ui/src/utils.rs:213
+#: crates/rnote-ui/src/utils.rs:215
 msgctxt "part of string representation of a color"
 msgid "mid"
 msgstr "blu cobalto"
 
-#: crates/rnote-ui/src/utils.rs:215
+#: crates/rnote-ui/src/utils.rs:217
 msgctxt "part of string representation of a color"
 msgid "bright"
 msgstr "acceso"
 
-#: crates/rnote-ui/src/utils.rs:219
+#: crates/rnote-ui/src/utils.rs:221
 msgctxt "part of string representation of a color"
 msgid "transparent"
 msgstr "trasparente"
 
-#: crates/rnote-ui/src/utils.rs:221
+#: crates/rnote-ui/src/utils.rs:223
 msgctxt "part of string representation of a color"
 msgid "translucent"
 msgstr "traslucido"
 
-#: crates/rnote-ui/src/utils.rs:225
+#: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
 msgstr "leggermente traslucido"
 
-#: crates/rnote-ui/src/utils.rs:234
+#: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
 msgstr "completamente trasparente"
 
-#: crates/rnote-ui/src/utils.rs:237
+#: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "black"
 msgstr "nero"
 
-#: crates/rnote-ui/src/utils.rs:239
+#: crates/rnote-ui/src/utils.rs:241
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "bianco"
+
+#, fuzzy
+#~| msgid "Failed to view the file in the file manager"
+#~ msgid "fix: .rnote file icons in file managers"
+#~ msgstr "Impossibile visualizzare il file nel gestore file"
+
+#, fuzzy
+#~| msgid ""
+#~| "The page order when documents with layouts\n"
+#~| "that expand in horizontal and vertical directions\n"
+#~| "are cut into pages"
+#~ msgid ""
+#~ "feature: specify page order when exporting documents with layouts that "
+#~ "expand in horizontal and vertical directions (thanks to @Kneemund)"
+#~ msgstr ""
+#~ "L'ordine delle pagine quando i documenti con layout\n"
+#~ "che si espandono in direzione orizzontale e verticale\n"
+#~ "vengono tagliati in pagine"
+
+#, fuzzy
+#~| msgid "Set whether the drawing cursor is visible"
+#~ msgid "feature: ability to toggle drawing cursor visibility"
+#~ msgstr "Imposta se il cursore di disegno è visibile"
+
+#, fuzzy
+#~| msgid ""
+#~| "Remove Page.\n"
+#~| "Available in Fixed-Size Document Layout."
+#~ msgid "fix: broken resizing in fixed-size document layout"
+#~ msgstr ""
+#~ "Rimuovi pagina.\n"
+#~ "Disponibile nel layout del documento a dimensione fissa."
+
+#, fuzzy
+#~| msgid "Brush styles configuration"
+#~ msgid "fix: rough style fill calculations"
+#~ msgstr "Configurazione stili pennello"
+
+#, fuzzy
+#~| msgid "Switch to the 'Typewriter'"
+#~ msgid "switch to the typewriter when dropping text"
+#~ msgstr "Passa alla 'Testo'"
+
+#, fuzzy
+#~| msgid "Select the export file"
+#~ msgid "improved: better export filenames"
+#~ msgstr "Selezionare il file da esportare"
+
+#, fuzzy
+#~| msgid "Set the background pattern height"
+#~ msgid "fix: background pattern tile rendering size"
+#~ msgstr "Impostare l'altezza del modello di sfondo"
+
+#, fuzzy
+#~| msgid "Write text with the typewriter"
+#~ msgid "long awaited: write and edit text with the typewriter"
+#~ msgstr "Scrivi il testo con la macchina da scrivere"
+
+#, fuzzy
+#~| msgid "Mark underneath other strokes"
+#~ msgid "mark underneath other strokes with the 'Marker' brush style"
+#~ msgstr "Disegna sotto ad altri tratti"
+
+#, fuzzy
+#~| msgid "Set the format border color"
+#~ msgid "feature: setting to change the format border color"
+#~ msgstr "Scegli il colore del bordo"
+
+#, fuzzy
+#~| msgid "Export selection"
+#~ msgid "improved selector"
+#~ msgstr "Esporta selezione"
+
+#, fuzzy
+#~| msgid "Set whether Pdf's should be imported as vector or bitmap images"
+#~ msgid "Pdf import as vector images"
+#~ msgstr ""
+#~ "Imposta se i Pdf devono essere importati come immagini vettoriali o bitmap"
+
+#, fuzzy
+#~| msgid "Select With a Rectangle"
+#~ msgid "selecting with a rectangle"
+#~ msgstr "Selezione rettangolare"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing dots as background pattern"
+#~ msgstr "Scegli un modello di sfondo"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "improved background rendering"
+#~ msgstr "Scegli un modello di sfondo"
+
+#, fuzzy
+#~| msgid "Choose a background pattern"
+#~ msgid "introducing background patterns"
+#~ msgstr "Scegli un modello di sfondo"
+
+#, fuzzy
+#~| msgid "Set the background color"
+#~ msgid "set a background color"
+#~ msgstr "Imposta il colore di sfondo"
 
 #~ msgid "Opened file was moved or deleted on disk"
 #~ msgstr "Il file aperto è stato spostato o cancellato"
@@ -2770,9 +2862,6 @@ msgstr "bianco"
 
 #~ msgid "Export document"
 #~ msgstr "Esporta documento"
-
-#~ msgid "Export selection"
-#~ msgstr "Esporta selezione"
 
 #~ msgid "Export _document"
 #~ msgstr "Esporta _documento"
@@ -3087,9 +3176,6 @@ msgstr "bianco"
 #~ msgctxt "shortcut window"
 #~ msgid "Redo last stroke"
 #~ msgstr "Rifai l'ultimo tratto"
-
-#~ msgid "Brush styles configuration"
-#~ msgstr "Configurazione stili pennello"
 
 #~ msgid "Dot Radii"
 #~ msgstr "Raggio punto"

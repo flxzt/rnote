@@ -16,7 +16,7 @@ pub use typewriterconfig::TypewriterConfig;
 
 // Imports
 use super::shortcuts::ShortcutAction;
-use super::{PenMode, PenStyle, Shortcuts};
+use super::{PenStyle, Shortcuts};
 use rnote_compose::Color;
 use rnote_compose::penevent::ShortcutKey;
 use serde::{Deserialize, Serialize};
@@ -39,12 +39,10 @@ pub struct PensConfig {
 
     #[serde(rename = "shortcuts")]
     pub shortcuts: Shortcuts,
-    #[serde(rename = "penmode")]
-    pub penmode: PenMode,
-    #[serde(rename = "penmode_pen_style")]
-    pub penmode_pen_style: PenStyle,
-    #[serde(rename = "penmode_eraser_style")]
-    pub penmode_eraser_style: PenStyle,
+    #[serde(rename = "pen_mode_pen_style")]
+    pub pen_mode_pen_style: PenStyle,
+    #[serde(rename = "pen_mode_eraser_style")]
+    pub pen_mode_eraser_style: PenStyle,
 }
 
 impl PensConfig {

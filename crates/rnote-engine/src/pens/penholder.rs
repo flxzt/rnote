@@ -17,11 +17,15 @@ use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenProgress, S
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(rename = "backlog_policy")]
 pub enum BacklogPolicy {
+    #[serde(rename = "no_limit")]
     NoLimit,
+    #[serde(rename = "limit")]
     Limit(Duration),
-    DisableBacklog,
+    #[serde(rename = "disable")]
+    Disable,
 }
 
 /// The Penholder holds the pens and related state and handles pen events.
@@ -30,9 +34,8 @@ pub enum BacklogPolicy {
 pub struct PenHolder {
     #[serde(rename = "pen_mode_state")]
     pen_mode_state: PenModeState,
-
     /// The policy for the retrieval of input event backlogs.
-    #[serde(skip)]
+    #[serde(rename = "backlog_policy")]
     backlog_policy: BacklogPolicy,
     #[serde(skip)]
     current_pen: Pen,
@@ -119,17 +122,12 @@ impl PenHolder {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        if self
-            .pen_mode_state
-            .style_override(&engine_view.config.pens_config)
-            != new_style_override
-        {
+        if self.pen_mode_state.style_override() != new_style_override {
             // Deselecting when changing the style override
             let all_strokes = engine_view.store.selection_keys_as_rendered();
             engine_view.store.set_selected_keys(&all_strokes, false);
 
-            self.pen_mode_state
-                .set_style_override(&engine_view.config.pens_config, new_style_override);
+            self.pen_mode_state.set_style_override(new_style_override);
             widget_flags |= self.reinstall_pen_current_style(engine_view);
             widget_flags.refresh_ui = true;
         }
@@ -147,13 +145,8 @@ impl PenHolder {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        if self
-            .pen_mode_state
-            .pen_mode(&engine_view.config.pens_config)
-            != new_pen_mode
-        {
-            self.pen_mode_state
-                .set_pen_mode(&mut engine_view.config.pens_config, new_pen_mode);
+        if self.pen_mode_state.pen_mode() != new_pen_mode {
+            self.pen_mode_state.set_pen_mode(new_pen_mode);
             widget_flags |= self.reinstall_pen_current_style(engine_view);
             widget_flags.refresh_ui = true;
         }
@@ -448,11 +441,7 @@ impl PenHolder {
             PenProgress::InProgress => {}
             PenProgress::Finished => {
                 // take the style override when pen is finished
-                if self
-                    .pen_mode_state
-                    .take_style_override(&engine_view.config.pens_config)
-                    .is_some()
-                {
+                if self.pen_mode_state.take_style_override().is_some() {
                     widget_flags.refresh_ui = true;
                     widget_flags |= self.reinstall_pen_current_style(engine_view);
                 }
@@ -476,7 +465,7 @@ impl PenHolder {
             PenStyle::Typewriter => BacklogPolicy::Limit(Duration::from_millis(33)),
             PenStyle::Eraser => BacklogPolicy::Limit(Duration::from_millis(33)),
             PenStyle::Selector => BacklogPolicy::Limit(Duration::from_millis(33)),
-            PenStyle::Tools => BacklogPolicy::DisableBacklog,
+            PenStyle::Tools => BacklogPolicy::Disable,
         };
 
         // Enable text preprocessing for typewriter

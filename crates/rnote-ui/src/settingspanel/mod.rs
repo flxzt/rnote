@@ -731,8 +731,8 @@ impl RnSettingsPanel {
                         .format
                         .set_dpi(doc_config.format.dpi());
 
-                    let mut widget_flags = canvas.engine_mut().update_rendering_current_viewport();
-                    widget_flags |= canvas.engine_mut().doc_resize_autoexpand();
+                    let mut widget_flags = canvas.engine_mut().doc_resize_autoexpand();
+                    widget_flags |= canvas.engine_mut().background_rendering_regenerate();
                     widget_flags.refresh_ui = true;
                     appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
@@ -831,8 +831,8 @@ impl RnSettingsPanel {
                     .format
                     .show_origin_indicator = doc_config.format.show_origin_indicator;
 
-                let mut widget_flags = canvas.engine_mut().update_rendering_current_viewport();
-                widget_flags |= canvas.engine_mut().doc_resize_autoexpand();
+                let mut widget_flags = canvas.engine_mut().doc_resize_autoexpand();
+                widget_flags |= canvas.engine_mut().background_rendering_regenerate();
                 widget_flags.refresh_ui = true;
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }

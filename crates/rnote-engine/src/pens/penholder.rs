@@ -248,7 +248,6 @@ impl PenHolder {
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (EventPropagation, WidgetFlags) {
-        println!("handle_pressed_shortcut_key");
         let mut widget_flags = WidgetFlags::default();
         let mut propagate = EventPropagation::Proceed;
 

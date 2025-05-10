@@ -223,12 +223,14 @@ impl RnCanvas {
         self.set_save_in_progress(true);
         debug!("Saving file is now in progress");
 
-        let file_path = file
-            .path()
-            .ok_or_else(|| anyhow::anyhow!("Could not get a path for file: `{file:?}`."))?;
-        let basename = file
-            .basename()
-            .ok_or_else(|| anyhow::anyhow!("Could not retrieve basename for file: `{file:?}`."))?;
+        let file_path = file.path().ok_or_else(|| {
+            self.set_save_in_progress(false);
+            anyhow::anyhow!("Could not get a path for file: `{file:?}`.")
+        })?;
+        let basename = file.basename().ok_or_else(|| {
+            self.set_save_in_progress(false);
+            anyhow::anyhow!("Could not retrieve basename for file: `{file:?}`.")
+        })?;
         let rnote_bytes_receiver = self
             .engine_ref()
             .save_as_rnote_bytes(basename.to_string_lossy().to_string());

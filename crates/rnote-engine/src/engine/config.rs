@@ -56,5 +56,6 @@ impl EngineConfigShared {
         write.pen_sounds = config.pen_sounds;
         write.optimize_epd = config.optimize_epd;
         write.snap_positions = config.snap_positions;
+        write.visual_debug = config.visual_debug;
     }
 }

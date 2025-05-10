@@ -17,6 +17,7 @@ use rnote_compose::builders::{
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::{Element, Segment};
+use rnote_compose::shapes::Shapeable;
 use std::time::Instant;
 
 #[derive(Debug)]
@@ -41,6 +42,15 @@ impl Default for Brush {
     }
 }
 
+impl Brush {
+    /// Threshold for the ratio of stroke bounds volume over
+    /// stroke width**2 over which we consider that strokes
+    /// or shapes that are left by pressing the pen down when
+    /// cancelling a selection should be kept. Smaller ratio
+    /// are deleted
+    const VOLUME_RATIO_THRESHOLD: f64 = 5.0;
+}
+
 impl PenBehaviour for Brush {
     fn init(&mut self, _engine_view: &EngineView) -> WidgetFlags {
         WidgetFlags::default()
@@ -63,6 +73,7 @@ impl PenBehaviour for Brush {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
+        _temporary_tool: bool,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
@@ -233,6 +244,28 @@ impl PenBehaviour for Brush {
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
                             );
+                        }
+
+                        // remove strokes that follow a selection cancellation if they are large
+                        // hence we can write after selecting strokes but we won't leave tiny spots
+                        // behind
+                        let volume = engine_view
+                            .store
+                            .get_stroke_ref(*current_stroke_key)
+                            .unwrap()
+                            .bounds()
+                            .volume();
+                        if engine_view.store.get_cancelled_state()
+                            && volume
+                                < Self::VOLUME_RATIO_THRESHOLD
+                                    * engine_view
+                                        .config
+                                        .pens_config
+                                        .brush_config
+                                        .get_stroke_width()
+                                        .powi(2)
+                        {
+                            engine_view.store.remove_stroke(*current_stroke_key);
                         }
 
                         // Finish up the last stroke

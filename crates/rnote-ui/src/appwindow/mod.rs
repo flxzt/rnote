@@ -594,6 +594,8 @@ impl RnAppWindow {
                     anyhow::anyhow!("Could not open file '{input_file:?}', file path is None.")
                 })?;
 
+                // we grab focus
+                self.present();
                 // If the file is already opened in a tab, simply switch to it
                 if let Some(page) = self.tabs_query_file_opened(input_file_path) {
                     self.overlays().tabview().set_selected_page(&page);
@@ -624,7 +626,6 @@ impl RnAppWindow {
                         self.append_wrapper_new_tab(&wrapper);
                     }
                     self.handle_widget_flags(widget_flags, &wrapper.canvas());
-                    self.present();
                     true
                 }
             }

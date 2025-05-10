@@ -259,7 +259,11 @@ impl PenHolder {
             match action {
                 ShortcutAction::ChangePenStyle { style, mode } => match mode {
                     ShortcutMode::Temporary => {
-                        if self.pen_mode_state.current_style_w_override() == style {
+                        if self
+                            .pen_mode_state
+                            .current_style_w_override(&engine_view.config.pens_config)
+                            == style
+                        {
                             self.temporary_style = true;
                         };
                         widget_flags |= self.change_style_override(Some(style), engine_view);

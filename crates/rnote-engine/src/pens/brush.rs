@@ -259,6 +259,7 @@ impl PenBehaviour for Brush {
                             && volume
                                 < Self::VOLUME_RATIO_THRESHOLD
                                     * engine_view
+                                        .config
                                         .pens_config
                                         .brush_config
                                         .get_stroke_width()

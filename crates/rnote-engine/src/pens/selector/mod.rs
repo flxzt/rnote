@@ -320,7 +320,7 @@ impl DrawableOnDoc for Selector {
         match &self.state {
             SelectorState::Idle => {}
             SelectorState::Selecting { path } => {
-                match engine_view.pens_config.selector_config.style {
+                match engine_view.config.pens_config.selector_config.style {
                     SelectorStyle::Polygon => {
                         let mut bez_path = kurbo::BezPath::new();
                         let mut path_iter = path.iter();

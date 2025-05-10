@@ -43,10 +43,7 @@ prerequisites:
     fi
 
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    . "$HOME/.cargo/env"
-    curl -L --proto '=https' --tlsv1.2 -sSf \
-        https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-    cargo binstall -y cargo-nextest
+    export PATH="$HOME/.cargo/bin:$PATH"
 
 prerequisites-flatpak: prerequisites
     #!/usr/bin/env bash
@@ -88,6 +85,10 @@ prerequisites-dev: prerequisites
         ln -sf build-aux/git-hooks/pre-commit.hook .git/hooks/pre-commit
     fi
 
+    curl -L --proto '=https' --tlsv1.2 -sSf \
+        https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+    cargo binstall -y cargo-nextest cargo-edit cargo-deny
+
 # in MSYS2 shell
 prerequisites-win:
     pacman -S --noconfirm \
@@ -100,8 +101,7 @@ prerequisites-win:
     mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
 
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    . "$HOME/.cargo/env"
-    cargo install --locked cargo-nextest
+    export PATH="$HOME/.cargo/bin:$PATH"
 
 setup-dev *MESON_ARGS:
     meson setup \
@@ -119,9 +119,11 @@ setup-release *MESON_ARGS:
         {{ build_folder }}
 
 # in MINGW64 shell
-setup-win installer_name="rnote-win-installer":
+setup-win-installer installer_name="rnote-win-installer":
     meson setup \
         --prefix={{ mingw64_prefix_path }} \
+        -Dprofile=default \
+        -Dcli=false \
         -Dwin-installer-name={{ installer_name }} \
         -Dci={{ ci }} \
         {{ build_folder }}
@@ -148,6 +150,9 @@ lint:
     meson compile ui-cargo-clippy -C {{ build_folder }}
     meson compile cli-cargo-clippy -C {{ build_folder }}
     yamllint .
+
+lint-dependencies:
+    cargo deny check
 
 build:
     meson compile ui-cargo-build -C {{ build_folder }}
@@ -192,7 +197,7 @@ test:
     meson compile cargo-test -C {{ build_folder }}
 
 test-file-compatibility:
-    rnote-cli test \
+    {{ build_folder }}/target/debug/rnote-cli test \
         misc/file-tests/v0-5-5-test.rnote \
         misc/file-tests/v0-5-13-test.rnote \
         misc/file-tests/v0-6-0-test.rnote \
@@ -203,7 +208,14 @@ generate-docs:
     meson compile cli-cargo-doc -C {{ build_folder }}
 
 check-outdated-dependencies:
-    cargo upgrade --dry-run --verbose
+    cargo upgrade --dry-run -vv
+
+[doc('Regenerates the .pot file in the translations folder.
+Note that all entries with strings starting and ending like this "@<..>@" must be removed,
+they are templated variables and will be replaced in the build process of the app.
+All changelog entries should be removed as well.')]
+update-translations-template:
+    meson compile rnote-pot -C {{ build_folder }}
 
 update-translations:
     #!/usr/bin/env bash

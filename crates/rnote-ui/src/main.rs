@@ -10,6 +10,7 @@
 pub(crate) mod app;
 pub(crate) mod appmenu;
 pub(crate) mod appwindow;
+pub(crate) mod boxed;
 pub(crate) mod canvas;
 pub(crate) mod canvasmenu;
 pub(crate) mod canvaswrapper;

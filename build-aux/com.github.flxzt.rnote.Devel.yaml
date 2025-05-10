@@ -68,6 +68,7 @@ modules:
       run-tests: true
       config-opts:
           - "-Dprofile=devel"
+          - "-Dcli=false"
       sources:
           - type: dir
             path: ../

@@ -169,6 +169,7 @@ impl DrawableOnDoc for Eraser {
             EraserState::Up => None,
             EraserState::Proximity(current_element) | EraserState::Down(current_element) => Some(
                 engine_view
+                    .config
                     .pens_config
                     .eraser_config
                     .eraser_bounds(*current_element),
@@ -192,6 +193,7 @@ impl DrawableOnDoc for Eraser {
             EraserState::Up => {}
             EraserState::Proximity(current_element) => {
                 let bounds = engine_view
+                    .config
                     .pens_config
                     .eraser_config
                     .eraser_bounds(*current_element);
@@ -204,6 +206,7 @@ impl DrawableOnDoc for Eraser {
             }
             EraserState::Down(current_element) => {
                 let bounds = engine_view
+                    .config
                     .pens_config
                     .eraser_config
                     .eraser_bounds(*current_element);
@@ -225,16 +228,24 @@ fn erase(element: Element, engine_view: &mut EngineViewMut) -> WidgetFlags {
     // the widget_flags.store_modified flag is set in the `.trash_..()` methods
     let mut widget_flags = WidgetFlags::default();
 
-    match &engine_view.pens_config.eraser_config.style {
+    match &engine_view.config.pens_config.eraser_config.style {
         EraserStyle::TrashCollidingStrokes => {
             widget_flags |= engine_view.store.trash_colliding_strokes(
-                engine_view.pens_config.eraser_config.eraser_bounds(element),
+                engine_view
+                    .config
+                    .pens_config
+                    .eraser_config
+                    .eraser_bounds(element),
                 engine_view.camera.viewport(),
             );
         }
         EraserStyle::SplitCollidingStrokes => {
             let (modified_strokes, wf) = engine_view.store.split_colliding_strokes(
-                engine_view.pens_config.eraser_config.eraser_bounds(element),
+                engine_view
+                    .config
+                    .pens_config
+                    .eraser_config
+                    .eraser_bounds(element),
                 engine_view.camera.viewport(),
             );
             widget_flags |= wf;

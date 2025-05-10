@@ -10,9 +10,9 @@ name: Nightly
 
 jobs:
   flatpak:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-47
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
       options: --privileged
     steps:
 
@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build nightly flatpak
-        uses: flathub-infra/flatpak-github-actions/flatpak-builder@4388a4c5fc8bab58e1dfb7fc63267dca0f7b4976
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
           manifest-path: build-aux/com.github.flxzt.rnote.Devel.yaml
           cache-key: flatpak-builder-${{ github.sha }}

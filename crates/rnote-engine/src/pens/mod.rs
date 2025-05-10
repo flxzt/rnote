@@ -202,6 +202,7 @@ impl DrawableOnDoc for Pen {
     num_derive::FromPrimitive,
     num_derive::ToPrimitive,
 )]
+#[cfg_attr(feature = "ui", derive(glib::Variant))]
 #[serde(rename = "pen_style")]
 pub enum PenStyle {
     #[serde(rename = "brush")]

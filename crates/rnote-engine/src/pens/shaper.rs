@@ -71,11 +71,14 @@ impl PenBehaviour for Shaper {
                 if !engine_view.store.get_cancelled_state() {
                     // here we need an additional up/down event after a selection
                     // cancellation
-                    engine_view.pens_config.shaper_config.new_style_seeds();
-
+                    engine_view
+                        .config
+                        .pens_config
+                        .shaper_config
+                        .new_style_seeds();
                     self.state = ShaperState::BuildShape {
                         builder: new_builder(
-                            engine_view.pens_config.shaper_config.builder_type,
+                            engine_view.config.pens_config.shaper_config.builder_type,
                             element,
                             now,
                         ),
@@ -104,7 +107,12 @@ impl PenBehaviour for Shaper {
             }
             (ShaperState::BuildShape { builder }, event) => {
                 // Use Ctrl to temporarily enable/disable constraints when the switch is off/on
-                let mut constraints = engine_view.pens_config.shaper_config.constraints.clone();
+                let mut constraints = engine_view
+                    .config
+                    .pens_config
+                    .shaper_config
+                    .constraints
+                    .clone();
                 constraints.enabled = match event {
                     PenEvent::Down {
                         ref modifier_keys, ..
@@ -128,6 +136,7 @@ impl PenBehaviour for Shaper {
                     BuilderProgress::InProgress => PenProgress::InProgress,
                     BuilderProgress::EmitContinue(shapes) => {
                         let mut style = engine_view
+                            .config
                             .pens_config
                             .shaper_config
                             .gen_style_for_current_options();
@@ -154,6 +163,7 @@ impl PenBehaviour for Shaper {
                     }
                     BuilderProgress::Finished(shapes) => {
                         let mut style = engine_view
+                            .config
                             .pens_config
                             .shaper_config
                             .gen_style_for_current_options();
@@ -214,6 +224,7 @@ impl PenBehaviour for Shaper {
 impl DrawableOnDoc for Shaper {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let style = engine_view
+            .config
             .pens_config
             .shaper_config
             .gen_style_for_current_options();
@@ -233,6 +244,7 @@ impl DrawableOnDoc for Shaper {
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let style = engine_view
+            .config
             .pens_config
             .shaper_config
             .gen_style_for_current_options();

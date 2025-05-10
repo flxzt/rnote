@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-09 12:05+0200\n"
-"PO-Revision-Date: 2025-05-10 10:41+0000\n"
+"PO-Revision-Date: 2025-05-11 20:01+0000\n"
 "Last-Translator: Fjuro <fjuro@alius.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
@@ -1380,12 +1380,12 @@ msgstr "Formát stránky"
 #: crates/rnote-ui/data/ui/settingspanel.ui:142
 #: crates/rnote-ui/data/ui/settingspanel.ui:284
 msgid "Save as Preset"
-msgstr ""
+msgstr "Uložit jako předvolbu"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:151
 #: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Restore From Preset"
-msgstr ""
+msgstr "Obnovit z předvolby"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:161
 msgid "Format"
@@ -1498,16 +1498,12 @@ msgid "Infinite"
 msgstr "Nekonečný"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:318
-#, fuzzy
-#| msgid "Show _Format Borders"
 msgid "Show Format Borders"
 msgstr "Zobrazit formátované hranice"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:319
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are shown"
 msgid "Set whether the format borders are shown"
-msgstr "Nastavit, zda se mají zobrazovat posuvníky na plátně"
+msgstr "Nastavit, zda se mají zobrazovat okraje formátu"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:324
 msgid "Format Border Color"
@@ -1575,26 +1571,20 @@ msgid "Set the background pattern height"
 msgstr "Nastavit vzorovou výšku pro pozadí"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:439
-#, fuzzy
-#| msgid "Show _Origin Indicator"
 msgid "Show Origin Indicator"
-msgstr "Zobrazit _Původ indikátoru"
+msgstr "Zobrazit indikátor původu"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:440
-#, fuzzy
-#| msgid "Set whether the drawing cursor is visible"
 msgid "Set whether the document origin indicator is shown"
-msgstr "Nastavení viditelnosti kreslicího kurzoru"
+msgstr "Nastavit, zda je zobrazen indikátor původu dokumentu"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:445
 msgid "Invert Color Brightness"
 msgstr "Invertovat jas barvy"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:446
-#, fuzzy
-#| msgid "Invert the brightness of all background pattern colors"
 msgid "Invert the brightness of the background and pattern colors"
-msgstr "Invertovat jas všech barevných vzorů pozadí"
+msgstr "Invertovat jas pozadí a barev vzorů"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:450
 msgid "Invert"

@@ -65,7 +65,7 @@ impl PenBehaviour for Tools {
         now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
-        match engine_view.pens_config.tools_config.style {
+        match engine_view.config.pens_config.tools_config.style {
             ToolStyle::VerticalSpace => {
                 self.verticalspace_tool
                     .handle_event(event, now, engine_view)
@@ -77,7 +77,7 @@ impl PenBehaviour for Tools {
     }
 
     fn handle_animation_frame(&mut self, engine_view: &mut EngineViewMut, optimize_epd: bool) {
-        match engine_view.pens_config.tools_config.style {
+        match engine_view.config.pens_config.tools_config.style {
             ToolStyle::Laser => self
                 .laser_tool
                 .handle_animation_frame(engine_view, optimize_epd),
@@ -88,7 +88,7 @@ impl PenBehaviour for Tools {
 
 impl DrawableOnDoc for Tools {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
-        match engine_view.pens_config.tools_config.style {
+        match engine_view.config.pens_config.tools_config.style {
             ToolStyle::VerticalSpace => self.verticalspace_tool.bounds_on_doc(engine_view),
             ToolStyle::OffsetCamera => self.offsetcamera_tool.bounds_on_doc(engine_view),
             ToolStyle::Zoom => self.zoom_tool.bounds_on_doc(engine_view),
@@ -103,7 +103,7 @@ impl DrawableOnDoc for Tools {
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
-        match &engine_view.pens_config.tools_config.style {
+        match &engine_view.config.pens_config.tools_config.style {
             ToolStyle::VerticalSpace => {
                 self.verticalspace_tool.draw_on_doc(cx, engine_view)?;
             }

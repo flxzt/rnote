@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-09 12:05+0200\n"
-"PO-Revision-Date: 2025-05-10 10:41+0000\n"
+"PO-Revision-Date: 2025-05-11 20:01+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -1381,16 +1381,13 @@ msgstr "Formato Della Pagina"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:142
 #: crates/rnote-ui/data/ui/settingspanel.ui:284
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Save sheet"
 msgid "Save as Preset"
-msgstr "Salva foglio"
+msgstr "Salva come preimpostazione"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:151
 #: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Restore From Preset"
-msgstr ""
+msgstr "Ripristina da preimpostazione"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:161
 msgid "Format"
@@ -1580,26 +1577,20 @@ msgid "Set the background pattern height"
 msgstr "Impostare l'altezza del modello di sfondo"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:439
-#, fuzzy
-#| msgid "Show _Origin Indicator"
 msgid "Show Origin Indicator"
-msgstr "Mostra_Indicatore di origine"
+msgstr "Mostra indicatore di origine"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:440
-#, fuzzy
-#| msgid "Set whether the drawing cursor is visible"
 msgid "Set whether the document origin indicator is shown"
-msgstr "Imposta se il cursore di disegno è visibile"
+msgstr "Imposta se visualizzare l'indicatore di origine del documento"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:445
 msgid "Invert Color Brightness"
 msgstr "Inverti la luminosità del colore"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:446
-#, fuzzy
-#| msgid "Invert the brightness of all background pattern colors"
 msgid "Invert the brightness of the background and pattern colors"
-msgstr "Inverte la luminosità di tutti i colori del motivo di sfondo"
+msgstr "Inverti la luminosità dei colori di sfondo e del motivo"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:450
 msgid "Invert"

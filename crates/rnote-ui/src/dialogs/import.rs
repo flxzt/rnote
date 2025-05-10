@@ -268,7 +268,11 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         .sync_create()
         .build();
 
-    let pdf_import_prefs = canvas.engine_ref().import_prefs.pdf_import_prefs;
+    let pdf_import_prefs = appwindow
+        .engine_config()
+        .read()
+        .import_prefs
+        .pdf_import_prefs;
 
     // Set the widget state from the pdf import prefs
     pdf_import_width_row.set_value(pdf_import_prefs.page_width_perc);
@@ -301,13 +305,18 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         #[weak]
         pdf_import_bitmap_scalefactor_row,
         #[weak]
-        canvas,
+        appwindow,
         move |toggle| {
-            if toggle.is_active() {
-                canvas.engine_mut().import_prefs.pdf_import_prefs.pages_type =
-                    PdfImportPagesType::Vector;
-                pdf_import_bitmap_scalefactor_row.set_sensitive(false);
+            if !toggle.is_active() {
+                return;
             }
+            appwindow
+                .engine_config()
+                .write()
+                .import_prefs
+                .pdf_import_prefs
+                .pages_type = PdfImportPagesType::Vector;
+            pdf_import_bitmap_scalefactor_row.set_sensitive(false);
         }
     ));
 
@@ -315,22 +324,28 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         #[weak]
         pdf_import_bitmap_scalefactor_row,
         #[weak]
-        canvas,
+        appwindow,
         move |toggle| {
-            if toggle.is_active() {
-                canvas.engine_mut().import_prefs.pdf_import_prefs.pages_type =
-                    PdfImportPagesType::Bitmap;
-                pdf_import_bitmap_scalefactor_row.set_sensitive(true);
+            if !toggle.is_active() {
+                return;
             }
+            appwindow
+                .engine_config()
+                .write()
+                .import_prefs
+                .pdf_import_prefs
+                .pages_type = PdfImportPagesType::Bitmap;
+            pdf_import_bitmap_scalefactor_row.set_sensitive(true);
         }
     ));
 
     pdf_import_bitmap_scalefactor_row.connect_changed(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .import_prefs
                 .pdf_import_prefs
                 .bitmap_scalefactor = row.value();
@@ -339,12 +354,12 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
 
     pdf_import_page_spacing_row.connect_selected_notify(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
             let page_spacing = PdfImportPageSpacing::try_from(row.selected()).unwrap();
-
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .import_prefs
                 .pdf_import_prefs
                 .page_spacing = page_spacing;
@@ -353,10 +368,11 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
 
     pdf_import_width_row.connect_changed(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .import_prefs
                 .pdf_import_prefs
                 .page_width_perc = row.value();
@@ -365,10 +381,11 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
 
     pdf_import_page_borders_row.connect_active_notify(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .import_prefs
                 .pdf_import_prefs
                 .page_borders = row.is_active();
@@ -377,10 +394,11 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
 
     pdf_import_adjust_document_row.connect_active_notify(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .import_prefs
                 .pdf_import_prefs
                 .adjust_document = row.is_active();
@@ -444,12 +462,12 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }
     ));
 
-    import_pdf_button_confirm.connect_clicked(clone!(#[weak] pdf_page_start_row, #[weak] pdf_page_end_row, #[weak] input_file, #[weak] dialog, #[weak] canvas, #[strong] password, move |_| {
+    import_pdf_button_confirm.connect_clicked(clone!(#[weak] pdf_page_start_row, #[weak] pdf_page_end_row, #[weak] input_file, #[weak] dialog, #[strong] password, #[weak] appwindow, #[weak] canvas, move |_| {
         dialog.close();
 
         let inner_tx_confirm = tx_confirm.clone();
 
-        glib::spawn_future_local(clone!(#[weak] pdf_page_start_row, #[weak] pdf_page_end_row, #[weak] input_file, #[weak] canvas, #[strong] password , async move {
+        glib::spawn_future_local(clone!(#[weak] pdf_page_start_row, #[weak] pdf_page_end_row, #[weak] input_file, #[strong] password, #[weak] appwindow, #[weak] canvas, async move {
             let page_range =
                 (pdf_page_start_row.value() as u32 - 1)..pdf_page_end_row.value() as u32;
 
@@ -462,7 +480,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
                     return;
                 }
             };
-            if let Err(e) = canvas.load_in_pdf_bytes(bytes.to_vec(), target_pos, Some(page_range), password).await {
+            if let Err(e) = canvas.load_in_pdf_bytes(&appwindow, bytes.to_vec(), target_pos, Some(page_range), password).await {
                 if let Err(e) = inner_tx_confirm.unbounded_send(Err(e)) {
                     error!("Failed to load PDF, but failed to send signal through channel. Err: {e:?}");
                 }
@@ -508,7 +526,11 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
     );
     let dialog: adw::Dialog = builder.object("dialog_import_xopp_w_prefs").unwrap();
     let dpi_row: adw::SpinRow = builder.object("xopp_import_dpi_row").unwrap();
-    let xopp_import_prefs = canvas.engine_ref().import_prefs.xopp_import_prefs;
+    let xopp_import_prefs = appwindow
+        .engine_config()
+        .read()
+        .import_prefs
+        .xopp_import_prefs;
     let import_xopp_button_cancel: Button = builder.object("import_xopp_button_cancel").unwrap();
     let import_xopp_button_confirm: Button = builder.object("import_xopp_button_confirm").unwrap();
 
@@ -518,9 +540,14 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
     // Update preferences
     dpi_row.connect_changed(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
-            canvas.engine_mut().import_prefs.xopp_import_prefs.dpi = row.value();
+            appwindow
+                .engine_config()
+                .write()
+                .import_prefs
+                .xopp_import_prefs
+                .dpi = row.value();
         }
     ));
 
@@ -544,12 +571,12 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
         }
     ));
 
-    import_xopp_button_confirm.connect_clicked(clone!(#[weak] input_file, #[weak] dialog, #[weak] canvas , move |_| {
+    import_xopp_button_confirm.connect_clicked(clone!(#[weak] input_file, #[weak] dialog, #[weak] appwindow, #[weak] canvas , move |_| {
         dialog.close();
 
         let inner_tx_confirm = tx_confirm.clone();
 
-        glib::spawn_future_local(clone!(#[weak] input_file, #[weak] canvas , async move {
+        glib::spawn_future_local(clone!(#[weak] input_file, #[weak] appwindow, #[weak] canvas , async move {
             let (bytes, _) = match input_file.load_bytes_future().await {
                 Ok(res) => {res}
                 Err(err) => {
@@ -559,7 +586,7 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
                     return;
                 }
             };
-            if let Err(e) = canvas.load_in_xopp_bytes(bytes.to_vec()).await {
+            if let Err(e) = canvas.load_in_xopp_bytes(&appwindow, bytes.to_vec()).await {
                 if let Err(e) = inner_tx_confirm.unbounded_send(Err(e)) {
                     error!("Failed to load XOPP, but failed to send signal through channel. Err: {e:?}");
                 }

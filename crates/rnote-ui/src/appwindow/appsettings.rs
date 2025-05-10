@@ -399,8 +399,8 @@ impl RnAppWindow {
             .app_settings()
             .ok_or_else(|| anyhow::anyhow!("Settings schema not found."))?;
 
-        // appwindow
         {
+            // Appwindow
             let window_width = app_settings.int("window-width");
             let window_height = app_settings.int("window-height");
             let is_maximized = app_settings.boolean("is-maximized");
@@ -425,6 +425,15 @@ impl RnAppWindow {
                 .load_from_settings(&app_settings);
         }
 
+        {
+            // Global config
+            if let Err(err) = self.load_global_config_from_settings(&app_settings) {
+                error!(
+                    "Failed to load engine configuration from app settings, using defaults. Err: {err:?}"
+                );
+            };
+        }
+
         Ok(())
     }
 
@@ -445,9 +454,9 @@ impl RnAppWindow {
         }
 
         {
-            // Save engine config of the current active tab
-            if let Some(canvas) = self.active_tab_canvas() {
-                canvas.save_engine_config(&app_settings)?;
+            // Save global config
+            if let Err(err) = self.save_global_config_to_settings(&app_settings) {
+                error!("Unable to save global configuration to app settings, Err: {err:?}");
             }
         }
 
@@ -482,12 +491,9 @@ impl RnAppWindow {
                     #[upgrade_or]
                     glib::ControlFlow::Break,
                     move || {
-                        let Some(canvas) = appwindow.active_tab_canvas() else {
-                            return glib::ControlFlow::Continue;
-                        };
-                        if let Err(e) = canvas.save_engine_config(&app_settings) {
+                        if let Err(e) = appwindow.save_global_config_to_settings(&app_settings) {
                             error!(
-                                "Saving engine config in periodic save task failed , Err: {e:?}"
+                                "Saving global config in periodic save task failed , Err: {e:?}"
                             );
                         }
 

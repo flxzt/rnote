@@ -1,5 +1,5 @@
 // Imports
-use crate::{RnAppWindow, RnCanvasWrapper};
+use crate::RnAppWindow;
 use gtk4::{
     Button, CompositeTemplate, MenuButton, Popover, ToggleButton, glib, glib::clone, prelude::*,
     subclass::prelude::*,
@@ -123,15 +123,20 @@ impl RnToolsPage {
             #[weak]
             appwindow,
             move |toggle| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
+                if !toggle.is_active() {
                     return;
-                };
+                }
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .tools_config
+                    .style = ToolStyle::VerticalSpace;
 
-                if toggle.is_active() {
-                    canvas.engine_mut().pens_config.tools_config.style = ToolStyle::VerticalSpace;
+                if let Some(canvas) = appwindow.active_tab_canvas() {
                     let widget_flags = canvas.engine_mut().reinstall_pen_current_style();
                     canvas.emit_handle_widget_flags(widget_flags);
-                }
+                };
             }
         ));
 
@@ -139,15 +144,20 @@ impl RnToolsPage {
             #[weak]
             appwindow,
             move |toggle| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
+                if !toggle.is_active() {
                     return;
-                };
+                }
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .tools_config
+                    .style = ToolStyle::OffsetCamera;
 
-                if toggle.is_active() {
-                    canvas.engine_mut().pens_config.tools_config.style = ToolStyle::OffsetCamera;
+                if let Some(canvas) = appwindow.active_tab_canvas() {
                     let widget_flags = canvas.engine_mut().reinstall_pen_current_style();
                     canvas.emit_handle_widget_flags(widget_flags);
-                }
+                };
             }
         ));
 
@@ -155,15 +165,20 @@ impl RnToolsPage {
             #[weak]
             appwindow,
             move |toggle| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
+                if !toggle.is_active() {
                     return;
-                };
+                }
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .tools_config
+                    .style = ToolStyle::Zoom;
 
-                if toggle.is_active() {
-                    canvas.engine_mut().pens_config.tools_config.style = ToolStyle::Zoom;
+                if let Some(canvas) = appwindow.active_tab_canvas() {
                     let widget_flags = canvas.engine_mut().reinstall_pen_current_style();
                     canvas.emit_handle_widget_flags(widget_flags);
-                }
+                };
             }
         ));
 
@@ -171,15 +186,20 @@ impl RnToolsPage {
             #[weak]
             appwindow,
             move |toggle| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
+                if !toggle.is_active() {
                     return;
-                };
+                }
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .tools_config
+                    .style = ToolStyle::Laser;
 
-                if toggle.is_active() {
-                    canvas.engine_mut().pens_config.tools_config.style = ToolStyle::Laser;
+                if let Some(canvas) = appwindow.active_tab_canvas() {
                     let widget_flags = canvas.engine_mut().reinstall_pen_current_style();
                     canvas.emit_handle_widget_flags(widget_flags);
-                }
+                };
             }
         ));
 
@@ -208,12 +228,9 @@ impl RnToolsPage {
                 #[weak]
                 appwindow,
                 move |row| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-
-                    canvas
-                        .engine_mut()
+                    appwindow
+                        .engine_config()
+                        .write()
                         .pens_config
                         .tools_config
                         .verticalspace_tool_config
@@ -226,12 +243,9 @@ impl RnToolsPage {
                 #[weak]
                 appwindow,
                 move |row| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-
-                    canvas
-                        .engine_mut()
+                    appwindow
+                        .engine_config()
+                        .write()
                         .pens_config
                         .tools_config
                         .verticalspace_tool_config
@@ -240,10 +254,10 @@ impl RnToolsPage {
             ));
     }
 
-    pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
-        let tools_config = active_tab
-            .canvas()
-            .engine_ref()
+    pub(crate) fn refresh_ui(&self, appwindow: &RnAppWindow) {
+        let tools_config = appwindow
+            .engine_config()
+            .read()
             .pens_config
             .tools_config
             .clone();

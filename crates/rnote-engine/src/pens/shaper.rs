@@ -88,6 +88,7 @@ impl PenBehaviour for Shaper {
                         ),
                     };
                 }
+
                 EventResult {
                     handled: true,
                     propagate: EventPropagation::Stop,

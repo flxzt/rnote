@@ -38,7 +38,7 @@ rustup toolchain install stable-gnu
 rustup default stable-gnu
 ```
 
-To be able to create symlinks present in the project when it's sources are cloned, make sure that the `Developer Mode`
+To be able to create symlinks present in the project when its sources are cloned, make sure that the `Developer Mode`
 in Windows is enabled. It doesn't say it, but it enables permissions for users to create symlinks.
 
 Finally, clone the repository somewhere and initialize the submodules.

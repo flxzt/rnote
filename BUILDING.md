@@ -211,7 +211,7 @@ meson test -v -C _mesonbuild
 ```
 
 ## Uninstall
-If you don't like rnote, or decided that is not worth your precious disk space, you can always uninstall it with:
+If you don't like rnote, or decided that it's not worth your precious disk space, you can always uninstall it with:
 
 ```bash
 sudo -E ninja uninstall -C _mesonbuild

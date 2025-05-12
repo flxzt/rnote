@@ -27,15 +27,15 @@ regardless of which DE, compositor, or distribution is used.
 
 In addition the focus for development and testing is on Wayland,
 because X11 has a lot of issues and inconsistencies especially with regards to
-pen input which is a integral part of the application.
+pen input which is an integral part of the application.
 
-For more details how to build the application on linux either natively or as flatpak see: [BUILDING.md](./BUILDING.md).
+For more details on how to build the application on linux either natively or as flatpak see: [BUILDING.md](./BUILDING.md).
 
 ## MacOS
 
 The application is also bundled for MacOS, @dehesselle is active in issues that affect the app bundle.
 
-For more details how to build the application on MacOS
+For more details on how to build the application on MacOS
 see: [rnote-macos-build.md](./misc/building/rnote-macos-build.md).
 
 ## Windows
@@ -46,7 +46,7 @@ For the installer `innosetup` is used.
 It should always be ensured that the app will build in `mingw64`,
 however tight integration with the Windows OS is not a priority.
 
-For more details how to build the application and the installer on Windows
+For more details on how to build the application and the installer on Windows
 see: [rnote-windows-build.md](./misc/building/rnote-windows-build.md).
 
 # Translations
@@ -137,7 +137,7 @@ All code additions should go through a PR->Review cycle.
 The core maintainers can also push directly to main but should only do that in case of
 trivial changes and fixes.
 
-The CI must run successfully in a opened PR to get it merged.
+The CI must run successfully in an opened PR to get it merged.
 Ideally the optional lint step does not report any warnings.
 But because new lints can appear on new clippy versions this is not mandatory.
 
@@ -149,7 +149,7 @@ When it fixes a specific issue, the description should reference the to-be-fixed
 
 For building the application the `cargo` calls are wrapped by meson.
 It uses a user specified build directory (e.g. `_mesonbuild`) where the build artifacts will be compiled into.
-All needed additional files needed before/after compilation are prepared and placed into it as well.
+All additional files needed before/after compilation are prepared and placed into it as well.
 
 # Dependencies
 
@@ -173,7 +173,7 @@ The codebase is separated into multiple crates that have specific purposes and s
     In it is the entire core logic of the drawing part of the Rnote application.
 
     It is categorized like this:
-    - `rnote-engine/store` : a Entity-Component-System pattern is used there to hold all strokes
+    - `rnote-engine/store` : an Entity-Component-System pattern is used there to hold all strokes
     that are produced by the user in a generational Vector and the methods that define the interactions with them.
     - `rnote-engine/document` : information about the entire document (it's dimensions, colors, ..)
     - `rnote-engine/fileformats` : dictates the current stable Rnote file format,

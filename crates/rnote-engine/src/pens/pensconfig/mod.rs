@@ -87,7 +87,7 @@ impl PensConfig {
         self.shortcuts.remove(&key)
     }
 
-    // Get the current registered action the the given shortcut key.
+    // Get the current registered action for the given shortcut key.
     pub fn get_shortcut_action(&self, key: ShortcutKey) -> Option<ShortcutAction> {
         self.shortcuts.get(&key).cloned()
     }

@@ -280,7 +280,7 @@ impl Engine {
 
         if pen_sounds {
             if let Some(pkg_data_dir) = pkg_data_dir {
-                // Only create and init a new audioplayer if it does not already exists
+                // Only create and init a new audioplayer if it does not already exist
                 if self.audioplayer.is_none() {
                     self.audioplayer = match AudioPlayer::new_init(pkg_data_dir) {
                         Ok(audioplayer) => Some(audioplayer),
@@ -386,7 +386,7 @@ impl Engine {
     /// Handle a received task from tasks_rx.
     /// Returns [WidgetFlags] to indicate what needs to be updated in the UI.
     ///
-    /// An example how to use it:
+    /// An example of how to use it:
     /// ```rust, ignore
     ///
     /// glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
@@ -418,7 +418,7 @@ impl Engine {
                     match state {
                         RenderCompState::Complete | RenderCompState::ForViewport(_) => {
                             // The rendering was already regenerated in the meantime,
-                            // so we just discard the the render task result
+                            // so we just discard the render task result
                         }
                         RenderCompState::BusyRenderingInTask => {
                             if (self.camera.image_scale()
@@ -427,7 +427,7 @@ impl Engine {
                                     + render_comp::RENDER_IMAGE_SCALE_TOLERANCE)
                                 .contains(&image_scale)
                             {
-                                // Only when the image scale is roughly the same to when the render task was started,
+                                // Only when the image scale is roughly the same as when the render task was started,
                                 // the new images are considered valid and can replace the old.
                                 self.store.replace_rendering_with_images(key, images);
                             }
@@ -594,7 +594,7 @@ impl Engine {
 
     /// Resizes the doc to the format and to fit all strokes.
     ///
-    /// Background rendering then needs to be updated.
+    /// Background rendering then need to be updated.
     pub fn doc_resize_to_fit_content(&mut self) -> WidgetFlags {
         let widget_flags = self
             .document

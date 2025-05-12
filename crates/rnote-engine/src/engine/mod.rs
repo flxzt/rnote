@@ -594,7 +594,7 @@ impl Engine {
 
     /// Resizes the doc to the format and to fit all strokes.
     ///
-    /// Background rendering then need to be updated.
+    /// Background rendering then needs to be updated.
     pub fn doc_resize_to_fit_content(&mut self) -> WidgetFlags {
         let widget_flags = self
             .document
@@ -636,7 +636,7 @@ impl Engine {
 
     /// Expand the doc to the camera when in autoexpanding layouts. called e.g. when dragging with touch.
     ///
-    /// Background and content rendering then needs to be updated.
+    /// Background and content rendering then need to be updated.
     pub fn doc_expand_autoexpand(&mut self) -> WidgetFlags {
         self.document.expand_autoexpand(&self.camera, &self.store)
     }

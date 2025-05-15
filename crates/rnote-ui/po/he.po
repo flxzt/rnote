@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-09 12:05+0200\n"
-"PO-Revision-Date: 2025-04-13 14:41+0000\n"
+"PO-Revision-Date: 2025-05-16 02:01+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
 "Language: he\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n == 1) ? 0 : ((n == 2) ? 1 : ((n > 10 && "
 "n % 10 == 0) ? 2 : 3));\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1380,16 +1380,13 @@ msgstr "תבנית עמוד"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:142
 #: crates/rnote-ui/data/ui/settingspanel.ui:284
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Save sheet"
 msgid "Save as Preset"
-msgstr "שמירת גיליון"
+msgstr "שמירה כערכה"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:151
 #: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Restore From Preset"
-msgstr ""
+msgstr "שחזור מערכה"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:161
 msgid "Format"
@@ -1502,16 +1499,12 @@ msgid "Infinite"
 msgstr "אינסוף"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:318
-#, fuzzy
-#| msgid "Show _Format Borders"
 msgid "Show Format Borders"
-msgstr "הצגת גבולות _תבנית"
+msgstr "הצגת גבולות תבנית"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:319
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are shown"
 msgid "Set whether the format borders are shown"
-msgstr "הגדרה אם פסי הגלילה על הקנבס מוצגים"
+msgstr "הגדרה מתי מסגרות התבנית מופיעות"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:324
 msgid "Format Border Color"
@@ -1579,26 +1572,20 @@ msgid "Set the background pattern height"
 msgstr "הגדרת גובה תבנית הרקע"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:439
-#, fuzzy
-#| msgid "Show _Origin Indicator"
 msgid "Show Origin Indicator"
-msgstr "הצגת _סמן המקור"
+msgstr "הצגת סמן המקור"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:440
-#, fuzzy
-#| msgid "Set whether the drawing cursor is visible"
 msgid "Set whether the document origin indicator is shown"
-msgstr "הגדרה אם סמן הציור גלוי"
+msgstr "הגדרה האם מחוון מקור המסמך מופיע"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:445
 msgid "Invert Color Brightness"
 msgstr "היפוך בהירות צבע"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:446
-#, fuzzy
-#| msgid "Invert the brightness of all background pattern colors"
 msgid "Invert the brightness of the background and pattern colors"
-msgstr "היפוך בהירות כל צבעי תבנית הרקע"
+msgstr "היפוך בהירות צבעי התבנית והרקע"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:450
 msgid "Invert"
@@ -2592,7 +2579,7 @@ msgstr "אפרפר"
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "strong"
-msgstr ""
+msgstr "בוהק"
 
 #: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"

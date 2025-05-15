@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-09 12:05+0200\n"
-"PO-Revision-Date: 2025-05-08 05:02+0000\n"
+"PO-Revision-Date: 2025-05-16 02:01+0000\n"
 "Last-Translator: Chisa Tanaka <chisa_t@users.noreply.hosted.weblate.org>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/"
-">\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/>"
+"\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -344,11 +344,6 @@ msgid "Page Order"
 msgstr "ページ順"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
@@ -800,8 +795,6 @@ msgid "Select Intersecting Path"
 msgstr "交差するパスを選択"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
-#, fuzzy
-#| msgid "Lock Aspectratio While Resizing the Selection"
 msgid "Lock Aspect Ratio While Resizing the Selection"
 msgstr "選択範囲のリサイズ中はアスペクト比をロックする"
 
@@ -2600,7 +2593,7 @@ msgstr "グレイッシュな"
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "strong"
-msgstr ""
+msgstr "ストロングな"
 
 #: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"
@@ -2623,39 +2616,29 @@ msgid "mid"
 msgstr "中明度の"
 
 #: crates/rnote-ui/src/utils.rs:217
-#, fuzzy
-#| msgid "Height"
 msgctxt "part of string representation of a color"
 msgid "bright"
-msgstr "高さ"
+msgstr "明るい"
 
 #: crates/rnote-ui/src/utils.rs:221
-#, fuzzy
-#| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "transparent"
-msgstr ""
-"Seio Inoue <sei0okun@gmail.com>\n"
-"Ryo Nakano<ryonakaknock3@gmail.com>"
+msgstr "透明な"
 
 #: crates/rnote-ui/src/utils.rs:223
-#, fuzzy
-#| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "translucent"
-msgstr ""
-"Seio Inoue <sei0okun@gmail.com>\n"
-"Ryo Nakano<ryonakaknock3@gmail.com>"
+msgstr "半透明な"
 
 #: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
-msgstr ""
+msgstr "やや半透明な"
 
 #: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
-msgstr ""
+msgstr "完全に透明"
 
 #: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"

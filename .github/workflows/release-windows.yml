@@ -21,8 +21,7 @@ jobs:
         id: install_inno
         shell: pwsh
         run: |
-           Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile D:\\is.exe
-           Start-Process -FilePath D:\\is.exe -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/SP-" -Wait
+           winget install -e --id JRSoftware.InnoSetup -v 6.4.3 --accept-package-agreements --accept-source-agreements --disable-interactivity
 
       - name: Set installer name
         id: set_installer_name

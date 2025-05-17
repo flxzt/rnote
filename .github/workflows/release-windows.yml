@@ -22,8 +22,11 @@ jobs:
         shell: pwsh
         run: |
            winget install -e --id JRSoftware.InnoSetup -v 6.4.3 --accept-package-agreements --accept-source-agreements --disable-interactivity --scope machine
-           cd "C:\Program Files (x86)\Inno Setup 6\"
-           dir
+           if (Test-Path "C:\Program Files (x86)\Inno Setup 6\") {
+             echo "inno installed successfully"
+           } else {
+             throw "could not find inno's installation folder"
+           }
 
       - name: Set installer name
         id: set_installer_name

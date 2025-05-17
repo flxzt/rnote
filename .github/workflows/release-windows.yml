@@ -21,7 +21,9 @@ jobs:
         id: install_inno
         shell: pwsh
         run: |
-           winget install -e --id JRSoftware.InnoSetup -v 6.4.3 --accept-package-agreements --accept-source-agreements --disable-interactivity
+           winget install -e --id JRSoftware.InnoSetup -v 6.4.3 --accept-package-agreements --accept-source-agreements --disable-interactivity --scope machine
+           cd "C:\Program Files (x86)\Inno Setup 6\"
+           dir
 
       - name: Set installer name
         id: set_installer_name

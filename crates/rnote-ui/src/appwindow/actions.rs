@@ -151,7 +151,8 @@ impl RnAppWindow {
                         return;
                     };
                     let en = canvas.engine_ref();
-                    let condition = en.penholder.current_pen_style() != PenStyle::Typewriter
+                    let condition = en.penholder.current_pen_style(&engine_view!(en))
+                        != PenStyle::Typewriter
                         || en.penholder.current_pen_progress()
                             != rnote_compose::penevent::PenProgress::InProgress;
                     drop(en);

@@ -104,6 +104,12 @@
                 <property name="accelerator">&lt;ctrl&gt;6</property>
               </object>
             </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Color Selection</property>
+                <property name="accelerator">1 2 3 4 5 6 7 8 9</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

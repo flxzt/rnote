@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-09 12:05+0200\n"
-"PO-Revision-Date: 2025-05-20 07:03+0000\n"
+"PO-Revision-Date: 2025-05-22 08:01+0000\n"
 "Last-Translator: Conner McKay <connermckay927@proton.me>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/rnote/repo/eo/>"
 "\n"
@@ -270,54 +270,54 @@ msgstr "- neniu dosiero elektita -"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:319
 #: crates/rnote-ui/data/ui/dialogs/export.ui:517
 msgid "Export Preferences"
-msgstr ""
+msgstr "Eksportu Agordojn"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:112
 #: crates/rnote-ui/data/ui/dialogs/export.ui:323
 #: crates/rnote-ui/data/ui/dialogs/export.ui:521
 msgid "With Background"
-msgstr ""
+msgstr "Kun Fono"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:113
 #: crates/rnote-ui/data/ui/dialogs/export.ui:324
 #: crates/rnote-ui/data/ui/dialogs/export.ui:522
 msgid "Set whether the background should be exported"
-msgstr ""
+msgstr "Elektu ĉu eksporti la fonon"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:118
 #: crates/rnote-ui/data/ui/dialogs/export.ui:329
 #: crates/rnote-ui/data/ui/dialogs/export.ui:527
 msgid "With Pattern"
-msgstr ""
+msgstr "Kun Desino"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:119
 #: crates/rnote-ui/data/ui/dialogs/export.ui:330
 #: crates/rnote-ui/data/ui/dialogs/export.ui:528
 msgid "Set whether the background pattern should be exported"
-msgstr ""
+msgstr "Elektu ĉu eksporti la desinon"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:124
 #: crates/rnote-ui/data/ui/dialogs/export.ui:335
 #: crates/rnote-ui/data/ui/dialogs/export.ui:533
 msgid "Optimize for Printing"
-msgstr ""
+msgstr "Optimumigu por Presado"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:125
 #: crates/rnote-ui/data/ui/dialogs/export.ui:336
 #: crates/rnote-ui/data/ui/dialogs/export.ui:534
 msgid "Set whether the content should be optimized for printing"
-msgstr ""
+msgstr "Elektu ĉu optimumigu la enhavo por presado"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:130
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:539
 msgid "Export Format"
-msgstr ""
+msgstr "Eksportodosierformo"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:131
 #: crates/rnote-ui/data/ui/dialogs/export.ui:342
 msgid "The export format"
-msgstr ""
+msgstr "La eksportodosierformo"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
 #: crates/rnote-ui/data/ui/dialogs/export.ui:346
@@ -326,22 +326,22 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:789
 #: crates/rnote-ui/src/dialogs/export.rs:1181
 msgid "Svg"
-msgstr ""
+msgstr "Svg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:376
 msgid "Pdf"
-msgstr ""
+msgstr "Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:387
 msgid "Xopp"
-msgstr ""
+msgstr "Xopp"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
 #: crates/rnote-ui/data/ui/dialogs/export.ui:356
 msgid "Page Order"
-msgstr ""
+msgstr "Paĝordo"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
 msgid ""
@@ -349,53 +349,56 @@ msgid ""
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
+"La ordo de la paĝoj kiam dokumentoj kun aranĝoj,\n"
+"kiuj ekspansias en horizontalaj kaj vertikalaj direktoj,\n"
+"estas tranĉita en paĝojn"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:152
 #: crates/rnote-ui/data/ui/dialogs/export.ui:363
 msgid "Horizontal First"
-msgstr ""
+msgstr "Horizontala Unue"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:153
 #: crates/rnote-ui/data/ui/dialogs/export.ui:364
 msgid "Vertical First"
-msgstr ""
+msgstr "Vertikala Unue"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:174
 #: crates/rnote-ui/src/dialogs/export.rs:769
 msgid "Export Document Pages"
-msgstr ""
+msgstr "Eksportu Dokumentajn Paĝojn"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:260
 msgid "Page Files Naming:"
-msgstr ""
+msgstr "Paĝaj Dosiernomo:"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:280
 msgid "Export Directory"
-msgstr ""
+msgstr "Eksportdosierujon"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:281
 msgid "Select the export directory"
-msgstr ""
+msgstr "Elektu la eksportdosierujon"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:312
 msgctxt ""
 "When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
-msgstr ""
+msgstr "Eksportdosiera Nombazo"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:347
 #: crates/rnote-ui/data/ui/dialogs/export.ui:545
 #: crates/rnote-ui/src/dialogs/export.rs:800
 #: crates/rnote-ui/src/dialogs/export.rs:1192
 msgid "Png"
-msgstr ""
+msgstr "Png"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:348
 #: crates/rnote-ui/data/ui/dialogs/export.ui:546
 #: crates/rnote-ui/src/dialogs/export.rs:813
 #: crates/rnote-ui/src/dialogs/export.rs:1205
 msgid "Jpeg"
-msgstr ""
+msgstr "Jpeg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
 msgid ""
@@ -403,6 +406,9 @@ msgid ""
 "    that expand in horizontal and vertical directions\n"
 "    are cut into pages"
 msgstr ""
+"La ordo de la paĝoj kiam dokumentoj kun aranĝoj,\n"
+"kiuj ekspansias en horizontalaj kaj vertikalaj direktoj,\n"
+"estas tranĉita en paĝojn"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554

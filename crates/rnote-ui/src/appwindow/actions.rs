@@ -150,20 +150,12 @@ impl RnAppWindow {
                     let Some(canvas) = appwindow.active_tab_canvas() else {
                         return;
                     };
-                    let en = canvas.engine_ref();
-                    let condition = en
-                        .penholder
-                        .current_pen_style(&rnote_engine::engine_view!(en))
-                        != rnote_engine::pens::PenStyle::Typewriter
-                        || en.penholder.current_pen_progress()
-                            != rnote_compose::penevent::PenProgress::InProgress;
-                    drop(en);
-                    if condition {
-                        setter.set_active(true);
-                    } else {
+                    if canvas.engine_ref().is_typewriter_in_progress() {
                         let widget_flags =
                             canvas.engine_mut().text_insert(format!("{}", i + 1), None);
                         appwindow.handle_widget_flags(widget_flags, &canvas);
+                    } else {
+                        setter.set_active(true);
                     }
                 }
             ));

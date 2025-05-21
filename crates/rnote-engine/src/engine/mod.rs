@@ -909,6 +909,12 @@ impl Engine {
         widget_flags
     }
 
+    pub fn is_typewriter_in_progress(&self) -> bool {
+        self.penholder.current_pen_style(&engine_view!(self)) == pens::PenStyle::Typewriter
+            && self.penholder.current_pen_progress()
+                == rnote_compose::penevent::PenProgress::InProgress
+    }
+
     pub fn current_pen_style_w_override(&self) -> PenStyle {
         self.penholder
             .current_pen_style_w_override(&engine_view!(self))

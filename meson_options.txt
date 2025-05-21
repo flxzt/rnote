@@ -14,7 +14,7 @@ option(
 option(
   'cli',
   type: 'boolean',
-  value: false,
+  value: true,
   description: 'Build the CLI',
 )
 option(

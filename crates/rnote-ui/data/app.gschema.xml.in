@@ -169,5 +169,9 @@
       <default>''</default>
       <summary>the engine configuration</summary>
     </key>
+    <key name="document-config-preset" type="s">
+      <default>''</default>
+      <summary>the document configuration preset</summary>
+    </key>
   </schema>
 </schemalist>

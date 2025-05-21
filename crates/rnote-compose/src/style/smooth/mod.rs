@@ -6,12 +6,12 @@ pub use smoothoptions::SmoothOptions;
 
 // Imports
 use super::Composer;
+use crate::PenPath;
 use crate::ext::Vector2Ext;
 use crate::penpath::{self, Segment};
 use crate::shapes::{
     Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
 };
-use crate::PenPath;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 
@@ -368,7 +368,7 @@ fn compose_lines_variable_width(
     end_width: f64,
     _options: &SmoothOptions,
 ) -> kurbo::BezPath {
-    // The the lines variable is ghosted here, to make sure we can only use the filtered
+    // The lines variable is ghosted here, to make sure we can only use the filtered
     let lines = lines
         .iter()
         .filter(|line| (line.end - line.start).magnitude() > 0.0)

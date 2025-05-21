@@ -1,11 +1,11 @@
 // Imports
-use crate::canvaswrapper::RnCanvasWrapper;
 use crate::RnPensSideBar;
-use crate::{dialogs, RnAppWindow, RnColorPicker, RnPenPicker};
+use crate::canvaswrapper::RnCanvasWrapper;
+use crate::{RnAppWindow, RnColorPicker, RnPenPicker, dialogs};
 use core::time::Duration;
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Overlay,
-    ProgressBar, ScrolledWindow, Widget,
+    CompositeTemplate, Overlay, ProgressBar, ScrolledWindow, Widget, gio, glib, glib::clone,
+    prelude::*, subclass::prelude::*,
 };
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::PenStyle;
@@ -20,7 +20,6 @@ mod imp {
     pub(crate) struct RnOverlays {
         pub(crate) progresspulses_active: Cell<usize>,
         pub(crate) progresspulse_id: RefCell<Option<glib::SourceId>>,
-        pub(super) prev_active_tab_page: glib::WeakRef<adw::TabPage>,
 
         #[template_child]
         pub(crate) toolbar_overlay: TemplateChild<Overlay>,
@@ -165,8 +164,7 @@ impl RnOverlays {
                         return;
                     };
                     let stroke_color = colorpicker.stroke_color().into_compose_color();
-                    let current_pen_style =
-                        canvas.engine_ref().penholder.current_pen_style_w_override();
+                    let current_pen_style = canvas.engine_ref().current_pen_style_w_override();
 
                     match current_pen_style {
                         PenStyle::Typewriter => {
@@ -184,8 +182,9 @@ impl RnOverlays {
                     }
 
                     // We have a global colorpicker, so we apply it to all styles
-                    canvas
-                        .engine_mut()
+                    appwindow
+                        .engine_config()
+                        .write()
                         .pens_config
                         .set_all_stroke_colors(stroke_color);
                 }
@@ -202,7 +201,7 @@ impl RnOverlays {
                         return;
                     };
                     let fill_color = colorpicker.fill_color().into_compose_color();
-                    let stroke_style = canvas.engine_ref().penholder.current_pen_style_w_override();
+                    let stroke_style = canvas.engine_ref().current_pen_style_w_override();
 
                     match stroke_style {
                         PenStyle::Selector => {
@@ -218,8 +217,9 @@ impl RnOverlays {
                     }
 
                     // We have a global colorpicker, so we apply it to all styles
-                    canvas
-                        .engine_mut()
+                    appwindow
+                        .engine_config()
+                        .write()
                         .pens_config
                         .set_all_fill_colors(fill_color);
                 }
@@ -231,8 +231,6 @@ impl RnOverlays {
         let imp = self.imp();
 
         imp.tabview.connect_selected_page_notify(clone!(
-            #[weak(rename_to=overlays)]
-            self,
             #[weak]
             appwindow,
             move |_| {
@@ -244,20 +242,9 @@ impl RnOverlays {
                     .downcast::<RnCanvasWrapper>()
                     .unwrap();
                 appwindow.tabs_set_unselected_inactive();
-
-                if let Some(prev_active_tab_page) = overlays.imp().prev_active_tab_page.upgrade() {
-                    if prev_active_tab_page != active_tab_page {
-                        appwindow.sync_state_between_tabs(&prev_active_tab_page, &active_tab_page);
-                    }
-                }
-                overlays
-                    .imp()
-                    .prev_active_tab_page
-                    .set(Some(&active_tab_page));
-
                 let widget_flags = active_canvaswrapper.canvas().engine_mut().set_active(true);
                 appwindow.handle_widget_flags(widget_flags, &active_canvaswrapper.canvas());
-                appwindow.refresh_ui_from_engine(&active_canvaswrapper);
+                appwindow.refresh_ui();
             }
         ));
 
@@ -273,26 +260,11 @@ impl RnOverlays {
             }
         ));
 
-        imp.tabview.connect_page_detached(clone!(
-            #[weak(rename_to=overlays)]
-            self,
-            move |_, page, _| {
-                let canvaswrapper = page.child().downcast::<RnCanvasWrapper>().unwrap();
-
-                // if the to be detached page was the active (selected), remove it.
-                if overlays
-                    .imp()
-                    .prev_active_tab_page
-                    .upgrade()
-                    .map_or(true, |prev| prev == *page)
-                {
-                    overlays.imp().prev_active_tab_page.set(None);
-                }
-
-                let _ = canvaswrapper.canvas().engine_mut().set_active(false);
-                canvaswrapper.disconnect_connections();
-            }
-        ));
+        imp.tabview.connect_page_detached(clone!(move |_, page, _| {
+            let canvaswrapper = page.child().downcast::<RnCanvasWrapper>().unwrap();
+            let _ = canvaswrapper.canvas().engine_mut().set_active(false);
+            canvaswrapper.disconnect_connections();
+        }));
 
         imp.tabview.connect_close_page(clone!(
             #[weak]

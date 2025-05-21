@@ -8,19 +8,17 @@
 
 > The following instructions assume that the default installation directories were used.
 
-The MSYS2 binary directories, namely `C:\msys64\mingw64\bin` and `C:\msys64\usr\bin`, must be added to the system
-environment variable `Path`.
-
 ### Dependencies
 
 In order to install the necessary dependencies, run the following command in a MSYS2 terminal.
 
 ```bash
-pacman -S git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang \
-mingw-w64-x86_64-toolchain mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake \
-mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils mingw-w64-x86_64-appstream \
-mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-poppler mingw-w64-x86_64-poppler-data \
-mingw-w64-x86_64-angleproject
+pacman -S --noconfirm \
+    unzip git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang \
+    mingw-w64-x86_64-toolchain mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake \
+    mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils mingw-w64-x86_64-appstream \
+    mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-poppler mingw-w64-x86_64-poppler-data \
+    mingw-w64-x86_64-angleproject
 ```
 
 ### Configuration
@@ -28,10 +26,10 @@ mingw-w64-x86_64-angleproject
 Add the Rust binary directory to the MSYS2 `PATH` by adding the following line to `~/.bashrc`.
 
 ```bash
-export PATH=$PATH:/c/Users/$USER/.cargo/bin
+export PATH=$PATH:/c/Users/<user>/.cargo/bin
 ```
 
-If you installed Inno Setup, append `:/c/Program\ Files\ \(x86\)/Inno\ Setup\ 6` to the line above.
+If you installed Inno Setup, append `:/c/Program Files (x86)/Inno Setup 6` to the path as well.
 
 Next, Rust's toolchain needs to be changed.
 
@@ -40,7 +38,7 @@ rustup toolchain install stable-gnu
 rustup default stable-gnu
 ```
 
-To be able to create symlinks present in the project when it's sources are cloned, make sure that the `Developer Mode`
+To be able to create symlinks present in the project when its sources are cloned, make sure that the `Developer Mode`
 in Windows is enabled. It doesn't say it, but it enables permissions for users to create symlinks.
 
 Finally, clone the repository somewhere and initialize the submodules.
@@ -56,7 +54,6 @@ MSYS=winsymlinks:native git clone https://github.com/flxzt/rnote.git
 git submodule update --init --recursive
 ```
 Verify that you see in `/crates/rnote-ui/po` the four files zh_CN.po, zh_HK.po, zh_SG.po and zh_TW.po as symlinks (and not as a text file with a single line inside).   
-
 
 For unknown reasons, `libpthread.a` **and** `libpthread.dll.a` exist in `/mingw64/lib/` and rustc apparently wants to
 link with both, resulting in "multiple definitions of pthread\_..." linker errors.

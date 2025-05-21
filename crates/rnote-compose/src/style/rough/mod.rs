@@ -7,11 +7,11 @@ pub use roughoptions::RoughOptions;
 
 // Imports
 use super::Composer;
+use crate::Color;
 use crate::ext::Vector2Ext;
 use crate::shapes::{
     Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
 };
-use crate::Color;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use roughr::Point2D;
 

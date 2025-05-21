@@ -1,20 +1,20 @@
 // Imports
 use crate::{
-    groupediconpicker::GroupedIconPickerGroupData, RnAppWindow, RnCanvasWrapper,
-    RnGroupedIconPicker, RnStrokeWidthPicker,
+    RnAppWindow, RnGroupedIconPicker, RnStrokeWidthPicker,
+    groupediconpicker::GroupedIconPickerGroupData,
 };
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    glib, glib::clone, Button, CompositeTemplate, ListBox, MenuButton, Popover, StringList,
+    Button, CompositeTemplate, ListBox, MenuButton, Popover, StringList, glib, glib::clone,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::ShapeBuilderType;
 use rnote_compose::constraints::ConstraintRatio;
 use rnote_compose::style::rough::roughoptions::FillStyle;
 use rnote_compose::style::smooth::SmoothOptions;
-use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::pensconfig::ShaperConfig;
+use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 
 mod imp {
     use super::*;
@@ -231,24 +231,28 @@ impl RnShaperPage {
                 #[weak]
                 appwindow,
                 move |picker, _| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
                     let stroke_width = picker.stroke_width();
-                    let shaper_style = canvas.engine_ref().pens_config.shaper_config.style;
+                    let shaper_style = appwindow
+                        .engine_config()
+                        .read()
+                        .pens_config
+                        .shaper_config
+                        .style;
 
                     match shaper_style {
                         ShaperStyle::Smooth => {
-                            canvas
-                                .engine_mut()
+                            appwindow
+                                .engine_config()
+                                .write()
                                 .pens_config
                                 .shaper_config
                                 .smooth_options
                                 .stroke_width = stroke_width;
                         }
                         ShaperStyle::Rough => {
-                            canvas
-                                .engine_mut()
+                            appwindow
+                                .engine_config()
+                                .write()
                                 .pens_config
                                 .shaper_config
                                 .rough_options
@@ -267,16 +271,19 @@ impl RnShaperPage {
             appwindow,
             move |_, _| {
                 if let Some(shaper_style) = shaperpage.shaper_style() {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-                    canvas.engine_mut().pens_config.shaper_config.style = shaper_style;
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
+                        .shaper_config
+                        .style = shaper_style;
                     shaperpage.stroke_width_picker().deselect_setters();
 
                     match shaper_style {
                         ShaperStyle::Smooth => {
-                            let stroke_width = canvas
-                                .engine_mut()
+                            let stroke_width = appwindow
+                                .engine_config()
+                                .write()
                                 .pens_config
                                 .shaper_config
                                 .smooth_options
@@ -291,11 +298,9 @@ impl RnShaperPage {
                                 .set_icon_name("pen-shaper-style-smooth-symbolic");
                         }
                         ShaperStyle::Rough => {
-                            let Some(canvas) = appwindow.active_tab_canvas() else {
-                                return;
-                            };
-                            let stroke_width = canvas
-                                .engine_mut()
+                            let stroke_width = appwindow
+                                .engine_config()
+                                .write()
                                 .pens_config
                                 .shaper_config
                                 .rough_options
@@ -325,12 +330,9 @@ impl RnShaperPage {
                 #[weak]
                 appwindow,
                 move |_| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-
-                    canvas
-                        .engine_mut()
+                    appwindow
+                        .engine_config()
+                        .write()
                         .pens_config
                         .shaper_config
                         .rough_options
@@ -345,12 +347,9 @@ impl RnShaperPage {
                 #[weak]
                 appwindow,
                 move |row| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-
-                    canvas
-                        .engine_mut()
+                    appwindow
+                        .engine_config()
+                        .write()
                         .pens_config
                         .shaper_config
                         .rough_options
@@ -376,14 +375,15 @@ impl RnShaperPage {
                 #[weak]
                 appwindow,
                 move |picker, _| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-
                     if let (Some(buildertype), Some(icon_name)) =
                         (shaperpage.shapebuildertype(), picker.picked())
                     {
-                        canvas.engine_mut().pens_config.shaper_config.builder_type = buildertype;
+                        appwindow
+                            .engine_config()
+                            .write()
+                            .pens_config
+                            .shaper_config
+                            .builder_type = buildertype;
                         shaperpage
                             .imp()
                             .shapebuildertype_menubutton
@@ -400,12 +400,9 @@ impl RnShaperPage {
                 #[weak]
                 appwindow,
                 move |row| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-
-                    canvas
-                        .engine_mut()
+                    appwindow
+                        .engine_config()
+                        .write()
                         .pens_config
                         .shaper_config
                         .constraints
@@ -419,21 +416,19 @@ impl RnShaperPage {
                 #[weak]
                 appwindow,
                 move |row| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-
                     if row.is_active() {
-                        canvas
-                            .engine_mut()
+                        appwindow
+                            .engine_config()
+                            .write()
                             .pens_config
                             .shaper_config
                             .constraints
                             .ratios
                             .insert(ConstraintRatio::OneToOne);
                     } else {
-                        canvas
-                            .engine_mut()
+                        appwindow
+                            .engine_config()
+                            .write()
                             .pens_config
                             .shaper_config
                             .constraints
@@ -449,21 +444,19 @@ impl RnShaperPage {
                 #[weak]
                 appwindow,
                 move |row| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-
                     if row.is_active() {
-                        canvas
-                            .engine_mut()
+                        appwindow
+                            .engine_config()
+                            .write()
                             .pens_config
                             .shaper_config
                             .constraints
                             .ratios
                             .insert(ConstraintRatio::ThreeToTwo);
                     } else {
-                        canvas
-                            .engine_mut()
+                        appwindow
+                            .engine_config()
+                            .write()
                             .pens_config
                             .shaper_config
                             .constraints
@@ -479,21 +472,19 @@ impl RnShaperPage {
                 #[weak]
                 appwindow,
                 move |row| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-
                     if row.is_active() {
-                        canvas
-                            .engine_mut()
+                        appwindow
+                            .engine_config()
+                            .write()
                             .pens_config
                             .shaper_config
                             .constraints
                             .ratios
                             .insert(ConstraintRatio::Golden);
                     } else {
-                        canvas
-                            .engine_mut()
+                        appwindow
+                            .engine_config()
+                            .write()
                             .pens_config
                             .shaper_config
                             .constraints
@@ -504,12 +495,12 @@ impl RnShaperPage {
             ));
     }
 
-    pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
+    pub(crate) fn refresh_ui(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
-        let shaper_config = active_tab
-            .canvas()
-            .engine_ref()
+        let shaper_config = appwindow
+            .engine_config()
+            .read()
             .pens_config
             .shaper_config
             .clone();

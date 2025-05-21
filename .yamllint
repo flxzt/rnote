@@ -1,0 +1,14 @@
+---
+
+extends: default
+
+rules:
+  line-length:
+    max: 120
+    level: warning
+
+ignore: |
+  /_flatpak_app
+  /_flatpak_repo
+  /_mesonbuild
+  /.flatpak-builder

@@ -36,7 +36,7 @@ pub struct Resize {
 /// based on the current `position` and the `size` of
 /// the page length
 ///
-/// in conjunction with the the ratio min value, may
+/// in conjunction with the ratio min value, may
 /// fail if the position is very close to a page border
 fn helper_calculate_page_next_limit(position: &f64, size: &f64) -> f64 {
     ((position / size).floor() + 1.0f64) * size
@@ -55,8 +55,8 @@ fn helper_calculate_fit_ratio(
 
 /// Calculate the `ratio` by which to resize the image such that
 /// - it stays fully in view
-/// - it does not goes over a page border when the mode has a fixed
-///     width size
+/// - it does not go over a page border when the mode has a fixed
+///   width size
 ///
 /// There is an additional constraint when the `respect_border`
 /// bool of the `Resize` struct is true. In this case we disallow

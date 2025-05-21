@@ -1,6 +1,8 @@
+---
+
 name: 'Test Report'
 
-on:
+"on":
   workflow_run:
     workflows: ['CI']
     types:
@@ -13,11 +15,13 @@ permissions:
 
 jobs:
   report:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-    - uses: dorny/test-reporter@v1
-      with:
-        artifact: test-results
-        name: Tests
-        path: 'test-report-junit.xml'
-        reporter: java-junit
+
+      - name: Report test results
+        uses: dorny/test-reporter@v1
+        with:
+          artifact: test-results
+          name: Tests
+          path: 'test-report-junit.xml'
+          reporter: java-junit

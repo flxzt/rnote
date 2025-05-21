@@ -1,8 +1,9 @@
 // Imports
 use crate::document::Layout;
+use crate::engine::snapshot::Snapshotable;
 use crate::engine::{EngineTask, EngineTaskSender};
 use crate::tasks::{OneOffTaskError, OneOffTaskHandle};
-use crate::{CloneConfig, Document, WidgetFlags};
+use crate::{Document, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use serde::{Deserialize, Serialize};
@@ -60,8 +61,8 @@ impl Default for Camera {
     }
 }
 
-impl CloneConfig for Camera {
-    fn clone_config(&self) -> Self {
+impl Snapshotable for Camera {
+    fn extract_snapshot_data(&self) -> Self {
         Self {
             offset: self.offset,
             size: self.size,
@@ -118,7 +119,7 @@ impl Camera {
     pub fn offset_lower_upper(&self, doc: &Document) -> (na::Vector2<f64>, na::Vector2<f64>) {
         let total_zoom = self.total_zoom();
 
-        let (h_lower, h_upper) = match doc.layout {
+        let (h_lower, h_upper) = match doc.config.layout {
             Layout::FixedSize | Layout::ContinuousVertical => (
                 doc.x * total_zoom - Self::OVERSHOOT_HORIZONTAL,
                 (doc.x + doc.width) * total_zoom + Self::OVERSHOOT_HORIZONTAL,
@@ -129,7 +130,7 @@ impl Camera {
             ),
             Layout::Infinite => (doc.x * total_zoom, (doc.x + doc.width) * total_zoom),
         };
-        let (v_lower, v_upper) = match doc.layout {
+        let (v_lower, v_upper) = match doc.config.layout {
             Layout::FixedSize | Layout::ContinuousVertical => (
                 doc.y * total_zoom - Self::OVERSHOOT_VERTICAL,
                 (doc.y + doc.height) * total_zoom + Self::OVERSHOOT_VERTICAL,

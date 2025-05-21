@@ -1,12 +1,12 @@
 //adw::ToolbarView is a replacement for adw::Dialog but not suitable for an async flow
 
 // Imports
-use crate::canvas::{self, RnCanvas};
 use crate::RnStrokeContentPreview;
-use crate::{config, RnAppWindow};
+use crate::canvas::{self, RnCanvas};
+use crate::{RnAppWindow, config};
 use adw::prelude::*;
 use gettextrs::gettext;
-use gtk4::{gio, glib, glib::clone, Builder, Button, FileDialog, FileFilter, Label};
+use gtk4::{Builder, Button, FileDialog, FileFilter, Label, gio, glib, glib::clone};
 use num_traits::ToPrimitive;
 use rnote_compose::SplitOrder;
 use rnote_engine::document::Layout;
@@ -111,8 +111,12 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     let export_doc_button_cancel: Button = builder.object("export_doc_button_cancel").unwrap();
     let export_doc_button_confirm: Button = builder.object("export_doc_button_confirm").unwrap();
 
-    let initial_doc_export_prefs = canvas.engine_ref().export_prefs.doc_export_prefs;
-    let doc_layout = canvas.engine_ref().document.layout;
+    let initial_doc_export_prefs = appwindow
+        .engine_config()
+        .read()
+        .export_prefs
+        .doc_export_prefs;
+    let doc_layout = canvas.engine_ref().document.config.layout;
 
     // initial widget state with the preferences
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
@@ -141,7 +145,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
             glib::spawn_future_local(clone!(#[strong] selected_file, #[weak] export_file_label, #[weak] button_confirm, #[weak] dialog, #[weak] canvas, #[weak] appwindow,  async move {
                 dialog.set_sensitive(false);
 
-                let doc_export_prefs = canvas.engine_mut().export_prefs.doc_export_prefs;
+                let doc_export_prefs = appwindow.engine_config().read().export_prefs.doc_export_prefs;
                 let filedialog =
                     create_filedialog_export_doc(&appwindow, &canvas, &doc_export_prefs);
                 match filedialog.save_future(Some(&appwindow)).await {
@@ -178,11 +182,12 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         #[weak]
         preview,
         #[weak]
-        canvas,
+        appwindow,
         move |with_background_row| {
             let active = with_background_row.is_active();
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .doc_export_prefs
                 .with_background = active;
@@ -194,11 +199,12 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         #[weak]
         preview,
         #[weak]
-        canvas,
+        appwindow,
         move |with_pattern_row| {
             let active = with_pattern_row.is_active();
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .doc_export_prefs
                 .with_pattern = active;
@@ -210,11 +216,12 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         #[weak]
         preview,
         #[weak]
-        canvas,
+        appwindow,
         move |optimize_printing_row| {
             let active = optimize_printing_row.is_active();
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .doc_export_prefs
                 .optimize_printing = active;
@@ -230,11 +237,12 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         #[weak]
         button_confirm,
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
             let export_format = DocExportFormat::try_from(row.selected()).unwrap();
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .doc_export_prefs
                 .export_format = export_format;
@@ -250,10 +258,18 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         #[weak]
         preview,
         #[weak]
+        appwindow,
+        #[weak]
         canvas,
         move |row| {
             let page_order = SplitOrder::try_from(row.selected()).unwrap();
-            canvas.engine_mut().export_prefs.doc_export_prefs.page_order = page_order;
+
+            appwindow
+                .engine_config()
+                .write()
+                .export_prefs
+                .doc_export_prefs
+                .page_order = page_order;
             preview.set_contents(canvas.engine_ref().extract_pages_content(page_order));
         }
     ));
@@ -428,8 +444,12 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
     let export_doc_pages_button_confirm: Button =
         builder.object("export_doc_pages_button_confirm").unwrap();
 
-    let initial_doc_pages_export_prefs = canvas.engine_ref().export_prefs.doc_pages_export_prefs;
-    let doc_layout = canvas.engine_ref().document.layout;
+    let initial_doc_pages_export_prefs = appwindow
+        .engine_config()
+        .write()
+        .export_prefs
+        .doc_pages_export_prefs;
+    let doc_layout = canvas.engine_ref().document.config.layout;
 
     // initial widget state with the preferences
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
@@ -483,7 +503,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
             glib::spawn_future_local(clone!(#[strong] selected_file, #[weak] export_dir_label, #[weak] button_confirm, #[weak] dialog, #[weak] canvas, #[weak] appwindow ,async move {
                 dialog.set_sensitive(false);
 
-                let doc_pages_export_prefs = canvas.engine_mut().export_prefs.doc_pages_export_prefs;
+                let doc_pages_export_prefs = appwindow.engine_config().write().export_prefs.doc_pages_export_prefs;
                 let filedialog = create_filedialog_export_doc_pages(
                     &appwindow,
                     &canvas,
@@ -524,11 +544,12 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         #[weak]
         preview,
         #[weak]
-        canvas,
+        appwindow,
         move |with_background_row| {
             let active = with_background_row.is_active();
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .doc_pages_export_prefs
                 .with_background = active;
@@ -540,11 +561,12 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         #[weak]
         preview,
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
             let active = row.is_active();
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .doc_pages_export_prefs
                 .with_pattern = active;
@@ -556,11 +578,12 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         #[weak]
         preview,
         #[weak]
-        canvas,
+        appwindow,
         move |optimize_printing_row| {
             let active = optimize_printing_row.is_active();
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .doc_pages_export_prefs
                 .optimize_printing = active;
@@ -578,11 +601,12 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         #[weak]
         jpeg_quality_row,
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
             let export_format = DocPagesExportFormat::try_from(row.selected()).unwrap();
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .doc_pages_export_prefs
                 .export_format = export_format;
@@ -600,8 +624,9 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
                     export_files_stemname_entryrow.text().to_string(),
                     1,
                 ) + "."
-                    + &canvas
-                        .engine_mut()
+                    + &appwindow
+                        .engine_config()
+                        .write()
                         .export_prefs
                         .doc_pages_export_prefs
                         .export_format
@@ -614,11 +639,14 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         #[weak]
         preview,
         #[weak]
+        appwindow,
+        #[weak]
         canvas,
         move |row| {
             let page_order = SplitOrder::try_from(row.selected()).unwrap();
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .doc_pages_export_prefs
                 .page_order = page_order;
@@ -628,10 +656,11 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
 
     bitmap_scalefactor_row.connect_changed(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |bitmap_scalefactor_row| {
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .doc_pages_export_prefs
                 .bitmap_scalefactor = bitmap_scalefactor_row.value();
@@ -640,10 +669,11 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
 
     jpeg_quality_row.connect_changed(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |jpeg_quality_row| {
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .doc_pages_export_prefs
                 .jpeg_quality = jpeg_quality_row.value().clamp(1.0, 100.0) as u8;
@@ -656,7 +686,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         #[weak]
         button_confirm,
         #[weak]
-        canvas,
+        appwindow,
         move |entryrow| {
             button_confirm.set_sensitive(!entryrow.text().is_empty());
 
@@ -664,8 +694,9 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
             page_files_naming_info_label.set_text(
                 &(rnote_engine::utils::doc_pages_files_names(entryrow.text().to_string(), 1)
                     + "."
-                    + &canvas
-                        .engine_mut()
+                    + &appwindow
+                        .engine_config()
+                        .read()
                         .export_prefs
                         .doc_pages_export_prefs
                         .export_format
@@ -699,7 +730,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
 
             let file_stem_name = export_files_stemname_entryrow.text().to_string();
 
-            if let Err(e) = canvas.export_doc_pages(&dir, file_stem_name, None).await {
+            if let Err(e) = canvas.export_doc_pages(&appwindow, &dir, file_stem_name, None).await {
                 error!("Exporting document pages failed, Err: {e:?}");
                 appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed"));
                 appwindow.overlays().progressbar_abort();
@@ -823,7 +854,11 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
     let export_selection_button_confirm: Button =
         builder.object("export_selection_button_confirm").unwrap();
 
-    let initial_selection_export_prefs = canvas.engine_ref().export_prefs.selection_export_prefs;
+    let initial_selection_export_prefs = appwindow
+        .engine_config()
+        .write()
+        .export_prefs
+        .selection_export_prefs;
 
     // initial widget state with the preferences
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
@@ -866,10 +901,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
             glib::spawn_future_local(clone!(#[strong] selected_file, #[weak] export_file_label, #[weak] button_confirm, #[weak] dialog, #[weak] canvas, #[weak] appwindow , async move {
                 dialog.set_sensitive(false);
 
-                let selection_export_prefs = canvas
-                    .engine_ref()
-                    .export_prefs
-                    .selection_export_prefs;
+                let selection_export_prefs = appwindow.engine_config().write().export_prefs.selection_export_prefs;
                 let filedialog = create_filedialog_export_selection(
                     &appwindow,
                     &canvas,
@@ -909,11 +941,12 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         #[weak]
         preview,
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
             let active = row.is_active();
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .selection_export_prefs
                 .with_background = active;
@@ -925,11 +958,12 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         #[weak]
         preview,
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
             let active = row.is_active();
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .selection_export_prefs
                 .with_pattern = active;
@@ -941,11 +975,12 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         #[weak]
         preview,
         #[weak]
-        canvas,
+        appwindow,
         move |optimize_printing_row| {
             let active = optimize_printing_row.is_active();
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .selection_export_prefs
                 .optimize_printing = active;
@@ -963,11 +998,12 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         #[weak]
         export_file_label,
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
             let export_format = SelectionExportFormat::try_from(row.selected()).unwrap();
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .selection_export_prefs
                 .export_format = export_format;
@@ -989,10 +1025,11 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
 
     bitmap_scalefactor_row.connect_changed(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |bitmap_scalefactor_row| {
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .selection_export_prefs
                 .bitmap_scalefactor = bitmap_scalefactor_row.value();
@@ -1001,10 +1038,11 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
 
     jpeg_quality_row.connect_changed(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |jpeg_quality_row| {
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .selection_export_prefs
                 .jpeg_quality = jpeg_quality_row.value().clamp(1.0, 100.0) as u8;
@@ -1015,11 +1053,12 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         #[weak]
         preview,
         #[weak]
-        canvas,
+        appwindow,
         move |margin_row| {
             let value = margin_row.value();
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .export_prefs
                 .selection_export_prefs
                 .margin = value;
@@ -1283,8 +1322,8 @@ pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, ca
         Ok(selected_file) => {
             appwindow.overlays().progressbar_start_pulsing();
 
-            if let Err(e) = canvas.export_engine_config(&selected_file).await {
-                error!("Exporting engine state failed, Err: {e:?}");
+            if let Err(e) = appwindow.export_engine_config(&selected_file).await {
+                error!("Exporting engine config failed, Err: {e:?}");
 
                 appwindow
                     .overlays()

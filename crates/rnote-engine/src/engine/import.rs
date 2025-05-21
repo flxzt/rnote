@@ -1,20 +1,19 @@
 // Imports
-use super::{EngineConfig, StrokeContent};
+use super::StrokeContent;
 use crate::document::Layout;
 use crate::engine_view_mut;
 use crate::pens::Pen;
 use crate::pens::PenStyle;
-use crate::store::chrono_comp::StrokeLayer;
 use crate::store::StrokeKey;
-use crate::strokes::{resize::calculate_resize_ratio, resize::ImageSizeOption, Resize};
+use crate::store::chrono_comp::StrokeLayer;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
-use crate::{CloneConfig, Engine, WidgetFlags};
+use crate::strokes::{Resize, resize::ImageSizeOption, resize::calculate_resize_ratio};
+use crate::{Engine, WidgetFlags};
 use futures::channel::oneshot;
 use rnote_compose::ext::Vector2Ext;
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
-use std::path::PathBuf;
 use std::time::Instant;
 use tracing::error;
 
@@ -142,80 +141,7 @@ pub struct ImportPrefs {
     pub xopp_import_prefs: XoppImportPrefs,
 }
 
-impl CloneConfig for ImportPrefs {
-    fn clone_config(&self) -> Self {
-        *self
-    }
-}
-
 impl Engine {
-    /// Loads the engine config
-    pub fn load_engine_config(
-        &mut self,
-        engine_config: EngineConfig,
-        data_dir: Option<PathBuf>,
-    ) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
-        self.document = engine_config.document;
-        self.pens_config = engine_config.pens_config;
-        self.penholder = engine_config.penholder;
-        self.import_prefs = engine_config.import_prefs;
-        self.export_prefs = engine_config.export_prefs;
-
-        // Set the pen sounds to update the audioplayer
-        self.set_pen_sounds(engine_config.pen_sounds, data_dir);
-
-        self.set_optimize_epd(engine_config.optimize_epd);
-
-        widget_flags |= self
-            .penholder
-            .reinstall_pen_current_style(&mut engine_view_mut!(self));
-        widget_flags |= self.doc_resize_to_fit_content();
-        widget_flags.redraw = true;
-        widget_flags.refresh_ui = true;
-        widget_flags
-    }
-
-    /// Loads the config when syncing engine state between tabs.
-    pub fn load_engine_config_sync_tab(
-        &mut self,
-        engine_config: EngineConfig,
-        data_dir: Option<PathBuf>,
-    ) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
-        self.pens_config = engine_config.pens_config;
-        self.penholder = engine_config.penholder;
-        self.import_prefs = engine_config.import_prefs;
-        self.export_prefs = engine_config.export_prefs;
-
-        // Set the pen sounds to update the audioplayer
-        self.set_pen_sounds(engine_config.pen_sounds, data_dir);
-
-        self.set_optimize_epd(engine_config.optimize_epd);
-
-        widget_flags |= self
-            .penholder
-            .reinstall_pen_current_style(&mut engine_view_mut!(self));
-        widget_flags |= self.doc_resize_to_fit_content();
-        widget_flags.redraw = true;
-        widget_flags.refresh_ui = true;
-        widget_flags
-    }
-
-    /// Import and replaces the engine config.
-    ///
-    /// If pen sounds should be enabled the rnote data-dir must be provided.
-    pub fn import_engine_config_from_json(
-        &mut self,
-        serialized_config: &str,
-        data_dir: Option<PathBuf>,
-    ) -> anyhow::Result<WidgetFlags> {
-        let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
-        Ok(self.load_engine_config(engine_config, data_dir))
-    }
-
     /// Generate a vectorimage from the bytes.
     ///
     /// The bytes are expected to be from a valid UTF-8 encoded Svg string.
@@ -228,9 +154,9 @@ impl Engine {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<VectorImage>>();
 
         let resize_struct = Resize {
-            width: self.document.format.width(),
-            height: self.document.format.height(),
-            layout_fixed_width: self.document.layout.is_fixed_width(),
+            width: self.document.config.format.width(),
+            height: self.document.config.format.height(),
+            layout_fixed_width: self.document.config.layout.is_fixed_width(),
             max_viewpoint: Some(self.camera.viewport().maxs),
             restrain_to_viewport: true,
             respect_borders,
@@ -268,9 +194,9 @@ impl Engine {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<BitmapImage>>();
 
         let resize_struct = Resize {
-            width: self.document.format.width(),
-            height: self.document.format.height(),
-            layout_fixed_width: self.document.layout.is_fixed_width(),
+            width: self.document.config.format.width(),
+            height: self.document.config.format.height(),
+            layout_fixed_width: self.document.config.layout.is_fixed_width(),
             max_viewpoint: Some(self.camera.viewport().maxs),
             restrain_to_viewport: true,
             respect_borders,
@@ -309,9 +235,15 @@ impl Engine {
     ) -> oneshot::Receiver<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>>();
-        let pdf_import_prefs = self.import_prefs.pdf_import_prefs;
-        let format = self.document.format;
-        let insert_pos = if self.import_prefs.pdf_import_prefs.adjust_document {
+        let pdf_import_prefs = self.config.read().import_prefs.pdf_import_prefs;
+        let format = self.document.config.format;
+        let insert_pos = if self
+            .config
+            .read()
+            .import_prefs
+            .pdf_import_prefs
+            .adjust_document
+        {
             na::Vector2::<f64>::zeros()
         } else {
             insert_pos
@@ -352,7 +284,9 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver while importing Pdf bytes failed. Receiver already dropped");
+                error!(
+                    "Sending result to receiver while importing Pdf bytes failed. Receiver already dropped"
+                );
             }
         });
 
@@ -385,8 +319,8 @@ impl Engine {
                 .iter()
                 .map(|(stroke, _)| stroke.bounds().extents())
                 .fold(na::Vector2::<f64>::zeros(), |acc, x| acc.maxs(&x));
-            self.document.format.set_width(max_size[0]);
-            self.document.format.set_height(max_size[1]);
+            self.document.config.format.set_width(max_size[0]);
+            self.document.config.format.set_height(max_size[1]);
             widget_flags |= self.set_doc_layout(Layout::FixedSize) | self.doc_resize_autoexpand()
         }
 

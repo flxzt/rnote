@@ -30,9 +30,9 @@ use crate::{DrawableOnDoc, WidgetFlags};
 use core::fmt::Display;
 use futures::channel::oneshot;
 use piet_cairo::CairoRenderContext;
-use rnote_compose::penevent::PenProgress;
 use rnote_compose::EventResult;
 use rnote_compose::PenEvent;
+use rnote_compose::penevent::PenProgress;
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
 
@@ -197,6 +197,7 @@ impl DrawableOnDoc for Pen {
     num_derive::FromPrimitive,
     num_derive::ToPrimitive,
 )]
+#[cfg_attr(feature = "ui", derive(glib::Variant))]
 #[serde(rename = "pen_style")]
 pub enum PenStyle {
     #[serde(rename = "brush")]

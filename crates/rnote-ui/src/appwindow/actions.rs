@@ -1,22 +1,20 @@
 // Imports
-use crate::{config, dialogs, RnAppWindow, RnCanvas};
+use crate::{RnAppWindow, RnCanvas, config, dialogs};
 use gettextrs::gettext;
 use gtk4::gio::InputStream;
 use gtk4::graphene;
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit,
-    UriLauncher, Window,
+    PrintOperation, PrintOperationAction, Unit, UriLauncher, Window, gdk, gio, glib, glib::clone,
+    prelude::*,
 };
 use p2d::bounding_volume::BoundingVolume;
-use rnote_compose::penevent::ShortcutKey;
 use rnote_compose::SplitOrder;
+use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::ext::GraphenePointExt;
-use rnote_engine::pens::PenStyle;
 use rnote_engine::strokes::resize::{ImageSizeOption, Resize};
 use rnote_engine::{Camera, Engine};
 use std::path::PathBuf;
-use std::str::FromStr;
 use std::time::Instant;
 use tracing::{debug, error};
 
@@ -49,53 +47,16 @@ impl RnAppWindow {
         self.add_action(&action_open_appmenu);
         let action_toggle_overview = gio::SimpleAction::new("toggle-overview", None);
         self.add_action(&action_toggle_overview);
-        let action_devel_mode =
-            gio::SimpleAction::new_stateful("devel-mode", None, &false.to_variant());
-        self.add_action(&action_devel_mode);
         let action_devel_menu = gio::SimpleAction::new("devel-menu", None);
         self.add_action(&action_devel_menu);
         let action_new_tab = gio::SimpleAction::new("new-tab", None);
         self.add_action(&action_new_tab);
-        let action_visual_debug =
-            gio::SimpleAction::new_stateful("visual-debug", None, &false.to_variant());
-        self.add_action(&action_visual_debug);
         let action_debug_export_engine_state =
             gio::SimpleAction::new("debug-export-engine-state", None);
         self.add_action(&action_debug_export_engine_state);
         let action_debug_export_engine_config =
             gio::SimpleAction::new("debug-export-engine-config", None);
         self.add_action(&action_debug_export_engine_config);
-        let action_righthanded = gio::PropertyAction::new("righthanded", self, "righthanded");
-        self.add_action(&action_righthanded);
-        let action_touch_drawing = gio::PropertyAction::new("touch-drawing", self, "touch-drawing");
-        self.add_action(&action_touch_drawing);
-        let action_focus_mode = gio::PropertyAction::new("focus-mode", self, "focus-mode");
-        self.add_action(&action_focus_mode);
-
-        let action_pen_sounds =
-            gio::SimpleAction::new_stateful("pen-sounds", None, &false.to_variant());
-        self.add_action(&action_pen_sounds);
-        let action_snap_positions =
-            gio::SimpleAction::new_stateful("snap-positions", None, &false.to_variant());
-        self.add_action(&action_snap_positions);
-        let action_show_format_borders =
-            gio::SimpleAction::new_stateful("show-format-borders", None, &true.to_variant());
-        self.add_action(&action_show_format_borders);
-        let action_show_origin_indicator =
-            gio::SimpleAction::new_stateful("show-origin-indicator", None, &true.to_variant());
-        self.add_action(&action_show_origin_indicator);
-        let action_block_pinch_zoom =
-            gio::PropertyAction::new("block-pinch-zoom", self, "block-pinch-zoom");
-        self.add_action(&action_block_pinch_zoom);
-        let action_respect_borders =
-            gio::PropertyAction::new("respect-borders", self, "respect-borders");
-        self.add_action(&action_respect_borders);
-        let action_pen_style = gio::SimpleAction::new_stateful(
-            "pen-style",
-            Some(&String::static_variant_type()),
-            &String::from("brush").to_variant(),
-        );
-        self.add_action(&action_pen_style);
         let action_undo_stroke = gio::SimpleAction::new("undo", None);
         self.add_action(&action_undo_stroke);
         let action_redo_stroke = gio::SimpleAction::new("redo", None);
@@ -134,8 +95,6 @@ impl RnAppWindow {
         self.add_action(&action_save_doc);
         let action_save_doc_as = gio::SimpleAction::new("save-doc-as", None);
         self.add_action(&action_save_doc_as);
-        let action_autosave = gio::PropertyAction::new("autosave", self, "autosave");
-        self.add_action(&action_autosave);
         let action_open_doc = gio::SimpleAction::new("open-doc", None);
         self.add_action(&action_open_doc);
         let action_print_doc = gio::SimpleAction::new("print-doc", None);
@@ -219,6 +178,31 @@ impl RnAppWindow {
         let action_drawing_pad_pressed_button_3 =
             gio::SimpleAction::new("drawing-pad-pressed-button-3", None);
         self.add_action(&action_drawing_pad_pressed_button_3);
+
+        // Property Actions
+        let action_righthanded = gio::PropertyAction::new("righthanded", self, "righthanded");
+        self.add_action(&action_righthanded);
+        let action_touch_drawing = gio::PropertyAction::new("touch-drawing", self, "touch-drawing");
+        self.add_action(&action_touch_drawing);
+        let action_focus_mode = gio::PropertyAction::new("focus-mode", self, "focus-mode");
+        self.add_action(&action_focus_mode);
+        let action_pen_sounds = gio::PropertyAction::new("pen-sounds", self, "pen-sounds");
+        self.add_action(&action_pen_sounds);
+        let action_snap_positions =
+            gio::PropertyAction::new("snap-positions", self, "snap-positions");
+        self.add_action(&action_snap_positions);
+        let action_block_pinch_zoom =
+            gio::PropertyAction::new("block-pinch-zoom", self, "block-pinch-zoom");
+        self.add_action(&action_block_pinch_zoom);
+        let action_respect_borders =
+            gio::PropertyAction::new("respect-borders", self, "respect-borders");
+        self.add_action(&action_respect_borders);
+        let action_autosave = gio::PropertyAction::new("autosave", self, "autosave");
+        self.add_action(&action_autosave);
+        let action_devel_mode = gio::PropertyAction::new("devel-mode", self, "devel-mode");
+        self.add_action(&action_devel_mode);
+        let action_visual_debug = gio::PropertyAction::new("visual-debug", self, "visual-debug");
+        self.add_action(&action_visual_debug);
 
         // Open settings
         action_open_settings.connect_activate(clone!(
@@ -304,46 +288,9 @@ impl RnAppWindow {
             }
         ));
 
-        // Developer mode
-        action_devel_mode.connect_activate(clone!(
-            #[weak]
-            action_devel_menu,
-            #[weak]
-            action_visual_debug,
-            move |action, _| {
-                let state = action.state().unwrap().get::<bool>().unwrap();
-
-                // Enable the devel menu action to reveal it in the app menu
-                action_devel_menu.set_enabled(!state);
-
-                // Always disable visual-debugging when disabling the developer mode
-                if state {
-                    debug!("Disabling developer mode, disabling visual debugging.");
-                    action_visual_debug.change_state(&false.to_variant());
-                }
-                action.change_state(&(!state).to_variant());
-            }
-        ));
-
         // Developer settings
         // Its enabled state toggles the visibility of the developer settings menu entry.
-        // Must only be modified inside the devel-mode action
         action_devel_menu.set_enabled(false);
-
-        // Visual debugging
-        action_visual_debug.connect_change_state(clone!(
-            #[weak(rename_to=appwindow)]
-            self,
-            move |action, state_request| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
-                    return;
-                };
-                let visual_debug = state_request.unwrap().get::<bool>().unwrap();
-                let widget_flags = canvas.engine_mut().set_visual_debug(visual_debug);
-                appwindow.handle_widget_flags(widget_flags, &canvas);
-                action.set_state(&visual_debug.to_variant());
-            }
-        ));
 
         // Create page
         action_new_tab.connect_activate(clone!(
@@ -389,95 +336,6 @@ impl RnAppWindow {
                             .await;
                     }
                 ));
-            }
-        ));
-
-        // Pen sounds
-        action_pen_sounds.connect_change_state(clone!(
-            #[weak(rename_to=appwindow)]
-            self,
-            move |action, state_request| {
-                let pen_sounds = state_request.unwrap().get::<bool>().unwrap();
-                let Some(canvas) = appwindow.active_tab_canvas() else {
-                    return;
-                };
-                canvas
-                    .engine_mut()
-                    .set_pen_sounds(pen_sounds, crate::env::pkg_data_dir().ok());
-                action.set_state(&pen_sounds.to_variant());
-            }
-        ));
-
-        // Snap positions
-        action_snap_positions.connect_change_state(clone!(
-            #[weak(rename_to=appwindow)]
-            self,
-            move |action, state_request| {
-                let snap_positions = state_request.unwrap().get::<bool>().unwrap();
-                let Some(canvas) = appwindow.active_tab_canvas() else {
-                    return;
-                };
-                canvas.engine_mut().document.snap_positions = snap_positions;
-                action.set_state(&snap_positions.to_variant());
-            }
-        ));
-
-        // Show format borders
-        action_show_format_borders.connect_change_state(clone!(
-            #[weak(rename_to=appwindow)]
-            self,
-            move |action, state_request| {
-                let show_format_borders = state_request.unwrap().get::<bool>().unwrap();
-                let Some(canvas) = appwindow.active_tab_canvas() else {
-                    return;
-                };
-                canvas.engine_mut().document.format.show_borders = show_format_borders;
-                canvas.queue_draw();
-                action.set_state(&show_format_borders.to_variant());
-            }
-        ));
-
-        // Show origin indicator
-        action_show_origin_indicator.connect_change_state(clone!(
-            #[weak(rename_to=appwindow)]
-            self,
-            move |action, state_request| {
-                let show_origin_indicator = state_request.unwrap().get::<bool>().unwrap();
-                let Some(canvas) = appwindow.active_tab_canvas() else {
-                    return;
-                };
-                canvas.engine_mut().document.format.show_origin_indicator = show_origin_indicator;
-                canvas.queue_draw();
-                action.set_state(&show_origin_indicator.to_variant());
-            }
-        ));
-
-        // Pen style
-        action_pen_style.connect_activate(clone!(
-            #[weak(rename_to=appwindow)]
-            self,
-            move |action, target| {
-                let pen_style_str = target.unwrap().str().unwrap();
-                let pen_style = match PenStyle::from_str(pen_style_str) {
-                    Ok(s) => s,
-                    Err(e) => {
-                        error!("Activated pen-style action with invalid target, Err: {e:}");
-                        return;
-                    }
-                };
-                let Some(canvas) = appwindow.active_tab_canvas() else {
-                    return;
-                };
-
-                // don't change the style if the current style with override is already the same
-                // (e.g. when switched to from the pen button, not by clicking the pen page)
-                if pen_style != canvas.engine_ref().penholder.current_pen_style_w_override() {
-                    let mut widget_flags = canvas.engine_mut().change_pen_style(pen_style);
-                    widget_flags |= canvas.engine_mut().change_pen_style_override(None);
-                    appwindow.handle_widget_flags(widget_flags, &canvas);
-                }
-
-                action.set_state(&pen_style_str.to_variant());
             }
         ));
 
@@ -724,7 +582,7 @@ impl RnAppWindow {
                 let canvas = wrapper.canvas();
                 let viewport_center = canvas.engine_ref().camera.viewport_center();
                 let new_zoom = f64::from(wrapper.scroller().width())
-                    / (wrapper.canvas().engine_ref().document.format.width()
+                    / (wrapper.canvas().engine_ref().document.config.format.width()
                         + 2.0 * Camera::OVERSHOOT_HORIZONTAL);
                 let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
                 widget_flags |= canvas
@@ -1255,11 +1113,12 @@ impl RnAppWindow {
                                         let file_paths = text
                                             .lines()
                                             .filter_map(|line| {
-                                                let file_path = if let Ok(path_uri) = url::Url::parse(line) {
-                                                    path_uri.to_file_path().ok()?
-                                                } else {
-                                                    PathBuf::from(&line)
-                                                };
+                                                let file_path =
+                                                    if let Ok(path_uri) = url::Url::parse(line) {
+                                                        path_uri.to_file_path().ok()?
+                                                    } else {
+                                                        PathBuf::from(&line)
+                                                    };
 
                                                 if file_path.exists() {
                                                     Some(file_path)
@@ -1279,8 +1138,10 @@ impl RnAppWindow {
                                                 .await;
                                         }
                                     }
-                                    Err(e) => error!("Failed to read `text/uri-list` from clipboard data, Err: {e:?}"),
-                                    }
+                                    Err(e) => error!(
+                                        "Failed to read `text/uri-list` from clipboard data, Err: {e:?}"
+                                    ),
+                                }
                             }
                         }
                         Err(e) => {
@@ -1313,21 +1174,49 @@ impl RnAppWindow {
 
                             if !acc.is_empty() {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
-                                Ok(json_string) => {
-                                        let resize_argument = ImageSizeOption::ResizeImage(Resize {
-                                            width: canvas.engine_ref().document.format.width(),
-                                            height: canvas.engine_ref().document.format.height(),
-                                            layout_fixed_width: canvas.engine_ref().document.layout.is_fixed_width(),
-                                            max_viewpoint: None,
-                                            restrain_to_viewport: false,
-                                            respect_borders: appwindow.respect_borders(),
-                                        });
-                                    if let Err(e) = canvas.insert_stroke_content(json_string.to_string(), resize_argument, target_pos).await {
-                                        error!("Failed to insert stroke content while pasting as `{}`, Err: {e:?}", StrokeContent::MIME_TYPE);
+                                    Ok(json_string) => {
+                                        let resize_argument =
+                                            ImageSizeOption::ResizeImage(Resize {
+                                                width: canvas
+                                                    .engine_ref()
+                                                    .document
+                                                    .config
+                                                    .format
+                                                    .width(),
+                                                height: canvas
+                                                    .engine_ref()
+                                                    .document
+                                                    .config
+                                                    .format
+                                                    .height(),
+                                                layout_fixed_width: canvas
+                                                    .engine_ref()
+                                                    .document
+                                                    .config
+                                                    .layout
+                                                    .is_fixed_width(),
+                                                max_viewpoint: None,
+                                                restrain_to_viewport: false,
+                                                respect_borders: appwindow.respect_borders(),
+                                            });
+                                        if let Err(e) = canvas
+                                            .insert_stroke_content(
+                                                json_string.to_string(),
+                                                resize_argument,
+                                                target_pos,
+                                            )
+                                            .await
+                                        {
+                                            error!(
+                                                "Failed to insert stroke content while pasting as `{}`, Err: {e:?}",
+                                                StrokeContent::MIME_TYPE
+                                            );
+                                        }
                                     }
+                                    Err(e) => error!(
+                                        "Failed to read stroke content &str from clipboard data, Err: {e:?}"
+                                    ),
                                 }
-                                Err(e) => error!("Failed to read stroke content &str from clipboard data, Err: {e:?}"),
-                            }
                             }
                         }
                         Err(e) => {
@@ -1356,15 +1245,24 @@ impl RnAppWindow {
 
                             if !acc.is_empty() {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
-                                Ok(text) => {
-                                    if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), target_pos, appwindow.respect_borders()).await {
-                                        error!(
-                                            "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
-                                        );
-                                    };
+                                    Ok(text) => {
+                                        if let Err(e) = canvas
+                                            .load_in_vectorimage_bytes(
+                                                text.as_bytes().to_vec(),
+                                                target_pos,
+                                                appwindow.respect_borders(),
+                                            )
+                                            .await
+                                        {
+                                            error!(
+                                                "Loading VectorImage bytes failed while pasting as Svg failed, Err: {e:?}"
+                                            );
+                                        };
+                                    }
+                                    Err(e) => error!(
+                                        "Failed to get string from clipboard data while pasting as Svg, Err: {e:?}"
+                                    ),
                                 }
-                                Err(e) => error!("Failed to get string from clipboard data while pasting as Svg, Err: {e:?}"),
-                            }
                             }
                         }
                         Err(e) => {
@@ -1445,8 +1343,8 @@ impl RnAppWindow {
                         Ok(None) => {}
                         Err(e) => {
                             error!(
-                            "Reading clipboard text failed while pasting clipboard as plain text, Err: {e:?}"
-                        );
+                                "Reading clipboard text failed while pasting clipboard as plain text, Err: {e:?}"
+                            );
                         }
                     }
                 }

@@ -144,7 +144,7 @@ On some devices one stylus button is mapped to a dedicated "Eraser" mode (which 
 <img src="https://hosted.weblate.org/widgets/rnote/-/repo/multi-auto.svg" alt="Translation status" />
 </a><br><br>
 
-If you want to start contribute by translating, take a look into the [translations section](./CONTRIBUTING.md#Translations)
+If you want to start contributing by translating, take a look into the [translations section](./CONTRIBUTING.md#Translations)
 of the CONTRIBUTING document.
 
 ## Fonts

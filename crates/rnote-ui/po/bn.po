@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-09 12:05+0200\n"
-"PO-Revision-Date: 2025-05-16 02:01+0000\n"
+"PO-Revision-Date: 2025-05-22 08:01+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -217,14 +217,12 @@ msgid "Change the directory"
 msgstr "ডিরেক্টরি পরিবর্তন করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
-#, fuzzy
-#| msgid "Trash Strokes"
 msgid "Trash File"
-msgstr "ট্র্যাশ স্ট্রোক"
+msgstr "ট্র্যাশ ফাইল"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr ""
+msgstr "আপনি কি নিশ্চিত যে আপনি এই ফাইলটি আবর্জনা বাক্সে সরাতে চান?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
@@ -937,8 +935,9 @@ msgid "Laser"
 msgstr "ইরেজার"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
+#, fuzzy
 msgid "Font Chooser"
-msgstr ""
+msgstr "ফন্ট নির্বাচক"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:29
 msgid "Edit Font Size"
@@ -1230,7 +1229,7 @@ msgstr "নাম পরিবর্তন করুন"
 
 #: crates/rnote-ui/data/ui/filerow.ui:73
 msgid "Move to Trash"
-msgstr "ট্র্যাশে পাঠান"
+msgstr "আবর্জনা বাক্সে পাঠান"
 
 #: crates/rnote-ui/data/ui/filerow.ui:77
 msgid "Duplicate"

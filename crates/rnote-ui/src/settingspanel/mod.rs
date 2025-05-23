@@ -57,6 +57,8 @@ mod imp {
         #[template_child]
         pub(crate) general_drawing_cursor_picker_menubutton: TemplateChild<MenuButton>,
         #[template_child]
+        pub(crate) general_background_invert_mode_row: TemplateChild<adw::ComboRow>,
+        #[template_child]
         pub(crate) format_predefined_formats_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(crate) format_save_preset_button: TemplateChild<Button>,
@@ -108,8 +110,6 @@ mod imp {
         pub(crate) doc_background_pattern_height_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
         pub(crate) doc_show_origin_indicator_row: TemplateChild<adw::SwitchRow>,
-        #[template_child]
-        pub(crate) background_pattern_invert_color_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) penshortcut_stylus_button_primary_row: TemplateChild<RnPenShortcutRow>,
         #[template_child]
@@ -395,6 +395,16 @@ impl RnSettingsPanel {
 
     pub(crate) fn general_inertial_scrolling_row(&self) -> adw::SwitchRow {
         self.imp().general_inertial_scrolling_row.clone()
+    }
+
+    pub(crate) fn invert_mode(&self) -> u32 {
+        self.imp().general_background_invert_mode_row.selected()
+    }
+
+    pub(crate) fn set_background_pattern_invert_mode(&self, mode: u32) {
+        self.imp()
+            .general_background_invert_mode_row
+            .set_selected(mode);
     }
 
     pub(crate) fn document_layout(&self) -> Layout {
@@ -1144,43 +1154,14 @@ impl RnSettingsPanel {
                 }
             ));
 
-        imp.background_pattern_invert_color_button
+        imp.general_background_invert_mode_row
             .get()
-            .connect_clicked(clone!(
+            .connect_selected_item_notify(clone!(
+                #[weak(rename_to=settings_panel)]
+                self,
                 #[weak]
                 appwindow,
-                move |_| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-
-                    let mut widget_flags = {
-                        let mut engine = canvas.engine_mut();
-                        engine.document.config.background.color = engine
-                            .document
-                            .config
-                            .background
-                            .color
-                            .to_inverted_brightness_color();
-                        engine.document.config.background.pattern_color = engine
-                            .document
-                            .config
-                            .background
-                            .pattern_color
-                            .to_inverted_brightness_color();
-                        engine.document.config.format.border_color = engine
-                            .document
-                            .config
-                            .format
-                            .border_color
-                            .to_inverted_brightness_color();
-                        engine.background_rendering_regenerate()
-                    };
-
-                    widget_flags.refresh_ui = true;
-                    widget_flags.store_modified = true;
-                    appwindow.handle_widget_flags(widget_flags, &canvas);
-                }
+                move |_| todo!()
             ));
     }
 

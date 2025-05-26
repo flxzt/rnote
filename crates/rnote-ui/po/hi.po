@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-09 12:05+0200\n"
+"POT-Creation-Date: 2025-05-26 11:14+0200\n"
 "PO-Revision-Date: 2024-08-01 15:09+0000\n"
 "Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/rnote/repo/hi/>\n"
@@ -345,6 +345,7 @@ msgid "Page Order"
 msgstr "पृष्ठ क्रम"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
@@ -401,16 +402,6 @@ msgstr "PNG"
 msgid "Jpeg"
 msgstr "JPEG"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
-msgid ""
-"The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
-msgstr ""
-"पृष्ठ क्रम जब क्षैतिज और ऊर्ध्वाधर दिशाओं में\n"
-"    विस्तारित अभिन्यास वाले दस्तावेज़ों को पृष्ठों\n"
-"    में काटा जाता है"
-
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -418,13 +409,14 @@ msgid "Bitmap Scale-Factor"
 msgstr "बिटमैप स्केल-कारक"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 msgid ""
 "Set the bitmap scale factor in relation\n"
-"    to the actual size on the document"
+"to the actual size on the document"
 msgstr ""
 "दस्तावेज पर वास्तविक आकार के संबंध में बिटमैप\n"
-"    स्केल कारक निर्धारित करें"
+"स्केल कारक निर्धारित करें"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
@@ -444,14 +436,6 @@ msgstr "निर्यात चयन"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
 msgstr "निर्यात छवि प्रारूप"
-
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
-msgid ""
-"Set the bitmap scale factor in relation\n"
-"to the actual size on the document"
-msgstr ""
-"दस्तावेज पर वास्तविक आकार के संबंध में बिटमैप\n"
-"स्केल कारक निर्धारित करें"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"
@@ -2660,6 +2644,22 @@ msgstr "काला"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "सफेद"
+
+#~ msgid ""
+#~ "The page order when documents with layouts\n"
+#~ "    that expand in horizontal and vertical directions\n"
+#~ "    are cut into pages"
+#~ msgstr ""
+#~ "पृष्ठ क्रम जब क्षैतिज और ऊर्ध्वाधर दिशाओं में\n"
+#~ "    विस्तारित अभिन्यास वाले दस्तावेज़ों को पृष्ठों\n"
+#~ "    में काटा जाता है"
+
+#~ msgid ""
+#~ "Set the bitmap scale factor in relation\n"
+#~ "    to the actual size on the document"
+#~ msgstr ""
+#~ "दस्तावेज पर वास्तविक आकार के संबंध में बिटमैप\n"
+#~ "    स्केल कारक निर्धारित करें"
 
 #, fuzzy
 #~| msgid "Failed to open the file in the file manager"

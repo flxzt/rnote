@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-09 12:05+0200\n"
+"POT-Creation-Date: 2025-05-26 11:14+0200\n"
 "PO-Revision-Date: 2023-02-09 20:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
@@ -363,6 +363,7 @@ msgid "Page Order"
 msgstr "페이지 유형"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
@@ -418,13 +419,6 @@ msgstr "Png"
 msgid "Jpeg"
 msgstr "Jpeg"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
-msgid ""
-"The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
-msgstr ""
-
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -432,6 +426,7 @@ msgid "Bitmap Scale-Factor"
 msgstr "비트맵 배율 인수"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 #, fuzzy
 #| msgid ""
@@ -439,7 +434,7 @@ msgstr "비트맵 배율 인수"
 #| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
-"    to the actual size on the document"
+"to the actual size on the document"
 msgstr ""
 "문서의 실제 크기를 기준으로 비트맵\n"
 "배율을 설정합니다"
@@ -462,18 +457,6 @@ msgstr "내보내기 선택항목"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
 msgstr "내보내기 이미지 형식"
-
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
-msgid ""
-"Set the bitmap scale factor in relation\n"
-"to the actual size on the document"
-msgstr ""
-"문서의 실제 크기를 기준으로 비트맵\n"
-"배율을 설정합니다"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"
@@ -2785,6 +2768,17 @@ msgstr ""
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr ""
+
+#, fuzzy
+#~| msgid ""
+#~| "Set the bitmap scale factor in relation\n"
+#~| "to the actual size on the document"
+#~ msgid ""
+#~ "Set the bitmap scale factor in relation\n"
+#~ "    to the actual size on the document"
+#~ msgstr ""
+#~ "문서의 실제 크기를 기준으로 비트맵\n"
+#~ "배율을 설정합니다"
 
 #, fuzzy
 #~| msgid "Failed to open file, unsupported file type"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-09 12:05+0200\n"
+"POT-Creation-Date: 2025-05-26 11:14+0200\n"
 "PO-Revision-Date: 2024-12-03 23:00+0000\n"
 "Last-Translator: Pavel Ovchinnikov <opavel@internet.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -346,6 +346,7 @@ msgid "Page Order"
 msgstr "Порядок страниц"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
@@ -402,16 +403,6 @@ msgstr "PNG"
 msgid "Jpeg"
 msgstr "JPEG"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
-msgid ""
-"The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
-msgstr ""
-"Порядок страниц, при котором документы с компоновкой,\n"
-"\tрасширяющейся по горизонтали и вертикали,\n"
-"\tделятся на страницы"
-
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -419,13 +410,14 @@ msgid "Bitmap Scale-Factor"
 msgstr "Коэффициент масштабирования растрового изображения"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 msgid ""
 "Set the bitmap scale factor in relation\n"
-"    to the actual size on the document"
+"to the actual size on the document"
 msgstr ""
 "Установить коэффициент растрового масштабирования\n"
-"\tотносительно фактического размера документа"
+"относительно фактического размера документа"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
@@ -445,14 +437,6 @@ msgstr "Экспортировать выделение"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
 msgstr "Формат экспортируемого изображения"
-
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
-msgid ""
-"Set the bitmap scale factor in relation\n"
-"to the actual size on the document"
-msgstr ""
-"Установить коэффициент растрового масштабирования\n"
-"относительно фактического размера документа"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"
@@ -2663,6 +2647,22 @@ msgstr "чёрный"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "белый"
+
+#~ msgid ""
+#~ "The page order when documents with layouts\n"
+#~ "    that expand in horizontal and vertical directions\n"
+#~ "    are cut into pages"
+#~ msgstr ""
+#~ "Порядок страниц, при котором документы с компоновкой,\n"
+#~ "\tрасширяющейся по горизонтали и вертикали,\n"
+#~ "\tделятся на страницы"
+
+#~ msgid ""
+#~ "Set the bitmap scale factor in relation\n"
+#~ "    to the actual size on the document"
+#~ msgstr ""
+#~ "Установить коэффициент растрового масштабирования\n"
+#~ "\tотносительно фактического размера документа"
 
 #, fuzzy
 #~| msgid "Failed to open the file in the file manager"

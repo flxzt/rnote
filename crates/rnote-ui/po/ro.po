@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-09 12:05+0200\n"
+"POT-Creation-Date: 2025-05-26 11:14+0200\n"
 "PO-Revision-Date: 2024-11-28 17:05+0000\n"
 "Last-Translator: Andrea Andre <andrea.tsg19@slmail.me>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/rnote/repo/ro/"
@@ -341,6 +341,7 @@ msgid "Page Order"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
@@ -394,13 +395,6 @@ msgstr ""
 msgid "Jpeg"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
-msgid ""
-"The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
-msgstr ""
-
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -408,10 +402,11 @@ msgid "Bitmap Scale-Factor"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 msgid ""
 "Set the bitmap scale factor in relation\n"
-"    to the actual size on the document"
+"to the actual size on the document"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
@@ -431,12 +426,6 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
-msgid ""
-"Set the bitmap scale factor in relation\n"
-"to the actual size on the document"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-09 12:05+0200\n"
+"POT-Creation-Date: 2025-05-26 11:14+0200\n"
 "PO-Revision-Date: 2025-04-15 10:27+0000\n"
 "Last-Translator: Murteza Y <weblate@murtezayesil.me>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
@@ -343,6 +343,7 @@ msgid "Page Order"
 msgstr "Sayfa Sırası"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 #, fuzzy
 #| msgid ""
 #| "The page order when documents with layouts\n"
@@ -404,21 +405,6 @@ msgstr "Png"
 msgid "Jpeg"
 msgstr "Jpeg"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
-msgid ""
-"The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
-msgstr ""
-"Yatay ve dikey yönlerde genişleyen mizanpajlara\n"
-"sahip belgeler sayfalar halinde\n"
-"kesildiğinde sayfa sırası"
-
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -426,6 +412,7 @@ msgid "Bitmap Scale-Factor"
 msgstr "Bitmap Ölçek Faktörü"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 #, fuzzy
 #| msgid ""
@@ -433,7 +420,7 @@ msgstr "Bitmap Ölçek Faktörü"
 #| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
-"    to the actual size on the document"
+"to the actual size on the document"
 msgstr ""
 "Belgedeki gerçek boyuta göre bitmap \n"
 "ölçek faktörünü ayarlayın"
@@ -456,18 +443,6 @@ msgstr "Seçimi Dışa Aktar"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
 msgstr "Dışa aktarma görüntü biçim"
-
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
-msgid ""
-"Set the bitmap scale factor in relation\n"
-"to the actual size on the document"
-msgstr ""
-"Belgedeki gerçek boyuta göre bitmap \n"
-"ölçek faktörünü ayarlayın"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"
@@ -2684,6 +2659,31 @@ msgstr "siyah"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "beyaz"
+
+#, fuzzy
+#~| msgid ""
+#~| "The page order when documents with layouts\n"
+#~| "that expand in horizontal and vertical directions\n"
+#~| "are cut into pages"
+#~ msgid ""
+#~ "The page order when documents with layouts\n"
+#~ "    that expand in horizontal and vertical directions\n"
+#~ "    are cut into pages"
+#~ msgstr ""
+#~ "Yatay ve dikey yönlerde genişleyen mizanpajlara\n"
+#~ "sahip belgeler sayfalar halinde\n"
+#~ "kesildiğinde sayfa sırası"
+
+#, fuzzy
+#~| msgid ""
+#~| "Set the bitmap scale factor in relation\n"
+#~| "to the actual size on the document"
+#~ msgid ""
+#~ "Set the bitmap scale factor in relation\n"
+#~ "    to the actual size on the document"
+#~ msgstr ""
+#~ "Belgedeki gerçek boyuta göre bitmap \n"
+#~ "ölçek faktörünü ayarlayın"
 
 #, fuzzy
 #~| msgid "Failed to open the file in the file manager"

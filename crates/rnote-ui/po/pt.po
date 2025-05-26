@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-09 12:05+0200\n"
+"POT-Creation-Date: 2025-05-26 11:14+0200\n"
 "PO-Revision-Date: 2025-04-14 08:14+0000\n"
 "Last-Translator: Joel Pinto <geral.joelpinto@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/rnote/repo/pt/"
@@ -346,6 +346,7 @@ msgid "Page Order"
 msgstr "Ordem da página"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
@@ -404,16 +405,6 @@ msgstr "Png"
 msgid "Jpeg"
 msgstr "Jpeg"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
-msgid ""
-"The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
-msgstr ""
-"Ordem da página com layout de documento\n"
-"quando expandida nas direções horizontal e vertical\n"
-"são cortadas em páginas"
-
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -421,6 +412,7 @@ msgid "Bitmap Scale-Factor"
 msgstr "Factor de Escala do mapa de bits"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 #, fuzzy
 #| msgid ""
@@ -428,7 +420,7 @@ msgstr "Factor de Escala do mapa de bits"
 #| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
-"    to the actual size on the document"
+"to the actual size on the document"
 msgstr ""
 "Definir o factor de escala do mapa de bits em relação\n"
 "ao tamanho real do documento"
@@ -451,18 +443,6 @@ msgstr "Exportar Selecção"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
 msgstr "Exportar o Formato de Imagem"
-
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
-msgid ""
-"Set the bitmap scale factor in relation\n"
-"to the actual size on the document"
-msgstr ""
-"Definir o factor de escala do mapa de bits em relação\n"
-"ao tamanho real do documento"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"
@@ -2686,6 +2666,26 @@ msgstr ""
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "branco"
+
+#~ msgid ""
+#~ "The page order when documents with layouts\n"
+#~ "    that expand in horizontal and vertical directions\n"
+#~ "    are cut into pages"
+#~ msgstr ""
+#~ "Ordem da página com layout de documento\n"
+#~ "quando expandida nas direções horizontal e vertical\n"
+#~ "são cortadas em páginas"
+
+#, fuzzy
+#~| msgid ""
+#~| "Set the bitmap scale factor in relation\n"
+#~| "to the actual size on the document"
+#~ msgid ""
+#~ "Set the bitmap scale factor in relation\n"
+#~ "    to the actual size on the document"
+#~ msgstr ""
+#~ "Definir o factor de escala do mapa de bits em relação\n"
+#~ "ao tamanho real do documento"
 
 #, fuzzy
 #~| msgid ""

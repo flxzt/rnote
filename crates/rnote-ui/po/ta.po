@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-09 12:05+0200\n"
+"POT-Creation-Date: 2025-05-26 11:14+0200\n"
 "PO-Revision-Date: 2025-02-28 01:02+0000\n"
 "Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -345,6 +345,7 @@ msgid "Page Order"
 msgstr "பக்க வரிசை"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
@@ -401,16 +402,6 @@ msgstr "Png"
 msgid "Jpeg"
 msgstr "Jpeg"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
-msgid ""
-"The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
-msgstr ""
-"தளவமைப்புகளுடன் ஆவணங்கள் இருக்கும் போது பக்க வரிசை\n"
-" கிடைமட்ட மற்றும் செங்குத்து திசைகளில் விரிவடைகிறது\n"
-" பக்கங்களாக வெட்டப்படுகின்றன"
-
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -418,13 +409,14 @@ msgid "Bitmap Scale-Factor"
 msgstr "பிட்மேப் அளவிலான-காரணி"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 msgid ""
 "Set the bitmap scale factor in relation\n"
-"    to the actual size on the document"
+"to the actual size on the document"
 msgstr ""
 "தொடர்பில் பிட்மேப் அளவுகோலை அமைக்கவும்\n"
-" ஆவணத்தின் உண்மையான அளவிற்கு"
+"ஆவணத்தின் உண்மையான அளவிற்கு"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
@@ -444,14 +436,6 @@ msgstr "ஏற்றுமதி தேர்வு"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
 msgstr "ஏற்றுமதி படத்தின் வடிவம்"
-
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
-msgid ""
-"Set the bitmap scale factor in relation\n"
-"to the actual size on the document"
-msgstr ""
-"தொடர்பில் பிட்மேப் அளவுகோலை அமைக்கவும்\n"
-"ஆவணத்தின் உண்மையான அளவிற்கு"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"
@@ -2658,6 +2642,22 @@ msgstr "கருப்பு"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "வெள்ளை"
+
+#~ msgid ""
+#~ "The page order when documents with layouts\n"
+#~ "    that expand in horizontal and vertical directions\n"
+#~ "    are cut into pages"
+#~ msgstr ""
+#~ "தளவமைப்புகளுடன் ஆவணங்கள் இருக்கும் போது பக்க வரிசை\n"
+#~ " கிடைமட்ட மற்றும் செங்குத்து திசைகளில் விரிவடைகிறது\n"
+#~ " பக்கங்களாக வெட்டப்படுகின்றன"
+
+#~ msgid ""
+#~ "Set the bitmap scale factor in relation\n"
+#~ "    to the actual size on the document"
+#~ msgstr ""
+#~ "தொடர்பில் பிட்மேப் அளவுகோலை அமைக்கவும்\n"
+#~ " ஆவணத்தின் உண்மையான அளவிற்கு"
 
 #, fuzzy
 #~| msgid "Failed to open the file in the file manager"

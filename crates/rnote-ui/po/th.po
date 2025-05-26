@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-09 12:05+0200\n"
+"POT-Creation-Date: 2025-05-26 11:14+0200\n"
 "PO-Revision-Date: 2024-04-11 08:02+0000\n"
 "Last-Translator: Waris Lappanathiti <waris.lapp@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -344,6 +344,7 @@ msgid "Page Order"
 msgstr "ลำดับของหน้ากระดาษ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 #, fuzzy
 #| msgid ""
 #| "The page order when documents with layouts\n"
@@ -405,21 +406,6 @@ msgstr "Png"
 msgid "Jpeg"
 msgstr "Jpeg"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
-msgid ""
-"The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
-msgstr ""
-"ลำดับของหน้ากระดาษ สำหรับเมื่อเอกสาร\n"
-"ที่ขยายออกทางแนวนอนหรือแนวตั้ง\n"
-"ถูกตัดแบ่งเป็นหน้า"
-
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -427,6 +413,7 @@ msgid "Bitmap Scale-Factor"
 msgstr "มาตราส่วนของไฟล์บิตแม็ป"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 #, fuzzy
 #| msgid ""
@@ -434,7 +421,7 @@ msgstr "มาตราส่วนของไฟล์บิตแม็ป"
 #| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
-"    to the actual size on the document"
+"to the actual size on the document"
 msgstr ""
 "กำหนดมาตราส่วนของภาพ\n"
 "ต่อขนาดของเอกสารจริง"
@@ -457,18 +444,6 @@ msgstr "ส่งออกสิ่งที่เลือก"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
 msgstr "ฟอร์แมตรูปที่จะส่งออก"
-
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
-msgid ""
-"Set the bitmap scale factor in relation\n"
-"to the actual size on the document"
-msgstr ""
-"กำหนดมาตราส่วนของภาพ\n"
-"ต่อขนาดของเอกสารจริง"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"
@@ -2686,6 +2661,31 @@ msgstr ""
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr ""
+
+#, fuzzy
+#~| msgid ""
+#~| "The page order when documents with layouts\n"
+#~| "that expand in horizontal and vertical directions\n"
+#~| "are cut into pages"
+#~ msgid ""
+#~ "The page order when documents with layouts\n"
+#~ "    that expand in horizontal and vertical directions\n"
+#~ "    are cut into pages"
+#~ msgstr ""
+#~ "ลำดับของหน้ากระดาษ สำหรับเมื่อเอกสาร\n"
+#~ "ที่ขยายออกทางแนวนอนหรือแนวตั้ง\n"
+#~ "ถูกตัดแบ่งเป็นหน้า"
+
+#, fuzzy
+#~| msgid ""
+#~| "Set the bitmap scale factor in relation\n"
+#~| "to the actual size on the document"
+#~ msgid ""
+#~ "Set the bitmap scale factor in relation\n"
+#~ "    to the actual size on the document"
+#~ msgstr ""
+#~ "กำหนดมาตราส่วนของภาพ\n"
+#~ "ต่อขนาดของเอกสารจริง"
 
 #, fuzzy
 #~| msgid "Failed to open the file in the file manager"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-09 12:05+0200\n"
+"POT-Creation-Date: 2025-05-26 11:14+0200\n"
 "PO-Revision-Date: 2024-04-02 00:01+0000\n"
 "Last-Translator: Integral <integral@member.fsf.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -345,6 +345,7 @@ msgid "Page Order"
 msgstr "页面循序"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 #, fuzzy
 #| msgid ""
 #| "The page order when documents with layouts\n"
@@ -406,21 +407,6 @@ msgstr "便携式网络图形（PNG）"
 msgid "Jpeg"
 msgstr "联合图像标准（JPEG）"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
-msgid ""
-"The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
-msgstr ""
-"文档带有布局时的页面循序\n"
-"向水平和垂直方向扩展\n"
-"被切断成页"
-
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -428,6 +414,7 @@ msgid "Bitmap Scale-Factor"
 msgstr "位图缩放系数"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 #, fuzzy
 #| msgid ""
@@ -435,7 +422,7 @@ msgstr "位图缩放系数"
 #| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
-"    to the actual size on the document"
+"to the actual size on the document"
 msgstr ""
 "根据文档的实际大小\n"
 "设置位图缩放倍数"
@@ -458,18 +445,6 @@ msgstr "导出所选"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
 msgstr "图像导出的格式"
-
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
-msgid ""
-"Set the bitmap scale factor in relation\n"
-"to the actual size on the document"
-msgstr ""
-"根据文档的实际大小\n"
-"设置位图缩放倍数"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"
@@ -2695,6 +2670,31 @@ msgstr ""
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr ""
+
+#, fuzzy
+#~| msgid ""
+#~| "The page order when documents with layouts\n"
+#~| "that expand in horizontal and vertical directions\n"
+#~| "are cut into pages"
+#~ msgid ""
+#~ "The page order when documents with layouts\n"
+#~ "    that expand in horizontal and vertical directions\n"
+#~ "    are cut into pages"
+#~ msgstr ""
+#~ "文档带有布局时的页面循序\n"
+#~ "向水平和垂直方向扩展\n"
+#~ "被切断成页"
+
+#, fuzzy
+#~| msgid ""
+#~| "Set the bitmap scale factor in relation\n"
+#~| "to the actual size on the document"
+#~ msgid ""
+#~ "Set the bitmap scale factor in relation\n"
+#~ "    to the actual size on the document"
+#~ msgstr ""
+#~ "根据文档的实际大小\n"
+#~ "设置位图缩放倍数"
 
 #, fuzzy
 #~| msgid "Failed to open the file in the file manager"

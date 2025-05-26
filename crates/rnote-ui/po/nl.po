@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-09 12:05+0200\n"
+"POT-Creation-Date: 2025-05-26 11:14+0200\n"
 "PO-Revision-Date: 2025-01-30 23:56+0000\n"
 "Last-Translator: Pavel Ovchinnikov <opavel@internet.ru>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -345,6 +345,7 @@ msgid "Page Order"
 msgstr "Paginavolgorde"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
@@ -401,16 +402,6 @@ msgstr "PNG"
 msgid "Jpeg"
 msgstr "JPEG"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
-msgid ""
-"The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
-msgstr ""
-"De paginavolgorde voor documenten met indelingen\n"
-"    die horizontaal en verticaal uitgebreid zijn worden\n"
-"    opgedeeld in paginas"
-
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -418,13 +409,14 @@ msgid "Bitmap Scale-Factor"
 msgstr "Bitmap-schaalfactor"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 msgid ""
 "Set the bitmap scale factor in relation\n"
-"    to the actual size on the document"
+"to the actual size on the document"
 msgstr ""
 "Stel de bitmapfactor in verhouding\n"
-"    tot de ware grootte van het document in"
+"tot de ware grootte van het document in"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
@@ -444,14 +436,6 @@ msgstr "Selectie exporteren"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
 msgstr "Het export-afbeeldingsbestand"
-
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
-msgid ""
-"Set the bitmap scale factor in relation\n"
-"to the actual size on the document"
-msgstr ""
-"Stel de bitmapfactor in verhouding\n"
-"tot de ware grootte van het document in"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"
@@ -2669,6 +2653,22 @@ msgstr "zwart"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "wit"
+
+#~ msgid ""
+#~ "The page order when documents with layouts\n"
+#~ "    that expand in horizontal and vertical directions\n"
+#~ "    are cut into pages"
+#~ msgstr ""
+#~ "De paginavolgorde voor documenten met indelingen\n"
+#~ "    die horizontaal en verticaal uitgebreid zijn worden\n"
+#~ "    opgedeeld in paginas"
+
+#~ msgid ""
+#~ "Set the bitmap scale factor in relation\n"
+#~ "    to the actual size on the document"
+#~ msgstr ""
+#~ "Stel de bitmapfactor in verhouding\n"
+#~ "    tot de ware grootte van het document in"
 
 #, fuzzy
 #~| msgid "Failed to open the file in the file manager"

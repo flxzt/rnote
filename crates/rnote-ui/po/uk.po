@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-09 12:05+0200\n"
+"POT-Creation-Date: 2025-05-26 11:14+0200\n"
 "PO-Revision-Date: 2024-11-13 20:00+0000\n"
 "Last-Translator: Bezruchenko Simon <worcposj44@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
@@ -344,6 +344,7 @@ msgid "Page Order"
 msgstr "Порядок сторінок"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
+#: crates/rnote-ui/data/ui/dialogs/export.ui:357
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
@@ -400,16 +401,6 @@ msgstr "Png"
 msgid "Jpeg"
 msgstr "Jpeg"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
-msgid ""
-"The page order when documents with layouts\n"
-"    that expand in horizontal and vertical directions\n"
-"    are cut into pages"
-msgstr ""
-"Порядок сторінок при розрізанні документів з макетами, \n"
-"що розширюються в горизонтальному та вертикальному \n"
-"напрямках, на сторінки"
-
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
@@ -417,12 +408,13 @@ msgid "Bitmap Scale-Factor"
 msgstr "Масштаб растрового зображення"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
+#: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
 msgid ""
 "Set the bitmap scale factor in relation\n"
-"    to the actual size on the document"
+"to the actual size on the document"
 msgstr ""
-"Встановіть масштабний коефіцієнт бітової карти \n"
+"Встановіть коефіцієнт масштабу бітової карти \n"
 "відносно фактичного розміру на документі"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
@@ -443,14 +435,6 @@ msgstr "Експортувати вибране"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
 msgstr "Формат експортованого зображення"
-
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
-msgid ""
-"Set the bitmap scale factor in relation\n"
-"to the actual size on the document"
-msgstr ""
-"Встановіть коефіцієнт масштабу бітової карти \n"
-"відносно фактичного розміру на документі"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"
@@ -2666,6 +2650,22 @@ msgstr "чорний"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "білий"
+
+#~ msgid ""
+#~ "The page order when documents with layouts\n"
+#~ "    that expand in horizontal and vertical directions\n"
+#~ "    are cut into pages"
+#~ msgstr ""
+#~ "Порядок сторінок при розрізанні документів з макетами, \n"
+#~ "що розширюються в горизонтальному та вертикальному \n"
+#~ "напрямках, на сторінки"
+
+#~ msgid ""
+#~ "Set the bitmap scale factor in relation\n"
+#~ "    to the actual size on the document"
+#~ msgstr ""
+#~ "Встановіть масштабний коефіцієнт бітової карти \n"
+#~ "відносно фактичного розміру на документі"
 
 #, fuzzy
 #~| msgid "Failed to open the file in the file manager"

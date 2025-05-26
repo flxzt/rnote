@@ -404,7 +404,7 @@ msgstr "行動式網路圖形（PNG）"
 #: crates/rnote-ui/src/dialogs/export.rs:813
 #: crates/rnote-ui/src/dialogs/export.rs:1205
 msgid "Jpeg"
-msgstr "聯合影象標準（JPEG）"
+msgstr "聯合影像標準（JPEG）"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
 #, fuzzy
@@ -443,12 +443,12 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
 msgid "Jpeg Quality"
-msgstr "Jpeg影象質量"
+msgstr "Jpeg影像質量"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:382
 #: crates/rnote-ui/data/ui/dialogs/export.ui:564
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr "設定Jpeg影象的質量（1-100）"
+msgstr "設定Jpeg影像的質量（1-100）"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:414
 #: crates/rnote-ui/src/dialogs/export.rs:1160
@@ -457,7 +457,7 @@ msgstr "匯出所選"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
-msgstr "影象匯出的格式"
+msgstr "影像匯出的格式"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #, fuzzy

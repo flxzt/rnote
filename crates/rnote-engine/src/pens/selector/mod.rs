@@ -133,12 +133,15 @@ impl PenBehaviour for Selector {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
+        temporary_tool: bool,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         match event {
             PenEvent::Down {
                 element,
                 modifier_keys,
-            } => self.handle_pen_event_down(element, modifier_keys, now, engine_view),
+            } => {
+                self.handle_pen_event_down(element, modifier_keys, now, engine_view, temporary_tool)
+            }
             PenEvent::Up {
                 element,
                 modifier_keys,

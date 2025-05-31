@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-26 11:14+0200\n"
-"PO-Revision-Date: 2025-05-09 10:08+0000\n"
-"Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
+"PO-Revision-Date: 2025-06-01 11:03+0000\n"
+"Last-Translator: David Thievon <pdkfan@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -1363,15 +1363,13 @@ msgstr "Seitenformat"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:142
 #: crates/rnote-ui/data/ui/settingspanel.ui:284
-#, fuzzy
-#| msgid "Save sheet"
 msgid "Save as Preset"
-msgstr "Blatt sichern"
+msgstr "Als Vorlage speichern"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:151
 #: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Restore From Preset"
-msgstr ""
+msgstr "Aus Vorlage wiederherstellen"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:161
 msgid "Format"
@@ -1484,16 +1482,12 @@ msgid "Infinite"
 msgstr "Unendlich"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:318
-#, fuzzy
-#| msgid "Show _Format Borders"
 msgid "Show Format Borders"
-msgstr "Zeige _Formatränder"
+msgstr "Zeige Formatränder"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:319
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are shown"
 msgid "Set whether the format borders are shown"
-msgstr "Sichtbarkeit der Scrollbalken der Leinwand ändern"
+msgstr "Sichtbarkeit der Formatränder ändern"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:324
 msgid "Format Border Color"
@@ -1561,10 +1555,8 @@ msgid "Set the background pattern height"
 msgstr "Höhe des Hintergrundmusters ändern"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:439
-#, fuzzy
-#| msgid "Show _Origin Indicator"
 msgid "Show Origin Indicator"
-msgstr "Zeige _Ursprungsindikator"
+msgstr "Zeige Ursprungsindikator"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:440
 #, fuzzy
@@ -1577,10 +1569,8 @@ msgid "Invert Color Brightness"
 msgstr "Farbhelligkeit invertieren"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:446
-#, fuzzy
-#| msgid "Invert the brightness of all background pattern colors"
 msgid "Invert the brightness of the background and pattern colors"
-msgstr "Farbhelligkeit des Hintergrundmusters invertieren"
+msgstr "Farbhelligkeit des Hintergrundmusters und der Musterfarben invertieren"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:450
 msgid "Invert"

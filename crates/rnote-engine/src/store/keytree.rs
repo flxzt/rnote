@@ -70,7 +70,6 @@ impl KeyTree {
         *self = Self::default()
     }
 
-    #[cfg(feature = "ui")]
     pub(crate) fn get_tree(&self) -> &rstar::RTree<KeyTreeObject, rstar::DefaultParams> {
         &self.0
     }

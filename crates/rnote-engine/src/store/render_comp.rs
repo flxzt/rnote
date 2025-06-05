@@ -656,6 +656,18 @@ impl StrokeStore {
             }
         }
 
+        // draw the rtree root
+        let tree_bounds = self.key_tree.get_tree().root().envelope();
+        visual_debug::draw_bounds_to_gtk_snapshot(
+            Aabb::new(
+                na::point![tree_bounds.lower()[0], tree_bounds.lower()[1]],
+                na::point![tree_bounds.upper()[0], tree_bounds.upper()[1]],
+            ),
+            rnote_compose::Color::new(1.0, 0.5, 0., 1.0),
+            snapshot,
+            border_widths,
+        );
+
         Ok(())
     }
 }

@@ -86,6 +86,10 @@ impl KeyTree {
     pub(crate) fn clear(&mut self) {
         *self = Self::default()
     }
+
+    pub(crate) fn get_tree(&self) -> &rstar::RTree<KeyTreeObject, rstar::DefaultParams> {
+        &self.0
+    }
 }
 
 fn new_keytree_object(key: StrokeKey, bounds: Aabb) -> KeyTreeObject {

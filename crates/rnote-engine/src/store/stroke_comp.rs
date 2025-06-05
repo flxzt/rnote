@@ -127,17 +127,8 @@ impl StrokeStore {
 
     /// Calculate the height needed to fit all strokes.
     pub(crate) fn calc_height(&self) -> f64 {
-        let strokes_iter = self
-            .stroke_keys_unordered()
-            .into_iter()
-            .filter_map(|key| self.stroke_components.get(key));
-
-        let strokes_min_y = strokes_iter
-            .clone()
-            .fold(0.0, |acc, stroke| stroke.bounds().mins[1].min(acc));
-        let strokes_max_y = strokes_iter.fold(0.0, |acc, stroke| stroke.bounds().maxs[1].max(acc));
-
-        strokes_max_y - strokes_min_y
+        let bounds = self.key_tree.get_tree().root().envelope();
+        bounds.upper()[1] - bounds.lower()[1]
     }
 
     /// Calculate the width needed to fit all strokes.

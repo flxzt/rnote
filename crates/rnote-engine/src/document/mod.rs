@@ -9,6 +9,7 @@ pub use background::Background;
 pub use config::DocumentConfig;
 pub use format::Format;
 pub use layout::Layout;
+use rstar::Envelope;
 
 // Imports
 use crate::engine::EngineConfig;
@@ -256,10 +257,14 @@ impl Document {
         );
 
         if include_content {
-            let keys = store.stroke_keys_as_rendered();
-            let content_bounds = if let Some(content_bounds) = store.bounds_for_strokes(&keys) {
-                content_bounds
-                    .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
+            let rendered_bounds = store.key_tree.get_bounds();
+
+            let content_bounds = if rendered_bounds.area() > 0.0 {
+                Aabb::new(
+                    na::point![rendered_bounds.lower()[0], rendered_bounds.lower()[1]],
+                    na::point![rendered_bounds.upper()[0], rendered_bounds.upper()[1]],
+                )
+                .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
             } else {
                 // If doc is empty, resize to one page with the format size
                 Aabb::new(na::point![0.0, 0.0], self.config.format.size().into())
@@ -301,9 +306,14 @@ impl Document {
             .merged(&viewport.extend_by(na::vector![padding_horizontal, padding_vertical]));
 
         if include_content {
-            let keys = store.stroke_keys_as_rendered();
-            let content_bounds = if let Some(content_bounds) = store.bounds_for_strokes(&keys) {
-                content_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])
+            let rendered_bounds = store.key_tree.get_bounds();
+
+            let content_bounds = if rendered_bounds.area() > 0.0 {
+                Aabb::new(
+                    na::point![rendered_bounds.lower()[0], rendered_bounds.lower()[1]],
+                    na::point![rendered_bounds.upper()[0], rendered_bounds.upper()[1]],
+                )
+                .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
             } else {
                 // If doc is empty, resize to one page with the format size
                 Aabb::new(na::point![0.0, 0.0], self.config.format.size().into())

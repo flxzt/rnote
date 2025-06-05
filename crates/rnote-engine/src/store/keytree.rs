@@ -1,16 +1,17 @@
 // Imports
 use super::StrokeKey;
 use p2d::bounding_volume::Aabb;
+use rstar::AABB;
 use rstar::primitives::GeomWithData;
 
 /// The rtree object that holds the bounds and [StrokeKey].
-type KeyTreeObject = GeomWithData<rstar::primitives::Rectangle<[f64; 2]>, StrokeKey>;
+pub(crate) type KeyTreeObject = GeomWithData<rstar::primitives::Rectangle<[f64; 2]>, StrokeKey>;
 
 #[derive(Debug, Default)]
 /// A Rtree with [StrokeKey]'s as associated data.
 ///
 /// Used for faster spatial queries.
-pub(super) struct KeyTree(rstar::RTree<KeyTreeObject, rstar::DefaultParams>);
+pub(crate) struct KeyTree(rstar::RTree<KeyTreeObject, rstar::DefaultParams>);
 
 impl KeyTree {
     /// Insert a new tree object with the given [StrokeKey] and bounds.
@@ -72,6 +73,10 @@ impl KeyTree {
 
     pub(crate) fn get_tree(&self) -> &rstar::RTree<KeyTreeObject, rstar::DefaultParams> {
         &self.0
+    }
+
+    pub fn get_bounds(&self) -> AABB<[f64; 2]> {
+        self.0.root().envelope()
     }
 }
 

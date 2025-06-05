@@ -9,6 +9,7 @@ pub use background::Background;
 pub use config::DocumentConfig;
 pub use format::Format;
 pub use layout::Layout;
+use rstar::Envelope;
 
 // Imports
 use self::background::PatternStyle;
@@ -265,9 +266,14 @@ impl Document {
         }
 
         if include_content {
-            let keys = store.stroke_keys_as_rendered();
-            let content_bounds = if let Some(content_bounds) = store.bounds_for_strokes(&keys) {
-                content_bounds.extend_right_and_bottom_by(padding)
+            let rendered_bounds = store.key_tree.get_bounds();
+
+            let content_bounds = if rendered_bounds.area() > 0.0 {
+                Aabb::new(
+                    Vector2::new(rendered_bounds.lower()[0], rendered_bounds.lower()[1]),
+                    Vector2::new(rendered_bounds.upper()[0], rendered_bounds.upper()[1]),
+                )
+                .extend_right_and_bottom_by(padding)
             } else {
                 // If doc is empty, resize to one page with the format size
                 Aabb::new(Vector2::ZERO, self.config.format.size())
@@ -314,9 +320,14 @@ impl Document {
         }
 
         if include_content {
-            let keys = store.stroke_keys_as_rendered();
-            let content_bounds = if let Some(content_bounds) = store.bounds_for_strokes(&keys) {
-                content_bounds.extend_by(padding)
+            let rendered_bounds = store.key_tree.get_bounds();
+
+            let content_bounds = if rendered_bounds.area() > 0.0 {
+                Aabb::new(
+                    Vector2::new(rendered_bounds.lower()[0], rendered_bounds.lower()[1]),
+                    Vector2::new(rendered_bounds.upper()[0], rendered_bounds.upper()[1]),
+                )
+                .extend_by(padding)
             } else {
                 // If doc is empty, resize to one page with the format size
                 Aabb::new(Vector2::ZERO, self.config.format.size()).extend_by(padding)

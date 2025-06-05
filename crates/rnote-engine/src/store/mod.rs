@@ -95,7 +95,7 @@ pub struct StrokeStore {
     ///
     /// Needs to be updated with `update_with_key()` when strokes changed their geometry or position!
     #[serde(skip)]
-    key_tree: KeyTree,
+    pub(crate) key_tree: KeyTree,
 }
 
 impl Default for StrokeStore {

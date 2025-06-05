@@ -147,6 +147,7 @@ impl StrokeStore {
         let tree_objects = self
             .stroke_components
             .iter()
+            .filter(|(key, _stroke)| self.trashed(*key).is_some_and(|x| !x))
             .map(|(key, stroke)| (key, stroke.bounds()))
             .collect();
         self.key_tree.rebuild_from_vec(tree_objects);

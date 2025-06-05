@@ -67,7 +67,7 @@ impl StrokeStore {
             .collect()
     }
 
-    /// Storke keys in the order that they should be rendered.
+    /// Stroke keys in the order that they should be rendered.
     pub(crate) fn stroke_keys_as_rendered(&self) -> Vec<StrokeKey> {
         self.keys_sorted_chrono()
             .into_iter()

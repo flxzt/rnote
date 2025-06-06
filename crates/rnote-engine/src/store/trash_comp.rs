@@ -51,6 +51,8 @@ impl StrokeStore {
             trash_comp.trashed = trash;
             // remove the key from the rtree (so that the rtree holds information
             // only for non trashed strokes)
+            // Remark : the corresponding stroke will hold onto its rendernodes and image
+            // until `regenerate_rendering_in_viewport_threaded` is called again
             if trash {
                 self.key_tree.remove_with_key(key);
             } else {

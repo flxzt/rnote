@@ -10,6 +10,7 @@ pub mod trash_comp;
 pub use chrono_comp::ChronoComponent;
 use keytree::KeyTree;
 pub use render_comp::RenderComponent;
+use rstar::AABB;
 pub use selection_comp::SelectionComponent;
 pub use trash_comp::TrashComponent;
 
@@ -95,7 +96,7 @@ pub struct StrokeStore {
     ///
     /// Needs to be updated with `update_with_key()` when strokes changed their geometry or position!
     #[serde(skip)]
-    pub(crate) key_tree: KeyTree,
+    key_tree: KeyTree,
 }
 
 impl Default for StrokeStore {
@@ -368,5 +369,9 @@ impl StrokeStore {
         self.key_tree.clear();
 
         widget_flags
+    }
+
+    pub(super) fn get_bounds(&self) -> AABB<[f64; 2]> {
+        self.key_tree.get_bounds()
     }
 }

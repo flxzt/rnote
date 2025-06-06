@@ -266,7 +266,7 @@ impl Document {
         }
 
         if include_content {
-            let rendered_bounds = store.key_tree.get_bounds();
+            let rendered_bounds = store.get_bounds();
 
             let content_bounds = if rendered_bounds.area() > 0.0 {
                 Aabb::new(
@@ -320,7 +320,7 @@ impl Document {
         }
 
         if include_content {
-            let rendered_bounds = store.key_tree.get_bounds();
+            let rendered_bounds = store.get_bounds();
 
             let content_bounds = if rendered_bounds.area() > 0.0 {
                 Aabb::new(

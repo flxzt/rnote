@@ -5,13 +5,13 @@ use rstar::AABB;
 use rstar::primitives::GeomWithData;
 
 /// The rtree object that holds the bounds and [StrokeKey].
-pub(crate) type KeyTreeObject = GeomWithData<rstar::primitives::Rectangle<[f64; 2]>, StrokeKey>;
+type KeyTreeObject = GeomWithData<rstar::primitives::Rectangle<[f64; 2]>, StrokeKey>;
 
 #[derive(Debug, Default)]
 /// A Rtree with [StrokeKey]'s as associated data.
 ///
 /// Used for faster spatial queries.
-pub(crate) struct KeyTree(rstar::RTree<KeyTreeObject, rstar::DefaultParams>);
+pub(super) struct KeyTree(rstar::RTree<KeyTreeObject, rstar::DefaultParams>);
 
 impl KeyTree {
     /// Insert a new tree object with the given [StrokeKey] and bounds.

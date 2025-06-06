@@ -687,7 +687,7 @@ impl StrokeStore {
         }
 
         // draw the rtree root
-        let tree_bounds = self.key_tree.get_tree().root().envelope();
+        let tree_bounds = self.key_tree.get_bounds();
         visual_debug::draw_bounds_to_gtk_snapshot(
             Aabb::new(
                 na::point![tree_bounds.lower()[0], tree_bounds.lower()[1]],

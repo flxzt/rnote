@@ -374,4 +374,8 @@ impl StrokeStore {
     pub(super) fn get_bounds(&self) -> AABB<[f64; 2]> {
         self.key_tree.get_bounds()
     }
+
+    pub(super) fn keytree_is_empty(&self) -> bool {
+        self.key_tree.is_empty()
+    }
 }

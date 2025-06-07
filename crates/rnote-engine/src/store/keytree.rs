@@ -78,6 +78,10 @@ impl KeyTree {
     pub fn get_bounds(&self) -> AABB<[f64; 2]> {
         self.0.root().envelope()
     }
+
+    pub(crate) fn is_empty(&self) -> bool {
+        self.0.size() == 0
+    }
 }
 
 fn new_keytree_object(key: StrokeKey, bounds: Aabb) -> KeyTreeObject {

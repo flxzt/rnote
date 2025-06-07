@@ -331,7 +331,7 @@ impl StrokeStore {
 
         // iterate a second time on stroke keys that we know are not in
         // the viewport
-        // This way we can skip calculting their bounds
+        // This way we can skip calculating their bounds
         for (_key, render_comp) in self
             .render_components
             .iter_mut()

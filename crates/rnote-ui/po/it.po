@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-26 11:14+0200\n"
-"PO-Revision-Date: 2025-05-11 20:01+0000\n"
+"PO-Revision-Date: 2025-06-12 10:05+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -1484,16 +1484,12 @@ msgid "Infinite"
 msgstr "Infinito"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:318
-#, fuzzy
-#| msgid "Show _Format Borders"
 msgid "Show Format Borders"
-msgstr "Mostra _Bordi Pagina"
+msgstr "Mostra Formato Bordi"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:319
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are shown"
 msgid "Set whether the format borders are shown"
-msgstr "Imposta se le barre di scorrimento sull'area di disegno sono mostrate"
+msgstr "Imposta se il formato dei bordi vengono visualizzati"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:324
 msgid "Format Border Color"

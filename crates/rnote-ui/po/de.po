@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-26 11:14+0200\n"
-"PO-Revision-Date: 2025-06-01 11:03+0000\n"
-"Last-Translator: David Thievon <pdkfan@gmail.com>\n"
+"PO-Revision-Date: 2025-06-12 10:05+0000\n"
+"Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -1559,10 +1559,8 @@ msgid "Show Origin Indicator"
 msgstr "Zeige Ursprungsindikator"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:440
-#, fuzzy
-#| msgid "Set whether the drawing cursor is visible"
 msgid "Set whether the document origin indicator is shown"
-msgstr "Sichtbarkeit des Zeichnen-Cursor ändern"
+msgstr "Sichtbarkeit des Ursprungindikators ändern"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:445
 msgid "Invert Color Brightness"

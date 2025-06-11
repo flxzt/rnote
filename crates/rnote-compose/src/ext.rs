@@ -161,6 +161,8 @@ where
     /// splits a aabb into multiple which have a maximum of the given size. Their union is the given aabb.
     /// the split bounds are exactly fitted to not overlap, or extend the given bounds
     fn split(self, split_size: na::Vector2<f64>) -> Vec<Self>;
+    /// get the top patch for a given split size
+    fn get_origin(self, split_size: na::Vector2<f64>, split_order: SplitOrder) -> Self;
     /// splits a aabb into multiple of the given size. Their union contains the given aabb.
     /// The boxes on the edges most likely extend beyond the given aabb.
     fn split_extended(self, split_size: na::Vector2<f64>) -> Vec<Self>;
@@ -392,6 +394,25 @@ impl AabbExt for Aabb {
         }
 
         split_aabbs
+    }
+
+    fn get_origin(self, split_size: na::Vector2<f64>, split_order: SplitOrder) -> Self {
+        let (outer_idx, inner_idx) = match split_order {
+            SplitOrder::RowMajor => (1, 0),
+            SplitOrder::ColumnMajor => (0, 1),
+        };
+
+        let offset_outer =
+            (self.mins[outer_idx] / split_size[outer_idx]).floor() * split_size[outer_idx];
+
+        let offset_inner =
+            (self.mins[inner_idx] / split_size[inner_idx]).floor() * split_size[inner_idx];
+
+        let mins = match split_order {
+            SplitOrder::RowMajor => na::point![offset_inner, offset_outer],
+            SplitOrder::ColumnMajor => na::point![offset_outer, offset_inner],
+        };
+        Aabb::new(mins, mins + split_size)
     }
 
     fn split_extended_origin_aligned(

@@ -1,6 +1,7 @@
 // Imports
 use super::StrokeKey;
 use p2d::bounding_volume::Aabb;
+use rstar::AABB;
 use rstar::primitives::GeomWithData;
 
 /// The rtree object that holds the bounds and [StrokeKey].
@@ -68,6 +69,18 @@ impl KeyTree {
     ///  Clear the entire tree.
     pub(crate) fn clear(&mut self) {
         *self = Self::default()
+    }
+
+    pub(crate) fn get_tree(&self) -> &rstar::RTree<KeyTreeObject, rstar::DefaultParams> {
+        &self.0
+    }
+
+    pub fn get_bounds(&self) -> AABB<[f64; 2]> {
+        self.0.root().envelope()
+    }
+
+    pub(crate) fn is_empty(&self) -> bool {
+        self.0.size() == 0
     }
 }
 

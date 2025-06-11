@@ -199,7 +199,8 @@ pub struct Engine {
     background_tile_image: Option<render::Image>,
     #[cfg(feature = "ui")]
     #[serde(skip)]
-    background_rendernodes: Vec<gtk4::gsk::RenderNode>,
+    background_rendernode: Option<gtk4::gsk::RenderNode>,
+    origin_background_rendernode: Option<Aabb>,
     // Origin indicator rendering
     #[serde(skip)]
     origin_indicator_image: Option<render::Image>,
@@ -225,7 +226,8 @@ impl Default for Engine {
             tasks_rx: Some(EngineTaskReceiver(tasks_rx)),
             background_tile_image: None,
             #[cfg(feature = "ui")]
-            background_rendernodes: Vec::default(),
+            background_rendernode: None,
+            origin_background_rendernode: None,
             origin_indicator_image: None,
             #[cfg(feature = "ui")]
             origin_indicator_rendernode: None,

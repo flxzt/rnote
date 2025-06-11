@@ -12,7 +12,8 @@ use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
 use gtk4::{
     Adjustment, Button, ColorDialogButton, CompositeTemplate, MenuButton, ScrolledWindow,
-    StringList, ToggleButton, Widget, gdk, glib, glib::clone, subclass::prelude::*,
+    StringList, ToggleButton, Widget, gdk, glib, glib::SignalHandlerId, glib::clone,
+    subclass::prelude::*,
 };
 use num_traits::ToPrimitive;
 use rnote_compose::penevent::ShortcutKey;
@@ -21,7 +22,8 @@ use rnote_engine::document::Layout;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
 use rnote_engine::ext::GdkRGBAExt;
-use std::cell::RefCell;
+use std::cell::{Ref, RefCell};
+use tracing::debug;
 
 mod imp {
     use super::*;
@@ -104,8 +106,12 @@ mod imp {
         pub(crate) doc_background_pattern_color_button: TemplateChild<ColorDialogButton>,
         #[template_child]
         pub(crate) doc_background_pattern_width_unitentry: TemplateChild<RnUnitEntry>,
+        pub(crate) doc_background_pattern_width_unitentry_connect_update:
+            RefCell<Option<SignalHandlerId>>,
         #[template_child]
         pub(crate) doc_background_pattern_height_unitentry: TemplateChild<RnUnitEntry>,
+        pub(crate) doc_background_pattern_height_unitentry_connect_update:
+            RefCell<Option<SignalHandlerId>>,
         #[template_child]
         pub(crate) doc_show_origin_indicator_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
@@ -407,11 +413,17 @@ impl RnSettingsPanel {
             .set_selected(layout.to_u32().unwrap());
     }
 
-    pub(crate) fn refresh_ui(&self, appwindow: &RnAppWindow) {
+    pub(crate) fn refresh_ui(&self, appwindow: &RnAppWindow, init: bool) {
+        if init {
+            self.set_signal_state(false);
+        }
         self.refresh_general_ui(appwindow);
         self.refresh_format_ui(appwindow);
         self.refresh_doc_ui(appwindow);
         self.refresh_shortcuts_ui(appwindow);
+        if init {
+            self.set_signal_state(true);
+        }
     }
 
     fn refresh_general_ui(&self, appwindow: &RnAppWindow) {
@@ -1058,73 +1070,79 @@ impl RnSettingsPanel {
                 }
             ));
 
-        imp.doc_background_pattern_width_unitentry
-            .get()
-            .connect_notify_local(
-                Some("value"),
-                clone!(
-                    #[weak]
-                    appwindow,
-                    move |unit_entry, _| {
-                        let Some(canvas) = appwindow.active_tab_canvas() else {
-                            return;
-                        };
-                        let mut pattern_size =
-                            canvas.engine_ref().document.config.background.pattern_size;
-                        pattern_size[0] = unit_entry.value_in_px();
+        imp.doc_background_pattern_width_unitentry_connect_update
+            .replace(Some(
+                imp.doc_background_pattern_width_unitentry
+                    .get()
+                    .connect_notify_local(
+                        Some("value"),
+                        clone!(
+                            #[weak]
+                            appwindow,
+                            move |unit_entry, _| {
+                                let Some(canvas) = appwindow.active_tab_canvas() else {
+                                    return;
+                                };
+                                let mut pattern_size =
+                                    canvas.engine_ref().document.config.background.pattern_size;
+                                pattern_size[0] = unit_entry.value_in_px();
 
-                        if !canvas
-                            .engine_ref()
-                            .document
-                            .config
-                            .background
-                            .pattern_size
-                            .approx_eq(&pattern_size)
-                        {
-                            canvas.engine_mut().document.config.background.pattern_size =
-                                pattern_size;
-                            let mut widget_flags =
-                                canvas.engine_mut().background_rendering_regenerate();
-                            widget_flags.store_modified = true;
-                            appwindow.handle_widget_flags(widget_flags, &canvas);
-                        }
-                    }
-                ),
-            );
+                                if !canvas
+                                    .engine_ref()
+                                    .document
+                                    .config
+                                    .background
+                                    .pattern_size
+                                    .approx_eq(&pattern_size)
+                                {
+                                    canvas.engine_mut().document.config.background.pattern_size =
+                                        pattern_size;
+                                    let mut widget_flags =
+                                        canvas.engine_mut().background_rendering_regenerate();
+                                    widget_flags.store_modified = true;
+                                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                                }
+                            }
+                        ),
+                    ),
+            ));
 
-        imp.doc_background_pattern_height_unitentry
-            .get()
-            .connect_notify_local(
-                Some("value"),
-                clone!(
-                    #[weak]
-                    appwindow,
-                    move |unit_entry, _| {
-                        let Some(canvas) = appwindow.active_tab_canvas() else {
-                            return;
-                        };
-                        let mut pattern_size =
-                            canvas.engine_ref().document.config.background.pattern_size;
-                        pattern_size[1] = unit_entry.value_in_px();
+        imp.doc_background_pattern_height_unitentry_connect_update
+            .replace(Some(
+                imp.doc_background_pattern_height_unitentry
+                    .get()
+                    .connect_notify_local(
+                        Some("value"),
+                        clone!(
+                            #[weak]
+                            appwindow,
+                            move |unit_entry, _| {
+                                let Some(canvas) = appwindow.active_tab_canvas() else {
+                                    return;
+                                };
+                                let mut pattern_size =
+                                    canvas.engine_ref().document.config.background.pattern_size;
+                                pattern_size[1] = unit_entry.value_in_px();
 
-                        if !canvas
-                            .engine_ref()
-                            .document
-                            .config
-                            .background
-                            .pattern_size
-                            .approx_eq(&pattern_size)
-                        {
-                            canvas.engine_mut().document.config.background.pattern_size =
-                                pattern_size;
-                            let mut widget_flags =
-                                canvas.engine_mut().background_rendering_regenerate();
-                            widget_flags.store_modified = true;
-                            appwindow.handle_widget_flags(widget_flags, &canvas);
-                        }
-                    }
-                ),
-            );
+                                if !canvas
+                                    .engine_ref()
+                                    .document
+                                    .config
+                                    .background
+                                    .pattern_size
+                                    .approx_eq(&pattern_size)
+                                {
+                                    canvas.engine_mut().document.config.background.pattern_size =
+                                        pattern_size;
+                                    let mut widget_flags =
+                                        canvas.engine_mut().background_rendering_regenerate();
+                                    widget_flags.store_modified = true;
+                                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                                }
+                            }
+                        ),
+                    ),
+            ));
 
         imp.doc_show_origin_indicator_row
             .connect_active_notify(clone!(
@@ -1433,6 +1451,54 @@ impl RnSettingsPanel {
         let mut widget_flags = canvas.engine_mut().doc_resize_to_fit_content();
         widget_flags.store_modified = true;
         appwindow.handle_widget_flags(widget_flags, &canvas);
+    }
+
+    /// with true, reinstates/unblocks the signals for the connect_update methods
+    /// otherwise blocks it
+    fn set_signal_state(&self, pass: bool) {
+        debug!("set signal state to {:?}", pass);
+        let imp = self.imp();
+
+        Ref::map(
+            imp.doc_background_pattern_height_unitentry_connect_update
+                .borrow(),
+            |x| {
+                match x {
+                    Some(handler_id) => {
+                        debug!("handler id exists applying");
+                        if pass {
+                            imp.doc_background_pattern_height_unitentry
+                                .unblock_signal(handler_id)
+                        } else {
+                            imp.doc_background_pattern_height_unitentry
+                                .block_signal(handler_id)
+                        }
+                    }
+                    None => (),
+                }
+                x
+            },
+        );
+        Ref::map(
+            imp.doc_background_pattern_width_unitentry_connect_update
+                .borrow(),
+            |x| {
+                match x {
+                    Some(handler_id) => {
+                        debug!("handler id exists applying");
+                        if pass {
+                            imp.doc_background_pattern_width_unitentry
+                                .unblock_signal(handler_id)
+                        } else {
+                            imp.doc_background_pattern_width_unitentry
+                                .block_signal(handler_id)
+                        }
+                    }
+                    None => (),
+                }
+                x
+            },
+        );
     }
 }
 

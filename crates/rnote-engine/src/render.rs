@@ -150,7 +150,7 @@ impl Drawable for Image {
     ///
     /// Expects image to be in rgba8-premultiplied format, else drawing will fail.
     ///
-    /// `image_scale` has no meaning here, because the bitamp is already provided.
+    /// `image_scale` has no meaning here, because the bitmap is already provided.
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
         let piet_image_format = piet::ImageFormat::from(self.memory_format);
 

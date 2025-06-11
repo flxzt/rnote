@@ -28,9 +28,9 @@ use rnote_engine::Camera;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::ext::GrapheneRectExt;
 use rnote_engine::{Engine, WidgetFlags};
-use std::cell::{Cell, Ref, RefCell, RefMut};
+use std::cell::{Cell, OnceCell, Ref, RefCell, RefMut};
 use std::path::Path;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use tracing::{debug, error, warn};
 
 #[derive(Debug, Default)]
@@ -53,6 +53,8 @@ struct Connections {
 }
 
 mod imp {
+    use std::time::Instant;
+
     use super::*;
 
     #[derive(Debug)]
@@ -88,6 +90,11 @@ mod imp {
         pub(crate) show_drawing_cursor: Cell<bool>,
 
         pub(crate) last_export_dir: RefCell<Option<gio::File>>,
+
+        // mapping from gtk timestamp to instant
+        pub mapping_time: OnceCell<Instant>,
+        pub last_gtk_time: RefCell<u32>,
+        pub overflow_duration: RefCell<Duration>,
     }
 
     impl Default for RnCanvas {
@@ -183,6 +190,10 @@ mod imp {
                 show_drawing_cursor: Cell::new(false),
 
                 last_export_dir: RefCell::new(None),
+
+                mapping_time: OnceCell::new(),
+                last_gtk_time: RefCell::new(0),
+                overflow_duration: RefCell::new(Duration::default()),
             }
         }
     }
@@ -1476,5 +1487,50 @@ impl RnCanvas {
             na::point![0.0, 0.0],
             na::point![f64::from(self.width()), f64::from(self.height())],
         )
+    }
+
+    pub(crate) fn get_time(&self, time_gtk: u32) -> Instant {
+        // this is built so that we get the time by the mapping_time +
+        // time_gtk*1e-3 seconds
+        // time_gtk cannot be 0, 0 is the absence of timestamp
+        if self.imp().mapping_time.get().is_none() {
+            let _ = self.imp().mapping_time.set(
+                Instant::now()
+                    .checked_sub(Duration::from_millis(time_gtk as u64))
+                    .unwrap_or(Instant::now()),
+            );
+            self.imp().last_gtk_time.replace(time_gtk);
+            return Instant::now();
+        } else {
+            let overflow = time_gtk
+                .checked_sub(*self.imp().last_gtk_time.borrow())
+                .is_none()
+                && (time_gtk != 0);
+            if overflow {
+                let _ = self.imp().overflow_duration.replace_with(|&mut old| {
+                    old.checked_add(Duration::from_millis(u32::MAX as u64))
+                        .unwrap()
+                });
+            }
+            let time_out = self
+                .imp()
+                .mapping_time
+                .get()
+                .unwrap()
+                .checked_add(
+                    self.imp()
+                        .overflow_duration
+                        .borrow()
+                        .checked_add(Duration::from_millis(if time_gtk == 0 {
+                            *self.imp().last_gtk_time.borrow()
+                        } else {
+                            time_gtk
+                        } as u64))
+                        .unwrap(),
+                )
+                .unwrap();
+            self.imp().last_gtk_time.replace(time_gtk);
+            return time_out;
+        }
     }
 }

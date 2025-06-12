@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-26 11:14+0200\n"
-"PO-Revision-Date: 2025-01-30 23:56+0000\n"
+"PO-Revision-Date: 2025-06-12 10:05+0000\n"
 "Last-Translator: Pavel Ovchinnikov <opavel@internet.ru>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -217,18 +217,16 @@ msgid "Change the directory"
 msgstr "Wijzig de map"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
-#, fuzzy
-#| msgid "Trash Strokes"
 msgid "Trash File"
-msgstr "Penseelstreken wissen"
+msgstr "Bestand naar prullenbak"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr ""
+msgstr "Weet je zeker dat je dit bestand wilt verwijderen?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "Prullenbak"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:346
@@ -770,8 +768,6 @@ msgid "Select Intersecting Path"
 msgstr "Intersectieselectie"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
-#, fuzzy
-#| msgid "Lock Aspectratio While Resizing the Selection"
 msgid "Lock Aspect Ratio While Resizing the Selection"
 msgstr "Beeldverhouding vastzetten tijdens vergroten/verkleinen van selectie"
 
@@ -904,10 +900,8 @@ msgstr "Verticale ruimte invoegen"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-#, fuzzy
-#| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
-msgstr "Vorm afstellen"
+msgstr "Verticale ruimte afstellen"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
@@ -919,18 +913,16 @@ msgid "Zoom In/Out"
 msgstr "In-/uitzoomen"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
-#, fuzzy
-#| msgid "Eraser"
 msgid "Laser"
-msgstr "Gum"
+msgstr "Laser"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"
-msgstr ""
+msgstr "Lettertypekiezer"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:29
 msgid "Edit Font Size"
-msgstr ""
+msgstr "Lettergrootte bewerken"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:45
 msgid "Pick And Insert Emoji"
@@ -1241,7 +1233,7 @@ msgstr "Nieuw tabblad"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:54
 msgid "View Open Tabs"
-msgstr ""
+msgstr "Open tabbladen weergeven"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:61
 msgid "Focus Mode"
@@ -1253,14 +1245,12 @@ msgid "Save Document"
 msgstr "Document opslaan"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:89
-#, fuzzy
-#| msgid "Open the Canvas-Menu"
 msgid "Canvas Menu"
-msgstr "Canvasmenu openen"
+msgstr "Canvasmenu"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:94
 msgid "App Menu"
-msgstr ""
+msgstr "App-menu"
 
 #: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
@@ -1377,16 +1367,13 @@ msgstr "Paginaformaat"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:142
 #: crates/rnote-ui/data/ui/settingspanel.ui:284
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Save sheet"
 msgid "Save as Preset"
-msgstr "Sla het werkblad op"
+msgstr "Als preset opslaan"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:151
 #: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Restore From Preset"
-msgstr ""
+msgstr "Uit preset herstellen"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:161
 msgid "Format"
@@ -1499,16 +1486,12 @@ msgid "Infinite"
 msgstr "Oneindig"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:318
-#, fuzzy
-#| msgid "Show _Format Borders"
 msgid "Show Format Borders"
-msgstr "_Formaatkaders tonen"
+msgstr "Formaatkaders tonen"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:319
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are shown"
 msgid "Set whether the format borders are shown"
-msgstr "Geef aan of de schuifbalken op het canvas dienen te worden getoond"
+msgstr "Geef aan of de formaatkaders dienen te worden getoond"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:324
 msgid "Format Border Color"
@@ -1576,26 +1559,20 @@ msgid "Set the background pattern height"
 msgstr "Stel de achtergrondpatroonhoogte in"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:439
-#, fuzzy
-#| msgid "Show _Origin Indicator"
 msgid "Show Origin Indicator"
-msgstr "_Oorsprong­indicator tonen"
+msgstr "Oorsprongindicator tonen"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:440
-#, fuzzy
-#| msgid "Set whether the drawing cursor is visible"
 msgid "Set whether the document origin indicator is shown"
-msgstr "Of de normale aanwijzer zichtbaar is"
+msgstr "Of de oorsprongindicator zichtbaar is"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:445
 msgid "Invert Color Brightness"
 msgstr "Inverteer de kleurhelderheid"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:446
-#, fuzzy
-#| msgid "Invert the brightness of all background pattern colors"
 msgid "Invert the brightness of the background and pattern colors"
-msgstr "Inverteer de helderheid van de kleuren van alle achtergrondpatronen"
+msgstr "Inverteer de helderheid en de kleuren van achtergrondpatronen"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:450
 msgid "Invert"
@@ -1727,7 +1704,7 @@ msgstr "App sluiten"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:44
 msgid "Toggle Tabs Overview"
-msgstr ""
+msgstr "Tabbladenoverzicht in-/uitschakelen"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:50
 msgid "Open the Canvas-Menu"
@@ -1848,10 +1825,8 @@ msgid "Page"
 msgstr "Pagina"
 
 #: crates/rnote-ui/data/ui/strokewidthpicker.ui:20
-#, fuzzy
-#| msgid "Split Strokes"
 msgid "Edit Stroke Size"
-msgstr "Penseelstreken splitsen"
+msgstr "Penseelgrootte editeren"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
@@ -1866,10 +1841,8 @@ msgid "Create new Folder"
 msgstr "Map aanmaken"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:167
-#, fuzzy
-#| msgid "Workspace Name"
 msgid "Open Workspace Folder"
-msgstr "Werkbladnaam"
+msgstr "Werkmap openen"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:700
 #: crates/rnote-ui/src/appwindow/imp.rs:426
@@ -1990,10 +1963,8 @@ msgstr "Bekijken in bestands­beheerder"
 #: crates/rnote-ui/src/dialogs/export.rs:752
 #: crates/rnote-ui/src/dialogs/export.rs:1111
 #: crates/rnote-ui/src/dialogs/export.rs:1117
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Failed to view the file in the file manager"
-msgstr "Kan het bestand niet openen in de bestands­beheerder"
+msgstr "Kan het bestand niet tonen in de bestandsbeheerder"
 
 #: crates/rnote-ui/src/dialogs/export.rs:348
 #: crates/rnote-ui/src/dialogs/export.rs:771
@@ -2597,7 +2568,7 @@ msgstr "grĳs­achtig"
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "strong"
-msgstr ""
+msgstr "vet"
 
 #: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"

@@ -159,7 +159,7 @@
                       <object class="AdwSpinRow" id="pdf_import_bitmap_scalefactor_row">
                         <property name="title" translatable="yes">Bitmap Scale-Factor</property>
                         <property name="subtitle" translatable="yes">Set the bitmap scale factor in relation
-    to the actual size on the document</property>
+to the actual size on the document</property>
                         <property name="adjustment">pdf_import_bitmap_scalefactor_adj</property>
                         <property name="digits">1</property>
                       </object>

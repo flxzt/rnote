@@ -5,9 +5,9 @@ and gives an overview of its structure and the tooling used.
 
 # Maintainers
 
-- @flxzt : Original Author and Core Maintainer - active
-- @Doublonmousse : Core Maintainer - active
-- @Kneemund : Maintainer - currently inactive
+- @flxzt : Original Author and Maintainer
+- @Doublonmousse : Maintainer
+- @Kneemund : Maintainer
 
 # Bug Reports & Features Requests
 

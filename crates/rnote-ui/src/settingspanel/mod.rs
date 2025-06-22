@@ -418,8 +418,8 @@ impl RnSettingsPanel {
         let imp = self.imp();
         let canvas = appwindow.active_tab_canvas();
 
-        imp.general_optimize_epd_row
-            .set_active(appwindow.engine_config().read().optimize_epd);
+        let optimize_epd = appwindow.engine_config().read().optimize_epd;
+        imp.general_optimize_epd_row.set_active(optimize_epd);
 
         if let Some(canvas) = canvas {
             let format_border_color = canvas.engine_ref().document.config.format.border_color;

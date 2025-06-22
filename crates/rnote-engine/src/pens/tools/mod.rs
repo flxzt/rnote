@@ -76,11 +76,9 @@ impl PenBehaviour for Tools {
         }
     }
 
-    fn handle_animation_frame(&mut self, engine_view: &mut EngineViewMut, optimize_epd: bool) {
+    fn handle_animation_frame(&mut self, engine_view: &mut EngineViewMut) {
         match engine_view.config.pens_config.tools_config.style {
-            ToolStyle::Laser => self
-                .laser_tool
-                .handle_animation_frame(engine_view, optimize_epd),
+            ToolStyle::Laser => self.laser_tool.handle_animation_frame(engine_view),
             _ => {}
         }
     }

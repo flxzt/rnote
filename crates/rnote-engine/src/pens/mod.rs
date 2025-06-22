@@ -113,16 +113,14 @@ impl PenBehaviour for Pen {
         }
     }
 
-    fn handle_animation_frame(&mut self, engine_view: &mut EngineViewMut, optimize_epd: bool) {
+    fn handle_animation_frame(&mut self, engine_view: &mut EngineViewMut) {
         match self {
-            Pen::Brush(brush) => brush.handle_animation_frame(engine_view, optimize_epd),
-            Pen::Shaper(shaper) => shaper.handle_animation_frame(engine_view, optimize_epd),
-            Pen::Typewriter(typewriter) => {
-                typewriter.handle_animation_frame(engine_view, optimize_epd)
-            }
-            Pen::Eraser(eraser) => eraser.handle_animation_frame(engine_view, optimize_epd),
-            Pen::Selector(selector) => selector.handle_animation_frame(engine_view, optimize_epd),
-            Pen::Tools(tools) => tools.handle_animation_frame(engine_view, optimize_epd),
+            Pen::Brush(brush) => brush.handle_animation_frame(engine_view),
+            Pen::Shaper(shaper) => shaper.handle_animation_frame(engine_view),
+            Pen::Typewriter(typewriter) => typewriter.handle_animation_frame(engine_view),
+            Pen::Eraser(eraser) => eraser.handle_animation_frame(engine_view),
+            Pen::Selector(selector) => selector.handle_animation_frame(engine_view),
+            Pen::Tools(tools) => tools.handle_animation_frame(engine_view),
         }
     }
 

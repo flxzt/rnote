@@ -891,9 +891,8 @@ impl Engine {
     ///
     /// Can request another frame using `EngineViewMut#animation.claim_frame()`.
     pub fn handle_animation_frame(&mut self) {
-        let optimize_epd = self.config.read().optimize_epd;
         self.penholder
-            .handle_animation_frame(&mut engine_view_mut!(self), optimize_epd);
+            .handle_animation_frame(&mut engine_view_mut!(self));
     }
 
     pub fn current_pen_style_w_override(&self) -> PenStyle {

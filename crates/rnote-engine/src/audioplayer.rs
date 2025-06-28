@@ -131,7 +131,7 @@ impl AudioPlayer {
                 sink.detach();
             }
             Err(e) => {
-                error!("Failed to create sink when trying to play marker sound, Err {e:?}",)
+                error!("Failed to create sink when trying to play marker sound, Err: {e:?}",)
             }
         }
     }
@@ -161,7 +161,7 @@ impl AudioPlayer {
                 Ok(sink) => sink,
                 Err(e) => {
                     error!(
-                        "Failed to create sink when trying to trigger random brush sound, Err {e:?}",
+                        "Failed to create sink when trying to trigger random brush sound, Err: {e:?}",
                     );
                     self.brush_sound_task_handle = None;
                     return;
@@ -192,7 +192,7 @@ impl AudioPlayer {
         let sink = match rodio::Sink::try_new(&self.typewriter_outputstream_handle) {
             Ok(sink) => sink,
             Err(e) => {
-                error!("Failed to create sink when trying to play typewriter sound, Err {e:?}");
+                error!("Failed to create sink when trying to play typewriter sound, Err: {e:?}");
                 return;
             }
         };

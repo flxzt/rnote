@@ -411,7 +411,7 @@ impl StrokeStore {
                         }
                         Err(e) => {
                             error!(
-                                "Generating rendernodes failed while replacing rendering with partial images, Err {e:?}"
+                                "Generating rendernodes failed while replacing rendering with partial images, Err: {e:?}"
                             );
                             render_comp.state = RenderCompState::Dirty;
                         }
@@ -432,7 +432,7 @@ impl StrokeStore {
                         }
                         Err(e) => {
                             error!(
-                                "Generating rendernodes failed while replacing rendering with full images, Err {e:?}"
+                                "Generating rendernodes failed while replacing rendering with full images, Err: {e:?}"
                             );
                             render_comp.state = RenderCompState::Dirty;
                         }
@@ -470,7 +470,7 @@ impl StrokeStore {
                         }
                         Err(e) => {
                             error!(
-                                "Generating rendernodes failed while appending rendering full images, Err {e:?}"
+                                "Generating rendernodes failed while appending rendering full images, Err: {e:?}"
                             );
                             render_comp.state = RenderCompState::Dirty;
                         }

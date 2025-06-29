@@ -83,10 +83,6 @@ impl KeyTree {
         *self = Self::default()
     }
 
-    pub(crate) fn get_tree(&self) -> &rstar::RTree<KeyTreeObject, rstar::DefaultParams> {
-        &self.0
-    }
-
     pub fn get_bounds(&self) -> AABB<[f64; 2]> {
         self.0.root().envelope()
     }

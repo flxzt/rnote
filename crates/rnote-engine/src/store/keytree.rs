@@ -3,6 +3,7 @@ use super::StrokeKey;
 use p2d::bounding_volume::Aabb;
 use rstar::AABB;
 use rstar::primitives::GeomWithData;
+use std::collections::HashMap;
 
 /// The rtree object that holds the bounds and [StrokeKey].
 type KeyTreeObject = GeomWithData<rstar::primitives::Rectangle<[f64; 2]>, StrokeKey>;
@@ -42,6 +43,17 @@ impl KeyTree {
                 [bounds.maxs[0], bounds.maxs[1]],
             ))
             .map(|object| object.data)
+            .collect()
+    }
+
+    /// Return the keys that intersect with the given bounds.
+    pub(crate) fn keys_intersecting_bounds_hashset(&self, bounds: Aabb) -> HashMap<StrokeKey, ()> {
+        self.0
+            .locate_in_envelope_intersecting(&rstar::AABB::from_corners(
+                [bounds.mins[0], bounds.mins[1]],
+                [bounds.maxs[0], bounds.maxs[1]],
+            ))
+            .map(|object| (object.data, ()))
             .collect()
     }
 

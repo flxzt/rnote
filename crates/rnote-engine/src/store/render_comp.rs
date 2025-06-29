@@ -245,9 +245,6 @@ impl StrokeStore {
         viewport: Aabb,
         image_scale: f64,
     ) {
-        // use the rtree to reduce the number of keys to search through
-        // for now we are using directly the tree because we want to iter without actually
-        // collecting elements
         let viewport_extended =
             viewport.extend_by(viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
@@ -255,24 +252,34 @@ impl StrokeStore {
         // rtree but also get from this the keys that are not in here
         // for that also create a slotmap of keys that are in the viewport
         // so that we can iterate a second time on keys and filter on elements not in the slotmap
-        let mut hashmap_in_viewport: HashMap<StrokeKey, ()> = HashMap::new();
-
-        let keys_in_viewport = self
+        let mut keys_in_viewport_hash = self
             .key_tree
-            .get_tree()
-            .locate_in_envelope_intersecting(&rstar::AABB::from_corners(
-                [viewport_extended.mins[0], viewport_extended.mins[1]],
-                [viewport_extended.maxs[0], viewport_extended.maxs[1]],
-            ))
-            .map(|object| {
-                let key = object.data;
-                hashmap_in_viewport.insert(key, ());
-                key
-            })
-            .into_iter()
-            .collect::<Vec<StrokeKey>>();
+            .keys_intersecting_bounds_hashset(viewport_extended);
 
-        for key in keys_in_viewport {
+        // if we have a current key in the store, push it as well
+        if let Some(current_stroke_key) = self.current_key() {
+            dbg!("add current stroke key to the viewport");
+            dbg!(current_stroke_key);
+            keys_in_viewport_hash.insert(current_stroke_key, ());
+        }
+
+        // remove stroke keys that we know are not in
+        // the viewport
+        // This way we can skip calculating their bounds
+        for (_key, render_comp) in self
+            .render_components
+            .iter_mut()
+            .filter(|x| !keys_in_viewport_hash.contains_key(&x.0))
+        {
+            #[cfg(feature = "ui")]
+            {
+                render_comp.rendernodes = vec![];
+            }
+            render_comp.images = vec![];
+            render_comp.state = RenderCompState::Dirty;
+        }
+
+        for (key, _) in keys_in_viewport_hash {
             if let (Some(stroke), Some(render_comp)) = (
                 self.stroke_components.get(key),
                 self.render_components.get_mut(key),
@@ -327,22 +334,6 @@ impl StrokeStore {
                     },
                 );
             }
-        }
-
-        // iterate a second time on stroke keys that we know are not in
-        // the viewport
-        // This way we can skip calculating their bounds
-        for (_key, render_comp) in self
-            .render_components
-            .iter_mut()
-            .filter(|x| !hashmap_in_viewport.contains_key(&x.0))
-        {
-            #[cfg(feature = "ui")]
-            {
-                render_comp.rendernodes = vec![];
-            }
-            render_comp.images = vec![];
-            render_comp.state = RenderCompState::Dirty;
         }
     }
 

@@ -304,11 +304,8 @@ impl Document {
             let rendered_bounds = store.get_bounds();
 
             let content_bounds = if rendered_bounds.volume() > 0.0 {
-                Aabb::new(
-                    na::point![rendered_bounds.mins[0], rendered_bounds.mins[1]],
-                    na::point![rendered_bounds.maxs[0], rendered_bounds.maxs[1]],
-                )
-                .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
+                rendered_bounds
+                    .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
             } else {
                 // If doc is empty, resize to one page with the format size
                 Aabb::new(na::point![0.0, 0.0], self.config.format.size().into())

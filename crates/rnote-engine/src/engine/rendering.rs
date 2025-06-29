@@ -46,7 +46,6 @@ impl Engine {
                     )
                     .upcast(),
                 );
-                self.origin_background_rendernode = Some(origin_aabb);
             }
         }
 
@@ -116,7 +115,6 @@ impl Engine {
         #[cfg(feature = "ui")]
         {
             self.background_rendernode = None;
-            self.origin_background_rendernode = None;
             self.origin_indicator_rendernode.take();
         }
         widget_flags.redraw = true;
@@ -256,14 +254,8 @@ impl Engine {
         );
         snapshot.pop();
 
-        if let (Some(bounds), Some(render_node)) = (
-            self.origin_background_rendernode,
-            self.background_rendernode.clone(),
-        ) {
-            snapshot.push_repeat(
-                &graphene::Rect::from_p2d_aabb(doc_bounds),
-                Some(&graphene::Rect::from_p2d_aabb(bounds)),
-            );
+        if let Some(render_node) = &self.background_rendernode {
+            snapshot.push_repeat(&graphene::Rect::from_p2d_aabb(doc_bounds), None);
             snapshot.append_node(render_node);
             snapshot.pop();
         }

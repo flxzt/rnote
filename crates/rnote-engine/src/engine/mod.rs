@@ -200,7 +200,6 @@ pub struct Engine {
     #[cfg(feature = "ui")]
     #[serde(skip)]
     background_rendernode: Option<gtk4::gsk::RenderNode>,
-    origin_background_rendernode: Option<Aabb>,
     // Origin indicator rendering
     #[serde(skip)]
     origin_indicator_image: Option<render::Image>,
@@ -227,7 +226,6 @@ impl Default for Engine {
             background_tile_image: None,
             #[cfg(feature = "ui")]
             background_rendernode: None,
-            origin_background_rendernode: None,
             origin_indicator_image: None,
             #[cfg(feature = "ui")]
             origin_indicator_rendernode: None,

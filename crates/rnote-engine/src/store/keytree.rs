@@ -1,7 +1,6 @@
 // Imports
 use super::StrokeKey;
 use p2d::bounding_volume::Aabb;
-use rstar::AABB;
 use rstar::primitives::GeomWithData;
 use std::collections::HashMap;
 
@@ -83,8 +82,12 @@ impl KeyTree {
         *self = Self::default()
     }
 
-    pub fn get_bounds(&self) -> AABB<[f64; 2]> {
-        self.0.root().envelope()
+    pub fn get_bounds(&self) -> Aabb {
+        let aabb_enveloppe = self.0.root().envelope();
+        Aabb::new(
+            na::point![aabb_enveloppe.lower()[0], aabb_enveloppe.lower()[1]],
+            na::point![aabb_enveloppe.upper()[0], aabb_enveloppe.upper()[1]],
+        )
     }
 
     pub(crate) fn is_empty(&self) -> bool {

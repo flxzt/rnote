@@ -6,7 +6,6 @@ use crate::strokes::content::GeneratedContentImages;
 use crate::{Drawable, render};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::AabbExt;
-use std::collections::HashMap;
 use tracing::error;
 
 #[cfg(feature = "ui")]
@@ -680,10 +679,7 @@ impl StrokeStore {
         // draw the rtree root
         let tree_bounds = self.key_tree.get_bounds();
         visual_debug::draw_bounds_to_gtk_snapshot(
-            Aabb::new(
-                na::point![tree_bounds.lower()[0], tree_bounds.lower()[1]],
-                na::point![tree_bounds.upper()[0], tree_bounds.upper()[1]],
-            ),
+            tree_bounds,
             visual_debug::COLOR_RTREE_BOUNDS,
             snapshot,
             border_widths,

@@ -9,7 +9,6 @@ pub use background::Background;
 pub use config::DocumentConfig;
 pub use format::Format;
 pub use layout::Layout;
-use rstar::Envelope;
 
 // Imports
 use crate::engine::EngineConfig;
@@ -262,13 +261,9 @@ impl Document {
                 Aabb::new(na::point![0.0, 0.0], self.config.format.size().into())
                     .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
             } else {
-                let rendered_bounds = store.get_bounds();
-
-                Aabb::new(
-                    na::point![rendered_bounds.lower()[0], rendered_bounds.lower()[1]],
-                    na::point![rendered_bounds.upper()[0], rendered_bounds.upper()[1]],
-                )
-                .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
+                store
+                    .get_bounds()
+                    .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
             };
             new_bounds.merge(&content_bounds);
         }
@@ -308,10 +303,10 @@ impl Document {
         if include_content {
             let rendered_bounds = store.get_bounds();
 
-            let content_bounds = if rendered_bounds.area() > 0.0 {
+            let content_bounds = if rendered_bounds.volume() > 0.0 {
                 Aabb::new(
-                    na::point![rendered_bounds.lower()[0], rendered_bounds.lower()[1]],
-                    na::point![rendered_bounds.upper()[0], rendered_bounds.upper()[1]],
+                    na::point![rendered_bounds.mins[0], rendered_bounds.mins[1]],
+                    na::point![rendered_bounds.maxs[0], rendered_bounds.maxs[1]],
                 )
                 .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
             } else {

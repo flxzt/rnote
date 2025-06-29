@@ -131,7 +131,7 @@ impl StrokeStore {
             return 0.0;
         } else {
             let bounds = self.key_tree.get_bounds();
-            bounds.upper()[1] - bounds.lower()[1]
+            bounds.maxs[1] - bounds.mins[1]
         }
     }
 

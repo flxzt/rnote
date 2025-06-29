@@ -7,7 +7,6 @@ use crate::strokes::content::GeneratedContentImages;
 use crate::{Drawable, image};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::AabbExt;
-use std::collections::HashMap;
 use tracing::error;
 
 #[cfg(feature = "ui")]
@@ -251,7 +250,7 @@ impl StrokeStore {
         // rtree but also get from this the keys that are not in here
         // for that also create a slotmap of keys that are in the viewport
         // so that we can iterate a second time on keys and filter on elements not in the slotmap
-        let mut keys_in_viewport_hash = self
+        let keys_in_viewport_hash = self
             .key_tree
             .keys_intersecting_bounds_hashset(viewport_extended);
 

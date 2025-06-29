@@ -9,8 +9,8 @@ pub mod trash_comp;
 // Re-exports
 pub use chrono_comp::ChronoComponent;
 use keytree::KeyTree;
+use p2d::bounding_volume::Aabb;
 pub use render_comp::RenderComponent;
-use rstar::AABB;
 pub use selection_comp::SelectionComponent;
 pub use trash_comp::TrashComponent;
 
@@ -371,7 +371,7 @@ impl StrokeStore {
         widget_flags
     }
 
-    pub(super) fn get_bounds(&self) -> AABB<[f64; 2]> {
+    pub(super) fn get_bounds(&self) -> Aabb {
         self.key_tree.get_bounds()
     }
 

@@ -271,12 +271,9 @@ impl Document {
                 Aabb::new(Vector2::ZERO, self.config.format.size())
                     .extend_right_and_bottom_by(padding)
             } else {
-                let rendered_bounds = store.get_bounds();
-
-                Aabb::new(
-                    Vector2::new(rendered_bounds.lower()[0], rendered_bounds.lower()[1]),
-                    Vector2::new(rendered_bounds.upper()[0], rendered_bounds.upper()[1]),
-                ).extend_right_and_bottom_by(padding)
+                store
+                    .get_bounds()
+                    .extend_right_and_bottom_by(padding)
             };
             new_bounds.merge(&content_bounds);
         }
@@ -321,10 +318,10 @@ impl Document {
         if include_content {
             let rendered_bounds = store.get_bounds();
 
-            let content_bounds = if rendered_bounds.area() > 0.0 {
+            let content_bounds = if rendered_bounds.volume() > 0.0 {
                 Aabb::new(
-                    Vector2::new(rendered_bounds.lower()[0], rendered_bounds.lower()[1]),
-                    Vector2::new(rendered_bounds.upper()[0], rendered_bounds.upper()[1]),
+                    Vector2::new(rendered_bounds.mins[0], rendered_bounds.mins[1]),
+                    Vector2::new(rendered_bounds.maxs[0], rendered_bounds.maxs[1]),
                 )
                 .extend_by(padding)
             } else {

@@ -1,10 +1,10 @@
 // Imports
 use super::StrokeKey;
 use p2d::bounding_volume::Aabb;
-use p2d::math::Vector2;
-use rstar::AABB;
 use rstar::primitives::GeomWithData;
 use std::collections::HashMap;
+use p2d::math::Vector2;
+
 
 /// The rtree object that holds the bounds and [StrokeKey].
 type KeyTreeObject = GeomWithData<rstar::primitives::Rectangle<[f64; 2]>, StrokeKey>;
@@ -100,8 +100,12 @@ impl KeyTree {
         *self = Self::default()
     }
 
-    pub fn get_bounds(&self) -> AABB<[f64; 2]> {
-        self.0.root().envelope()
+    pub fn get_bounds(&self) -> Aabb {
+        let aabb_enveloppe = self.0.root().envelope();
+        Aabb::new(
+            Vector2::new(aabb_enveloppe.lower()[0], aabb_enveloppe.lower()[1]),
+            Vector2::new(aabb_enveloppe.upper()[0], aabb_enveloppe.upper()[1]),
+        )
     }
 
     pub(crate) fn is_empty(&self) -> bool {

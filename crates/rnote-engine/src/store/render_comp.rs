@@ -693,7 +693,7 @@ impl StrokeStore {
                 na::point![tree_bounds.lower()[0], tree_bounds.lower()[1]],
                 na::point![tree_bounds.upper()[0], tree_bounds.upper()[1]],
             ),
-            rnote_compose::Color::new(1.0, 0.5, 0., 1.0),
+            visual_debug::COLOR_RTREE_BOUNDS,
             snapshot,
             border_widths,
         );

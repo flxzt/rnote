@@ -17,7 +17,6 @@ impl Engine {
         {
             use crate::ext::GrapheneRectExt;
             use gtk4::{graphene, gsk, prelude::*};
-            use rnote_compose::SplitOrder;
             use rnote_compose::ext::AabbExt;
 
             let viewport = self.camera.viewport();
@@ -34,10 +33,8 @@ impl Engine {
                     }
                 };
 
-                let origin_aabb = viewport.get_origin(
-                    self.document.config.background.tile_size(),
-                    SplitOrder::default(),
-                );
+                let origin_aabb = viewport
+                    .split_first_origin_aligned(self.document.config.background.tile_size());
 
                 self.background_rendernode = Some(
                     gsk::TextureNode::new(

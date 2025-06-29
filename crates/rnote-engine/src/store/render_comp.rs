@@ -8,9 +8,6 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::AabbExt;
 use tracing::error;
 
-#[cfg(feature = "ui")]
-use rnote_compose::shapes::Shapeable;
-
 /// The tolerance where check between scale-factors are considered "equal".
 pub(crate) const RENDER_IMAGE_SCALE_TOLERANCE: f64 = 0.01;
 
@@ -515,6 +512,7 @@ impl StrokeStore {
         use crate::ext::{GdkRGBAExt, GrapheneRectExt};
         use gtk4::{gdk, graphene, prelude::*};
         use rnote_compose::color;
+        use rnote_compose::shapes::Shapeable;
 
         snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
 
@@ -595,6 +593,7 @@ impl StrokeStore {
     ) -> anyhow::Result<()> {
         use crate::engine::visual_debug;
         use gtk4::prelude::*;
+        use rnote_compose::shapes::Shapeable;
 
         let border_widths = 1.0 / engine.camera.total_zoom();
 

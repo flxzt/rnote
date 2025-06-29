@@ -93,7 +93,6 @@ fn main() -> glib::ExitCode {
             eprintln!("failed to setup custom css for windows, Err: {e:?}");
         }
     }
-    println!("git commit : fda71990");
     app.run()
 }
 

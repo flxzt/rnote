@@ -151,8 +151,6 @@ where
     /// splits a aabb into multiple which have a maximum of the given size. Their union is the given aabb.
     /// the split bounds are exactly fitted to not overlap, or extend the given bounds
     fn split(self, split_size: Vector2) -> Vec<Self>;
-    /// get the top patch for a given split size
-    fn get_origin(self, split_size: Vector2, split_order: SplitOrder) -> Self;
     /// splits a aabb into multiple of the given size. Their union contains the given aabb.
     /// The boxes on the edges most likely extend beyond the given aabb.
     fn split_extended(self, split_size: Vector2) -> Vec<Self>;
@@ -164,6 +162,9 @@ where
         split_size: Vector2,
         split_order: SplitOrder,
     ) -> Vec<Self>;
+    /// Gives an aabb of size split_size, snapped to a multiple of split_size
+    /// This returns the first element of a call to `split_extended_origin_aligned`
+    fn split_first_origin_aligned(self, split_size: Vector2) -> Self;
     /// Converts a Aabb to a kurbo Rectangle
     fn to_kurbo_rect(&self) -> kurbo::Rect;
     /// Converts a kurbo Rectangle to Aabb
@@ -362,22 +363,10 @@ impl AabbExt for Aabb {
         split_aabbs
     }
 
-    fn get_origin(self, split_size: Vector2, split_order: SplitOrder) -> Self {
-        let (outer_idx, inner_idx) = match split_order {
-            SplitOrder::RowMajor => (1, 0),
-            SplitOrder::ColumnMajor => (0, 1),
-        };
-
-        let offset_outer =
-            (self.mins[outer_idx] / split_size[outer_idx]).floor() * split_size[outer_idx];
-
-        let offset_inner =
-            (self.mins[inner_idx] / split_size[inner_idx]).floor() * split_size[inner_idx];
-
-        let mins = match split_order {
-            SplitOrder::RowMajor => Vector2::new(offset_inner, offset_outer),
-            SplitOrder::ColumnMajor => Vector2::new(offset_outer, offset_inner),
-        };
+    fn split_first_origin_aligned(self, split_size: Vector2) -> Self {
+        let offset_outer = (self.mins[1] / split_size[1]).floor() * split_size[1];
+        let offset_inner = (self.mins[0] / split_size[0]).floor() * split_size[0];
+        let mins = Vector2::new(offset_inner, offset_outer);
         Aabb::new(mins, mins + split_size)
     }
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-26 11:14+0200\n"
-"PO-Revision-Date: 2025-05-06 15:05+0000\n"
+"PO-Revision-Date: 2025-07-01 15:03+0200\n"
 "Last-Translator: Pedro Wasconcelos <pedro.wasconcelos@proton.me>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "rnote/repo/pt_BR/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.12-dev\n"
+"X-Generator: Poedit 3.6\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -43,12 +43,13 @@ msgstr ""
 "Rnote é uma aplicação simples baseada em vetores para esboços, notas "
 "manuscritas e para anotar documentos e fotos."
 
+# aquivo -> arquivo
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"Isenção de responsabilidade: O formato de aquivo ainda é instável. Pode "
+"Isenção de responsabilidade: O formato de arquivo ainda é instável. Pode "
 "haver mudanças e quebra de compatibilidade entre versões."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
@@ -1071,11 +1072,11 @@ msgstr "_Exportar…"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:115
 msgid "Export _Document"
-msgstr "Exportar_Documento"
+msgstr "Exportar _Documento"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:119
 msgid "Export Document _Pages"
-msgstr "Exportar Paginas do Documento"
+msgstr "Exportar Páginas do Documento"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:123
 msgid "Export _Selection"
@@ -1128,7 +1129,7 @@ msgstr "Desenhar Com_Entrada Por Toque"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:44
 msgid "Block Pinch to _Zoom"
-msgstr "Bloquear Apertar para_Ampliar"
+msgstr "Bloquear Apertar para _Ampliar"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:51
 msgid "_Return to Origin Page"
@@ -1364,12 +1365,12 @@ msgstr "Modelo da Página"
 #: crates/rnote-ui/data/ui/settingspanel.ui:142
 #: crates/rnote-ui/data/ui/settingspanel.ui:284
 msgid "Save as Preset"
-msgstr ""
+msgstr "Salvar como Predefinição"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:151
 #: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Restore From Preset"
-msgstr ""
+msgstr "Restaurar a Partir da Predefinição"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:161
 msgid "Format"
@@ -1482,16 +1483,12 @@ msgid "Infinite"
 msgstr "Infinito"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:318
-#, fuzzy
-#| msgid "Show _Format Borders"
 msgid "Show Format Borders"
-msgstr "Mostrar_As Bordas Do Modelo"
+msgstr "Mostrar Bordas Do Modelo"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:319
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are shown"
 msgid "Set whether the format borders are shown"
-msgstr "Definir Se as Barras de Rolagem são Mostradas na Tela"
+msgstr "Definir Se as Barras de Rolagem são Mostradas"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:324
 msgid "Format Border Color"
@@ -1499,7 +1496,7 @@ msgstr "Cor da Borda do Modelo"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:325
 msgid "Set the format border color"
-msgstr "Definir"
+msgstr "Definir cor da borda do modelo"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:346
 msgid "Set the background color"
@@ -1559,26 +1556,20 @@ msgid "Set the background pattern height"
 msgstr "Definir a altura do plano de fundo de padrão"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:439
-#, fuzzy
-#| msgid "Show _Origin Indicator"
 msgid "Show Origin Indicator"
-msgstr "Mostrar_o Indicador de Origem"
+msgstr "Mostrar Indicador de Origem"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:440
-#, fuzzy
-#| msgid "Set whether the drawing cursor is visible"
 msgid "Set whether the document origin indicator is shown"
-msgstr "Definir se o cursor de desenho é visível"
+msgstr "Definir se o indicador de origem do documento é mostrado"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:445
 msgid "Invert Color Brightness"
-msgstr "Inverter cores"
+msgstr "Inverter o brilho das cores"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:446
-#, fuzzy
-#| msgid "Invert the brightness of all background pattern colors"
 msgid "Invert the brightness of the background and pattern colors"
-msgstr "Inverta o brilho de todas as cores do padrão de fundo"
+msgstr "Inverta o brilho das cores de fundo e de padrão"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:450
 msgid "Invert"
@@ -1738,7 +1729,7 @@ msgstr "Mudar para a 'Maquina de Escrever'"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:91
 msgid "Switch to the 'Eraser'"
-msgstr "Mudar para a \"Boracha\""
+msgstr "Mudar para o 'Apagador'"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:97
 msgid "Switch to the 'Selector'"
@@ -1758,7 +1749,7 @@ msgstr "Alt + Arrastar"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:156
 msgid "Zoom in/out"
-msgstr "Diminuir/Aumentar"
+msgstr "Aumentar/Diminuir Zoom"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:157
 msgid "Alt + Shift + Drag"
@@ -1982,7 +1973,7 @@ msgstr "Selecionar"
 #: crates/rnote-ui/src/dialogs/export.rs:723
 msgid "Exporting document pages failed, no directory selected"
 msgstr ""
-"Falha ao exportar as páginas do documento, nenhum diretorio selecionado"
+"Falha ao exportar as páginas do documento, nenhum diretório selecionado"
 
 #: crates/rnote-ui/src/dialogs/export.rs:735
 msgid "Exporting document pages failed"
@@ -2154,7 +2145,7 @@ msgstr "Compor"
 #: crates/rnote-ui/src/dialogs/mod.rs:703
 msgctxt "as in plant"
 msgid "Crop"
-msgstr "Cortar"
+msgstr "Colheita"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:704
 msgid "Dictionary"
@@ -2375,7 +2366,7 @@ msgstr "Polígono"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:662
 msgid "Application restart is required"
-msgstr "Reinicio da aplicação é necessário"
+msgstr "Reinicio do aplicativo é necessário"
 
 #: crates/rnote-ui/src/settingspanel/mod.rs:1462
 msgctxt "a cursor type"
@@ -2572,7 +2563,7 @@ msgstr "acinzentado"
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "strong"
-msgstr ""
+msgstr "forte"
 
 #: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"

@@ -6,7 +6,6 @@ use crate::strokes::content::GeneratedContentImages;
 use crate::{Drawable, render};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::AabbExt;
-use rnote_compose::shapes::Shapeable;
 use tracing::error;
 
 /// The tolerance where check between scale-factors are considered "equal".
@@ -242,28 +241,46 @@ impl StrokeStore {
         viewport: Aabb,
         image_scale: f64,
     ) {
-        let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
+        let viewport_extended =
+            viewport.extend_by(viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
-        for key in keys {
+        // we want to iterate on the keys that are in the viewport using the
+        // rtree but also get from this the keys that are not in here
+        // for that also create a slotmap of keys that are in the viewport
+        // so that we can iterate a second time on keys and filter on elements not in the slotmap
+        let mut keys_in_viewport_hash = self
+            .key_tree
+            .keys_intersecting_bounds_hashset(viewport_extended);
+
+        // if we have a current key in the store, push it as well
+        if let Some(current_stroke_key) = self.current_key() {
+            dbg!("add current stroke key to the viewport");
+            dbg!(current_stroke_key);
+            keys_in_viewport_hash.insert(current_stroke_key, ());
+        }
+
+        // remove stroke keys that we know are not in
+        // the viewport
+        // This way we can skip calculating their bounds
+        for (_key, render_comp) in self
+            .render_components
+            .iter_mut()
+            .filter(|x| !keys_in_viewport_hash.contains_key(&x.0))
+        {
+            #[cfg(feature = "ui")]
+            {
+                render_comp.rendernodes = vec![];
+            }
+            render_comp.images = vec![];
+            render_comp.state = RenderCompState::Dirty;
+        }
+
+        for (key, _) in keys_in_viewport_hash {
             if let (Some(stroke), Some(render_comp)) = (
                 self.stroke_components.get(key),
                 self.render_components.get_mut(key),
             ) {
                 let tasks_tx = tasks_tx.clone();
-                let stroke_bounds = stroke.bounds();
-                let viewport_extended =
-                    viewport.extend_by(viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR);
-
-                // skip and clear image buffer if stroke is not in viewport
-                if !viewport_extended.intersects(&stroke_bounds) {
-                    #[cfg(feature = "ui")]
-                    {
-                        render_comp.rendernodes = vec![];
-                    }
-                    render_comp.images = vec![];
-                    render_comp.state = RenderCompState::Dirty;
-                    continue;
-                }
 
                 // only check if rerendering is not forced
                 if !force_regenerate {
@@ -495,6 +512,7 @@ impl StrokeStore {
         use crate::ext::{GdkRGBAExt, GrapheneRectExt};
         use gtk4::{gdk, graphene, prelude::*};
         use rnote_compose::color;
+        use rnote_compose::shapes::Shapeable;
 
         snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
 
@@ -575,6 +593,7 @@ impl StrokeStore {
     ) -> anyhow::Result<()> {
         use crate::engine::visual_debug;
         use gtk4::prelude::*;
+        use rnote_compose::shapes::Shapeable;
 
         let border_widths = 1.0 / engine.camera.total_zoom();
 
@@ -655,6 +674,15 @@ impl StrokeStore {
                 }
             }
         }
+
+        // draw the rtree root
+        let tree_bounds = self.key_tree.get_bounds();
+        visual_debug::draw_bounds_to_gtk_snapshot(
+            tree_bounds,
+            visual_debug::COLOR_RTREE_BOUNDS,
+            snapshot,
+            border_widths,
+        );
 
         Ok(())
     }

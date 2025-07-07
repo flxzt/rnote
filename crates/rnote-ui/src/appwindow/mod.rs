@@ -237,9 +237,11 @@ impl RnAppWindow {
         // An initial tab (canvas).
         self.add_initial_tab();
 
+        // NOW we can re enable the signal handler for the tab
+
         // Anything that needs to be done right before showing the appwindow
 
-        self.refresh_ui();
+        self.refresh_ui(true);
     }
 
     fn setup_icon_theme(&self) {
@@ -285,7 +287,7 @@ impl RnAppWindow {
             canvas.queue_resize();
         }
         if widget_flags.refresh_ui {
-            self.refresh_ui();
+            self.refresh_ui(false);
         }
         if widget_flags.store_modified {
             canvas.set_unsaved_changes(true);
@@ -383,7 +385,9 @@ impl RnAppWindow {
     /// adds the initial tab to the tabview
     fn add_initial_tab(&self) -> adw::TabPage {
         let wrapper = self.new_canvas_wrapper();
-        self.append_wrapper_new_tab(&wrapper)
+        let out = self.append_wrapper_new_tab(&wrapper);
+        self.overlays().set_tab_signal_state(true);
+        out
     }
 
     /// Creates a new canvas wrapper without attaching it as a tab.
@@ -697,7 +701,7 @@ impl RnAppWindow {
     }
 
     /// Refresh the UI from the global state and from the current active tab page.
-    pub(crate) fn refresh_ui(&self) {
+    pub(crate) fn refresh_ui(&self, startup: bool) {
         let canvas = self.active_tab_canvas();
 
         self.overlays().penssidebar().brush_page().refresh_ui(self);
@@ -712,7 +716,7 @@ impl RnAppWindow {
             .selector_page()
             .refresh_ui(self);
         self.overlays().penssidebar().tools_page().refresh_ui(self);
-        self.sidebar().settings_panel().refresh_ui(self);
+        self.sidebar().settings_panel().refresh_ui(self, startup);
 
         if let Some(canvas) = canvas {
             self.refresh_titles(&canvas);

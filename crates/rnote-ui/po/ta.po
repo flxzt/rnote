@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-26 11:14+0200\n"
-"PO-Revision-Date: 2025-02-28 01:02+0000\n"
+"PO-Revision-Date: 2025-07-10 16:01+0000\n"
 "Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.2-rc\n"
+"X-Generator: Weblate 5.13-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -217,18 +217,16 @@ msgid "Change the directory"
 msgstr "கோப்பகத்தை மாற்றவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
-#, fuzzy
-#| msgid "Trash Strokes"
 msgid "Trash File"
-msgstr "குப்பை பக்கவாதம்"
+msgstr "குப்பை கோப்பு"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr ""
+msgstr "இந்த கோப்பை குப்பைக்கு நகர்த்த விரும்புகிறீர்களா?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "குப்பை"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:346
@@ -767,10 +765,8 @@ msgid "Select Intersecting Path"
 msgstr "வெட்டும் பாதையைத் தேர்ந்தெடுக்கவும்"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
-#, fuzzy
-#| msgid "Lock Aspectratio While Resizing the Selection"
 msgid "Lock Aspect Ratio While Resizing the Selection"
-msgstr "தேர்வின் அளவை மாற்றும் போது தோற்ற விகிதத்தைப் பூட்டவும்"
+msgstr "தேர்வை மறுஅளவிடும்போது விகித விகிதத்தை பூட்டு"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select All Strokes"
@@ -901,10 +897,8 @@ msgstr "செங்குத்து இடத்தைச் செருக�
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-#, fuzzy
-#| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
-msgstr "வடிவ கட்டமைப்பு"
+msgstr "செங்குத்து-விண்வெளி கருவி உள்ளமைவு"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
@@ -916,18 +910,16 @@ msgid "Zoom In/Out"
 msgstr "பெரிதாக்கு/வெளியேறு"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
-#, fuzzy
-#| msgid "Eraser"
 msgid "Laser"
-msgstr "அழிப்பான்"
+msgstr "ஊடொளி"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"
-msgstr ""
+msgstr "எழுத்துரு தேர்வு"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:29
 msgid "Edit Font Size"
-msgstr ""
+msgstr "எழுத்துரு அளவைத் திருத்தவும்"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:45
 msgid "Pick And Insert Emoji"
@@ -1238,7 +1230,7 @@ msgstr "புதிய தாவல்"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:54
 msgid "View Open Tabs"
-msgstr ""
+msgstr "திறந்த தாவல்களைக் காண்க"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:61
 msgid "Focus Mode"
@@ -1250,14 +1242,12 @@ msgid "Save Document"
 msgstr "ஆவணத்தைச் சேமி"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:89
-#, fuzzy
-#| msgid "Open the Canvas-Menu"
 msgid "Canvas Menu"
-msgstr "கேன்வாஸ்-பட்டியலைத் திறக்கவும்"
+msgstr "கேன்வாச் பட்டியல்"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:94
 msgid "App Menu"
-msgstr ""
+msgstr "பயன்பாட்டு பட்டியல்"
 
 #: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
@@ -1373,12 +1363,12 @@ msgstr "பக்க வடிவம்"
 #: crates/rnote-ui/data/ui/settingspanel.ui:142
 #: crates/rnote-ui/data/ui/settingspanel.ui:284
 msgid "Save as Preset"
-msgstr ""
+msgstr "முன்னமைக்கப்பட்டதாக சேமிக்கவும்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:151
 #: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Restore From Preset"
-msgstr ""
+msgstr "முன்னமைவிலிருந்து மீட்டமைக்கவும்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:161
 msgid "Format"
@@ -1491,16 +1481,12 @@ msgid "Infinite"
 msgstr "எல்லையற்றது"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:318
-#, fuzzy
-#| msgid "Show _Format Borders"
 msgid "Show Format Borders"
-msgstr "காட்டு வடிவ (_F) பார்டர்களை"
+msgstr "வடிவமைப்பு எல்லைகளைக் காட்டு"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:319
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are shown"
 msgid "Set whether the format borders are shown"
-msgstr "கேன்வாஸில் உள்ள சுருள் பட்டைகள் காட்டப்பட வேண்டுமா என்பதை அமைக்கவும்"
+msgstr "வடிவமைப்பு எல்லைகள் காட்டப்பட்டுள்ளதா என்பதை அமைக்கவும்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:324
 msgid "Format Border Color"
@@ -1568,26 +1554,20 @@ msgid "Set the background pattern height"
 msgstr "பின்னணி வடிவ உயரத்தை அமைக்கவும்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:439
-#, fuzzy
-#| msgid "Show _Origin Indicator"
 msgid "Show Origin Indicator"
-msgstr "மூலக் குறிகாட்டியைக் காட்டு (_O)"
+msgstr "தோற்றம் காட்டி காட்டு"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:440
-#, fuzzy
-#| msgid "Set whether the drawing cursor is visible"
 msgid "Set whether the document origin indicator is shown"
-msgstr "வரைதல் சுட்டி தெரியும் என்பதை அமைக்கவும்"
+msgstr "ஆவண தோற்றம் காட்டி காட்டப்பட்டுள்ளதா என்பதை அமைக்கவும்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:445
 msgid "Invert Color Brightness"
 msgstr "தலைகீழ் வண்ண பிரகாசம்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:446
-#, fuzzy
-#| msgid "Invert the brightness of all background pattern colors"
 msgid "Invert the brightness of the background and pattern colors"
-msgstr "அனைத்து பின்னணி வண்ணங்களின் பிரகாசத்தையும் மாற்றவும்"
+msgstr "பின்னணி மற்றும் முறை வண்ணங்களின் பிரகாசத்தை தலைகீழாக மாற்றவும்"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:450
 msgid "Invert"
@@ -1719,7 +1699,7 @@ msgstr "விண்ணப்பத்திலிருந்து வெள�
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:44
 msgid "Toggle Tabs Overview"
-msgstr ""
+msgstr "தாவல்கள் கண்ணோட்டத்தை மாற்றவும்"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:50
 msgid "Open the Canvas-Menu"
@@ -1840,10 +1820,8 @@ msgid "Page"
 msgstr "பக்கம்"
 
 #: crates/rnote-ui/data/ui/strokewidthpicker.ui:20
-#, fuzzy
-#| msgid "Split Strokes"
 msgid "Edit Stroke Size"
-msgstr "பிளவு பக்கவாதம்"
+msgstr "பக்கவாதம் அளவைத் திருத்து"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
@@ -1858,10 +1836,8 @@ msgid "Create new Folder"
 msgstr "புதிய கோப்புறையை உருவாக்கவும்"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:167
-#, fuzzy
-#| msgid "Workspace Name"
 msgid "Open Workspace Folder"
-msgstr "பணியிடத்தின் பெயர்"
+msgstr "திறந்த பணியிட கோப்புறை"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:700
 #: crates/rnote-ui/src/appwindow/imp.rs:426
@@ -1982,10 +1958,8 @@ msgstr "கோப்பு மேலாளரில் பார்க்கவ�
 #: crates/rnote-ui/src/dialogs/export.rs:752
 #: crates/rnote-ui/src/dialogs/export.rs:1111
 #: crates/rnote-ui/src/dialogs/export.rs:1117
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Failed to view the file in the file manager"
-msgstr "கோப்பு மேலாளரில் கோப்பைத் திறக்க முடியவில்லை"
+msgstr "கோப்பு மேலாளரில் கோப்பைக் காணத் தவறிவிட்டது"
 
 #: crates/rnote-ui/src/dialogs/export.rs:348
 #: crates/rnote-ui/src/dialogs/export.rs:771
@@ -2586,7 +2560,7 @@ msgstr "சாம்பல் நிறமானது"
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "strong"
-msgstr ""
+msgstr "வலுவான"
 
 #: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"

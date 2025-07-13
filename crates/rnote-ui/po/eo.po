@@ -414,22 +414,23 @@ msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
-"Agordu la rastruman skaladon relative al la efektiva skalo en la dokumento."
+"Agordu la rastruman skaladon relative\n"
+"al la efektiva skalo en la dokumento"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
 msgid "Jpeg Quality"
-msgstr ""
+msgstr "Jpeg Kvalito"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:382
 #: crates/rnote-ui/data/ui/dialogs/export.ui:564
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr ""
+msgstr "Agordu la kvalito de la Jpeg-bildo (1 - 100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:414
 #: crates/rnote-ui/src/dialogs/export.rs:1160
 msgid "Export Selection"
-msgstr ""
+msgstr "Eksportu Zonon"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"

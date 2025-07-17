@@ -248,16 +248,9 @@ impl StrokeStore {
         // rtree but also get from this the keys that are not in here
         // for that also create a slotmap of keys that are in the viewport
         // so that we can iterate a second time on keys and filter on elements not in the slotmap
-        let mut keys_in_viewport_hash = self
+        let keys_in_viewport_hash = self
             .key_tree
             .keys_intersecting_bounds_hashset(viewport_extended);
-
-        // if we have a current key in the store, push it as well
-        if let Some(current_stroke_key) = self.current_key() {
-            dbg!("add current stroke key to the viewport");
-            dbg!(current_stroke_key);
-            keys_in_viewport_hash.insert(current_stroke_key, ());
-        }
 
         // remove stroke keys that we know are not in
         // the viewport

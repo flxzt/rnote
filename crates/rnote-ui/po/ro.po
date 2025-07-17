@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-26 11:14+0200\n"
-"PO-Revision-Date: 2024-11-28 17:05+0000\n"
+"PO-Revision-Date: 2025-07-18 13:03+0000\n"
 "Last-Translator: Andrea Andre <andrea.tsg19@slmail.me>\n"
-"Language-Team: Romanian <https://hosted.weblate.org/projects/rnote/repo/ro/"
-">\n"
+"Language-Team: Romanian <https://hosted.weblate.org/projects/rnote/repo/ro/>"
+"\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 5.13-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -66,7 +66,7 @@ msgstr "Scrie un text cu mașina de scris"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"
-msgstr ""
+msgstr "Ascunde benzile cu instrumente în Modul Simplu"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
@@ -1215,7 +1215,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/mainheader.ui:61
 msgid "Focus Mode"
-msgstr ""
+msgstr "Modul Simplu"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:73
 #: crates/rnote-ui/data/ui/shortcuts.ui:173

@@ -2,6 +2,7 @@
 use super::StrokeKey;
 use p2d::bounding_volume::Aabb;
 use rstar::primitives::GeomWithData;
+use std::collections::HashMap;
 
 /// The rtree object that holds the bounds and [StrokeKey].
 type KeyTreeObject = GeomWithData<rstar::primitives::Rectangle<[f64; 2]>, StrokeKey>;
@@ -44,6 +45,17 @@ impl KeyTree {
             .collect()
     }
 
+    /// Return the keys that intersect with the given bounds.
+    pub(crate) fn keys_intersecting_bounds_hashset(&self, bounds: Aabb) -> HashMap<StrokeKey, ()> {
+        self.0
+            .locate_in_envelope_intersecting(&rstar::AABB::from_corners(
+                [bounds.mins[0], bounds.mins[1]],
+                [bounds.maxs[0], bounds.maxs[1]],
+            ))
+            .map(|object| (object.data, ()))
+            .collect()
+    }
+
     /// Return the keys that are completely contained in the given bounds.
     pub(crate) fn keys_in_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         self.0
@@ -68,6 +80,18 @@ impl KeyTree {
     ///  Clear the entire tree.
     pub(crate) fn clear(&mut self) {
         *self = Self::default()
+    }
+
+    pub fn get_bounds(&self) -> Aabb {
+        let aabb_enveloppe = self.0.root().envelope();
+        Aabb::new(
+            na::point![aabb_enveloppe.lower()[0], aabb_enveloppe.lower()[1]],
+            na::point![aabb_enveloppe.upper()[0], aabb_enveloppe.upper()[1]],
+        )
+    }
+
+    pub(crate) fn is_empty(&self) -> bool {
+        self.0.size() == 0
     }
 }
 

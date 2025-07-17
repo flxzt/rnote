@@ -9,6 +9,7 @@ pub mod trash_comp;
 // Re-exports
 pub use chrono_comp::ChronoComponent;
 use keytree::KeyTree;
+use p2d::bounding_volume::Aabb;
 pub use render_comp::RenderComponent;
 pub use selection_comp::SelectionComponent;
 pub use trash_comp::TrashComponent;
@@ -147,6 +148,7 @@ impl StrokeStore {
         let tree_objects = self
             .stroke_components
             .iter()
+            .filter(|(key, _stroke)| self.trashed(*key).is_some_and(|x| !x))
             .map(|(key, stroke)| (key, stroke.bounds()))
             .collect();
         self.key_tree.rebuild_from_vec(tree_objects);
@@ -367,5 +369,13 @@ impl StrokeStore {
         self.key_tree.clear();
 
         widget_flags
+    }
+
+    pub(super) fn get_bounds(&self) -> Aabb {
+        self.key_tree.get_bounds()
+    }
+
+    pub(super) fn keytree_is_empty(&self) -> bool {
+        self.key_tree.is_empty()
     }
 }

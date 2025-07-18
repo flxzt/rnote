@@ -13,8 +13,8 @@ use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::{Rectangle, Shapeable};
-use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::style::PressureCurve;
+use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::transform::Transform;
 use rnote_compose::transform::Transformable;
 use rnote_compose::{Color, PenPath, Style};
@@ -688,8 +688,8 @@ impl Stroke {
                 let elements = brushstroke.path.clone().into_elements();
                 let ignore_pressure = match &brushstroke.style {
                     Style::Smooth(smooth_options) => match smooth_options.pressure_curve {
-                        PressureCurve::Const => false,
-                        _ => true,
+                        PressureCurve::Const => true,
+                        _ => false,
                     },
                     Style::Rough(_) => false,
                     Style::Textured(_) => false,
@@ -705,10 +705,7 @@ impl Stroke {
                             .iter()
                             .map(|element| pixel_to_cm_factor * element.pos.y)
                             .collect(),
-                        f: elements
-                            .iter()
-                            .map(|element| pixel_to_cm_factor * element.pressure)
-                            .collect(),
+                        f: elements.iter().map(|element| element.pressure).collect(),
                     },
                     writer_inkml::Brush::init(
                         String::from(""),

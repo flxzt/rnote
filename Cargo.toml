@@ -91,7 +91,7 @@ poppler-rs = { git = "https://github.com/Doublonmousse/poppler-patch", features 
     "v20_9",
 ], rev = "3acaa4e28d45a05939a71116b0d5ebd4b1c99b98" }
 # inkml parser/writer
-writer_inkml = {git = "https://github.com/Doublonmousse/writer_reader_inkml", rev = "9498471ca978be417fb104e015151c1f8ade2f6a"}
+writer_inkml = {git = "https://github.com/Doublonmousse/writer_reader_inkml", rev = "6f5f903199a16996d5c2cb2a074cfd98cebd3f67"}
 
 [patch.crates-io]
 

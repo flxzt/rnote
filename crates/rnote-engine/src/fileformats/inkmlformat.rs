@@ -1,10 +1,10 @@
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
-use rnote_compose::penpath::Element;
-use rnote_compose::style::smooth::SmoothOptions;
-use rnote_compose::style::PressureCurve;
 use rnote_compose::Color;
 use rnote_compose::PenPath;
+use rnote_compose::penpath::Element;
+use rnote_compose::style::PressureCurve;
+use rnote_compose::style::smooth::SmoothOptions;
 use std::sync::Arc;
 use writer_inkml::{Brush, FormattedStroke};
 
@@ -21,8 +21,8 @@ pub fn inkml_to_stroke(
         1.0 - brush.transparency as f64 / 255.0,
     ));
 
-    // converting from mm to px
-    smooth_options.stroke_width = dpi * brush.stroke_width / (10.0 * 2.54);
+    // converting from cm to px
+    smooth_options.stroke_width = dpi * brush.stroke_width_cm / 2.54;
 
     // pressure curve
     if brush.ignorepressure {

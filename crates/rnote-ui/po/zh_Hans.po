@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-26 11:14+0200\n"
-"PO-Revision-Date: 2025-07-02 06:17+0000\n"
-"Last-Translator: Zhelin Zheng <paradiselinzzl@gmail.com>\n"
+"PO-Revision-Date: 2025-07-18 13:03+0000\n"
+"Last-Translator: Yuqi Huang <ctrlhuangyq@gmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/rnote/repo/zh_Hans/>\n"
 "Language: zh_Hans\n"
@@ -217,10 +217,8 @@ msgid "Change the directory"
 msgstr "更改目录"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
-#, fuzzy
-#| msgid "Trash Strokes"
 msgid "Trash File"
-msgstr "回收笔画"
+msgstr "将文件移至回收站"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
@@ -561,16 +559,12 @@ msgid "Encrypted PDF"
 msgstr "加密PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:279
-#, fuzzy
-#| msgid "Cancel"
 msgid "_Cancel"
-msgstr "取消"
+msgstr "_取消"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:280
-#, fuzzy
-#| msgid "Clock"
 msgid "_Unlock"
-msgstr "时钟"
+msgstr "_解锁"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:291
 msgid "Enter the PDF password"
@@ -779,8 +773,6 @@ msgid "Select Intersecting Path"
 msgstr "选择相交路径"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
-#, fuzzy
-#| msgid "Lock Aspectratio While Resizing the Selection"
 msgid "Lock Aspect Ratio While Resizing the Selection"
 msgstr "调整选区大小时锁定长宽比"
 
@@ -913,10 +905,8 @@ msgstr "插入竖直空白"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-#, fuzzy
-#| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
-msgstr "形状设置"
+msgstr "纵向空间工具配置"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
@@ -928,10 +918,8 @@ msgid "Zoom In/Out"
 msgstr "缩放"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
-#, fuzzy
-#| msgid "Eraser"
 msgid "Laser"
-msgstr "橡皮"
+msgstr "激光"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"
@@ -1262,10 +1250,8 @@ msgid "Save Document"
 msgstr "保存文档"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:89
-#, fuzzy
-#| msgid "Open the Canvas-Menu"
 msgid "Canvas Menu"
-msgstr "打开画布菜单"
+msgstr "画布菜单"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:94
 msgid "App Menu"
@@ -1296,10 +1282,8 @@ msgid "Toggle"
 msgstr "切换"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:14
-#, fuzzy
-#| msgid "Enabled"
 msgid "Disabled"
-msgstr "启用"
+msgstr "已停用"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:41
 #: crates/rnote-ui/data/ui/shortcuts.ui:11
@@ -1331,16 +1315,16 @@ msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "设置画布上的滚动条是否显示"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:64
-#, fuzzy
-#| msgid "Optimize for Printing"
 msgid "Optimize for E-Paper Displays"
-msgstr "针对打印优化"
+msgstr "针对电子书优化"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:65
 msgid ""
 "Changes certain UI elements and modifies behaviour\n"
 "of tools for optimized usage on E-Paper displays"
 msgstr ""
+"更改某些用界面元素并修改工具行为\n"
+"以优化在电子纸书上的使用"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:71
 msgid "Inertial Touch Scrolling"
@@ -1392,7 +1376,7 @@ msgstr "另存为预设"
 #: crates/rnote-ui/data/ui/settingspanel.ui:151
 #: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Restore From Preset"
-msgstr ""
+msgstr "恢复为预设"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:161
 msgid "Format"
@@ -1505,16 +1489,12 @@ msgid "Infinite"
 msgstr "无限"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:318
-#, fuzzy
-#| msgid "Show _Format Borders"
 msgid "Show Format Borders"
-msgstr "显示格式边框 [_F]"
+msgstr "显示格式界线"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:319
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are shown"
 msgid "Set whether the format borders are shown"
-msgstr "设置画布上的滚动条是否显示"
+msgstr "设置是否显示格式界线"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:324
 msgid "Format Border Color"
@@ -1582,24 +1562,18 @@ msgid "Set the background pattern height"
 msgstr "选择背景使用的纹理的高度"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:439
-#, fuzzy
-#| msgid "Show _Origin Indicator"
 msgid "Show Origin Indicator"
-msgstr "显示原点指示器 [_O]"
+msgstr "显示原点指示器"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:440
-#, fuzzy
-#| msgid "Set whether the drawing cursor is visible"
 msgid "Set whether the document origin indicator is shown"
-msgstr "设置画笔光标是否可见"
+msgstr "设置是否显示文档原点指示器"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:445
 msgid "Invert Color Brightness"
 msgstr "反转色彩亮度"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:446
-#, fuzzy
-#| msgid "Invert the brightness of all background pattern colors"
 msgid "Invert the brightness of the background and pattern colors"
 msgstr "反转背景纹理的颜色明暗"
 
@@ -1733,7 +1707,7 @@ msgstr "退出应用"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:44
 msgid "Toggle Tabs Overview"
-msgstr ""
+msgstr "切换标签概述"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:50
 msgid "Open the Canvas-Menu"
@@ -1854,10 +1828,8 @@ msgid "Page"
 msgstr "页码"
 
 #: crates/rnote-ui/data/ui/strokewidthpicker.ui:20
-#, fuzzy
-#| msgid "Split Strokes"
 msgid "Edit Stroke Size"
-msgstr "分割笔画"
+msgstr "编辑笔画大小"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
@@ -1872,10 +1844,8 @@ msgid "Create new Folder"
 msgstr "创建新文件夹"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:167
-#, fuzzy
-#| msgid "Workspace Name"
 msgid "Open Workspace Folder"
-msgstr "工作区名称"
+msgstr "打开工作区目录"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:700
 #: crates/rnote-ui/src/appwindow/imp.rs:426
@@ -1896,7 +1866,7 @@ msgstr "导出选择内容失败，没有选择内容"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:377
 msgid "Saves are in progress, waiting before closing.."
-msgstr ""
+msgstr "保存正在进行中，请稍候再关闭……"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:449
 msgid "Button 1"
@@ -1994,10 +1964,8 @@ msgstr "在文件管理器中查看"
 #: crates/rnote-ui/src/dialogs/export.rs:752
 #: crates/rnote-ui/src/dialogs/export.rs:1111
 #: crates/rnote-ui/src/dialogs/export.rs:1117
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Failed to view the file in the file manager"
-msgstr "无法打开在文件管理器中选择的文件"
+msgstr "无法在文件管理器中查看选择的文件"
 
 #: crates/rnote-ui/src/dialogs/export.rs:348
 #: crates/rnote-ui/src/dialogs/export.rs:771
@@ -2508,10 +2476,8 @@ msgid "Duplicating the directory failed"
 msgstr "复制目录失败"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:26
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Open the file in the default app failed"
-msgstr "无法打开在文件管理器中选择的文件"
+msgstr "文件无法在默认应用程序中打开"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:60
 msgid "Renaming file failed, target file already exists"
@@ -2532,54 +2498,52 @@ msgstr "新建文件夹"
 #: crates/rnote-ui/src/utils.rs:159
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
-msgstr ""
+msgstr "灰色"
 
 #: crates/rnote-ui/src/utils.rs:161 crates/rnote-ui/src/utils.rs:196
 msgctxt "part of string representation of a color"
 msgid "rose"
-msgstr ""
+msgstr "玫瑰色"
 
 #: crates/rnote-ui/src/utils.rs:163
-#, fuzzy
-#| msgid "Bread"
 msgctxt "part of string representation of a color"
 msgid "red"
-msgstr "面包"
+msgstr "红色"
 
 #: crates/rnote-ui/src/utils.rs:166
 msgctxt "part of string representation of a color"
 msgid "orange"
-msgstr ""
+msgstr "橙色"
 
 #: crates/rnote-ui/src/utils.rs:169
 msgctxt "part of string representation of a color"
 msgid "yellow"
-msgstr ""
+msgstr "黄色"
 
 #: crates/rnote-ui/src/utils.rs:173
 msgctxt "part of string representation of a color"
 msgid "chartreuse-green"
-msgstr ""
+msgstr "黄绿"
 
 #: crates/rnote-ui/src/utils.rs:176
 msgctxt "part of string representation of a color"
 msgid "green"
-msgstr ""
+msgstr "绿色"
 
 #: crates/rnote-ui/src/utils.rs:179
 msgctxt "part of string representation of a color"
 msgid "spring-green"
-msgstr ""
+msgstr "青绿"
 
 #: crates/rnote-ui/src/utils.rs:182
 msgctxt "part of string representation of a color"
 msgid "cyan"
-msgstr ""
+msgstr "青色"
 
 #: crates/rnote-ui/src/utils.rs:185
 msgctxt "part of string representation of a color"
 msgid "azure"
-msgstr ""
+msgstr "天蓝"
 
 #: crates/rnote-ui/src/utils.rs:188
 msgctxt "part of string representation of a color"

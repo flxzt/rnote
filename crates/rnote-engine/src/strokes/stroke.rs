@@ -729,7 +729,7 @@ impl Stroke {
                 let elements = brushstroke.path.clone().into_elements();
                 let ignore_pressure = match &brushstroke.style {
                     Style::Smooth(smooth_options) => {
-                        !matches!(smooth_options.pressure_curve, PressureCurve::Const)
+                        matches!(smooth_options.pressure_curve, PressureCurve::Const)
                     }
                     Style::Rough(_) => false,
                     Style::Textured(_) => false,

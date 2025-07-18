@@ -8,7 +8,7 @@ use rnote_compose::style::smooth::SmoothOptions;
 use std::sync::Arc;
 use writer_inkml::{Brush, FormattedStroke};
 
-const MM_TO_PX: f64 = 1.0 / (10.0 * 2.54);
+const INCH_TO_CM: f64 = 2.54;
 
 pub fn inkml_to_stroke(
     formatted_stroke: FormattedStroke,
@@ -23,8 +23,8 @@ pub fn inkml_to_stroke(
         1.0 - brush.transparency as f64 / 255.0,
     ));
 
-    // converting from mm to px
-    smooth_options.stroke_width = dpi * brush.stroke_width * MM_TO_PX;
+    // converting from cm to px
+    smooth_options.stroke_width = dpi * brush.stroke_width_cm / INCH_TO_CM;
 
     // pressure curve
     if brush.ignorepressure {

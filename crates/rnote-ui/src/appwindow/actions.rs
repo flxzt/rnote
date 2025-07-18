@@ -12,6 +12,7 @@ use rnote_compose::SplitOrder;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::ext::GraphenePointExt;
+use rnote_engine::fileformats::inkmlformat;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::strokes::resize::{ImageSizeOption, Resize};
 use rnote_engine::strokes::textstroke::TextAttribute;
@@ -20,7 +21,6 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::Instant;
 use tracing::{debug, error};
-use rnote_engine::fileformats::inkmlformat;
 
 const CLIPBOARD_INPUT_STREAM_BUFSIZE: usize = 4096;
 

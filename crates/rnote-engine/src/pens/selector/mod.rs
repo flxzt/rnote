@@ -199,9 +199,11 @@ impl PenBehaviour for Selector {
                                 str::from_utf8(&inkml_bytes)
                             );
                             clipboard_content.push((
-                                inkml_bytes,
+                                inkml_bytes.clone(),
                                 "application/x.windows.InkML Format".to_string(),
                             ));
+                            clipboard_content
+                                .push((inkml_bytes, "application/inkml+xml".to_string()));
                         }
                         Err(e) => error!(
                             "Could not convert strokes to inkml to add to the clipboard, {e}"

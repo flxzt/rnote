@@ -7,6 +7,7 @@ use super::vectorimage::VectorImage;
 use super::{Content, TextStroke};
 use crate::fileformats::xoppformat::{self, XoppColor};
 use crate::store::chrono_comp::StrokeLayer;
+use crate::strokes::textstroke::TextStyle;
 use crate::{Drawable, utils};
 use crate::{Engine, render};
 use p2d::bounding_volume::Aabb;
@@ -425,6 +426,29 @@ impl Stroke {
         let image = render::Image::try_from_encoded_bytes(&bytes)?;
 
         Ok(Stroke::BitmapImage(BitmapImage { image, rectangle }))
+    }
+
+    pub fn from_xopptext(
+        xopp_text: xoppformat::XoppText,
+        offset: na::Vector2<f64>,
+        target_dpi: f64,
+    ) -> Result<Self, anyhow::Error> {
+        let pos: na::Vector2<f64> = na::Vector2::<f64>::new(
+            crate::utils::convert_value_dpi(xopp_text.x, xoppformat::XoppFile::DPI, target_dpi),
+            crate::utils::convert_value_dpi(xopp_text.y, xoppformat::XoppFile::DPI, target_dpi),
+        );
+
+        let mut textstyle = TextStyle::default();
+        textstyle.color = crate::utils::color_from_xopp(xopp_text.color);
+        textstyle.font_size =
+            crate::utils::convert_value_dpi(xopp_text.size, xoppformat::XoppFile::DPI, target_dpi);
+        textstyle.font_family = xopp_text.font;
+
+        Ok(Stroke::TextStroke(TextStroke::new(
+            xopp_text.text,
+            pos + offset,
+            textstyle,
+        )))
     }
 
     pub fn into_xopp(self, current_dpi: f64) -> Option<xoppformat::XoppStrokeType> {

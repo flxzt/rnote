@@ -520,6 +520,12 @@ impl Stroke {
                 ))
             }
             Stroke::ShapeStroke(shapestroke) => {
+                // Remark
+                // We can transform shapes to a xopp brushstroke
+                // under the following conditions
+                // - if the stroke color is not none
+                // - if the fill color is transparent
+                // - if the style is not rough
                 let png_data = match shapestroke.export_to_bitmap_image_bytes(
                     image::ImageFormat::Png,
                     Engine::STROKE_EXPORT_IMAGE_SCALE,
@@ -564,6 +570,14 @@ impl Stroke {
             Stroke::TextStroke(textstroke) => {
                 // Xournal++ text strokes do not support affine transformations, so we have to convert on best effort here.
                 // The best solution for now seems to be to export them as a bitmap image.
+                //
+                // We _could_ try to retain the text more but
+                // the hard part is a xopp text element is
+                // - a single font
+                // - a single emphasis mode (bold,italic ...) on all text
+                // - a single color
+                // So we'd have to cut the text into smaller xopp text elements
+                // to retain it ...
                 let png_data = match textstroke.export_to_bitmap_image_bytes(
                     image::ImageFormat::Png,
                     Engine::STROKE_EXPORT_IMAGE_SCALE,
@@ -606,6 +620,7 @@ impl Stroke {
                 ))
             }
             Stroke::VectorImage(vectorimage) => {
+                // no svg support in xournalpp
                 let png_data = match vectorimage.export_to_bitmap_image_bytes(
                     image::ImageFormat::Png,
                     Engine::STROKE_EXPORT_IMAGE_SCALE,

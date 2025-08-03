@@ -753,6 +753,14 @@ impl Engine {
             | self.update_rendering_current_viewport()
     }
 
+    pub fn mirror_horizontal_selection(&mut self) -> WidgetFlags {
+        todo!("horizontal mirror not implemented yet!");
+    }
+
+    pub fn mirror_vertical_selection(&mut self) -> WidgetFlags {
+        todo!("vertical mirror not implemented yet!");
+    }
+
     pub fn select_with_bounds(
         &mut self,
         bounds: Aabb,

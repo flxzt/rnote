@@ -308,15 +308,32 @@ impl StrokeStore {
             return widget_flags;
         }
 
+        let all_stroke_bounds = self.strokes_bounds(keys);
+
+        let min_x = all_stroke_bounds.iter()
+            .map(|aabb_element| aabb_element.mins.coords.x)
+            .reduce(|a, b| {
+                a.min(b)
+            });
+        let max_x = all_stroke_bounds.iter()
+            .map(|aabb_element| aabb_element.maxs.coords.x)
+            .reduce(|a, b| {
+                a.max(b)
+            });
+
+        let selection_centerline_x = if let (Some(min_x), Some(max_x)) = (min_x, max_x) {
+            (min_x + max_x)/2.0
+        } else {
+            return widget_flags;
+        };
+
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
                 .get_mut(key)
                 .map(Arc::make_mut)
             {
-                {
-                    stroke.horizontal_mirror();
-                    self.set_rendering_dirty(key);
-                }
+                stroke.horizontal_mirror(selection_centerline_x);
+                self.set_rendering_dirty(key);
             }
         });
 

@@ -673,9 +673,7 @@ impl Stroke {
         }
     }
 
-    pub fn horizontal_mirror(&mut self) {
-        let selection_centerline_x = self.bounds().center().x;
-        
+    pub fn horizontal_mirror(&mut self, selection_centerline_x: f64) {
         match self {
             Stroke::BrushStroke(brushstroke) => {
                 let current_penpath_elements = brushstroke.path.clone().into_elements();

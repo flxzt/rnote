@@ -673,6 +673,13 @@ impl Stroke {
         }
     }
 
+    // horizontally mirrors point around line 'x = selection_centerline_x'
+    fn mirror_point_x(point: &mut na::Vector2<f64>, selection_centerline_x: f64) {
+        point.x -= selection_centerline_x;
+        point.x *= -1.0;
+        point.x += selection_centerline_x;
+    }
+
     pub fn horizontal_mirror(&mut self, selection_centerline_x: f64) {
         match self {
             Stroke::BrushStroke(brushstroke) => {
@@ -684,11 +691,8 @@ impl Stroke {
                         element.pos
                     }).collect::<Vec<na::Vector2<f64>>>();
                 
-                // actually mirroring all the points
                 for coord in coords.iter_mut() {
-                    coord.x -= selection_centerline_x;
-                    coord.x *= -1.0;
-                    coord.x += selection_centerline_x;
+                    Self::mirror_point_x(coord, selection_centerline_x);
                 }
 
                 let new_penpath_elements: Vec<Element> = current_penpath_elements
@@ -703,10 +707,75 @@ impl Stroke {
                 }
 
             }
-            Stroke::ShapeStroke(shape_stroke) => todo!("no shapes!"),
-            Stroke::TextStroke(text_stroke) => todo!(),
+            Stroke::ShapeStroke(shape_stroke) => {
+                // affine transformation matrix performing a reflection across line 'x = selection_centerline_x'
+                let mirror_transformation_x = na::Matrix3::new(
+                    -1.0, 0.0, 2.0 * selection_centerline_x,
+                    0.0, 1.0, 0.0,
+                    0.0, 0.0, 1.0,
+                );
+
+                match &mut shape_stroke.shape {
+                    rnote_compose::Shape::Line(line) => {
+                        Self::mirror_point_x(&mut line.start, selection_centerline_x);
+                        Self::mirror_point_x(&mut line.end, selection_centerline_x);
+                    }
+                    rnote_compose::Shape::Arrow(arrow) => {
+                        Self::mirror_point_x(&mut arrow.start, selection_centerline_x);
+                        Self::mirror_point_x(&mut arrow.tip, selection_centerline_x);
+                    }
+                    rnote_compose::Shape::Rectangle(rectangle) => {
+                        let transformed_affine_matrix =
+                            mirror_transformation_x * rectangle.transform.affine.matrix();
+
+                        rectangle.transform.affine =
+                            na::Affine2::from_matrix_unchecked(transformed_affine_matrix);
+                    }
+                    rnote_compose::Shape::Ellipse(ellipse) => {
+                        let transformed_affine_matrix =
+                            mirror_transformation_x * ellipse.transform.affine.matrix();
+
+                        ellipse.transform.affine =
+                            na::Affine2::from_matrix_unchecked(transformed_affine_matrix);
+                    }
+                    rnote_compose::Shape::QuadraticBezier(quadratic_bezier) => {
+                        for point in [
+                            &mut quadratic_bezier.start,
+                            &mut quadratic_bezier.end,
+                            &mut quadratic_bezier.cp,
+                        ] {
+                            Self::mirror_point_x(point, selection_centerline_x);
+                        }
+                    }
+                    rnote_compose::Shape::CubicBezier(cubic_bezier) => {
+                        for point in [
+                            &mut cubic_bezier.start,
+                            &mut cubic_bezier.end,
+                            &mut cubic_bezier.cp1,
+                            &mut cubic_bezier.cp2,
+                        ] {
+                            Self::mirror_point_x(point, selection_centerline_x);
+                        }
+                    }
+                    rnote_compose::Shape::Polyline(polyline) => {
+                        Self::mirror_point_x(&mut polyline.start, selection_centerline_x);
+
+                        for point in polyline.path.iter_mut() {
+                            Self::mirror_point_x(point, selection_centerline_x);
+                        }
+                    }
+                    rnote_compose::Shape::Polygon(polygon) => {
+                        Self::mirror_point_x(&mut polygon.start, selection_centerline_x);
+
+                        for point in polygon.path.iter_mut() {
+                            Self::mirror_point_x(point, selection_centerline_x);
+                        }
+                    }
+                }
+            }
             Stroke::VectorImage(vector_image) => todo!(),
             Stroke::BitmapImage(bitmap_image) => todo!(),
+            Stroke::TextStroke(_) => {}
         }
     }
 }

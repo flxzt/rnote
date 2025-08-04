@@ -687,10 +687,9 @@ impl Stroke {
 
                 let mut coords = current_penpath_elements
                     .iter()
-                    .map(|element| {
-                        element.pos
-                    }).collect::<Vec<na::Vector2<f64>>>();
-                
+                    .map(|element| element.pos)
+                    .collect::<Vec<na::Vector2<f64>>>();
+
                 for coord in coords.iter_mut() {
                     Self::mirror_point_x(coord, selection_centerline_x);
                 }
@@ -700,20 +699,21 @@ impl Stroke {
                     .zip(coords.iter())
                     .map(|(current_penpath_element, new_position)| Element {
                         pos: *new_position,
-                        ..*current_penpath_element}).collect();
+                        ..*current_penpath_element
+                    })
+                    .collect();
 
                 if let Some(new_penpath) = PenPath::try_from_elements(new_penpath_elements) {
                     brushstroke.path = new_penpath;
                 }
-
             }
             Stroke::ShapeStroke(shape_stroke) => {
                 // affine transformation matrix performing a reflection across line 'x = selection_centerline_x'
-                let mirror_transformation_x = na::Matrix3::new(
-                    -1.0, 0.0, 2.0 * selection_centerline_x,
-                    0.0, 1.0, 0.0,
-                    0.0, 0.0, 1.0,
-                );
+                let mirror_transformation_x = na::matrix![
+                    -1.0, 0.0, 2.0 * selection_centerline_x;
+                    0.0, 1.0, 0.0;
+                    0.0, 0.0, 1.0;
+                ];
 
                 match &mut shape_stroke.shape {
                     rnote_compose::Shape::Line(line) => {

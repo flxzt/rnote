@@ -8,7 +8,7 @@ use piet::RenderContext;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevent::PenProgress;
-use rnote_compose::{color, EventResult, PenEvent};
+use rnote_compose::{EventResult, PenEvent, color};
 use std::time::Instant;
 
 #[derive(Clone, Debug)]
@@ -56,22 +56,26 @@ impl VerticalSpaceTool {
                 self.pos_y = element.pos[1];
                 let pos_x = element.pos[0];
                 let limit_movement_horizontal_borders = engine_view
+                    .config
                     .pens_config
                     .tools_config
                     .verticalspace_tool_config
                     .limit_movement_horizontal_borders;
                 let limit_movement_vertical_borders = engine_view
+                    .config
                     .pens_config
                     .tools_config
                     .verticalspace_tool_config
                     .limit_movement_vertical_borders;
-                let y_max = ((self.pos_y / engine_view.document.format.height()).floor() + 1.0f64)
-                    * engine_view.document.format.height();
+                let y_max = ((self.pos_y / engine_view.document.config.format.height()).floor()
+                    + 1.0f64)
+                    * engine_view.document.config.format.height();
                 let limit_x = {
-                    let page_number_hor = (pos_x / engine_view.document.format.width()).floor();
+                    let page_number_hor =
+                        (pos_x / engine_view.document.config.format.width()).floor();
                     (
-                        page_number_hor * engine_view.document.format.width(),
-                        (page_number_hor + 1.0f64) * engine_view.document.format.width(),
+                        page_number_hor * engine_view.document.config.format.width(),
+                        (page_number_hor + 1.0f64) * engine_view.document.config.format.width(),
                     )
                 };
                 self.limit_x = if limit_movement_vertical_borders {
@@ -108,9 +112,10 @@ impl VerticalSpaceTool {
                 {
                     self.start_pos_y - self.pos_y
                 } else {
-                    engine_view
-                        .document
-                        .snap_position(element.pos - na::vector![0., self.pos_y])[1]
+                    engine_view.document.snap_position(
+                        element.pos - na::vector![0., self.pos_y],
+                        engine_view.config,
+                    )[1]
                 };
 
                 if y_offset.abs() > VerticalSpaceTool::Y_OFFSET_THRESHOLD {

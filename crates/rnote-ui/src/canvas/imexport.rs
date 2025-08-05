@@ -1,15 +1,16 @@
 // Imports
 use super::RnCanvas;
+use crate::RnAppWindow;
 use anyhow::Context;
-use futures::channel::oneshot;
 use futures::AsyncWriteExt;
+use futures::channel::oneshot;
 use gtk4::{gio, prelude::*};
 use rnote_compose::ext::Vector2Ext;
+use rnote_engine::WidgetFlags;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
 use rnote_engine::engine::{EngineSnapshot, StrokeContent};
-use rnote_engine::strokes::resize::ImageSizeOption;
 use rnote_engine::strokes::Stroke;
-use rnote_engine::WidgetFlags;
+use rnote_engine::strokes::resize::ImageSizeOption;
 use std::ops::Range;
 use std::path::Path;
 use tracing::{debug, error};
@@ -60,8 +61,16 @@ impl RnCanvas {
         Ok(())
     }
 
-    pub(crate) async fn load_in_xopp_bytes(&self, bytes: Vec<u8>) -> anyhow::Result<()> {
-        let xopp_import_prefs = self.engine_ref().import_prefs.xopp_import_prefs;
+    pub(crate) async fn load_in_xopp_bytes(
+        &self,
+        appwindow: &RnAppWindow,
+        bytes: Vec<u8>,
+    ) -> anyhow::Result<()> {
+        let xopp_import_prefs = appwindow
+            .engine_config()
+            .read()
+            .import_prefs
+            .xopp_import_prefs;
         let engine_snapshot =
             EngineSnapshot::load_from_xopp_bytes(bytes, xopp_import_prefs).await?;
         let widget_flags = self.engine_mut().load_snapshot(engine_snapshot);
@@ -126,14 +135,16 @@ impl RnCanvas {
     /// `target_pos` is in coordinate space of the doc.
     pub(crate) async fn load_in_pdf_bytes(
         &self,
+        appwindow: &RnAppWindow,
         bytes: Vec<u8>,
         target_pos: Option<na::Vector2<f64>>,
         page_range: Option<Range<u32>>,
         password: Option<String>,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
-        let adjust_document = self
-            .engine_ref()
+        let adjust_document = appwindow
+            .engine_config()
+            .read()
             .import_prefs
             .pdf_import_prefs
             .adjust_document;
@@ -212,12 +223,14 @@ impl RnCanvas {
         self.set_save_in_progress(true);
         debug!("Saving file is now in progress");
 
-        let file_path = file
-            .path()
-            .ok_or_else(|| anyhow::anyhow!("Could not get a path for file: `{file:?}`."))?;
-        let basename = file
-            .basename()
-            .ok_or_else(|| anyhow::anyhow!("Could not retrieve basename for file: `{file:?}`."))?;
+        let file_path = file.path().ok_or_else(|| {
+            self.set_save_in_progress(false);
+            anyhow::anyhow!("Could not get a path for file: `{file:?}`.")
+        })?;
+        let basename = file.basename().ok_or_else(|| {
+            self.set_save_in_progress(false);
+            anyhow::anyhow!("Could not retrieve basename for file: `{file:?}`.")
+        })?;
         let rnote_bytes_receiver = self
             .engine_ref()
             .save_as_rnote_bytes(basename.to_string_lossy().to_string());
@@ -292,6 +305,7 @@ impl RnCanvas {
     /// file extension overwrites existing files with the same name!
     pub(crate) async fn export_doc_pages(
         &self,
+        appwindow: &RnAppWindow,
         dir: &gio::File,
         file_stem_name: String,
         export_prefs_override: Option<DocPagesExportPrefs>,
@@ -303,8 +317,13 @@ impl RnCanvas {
                 "Supplied target file `{dir:?}` is not a directory."
             ));
         }
-        let export_prefs =
-            export_prefs_override.unwrap_or(self.engine_ref().export_prefs.doc_pages_export_prefs);
+        let export_prefs = export_prefs_override.unwrap_or(
+            appwindow
+                .engine_config()
+                .read()
+                .export_prefs
+                .doc_pages_export_prefs,
+        );
         let file_ext = export_prefs.export_format.file_ext();
 
         let export_bytes_recv = self.engine_ref().export_doc_pages(export_prefs_override);
@@ -349,18 +368,6 @@ impl RnCanvas {
         let exported_engine_state = self.engine_ref().export_state_as_json()?;
 
         crate::utils::create_replace_file_future(exported_engine_state.into_bytes(), file).await?;
-
-        self.set_last_export_dir(file.parent());
-
-        Ok(())
-    }
-
-    /// exports and writes the engine config as json into the file.
-    /// Only for debugging!
-    pub(crate) async fn export_engine_config(&self, file: &gio::File) -> anyhow::Result<()> {
-        let exported_engine_config = self.engine_ref().export_engine_config_as_json()?;
-
-        crate::utils::create_replace_file_future(exported_engine_config.into_bytes(), file).await?;
 
         self.set_last_export_dir(file.parent());
 

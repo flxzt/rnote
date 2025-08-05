@@ -1,13 +1,12 @@
 // Imports
-use super::{Engine, EngineConfig, StrokeContent};
+use super::{Engine, StrokeContent};
 use crate::fileformats::rnoteformat::RnoteFile;
-use crate::fileformats::{xoppformat, FileFormatSaver};
-use crate::CloneConfig;
+use crate::fileformats::{FileFormatSaver, xoppformat};
 use anyhow::Context;
 use futures::channel::oneshot;
 use rayon::prelude::*;
-use rnote_compose::transform::Transformable;
 use rnote_compose::SplitOrder;
+use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tracing::error;
@@ -312,12 +311,6 @@ pub struct ExportPrefs {
     pub selection_export_prefs: SelectionExportPrefs,
 }
 
-impl CloneConfig for ExportPrefs {
-    fn clone_config(&self) -> Self {
-        *self
-    }
-}
-
 impl Engine {
     /// The used image scale-factor for any strokes that are converted to bitmap images on export.
     pub const STROKE_EXPORT_IMAGE_SCALE: f64 = 1.8;
@@ -345,19 +338,6 @@ impl Engine {
         oneshot_receiver
     }
 
-    /// Extract the current engine configuration.
-    pub fn extract_engine_config(&self) -> EngineConfig {
-        EngineConfig {
-            document: self.document.clone_config(),
-            pens_config: self.pens_config.clone_config(),
-            penholder: self.penholder.clone_config(),
-            import_prefs: self.import_prefs.clone_config(),
-            export_prefs: self.export_prefs.clone_config(),
-            pen_sounds: self.pen_sounds(),
-            optimize_epd: self.optimize_epd(),
-        }
-    }
-
     pub fn extract_document_content(&self) -> StrokeContent {
         StrokeContent::default()
             .with_strokes(
@@ -368,7 +348,7 @@ impl Engine {
                 self.bounds_w_content_extended()
                     .unwrap_or(self.document.bounds()),
             ))
-            .with_background(Some(self.document.background))
+            .with_background(Some(self.document.config.background))
     }
 
     pub fn extract_pages_content(&self, page_order: SplitOrder) -> Vec<StrokeContent> {
@@ -384,7 +364,7 @@ impl Engine {
                         ),
                     )
                     .with_bounds(Some(bounds))
-                    .with_background(Some(self.document.background))
+                    .with_background(Some(self.document.config.background))
             })
             .collect()
     }
@@ -397,13 +377,8 @@ impl Engine {
         Some(
             StrokeContent::default()
                 .with_strokes(self.store.get_strokes_arc(&selection_keys))
-                .with_background(Some(self.document.background)),
+                .with_background(Some(self.document.config.background)),
         )
-    }
-
-    /// Export the current engine config as Json string.
-    pub fn export_engine_config_as_json(&self) -> anyhow::Result<String> {
-        Ok(serde_json::to_string(&self.extract_engine_config())?)
     }
 
     /// Export the entire engine state as Json string.
@@ -420,7 +395,7 @@ impl Engine {
         doc_export_prefs_override: Option<DocExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<u8>, anyhow::Error>> {
         let doc_export_prefs =
-            doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
+            doc_export_prefs_override.unwrap_or(self.config.read().export_prefs.doc_export_prefs);
 
         match doc_export_prefs.export_format {
             DocExportFormat::Svg => self.export_doc_as_svg_bytes(doc_export_prefs_override),
@@ -438,7 +413,7 @@ impl Engine {
     ) -> oneshot::Receiver<Result<Vec<u8>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
         let doc_export_prefs =
-            doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
+            doc_export_prefs_override.unwrap_or(self.config.read().export_prefs.doc_export_prefs);
         let doc_content = self.extract_document_content();
 
         rayon::spawn(move || {
@@ -464,7 +439,9 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver failed while exporting document as Svg bytes. Receiver already dropped.");
+                error!(
+                    "Sending result to receiver failed while exporting document as Svg bytes. Receiver already dropped."
+                );
             }
         });
 
@@ -479,9 +456,9 @@ impl Engine {
     ) -> oneshot::Receiver<anyhow::Result<Vec<u8>>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
         let doc_export_prefs =
-            doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
+            doc_export_prefs_override.unwrap_or(self.config.read().export_prefs.doc_export_prefs);
         let pages_content = self.extract_pages_content(doc_export_prefs.page_order);
-        let format_size = self.document.format.size();
+        let format_size = self.document.config.format.size();
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
@@ -538,7 +515,9 @@ impl Engine {
             };
 
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver failed while exporting document as Pdf bytes. Receiver already dropped.");
+                error!(
+                    "Sending result to receiver failed while exporting document as Pdf bytes. Receiver already dropped."
+                );
             }
         });
 
@@ -553,7 +532,7 @@ impl Engine {
     ) -> oneshot::Receiver<Result<Vec<u8>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
         let doc_export_prefs =
-            doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
+            doc_export_prefs_override.unwrap_or(self.config.read().export_prefs.doc_export_prefs);
         let pages_content = self.extract_pages_content(doc_export_prefs.page_order);
         let document = self.document.clone();
 
@@ -563,7 +542,7 @@ impl Engine {
                 let xopp_background = xoppformat::XoppBackground {
                     name: None,
                     bg_type: xoppformat::XoppBackgroundType::Solid {
-                        color: crate::utils::xoppcolor_from_color(document.background.color),
+                        color: crate::utils::xoppcolor_from_color(document.config.background.color),
                         style: xoppformat::XoppBackgroundSolidStyle::Plain,
                     },
                 };
@@ -581,7 +560,7 @@ impl Engine {
                             .filter_map(|mut stroke| {
                                 let mut stroke = Arc::make_mut(&mut stroke).clone();
                                 stroke.translate(-page_bounds.mins.coords);
-                                stroke.into_xopp(document.format.dpi())
+                                stroke.into_xopp(document.config.format.dpi())
                             })
                             .collect::<Vec<xoppformat::XoppStrokeType>>();
 
@@ -639,7 +618,7 @@ impl Engine {
 
                         let page_dimensions = crate::utils::convert_coord_dpi(
                             page_bounds.extents(),
-                            document.format.dpi(),
+                            document.config.format.dpi(),
                             xoppformat::XoppFile::DPI,
                         );
 
@@ -653,7 +632,7 @@ impl Engine {
                     .collect::<Vec<xoppformat::XoppPage>>();
 
                 let xopp_title = String::from(
-                    "Xournal++ document - see https://github.com/xournalpp/xournalpp (exported from Rnote - see https://github.com/flxzt/rnote)"
+                    "Xournal++ document - see https://github.com/xournalpp/xournalpp (exported from Rnote - see https://github.com/flxzt/rnote)",
                 );
 
                 let xopp_root = xoppformat::XoppRoot {
@@ -682,8 +661,8 @@ impl Engine {
         &self,
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
-        let doc_pages_export_prefs =
-            doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
+        let doc_pages_export_prefs = doc_pages_export_prefs_override
+            .unwrap_or(self.config.read().export_prefs.doc_pages_export_prefs);
 
         match doc_pages_export_prefs.export_format {
             DocPagesExportFormat::Svg => {
@@ -701,8 +680,8 @@ impl Engine {
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Vec<u8>>>>();
-        let doc_pages_export_prefs =
-            doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
+        let doc_pages_export_prefs = doc_pages_export_prefs_override
+            .unwrap_or(self.config.read().export_prefs.doc_pages_export_prefs);
         let pages_content = self.extract_pages_content(doc_pages_export_prefs.page_order);
 
         rayon::spawn(move || {
@@ -753,14 +732,18 @@ impl Engine {
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Vec<u8>>>>();
-        let doc_pages_export_prefs =
-            doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
+        let doc_pages_export_prefs = doc_pages_export_prefs_override
+            .unwrap_or(self.config.read().export_prefs.doc_pages_export_prefs);
         let pages_contents = self.extract_pages_content(doc_pages_export_prefs.page_order);
 
         rayon::spawn(move || {
             let result = || -> Result<Vec<Vec<u8>>, anyhow::Error> {
                 let image_format = match doc_pages_export_prefs.export_format {
-                    DocPagesExportFormat::Svg => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
+                    DocPagesExportFormat::Svg => {
+                        return Err(anyhow::anyhow!(
+                            "Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format."
+                        ));
+                    }
                     DocPagesExportFormat::Png => image::ImageFormat::Png,
                     DocPagesExportFormat::Jpeg => image::ImageFormat::Jpeg,
                 };
@@ -787,7 +770,9 @@ impl Engine {
                     .collect()
             };
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver failed while exporting document pages as bitmap bytes. Receiver already dropped.");
+                error!(
+                    "Sending result to receiver failed while exporting document pages as bitmap bytes. Receiver already dropped."
+                );
             }
         });
 
@@ -799,8 +784,8 @@ impl Engine {
         &self,
         selection_export_prefs_override: Option<SelectionExportPrefs>,
     ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
-        let selection_export_prefs =
-            selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
+        let selection_export_prefs = selection_export_prefs_override
+            .unwrap_or(self.config.read().export_prefs.selection_export_prefs);
 
         match selection_export_prefs.export_format {
             SelectionExportFormat::Svg => {
@@ -819,8 +804,8 @@ impl Engine {
     ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<Option<Vec<u8>>>>();
-        let selection_export_prefs =
-            selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
+        let selection_export_prefs = selection_export_prefs_override
+            .unwrap_or(self.config.read().export_prefs.selection_export_prefs);
         let content = self.extract_selection_content();
 
         rayon::spawn(move || {
@@ -852,7 +837,9 @@ impl Engine {
                 ))
             };
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver failed while exporting selection as Svg bytes. Receiver already dropped.");
+                error!(
+                    "Sending result to receiver failed while exporting selection as Svg bytes. Receiver already dropped."
+                );
             }
         });
 
@@ -868,8 +855,8 @@ impl Engine {
     ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<Option<Vec<u8>>>>();
-        let selection_export_prefs =
-            selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
+        let selection_export_prefs = selection_export_prefs_override
+            .unwrap_or(self.config.read().export_prefs.selection_export_prefs);
         let content = self.extract_selection_content();
 
         rayon::spawn(move || {
@@ -887,9 +874,13 @@ impl Engine {
                     return Ok(None);
                 };
                 let image_format = match selection_export_prefs.export_format {
-                    SelectionExportFormat::Svg => return Err(anyhow::anyhow!("Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
+                    SelectionExportFormat::Svg => {
+                        return Err(anyhow::anyhow!(
+                            "Extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format."
+                        ));
+                    }
                     SelectionExportFormat::Png => image::ImageFormat::Png,
-                    SelectionExportFormat::Jpeg => image::ImageFormat::Jpeg
+                    SelectionExportFormat::Jpeg => image::ImageFormat::Jpeg,
                 };
 
                 Ok(Some(
@@ -901,7 +892,9 @@ impl Engine {
                 ))
             };
             if oneshot_sender.send(result()).is_err() {
-                error!("Sending result to receiver failed while exporting selection as bitmap image bytes. Receiver already dropped");
+                error!(
+                    "Sending result to receiver failed while exporting selection as bitmap image bytes. Receiver already dropped"
+                );
             }
         });
 

@@ -5,10 +5,12 @@ use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use p2d::bounding_volume::BoundingVolume;
 use piet::RenderContext;
+use rnote_compose::Constraints;
+use rnote_compose::PenPath;
+use rnote_compose::builders::PenPathCurvedBuilder;
 use rnote_compose::builders::buildable::Buildable;
 use rnote_compose::builders::buildable::BuilderCreator;
 use rnote_compose::builders::buildable::BuilderProgress;
-use rnote_compose::builders::PenPathCurvedBuilder;
 use rnote_compose::color;
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::ext::AabbExt;
@@ -16,8 +18,6 @@ use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::Element;
 use rnote_compose::penpath::Segment;
 use rnote_compose::shapes::Shapeable;
-use rnote_compose::Constraints;
-use rnote_compose::PenPath;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -126,8 +126,6 @@ impl LaserTool {
                 }
             }
             (ToolsState::Active, PenEvent::Up { .. }) => {
-                let mut progress = PenProgress::Finished;
-
                 if let Some(builder) = &mut self.path_builder {
                     let builder_result = builder.handle_event(event, now, Constraints::default());
 
@@ -135,7 +133,6 @@ impl LaserTool {
                     self.start_fade(now);
 
                     engine_view.animation.claim_frame();
-                    progress = PenProgress::InProgress;
                 }
 
                 self.reset(false);
@@ -143,7 +140,7 @@ impl LaserTool {
                 EventResult {
                     handled: true,
                     propagate: EventPropagation::Stop,
-                    progress,
+                    progress: PenProgress::Finished,
                 }
             }
             (ToolsState::Active, PenEvent::Proximity { .. }) => EventResult {
@@ -175,7 +172,7 @@ impl LaserTool {
         (event_result, widget_flags)
     }
 
-    pub fn handle_animation_frame(&mut self, engine_view: &mut EngineViewMut, optimize_epd: bool) {
+    pub fn handle_animation_frame(&mut self, engine_view: &mut EngineViewMut) {
         let Some(faded) = self.has_fully_faded() else {
             return;
         };
@@ -183,7 +180,7 @@ impl LaserTool {
         if faded {
             self.reset(true);
         } else {
-            if !optimize_epd {
+            if !engine_view.config.optimize_epd {
                 let transparency = self
                     .fade_start_time
                     .unwrap() // Never fails because `has_fully_faded` has not returned `None`.

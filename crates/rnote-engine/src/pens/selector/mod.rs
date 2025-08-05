@@ -2,9 +2,9 @@
 mod penevents;
 
 // Imports
-use super::pensconfig::selectorconfig::SelectorStyle;
 use super::PenBehaviour;
 use super::PenStyle;
+use super::pensconfig::selectorconfig::SelectorStyle;
 use crate::engine::{EngineView, EngineViewMut, StrokeContent};
 use crate::render::Svg;
 use crate::snap::SnapCorner;
@@ -16,13 +16,12 @@ use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use p2d::query::PointQuery;
 use piet::RenderContext;
+use rnote_compose::EventResult;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevent::{ModifierKey, PenEvent, PenProgress, PenState};
+use rnote_compose::penevent::{PenEvent, PenProgress, PenState};
 use rnote_compose::penpath::Element;
 use rnote_compose::style::indicators;
-use rnote_compose::EventResult;
-use rnote_compose::{color, Color};
-use std::collections::HashSet;
+use rnote_compose::{Color, color};
 use std::time::Instant;
 use tracing::error;
 
@@ -36,8 +35,7 @@ pub(super) enum ResizeCorner {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum ModifyState {
-    Up,
-    Hover(na::Vector2<f64>),
+    Idle,
     Translate {
         start_pos: na::Vector2<f64>,
         current_pos: na::Vector2<f64>,
@@ -58,7 +56,7 @@ pub(super) enum ModifyState {
 
 impl Default for ModifyState {
     fn default() -> Self {
-        Self::Up
+        Self::Idle
     }
 }
 
@@ -84,12 +82,14 @@ impl Default for SelectorState {
 #[derive(Clone, Debug)]
 pub struct Selector {
     pub(super) state: SelectorState,
+    pos: Option<na::Vector2<f64>>,
 }
 
 impl Default for Selector {
     fn default() -> Self {
         Self {
-            state: SelectorState::default(),
+            state: Default::default(),
+            pos: None,
         }
     }
 }
@@ -317,7 +317,7 @@ impl DrawableOnDoc for Selector {
         match &self.state {
             SelectorState::Idle => {}
             SelectorState::Selecting { path } => {
-                match engine_view.pens_config.selector_config.style {
+                match engine_view.config.pens_config.selector_config.style {
                     SelectorStyle::Polygon => {
                         let mut bez_path = kurbo::BezPath::new();
                         let mut path_iter = path.iter();
@@ -430,6 +430,7 @@ impl DrawableOnDoc for Selector {
                     cx,
                     *selection_bounds,
                     modify_state,
+                    self.pos,
                     engine_view.camera,
                 )?;
 
@@ -540,90 +541,103 @@ impl Selector {
         piet_cx: &mut impl RenderContext,
         selection_bounds: Aabb,
         modify_state: &ModifyState,
+        pos: Option<na::Vector2<f64>>,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let total_zoom = camera.total_zoom();
 
         let rotate_node_sphere = Self::rotate_node_sphere(selection_bounds, camera);
-        let rotate_node_state = match modify_state {
-            ModifyState::Rotate { .. } => PenState::Down,
-            ModifyState::Hover(pos) => {
-                if rotate_node_sphere.contains_local_point(&(*pos).into()) {
-                    PenState::Proximity
-                } else {
-                    PenState::Up
-                }
+        let rotate_node_state = if matches!(modify_state, ModifyState::Rotate { .. }) {
+            PenState::Down
+        } else if let Some(pos) = pos {
+            if rotate_node_sphere.contains_local_point(&pos.into()) {
+                PenState::Proximity
+            } else {
+                PenState::Up
             }
-            _ => PenState::Up,
+        } else {
+            PenState::Up
         };
 
         let resize_tl_node_bounds =
             Self::resize_node_bounds(ResizeCorner::TopLeft, selection_bounds, camera);
-        let resize_tl_node_state = match modify_state {
+        let resize_tl_node_state = if matches!(
+            modify_state,
             ModifyState::Resize {
                 from_corner: ResizeCorner::TopLeft,
                 ..
-            } => PenState::Down,
-            ModifyState::Hover(pos) => {
-                if resize_tl_node_bounds.contains_local_point(&(*pos).into()) {
-                    PenState::Proximity
-                } else {
-                    PenState::Up
-                }
             }
-            _ => PenState::Up,
+        ) {
+            PenState::Down
+        } else if let Some(pos) = pos {
+            if resize_tl_node_bounds.contains_local_point(&pos.into()) {
+                PenState::Proximity
+            } else {
+                PenState::Up
+            }
+        } else {
+            PenState::Up
         };
 
         let resize_tr_node_bounds =
             Self::resize_node_bounds(ResizeCorner::TopRight, selection_bounds, camera);
-        let resize_tr_node_state = match modify_state {
+        let resize_tr_node_state = if matches!(
+            modify_state,
             ModifyState::Resize {
                 from_corner: ResizeCorner::TopRight,
                 ..
-            } => PenState::Down,
-            ModifyState::Hover(pos) => {
-                if resize_tr_node_bounds.contains_local_point(&(*pos).into()) {
-                    PenState::Proximity
-                } else {
-                    PenState::Up
-                }
             }
-            _ => PenState::Up,
+        ) {
+            PenState::Down
+        } else if let Some(pos) = pos {
+            if resize_tr_node_bounds.contains_local_point(&pos.into()) {
+                PenState::Proximity
+            } else {
+                PenState::Up
+            }
+        } else {
+            PenState::Up
         };
 
         let resize_bl_node_bounds =
             Self::resize_node_bounds(ResizeCorner::BottomLeft, selection_bounds, camera);
-        let resize_bl_node_state = match modify_state {
+        let resize_bl_node_state = if matches!(
+            modify_state,
             ModifyState::Resize {
                 from_corner: ResizeCorner::BottomLeft,
                 ..
-            } => PenState::Down,
-            ModifyState::Hover(pos) => {
-                if resize_bl_node_bounds.contains_local_point(&(*pos).into()) {
-                    PenState::Proximity
-                } else {
-                    PenState::Up
-                }
             }
-            _ => PenState::Up,
+        ) {
+            PenState::Down
+        } else if let Some(pos) = pos {
+            if resize_bl_node_bounds.contains_local_point(&pos.into()) {
+                PenState::Proximity
+            } else {
+                PenState::Up
+            }
+        } else {
+            PenState::Up
         };
 
         let resize_br_node_bounds =
             Self::resize_node_bounds(ResizeCorner::BottomRight, selection_bounds, camera);
-        let resize_br_node_state = match modify_state {
+        let resize_br_node_state = if matches!(
+            modify_state,
             ModifyState::Resize {
                 from_corner: ResizeCorner::BottomRight,
                 ..
-            } => PenState::Down,
-            ModifyState::Hover(pos) => {
-                if resize_br_node_bounds.contains_local_point(&(*pos).into()) {
-                    PenState::Proximity
-                } else {
-                    PenState::Up
-                }
             }
-            _ => PenState::Up,
+        ) {
+            PenState::Down
+        } else if let Some(pos) = pos {
+            if resize_br_node_bounds.contains_local_point(&pos.into()) {
+                PenState::Proximity
+            } else {
+                PenState::Up
+            }
+        } else {
+            PenState::Up
         };
 
         // Selection rect
@@ -775,32 +789,18 @@ impl Selector {
         Ok(())
     }
 
-    fn select_all(
-        &mut self,
-        modifier_keys: HashSet<ModifierKey>,
-        engine_view: &mut EngineViewMut,
-        widget_flags: &mut WidgetFlags,
-    ) {
-        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
-            // Select all keys
-            let all_strokes = engine_view.store.stroke_keys_as_rendered();
+    fn select_all(&mut self, engine_view: &mut EngineViewMut, widget_flags: &mut WidgetFlags) {
+        // Select all keys
+        let all_strokes = engine_view.store.stroke_keys_as_rendered();
 
-            if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&all_strokes) {
-                engine_view.store.set_selected_keys(&all_strokes, true);
-                *widget_flags |= engine_view
-                    .document
-                    .resize_autoexpand(engine_view.store, engine_view.camera);
+        if !all_strokes.is_empty() {
+            engine_view.store.set_selected_keys(&all_strokes, true);
 
-                self.state = SelectorState::ModifySelection {
-                    modify_state: ModifyState::default(),
-                    selection: all_strokes,
-                    selection_bounds: new_bounds,
-                };
-
-                widget_flags.store_modified = true;
-                widget_flags.deselect_color_setters = true;
-            }
+            widget_flags.store_modified = true;
+            widget_flags.deselect_color_setters = true;
         }
+
+        *widget_flags |= self.update_state(engine_view);
     }
 }
 

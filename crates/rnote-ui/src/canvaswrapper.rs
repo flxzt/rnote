@@ -1,15 +1,15 @@
 // Imports
-use crate::{RnAppWindow, RnCanvas, RnContextMenu};
+use crate::{RnAppWindow, RnCanvas, RnContextMenu, canvas::reject_pointer_input};
 use gtk4::{
-    gdk, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, CompositeTemplate,
-    CornerType, EventControllerMotion, EventControllerScroll, EventControllerScrollFlags,
-    EventSequenceState, GestureDrag, GestureLongPress, GestureZoom, PropagationPhase,
-    ScrolledWindow, Widget,
+    CompositeTemplate, CornerType, EventControllerMotion, EventControllerScroll,
+    EventControllerScrollFlags, EventSequenceState, GestureClick, GestureDrag, GestureLongPress,
+    GestureZoom, PropagationPhase, ScrolledWindow, Widget, gdk, glib, glib::clone, graphene,
+    prelude::*, subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::penevent::ShortcutKey;
-use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::Camera;
+use rnote_engine::ext::GraphenePointExt;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::time::Instant;
@@ -39,6 +39,7 @@ mod imp {
         pub(crate) pointer_motion_controller: EventControllerMotion,
         pub(crate) canvas_drag_gesture: GestureDrag,
         pub(crate) canvas_zoom_gesture: GestureZoom,
+        pub(crate) canvas_multi_press_gesture: GestureClick,
         pub(crate) canvas_zoom_scroll_controller: EventControllerScroll,
         pub(crate) canvas_mouse_drag_middle_gesture: GestureDrag,
         pub(crate) canvas_alt_drag_gesture: GestureDrag,
@@ -72,6 +73,13 @@ mod imp {
 
             let canvas_zoom_gesture = GestureZoom::builder()
                 .name("canvas_zoom_gesture")
+                .propagation_phase(PropagationPhase::Capture)
+                .build();
+
+            let canvas_multi_press_gesture = GestureClick::builder()
+                .name("canvas_multi_press_gesture")
+                .button(gdk::BUTTON_PRIMARY)
+                .exclusive(true)
                 .propagation_phase(PropagationPhase::Capture)
                 .build();
 
@@ -130,6 +138,7 @@ mod imp {
                 pointer_motion_controller,
                 canvas_drag_gesture,
                 canvas_zoom_gesture,
+                canvas_multi_press_gesture,
                 canvas_zoom_scroll_controller,
                 canvas_mouse_drag_middle_gesture,
                 canvas_alt_drag_gesture,
@@ -171,6 +180,8 @@ mod imp {
                 .add_controller(self.canvas_drag_gesture.clone());
             self.scroller
                 .add_controller(self.canvas_zoom_gesture.clone());
+            self.scroller
+                .add_controller(self.canvas_multi_press_gesture.clone());
             self.scroller
                 .add_controller(self.canvas_zoom_scroll_controller.clone());
             self.scroller
@@ -641,6 +652,40 @@ mod imp {
                 ));
             }
 
+            // Double press to select word, triple press to select line
+            {
+                self.canvas_multi_press_gesture.connect_pressed(clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |signal, n_press, _, _| {
+                        // cycle through 0, 1, 2 - single, double, triple press
+                        let action = (n_press - 1) % 3;
+
+                        if action <= 0 {
+                            // Single press or invalid press count
+                            return;
+                        }
+
+                        let canvas = canvaswrapper.canvas();
+
+                        if signal.current_event().is_none_or(|event| {
+                            reject_pointer_input(&event, canvas.touch_drawing())
+                        }) {
+                            // Reject certain kinds of input (same behavior as canvas)
+                            return;
+                        }
+
+                        match action {
+                            // Double press
+                            1 => canvas.engine_mut().text_select_closest_word(),
+                            // Triple press
+                            2 => canvas.engine_mut().text_select_closest_line(),
+                            _ => unreachable!(),
+                        }
+                    }
+                ));
+            }
+
             // Zoom with alt + shift + drag
             {
                 let zoom_begin = Rc::new(Cell::new(1_f64));
@@ -805,6 +850,10 @@ impl RnCanvasWrapper {
     #[allow(unused)]
     pub(crate) fn set_inertial_scrolling(&self, inertial_scrolling: bool) {
         self.set_property("inertial-scrolling", inertial_scrolling);
+    }
+
+    pub(crate) fn pointer_pos(&self) -> Option<na::Vector2<f64>> {
+        self.imp().pointer_pos.get()
     }
 
     pub(crate) fn last_contextmenu_pos(&self) -> Option<na::Vector2<f64>> {

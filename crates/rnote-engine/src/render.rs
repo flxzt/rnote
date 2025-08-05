@@ -103,7 +103,7 @@ pub struct Image {
 impl Debug for Image {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Image")
-            .field("data", &String::from("- no debug impl -"))
+            .field("data", &String::from("{.. no debug impl ..}"))
             .field("rect", &self.rect)
             .field("pixel_width", &self.pixel_width)
             .field("pixel_height", &self.pixel_height)
@@ -150,7 +150,7 @@ impl Drawable for Image {
     ///
     /// Expects image to be in rgba8-premultiplied format, else drawing will fail.
     ///
-    /// `image_scale` has no meaning here, because the bitamp is already provided.
+    /// `image_scale` has no meaning here, because the bitmap is already provided.
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
         let piet_image_format = piet::ImageFormat::from(self.memory_format);
 
@@ -233,15 +233,17 @@ impl Image {
         self.assert_valid()?;
 
         match self.memory_format {
-            ImageMemoryFormat::R8g8b8a8Premultiplied => {
-                image::RgbaImage::from_vec(self.pixel_width, self.pixel_height, self.data.to_vec())
-                    .ok_or_else(|| {
-                        anyhow::anyhow!(
+            ImageMemoryFormat::R8g8b8a8Premultiplied => image::RgbaImage::from_vec(
+                self.pixel_width,
+                self.pixel_height,
+                self.data.to_vec(),
+            )
+            .ok_or_else(|| {
+                anyhow::anyhow!(
                     "Creating RgbaImage from data failed for image with memory-format {:?}.",
                     self.memory_format
                 )
-                    })
-            }
+            }),
         }
     }
 

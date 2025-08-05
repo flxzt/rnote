@@ -65,7 +65,7 @@ Thanks to @dehesselle the app is available on MacOS as an app bundle.
 Check out the [repository](https://gitlab.com/dehesselle/rnote_macos), the latest release can be downloaded [here](https://gitlab.com/dehesselle/rnote_macos/-/releases/permalink/latest).
 
 <div align="start">
-<a href='https://gitlab.com/dehesselle/rnote_macos/-/releases/permalink/latest'><img height="150" alt='Download MacOS app bundle' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/rnote-macos-app-bundle-badge.png'/></a>
+<a href='https://gitlab.com/dehesselle/rnote_macos/-/releases/permalink/latest'><img width="150" alt='Download MacOS app bundle' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/rnote-macos-app-bundle-badge.png'/></a>
 </div><br>
 
 ### Windows
@@ -144,7 +144,7 @@ On some devices one stylus button is mapped to a dedicated "Eraser" mode (which 
 <img src="https://hosted.weblate.org/widgets/rnote/-/repo/multi-auto.svg" alt="Translation status" />
 </a><br><br>
 
-If you want to start contribute by translating, take a look into the [translations section](./CONTRIBUTING.md#Translations)
+If you want to start contributing by translating, take a look into the [translations section](./CONTRIBUTING.md#Translations)
 of the CONTRIBUTING document.
 
 ## Fonts

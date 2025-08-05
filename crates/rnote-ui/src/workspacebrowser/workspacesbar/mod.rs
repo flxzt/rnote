@@ -13,8 +13,8 @@ pub(crate) use workspacerow::RnWorkspaceRow;
 use crate::appwindow::RnAppWindow;
 use crate::dialogs;
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
-    ListBox, ScrolledWindow, Widget,
+    Button, CompositeTemplate, ListBox, ScrolledWindow, Widget, gdk, gio, glib, glib::clone,
+    prelude::*, subclass::prelude::*,
 };
 use std::path::PathBuf;
 use tracing::{error, warn};

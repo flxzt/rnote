@@ -1,96 +1,29 @@
 // Modules
 pub mod background;
+pub mod config;
 pub mod format;
+pub mod layout;
 
 // Re-exports
 pub use background::Background;
+pub use config::DocumentConfig;
 pub use format::Format;
+pub use layout::Layout;
 
 // Imports
-use crate::{Camera, CloneConfig, StrokeStore, WidgetFlags};
-use core::fmt::Display;
+use crate::engine::EngineConfig;
+use crate::engine::snapshot::Snapshotable;
+use crate::{Camera, StrokeStore, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
 
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Serialize,
-    Deserialize,
-    num_derive::FromPrimitive,
-    num_derive::ToPrimitive,
-)]
-#[serde(rename = "layout")]
-pub enum Layout {
-    #[serde(rename = "fixed_size")]
-    FixedSize,
-    #[serde(rename = "continuous_vertical", alias = "endless_vertical")]
-    ContinuousVertical,
-    #[serde(rename = "semi_infinite")]
-    SemiInfinite,
-    #[serde(rename = "infinite")]
-    Infinite,
-}
-
-impl Default for Layout {
-    fn default() -> Self {
-        Self::Infinite
-    }
-}
-
-impl TryFrom<u32> for Layout {
-    type Error = anyhow::Error;
-
-    fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value)
-            .ok_or_else(|| anyhow::anyhow!("Layout try_from::<u32>() for value {} failed", value))
-    }
-}
-
-impl std::str::FromStr for Layout {
-    type Err = anyhow::Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "fixed-size" => Ok(Self::FixedSize),
-            "continuous-vertical" => Ok(Self::ContinuousVertical),
-            "semi-infinite" => Ok(Self::SemiInfinite),
-            "infinite" => Ok(Self::Infinite),
-            s => Err(anyhow::anyhow!(
-                "Layout from_string failed, invalid name: {s}"
-            )),
-        }
-    }
-}
-
-impl Display for Layout {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Layout::FixedSize => write!(f, "fixed-size"),
-            Layout::ContinuousVertical => write!(f, "continuous-vertical"),
-            Layout::SemiInfinite => write!(f, "semi-infinite"),
-            Layout::Infinite => write!(f, "infinite"),
-        }
-    }
-}
-
-impl Layout {
-    /// checks if the layout is constrained in the horizontal direction
-    pub fn is_fixed_width(&self) -> bool {
-        matches!(self, Layout::FixedSize | Layout::ContinuousVertical)
-    }
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "document")]
 pub struct Document {
+    #[serde(rename = "config")]
+    pub config: DocumentConfig,
     #[serde(rename = "x", with = "rnote_compose::serialize::f64_dp3")]
     pub x: f64,
     #[serde(rename = "y", with = "rnote_compose::serialize::f64_dp3")]
@@ -99,33 +32,22 @@ pub struct Document {
     pub width: f64,
     #[serde(rename = "height", with = "rnote_compose::serialize::f64_dp3")]
     pub height: f64,
-    #[serde(rename = "format")]
-    pub format: Format,
-    #[serde(rename = "background")]
-    pub background: Background,
-    #[serde(rename = "layout", alias = "expand_mode")]
-    pub layout: Layout,
-    #[serde(rename = "snap_positions")]
-    pub snap_positions: bool,
 }
 
 impl Default for Document {
     fn default() -> Self {
         Self {
+            config: DocumentConfig::default(),
             x: 0.0,
             y: 0.0,
             width: Format::default().width(),
             height: Format::default().height(),
-            format: Format::default(),
-            background: Background::default(),
-            layout: Layout::default(),
-            snap_positions: false,
         }
     }
 }
 
-impl CloneConfig for Document {
-    fn clone_config(&self) -> Self {
+impl Snapshotable for Document {
+    fn extract_snapshot_data(&self) -> Self {
         self.clone()
     }
 }
@@ -154,9 +76,9 @@ impl Document {
     pub(crate) fn pages_bounds(&self, split_order: SplitOrder) -> Vec<Aabb> {
         let doc_bounds = self.bounds();
 
-        if self.format.height() > 0.0 && self.format.width() > 0.0 {
+        if self.config.format.height() > 0.0 && self.config.format.width() > 0.0 {
             doc_bounds.split_extended_origin_aligned(
-                na::vector![self.format.width(), self.format.height()],
+                na::vector![self.config.format.width(), self.config.format.height()],
                 split_order,
             )
         } else {
@@ -167,9 +89,9 @@ impl Document {
     #[allow(unused)]
     pub(crate) fn calc_n_pages(&self) -> u32 {
         // Avoid div by 0
-        if self.format.height() > 0.0 && self.format.width() > 0.0 {
-            (self.width / self.format.width()).ceil() as u32
-                * (self.height / self.format.height()).ceil() as u32
+        if self.config.format.height() > 0.0 && self.config.format.width() > 0.0 {
+            (self.width / self.config.format.width()).ceil() as u32
+                * (self.height / self.config.format.height()).ceil() as u32
         } else {
             0
         }
@@ -181,7 +103,7 @@ impl Document {
         camera: &Camera,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        match self.layout {
+        match self.config.layout {
             Layout::FixedSize => {
                 widget_flags.resize |= self.resize_doc_fixed_size_layout(store);
             }
@@ -206,7 +128,7 @@ impl Document {
         camera: &Camera,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        match self.layout {
+        match self.config.layout {
             Layout::FixedSize => {
                 // do not resize in fixed size mode, if wanted use resize_to_fit_content() for it.
             }
@@ -231,7 +153,7 @@ impl Document {
         store: &StrokeStore,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        match self.layout {
+        match self.config.layout {
             Layout::FixedSize | Layout::ContinuousVertical => {
                 // not resizing in these modes, the size is not dependent on the camera
             }
@@ -253,10 +175,10 @@ impl Document {
     ///
     /// Returns false when not in fixed-size layout.
     pub(crate) fn add_page_fixed_size(&mut self) -> bool {
-        if self.layout != Layout::FixedSize {
+        if self.config.layout != Layout::FixedSize {
             return false;
         }
-        let format_height = self.format.height();
+        let format_height = self.config.format.height();
         let new_doc_height = self.height + format_height;
         self.height = new_doc_height;
         true
@@ -266,19 +188,19 @@ impl Document {
     ///
     /// Returns false when not in fixed-size layout.
     pub(crate) fn remove_page_fixed_size(&mut self) -> bool {
-        if self.layout != Layout::FixedSize || self.height <= self.format.height() {
+        if self.config.layout != Layout::FixedSize || self.height <= self.config.format.height() {
             return false;
         }
-        self.height -= self.format.height();
+        self.height -= self.config.format.height();
         true
     }
 
     /// Returns true if a resize happened.
     #[must_use = "Determines if the resize flag should be set"]
     fn resize_doc_fixed_size_layout(&mut self, store: &StrokeStore) -> bool {
-        let format_height = self.format.height();
+        let format_height = self.config.format.height();
 
-        let new_width = self.format.width();
+        let new_width = self.config.format.width();
         // max(1.0) because then 'fraction'.ceil() is at least 1
         let new_height = ((store.calc_height().max(1.0)) / format_height).ceil() * format_height;
 
@@ -297,9 +219,9 @@ impl Document {
     /// Returns true if a resize happened.
     #[must_use = "Determines if the resize flag should be set"]
     fn resize_doc_continuous_vertical_layout(&mut self, store: &StrokeStore) -> bool {
-        let padding_bottom = self.format.height();
+        let padding_bottom = self.config.format.height();
         let new_height = store.calc_height() + padding_bottom;
-        let new_width = self.format.width();
+        let new_width = self.config.format.width();
 
         set_dimensions_checked(
             &mut self.x,
@@ -326,8 +248,8 @@ impl Document {
         store: &StrokeStore,
         include_content: bool,
     ) -> bool {
-        let padding_horizontal = self.format.width() * 2.0;
-        let padding_vertical = self.format.height() * 2.0;
+        let padding_horizontal = self.config.format.width() * 2.0;
+        let padding_vertical = self.config.format.height() * 2.0;
 
         let mut new_bounds = self.bounds().merged(
             &viewport.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical]),
@@ -340,7 +262,7 @@ impl Document {
                     .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
             } else {
                 // If doc is empty, resize to one page with the format size
-                Aabb::new(na::point![0.0, 0.0], self.format.size().into())
+                Aabb::new(na::point![0.0, 0.0], self.config.format.size().into())
                     .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
             };
             new_bounds.merge(&content_bounds);
@@ -371,8 +293,8 @@ impl Document {
         store: &StrokeStore,
         include_content: bool,
     ) -> bool {
-        let padding_horizontal = self.format.width() * 2.0;
-        let padding_vertical = self.format.height() * 2.0;
+        let padding_horizontal = self.config.format.width() * 2.0;
+        let padding_vertical = self.config.format.height() * 2.0;
 
         let mut new_bounds = self
             .bounds()
@@ -384,7 +306,7 @@ impl Document {
                 content_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])
             } else {
                 // If doc is empty, resize to one page with the format size
-                Aabb::new(na::point![0.0, 0.0], self.format.size().into())
+                Aabb::new(na::point![0.0, 0.0], self.config.format.size().into())
                     .extend_by(na::vector![padding_horizontal, padding_vertical])
             };
             new_bounds.merge(&content_bounds);
@@ -405,12 +327,16 @@ impl Document {
     /// Snap the position to the document and pattern grid when `snap_positions` is enabled.
     ///
     /// If not, the original coordinates are returned.
-    pub(crate) fn snap_position(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
+    pub(crate) fn snap_position(
+        &self,
+        pos: na::Vector2<f64>,
+        config: &EngineConfig,
+    ) -> na::Vector2<f64> {
         const DOCUMENT_SNAP_DIST: f64 = 10.;
-        let doc_format_size = self.format.size();
-        let pattern_size = self.background.pattern_size;
+        let doc_format_size = self.config.format.size();
+        let pattern_size = self.config.background.pattern_size;
 
-        if !self.snap_positions {
+        if !config.snap_positions {
             return pos;
         }
 

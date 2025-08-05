@@ -8,7 +8,7 @@ use piet::{RenderContext, TextLayout, TextLayoutBuilder};
 use rnote_compose::ext::{AabbExt, Affine2Ext, Vector2Ext};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::transform::Transformable;
-use rnote_compose::{color, Color, Transform};
+use rnote_compose::{Color, Transform, color};
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use tracing::error;
@@ -860,11 +860,43 @@ impl TextStroke {
         current_char_index
     }
 
+    fn get_prev_word_boundary_index(&self, current_char_index: usize) -> usize {
+        for (start_index, word) in self.text.unicode_word_indices().rev() {
+            let end_index = start_index + word.len();
+
+            if end_index < current_char_index {
+                return end_index;
+            }
+
+            if start_index < current_char_index {
+                return start_index;
+            }
+        }
+
+        current_char_index
+    }
+
     fn get_next_word_end_index(&self, current_char_index: usize) -> usize {
         for (start_index, word) in self.text.unicode_word_indices() {
             let end_index = start_index + word.len();
 
             if end_index > current_char_index {
+                return end_index;
+            }
+        }
+
+        current_char_index
+    }
+
+    fn get_next_word_boundary_index(&self, current_char_index: usize) -> usize {
+        for (start_index, word) in self.text.unicode_word_indices() {
+            if start_index >= current_char_index {
+                return start_index;
+            }
+
+            let end_index = start_index + word.len();
+
+            if end_index >= current_char_index {
                 return end_index;
             }
         }
@@ -886,8 +918,16 @@ impl TextStroke {
         cursor.set_cursor(self.get_prev_word_start_index(cursor.cur_cursor()));
     }
 
+    pub fn move_cursor_word_boundary_back(&self, cursor: &mut GraphemeCursor) {
+        cursor.set_cursor(self.get_prev_word_boundary_index(cursor.cur_cursor()));
+    }
+
     pub fn move_cursor_word_forward(&self, cursor: &mut GraphemeCursor) {
         cursor.set_cursor(self.get_next_word_end_index(cursor.cur_cursor()));
+    }
+
+    pub fn move_cursor_word_boundary_forward(&self, cursor: &mut GraphemeCursor) {
+        cursor.set_cursor(self.get_next_word_boundary_index(cursor.cur_cursor()));
     }
 
     pub fn move_cursor_text_start(&self, cursor: &mut GraphemeCursor) {
@@ -927,21 +967,13 @@ impl TextStroke {
 
             // Move cursor in front of new line characters if they exist.
             if offset > line_metric.start_offset
-                && self
-                    .text
-                    .chars()
-                    .nth(offset - 1)
-                    .map_or(false, |c| c == '\n')
+                && (self.text.chars().nth(offset - 1) == Some('\n'))
             {
                 offset -= 1;
             }
 
             if offset > line_metric.start_offset
-                && self
-                    .text
-                    .chars()
-                    .nth(offset - 1)
-                    .map_or(false, |c| c == '\r')
+                && (self.text.chars().nth(offset - 1) == Some('\r'))
             {
                 offset -= 1;
             }

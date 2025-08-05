@@ -1,10 +1,10 @@
 // Imports
 use super::buildable::{Buildable, BuilderCreator, BuilderProgress};
+use crate::PenEvent;
 use crate::eventresult::EventPropagation;
 use crate::penpath::{Element, Segment};
 use crate::shapes::CubicBezier;
 use crate::style::Composer;
-use crate::PenEvent;
 use crate::{Constraints, EventResult};
 use crate::{PenPath, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -71,7 +71,10 @@ impl Buildable for PenPathCurvedBuilder {
             (_, PenEvent::Up { element, .. }) => {
                 self.buffer.push(element);
 
-                BuilderProgress::Finished(self.try_build_segments_end())
+                let segments = self.try_build_segments_end();
+                self.reset();
+
+                BuilderProgress::Finished(segments)
             }
             (_, PenEvent::Proximity { .. })
             | (_, PenEvent::KeyPressed { .. })

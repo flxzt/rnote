@@ -1,10 +1,11 @@
 // Imports
 use super::{ModifyState, ResizeCorner, Selector, SelectorState};
+use crate::WidgetFlags;
 use crate::engine::EngineViewMut;
+use crate::pens::PenBehaviour;
 use crate::pens::pensconfig::selectorconfig::SelectorStyle;
 use crate::snap::SnapCorner;
 use crate::store::StrokeKey;
-use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use p2d::query::PointQuery;
 use rnote_compose::eventresult::{EventPropagation, EventResult};
@@ -23,6 +24,7 @@ impl Selector {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
+        self.pos = Some(element.pos);
 
         let event_result = match &mut self.state {
             SelectorState::Idle => {
@@ -45,7 +47,7 @@ impl Selector {
             }
             SelectorState::Selecting { path } => {
                 Self::add_to_select_path(
-                    engine_view.pens_config.selector_config.style,
+                    engine_view.config.pens_config.selector_config.style,
                     path,
                     element,
                 );
@@ -77,7 +79,7 @@ impl Selector {
                 let mut progress = PenProgress::InProgress;
 
                 match modify_state {
-                    ModifyState::Up | ModifyState::Hover(_) => {
+                    ModifyState::Idle => {
                         // If we click on another, not-already selected stroke while in separate style or
                         // while pressing Shift, we add it to the selection
                         let key_to_add = engine_view
@@ -168,7 +170,7 @@ impl Selector {
                                 start_pos: element.pos,
                                 last_rendered_bounds: *selection_bounds,
                             }
-                        } else if engine_view.pens_config.selector_config.style
+                        } else if engine_view.config.pens_config.selector_config.style
                             == SelectorStyle::Single
                             && key_to_add
                                 .and_then(|key| engine_view.store.selected(key).map(|s| !s))
@@ -218,10 +220,10 @@ impl Selector {
                             SnapCorner::BottomRight => selection_bounds.maxs.coords,
                         };
 
-                        let offset = engine_view
-                            .document
-                            .snap_position(snap_corner_pos + (element.pos - *current_pos))
-                            - snap_corner_pos;
+                        let offset = engine_view.document.snap_position(
+                            snap_corner_pos + (element.pos - *current_pos),
+                            engine_view.config,
+                        ) - snap_corner_pos;
 
                         if offset.magnitude()
                             > Self::TRANSLATE_OFFSET_THRESHOLD / engine_view.camera.total_zoom()
@@ -287,6 +289,7 @@ impl Selector {
                         last_rendered_bounds,
                     } => {
                         let lock_aspectratio = engine_view
+                            .config
                             .pens_config
                             .selector_config
                             .resize_lock_aspectratio
@@ -317,10 +320,10 @@ impl Selector {
                         };
                         let mut offset_to_start = element.pos - *start_pos;
                         if !lock_aspectratio {
-                            offset_to_start = engine_view
-                                .document
-                                .snap_position(snap_corner_pos + offset_to_start)
-                                - snap_corner_pos;
+                            offset_to_start = engine_view.document.snap_position(
+                                snap_corner_pos + offset_to_start,
+                                engine_view.config,
+                            ) - snap_corner_pos;
                         }
                         offset_to_start = match from_corner {
                             ResizeCorner::TopLeft => -offset_to_start,
@@ -414,7 +417,7 @@ impl Selector {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
-        let selector_bounds = self.bounds_on_doc(&engine_view.as_im());
+        self.pos = Some(element.pos);
 
         let event_result = match &mut self.state {
             SelectorState::Idle => EventResult {
@@ -425,7 +428,7 @@ impl Selector {
             SelectorState::Selecting { path } => {
                 let mut progress = PenProgress::Finished;
 
-                let new_selection = match engine_view.pens_config.selector_config.style {
+                let new_selection = match engine_view.config.pens_config.selector_config.style {
                     SelectorStyle::Polygon => {
                         if path.len() >= 3 {
                             engine_view
@@ -475,21 +478,17 @@ impl Selector {
                         }
                     }
                 };
+
                 if !new_selection.is_empty() {
                     engine_view.store.set_selected_keys(&new_selection, true);
+
                     widget_flags.store_modified = true;
                     widget_flags.deselect_color_setters = true;
 
-                    if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&new_selection) {
-                        // Change to the modify state
-                        self.state = SelectorState::ModifySelection {
-                            modify_state: ModifyState::default(),
-                            selection: new_selection,
-                            selection_bounds: new_bounds,
-                        };
-                        progress = PenProgress::InProgress;
-                    }
+                    progress = PenProgress::InProgress;
                 }
+
+                widget_flags |= self.update_state(engine_view);
 
                 EventResult {
                     handled: true,
@@ -529,14 +528,7 @@ impl Selector {
                     _ => {}
                 }
 
-                *modify_state = if selector_bounds
-                    .map(|b| b.contains_local_point(&element.pos.into()))
-                    .unwrap_or(false)
-                {
-                    ModifyState::Hover(element.pos)
-                } else {
-                    ModifyState::Up
-                };
+                *modify_state = ModifyState::Idle;
 
                 EventResult {
                     handled: true,
@@ -554,10 +546,10 @@ impl Selector {
         element: Element,
         _modifier_keys: HashSet<ModifierKey>,
         _now: Instant,
-        engine_view: &mut EngineViewMut,
+        _engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
-        let selector_bounds = self.bounds_on_doc(&engine_view.as_im());
+        self.pos = Some(element.pos);
 
         let event_result = match &mut self.state {
             SelectorState::Idle => EventResult {
@@ -571,14 +563,8 @@ impl Selector {
                 progress: PenProgress::InProgress,
             },
             SelectorState::ModifySelection { modify_state, .. } => {
-                *modify_state = if selector_bounds
-                    .map(|b| b.contains_local_point(&element.pos.into()))
-                    .unwrap_or(false)
-                {
-                    ModifyState::Hover(element.pos)
-                } else {
-                    ModifyState::Up
-                };
+                *modify_state = ModifyState::Idle;
+
                 EventResult {
                     handled: true,
                     propagate: EventPropagation::Stop,
@@ -598,15 +584,25 @@ impl Selector {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
+        self.pos = None;
 
         let event_result = match &mut self.state {
             SelectorState::Idle => match keyboard_key {
                 KeyboardKey::Unicode('a') => {
-                    self.select_all(modifier_keys, engine_view, &mut widget_flags);
-                    EventResult {
-                        handled: true,
-                        propagate: EventPropagation::Stop,
-                        progress: PenProgress::InProgress,
+                    if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                        self.select_all(engine_view, &mut widget_flags);
+
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::InProgress,
+                        }
+                    } else {
+                        EventResult {
+                            handled: false,
+                            propagate: EventPropagation::Proceed,
+                            progress: PenProgress::InProgress,
+                        }
                     }
                 }
                 _ => EventResult {
@@ -617,11 +613,20 @@ impl Selector {
             },
             SelectorState::Selecting { .. } => match keyboard_key {
                 KeyboardKey::Unicode('a') => {
-                    self.select_all(modifier_keys, engine_view, &mut widget_flags);
-                    EventResult {
-                        handled: true,
-                        propagate: EventPropagation::Stop,
-                        progress: PenProgress::InProgress,
+                    if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                        self.select_all(engine_view, &mut widget_flags);
+
+                        EventResult {
+                            handled: true,
+                            propagate: EventPropagation::Stop,
+                            progress: PenProgress::InProgress,
+                        }
+                    } else {
+                        EventResult {
+                            handled: false,
+                            propagate: EventPropagation::Proceed,
+                            progress: PenProgress::InProgress,
+                        }
                     }
                 }
                 _ => EventResult {
@@ -633,11 +638,20 @@ impl Selector {
             SelectorState::ModifySelection { selection, .. } => {
                 match keyboard_key {
                     KeyboardKey::Unicode('a') => {
-                        self.select_all(modifier_keys, engine_view, &mut widget_flags);
-                        EventResult {
-                            handled: true,
-                            propagate: EventPropagation::Stop,
-                            progress: PenProgress::InProgress,
+                        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                            self.select_all(engine_view, &mut widget_flags);
+
+                            EventResult {
+                                handled: true,
+                                propagate: EventPropagation::Stop,
+                                progress: PenProgress::InProgress,
+                            }
+                        } else {
+                            EventResult {
+                                handled: false,
+                                propagate: EventPropagation::Proceed,
+                                progress: PenProgress::InProgress,
+                            }
                         }
                     }
                     KeyboardKey::Unicode('d') => {
@@ -655,11 +669,20 @@ impl Selector {
                             widget_flags |= engine_view.store.record(Instant::now());
                             widget_flags.resize = true;
                             widget_flags.store_modified = true;
-                        }
-                        EventResult {
-                            handled: true,
-                            propagate: EventPropagation::Stop,
-                            progress: PenProgress::Finished,
+
+                            widget_flags |= self.update_state(engine_view);
+
+                            EventResult {
+                                handled: true,
+                                propagate: EventPropagation::Stop,
+                                progress: PenProgress::InProgress,
+                            }
+                        } else {
+                            EventResult {
+                                handled: false,
+                                propagate: EventPropagation::Proceed,
+                                progress: PenProgress::InProgress,
+                            }
                         }
                     }
                     KeyboardKey::Delete | KeyboardKey::BackSpace => {
@@ -700,6 +723,7 @@ impl Selector {
         _engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
+        self.pos = None;
 
         let event_result = match &mut self.state {
             SelectorState::Idle => EventResult {
@@ -728,6 +752,7 @@ impl Selector {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
+        self.pos = None;
 
         let event_result = match &mut self.state {
             SelectorState::Idle => EventResult {

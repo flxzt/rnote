@@ -1,7 +1,7 @@
 // Imports
 use palette::{
-    convert::{FromColorUnclamped, IntoColorUnclamped},
     IntoColor,
+    convert::{FromColorUnclamped, IntoColorUnclamped},
 };
 use serde::{Deserialize, Serialize};
 

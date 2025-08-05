@@ -15,9 +15,9 @@ pub use trash_comp::TrashComponent;
 
 // Imports
 use self::chrono_comp::StrokeLayer;
+use crate::WidgetFlags;
 use crate::engine::EngineSnapshot;
 use crate::strokes::Stroke;
-use crate::WidgetFlags;
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};

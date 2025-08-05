@@ -18,8 +18,8 @@ pub(crate) use typewriterpage::RnTypewriterPage;
 // Imports
 use crate::RnAppWindow;
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Stack, StackPage,
-    Widget,
+    CompositeTemplate, Stack, StackPage, Widget, glib, glib::clone, prelude::*,
+    subclass::prelude::*,
 };
 
 mod imp {
@@ -141,46 +141,22 @@ impl RnPensSideBar {
                     if let Some(child_name) = sidebar_stack.visible_child_name() {
                         match child_name.to_value().get::<String>().unwrap().as_str() {
                             "brush_page" => {
-                                adw::prelude::ActionGroupExt::activate_action(
-                                    &appwindow,
-                                    "pen-style",
-                                    Some(&PenStyle::Brush.to_string().to_variant()),
-                                );
+                                appwindow.set_pen_style(PenStyle::Brush);
                             }
                             "shaper_page" => {
-                                adw::prelude::ActionGroupExt::activate_action(
-                                    &appwindow,
-                                    "pen-style",
-                                    Some(&PenStyle::Shaper.to_string().to_variant()),
-                                );
+                                appwindow.set_pen_style(PenStyle::Shaper);
                             }
                             "typewriter_page" => {
-                                adw::prelude::ActionGroupExt::activate_action(
-                                    &appwindow,
-                                    "pen-style",
-                                    Some(&PenStyle::Typewriter.to_string().to_variant()),
-                                );
+                                appwindow.set_pen_style(PenStyle::Typewriter);
                             }
                             "eraser_page" => {
-                                adw::prelude::ActionGroupExt::activate_action(
-                                    &appwindow,
-                                    "pen-style",
-                                    Some(&PenStyle::Eraser.to_string().to_variant()),
-                                );
+                                appwindow.set_pen_style(PenStyle::Eraser);
                             }
                             "selector_page" => {
-                                adw::prelude::ActionGroupExt::activate_action(
-                                    &appwindow,
-                                    "pen-style",
-                                    Some(&PenStyle::Selector.to_string().to_variant()),
-                                );
+                                appwindow.set_pen_style(PenStyle::Selector);
                             }
                             "tools_page" => {
-                                adw::prelude::ActionGroupExt::activate_action(
-                                    &appwindow,
-                                    "pen-style",
-                                    Some(&PenStyle::Tools.to_string().to_variant()),
-                                );
+                                appwindow.set_pen_style(PenStyle::Tools);
                             }
                             _ => {}
                         };

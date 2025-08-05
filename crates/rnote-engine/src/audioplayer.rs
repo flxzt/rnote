@@ -122,8 +122,8 @@ impl AudioPlayer {
     }
 
     pub fn play_random_marker_sound(&self) {
-        let mut rng = rand::thread_rng();
-        let marker_sound_index = rng.gen_range(0..Self::N_SOUND_FILES_MARKER);
+        let mut rng = rand::rng();
+        let marker_sound_index = rng.random_range(0..Self::N_SOUND_FILES_MARKER);
 
         match rodio::Sink::try_new(&self.marker_outputstream_handle) {
             Ok(sink) => {
@@ -131,15 +131,15 @@ impl AudioPlayer {
                 sink.detach();
             }
             Err(e) => {
-                error!("Failed to create sink when trying to play marker sound, Err {e:?}",)
+                error!("Failed to create sink when trying to play marker sound, Err: {e:?}",)
             }
         }
     }
 
     pub fn trigger_random_brush_sound(&mut self) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
         let brush_sound_seek_time_index =
-            rng.gen_range(0..Self::SOUND_FILE_BRUSH_SEEK_TIMES_MS.len());
+            rng.random_range(0..Self::SOUND_FILE_BRUSH_SEEK_TIMES_MS.len());
 
         let mut reinstall_task = false;
 
@@ -161,7 +161,7 @@ impl AudioPlayer {
                 Ok(sink) => sink,
                 Err(e) => {
                     error!(
-                        "Failed to create sink when trying to trigger random brush sound, Err {e:?}",
+                        "Failed to create sink when trying to trigger random brush sound, Err: {e:?}",
                     );
                     self.brush_sound_task_handle = None;
                     return;
@@ -192,7 +192,7 @@ impl AudioPlayer {
         let sink = match rodio::Sink::try_new(&self.typewriter_outputstream_handle) {
             Ok(sink) => sink,
             Err(e) => {
-                error!("Failed to create sink when trying to play typewriter sound, Err {e:?}");
+                error!("Failed to create sink when trying to play typewriter sound, Err: {e:?}");
                 return;
             }
         };
@@ -213,8 +213,8 @@ impl AudioPlayer {
             | Some(KeyboardKey::Delete)
             | Some(KeyboardKey::HorizontalTab)
             | None => {
-                let mut rng = rand::thread_rng();
-                let typewriter_sound_index = rng.gen_range(0..Self::N_SOUND_FILES_TYPEWRITER);
+                let mut rng = rand::rng();
+                let typewriter_sound_index = rng.random_range(0..Self::N_SOUND_FILES_TYPEWRITER);
 
                 sink.append(
                     self.sounds[&format!("typewriter_{typewriter_sound_index:02}")].clone(),

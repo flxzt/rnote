@@ -2,9 +2,9 @@
 mod penevents;
 
 // Imports
-use super::pensconfig::TypewriterConfig;
 use super::PenBehaviour;
 use super::PenStyle;
+use super::pensconfig::TypewriterConfig;
 use crate::engine::{EngineTask, EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
@@ -13,23 +13,37 @@ use crate::{AudioPlayer, Camera, DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
+use rnote_compose::EventResult;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevent::{KeyboardKey, PenEvent, PenProgress, PenState};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::indicators;
-use rnote_compose::EventResult;
-use rnote_compose::{color, Transform};
+use rnote_compose::{Transform, color};
 use std::ops::Range;
 use std::time::{Duration, Instant};
 use tracing::error;
 use unicode_segmentation::GraphemeCursor;
 
 #[derive(Debug, Clone)]
+pub(super) enum SelectionMode {
+    /// Select individual characters.
+    Caret,
+    /// Select whole words.
+    ///
+    /// The values represent the start and end of the initially selected word.
+    Word(usize, usize),
+    /// Select whole lines.
+    ///
+    /// The values represent the start and end of the initially selected line.
+    Line(usize, usize),
+}
+
+#[derive(Debug, Clone)]
 pub(super) enum ModifyState {
-    Up,
-    Hover(na::Vector2<f64>),
+    Idle,
     Selecting {
         selection_cursor: GraphemeCursor,
+        mode: SelectionMode,
         /// Whether selecting is finished.
         ///
         /// If true, the state will get reset on the next click.
@@ -45,6 +59,7 @@ pub(super) enum ModifyState {
     },
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone)]
 pub(super) enum TypewriterState {
     Idle,
@@ -60,6 +75,7 @@ pub(super) enum TypewriterState {
 #[derive(Debug, Clone)]
 pub struct Typewriter {
     state: TypewriterState,
+    pos: Option<na::Vector2<f64>>,
     blink_task_handle: Option<crate::tasks::PeriodicTaskHandle>,
     cursor_visible: bool,
 }
@@ -68,6 +84,7 @@ impl Default for Typewriter {
     fn default() -> Self {
         Self {
             state: TypewriterState::Idle,
+            pos: None,
             blink_task_handle: None,
             cursor_visible: true,
         }
@@ -85,6 +102,7 @@ impl DrawableOnDoc for Typewriter {
                 (pos + na::vector![
                     Self::STATE_START_TEXT_WIDTH,
                     engine_view
+                        .config
                         .pens_config
                         .typewriter_config
                         .text_style
@@ -97,7 +115,11 @@ impl DrawableOnDoc for Typewriter {
                     engine_view.store.get_stroke_ref(*stroke_key)
                 {
                     let text_rect = Self::text_rect_bounds(
-                        engine_view.pens_config.typewriter_config.text_width(),
+                        engine_view
+                            .config
+                            .pens_config
+                            .typewriter_config
+                            .text_width(),
                         textstroke,
                     );
                     let typewriter_bounds = text_rect.extend_by(
@@ -143,6 +165,7 @@ impl DrawableOnDoc for Typewriter {
                         let cursor_text = String::from('|');
                         let cursor_text_len = cursor_text.len();
                         engine_view
+                            .config
                             .pens_config
                             .typewriter_config
                             .text_style
@@ -165,7 +188,11 @@ impl DrawableOnDoc for Typewriter {
                 if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_ref(*stroke_key)
                 {
-                    let text_width = engine_view.pens_config.typewriter_config.text_width();
+                    let text_width = engine_view
+                        .config
+                        .pens_config
+                        .typewriter_config
+                        .text_width();
                     let text_bounds = Self::text_rect_bounds(text_width, textstroke);
 
                     // Draw text outline
@@ -205,15 +232,20 @@ impl DrawableOnDoc for Typewriter {
                     );
                     let adjust_text_width_node_state = match modify_state {
                         ModifyState::AdjustTextWidth { .. } => PenState::Down,
-                        ModifyState::Hover(pos) => {
-                            if adjust_text_width_node_bounds.contains_local_point(&(*pos).into()) {
-                                PenState::Proximity
+                        ModifyState::Idle | ModifyState::Selecting { .. } => {
+                            if let Some(pos) = self.pos {
+                                if adjust_text_width_node_bounds.contains_local_point(&pos.into()) {
+                                    PenState::Proximity
+                                } else {
+                                    PenState::Up
+                                }
                             } else {
                                 PenState::Up
                             }
                         }
                         _ => PenState::Up,
                     };
+
                     indicators::draw_triangular_node(
                         cx,
                         adjust_text_width_node_state,
@@ -232,15 +264,20 @@ impl DrawableOnDoc for Typewriter {
                             Self::translate_node_bounds(typewriter_bounds, engine_view.camera);
                         let translate_node_state = match modify_state {
                             ModifyState::Translating { .. } => PenState::Down,
-                            ModifyState::Hover(pos) => {
-                                if translate_node_bounds.contains_local_point(&(*pos).into()) {
-                                    PenState::Proximity
+                            ModifyState::Idle | ModifyState::Selecting { .. } => {
+                                if let Some(pos) = self.pos {
+                                    if translate_node_bounds.contains_local_point(&pos.into()) {
+                                        PenState::Proximity
+                                    } else {
+                                        PenState::Up
+                                    }
                                 } else {
                                     PenState::Up
                                 }
                             }
                             _ => PenState::Up,
                         };
+
                         indicators::draw_rectangular_node(
                             cx,
                             translate_node_state,
@@ -297,46 +334,55 @@ impl PenBehaviour for Typewriter {
                     if let Some(Stroke::TextStroke(textstroke)) =
                         engine_view.store.get_stroke_ref(*stroke_key)
                     {
-                        engine_view.pens_config.typewriter_config.text_style =
+                        engine_view.config.pens_config.typewriter_config.text_style =
                             textstroke.text_style.clone();
                         engine_view
+                            .config
                             .pens_config
                             .typewriter_config
                             .text_style
                             .ranged_text_attributes
                             .clear();
-                        engine_view.pens_config.typewriter_config.set_text_width(
-                            textstroke
-                                .text_style
-                                .max_width()
-                                .unwrap_or(TypewriterConfig::TEXT_WIDTH_DEFAULT),
-                        );
+                        engine_view
+                            .config
+                            .pens_config
+                            .typewriter_config
+                            .set_text_width(
+                                textstroke
+                                    .text_style
+                                    .max_width()
+                                    .unwrap_or(TypewriterConfig::TEXT_WIDTH_DEFAULT),
+                            );
                         update_cursors_for_textstroke(textstroke, cursor, Some(selection_cursor));
 
                         widget_flags.refresh_ui = true;
                     }
                 }
-                ModifyState::Up
-                | ModifyState::Hover(_)
+                ModifyState::Idle
                 | ModifyState::Translating { .. }
                 | ModifyState::AdjustTextWidth { .. } => {
                     if let Some(Stroke::TextStroke(textstroke)) =
                         engine_view.store.get_stroke_ref(*stroke_key)
                     {
-                        engine_view.pens_config.typewriter_config.text_style =
+                        engine_view.config.pens_config.typewriter_config.text_style =
                             textstroke.text_style.clone();
                         engine_view
+                            .config
                             .pens_config
                             .typewriter_config
                             .text_style
                             .ranged_text_attributes
                             .clear();
-                        engine_view.pens_config.typewriter_config.set_text_width(
-                            textstroke
-                                .text_style
-                                .max_width()
-                                .unwrap_or(TypewriterConfig::TEXT_WIDTH_DEFAULT),
-                        );
+                        engine_view
+                            .config
+                            .pens_config
+                            .typewriter_config
+                            .set_text_width(
+                                textstroke
+                                    .text_style
+                                    .max_width()
+                                    .unwrap_or(TypewriterConfig::TEXT_WIDTH_DEFAULT),
+                            );
                         update_cursors_for_textstroke(textstroke, cursor, None);
 
                         widget_flags.refresh_ui = true;
@@ -484,7 +530,7 @@ impl PenBehaviour for Typewriter {
 
                             // Back to modifying state
                             self.state = TypewriterState::Modifying {
-                                modify_state: ModifyState::Up,
+                                modify_state: ModifyState::Idle,
                                 stroke_key: *stroke_key,
                                 cursor: cursor.clone(),
                                 pen_down: false,
@@ -633,8 +679,17 @@ impl Typewriter {
             engine_view.camera.viewport().mins.coords + Stroke::IMPORT_OFFSET_DEFAULT
         });
         let mut widget_flags = WidgetFlags::default();
-        let text_width = engine_view.pens_config.typewriter_config.text_width();
-        let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
+        let text_width = engine_view
+            .config
+            .pens_config
+            .typewriter_config
+            .text_width();
+        let mut text_style = engine_view
+            .config
+            .pens_config
+            .typewriter_config
+            .text_style
+            .clone();
 
         match &mut self.state {
             TypewriterState::Idle => {
@@ -654,7 +709,7 @@ impl Typewriter {
                 );
 
                 self.state = TypewriterState::Modifying {
-                    modify_state: ModifyState::Up,
+                    modify_state: ModifyState::Idle,
                     stroke_key,
                     cursor,
                     pen_down: false,
@@ -681,7 +736,7 @@ impl Typewriter {
                 );
 
                 self.state = TypewriterState::Modifying {
-                    modify_state: ModifyState::Up,
+                    modify_state: ModifyState::Idle,
                     stroke_key,
                     cursor,
                     pen_down: false,
@@ -719,7 +774,7 @@ impl Typewriter {
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
-                            modify_state: ModifyState::Up,
+                            modify_state: ModifyState::Idle,
                             stroke_key: *stroke_key,
                             cursor: cursor.clone(),
                             pen_down: false,

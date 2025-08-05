@@ -1,9 +1,9 @@
 // Imports
 use super::{Stroke, StrokeKey, StrokeStore};
 use crate::engine::{EngineTask, EngineTaskSender};
-use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::Content;
-use crate::{render, Drawable};
+use crate::strokes::content::GeneratedContentImages;
+use crate::{Drawable, render};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Shapeable;
@@ -355,7 +355,9 @@ impl StrokeStore {
                                 }
                                 Err(e) => {
                                     render_comp.state = RenderCompState::Dirty;
-                                    error!("Failed to generated rendernodes while appending last segments rendering, Err: {e:?}");
+                                    error!(
+                                        "Failed to generated rendernodes while appending last segments rendering, Err: {e:?}"
+                                    );
                                 }
                             }
                             #[cfg(not(feature = "ui"))]
@@ -408,7 +410,9 @@ impl StrokeStore {
                             render_comp.state = RenderCompState::ForViewport(viewport);
                         }
                         Err(e) => {
-                            error!("Generating rendernodes failed while replacing rendering with partial images, Err {e:?}");
+                            error!(
+                                "Generating rendernodes failed while replacing rendering with partial images, Err: {e:?}"
+                            );
                             render_comp.state = RenderCompState::Dirty;
                         }
                     }
@@ -427,7 +431,9 @@ impl StrokeStore {
                             render_comp.state = RenderCompState::Complete;
                         }
                         Err(e) => {
-                            error!("Generating rendernodes failed while replacing rendering with full images, Err {e:?}");
+                            error!(
+                                "Generating rendernodes failed while replacing rendering with full images, Err: {e:?}"
+                            );
                             render_comp.state = RenderCompState::Dirty;
                         }
                     }
@@ -463,7 +469,9 @@ impl StrokeStore {
                             render_comp.images.append(&mut images);
                         }
                         Err(e) => {
-                            error!("Generating rendernodes failed while appending rendering full images, Err {e:?}");
+                            error!(
+                                "Generating rendernodes failed while appending rendering full images, Err: {e:?}"
+                            );
                             render_comp.state = RenderCompState::Dirty;
                         }
                     }

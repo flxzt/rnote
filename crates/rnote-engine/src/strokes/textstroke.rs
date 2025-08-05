@@ -585,7 +585,27 @@ impl TextStroke {
         // translate the text attributes
         self.translate_attrs_after_cursor(cursor.cur_cursor(), text.len() as i32);
 
+        // adds ")" or "] after e. g. "("
+        if let Some(closing) = Self::get_auto_closing_pair(text){
+            self.text.insert_str(cursor.cur_cursor() + text.len(), closing);
+            self.translate_attrs_after_cursor(cursor.cur_cursor() + text.len(), closing.len() as i32);
+        }
+    
+
         *cursor = GraphemeCursor::new(cursor.cur_cursor() + text.len(), self.text.len(), true);
+
+    }
+
+    fn get_auto_closing_pair(open: &str) -> Option<&'static str>{
+        match open {
+            "(" => Some(")"),
+            "[" => Some("]"),
+            "{" => Some("}"),
+            "'" => Some("'"),
+            "\"" => Some("\""),
+            _ => None,
+            
+        }
     }
 
     pub fn remove_grapheme_before_cursor(&mut self, cursor: &mut GraphemeCursor) {

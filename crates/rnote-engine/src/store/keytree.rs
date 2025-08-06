@@ -20,10 +20,12 @@ impl KeyTree {
     }
 
     /// Removes the [KeyTreeObject] for the given key.
-    pub(crate) fn remove_with_key(&mut self, key: StrokeKey) -> Option<KeyTreeObject> {
+    pub(crate) fn remove_with_key(&mut self, key: StrokeKey) -> Option<(StrokeKey, Aabb)> {
         let object_to_remove = self.0.iter().find(|&object| object.data == key)?.to_owned();
 
-        self.0.remove(&object_to_remove)
+        self.0
+            .remove(&object_to_remove)
+            .and_then(|key_object| Some(keytree_to_store(key_object)))
     }
 
     /// Update the Tree with new bounds for the given key.
@@ -102,5 +104,15 @@ fn new_keytree_object(key: StrokeKey, bounds: Aabb) -> KeyTreeObject {
             [bounds.maxs[0], bounds.maxs[1]],
         ),
         key,
+    )
+}
+
+fn keytree_to_store(key_object: KeyTreeObject) -> (StrokeKey, Aabb) {
+    (
+        key_object.data,
+        Aabb::new(
+            na::point![key_object.geom().lower()[0], key_object.geom().lower()[1]],
+            na::point![key_object.geom().upper()[0], key_object.geom().upper()[1]],
+        ),
     )
 }

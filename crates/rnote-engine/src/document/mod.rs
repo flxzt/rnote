@@ -262,7 +262,7 @@ impl Document {
                     .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
             } else {
                 store
-                    .get_bounds()
+                    .get_bounds_non_trashed()
                     .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
             };
             new_bounds.merge(&content_bounds);
@@ -301,7 +301,7 @@ impl Document {
             .merged(&viewport.extend_by(na::vector![padding_horizontal, padding_vertical]));
 
         if include_content {
-            let rendered_bounds = store.get_bounds();
+            let rendered_bounds = store.get_bounds_non_trashed();
 
             let content_bounds = if rendered_bounds.volume() > 0.0 {
                 rendered_bounds

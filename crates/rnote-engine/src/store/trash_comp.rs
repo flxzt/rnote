@@ -98,16 +98,16 @@ impl StrokeStore {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        self.stroke_keys_as_rendered_intersecting_bounds(viewport)
+        self.stroke_keys_and_bounds_as_rendered_intersecting_bounds(viewport)
             .into_iter()
-            .for_each(|key| {
+            .for_each(|(key, bounds)| {
                 let mut trash_current_stroke = false;
 
                 if let Some(stroke) = self.stroke_components.get(key) {
                     match stroke.as_ref() {
                         Stroke::BrushStroke(_) | Stroke::ShapeStroke(_) => {
                             // First check if eraser even intersects stroke bounds, avoiding unnecessary work
-                            if eraser_bounds.intersects(&stroke.bounds()) {
+                            if eraser_bounds.intersects(&bounds) {
                                 for hitbox in stroke.hitboxes().into_iter() {
                                     if eraser_bounds.intersects(&hitbox) {
                                         trash_current_stroke = true;

@@ -677,6 +677,15 @@ impl StrokeStore {
             border_widths,
         );
 
+        // draw the trashed rtree root
+        let trashed_tree_bounds = self.trashed_key_tree.get_bounds();
+        visual_debug::draw_bounds_to_gtk_snapshot(
+            trashed_tree_bounds,
+            visual_debug::COLOR_TRASH_RTREE_BOUNDS,
+            snapshot,
+            border_widths,
+        );
+
         Ok(())
     }
 }

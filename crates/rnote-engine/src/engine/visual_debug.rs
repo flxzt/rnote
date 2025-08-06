@@ -55,6 +55,12 @@ pub const COLOR_RTREE_BOUNDS: Color = Color {
     b: 0.0,
     a: 1.0,
 };
+pub const COLOR_TRASH_RTREE_BOUNDS: Color = Color {
+    r: 0.0,
+    g: 0.5,
+    b: 1.0,
+    a: 1.0,
+};
 
 #[cfg(feature = "ui")]
 pub(crate) fn draw_bounds_to_gtk_snapshot(

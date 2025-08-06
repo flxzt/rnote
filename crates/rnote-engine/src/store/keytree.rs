@@ -25,7 +25,7 @@ impl KeyTree {
 
         self.0
             .remove(&object_to_remove)
-            .and_then(|key_object| Some(keytree_to_store(key_object)))
+            .and_then(|key_object| Some(keytree_to_store(&key_object)))
     }
 
     /// Update the Tree with new bounds for the given key.
@@ -44,6 +44,17 @@ impl KeyTree {
                 [bounds.maxs[0], bounds.maxs[1]],
             ))
             .map(|object| object.data)
+            .collect()
+    }
+
+    /// Return the keys + bounds that intersect with the given bounds.
+    pub(crate) fn keys_bounds_intersecting_bounds(&self, bounds: Aabb) -> Vec<(StrokeKey, Aabb)> {
+        self.0
+            .locate_in_envelope_intersecting(&rstar::AABB::from_corners(
+                [bounds.mins[0], bounds.mins[1]],
+                [bounds.maxs[0], bounds.maxs[1]],
+            ))
+            .map(|object| keytree_to_store(&object))
             .collect()
     }
 
@@ -107,7 +118,7 @@ fn new_keytree_object(key: StrokeKey, bounds: Aabb) -> KeyTreeObject {
     )
 }
 
-fn keytree_to_store(key_object: KeyTreeObject) -> (StrokeKey, Aabb) {
+fn keytree_to_store(key_object: &KeyTreeObject) -> (StrokeKey, Aabb) {
     (
         key_object.data,
         Aabb::new(

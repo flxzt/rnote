@@ -87,6 +87,16 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>()
     }
 
+    /// Stroke keys + bounds intersecting the given bounds, in the order that they should be rendered
+    pub(crate) fn stroke_keys_and_bounds_as_rendered_intersecting_bounds(
+        &self,
+        bounds: Aabb,
+    ) -> Vec<(StrokeKey, Aabb)> {
+        self.keys_bounds_sorted_chrono_intersecting_bounds(bounds)
+            .into_iter()
+            .collect()
+    }
+
     /// Stroke keys contained in the given bounds, in the order that they should be rendered.
     pub(crate) fn stroke_keys_as_rendered_in_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_in_bounds(bounds)

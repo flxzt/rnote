@@ -594,6 +594,14 @@ impl TextStroke {
 
         *cursor = GraphemeCursor::new(cursor.cur_cursor() + text.len(), self.text.len(), true);
 
+        if text == "\n"{
+            let prefix = self.get_last_line_prefix();
+            self.text.insert_str(cursor.cur_cursor(), &prefix);
+            self.translate_attrs_after_cursor(cursor.cur_cursor(), prefix.len() as i32);
+
+            *cursor = GraphemeCursor::new(cursor.cur_cursor() + prefix.len(), self.text.len(), true);
+        }
+
     }
 
     fn get_auto_closing_pair(open: &str) -> Option<&'static str>{
@@ -606,6 +614,13 @@ impl TextStroke {
             _ => None,
             
         }
+    }
+
+    fn get_last_line_prefix(&self) -> String{
+        self.text.lines().last().unwrap_or("").chars()
+        .take_while(|&ch| matches!(ch, ' ' | '\t' | '-' | '*' | '.'))
+        .collect()
+        
     }
 
     pub fn remove_grapheme_before_cursor(&mut self, cursor: &mut GraphemeCursor) {

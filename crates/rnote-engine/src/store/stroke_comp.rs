@@ -341,6 +341,49 @@ impl StrokeStore {
         widget_flags
     }
 
+    /// Mirror stroke vertically for given set of keys
+    ///
+    /// The strokes must update rendering after a mirror
+    pub(crate) fn mirror_stroke_vertical(&mut self, keys: &[StrokeKey]) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if keys.is_empty() {
+            return widget_flags;
+        }
+
+        let all_stroke_bounds = self.strokes_bounds(keys);
+
+        let min_y = all_stroke_bounds
+            .iter()
+            .map(|aabb_element| aabb_element.mins.coords.y)
+            .reduce(|a, b| a.min(b));
+        let max_y = all_stroke_bounds
+            .iter()
+            .map(|aabb_element| aabb_element.maxs.coords.y)
+            .reduce(|a, b| a.max(b));
+
+        let selection_centerline_y = if let (Some(min_y), Some(max_y)) = (min_y, max_y) {
+            (min_y + max_y) / 2.0
+        } else {
+            return widget_flags;
+        };
+
+        keys.iter().for_each(|&key| {
+            if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
+                .get_mut(key)
+                .map(Arc::make_mut)
+            {
+                stroke.vertical_mirror(selection_centerline_y);
+                self.set_rendering_dirty(key);
+            }
+        });
+
+        widget_flags.redraw = true;
+        widget_flags.store_modified = true;
+
+        widget_flags
+    }
+
     /// Invert the stroke, text and fill color of the given keys.
     ///
     /// Strokes then need to update their rendering.

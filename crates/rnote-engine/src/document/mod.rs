@@ -9,7 +9,6 @@ pub use background::Background;
 pub use config::DocumentConfig;
 pub use format::Format;
 pub use layout::Layout;
-use rstar::Envelope;
 
 // Imports
 use self::background::PatternStyle;
@@ -271,7 +270,9 @@ impl Document {
                 Aabb::new(Vector2::ZERO, self.config.format.size())
                     .extend_right_and_bottom_by(padding)
             } else {
-                store.get_bounds().extend_right_and_bottom_by(padding)
+                store
+                    .get_bounds_non_trashed()
+                    .extend_right_and_bottom_by(padding)
             };
             new_bounds.merge(&content_bounds);
         }
@@ -314,7 +315,7 @@ impl Document {
         }
 
         if include_content {
-            let rendered_bounds = store.get_bounds();
+            let rendered_bounds = store.get_bounds_non_trashed();
 
             let content_bounds = if rendered_bounds.volume() > 0.0 {
                 rendered_bounds.extend_right_and_bottom_by(padding)

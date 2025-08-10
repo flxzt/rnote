@@ -553,66 +553,95 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
 
     // Listen to responses
 
-    let (tx, mut rx) = futures::channel::mpsc::unbounded::<anyhow::Result<bool>>();
+    let (tx, mut rx_confirm) = futures::channel::mpsc::unbounded::<(bool, bool)>();
     let tx_cancel = tx.clone();
     let tx_confirm = tx.clone();
+    let tx_close = tx.clone();
 
-    import_xopp_button_cancel.connect_clicked(clone!(
-        #[weak]
-        dialog,
-        move |_| {
-            dialog.close();
-
-            if let Err(e) = tx_cancel.unbounded_send(Ok(false)) {
-                error!(
-                "XOPP import dialog closed, but failed to send signal through channel. Err: {e:?}"
+    import_xopp_button_cancel.connect_clicked(clone!(move |_| {
+        if let Err(e) = tx_cancel.unbounded_send((false, false)) {
+            error!(
+                "XOPP import dialog cancelled, but failed to send signal through channel. Err: {e:?}"
             );
-            }
         }
-    ));
+    }));
 
-    import_xopp_button_confirm.connect_clicked(clone!(#[weak] input_file, #[weak] dialog, #[weak] appwindow, #[weak] canvas , move |_| {
-        dialog.close();
-
-        let inner_tx_confirm = tx_confirm.clone();
-
-        glib::spawn_future_local(clone!(#[weak] input_file, #[weak] appwindow, #[weak] canvas , async move {
-            let (bytes, _) = match input_file.load_bytes_future().await {
-                Ok(res) => {res}
-                Err(err) => {
-                    if let Err(e) = inner_tx_confirm.unbounded_send(Err(err.into())) {
-                        error!("Failed to load file, but failed to send signal through channel. Err: {e:?}");
-                    }
-                    return;
-                }
-            };
-            if let Err(e) = canvas.load_in_xopp_bytes(&appwindow, bytes.to_vec()).await {
-                if let Err(e) = inner_tx_confirm.unbounded_send(Err(e)) {
-                    error!("Failed to load XOPP, but failed to send signal through channel. Err: {e:?}");
-                }
-                return;
-            };
-
-            if let Err(e) = inner_tx_confirm.unbounded_send(Ok(true)) {
-                error!("XOPP file imported, but failed to send signal through channel. Err: {e:?}");
-            }
-        }));
+    import_xopp_button_confirm.connect_clicked(clone!(move |_| {
+        if let Err(e) = tx_confirm.unbounded_send((true,false)) {
+            error!(
+                "Xopp import dialog confirmed, but failed to send signal through channel. Err: {e:?}"
+            );
+        }
     }));
 
     // Send a cancel response when the dialog is closed
-    dialog.connect_closed(clone!(
-        #[weak]
-        import_xopp_button_cancel,
-        move |_| {
-            import_xopp_button_cancel.emit_clicked();
+    dialog.connect_closed(clone!(move |_| {
+        if let Err(e) = tx_close.unbounded_send((false, true)) {
+            error!(
+                "XOPP import dialog closed, but failed to send signal through channel. Err: {e:?}"
+            );
         }
-    ));
+    }));
 
     // Present than wait for a response from the dialog
     dialog.present(appwindow.root().as_ref());
 
-    match rx.next().await {
-        Some(res) => res,
+    match rx_confirm.next().await {
+        Some((confirm, dialog_closed)) => {
+            if !dialog_closed {
+                dialog.close();
+            }
+            if confirm {
+                let (tx_import, mut rx_import) =
+                    futures::channel::mpsc::unbounded::<anyhow::Result<bool>>();
+
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    input_file,
+                    #[weak]
+                    appwindow,
+                    #[weak]
+                    canvas,
+                    async move {
+                        let (bytes, _) = match input_file.load_bytes_future().await {
+                            Ok(res) => res,
+                            Err(err) => {
+                                if let Err(e) = tx_import.unbounded_send(Err(err.into())) {
+                                    error!(
+                                        "Failed to load file, but failed to send signal through channel. Err: {e:?}"
+                                    );
+                                }
+                                return;
+                            }
+                        };
+                        if let Err(e) = canvas.load_in_xopp_bytes(&appwindow, bytes.to_vec()).await
+                        {
+                            if let Err(e) = tx_import.unbounded_send(Err(e)) {
+                                error!(
+                                    "Failed to load XOPP, but failed to send signal through channel. Err: {e:?}"
+                                );
+                            }
+                            return;
+                        };
+
+                        if let Err(e) = tx_import.unbounded_send(Ok(true)) {
+                            error!(
+                                "XOPP file imported, but failed to send signal through channel. Err: {e:?}"
+                            );
+                        }
+                    }
+                ));
+
+                match rx_import.next().await {
+                    Some(res) => res,
+                    None => Err(anyhow::anyhow!(
+                        "Channel closed before receiving a response from loader thread."
+                    )),
+                }
+            } else {
+                Ok(false)
+            }
+        }
         None => Err(anyhow::anyhow!(
             "Channel closed before receiving a response from dialog."
         )),

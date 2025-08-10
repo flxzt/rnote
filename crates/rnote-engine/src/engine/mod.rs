@@ -753,6 +753,20 @@ impl Engine {
             | self.update_rendering_current_viewport()
     }
 
+    pub fn mirror_horizontal_selection(&mut self) -> WidgetFlags {
+        self.store
+            .mirror_stroke_horizontal(&self.store.selection_keys_as_rendered())
+            | self.record(Instant::now())
+            | self.update_content_rendering_current_viewport()
+    }
+
+    pub fn mirror_vertical_selection(&mut self) -> WidgetFlags {
+        self.store
+            .mirror_stroke_vertical(&self.store.selection_keys_as_rendered())
+            | self.record(Instant::now())
+            | self.update_content_rendering_current_viewport()
+    }
+
     pub fn select_with_bounds(
         &mut self,
         bounds: Aabb,

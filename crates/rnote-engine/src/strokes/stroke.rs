@@ -13,6 +13,7 @@ use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::{Rectangle, Shapeable};
+use rnote_compose::style::PressureCurve;
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::transform::Transform;
 use rnote_compose::transform::Transformable;
@@ -670,6 +671,98 @@ impl Stroke {
                     },
                 ))
             }
+        }
+    }
+
+    /// converts a stroke into the input format used by the inkml writer
+    pub fn into_inkml(
+        &self,
+        current_dpi: f64,
+    ) -> Option<(writer_inkml::FormattedStroke, writer_inkml::Brush)> {
+        let pixel_to_cm_factor = 2.54 / current_dpi;
+        match self {
+            Stroke::BrushStroke(brushstroke) => {
+                // remark : style is not preserved here, we will always get a smooth
+                // version
+                let fill_color = brushstroke.style.stroke_color().unwrap_or_default();
+                let elements = brushstroke.path.clone().into_elements();
+                let ignore_pressure = match &brushstroke.style {
+                    Style::Smooth(smooth_options) => match smooth_options.pressure_curve {
+                        PressureCurve::Const => true,
+                        _ => false,
+                    },
+                    Style::Rough(_) => false,
+                    Style::Textured(_) => false,
+                };
+                tracing::debug!("formatting strokes");
+                Some((
+                    writer_inkml::FormattedStroke {
+                        x: elements
+                            .iter()
+                            .map(|element| pixel_to_cm_factor * element.pos.x)
+                            .collect(), // need the scale !
+                        y: elements
+                            .iter()
+                            .map(|element| pixel_to_cm_factor * element.pos.y)
+                            .collect(),
+                        f: elements.iter().map(|element| element.pressure).collect(),
+                    },
+                    writer_inkml::Brush::init(
+                        String::from(""),
+                        (
+                            (fill_color.r * 255.0) as u8,
+                            (fill_color.g * 255.0) as u8,
+                            (fill_color.b * 255.0) as u8,
+                        ),
+                        ignore_pressure,
+                        ((1.0 - fill_color.a) * 255.0) as u8,
+                        brushstroke.style.stroke_width() * pixel_to_cm_factor,
+                    ),
+                ))
+            }
+            Stroke::ShapeStroke(ShapeStroke { shape, style, .. }) => {
+                // partial support for shapes
+                // everything with no fill
+                let stroke_color = style.stroke_color().unwrap_or_default();
+                let brush = writer_inkml::Brush::init(
+                    String::from(""),
+                    (
+                        (stroke_color.r * 255.0) as u8,
+                        (stroke_color.g * 255.0) as u8,
+                        (stroke_color.b * 255.0) as u8,
+                    ),
+                    true,
+                    ((1.0 - stroke_color.a) * 255.0) as u8,
+                    style.stroke_width() * pixel_to_cm_factor,
+                );
+                let mut out_elements: Vec<(f64, f64)> = vec![];
+                kurbo::flatten(shape.outline_path(), 0.25, |path_el| match path_el {
+                    kurbo::PathEl::MoveTo(pt) => out_elements.push((pt.x, pt.y)),
+                    // technically, a moveto should create a new brush
+                    kurbo::PathEl::LineTo(pt) => out_elements.push((pt.x, pt.y)),
+                    kurbo::PathEl::ClosePath => {
+                        out_elements.push(out_elements[0]);
+                    }
+                    _ => {}
+                });
+                // we return ONE stroke at most for now
+                // only affect arrows for now (though they still render fine ?)
+                let formatted_stroke = writer_inkml::FormattedStroke {
+                    x: out_elements
+                        .iter()
+                        .map(|element| pixel_to_cm_factor * element.0)
+                        .collect(), // need the scale !
+                    y: out_elements
+                        .iter()
+                        .map(|element| pixel_to_cm_factor * element.1)
+                        .collect(),
+                    f: out_elements.iter().map(|_| 1.0).collect(),
+                };
+                Some((formatted_stroke, brush))
+            }
+            Stroke::TextStroke(_) => None,
+            Stroke::VectorImage(_) => None,
+            Stroke::BitmapImage(_) => None,
         }
     }
 }

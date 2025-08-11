@@ -1,4 +1,5 @@
 // Modules
+pub mod inkmlformat;
 pub mod rnoteformat;
 pub mod xoppformat;
 

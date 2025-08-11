@@ -9,10 +9,12 @@ use gtk4::{
 };
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::PenStyle;
-use std::cell::{Cell, RefCell};
-use tracing::error;
+use std::cell::{Cell, Ref, RefCell};
+use tracing::{debug, error};
 
 mod imp {
+    use adw::glib::SignalHandlerId;
+
     use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
@@ -33,6 +35,7 @@ mod imp {
         pub(crate) colorpicker: TemplateChild<RnColorPicker>,
         #[template_child]
         pub(crate) tabview: TemplateChild<adw::TabView>,
+        pub(crate) tabview_connect_selected: RefCell<Option<SignalHandlerId>>,
         #[template_child]
         pub(crate) sidebar_box: TemplateChild<gtk4::Box>,
         #[template_child]
@@ -230,23 +233,31 @@ impl RnOverlays {
     fn setup_tabview(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
-        imp.tabview.connect_selected_page_notify(clone!(
-            #[weak]
-            appwindow,
-            move |_| {
-                let Some(active_tab_page) = appwindow.active_tab_page() else {
-                    return;
-                };
-                let active_canvaswrapper = active_tab_page
-                    .child()
-                    .downcast::<RnCanvasWrapper>()
-                    .unwrap();
-                appwindow.tabs_set_unselected_inactive();
-                let widget_flags = active_canvaswrapper.canvas().engine_mut().set_active(true);
-                appwindow.handle_widget_flags(widget_flags, &active_canvaswrapper.canvas());
-                appwindow.refresh_ui();
-            }
-        ));
+        imp.tabview_connect_selected
+            .replace(Some(imp.tabview.connect_selected_page_notify(clone!(
+                #[weak]
+                appwindow,
+                move |_| {
+                    let Some(active_tab_page) = appwindow.active_tab_page() else {
+                        return;
+                    };
+                    let active_canvaswrapper = active_tab_page
+                        .child()
+                        .downcast::<RnCanvasWrapper>()
+                        .unwrap();
+                    appwindow.tabs_set_unselected_inactive();
+                    let widget_flags = active_canvaswrapper.canvas().engine_mut().set_active(true);
+                    appwindow.handle_widget_flags(widget_flags, &active_canvaswrapper.canvas());
+                    appwindow.refresh_ui(false);
+                    // this is an issue
+                    // check if we can disable this call for the first tab
+                }
+            ))));
+
+        // TODO : retest that this is responsible for the unsaved indicator in some way
+        // we set the connect select to false initially
+        // as we don't want the first added tab to send anything
+        self.set_tab_signal_state(false);
 
         imp.tabview.connect_page_attached(clone!(
             #[weak]
@@ -329,6 +340,26 @@ impl RnOverlays {
                 }
             }
         ));
+    }
+
+    pub(crate) fn set_tab_signal_state(&self, state: bool) {
+        let imp = self.imp();
+        debug!("setting the tab signal state to {:?}", state);
+
+        Ref::map(imp.tabview_connect_selected.borrow(), |x| {
+            match x {
+                Some(handler_id) => {
+                    debug!("handler id exists applying");
+                    if state {
+                        imp.tabview.unblock_signal(handler_id)
+                    } else {
+                        imp.tabview.block_signal(handler_id)
+                    }
+                }
+                None => (),
+            }
+            x
+        });
     }
 
     pub(crate) fn progressbar_start_pulsing(&self) {

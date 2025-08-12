@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-26 11:14+0200\n"
-"PO-Revision-Date: 2025-04-28 10:01+0000\n"
-"Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"PO-Revision-Date: 2025-08-13 16:01+0000\n"
+"Last-Translator: Ács Zoltán <acszoltan111@gmail.com>\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12-dev\n"
+"X-Generator: Weblate 5.13-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1484,10 +1484,8 @@ msgid "Infinite"
 msgstr "Végtelen"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:318
-#, fuzzy
-#| msgid "Show _Format Borders"
 msgid "Show Format Borders"
-msgstr "_Formátumszegélyek megjelenítése"
+msgstr "Formátumszegélyek megjelenítése"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:319
 #, fuzzy
@@ -1561,16 +1559,12 @@ msgid "Set the background pattern height"
 msgstr "Állítsa be a háttérminta magasságát"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:439
-#, fuzzy
-#| msgid "Show _Origin Indicator"
 msgid "Show Origin Indicator"
-msgstr "_Eredetjelző megjelenítése"
+msgstr "Eredetjelző megjelenítése"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:440
-#, fuzzy
-#| msgid "Set whether the drawing cursor is visible"
 msgid "Set whether the document origin indicator is shown"
-msgstr "Rajzkurzor láthatóságának beállítása"
+msgstr "Dokumentum eredetjelző láthatóságának beállítása"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:445
 msgid "Invert Color Brightness"
@@ -2561,7 +2555,7 @@ msgstr "szürkés"
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "strong"
-msgstr ""
+msgstr "erős"
 
 #: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"

@@ -831,12 +831,12 @@ impl RnCanvas {
     }
 
     /// Immutable borrow of the engine.
-    pub(crate) fn engine_ref(&self) -> Ref<Engine> {
+    pub(crate) fn engine_ref(&self) -> Ref<'_, Engine> {
         self.imp().engine.borrow()
     }
 
     /// Mutable borrow of the engine.
-    pub(crate) fn engine_mut(&self) -> RefMut<Engine> {
+    pub(crate) fn engine_mut(&self) -> RefMut<'_, Engine> {
         self.imp().engine.borrow_mut()
     }
 

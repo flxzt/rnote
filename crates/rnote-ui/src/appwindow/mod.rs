@@ -42,11 +42,11 @@ impl RnAppWindow {
         &self.imp().engine_config
     }
 
-    pub(crate) fn document_config_preset_ref(&self) -> Ref<DocumentConfig> {
+    pub(crate) fn document_config_preset_ref(&self) -> Ref<'_, DocumentConfig> {
         self.imp().document_config_preset.borrow()
     }
 
-    pub(crate) fn document_config_preset_mut(&self) -> RefMut<DocumentConfig> {
+    pub(crate) fn document_config_preset_mut(&self) -> RefMut<'_, DocumentConfig> {
         self.imp().document_config_preset.borrow_mut()
     }
 

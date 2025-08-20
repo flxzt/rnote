@@ -240,6 +240,7 @@ impl RnAppWindow {
         // Anything that needs to be done right before showing the appwindow
 
         self.refresh_ui();
+        imp.sidebar.get().activate_doc_settings_buttons();
     }
 
     fn setup_icon_theme(&self) {

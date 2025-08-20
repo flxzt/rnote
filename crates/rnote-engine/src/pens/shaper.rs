@@ -86,7 +86,7 @@ impl PenBehaviour for Shaper {
                             element,
                             now,
                         ),
-                     };
+                    };
                 };
 
                 EventResult {

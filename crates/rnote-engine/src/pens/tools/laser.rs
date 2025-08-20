@@ -172,7 +172,7 @@ impl LaserTool {
         (event_result, widget_flags)
     }
 
-    pub fn handle_animation_frame(&mut self, engine_view: &mut EngineViewMut, optimize_epd: bool) {
+    pub fn handle_animation_frame(&mut self, engine_view: &mut EngineViewMut) {
         let Some(faded) = self.has_fully_faded() else {
             return;
         };
@@ -180,7 +180,7 @@ impl LaserTool {
         if faded {
             self.reset(true);
         } else {
-            if !optimize_epd {
+            if !engine_view.config.optimize_epd {
                 let transparency = self
                     .fade_start_time
                     .unwrap() // Never fails because `has_fully_faded` has not returned `None`.

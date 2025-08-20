@@ -119,7 +119,7 @@ impl RnSelectorPage {
             #[weak]
             appwindow,
             move |toggle| {
-                if toggle.is_active() {
+                if !toggle.is_active() {
                     return;
                 }
                 appwindow

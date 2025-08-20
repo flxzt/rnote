@@ -2,13 +2,15 @@
 
 # Either 'true' or 'false'
 ci := "false"
-linux_distr := `lsb_release -ds | tr '[:upper:]' '[:lower:]'`
 log_level := "debug"
 build_folder := "_mesonbuild"
 flatpak_app_folder := "_flatpak_app"
 flatpak_repo_folder := "_flatpak_repo"
 mingw64_prefix_path := "C:/msys64/mingw64"
 
+[private]
+linux_distr := `lsb_release -ds | tr '[:upper:]' '[:lower:]'`
+[private]
 sudo_cmd := "sudo"
 
 export LANG := "C"
@@ -26,8 +28,7 @@ default:
 prerequisites:
     #!/usr/bin/env bash
     set -euxo pipefail
-
-    if [[ ('{{linux_distr}}' =~ 'fedora') || ('{{linux_distr}}' =~ 'rhel') || ('{{linux_distr}}' =~ 'alma') ]]; then
+    if [[ ('{{linux_distr}}' =~ 'fedora') ]]; then
         {{sudo_cmd}} dnf install -y \
             gcc gcc-c++ clang clang-devel python3 make cmake meson just git appstream gettext desktop-file-utils \
             shared-mime-info kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel \
@@ -41,15 +42,13 @@ prerequisites:
         echo "Unable to install system dependencies, unsupported distro."
         exit 1
     fi
-
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     export PATH="$HOME/.cargo/bin:$PATH"
 
 prerequisites-flatpak: prerequisites
     #!/usr/bin/env bash
     set -euxo pipefail
-
-    if [[ ('{{linux_distr}}' =~ 'fedora') || ('{{linux_distr}}' =~ 'rhel') || ('{{linux_distr}}' =~ 'alma') ]]; then
+    if [[ ('{{linux_distr}}' =~ 'fedora') ]]; then
         {{sudo_cmd}} dnf install -y \
             flatpak flatpak-builder
     elif [[ '{{linux_distr}}' =~ 'debian' || '{{linux_distr}}' =~ 'ubuntu' ]]; then
@@ -60,7 +59,6 @@ prerequisites-flatpak: prerequisites
         echo "Unable to install system dependencies, unsupported distro."
         exit 1
     fi
-
     flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
     flatpak install -y org.gnome.Platform//48 org.gnome.Sdk//48 org.freedesktop.Sdk.Extension.rust-stable//24.08 \
         org.freedesktop.Sdk.Extension.llvm19//24.08
@@ -68,8 +66,7 @@ prerequisites-flatpak: prerequisites
 prerequisites-dev: prerequisites
     #!/usr/bin/env bash
     set -euxo pipefail
-
-    if [[ ('{{linux_distr}}' =~ 'fedora') || ('{{linux_distr}}' =~ 'rhel') || ('{{linux_distr}}' =~ 'alma') ]]; then
+    if [[ ('{{linux_distr}}' =~ 'fedora') ]]; then
         {{sudo_cmd}} dnf install -y \
             yamllint yq opencc-tools
     elif [[ '{{linux_distr}}' =~ 'debian' || '{{linux_distr}}' =~ 'ubuntu' ]]; then
@@ -80,11 +77,9 @@ prerequisites-dev: prerequisites
         echo "Unable to install system dependencies, unsupported distro."
         exit 1
     fi
-
     if [[ "{{ci}}" != "true" ]]; then
         ln -sf build-aux/git-hooks/pre-commit.hook .git/hooks/pre-commit
     fi
-
     curl -L --proto '=https' --tlsv1.2 -sSf \
         https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
     cargo binstall -y cargo-nextest cargo-edit cargo-deny
@@ -97,9 +92,7 @@ prerequisites-win:
         mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils \
         mingw-w64-x86_64-appstream mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-poppler \
         mingw-w64-x86_64-poppler-data mingw-w64-x86_64-angleproject
-
     mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
-
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     export PATH="$HOME/.cargo/bin:$PATH"
 
@@ -123,7 +116,7 @@ setup-win-installer installer_name="rnote-win-installer":
     meson setup \
         --prefix={{ mingw64_prefix_path }} \
         -Dprofile=default \
-        -Dcli=false \
+        -Dcli=true \
         -Dwin-installer-name={{ installer_name }} \
         -Dci={{ ci }} \
         {{ build_folder }}

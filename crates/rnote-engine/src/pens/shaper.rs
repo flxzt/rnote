@@ -67,7 +67,7 @@ impl PenBehaviour for Shaper {
         let mut widget_flags = WidgetFlags::default();
 
         let event_result = match (&mut self.state, event) {
-            (ShaperState::Idle, PenEvent::Down { element, .. }) => {
+            (ShaperState::Idle, PenEvent::Down { mut element, .. }) => {
                 if !engine_view.store.get_cancelled_state() {
                     // here we need an additional up/down event after a selection
                     // cancellation
@@ -76,14 +76,18 @@ impl PenBehaviour for Shaper {
                         .pens_config
                         .shaper_config
                         .new_style_seeds();
+                    element.pos = engine_view
+                        .document
+                        .snap_position(element.pos, engine_view.config);
+
                     self.state = ShaperState::BuildShape {
                         builder: new_builder(
                             engine_view.config.pens_config.shaper_config.builder_type,
                             element,
                             now,
                         ),
-                    };
-                }
+                     };
+                };
 
                 EventResult {
                     handled: true,
@@ -105,7 +109,7 @@ impl PenBehaviour for Shaper {
                     progress: PenProgress::Finished,
                 }
             }
-            (ShaperState::BuildShape { builder }, event) => {
+            (ShaperState::BuildShape { builder }, mut event) => {
                 // Use Ctrl to temporarily enable/disable constraints when the switch is off/on
                 let mut constraints = engine_view
                     .config
@@ -128,6 +132,15 @@ impl PenBehaviour for Shaper {
                     } => constraints.enabled ^ modifier_keys.contains(&ModifierKey::KeyboardCtrl),
                     PenEvent::Text { .. } | PenEvent::Cancel => false,
                 };
+                match &mut event {
+                    PenEvent::Down { element, .. } | PenEvent::Up { element, .. } => {
+                        element.pos = engine_view
+                            .document
+                            .snap_position(element.pos, engine_view.config);
+                    }
+                    _ => {}
+                }
+
                 let builder_result = builder.handle_event(event.clone(), now, constraints);
                 let handled = builder_result.handled;
                 let propagate = builder_result.propagate;

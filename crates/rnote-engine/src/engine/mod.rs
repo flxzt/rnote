@@ -245,11 +245,9 @@ impl Engine {
         let mut widget_flags = WidgetFlags::default();
 
         let pen_sounds = config.read().pen_sounds;
-        let optimize_epd = config.read().optimize_epd;
 
         self.config = config.clone();
         self.set_pen_sounds(pen_sounds, data_dir);
-        self.set_optimize_epd(optimize_epd);
 
         widget_flags |= self
             .penholder
@@ -281,7 +279,7 @@ impl Engine {
 
         if pen_sounds {
             if let Some(pkg_data_dir) = pkg_data_dir {
-                // Only create and init a new audioplayer if it does not already exists
+                // Only create and init a new audioplayer if it does not already exist
                 if self.audioplayer.is_none() {
                     self.audioplayer = match AudioPlayer::new_init(pkg_data_dir) {
                         Ok(audioplayer) => Some(audioplayer),
@@ -301,10 +299,6 @@ impl Engine {
 
     pub fn optimize_epd(&self) -> bool {
         self.config.read().optimize_epd
-    }
-
-    pub fn set_optimize_epd(&mut self, optimize_epd: bool) {
-        self.config.write().optimize_epd = optimize_epd;
     }
 
     /// Takes a snapshot of the current state.
@@ -387,7 +381,7 @@ impl Engine {
     /// Handle a received task from tasks_rx.
     /// Returns [WidgetFlags] to indicate what needs to be updated in the UI.
     ///
-    /// An example how to use it:
+    /// An example of how to use it:
     /// ```rust, ignore
     ///
     /// glib::spawn_future_local(clone!(@weak canvas, @weak appwindow => async move {
@@ -419,7 +413,7 @@ impl Engine {
                     match state {
                         RenderCompState::Complete | RenderCompState::ForViewport(_) => {
                             // The rendering was already regenerated in the meantime,
-                            // so we just discard the the render task result
+                            // so we just discard the render task result
                         }
                         RenderCompState::BusyRenderingInTask => {
                             if (self.camera.image_scale()
@@ -428,7 +422,7 @@ impl Engine {
                                     + render_comp::RENDER_IMAGE_SCALE_TOLERANCE)
                                 .contains(&image_scale)
                             {
-                                // Only when the image scale is roughly the same to when the render task was started,
+                                // Only when the image scale is roughly the same as when the render task was started,
                                 // the new images are considered valid and can replace the old.
                                 self.store.replace_rendering_with_images(key, images);
                             }
@@ -637,7 +631,7 @@ impl Engine {
 
     /// Expand the doc to the camera when in autoexpanding layouts. called e.g. when dragging with touch.
     ///
-    /// Background and content rendering then needs to be updated.
+    /// Background and content rendering then need to be updated.
     pub fn doc_expand_autoexpand(&mut self) -> WidgetFlags {
         self.document.expand_autoexpand(&self.camera, &self.store)
     }
@@ -923,9 +917,9 @@ impl Engine {
     /// Handle a requested animation frame.
     ///
     /// Can request another frame using `EngineViewMut#animation.claim_frame()`.
-    pub fn handle_animation_frame(&mut self, optimize_epd: bool) {
+    pub fn handle_animation_frame(&mut self) {
         self.penholder
-            .handle_animation_frame(&mut engine_view_mut!(self), optimize_epd);
+            .handle_animation_frame(&mut engine_view_mut!(self));
     }
 
     pub fn current_pen_style_w_override(&self) -> PenStyle {

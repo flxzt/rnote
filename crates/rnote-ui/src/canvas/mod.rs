@@ -255,7 +255,7 @@ mod imp {
                 move |_widget, _frame_clock| {
                     if canvas.engine_mut().animation.process_frame() {
                         let optimize_epd = canvas.engine_ref().optimize_epd();
-                        canvas.engine_mut().handle_animation_frame(optimize_epd);
+                        canvas.engine_mut().handle_animation_frame();
 
                         // if optimize_epd is enabled, we only redraw the canvas
                         // when no follow-up frame has been requested (i.e. the animation is done)
@@ -831,12 +831,12 @@ impl RnCanvas {
     }
 
     /// Immutable borrow of the engine.
-    pub(crate) fn engine_ref(&self) -> Ref<Engine> {
+    pub(crate) fn engine_ref(&self) -> Ref<'_, Engine> {
         self.imp().engine.borrow()
     }
 
     /// Mutable borrow of the engine.
-    pub(crate) fn engine_mut(&self) -> RefMut<Engine> {
+    pub(crate) fn engine_mut(&self) -> RefMut<'_, Engine> {
         self.imp().engine.borrow_mut()
     }
 

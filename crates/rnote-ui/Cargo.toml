@@ -55,6 +55,7 @@ tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 unicode-segmentation = { workspace = true }
 url = { workspace = true }
+writer_inkml = { workspace = true}
 
 [build-dependencies]
 anyhow = { workspace = true }

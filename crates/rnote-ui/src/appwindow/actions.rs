@@ -11,6 +11,7 @@ use p2d::bounding_volume::BoundingVolume;
 use rnote_compose::SplitOrder;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::engine::StrokeContent;
+use rnote_engine::fileformats::inkmlformat;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::strokes::resize::{ImageSizeOption, Resize};
 use rnote_engine::{Camera, Engine};
@@ -1150,7 +1151,7 @@ impl RnAppWindow {
                                                 respect_borders: appwindow.respect_borders(),
                                             });
                                         if let Err(e) = canvas
-                                            .insert_stroke_content(
+                                            .deserialize_and_insert_stroke_content(
                                                 json_string.to_string(),
                                                 resize_argument,
                                                 target_pos,
@@ -1173,6 +1174,85 @@ impl RnAppWindow {
                             error!(
                                 "Reading clipboard failed while pasting as `{}`, Err: {e:?}",
                                 StrokeContent::MIME_TYPE
+                            );
+                        }
+                    };
+                }
+            ));
+        }
+        // test if we see inkml
+        // mimetype expected : application/inkml+xml
+        else if content_formats.contain_mime_type("application/inkml+xml")
+            || content_formats.contain_mime_type("application/x.windows.InkML Format")
+        {
+            glib::spawn_future_local(clone!(
+                #[weak]
+                canvas,
+                #[weak(rename_to=appwindow)]
+                self,
+                async move {
+                    debug!("Recognized clipboard content: inkml");
+
+                    match appwindow
+                        .clipboard()
+                        .read_future(
+                            &[
+                                "application/inkml+xml",
+                                "application/x.windows.InkML Format",
+                            ],
+                            glib::source::Priority::DEFAULT,
+                        )
+                        .await
+                    {
+                        Ok((input_stream, _)) => {
+                            let acc = collect_clipboard_data(input_stream).await;
+
+                            if !acc.is_empty() {
+                                match crate::utils::str_from_u8_nul_utf8(&acc) {
+                                Ok(text) => {
+                                    let stroke_result = writer_inkml::parse_formatted(text.as_bytes());
+                                    let dpi = canvas.engine_ref().document.config.format.dpi();
+
+                                    debug!("stroke result {:?}", stroke_result);
+
+                                    if let Ok(strokes) = stroke_result {
+                                        let generated_strokes = strokes.into_iter().map(|(formatted_stroke,brush)| {
+                                            inkmlformat::inkml_to_stroke(
+                                                formatted_stroke,brush, &dpi
+                                            )})
+                                            .filter(|x| x.is_some())
+                                            .map(|x| x.unwrap())
+                                            .collect();
+
+                                        let mut stroke_content = StrokeContent {
+                                            strokes: generated_strokes,
+                                            bounds:None,
+                                            background:None
+                                        };
+                                        stroke_content.bounds = stroke_content.bounds();
+
+                                        let resize_argument = ImageSizeOption::ResizeImage(Resize {
+                                            width: canvas.engine_ref().document.config.format.width(),
+                                            height: canvas.engine_ref().document.config.format.height(),
+                                            layout_fixed_width: canvas.engine_ref().document.config.layout.is_fixed_width(),
+                                            max_viewpoint: None,
+                                            restrain_to_viewport: false,
+                                            respect_borders: appwindow.respect_borders(),
+                                        });
+                                        if let Err(e) = canvas.insert_stroke_content(stroke_content, resize_argument, target_pos).await {
+                                            error!("Failed to insert stroke content while pasting as `inkml`, Err: {e:?}");
+                                        }
+                                    } else {
+                                        error!("could not parse the inkml file");
+                                    }
+                                    }
+                                Err(e) => error!("Failed to get string from clipboard data while pasting as inkml, Err: {e:?}"),
+                            }
+                            }
+                        }
+                        Err(e) => {
+                            error!(
+                                "Failed to read clipboard data while pasting as inkml, Err: {e:?}"
                             );
                         }
                     };

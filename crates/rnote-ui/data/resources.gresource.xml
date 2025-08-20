@@ -65,7 +65,6 @@
         <file compressed="true">icons/scalable/actions/dir-right-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dir-up-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/doc-create-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/doc-save-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-left-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-right-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dot-symbolic.svg</file>
@@ -112,7 +111,9 @@
         <file compressed="true">icons/scalable/actions/remove-page-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/reset-state-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/resize-to-fit-content-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/restore-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/return-origin-page-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/save-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-deselect-all-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-duplicate-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-invert-color-symbolic.svg</file>

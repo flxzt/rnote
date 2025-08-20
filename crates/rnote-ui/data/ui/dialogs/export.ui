@@ -355,8 +355,8 @@ are cut into pages</property>
                               <object class="AdwComboRow" id="export_doc_pages_page_order_row">
                                 <property name="title" translatable="yes">Page Order</property>
                                 <property name="subtitle" translatable="yes">The page order when documents with layouts
-    that expand in horizontal and vertical directions
-    are cut into pages</property>
+that expand in horizontal and vertical directions
+are cut into pages</property>
                                 <property name="model">
                                   <object class="GtkStringList">
                                     <items>
@@ -371,7 +371,7 @@ are cut into pages</property>
                               <object class="AdwSpinRow" id="export_doc_pages_bitmap_scalefactor_row">
                                 <property name="title" translatable="yes">Bitmap Scale-Factor</property>
                                 <property name="subtitle" translatable="yes">Set the bitmap scale factor in relation
-    to the actual size on the document</property>
+to the actual size on the document</property>
                                 <property name="adjustment">export_doc_pages_bitmap_scalefactor_adj</property>
                                 <property name="digits">1</property>
                               </object>

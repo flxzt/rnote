@@ -1,4 +1,4 @@
-project('rnote', ['rust', 'cpp'], version: '0.12.0', meson_version: '>= 1.0')
+project('rnote', ['rust', 'cpp'], version: '0.13.0', meson_version: '>= 1.0')
 # add a patch suffix for alpha or beta versions in format '-<alpha|beta>.<x>'.
 patch = ''
 
@@ -89,7 +89,6 @@ meson.add_dist_script(
 # core crates
 subdir('crates/rnote-compose')
 subdir('crates/rnote-engine')
-
 
 # cargo fmt check
 run_target(

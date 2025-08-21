@@ -12,6 +12,7 @@ use crate::{Engine, render};
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::Element;
+use rnote_compose::point_utils;
 use rnote_compose::shapes::{Rectangle, Shapeable};
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::transform::Transform;
@@ -673,13 +674,6 @@ impl Stroke {
         }
     }
 
-    // horizontally mirrors point around line 'x = selection_centerline_x'
-    fn mirror_point_x(point: &mut na::Vector2<f64>, selection_centerline_x: f64) {
-        point.x -= selection_centerline_x;
-        point.x *= -1.0;
-        point.x += selection_centerline_x;
-    }
-
     // performs a matrix transform on 2d affine matrix causing a reflection across line 'x = selection_centerline_x'
     fn mirror_affine_x(affine: &mut na::Affine2<f64>, selection_centerline_x: f64) {
         let mirror_transformation_x = na::matrix![
@@ -704,7 +698,7 @@ impl Stroke {
                     .collect::<Vec<na::Vector2<f64>>>();
 
                 for coord in coords.iter_mut() {
-                    Self::mirror_point_x(coord, selection_centerline_x);
+                    point_utils::mirror_point_x(coord, selection_centerline_x);
                 }
 
                 let new_penpath_elements: Vec<Element> = current_penpath_elements
@@ -722,12 +716,12 @@ impl Stroke {
             }
             Stroke::ShapeStroke(shape_stroke) => match &mut shape_stroke.shape {
                 rnote_compose::Shape::Line(line) => {
-                    Self::mirror_point_x(&mut line.start, selection_centerline_x);
-                    Self::mirror_point_x(&mut line.end, selection_centerline_x);
+                    point_utils::mirror_point_x(&mut line.start, selection_centerline_x);
+                    point_utils::mirror_point_x(&mut line.end, selection_centerline_x);
                 }
                 rnote_compose::Shape::Arrow(arrow) => {
-                    Self::mirror_point_x(&mut arrow.start, selection_centerline_x);
-                    Self::mirror_point_x(&mut arrow.tip, selection_centerline_x);
+                    point_utils::mirror_point_x(&mut arrow.start, selection_centerline_x);
+                    point_utils::mirror_point_x(&mut arrow.tip, selection_centerline_x);
                 }
                 rnote_compose::Shape::Rectangle(rectangle) => {
                     Self::mirror_affine_x(&mut rectangle.transform.affine, selection_centerline_x);
@@ -741,7 +735,7 @@ impl Stroke {
                         &mut quadratic_bezier.end,
                         &mut quadratic_bezier.cp,
                     ] {
-                        Self::mirror_point_x(point, selection_centerline_x);
+                        point_utils::mirror_point_x(point, selection_centerline_x);
                     }
                 }
                 rnote_compose::Shape::CubicBezier(cubic_bezier) => {
@@ -751,21 +745,21 @@ impl Stroke {
                         &mut cubic_bezier.cp1,
                         &mut cubic_bezier.cp2,
                     ] {
-                        Self::mirror_point_x(point, selection_centerline_x);
+                        point_utils::mirror_point_x(point, selection_centerline_x);
                     }
                 }
                 rnote_compose::Shape::Polyline(polyline) => {
-                    Self::mirror_point_x(&mut polyline.start, selection_centerline_x);
+                    point_utils::mirror_point_x(&mut polyline.start, selection_centerline_x);
 
                     for point in polyline.path.iter_mut() {
-                        Self::mirror_point_x(point, selection_centerline_x);
+                        point_utils::mirror_point_x(point, selection_centerline_x);
                     }
                 }
                 rnote_compose::Shape::Polygon(polygon) => {
-                    Self::mirror_point_x(&mut polygon.start, selection_centerline_x);
+                    point_utils::mirror_point_x(&mut polygon.start, selection_centerline_x);
 
                     for point in polygon.path.iter_mut() {
-                        Self::mirror_point_x(point, selection_centerline_x);
+                        point_utils::mirror_point_x(point, selection_centerline_x);
                     }
                 }
             },
@@ -783,13 +777,6 @@ impl Stroke {
             }
             Stroke::TextStroke(_) => {}
         }
-    }
-
-    /// vertically mirrors point around line 'y = selection_centerline_y'
-    fn mirror_point_y(point: &mut na::Vector2<f64>, selection_centerline_y: f64) {
-        point.y -= selection_centerline_y;
-        point.y *= -1.0;
-        point.y += selection_centerline_y;
     }
 
     /// performs a matrix transform on 2d affine matrix causing a reflection across line 'y = selection_centerline_y'
@@ -816,7 +803,7 @@ impl Stroke {
                     .collect::<Vec<na::Vector2<f64>>>();
 
                 for coord in coords.iter_mut() {
-                    Self::mirror_point_y(coord, selection_centerline_y);
+                    point_utils::mirror_point_y(coord, selection_centerline_y);
                 }
 
                 let new_penpath_elements: Vec<Element> = current_penpath_elements
@@ -834,12 +821,12 @@ impl Stroke {
             }
             Stroke::ShapeStroke(shape_stroke) => match &mut shape_stroke.shape {
                 rnote_compose::Shape::Line(line) => {
-                    Self::mirror_point_y(&mut line.start, selection_centerline_y);
-                    Self::mirror_point_y(&mut line.end, selection_centerline_y);
+                    point_utils::mirror_point_y(&mut line.start, selection_centerline_y);
+                    point_utils::mirror_point_y(&mut line.end, selection_centerline_y);
                 }
                 rnote_compose::Shape::Arrow(arrow) => {
-                    Self::mirror_point_y(&mut arrow.start, selection_centerline_y);
-                    Self::mirror_point_y(&mut arrow.tip, selection_centerline_y);
+                    point_utils::mirror_point_y(&mut arrow.start, selection_centerline_y);
+                    point_utils::mirror_point_y(&mut arrow.tip, selection_centerline_y);
                 }
                 rnote_compose::Shape::Rectangle(rectangle) => {
                     Self::mirror_affine_y(&mut rectangle.transform.affine, selection_centerline_y);
@@ -853,7 +840,7 @@ impl Stroke {
                         &mut quadratic_bezier.end,
                         &mut quadratic_bezier.cp,
                     ] {
-                        Self::mirror_point_y(point, selection_centerline_y);
+                        point_utils::mirror_point_y(point, selection_centerline_y);
                     }
                 }
                 rnote_compose::Shape::CubicBezier(cubic_bezier) => {
@@ -863,21 +850,21 @@ impl Stroke {
                         &mut cubic_bezier.cp1,
                         &mut cubic_bezier.cp2,
                     ] {
-                        Self::mirror_point_y(point, selection_centerline_y);
+                        point_utils::mirror_point_y(point, selection_centerline_y);
                     }
                 }
                 rnote_compose::Shape::Polyline(polyline) => {
-                    Self::mirror_point_y(&mut polyline.start, selection_centerline_y);
+                    point_utils::mirror_point_y(&mut polyline.start, selection_centerline_y);
 
                     for point in polyline.path.iter_mut() {
-                        Self::mirror_point_y(point, selection_centerline_y);
+                        point_utils::mirror_point_y(point, selection_centerline_y);
                     }
                 }
                 rnote_compose::Shape::Polygon(polygon) => {
-                    Self::mirror_point_y(&mut polygon.start, selection_centerline_y);
+                    point_utils::mirror_point_y(&mut polygon.start, selection_centerline_y);
 
                     for point in polygon.path.iter_mut() {
-                        Self::mirror_point_y(point, selection_centerline_y);
+                        point_utils::mirror_point_y(point, selection_centerline_y);
                     }
                 }
             },

@@ -23,6 +23,7 @@ use crate::pens::PenMode;
 use crate::pens::{Pen, PenStyle};
 use crate::store::StrokeKey;
 use crate::store::render_comp::{self, RenderCompState};
+use crate::store::stroke_comp::MirrorOrientation;
 use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::textstroke::{TextAttribute, TextStyle};
 use crate::{AudioPlayer, SelectionCollision, WidgetFlags, render};
@@ -754,16 +755,18 @@ impl Engine {
     }
 
     pub fn mirror_horizontal_selection(&mut self) -> WidgetFlags {
-        self.store
-            .mirror_stroke_horizontal(&self.store.selection_keys_as_rendered())
-            | self.record(Instant::now())
+        self.store.mirror_stroke(
+            &self.store.selection_keys_as_rendered(),
+            MirrorOrientation::Horizontal,
+        ) | self.record(Instant::now())
             | self.update_content_rendering_current_viewport()
     }
 
     pub fn mirror_vertical_selection(&mut self) -> WidgetFlags {
-        self.store
-            .mirror_stroke_vertical(&self.store.selection_keys_as_rendered())
-            | self.record(Instant::now())
+        self.store.mirror_stroke(
+            &self.store.selection_keys_as_rendered(),
+            MirrorOrientation::Vertical,
+        ) | self.record(Instant::now())
             | self.update_content_rendering_current_viewport()
     }
 

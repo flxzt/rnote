@@ -686,14 +686,10 @@ impl Stroke {
                     arrow.mirror_x(selection_centerline_x);
                 }
                 rnote_compose::Shape::Rectangle(rectangle) => {
-                    rectangle
-                        .transform
-                        .append_mirror_x_mut(selection_centerline_x);
+                    rectangle.mirror_x(selection_centerline_x);
                 }
                 rnote_compose::Shape::Ellipse(ellipse) => {
-                    ellipse
-                        .transform
-                        .append_mirror_x_mut(selection_centerline_x);
+                    ellipse.mirror_x(selection_centerline_x);
                 }
                 rnote_compose::Shape::QuadraticBezier(quadratic_bezier) => {
                     quadratic_bezier.mirror_x(selection_centerline_x);
@@ -709,16 +705,10 @@ impl Stroke {
                 }
             },
             Stroke::VectorImage(vector_image) => {
-                vector_image
-                    .rectangle
-                    .transform
-                    .append_mirror_x_mut(selection_centerline_x);
+                vector_image.mirror_x(selection_centerline_x);
             }
             Stroke::BitmapImage(bitmap_image) => {
-                bitmap_image
-                    .rectangle
-                    .transform
-                    .append_mirror_x_mut(selection_centerline_x);
+                bitmap_image.mirror_x(selection_centerline_x);
             }
             Stroke::TextStroke(_) => {}
         }
@@ -737,14 +727,10 @@ impl Stroke {
                     arrow.mirror_y(selection_centerline_y);
                 }
                 rnote_compose::Shape::Rectangle(rectangle) => {
-                    rectangle
-                        .transform
-                        .append_mirror_y_mut(selection_centerline_y);
+                    rectangle.mirror_y(selection_centerline_y);
                 }
                 rnote_compose::Shape::Ellipse(ellipse) => {
-                    ellipse
-                        .transform
-                        .append_mirror_y_mut(selection_centerline_y);
+                    ellipse.mirror_y(selection_centerline_y);
                 }
                 rnote_compose::Shape::QuadraticBezier(quadratic_bezier) => {
                     quadratic_bezier.mirror_y(selection_centerline_y);
@@ -760,16 +746,10 @@ impl Stroke {
                 }
             },
             Stroke::VectorImage(vector_image) => {
-                vector_image
-                    .rectangle
-                    .transform
-                    .append_mirror_y_mut(selection_centerline_y);
+                vector_image.mirror_y(selection_centerline_y);
             }
             Stroke::BitmapImage(bitmap_image) => {
-                bitmap_image
-                    .rectangle
-                    .transform
-                    .append_mirror_y_mut(selection_centerline_y);
+                bitmap_image.mirror_y(selection_centerline_y);
             }
             Stroke::TextStroke(_) => {}
         }

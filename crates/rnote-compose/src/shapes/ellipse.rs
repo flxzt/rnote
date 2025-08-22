@@ -112,4 +112,14 @@ impl Ellipse {
 
         lines
     }
+
+    /// Mirrors ellipse around line 'x = centerline_x'
+    pub fn mirror_x(&mut self, centerline_x: f64) {
+        self.transform.append_mirror_x_mut(centerline_x);
+    }
+
+    /// Mirrors ellipse around line 'y = centerline_y'
+    pub fn mirror_y(&mut self, centerline_y: f64) {
+        self.transform.append_mirror_y_mut(centerline_y);
+    }
 }

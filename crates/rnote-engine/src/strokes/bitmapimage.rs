@@ -231,4 +231,14 @@ impl BitmapImage {
             })
             .collect()
     }
+
+    /// Mirrors bitmapped image around line 'x = centerline_x'
+    pub fn mirror_x(&mut self, centerline_x: f64) {
+        self.rectangle.mirror_x(centerline_x);
+    }
+
+    /// Mirrors bitmapped image around line 'y = centerline_y'
+    pub fn mirror_y(&mut self, centerline_y: f64) {
+        self.rectangle.mirror_y(centerline_y);
+    }
 }

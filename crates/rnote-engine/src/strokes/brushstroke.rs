@@ -290,6 +290,16 @@ impl BrushStroke {
         self.update_geometry();
     }
 
+    /// Mirrors brushstroke around line 'x = centerline_x'
+    pub fn mirror_x(&mut self, centerline_x: f64) {
+        self.path.mirror_x(centerline_x);
+    }
+
+    /// Mirrors brushstroke around line 'y = centerline_y'
+    pub fn mirror_y(&mut self, centerline_y: f64) {
+        self.path.mirror_y(centerline_y);
+    }
+
     // internal method generating the current hitboxes.
     fn gen_hitboxes_int(&self) -> Vec<Aabb> {
         let stroke_width = self.style.stroke_width();

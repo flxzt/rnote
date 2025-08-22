@@ -676,7 +676,7 @@ impl Stroke {
     pub fn horizontal_mirror(&mut self, selection_centerline_x: f64) {
         match self {
             Stroke::BrushStroke(brushstroke) => {
-                brushstroke.path.mirror_x(selection_centerline_x);
+                brushstroke.mirror_x(selection_centerline_x);
             }
             Stroke::ShapeStroke(shape_stroke) => match &mut shape_stroke.shape {
                 rnote_compose::Shape::Line(line) => {
@@ -717,7 +717,7 @@ impl Stroke {
     pub fn vertical_mirror(&mut self, selection_centerline_y: f64) {
         match self {
             Stroke::BrushStroke(brushstroke) => {
-                brushstroke.path.mirror_y(selection_centerline_y);
+                brushstroke.mirror_y(selection_centerline_y);
             }
             Stroke::ShapeStroke(shape_stroke) => match &mut shape_stroke.shape {
                 rnote_compose::Shape::Line(line) => {

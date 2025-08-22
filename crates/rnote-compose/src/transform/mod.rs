@@ -53,6 +53,14 @@ impl Transformable for Transform {
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.append_scale_mut(scale);
     }
+
+    fn mirror_x(&mut self, centerline_x: f64) {
+        self.append_mirror_x_mut(centerline_x);
+    }
+
+    fn mirror_y(&mut self, centerline_y: f64) {
+        self.append_mirror_y_mut(centerline_y);
+    }
 }
 
 impl Transform {

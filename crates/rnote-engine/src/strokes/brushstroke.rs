@@ -255,6 +255,14 @@ impl Transformable for BrushStroke {
         self.style
             .set_stroke_width(self.style.stroke_width() * scale_scalar);
     }
+
+    fn mirror_x(&mut self, centerline_x: f64) {
+        self.path.mirror_x(centerline_x);
+    }
+
+    fn mirror_y(&mut self, centerline_y: f64) {
+        self.path.mirror_y(centerline_y);
+    }
 }
 
 impl BrushStroke {
@@ -288,16 +296,6 @@ impl BrushStroke {
     pub fn replace_path(&mut self, path: PenPath) {
         self.path = path;
         self.update_geometry();
-    }
-
-    /// Mirrors brushstroke around line 'x = centerline_x'
-    pub fn mirror_x(&mut self, centerline_x: f64) {
-        self.path.mirror_x(centerline_x);
-    }
-
-    /// Mirrors brushstroke around line 'y = centerline_y'
-    pub fn mirror_y(&mut self, centerline_y: f64) {
-        self.path.mirror_y(centerline_y);
     }
 
     // internal method generating the current hitboxes.

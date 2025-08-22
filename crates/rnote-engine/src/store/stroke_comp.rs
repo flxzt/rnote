@@ -359,8 +359,8 @@ impl StrokeStore {
                 .map(Arc::make_mut)
             {
                 match orientation {
-                    MirrorOrientation::Horizontal => stroke.horizontal_mirror(selection_centerline),
-                    MirrorOrientation::Vertical => stroke.vertical_mirror(selection_centerline),
+                    MirrorOrientation::Horizontal => stroke.mirror_x(selection_centerline),
+                    MirrorOrientation::Vertical => stroke.mirror_y(selection_centerline),
                 }
                 self.set_rendering_dirty(key);
             }

@@ -95,6 +95,14 @@ impl Transformable for BitmapImage {
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.rectangle.scale(scale);
     }
+
+    fn mirror_x(&mut self, centerline_x: f64) {
+        self.rectangle.mirror_x(centerline_x);
+    }
+
+    fn mirror_y(&mut self, centerline_y: f64) {
+        self.rectangle.mirror_y(centerline_y);
+    }
 }
 
 impl BitmapImage {
@@ -230,15 +238,5 @@ impl BitmapImage {
                 Self::from_image_bytes(&png_data, pos, ImageSizeOption::ImposeSize(size))
             })
             .collect()
-    }
-
-    /// Mirrors bitmapped image around line 'x = centerline_x'
-    pub fn mirror_x(&mut self, centerline_x: f64) {
-        self.rectangle.mirror_x(centerline_x);
-    }
-
-    /// Mirrors bitmapped image around line 'y = centerline_y'
-    pub fn mirror_y(&mut self, centerline_y: f64) {
-        self.rectangle.mirror_y(centerline_y);
     }
 }

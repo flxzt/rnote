@@ -199,6 +199,46 @@ impl Transformable for Stroke {
             }
         }
     }
+
+    fn mirror_x(&mut self, selection_centerline_x: f64) {
+        match self {
+            Self::BrushStroke(brushstroke) => {
+                brushstroke.mirror_x(selection_centerline_x);
+            }
+            Self::ShapeStroke(shape_stroke) => {
+                shape_stroke.mirror_x(selection_centerline_x);
+            }
+            Self::VectorImage(vector_image) => {
+                vector_image.mirror_x(selection_centerline_x);
+            }
+            Self::BitmapImage(bitmap_image) => {
+                bitmap_image.mirror_x(selection_centerline_x);
+            }
+            Self::TextStroke(text_stroke) => {
+                text_stroke.mirror_x(selection_centerline_x);
+            }
+        }
+    }
+
+    fn mirror_y(&mut self, selection_centerline_y: f64) {
+        match self {
+            Self::BrushStroke(brushstroke) => {
+                brushstroke.mirror_y(selection_centerline_y);
+            }
+            Self::ShapeStroke(shape_stroke) => {
+                shape_stroke.mirror_y(selection_centerline_y);
+            }
+            Self::VectorImage(vector_image) => {
+                vector_image.mirror_y(selection_centerline_y);
+            }
+            Self::BitmapImage(bitmap_image) => {
+                bitmap_image.mirror_y(selection_centerline_y);
+            }
+            Self::TextStroke(text_stroke) => {
+                text_stroke.mirror_y(selection_centerline_y);
+            }
+        }
+    }
 }
 
 impl Stroke {
@@ -670,88 +710,6 @@ impl Stroke {
                     },
                 ))
             }
-        }
-    }
-
-    pub fn horizontal_mirror(&mut self, selection_centerline_x: f64) {
-        match self {
-            Stroke::BrushStroke(brushstroke) => {
-                brushstroke.mirror_x(selection_centerline_x);
-            }
-            Stroke::ShapeStroke(shape_stroke) => match &mut shape_stroke.shape {
-                rnote_compose::Shape::Line(line) => {
-                    line.mirror_x(selection_centerline_x);
-                }
-                rnote_compose::Shape::Arrow(arrow) => {
-                    arrow.mirror_x(selection_centerline_x);
-                }
-                rnote_compose::Shape::Rectangle(rectangle) => {
-                    rectangle.mirror_x(selection_centerline_x);
-                }
-                rnote_compose::Shape::Ellipse(ellipse) => {
-                    ellipse.mirror_x(selection_centerline_x);
-                }
-                rnote_compose::Shape::QuadraticBezier(quadratic_bezier) => {
-                    quadratic_bezier.mirror_x(selection_centerline_x);
-                }
-                rnote_compose::Shape::CubicBezier(cubic_bezier) => {
-                    cubic_bezier.mirror_x(selection_centerline_x);
-                }
-                rnote_compose::Shape::Polyline(polyline) => {
-                    polyline.mirror_x(selection_centerline_x);
-                }
-                rnote_compose::Shape::Polygon(polygon) => {
-                    polygon.mirror_x(selection_centerline_x);
-                }
-            },
-            Stroke::VectorImage(vector_image) => {
-                vector_image.mirror_x(selection_centerline_x);
-            }
-            Stroke::BitmapImage(bitmap_image) => {
-                bitmap_image.mirror_x(selection_centerline_x);
-            }
-            Stroke::TextStroke(_) => {}
-        }
-    }
-
-    pub fn vertical_mirror(&mut self, selection_centerline_y: f64) {
-        match self {
-            Stroke::BrushStroke(brushstroke) => {
-                brushstroke.mirror_y(selection_centerline_y);
-            }
-            Stroke::ShapeStroke(shape_stroke) => match &mut shape_stroke.shape {
-                rnote_compose::Shape::Line(line) => {
-                    line.mirror_y(selection_centerline_y);
-                }
-                rnote_compose::Shape::Arrow(arrow) => {
-                    arrow.mirror_y(selection_centerline_y);
-                }
-                rnote_compose::Shape::Rectangle(rectangle) => {
-                    rectangle.mirror_y(selection_centerline_y);
-                }
-                rnote_compose::Shape::Ellipse(ellipse) => {
-                    ellipse.mirror_y(selection_centerline_y);
-                }
-                rnote_compose::Shape::QuadraticBezier(quadratic_bezier) => {
-                    quadratic_bezier.mirror_y(selection_centerline_y);
-                }
-                rnote_compose::Shape::CubicBezier(cubic_bezier) => {
-                    cubic_bezier.mirror_y(selection_centerline_y);
-                }
-                rnote_compose::Shape::Polyline(polyline) => {
-                    polyline.mirror_y(selection_centerline_y);
-                }
-                rnote_compose::Shape::Polygon(polygon) => {
-                    polygon.mirror_y(selection_centerline_y);
-                }
-            },
-            Stroke::VectorImage(vector_image) => {
-                vector_image.mirror_y(selection_centerline_y);
-            }
-            Stroke::BitmapImage(bitmap_image) => {
-                bitmap_image.mirror_y(selection_centerline_y);
-            }
-            Stroke::TextStroke(_) => {}
         }
     }
 }

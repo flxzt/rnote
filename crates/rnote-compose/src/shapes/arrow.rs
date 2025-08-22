@@ -56,6 +56,16 @@ impl Transformable for Arrow {
         self.start = self.start.component_mul(&scale);
         self.tip = self.tip.component_mul(&scale);
     }
+
+    fn mirror_x(&mut self, centerline_x: f64) {
+        point_utils::mirror_point_x(&mut self.start, centerline_x);
+        point_utils::mirror_point_x(&mut self.tip, centerline_x);
+    }
+
+    fn mirror_y(&mut self, centerline_y: f64) {
+        point_utils::mirror_point_y(&mut self.start, centerline_y);
+        point_utils::mirror_point_y(&mut self.tip, centerline_y);
+    }
 }
 
 impl Shapeable for Arrow {
@@ -111,18 +121,6 @@ impl Arrow {
                 }
             })
             .collect::<Vec<Line>>()
-    }
-
-    /// Mirrors arrow around line 'x = centerline_x'
-    pub fn mirror_x(&mut self, centerline_x: f64) {
-        point_utils::mirror_point_x(&mut self.start, centerline_x);
-        point_utils::mirror_point_x(&mut self.tip, centerline_x);
-    }
-
-    /// Mirrors arrow around line 'y = centerline_y'
-    pub fn mirror_y(&mut self, centerline_y: f64) {
-        point_utils::mirror_point_y(&mut self.start, centerline_y);
-        point_utils::mirror_point_y(&mut self.tip, centerline_y);
     }
 
     /// Convert to kurbo shape.

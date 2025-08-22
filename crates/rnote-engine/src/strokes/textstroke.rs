@@ -465,6 +465,11 @@ impl Transformable for TextStroke {
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.transform.append_scale_mut(scale);
     }
+
+    // no mirroring for text as of now
+    fn mirror_x(&mut self, _centerline_x: f64) {}
+
+    fn mirror_y(&mut self, _centerline_y: f64) {}
 }
 
 impl Shapeable for TextStroke {

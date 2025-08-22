@@ -98,6 +98,22 @@ impl Transformable for PenPath {
             segment.scale(scale);
         });
     }
+
+    fn mirror_x(&mut self, centerline_x: f64) {
+        self.start.mirror_x(centerline_x);
+
+        for element in &mut self.segments {
+            element.mirror_x(centerline_x);
+        }
+    }
+
+    fn mirror_y(&mut self, centerline_y: f64) {
+        self.start.mirror_y(centerline_y);
+
+        for element in &mut self.segments {
+            element.mirror_y(centerline_y);
+        }
+    }
 }
 
 impl PenPath {
@@ -140,24 +156,6 @@ impl PenPath {
             .collect::<Vec<Segment>>();
 
         Some(Self { start, segments })
-    }
-
-    /// Mirrors the path around line 'x = centerline_x'
-    pub fn mirror_x(&mut self, centerline_x: f64) {
-        self.start.mirror_x(centerline_x);
-
-        for element in &mut self.segments {
-            element.mirror_x(centerline_x);
-        }
-    }
-
-    /// Mirrors the path around line 'y = centerline_y'
-    pub fn mirror_y(&mut self, centerline_y: f64) {
-        self.start.mirror_y(centerline_y);
-
-        for element in &mut self.segments {
-            element.mirror_y(centerline_y);
-        }
     }
 
     /// Checks whether bounds collide with the path. If it does, it returns the indices of the colliding segments

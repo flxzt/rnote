@@ -35,6 +35,14 @@ impl Transformable for Element {
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.pos = self.pos.component_mul(&scale);
     }
+
+    fn mirror_x(&mut self, centerline_x: f64) {
+        point_utils::mirror_point_x(&mut self.pos, centerline_x);
+    }
+
+    fn mirror_y(&mut self, centerline_y: f64) {
+        point_utils::mirror_point_y(&mut self.pos, centerline_y);
+    }
 }
 
 impl Element {
@@ -64,15 +72,5 @@ impl Element {
     /// Transforms the element position by the given transform.
     pub fn transform_by(&mut self, transform: na::Affine2<f64>) {
         self.pos = transform.transform_point(&self.pos.into()).coords;
-    }
-
-    /// Mirrors position of element around line 'x = centerline_x'
-    pub fn mirror_x(&mut self, centerline_x: f64) {
-        point_utils::mirror_point_x(&mut self.pos, centerline_x);
-    }
-
-    /// Mirrors position of element around line 'y = centerline_y'
-    pub fn mirror_y(&mut self, centerline_y: f64) {
-        point_utils::mirror_point_y(&mut self.pos, centerline_y);
     }
 }

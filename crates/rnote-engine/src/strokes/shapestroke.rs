@@ -98,6 +98,14 @@ impl Transformable for ShapeStroke {
         self.style
             .set_stroke_width(self.style.stroke_width() * scale_scalar);
     }
+
+    fn mirror_x(&mut self, centerline_x: f64) {
+        self.shape.mirror_x(centerline_x);
+    }
+
+    fn mirror_y(&mut self, centerline_y: f64) {
+        self.shape.mirror_y(centerline_y);
+    }
 }
 
 impl ShapeStroke {

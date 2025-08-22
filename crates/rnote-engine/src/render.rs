@@ -186,6 +186,14 @@ impl Transformable for Image {
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.rect.scale(scale)
     }
+
+    fn mirror_x(&mut self, centerline_x: f64) {
+        self.rect.mirror_x(centerline_x);
+    }
+
+    fn mirror_y(&mut self, centerline_y: f64) {
+        self.rect.mirror_y(centerline_y);
+    }
 }
 
 impl Image {

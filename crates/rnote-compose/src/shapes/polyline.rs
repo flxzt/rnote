@@ -41,6 +41,22 @@ impl Transformable for Polyline {
             *p = p.component_mul(&scale);
         }
     }
+
+    fn mirror_x(&mut self, centerline_x: f64) {
+        point_utils::mirror_point_x(&mut self.start, centerline_x);
+
+        for point in self.path.iter_mut() {
+            point_utils::mirror_point_x(point, centerline_x);
+        }
+    }
+
+    fn mirror_y(&mut self, centerline_y: f64) {
+        point_utils::mirror_point_y(&mut self.start, centerline_y);
+
+        for point in self.path.iter_mut() {
+            point_utils::mirror_point_y(point, centerline_y);
+        }
+    }
 }
 
 impl Shapeable for Polyline {
@@ -85,24 +101,6 @@ impl Polyline {
         Self {
             start,
             path: Vec::new(),
-        }
-    }
-
-    /// Mirrors polyline around line 'x = centerline_x'
-    pub fn mirror_x(&mut self, centerline_x: f64) {
-        point_utils::mirror_point_x(&mut self.start, centerline_x);
-
-        for point in self.path.iter_mut() {
-            point_utils::mirror_point_x(point, centerline_x);
-        }
-    }
-
-    /// Mirrors polyline around line 'y = centerline_y'
-    pub fn mirror_y(&mut self, centerline_y: f64) {
-        point_utils::mirror_point_y(&mut self.start, centerline_y);
-
-        for point in self.path.iter_mut() {
-            point_utils::mirror_point_y(point, centerline_y);
         }
     }
 }

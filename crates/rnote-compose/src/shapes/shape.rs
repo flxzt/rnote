@@ -129,6 +129,64 @@ impl Transformable for Shape {
             }
         }
     }
+
+    fn mirror_x(&mut self, centerline_x: f64) {
+        match self {
+            Self::Line(line) => {
+                line.mirror_x(centerline_x);
+            }
+            Self::Arrow(arrow) => {
+                arrow.mirror_x(centerline_x);
+            }
+            Self::Rectangle(rectangle) => {
+                rectangle.mirror_x(centerline_x);
+            }
+            Self::Ellipse(ellipse) => {
+                ellipse.mirror_x(centerline_x);
+            }
+            Self::QuadraticBezier(quadratic_bezier) => {
+                quadratic_bezier.mirror_x(centerline_x);
+            }
+            Self::CubicBezier(cubic_bezier) => {
+                cubic_bezier.mirror_x(centerline_x);
+            }
+            Self::Polyline(polyline) => {
+                polyline.mirror_x(centerline_x);
+            }
+            Self::Polygon(polygon) => {
+                polygon.mirror_x(centerline_x);
+            }
+        }
+    }
+
+    fn mirror_y(&mut self, centerline_y: f64) {
+        match self {
+            Self::Line(line) => {
+                line.mirror_y(centerline_y);
+            }
+            Self::Arrow(arrow) => {
+                arrow.mirror_y(centerline_y);
+            }
+            Self::Rectangle(rectangle) => {
+                rectangle.mirror_y(centerline_y);
+            }
+            Self::Ellipse(ellipse) => {
+                ellipse.mirror_y(centerline_y);
+            }
+            Self::QuadraticBezier(quadratic_bezier) => {
+                quadratic_bezier.mirror_y(centerline_y);
+            }
+            Self::CubicBezier(cubic_bezier) => {
+                cubic_bezier.mirror_y(centerline_y);
+            }
+            Self::Polyline(polyline) => {
+                polyline.mirror_y(centerline_y);
+            }
+            Self::Polygon(polygon) => {
+                polygon.mirror_y(centerline_y);
+            }
+        }
+    }
 }
 
 impl Shapeable for Shape {

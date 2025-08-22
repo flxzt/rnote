@@ -45,6 +45,18 @@ impl Transformable for QuadraticBezier {
         self.cp = self.cp.component_mul(&scale);
         self.end = self.end.component_mul(&scale);
     }
+
+    fn mirror_x(&mut self, centerline_x: f64) {
+        for point in [&mut self.start, &mut self.cp, &mut self.end] {
+            point_utils::mirror_point_x(point, centerline_x);
+        }
+    }
+
+    fn mirror_y(&mut self, centerline_y: f64) {
+        for point in [&mut self.start, &mut self.cp, &mut self.end] {
+            point_utils::mirror_point_y(point, centerline_y);
+        }
+    }
 }
 
 impl Shapeable for QuadraticBezier {
@@ -91,20 +103,6 @@ impl QuadraticBezier {
         };
 
         (first_split, second_split)
-    }
-
-    /// Mirrors quadratic bezier around line 'x = centerline_x'
-    pub fn mirror_x(&mut self, centerline_x: f64) {
-        for point in [&mut self.start, &mut self.cp, &mut self.end] {
-            point_utils::mirror_point_x(point, centerline_x);
-        }
-    }
-
-    /// Mirrors quadratic bezier around line 'y = centerline_y'
-    pub fn mirror_y(&mut self, centerline_y: f64) {
-        for point in [&mut self.start, &mut self.cp, &mut self.end] {
-            point_utils::mirror_point_y(point, centerline_y);
-        }
     }
 
     /// Convert to a cubic bezier (raising the order of a bezier curve is without losses).

@@ -93,22 +93,8 @@ impl Transformable for Segment {
             }
         }
     }
-}
 
-impl Segment {
-    /// The end element of a segment.
-    ///
-    /// All segment variants have an end element.
-    pub fn end(&self) -> Element {
-        match self {
-            Segment::LineTo { end, .. } => *end,
-            Segment::QuadBezTo { end, .. } => *end,
-            Segment::CubBezTo { end, .. } => *end,
-        }
-    }
-
-    /// Mirrors position of segment around line 'x = centerline_x'
-    pub fn mirror_x(&mut self, centerline_x: f64) {
+    fn mirror_x(&mut self, centerline_x: f64) {
         match self {
             Segment::LineTo { end } => {
                 end.mirror_x(centerline_x);
@@ -125,8 +111,7 @@ impl Segment {
         }
     }
 
-    /// Mirrors position of segment around line 'y = centerline_y'
-    pub fn mirror_y(&mut self, centerline_y: f64) {
+    fn mirror_y(&mut self, centerline_y: f64) {
         match self {
             Segment::LineTo { end } => {
                 end.mirror_y(centerline_y);
@@ -140,6 +125,19 @@ impl Segment {
                 point_utils::mirror_point_y(cp2, centerline_y);
                 end.mirror_y(centerline_y);
             }
+        }
+    }
+}
+
+impl Segment {
+    /// The end element of a segment.
+    ///
+    /// All segment variants have an end element.
+    pub fn end(&self) -> Element {
+        match self {
+            Segment::LineTo { end, .. } => *end,
+            Segment::QuadBezTo { end, .. } => *end,
+            Segment::CubBezTo { end, .. } => *end,
         }
     }
 }

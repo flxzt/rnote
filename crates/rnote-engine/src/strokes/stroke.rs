@@ -674,19 +674,6 @@ impl Stroke {
         }
     }
 
-    // performs a matrix transform on 2d affine matrix causing a reflection across line 'x = selection_centerline_x'
-    fn mirror_affine_x(affine: &mut na::Affine2<f64>, selection_centerline_x: f64) {
-        let mirror_transformation_x = na::matrix![
-            -1.0, 0.0, 2.0 * selection_centerline_x;
-            0.0, 1.0, 0.0;
-            0.0, 0.0, 1.0;
-        ];
-
-        let transformed_affine = mirror_transformation_x * affine.matrix();
-
-        *affine = na::Affine2::from_matrix_unchecked(transformed_affine);
-    }
-
     pub fn horizontal_mirror(&mut self, selection_centerline_x: f64) {
         match self {
             Stroke::BrushStroke(brushstroke) => {
@@ -724,10 +711,14 @@ impl Stroke {
                     point_utils::mirror_point_x(&mut arrow.tip, selection_centerline_x);
                 }
                 rnote_compose::Shape::Rectangle(rectangle) => {
-                    Self::mirror_affine_x(&mut rectangle.transform.affine, selection_centerline_x);
+                    rectangle
+                        .transform
+                        .append_mirror_x_mut(selection_centerline_x);
                 }
                 rnote_compose::Shape::Ellipse(ellipse) => {
-                    Self::mirror_affine_x(&mut ellipse.transform.affine, selection_centerline_x);
+                    ellipse
+                        .transform
+                        .append_mirror_x_mut(selection_centerline_x);
                 }
                 rnote_compose::Shape::QuadraticBezier(quadratic_bezier) => {
                     for point in [
@@ -764,32 +755,19 @@ impl Stroke {
                 }
             },
             Stroke::VectorImage(vector_image) => {
-                Self::mirror_affine_x(
-                    &mut vector_image.rectangle.transform.affine,
-                    selection_centerline_x,
-                );
+                vector_image
+                    .rectangle
+                    .transform
+                    .append_mirror_x_mut(selection_centerline_x);
             }
             Stroke::BitmapImage(bitmap_image) => {
-                Self::mirror_affine_x(
-                    &mut bitmap_image.rectangle.transform.affine,
-                    selection_centerline_x,
-                );
+                bitmap_image
+                    .rectangle
+                    .transform
+                    .append_mirror_x_mut(selection_centerline_x);
             }
             Stroke::TextStroke(_) => {}
         }
-    }
-
-    /// performs a matrix transform on 2d affine matrix causing a reflection across line 'y = selection_centerline_y'
-    fn mirror_affine_y(affine: &mut na::Affine2<f64>, selection_centerline_y: f64) {
-        let mirror_transformation_y = na::matrix![
-            1.0, 0.0, 0.0;
-            0.0, -1.0, 2.0 * selection_centerline_y;
-            0.0, 0.0, 1.0;
-        ];
-
-        let transformed_affine = mirror_transformation_y * affine.matrix();
-
-        *affine = na::Affine2::from_matrix_unchecked(transformed_affine);
     }
 
     pub fn vertical_mirror(&mut self, selection_centerline_y: f64) {
@@ -829,10 +807,14 @@ impl Stroke {
                     point_utils::mirror_point_y(&mut arrow.tip, selection_centerline_y);
                 }
                 rnote_compose::Shape::Rectangle(rectangle) => {
-                    Self::mirror_affine_y(&mut rectangle.transform.affine, selection_centerline_y);
+                    rectangle
+                        .transform
+                        .append_mirror_y_mut(selection_centerline_y);
                 }
                 rnote_compose::Shape::Ellipse(ellipse) => {
-                    Self::mirror_affine_y(&mut ellipse.transform.affine, selection_centerline_y);
+                    ellipse
+                        .transform
+                        .append_mirror_y_mut(selection_centerline_y);
                 }
                 rnote_compose::Shape::QuadraticBezier(quadratic_bezier) => {
                     for point in [
@@ -869,16 +851,16 @@ impl Stroke {
                 }
             },
             Stroke::VectorImage(vector_image) => {
-                Self::mirror_affine_y(
-                    &mut vector_image.rectangle.transform.affine,
-                    selection_centerline_y,
-                );
+                vector_image
+                    .rectangle
+                    .transform
+                    .append_mirror_y_mut(selection_centerline_y);
             }
             Stroke::BitmapImage(bitmap_image) => {
-                Self::mirror_affine_y(
-                    &mut bitmap_image.rectangle.transform.affine,
-                    selection_centerline_y,
-                );
+                bitmap_image
+                    .rectangle
+                    .transform
+                    .append_mirror_y_mut(selection_centerline_y);
             }
             Stroke::TextStroke(_) => {}
         }

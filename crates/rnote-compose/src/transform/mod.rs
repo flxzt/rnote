@@ -120,6 +120,32 @@ impl Transform {
         .unwrap();
     }
 
+    /// Apply a reflection across line 'x = centerline_x' to the affine matrix
+    pub fn append_mirror_x_mut(&mut self, centerline_x: f64) {
+        let mirror_transformation_x = na::matrix![
+            -1.0, 0.0, 2.0 * centerline_x;
+            0.0, 1.0, 0.0;
+            0.0, 0.0, 1.0;
+        ];
+
+        let transformed_affine = mirror_transformation_x * self.affine.matrix();
+
+        self.affine = na::Affine2::from_matrix_unchecked(transformed_affine);
+    }
+
+    /// Apply a reflection across line 'y = centerline_y' to the affine matrix
+    pub fn append_mirror_y_mut(&mut self, centerline_y: f64) {
+        let mirror_transformation_y = na::matrix![
+            1.0, 0.0, 0.0;
+            0.0, -1.0, 2.0 * centerline_y;
+            0.0, 0.0, 1.0;
+        ];
+
+        let transformed_affine = mirror_transformation_y * self.affine.matrix();
+
+        self.affine = na::Affine2::from_matrix_unchecked(transformed_affine);
+    }
+
     /// Convert the transform to a Svg attribute string, insertable into svg elements.
     pub fn to_svg_transform_attr_str(&self) -> String {
         let matrix = self.affine;

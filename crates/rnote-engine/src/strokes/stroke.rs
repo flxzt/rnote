@@ -12,7 +12,6 @@ use crate::{Engine, render};
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::Element;
-use rnote_compose::point_utils;
 use rnote_compose::shapes::{Rectangle, Shapeable};
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::transform::Transform;
@@ -681,12 +680,10 @@ impl Stroke {
             }
             Stroke::ShapeStroke(shape_stroke) => match &mut shape_stroke.shape {
                 rnote_compose::Shape::Line(line) => {
-                    point_utils::mirror_point_x(&mut line.start, selection_centerline_x);
-                    point_utils::mirror_point_x(&mut line.end, selection_centerline_x);
+                    line.mirror_x(selection_centerline_x);
                 }
                 rnote_compose::Shape::Arrow(arrow) => {
-                    point_utils::mirror_point_x(&mut arrow.start, selection_centerline_x);
-                    point_utils::mirror_point_x(&mut arrow.tip, selection_centerline_x);
+                    arrow.mirror_x(selection_centerline_x);
                 }
                 rnote_compose::Shape::Rectangle(rectangle) => {
                     rectangle
@@ -699,37 +696,16 @@ impl Stroke {
                         .append_mirror_x_mut(selection_centerline_x);
                 }
                 rnote_compose::Shape::QuadraticBezier(quadratic_bezier) => {
-                    for point in [
-                        &mut quadratic_bezier.start,
-                        &mut quadratic_bezier.end,
-                        &mut quadratic_bezier.cp,
-                    ] {
-                        point_utils::mirror_point_x(point, selection_centerline_x);
-                    }
+                    quadratic_bezier.mirror_x(selection_centerline_x);
                 }
                 rnote_compose::Shape::CubicBezier(cubic_bezier) => {
-                    for point in [
-                        &mut cubic_bezier.start,
-                        &mut cubic_bezier.end,
-                        &mut cubic_bezier.cp1,
-                        &mut cubic_bezier.cp2,
-                    ] {
-                        point_utils::mirror_point_x(point, selection_centerline_x);
-                    }
+                    cubic_bezier.mirror_x(selection_centerline_x);
                 }
                 rnote_compose::Shape::Polyline(polyline) => {
-                    point_utils::mirror_point_x(&mut polyline.start, selection_centerline_x);
-
-                    for point in polyline.path.iter_mut() {
-                        point_utils::mirror_point_x(point, selection_centerline_x);
-                    }
+                    polyline.mirror_x(selection_centerline_x);
                 }
                 rnote_compose::Shape::Polygon(polygon) => {
-                    point_utils::mirror_point_x(&mut polygon.start, selection_centerline_x);
-
-                    for point in polygon.path.iter_mut() {
-                        point_utils::mirror_point_x(point, selection_centerline_x);
-                    }
+                    polygon.mirror_x(selection_centerline_x);
                 }
             },
             Stroke::VectorImage(vector_image) => {
@@ -755,12 +731,10 @@ impl Stroke {
             }
             Stroke::ShapeStroke(shape_stroke) => match &mut shape_stroke.shape {
                 rnote_compose::Shape::Line(line) => {
-                    point_utils::mirror_point_y(&mut line.start, selection_centerline_y);
-                    point_utils::mirror_point_y(&mut line.end, selection_centerline_y);
+                    line.mirror_y(selection_centerline_y);
                 }
                 rnote_compose::Shape::Arrow(arrow) => {
-                    point_utils::mirror_point_y(&mut arrow.start, selection_centerline_y);
-                    point_utils::mirror_point_y(&mut arrow.tip, selection_centerline_y);
+                    arrow.mirror_y(selection_centerline_y);
                 }
                 rnote_compose::Shape::Rectangle(rectangle) => {
                     rectangle
@@ -773,37 +747,16 @@ impl Stroke {
                         .append_mirror_y_mut(selection_centerline_y);
                 }
                 rnote_compose::Shape::QuadraticBezier(quadratic_bezier) => {
-                    for point in [
-                        &mut quadratic_bezier.start,
-                        &mut quadratic_bezier.end,
-                        &mut quadratic_bezier.cp,
-                    ] {
-                        point_utils::mirror_point_y(point, selection_centerline_y);
-                    }
+                    quadratic_bezier.mirror_y(selection_centerline_y);
                 }
                 rnote_compose::Shape::CubicBezier(cubic_bezier) => {
-                    for point in [
-                        &mut cubic_bezier.start,
-                        &mut cubic_bezier.end,
-                        &mut cubic_bezier.cp1,
-                        &mut cubic_bezier.cp2,
-                    ] {
-                        point_utils::mirror_point_y(point, selection_centerline_y);
-                    }
+                    cubic_bezier.mirror_y(selection_centerline_y);
                 }
                 rnote_compose::Shape::Polyline(polyline) => {
-                    point_utils::mirror_point_y(&mut polyline.start, selection_centerline_y);
-
-                    for point in polyline.path.iter_mut() {
-                        point_utils::mirror_point_y(point, selection_centerline_y);
-                    }
+                    polyline.mirror_y(selection_centerline_y);
                 }
                 rnote_compose::Shape::Polygon(polygon) => {
-                    point_utils::mirror_point_y(&mut polygon.start, selection_centerline_y);
-
-                    for point in polygon.path.iter_mut() {
-                        point_utils::mirror_point_y(point, selection_centerline_y);
-                    }
+                    polygon.mirror_y(selection_centerline_y);
                 }
             },
             Stroke::VectorImage(vector_image) => {

@@ -1,9 +1,9 @@
 // Imports
-use crate::Transform;
 use crate::ext::{AabbExt, Vector2Ext};
 use crate::shapes::Rectangle;
 use crate::shapes::Shapeable;
 use crate::transform::Transformable;
+use crate::{Transform, point_utils};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -94,5 +94,17 @@ impl Line {
                 }
             })
             .collect::<Vec<Self>>()
+    }
+
+    /// Mirrors Line around line 'x = centerline_x'
+    pub fn mirror_x(&mut self, centerline_x: f64) {
+        point_utils::mirror_point_x(&mut self.start, centerline_x);
+        point_utils::mirror_point_x(&mut self.end, centerline_x);
+    }
+
+    /// Mirrors Line around line 'y = centerline_y'
+    pub fn mirror_y(&mut self, centerline_y: f64) {
+        point_utils::mirror_point_y(&mut self.start, centerline_y);
+        point_utils::mirror_point_y(&mut self.end, centerline_y);
     }
 }

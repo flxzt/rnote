@@ -2,6 +2,7 @@
 use super::line::Line;
 use super::quadbez::QuadraticBezier;
 use crate::ext::{KurboShapeExt, Vector2Ext};
+use crate::point_utils;
 use crate::shapes::Shapeable;
 use crate::transform::Transformable;
 use kurbo::Shape;
@@ -140,6 +141,20 @@ impl CubicBezier {
                 end: a3,
             },
         )
+    }
+
+    /// Mirrors cubic bezier around line 'x = centerline_x'
+    pub fn mirror_x(&mut self, centerline_x: f64) {
+        for point in [&mut self.start, &mut self.cp1, &mut self.cp2, &mut self.end] {
+            point_utils::mirror_point_x(point, centerline_x);
+        }
+    }
+
+    /// Mirrors cubic bezier around line 'y = centerline_y'
+    pub fn mirror_y(&mut self, centerline_y: f64) {
+        for point in [&mut self.start, &mut self.cp1, &mut self.cp2, &mut self.end] {
+            point_utils::mirror_point_y(point, centerline_y);
+        }
     }
 
     /// Approximate a cubic with a quadratic bezier curve.

@@ -677,29 +677,7 @@ impl Stroke {
     pub fn horizontal_mirror(&mut self, selection_centerline_x: f64) {
         match self {
             Stroke::BrushStroke(brushstroke) => {
-                let current_penpath_elements = brushstroke.path.clone().into_elements();
-
-                let mut coords = current_penpath_elements
-                    .iter()
-                    .map(|element| element.pos)
-                    .collect::<Vec<na::Vector2<f64>>>();
-
-                for coord in coords.iter_mut() {
-                    point_utils::mirror_point_x(coord, selection_centerline_x);
-                }
-
-                let new_penpath_elements: Vec<Element> = current_penpath_elements
-                    .iter()
-                    .zip(coords.iter())
-                    .map(|(current_penpath_element, new_position)| Element {
-                        pos: *new_position,
-                        ..*current_penpath_element
-                    })
-                    .collect();
-
-                if let Some(new_penpath) = PenPath::try_from_elements(new_penpath_elements) {
-                    brushstroke.path = new_penpath;
-                }
+                brushstroke.path.mirror_x(selection_centerline_x);
             }
             Stroke::ShapeStroke(shape_stroke) => match &mut shape_stroke.shape {
                 rnote_compose::Shape::Line(line) => {
@@ -773,29 +751,7 @@ impl Stroke {
     pub fn vertical_mirror(&mut self, selection_centerline_y: f64) {
         match self {
             Stroke::BrushStroke(brushstroke) => {
-                let current_penpath_elements = brushstroke.path.clone().into_elements();
-
-                let mut coords = current_penpath_elements
-                    .iter()
-                    .map(|element| element.pos)
-                    .collect::<Vec<na::Vector2<f64>>>();
-
-                for coord in coords.iter_mut() {
-                    point_utils::mirror_point_y(coord, selection_centerline_y);
-                }
-
-                let new_penpath_elements: Vec<Element> = current_penpath_elements
-                    .iter()
-                    .zip(coords.iter())
-                    .map(|(current_penpath_element, new_position)| Element {
-                        pos: *new_position,
-                        ..*current_penpath_element
-                    })
-                    .collect();
-
-                if let Some(new_penpath) = PenPath::try_from_elements(new_penpath_elements) {
-                    brushstroke.path = new_penpath;
-                }
+                brushstroke.path.mirror_y(selection_centerline_y);
             }
             Stroke::ShapeStroke(shape_stroke) => match &mut shape_stroke.shape {
                 rnote_compose::Shape::Line(line) => {

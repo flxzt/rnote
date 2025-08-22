@@ -1,6 +1,6 @@
 // Imports
 use super::Element;
-use crate::transform::Transformable;
+use crate::{point_utils, transform::Transformable};
 use serde::{Deserialize, Serialize};
 
 /// A single segment, usually of a pen path.
@@ -104,6 +104,42 @@ impl Segment {
             Segment::LineTo { end, .. } => *end,
             Segment::QuadBezTo { end, .. } => *end,
             Segment::CubBezTo { end, .. } => *end,
+        }
+    }
+
+    /// Mirrors position of segment around line 'x = centerline_x'
+    pub fn mirror_x(&mut self, centerline_x: f64) {
+        match self {
+            Segment::LineTo { end } => {
+                end.mirror_x(centerline_x);
+            }
+            Segment::QuadBezTo { cp, end } => {
+                point_utils::mirror_point_x(cp, centerline_x);
+                end.mirror_x(centerline_x);
+            }
+            Segment::CubBezTo { cp1, cp2, end } => {
+                point_utils::mirror_point_x(cp1, centerline_x);
+                point_utils::mirror_point_x(cp2, centerline_x);
+                end.mirror_x(centerline_x);
+            }
+        }
+    }
+
+    /// Mirrors position of segment around line 'y = centerline_y'
+    pub fn mirror_y(&mut self, centerline_y: f64) {
+        match self {
+            Segment::LineTo { end } => {
+                end.mirror_y(centerline_y);
+            }
+            Segment::QuadBezTo { cp, end } => {
+                point_utils::mirror_point_y(cp, centerline_y);
+                end.mirror_y(centerline_y);
+            }
+            Segment::CubBezTo { cp1, cp2, end } => {
+                point_utils::mirror_point_y(cp1, centerline_y);
+                point_utils::mirror_point_y(cp2, centerline_y);
+                end.mirror_y(centerline_y);
+            }
         }
     }
 }

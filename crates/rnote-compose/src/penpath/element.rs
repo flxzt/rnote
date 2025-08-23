@@ -40,14 +40,7 @@ impl Transformable for Element {
     }
 
     fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
-        match orientation {
-            MirrorOrientation::Horizontal => {
-                point_utils::mirror_point_x(&mut self.pos, centerline);
-            }
-            MirrorOrientation::Vertical => {
-                point_utils::mirror_point_y(&mut self.pos, centerline);
-            }
-        }
+        point_utils::mirror_point(&mut self.pos, centerline, orientation);
     }
 }
 

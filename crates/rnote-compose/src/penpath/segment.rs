@@ -98,35 +98,19 @@ impl Transformable for Segment {
     }
 
     fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
-        match orientation {
-            MirrorOrientation::Horizontal => match self {
-                Segment::LineTo { end } => {
-                    end.mirror(centerline, orientation);
-                }
-                Segment::QuadBezTo { cp, end } => {
-                    point_utils::mirror_point_x(cp, centerline);
-                    end.mirror(centerline, orientation);
-                }
-                Segment::CubBezTo { cp1, cp2, end } => {
-                    point_utils::mirror_point_x(cp1, centerline);
-                    point_utils::mirror_point_x(cp2, centerline);
-                    end.mirror(centerline, orientation);
-                }
-            },
-            MirrorOrientation::Vertical => match self {
-                Segment::LineTo { end } => {
-                    end.mirror(centerline, orientation);
-                }
-                Segment::QuadBezTo { cp, end } => {
-                    point_utils::mirror_point_y(cp, centerline);
-                    end.mirror(centerline, orientation);
-                }
-                Segment::CubBezTo { cp1, cp2, end } => {
-                    point_utils::mirror_point_y(cp1, centerline);
-                    point_utils::mirror_point_y(cp2, centerline);
-                    end.mirror(centerline, orientation);
-                }
-            },
+        match self {
+            Segment::LineTo { end } => {
+                end.mirror(centerline, orientation);
+            }
+            Segment::QuadBezTo { cp, end } => {
+                point_utils::mirror_point(cp, centerline, orientation);
+                end.mirror(centerline, orientation);
+            }
+            Segment::CubBezTo { cp1, cp2, end } => {
+                point_utils::mirror_point(cp1, centerline, orientation);
+                point_utils::mirror_point(cp2, centerline, orientation);
+                end.mirror(centerline, orientation);
+            }
         }
     }
 }

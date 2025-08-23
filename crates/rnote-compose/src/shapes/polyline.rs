@@ -43,21 +43,10 @@ impl Transformable for Polyline {
     }
 
     fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
-        match orientation {
-            MirrorOrientation::Horizontal => {
-                point_utils::mirror_point_x(&mut self.start, centerline);
+        point_utils::mirror_point(&mut self.start, centerline, orientation);
 
-                for point in self.path.iter_mut() {
-                    point_utils::mirror_point_x(point, centerline);
-                }
-            }
-            MirrorOrientation::Vertical => {
-                point_utils::mirror_point_y(&mut self.start, centerline);
-
-                for point in self.path.iter_mut() {
-                    point_utils::mirror_point_y(point, centerline);
-                }
-            }
+        for point in self.path.iter_mut() {
+            point_utils::mirror_point(point, centerline, orientation);
         }
     }
 }

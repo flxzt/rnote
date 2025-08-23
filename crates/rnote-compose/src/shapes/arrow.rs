@@ -58,16 +58,8 @@ impl Transformable for Arrow {
     }
 
     fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
-        match orientation {
-            MirrorOrientation::Horizontal => {
-                point_utils::mirror_point_x(&mut self.start, centerline);
-                point_utils::mirror_point_x(&mut self.tip, centerline);
-            }
-            MirrorOrientation::Vertical => {
-                point_utils::mirror_point_y(&mut self.start, centerline);
-                point_utils::mirror_point_y(&mut self.tip, centerline);
-            }
-        }
+        point_utils::mirror_point(&mut self.start, centerline, orientation);
+        point_utils::mirror_point(&mut self.tip, centerline, orientation);
     }
 }
 

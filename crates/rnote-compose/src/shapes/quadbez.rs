@@ -47,17 +47,8 @@ impl Transformable for QuadraticBezier {
     }
 
     fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
-        match orientation {
-            MirrorOrientation::Horizontal => {
-                for point in [&mut self.start, &mut self.cp, &mut self.end] {
-                    point_utils::mirror_point_x(point, centerline);
-                }
-            }
-            MirrorOrientation::Vertical => {
-                for point in [&mut self.start, &mut self.cp, &mut self.end] {
-                    point_utils::mirror_point_y(point, centerline);
-                }
-            }
+        for point in [&mut self.start, &mut self.cp, &mut self.end] {
+            point_utils::mirror_point(point, centerline, orientation);
         }
     }
 }

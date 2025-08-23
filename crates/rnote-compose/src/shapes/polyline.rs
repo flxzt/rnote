@@ -1,6 +1,6 @@
 // Imports
 use super::{Line, Shapeable};
-use crate::transform::Transformable;
+use crate::transform::{MirrorOrientation, Transformable};
 use crate::{ext::Vector2Ext, point_utils};
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -42,19 +42,22 @@ impl Transformable for Polyline {
         }
     }
 
-    fn mirror_x(&mut self, centerline_x: f64) {
-        point_utils::mirror_point_x(&mut self.start, centerline_x);
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        match orientation {
+            MirrorOrientation::Horizontal => {
+                point_utils::mirror_point_x(&mut self.start, centerline);
 
-        for point in self.path.iter_mut() {
-            point_utils::mirror_point_x(point, centerline_x);
-        }
-    }
+                for point in self.path.iter_mut() {
+                    point_utils::mirror_point_x(point, centerline);
+                }
+            }
+            MirrorOrientation::Vertical => {
+                point_utils::mirror_point_y(&mut self.start, centerline);
 
-    fn mirror_y(&mut self, centerline_y: f64) {
-        point_utils::mirror_point_y(&mut self.start, centerline_y);
-
-        for point in self.path.iter_mut() {
-            point_utils::mirror_point_y(point, centerline_y);
+                for point in self.path.iter_mut() {
+                    point_utils::mirror_point_y(point, centerline);
+                }
+            }
         }
     }
 }

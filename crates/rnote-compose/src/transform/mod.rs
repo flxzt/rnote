@@ -18,6 +18,15 @@ pub struct Transform {
     pub affine: na::Affine2<f64>,
 }
 
+/// Selection of which direction a mirror should use
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum MirrorOrientation {
+    /// Mirror is applied accross the line 'x = centerline'
+    Horizontal,
+    /// Mirror is applied accross the line 'y = centerline'
+    Vertical,
+}
+
 impl Default for Transform {
     fn default() -> Self {
         Self {
@@ -54,12 +63,8 @@ impl Transformable for Transform {
         self.append_scale_mut(scale);
     }
 
-    fn mirror_x(&mut self, centerline_x: f64) {
-        self.append_mirror_x_mut(centerline_x);
-    }
-
-    fn mirror_y(&mut self, centerline_y: f64) {
-        self.append_mirror_y_mut(centerline_y);
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        self.append_mirror_mut(centerline, orientation);
     }
 }
 
@@ -128,28 +133,29 @@ impl Transform {
         .unwrap();
     }
 
-    /// Apply a reflection across line 'x = centerline_x' to the affine matrix
-    pub fn append_mirror_x_mut(&mut self, centerline_x: f64) {
-        let mirror_transformation_x = na::matrix![
-            -1.0, 0.0, 2.0 * centerline_x;
-            0.0, 1.0, 0.0;
-            0.0, 0.0, 1.0;
-        ];
+    /// Apply a reflection across either Horizontal: 'x = centerline' or Vertical: 'y = centerline' to the
+    /// affine matrix based on the orientation
+    pub fn append_mirror_mut(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        let mirror_transformation;
 
-        let transformed_affine = mirror_transformation_x * self.affine.matrix();
+        match orientation {
+            MirrorOrientation::Horizontal => {
+                mirror_transformation = na::matrix![
+                    -1.0, 0.0, 2.0 * centerline;
+                    0.0, 1.0, 0.0;
+                    0.0, 0.0, 1.0;
+                ];
+            }
+            MirrorOrientation::Vertical => {
+                mirror_transformation = na::matrix![
+                    1.0, 0.0, 0.0;
+                    0.0, -1.0, 2.0 * centerline;
+                    0.0, 0.0, 1.0;
+                ];
+            }
+        }
 
-        self.affine = na::Affine2::from_matrix_unchecked(transformed_affine);
-    }
-
-    /// Apply a reflection across line 'y = centerline_y' to the affine matrix
-    pub fn append_mirror_y_mut(&mut self, centerline_y: f64) {
-        let mirror_transformation_y = na::matrix![
-            1.0, 0.0, 0.0;
-            0.0, -1.0, 2.0 * centerline_y;
-            0.0, 0.0, 1.0;
-        ];
-
-        let transformed_affine = mirror_transformation_y * self.affine.matrix();
+        let transformed_affine = mirror_transformation * self.affine.matrix();
 
         self.affine = na::Affine2::from_matrix_unchecked(transformed_affine);
     }

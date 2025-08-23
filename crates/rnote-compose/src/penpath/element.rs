@@ -1,5 +1,8 @@
 // Imports
-use crate::{point_utils, transform::Transformable};
+use crate::{
+    point_utils,
+    transform::{MirrorOrientation, Transformable},
+};
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -36,12 +39,15 @@ impl Transformable for Element {
         self.pos = self.pos.component_mul(&scale);
     }
 
-    fn mirror_x(&mut self, centerline_x: f64) {
-        point_utils::mirror_point_x(&mut self.pos, centerline_x);
-    }
-
-    fn mirror_y(&mut self, centerline_y: f64) {
-        point_utils::mirror_point_y(&mut self.pos, centerline_y);
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        match orientation {
+            MirrorOrientation::Horizontal => {
+                point_utils::mirror_point_x(&mut self.pos, centerline);
+            }
+            MirrorOrientation::Vertical => {
+                point_utils::mirror_point_y(&mut self.pos, centerline);
+            }
+        }
     }
 }
 

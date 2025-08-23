@@ -8,7 +8,7 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::{Rectangle, Shapeable};
-use rnote_compose::transform::Transformable;
+use rnote_compose::transform::{MirrorOrientation, Transformable};
 use serde::{Deserialize, Serialize};
 use std::io::{self, Cursor};
 use std::sync::Arc;
@@ -187,12 +187,8 @@ impl Transformable for Image {
         self.rect.scale(scale)
     }
 
-    fn mirror_x(&mut self, centerline_x: f64) {
-        self.rect.mirror_x(centerline_x);
-    }
-
-    fn mirror_y(&mut self, centerline_y: f64) {
-        self.rect.mirror_y(centerline_y);
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        self.rect.mirror(centerline, orientation);
     }
 }
 

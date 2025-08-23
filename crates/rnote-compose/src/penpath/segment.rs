@@ -1,6 +1,9 @@
 // Imports
 use super::Element;
-use crate::{point_utils, transform::Transformable};
+use crate::{
+    point_utils,
+    transform::{MirrorOrientation, Transformable},
+};
 use serde::{Deserialize, Serialize};
 
 /// A single segment, usually of a pen path.
@@ -94,37 +97,36 @@ impl Transformable for Segment {
         }
     }
 
-    fn mirror_x(&mut self, centerline_x: f64) {
-        match self {
-            Segment::LineTo { end } => {
-                end.mirror_x(centerline_x);
-            }
-            Segment::QuadBezTo { cp, end } => {
-                point_utils::mirror_point_x(cp, centerline_x);
-                end.mirror_x(centerline_x);
-            }
-            Segment::CubBezTo { cp1, cp2, end } => {
-                point_utils::mirror_point_x(cp1, centerline_x);
-                point_utils::mirror_point_x(cp2, centerline_x);
-                end.mirror_x(centerline_x);
-            }
-        }
-    }
-
-    fn mirror_y(&mut self, centerline_y: f64) {
-        match self {
-            Segment::LineTo { end } => {
-                end.mirror_y(centerline_y);
-            }
-            Segment::QuadBezTo { cp, end } => {
-                point_utils::mirror_point_y(cp, centerline_y);
-                end.mirror_y(centerline_y);
-            }
-            Segment::CubBezTo { cp1, cp2, end } => {
-                point_utils::mirror_point_y(cp1, centerline_y);
-                point_utils::mirror_point_y(cp2, centerline_y);
-                end.mirror_y(centerline_y);
-            }
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        match orientation {
+            MirrorOrientation::Horizontal => match self {
+                Segment::LineTo { end } => {
+                    end.mirror(centerline, orientation);
+                }
+                Segment::QuadBezTo { cp, end } => {
+                    point_utils::mirror_point_x(cp, centerline);
+                    end.mirror(centerline, orientation);
+                }
+                Segment::CubBezTo { cp1, cp2, end } => {
+                    point_utils::mirror_point_x(cp1, centerline);
+                    point_utils::mirror_point_x(cp2, centerline);
+                    end.mirror(centerline, orientation);
+                }
+            },
+            MirrorOrientation::Vertical => match self {
+                Segment::LineTo { end } => {
+                    end.mirror(centerline, orientation);
+                }
+                Segment::QuadBezTo { cp, end } => {
+                    point_utils::mirror_point_y(cp, centerline);
+                    end.mirror(centerline, orientation);
+                }
+                Segment::CubBezTo { cp1, cp2, end } => {
+                    point_utils::mirror_point_y(cp1, centerline);
+                    point_utils::mirror_point_y(cp2, centerline);
+                    end.mirror(centerline, orientation);
+                }
+            },
         }
     }
 }

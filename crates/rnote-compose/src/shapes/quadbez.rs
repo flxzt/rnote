@@ -4,7 +4,7 @@ use super::line::Line;
 use crate::ext::{KurboShapeExt, Vector2Ext};
 use crate::point_utils;
 use crate::shapes::Shapeable;
-use crate::transform::Transformable;
+use crate::transform::{MirrorOrientation, Transformable};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -46,15 +46,18 @@ impl Transformable for QuadraticBezier {
         self.end = self.end.component_mul(&scale);
     }
 
-    fn mirror_x(&mut self, centerline_x: f64) {
-        for point in [&mut self.start, &mut self.cp, &mut self.end] {
-            point_utils::mirror_point_x(point, centerline_x);
-        }
-    }
-
-    fn mirror_y(&mut self, centerline_y: f64) {
-        for point in [&mut self.start, &mut self.cp, &mut self.end] {
-            point_utils::mirror_point_y(point, centerline_y);
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        match orientation {
+            MirrorOrientation::Horizontal => {
+                for point in [&mut self.start, &mut self.cp, &mut self.end] {
+                    point_utils::mirror_point_x(point, centerline);
+                }
+            }
+            MirrorOrientation::Vertical => {
+                for point in [&mut self.start, &mut self.cp, &mut self.end] {
+                    point_utils::mirror_point_y(point, centerline);
+                }
+            }
         }
     }
 }

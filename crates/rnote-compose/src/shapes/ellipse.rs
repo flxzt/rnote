@@ -3,7 +3,7 @@ use super::Line;
 use crate::Transform;
 use crate::ext::{Affine2Ext, Vector2Ext};
 use crate::shapes::Shapeable;
-use crate::transform::Transformable;
+use crate::transform::{MirrorOrientation, Transformable};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -42,12 +42,8 @@ impl Transformable for Ellipse {
         self.transform.append_scale_mut(scale);
     }
 
-    fn mirror_x(&mut self, centerline_x: f64) {
-        self.transform.append_mirror_x_mut(centerline_x);
-    }
-
-    fn mirror_y(&mut self, centerline_y: f64) {
-        self.transform.append_mirror_y_mut(centerline_y);
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        self.transform.append_mirror_mut(centerline, orientation);
     }
 }
 

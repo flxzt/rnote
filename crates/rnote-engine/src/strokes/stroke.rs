@@ -14,8 +14,8 @@ use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::{Rectangle, Shapeable};
 use rnote_compose::style::smooth::SmoothOptions;
-use rnote_compose::transform::Transform;
 use rnote_compose::transform::Transformable;
+use rnote_compose::transform::{MirrorOrientation, Transform};
 use rnote_compose::{Color, PenPath, Style};
 use serde::{Deserialize, Serialize};
 use tracing::error;
@@ -200,42 +200,22 @@ impl Transformable for Stroke {
         }
     }
 
-    fn mirror_x(&mut self, selection_centerline_x: f64) {
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
         match self {
             Self::BrushStroke(brushstroke) => {
-                brushstroke.mirror_x(selection_centerline_x);
+                brushstroke.mirror(centerline, orientation);
             }
             Self::ShapeStroke(shape_stroke) => {
-                shape_stroke.mirror_x(selection_centerline_x);
+                shape_stroke.mirror(centerline, orientation);
             }
             Self::VectorImage(vector_image) => {
-                vector_image.mirror_x(selection_centerline_x);
+                vector_image.mirror(centerline, orientation);
             }
             Self::BitmapImage(bitmap_image) => {
-                bitmap_image.mirror_x(selection_centerline_x);
+                bitmap_image.mirror(centerline, orientation);
             }
             Self::TextStroke(text_stroke) => {
-                text_stroke.mirror_x(selection_centerline_x);
-            }
-        }
-    }
-
-    fn mirror_y(&mut self, selection_centerline_y: f64) {
-        match self {
-            Self::BrushStroke(brushstroke) => {
-                brushstroke.mirror_y(selection_centerline_y);
-            }
-            Self::ShapeStroke(shape_stroke) => {
-                shape_stroke.mirror_y(selection_centerline_y);
-            }
-            Self::VectorImage(vector_image) => {
-                vector_image.mirror_y(selection_centerline_y);
-            }
-            Self::BitmapImage(bitmap_image) => {
-                bitmap_image.mirror_y(selection_centerline_y);
-            }
-            Self::TextStroke(text_stroke) => {
-                text_stroke.mirror_y(selection_centerline_y);
+                text_stroke.mirror(centerline, orientation);
             }
         }
     }

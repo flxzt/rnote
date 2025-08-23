@@ -2,7 +2,7 @@
 use super::{
     Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
 };
-use crate::transform::Transformable;
+use crate::transform::{MirrorOrientation, Transformable};
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -130,60 +130,31 @@ impl Transformable for Shape {
         }
     }
 
-    fn mirror_x(&mut self, centerline_x: f64) {
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
         match self {
             Self::Line(line) => {
-                line.mirror_x(centerline_x);
+                line.mirror(centerline, orientation);
             }
             Self::Arrow(arrow) => {
-                arrow.mirror_x(centerline_x);
+                arrow.mirror(centerline, orientation);
             }
             Self::Rectangle(rectangle) => {
-                rectangle.mirror_x(centerline_x);
+                rectangle.mirror(centerline, orientation);
             }
             Self::Ellipse(ellipse) => {
-                ellipse.mirror_x(centerline_x);
+                ellipse.mirror(centerline, orientation);
             }
             Self::QuadraticBezier(quadratic_bezier) => {
-                quadratic_bezier.mirror_x(centerline_x);
+                quadratic_bezier.mirror(centerline, orientation);
             }
             Self::CubicBezier(cubic_bezier) => {
-                cubic_bezier.mirror_x(centerline_x);
+                cubic_bezier.mirror(centerline, orientation);
             }
             Self::Polyline(polyline) => {
-                polyline.mirror_x(centerline_x);
+                polyline.mirror(centerline, orientation);
             }
             Self::Polygon(polygon) => {
-                polygon.mirror_x(centerline_x);
-            }
-        }
-    }
-
-    fn mirror_y(&mut self, centerline_y: f64) {
-        match self {
-            Self::Line(line) => {
-                line.mirror_y(centerline_y);
-            }
-            Self::Arrow(arrow) => {
-                arrow.mirror_y(centerline_y);
-            }
-            Self::Rectangle(rectangle) => {
-                rectangle.mirror_y(centerline_y);
-            }
-            Self::Ellipse(ellipse) => {
-                ellipse.mirror_y(centerline_y);
-            }
-            Self::QuadraticBezier(quadratic_bezier) => {
-                quadratic_bezier.mirror_y(centerline_y);
-            }
-            Self::CubicBezier(cubic_bezier) => {
-                cubic_bezier.mirror_y(centerline_y);
-            }
-            Self::Polyline(polyline) => {
-                polyline.mirror_y(centerline_y);
-            }
-            Self::Polygon(polygon) => {
-                polygon.mirror_y(centerline_y);
+                polygon.mirror(centerline, orientation);
             }
         }
     }

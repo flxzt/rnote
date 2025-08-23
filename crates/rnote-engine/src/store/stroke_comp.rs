@@ -10,16 +10,10 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::Color;
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::Shapeable;
-use rnote_compose::transform::Transformable;
+use rnote_compose::transform::{MirrorOrientation, Transformable};
 use std::sync::Arc;
 #[cfg(feature = "ui")]
 use tracing::error;
-
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum MirrorOrientation {
-    Horizontal,
-    Vertical,
-}
 
 /// Systems that are related to the stroke components.
 impl StrokeStore {
@@ -358,10 +352,7 @@ impl StrokeStore {
                 .get_mut(key)
                 .map(Arc::make_mut)
             {
-                match orientation {
-                    MirrorOrientation::Horizontal => stroke.mirror_x(selection_centerline),
-                    MirrorOrientation::Vertical => stroke.mirror_y(selection_centerline),
-                }
+                stroke.mirror(selection_centerline, orientation);
                 self.set_rendering_dirty(key);
             }
         });

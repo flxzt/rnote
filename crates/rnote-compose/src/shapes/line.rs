@@ -2,7 +2,7 @@
 use crate::ext::{AabbExt, Vector2Ext};
 use crate::shapes::Rectangle;
 use crate::shapes::Shapeable;
-use crate::transform::Transformable;
+use crate::transform::{MirrorOrientation, Transformable};
 use crate::{Transform, point_utils};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
@@ -39,14 +39,17 @@ impl Transformable for Line {
         self.end = self.end.component_mul(&scale);
     }
 
-    fn mirror_x(&mut self, centerline_x: f64) {
-        point_utils::mirror_point_x(&mut self.start, centerline_x);
-        point_utils::mirror_point_x(&mut self.end, centerline_x);
-    }
-
-    fn mirror_y(&mut self, centerline_y: f64) {
-        point_utils::mirror_point_y(&mut self.start, centerline_y);
-        point_utils::mirror_point_y(&mut self.end, centerline_y);
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        match orientation {
+            MirrorOrientation::Horizontal => {
+                point_utils::mirror_point_x(&mut self.start, centerline);
+                point_utils::mirror_point_x(&mut self.end, centerline);
+            }
+            MirrorOrientation::Vertical => {
+                point_utils::mirror_point_y(&mut self.start, centerline);
+                point_utils::mirror_point_y(&mut self.end, centerline);
+            }
+        }
     }
 }
 

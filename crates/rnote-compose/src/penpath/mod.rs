@@ -9,7 +9,7 @@ pub use segment::Segment;
 // Imports
 use crate::ext::{KurboShapeExt, Vector2Ext};
 use crate::shapes::{CubicBezier, Line, QuadraticBezier, Shapeable};
-use crate::transform::Transformable;
+use crate::transform::{MirrorOrientation, Transformable};
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
@@ -99,19 +99,11 @@ impl Transformable for PenPath {
         });
     }
 
-    fn mirror_x(&mut self, centerline_x: f64) {
-        self.start.mirror_x(centerline_x);
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        self.start.mirror(centerline, orientation);
 
         for element in &mut self.segments {
-            element.mirror_x(centerline_x);
-        }
-    }
-
-    fn mirror_y(&mut self, centerline_y: f64) {
-        self.start.mirror_y(centerline_y);
-
-        for element in &mut self.segments {
-            element.mirror_y(centerline_y);
+            element.mirror(centerline, orientation);
         }
     }
 }

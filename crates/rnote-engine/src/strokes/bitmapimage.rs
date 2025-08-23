@@ -13,8 +13,8 @@ use rnote_compose::color;
 use rnote_compose::ext::{AabbExt, Affine2Ext};
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::Shapeable;
-use rnote_compose::transform::Transform;
 use rnote_compose::transform::Transformable;
+use rnote_compose::transform::{MirrorOrientation, Transform};
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 
@@ -96,12 +96,8 @@ impl Transformable for BitmapImage {
         self.rectangle.scale(scale);
     }
 
-    fn mirror_x(&mut self, centerline_x: f64) {
-        self.rectangle.mirror_x(centerline_x);
-    }
-
-    fn mirror_y(&mut self, centerline_y: f64) {
-        self.rectangle.mirror_y(centerline_y);
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        self.rectangle.mirror(centerline, orientation);
     }
 }
 

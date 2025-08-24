@@ -102,9 +102,9 @@ impl Transformable for PenPath {
     fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
         self.start.mirror(centerline, orientation);
 
-        for element in &mut self.segments {
+        self.segments.iter_mut().for_each(|element| {
             element.mirror(centerline, orientation);
-        }
+        });
     }
 }
 

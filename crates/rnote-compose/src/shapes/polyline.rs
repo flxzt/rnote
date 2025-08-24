@@ -45,9 +45,9 @@ impl Transformable for Polyline {
     fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
         point_utils::mirror_point(&mut self.start, centerline, orientation);
 
-        for point in self.path.iter_mut() {
+        self.path.iter_mut().for_each(|point| {
             point_utils::mirror_point(point, centerline, orientation);
-        }
+        });
     }
 }
 

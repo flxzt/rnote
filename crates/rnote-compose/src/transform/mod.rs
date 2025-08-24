@@ -136,24 +136,22 @@ impl Transform {
     /// Apply a reflection across either Horizontal: 'x = centerline' or Vertical: 'y = centerline' to the
     /// affine matrix based on the orientation
     pub fn append_mirror_mut(&mut self, centerline: f64, orientation: MirrorOrientation) {
-        let mirror_transformation;
-
-        match orientation {
+        let mirror_transformation = match orientation {
             MirrorOrientation::Horizontal => {
-                mirror_transformation = na::matrix![
+                na::matrix![
                     -1.0, 0.0, 2.0 * centerline;
                     0.0, 1.0, 0.0;
                     0.0, 0.0, 1.0;
-                ];
+                ]
             }
             MirrorOrientation::Vertical => {
-                mirror_transformation = na::matrix![
+                na::matrix![
                     1.0, 0.0, 0.0;
                     0.0, -1.0, 2.0 * centerline;
                     0.0, 0.0, 1.0;
-                ];
+                ]
             }
-        }
+        };
 
         let transformed_affine = mirror_transformation * self.affine.matrix();
 

@@ -12,8 +12,8 @@ use rnote_compose::color;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::Shapeable;
-use rnote_compose::transform::Transform;
 use rnote_compose::transform::Transformable;
+use rnote_compose::transform::{MirrorOrientation, Transform};
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use std::sync::Arc;
@@ -133,6 +133,10 @@ impl Transformable for VectorImage {
 
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.rectangle.scale(scale);
+    }
+
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        self.rectangle.mirror(centerline, orientation);
     }
 }
 

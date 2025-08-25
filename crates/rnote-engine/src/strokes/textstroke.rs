@@ -7,7 +7,7 @@ use p2d::bounding_volume::Aabb;
 use piet::{RenderContext, TextLayout, TextLayoutBuilder};
 use rnote_compose::ext::{AabbExt, Affine2Ext, Vector2Ext};
 use rnote_compose::shapes::Shapeable;
-use rnote_compose::transform::Transformable;
+use rnote_compose::transform::{MirrorOrientation, Transformable};
 use rnote_compose::{Color, Transform, color};
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
@@ -465,6 +465,9 @@ impl Transformable for TextStroke {
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.transform.append_scale_mut(scale);
     }
+
+    // no mirroring for text as of now
+    fn mirror(&mut self, _centerline: f64, _orientation: MirrorOrientation) {}
 }
 
 impl Shapeable for TextStroke {

@@ -34,6 +34,7 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::{PenEvent, ShortcutKey};
+use rnote_compose::transform::MirrorOrientation;
 use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
 use snapshot::Snapshotable;
@@ -751,6 +752,32 @@ impl Engine {
             | self.doc_resize_autoexpand()
             | self.record(Instant::now())
             | self.update_rendering_current_viewport()
+    }
+
+    pub fn mirror_horizontal_selection(&mut self) -> Option<WidgetFlags> {
+        self.store
+            .mirror_stroke(
+                &self.store.selection_keys_as_rendered(),
+                MirrorOrientation::Horizontal,
+            )
+            .map(|widget_flags| {
+                widget_flags
+                    | self.record(Instant::now())
+                    | self.update_content_rendering_current_viewport()
+            })
+    }
+
+    pub fn mirror_vertical_selection(&mut self) -> Option<WidgetFlags> {
+        self.store
+            .mirror_stroke(
+                &self.store.selection_keys_as_rendered(),
+                MirrorOrientation::Vertical,
+            )
+            .map(|widget_flags| {
+                widget_flags
+                    | self.record(Instant::now())
+                    | self.update_content_rendering_current_viewport()
+            })
     }
 
     pub fn select_with_bounds(

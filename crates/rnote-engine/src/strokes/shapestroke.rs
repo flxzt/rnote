@@ -7,6 +7,7 @@ use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Shape;
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::Composer;
+use rnote_compose::transform::MirrorOrientation;
 use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 
@@ -97,6 +98,10 @@ impl Transformable for ShapeStroke {
         let scale_scalar = (scale[0] * scale[1]).sqrt();
         self.style
             .set_stroke_width(self.style.stroke_width() * scale_scalar);
+    }
+
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        self.shape.mirror(centerline, orientation);
     }
 }
 

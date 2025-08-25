@@ -12,6 +12,11 @@ use slotmap::{HopSlotMap, SecondaryMap};
 use std::sync::Arc;
 use tracing::error;
 
+/// Trait for types which hold configuration needed for engine snapshots
+pub trait Snapshotable {
+    fn extract_snapshot_data(&self) -> Self;
+}
+
 // An engine snapshot, used when loading/saving the current document from/into a file.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "engine_snapshot")]
@@ -93,7 +98,7 @@ impl EngineSnapshot {
                 let mut engine = Engine::default();
 
                 // We convert all values from the hardcoded 72 DPI of Xopp files to the preferred dpi
-                engine.document.format.set_dpi(xopp_import_prefs.dpi);
+                engine.document.config.format.set_dpi(xopp_import_prefs.dpi);
 
                 engine.document.x = 0.0;
                 engine.document.y = 0.0;
@@ -110,6 +115,7 @@ impl EngineSnapshot {
 
                 engine
                     .document
+                    .config
                     .format
                     .set_width(crate::utils::convert_value_dpi(
                         doc_width,
@@ -118,6 +124,7 @@ impl EngineSnapshot {
                     ));
                 engine
                     .document
+                    .config
                     .format
                     .set_height(crate::utils::convert_value_dpi(
                         doc_height / (no_pages as f64),
@@ -132,7 +139,7 @@ impl EngineSnapshot {
                     } = &first_page.background.bg_type
                     {
                         // Xopp background styles are not compatible with Rnotes, so everything is plain for now
-                        engine.document.background.pattern = background::PatternStyle::None;
+                        engine.document.config.background.pattern = background::PatternStyle::None;
                     }
                 }
 

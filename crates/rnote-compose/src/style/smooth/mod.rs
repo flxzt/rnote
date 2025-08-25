@@ -398,7 +398,7 @@ fn compose_lines_variable_width(
     end_width: f64,
     _options: &SmoothOptions,
 ) -> kurbo::BezPath {
-    // The the lines variable is ghosted here, to make sure we can only use the filtered
+    // The lines variable is ghosted here, to make sure we can only use the filtered
     let lines = lines
         .iter()
         .filter(|line| (line.end - line.start).magnitude() > 0.0)

@@ -55,7 +55,6 @@ sounds_files = files(
 # install sounds flat in one directory
 install_data(sounds_files, install_dir: pkgdatadir / 'sounds')
 
-
 # fonts
 fonts_files = files(
     'fonts/GrapeNuts-Regular.ttf',

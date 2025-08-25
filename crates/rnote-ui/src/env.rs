@@ -63,10 +63,6 @@ pub(crate) fn locale_dir() -> anyhow::Result<PathBuf> {
 
 /// depending on the target platform we need to set some env vars on startup
 pub(crate) fn setup_env() -> anyhow::Result<()> {
-    // workaround for issue 1061 https://github.com/flxzt/rnote/issues/1061
-    // SAFETY: this setup only happens while still being single-threaded
-    unsafe { std::env::set_var("GSK_RENDERER", "gl") };
-
     if cfg!(target_os = "windows") {
         let data_dir = data_dir()?;
         let lib_dir = lib_dir()?;
@@ -130,7 +126,7 @@ fn macos_is_in_app_bundle(canonicalized_exec_dir: impl AsRef<Path>) -> bool {
 /// actual window. See https://github.com/flxzt/rnote/issues/1372
 ///
 /// Taken from gaphor
-/// See commment from https://github.com/gaphor/gaphor/blob/a7b35712b166a38b78933a79613eab330f7bd885/gaphor/ui/styling-windows.css
+/// See comment from https://github.com/gaphor/gaphor/blob/a7b35712b166a38b78933a79613eab330f7bd885/gaphor/ui/styling-windows.css
 /// and https://gitlab.gnome.org/GNOME/gtk/-/issues/6255#note_1952796
 pub fn window_styling_workaround() -> anyhow::Result<()> {
     use gtk4::{gdk, style_context_add_provider_for_display};

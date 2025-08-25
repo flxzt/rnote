@@ -22,14 +22,21 @@ impl Typewriter {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
-        let text_width = engine_view.pens_config.typewriter_config.text_width();
+        let text_width = engine_view
+            .config
+            .pens_config
+            .typewriter_config
+            .text_width();
         self.pos = Some(element.pos);
 
         let event_result = match &mut self.state {
             TypewriterState::Idle | TypewriterState::Start { .. } => {
                 let mut refresh_state = false;
-                let mut new_state =
-                    TypewriterState::Start(engine_view.document.snap_position(element.pos));
+                let mut new_state = TypewriterState::Start(
+                    engine_view
+                        .document
+                        .snap_position(element.pos, engine_view.config),
+                );
 
                 if let Some(&stroke_key) = engine_view
                     .store
@@ -285,10 +292,10 @@ impl Typewriter {
                             .map(|s| s.bounds())
                         {
                             let snap_corner_pos = textstroke_bounds.mins.coords;
-                            let offset = engine_view
-                                .document
-                                .snap_position(snap_corner_pos + (element.pos - *current_pos))
-                                - snap_corner_pos;
+                            let offset = engine_view.document.snap_position(
+                                snap_corner_pos + (element.pos - *current_pos),
+                                engine_view.config,
+                            ) - snap_corner_pos;
 
                             if offset.magnitude()
                                 > Self::TRANSLATE_OFFSET_THRESHOLD / engine_view.camera.total_zoom()
@@ -340,6 +347,7 @@ impl Typewriter {
                                 let new_text_width =
                                     *start_text_width + (element.pos[0] - start_pos[0]);
                                 engine_view
+                                    .config
                                     .pens_config
                                     .typewriter_config
                                     .set_text_width(new_text_width);
@@ -519,8 +527,17 @@ impl Typewriter {
         let mut widget_flags = WidgetFlags::default();
         self.pos = None;
 
-        let text_width = engine_view.pens_config.typewriter_config.text_width();
-        let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
+        let text_width = engine_view
+            .config
+            .pens_config
+            .typewriter_config
+            .text_width();
+        let mut text_style = engine_view
+            .config
+            .pens_config
+            .typewriter_config
+            .text_style
+            .clone();
 
         let event_result = match &mut self.state {
             TypewriterState::Idle => EventResult {
@@ -1097,8 +1114,17 @@ impl Typewriter {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
-        let text_width = engine_view.pens_config.typewriter_config.text_width();
-        let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
+        let text_width = engine_view
+            .config
+            .pens_config
+            .typewriter_config
+            .text_width();
+        let mut text_style = engine_view
+            .config
+            .pens_config
+            .typewriter_config
+            .text_style
+            .clone();
 
         self.pos = None;
         self.reset_blink();

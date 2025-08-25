@@ -2,6 +2,7 @@
 use super::maj0min5patch8::{
     PenPathMaj0Min5Patch8, RnoteFileMaj0Min5Patch8, SegmentMaj0Min5Patch8,
 };
+use anyhow::anyhow;
 use serde::{Deserialize, Serialize};
 
 /// Rnote file in version: maj 0 min 5 patch 9.
@@ -19,18 +20,20 @@ impl TryFrom<RnoteFileMaj0Min5Patch8> for RnoteFileMaj0Min5Patch9 {
     type Error = anyhow::Error;
 
     fn try_from(mut file: RnoteFileMaj0Min5Patch8) -> Result<RnoteFileMaj0Min5Patch9, Self::Error> {
-        for value in file.store_snapshot["stroke_components"]
+        let stroke_components = file
+            .store_snapshot
+            .get_mut("stroke_components")
+            .ok_or_else(|| anyhow!("no value `stroke_components` in `store_snapshot`"))?
             .as_array_mut()
-            .ok_or_else(|| anyhow::anyhow!("value `stroke_components` is not a JSON array."))?
-        {
+            .ok_or_else(|| anyhow!("value `stroke_components` is not a JSON array."))?;
+
+        for value in stroke_components {
             let stroke = value
                 .as_object_mut()
-                .ok_or_else(|| {
-                    anyhow::anyhow!("value in `stroke_components` array is not a JSON Object.")
-                })?
+                .ok_or_else(|| anyhow!("value in `stroke_components` array is not a JSON Object."))?
                 .get_mut("value")
                 .ok_or_else(|| {
-                    anyhow::anyhow!("no value `value` in JSON object of `stroke_components` array.")
+                    anyhow!("no value `value` in JSON object of `stroke_components` array.")
                 })?;
 
             if stroke.is_null() {
@@ -39,16 +42,16 @@ impl TryFrom<RnoteFileMaj0Min5Patch8> for RnoteFileMaj0Min5Patch9 {
 
             if let Some(brushstroke) = stroke
                 .as_object_mut()
-                .ok_or_else(|| anyhow::anyhow!("stroke value is not a JSON Object."))?
+                .ok_or_else(|| anyhow!("stroke value is not a JSON Object."))?
                 .get_mut("brushstroke")
             {
                 let brushstroke = brushstroke
                     .as_object_mut()
-                    .ok_or_else(|| anyhow::anyhow!("brushstroke is not a JSON object."))?;
+                    .ok_or_else(|| anyhow!("brushstroke is not a JSON object."))?;
                 let path = ijson::from_value::<PenPathMaj0Min5Patch8>(
                     &brushstroke
                         .remove("path")
-                        .ok_or_else(|| anyhow::anyhow!("brushstroke has no value `path`."))?,
+                        .ok_or_else(|| anyhow!("brushstroke has no value `path`."))?,
                 )?;
                 let mut path_upgraded = ijson::IObject::new();
                 let mut seg_iter = path.inner().into_iter().peekable();

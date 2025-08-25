@@ -94,7 +94,9 @@ impl ShaperConfig {
                     if let Some(ref mut color) = options.stroke_color {
                         color.a = self.highlight_opacity;
                     }
-                    if let Some(ref mut color) = options.fill_color {
+                    if let Some(ref mut color) = options.fill_color
+                        && color.a > 0.0
+                    {
                         color.a = self.highlight_opacity;
                     }
                 }
@@ -106,7 +108,9 @@ impl ShaperConfig {
                     if let Some(ref mut color) = options.stroke_color {
                         color.a = self.highlight_opacity;
                     }
-                    if let Some(ref mut color) = options.fill_color {
+                    if let Some(ref mut color) = options.fill_color
+                        && color.a > 0.0
+                    {
                         color.a = self.highlight_opacity;
                     }
                 }

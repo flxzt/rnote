@@ -1,5 +1,5 @@
 // Imports
-use crate::{RnAppWindow, RnCanvas, config, dialogs};
+use crate::{RnAppWindow, RnCanvas, config, dialogs, overlays};
 use gettextrs::gettext;
 use gtk4::gio::InputStream;
 use gtk4::graphene;
@@ -478,8 +478,14 @@ impl RnAppWindow {
                 let Some(canvas) = appwindow.active_tab_canvas() else {
                     return;
                 };
-                let widget_flags = canvas.engine_mut().mirror_horizontal_selection();
-                appwindow.handle_widget_flags(widget_flags, &canvas);
+                if let Some(widget_flags) = canvas.engine_mut().mirror_horizontal_selection() {
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                } else {
+                    appwindow.overlays().dispatch_toast_text(
+                        &gettext("Mirroring selections containing text is not supported"),
+                        overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
+                    );
+                }
             }
         ));
 
@@ -491,8 +497,14 @@ impl RnAppWindow {
                 let Some(canvas) = appwindow.active_tab_canvas() else {
                     return;
                 };
-                let widget_flags = canvas.engine_mut().mirror_vertical_selection();
-                appwindow.handle_widget_flags(widget_flags, &canvas);
+                if let Some(widget_flags) = canvas.engine_mut().mirror_vertical_selection() {
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                } else {
+                    appwindow.overlays().dispatch_toast_text(
+                        &gettext("Mirroring selections containing text is not supported"),
+                        overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
+                    );
+                }
             }
         ));
 

@@ -305,11 +305,30 @@ impl StrokeStore {
         &mut self,
         keys: &[StrokeKey],
         orientation: MirrorOrientation,
-    ) -> WidgetFlags {
+    ) -> Option<WidgetFlags> {
         let mut widget_flags = WidgetFlags::default();
 
         if keys.is_empty() {
-            return widget_flags;
+            return Some(widget_flags);
+        }
+
+        let mut stroke_contains_text = false;
+        keys.iter().for_each(|&key| {
+            if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
+                .get_mut(key)
+                .map(Arc::make_mut)
+            {
+                match stroke {
+                    Stroke::TextStroke(_text_stroke) => {
+                        stroke_contains_text = true;
+                    }
+                    _ => {}
+                }
+            }
+        });
+
+        if stroke_contains_text {
+            return None;
         }
 
         let all_stroke_bounds = self.strokes_bounds(keys);
@@ -344,7 +363,7 @@ impl StrokeStore {
             if let (Some(min_component), Some(max_component)) = (min_component, max_component) {
                 (min_component + max_component) / 2.0
             } else {
-                return widget_flags;
+                return Some(widget_flags);
             };
 
         keys.iter().for_each(|&key| {
@@ -360,7 +379,7 @@ impl StrokeStore {
         widget_flags.redraw = true;
         widget_flags.store_modified = true;
 
-        widget_flags
+        Some(widget_flags)
     }
 
     /// Invert the stroke, text and fill color of the given keys.

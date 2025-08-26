@@ -754,30 +754,20 @@ impl Engine {
             | self.update_rendering_current_viewport()
     }
 
-    pub fn mirror_horizontal_selection(&mut self) -> Option<WidgetFlags> {
-        self.store
-            .mirror_stroke(
-                &self.store.selection_keys_as_rendered(),
-                MirrorOrientation::Horizontal,
-            )
-            .map(|widget_flags| {
-                widget_flags
-                    | self.record(Instant::now())
-                    | self.update_content_rendering_current_viewport()
-            })
+    pub fn mirror_horizontal_selection(&mut self) -> WidgetFlags {
+        self.store.mirror_stroke(
+            &self.store.selection_keys_as_rendered(),
+            MirrorOrientation::Horizontal,
+        ) | self.record(Instant::now())
+            | self.update_content_rendering_current_viewport()
     }
 
-    pub fn mirror_vertical_selection(&mut self) -> Option<WidgetFlags> {
-        self.store
-            .mirror_stroke(
-                &self.store.selection_keys_as_rendered(),
-                MirrorOrientation::Vertical,
-            )
-            .map(|widget_flags| {
-                widget_flags
-                    | self.record(Instant::now())
-                    | self.update_content_rendering_current_viewport()
-            })
+    pub fn mirror_vertical_selection(&mut self) -> WidgetFlags {
+        self.store.mirror_stroke(
+            &self.store.selection_keys_as_rendered(),
+            MirrorOrientation::Vertical,
+        ) | self.record(Instant::now())
+            | self.update_content_rendering_current_viewport()
     }
 
     pub fn select_with_bounds(

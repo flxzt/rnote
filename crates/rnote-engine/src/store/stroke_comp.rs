@@ -305,30 +305,26 @@ impl StrokeStore {
         &mut self,
         keys: &[StrokeKey],
         orientation: MirrorOrientation,
-    ) -> Option<WidgetFlags> {
+    ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         if keys.is_empty() {
-            return Some(widget_flags);
+            return widget_flags;
         }
 
-        let mut stroke_contains_text = false;
-        keys.iter().for_each(|&key| {
-            if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
-                .get_mut(key)
-                .map(Arc::make_mut)
-            {
-                match stroke {
-                    Stroke::TextStroke(_text_stroke) => {
-                        stroke_contains_text = true;
-                    }
-                    _ => {}
-                }
-            }
+        let stroke_contains_text = keys.iter().any(|&key| {
+            matches!(
+                Arc::make_mut(&mut self.stroke_components)
+                    .get_mut(key)
+                    .map(Arc::make_mut),
+                Some(Stroke::TextStroke(_))
+            )
         });
 
         if stroke_contains_text {
-            return None;
+            widget_flags.popup_message =
+                Some("Mirroring selections containing text is not supported".to_string());
+            return widget_flags;
         }
 
         let all_stroke_bounds = self.strokes_bounds(keys);
@@ -363,7 +359,7 @@ impl StrokeStore {
             if let (Some(min_component), Some(max_component)) = (min_component, max_component) {
                 (min_component + max_component) / 2.0
             } else {
-                return Some(widget_flags);
+                return widget_flags;
             };
 
         keys.iter().for_each(|&key| {
@@ -379,7 +375,7 @@ impl StrokeStore {
         widget_flags.redraw = true;
         widget_flags.store_modified = true;
 
-        Some(widget_flags)
+        widget_flags
     }
 
     /// Invert the stroke, text and fill color of the given keys.

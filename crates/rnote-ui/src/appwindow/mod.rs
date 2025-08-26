@@ -6,7 +6,7 @@ mod imp;
 // Imports
 use crate::{
     FileType, RnApp, RnCanvas, RnCanvasWrapper, RnMainHeader, RnOverlays, RnSidebar, config,
-    dialogs, env,
+    dialogs, env, overlays,
 };
 use adw::{prelude::*, subclass::prelude::*};
 use core::cell::{Ref, RefMut};
@@ -334,6 +334,12 @@ impl RnAppWindow {
         }
         if let Some(enable_text_preprocessing) = widget_flags.enable_text_preprocessing {
             canvas.set_text_preprocessing(enable_text_preprocessing);
+        }
+        if let Some(popup_message) = widget_flags.popup_message {
+            self.overlays().dispatch_toast_text(
+                &gettext(popup_message),
+                overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
+            );
         }
     }
 

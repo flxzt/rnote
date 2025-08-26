@@ -1072,6 +1072,8 @@ impl RnAppWindow {
         app.set_accels_for_action("win.pen-style::eraser", &["<Ctrl>4", "<Ctrl>KP_4"]);
         app.set_accels_for_action("win.pen-style::selector", &["<Ctrl>5", "<Ctrl>KP_5"]);
         app.set_accels_for_action("win.pen-style::tools", &["<Ctrl>6", "<Ctrl>KP_6"]);
+        app.set_accels_for_action("win.selection-mirror-horizontal", &["<Ctrl>m"]);
+        app.set_accels_for_action("win.selection-mirror-vertical", &["<Ctrl><Shift>m"]);
 
         // shortcuts for devel build
         if config::PROFILE.to_lowercase().as_str() == "devel" {

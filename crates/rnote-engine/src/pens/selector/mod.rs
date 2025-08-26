@@ -21,7 +21,6 @@ use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevent::{PenEvent, PenProgress, PenState};
 use rnote_compose::penpath::Element;
 use rnote_compose::style::indicators;
-use rnote_compose::transform::MirrorOrientation;
 use rnote_compose::{Color, color};
 use std::time::Instant;
 use tracing::error;
@@ -802,29 +801,6 @@ impl Selector {
         }
 
         *widget_flags |= self.update_state(engine_view);
-    }
-
-    fn mirror(
-        &mut self,
-        engine_view: &mut EngineViewMut,
-        orientation: MirrorOrientation,
-    ) -> Option<WidgetFlags> {
-        let strokes = engine_view.store.selection_keys_as_rendered();
-
-        let widget_flags = engine_view
-            .store
-            .mirror_stroke(&strokes, orientation)
-            .map(|wf| wf | engine_view.store.record(Instant::now()));
-
-        engine_view.store.update_geometry_for_strokes(&strokes);
-        engine_view.store.regenerate_rendering_in_viewport_threaded(
-            engine_view.tasks_tx.clone(),
-            false,
-            engine_view.camera.viewport(),
-            engine_view.camera.image_scale(),
-        );
-
-        widget_flags
     }
 }
 

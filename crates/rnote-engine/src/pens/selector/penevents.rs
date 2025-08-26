@@ -12,6 +12,7 @@ use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenProgress};
 use rnote_compose::penpath::Element;
+use rnote_compose::transform::MirrorOrientation;
 use std::collections::HashSet;
 use std::time::Instant;
 
@@ -671,6 +672,44 @@ impl Selector {
                             widget_flags.store_modified = true;
 
                             widget_flags |= self.update_state(engine_view);
+
+                            EventResult {
+                                handled: true,
+                                propagate: EventPropagation::Stop,
+                                progress: PenProgress::InProgress,
+                            }
+                        } else {
+                            EventResult {
+                                handled: false,
+                                propagate: EventPropagation::Proceed,
+                                progress: PenProgress::InProgress,
+                            }
+                        }
+                    }
+                    KeyboardKey::Unicode('x') => {
+                        if let Some(mirror_widget_flags) =
+                            self.mirror(engine_view, MirrorOrientation::Horizontal)
+                        {
+                            widget_flags = mirror_widget_flags;
+
+                            EventResult {
+                                handled: true,
+                                propagate: EventPropagation::Stop,
+                                progress: PenProgress::InProgress,
+                            }
+                        } else {
+                            EventResult {
+                                handled: false,
+                                propagate: EventPropagation::Proceed,
+                                progress: PenProgress::InProgress,
+                            }
+                        }
+                    }
+                    KeyboardKey::Unicode('y') => {
+                        if let Some(mirror_widget_flags) =
+                            self.mirror(engine_view, MirrorOrientation::Vertical)
+                        {
+                            widget_flags = mirror_widget_flags;
 
                             EventResult {
                                 handled: true,

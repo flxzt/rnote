@@ -336,10 +336,8 @@ impl RnAppWindow {
             canvas.set_text_preprocessing(enable_text_preprocessing);
         }
         if let Some(popup_message) = widget_flags.popup_message {
-            self.overlays().dispatch_toast_text(
-                &gettext(popup_message),
-                overlays::TEXT_TOAST_TIMEOUT_DEFAULT,
-            );
+            self.overlays()
+                .dispatch_toast_text(&popup_message, overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
         }
     }
 

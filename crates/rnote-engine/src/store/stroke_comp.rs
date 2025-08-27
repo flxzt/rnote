@@ -6,6 +6,7 @@ use crate::strokes::{Content, Stroke};
 use crate::{StrokeStore, WidgetFlags};
 use geo::intersects::Intersects;
 use geo::prelude::Contains;
+use gettextrs::gettext;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::Color;
 use rnote_compose::penpath::Element;
@@ -322,8 +323,9 @@ impl StrokeStore {
         });
 
         if stroke_contains_text {
-            widget_flags.popup_message =
-                Some("Mirroring selections containing text is not supported".to_string());
+            widget_flags.popup_message = Some(gettext(
+                "Mirroring selections containing text is not supported",
+            ));
             return widget_flags;
         }
 

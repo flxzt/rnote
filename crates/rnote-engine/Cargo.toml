@@ -20,6 +20,7 @@ clap = { workspace = true, optional = true }
 flate2 = { workspace = true }
 futures = { workspace = true }
 geo = { workspace = true }
+gettext-rs = { workspace = true }
 gio = { workspace = true }
 glib = { workspace = true }
 ijson = { workspace = true }

@@ -373,6 +373,7 @@ impl StrokeStore {
                 self.set_rendering_dirty(key);
             }
         });
+        self.update_geometry_for_strokes(keys);
 
         widget_flags.redraw = true;
         widget_flags.store_modified = true;

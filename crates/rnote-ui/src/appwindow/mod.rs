@@ -611,7 +611,7 @@ impl RnAppWindow {
                             {
                                 (true, self.new_canvas_wrapper())
                             }
-                            // Re-use the existing empty tab otherwise
+                            // Reuse the existing empty tab otherwise
                             (true, Some(active_wrapper)) => (false, active_wrapper),
                             (false, None) => (true, self.new_canvas_wrapper()),
                             (false, Some(active_wrapper)) => (false, active_wrapper),

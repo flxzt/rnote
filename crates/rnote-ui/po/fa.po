@@ -8,84 +8,84 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-26 11:14+0200\n"
-"PO-Revision-Date: 2025-04-16 13:30+0000\n"
-"Last-Translator: Sajad Mousavi <s.sajad.mousavi@gmail.com>\n"
+"PO-Revision-Date: 2025-08-29 06:01+0000\n"
+"Last-Translator: mohammad taheri <mohammad.t.varzaneh.2000@gmail.com>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/rnote/repo/fa/>\n"
 "Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.11.1-dev\n"
+"X-Generator: Weblate 5.13.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
 #: crates/rnote-ui/src/dialogs/mod.rs:33
 msgid "Sketch and take handwritten notes"
-msgstr "بنگارید و یادداشت بردارید"
+msgstr "طراحی کنید و یادداشت‌های دست‌نویس بردارید."
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:14
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;آفیس;گرافیک;یادداشت;طراحی;"
+msgstr "گنوم؛ جی‌تی‌کی؛ آفیس؛ گرافیک؛ یادداشت"
 
 #: crates/rnote-ui/data/app.desktop.in.in:19
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
 msgid "New Window"
-msgstr "پنجره‌ نو"
+msgstr "پنجره‌ جدید"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"آرنوت یک برنامه‌ نگاشتاری بُرداری برای هندازش، یادداشت‌های دست‌نویس، و کنار‌نویسی "
-"نامه‌ها و نگاره‌ها است."
+"«Rnote» یک اپلیکیشن طراحی بُرداری برای کشیدن طرح‌های اولیه (اسکچ)، "
+"یادداشت‌برداریِ دست‌نویس و همچنین حاشیه‌نویسی روی اسناد و تصاویر است."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"جدا از پاسخ‌گویی: چارچوب پرونده هنوز ناپایدار است. شایش دگر‌گونی یا از میان "
-"رفتن سازگاری میان ویراست‌ها هست."
+"هشدار: فرمت فایل برنامه هنوز پایدار نیست. این فرمت ممکن است در آینده تغییر "
+"کند و باعث عدم سازگاری بین نسخه‌های مختلف نرم‌افزار شود."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An overview"
-msgstr "یک بررسی کوتاه"
+msgstr "نمای کلی"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "A selection"
-msgstr "بیرون‌آوری برگزیده"
+msgstr "گلچینی از"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "Write text with the typewriter"
-msgstr ""
+msgstr "با ابزار تایپ، متن بنویسید."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"
-msgstr ""
+msgstr "با حالت تمرکز، نوار ابزارها را مخفی کنید."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
-msgstr ""
+msgstr "دسترسی سریع به فایل‌ها از طریق فضای کاری"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
-msgstr ""
+msgstr "تنظیمات سند را تنظیم کنید."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
 msgid "Configure action shortcuts"
-msgstr ""
+msgstr "تنظیم میانبرهای عملکرد/دستور"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Clear Document"
-msgstr "پاکسازی نامه"
+msgstr "خالی کردن محتویات سند"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
-msgstr "همه نامه پاک می‌شود. خواهشمند است بپذیرید."
+msgstr "این کار کل سند را پاک می‌کند. لطفاً تأیید کنید."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:22
@@ -100,25 +100,25 @@ msgstr "همه نامه پاک می‌شود. خواهشمند است بپذیر
 #: crates/rnote-ui/data/ui/dialogs/import.ui:213
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
-msgstr "پیهایش"
+msgstr "لغو"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
-msgstr "پاکسازی"
+msgstr "پاک کردن"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
 #: crates/rnote-ui/src/canvas/mod.rs:656
 msgid "New Document"
-msgstr "نامه نو"
+msgstr "سند جدید"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:17
 msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
 msgstr ""
-"پیدایش نامه‌ای نو دگرش‌ها اندوخته‌نشده‌ را نادیده خواهد گرفت.\n"
-"آیا می‌خواهید نامه‌ کنونی را باندوزید؟"
+"ایجاد یک سند جدید باعث از بین رفتن تغییرات ذخیره‌نشده می‌شود.\n"
+"آیا می‌خواهید سند فعلی را ذخیره کنید؟"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:41
@@ -130,7 +130,7 @@ msgstr "نادیده گرفتن"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:60
 #: crates/rnote-ui/src/dialogs/export.rs:43
 msgid "Save"
-msgstr "اندوزش"
+msgstr "ذخیره"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:29
 msgid "Close Tab"
@@ -141,8 +141,8 @@ msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"این برگه دارای دگرش‌های اندوخته‌نشده است. دگرش‌هایی که اندوخته‌نشوند برای همیشه "
-"از دست خواهند رفت."
+"این زبانه دارای تغییرات ذخیره‌نشده است.\n"
+"تغییراتی که ذخیره نشده‌اند به‌طور دائم از بین خواهند رفت."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
@@ -153,12 +153,12 @@ msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
-"چندی از پوشه‌های باز‌شده دارای دگرش‌های اندوخته‌نشده هستند. دگرش‌هایی که "
-"اندوخته‌نشوند برای همیشه از دست خواهند رفت."
+"برخی از فایل‌های باز دارای تغییرات ذخیره‌نشده هستند.\n"
+"تغییراتی که ذخیره نشده‌اند به‌طور دائم از بین خواهند رفت."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
-msgstr "نامه‌های اندوخته‌نشده"
+msgstr "اسناد ذخیره‌نشده"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:59
 msgid "Discard All"
@@ -166,25 +166,25 @@ msgstr "نادیده گرفتن همه"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:65
 msgid "Edit Workspace"
-msgstr "دگرش پیرامون کار"
+msgstr "ویرایش محیط کاری"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:79
 #: crates/rnote-ui/data/ui/settingspanel.ui:264
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:36
 msgid "Apply"
-msgstr "انجامش"
+msgstr "اعمال کردن"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:119
 msgid "Workspace Name"
-msgstr "نام پیرامون کار"
+msgstr "نام محیط کاری"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:124
 msgid "Icon"
-msgstr "نگارک"
+msgstr "آیکون"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:125
 msgid "Change the workspace icon"
-msgstr "دگرش نگارک پیرامون کار"
+msgstr "تغییر آیکون محیط کاری"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:145
 #: crates/rnote-ui/data/ui/settingspanel.ui:345
@@ -193,15 +193,15 @@ msgstr "رنگ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:146
 msgid "Change the workspace color"
-msgstr "دگرش رنگ پیرامون کار"
+msgstr "تغییر رنگ محیط کاری"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:160
 msgid "Directory"
-msgstr "پوشه‌دان"
+msgstr "فهرست فایل‌ها"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:161
 msgid "Change the workspace directory"
-msgstr "دگرش پوشه‌دانی پیرامون کار"
+msgstr "تغییر مسیر پوشه محیط کاری"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:170
 #: crates/rnote-ui/data/ui/dialogs/export.ui:290
@@ -210,21 +210,19 @@ msgstr "دگرش پوشه‌دانی پیرامون کار"
 #: crates/rnote-ui/src/dialogs/export.rs:527
 #: crates/rnote-ui/src/dialogs/mod.rs:542
 msgid "- no directory selected -"
-msgstr "- هیچ پوشه‌دانی برگزیده نشده است -"
+msgstr "- هیچ پوشه‌ای انتخاب نشده است -"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:185
 msgid "Change the directory"
-msgstr "دگرش پوشه‌دان"
+msgstr "تغییر پوشه"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
-#, fuzzy
-#| msgid "Trash Strokes"
 msgid "Trash File"
-msgstr "نقش‌های اضافی"
+msgstr "سطل زباله"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr "آیا از انتقال این پرونده به سطل‌زباله اطمینان دارید؟"
+msgstr "آیا مطمئن هستید که می‌خواهید این فایل را به سطل زباله منتقل کنید؟"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
@@ -233,7 +231,7 @@ msgstr "سطل زباله"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:346
 msgid "Export Document"
-msgstr "بیرون‌آوری نامه"
+msgstr "خروجی گرفتن از سند"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:19
 #: crates/rnote-ui/data/ui/dialogs/export.ui:188
@@ -241,17 +239,17 @@ msgstr "بیرون‌آوری نامه"
 #: crates/rnote-ui/src/dialogs/export.rs:1252
 #: crates/rnote-ui/src/dialogs/export.rs:1313
 msgid "Export"
-msgstr "بیرون‌آوری"
+msgstr "خروجی گرفتن"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:74
 #: crates/rnote-ui/data/ui/dialogs/export.ui:483
 msgid "Export File"
-msgstr "بیرون‌آوری پرونده"
+msgstr "خروجی گرفتن از فایل"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:75
 #: crates/rnote-ui/data/ui/dialogs/export.ui:484
 msgid "Select the export file"
-msgstr "پرونده بیرون‌آورده‌شده را بگزینید"
+msgstr "فایل خروجی را انتخاب کنید"
 
 #. force the user to pick another file
 #: crates/rnote-ui/data/ui/dialogs/export.ui:84
@@ -265,13 +263,13 @@ msgstr "پرونده بیرون‌آورده‌شده را بگزینید"
 #: crates/rnote-ui/src/dialogs/export.rs:924
 #: crates/rnote-ui/src/dialogs/export.rs:1012
 msgid "- no file selected -"
-msgstr "- هیچ پرونده‌ای برگزیده نشده است -"
+msgstr "- هیچ فایلی انتخاب نشده است -"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:108
 #: crates/rnote-ui/data/ui/dialogs/export.ui:319
 #: crates/rnote-ui/data/ui/dialogs/export.ui:517
 msgid "Export Preferences"
-msgstr "نخستینگی‌های بیرون‌آوری"
+msgstr "تنظیمات خروجی"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:112
 #: crates/rnote-ui/data/ui/dialogs/export.ui:323
@@ -283,19 +281,19 @@ msgstr "با پس‌زمینه"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:324
 #: crates/rnote-ui/data/ui/dialogs/export.ui:522
 msgid "Set whether the background should be exported"
-msgstr "بگزینید که پس‌زمینه بیرون‌آوری شود یا نه"
+msgstr "تنظیم کنید که آیا پس‌زمینه باید صادر شود یا خیر"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:118
 #: crates/rnote-ui/data/ui/dialogs/export.ui:329
 #: crates/rnote-ui/data/ui/dialogs/export.ui:527
 msgid "With Pattern"
-msgstr "با نمونه"
+msgstr "با الگو"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:119
 #: crates/rnote-ui/data/ui/dialogs/export.ui:330
 #: crates/rnote-ui/data/ui/dialogs/export.ui:528
 msgid "Set whether the background pattern should be exported"
-msgstr "بگزینید که نمونه پس‌زمینه بیرون‌آوری شود یا نه"
+msgstr "تنظیم کنید که آیا الگوی پس‌زمینه باید صادر شود یا خیر"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:124
 #: crates/rnote-ui/data/ui/dialogs/export.ui:335
@@ -307,18 +305,18 @@ msgstr "بهینه‌سازی برای چاپ"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:336
 #: crates/rnote-ui/data/ui/dialogs/export.ui:534
 msgid "Set whether the content should be optimized for printing"
-msgstr "بگزینید که درونمایه بیرون‌آورده شود یا نه"
+msgstr "تنظیم کنید که آیا محتوا باید برای چاپ بهینه‌سازی شود یا خیر"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:130
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:539
 msgid "Export Format"
-msgstr "چارچوب بیرون‌آوری"
+msgstr "فرمت خروجی"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:131
 #: crates/rnote-ui/data/ui/dialogs/export.ui:342
 msgid "The export format"
-msgstr "چارچوب بیرون‌آوری"
+msgstr "فرمت خروجی"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
 #: crates/rnote-ui/data/ui/dialogs/export.ui:346
@@ -327,7 +325,7 @@ msgstr "چارچوب بیرون‌آوری"
 #: crates/rnote-ui/src/dialogs/export.rs:789
 #: crates/rnote-ui/src/dialogs/export.rs:1181
 msgid "Svg"
-msgstr "اس‌وی‌جی"
+msgstr "SVG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:376
@@ -337,116 +335,102 @@ msgstr "پی‌دی‌اف"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:387
 msgid "Xopp"
-msgstr "اکس‌اوپی‌پی"
+msgstr "XOPP"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
 #: crates/rnote-ui/data/ui/dialogs/export.ui:356
 msgid "Page Order"
-msgstr "آرایش برگه‌ها"
+msgstr "ترتیب صفحات"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
-"آرایش برگه‌ها زمانی که نامه‌هایی با چینشی\n"
-"که ایستایی یا کرانی پهن می شوند به برگه‌ها\n"
-"جدا می شوند"
+"ترتیب صفحات زمانی که اسنادی با چیدمان‌هایی که در جهت افقی و عمودی گسترش "
+"می‌یابند، به صفحات تقسیم می‌شوند"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:152
 #: crates/rnote-ui/data/ui/dialogs/export.ui:363
 msgid "Horizontal First"
-msgstr "نخست ایستایی"
+msgstr "صفحات به ترتیب افقی اول مرتب شوند"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:153
 #: crates/rnote-ui/data/ui/dialogs/export.ui:364
 msgid "Vertical First"
-msgstr "نخست کرانی"
+msgstr "صفحات به ترتیب عمودی اول مرتب شوند"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:174
 #: crates/rnote-ui/src/dialogs/export.rs:769
 msgid "Export Document Pages"
-msgstr "بیرون‌آوری برگه‌های نامه"
+msgstr "خروجی گرفتن از صفحات سند"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:260
 msgid "Page Files Naming:"
-msgstr "نام‌گذاری برگه‌های پرونده:"
+msgstr "نام‌گذاری فایل‌های صفحات:"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:280
 msgid "Export Directory"
-msgstr "پوشه‌دان بیرون‌آوری"
+msgstr "پوشه خروجی"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:281
 msgid "Select the export directory"
-msgstr "پوشه‌دان بیرون‌آوری را برگزینید"
+msgstr "پوشه خروجی را انتخاب کنید"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:312
-#, fuzzy
-#| msgid "Export Files Stem Name"
 msgctxt ""
 "When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
-msgstr "بیرون‌آوری از نام پرونده"
+msgstr "نام اصلی فایل‌ها برای صادر کردن"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:347
 #: crates/rnote-ui/data/ui/dialogs/export.ui:545
 #: crates/rnote-ui/src/dialogs/export.rs:800
 #: crates/rnote-ui/src/dialogs/export.rs:1192
 msgid "Png"
-msgstr "پی‌ان‌جی"
+msgstr "Png"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:348
 #: crates/rnote-ui/data/ui/dialogs/export.ui:546
 #: crates/rnote-ui/src/dialogs/export.rs:813
 #: crates/rnote-ui/src/dialogs/export.rs:1205
 msgid "Jpeg"
-msgstr "جی‌پگ"
+msgstr "Jpeg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
 #: crates/rnote-ui/data/ui/dialogs/import.ui:160
 msgid "Bitmap Scale-Factor"
-msgstr "درانگارش سنجه بیت‌مپ"
+msgstr "ضریب بزرگ‌نمایی/کوچک‌نمایی تصویر بیت‌مپ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
-msgstr ""
-"درانگارش سنجه بیت‌مپ را بسته به\n"
-"اندازه‌ راستین در نامه بنهانید"
+msgstr "تنظیم ضریب مقیاس تصویر بیت‌مپ نسبت به اندازه واقعی در سند"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
 msgid "Jpeg Quality"
-msgstr "چونی جی‌پگ"
+msgstr "کیفیت JPEG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:382
 #: crates/rnote-ui/data/ui/dialogs/export.ui:564
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr "چونی نگارهه جی‌پگ را بنهانید (۱-۱۰۰)"
+msgstr "کیفیت تصویر JPEG را تنظیم کنید (از ۱ تا ۱۰۰)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:414
 #: crates/rnote-ui/src/dialogs/export.rs:1160
 msgid "Export Selection"
-msgstr "بیرون‌آوری برگزیده"
+msgstr "خروجی گرفتن از قسمت انتخاب‌شده"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
-msgstr "چارچوب نگاره برگزیده"
+msgstr "فرمت تصویر خروجی"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"

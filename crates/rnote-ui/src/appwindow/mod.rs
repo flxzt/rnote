@@ -19,6 +19,7 @@ use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
+use rnote_engine::widgetflags::PopupMessage;
 use rnote_engine::{WidgetFlags, engine::EngineTask};
 use std::path::Path;
 use tracing::{debug, error};
@@ -336,8 +337,14 @@ impl RnAppWindow {
             canvas.set_text_preprocessing(enable_text_preprocessing);
         }
         if let Some(popup_message) = widget_flags.popup_message {
+            let popup_text = match popup_message {
+                PopupMessage::MirrorText => {
+                    gettext("Mirroring selections containing text is not supported")
+                }
+            };
+
             self.overlays()
-                .dispatch_toast_text(&popup_message, overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
+                .dispatch_toast_text(&popup_text, overlays::TEXT_TOAST_TIMEOUT_DEFAULT);
         }
     }
 

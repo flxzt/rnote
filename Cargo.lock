@@ -3587,7 +3587,6 @@ dependencies = [
  "flate2",
  "futures",
  "geo",
- "gettext-rs",
  "gio",
  "glib",
  "gtk4",

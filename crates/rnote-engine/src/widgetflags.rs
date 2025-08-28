@@ -1,3 +1,9 @@
+/// Types of messages that can be sent to the user via a dispatch_toast_text
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub enum PopupMessage {
+    MirrorText,
+}
+
 /// Flags returned to the UI widget that holds the engine.
 #[must_use]
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -29,7 +35,7 @@ pub struct WidgetFlags {
     /// If Some, a popup message is sent to the user, through a dispatch_toast_text message.
     /// Intended to notify the user that an operation they performed could not be completed
     /// or is not possible
-    pub popup_message: Option<String>,
+    pub popup_message: Option<PopupMessage>,
 }
 
 impl Default for WidgetFlags {

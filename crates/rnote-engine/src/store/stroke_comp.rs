@@ -3,10 +3,10 @@ use super::StrokeKey;
 use super::render_comp::RenderCompState;
 use crate::engine::StrokeContent;
 use crate::strokes::{Content, Stroke};
+use crate::widgetflags::PopupMessage;
 use crate::{StrokeStore, WidgetFlags};
 use geo::intersects::Intersects;
 use geo::prelude::Contains;
-use gettextrs::gettext;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::Color;
 use rnote_compose::penpath::Element;
@@ -323,9 +323,7 @@ impl StrokeStore {
         });
 
         if stroke_contains_text {
-            widget_flags.popup_message = Some(gettext(
-                "Mirroring selections containing text is not supported",
-            ));
+            widget_flags.popup_message = Some(PopupMessage::MirrorText);
             return widget_flags;
         }
 

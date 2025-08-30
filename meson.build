@@ -1,4 +1,4 @@
-project('rnote', ['rust', 'cpp'], version: '0.11.0', meson_version: '>= 1.0')
+project('rnote', ['rust', 'cpp'], version: '0.13.0', meson_version: '>= 1.0')
 # add a patch suffix for alpha or beta versions in format '-<alpha|beta>.<x>'.
 patch = ''
 
@@ -60,8 +60,8 @@ endif
 dependency('glib-2.0', version: '>= 2.76')
 dependency('gio-2.0', version: '>= 2.76')
 dependency('cairo', version: '>= 1.18')
-dependency('gtk4', version: '>= 4.16.0')
 dependency('poppler', version: '>= 20.09')
+# UI/CLI specific dependencies are declared below
 
 cargo = find_program('cargo', required: true)
 # cmake is needed by the "ink-stroke-modeler-rs" bindings crate to build the C++ library
@@ -89,7 +89,6 @@ meson.add_dist_script(
 # core crates
 subdir('crates/rnote-compose')
 subdir('crates/rnote-engine')
-
 
 # cargo fmt check
 run_target(
@@ -136,11 +135,11 @@ run_target(
 
 # build/install the ui
 if build_ui == true
-# ui dependencies
+    # ui dependencies
     dependency('appstream')
-    dependency('poppler-glib', version: '>= 22.02')
-    dependency('gtk4', version: '>= 4.12')
-    dependency('libadwaita-1', version: '>= 1.4')
+    dependency('poppler-glib', version: '>= 20.09')
+    dependency('gtk4', version: '>= 4.18')
+    dependency('libadwaita-1', version: '>= 1.7')
 
     # ui crate
     subdir('crates/rnote-ui')
@@ -263,7 +262,7 @@ if build_ui == true
     )
 
     if host_machine.system() == 'windows'
-# build installer
+        # build installer
         custom_target(
             'build-installer',
             input: inno_script,
@@ -287,7 +286,7 @@ endif
 
 # build/install the cli
 if build_cli == true
-# cli crate
+    # cli crate
     subdir('crates/rnote-cli')
 
     cli_cargo_options = ['--manifest-path', cargo_manifest_path]

@@ -102,6 +102,7 @@ impl DrawableOnDoc for Typewriter {
                 (pos + na::vector![
                     Self::STATE_START_TEXT_WIDTH,
                     engine_view
+                        .config
                         .pens_config
                         .typewriter_config
                         .text_style
@@ -114,7 +115,11 @@ impl DrawableOnDoc for Typewriter {
                     engine_view.store.get_stroke_ref(*stroke_key)
                 {
                     let text_rect = Self::text_rect_bounds(
-                        engine_view.pens_config.typewriter_config.text_width(),
+                        engine_view
+                            .config
+                            .pens_config
+                            .typewriter_config
+                            .text_width(),
                         textstroke,
                     );
                     let typewriter_bounds = text_rect.extend_by(
@@ -160,6 +165,7 @@ impl DrawableOnDoc for Typewriter {
                         let cursor_text = String::from('|');
                         let cursor_text_len = cursor_text.len();
                         engine_view
+                            .config
                             .pens_config
                             .typewriter_config
                             .text_style
@@ -182,7 +188,11 @@ impl DrawableOnDoc for Typewriter {
                 if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_ref(*stroke_key)
                 {
-                    let text_width = engine_view.pens_config.typewriter_config.text_width();
+                    let text_width = engine_view
+                        .config
+                        .pens_config
+                        .typewriter_config
+                        .text_width();
                     let text_bounds = Self::text_rect_bounds(text_width, textstroke);
 
                     // Draw text outline
@@ -326,20 +336,25 @@ impl PenBehaviour for Typewriter {
                     if let Some(Stroke::TextStroke(textstroke)) =
                         engine_view.store.get_stroke_ref(*stroke_key)
                     {
-                        engine_view.pens_config.typewriter_config.text_style =
+                        engine_view.config.pens_config.typewriter_config.text_style =
                             textstroke.text_style.clone();
                         engine_view
+                            .config
                             .pens_config
                             .typewriter_config
                             .text_style
                             .ranged_text_attributes
                             .clear();
-                        engine_view.pens_config.typewriter_config.set_text_width(
-                            textstroke
-                                .text_style
-                                .max_width()
-                                .unwrap_or(TypewriterConfig::TEXT_WIDTH_DEFAULT),
-                        );
+                        engine_view
+                            .config
+                            .pens_config
+                            .typewriter_config
+                            .set_text_width(
+                                textstroke
+                                    .text_style
+                                    .max_width()
+                                    .unwrap_or(TypewriterConfig::TEXT_WIDTH_DEFAULT),
+                            );
                         update_cursors_for_textstroke(textstroke, cursor, Some(selection_cursor));
 
                         widget_flags.refresh_ui = true;
@@ -351,20 +366,25 @@ impl PenBehaviour for Typewriter {
                     if let Some(Stroke::TextStroke(textstroke)) =
                         engine_view.store.get_stroke_ref(*stroke_key)
                     {
-                        engine_view.pens_config.typewriter_config.text_style =
+                        engine_view.config.pens_config.typewriter_config.text_style =
                             textstroke.text_style.clone();
                         engine_view
+                            .config
                             .pens_config
                             .typewriter_config
                             .text_style
                             .ranged_text_attributes
                             .clear();
-                        engine_view.pens_config.typewriter_config.set_text_width(
-                            textstroke
-                                .text_style
-                                .max_width()
-                                .unwrap_or(TypewriterConfig::TEXT_WIDTH_DEFAULT),
-                        );
+                        engine_view
+                            .config
+                            .pens_config
+                            .typewriter_config
+                            .set_text_width(
+                                textstroke
+                                    .text_style
+                                    .max_width()
+                                    .unwrap_or(TypewriterConfig::TEXT_WIDTH_DEFAULT),
+                            );
                         update_cursors_for_textstroke(textstroke, cursor, None);
 
                         widget_flags.refresh_ui = true;
@@ -661,8 +681,17 @@ impl Typewriter {
             engine_view.camera.viewport().mins.coords + Stroke::IMPORT_OFFSET_DEFAULT
         });
         let mut widget_flags = WidgetFlags::default();
-        let text_width = engine_view.pens_config.typewriter_config.text_width();
-        let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
+        let text_width = engine_view
+            .config
+            .pens_config
+            .typewriter_config
+            .text_width();
+        let mut text_style = engine_view
+            .config
+            .pens_config
+            .typewriter_config
+            .text_style
+            .clone();
 
         match &mut self.state {
             TypewriterState::Idle => {

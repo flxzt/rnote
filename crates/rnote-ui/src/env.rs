@@ -63,10 +63,6 @@ pub(crate) fn locale_dir() -> anyhow::Result<PathBuf> {
 
 /// depending on the target platform we need to set some env vars on startup
 pub(crate) fn setup_env() -> anyhow::Result<()> {
-    // workaround for issue 1061 https://github.com/flxzt/rnote/issues/1061
-    // SAFETY: this setup only happens while still being single-threaded
-    unsafe { std::env::set_var("GSK_RENDERER", "gl") };
-
     if cfg!(target_os = "windows") {
         let data_dir = data_dir()?;
         let lib_dir = lib_dir()?;
@@ -123,4 +119,46 @@ fn macos_is_in_app_bundle(canonicalized_exec_dir: impl AsRef<Path>) -> bool {
                 false
             }
         })
+}
+
+#[cfg(target_os = "windows")]
+/// Workaround for windows for shadow that intercept mouse events outside of the
+/// actual window. See https://github.com/flxzt/rnote/issues/1372
+///
+/// Taken from gaphor
+/// See comment from https://github.com/gaphor/gaphor/blob/a7b35712b166a38b78933a79613eab330f7bd885/gaphor/ui/styling-windows.css
+/// and https://gitlab.gnome.org/GNOME/gtk/-/issues/6255#note_1952796
+pub fn window_styling_workaround() -> anyhow::Result<()> {
+    use gtk4::{gdk, style_context_add_provider_for_display};
+
+    // gtk needs to be initialized for the style provider to work
+    gtk4::init()?;
+
+    let default_display = gdk::Display::default();
+    let style_provider = gtk4::CssProvider::new();
+    style_provider.load_from_string(
+        "
+            .csd {
+          box-shadow: 0 3px 9px 1px alpha(black, 0.35),
+                      0 0 0 1px alpha(black, 0.18);
+        }
+        
+        .csd:backdrop {
+          box-shadow: 0 3px 9px 1px transparent,
+                      0 2px 6px 2px alpha(black, 1),
+                      0 0 0 1px alpha(black, 0.06);
+        }",
+    );
+
+    match default_display {
+        Some(display) => {
+            style_context_add_provider_for_display(
+                &display,
+                &style_provider,
+                gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
+            );
+            Ok(())
+        }
+        None => Err(anyhow::anyhow!("Could not find a default display")),
+    }
 }

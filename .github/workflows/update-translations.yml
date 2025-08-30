@@ -20,8 +20,8 @@ concurrency:
 jobs:
   i18n_zh_Hans2zh_Hant:
     name: zh_Hans -> zh_Hant
-    runs-on: ubuntu-22.04
-    container: fedora:39
+    runs-on: ubuntu-24.04
+    container: fedora:42
     permissions:
       # needed for pushing the changes
       contents: write
@@ -29,7 +29,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo dnf install --refresh -y just git opencc-tools
+          sudo dnf install -y just lsb_release git opencc-tools
 
       - name: Setup repository
         run: |

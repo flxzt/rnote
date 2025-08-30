@@ -11,9 +11,11 @@ use crate::workspacebrowser::workspacesbar::RnWorkspaceRow;
 use crate::{RnIconPicker, globals};
 use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
+#[allow(deprecated)]
+use gtk4::ShortcutsWindow;
 use gtk4::{
-    Builder, Button, CheckButton, ColorDialogButton, FileDialog, Label, MenuButton,
-    ShortcutsWindow, StringList, gio, glib, glib::clone,
+    Builder, Button, CheckButton, ColorDialogButton, FileDialog, Label, MenuButton, StringList,
+    gio, glib, glib::clone,
 };
 use tracing::{debug, error, warn};
 
@@ -50,6 +52,7 @@ pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
 pub(crate) fn dialog_keyboard_shortcuts(appwindow: &RnAppWindow) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/shortcuts.ui").as_str());
+    #[allow(deprecated)]
     let dialog: ShortcutsWindow = builder.object("shortcuts_window").unwrap();
     dialog.set_transient_for(Some(appwindow));
     dialog.present();
@@ -221,7 +224,7 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
     prefix_box.append(&check);
     if canvas_output_file.is_some() {
         // Indicate that a new existing file will be saved
-        let icon_image = gtk4::Image::from_icon_name("doc-save-symbolic");
+        let icon_image = gtk4::Image::from_icon_name("save-symbolic");
         icon_image.set_tooltip_text(Some(&gettext("The changes will be saved")));
         prefix_box.append(&icon_image);
     } else {
@@ -353,7 +356,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         prefix_box.append(&check);
         if canvas_output_file.is_some() {
             // Indicate that a new existing file will be saved
-            let icon_image = gtk4::Image::from_icon_name("doc-save-symbolic");
+            let icon_image = gtk4::Image::from_icon_name("save-symbolic");
             icon_image.set_tooltip_text(Some(&gettext("The changes will be saved")));
             prefix_box.append(&icon_image);
         } else {

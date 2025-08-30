@@ -13,6 +13,7 @@
     - `just install`
     - `just lint`
     - `just test`
+    - `just test-file-compatibility`
 - Wait for CI to run successfully
 - Create a release with tag `vX.Y.Z` on Github - the installer and tarball will be created by Github Actions CD
 - For Flathub: create a new release branch, update the Flathub flatpak manifest with the new tarball download Url and
@@ -75,7 +76,10 @@ just generate-json-flatpak-manifest
 
 # Translations
 
-To regenerate the `.pot`, run:
+Regenerate the .pot file in the translations folder.
+Note that all entries with strings starting and ending like this "@<..>@" must be removed,
+they are templated variables and will be replaced in the build process of the app.
+All changelog entries should be removed as well.
 
 ```bash
 meson compile rnote-pot -C _mesonbuild

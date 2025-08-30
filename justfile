@@ -2,13 +2,15 @@
 
 # Either 'true' or 'false'
 ci := "false"
-linux_distr := `lsb_release -ds | tr '[:upper:]' '[:lower:]'`
 log_level := "debug"
 build_folder := "_mesonbuild"
 flatpak_app_folder := "_flatpak_app"
 flatpak_repo_folder := "_flatpak_repo"
 mingw64_prefix_path := "C:/msys64/mingw64"
 
+[private]
+linux_distr := `lsb_release -ds | tr '[:upper:]' '[:lower:]'`
+[private]
 sudo_cmd := "sudo"
 
 export LANG := "C"
@@ -26,8 +28,7 @@ default:
 prerequisites:
     #!/usr/bin/env bash
     set -euxo pipefail
-
-    if [[ ('{{linux_distr}}' =~ 'fedora') || ('{{linux_distr}}' =~ 'rhel') || ('{{linux_distr}}' =~ 'alma') ]]; then
+    if [[ ('{{linux_distr}}' =~ 'fedora') ]]; then
         {{sudo_cmd}} dnf install -y \
             gcc gcc-c++ clang clang-devel python3 make cmake meson just git appstream gettext desktop-file-utils \
             shared-mime-info kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel \
@@ -41,18 +42,13 @@ prerequisites:
         echo "Unable to install system dependencies, unsupported distro."
         exit 1
     fi
-
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    . "$HOME/.cargo/env"
-    curl -L --proto '=https' --tlsv1.2 -sSf \
-        https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-    cargo binstall -y cargo-nextest
+    export PATH="$HOME/.cargo/bin:$PATH"
 
 prerequisites-flatpak: prerequisites
     #!/usr/bin/env bash
     set -euxo pipefail
-
-    if [[ ('{{linux_distr}}' =~ 'fedora') || ('{{linux_distr}}' =~ 'rhel') || ('{{linux_distr}}' =~ 'alma') ]]; then
+    if [[ ('{{linux_distr}}' =~ 'fedora') ]]; then
         {{sudo_cmd}} dnf install -y \
             flatpak flatpak-builder
     elif [[ '{{linux_distr}}' =~ 'debian' || '{{linux_distr}}' =~ 'ubuntu' ]]; then
@@ -63,7 +59,6 @@ prerequisites-flatpak: prerequisites
         echo "Unable to install system dependencies, unsupported distro."
         exit 1
     fi
-
     flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
     flatpak install -y org.gnome.Platform//48 org.gnome.Sdk//48 org.freedesktop.Sdk.Extension.rust-stable//24.08 \
         org.freedesktop.Sdk.Extension.llvm19//24.08
@@ -71,8 +66,7 @@ prerequisites-flatpak: prerequisites
 prerequisites-dev: prerequisites
     #!/usr/bin/env bash
     set -euxo pipefail
-
-    if [[ ('{{linux_distr}}' =~ 'fedora') || ('{{linux_distr}}' =~ 'rhel') || ('{{linux_distr}}' =~ 'alma') ]]; then
+    if [[ ('{{linux_distr}}' =~ 'fedora') ]]; then
         {{sudo_cmd}} dnf install -y \
             yamllint yq opencc-tools
     elif [[ '{{linux_distr}}' =~ 'debian' || '{{linux_distr}}' =~ 'ubuntu' ]]; then
@@ -83,10 +77,12 @@ prerequisites-dev: prerequisites
         echo "Unable to install system dependencies, unsupported distro."
         exit 1
     fi
-
     if [[ "{{ci}}" != "true" ]]; then
         ln -sf build-aux/git-hooks/pre-commit.hook .git/hooks/pre-commit
     fi
+    curl -L --proto '=https' --tlsv1.2 -sSf \
+        https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+    cargo binstall -y cargo-nextest cargo-edit cargo-deny
 
 # in MSYS2 shell
 prerequisites-win:
@@ -96,12 +92,9 @@ prerequisites-win:
         mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils \
         mingw-w64-x86_64-appstream mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-poppler \
         mingw-w64-x86_64-poppler-data mingw-w64-x86_64-angleproject
-
     mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
-
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    . "$HOME/.cargo/env"
-    cargo install --locked cargo-nextest
+    export PATH="$HOME/.cargo/bin:$PATH"
 
 setup-dev *MESON_ARGS:
     meson setup \
@@ -119,9 +112,11 @@ setup-release *MESON_ARGS:
         {{ build_folder }}
 
 # in MINGW64 shell
-setup-win installer_name="rnote-win-installer":
+setup-win-installer installer_name="rnote-win-installer":
     meson setup \
         --prefix={{ mingw64_prefix_path }} \
+        -Dprofile=default \
+        -Dcli=true \
         -Dwin-installer-name={{ installer_name }} \
         -Dci={{ ci }} \
         {{ build_folder }}
@@ -148,6 +143,9 @@ lint:
     meson compile ui-cargo-clippy -C {{ build_folder }}
     meson compile cli-cargo-clippy -C {{ build_folder }}
     yamllint .
+
+lint-dependencies:
+    cargo deny check
 
 build:
     meson compile ui-cargo-build -C {{ build_folder }}
@@ -192,7 +190,7 @@ test:
     meson compile cargo-test -C {{ build_folder }}
 
 test-file-compatibility:
-    rnote-cli test \
+    {{ build_folder }}/target/debug/rnote-cli test \
         misc/file-tests/v0-5-5-test.rnote \
         misc/file-tests/v0-5-13-test.rnote \
         misc/file-tests/v0-6-0-test.rnote \
@@ -203,7 +201,14 @@ generate-docs:
     meson compile cli-cargo-doc -C {{ build_folder }}
 
 check-outdated-dependencies:
-    cargo upgrade --dry-run --verbose
+    cargo upgrade --dry-run -vv
+
+[doc('Regenerates the .pot file in the translations folder.
+Note that all entries with strings starting and ending like this "@<..>@" must be removed,
+they are templated variables and will be replaced in the build process of the app.
+All changelog entries should be removed as well.')]
+update-translations-template:
+    meson compile rnote-pot -C {{ build_folder }}
 
 update-translations:
     #!/usr/bin/env bash

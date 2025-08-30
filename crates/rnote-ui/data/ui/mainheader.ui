@@ -71,7 +71,7 @@
             <child>
               <object class="GtkButton">
                 <property name="tooltip-text" translatable="yes">Save Document</property>
-                <property name="icon-name">doc-save-symbolic</property>
+                <property name="icon-name">save-symbolic</property>
                 <property name="action-name">win.save-doc</property>
               </object>
             </child>

@@ -432,7 +432,7 @@ impl DrawableOnDoc for Selector {
                     modify_state,
                     self.pos,
                     engine_view.camera,
-                    engine_view.document.background.color,
+                    engine_view.document.config.background.color,
                 )?;
 
                 match modify_state {

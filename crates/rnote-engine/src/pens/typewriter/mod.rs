@@ -256,7 +256,7 @@ impl DrawableOnDoc for Typewriter {
                         ),
                         Self::ADJUST_TEXT_WIDTH_NODE_SIZE / total_zoom,
                         total_zoom,
-                        piet::Color::from(engine_view.document.background.color),
+                        piet::Color::from(engine_view.document.config.background.color),
                     );
 
                     // Draw the translate Node
@@ -284,7 +284,7 @@ impl DrawableOnDoc for Typewriter {
                             translate_node_state,
                             translate_node_bounds,
                             total_zoom,
-                            piet::Color::from(engine_view.document.background.color),
+                            piet::Color::from(engine_view.document.config.background.color),
                         );
                     }
                 }

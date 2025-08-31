@@ -885,12 +885,12 @@ impl TextStroke {
     }
 
     pub fn move_cursor_back(&self, cursor: &mut GraphemeCursor) {
-        // Cant fail, we are providing the entire text
+        // Can't fail, we are providing the entire text
         cursor.prev_boundary(&self.text, 0).unwrap();
     }
 
     pub fn move_cursor_forward(&self, cursor: &mut GraphemeCursor) {
-        // Cant fail, we are providing the entire text
+        // Can't fail, we are providing the entire text
         cursor.next_boundary(&self.text, 0).unwrap();
     }
 

@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-08-31 17:01+0200\n"
-"PO-Revision-Date: 2024-04-02 00:01+0000\n"
-"Last-Translator: openCC converted Integral <integral@member.fsf.org>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"rnote/repo/zh_Hans/>\n"
+"PO-Revision-Date: 2025-07-19 14:03+0000\n"
+"Last-Translator: openCC converted Yuqi Huang <ctrlhuangyq@gmail.com>\n"
+"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
+"projects/rnote/repo/zh_Hans/>\n"
 "Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.13-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -28,7 +28,7 @@ msgstr "素描與手寫筆記"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:14
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;Office;Graphics;Notes;"
+msgstr "Gnome;GTK;Office;圖形;筆記;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:19
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
@@ -217,18 +217,16 @@ msgid "Change the directory"
 msgstr "更改目錄"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
-#, fuzzy
-#| msgid "Trash Strokes"
 msgid "Trash File"
-msgstr "回收筆畫"
+msgstr "將檔案移至回收站"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr ""
+msgstr "您確定移動這個檔案至回收站嗎？"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "回收站"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:346
@@ -346,29 +344,24 @@ msgstr "頁面循序"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
-"文件帶有佈局時的頁面循序\n"
-"向水平和垂直方向擴充套件\n"
-"被切斷成頁"
+"當文件的佈局在\n"
+"橫向與縱向擴充套件時，\n"
+"被切割為頁面的順序"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:152
 #: crates/rnote-ui/data/ui/dialogs/export.ui:363
 msgid "Horizontal First"
-msgstr "水平優先"
+msgstr "橫向優先"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:153
 #: crates/rnote-ui/data/ui/dialogs/export.ui:364
 msgid "Vertical First"
-msgstr "垂直優先"
+msgstr "縱向優先"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:174
 #: crates/rnote-ui/src/dialogs/export.rs:769
@@ -416,10 +409,6 @@ msgstr "點陣圖縮放係數"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
@@ -430,12 +419,12 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
 msgid "Jpeg Quality"
-msgstr "Jpeg影像質量"
+msgstr "JPEG 影像質量"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:382
 #: crates/rnote-ui/data/ui/dialogs/export.ui:564
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr "設定Jpeg影像的質量（1-100）"
+msgstr "設定 JPEG 影像的質量（1-100）"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:414
 #: crates/rnote-ui/src/dialogs/export.rs:1160
@@ -486,7 +475,7 @@ msgstr "調整文件"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "文件佈局是否應該調整為 Pdf"
+msgstr "文件佈局是否應該調整為 PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
 msgid "Page Width (%)"
@@ -538,43 +527,39 @@ msgstr "頁面是否繪製了邊框"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:204
 msgid "Import Xournal++ File"
-msgstr "匯入Xournal++檔案"
+msgstr "匯入 Xournal++ 檔案"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:247
 msgid "Xournal++ File Import Preferences"
-msgstr "Xournal++檔案匯入設定"
+msgstr "Xournal++ 檔案匯入設定"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:251
 msgid "DPI"
-msgstr "畫素密度(DPI)"
+msgstr "畫素密度（DPI）"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:252
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr "為Xournal++檔案設定推薦的DPI"
+msgstr "為 Xournal++ 檔案設定推薦的 DPI"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:273
 msgid "is password protected"
-msgstr ""
+msgstr "密碼受保護"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:276
 msgid "Encrypted PDF"
-msgstr ""
+msgstr "加密 PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:279
-#, fuzzy
-#| msgid "Cancel"
 msgid "_Cancel"
-msgstr "取消"
+msgstr "取消 [_C]"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:280
-#, fuzzy
-#| msgid "Clock"
 msgid "_Unlock"
-msgstr "時鐘"
+msgstr "解鎖 [_U]"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:291
 msgid "Enter the PDF password"
-msgstr ""
+msgstr "請輸入 PDF 密碼"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
@@ -633,7 +618,7 @@ msgstr "曲線"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Produces smooth, curved segments.\n"
-msgstr "生成光滑、彎曲的線段。\n"
+msgstr "生成平滑的曲線段。\n"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:201
 msgid "Modeled"
@@ -693,7 +678,7 @@ msgstr "密度"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:239
 msgid "The density is the amount of dots per 10x10 area"
-msgstr "密度指的是10x10區域內點的數量"
+msgstr "密度指的是 10x10 區域內點的數量"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
 msgctxt ""
@@ -780,8 +765,6 @@ msgid "Select Intersecting Path"
 msgstr "選擇相交路徑"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
-#, fuzzy
-#| msgid "Lock Aspectratio While Resizing the Selection"
 msgid "Lock Aspect Ratio While Resizing the Selection"
 msgstr "調整選區大小時鎖定長寬比"
 
@@ -868,9 +851,10 @@ msgstr "選擇格式"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:169
 #, fuzzy
-#| msgid "Height"
+#| msgctxt "part of string representation of a color"
+#| msgid "bright"
 msgid "Straight"
-msgstr "高度"
+msgstr "亮度"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
 msgid "Round"
@@ -985,18 +969,16 @@ msgstr "3:2"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:269
 msgid "Golden Ratio (1:1.618)"
-msgstr "黃金比例(1:1.618)"
+msgstr "黃金比例（1:1.618）"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:21
 msgid "Insert Vertical Space"
-msgstr "插入豎直空白"
+msgstr "插入縱向空白"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-#, fuzzy
-#| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
-msgstr "形狀設定"
+msgstr "縱向空間工具配置"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
@@ -1008,18 +990,16 @@ msgid "Zoom In/Out"
 msgstr "縮放"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
-#, fuzzy
-#| msgid "Eraser"
 msgid "Laser"
-msgstr "橡皮"
+msgstr "雷射"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"
-msgstr ""
+msgstr "請選擇字型"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:29
 msgid "Edit Font Size"
-msgstr ""
+msgstr "編輯字型大小"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:45
 msgid "Pick And Insert Emoji"
@@ -1215,7 +1195,7 @@ msgstr "捕獲位置 [_S]"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:29
 msgid "Respect Borders When Pasting"
-msgstr ""
+msgstr "貼上時注意邊界"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:34
 msgid "_Pen Sounds"
@@ -1330,7 +1310,7 @@ msgstr "新標籤頁"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:54
 msgid "View Open Tabs"
-msgstr ""
+msgstr "檢視開啟的標籤頁"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:61
 msgid "Focus Mode"
@@ -1342,14 +1322,12 @@ msgid "Save Document"
 msgstr "儲存文件"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:89
-#, fuzzy
-#| msgid "Open the Canvas-Menu"
 msgid "Canvas Menu"
-msgstr "開啟畫布選單"
+msgstr "畫布選單"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:94
 msgid "App Menu"
-msgstr ""
+msgstr "APP 目錄"
 
 #: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
@@ -1376,10 +1354,8 @@ msgid "Toggle"
 msgstr "切換"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:14
-#, fuzzy
-#| msgid "Enabled"
 msgid "Disabled"
-msgstr "啟用"
+msgstr "已停用"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:41
 #: crates/rnote-ui/data/ui/shortcuts.ui:11
@@ -1396,7 +1372,7 @@ msgstr "啟用/關閉自動儲存"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:50
 msgid "Autosave Interval (secs)"
-msgstr "自動儲存間隔(秒)"
+msgstr "自動儲存間隔（秒）"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:51
 msgid "Set the autosave interval in seconds"
@@ -1411,16 +1387,16 @@ msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "設定畫布上的捲軸是否顯示"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:64
-#, fuzzy
-#| msgid "Optimize for Printing"
 msgid "Optimize for E-Paper Displays"
-msgstr "針對列印最佳化"
+msgstr "針對電子書最佳化"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:65
 msgid ""
 "Changes certain UI elements and modifies behaviour\n"
 "of tools for optimized usage on E-Paper displays"
 msgstr ""
+"更改某些用介面元素並修改工具行為\n"
+"以最佳化在電子紙書上的使用"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:71
 msgid "Inertial Touch Scrolling"
@@ -1467,12 +1443,12 @@ msgstr "頁面格式"
 #: crates/rnote-ui/data/ui/settingspanel.ui:142
 #: crates/rnote-ui/data/ui/settingspanel.ui:284
 msgid "Save as Preset"
-msgstr ""
+msgstr "另存為預設"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:151
 #: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Restore From Preset"
-msgstr ""
+msgstr "恢復為預設"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:161
 msgid "Format"
@@ -1552,7 +1528,7 @@ msgstr "解析度"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:245
 msgid "Set the Dpi (dots per inch). Defaults to 96."
-msgstr "設定畫素密度(DPI)，預設為96。"
+msgstr "設定畫素密度（DPI），預設值為 96。"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:255
 msgid "Revert"
@@ -1574,7 +1550,7 @@ msgstr "固定尺寸"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:308
 msgid "Continuous Vertical"
-msgstr "垂直連續的頁面"
+msgstr "縱向連續的頁面"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:309
 msgid "Semi Infinite"
@@ -1585,16 +1561,12 @@ msgid "Infinite"
 msgstr "無限"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:318
-#, fuzzy
-#| msgid "Show _Format Borders"
 msgid "Show Format Borders"
-msgstr "顯示格式邊框 [_F]"
+msgstr "顯示格式界線"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:319
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are shown"
 msgid "Set whether the format borders are shown"
-msgstr "設定畫布上的捲軸是否顯示"
+msgstr "設定是否顯示格式界線"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:324
 msgid "Format Border Color"
@@ -1662,24 +1634,18 @@ msgid "Set the background pattern height"
 msgstr "選擇背景使用的紋理的高度"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:439
-#, fuzzy
-#| msgid "Show _Origin Indicator"
 msgid "Show Origin Indicator"
-msgstr "顯示原點指示器 [_O]"
+msgstr "顯示原點指示器"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:440
-#, fuzzy
-#| msgid "Set whether the drawing cursor is visible"
 msgid "Set whether the document origin indicator is shown"
-msgstr "設定畫筆游標是否可見"
+msgstr "設定是否顯示文件原點指示器"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:445
 msgid "Invert Color Brightness"
 msgstr "反轉色彩亮度"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:446
-#, fuzzy
-#| msgid "Invert the brightness of all background pattern colors"
 msgid "Invert the brightness of the background and pattern colors"
 msgstr "反轉背景紋理的顏色明暗"
 
@@ -1753,7 +1719,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:528
 msgid "Drawing Pad Button 1 Action"
-msgstr "畫板按鈕1行為"
+msgstr "畫板按鈕 1 的行為"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:529
 msgid ""
@@ -1761,11 +1727,11 @@ msgid ""
 "on a drawing pad"
 msgstr ""
 "設定畫板\n"
-"按鈕1的行為"
+"按鈕 1 的行為"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:541
 msgid "Drawing Pad Button 2 Action"
-msgstr "畫板按鈕2行為"
+msgstr "畫板按鈕 2 的行為"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:542
 msgid ""
@@ -1773,11 +1739,11 @@ msgid ""
 "on a drawing pad"
 msgstr ""
 "設定畫板\n"
-"按鈕2的行為"
+"按鈕 2 的行為"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:554
 msgid "Drawing Pad Button 3 Action"
-msgstr "畫板按鈕3行為"
+msgstr "畫板按鈕 3 的行為"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:555
 msgid ""
@@ -1785,11 +1751,11 @@ msgid ""
 "on a drawing pad"
 msgstr ""
 "設定畫板\n"
-"按鈕3的行為"
+"按鈕 3 的行為"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:567
 msgid "Drawing Pad Button 4 Action"
-msgstr "畫板按鈕4行為"
+msgstr "畫板按鈕 4 的行為"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:568
 msgid ""
@@ -1797,7 +1763,7 @@ msgid ""
 "on a drawing pad"
 msgstr ""
 "設定畫板\n"
-"按鈕4的行為"
+"按鈕 4 的行為"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"
@@ -1813,7 +1779,7 @@ msgstr "退出應用"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:44
 msgid "Toggle Tabs Overview"
-msgstr ""
+msgstr "切換標籤概述"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:50
 msgid "Open the Canvas-Menu"
@@ -1934,10 +1900,8 @@ msgid "Page"
 msgstr "頁碼"
 
 #: crates/rnote-ui/data/ui/strokewidthpicker.ui:20
-#, fuzzy
-#| msgid "Split Strokes"
 msgid "Edit Stroke Size"
-msgstr "分割筆畫"
+msgstr "編輯筆畫大小"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
@@ -1952,10 +1916,8 @@ msgid "Create new Folder"
 msgstr "建立新資料夾"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:167
-#, fuzzy
-#| msgid "Workspace Name"
 msgid "Open Workspace Folder"
-msgstr "工作區名稱"
+msgstr "開啟工作區目錄"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:700
 #: crates/rnote-ui/src/appwindow/imp.rs:425
@@ -1976,23 +1938,23 @@ msgstr "匯出選擇內容失敗，沒有選擇內容"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:377
 msgid "Saves are in progress, waiting before closing.."
-msgstr ""
+msgstr "儲存正在進行中，請稍候再關閉……"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:447
 msgid "Button 1"
-msgstr "按鈕1"
+msgstr "按鈕 1"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:454
 msgid "Button 2"
-msgstr "按鈕2"
+msgstr "按鈕 2"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:461
 msgid "Button 3"
-msgstr "按鈕3"
+msgstr "按鈕 3"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:468
 msgid "Button 4"
-msgstr "按鈕4"
+msgstr "按鈕 4"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:223
 msgid ""
@@ -2011,7 +1973,7 @@ msgstr "—— 無效檔名 ——"
 
 #: crates/rnote-ui/src/canvas/mod.rs:905
 msgid "- invalid folder path -"
-msgstr "-無效的資料夾路徑-"
+msgstr "—— 無效的資料夾路徑 ——"
 
 #: crates/rnote-ui/src/canvas/mod.rs:929
 msgid "Opened file was modified on disk"
@@ -2074,10 +2036,8 @@ msgstr "在檔案管理器中檢視"
 #: crates/rnote-ui/src/dialogs/export.rs:752
 #: crates/rnote-ui/src/dialogs/export.rs:1111
 #: crates/rnote-ui/src/dialogs/export.rs:1117
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Failed to view the file in the file manager"
-msgstr "無法開啟在檔案管理器中選擇的檔案"
+msgstr "無法在檔案管理器中檢視選擇的檔案"
 
 #: crates/rnote-ui/src/dialogs/export.rs:348
 #: crates/rnote-ui/src/dialogs/export.rs:771
@@ -2145,7 +2105,7 @@ msgstr "開啟檔案"
 
 #: crates/rnote-ui/src/dialogs/import.rs:85
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
+msgstr "JPG, PDF, PNG, SVG, xopp, TXT"
 
 #: crates/rnote-ui/src/dialogs/import.rs:181
 #: crates/rnote-ui/src/dialogs/import.rs:412
@@ -2447,15 +2407,15 @@ msgstr "矩形"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:678
 msgid "2D coordinate system"
-msgstr "2維座標系"
+msgstr "二維座標系"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:679
 msgid "3D coordinate system"
-msgstr "3維座標系"
+msgstr "三維座標系"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:680
 msgid "2D single quadrant coordinate system"
-msgstr "2維單象限座標系"
+msgstr "二維單象限座標系"
 
 #: crates/rnote-ui/src/penssidebar/shaperpage.rs:681
 msgid "Ellipse"
@@ -2588,10 +2548,8 @@ msgid "Duplicating the directory failed"
 msgstr "複製目錄失敗"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/open_in_default_app.rs:26
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Open the file in the default app failed"
-msgstr "無法開啟在檔案管理器中選擇的檔案"
+msgstr "檔案無法在預設應用程式中開啟"
 
 #: crates/rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:60
 msgid "Renaming file failed, target file already exists"
@@ -2612,144 +2570,132 @@ msgstr "新建資料夾"
 #: crates/rnote-ui/src/utils.rs:159
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
-msgstr ""
+msgstr "灰色"
 
 #: crates/rnote-ui/src/utils.rs:161 crates/rnote-ui/src/utils.rs:196
 msgctxt "part of string representation of a color"
 msgid "rose"
-msgstr ""
+msgstr "玫瑰紅"
 
 #: crates/rnote-ui/src/utils.rs:163
-#, fuzzy
-#| msgid "Bread"
 msgctxt "part of string representation of a color"
 msgid "red"
-msgstr "麵包"
+msgstr "紅色"
 
 #: crates/rnote-ui/src/utils.rs:166
 msgctxt "part of string representation of a color"
 msgid "orange"
-msgstr ""
+msgstr "橙色"
 
 #: crates/rnote-ui/src/utils.rs:169
 msgctxt "part of string representation of a color"
 msgid "yellow"
-msgstr ""
+msgstr "黃色"
 
 #: crates/rnote-ui/src/utils.rs:173
 msgctxt "part of string representation of a color"
 msgid "chartreuse-green"
-msgstr ""
+msgstr "黃綠"
 
 #: crates/rnote-ui/src/utils.rs:176
 msgctxt "part of string representation of a color"
 msgid "green"
-msgstr ""
+msgstr "綠色"
 
 #: crates/rnote-ui/src/utils.rs:179
 msgctxt "part of string representation of a color"
 msgid "spring-green"
-msgstr ""
+msgstr "青綠"
 
 #: crates/rnote-ui/src/utils.rs:182
 msgctxt "part of string representation of a color"
 msgid "cyan"
-msgstr ""
+msgstr "青色"
 
 #: crates/rnote-ui/src/utils.rs:185
 msgctxt "part of string representation of a color"
 msgid "azure"
-msgstr ""
+msgstr "天藍"
 
 #: crates/rnote-ui/src/utils.rs:188
 msgctxt "part of string representation of a color"
 msgid "blue"
-msgstr ""
+msgstr "藍色"
 
 #: crates/rnote-ui/src/utils.rs:191
 msgctxt "part of string representation of a color"
 msgid "violet"
-msgstr ""
+msgstr "紫羅蘭"
 
 #: crates/rnote-ui/src/utils.rs:194
 msgctxt "part of string representation of a color"
 msgid "magenta"
-msgstr ""
+msgstr "洋紅"
 
 #: crates/rnote-ui/src/utils.rs:201
 msgctxt "part of string representation of a color"
 msgid "greyish"
-msgstr ""
+msgstr "淺灰"
 
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "strong"
-msgstr ""
+msgstr "濃烈"
 
 #: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"
 msgid "vivid"
-msgstr ""
+msgstr "鮮豔"
 
 #: crates/rnote-ui/src/utils.rs:210
 msgctxt "part of string representation of a color"
 msgid "very-dark"
-msgstr ""
+msgstr "極深"
 
 #: crates/rnote-ui/src/utils.rs:212
 msgctxt "part of string representation of a color"
 msgid "dark"
-msgstr ""
+msgstr "深"
 
 #: crates/rnote-ui/src/utils.rs:215
 msgctxt "part of string representation of a color"
 msgid "mid"
-msgstr ""
+msgstr "中等"
 
 #: crates/rnote-ui/src/utils.rs:217
-#, fuzzy
-#| msgid "Height"
 msgctxt "part of string representation of a color"
 msgid "bright"
-msgstr "高度"
+msgstr "亮度"
 
 #: crates/rnote-ui/src/utils.rs:221
-#, fuzzy
-#| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "transparent"
-msgstr ""
-"Mr_Spade <Mr_Spade@foxmail.com>\n"
-"detiam <dehe_tian@outlook.com>"
+msgstr "透明"
 
 #: crates/rnote-ui/src/utils.rs:223
-#, fuzzy
-#| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "translucent"
-msgstr ""
-"Mr_Spade <Mr_Spade@foxmail.com>\n"
-"detiam <dehe_tian@outlook.com>"
+msgstr "半透明"
 
 #: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
-msgstr ""
+msgstr "略透明"
 
 #: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
-msgstr ""
+msgstr "完全透明"
 
 #: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "black"
-msgstr ""
+msgstr "黑色"
 
 #: crates/rnote-ui/src/utils.rs:241
 msgctxt "part of string representation of a color"
 msgid "white"
-msgstr ""
+msgstr "白色"
 
 #~ msgid "Shaper Styles"
 #~ msgstr "形狀工具樣式"

@@ -31,12 +31,12 @@ fn generate_roughr_options(options: &RoughOptions) -> roughr::core::Options {
         roughr_options.stroke(stroke_color.into());
     }
 
-    if let Some(fill_color) = options.fill_color {
-        if fill_color != Color::TRANSPARENT {
-            roughr_options
-                .fill(fill_color.into())
-                .fill_style(options.fill_style.into());
-        }
+    if let Some(fill_color) = options.fill_color
+        && fill_color != Color::TRANSPARENT
+    {
+        roughr_options
+            .fill(fill_color.into())
+            .fill_style(options.fill_style.into());
     }
 
     roughr_options.build().unwrap()

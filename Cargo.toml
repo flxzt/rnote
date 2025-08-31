@@ -13,60 +13,61 @@ edition = "2024"
 homepage = "https://rnote.flxzt.net"
 license = "GPL-3.0-or-later"
 repository = "https://github.com/flxzt/rnote"
-rust-version = "1.85"
+rust-version = "1.89"
 version = "0.13.0"
 
 [workspace.dependencies]
 rnote-compose = { version = "0.13.0", path = "crates/rnote-compose" }
 rnote-engine = { version = "0.13.0", path = "crates/rnote-engine" }
 
-adw = { version = "0.7.2", package = "libadwaita", features = ["v1_7"] }
+adw = { version = "0.8.0", package = "libadwaita", features = ["v1_7"] }
 anyhow = "1.0"
 approx = "0.5.1"
 async-fs = "2.1"
 base64 = "0.22.1"
-cairo-rs = { version = "0.20.7", features = ["v1_18", "png", "svg", "pdf"] }
+cairo-rs = { version = "0.21.1", features = ["v1_18", "png", "svg", "pdf"] }
 chrono = "0.4.41"
 clap = { version = "4.5", features = ["derive"] }
-dialoguer = "0.11.0"
+dialoguer = "0.12.0"
 flate2 = "1.1"
 fs_extra = "1.3"
 futures = "0.3.31"
 geo = "0.30.0"
 gettext-rs = { version = "0.7.2", features = ["gettext-system"] }
-gio = "0.20.9"
-glib = "0.20.9"
-glib-build-tools = "0.20.0"
-gtk4 = { version = "0.9.6", features = ["v4_18"] }
+gio = "0.21.1"
+glib = "0.21.1"
+glib-build-tools = "0.21.0"
+gtk4 = { version = "0.10.0", features = ["v4_18"] }
 ijson = "0.1.4"
 image = "0.25.6"
-indicatif = "0.17.11"
+indicatif = "0.18.0"
 ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "84d311e9b0d034dcd955a1f353d37f54b2bda70f" }
 itertools = "0.14.0"
 kurbo = "0.11.2"
 librsvg = "2.60.0"
-nalgebra = { version = "0.33.2", features = ["serde-serialize"] }
-notify-debouncer-full = "0.5.0"
+nalgebra = { version = "0.34.0", features = ["serde-serialize"] }
+notify-debouncer-full = "0.6.0"
 num-derive = "0.4.2"
 num-traits = "0.2.19"
 numeric-sort = "0.1.5"
 once_cell = "1.21"
 open = "5.3"
 palette = "0.7.6"
-parry2d-f64 = { version = "0.20.0", features = ["serde-serialize"] }
+parry2d-f64 = { version = "0.23.0", features = ["serde-serialize"] }
 path-absolutize = "3.1"
-piet = "0.7.0"
-piet-cairo = "0.7.0"
+piet = "0.8.0"
+piet-cairo = "0.8.0"
 rand = "0.9.1"
 rand_distr = "0.5.1"
 rand_pcg = "0.9.0"
 rayon = "1.10"
 regex = "1.11"
-rodio = { version = "0.20.1", default-features = false, features = [
-    "symphonia-wav",
+rodio = { version = "0.21.1", default-features = false, features = [
+    "playback",
+    "wav",
 ] }
-rough_piet = "0.9.0"
-roughr = "0.9.0"
+rough_piet = "0.13.0"
+roughr = "0.12.0"
 roxmltree = "0.20.0"
 rstar = "0.12.2"
 semver = { version = "1.0", features = ["serde"] }
@@ -83,13 +84,9 @@ url = "2.5"
 usvg = "0.45.1"
 winresource = "0.1.20"
 xmlwriter = "0.1.0"
+
 # Enabling feature > v20_9 causes linker errors on mingw
-# using a custom patched version to work on windows
-# as long as https://gitlab.gnome.org/World/Rust/poppler-rs/-/issues/1
-# is not fixed
-poppler-rs = { git = "https://github.com/Doublonmousse/poppler-patch", features = [
-    "v20_9",
-], rev = "3acaa4e28d45a05939a71116b0d5ebd4b1c99b98" }
+poppler-rs = { version = "0.25.0", features = ["v20_9"] }
 
 [patch.crates-io]
 

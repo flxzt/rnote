@@ -105,7 +105,7 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnIconPicker(ObjectSubclass<imp::RnIconPicker>)
-        @extends gtk4::Widget,
+        @extends Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
@@ -161,8 +161,8 @@ impl RnIconPicker {
 
     /// Internal function to set the picked icon
     fn set_picked_intern(&self, picked: Option<String>) {
-        if let (Some(selection), Some(list)) =
-            (&*self.imp().selection.borrow(), &*self.imp().list.borrow())
+        if let Some(selection) = &*self.imp().selection.borrow()
+            && let Some(list) = &*self.imp().list.borrow()
         {
             if let Some(picked) = picked {
                 let item = list

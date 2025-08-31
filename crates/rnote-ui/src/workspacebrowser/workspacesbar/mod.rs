@@ -97,7 +97,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnWorkspacesBar(ObjectSubclass<imp::RnWorkspacesBar>)
-        @extends gtk4::Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnWorkspacesBar {

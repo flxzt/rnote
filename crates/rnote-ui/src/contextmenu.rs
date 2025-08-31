@@ -15,7 +15,7 @@ mod imp {
     impl ObjectSubclass for RnContextMenu {
         const NAME: &'static str = "RnContextMenu";
         type Type = super::RnContextMenu;
-        type ParentType = gtk4::Widget;
+        type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
             Self::bind_template(klass);
@@ -49,7 +49,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnContextMenu(ObjectSubclass<imp::RnContextMenu>)
-    @extends Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnContextMenu {

@@ -708,22 +708,12 @@ impl RnAppWindow {
             obj.overlays()
                 .penssidebar()
                 .shaper_page()
-                .shaperstyle_menubutton()
-                .set_direction(ArrowType::Right);
-            obj.overlays()
-                .penssidebar()
-                .shaper_page()
                 .shapeconfig_menubutton()
                 .set_direction(ArrowType::Right);
             obj.overlays()
                 .penssidebar()
                 .shaper_page()
                 .shapebuildertype_menubutton()
-                .set_direction(ArrowType::Right);
-            obj.overlays()
-                .penssidebar()
-                .shaper_page()
-                .constraint_menubutton()
                 .set_direction(ArrowType::Right);
             obj.overlays()
                 .penssidebar()
@@ -835,22 +825,12 @@ impl RnAppWindow {
             obj.overlays()
                 .penssidebar()
                 .shaper_page()
-                .shaperstyle_menubutton()
-                .set_direction(ArrowType::Left);
-            obj.overlays()
-                .penssidebar()
-                .shaper_page()
                 .shapeconfig_menubutton()
                 .set_direction(ArrowType::Left);
             obj.overlays()
                 .penssidebar()
                 .shaper_page()
                 .shapebuildertype_menubutton()
-                .set_direction(ArrowType::Left);
-            obj.overlays()
-                .penssidebar()
-                .shaper_page()
-                .constraint_menubutton()
                 .set_direction(ArrowType::Left);
             obj.overlays()
                 .penssidebar()

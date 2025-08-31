@@ -208,11 +208,11 @@ impl PenBehaviour for Shaper {
                     keyboard_key,
                     modifier_keys,
                 } = event
+                    && keyboard_key == KeyboardKey::Escape
+                    && modifier_keys.is_empty()
                 {
-                    if keyboard_key == KeyboardKey::Escape && modifier_keys.is_empty() {
-                        self.state = ShaperState::Idle;
-                        progress = PenProgress::Finished;
-                    }
+                    self.state = ShaperState::Idle;
+                    progress = PenProgress::Finished;
                 }
 
                 EventResult {

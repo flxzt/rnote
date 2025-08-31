@@ -109,10 +109,10 @@ impl Typewriter {
                     ModifyState::Idle => {
                         let mut progress = PenProgress::InProgress;
 
-                        if let (Some(typewriter_bounds), Some(Stroke::TextStroke(textstroke))) = (
-                            typewriter_bounds,
-                            engine_view.store.get_stroke_ref(*stroke_key),
-                        ) {
+                        if let Some(typewriter_bounds) = typewriter_bounds
+                            && let Some(Stroke::TextStroke(textstroke)) =
+                                engine_view.store.get_stroke_ref(*stroke_key)
+                        {
                             if Self::translate_node_bounds(typewriter_bounds, engine_view.camera)
                                 .contains_local_point(&element.pos.into())
                             {
@@ -144,32 +144,29 @@ impl Typewriter {
                                     pen_down: true,
                                 };
                             // This is intentionally **not** the textstroke hitboxes
-                            } else if typewriter_bounds.contains_local_point(&element.pos.into()) {
-                                if let Some(Stroke::TextStroke(textstroke)) =
+                            } else if typewriter_bounds.contains_local_point(&element.pos.into())
+                                && let Some(Stroke::TextStroke(textstroke)) =
                                     engine_view.store.get_stroke_ref(*stroke_key)
+                            {
+                                if let Ok(new_cursor) =
+                                    textstroke.get_cursor_for_global_coord(element.pos)
                                 {
-                                    if let Ok(new_cursor) =
-                                        textstroke.get_cursor_for_global_coord(element.pos)
-                                    {
-                                        if new_cursor.cur_cursor() != cursor.cur_cursor()
-                                            && *pen_down
-                                        {
-                                            // switch to selecting state
-                                            self.state = TypewriterState::Modifying {
-                                                modify_state: ModifyState::Selecting {
-                                                    selection_cursor: cursor.clone(),
-                                                    mode: SelectionMode::Caret,
-                                                    finished: false,
-                                                },
-                                                stroke_key: *stroke_key,
-                                                cursor: cursor.clone(),
-                                                pen_down: true,
-                                            };
-                                        } else {
-                                            *cursor = new_cursor;
-                                            *pen_down = true;
-                                            self.reset_blink();
-                                        }
+                                    if new_cursor.cur_cursor() != cursor.cur_cursor() && *pen_down {
+                                        // switch to selecting state
+                                        self.state = TypewriterState::Modifying {
+                                            modify_state: ModifyState::Selecting {
+                                                selection_cursor: cursor.clone(),
+                                                mode: SelectionMode::Caret,
+                                                finished: false,
+                                            },
+                                            stroke_key: *stroke_key,
+                                            cursor: cursor.clone(),
+                                            pen_down: true,
+                                        };
+                                    } else {
+                                        *cursor = new_cursor;
+                                        *pen_down = true;
+                                        self.reset_blink();
                                     }
                                 }
                             } else {
@@ -340,28 +337,26 @@ impl Typewriter {
 
                         if let Some(Stroke::TextStroke(textstroke)) =
                             engine_view.store.get_stroke_mut(*stroke_key)
-                        {
-                            if x_offset.abs()
+                            && x_offset.abs()
                                 > Self::ADJ_TEXT_WIDTH_THRESHOLD / engine_view.camera.total_zoom()
-                            {
-                                let new_text_width =
-                                    *start_text_width + (element.pos[0] - start_pos[0]);
-                                engine_view
-                                    .config
-                                    .pens_config
-                                    .typewriter_config
-                                    .set_text_width(new_text_width);
-                                textstroke.text_style.set_max_width(Some(new_text_width));
-                                engine_view.store.regenerate_rendering_for_stroke(
-                                    *stroke_key,
-                                    engine_view.camera.viewport(),
-                                    engine_view.camera.image_scale(),
-                                );
+                        {
+                            let new_text_width =
+                                *start_text_width + (element.pos[0] - start_pos[0]);
+                            engine_view
+                                .config
+                                .pens_config
+                                .typewriter_config
+                                .set_text_width(new_text_width);
+                            textstroke.text_style.set_max_width(Some(new_text_width));
+                            engine_view.store.regenerate_rendering_for_stroke(
+                                *stroke_key,
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
+                            );
 
-                                *current_pos = element.pos;
+                            *current_pos = element.pos;
 
-                                widget_flags.store_modified = true;
-                            }
+                            widget_flags.store_modified = true;
                         }
 
                         EventResult {

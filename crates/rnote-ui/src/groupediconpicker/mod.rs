@@ -103,7 +103,7 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnGroupedIconPicker(ObjectSubclass<imp::RnGroupedIconPicker>)
-        @extends gtk4::Widget,
+        @extends Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 

@@ -6,7 +6,7 @@ use crate::{
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    Button, CompositeTemplate, ListBox, MenuButton, Popover, StringList, glib, glib::clone,
+    Button, CompositeTemplate, ListBox, MenuButton, Popover, StringList, Widget, glib, glib::clone,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::ShapeBuilderType;
@@ -76,7 +76,7 @@ mod imp {
     impl ObjectSubclass for RnShaperPage {
         const NAME: &'static str = "RnShaperPage";
         type Type = super::RnShaperPage;
-        type ParentType = gtk4::Widget;
+        type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -105,7 +105,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnShaperPage(ObjectSubclass<imp::RnShaperPage>)
-        @extends gtk4::Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnShaperPage {
@@ -441,8 +442,8 @@ impl RnShaperPage {
                 #[weak]
                 appwindow,
                 move |picker, _| {
-                    if let (Some(buildertype), Some(icon_name)) =
-                        (shaperpage.shapebuildertype(), picker.picked())
+                    if let Some(buildertype) = shaperpage.shapebuildertype()
+                        && let Some(icon_name) = picker.picked()
                     {
                         appwindow
                             .engine_config()

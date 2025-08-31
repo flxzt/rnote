@@ -164,7 +164,7 @@ impl Arrow {
                 .collect()
         };
 
-        Aabb::from_points(&points)
+        Aabb::from_points(points)
     }
 
     /// Compute the normalized direction vector from `start` to `tip`.

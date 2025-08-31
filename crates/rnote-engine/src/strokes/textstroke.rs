@@ -919,29 +919,29 @@ impl TextStroke {
     }
 
     pub fn move_cursor_line_start(&self, cursor: &mut GraphemeCursor) {
-        if let (Ok(lines), Ok(hittest_position)) = (
-            self.text_style
-                .lines(&mut piet_cairo::CairoText::new(), self.text.clone()),
-            self.text_style.cursor_hittest_position(
+        if let Ok(lines) = self
+            .text_style
+            .lines(&mut piet_cairo::CairoText::new(), self.text.clone())
+            && let Ok(hittest_position) = self.text_style.cursor_hittest_position(
                 &mut piet_cairo::CairoText::new(),
                 self.text.clone(),
                 cursor,
-            ),
-        ) {
+            )
+        {
             cursor.set_cursor(lines[hittest_position.line].start_offset);
         }
     }
 
     pub fn move_cursor_line_end(&self, cursor: &mut GraphemeCursor) {
-        if let (Ok(lines), Ok(hittest_position)) = (
-            self.text_style
-                .lines(&mut piet_cairo::CairoText::new(), self.text.clone()),
-            self.text_style.cursor_hittest_position(
+        if let Ok(lines) = self
+            .text_style
+            .lines(&mut piet_cairo::CairoText::new(), self.text.clone())
+            && let Ok(hittest_position) = self.text_style.cursor_hittest_position(
                 &mut piet_cairo::CairoText::new(),
                 self.text.clone(),
                 cursor,
-            ),
-        ) {
+            )
+        {
             let line_metric = &lines[hittest_position.line];
             let mut offset = line_metric.end_offset;
 
@@ -963,17 +963,18 @@ impl TextStroke {
     }
 
     pub fn move_cursor_line_down(&self, cursor: &mut GraphemeCursor) {
-        if let (Ok(text_layout), Ok(lines), Ok(hittest_position)) = (
-            self.text_style
-                .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone()),
-            self.text_style
-                .lines(&mut piet_cairo::CairoText::new(), self.text.clone()),
-            self.text_style.cursor_hittest_position(
+        if let Ok(text_layout) = self
+            .text_style
+            .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone())
+            && let Ok(lines) = self
+                .text_style
+                .lines(&mut piet_cairo::CairoText::new(), self.text.clone())
+            && let Ok(hittest_position) = self.text_style.cursor_hittest_position(
                 &mut piet_cairo::CairoText::new(),
                 self.text.clone(),
                 cursor,
-            ),
-        ) {
+            )
+        {
             let next_line = (hittest_position.line + 1).min(lines.len().saturating_sub(1));
 
             if next_line != hittest_position.line {
@@ -990,17 +991,18 @@ impl TextStroke {
     }
 
     pub fn move_cursor_line_up(&self, cursor: &mut GraphemeCursor) {
-        if let (Ok(text_layout), Ok(lines), Ok(hittest_position)) = (
-            self.text_style
-                .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone()),
-            self.text_style
-                .lines(&mut piet_cairo::CairoText::new(), self.text.clone()),
-            self.text_style.cursor_hittest_position(
+        if let Ok(text_layout) = self
+            .text_style
+            .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone())
+            && let Ok(lines) = self
+                .text_style
+                .lines(&mut piet_cairo::CairoText::new(), self.text.clone())
+            && let Ok(hittest_position) = self.text_style.cursor_hittest_position(
                 &mut piet_cairo::CairoText::new(),
                 self.text.clone(),
                 cursor,
-            ),
-        ) {
+            )
+        {
             let prev_line = hittest_position.line.saturating_sub(1);
 
             if prev_line != hittest_position.line {

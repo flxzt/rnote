@@ -823,22 +823,21 @@ impl Typewriter {
     {
         let mut widget_flags = WidgetFlags::default();
 
-        if let TypewriterState::Modifying { stroke_key, .. } = &mut self.state {
-            if let Some(Stroke::TextStroke(textstroke)) =
+        if let TypewriterState::Modifying { stroke_key, .. } = &mut self.state
+            && let Some(Stroke::TextStroke(textstroke)) =
                 engine_view.store.get_stroke_mut(*stroke_key)
-            {
-                modify_func(&mut textstroke.text_style);
-                engine_view.store.update_geometry_for_stroke(*stroke_key);
-                engine_view.store.regenerate_rendering_for_stroke(
-                    *stroke_key,
-                    engine_view.camera.viewport(),
-                    engine_view.camera.image_scale(),
-                );
+        {
+            modify_func(&mut textstroke.text_style);
+            engine_view.store.update_geometry_for_stroke(*stroke_key);
+            engine_view.store.regenerate_rendering_for_stroke(
+                *stroke_key,
+                engine_view.camera.viewport(),
+                engine_view.camera.image_scale(),
+            );
 
-                widget_flags |= engine_view.store.record(Instant::now());
-                widget_flags.redraw = true;
-                widget_flags.store_modified = true;
-            }
+            widget_flags |= engine_view.store.record(Instant::now());
+            widget_flags.redraw = true;
+            widget_flags.store_modified = true;
         }
 
         widget_flags
@@ -851,22 +850,21 @@ impl Typewriter {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        if let Some((selection_range, stroke_key)) = self.selection_range() {
-            if let Some(Stroke::TextStroke(textstroke)) =
+        if let Some((selection_range, stroke_key)) = self.selection_range()
+            && let Some(Stroke::TextStroke(textstroke)) =
                 engine_view.store.get_stroke_mut(stroke_key)
-            {
-                textstroke.toggle_attrs_for_range(selection_range.clone(), text_attribute.clone());
-                engine_view.store.update_geometry_for_stroke(stroke_key);
-                engine_view.store.regenerate_rendering_for_stroke(
-                    stroke_key,
-                    engine_view.camera.viewport(),
-                    engine_view.camera.image_scale(),
-                );
+        {
+            textstroke.toggle_attrs_for_range(selection_range.clone(), text_attribute.clone());
+            engine_view.store.update_geometry_for_stroke(stroke_key);
+            engine_view.store.regenerate_rendering_for_stroke(
+                stroke_key,
+                engine_view.camera.viewport(),
+                engine_view.camera.image_scale(),
+            );
 
-                widget_flags |= engine_view.store.record(Instant::now());
-                widget_flags.redraw = true;
-                widget_flags.store_modified = true;
-            }
+            widget_flags |= engine_view.store.record(Instant::now());
+            widget_flags.redraw = true;
+            widget_flags.store_modified = true;
         }
 
         widget_flags
@@ -878,22 +876,21 @@ impl Typewriter {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        if let Some((selection_range, stroke_key)) = self.selection_range() {
-            if let Some(Stroke::TextStroke(textstroke)) =
+        if let Some((selection_range, stroke_key)) = self.selection_range()
+            && let Some(Stroke::TextStroke(textstroke)) =
                 engine_view.store.get_stroke_mut(stroke_key)
-            {
-                textstroke.remove_attrs_for_range(selection_range);
-                engine_view.store.update_geometry_for_stroke(stroke_key);
-                engine_view.store.regenerate_rendering_for_stroke(
-                    stroke_key,
-                    engine_view.camera.viewport(),
-                    engine_view.camera.image_scale(),
-                );
+        {
+            textstroke.remove_attrs_for_range(selection_range);
+            engine_view.store.update_geometry_for_stroke(stroke_key);
+            engine_view.store.regenerate_rendering_for_stroke(
+                stroke_key,
+                engine_view.camera.viewport(),
+                engine_view.camera.image_scale(),
+            );
 
-                widget_flags |= engine_view.store.record(Instant::now());
-                widget_flags.redraw = true;
-                widget_flags.store_modified = true;
-            }
+            widget_flags |= engine_view.store.record(Instant::now());
+            widget_flags.redraw = true;
+            widget_flags.store_modified = true;
         }
 
         widget_flags
@@ -906,28 +903,27 @@ impl Typewriter {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        if let Some((selection_range, stroke_key)) = self.selection_range() {
-            if let Some(Stroke::TextStroke(textstroke)) =
+        if let Some((selection_range, stroke_key)) = self.selection_range()
+            && let Some(Stroke::TextStroke(textstroke)) =
                 engine_view.store.get_stroke_mut(stroke_key)
-            {
-                textstroke
-                    .text_style
-                    .ranged_text_attributes
-                    .push(RangedTextAttribute {
-                        attribute: text_attribute,
-                        range: selection_range,
-                    });
-                engine_view.store.update_geometry_for_stroke(stroke_key);
-                engine_view.store.regenerate_rendering_for_stroke(
-                    stroke_key,
-                    engine_view.camera.viewport(),
-                    engine_view.camera.image_scale(),
-                );
+        {
+            textstroke
+                .text_style
+                .ranged_text_attributes
+                .push(RangedTextAttribute {
+                    attribute: text_attribute,
+                    range: selection_range,
+                });
+            engine_view.store.update_geometry_for_stroke(stroke_key);
+            engine_view.store.regenerate_rendering_for_stroke(
+                stroke_key,
+                engine_view.camera.viewport(),
+                engine_view.camera.image_scale(),
+            );
 
-                widget_flags |= engine_view.store.record(Instant::now());
-                widget_flags.redraw = true;
-                widget_flags.store_modified = true;
-            }
+            widget_flags |= engine_view.store.record(Instant::now());
+            widget_flags.redraw = true;
+            widget_flags.store_modified = true;
         }
 
         widget_flags
@@ -940,22 +936,21 @@ impl Typewriter {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        if let Some((selection_range, stroke_key)) = self.selection_range() {
-            if let Some(Stroke::TextStroke(textstroke)) =
+        if let Some((selection_range, stroke_key)) = self.selection_range()
+            && let Some(Stroke::TextStroke(textstroke)) =
                 engine_view.store.get_stroke_mut(stroke_key)
-            {
-                textstroke.replace_attr_for_range(selection_range, text_attribute);
-                engine_view.store.update_geometry_for_stroke(stroke_key);
-                engine_view.store.regenerate_rendering_for_stroke(
-                    stroke_key,
-                    engine_view.camera.viewport(),
-                    engine_view.camera.image_scale(),
-                );
+        {
+            textstroke.replace_attr_for_range(selection_range, text_attribute);
+            engine_view.store.update_geometry_for_stroke(stroke_key);
+            engine_view.store.regenerate_rendering_for_stroke(
+                stroke_key,
+                engine_view.camera.viewport(),
+                engine_view.camera.image_scale(),
+            );
 
-                widget_flags |= engine_view.store.record(Instant::now());
-                widget_flags.redraw = true;
-                widget_flags.store_modified = true;
-            }
+            widget_flags |= engine_view.store.record(Instant::now());
+            widget_flags.redraw = true;
+            widget_flags.store_modified = true;
         }
 
         widget_flags
@@ -963,10 +958,10 @@ impl Typewriter {
 
     /// Resets the blink
     fn reset_blink(&mut self) {
-        if let Some(handle) = &mut self.blink_task_handle {
-            if let Err(e) = handle.skip() {
-                error!("Skipping blink task failed, Err: {e:?}");
-            }
+        if let Some(handle) = &mut self.blink_task_handle
+            && let Err(e) = handle.skip()
+        {
+            error!("Skipping blink task failed, Err: {e:?}");
         }
         self.cursor_visible = true;
     }

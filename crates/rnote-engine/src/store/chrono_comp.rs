@@ -101,8 +101,8 @@ impl StrokeStore {
         let mut keys = self.stroke_components.keys().collect::<Vec<StrokeKey>>();
 
         keys.par_sort_unstable_by(|&first, &second| {
-            if let (Some(first_chrono), Some(second_chrono)) =
-                (chrono_components.get(first), chrono_components.get(second))
+            if let Some(first_chrono) = chrono_components.get(first)
+                && let Some(second_chrono) = chrono_components.get(second)
             {
                 let layer_order = first_chrono.layer.cmp(&second_chrono.layer);
 
@@ -125,8 +125,8 @@ impl StrokeStore {
         let mut keys = self.key_tree.keys_intersecting_bounds(bounds);
 
         keys.par_sort_unstable_by(|&first, &second| {
-            if let (Some(first_chrono), Some(second_chrono)) =
-                (chrono_components.get(first), chrono_components.get(second))
+            if let Some(first_chrono) = chrono_components.get(first)
+                && let Some(second_chrono) = chrono_components.get(second)
             {
                 let layer_order = first_chrono.layer.cmp(&second_chrono.layer);
 
@@ -149,8 +149,8 @@ impl StrokeStore {
         let mut keys = self.key_tree.keys_in_bounds(bounds);
 
         keys.par_sort_unstable_by(|&first, &second| {
-            if let (Some(first_chrono), Some(second_chrono)) =
-                (chrono_components.get(first), chrono_components.get(second))
+            if let Some(first_chrono) = chrono_components.get(first)
+                && let Some(second_chrono) = chrono_components.get(second)
             {
                 let layer_order = first_chrono.layer.cmp(&second_chrono.layer);
 

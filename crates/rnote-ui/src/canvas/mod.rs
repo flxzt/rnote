@@ -642,7 +642,7 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnCanvas(ObjectSubclass<imp::RnCanvas>)
-        @extends gtk4::Widget,
+        @extends Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget, gtk4::Scrollable;
 }
 

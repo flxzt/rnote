@@ -89,7 +89,8 @@ pub(crate) const TEXT_TOAST_TIMEOUT_DEFAULT: Option<Duration> = Some(Duration::f
 
 glib::wrapper! {
     pub(crate) struct RnOverlays(ObjectSubclass<imp::RnOverlays>)
-    @extends Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnOverlays {

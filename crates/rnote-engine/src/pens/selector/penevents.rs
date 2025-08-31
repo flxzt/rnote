@@ -442,7 +442,9 @@ impl Selector {
                         }
                     }
                     SelectorStyle::Rectangle => {
-                        if let (Some(first), Some(last)) = (path.first(), path.last()) {
+                        if let Some(first) = path.first()
+                            && let Some(last) = path.last()
+                        {
                             let aabb = Aabb::new_positive(first.pos.into(), last.pos.into());
                             engine_view.store.strokes_hitboxes_contained_in_aabb(
                                 aabb,

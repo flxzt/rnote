@@ -178,25 +178,25 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
     };
 
     // Handle possible file collisions for new files
-    if save_file.is_none() {
-        if let Some(save_folder_path) = save_folder_path.as_ref() {
-            let base_title = canvas.doc_title_display();
-            let mut test_save_file =
-                gio::File::for_path(save_folder_path.join(base_title.clone() + ".rnote"));
-            let mut doc_postfix = 0;
+    if save_file.is_none()
+        && let Some(save_folder_path) = save_folder_path.as_ref()
+    {
+        let base_title = canvas.doc_title_display();
+        let mut test_save_file =
+            gio::File::for_path(save_folder_path.join(base_title.clone() + ".rnote"));
+        let mut doc_postfix = 0;
 
-            // increment as long as as files with same name exist
-            while gio::File::query_exists(&test_save_file, gio::Cancellable::NONE) {
-                doc_postfix += 1;
-                test_save_file = gio::File::for_path(save_folder_path.join(
-                    base_title.clone()
-                        + crate::utils::FILE_DUP_SUFFIX_DELIM
-                        + &doc_postfix.to_string()
-                        + ".rnote",
-                ));
-            }
-            save_file = Some(test_save_file);
+        // increment as long as as files with same name exist
+        while gio::File::query_exists(&test_save_file, gio::Cancellable::NONE) {
+            doc_postfix += 1;
+            test_save_file = gio::File::for_path(save_folder_path.join(
+                base_title.clone()
+                    + crate::utils::FILE_DUP_SUFFIX_DELIM
+                    + &doc_postfix.to_string()
+                    + ".rnote",
+            ));
         }
+        save_file = Some(test_save_file);
     }
 
     let save_file_display_name = save_file
@@ -302,34 +302,34 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         };
 
         // Handle possible file collisions for new files
-        if canvas_output_file.is_none() {
-            if let Some(save_folder_path) = save_folder_path.as_ref() {
-                let base_title = canvas.doc_title_display();
-                let mut test_save_file = if doc_postfix == 0 {
-                    gio::File::for_path(save_folder_path.join(base_title.clone() + ".rnote"))
-                } else {
-                    gio::File::for_path(save_folder_path.join(
-                        base_title.clone()
-                            + crate::utils::FILE_DUP_SUFFIX_DELIM
-                            + &doc_postfix.to_string()
-                            + ".rnote",
-                    ))
-                };
+        if canvas_output_file.is_none()
+            && let Some(save_folder_path) = save_folder_path.as_ref()
+        {
+            let base_title = canvas.doc_title_display();
+            let mut test_save_file = if doc_postfix == 0 {
+                gio::File::for_path(save_folder_path.join(base_title.clone() + ".rnote"))
+            } else {
+                gio::File::for_path(save_folder_path.join(
+                    base_title.clone()
+                        + crate::utils::FILE_DUP_SUFFIX_DELIM
+                        + &doc_postfix.to_string()
+                        + ".rnote",
+                ))
+            };
 
-                // increment as long as as files with same name exist
-                while gio::File::query_exists(&test_save_file, gio::Cancellable::NONE) {
-                    doc_postfix += 1;
-                    test_save_file = gio::File::for_path(save_folder_path.join(
-                        base_title.clone()
-                            + crate::utils::FILE_DUP_SUFFIX_DELIM
-                            + &doc_postfix.to_string()
-                            + ".rnote",
-                    ));
-                }
-                save_file = Some(test_save_file);
-                // increment for next iteration
+            // increment as long as as files with same name exist
+            while gio::File::query_exists(&test_save_file, gio::Cancellable::NONE) {
                 doc_postfix += 1;
+                test_save_file = gio::File::for_path(save_folder_path.join(
+                    base_title.clone()
+                        + crate::utils::FILE_DUP_SUFFIX_DELIM
+                        + &doc_postfix.to_string()
+                        + ".rnote",
+                ));
             }
+            save_file = Some(test_save_file);
+            // increment for next iteration
+            doc_postfix += 1;
         }
 
         let save_file_display_name = save_file

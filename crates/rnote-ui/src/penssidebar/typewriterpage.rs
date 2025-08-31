@@ -2,7 +2,7 @@
 use crate::RnAppWindow;
 use gtk4::{
     Button, CompositeTemplate, EmojiChooser, FontDialog, MenuButton, SpinButton, ToggleButton,
-    glib, glib::clone, pango, prelude::*, subclass::prelude::*,
+    Widget, glib, glib::clone, pango, prelude::*, subclass::prelude::*,
 };
 use rnote_engine::strokes::textstroke::{FontStyle, TextAlignment, TextAttribute, TextStyle};
 use std::cell::RefCell;
@@ -48,7 +48,7 @@ mod imp {
     impl ObjectSubclass for RnTypewriterPage {
         const NAME: &'static str = "RnTypewriterPage";
         type Type = super::RnTypewriterPage;
-        type ParentType = gtk4::Widget;
+        type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -77,7 +77,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnTypewriterPage(ObjectSubclass<imp::RnTypewriterPage>)
-        @extends gtk4::Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnTypewriterPage {

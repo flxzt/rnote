@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="RnShaperPage" parent="GtkWidget">
     <property name="layout-manager">
@@ -161,17 +161,17 @@
               <property name="title" translatable="yes">Smooth Style</property>
               <child>
                 <object class="AdwComboRow" id="smoothstyle_line_cap_row">
-                    <property name="title" translatable="yes">Line Cap</property>
-                    <property name="subtitle" translatable="yes">Choose a line cap</property>
-                    <property name="model">
-                      <object class="GtkStringList">
-                        <items>
-                          <item translatable="yes">Straight</item>
-                          <item translatable="yes">Round</item>
-                        </items>
-                      </object>
-                    </property>
-                  </object>
+                  <property name="title" translatable="yes">Line Cap</property>
+                  <property name="subtitle" translatable="yes">Choose a line cap</property>
+                  <property name="model">
+                    <object class="GtkStringList">
+                      <items>
+                        <item translatable="yes">Straight</item>
+                        <item translatable="yes">Round</item>
+                      </items>
+                    </object>
+                  </property>
+                </object>
               </child>
               <child>
                 <object class="AdwComboRow" id="smoothstyle_line_style_row">
@@ -251,7 +251,7 @@
                     <object class="AdwSwitchRow" id="constraint_enabled_row">
                       <property name="title" translatable="yes">Enabled</property>
                       <property name="subtitle" translatable="yes">Hold Ctrl to temporarily enable/disable
-constraints when this switch is off/on</property>
+                        constraints when this switch is off/on</property>
                     </object>
                   </child>
                   <child>

@@ -187,10 +187,11 @@ impl Composer<SmoothOptions> for Polyline {
                 &Into::<piet::Color>::into(color),
             );
         } else {
-            let mut style = options.piet_stroke_style.clone();
-            style.set_line_cap(piet::LineCap::Butt);
-            style.set_line_join(piet::LineJoin::Bevel);
-
+            let style = options
+                .piet_stroke_style
+                .clone()
+                .line_cap(piet::LineCap::Butt)
+                .line_join(piet::LineJoin::Bevel);
             cx.stroke_styled(
                 self.outline_path(),
                 &Into::<piet::Color>::into(color),
@@ -224,10 +225,11 @@ impl Composer<SmoothOptions> for Polygon {
             if let Some(fill_color) = options.fill_color {
                 cx.fill(&outline_path, &Into::<piet::Color>::into(fill_color));
             }
-
-            let mut style = options.piet_stroke_style.clone();
-            style.set_line_cap(piet::LineCap::Butt);
-            style.set_line_join(piet::LineJoin::Bevel);
+            let style = options
+                .piet_stroke_style
+                .clone()
+                .line_cap(piet::LineCap::Butt)
+                .line_join(piet::LineJoin::Bevel);
 
             cx.stroke_styled(
                 &outline_path,

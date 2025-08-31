@@ -170,18 +170,18 @@ impl<'de> Deserialize<'de> for SmoothOptions {
 }
 
 /// Line cap present at the start and end of a line
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, FromPrimitive, ToPrimitive)]
+#[derive(
+    Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, FromPrimitive, ToPrimitive,
+)]
+#[serde(rename = "line_cap")]
 pub enum LineCap {
     /// Straight line cap
+    #[default]
+    #[serde(rename = "straight")]
     Straight,
     /// Rounded line cap
+    #[serde(rename = "rounded")]
     Rounded,
-}
-
-impl Default for LineCap {
-    fn default() -> Self {
-        Self::Straight
-    }
 }
 
 impl TryFrom<u32> for LineCap {
@@ -203,17 +203,26 @@ impl From<LineCap> for piet::LineCap {
 }
 
 /// The overall style of the line
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, FromPrimitive, ToPrimitive)]
+#[derive(
+    Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, FromPrimitive, ToPrimitive,
+)]
+#[serde(rename = "line_style")]
 pub enum LineStyle {
     /// Solid line style
+    #[default]
+    #[serde(rename = "solid")]
     Solid,
     /// Dotted line style, the dots are equidistant
+    #[serde(rename = "dotted")]
     Dotted,
     /// Dashed line style, the dashes have less space between them
+    #[serde(rename = "dashed_narrow")]
     DashedNarrow,
     /// Dashed line style, the dashes are equidistant
+    #[serde(rename = "dashed_equidistant")]
     DashedEquidistant,
     /// Dashed line style, the dashes have more space between them
+    #[serde(rename = "dashed_wide")]
     DashedWide,
 }
 
@@ -237,12 +246,6 @@ impl LineStyle {
             Self::DashedEquidistant => false,
             Self::DashedWide => false,
         }
-    }
-}
-
-impl Default for LineStyle {
-    fn default() -> Self {
-        Self::Solid
     }
 }
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-26 11:14+0200\n"
+"POT-Creation-Date: 2025-08-31 17:01+0200\n"
 "PO-Revision-Date: 2024-04-02 00:01+0000\n"
 "Last-Translator: openCC converted Integral <integral@member.fsf.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -598,7 +598,8 @@ msgid "Mark underneath other strokes"
 msgstr "在其他筆畫下方標記"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:107
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:201
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:183
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:207
 msgid "Solid"
 msgstr "硬筆"
 
@@ -806,104 +807,183 @@ msgid "Delete Selection"
 msgstr "刪除所選內容"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:19
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:248
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:294
 msgid "Shape Builders"
 msgstr "形狀構建工具"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:35
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:290
-msgid "Constraints"
-msgstr "約束條件"
-
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:64
-msgid "Shaper Style"
-msgstr "形狀工具樣式"
-
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:77
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:32
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:71
 msgid "Shape Configuration"
 msgstr "形狀設定"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:101
-msgid "Shaper Styles"
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:94
+msgid "Shaper Style"
 msgstr "形狀工具樣式"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:130
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:104
 msgid "Smooth"
 msgstr "平滑"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:115
 msgid "Rough"
 msgstr "粗糙"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:192
-msgid "Rough style"
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:132
+msgid "Highlighting"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:135
+msgid "Highlight mode"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:136
+msgid "Fade active color"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
+msgid "Highlight Opacity"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:142
+msgid "Modify the highlight opacity (%)"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:161
+#, fuzzy
+#| msgid "Solid Style"
+msgid "Smooth Style"
+msgstr "硬筆樣式"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:164
+#, fuzzy
+#| msgid "Linear"
+msgid "Line Cap"
+msgstr "線性"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:165
+#, fuzzy
+#| msgid "Choose a format"
+msgid "Choose a line cap"
+msgstr "選擇格式"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:169
+#, fuzzy
+#| msgid "Height"
+msgid "Straight"
+msgstr "高度"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
+msgid "Round"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
+#, fuzzy
+#| msgid "Fill Style"
+msgid "Line Style"
+msgstr "填充樣式"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
+#, fuzzy
+#| msgid "Choose a fill style"
+msgid "Choose a line style"
+msgstr "選擇填充樣式"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:184
+msgid "Dotted"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:185
+msgid "Dashed (narrow)"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:186
+msgid "Dashed (equidistant)"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
+#, fuzzy
+#| msgid "Dashed"
+msgid "Dashed (wide)"
+msgstr "虛線"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:199
+#, fuzzy
+#| msgid "Rough style"
+msgid "Rough Style"
 msgstr "粗糙樣式"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:196
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:202
 msgid "Fill Style"
 msgstr "填充樣式"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:197
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:203
 msgid "Choose a fill style"
 msgstr "選擇填充樣式"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:202
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:208
 msgid "Hachure"
 msgstr "陰影線"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:203
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:209
 msgid "Zig-Zag"
 msgstr "鋸齒"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:204
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:210
 msgid "Zig-Zag Line"
 msgstr "鋸齒線"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:205
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:211
 msgid "Crosshatch"
 msgstr "交叉陰影線"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:206
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:212
 #: crates/rnote-ui/data/ui/settingspanel.ui:374
 msgid "Dots"
 msgstr "點"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:207
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:213
 msgid "Dashed"
 msgstr "虛線"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:215
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:221
 msgid "Hachure Angle"
 msgstr "帶角度的陰影線"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:216
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:222
 msgid "Set the angle of hachure fills"
 msgstr "設定陰影線的角度"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:319
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:241
+msgid "Constraints"
+msgstr "約束條件"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:252
 msgid "Enabled"
 msgstr "啟用"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:320
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:253
+#, fuzzy
+#| msgid ""
+#| "Hold Ctrl to temporarily\n"
+#| "enable/disable constraints\n"
+#| "when this switch is off/on"
 msgid ""
-"Hold Ctrl to temporarily\n"
-"enable/disable constraints\n"
-"when this switch is off/on"
+"Hold Ctrl to temporarily enable/disable\n"
+"                        constraints when this switch is off/on"
 msgstr ""
 "按住Ctrl鍵可暫時\n"
 "啟用/停用約束條件\n"
 "當此開關被關閉/開啟時"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:327
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:259
 msgid "1:1"
 msgstr "1:1"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:332
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:264
 msgid "3:2"
 msgstr "3:2"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:337
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:269
 msgid "Golden Ratio (1:1.618)"
 msgstr "黃金比例(1:1.618)"
 
@@ -1545,7 +1625,7 @@ msgid "Lines"
 msgstr "線"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:373
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:598
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:677
 msgid "Grid"
 msgstr "方格"
 
@@ -1878,7 +1958,7 @@ msgid "Open Workspace Folder"
 msgstr "工作區名稱"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:700
-#: crates/rnote-ui/src/appwindow/imp.rs:426
+#: crates/rnote-ui/src/appwindow/imp.rs:425
 #: crates/rnote-ui/src/dialogs/export.rs:82
 #: crates/rnote-ui/src/dialogs/mod.rs:127
 #: crates/rnote-ui/src/dialogs/mod.rs:257
@@ -1898,19 +1978,19 @@ msgstr "匯出選擇內容失敗，沒有選擇內容"
 msgid "Saves are in progress, waiting before closing.."
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/imp.rs:449
+#: crates/rnote-ui/src/appwindow/imp.rs:447
 msgid "Button 1"
 msgstr "按鈕1"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:456
+#: crates/rnote-ui/src/appwindow/imp.rs:454
 msgid "Button 2"
 msgstr "按鈕2"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:463
+#: crates/rnote-ui/src/appwindow/imp.rs:461
 msgid "Button 3"
 msgstr "按鈕3"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:470
+#: crates/rnote-ui/src/appwindow/imp.rs:468
 msgid "Button 4"
 msgstr "按鈕4"
 
@@ -2337,160 +2417,160 @@ msgstr "天氣"
 msgid "Weight"
 msgstr "權重"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:556
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:635
 msgid "Miscellaneous"
 msgstr "雜項"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:565
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:644
 msgid "Coordinate Systems"
 msgstr "座標系"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:573
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:652
 msgid "Ellipses"
 msgstr "橢圓"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:580
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:659
 msgid "Curves & Paths"
 msgstr "曲線與路徑"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:595
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:674
 msgid "Arrow"
 msgstr "箭頭"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:596
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:675
 msgid "Line"
 msgstr "直線"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:597
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:676
 msgid "Rectangle"
 msgstr "矩形"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:599
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:678
 msgid "2D coordinate system"
 msgstr "2維座標系"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:600
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:679
 msgid "3D coordinate system"
 msgstr "3維座標系"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:601
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:680
 msgid "2D single quadrant coordinate system"
 msgstr "2維單象限座標系"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:602
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:681
 msgid "Ellipse"
 msgstr "橢圓"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:603
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:682
 msgid "Ellipse with foci"
 msgstr "焦點橢圓"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:604
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:683
 msgid "Quadratic bezier curve"
 msgstr "二次貝塞爾曲線"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:605
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:684
 msgid "Cubic bezier curve"
 msgstr "三次貝塞爾曲線"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:606
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:685
 msgid "Polyline"
 msgstr "多段線"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:607
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:686
 msgid "Polygon"
 msgstr "多邊形"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:662
+#: crates/rnote-ui/src/settingspanel/mod.rs:660
 msgid "Application restart is required"
 msgstr "應用程式需要重新啟動"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1462
+#: crates/rnote-ui/src/settingspanel/mod.rs:1460
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "十字準線（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1463
+#: crates/rnote-ui/src/settingspanel/mod.rs:1461
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "十字準線（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1464
+#: crates/rnote-ui/src/settingspanel/mod.rs:1462
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "十字準線（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1465
+#: crates/rnote-ui/src/settingspanel/mod.rs:1463
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "點（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1466
+#: crates/rnote-ui/src/settingspanel/mod.rs:1464
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "點（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1467
+#: crates/rnote-ui/src/settingspanel/mod.rs:1465
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "點（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1468
+#: crates/rnote-ui/src/settingspanel/mod.rs:1466
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "西北方向水滴（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1469
+#: crates/rnote-ui/src/settingspanel/mod.rs:1467
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "西北方向水滴（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1470
+#: crates/rnote-ui/src/settingspanel/mod.rs:1468
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "西北方向水滴（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1471
+#: crates/rnote-ui/src/settingspanel/mod.rs:1469
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "東北方向水滴（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1472
+#: crates/rnote-ui/src/settingspanel/mod.rs:1470
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "東北方向水滴（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1473
+#: crates/rnote-ui/src/settingspanel/mod.rs:1471
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "東北方向水滴（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1474
+#: crates/rnote-ui/src/settingspanel/mod.rs:1472
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "正北方向水滴（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1475
+#: crates/rnote-ui/src/settingspanel/mod.rs:1473
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "正北方向水滴（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1476
+#: crates/rnote-ui/src/settingspanel/mod.rs:1474
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "正北方向水滴（大）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1477
+#: crates/rnote-ui/src/settingspanel/mod.rs:1475
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "橫（小）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1478
+#: crates/rnote-ui/src/settingspanel/mod.rs:1476
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "橫（中等）"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1479
+#: crates/rnote-ui/src/settingspanel/mod.rs:1477
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "橫（大）"
@@ -2670,6 +2750,9 @@ msgstr ""
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr ""
+
+#~ msgid "Shaper Styles"
+#~ msgstr "形狀工具樣式"
 
 #, fuzzy
 #~| msgid ""

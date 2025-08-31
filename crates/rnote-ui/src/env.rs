@@ -113,7 +113,9 @@ fn macos_is_in_app_bundle(canonicalized_exec_dir: impl AsRef<Path>) -> bool {
         .components()
         .zip(canonicalized_exec_dir.as_ref().components().skip(1))
         .any(|(a, b)| {
-            if let (Component::Normal(a), Component::Normal(b)) = (a, b) {
+            if let Component::Normal(a) = a
+                && let Component::Normal(b) = b
+            {
                 a == OsStr::new("Contents") && b == OsStr::new("MacOS")
             } else {
                 false

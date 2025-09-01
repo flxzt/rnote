@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-08-31 17:01+0200\n"
-"PO-Revision-Date: 2025-05-11 20:01+0000\n"
+"PO-Revision-Date: 2025-09-01 18:01+0000\n"
 "Last-Translator: Fjuro <fjuro@alius.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-"X-Generator: Weblate 5.12-dev\n"
+"X-Generator: Weblate 5.13.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -815,86 +815,69 @@ msgstr "Hrubý"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:132
 msgid "Highlighting"
-msgstr ""
+msgstr "Zvýrazňování"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:135
 msgid "Highlight mode"
-msgstr ""
+msgstr "Režim zvýrazňování"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:136
 msgid "Fade active color"
-msgstr ""
+msgstr "Ztlumit barvu aktivního prvku"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
 msgid "Highlight Opacity"
-msgstr ""
+msgstr "Neprůhlednost zvýraznění"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:142
 msgid "Modify the highlight opacity (%)"
-msgstr ""
+msgstr "Upravit neprůhlednost zvýraznění (%)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:161
-#, fuzzy
-#| msgid "Solid Style"
 msgid "Smooth Style"
-msgstr "Solidní styl"
+msgstr "Jemný styl"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:164
-#, fuzzy
-#| msgid "Linear"
 msgid "Line Cap"
-msgstr "Lineární"
+msgstr "Zakončení linky"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:165
-#, fuzzy
-#| msgid "Choose a format"
 msgid "Choose a line cap"
-msgstr "Vyberte formát"
+msgstr "Vyberte zakončení linky"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:169
-#, fuzzy
-#| msgctxt "part of string representation of a color"
-#| msgid "bright"
 msgid "Straight"
-msgstr "světlá"
+msgstr "Přímé"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
 msgid "Round"
-msgstr ""
+msgstr "Zaoblené"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
-#, fuzzy
-#| msgid "Fill Style"
 msgid "Line Style"
-msgstr "Styl výplně"
+msgstr "Styl linky"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
-#, fuzzy
-#| msgid "Choose a fill style"
 msgid "Choose a line style"
-msgstr "Vybrat styl výplně"
+msgstr "Vyberte styl linky"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:184
 msgid "Dotted"
-msgstr ""
+msgstr "Tečkovaná"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:185
 msgid "Dashed (narrow)"
-msgstr ""
+msgstr "Čárkovaná (úzká)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:186
 msgid "Dashed (equidistant)"
-msgstr ""
+msgstr "Čárkovaná (se stejnými rozestupy)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
-#, fuzzy
-#| msgid "Dashed"
 msgid "Dashed (wide)"
-msgstr "Čárkované"
+msgstr "Čárkovaná (široká)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:199
-#, fuzzy
-#| msgid "Rough style"
 msgid "Rough Style"
 msgstr "Hrubý styl"
 
@@ -948,18 +931,12 @@ msgid "Enabled"
 msgstr "Povoleno"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:253
-#, fuzzy
-#| msgid ""
-#| "Hold Ctrl to temporarily\n"
-#| "enable/disable constraints\n"
-#| "when this switch is off/on"
 msgid ""
 "Hold Ctrl to temporarily enable/disable\n"
 "                        constraints when this switch is off/on"
 msgstr ""
-"Podržením klávesy Ctrl dočasně\n"
-"povolit/zakázat omezení\n"
-"když je tento přepínač vypnutý/zapnutý"
+"Podržením klávesy Ctrl dočasně povolíte/zakážete\n"
+"                        omezení, když je tento přepínač vypnutý/zapnutý"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:259
 msgid "1:1"

@@ -93,7 +93,7 @@
         <ul>
           <li>feat: save/restore engine configuration with preset</li>
           <li>feat: respect snap-positions option when building shapes</li>
-          <li>feat: shape styling options and shape highlight-mode</li>
+          <li>feat: shape styling options and shape highlight-mode (thanks to @anesthetice)</li>
           <li>improv: application window always focused when opening a file (thanks to @Nugfle)</li>
           <li>fix: selected part when renaming files in the application file browser (thanks to @Kneemund)</li>
           <li>fix: cancelling import dialogs not stopping progress bar (thanks to @Doublonmousse)</li>

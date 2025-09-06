@@ -836,6 +836,7 @@ impl RnSettingsPanel {
             }
         ));
 
+        imp.doc_show_format_borders_row.set_sensitive(false);
         imp.doc_show_format_borders_row
             .connect_active_notify(clone!(
                 #[weak]
@@ -858,6 +859,7 @@ impl RnSettingsPanel {
             .sync_create()
             .build();
 
+        imp.doc_format_border_color_button.set_sensitive(false);
         imp.doc_format_border_color_button
             .connect_rgba_notify(clone!(
                 #[weak(rename_to=settingspanel)]
@@ -865,6 +867,9 @@ impl RnSettingsPanel {
                 #[weak]
                 appwindow,
                 move |button| {
+                    if !button.get_sensitive() {
+                        return;
+                    }
                     let format_border_color = button.rgba().into_compose_color();
                     let Some(canvas) = appwindow.active_tab_canvas() else {
                         return;
@@ -890,10 +895,14 @@ impl RnSettingsPanel {
                 }
             ));
 
+        imp.doc_background_color_button.set_sensitive(false);
         imp.doc_background_color_button.connect_rgba_notify(clone!(
             #[weak]
             appwindow,
             move |button| {
+                if !button.get_sensitive() {
+                    return;
+                }
                 let background_color = button.rgba().into_compose_color();
                 let Some(canvas) = appwindow.active_tab_canvas() else {
                     return;
@@ -915,6 +924,7 @@ impl RnSettingsPanel {
             }
         ));
 
+        imp.doc_document_layout_row.set_sensitive(false);
         imp.doc_document_layout_row
             .get()
             .connect_selected_item_notify(clone!(
@@ -922,7 +932,10 @@ impl RnSettingsPanel {
                 self,
                 #[weak]
                 appwindow,
-                move |_| {
+                move |row| {
+                    if !row.get_sensitive() {
+                        return;
+                    }
                     let document_layout = settings_panel.document_layout();
                     let Some(canvas) = appwindow.active_tab_canvas() else {
                         return;
@@ -942,6 +955,7 @@ impl RnSettingsPanel {
                 }
             ));
 
+        imp.doc_background_patterns_row.set_sensitive(false);
         imp.doc_background_patterns_row
             .get()
             .connect_selected_item_notify(clone!(
@@ -949,7 +963,10 @@ impl RnSettingsPanel {
                 self,
                 #[weak]
                 appwindow,
-                move |_| {
+                move |row| {
+                    if !row.get_sensitive() {
+                        return;
+                    }
                     let pattern = settings_panel.background_pattern();
                     let Some(canvas) = appwindow.active_tab_canvas() else {
                         return;
@@ -1028,11 +1045,15 @@ impl RnSettingsPanel {
                 }
             ));
 
+        imp.doc_background_pattern_color_button.set_sensitive(false);
         imp.doc_background_pattern_color_button
             .connect_rgba_notify(clone!(
                 #[weak]
                 appwindow,
                 move |button| {
+                    if !button.get_sensitive() {
+                        return;
+                    }
                     let Some(canvas) = appwindow.active_tab_canvas() else {
                         return;
                     };
@@ -1057,6 +1078,8 @@ impl RnSettingsPanel {
             ));
 
         imp.doc_background_pattern_width_unitentry
+            .set_sensitive(false);
+        imp.doc_background_pattern_width_unitentry
             .get()
             .connect_notify_local(
                 Some("value"),
@@ -1064,6 +1087,9 @@ impl RnSettingsPanel {
                     #[weak]
                     appwindow,
                     move |unit_entry, _| {
+                        if !unit_entry.get_sensitive() {
+                            return;
+                        }
                         let Some(canvas) = appwindow.active_tab_canvas() else {
                             return;
                         };
@@ -1091,6 +1117,8 @@ impl RnSettingsPanel {
             );
 
         imp.doc_background_pattern_height_unitentry
+            .set_sensitive(false);
+        imp.doc_background_pattern_height_unitentry
             .get()
             .connect_notify_local(
                 Some("value"),
@@ -1098,6 +1126,9 @@ impl RnSettingsPanel {
                     #[weak]
                     appwindow,
                     move |unit_entry, _| {
+                        if !unit_entry.get_sensitive() {
+                            return;
+                        }
                         let Some(canvas) = appwindow.active_tab_canvas() else {
                             return;
                         };
@@ -1143,11 +1174,16 @@ impl RnSettingsPanel {
             ));
 
         imp.background_pattern_invert_color_button
+            .set_sensitive(false);
+        imp.background_pattern_invert_color_button
             .get()
             .connect_clicked(clone!(
                 #[weak]
                 appwindow,
-                move |_| {
+                move |button| {
+                    if !button.get_sensitive() {
+                        return;
+                    }
                     let Some(canvas) = appwindow.active_tab_canvas() else {
                         return;
                     };
@@ -1180,6 +1216,26 @@ impl RnSettingsPanel {
                     appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
             ));
+    }
+
+    // All relevant buttons are set as sensitive : false upon startup
+    // until the first tab is added. This way setting the correct values
+    // in the doc part of the settings won't send back a widget flag
+    // that modifies the store
+    pub fn activate_doc_settings_buttons(&self) {
+        let imp = self.imp();
+        imp.doc_show_format_borders_row.set_sensitive(true);
+        imp.doc_format_border_color_button.set_sensitive(true);
+        imp.doc_background_color_button.set_sensitive(true);
+        imp.doc_document_layout_row.set_sensitive(true);
+        imp.doc_background_patterns_row.set_sensitive(true);
+        imp.doc_background_pattern_color_button.set_sensitive(true);
+        imp.doc_background_pattern_width_unitentry
+            .set_sensitive(true);
+        imp.doc_background_pattern_height_unitentry
+            .set_sensitive(true);
+        imp.background_pattern_invert_color_button
+            .set_sensitive(true);
     }
 
     fn setup_shortcuts(&self, appwindow: &RnAppWindow) {

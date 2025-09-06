@@ -132,13 +132,13 @@
               <property name="title" translatable="yes">Highlighting</property>
               <child>
                 <object class="AdwSwitchRow" id="highlight_mode_row">
-                  <property name="title" translatable="yes">Highlight mode</property>
+                  <property name="title" translatable="yes">Highlight-Mode</property>
                   <property name="subtitle" translatable="yes">Fade active color</property>
                 </object>
               </child>
               <child>
                 <object class="AdwSpinRow" id="highlight_opacity_row">
-                  <property name="title" translatable="yes">Highlight Opacity</property>
+                  <property name="title" translatable="yes">Highlight-Opacity</property>
                   <property name="subtitle" translatable="yes">Modify the highlight opacity (%)</property>
                   <property name="adjustment">
                     <object class="GtkAdjustment">
@@ -251,7 +251,7 @@
                     <object class="AdwSwitchRow" id="constraint_enabled_row">
                       <property name="title" translatable="yes">Enabled</property>
                       <property name="subtitle" translatable="yes">Hold Ctrl to temporarily enable/disable
-                        constraints when this switch is off/on</property>
+constraints when this switch is off/on</property>
                     </object>
                   </child>
                   <child>

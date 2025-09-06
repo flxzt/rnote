@@ -18,6 +18,15 @@ pub struct Transform {
     pub affine: na::Affine2<f64>,
 }
 
+/// Selection of which direction a mirror should use
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum MirrorOrientation {
+    /// Mirror is applied accross the line 'x = centerline'
+    Horizontal,
+    /// Mirror is applied accross the line 'y = centerline'
+    Vertical,
+}
+
 impl Default for Transform {
     fn default() -> Self {
         Self {
@@ -52,6 +61,10 @@ impl Transformable for Transform {
 
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.append_scale_mut(scale);
+    }
+
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        self.append_mirror_mut(centerline, orientation);
     }
 }
 
@@ -118,6 +131,31 @@ impl Transform {
             na::Scale2::<f64>::from(scale).to_homogeneous() * self.affine.to_homogeneous(),
         )
         .unwrap();
+    }
+
+    /// Apply a reflection across either Horizontal: 'x = centerline' or Vertical: 'y = centerline' to the
+    /// affine matrix based on the orientation
+    pub fn append_mirror_mut(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        let mirror_transformation = match orientation {
+            MirrorOrientation::Horizontal => {
+                na::matrix![
+                    -1.0, 0.0, 2.0 * centerline;
+                    0.0, 1.0, 0.0;
+                    0.0, 0.0, 1.0;
+                ]
+            }
+            MirrorOrientation::Vertical => {
+                na::matrix![
+                    1.0, 0.0, 0.0;
+                    0.0, -1.0, 2.0 * centerline;
+                    0.0, 0.0, 1.0;
+                ]
+            }
+        };
+
+        let transformed_affine = mirror_transformation * self.affine.matrix();
+
+        self.affine = na::Affine2::from_matrix_unchecked(transformed_affine);
     }
 
     /// Convert the transform to a Svg attribute string, insertable into svg elements.

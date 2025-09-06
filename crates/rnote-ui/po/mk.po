@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-31 17:01+0200\n"
+"POT-Creation-Date: 2025-09-06 15:24+0200\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Macedonian <https://hosted.weblate.org/projects/rnote/repo/mk/"
@@ -952,7 +952,7 @@ msgid "Highlighting"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:135
-msgid "Highlight mode"
+msgid "Highlight-Mode"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:136
@@ -960,7 +960,7 @@ msgid "Fade active color"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
-msgid "Highlight Opacity"
+msgid "Highlight-Opacity"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:142
@@ -1091,7 +1091,7 @@ msgstr "Овозможено"
 #| "when this switch is off/on"
 msgid ""
 "Hold Ctrl to temporarily enable/disable\n"
-"                        constraints when this switch is off/on"
+"constraints when this switch is off/on"
 msgstr ""
 "Држи CTRL за да привремено овозможиш / оневозможиш \n"
 "ограничувања кога оваа опција е исклучена / вклучена"

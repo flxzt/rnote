@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-31 17:01+0200\n"
+"POT-Creation-Date: 2025-09-06 15:24+0200\n"
 "PO-Revision-Date: 2025-09-06 13:27+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
@@ -818,7 +818,9 @@ msgid "Highlighting"
 msgstr "Hervorheben"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:135
-msgid "Highlight mode"
+#, fuzzy
+#| msgid "Highlight mode"
+msgid "Highlight-Mode"
 msgstr "Hervorhebenmodus"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:136
@@ -826,7 +828,9 @@ msgid "Fade active color"
 msgstr "Aktive Farbe verblassen"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
-msgid "Highlight Opacity"
+#, fuzzy
+#| msgid "Highlight Opacity"
+msgid "Highlight-Opacity"
 msgstr "Highlight Durchsichtigkeit"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:142
@@ -955,7 +959,7 @@ msgstr "Aktiviert"
 #| "when this switch is off/on"
 msgid ""
 "Hold Ctrl to temporarily enable/disable\n"
-"                        constraints when this switch is off/on"
+"constraints when this switch is off/on"
 msgstr ""
 "Halte Strg, um Beschränkungen\n"
 "temporär zu de-/aktivieren,\n"

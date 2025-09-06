@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-31 17:01+0200\n"
+"POT-Creation-Date: 2025-09-06 15:24+0200\n"
 "PO-Revision-Date: 2025-09-03 07:01+0000\n"
 "Last-Translator: Ács Zoltán <acszoltan111@gmail.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
-"\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
+">\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -819,7 +819,9 @@ msgid "Highlighting"
 msgstr "Kiemelés"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:135
-msgid "Highlight mode"
+#, fuzzy
+#| msgid "Highlight mode"
+msgid "Highlight-Mode"
 msgstr "Kiemelési mód"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:136
@@ -827,7 +829,9 @@ msgid "Fade active color"
 msgstr "Aktív szín halványítása"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
-msgid "Highlight Opacity"
+#, fuzzy
+#| msgid "Highlight Opacity"
+msgid "Highlight-Opacity"
 msgstr "Kiemelés átlátszatlansága"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:142
@@ -939,7 +943,7 @@ msgstr "Engedélyezve"
 #| "when this switch is off/on"
 msgid ""
 "Hold Ctrl to temporarily enable/disable\n"
-"                        constraints when this switch is off/on"
+"constraints when this switch is off/on"
 msgstr ""
 "Tartsa lenyomva a Ctrl billentyűt a korlátozások\n"
 "ideiglenes engedélyezéséhez/letiltásához,\n"

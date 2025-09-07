@@ -132,15 +132,14 @@ impl EngineSnapshot {
                         xopp_import_prefs.dpi,
                     ));
 
-                if let Some(first_page) = xopp_file.xopp_root.pages.first() {
-                    if let xoppformat::XoppBackgroundType::Solid {
+                if let Some(first_page) = xopp_file.xopp_root.pages.first()
+                    && let xoppformat::XoppBackgroundType::Solid {
                         color: _color,
                         style: _style,
                     } = &first_page.background.bg_type
-                    {
-                        // Xopp background styles are not compatible with Rnotes, so everything is plain for now
-                        engine.document.config.background.pattern = background::PatternStyle::None;
-                    }
+                {
+                    // Xopp background styles are not compatible with Rnotes, so everything is plain for now
+                    engine.document.config.background.pattern = background::PatternStyle::None;
                 }
 
                 // Offsetting as rnote has one global coordinate space

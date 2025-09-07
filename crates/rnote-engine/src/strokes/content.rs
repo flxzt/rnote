@@ -7,7 +7,7 @@ use rnote_compose::{color, shapes::Shapeable};
 #[derive(Debug, Clone)]
 /// Generated content images.
 ///
-/// Some `Content` trait implementors only support generating image(s) for the entire content (Full).
+/// Some `Content` trait implementers only support generating image(s) for the entire content (Full).
 pub enum GeneratedContentImages {
     /// Only part of the content was rendered (for example when part of it is out of the current viewport).
     Partial {
@@ -71,7 +71,7 @@ where
 
     /// Draw the content highlight. Used when indicating a selection.
     ///
-    /// The implementors are expected to save/restore the drawing context.
+    /// The implementers are expected to save/restore the drawing context.
     ///
     /// `total_zoom` is the zoom-factor of the surface that the highlight gets drawn on.
     fn draw_highlight(

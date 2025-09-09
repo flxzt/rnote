@@ -521,13 +521,12 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
                                 password,
                             )
                             .await
+                            && let Err(e) = tx_import.unbounded_send(Err(e))
                         {
-                            if let Err(e) = tx_import.unbounded_send(Err(e)) {
-                                error!(
-                                    "Failed to load PDF, but failed to send signal through channel. Err: {e:?}"
-                                );
-                                return;
-                            }
+                            error!(
+                                "Failed to load PDF, but failed to send signal through channel. Err: {e:?}"
+                            );
+                            return;
                         };
 
                         if let Err(e) = tx_import.unbounded_send(Ok(true)) {

@@ -87,6 +87,15 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.13.1" date="2025-09-09">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: occasional PDF import failure (thanks to @Doublonmousse)</li>
+          <li>fix: add back accidentally removed 'Pen Style' keyboard shortcuts (thanks to @Doublonmousse)</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.13.0" date="2025-09-06">
       <description>
         <p>this release changes:</p>

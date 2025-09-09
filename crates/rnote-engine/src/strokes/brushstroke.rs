@@ -11,7 +11,7 @@ use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::Composer;
-use rnote_compose::transform::Transformable;
+use rnote_compose::transform::{MirrorOrientation, Transformable};
 use rnote_compose::{PenPath, Style};
 use serde::{Deserialize, Serialize};
 use tracing::error;
@@ -254,6 +254,10 @@ impl Transformable for BrushStroke {
         let scale_scalar = (scale[0] * scale[1]).sqrt();
         self.style
             .set_stroke_width(self.style.stroke_width() * scale_scalar);
+    }
+
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        self.path.mirror(centerline, orientation);
     }
 }
 

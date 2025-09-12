@@ -44,10 +44,6 @@ mod imp {
         #[template_child]
         pub(crate) shaperstyle_rough_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub(crate) highlight_mode_row: TemplateChild<adw::SwitchRow>,
-        #[template_child]
-        pub(crate) highlight_opacity_row: TemplateChild<adw::SpinRow>,
-        #[template_child]
         pub(crate) smoothstyle_group: TemplateChild<adw::PreferencesGroup>,
         #[template_child]
         pub(crate) smoothstyle_line_cap_row: TemplateChild<adw::ComboRow>,
@@ -59,6 +55,17 @@ mod imp {
         pub(crate) roughstyle_fillstyle_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(crate) roughstyle_hachure_angle_row: TemplateChild<adw::SpinRow>,
+
+        #[template_child]
+        pub(crate) shaperextra_menubutton: TemplateChild<MenuButton>,
+        #[template_child]
+        pub(crate) shaperextra_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) shaperextra_popover_close_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) highlight_mode_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(crate) highlight_opacity_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(crate) constraint_enabled_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
@@ -124,6 +131,10 @@ impl RnShaperPage {
         self.imp().shapeconfig_menubutton.get()
     }
 
+    pub(crate) fn shaperextra_menubutton(&self) -> MenuButton {
+        self.imp().shaperextra_menubutton.get()
+    }
+
     pub(crate) fn shapebuildertype_menubutton(&self) -> MenuButton {
         self.imp().shapebuildertype_menubutton.get()
     }
@@ -184,6 +195,7 @@ impl RnShaperPage {
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
         let shapeconfig_popover = imp.shapeconfig_popover.get();
+        let shaperextra_popover = imp.shaperextra_popover.get();
         let shapebuildertype_popover = imp.shapebuildertype_popover.get();
 
         // Popovers
@@ -192,6 +204,14 @@ impl RnShaperPage {
             shapeconfig_popover,
             move |_| {
                 shapeconfig_popover.popdown();
+            }
+        ));
+
+        imp.shaperextra_popover_close_button.connect_clicked(clone!(
+            #[weak]
+            shaperextra_popover,
+            move |_| {
+                shaperextra_popover.popdown();
             }
         ));
 
@@ -301,33 +321,6 @@ impl RnShaperPage {
             }
         ));
 
-        // Highlighter options
-        imp.highlight_mode_row.connect_active_notify(clone!(
-            #[weak]
-            appwindow,
-            move |row| {
-                appwindow
-                    .engine_config()
-                    .write()
-                    .pens_config
-                    .shaper_config
-                    .highlight_mode = row.is_active();
-            }
-        ));
-
-        imp.highlight_opacity_row.connect_changed(clone!(
-            #[weak]
-            appwindow,
-            move |row| {
-                appwindow
-                    .engine_config()
-                    .write()
-                    .pens_config
-                    .shaper_config
-                    .highlight_opacity = row.value().round() / 100.0;
-            }
-        ));
-
         // Smooth style
         // Line cap
         imp.smoothstyle_line_cap_row
@@ -428,37 +421,33 @@ impl RnShaperPage {
                 }
             ));
 
-        // shape builder type
-        imp.shapebuildertype_picker.set_groups(
-            shape_builder_type_icons_get_groups(),
-            shape_builder_type_icons_to_display_name,
-        );
+        // Shaper extra
+        // Highlighter options
+        imp.highlight_mode_row.connect_active_notify(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .shaper_config
+                    .highlight_mode = row.is_active();
+            }
+        ));
 
-        imp.shapebuildertype_picker.connect_notify_local(
-            Some("picked"),
-            clone!(
-                #[weak(rename_to=shaperpage)]
-                self,
-                #[weak]
-                appwindow,
-                move |picker, _| {
-                    if let Some(buildertype) = shaperpage.shapebuildertype()
-                        && let Some(icon_name) = picker.picked()
-                    {
-                        appwindow
-                            .engine_config()
-                            .write()
-                            .pens_config
-                            .shaper_config
-                            .builder_type = buildertype;
-                        shaperpage
-                            .imp()
-                            .shapebuildertype_menubutton
-                            .set_icon_name(&icon_name);
-                    }
-                }
-            ),
-        );
+        imp.highlight_opacity_row.connect_changed(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .shaper_config
+                    .highlight_opacity = row.value().round() / 100.0;
+            }
+        ));
 
         // Constraints
         imp.constraint_enabled_row
@@ -560,6 +549,38 @@ impl RnShaperPage {
                     }
                 }
             ));
+
+        // shape builder type
+        imp.shapebuildertype_picker.set_groups(
+            shape_builder_type_icons_get_groups(),
+            shape_builder_type_icons_to_display_name,
+        );
+
+        imp.shapebuildertype_picker.connect_notify_local(
+            Some("picked"),
+            clone!(
+                #[weak(rename_to=shaperpage)]
+                self,
+                #[weak]
+                appwindow,
+                move |picker, _| {
+                    if let Some(buildertype) = shaperpage.shapebuildertype()
+                        && let Some(icon_name) = picker.picked()
+                    {
+                        appwindow
+                            .engine_config()
+                            .write()
+                            .pens_config
+                            .shaper_config
+                            .builder_type = buildertype;
+                        shaperpage
+                            .imp()
+                            .shapebuildertype_menubutton
+                            .set_icon_name(&icon_name);
+                    }
+                }
+            ),
+        );
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnAppWindow) {

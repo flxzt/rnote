@@ -1,15 +1,15 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the rnote package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Piotr Michalak piotrmic05@gmail.com, 2024.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 15:24+0200\n"
-"PO-Revision-Date: 2024-12-02 00:00+0000\n"
-"Last-Translator: Piotr Michalak <piotrmic05@gmail.com>\n"
+"PO-Revision-Date: 2025-09-13 14:02+0300\n"
+"Last-Translator: dawkagaming\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -226,11 +226,11 @@ msgstr "Śmieciowe pociągnięcia pędzlem"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr ""
+msgstr "Czy jesteś pewien, że chcesz przesunąć ten plik do kosza?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "Kosz"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:346
@@ -401,7 +401,7 @@ msgstr "Png"
 #: crates/rnote-ui/src/dialogs/export.rs:813
 #: crates/rnote-ui/src/dialogs/export.rs:1205
 msgid "Jpeg"
-msgstr "Jpeg"
+msgstr "JPEG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
@@ -422,12 +422,12 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
 msgid "Jpeg Quality"
-msgstr "Jakość Jpeg"
+msgstr "Jakość JPEG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:382
 #: crates/rnote-ui/data/ui/dialogs/export.ui:564
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr "Ustaw jakość obrazu Jpeg (1-100)"
+msgstr "Ustaw jakość obrazu JPEG (1-100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:414
 #: crates/rnote-ui/src/dialogs/export.rs:1160
@@ -448,7 +448,7 @@ msgstr "Ustaw margines wokół wybranego pola"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Import Pdf"
-msgstr "Importuj Pdf"
+msgstr "Importuj PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:218
@@ -462,7 +462,7 @@ msgstr "Informacje"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
 msgid "Pdf Import Preferences"
-msgstr "Preferencje importu Pdf"
+msgstr "Preferencje importu PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
 msgid "Start Page"
@@ -478,7 +478,7 @@ msgstr "Dostosuj Dokument"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "Czy układ dokumentu powinien zostać dostosowany do Pdf"
+msgstr "Czy układ dokumentu powinien zostać dostosowany do formatu PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
 msgid "Page Width (%)"
@@ -822,23 +822,23 @@ msgstr "Szorstki"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:132
 msgid "Highlighting"
-msgstr ""
+msgstr "Podkreślanie"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:135
 msgid "Highlight-Mode"
-msgstr ""
+msgstr "Tryb zakreślania"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:136
 msgid "Fade active color"
-msgstr ""
+msgstr "Zanikanie aktywnego koloru"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
 msgid "Highlight-Opacity"
-msgstr ""
+msgstr "Przeźroczystość zakreślenia"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:142
 msgid "Modify the highlight opacity (%)"
-msgstr ""
+msgstr "Modyfikuj przeźroczystość zakreślenia (%)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:161
 #, fuzzy
@@ -867,7 +867,7 @@ msgstr "jasny"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
 msgid "Round"
-msgstr ""
+msgstr "Zaokrąglony"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
 #, fuzzy
@@ -883,21 +883,21 @@ msgstr "Wybierz styl wypełnienia"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:184
 msgid "Dotted"
-msgstr ""
+msgstr "Kropkowane"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:185
 msgid "Dashed (narrow)"
-msgstr ""
+msgstr "Przerywane (wąskie)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:186
 msgid "Dashed (equidistant)"
-msgstr ""
+msgstr "Przerywane (równoległe)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 #, fuzzy
 #| msgid "Dashed"
 msgid "Dashed (wide)"
-msgstr "Przerywane"
+msgstr "Przerywane (szerokie)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:199
 #, fuzzy
@@ -1008,15 +1008,15 @@ msgstr "Gumka"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"
-msgstr ""
+msgstr "Wybór czcionki"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:29
 msgid "Edit Font Size"
-msgstr ""
+msgstr "Zmień wielkość czcionki"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:45
 msgid "Pick And Insert Emoji"
-msgstr "Wybierz i wstaw emoji"
+msgstr "Wybierz i wstaw emotkę"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:70
 msgid "Reset Text Attributes"
@@ -1323,7 +1323,7 @@ msgstr "Nowa karta"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:54
 msgid "View Open Tabs"
-msgstr ""
+msgstr "Pokaż otwarte karty"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:61
 msgid "Focus Mode"
@@ -1342,7 +1342,7 @@ msgstr "Otwórz menu płótna"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:94
 msgid "App Menu"
-msgstr ""
+msgstr "Menu aplikacji"
 
 #: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
@@ -1457,12 +1457,12 @@ msgstr "Format strony"
 #: crates/rnote-ui/data/ui/settingspanel.ui:142
 #: crates/rnote-ui/data/ui/settingspanel.ui:284
 msgid "Save as Preset"
-msgstr ""
+msgstr "Zapisz jako wzór"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:151
 #: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Restore From Preset"
-msgstr ""
+msgstr "Przywróć ze wzoru"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:161
 msgid "Format"
@@ -1538,7 +1538,7 @@ msgstr "Ustawienie wysokości formatu"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:244
 msgid "Dpi"
-msgstr "Dpi"
+msgstr "DPI"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:245
 msgid "Set the Dpi (dots per inch). Defaults to 96."
@@ -2106,7 +2106,7 @@ msgstr "Pomyślnie wyeksportowano zaznaczenie"
 #: crates/rnote-ui/src/dialogs/export.rs:1238
 #: crates/rnote-ui/src/dialogs/export.rs:1299
 msgid "Json"
-msgstr "Json"
+msgstr "JSON"
 
 #: crates/rnote-ui/src/dialogs/export.rs:1250
 msgid "Export Engine State"
@@ -2138,7 +2138,7 @@ msgstr "Otwórz plik"
 
 #: crates/rnote-ui/src/dialogs/import.rs:85
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
+msgstr "JPG, PDF, PNG, SVG, Xopp, TXT"
 
 #: crates/rnote-ui/src/dialogs/import.rs:181
 #: crates/rnote-ui/src/dialogs/import.rs:412
@@ -2671,7 +2671,7 @@ msgstr "szarawy"
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "strong"
-msgstr ""
+msgstr "mocny"
 
 #: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"

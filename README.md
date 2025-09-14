@@ -61,7 +61,7 @@ Download the official flatpak on Flathub [here](https://flathub.org/apps/details
 
 ### MacOS
 
-Thanks to @dehesselle the app is available on MacOS as an app bundle.  
+Thanks to [dehesselle](https://gitlab.com/dehesselle) the app is available on MacOS as an app bundle.  
 Check out the [repository](https://gitlab.com/dehesselle/rnote_macos), the latest release can be downloaded [here](https://gitlab.com/dehesselle/rnote_macos/-/releases/permalink/latest).
 
 <div align="start">

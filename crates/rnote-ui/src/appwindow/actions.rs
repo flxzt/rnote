@@ -144,6 +144,7 @@ impl RnAppWindow {
                     if let Some(widget) = GtkWindowExt::focus(&appwindow)
                         .and_then(|w| w.dynamic_cast::<gtk4::Editable>().ok())
                     {
+                        widget.delete_selection();
                         let mut p = widget.position();
                         widget.insert_text(&format!("{}", i + 1), &mut p);
                         widget.set_position(p);

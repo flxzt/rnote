@@ -89,7 +89,8 @@ pub(crate) const TEXT_TOAST_TIMEOUT_DEFAULT: Option<Duration> = Some(Duration::f
 
 glib::wrapper! {
     pub(crate) struct RnOverlays(ObjectSubclass<imp::RnOverlays>)
-    @extends Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnOverlays {
@@ -423,7 +424,7 @@ impl RnOverlays {
     ///
     /// `singleton_toast` is a weak reference to a `Toast` which should be held somewhere by the caller.
     /// On subsequent calls the held reference will be replaced by one of the new dispatched toast.
-    /// The caller should not modifiy this weak reference themselves.
+    /// The caller should not modify this weak reference themselves.
     pub(crate) fn dispatch_toast_w_button_singleton<F: Fn(&adw::Toast) + 'static>(
         &self,
         text: &str,

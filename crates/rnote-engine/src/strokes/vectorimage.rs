@@ -171,7 +171,7 @@ impl VectorImage {
         let mut transform = Transform::default();
         let rectangle = match size_option {
             ImageSizeOption::RespectOriginalSize => {
-                // Size not given : use the intrisic size
+                // Size not given : use the intrinsic size
                 transform.append_translation_mut(pos + intrinsic_size * 0.5);
                 Rectangle {
                     cuboid: p2d::shape::Cuboid::new(intrinsic_size * 0.5),

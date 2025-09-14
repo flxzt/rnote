@@ -12,9 +12,11 @@ use rnote_compose::SplitOrder;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::ext::GraphenePointExt;
+use rnote_engine::pens::PenStyle;
 use rnote_engine::strokes::resize::{ImageSizeOption, Resize};
 use rnote_engine::{Camera, Engine};
 use std::path::PathBuf;
+use std::str::FromStr;
 use std::time::Instant;
 use tracing::{debug, error};
 
@@ -199,6 +201,13 @@ impl RnAppWindow {
         let action_visual_debug = gio::PropertyAction::new("visual-debug", self, "visual-debug");
         self.add_action(&action_visual_debug);
 
+        let action_pen_style = gio::SimpleAction::new_stateful(
+            "pen-style",
+            Some(&String::static_variant_type()),
+            &String::from("brush").to_variant(),
+        );
+        self.add_action(&action_pen_style);
+
         // Open settings
         action_open_settings.connect_activate(clone!(
             #[weak(rename_to = appwindow)]
@@ -331,6 +340,35 @@ impl RnAppWindow {
                             .await;
                     }
                 ));
+            }
+        ));
+
+        // Pen style
+        action_pen_style.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |action, target| {
+                let pen_style_str = target.unwrap().str().unwrap();
+
+                let pen_style = match PenStyle::from_str(pen_style_str) {
+                    Ok(s) => s,
+                    Err(e) => {
+                        error!("Activated pen-style action with invalid target, Err: {e:}");
+                        return;
+                    }
+                };
+
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                // don't change the style if the current style with override is already the same
+                // (e.g. when switched to from the pen button, not by clicking the pen page)
+                if pen_style != canvas.engine_ref().current_pen_style_w_override() {
+                    let mut widget_flags = canvas.engine_mut().change_pen_style(pen_style);
+                    widget_flags |= canvas.engine_mut().change_pen_style_override(None);
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                }
+                action.set_state(&pen_style_str.to_variant());
             }
         ));
 

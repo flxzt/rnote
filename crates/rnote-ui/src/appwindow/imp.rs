@@ -412,21 +412,19 @@ impl RnAppWindow {
 
                     for (i, tab) in tabs.iter().enumerate() {
                         let canvas = tab.canvas();
-                        if canvas.unsaved_changes() {
-                            if let Some(output_file) = canvas.output_file() {
-                                trace!(
-                                    "there are unsaved changes on the tab {:?} with a file on disk, saving",i
-                                );
-                                glib::spawn_future_local(clone!(#[weak] canvas, #[weak] appwindow ,async move {
-                                    if let Err(e) = canvas.save_document_to_file(&output_file).await {
-                                        error!("Saving document failed, Err: `{e:?}`");
-                                        canvas.set_output_file(None);
-                                        appwindow
-                                            .overlays()
-                                            .dispatch_toast_error(&gettext("Saving document failed"));
-                                    };
-                                }));
-                            }
+                        if canvas.unsaved_changes() && let Some(output_file) = canvas.output_file() {
+                            trace!(
+                                "there are unsaved changes on the tab {:?} with a file on disk, saving",i
+                            );
+                            glib::spawn_future_local(clone!(#[weak] canvas, #[weak] appwindow ,async move {
+                                if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                                    error!("Saving document failed, Err: `{e:?}`");
+                                    canvas.set_output_file(None);
+                                    appwindow
+                                        .overlays()
+                                        .dispatch_toast_error(&gettext("Saving document failed"));
+                                };
+                            }));
                         }
                     }
 
@@ -708,22 +706,12 @@ impl RnAppWindow {
             obj.overlays()
                 .penssidebar()
                 .shaper_page()
-                .shaperstyle_menubutton()
-                .set_direction(ArrowType::Right);
-            obj.overlays()
-                .penssidebar()
-                .shaper_page()
                 .shapeconfig_menubutton()
                 .set_direction(ArrowType::Right);
             obj.overlays()
                 .penssidebar()
                 .shaper_page()
                 .shapebuildertype_menubutton()
-                .set_direction(ArrowType::Right);
-            obj.overlays()
-                .penssidebar()
-                .shaper_page()
-                .constraint_menubutton()
                 .set_direction(ArrowType::Right);
             obj.overlays()
                 .penssidebar()
@@ -835,22 +823,12 @@ impl RnAppWindow {
             obj.overlays()
                 .penssidebar()
                 .shaper_page()
-                .shaperstyle_menubutton()
-                .set_direction(ArrowType::Left);
-            obj.overlays()
-                .penssidebar()
-                .shaper_page()
                 .shapeconfig_menubutton()
                 .set_direction(ArrowType::Left);
             obj.overlays()
                 .penssidebar()
                 .shaper_page()
                 .shapebuildertype_menubutton()
-                .set_direction(ArrowType::Left);
-            obj.overlays()
-                .penssidebar()
-                .shaper_page()
-                .constraint_menubutton()
                 .set_direction(ArrowType::Left);
             obj.overlays()
                 .penssidebar()

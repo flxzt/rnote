@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-26 11:14+0200\n"
+"POT-Creation-Date: 2025-09-06 15:24+0200\n"
 "PO-Revision-Date: 2025-05-22 08:01+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -583,7 +583,8 @@ msgid "Mark underneath other strokes"
 msgstr "অন্যান্য স্ট্রোকের নীচে চিহ্নিত করুন"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:107
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:201
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:183
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:207
 msgid "Solid"
 msgstr "পূর্ণ"
 
@@ -791,104 +792,184 @@ msgid "Delete Selection"
 msgstr "নির্বাচন মুছুন"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:19
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:248
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:294
 msgid "Shape Builders"
 msgstr "আকৃতি নির্মাতা"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:35
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:290
-msgid "Constraints"
-msgstr "সীমাবদ্ধতা"
-
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:64
-msgid "Shaper Style"
-msgstr "শেপার স্টাইল"
-
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:77
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:32
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:71
 msgid "Shape Configuration"
 msgstr "আকৃতি কনফিগারেশন"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:101
-msgid "Shaper Styles"
-msgstr "শেপার স্টাইলসমূহ"
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:94
+msgid "Shaper Style"
+msgstr "শেপার স্টাইল"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:130
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:104
 msgid "Smooth"
 msgstr "মসৃণ"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:115
 msgid "Rough"
 msgstr "রুক্ষ"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:192
-msgid "Rough style"
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:132
+msgid "Highlighting"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:135
+msgid "Highlight-Mode"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:136
+msgid "Fade active color"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
+msgid "Highlight-Opacity"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:142
+msgid "Modify the highlight opacity (%)"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:161
+#, fuzzy
+#| msgid "Solid Style"
+msgid "Smooth Style"
+msgstr "পূর্ণ স্টাইল"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:164
+#, fuzzy
+#| msgid "Linear"
+msgid "Line Cap"
+msgstr "রৈখিক"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:165
+#, fuzzy
+#| msgid "Choose a format"
+msgid "Choose a line cap"
+msgstr "একটি বিন্যাস ঠিক করুন"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:169
+#, fuzzy
+#| msgctxt "part of string representation of a color"
+#| msgid "bright"
+msgid "Straight"
+msgstr "উজ্জল"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
+msgid "Round"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
+#, fuzzy
+#| msgid "Fill Style"
+msgid "Line Style"
+msgstr "পূর্ণ করা স্টাইল"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
+#, fuzzy
+#| msgid "Choose a fill style"
+msgid "Choose a line style"
+msgstr "একটি পুর্ণ করা স্টাইল নির্বাচন করুন"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:184
+msgid "Dotted"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:185
+msgid "Dashed (narrow)"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:186
+msgid "Dashed (equidistant)"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
+#, fuzzy
+#| msgid "Dashed"
+msgid "Dashed (wide)"
+msgstr "ড্যাশড"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:199
+#, fuzzy
+#| msgid "Rough style"
+msgid "Rough Style"
 msgstr "রুক্ষ স্টাইল"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:196
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:202
 msgid "Fill Style"
 msgstr "পূর্ণ করা স্টাইল"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:197
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:203
 msgid "Choose a fill style"
 msgstr "একটি পুর্ণ করা স্টাইল নির্বাচন করুন"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:202
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:208
 msgid "Hachure"
 msgstr "হাচুরে"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:203
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:209
 msgid "Zig-Zag"
 msgstr "আঁকা-বাঁকা"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:204
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:210
 msgid "Zig-Zag Line"
 msgstr "আঁকা-বাঁকা রেখা"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:205
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:211
 msgid "Crosshatch"
 msgstr "ক্রসহ্যাচ"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:206
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:212
 #: crates/rnote-ui/data/ui/settingspanel.ui:374
 msgid "Dots"
 msgstr "বিন্দু"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:207
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:213
 msgid "Dashed"
 msgstr "ড্যাশড"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:215
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:221
 msgid "Hachure Angle"
 msgstr "হাচুরে কোণ"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:216
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:222
 msgid "Set the angle of hachure fills"
 msgstr "হ্যাচুরে পূরণের কোণ সেট করুন"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:319
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:241
+msgid "Constraints"
+msgstr "সীমাবদ্ধতা"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:252
 msgid "Enabled"
 msgstr "সক্রিয়"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:320
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:253
+#, fuzzy
+#| msgid ""
+#| "Hold Ctrl to temporarily\n"
+#| "enable/disable constraints\n"
+#| "when this switch is off/on"
 msgid ""
-"Hold Ctrl to temporarily\n"
-"enable/disable constraints\n"
-"when this switch is off/on"
+"Hold Ctrl to temporarily enable/disable\n"
+"constraints when this switch is off/on"
 msgstr ""
 "Ctrl ধরে রাখুন সাময়িকভাবে\n"
 "সীমাবদ্ধতা সক্ষম/অক্ষম করতে\n"
 "যখন এই সুইচ বন্ধ/চালু হয়"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:327
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:259
 msgid "1:1"
 msgstr "১ঃ১"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:332
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:264
 msgid "3:2"
 msgstr "৩ঃ২"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:337
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:269
 msgid "Golden Ratio (1:1.618)"
 msgstr "সোনালী অনুপাত (১ঃ১.৬১৮)"
 
@@ -1529,7 +1610,7 @@ msgid "Lines"
 msgstr "পংক্তি"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:373
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:598
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:677
 msgid "Grid"
 msgstr "গ্রিড"
 
@@ -1862,7 +1943,7 @@ msgid "Open Workspace Folder"
 msgstr "কর্মক্ষেত্রের নাম"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:700
-#: crates/rnote-ui/src/appwindow/imp.rs:426
+#: crates/rnote-ui/src/appwindow/imp.rs:425
 #: crates/rnote-ui/src/dialogs/export.rs:82
 #: crates/rnote-ui/src/dialogs/mod.rs:127
 #: crates/rnote-ui/src/dialogs/mod.rs:257
@@ -1882,19 +1963,19 @@ msgstr "নির্বাচন রপ্তানি করতে ব্যর
 msgid "Saves are in progress, waiting before closing.."
 msgstr "সংরক্ষণ চলছে, বন্ধ্য করার আগে অপেক্ষা করুন.।"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:449
+#: crates/rnote-ui/src/appwindow/imp.rs:447
 msgid "Button 1"
 msgstr "বোতাম ১"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:456
+#: crates/rnote-ui/src/appwindow/imp.rs:454
 msgid "Button 2"
 msgstr "বোতাম ২"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:463
+#: crates/rnote-ui/src/appwindow/imp.rs:461
 msgid "Button 3"
 msgstr "বোতাম ৩"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:470
+#: crates/rnote-ui/src/appwindow/imp.rs:468
 msgid "Button 4"
 msgstr "বোতাম ৪"
 
@@ -2320,160 +2401,160 @@ msgstr "আবহাওয়া"
 msgid "Weight"
 msgstr "ওজন"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:556
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:635
 msgid "Miscellaneous"
 msgstr "বিবিধ"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:565
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:644
 msgid "Coordinate Systems"
 msgstr "স্থানাঙ্ক"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:573
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:652
 msgid "Ellipses"
 msgstr "উপবৃত্তসমূহ"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:580
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:659
 msgid "Curves & Paths"
 msgstr "বক্ররেখা এবং পথসমূহ"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:595
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:674
 msgid "Arrow"
 msgstr "তীর"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:596
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:675
 msgid "Line"
 msgstr "রেখা"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:597
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:676
 msgid "Rectangle"
 msgstr "আয়তক্ষেত্র"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:599
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:678
 msgid "2D coordinate system"
 msgstr "দ্বিমাত্রিক স্থানাঙ্ক"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:600
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:679
 msgid "3D coordinate system"
 msgstr "ত্রিমাত্রিক স্থানাঙ্ক"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:601
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:680
 msgid "2D single quadrant coordinate system"
 msgstr "দ্বিমাত্রিক একক চতুর্থাংশ স্থানাঙ্ক"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:602
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:681
 msgid "Ellipse"
 msgstr "উপবৃত্ত"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:603
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:682
 msgid "Ellipse with foci"
 msgstr "নাভী সহিত উপবৃত্ত"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:604
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:683
 msgid "Quadratic bezier curve"
 msgstr "দ্বিঘাত বেজিয়ে বক্ররেখা"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:605
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:684
 msgid "Cubic bezier curve"
 msgstr "ত্রিঘাত বেজিয়ে বক্ররেখা"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:606
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:685
 msgid "Polyline"
 msgstr "পলিলাইন"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:607
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:686
 msgid "Polygon"
 msgstr "বহুভুজ"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:662
+#: crates/rnote-ui/src/settingspanel/mod.rs:660
 msgid "Application restart is required"
 msgstr "অ্যাপ্লিকেশন পুনরায় চালু করা প্রয়োজন"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1462
+#: crates/rnote-ui/src/settingspanel/mod.rs:1460
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "ক্রসহেয়ার (ছোট)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1463
+#: crates/rnote-ui/src/settingspanel/mod.rs:1461
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "ক্রসহেয়ার (মাঝারি)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1464
+#: crates/rnote-ui/src/settingspanel/mod.rs:1462
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "ক্রসহেয়ার (বড়)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1465
+#: crates/rnote-ui/src/settingspanel/mod.rs:1463
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "বিন্দু (ছোট)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1466
+#: crates/rnote-ui/src/settingspanel/mod.rs:1464
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "বিন্দু (মাঝারি)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1467
+#: crates/rnote-ui/src/settingspanel/mod.rs:1465
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "বিন্দু (বড়)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1468
+#: crates/rnote-ui/src/settingspanel/mod.rs:1466
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "টিয়ারড্রপ উত্তর-পশ্চিম (ছোট)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1469
+#: crates/rnote-ui/src/settingspanel/mod.rs:1467
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "টিয়ারড্রপ উত্তর-পশ্চিম (মাঝারি)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1470
+#: crates/rnote-ui/src/settingspanel/mod.rs:1468
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "টিয়ারড্রপ উত্তর-পশ্চিম (বড়)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1471
+#: crates/rnote-ui/src/settingspanel/mod.rs:1469
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "টিয়ারড্রপ উত্তর-পূর্ব (ছোট)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1472
+#: crates/rnote-ui/src/settingspanel/mod.rs:1470
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "টিয়ারড্রপ উত্তর-পূর্ব (মাঝারি)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1473
+#: crates/rnote-ui/src/settingspanel/mod.rs:1471
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "টিয়ারড্রপ উত্তর-পূর্ব (বড়)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1474
+#: crates/rnote-ui/src/settingspanel/mod.rs:1472
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "টিয়ারড্রপ উত্তর (ছোট)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1475
+#: crates/rnote-ui/src/settingspanel/mod.rs:1473
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "টিয়ারড্রপ উত্তর (মাঝারি)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1476
+#: crates/rnote-ui/src/settingspanel/mod.rs:1474
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "টিয়ারড্রপ উত্তর (বড়)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1477
+#: crates/rnote-ui/src/settingspanel/mod.rs:1475
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "রশ্মি (ছোট)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1478
+#: crates/rnote-ui/src/settingspanel/mod.rs:1476
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "রশ্মি (মাঝারি)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1479
+#: crates/rnote-ui/src/settingspanel/mod.rs:1477
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "রশ্মি (বড়)"
@@ -2639,6 +2720,9 @@ msgstr "কালো"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "সাদা"
+
+#~ msgid "Shaper Styles"
+#~ msgstr "শেপার স্টাইলসমূহ"
 
 #~ msgid ""
 #~ "The page order when documents with layouts\n"

@@ -96,7 +96,7 @@ pub(crate) async fn run_export(
             .await
             {
                 let abandon_msg = format!(
-                    "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}"
+                    "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err: {e:?}"
                 );
                 if progressbar.is_hidden() {
                     println!("{abandon_msg}")
@@ -158,9 +158,9 @@ pub(crate) async fn run_export(
                 .await
                 {
                     let abandon_msg = match exporting_doc_pages {
-                        true => format!("Export \"{rnote_file_disp}\" failed, Err {e:?}"),
+                        true => format!("Export \"{rnote_file_disp}\" failed, Err: {e:?}"),
                         false => format!(
-                            "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}"
+                            "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err: {e:?}"
                         ),
                     };
                     if progressbar.is_hidden() {
@@ -472,7 +472,7 @@ pub(crate) fn file_conflict_prompt_action(
                     Ok(c) => on_conflict = options[c],
                     Err(e) => {
                         return Err(anyhow::anyhow!(
-                            "Failed to show select prompt, retry or select the behavior with\"--on-conflict\", Err {e:?}"
+                            "Failed to show select prompt, retry or select the behavior with\"--on-conflict\", Err: {e:?}"
                         ));
                     }
                 };

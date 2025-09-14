@@ -97,7 +97,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnGroupedIconPickerGroup(ObjectSubclass<imp::RnGroupedIconPickerGroup>)
-        @extends Widget, Box, ListBoxRow;
+        @extends Widget, Box, ListBoxRow,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget, gtk4::Actionable;
 }
 
 #[gtk4::template_callbacks]

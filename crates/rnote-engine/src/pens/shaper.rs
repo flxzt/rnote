@@ -66,12 +66,15 @@ impl PenBehaviour for Shaper {
         let mut widget_flags = WidgetFlags::default();
 
         let event_result = match (&mut self.state, event) {
-            (ShaperState::Idle, PenEvent::Down { element, .. }) => {
+            (ShaperState::Idle, PenEvent::Down { mut element, .. }) => {
                 engine_view
                     .config
                     .pens_config
                     .shaper_config
                     .new_style_seeds();
+                element.pos = engine_view
+                    .document
+                    .snap_position(element.pos, engine_view.config);
 
                 self.state = ShaperState::BuildShape {
                     builder: new_builder(
@@ -101,7 +104,7 @@ impl PenBehaviour for Shaper {
                     progress: PenProgress::Finished,
                 }
             }
-            (ShaperState::BuildShape { builder }, event) => {
+            (ShaperState::BuildShape { builder }, mut event) => {
                 // Use Ctrl to temporarily enable/disable constraints when the switch is off/on
                 let mut constraints = engine_view
                     .config
@@ -124,6 +127,15 @@ impl PenBehaviour for Shaper {
                     } => constraints.enabled ^ modifier_keys.contains(&ModifierKey::KeyboardCtrl),
                     PenEvent::Text { .. } | PenEvent::Cancel => false,
                 };
+                match &mut event {
+                    PenEvent::Down { element, .. } | PenEvent::Up { element, .. } => {
+                        element.pos = engine_view
+                            .document
+                            .snap_position(element.pos, engine_view.config);
+                    }
+                    _ => {}
+                }
+
                 let builder_result = builder.handle_event(event.clone(), now, constraints);
                 let handled = builder_result.handled;
                 let propagate = builder_result.propagate;
@@ -196,11 +208,11 @@ impl PenBehaviour for Shaper {
                     keyboard_key,
                     modifier_keys,
                 } = event
+                    && keyboard_key == KeyboardKey::Escape
+                    && modifier_keys.is_empty()
                 {
-                    if keyboard_key == KeyboardKey::Escape && modifier_keys.is_empty() {
-                        self.state = ShaperState::Idle;
-                        progress = PenProgress::Finished;
-                    }
+                    self.state = ShaperState::Idle;
+                    progress = PenProgress::Finished;
                 }
 
                 EventResult {

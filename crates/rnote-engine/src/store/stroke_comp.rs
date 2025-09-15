@@ -3,6 +3,7 @@ use super::StrokeKey;
 use super::render_comp::RenderCompState;
 use crate::engine::StrokeContent;
 use crate::strokes::{Content, Stroke};
+use crate::widgetflags::PopupMessage;
 use crate::{StrokeStore, WidgetFlags};
 use geo::intersects::Intersects;
 use geo::prelude::Contains;
@@ -10,7 +11,7 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::Color;
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::Shapeable;
-use rnote_compose::transform::Transformable;
+use rnote_compose::transform::{MirrorOrientation, Transformable};
 use std::sync::Arc;
 #[cfg(feature = "ui")]
 use tracing::error;
@@ -291,6 +292,86 @@ impl StrokeStore {
                 }
             }
         });
+
+        widget_flags.redraw = true;
+        widget_flags.store_modified = true;
+
+        widget_flags
+    }
+
+    /// Mirror stroke either horizontally or vertically for given set of keys
+    ///
+    /// The strokes need to update rendering after mirror
+    pub(crate) fn mirror_stroke(
+        &mut self,
+        keys: &[StrokeKey],
+        orientation: MirrorOrientation,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if keys.is_empty() {
+            return widget_flags;
+        }
+
+        let stroke_contains_text = keys.iter().any(|&key| {
+            matches!(
+                Arc::make_mut(&mut self.stroke_components)
+                    .get_mut(key)
+                    .map(Arc::make_mut),
+                Some(Stroke::TextStroke(_))
+            )
+        });
+
+        if stroke_contains_text {
+            widget_flags.popup_message = Some(PopupMessage::MirrorText);
+            return widget_flags;
+        }
+
+        let all_stroke_bounds = self.strokes_bounds(keys);
+
+        let min_component;
+        let max_component;
+
+        match orientation {
+            MirrorOrientation::Horizontal => {
+                min_component = all_stroke_bounds
+                    .iter()
+                    .map(|aabb_element| aabb_element.mins.coords.x)
+                    .reduce(|a, b| a.min(b));
+                max_component = all_stroke_bounds
+                    .iter()
+                    .map(|aabb_element| aabb_element.maxs.coords.x)
+                    .reduce(|a, b| a.max(b));
+            }
+            MirrorOrientation::Vertical => {
+                min_component = all_stroke_bounds
+                    .iter()
+                    .map(|aabb_element| aabb_element.mins.coords.y)
+                    .reduce(|a, b| a.min(b));
+                max_component = all_stroke_bounds
+                    .iter()
+                    .map(|aabb_element| aabb_element.maxs.coords.y)
+                    .reduce(|a, b| a.max(b));
+            }
+        }
+
+        let selection_centerline =
+            if let (Some(min_component), Some(max_component)) = (min_component, max_component) {
+                (min_component + max_component) / 2.0
+            } else {
+                return widget_flags;
+            };
+
+        keys.iter().for_each(|&key| {
+            if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
+                .get_mut(key)
+                .map(Arc::make_mut)
+            {
+                stroke.mirror(selection_centerline, orientation);
+                self.set_rendering_dirty(key);
+            }
+        });
+        self.update_geometry_for_strokes(keys);
 
         widget_flags.redraw = true;
         widget_flags.store_modified = true;

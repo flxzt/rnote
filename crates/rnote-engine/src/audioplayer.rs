@@ -41,7 +41,7 @@ impl AudioPlayer {
     /// Create and initialize new audioplayer.
     /// `pkg_data_dir` is the app data directory which has a "sounds" subfolder containing the sound files
     pub fn new_init(mut pkg_data_dir: PathBuf) -> Result<Self, anyhow::Error> {
-        pkg_data_dir.push("sounds/");
+        pkg_data_dir.push("sounds");
 
         let mut sounds = HashMap::new();
 

@@ -47,10 +47,7 @@ pub(crate) fn locale_dir() -> anyhow::Result<PathBuf> {
     if cfg!(target_os = "windows") {
         let exec_dir = exec_parent_dir()?;
 
-        exec_dir
-            .parent()
-            .and_then(|path| Some(path.join("share").join("locale")))
-            .ok_or(anyhow::anyhow!("Could not find locale dir"))
+        Ok(exec_dir.join("..\\share\\locale"))
     } else if cfg!(target_os = "macos") {
         let canonicalized_exec_dir = exec_parent_dir()?.canonicalize()?;
 

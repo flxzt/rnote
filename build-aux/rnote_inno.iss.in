@@ -82,6 +82,7 @@ Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\brush\*"; DestDir:
 Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\marker\*"; DestDir: "{app}\share\rnote\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\originals\*"; DestDir: "{app}\share\rnote\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\typewriter\*"; DestDir: "{app}\share\rnote\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\LICENSES.md"; DestDir: "{app}\share\rnote\"; Flags: ignoreversion
 
 ; Binary
 Source: "{#meson_build_root}\{#MyAppExeName}"; DestDir: "{app}\bin\"; Flags: ignoreversion

@@ -13,41 +13,11 @@ pub use layout::Layout;
 // Imports
 use crate::engine::EngineConfig;
 use crate::engine::snapshot::Snapshotable;
-use crate::engine::SPELLCHECK_DEFAULT_LANGUAGE;
 use crate::{Camera, StrokeStore, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SpellcheckOptions {
-    pub enabled: bool,
-    pub language: Option<String>,
-}
-
-impl Default for SpellcheckOptions {
-    fn default() -> Self {
-        Self {
-            enabled: true,
-            language: SPELLCHECK_DEFAULT_LANGUAGE.clone(),
-        }
-    }
-}
-
-impl SpellcheckOptions {
-    pub fn dictionary(&self, broker: &mut enchant::Broker) -> Option<enchant::Dict> {
-        if self.enabled {
-            if let Some(language) = &self.language {
-                broker.request_dict(language).ok()
-            } else {
-                None
-            }
-        } else {
-            None
-        }
-    }
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "document")]
@@ -62,8 +32,6 @@ pub struct Document {
     pub width: f64,
     #[serde(rename = "height", with = "rnote_compose::serialize::f64_dp3")]
     pub height: f64,
-    #[serde(rename = "spellcheck_options")]
-    pub spellcheck_options: SpellcheckOptions,
 }
 
 impl Default for Document {
@@ -74,7 +42,6 @@ impl Default for Document {
             y: 0.0,
             width: Format::default().width(),
             height: Format::default().height(),
-            spellcheck_options: SpellcheckOptions::default(),
         }
     }
 }

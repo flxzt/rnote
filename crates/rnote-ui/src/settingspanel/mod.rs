@@ -19,9 +19,10 @@ use icu_locid::Locale;
 use num_traits::ToPrimitive;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::WidgetFlags;
+use rnote_engine::document::Layout;
 use rnote_engine::document::background::PatternStyle;
+use rnote_engine::document::config::SpellcheckConfig;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
-use rnote_engine::document::{Layout, SpellcheckOptions};
 use rnote_engine::engine::SPELLCHECK_AVAILABLE_LANGUAGES;
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
@@ -393,9 +394,9 @@ impl RnSettingsPanel {
         self.imp().doc_spellcheck_row.set_active(enabled);
     }
 
-    pub(crate) fn set_spellcheck_options(&self, options: &SpellcheckOptions) {
-        self.set_spellcheck_enabled(options.enabled);
-        self.set_spellcheck_language(&options.language);
+    pub(crate) fn set_spellcheck_config(&self, config: &SpellcheckConfig) {
+        self.set_spellcheck_enabled(config.enabled);
+        self.set_spellcheck_language(&config.language);
     }
 
     #[allow(unused)]
@@ -510,8 +511,7 @@ impl RnSettingsPanel {
                 .config
                 .format
                 .show_origin_indicator;
-            let spellcheck_options = canvas.engine_ref().document.spellcheck_options.clone();
-
+            let spellcheck_config = canvas.engine_ref().document.config.spellcheck.clone();
 
             imp.doc_show_format_borders_row
                 .set_active(show_format_borders);
@@ -531,7 +531,7 @@ impl RnSettingsPanel {
             self.set_document_layout(&document_layout);
             imp.doc_show_origin_indicator_row
                 .set_active(show_origin_indicator);
-            self.set_spellcheck_options(&spellcheck_options);
+            self.set_spellcheck_config(&spellcheck_config);
         }
     }
 
@@ -840,6 +840,7 @@ impl RnSettingsPanel {
                     .document_config_preset_mut()
                     .format
                     .show_origin_indicator = doc_config.format.show_origin_indicator;
+                appwindow.document_config_preset_mut().spellcheck = doc_config.spellcheck;
 
                 let widget_flags = WidgetFlags {
                     refresh_ui: true,
@@ -876,6 +877,7 @@ impl RnSettingsPanel {
                     .config
                     .format
                     .show_origin_indicator = doc_config.format.show_origin_indicator;
+                canvas.engine_mut().document.config.spellcheck = doc_config.spellcheck;
 
                 let mut widget_flags = canvas.engine_mut().doc_resize_autoexpand();
                 widget_flags |= canvas.engine_mut().background_rendering_regenerate();
@@ -1204,7 +1206,7 @@ impl RnSettingsPanel {
                     return;
                 };
 
-                canvas.engine_mut().document.spellcheck_options.enabled = row.is_active();
+                canvas.engine_mut().document.config.spellcheck.enabled = row.is_active();
 
                 let widget_flags = canvas.engine_mut().refresh_spellcheck_language();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -1257,7 +1259,7 @@ impl RnSettingsPanel {
                     };
 
                     let language = settings_panel.spellcheck_language();
-                    canvas.engine_mut().document.spellcheck_options.language = language;
+                    canvas.engine_mut().document.config.spellcheck.language = language;
 
                     let widget_flags = canvas.engine_mut().refresh_spellcheck_language();
                     appwindow.handle_widget_flags(widget_flags, &canvas);

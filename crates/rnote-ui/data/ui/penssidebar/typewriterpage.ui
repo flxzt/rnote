@@ -105,8 +105,8 @@ Available</property>
           <child>
             <object class="GtkLabel">
               <property name="justify">center</property>
-              <property name="label" translatable="yes">Move cursor over underlined
-words to get suggestions.</property>
+              <property name="label" translatable="yes">Move the cursor over an underlined
+word to get suggestions.</property>
               <style>
                 <class name="dim-label"/>
               </style>

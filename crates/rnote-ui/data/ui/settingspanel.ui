@@ -441,18 +441,6 @@ gets disabled.</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="background_pattern_invert_color_row">
-                        <property name="title" translatable="yes">Invert Color Brightness</property>
-                        <property name="subtitle" translatable="yes">Invert the brightness of the background and pattern colors</property>
-                        <child type="suffix">
-                          <object class="GtkButton" id="background_pattern_invert_color_button">
-                            <property name="valign">center</property>
-                            <property name="label" translatable="yes">Invert</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
                       <object class="AdwSwitchRow" id="doc_spellcheck_row">
                         <property name="title" translatable="yes">Spellcheck</property>
                         <property name="subtitle" translatable="yes">Enable or disable spellcheck</property>
@@ -467,6 +455,18 @@ gets disabled.</property>
                         <property name="expression">
                           <lookup type="GtkStringObject" name="string"></lookup>
                         </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="background_pattern_invert_color_row">
+                        <property name="title" translatable="yes">Invert Color Brightness</property>
+                        <property name="subtitle" translatable="yes">Invert the brightness of the background and pattern colors</property>
+                        <child type="suffix">
+                          <object class="GtkButton" id="background_pattern_invert_color_button">
+                            <property name="valign">center</property>
+                            <property name="label" translatable="yes">Invert</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>

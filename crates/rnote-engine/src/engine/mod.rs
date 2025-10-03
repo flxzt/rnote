@@ -37,9 +37,9 @@ use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::{PenEvent, ShortcutKey};
 use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
+use snapshot::Snapshotable;
 use std::cell::RefCell;
 use std::fmt::Debug;
-use snapshot::Snapshotable;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
 use std::time::Instant;
@@ -363,7 +363,7 @@ impl Engine {
         let mut widget_flags = WidgetFlags::default();
 
         self.spellcheck.dict = SPELLCHECK_BROKER
-            .with_borrow_mut(|broker| self.document.spellcheck_options.dictionary(broker));
+            .with_borrow_mut(|broker| self.document.config.spellcheck.dictionary(broker));
 
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_ref() {
             typewriter.refresh_spellcheck_cache_in_modifying_stroke(&mut engine_view_mut!(self));

@@ -1,5 +1,5 @@
 // Imports
-use crate::{RnAppWindow, RnCanvasWrapper};
+use crate::RnAppWindow;
 use gtk4::ListView;
 use gtk4::Popover;
 use gtk4::{
@@ -61,7 +61,7 @@ mod imp {
     impl ObjectSubclass for RnTypewriterPage {
         const NAME: &'static str = "RnTypewriterPage";
         type Type = super::RnTypewriterPage;
-        type ParentType = gtk4::Widget;
+        type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -90,7 +90,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnTypewriterPage(ObjectSubclass<imp::RnTypewriterPage>)
-        @extends gtk4::Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnTypewriterPage {
@@ -152,7 +153,7 @@ impl RnTypewriterPage {
                         let font_family_name = new_font_family.name().to_string();
 
                         typewriterpage.imp().prev_picked_font_family.borrow_mut().replace(new_font_family);
-                        canvas.engine_mut().pens_config.typewriter_config.text_style.font_family.clone_from(&font_family_name);
+                        appwindow.engine_config().write().pens_config.typewriter_config.text_style.font_family.clone_from(&font_family_name);
                         let widget_flags = canvas.engine_mut().text_selection_change_style(|style| {style.font_family = font_family_name});
                         appwindow.handle_widget_flags(widget_flags, &canvas);
                     }
@@ -177,8 +178,9 @@ impl RnTypewriterPage {
                     return;
                 };
 
-                canvas
-                    .engine_mut()
+                appwindow
+                    .engine_config()
+                    .write()
                     .pens_config
                     .typewriter_config
                     .text_style
@@ -377,8 +379,9 @@ impl RnTypewriterPage {
                     let Some(canvas) = appwindow.active_tab_canvas() else {
                         return;
                     };
-                    canvas
-                        .engine_mut()
+                    appwindow
+                        .engine_config()
+                        .write()
                         .pens_config
                         .typewriter_config
                         .text_style
@@ -401,8 +404,9 @@ impl RnTypewriterPage {
                     let Some(canvas) = appwindow.active_tab_canvas() else {
                         return;
                     };
-                    canvas
-                        .engine_mut()
+                    appwindow
+                        .engine_config()
+                        .write()
                         .pens_config
                         .typewriter_config
                         .text_style
@@ -425,8 +429,9 @@ impl RnTypewriterPage {
                     let Some(canvas) = appwindow.active_tab_canvas() else {
                         return;
                     };
-                    canvas
-                        .engine_mut()
+                    appwindow
+                        .engine_config()
+                        .write()
                         .pens_config
                         .typewriter_config
                         .text_style
@@ -449,8 +454,9 @@ impl RnTypewriterPage {
                     let Some(canvas) = appwindow.active_tab_canvas() else {
                         return;
                     };
-                    canvas
-                        .engine_mut()
+                    appwindow
+                        .engine_config()
+                        .write()
                         .pens_config
                         .typewriter_config
                         .text_style
@@ -463,12 +469,12 @@ impl RnTypewriterPage {
             ));
     }
 
-    pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
+    pub(crate) fn refresh_ui(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
-        let typewriter_config = active_tab
-            .canvas()
-            .engine_ref()
+        let typewriter_config = appwindow
+            .engine_config()
+            .read()
             .pens_config
             .typewriter_config
             .clone();

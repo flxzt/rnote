@@ -1,8 +1,8 @@
 // Imports
+use crate::RnAppWindow;
 use crate::RnStrokeWidthPicker;
-use crate::{RnAppWindow, RnCanvasWrapper};
 use adw::prelude::*;
-use gtk4::{CompositeTemplate, ToggleButton, glib, glib::clone, subclass::prelude::*};
+use gtk4::{CompositeTemplate, ToggleButton, Widget, glib, glib::clone, subclass::prelude::*};
 use rnote_engine::pens::pensconfig::EraserConfig;
 use rnote_engine::pens::pensconfig::eraserconfig::EraserStyle;
 
@@ -24,7 +24,7 @@ mod imp {
     impl ObjectSubclass for RnEraserPage {
         const NAME: &'static str = "RnEraserPage";
         type Type = super::RnEraserPage;
-        type ParentType = gtk4::Widget;
+        type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -53,7 +53,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnEraserPage(ObjectSubclass<imp::RnEraserPage>)
-        @extends gtk4::Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnEraserPage {
@@ -111,15 +112,16 @@ impl RnEraserPage {
             .connect_toggled(clone!(
                 #[weak]
                 appwindow,
-                move |eraserstyle_trash_colliding_strokes_toggle| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                move |toggle| {
+                    if !toggle.is_active() {
                         return;
-                    };
-
-                    if eraserstyle_trash_colliding_strokes_toggle.is_active() {
-                        canvas.engine_mut().pens_config.eraser_config.style =
-                            EraserStyle::TrashCollidingStrokes;
                     }
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
+                        .eraser_config
+                        .style = EraserStyle::TrashCollidingStrokes;
                 }
             ));
 
@@ -127,15 +129,16 @@ impl RnEraserPage {
             .connect_toggled(clone!(
                 #[weak]
                 appwindow,
-                move |eraserstyle_split_colliding_strokes_toggle| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                move |toggle| {
+                    if !toggle.is_active() {
                         return;
-                    };
-
-                    if eraserstyle_split_colliding_strokes_toggle.is_active() {
-                        canvas.engine_mut().pens_config.eraser_config.style =
-                            EraserStyle::SplitCollidingStrokes;
                     }
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
+                        .eraser_config
+                        .style = EraserStyle::SplitCollidingStrokes;
                 }
             ));
 
@@ -158,21 +161,23 @@ impl RnEraserPage {
                 appwindow,
                 move |picker, _| {
                     let stroke_width = picker.stroke_width();
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-                    canvas.engine_mut().pens_config.eraser_config.width = stroke_width;
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
+                        .eraser_config
+                        .width = stroke_width;
                 }
             ),
         );
     }
 
-    pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
+    pub(crate) fn refresh_ui(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
-        let eraser_config = active_tab
-            .canvas()
-            .engine_ref()
+        let eraser_config = appwindow
+            .engine_config()
+            .read()
             .pens_config
             .eraser_config
             .clone();

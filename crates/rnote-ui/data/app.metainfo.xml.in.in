@@ -87,6 +87,58 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.13.1" date="2025-09-09">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: occasional PDF import failure (thanks to @Doublonmousse)</li>
+          <li>fix: add back accidentally removed 'Pen Style' keyboard shortcuts (thanks to @Doublonmousse)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.13.0" date="2025-09-06">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feat: save/restore engine configuration with preset</li>
+          <li>feat: respect snap-positions option when building shapes</li>
+          <li>feat: shape styling options and shape highlight-mode (thanks to @anesthetice)</li>
+          <li>improv: application window always focused when opening a file (thanks to @Nugfle)</li>
+          <li>fix: selected part when renaming files in the application file browser (thanks to @Kneemund)</li>
+          <li>fix: cancelling import dialogs not stopping progress bar (thanks to @Doublonmousse)</li>
+          <li>fix: missing translation for a string (thanks to @Doublonmousse)</li>
+          <li>fix: save file logic when encountering corner cases (thanks to @Doublonmousse)</li>
+          <li>fix: filename sorting in integrated files list</li>
+          <li>fix: prevent occasional xopp import failure</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.12.0" date="2025-04-12">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feat: laser tool with animations (thanks to @Kneemund)</li>
+          <li>feat: tab overviews (thanks to @zefr0x)</li>
+          <li>feat: thumbnailer for .rnote files (thanks to @tiziodcaio)</li>
+          <li>feat: keyboard clipboard paste at pointer location (thanks to @Kneemund)</li>
+          <li>feat: multi-click selections (thanks to @Kneemund)</li>
+          <li>feat: new limit movements options for vertical-space tool (thanks to @Doublonmousse)</li>
+          <li>feat: confirmation prompt for file/folder trash action (thanks to @RayJW)</li>
+          <li>feat: open workspace folder option (thanks to @Doublonmousse)</li>
+          <li>feat: import of encrypted PDFs (thanks to @kq98)</li>
+          <li>improv: support keyboard and uncommon key shortcuts (thanks to @Kneemund)</li>
+          <li>improv: clipboard pasting on certain platforms like macOS (thanks to @Doublonmousse)</li>
+          <li>fix: selection handle sensitivity in "single-selection" mode</li>
+          <li>fix: unwanted activation of long-press gesture after zooming (thanks to @Kneemund)</li>
+          <li>fix: allow view movement while having a selection</li>
+          <li>fix: cli file collision resolution in non-interactive settings (thanks to @LeSnake04)</li>
+          <li>fix: missing tooltips (thanks to @Doublonmousse)</li>
+          <li>fix: window shadows on Windows (thanks to @Doublonmousse)</li>
+          <li>fix: .rnote file icons in file managers</li>
+          <li>fix: selecting colors not working properly in certain cases (thanks to @Kneemund)</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.11.0" date="2024-07-26">
       <description>
         <p>this release changes:</p>

@@ -356,7 +356,7 @@ fn retrieve_pointer_elements(
     };
 
     if event.event_type() == gdk::EventType::MotionNotify
-        && backlog_policy != BacklogPolicy::DisableBacklog
+        && backlog_policy != BacklogPolicy::Disable
     {
         let mut prev_delta = Duration::ZERO;
 

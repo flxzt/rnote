@@ -74,17 +74,22 @@ impl PenBehaviour for Brush {
                         .bounds()
                         .loosened(Self::INPUT_OVERSHOOT),
                 ) {
-                    if engine_view.pens_config.brush_config.style == BrushStyle::Marker {
+                    if engine_view.config.pens_config.brush_config.style == BrushStyle::Marker {
                         play_marker_sound(engine_view);
                     } else {
                         trigger_brush_sound(engine_view);
                     }
 
-                    engine_view.pens_config.brush_config.new_style_seeds();
+                    engine_view
+                        .config
+                        .pens_config
+                        .brush_config
+                        .new_style_seeds();
 
                     let brushstroke = Stroke::BrushStroke(BrushStroke::new(
                         element,
                         engine_view
+                            .config
                             .pens_config
                             .brush_config
                             .style_for_current_options(),
@@ -93,6 +98,7 @@ impl PenBehaviour for Brush {
                         brushstroke,
                         Some(
                             engine_view
+                                .config
                                 .pens_config
                                 .brush_config
                                 .layer_for_current_options(),
@@ -107,7 +113,7 @@ impl PenBehaviour for Brush {
 
                     self.state = BrushState::Drawing {
                         path_builder: new_builder(
-                            engine_view.pens_config.brush_config.builder_type,
+                            engine_view.config.pens_config.brush_config.builder_type,
                             element,
                             now,
                         ),
@@ -177,14 +183,14 @@ impl PenBehaviour for Brush {
 
                 let progress = match builder_result.progress {
                     BuilderProgress::InProgress => {
-                        if engine_view.pens_config.brush_config.style != BrushStyle::Marker {
+                        if engine_view.config.pens_config.brush_config.style != BrushStyle::Marker {
                             trigger_brush_sound(engine_view);
                         }
 
                         PenProgress::InProgress
                     }
                     BuilderProgress::EmitContinue(segments) => {
-                        if engine_view.pens_config.brush_config.style != BrushStyle::Marker {
+                        if engine_view.config.pens_config.brush_config.style != BrushStyle::Marker {
                             trigger_brush_sound(engine_view);
                         }
 
@@ -267,6 +273,7 @@ impl PenBehaviour for Brush {
 impl DrawableOnDoc for Brush {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let style = engine_view
+            .config
             .pens_config
             .brush_config
             .style_for_current_options();
@@ -289,12 +296,13 @@ impl DrawableOnDoc for Brush {
         match &self.state {
             BrushState::Idle => {}
             BrushState::Drawing { path_builder, .. } => {
-                match engine_view.pens_config.brush_config.style {
+                match engine_view.config.pens_config.brush_config.style {
                     BrushStyle::Marker => {
                         // Don't draw the marker, as the pen would render on top of other strokes, while the stroke itself would render underneath them.
                     }
                     BrushStyle::Solid | BrushStyle::Textured => {
                         let style = engine_view
+                            .config
                             .pens_config
                             .brush_config
                             .style_for_current_options();

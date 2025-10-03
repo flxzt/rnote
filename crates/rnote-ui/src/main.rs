@@ -10,6 +10,7 @@
 pub(crate) mod app;
 pub(crate) mod appmenu;
 pub(crate) mod appwindow;
+pub(crate) mod boxed;
 pub(crate) mod canvas;
 pub(crate) mod canvasmenu;
 pub(crate) mod canvaswrapper;
@@ -83,6 +84,15 @@ fn main() -> glib::ExitCode {
     }
 
     let app = RnApp::new();
+
+    // window specific workaround for shadow that intercept mouse clicks outside the window
+    // See issue https://github.com/flxzt/rnote/issues/1372
+    #[cfg(target_os = "windows")]
+    {
+        if let Err(e) = env::window_styling_workaround() {
+            eprintln!("failed to setup custom css for windows, Err: {e:?}");
+        }
+    }
     app.run()
 }
 

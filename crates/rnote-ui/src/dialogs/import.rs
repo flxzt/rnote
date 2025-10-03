@@ -7,8 +7,8 @@ use adw::prelude::*;
 use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{
-    Builder, Button, CallbackAction, FileDialog, FileFilter, Label, Shortcut, ShortcutController,
-    ShortcutTrigger, ToggleButton, gio, glib, glib::clone, graphene, gsk,
+    Builder, Button, FileDialog, FileFilter, Label, ToggleButton, gio, glib, glib::clone, graphene,
+    gsk,
 };
 use num_traits::ToPrimitive;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
@@ -268,7 +268,11 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         .sync_create()
         .build();
 
-    let pdf_import_prefs = canvas.engine_ref().import_prefs.pdf_import_prefs;
+    let pdf_import_prefs = appwindow
+        .engine_config()
+        .read()
+        .import_prefs
+        .pdf_import_prefs;
 
     // Set the widget state from the pdf import prefs
     pdf_import_width_row.set_value(pdf_import_prefs.page_width_perc);
@@ -301,13 +305,18 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         #[weak]
         pdf_import_bitmap_scalefactor_row,
         #[weak]
-        canvas,
+        appwindow,
         move |toggle| {
-            if toggle.is_active() {
-                canvas.engine_mut().import_prefs.pdf_import_prefs.pages_type =
-                    PdfImportPagesType::Vector;
-                pdf_import_bitmap_scalefactor_row.set_sensitive(false);
+            if !toggle.is_active() {
+                return;
             }
+            appwindow
+                .engine_config()
+                .write()
+                .import_prefs
+                .pdf_import_prefs
+                .pages_type = PdfImportPagesType::Vector;
+            pdf_import_bitmap_scalefactor_row.set_sensitive(false);
         }
     ));
 
@@ -315,22 +324,28 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         #[weak]
         pdf_import_bitmap_scalefactor_row,
         #[weak]
-        canvas,
+        appwindow,
         move |toggle| {
-            if toggle.is_active() {
-                canvas.engine_mut().import_prefs.pdf_import_prefs.pages_type =
-                    PdfImportPagesType::Bitmap;
-                pdf_import_bitmap_scalefactor_row.set_sensitive(true);
+            if !toggle.is_active() {
+                return;
             }
+            appwindow
+                .engine_config()
+                .write()
+                .import_prefs
+                .pdf_import_prefs
+                .pages_type = PdfImportPagesType::Bitmap;
+            pdf_import_bitmap_scalefactor_row.set_sensitive(true);
         }
     ));
 
     pdf_import_bitmap_scalefactor_row.connect_changed(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .import_prefs
                 .pdf_import_prefs
                 .bitmap_scalefactor = row.value();
@@ -339,12 +354,12 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
 
     pdf_import_page_spacing_row.connect_selected_notify(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
             let page_spacing = PdfImportPageSpacing::try_from(row.selected()).unwrap();
-
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .import_prefs
                 .pdf_import_prefs
                 .page_spacing = page_spacing;
@@ -353,10 +368,11 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
 
     pdf_import_width_row.connect_changed(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .import_prefs
                 .pdf_import_prefs
                 .page_width_perc = row.value();
@@ -365,10 +381,11 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
 
     pdf_import_page_borders_row.connect_active_notify(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .import_prefs
                 .pdf_import_prefs
                 .page_borders = row.is_active();
@@ -377,10 +394,11 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
 
     pdf_import_adjust_document_row.connect_active_notify(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
-            canvas
-                .engine_mut()
+            appwindow
+                .engine_config()
+                .write()
                 .import_prefs
                 .pdf_import_prefs
                 .adjust_document = row.is_active();
@@ -426,78 +444,109 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
 
     // Listen to responses
 
-    let (tx, mut rx) = futures::channel::mpsc::unbounded::<anyhow::Result<bool>>();
+    let (tx, mut rx_confirm) = futures::channel::mpsc::unbounded::<(bool, bool)>();
     let tx_cancel = tx.clone();
     let tx_confirm = tx.clone();
+    let tx_close = tx.clone();
 
-    import_pdf_button_cancel.connect_clicked(clone!(
-        #[weak]
-        dialog,
-        move |_| {
-            dialog.close();
-
-            if let Err(e) = tx_cancel.unbounded_send(Ok(false)) {
-                error!(
+    import_pdf_button_cancel.connect_clicked(clone!(move |_| {
+        if let Err(e) = tx_cancel.unbounded_send((false, false)) {
+            error!(
                 "PDF import dialog closed, but failed to send signal through channel. Err: {e:?}"
             );
-            }
         }
-    ));
-
-    import_pdf_button_confirm.connect_clicked(clone!(#[weak] pdf_page_start_row, #[weak] pdf_page_end_row, #[weak] input_file, #[weak] dialog, #[weak] canvas, #[strong] password, move |_| {
-        dialog.close();
-
-        let inner_tx_confirm = tx_confirm.clone();
-
-        glib::spawn_future_local(clone!(#[weak] pdf_page_start_row, #[weak] pdf_page_end_row, #[weak] input_file, #[weak] canvas, #[strong] password , async move {
-            let page_range =
-                (pdf_page_start_row.value() as u32 - 1)..pdf_page_end_row.value() as u32;
-
-            let (bytes, _) = match input_file.load_bytes_future().await {
-                Ok(res) => {res}
-                Err(err) => {
-                    if let Err(e) = inner_tx_confirm.unbounded_send(Err(err.into())) {
-                        error!("Failed to load file, but failed to send signal through channel. Err: {e:?}");
-                    }
-                    return;
-                }
-            };
-            if let Err(e) = canvas.load_in_pdf_bytes(bytes.to_vec(), target_pos, Some(page_range), password).await {
-                if let Err(e) = inner_tx_confirm.unbounded_send(Err(e)) {
-                    error!("Failed to load PDF, but failed to send signal through channel. Err: {e:?}");
-                }
-                return;
-            }
-
-            if let Err(e) = inner_tx_confirm.unbounded_send(Ok(true)) {
-                error!("PDF file imported, but failed to send signal through channel. Err: {e:?}");
-            }
-        }));
     }));
 
-    // Overwrite builtin close shortcut
-    let controller = ShortcutController::new();
-    controller.add_shortcut(Shortcut::new(
-        Some(ShortcutTrigger::parse_string("Escape").unwrap()),
-        Some(CallbackAction::new(clone!(
-            #[weak]
-            import_pdf_button_cancel,
-            #[upgrade_or]
-            glib::Propagation::Stop,
-            move |_, _| {
-                import_pdf_button_cancel.emit_clicked();
+    import_pdf_button_confirm.connect_clicked(clone!(move |_| {
+        if let Err(e) = tx_confirm.unbounded_send((true, false)) {
+            error!("PDF file imported, but failed to send signal through channel. Err: {e:?}");
+        }
+    }));
 
-                glib::Propagation::Stop
-            }
-        ))),
-    ));
-    dialog.add_controller(controller);
+    // Send a cancel response when the dialog is closed
+    dialog.connect_closed(clone!(move |_| {
+        if let Err(e) = tx_close.unbounded_send((false, true)) {
+            error!(
+                "PDF import dialog closed, but failed to send signal through channel. Err: {e:?}"
+            );
+        }
+    }));
 
     // Present than wait for a response from the dialog
     dialog.present(appwindow.root().as_ref());
 
-    match rx.next().await {
-        Some(res) => res,
+    match rx_confirm.next().await {
+        Some((confirm, dialog_closed)) => {
+            if !dialog_closed {
+                dialog.close();
+            }
+            if confirm {
+                let (tx_import, mut rx_import) =
+                    futures::channel::mpsc::unbounded::<anyhow::Result<bool>>();
+
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    pdf_page_start_row,
+                    #[weak]
+                    pdf_page_end_row,
+                    #[weak]
+                    input_file,
+                    #[strong]
+                    password,
+                    #[weak]
+                    appwindow,
+                    #[weak]
+                    canvas,
+                    async move {
+                        let page_range = (pdf_page_start_row.value() as u32 - 1)
+                            ..pdf_page_end_row.value() as u32;
+                        let (bytes, _) = match input_file.load_bytes_future().await {
+                            Ok(res) => res,
+                            Err(err) => {
+                                if let Err(e) = tx_import.unbounded_send(Err(err.into())) {
+                                    error!(
+                                        "Failed to load file, but failed to send signal through channel. Err: {e:?}"
+                                    );
+                                }
+                                return;
+                            }
+                        };
+
+                        if let Err(e) = canvas
+                            .load_in_pdf_bytes(
+                                &appwindow,
+                                bytes.to_vec(),
+                                target_pos,
+                                Some(page_range),
+                                password,
+                            )
+                            .await
+                            && let Err(e) = tx_import.unbounded_send(Err(e))
+                        {
+                            error!(
+                                "Failed to load PDF, but failed to send signal through channel. Err: {e:?}"
+                            );
+                            return;
+                        };
+
+                        if let Err(e) = tx_import.unbounded_send(Ok(true)) {
+                            error!(
+                                "PDF file imported, but failed to send signal through channel. Err: {e:?}"
+                            );
+                        }
+                    }
+                ));
+
+                match rx_import.next().await {
+                    Some(res) => res,
+                    None => Err(anyhow::anyhow!(
+                        "Channel closed before receiving a response from loader thread."
+                    )),
+                }
+            } else {
+                Ok(false)
+            }
+        }
         None => Err(anyhow::anyhow!(
             "Channel closed before receiving a response from dialog."
         )),
@@ -517,7 +566,11 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
     );
     let dialog: adw::Dialog = builder.object("dialog_import_xopp_w_prefs").unwrap();
     let dpi_row: adw::SpinRow = builder.object("xopp_import_dpi_row").unwrap();
-    let xopp_import_prefs = canvas.engine_ref().import_prefs.xopp_import_prefs;
+    let xopp_import_prefs = appwindow
+        .engine_config()
+        .read()
+        .import_prefs
+        .xopp_import_prefs;
     let import_xopp_button_cancel: Button = builder.object("import_xopp_button_cancel").unwrap();
     let import_xopp_button_confirm: Button = builder.object("import_xopp_button_confirm").unwrap();
 
@@ -527,83 +580,108 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
     // Update preferences
     dpi_row.connect_changed(clone!(
         #[weak]
-        canvas,
+        appwindow,
         move |row| {
-            canvas.engine_mut().import_prefs.xopp_import_prefs.dpi = row.value();
+            appwindow
+                .engine_config()
+                .write()
+                .import_prefs
+                .xopp_import_prefs
+                .dpi = row.value();
         }
     ));
 
     // Listen to responses
 
-    let (tx, mut rx) = futures::channel::mpsc::unbounded::<anyhow::Result<bool>>();
+    let (tx, mut rx_confirm) = futures::channel::mpsc::unbounded::<(bool, bool)>();
     let tx_cancel = tx.clone();
     let tx_confirm = tx.clone();
+    let tx_close = tx.clone();
 
-    import_xopp_button_cancel.connect_clicked(clone!(
-        #[weak]
-        dialog,
-        move |_| {
-            dialog.close();
-
-            if let Err(e) = tx_cancel.unbounded_send(Ok(false)) {
-                error!(
-                "XOPP import dialog closed, but failed to send signal through channel. Err: {e:?}"
+    import_xopp_button_cancel.connect_clicked(clone!(move |_| {
+        if let Err(e) = tx_cancel.unbounded_send((false, false)) {
+            error!(
+                "XOPP import dialog cancelled, but failed to send signal through channel. Err: {e:?}"
             );
-            }
         }
-    ));
-
-    import_xopp_button_confirm.connect_clicked(clone!(#[weak] input_file, #[weak] dialog, #[weak] canvas , move |_| {
-        dialog.close();
-
-        let inner_tx_confirm = tx_confirm.clone();
-
-        glib::spawn_future_local(clone!(#[weak] input_file, #[weak] canvas , async move {
-            let (bytes, _) = match input_file.load_bytes_future().await {
-                Ok(res) => {res}
-                Err(err) => {
-                    if let Err(e) = inner_tx_confirm.unbounded_send(Err(err.into())) {
-                        error!("Failed to load file, but failed to send signal through channel. Err: {e:?}");
-                    }
-                    return;
-                }
-            };
-            if let Err(e) = canvas.load_in_xopp_bytes(bytes.to_vec()).await {
-                if let Err(e) = inner_tx_confirm.unbounded_send(Err(e)) {
-                    error!("Failed to load XOPP, but failed to send signal through channel. Err: {e:?}");
-                }
-                return;
-            };
-
-            if let Err(e) = inner_tx_confirm.unbounded_send(Ok(true)) {
-                error!("XOPP file imported, but failed to send signal through channel. Err: {e:?}");
-            }
-        }));
     }));
 
-    // Overwrite builtin close shortcut
-    let controller = ShortcutController::new();
-    controller.add_shortcut(Shortcut::new(
-        Some(ShortcutTrigger::parse_string("Escape").unwrap()),
-        Some(CallbackAction::new(clone!(
-            #[weak]
-            import_xopp_button_cancel,
-            #[upgrade_or]
-            glib::Propagation::Stop,
-            move |_, _| {
-                import_xopp_button_cancel.emit_clicked();
+    import_xopp_button_confirm.connect_clicked(clone!(move |_| {
+        if let Err(e) = tx_confirm.unbounded_send((true,false)) {
+            error!(
+                "Xopp import dialog confirmed, but failed to send signal through channel. Err: {e:?}"
+            );
+        }
+    }));
 
-                glib::Propagation::Stop
-            }
-        ))),
-    ));
-    dialog.add_controller(controller);
+    // Send a cancel response when the dialog is closed
+    dialog.connect_closed(clone!(move |_| {
+        if let Err(e) = tx_close.unbounded_send((false, true)) {
+            error!(
+                "XOPP import dialog closed, but failed to send signal through channel. Err: {e:?}"
+            );
+        }
+    }));
 
     // Present than wait for a response from the dialog
     dialog.present(appwindow.root().as_ref());
 
-    match rx.next().await {
-        Some(res) => res,
+    match rx_confirm.next().await {
+        Some((confirm, dialog_closed)) => {
+            if !dialog_closed {
+                dialog.close();
+            }
+            if confirm {
+                let (tx_import, mut rx_import) =
+                    futures::channel::mpsc::unbounded::<anyhow::Result<bool>>();
+
+                glib::spawn_future_local(clone!(
+                    #[weak]
+                    input_file,
+                    #[weak]
+                    appwindow,
+                    #[weak]
+                    canvas,
+                    async move {
+                        let (bytes, _) = match input_file.load_bytes_future().await {
+                            Ok(res) => res,
+                            Err(err) => {
+                                if let Err(e) = tx_import.unbounded_send(Err(err.into())) {
+                                    error!(
+                                        "Failed to load file, but failed to send signal through channel. Err: {e:?}"
+                                    );
+                                }
+                                return;
+                            }
+                        };
+                        if let Err(e) = canvas.load_in_xopp_bytes(&appwindow, bytes.to_vec()).await
+                        {
+                            if let Err(e) = tx_import.unbounded_send(Err(e)) {
+                                error!(
+                                    "Failed to load XOPP, but failed to send signal through channel. Err: {e:?}"
+                                );
+                            }
+                            return;
+                        };
+
+                        if let Err(e) = tx_import.unbounded_send(Ok(true)) {
+                            error!(
+                                "XOPP file imported, but failed to send signal through channel. Err: {e:?}"
+                            );
+                        }
+                    }
+                ));
+
+                match rx_import.next().await {
+                    Some(res) => res,
+                    None => Err(anyhow::anyhow!(
+                        "Channel closed before receiving a response from loader thread."
+                    )),
+                }
+            } else {
+                Ok(false)
+            }
+        }
         None => Err(anyhow::anyhow!(
             "Channel closed before receiving a response from dialog."
         )),

@@ -4,11 +4,11 @@ use crate::validators;
 use anyhow::Context;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::SplitOrder;
-use rnote_engine::engine::EngineSnapshot;
 use rnote_engine::engine::export::{
     DocExportFormat, DocExportPrefs, DocPagesExportFormat, DocPagesExportPrefs,
     SelectionExportFormat, SelectionExportPrefs,
 };
+use rnote_engine::engine::{EngineConfigShared, EngineSnapshot};
 use rnote_engine::{Engine, SelectionCollision};
 use std::io::{self, IsTerminal};
 use std::path::{Path, PathBuf};
@@ -29,7 +29,9 @@ pub(crate) async fn run_export(
         ));
     }
 
+    let config = EngineConfigShared::default();
     let mut engine = Engine::default();
+    let _ = engine.install_config(&config, None);
     let mut on_conflict_overwrite = None;
     let output_file = match &export_command {
         cli::ExportCommand::Doc { file_args, .. } => file_args.output_file.as_ref(),
@@ -47,7 +49,7 @@ pub(crate) async fn run_export(
     };
 
     apply_export_prefs(
-        &mut engine,
+        &config,
         &export_command,
         output_file,
         no_background,
@@ -94,7 +96,7 @@ pub(crate) async fn run_export(
             .await
             {
                 let abandon_msg = format!(
-                    "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}"
+                    "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err: {e:?}"
                 );
                 if progressbar.is_hidden() {
                     println!("{abandon_msg}")
@@ -112,7 +114,7 @@ pub(crate) async fn run_export(
         }
         None => {
             let exporting_doc_pages = matches!(export_command, cli::ExportCommand::DocPages { .. });
-            let output_ext = file_ext_from_export_command(&mut engine, &export_command);
+            let output_ext = file_ext_from_export_command(&config, &export_command);
             let output_files = rnote_files
                 .iter()
                 .map(|file| {
@@ -156,9 +158,9 @@ pub(crate) async fn run_export(
                 .await
                 {
                     let abandon_msg = match exporting_doc_pages {
-                        true => format!("Export \"{rnote_file_disp}\" failed, Err {e:?}"),
+                        true => format!("Export \"{rnote_file_disp}\" failed, Err: {e:?}"),
                         false => format!(
-                            "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}"
+                            "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err: {e:?}"
                         ),
                     };
                     if progressbar.is_hidden() {
@@ -186,7 +188,7 @@ pub(crate) async fn run_export(
 }
 
 fn apply_export_prefs(
-    engine: &mut Engine,
+    config: &EngineConfigShared,
     export_command: &cli::ExportCommand,
     output_file: Option<&PathBuf>,
     no_background: bool,
@@ -198,7 +200,7 @@ fn apply_export_prefs(
             file_args,
             page_order,
         } => {
-            engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
+            config.write().export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
                 output_file,
                 file_args.output_format,
                 no_background,
@@ -214,15 +216,16 @@ fn apply_export_prefs(
             jpeg_quality,
             ..
         } => {
-            engine.export_prefs.doc_pages_export_prefs = create_doc_pages_export_prefs_from_args(
-                *output_format,
-                no_background,
-                no_pattern,
-                optimize_printing,
-                *page_order,
-                *bitmap_scalefactor,
-                *jpeg_quality,
-            )?;
+            config.write().export_prefs.doc_pages_export_prefs =
+                create_doc_pages_export_prefs_from_args(
+                    *output_format,
+                    no_background,
+                    no_pattern,
+                    optimize_printing,
+                    *page_order,
+                    *bitmap_scalefactor,
+                    *jpeg_quality,
+                )?;
         }
         cli::ExportCommand::Selection {
             file_args,
@@ -231,37 +234,41 @@ fn apply_export_prefs(
             margin,
             ..
         } => {
-            engine.export_prefs.selection_export_prefs = create_selection_export_prefs_from_args(
-                output_file,
-                file_args.output_format,
-                no_background,
-                no_pattern,
-                optimize_printing,
-                *bitmap_scalefactor,
-                *jpeg_quality,
-                *margin,
-            )?;
+            config.write().export_prefs.selection_export_prefs =
+                create_selection_export_prefs_from_args(
+                    output_file,
+                    file_args.output_format,
+                    no_background,
+                    no_pattern,
+                    optimize_printing,
+                    *bitmap_scalefactor,
+                    *jpeg_quality,
+                    *margin,
+                )?;
         }
     }
     Ok(())
 }
 
 fn file_ext_from_export_command(
-    engine: &mut Engine,
+    config: &EngineConfigShared,
     export_command: &cli::ExportCommand,
 ) -> String {
     match export_command {
-        cli::ExportCommand::Doc { .. } => engine
+        cli::ExportCommand::Doc { .. } => config
+            .read()
             .export_prefs
             .doc_export_prefs
             .export_format
             .file_ext(),
-        cli::ExportCommand::DocPages { .. } => engine
+        cli::ExportCommand::DocPages { .. } => config
+            .read()
             .export_prefs
             .doc_pages_export_prefs
             .export_format
             .file_ext(),
-        cli::ExportCommand::Selection { .. } => engine
+        cli::ExportCommand::Selection { .. } => config
+            .read()
             .export_prefs
             .selection_export_prefs
             .export_format
@@ -433,12 +440,6 @@ pub(crate) fn file_conflict_prompt_action(
     if !output_file.exists() {
         return Ok(None);
     }
-    if !io::stdout().is_terminal() {
-        return Err(anyhow::anyhow!(
-            "File conflict for file \"{}\" detected and terminal is not interactive. Option \"--on-conflict\" needs to be supplied.",
-            output_file.display()
-        ));
-    }
     match on_conflict_overwrite {
         Some(o) => on_conflict = *o,
         None => {
@@ -452,6 +453,12 @@ pub(crate) fn file_conflict_prompt_action(
                 OnConflict::AlwaysSuffix,
             ];
             while matches!(on_conflict, OnConflict::Ask) {
+                if !io::stdout().is_terminal() {
+                    return Err(anyhow::anyhow!(
+                        "File conflict for file \"{}\" detected and terminal is not interactive. Option \"--on-conflict\" needs to be supplied.",
+                        output_file.display()
+                    ));
+                }
                 match dialoguer::Select::new()
                     .with_prompt(format!(
                         "File \"{}\" already exists:",
@@ -465,7 +472,7 @@ pub(crate) fn file_conflict_prompt_action(
                     Ok(c) => on_conflict = options[c],
                     Err(e) => {
                         return Err(anyhow::anyhow!(
-                            "Failed to show select prompt, retry or select the behavior with\"--on-conflict\", Err {e:?}"
+                            "Failed to show select prompt, retry or select the behavior with\"--on-conflict\", Err: {e:?}"
                         ));
                     }
                 };

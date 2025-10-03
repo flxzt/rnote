@@ -317,7 +317,7 @@ impl DrawableOnDoc for Selector {
         match &self.state {
             SelectorState::Idle => {}
             SelectorState::Selecting { path } => {
-                match engine_view.pens_config.selector_config.style {
+                match engine_view.config.pens_config.selector_config.style {
                     SelectorStyle::Polygon => {
                         let mut bez_path = kurbo::BezPath::new();
                         let mut path_iter = path.iter();
@@ -349,7 +349,9 @@ impl DrawableOnDoc for Selector {
                         }
                     }
                     SelectorStyle::Rectangle => {
-                        if let (Some(first), Some(last)) = (path.first(), path.last()) {
+                        if let Some(first) = path.first()
+                            && let Some(last) = path.last()
+                        {
                             let select_rect = kurbo::Rect::from_points(
                                 first.pos.to_kurbo_point(),
                                 last.pos.to_kurbo_point(),

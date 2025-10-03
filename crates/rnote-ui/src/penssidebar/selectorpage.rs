@@ -1,6 +1,8 @@
 // Imports
-use crate::{RnAppWindow, RnCanvasWrapper};
-use gtk4::{CompositeTemplate, ToggleButton, glib, glib::clone, prelude::*, subclass::prelude::*};
+use crate::RnAppWindow;
+use gtk4::{
+    CompositeTemplate, ToggleButton, Widget, glib, glib::clone, prelude::*, subclass::prelude::*,
+};
 use rnote_engine::pens::pensconfig::selectorconfig::SelectorStyle;
 
 mod imp {
@@ -25,7 +27,7 @@ mod imp {
     impl ObjectSubclass for RnSelectorPage {
         const NAME: &'static str = "RnSelectorPage";
         type Type = super::RnSelectorPage;
-        type ParentType = gtk4::Widget;
+        type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -54,7 +56,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnSelectorPage(ObjectSubclass<imp::RnSelectorPage>)
-        @extends gtk4::Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnSelectorPage {
@@ -102,43 +105,48 @@ impl RnSelectorPage {
         imp.selectorstyle_polygon_toggle.connect_toggled(clone!(
             #[weak]
             appwindow,
-            move |selectorstyle_polygon_toggle| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
+            move |toggle| {
+                if !toggle.is_active() {
                     return;
-                };
-
-                if selectorstyle_polygon_toggle.is_active() {
-                    canvas.engine_mut().pens_config.selector_config.style = SelectorStyle::Polygon;
                 }
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .selector_config
+                    .style = SelectorStyle::Polygon;
             }
         ));
 
         imp.selectorstyle_rect_toggle.connect_toggled(clone!(
             #[weak]
             appwindow,
-            move |selectorstyle_rect_toggle| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
+            move |toggle| {
+                if !toggle.is_active() {
                     return;
-                };
-
-                if selectorstyle_rect_toggle.is_active() {
-                    canvas.engine_mut().pens_config.selector_config.style =
-                        SelectorStyle::Rectangle;
                 }
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .selector_config
+                    .style = SelectorStyle::Rectangle;
             }
         ));
 
         imp.selectorstyle_single_toggle.connect_toggled(clone!(
             #[weak]
             appwindow,
-            move |selectorstyle_single_toggle| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
+            move |toggle| {
+                if !toggle.is_active() {
                     return;
-                };
-
-                if selectorstyle_single_toggle.is_active() {
-                    canvas.engine_mut().pens_config.selector_config.style = SelectorStyle::Single;
                 }
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .selector_config
+                    .style = SelectorStyle::Single;
             }
         ));
 
@@ -146,15 +154,16 @@ impl RnSelectorPage {
             .connect_toggled(clone!(
                 #[weak]
                 appwindow,
-                move |selectorstyle_intersectingpath_toggle| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                move |toggle| {
+                    if !toggle.is_active() {
                         return;
-                    };
-
-                    if selectorstyle_intersectingpath_toggle.is_active() {
-                        canvas.engine_mut().pens_config.selector_config.style =
-                            SelectorStyle::IntersectingPath;
                     }
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
+                        .selector_config
+                        .style = SelectorStyle::IntersectingPath;
                 }
             ));
 
@@ -162,26 +171,23 @@ impl RnSelectorPage {
             .connect_toggled(clone!(
                 #[weak]
                 appwindow,
-                move |resize_lock_aspectratio_togglebutton| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-
-                    canvas
-                        .engine_mut()
+                move |toggle| {
+                    appwindow
+                        .engine_config()
+                        .write()
                         .pens_config
                         .selector_config
-                        .resize_lock_aspectratio = resize_lock_aspectratio_togglebutton.is_active();
+                        .resize_lock_aspectratio = toggle.is_active();
                 }
             ));
     }
 
-    pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
+    pub(crate) fn refresh_ui(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
-        let selector_config = active_tab
-            .canvas()
-            .engine_ref()
+        let selector_config = appwindow
+            .engine_config()
+            .read()
             .pens_config
             .selector_config
             .clone();

@@ -1,6 +1,8 @@
+---
+
 name: Generate Dist Archive
 
-on:
+"on":
   release:
     types: [published]
   workflow_dispatch:
@@ -8,34 +10,48 @@ on:
 jobs:
   dist:
     runs-on: ubuntu-24.04
-    container: fedora:41
+    container: fedora:42
     permissions:
-      contents: write # needed for uploading release artifact
+      # needed for uploading release artifact
+      contents: write
     steps:
+
+      # Necessary so that 'Checkout' will clone as repository, which the `meson dist` commands needs,
+      # and that the artifact can be uploaded to github as release asset
       - name: Install dependencies
         run: |
-          sudo dnf upgrade --refresh -y
-          sudo dnf install -y gcc gcc-c++ clang python3 make cmake meson git gh kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel appstream-devel enchant2-devel desktop-file-utils
-      - name: Install toolchain
-        id: toolchain
-        uses: dtolnay/rust-toolchain@stable
+          dnf install -y git gh
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Add workspace as git safe directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - name: Setup
+
+      - name: Install rust toolchain
+        id: toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Prerequisites
         run: |
-          meson setup --prefix=/usr _mesonbuild
-      - name: Run meson dist
-        run: meson dist --no-tests -C _mesonbuild
+          dnf install -y just lsb_release
+          just ci=true prerequisites
+
+      - name: Setup
+        run: just ci=true setup-release
+
+      - name: Create tarball
+        run: just ci=true create-tarball
+
       - name: Register archive file names
         id: register_archive_file_names
         run: |
           echo "archive=$(basename _mesonbuild/meson-dist/rnote-*.tar.xz | tail -n1)" >> $GITHUB_OUTPUT
           echo "sha=$(basename _mesonbuild/meson-dist/rnote-*.tar.xz.sha256sum | tail -n1)" >> $GITHUB_OUTPUT
-      - name: Upload dist archive (Workflow Artifact)
+
+      - name: Upload dist archive (workflow artifact)
         uses: actions/upload-artifact@v4
         with:
           name: rnote-dist-archive-artifact
@@ -44,10 +60,13 @@ jobs:
             _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.sha }}
           include-hidden-files: true
           if-no-files-found: error
-      - name: Upload dist archive (Release Asset)
+
+      - name: Upload dist archive (release asset)
         if: ${{ github.event_name == 'release' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${{ github.ref_name }} _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.archive }}
-          gh release upload ${{ github.ref_name }} _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.sha }}
+          gh release upload ${{ github.ref_name }} \
+            _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.archive }}
+          gh release upload ${{ github.ref_name }} \
+            _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.sha }}

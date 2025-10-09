@@ -281,43 +281,33 @@
                   <property name="digits">0</property>
                 </object>
               </child>
+            </object>
+          </child>
 
-              <!-- Constraints -->
+          <!-- Constraints -->
+          <child>
+            <object class="AdwPreferencesGroup">
+              <property name="title" translatable="yes">Constraints</property>
               <child>
-                <object class="AdwPreferencesGroup">
-                  <property name="title" translatable="yes">Constraints</property>
-                  <child>
-                    <object class="GtkListBox">
-                      <property name="width-request">300</property>
-                      <property name="selection-mode">none</property>
-                      <style>
-                        <class name="content" />
-                        <class name="medium" />
-                      </style>
-                      <child>
-                        <object class="AdwSwitchRow" id="constraint_enabled_row">
-                          <property name="title" translatable="yes">Enabled</property>
-                          <property name="subtitle" translatable="yes">Hold Ctrl to temporarily enable/disable
+                <object class="AdwSwitchRow" id="constraint_enabled_row">
+                  <property name="title" translatable="yes">Enabled</property>
+                  <property name="subtitle" translatable="yes">Hold Ctrl to temporarily enable/disable
 constraints when this switch is off/on</property>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="AdwSwitchRow" id="constraint_one_to_one_row">
-                          <property name="title" translatable="yes">1:1</property>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="AdwSwitchRow" id="constraint_three_to_two_row">
-                          <property name="title" translatable="yes">3:2</property>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="AdwSwitchRow" id="constraint_golden_row">
-                          <property name="title" translatable="yes">Golden Ratio (1:1.618)</property>
-                        </object>
-                      </child>
-                    </object>
-                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwSwitchRow" id="constraint_one_to_one_row">
+                  <property name="title" translatable="yes">1:1</property>
+                </object>
+              </child>
+              <child>
+                <object class="AdwSwitchRow" id="constraint_three_to_two_row">
+                  <property name="title" translatable="yes">3:2</property>
+                </object>
+              </child>
+              <child>
+                <object class="AdwSwitchRow" id="constraint_golden_row">
+                  <property name="title" translatable="yes">Golden Ratio (1:1.618)</property>
                 </object>
               </child>
             </object>

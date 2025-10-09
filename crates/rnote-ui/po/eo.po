@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 15:24+0200\n"
-"PO-Revision-Date: 2025-10-08 07:02+0000\n"
+"PO-Revision-Date: 2025-10-10 05:07+0000\n"
 "Last-Translator: Conner McKay <connermckay927@proton.me>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/rnote/repo/eo/>"
 "\n"
@@ -23,7 +23,7 @@ msgstr ""
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
 #: crates/rnote-ui/src/dialogs/mod.rs:33
 msgid "Sketch and take handwritten notes"
-msgstr "Skizu kaj faru manskribitajn notojn"
+msgstr "Skizi kaj fari manskribitajn notojn"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:14
@@ -82,7 +82,7 @@ msgstr "Agordu butonkomandojn"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Clear Document"
-msgstr "Malplenigu la Dokumenton"
+msgstr "Malplenigi la Dokumenton"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
@@ -101,11 +101,11 @@ msgstr "Ĉi tiu ago malplenigus la tutan dokumenton. Bonvolu konfirmi."
 #: crates/rnote-ui/data/ui/dialogs/import.ui:213
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
-msgstr "Rezignu"
+msgstr "Rezigni"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
-msgstr "Malplenigu"
+msgstr "Malplenigi"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
@@ -124,18 +124,18 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Discard"
-msgstr "Ne Konservu"
+msgstr "Forĵeti"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:42
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:60
 #: crates/rnote-ui/src/dialogs/export.rs:43
 msgid "Save"
-msgstr "Konservu"
+msgstr "Konservi"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:29
 msgid "Close Tab"
-msgstr "Fermu Langeton"
+msgstr "Fermi Langeton"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
@@ -147,7 +147,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
-msgstr "Fermu la Fenestron"
+msgstr "Fermi la Fenestron"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:48
 msgid ""
@@ -163,17 +163,17 @@ msgstr "Nekonservitaj Dokumentoj"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:59
 msgid "Discard All"
-msgstr "Ne Konservu Ĉiujn"
+msgstr "Forĵeti Ĉion"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:65
 msgid "Edit Workspace"
-msgstr "Modifu la Laborspacon"
+msgstr "Modifi la Laborspacon"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:79
 #: crates/rnote-ui/data/ui/settingspanel.ui:264
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:36
 msgid "Apply"
-msgstr "Apliku"
+msgstr "Apliki"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:119
 msgid "Workspace Name"
@@ -219,11 +219,11 @@ msgstr "Ŝanĝu la dosierujon"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
 msgid "Trash File"
-msgstr "Rubujigu Dosieron"
+msgstr "Rubujigi Dosieron"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr "Ĉu vi certas, ke vi volas movi ĉi tiun dosieron al la rubujon?"
+msgstr "Ĉu vi certas, ke vi volas movi ĉi tiun dosieron al la rubujo?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
@@ -232,7 +232,7 @@ msgstr "Rubujo"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:346
 msgid "Export Document"
-msgstr "Eksportu la Dokumenton"
+msgstr "Eksporti la Dokumenton"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:19
 #: crates/rnote-ui/data/ui/dialogs/export.ui:188
@@ -240,17 +240,17 @@ msgstr "Eksportu la Dokumenton"
 #: crates/rnote-ui/src/dialogs/export.rs:1252
 #: crates/rnote-ui/src/dialogs/export.rs:1313
 msgid "Export"
-msgstr "Eksportu"
+msgstr "Eksporti"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:74
 #: crates/rnote-ui/data/ui/dialogs/export.ui:483
 msgid "Export File"
-msgstr "Eksportu la Dosieron"
+msgstr "Eksportodosiero"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:75
 #: crates/rnote-ui/data/ui/dialogs/export.ui:484
 msgid "Select the export file"
-msgstr "Elektu la eksportdosieron"
+msgstr "Elektu la eksportodosieron"
 
 #. force the user to pick another file
 #: crates/rnote-ui/data/ui/dialogs/export.ui:84
@@ -270,7 +270,7 @@ msgstr "- neniu dosiero elektita -"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:319
 #: crates/rnote-ui/data/ui/dialogs/export.ui:517
 msgid "Export Preferences"
-msgstr "Eksportu Agordojn"
+msgstr "Eksportagordoj"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:112
 #: crates/rnote-ui/data/ui/dialogs/export.ui:323
@@ -300,7 +300,7 @@ msgstr "Elektu ĉu eksporti la desinon"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:335
 #: crates/rnote-ui/data/ui/dialogs/export.ui:533
 msgid "Optimize for Printing"
-msgstr "Optimumigu por Presado"
+msgstr "Optimumigi por Presado"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:125
 #: crates/rnote-ui/data/ui/dialogs/export.ui:336
@@ -357,17 +357,17 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:152
 #: crates/rnote-ui/data/ui/dialogs/export.ui:363
 msgid "Horizontal First"
-msgstr "Horizontala Unue"
+msgstr "Horizontale Unue"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:153
 #: crates/rnote-ui/data/ui/dialogs/export.ui:364
 msgid "Vertical First"
-msgstr "Vertikala Unue"
+msgstr "Vertikale Unue"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:174
 #: crates/rnote-ui/src/dialogs/export.rs:769
 msgid "Export Document Pages"
-msgstr "Eksportu Dokumentajn Paĝojn"
+msgstr "Eksporti Dokumenton en Paĝojn"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:260
 msgid "Page Files Naming:"
@@ -415,22 +415,22 @@ msgid ""
 "to the actual size on the document"
 msgstr ""
 "Agordu la rastruman skaladon relative\n"
-"al la efektiva skalo en la dokumento"
+"al la efektiva skalo de la dokumento"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
 msgid "Jpeg Quality"
-msgstr "Jpeg Kvalito"
+msgstr "Jpeg-a Kvalito"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:382
 #: crates/rnote-ui/data/ui/dialogs/export.ui:564
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr "Agordu la kvalito de la Jpeg-bildo (1 - 100)"
+msgstr "Agordu la kvaliton de la Jpeg-bildo (1 - 100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:414
 #: crates/rnote-ui/src/dialogs/export.rs:1160
 msgid "Export Selection"
-msgstr "Eksportu Zonon"
+msgstr "Eksporti Zonon"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
@@ -446,13 +446,13 @@ msgstr "Agordu la marĝenon ĉirkaŭ la elektita zono"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Import Pdf"
-msgstr "Importu Pdf-on"
+msgstr "Importi Pdf-on"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:218
 #: crates/rnote-ui/src/dialogs/import.rs:93
 msgid "Import"
-msgstr "Importu"
+msgstr "Importi"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:63
 msgid "Info"
@@ -472,7 +472,7 @@ msgstr "Finpaĝo"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:103
 msgid "Adjust Document"
-msgstr "Ĝustigu Dokumenton"
+msgstr "Ĝustigi Dokumenton"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
 msgid "Whether the document layout should be adjusted to the Pdf"
@@ -488,47 +488,47 @@ msgstr "Agordu la larĝon de importitaj Pdf-oj per procento de la formlarĝo"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
 msgid "Page Spacing"
-msgstr "Paĝinterspaco"
+msgstr "Paĝa Divido"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
 msgid "How Pdf pages are spaced"
-msgstr ""
+msgstr "Kiel paĝoj estas dividita"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
 msgid "Continuous"
-msgstr ""
+msgstr "Seninterrompa"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:123
 msgid "One per Document Page"
-msgstr ""
+msgstr "Unu po Dokumenta Paĝo"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:131
 msgid "Pages Type"
-msgstr ""
+msgstr "Paĝtipo"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
-msgstr ""
+msgstr "Agordu ĉu la Pdf-oj estu importita kiel vektoraj aŭ rastrumaj bildoj"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:144
 msgid "Vector"
-msgstr ""
+msgstr "Vektoro"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:151
 msgid "Bitmap"
-msgstr ""
+msgstr "Rastrumo"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:169
 msgid "Page Borders"
-msgstr ""
+msgstr "Paĝborderoj"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:170
 msgid "Whether the pages have drawn borders"
-msgstr ""
+msgstr "Ĉu la paĝoj havas desegnatajn borderojn"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:204
 msgid "Import Xournal++ File"
-msgstr ""
+msgstr "Importi dosieron de Xournal++"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:247
 msgid "Xournal++ File Import Preferences"

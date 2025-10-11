@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 15:24+0200\n"
-"PO-Revision-Date: 2025-10-10 05:07+0000\n"
+"PO-Revision-Date: 2025-10-12 23:07+0000\n"
 "Last-Translator: Conner McKay <connermckay927@proton.me>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/rnote/repo/eo/>"
 "\n"
@@ -532,15 +532,15 @@ msgstr "Importi dosieron de Xournal++"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:247
 msgid "Xournal++ File Import Preferences"
-msgstr ""
+msgstr "Xournal++ Importaj Agordoj"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:251
 msgid "DPI"
-msgstr ""
+msgstr "Punktoj en Colo"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:252
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr ""
+msgstr "Agordu la preferatan punktan skaladon por la Xournal++ dosiero"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:273
 msgid "is password protected"

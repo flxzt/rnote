@@ -2,8 +2,9 @@
 use super::line::Line;
 use super::quadbez::QuadraticBezier;
 use crate::ext::{KurboShapeExt, Vector2Ext};
+use crate::point_utils;
 use crate::shapes::Shapeable;
-use crate::transform::Transformable;
+use crate::transform::{MirrorOrientation, Transformable};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -49,6 +50,12 @@ impl Transformable for CubicBezier {
         self.cp1 = self.cp1.component_mul(&scale);
         self.cp2 = self.cp2.component_mul(&scale);
         self.end = self.end.component_mul(&scale);
+    }
+
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        for point in [&mut self.start, &mut self.cp1, &mut self.cp2, &mut self.end] {
+            point_utils::mirror_point(point, centerline, orientation);
+        }
     }
 }
 

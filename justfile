@@ -86,8 +86,15 @@ prerequisites-dev: prerequisites
 
 # in MSYS2 shell
 prerequisites-win:
+    echo "compile cairo without the 0001-DWrite-Get-glyph-bitmap-with-D2D-in-selected-cases.patch patch"
     pacman -S --noconfirm \
-        unzip git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang \
+        mingw-w64-x86_64-freetype mingw-w64-x86_64-fontconfig mingw-w64-x86_64-glib2 mingw-w64-x86_64-libpng \
+        mingw-w64-x86_64-lzo2 mingw-w64-x86_64-pixman mingw-w64-x86_64-cc mingw-w64-x86_64-meson \
+        mingw-w64-x86_64-ninja mingw-w64-x86_64-pkgconf mingw-w64-x86_64-python mingw-w64-x86_64-python-fonttools \
+        mingw-w64-x86_64-gettext-tools patch
+    cd build-aux && cd cairo_build && sed -i 's/\r$//g' PKGBUILD && sed -i 's/\r$//g' 0030-ucrt-clang-fixes.patch &&  makepkg -i --noconfirm && cp -r ./pkg/mingw-w64-x86_64-cairo/msys64/mingw64/lib/pkgconfig/. /C/msys64/mingw64/lib/pkgconfig/ && cp -r ./pkg/mingw-w64-x86_64-cairo/msys64/mingw64/include/cairo /C/msys64/mingw64/include/ && cp -r ./pkg/mingw-w64-x86_64-cairo/msys64/mingw64/bin/. /C/msys64/mingw64/bin/ && cp -r ./pkg/mingw-w64-x86_64-cairo/msys64/mingw64/lib/. /C/msys64/mingw64/lib/ 
+    pacman -S --noconfirm \
+        unzip git mingw-w64-x86_64-xz mingw-w64-x86_64-gcc mingw-w64-x86_64-clang \
         mingw-w64-x86_64-toolchain mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake \
         mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils \
         mingw-w64-x86_64-appstream mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-poppler \

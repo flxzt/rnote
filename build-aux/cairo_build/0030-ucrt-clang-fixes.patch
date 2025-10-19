@@ -1,0 +1,11 @@
+--- cairo-1.17.4/src/cairo-compiler-private.h.orig	2021-05-04 17:46:38.073000000 +0200
++++ cairo-1.17.4/src/cairo-compiler-private.h	2021-05-04 17:50:50.920604000 +0200
+@@ -203,7 +203,7 @@
+ #define popen _popen
+ #define strdup _strdup
+ #define unlink _unlink
+-#if _MSC_VER < 1900
++#if (defined(_MSC_VER) && _MSC_VER < 1900)
+   #define vsnprintf _vsnprintf
+   #define snprintf _snprintf
+ #endif

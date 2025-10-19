@@ -94,7 +94,7 @@ prerequisites-win:
         mingw-w64-x86_64-poppler-data mingw-w64-x86_64-angleproject
     echo "Forcing cairo 1.18.4-1 on windows, see issue #1536"
     wget https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-cairo-1.18.4-1-any.pkg.tar.zst
-    pacman -U mingw-w64-x86_64-cairo-1.18.4-1-any.pkg.tar.zst
+    pacman -U --noconfirm  mingw-w64-x86_64-cairo-1.18.4-1-any.pkg.tar.zst
     mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     export PATH="$HOME/.cargo/bin:$PATH"

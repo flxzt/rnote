@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 15:24+0200\n"
-"PO-Revision-Date: 2025-10-20 14:17+0000\n"
+"PO-Revision-Date: 2025-10-20 14:20+0000\n"
 "Last-Translator: Samuele Pizzi <samu4199@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -2134,7 +2134,7 @@ msgstr "Pagine:"
 msgid "translator-credits"
 msgstr ""
 "Albano Battistella <albano_battistella@hotmail.com>\n"
-"'Samuele P. https://gitlab.com/samu4199'"
+"Samuele P. https://gitlab.com/samu4199"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:212
 #: crates/rnote-ui/src/dialogs/mod.rs:345

@@ -86,15 +86,16 @@ prerequisites-dev: prerequisites
 
 # in MSYS2 shell
 prerequisites-win:
+    echo "Forcing cairo 1.18.4-1 on windows, see issue #1536"
+    wget https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-cairo-1.18.4-1-any.pkg.tar.zst
+    pacman -U --noconfirm  mingw-w64-x86_64-cairo-1.18.4-1-any.pkg.tar.zst
+    echo "#IgnoreGroup=mingw-w64-x86_64-cairo" >> /etc/pacman.conf
     pacman -S --noconfirm \
         unzip git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang \
         mingw-w64-x86_64-toolchain mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake \
         mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils \
         mingw-w64-x86_64-appstream mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-poppler \
         mingw-w64-x86_64-poppler-data mingw-w64-x86_64-angleproject
-    echo "Forcing cairo 1.18.4-1 on windows, see issue #1536"
-    wget https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-cairo-1.18.4-1-any.pkg.tar.zst
-    pacman -U --noconfirm  mingw-w64-x86_64-cairo-1.18.4-1-any.pkg.tar.zst
     mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     export PATH="$HOME/.cargo/bin:$PATH"

@@ -26,7 +26,7 @@ pacman -S --noconfirm \
 Add the Rust binary directory to the MSYS2 `PATH` by adding the following line to `~/.bashrc`.
 
 ```bash
-export PATH=$PATH:/c/Users/<user>/.cargo/bin
+export PATH="$PATH:/c/Users/<user>/.cargo/bin"
 ```
 
 If you installed Inno Setup, append `:/c/Program Files (x86)/Inno Setup 6` to the path as well.
@@ -45,6 +45,7 @@ Finally, clone the repository somewhere and initialize the submodules.
 
 ```bash
 git clone -c core.symlinks=true https://github.com/flxzt/rnote
+cd rnote/
 git submodule update --init --recursive
 ```
 

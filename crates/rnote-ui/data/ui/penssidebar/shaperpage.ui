@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <interface>
   <template class="RnShaperPage" parent="GtkWidget">
     <property name="layout-manager">
@@ -26,22 +26,23 @@
           </object>
         </child>
         <child>
-          <object class="GtkMenuButton" id="shapeconfig_menubutton">
-            <property name="icon-name">settings-symbolic</property>
+          <object class="GtkMenuButton" id="shapestyling_menubutton">
+            <property name="icon-name">pen-shaper-style-smooth-symbolic</property>
             <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Shape Configuration</property>
-            <property name="popover">shapeconfig_popover</property>
+            <property name="tooltip_text" translatable="yes">Shape Styling</property>
+            <property name="popover">shapestyling_popover</property>
             <style>
               <class name="flat" />
-            </style>
+              <class name="sidebar_action_button" />
+            </style>s
           </object>
         </child>
         <child>
-          <object class="GtkMenuButton" id="shaperextra_menubutton">
-            <property name="icon-name">misc-menu-symbolic</property>
+          <object class="GtkMenuButton" id="shaperconfig_menubutton">
+            <property name="icon-name">settings-symbolic</property>
             <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Shaper Extra</property>
-            <property name="popover">shaperextra_popover</property>
+            <property name="tooltip_text" translatable="yes">Shaper Configuration</property>
+            <property name="popover">shaperconfig_popover</property>
             <style>
               <class name="flat" />
             </style>
@@ -64,8 +65,8 @@
       </object>
     </child>
 
-    <!-- Shape config -->
-    <object class="GtkPopover" id="shapeconfig_popover">
+    <!-- Shape styling -->
+    <object class="GtkPopover" id="shapestyling_popover">
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
@@ -79,7 +80,7 @@
             <object class="GtkBox">
               <child>
                 <object class="GtkLabel">
-                  <property name="label" translatable="yes">Shape Configuration</property>
+                  <property name="label" translatable="yes">Shape Styling</property>
                   <property name="hexpand">true</property>
                   <property name="halign">center</property>
                   <style>
@@ -88,7 +89,7 @@
                 </object>
               </child>
               <child>
-                <object class="GtkButton" id="shapeconfig_popover_close_button">
+                <object class="GtkButton" id="shapestyling_popover_close_button">
                   <property name="icon-name">window-close-symbolic</property>
                   <style>
                     <class name="flat" />
@@ -139,10 +140,10 @@
 
           <!-- Smooth options -->
           <child>
-            <object class="AdwPreferencesGroup" id="smoothstyle_group">
-              <property name="title" translatable="yes">Smooth Style</property>
+            <object class="AdwPreferencesGroup" id="smoothoptions_group">
+              <property name="title" translatable="yes">Smooth Options</property>
               <child>
-                <object class="AdwComboRow" id="smoothstyle_line_cap_row">
+                <object class="AdwComboRow" id="smoothoptions_line_cap_row">
                   <property name="title" translatable="yes">Line Cap</property>
                   <property name="subtitle" translatable="yes">Choose a line cap</property>
                   <property name="model">
@@ -156,7 +157,7 @@
                 </object>
               </child>
               <child>
-                <object class="AdwComboRow" id="smoothstyle_line_style_row">
+                <object class="AdwComboRow" id="smoothoptions_line_style_row">
                   <property name="title" translatable="yes">Line Style</property>
                   <property name="subtitle" translatable="yes">Choose a line style</property>
                   <property name="model">
@@ -177,10 +178,10 @@
 
           <!-- Rough options -->
           <child>
-            <object class="AdwPreferencesGroup" id="roughstyle_group">
-              <property name="title" translatable="yes">Rough Style</property>
+            <object class="AdwPreferencesGroup" id="roughoptions_group">
+              <property name="title" translatable="yes">Rough Options</property>
               <child>
-                <object class="AdwComboRow" id="roughstyle_fillstyle_row">
+                <object class="AdwComboRow" id="roughoptions_fillstyle_row">
                   <property name="title" translatable="yes">Fill Style</property>
                   <property name="subtitle" translatable="yes">Choose a fill style</property>
                   <property name="model">
@@ -199,7 +200,7 @@
                 </object>
               </child>
               <child>
-                <object class="AdwSpinRow" id="roughstyle_hachure_angle_row">
+                <object class="AdwSpinRow" id="roughoptions_hachure_angle_row">
                   <property name="title" translatable="yes">Hachure Angle</property>
                   <property name="subtitle" translatable="yes">Set the angle of hachure fills</property>
                   <property name="adjustment">
@@ -220,8 +221,8 @@
       </child>
     </object>
 
-    <!-- Shaper Extra -->
-    <object class="GtkPopover" id="shaperextra_popover">
+    <!-- Shaper Config -->
+    <object class="GtkPopover" id="shaperconfig_popover">
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
@@ -235,7 +236,7 @@
             <object class="GtkBox">
               <child>
                 <object class="GtkLabel">
-                  <property name="label" translatable="yes">Shaper Extra</property>
+                  <property name="label" translatable="yes">Shaper Configuration</property>
                   <property name="hexpand">true</property>
                   <property name="halign">center</property>
                   <style>
@@ -244,7 +245,7 @@
                 </object>
               </child>
               <child>
-                <object class="GtkButton" id="shaperextra_popover_close_button">
+                <object class="GtkButton" id="shaperconfig_popover_close_button">
                   <property name="icon-name">window-close-symbolic</property>
                   <style>
                     <class name="flat" />

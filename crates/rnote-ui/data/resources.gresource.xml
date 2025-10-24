@@ -115,6 +115,8 @@
         <file compressed="true">icons/scalable/actions/return-origin-page-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/save-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-deselect-all-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/selection-mirror-horizontal-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/selection-mirror-vertical-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-duplicate-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-invert-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-resize-lock-aspectratio-symbolic.svg</file>

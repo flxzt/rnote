@@ -1,7 +1,8 @@
 // Imports
 use super::{Line, Shapeable};
 use crate::ext::{AabbExt, Vector2Ext};
-use crate::transform::Transformable;
+use crate::point_utils;
+use crate::transform::{MirrorOrientation, Transformable};
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -40,6 +41,14 @@ impl Transformable for Polygon {
         for p in &mut self.path {
             *p = p.component_mul(&scale);
         }
+    }
+
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        point_utils::mirror_point(&mut self.start, centerline, orientation);
+
+        self.path.iter_mut().for_each(|point| {
+            point_utils::mirror_point(point, centerline, orientation);
+        });
     }
 }
 

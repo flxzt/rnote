@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 15:24+0200\n"
-"PO-Revision-Date: 2025-09-01 18:01+0000\n"
+"PO-Revision-Date: 2025-09-08 19:51+0000\n"
 "Last-Translator: Fjuro <fjuro@alius.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-"X-Generator: Weblate 5.13.1-dev\n"
+"X-Generator: Weblate 5.14-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -818,8 +818,6 @@ msgid "Highlighting"
 msgstr "Zvýrazňování"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:135
-#, fuzzy
-#| msgid "Highlight mode"
 msgid "Highlight-Mode"
 msgstr "Režim zvýrazňování"
 
@@ -828,8 +826,6 @@ msgid "Fade active color"
 msgstr "Ztlumit barvu aktivního prvku"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
-#, fuzzy
-#| msgid "Highlight Opacity"
 msgid "Highlight-Opacity"
 msgstr "Neprůhlednost zvýraznění"
 
@@ -935,16 +931,12 @@ msgid "Enabled"
 msgstr "Povoleno"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:253
-#, fuzzy
-#| msgid ""
-#| "Hold Ctrl to temporarily enable/disable\n"
-#| "                        constraints when this switch is off/on"
 msgid ""
 "Hold Ctrl to temporarily enable/disable\n"
 "constraints when this switch is off/on"
 msgstr ""
 "Podržením klávesy Ctrl dočasně povolíte/zakážete\n"
-"                        omezení, když je tento přepínač vypnutý/zapnutý"
+"omezení, když je tento přepínač vypnutý/zapnutý"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:259
 msgid "1:1"

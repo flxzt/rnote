@@ -7,6 +7,7 @@ use super::vectorimage::VectorImage;
 use super::{Content, TextStroke};
 use crate::fileformats::xoppformat::{self, XoppColor};
 use crate::store::chrono_comp::StrokeLayer;
+use crate::strokes::textstroke::TextStyle;
 use crate::{Drawable, utils};
 use crate::{Engine, render};
 use p2d::bounding_volume::Aabb;
@@ -427,6 +428,29 @@ impl Stroke {
         Ok(Stroke::BitmapImage(BitmapImage { image, rectangle }))
     }
 
+    pub fn from_xopptext(
+        xopp_text: xoppformat::XoppText,
+        offset: na::Vector2<f64>,
+        target_dpi: f64,
+    ) -> Result<Self, anyhow::Error> {
+        let pos: na::Vector2<f64> = na::Vector2::<f64>::new(
+            crate::utils::convert_value_dpi(xopp_text.x, xoppformat::XoppFile::DPI, target_dpi),
+            crate::utils::convert_value_dpi(xopp_text.y, xoppformat::XoppFile::DPI, target_dpi),
+        );
+
+        let mut textstyle = TextStyle::default();
+        textstyle.color = crate::utils::color_from_xopp(xopp_text.color);
+        textstyle.font_size =
+            crate::utils::convert_value_dpi(xopp_text.size, xoppformat::XoppFile::DPI, target_dpi);
+        textstyle.font_family = xopp_text.font;
+
+        Ok(Stroke::TextStroke(TextStroke::new(
+            xopp_text.text,
+            pos + offset,
+            textstyle,
+        )))
+    }
+
     pub fn into_xopp(self, current_dpi: f64) -> Option<xoppformat::XoppStrokeType> {
         match self {
             Stroke::BrushStroke(brushstroke) => {
@@ -496,6 +520,12 @@ impl Stroke {
                 ))
             }
             Stroke::ShapeStroke(shapestroke) => {
+                // Remark
+                // We can transform shapes to a xopp brushstroke
+                // under the following conditions
+                // - if the stroke color is not none
+                // - if the fill color is transparent
+                // - if the style is not rough
                 let png_data = match shapestroke.export_to_bitmap_image_bytes(
                     image::ImageFormat::Png,
                     Engine::STROKE_EXPORT_IMAGE_SCALE,
@@ -540,6 +570,14 @@ impl Stroke {
             Stroke::TextStroke(textstroke) => {
                 // Xournal++ text strokes do not support affine transformations, so we have to convert on best effort here.
                 // The best solution for now seems to be to export them as a bitmap image.
+                //
+                // We _could_ try to retain the text more but
+                // the hard part is a xopp text element is
+                // - a single font
+                // - a single emphasis mode (bold,italic ...) on all text
+                // - a single color
+                // So we'd have to cut the text into smaller xopp text elements
+                // to retain it ...
                 let png_data = match textstroke.export_to_bitmap_image_bytes(
                     image::ImageFormat::Png,
                     Engine::STROKE_EXPORT_IMAGE_SCALE,
@@ -582,6 +620,7 @@ impl Stroke {
                 ))
             }
             Stroke::VectorImage(vectorimage) => {
+                // no svg support in xournalpp
                 let png_data = match vectorimage.export_to_bitmap_image_bytes(
                     image::ImageFormat::Png,
                     Engine::STROKE_EXPORT_IMAGE_SCALE,

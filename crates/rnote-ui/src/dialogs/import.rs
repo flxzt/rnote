@@ -498,8 +498,8 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
                     #[weak]
                     canvas,
                     async move {
-                        let page_range = (pdf_page_start_row.value() as u32 - 1)
-                            ..pdf_page_end_row.value() as u32;
+                        let page_range = (pdf_page_start_row.value() as usize).saturating_sub(1)
+                            ..pdf_page_end_row.value() as usize;
                         let (bytes, _) = match input_file.load_bytes_future().await {
                             Ok(res) => res,
                             Err(err) => {

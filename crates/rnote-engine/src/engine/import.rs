@@ -230,7 +230,7 @@ impl Engine {
         &self,
         bytes: Vec<u8>,
         insert_pos: na::Vector2<f64>,
-        page_range: Option<Range<u32>>,
+        page_range: Option<Range<usize>>,
         password: Option<String>,
     ) -> oneshot::Receiver<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>> {
         let (oneshot_sender, oneshot_receiver) =

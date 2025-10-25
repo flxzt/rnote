@@ -138,7 +138,7 @@ impl RnCanvas {
         appwindow: &RnAppWindow,
         bytes: Vec<u8>,
         target_pos: Option<na::Vector2<f64>>,
-        page_range: Option<Range<u32>>,
+        page_range: Option<Range<usize>>,
         password: Option<String>,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);

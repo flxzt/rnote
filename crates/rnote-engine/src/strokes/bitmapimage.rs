@@ -5,11 +5,10 @@ use crate::Drawable;
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::render;
-use anyhow::Context;
+use anyhow::anyhow;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
-use rnote_compose::color;
 use rnote_compose::ext::{AabbExt, Affine2Ext};
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::Shapeable;
@@ -17,6 +16,7 @@ use rnote_compose::transform::Transform;
 use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
+use std::sync::Arc;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "bitmapimage")]
@@ -130,83 +130,62 @@ impl BitmapImage {
         to_be_read: &[u8],
         pdf_import_prefs: PdfImportPrefs,
         insert_pos: na::Vector2<f64>,
-        page_range: Option<Range<u32>>,
+        page_range: Option<Range<usize>>,
         format: &Format,
         password: Option<String>,
     ) -> Result<Vec<Self>, anyhow::Error> {
-        let doc =
-            poppler::Document::from_bytes(&glib::Bytes::from(to_be_read), password.as_deref())?;
-        let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
+        // TODO: how to avoid this allocation without lifetime issues?
+        let data = Arc::new(to_be_read.to_vec());
+        // TODO: hayro does not have the ability to unlock password-protected PDFs yet
+        if password.is_some() {
+            return Err(anyhow!(
+                "Import of password-protected PDFs is not supported at the moment"
+            ));
+        }
+        let pdf = hayro::Pdf::new(data)
+            .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?;
+        let interpreter_settings = hayro::InterpreterSettings::default();
+        let pages = pdf.pages();
+        let page_range = page_range.unwrap_or(0..pages.len());
         let page_width = if pdf_import_prefs.adjust_document {
             format.width()
         } else {
             format.width() * (pdf_import_prefs.page_width_perc / 100.0)
         };
+
         // calculate the page zoom based on the width of the first page.
-        let page_zoom = if let Some(first_page) = doc.page(0) {
-            page_width / first_page.size().0
+        let page_zoom = if let Some(first_page) = pages.first() {
+            page_width / first_page.render_dimensions().0 as f64
         } else {
             return Ok(vec![]);
         };
         let x = insert_pos[0];
         let mut y = insert_pos[1];
 
+        // TODO: investigate if this can be parallelized with rayon's `par_iter()`
         let pngs = page_range
             .map(|page_i| {
-                let page = doc
-                    .page(page_i as i32)
+                let page = pages
+                    .get(page_i)
                     .ok_or_else(|| anyhow::anyhow!("no page at index '{page_i}"))?;
-                let (intrinsic_width, intrinsic_height) = page.size();
+                let (intrinsic_width, intrinsic_height) = {
+                    let dimensions = page.render_dimensions();
+                    (dimensions.0 as f64, dimensions.1 as f64)
+                };
                 let width = intrinsic_width * page_zoom;
                 let height = intrinsic_height * page_zoom;
-                let surface_width = (width * pdf_import_prefs.bitmap_scalefactor).round() as i32;
-                let surface_height = (height * pdf_import_prefs.bitmap_scalefactor).round() as i32;
-                let surface = cairo::ImageSurface::create(
-                    cairo::Format::ARgb32,
-                    surface_width,
-                    surface_height,
-                )
-                .map_err(|e| {
-                    anyhow::anyhow!(
-                        "Creating image surface while importing bitmapimage failed, Err: {e:?}"
-                    )
-                })?;
+                let render_settings = hayro::RenderSettings {
+                    x_scale: (pdf_import_prefs.bitmap_scalefactor * page_zoom) as f32,
+                    y_scale: (pdf_import_prefs.bitmap_scalefactor * page_zoom) as f32,
+                    width: Some((pdf_import_prefs.bitmap_scalefactor * width).ceil() as u16),
+                    height: Some((pdf_import_prefs.bitmap_scalefactor * height).ceil() as u16),
+                };
 
-                {
-                    let cx = cairo::Context::new(&surface)
-                        .context("Creating new cairo Context failed")?;
+                // TODO: implement drawing page borders.
+                // Possibly with vello-cpu, since it already is a dependency of hayro
+                let pixmap = hayro::render(page, &interpreter_settings, &render_settings);
+                let png_data = pixmap.take_png();
 
-                    // Scale with the bitmap scalefactor pref
-                    cx.scale(
-                        page_zoom * pdf_import_prefs.bitmap_scalefactor,
-                        page_zoom * pdf_import_prefs.bitmap_scalefactor,
-                    );
-
-                    // Set margin to white
-                    cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
-                    cx.paint()?;
-
-                    page.render_for_printing(&cx);
-
-                    if pdf_import_prefs.page_borders {
-                        // Draw outline around page
-                        let (red, green, blue, _) = color::GNOME_REDS[4].as_rgba();
-                        cx.set_source_rgba(red, green, blue, 1.0);
-
-                        let line_width = 1.0;
-                        cx.set_line_width(line_width);
-                        cx.rectangle(
-                            line_width * 0.5,
-                            line_width * 0.5,
-                            intrinsic_width - line_width,
-                            intrinsic_height - line_width,
-                        );
-                        cx.stroke()?;
-                    }
-                }
-
-                let mut png_data: Vec<u8> = Vec::new();
-                surface.write_to_png(&mut png_data)?;
                 let image_pos = na::vector![x, y];
                 let image_size = na::vector![width, height];
 

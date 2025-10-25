@@ -38,6 +38,8 @@ gio = "0.21.1"
 glib = "0.21.1"
 glib-build-tools = "0.21.0"
 gtk4 = { version = "0.10.0", features = ["v4_18"] }
+hayro = { version = "0.4.0", features = ["embed-fonts"] }
+hayro-svg = "0.2.0"
 ijson = "0.1.4"
 image = { version = "0.25.6", default-features = false, features = [
     "rayon",

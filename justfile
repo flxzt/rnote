@@ -88,7 +88,7 @@ prerequisites-dev: prerequisites
 prerequisites-win:
     echo "compile cairo without the 0001-DWrite-Get-glyph-bitmap-with-D2D-in-selected-cases.patch patch"
     ls 
-    cd rnote/build-aux/cairo_build
+    cd rnote/build-aux/
     ls
     makepkg -i
     pacman -S --noconfirm \

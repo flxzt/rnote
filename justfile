@@ -86,6 +86,8 @@ prerequisites-dev: prerequisites
 
 # in MSYS2 shell
 prerequisites-win:
+    echo "compile cairo without the 0001-DWrite-Get-glyph-bitmap-with-D2D-in-selected-cases.patch patch"
+    cd build-aux &&  cd cairo_build && makepkg -i
     pacman -S --noconfirm \
         unzip git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang \
         mingw-w64-x86_64-toolchain mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake \

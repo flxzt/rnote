@@ -181,10 +181,47 @@ impl BitmapImage {
                     height: Some((pdf_import_prefs.bitmap_scalefactor * height).ceil() as u16),
                 };
 
-                // TODO: implement drawing page borders.
-                // Possibly with vello-cpu, since it already is a dependency of hayro
                 let pixmap = hayro::render(page, &interpreter_settings, &render_settings);
-                let png_data = pixmap.into_png()?;
+                let png_data = if pdf_import_prefs.page_borders {
+                    let width = pixmap.width();
+                    let height = pixmap.height();
+                    let mut ctx = vello_cpu::RenderContext::new_with(
+                        width,
+                        height,
+                        vello_cpu::RenderSettings::default(),
+                    );
+                    let pixmap =
+                        Arc::new(vello_cpu::Pixmap::from_parts(pixmap.take(), width, height));
+                    let mut target = vello_cpu::Pixmap::new(width, height);
+
+                    let color = rnote_compose::color::GNOME_REDS[4].as_rgba8();
+                    ctx.set_paint(vello_cpu::PaintType::Image(vello_cpu::peniko::ImageBrush {
+                        image: vello_cpu::ImageSource::Pixmap(pixmap),
+                        sampler: vello_cpu::peniko::ImageSampler::default(),
+                    }));
+                    ctx.fill_rect(&vello_cpu::kurbo::Rect::new(
+                        0.,
+                        0.,
+                        width as f64,
+                        height as f64,
+                    ));
+                    ctx.set_stroke(
+                        vello_cpu::kurbo::Stroke::new(2.).with_join(vello_cpu::kurbo::Join::Bevel),
+                    );
+                    ctx.set_paint(color::OpaqueColor::from_rgb8(color.0, color.1, color.2));
+                    ctx.stroke_rect(&vello_cpu::kurbo::Rect::new(
+                        1.5,
+                        1.5,
+                        width as f64 - 1.5,
+                        height as f64 - 1.5,
+                    ));
+
+                    ctx.flush();
+                    ctx.render_to_pixmap(&mut target);
+                    target.into_png()?
+                } else {
+                    pixmap.into_png()?
+                };
 
                 let image_pos = na::vector![x, y];
                 let image_size = na::vector![width, height];

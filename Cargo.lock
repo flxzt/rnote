@@ -1897,7 +1897,7 @@ dependencies = [
  "hayro-interpret",
  "image",
  "kurbo 0.12.0",
- "vello_cpu",
+ "vello_cpu 0.0.4 (git+https://github.com/linebender/vello?rev=4ea47b4)",
 ]
 
 [[package]]
@@ -3956,6 +3956,7 @@ dependencies = [
  "cairo-rs",
  "chrono",
  "clap",
+ "color",
  "flate2",
  "futures",
  "geo",
@@ -3997,6 +3998,7 @@ dependencies = [
  "tracing",
  "unicode-segmentation",
  "usvg",
+ "vello_cpu 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "xmlwriter",
 ]
 
@@ -5039,6 +5041,22 @@ checksum = "ba73ea9cf16a25df0c8caa16c51acb937d5712a8429db78a3ee29d5dcacd3a65"
 [[package]]
 name = "vello_common"
 version = "0.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a235ba928b3109ad9e7696270edb09445a52ae1c7c08e6d31a19b1cdd6cbc24a"
+dependencies = [
+ "bytemuck",
+ "fearless_simd",
+ "hashbrown 0.15.5",
+ "log",
+ "peniko",
+ "png 0.17.16",
+ "skrifa 0.37.0",
+ "smallvec",
+]
+
+[[package]]
+name = "vello_common"
+version = "0.0.4"
 source = "git+https://github.com/linebender/vello?rev=4ea47b4#4ea47b47c3e04a68b20422c9a12b2b98c735f547"
 dependencies = [
  "bytemuck",
@@ -5054,11 +5072,21 @@ dependencies = [
 [[package]]
 name = "vello_cpu"
 version = "0.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b0bd1fcf9c1814f17a491e07113623d44e3ec1125a9f3401f5e047d6d326da21"
+dependencies = [
+ "bytemuck",
+ "vello_common 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "vello_cpu"
+version = "0.0.4"
 source = "git+https://github.com/linebender/vello?rev=4ea47b4#4ea47b47c3e04a68b20422c9a12b2b98c735f547"
 dependencies = [
  "bytemuck",
  "hashbrown 0.15.5",
- "vello_common",
+ "vello_common 0.0.4 (git+https://github.com/linebender/vello?rev=4ea47b4)",
 ]
 
 [[package]]

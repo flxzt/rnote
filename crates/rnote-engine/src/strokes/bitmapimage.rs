@@ -184,7 +184,7 @@ impl BitmapImage {
                 // TODO: implement drawing page borders.
                 // Possibly with vello-cpu, since it already is a dependency of hayro
                 let pixmap = hayro::render(page, &interpreter_settings, &render_settings);
-                let png_data = pixmap.take_png();
+                let png_data = pixmap.into_png()?;
 
                 let image_pos = na::vector![x, y];
                 let image_size = na::vector![width, height];

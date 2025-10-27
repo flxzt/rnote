@@ -27,6 +27,27 @@ pub fn xoppcolor_from_color(color: Color) -> xoppformat::XoppColor {
     }
 }
 
+pub fn chrono_dt_from_hayro(
+    raw: hayro_syntax::object::DateTime,
+) -> Option<chrono::DateTime<chrono::FixedOffset>> {
+    let date = chrono::NaiveDate::from_ymd_opt(raw.year as i32, raw.month as u32, raw.day as u32)?;
+    let time =
+        chrono::NaiveTime::from_hms_opt(raw.hour as u32, raw.minute as u32, raw.second as u32)?;
+    let offset = if raw.utc_offset_hour < 0 {
+        chrono::FixedOffset::west_opt(
+            -raw.utc_offset_hour as i32 * 60 * 60 + raw.utc_offset_minute as i32 * 60,
+        )?
+    } else {
+        chrono::FixedOffset::east_opt(
+            raw.utc_offset_hour as i32 * 60 * 60 + raw.utc_offset_minute as i32 * 60,
+        )?
+    };
+    Some(chrono::DateTime::from_naive_utc_and_offset(
+        chrono::NaiveDateTime::new(date, time),
+        offset,
+    ))
+}
+
 pub fn now_formatted_string() -> String {
     chrono::Local::now().format("%Y-%m-%d_%H:%M:%S").to_string()
 }

@@ -4,14 +4,13 @@
 use crate::canvas::RnCanvas;
 use crate::{RnAppWindow, config};
 use adw::prelude::*;
+use anyhow::anyhow;
 use futures::StreamExt;
 use gettextrs::gettext;
-use gtk4::{
-    Builder, Button, FileDialog, FileFilter, Label, ToggleButton, gio, glib, glib::clone, graphene,
-    gsk,
-};
+use gtk4::{Builder, Button, FileDialog, FileFilter, Label, ToggleButton, gio, glib, glib::clone};
 use num_traits::ToPrimitive;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
+use std::sync::Arc;
 use tracing::{debug, error};
 
 /// Opens a new rnote save file in a new tab
@@ -115,9 +114,14 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
 ///
 /// Returns a password Option and a boolean weather the user canceled the file import or not
 pub(crate) async fn pdf_encryption_check_and_dialog(
-    appwindow: &RnAppWindow,
-    input_file: &gio::File,
+    _appwindow: &RnAppWindow,
+    _input_file: &gio::File,
 ) -> (Option<String>, bool) {
+    // Currently the 'hayro' Pdf library used for import does not support decryption of password-protected Pdfs.
+    // Until it is implemented, return None.
+    return (None, false);
+
+    /*
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );
@@ -218,6 +222,7 @@ pub(crate) async fn pdf_encryption_check_and_dialog(
             }
         };
     }
+    */
 }
 
 /// Imports the file as Pdf with an import dialog.
@@ -405,27 +410,41 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }
     ));
 
-    if let Ok(poppler_doc) =
-        poppler::Document::from_gfile(&input_file, password.as_deref(), None::<&gio::Cancellable>)
-    {
-        let file_name = input_file.basename().map_or_else(
-            || gettext("- no file name -"),
-            |s| s.to_string_lossy().to_string(),
-        );
-        let title = poppler_doc
-            .title()
-            .map_or_else(|| gettext("- no title -"), |s| s.to_string());
-        let author = poppler_doc
-            .author()
-            .map_or_else(|| gettext("- no author -"), |s| s.to_string());
-        let mod_date = poppler_doc
-            .mod_datetime()
-            .and_then(|dt| dt.format("%F").ok())
-            .map_or_else(|| gettext("- no date -"), |s| s.to_string());
-        let n_pages = poppler_doc.n_pages();
+    let pdf_data = Arc::new(input_file.load_bytes_future().await?.0.to_vec());
+    let pdf = match hayro::Pdf::new(pdf_data) {
+        Ok(pdf) => pdf,
+        Err(hayro_syntax::LoadPdfError::Decryption(_)) => {
+            return Err(anyhow!("Unable to decrypt Pdf file."));
+        }
+        Err(_) => return Err(anyhow!("Unable to load Pdf file.")),
+    };
+    let pdf_metadata = pdf.metadata();
 
-        // pdf info
-        pdf_info_label.set_label(
+    let file_name = input_file.basename().map_or_else(
+        || gettext("- no file name -"),
+        |s| s.to_string_lossy().to_string(),
+    );
+    let title = pdf_metadata
+        .title
+        .to_owned()
+        .and_then(|s| String::from_utf8(s).ok())
+        .unwrap_or_else(|| gettext("- no title -"));
+    let author = pdf_metadata
+        .author
+        .to_owned()
+        .and_then(|s| String::from_utf8(s).ok())
+        .unwrap_or_else(|| gettext("- no author -"));
+    let mod_date = pdf_metadata
+        .modification_date
+        .and_then(|dt| {
+            let dt = rnote_engine::utils::chrono_dt_from_hayro(dt)?;
+            Some(dt.to_rfc3339())
+        })
+        .unwrap_or_else(|| gettext("- no modification date -"));
+    let n_pages = pdf.pages().len();
+
+    // pdf info
+    pdf_info_label.set_label(
             &format!("<b>{}  </b>{file_name}\n<b>{}  </b>{title}\n<b>{}  </b>{author}\n<b>{}  </b>{mod_date}\n<b>{}  </b>{n_pages}\n",
                 &gettext("File name:"),
                 &gettext("Title:"),
@@ -434,13 +453,12 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
                 &gettext("Pages:"))
         );
 
-        // Configure pages spinners
-        pdf_page_start_row.set_range(1.into(), n_pages.into());
-        pdf_page_start_row.set_value(1.into());
+    // Configure pages spinners
+    pdf_page_start_row.set_range(1.into(), n_pages as f64);
+    pdf_page_start_row.set_value(1.into());
 
-        pdf_page_end_row.set_range(1.into(), n_pages.into());
-        pdf_page_end_row.set_value(n_pages.into());
-    }
+    pdf_page_end_row.set_range(1.into(), n_pages as f64);
+    pdf_page_end_row.set_value(n_pages as f64);
 
     // Listen to responses
 
@@ -491,8 +509,6 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
                     pdf_page_end_row,
                     #[weak]
                     input_file,
-                    #[strong]
-                    password,
                     #[weak]
                     appwindow,
                     #[weak]

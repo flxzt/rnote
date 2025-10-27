@@ -45,42 +45,6 @@
   },
   "modules": [
     {
-      "name": "poppler",
-      "buildsystem": "cmake-ninja",
-      "config-opts": [
-        "-DCMAKE_POSITION_INDEPENDENT_CODE=ON",
-        "-DCMAKE_INSTALL_LIBDIR=/app/lib",
-        "-DCMAKE_INSTALL_INCLUDEDIR=/app/include",
-        "-DENABLE_BOOST=OFF",
-        "-DENABLE_LIBOPENJPEG=none",
-        "-DENABLE_QT5=OFF",
-        "-DENABLE_QT6=OFF",
-        "-DENABLE_CPP=OFF",
-        "-DENABLE_UTILS=OFF"
-      ],
-      "sources": [
-        {
-          "type": "archive",
-          "url": "https://poppler.freedesktop.org/poppler-25.09.1.tar.xz",
-          "sha256": "0c1091d01d3dd1664a13816861e812d02b29201e96665454b81b52d261fad658"
-        }
-      ]
-    },
-    {
-      "name": "poppler-data",
-      "buildsystem": "cmake-ninja",
-      "config-opts": [
-        "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
-      ],
-      "sources": [
-        {
-          "type": "archive",
-          "url": "https://poppler.freedesktop.org/poppler-data-0.4.12.tar.gz",
-          "sha256": "c835b640a40ce357e1b83666aabd95edffa24ddddd49b8daff63adb851cdab74"
-        }
-      ]
-    },
-    {
       "name": "rnote",
       "buildsystem": "meson",
       "run-tests": true,

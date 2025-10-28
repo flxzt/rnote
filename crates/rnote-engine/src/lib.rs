@@ -16,12 +16,13 @@ pub mod drawable;
 pub mod engine;
 pub mod ext;
 pub mod fileformats;
+pub mod image;
 pub mod pens;
-pub mod render;
 pub mod selectioncollision;
 pub mod snap;
 pub mod store;
 pub mod strokes;
+pub mod svg;
 pub mod tasks;
 pub mod utils;
 pub mod widgetflags;
@@ -33,9 +34,11 @@ pub use document::Document;
 pub use drawable::Drawable;
 pub use drawable::DrawableOnDoc;
 pub use engine::Engine;
+pub use image::Image;
 pub use pens::PenHolder;
 pub use selectioncollision::SelectionCollision;
 pub use store::StrokeStore;
+pub use svg::Svg;
 pub use widgetflags::WidgetFlags;
 
 // Renames

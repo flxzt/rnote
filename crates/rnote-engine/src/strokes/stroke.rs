@@ -5,11 +5,13 @@ use super::content::GeneratedContentImages;
 use super::shapestroke::ShapeStroke;
 use super::vectorimage::VectorImage;
 use super::{Content, TextStroke};
+use crate::Engine;
+use crate::Image;
+use crate::Svg;
 use crate::fileformats::xoppformat::{self, XoppColor};
 use crate::store::chrono_comp::StrokeLayer;
 use crate::strokes::textstroke::TextStyle;
 use crate::{Drawable, utils};
-use crate::{Engine, render};
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::Element;
@@ -37,7 +39,7 @@ pub enum Stroke {
 }
 
 impl Content for Stroke {
-    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
+    fn gen_svg(&self) -> Result<Svg, anyhow::Error> {
         match self {
             Stroke::BrushStroke(brushstroke) => brushstroke.gen_svg(),
             Stroke::ShapeStroke(shapestroke) => shapestroke.gen_svg(),
@@ -423,7 +425,7 @@ impl Stroke {
             cuboid: p2d::shape::Cuboid::new(bounds.half_extents()),
             transform: Transform::new_w_isometry(na::Isometry2::new(bounds.center().coords, 0.0)),
         };
-        let image = render::Image::try_from_encoded_bytes(&bytes)?;
+        let image = Image::try_from_encoded_bytes(&bytes)?;
 
         Ok(Stroke::BitmapImage(BitmapImage { image, rectangle }))
     }

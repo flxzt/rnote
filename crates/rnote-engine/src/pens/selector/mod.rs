@@ -6,7 +6,7 @@ use super::PenBehaviour;
 use super::PenStyle;
 use super::pensconfig::selectorconfig::SelectorStyle;
 use crate::engine::{EngineView, EngineViewMut, StrokeContent};
-use crate::render::Svg;
+use crate::Svg;
 use crate::snap::SnapCorner;
 use crate::store::StrokeKey;
 use crate::strokes::Content;

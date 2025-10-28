@@ -1,5 +1,5 @@
 // Imports
-use crate::render::Image;
+use crate::Image;
 use crate::{Engine, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;

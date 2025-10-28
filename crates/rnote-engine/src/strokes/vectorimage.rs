@@ -4,7 +4,9 @@ use super::resize::{ImageSizeOption, calculate_resize_ratio};
 use super::{Content, Stroke};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
-use crate::{Drawable, render};
+use crate::Image;
+use crate::svg::USVG_FONTDB;
+use crate::{Drawable, Svg};
 use anyhow::anyhow;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
@@ -43,7 +45,7 @@ impl Default for VectorImage {
 }
 
 impl Content for VectorImage {
-    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
+    fn gen_svg(&self) -> Result<Svg, anyhow::Error> {
         let svg_root = svg::node::element::SVG::new()
             .set("x", -self.rectangle.cuboid.half_extents[0])
             .set("y", -self.rectangle.cuboid.half_extents[1])
@@ -65,7 +67,7 @@ impl Content for VectorImage {
             )
             .add(svg_root);
         let svg_data = rnote_compose::utils::svg_node_to_string(&group)?;
-        let svg = render::Svg {
+        let svg = Svg {
             bounds: self.rectangle.bounds(),
             svg_data,
         };
@@ -79,13 +81,11 @@ impl Content for VectorImage {
     ) -> Result<GeneratedContentImages, anyhow::Error> {
         let bounds = self.bounds();
         // always generate full stroke images for vectorimages, they are too expensive to be repeatedly rendered
-        Ok(GeneratedContentImages::Full(vec![
-            render::Image::gen_with_piet(
-                |piet_cx| self.draw(piet_cx, image_scale),
-                bounds,
-                image_scale,
-            )?,
-        ]))
+        Ok(GeneratedContentImages::Full(vec![Image::gen_with_piet(
+            |piet_cx| self.draw(piet_cx, image_scale),
+            bounds,
+            image_scale,
+        )?]))
     }
 
     fn update_geometry(&mut self) {}
@@ -156,7 +156,7 @@ impl VectorImage {
         let svg_tree = usvg::Tree::from_str(
             svg_data,
             &usvg::Options {
-                fontdb: Arc::clone(&render::USVG_FONTDB),
+                fontdb: Arc::clone(&USVG_FONTDB),
                 ..Default::default()
             },
         )?;
@@ -250,9 +250,6 @@ impl VectorImage {
                 let width = intrinsic_width * page_zoom;
                 let height = intrinsic_height * page_zoom;
 
-                // TODO: implement drawing page borders
-                let svg_data = hayro_svg::convert(page, &interpreter_settings);
-
                 if pdf_import_prefs.adjust_document {
                     y += height
                 } else {
@@ -263,10 +260,14 @@ impl VectorImage {
                         PdfImportPageSpacing::OnePerDocumentPage => format.height(),
                     };
                 }
+                // TODO: implement drawing page borders
+                let svg_data = hayro_svg::convert(page, &interpreter_settings);
                 let bounds = Aabb::new(na::point![x, y], na::point![x + width, y + height]);
-                Some(render::Svg { svg_data, bounds })
+                let svg = Svg { svg_data, bounds };
+
+                Some(svg)
             })
-            .collect::<Vec<render::Svg>>();
+            .collect::<Vec<Svg>>();
 
         svgs.into_par_iter()
             .map(|svg| {

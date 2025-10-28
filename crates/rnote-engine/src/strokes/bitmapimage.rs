@@ -4,7 +4,7 @@ use super::{Content, Stroke};
 use crate::Drawable;
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
-use crate::render;
+use crate::Image;
 use anyhow::anyhow;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
@@ -26,7 +26,7 @@ pub struct BitmapImage {
     /// The bounds field of the image should not be used to determine the stroke bounds.
     /// Use rectangle.bounds() instead.
     #[serde(rename = "image")]
-    pub image: render::Image,
+    pub image: Image,
     #[serde(rename = "rectangle")]
     pub rectangle: Rectangle,
 }
@@ -34,7 +34,7 @@ pub struct BitmapImage {
 impl Default for BitmapImage {
     fn default() -> Self {
         Self {
-            image: render::Image::default(),
+            image: Image::default(),
             rectangle: Rectangle::default(),
         }
     }
@@ -103,7 +103,7 @@ impl BitmapImage {
         pos: na::Vector2<f64>,
         size_option: ImageSizeOption,
     ) -> Result<Self, anyhow::Error> {
-        let image = render::Image::try_from_encoded_bytes(bytes)?;
+        let image = Image::try_from_encoded_bytes(bytes)?;
 
         let initial_size = na::vector![f64::from(image.pixel_width), f64::from(image.pixel_height)];
 

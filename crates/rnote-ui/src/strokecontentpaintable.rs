@@ -6,7 +6,7 @@ use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::ext::GdkRGBAExt;
-use rnote_engine::render::Image;
+use rnote_engine::Image;
 use rnote_engine::tasks::{OneOffTaskError, OneOffTaskHandle};
 use std::cell::{Cell, OnceCell, RefCell};
 use std::time::Duration;

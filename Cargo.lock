@@ -783,6 +783,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "be1e0bca6c3637f992fc1cc7cbc52a78c1ef6db076dbf1059c4323d6a2048376"
 
 [[package]]
+name = "deranged"
+version = "0.5.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a41953f86f8a05768a6cda24def994fd2f424b04ec5c719cf89989779f199071"
+dependencies = [
+ "serde_core",
+]
+
+[[package]]
 name = "derive_builder"
 version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3600,7 +3609,7 @@ dependencies = [
 
 [[package]]
 name = "rnote"
-version = "0.13.1"
+version = "0.14.0"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -3652,7 +3661,7 @@ dependencies = [
 
 [[package]]
 name = "rnote-cli"
-version = "0.13.1"
+version = "0.14.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -3671,7 +3680,7 @@ dependencies = [
 
 [[package]]
 name = "rnote-compose"
-version = "0.13.1"
+version = "0.14.0"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -3700,14 +3709,17 @@ dependencies = [
 
 [[package]]
 name = "rnote-engine"
-version = "0.13.1"
+version = "0.14.0"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
+ "async-fs",
  "base64",
  "cairo-rs",
  "chrono",
  "clap",
+ "crc32fast",
+ "deranged",
  "flate2",
  "futures",
  "geo",
@@ -3748,6 +3760,7 @@ dependencies = [
  "unicode-segmentation",
  "usvg",
  "xmlwriter",
+ "zstd",
 ]
 
 [[package]]
@@ -3920,18 +3933,28 @@ dependencies = [
 
 [[package]]
 name = "serde"
-version = "1.0.219"
+version = "1.0.228"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f0e2c6ed6606019b4e29e69dbaba95b11854410e5347d525002456dbbb786b6"
+checksum = "9a8e94ea7f378bd32cbbd37198a4a91436180c5bb472411e48b5ec2e2124ae9e"
+dependencies = [
+ "serde_core",
+ "serde_derive",
+]
+
+[[package]]
+name = "serde_core"
+version = "1.0.228"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "41d385c7d4ca58e59fc732af25c3983b67ac852c1a25000afe1175de458b67ad"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.219"
+version = "1.0.228"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b0276cf7f2c73365f7157c8123c21cd9a50fbbd844757af28ca1f5925fc2a00"
+checksum = "d540f220d3187173da220f885ab66608367b6574e925011a9353e4badda91d79"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5402,6 +5425,34 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.106",
+]
+
+[[package]]
+name = "zstd"
+version = "0.13.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e91ee311a569c327171651566e07972200e76fcfe2242a4fa446149a3881c08a"
+dependencies = [
+ "zstd-safe",
+]
+
+[[package]]
+name = "zstd-safe"
+version = "7.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8f49c4d5f0abb602a93fb8736af2a4f4dd9512e36f7f570d66e65ff867ed3b9d"
+dependencies = [
+ "zstd-sys",
+]
+
+[[package]]
+name = "zstd-sys"
+version = "2.0.16+zstd.1.5.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "91e19ebc2adc8f83e43039e79776e3fda8ca919132d68a1fed6a5faca2683748"
+dependencies = [
+ "cc",
+ "pkg-config",
 ]
 
 [[package]]

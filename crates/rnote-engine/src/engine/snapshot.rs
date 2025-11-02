@@ -56,7 +56,7 @@ impl EngineSnapshot {
             let result = || -> anyhow::Result<Self> {
                 let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
                     .context("loading RnoteFile from bytes failed.")?;
-                Ok(ijson::from_value(&rnote_file.engine_snapshot)?)
+                Self::try_from(rnote_file)
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {

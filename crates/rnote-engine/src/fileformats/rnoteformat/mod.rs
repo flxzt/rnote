@@ -6,153 +6,189 @@
 //! Then [TryFrom] can be implemented to allow conversions and chaining from older to newer versions.
 
 // Modules
-pub(crate) mod maj0min13;
-pub(crate) mod maj0min5patch8;
-pub(crate) mod maj0min5patch9;
-pub(crate) mod maj0min6;
-pub(crate) mod maj0min9;
+pub(crate) mod bcursor;
+pub(crate) mod compression;
+pub(crate) mod legacy;
+pub(crate) mod maj0min14;
+pub(crate) mod prelude;
 
 // Imports
-use self::maj0min5patch8::RnoteFileMaj0Min5Patch8;
-use self::maj0min5patch9::RnoteFileMaj0Min5Patch9;
-use self::maj0min6::RnoteFileMaj0Min6;
-use self::maj0min9::RnoteFileMaj0Min9;
-use self::maj0min13::RnoteFileMaj0Min13;
+use crate::{
+    engine::EngineSnapshot,
+    fileformats::{
+        FileFormatLoader, FileFormatSaver,
+        rnoteformat::{
+            bcursor::BCursor, compression::CompressionMethod, maj0min14::RnoteHeaderMaj0Min14,
+            prelude::Prelude,
+        },
+    },
+    store::{ChronoComponent, StrokeKey},
+    strokes::Stroke,
+};
+use itertools::Itertools;
+use rayon::prelude::*;
+use slotmap::{HopSlotMap, SecondaryMap};
+use std::{num::NonZero, sync::Arc};
 
-use super::{FileFormatLoader, FileFormatSaver};
-use anyhow::Context;
-use serde::{Deserialize, Serialize};
-use std::io::{Read, Write};
+pub type RnoteFile = maj0min14::RnoteFileMaj0Min14;
 
-/// Compress bytes with gzip.
-fn compress_to_gzip(to_compress: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
-    let mut encoder = flate2::write::GzEncoder::new(Vec::<u8>::new(), flate2::Compression::new(5));
-    encoder.write_all(to_compress)?;
-    Ok(encoder.finish()?)
-}
+impl FileFormatSaver for RnoteFile {
+    #[allow(unused_variables)]
+    fn save_as_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
+        let core_data = serde_json::to_vec(&self.core)?;
+        let core_length = core_data.len();
 
-/// Decompress from gzip.
-fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
-    // Optimization for the gzip format, defined by RFC 1952
-    // capacity of the vector defined by the size of the uncompressed data
-    // given in little endian format, by the last 4 bytes of "compressed"
-    //
-    //   ISIZE (Input SIZE)
-    //     This contains the size of the original (uncompressed) input data modulo 2^32.
-    let mut bytes: Vec<u8> = {
-        let mut decompressed_size: [u8; 4] = [0; 4];
-        let idx_start = compressed
-            .len()
-            .checked_sub(4)
-            // only happens if the file has less than 4 bytes
-            .ok_or_else(|| {
-                anyhow::anyhow!("Invalid file")
-                    .context("Failed to get the size of the decompressed data")
-            })?;
-        decompressed_size.copy_from_slice(&compressed[idx_start..]);
-        // u32 -> usize to avoid issues on 32-bit architectures
-        // also more reasonable since the uncompressed size is given by 4 bytes
-        Vec::with_capacity(u32::from_le_bytes(decompressed_size) as usize)
-    };
+        let mut para_data_vec = self
+            .para_vec
+            .par_iter()
+            .map(serde_json::to_vec)
+            .collect::<Result<Vec<Vec<u8>>, serde_json::Error>>()?;
+        let para_length_vec = para_data_vec.iter().map(Vec::len).collect_vec();
 
-    let mut decoder = flate2::read::MultiGzDecoder::new(compressed);
-    decoder.read_to_end(&mut bytes)?;
-    Ok(bytes)
-}
+        let body = {
+            para_data_vec.insert(0, core_data);
+            self.header
+                .compression_method
+                .compress(para_data_vec.concat())?
+        };
 
-/// The rnote file wrapper.
-///
-/// Used to extract and match the version up front, before deserializing the data.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "rnotefile_wrapper")]
-struct RnotefileWrapper {
-    #[serde(rename = "version")]
-    version: semver::Version,
-    #[serde(rename = "data")]
-    data: ijson::IValue,
-}
+        let header = {
+            let mut file_header = self.header.clone();
+            file_header.uc_size = core_length + para_length_vec.iter().sum::<usize>();
+            file_header.core_length = core_length;
+            file_header.para_length_vec = para_length_vec;
+            serde_json::to_vec(&ijson::to_value(&file_header)?)?
+        };
 
-/// The Rnote file in the newest format version.
-///
-/// This struct exists to allow for upgrading older versions before loading the file in.
-pub type RnoteFile = RnoteFileMaj0Min13;
+        let prelude = Prelude::new(
+            semver::Version::parse(crate::utils::crate_version())?,
+            header.len(),
+        )
+        .try_to_bytes()?;
 
-impl RnoteFile {
-    pub const SEMVER: &'static str = crate::utils::crate_version();
+        Ok([prelude, header, body].concat())
+    }
 }
 
 impl FileFormatLoader for RnoteFile {
-    fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self> {
-        let wrapper = serde_json::from_slice::<RnotefileWrapper>(
-            &decompress_from_gzip(bytes).context("decompressing bytes failed.")?,
-        )
-        .context("deserializing RnotefileWrapper from bytes failed.")?;
+    fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self>
+    where
+        Self: Sized,
+    {
+        // handle for legacy files
+        if bytes
+            .get(..2)
+            .ok_or_else(|| anyhow::anyhow!("Invalid file, too small"))?
+            == [0x1f, 0x8b]
+        {
+            let legacy = legacy::LegacyRnoteFile::load_from_bytes(bytes)?;
+            return legacy.try_into();
+        }
 
-        // Conversions for older file format versions happen here
-        if semver::VersionReq::parse(">=0.13.0")
+        let mut cursor = BCursor::new(bytes);
+
+        let prelude = Prelude::try_from_bytes(&mut cursor)?;
+
+        if semver::VersionReq::parse(">=0.14.0")
             .unwrap()
-            .matches(&wrapper.version)
+            .matches(&prelude.version)
         {
-            ijson::from_value::<RnoteFileMaj0Min13>(&wrapper.data)
-                .context("deserializing RnoteFileMaj0Min13 failed.")
-        } else if semver::VersionReq::parse(">=0.9.0")
-            .unwrap()
-            .matches(&wrapper.version)
-        {
-            ijson::from_value::<RnoteFileMaj0Min9>(&wrapper.data)
-                .context("deserializing RnoteFileMaj0Min9 failed.")
-                .and_then(RnoteFileMaj0Min13::try_from)
-                .context("converting RnoteFileMaj0Min9 to newest file version failed.")
-        } else if semver::VersionReq::parse(">=0.5.10")
-            .unwrap()
-            .matches(&wrapper.version)
-        {
-            ijson::from_value::<RnoteFileMaj0Min6>(&wrapper.data)
-                .context("deserializing RnoteFileMaj0Min6 failed.")
-                .and_then(RnoteFileMaj0Min9::try_from)
-                .and_then(RnoteFileMaj0Min13::try_from)
-                .context("converting RnoteFileMaj0Min6 to newest file version failed.")
-        } else if semver::VersionReq::parse(">=0.5.9")
-            .unwrap()
-            .matches(&wrapper.version)
-        {
-            ijson::from_value::<RnoteFileMaj0Min5Patch9>(&wrapper.data)
-                .context("deserializing RnoteFileMaj0Min5Patch9 failed.")
-                .and_then(RnoteFileMaj0Min6::try_from)
-                .and_then(RnoteFileMaj0Min9::try_from)
-                .and_then(RnoteFileMaj0Min13::try_from)
-                .context("converting RnoteFileMaj0Min5Patch9 to newest file version failed.")
-        } else if semver::VersionReq::parse(">=0.5.0")
-            .unwrap()
-            .matches(&wrapper.version)
-        {
-            ijson::from_value::<RnoteFileMaj0Min5Patch8>(&wrapper.data)
-                .context("deserializing RnoteFileMaj0Min5Patch8 failed")
-                .and_then(RnoteFileMaj0Min5Patch9::try_from)
-                .and_then(RnoteFileMaj0Min6::try_from)
-                .and_then(RnoteFileMaj0Min9::try_from)
-                .and_then(RnoteFileMaj0Min13::try_from)
-                .context("converting RnoteFileMaj0Min5Patch8 to newest file version failed.")
+            maj0min14::RnoteFileMaj0Min14::load(cursor, prelude.header_size)
         } else {
-            Err(anyhow::anyhow!(
-                "failed to load rnote file from bytes, unsupported version: {}.",
-                wrapper.version
-            ))
+            anyhow::bail!("Unknown version: '{}'", prelude.version);
         }
     }
 }
 
-impl FileFormatSaver for RnoteFile {
-    fn save_as_bytes(&self, _file_name: &str) -> anyhow::Result<Vec<u8>> {
-        let wrapper = RnotefileWrapper {
-            version: semver::Version::parse(Self::SEMVER).unwrap(),
-            data: ijson::to_value(self).context("converting RnoteFile to JSON value failed.")?,
-        };
-        let compressed = compress_to_gzip(
-            &serde_json::to_vec(&wrapper).context("Serializing RnoteFileWrapper failed.")?,
-        )
-        .context("compressing bytes failed.")?;
+impl TryFrom<EngineSnapshot> for RnoteFile {
+    type Error = anyhow::Error;
 
-        Ok(compressed)
+    fn try_from(mut value: EngineSnapshot) -> Result<Self, Self::Error> {
+        let extracted_strokes = std::mem::take(&mut value.stroke_components);
+        let extracted_chronos = std::mem::take(&mut value.chrono_components);
+
+        let strokes_with_chronos = extracted_strokes
+            .iter()
+            .map(|(key, stroke)| (stroke, extracted_chronos.get(key).unwrap()))
+            .collect_vec();
+
+        let nb_para = std::thread::available_parallelism()
+            .map(NonZero::get)
+            .unwrap_or_else(|e| {
+                tracing::warn!("Failed to get available parallelism, {e}");
+                1_usize
+            });
+
+        let para_vec = {
+            let n = nb_para;
+            let len = strokes_with_chronos.len();
+
+            let base = len / n;
+            let rem = len % n;
+
+            let mut res = Vec::with_capacity(n);
+            let mut start = 0usize;
+
+            for i in 0..n {
+                let size = base + if i < rem { 1 } else { 0 };
+                let end = start + size;
+                res.push(&strokes_with_chronos[start..end]);
+                start = end;
+            }
+
+            res
+        }
+        .into_par_iter()
+        .map(ijson::to_value)
+        .collect::<Result<Vec<ijson::IValue>, serde_json::Error>>()?;
+
+        Ok(Self {
+            header: RnoteHeaderMaj0Min14 {
+                compression_method: CompressionMethod::default(),
+                method_lock: false,
+                uc_size: 0,
+                core_length: 0,
+                para_length_vec: vec![0; para_vec.len()],
+            },
+            core: ijson::to_value(&value)?,
+            para_vec,
+        })
+    }
+}
+
+impl TryFrom<RnoteFile> for EngineSnapshot {
+    type Error = anyhow::Error;
+
+    fn try_from(value: RnoteFile) -> Result<Self, Self::Error> {
+        let mut engine_snapshot: EngineSnapshot = ijson::from_value(&value.core)?;
+
+        let strokes_with_chronos_multi_vec = value
+            .para_vec
+            .par_iter()
+            .map(ijson::from_value::<Vec<(Stroke, ChronoComponent)>>)
+            .collect::<Result<Vec<Vec<(Stroke, ChronoComponent)>>, serde_json::Error>>()?;
+
+        let capacity = strokes_with_chronos_multi_vec
+            .iter()
+            .map(Vec::len)
+            .sum::<usize>();
+
+        let mut stroke_components: HopSlotMap<StrokeKey, Arc<Stroke>> =
+            HopSlotMap::with_capacity_and_key(capacity);
+        let mut chrono_components: SecondaryMap<StrokeKey, Arc<ChronoComponent>> =
+            SecondaryMap::with_capacity(capacity);
+
+        strokes_with_chronos_multi_vec
+            .into_iter()
+            .flatten()
+            .for_each(|(stroke, chrono)| {
+                let key = stroke_components.insert(Arc::new(stroke));
+                chrono_components.insert(key, Arc::new(chrono));
+            });
+
+        engine_snapshot.stroke_components = Arc::new(stroke_components);
+        engine_snapshot.chrono_components = Arc::new(chrono_components);
+
+        Ok(engine_snapshot)
     }
 }

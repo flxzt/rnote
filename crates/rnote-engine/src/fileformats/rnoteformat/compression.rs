@@ -51,13 +51,6 @@ impl CompressionMethod {
             }
             Self::Zstd(comp_int) => {
                 let mut encoder = zstd::Encoder::new(Vec::<u8>::new(), comp_int.get())?;
-                let _ = encoder.set_parameter(
-                    zstd::zstd_safe::CParameter::EnableLongDistanceMatching(true),
-                );
-                match std::thread::available_parallelism() {
-                    Ok(num_workers) => encoder.multithread(num_workers.get() as u32)?,
-                    Err(e) => tracing::warn!("Failed to get available parallelism, {e}"),
-                }
                 encoder.write_all(&data)?;
                 Ok(encoder.finish()?)
             }

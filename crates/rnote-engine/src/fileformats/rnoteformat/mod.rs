@@ -17,56 +17,52 @@ use crate::{
     engine::EngineSnapshot,
     fileformats::{
         FileFormatLoader, FileFormatSaver,
-        rnoteformat::{
-            bcursor::BCursor, compression::CompressionMethod, maj0min14::RnoteHeaderMaj0Min14,
-            prelude::Prelude,
-        },
+        rnoteformat::{bcursor::BCursor, compression::CompressionMethod, prelude::Prelude},
     },
     store::{ChronoComponent, StrokeKey},
     strokes::Stroke,
 };
-use itertools::Itertools;
 use rayon::prelude::*;
 use slotmap::{HopSlotMap, SecondaryMap};
-use std::{num::NonZero, sync::Arc};
+use std::sync::Arc;
 
 pub type RnoteFile = maj0min14::RnoteFileMaj0Min14;
 
 impl FileFormatSaver for RnoteFile {
     #[allow(unused_variables)]
     fn save_as_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
-        let core_data = serde_json::to_vec(&self.core)?;
-        let core_length = core_data.len();
-
-        let mut para_data_vec = self
-            .para_vec
+        let (body, chunk_info_vec): (Vec<Vec<u8>>, Vec<maj0min14::ChunkInfo>) = self
+            .engine_snapshot_ir
+            .strokechrono_chunks
             .par_iter()
-            .map(serde_json::to_vec)
-            .collect::<Result<Vec<Vec<u8>>, serde_json::Error>>()?;
-        let para_length_vec = para_data_vec.iter().map(Vec::len).collect_vec();
+            .chain(rayon::iter::once(&self.engine_snapshot_ir.core))
+            .map(|ival| {
+                let uc_data = serde_json::to_vec(ival)?;
+                let uc_size = uc_data.len();
+                let c_data = self.compression_method.compress(uc_data)?;
+                let c_size = c_data.len();
+                Ok((c_data, maj0min14::ChunkInfo { c_size, uc_size }))
+            })
+            .collect::<Result<Vec<(Vec<u8>, maj0min14::ChunkInfo)>, anyhow::Error>>()?
+            .into_iter()
+            .unzip();
 
-        let body = {
-            para_data_vec.insert(0, core_data);
-            self.header
-                .compression_method
-                .compress(para_data_vec.concat())?
+        let body_bytes = body.concat();
+
+        let header = maj0min14::RnoteHeaderMaj0Min14 {
+            compression_method: self.compression_method,
+            compression_lock: self.compression_lock,
+            chunk_info_vec,
         };
+        let header_bytes = serde_json::to_vec(&ijson::to_value(&header)?)?;
 
-        let header = {
-            let mut file_header = self.header.clone();
-            file_header.uc_size = core_length + para_length_vec.iter().sum::<usize>();
-            file_header.core_length = core_length;
-            file_header.para_length_vec = para_length_vec;
-            serde_json::to_vec(&ijson::to_value(&file_header)?)?
-        };
-
-        let prelude = Prelude::new(
+        let prelude_bytes = Prelude::new(
             semver::Version::parse(crate::utils::crate_version())?,
-            header.len(),
+            header_bytes.len(),
         )
         .try_to_bytes()?;
 
-        Ok([prelude, header, body].concat())
+        Ok([prelude_bytes, header_bytes, body_bytes].concat())
     }
 }
 
@@ -75,19 +71,14 @@ impl FileFormatLoader for RnoteFile {
     where
         Self: Sized,
     {
-        // handle for legacy files
-        if bytes
-            .get(..2)
-            .ok_or_else(|| anyhow::anyhow!("Invalid file, too small"))?
-            == [0x1f, 0x8b]
-        {
-            let legacy = legacy::LegacyRnoteFile::load_from_bytes(bytes)?;
-            return legacy.try_into();
-        }
-
         let mut cursor = BCursor::new(bytes);
 
-        let prelude = Prelude::try_from_bytes(&mut cursor)?;
+        let prelude = if cursor.try_seek(2)? != [0x1f, 0x8b] {
+            Prelude::try_from_bytes(&mut cursor)?
+        } else {
+            // We create a "phony" prelude if the file is found to be entirely compressed with gzip (meaning it's a legacy Rnote file)
+            Prelude::new(semver::Version::new(0, 13, 0), 0)
+        };
 
         if semver::VersionReq::parse(">=0.14.0")
             .unwrap()
@@ -95,7 +86,7 @@ impl FileFormatLoader for RnoteFile {
         {
             maj0min14::RnoteFileMaj0Min14::load(cursor, prelude.header_size)
         } else {
-            anyhow::bail!("Unknown version: '{}'", prelude.version);
+            legacy::LegacyRnoteFile::load_from_bytes(bytes)?.try_into()
         }
     }
 }
@@ -107,51 +98,15 @@ impl TryFrom<EngineSnapshot> for RnoteFile {
         let extracted_strokes = std::mem::take(&mut value.stroke_components);
         let extracted_chronos = std::mem::take(&mut value.chrono_components);
 
-        let strokes_with_chronos = extracted_strokes
-            .iter()
-            .map(|(key, stroke)| (stroke, extracted_chronos.get(key).unwrap()))
-            .collect_vec();
-
-        let nb_para = std::thread::available_parallelism()
-            .map(NonZero::get)
-            .unwrap_or_else(|e| {
-                tracing::warn!("Failed to get available parallelism, {e}");
-                1_usize
-            });
-
-        let para_vec = {
-            let n = nb_para;
-            let len = strokes_with_chronos.len();
-
-            let base = len / n;
-            let rem = len % n;
-
-            let mut res = Vec::with_capacity(n);
-            let mut start = 0usize;
-
-            for i in 0..n {
-                let size = base + if i < rem { 1 } else { 0 };
-                let end = start + size;
-                res.push(&strokes_with_chronos[start..end]);
-                start = end;
-            }
-
-            res
-        }
-        .into_par_iter()
-        .map(ijson::to_value)
-        .collect::<Result<Vec<ijson::IValue>, serde_json::Error>>()?;
+        let strokechrono_chunks = maj0min14::chunk_serialize(extracted_strokes, extracted_chronos)?;
 
         Ok(Self {
-            header: RnoteHeaderMaj0Min14 {
-                compression_method: CompressionMethod::default(),
-                method_lock: false,
-                uc_size: 0,
-                core_length: 0,
-                para_length_vec: vec![0; para_vec.len()],
+            compression_method: CompressionMethod::default(),
+            compression_lock: false,
+            engine_snapshot_ir: maj0min14::EngineSnaphotIR {
+                strokechrono_chunks,
+                core: ijson::to_value(&value)?,
             },
-            core: ijson::to_value(&value)?,
-            para_vec,
         })
     }
 }
@@ -160,25 +115,24 @@ impl TryFrom<RnoteFile> for EngineSnapshot {
     type Error = anyhow::Error;
 
     fn try_from(value: RnoteFile) -> Result<Self, Self::Error> {
-        let mut engine_snapshot: EngineSnapshot = ijson::from_value(&value.core)?;
+        let mut engine_snapshot: EngineSnapshot =
+            ijson::from_value(&value.engine_snapshot_ir.core)?;
 
-        let strokes_with_chronos_multi_vec = value
-            .para_vec
+        let strokechrono_chunks = value
+            .engine_snapshot_ir
+            .strokechrono_chunks
             .par_iter()
             .map(ijson::from_value::<Vec<(Stroke, ChronoComponent)>>)
             .collect::<Result<Vec<Vec<(Stroke, ChronoComponent)>>, serde_json::Error>>()?;
 
-        let capacity = strokes_with_chronos_multi_vec
-            .iter()
-            .map(Vec::len)
-            .sum::<usize>();
+        let capacity = strokechrono_chunks.iter().map(Vec::len).sum::<usize>();
 
         let mut stroke_components: HopSlotMap<StrokeKey, Arc<Stroke>> =
             HopSlotMap::with_capacity_and_key(capacity);
         let mut chrono_components: SecondaryMap<StrokeKey, Arc<ChronoComponent>> =
             SecondaryMap::with_capacity(capacity);
 
-        strokes_with_chronos_multi_vec
+        strokechrono_chunks
             .into_iter()
             .flatten()
             .for_each(|(stroke, chrono)| {

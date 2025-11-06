@@ -1,4 +1,4 @@
-/// Simple cursor struct, `std::io::Cursor` does not have the methods we want.
+/// Simple cursor struct, similar to `std::io::Cursor` but made for our use case
 pub struct BCursor<'a> {
     inner: &'a [u8],
     pos: usize,
@@ -13,21 +13,21 @@ impl<'a> BCursor<'a> {
     }
 
     pub fn try_capture(&mut self, by: usize) -> anyhow::Result<&'a [u8]> {
-        if let Some(slice) = self.inner.get(self.pos..self.pos + by) {
-            self.pos += by;
-            Ok(slice)
-        } else {
-            anyhow::bail!("Insufficient bytes")
-        }
+        self.inner
+            .get(self.pos..self.pos + by)
+            .inspect(|_| self.pos += by)
+            .ok_or_else(|| anyhow::anyhow!("Failed to capture {by} bytes, out of bounds"))
+    }
+
+    pub fn try_seek(&mut self, by: usize) -> anyhow::Result<&'a [u8]> {
+        self.inner
+            .get(self.pos..self.pos + by)
+            .ok_or_else(|| anyhow::anyhow!("Failed to seek {by} bytes, out of bounds"))
     }
 
     pub fn try_capture_exact<const BY: usize>(&mut self) -> anyhow::Result<[u8; BY]> {
         let mut bytes_exact: [u8; BY] = [0; BY];
         bytes_exact.copy_from_slice(self.try_capture(BY)?);
         Ok(bytes_exact)
-    }
-
-    pub fn get_rest(self) -> &'a [u8] {
-        &self.inner[self.pos..]
     }
 }

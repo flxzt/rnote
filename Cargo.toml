@@ -86,7 +86,7 @@ url = "2.5"
 usvg = "0.45.1"
 winresource = "0.1.20"
 xmlwriter = "0.1.0"
-zstd = { version = "0.13", features = ["zstdmt"] }
+zstd = "0.13"
 
 # Enabling feature > v20_9 causes linker errors on mingw
 poppler-rs = { version = "0.25.0", features = ["v20_9"] }

@@ -1,4 +1,4 @@
-/// Simple cursor struct, similar to `std::io::Cursor` but made for our use case
+/// Simple cursor struct for bytes, similar to `std::io::Cursor` but made for our use case
 pub struct BCursor<'a> {
     inner: &'a [u8],
     pos: usize,

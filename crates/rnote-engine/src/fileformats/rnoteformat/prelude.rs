@@ -4,38 +4,41 @@ use anyhow::{Context, bail};
 use crate::fileformats::rnoteformat::bcursor::BCursor;
 
 /// # Prelude
-/// * magic number: [u8; 9] = [0x52, 0x4e, 0x4f, 0x54, 0x45, 0xce, 0xa6, 0xce, 0x9b] = "RNOTEϕλ"
-/// * version: [u64, u64, u64, u16, str, u16, str] (almost one-to-one representation of semver::Version)
-///            [major, minor, patch, Prerelease size, Prerelease, BuildMetadata size, BuildMetadata]
-/// * header size: u32
+/// * Magic number: [u8; 10] = [52, 4e, 4f, 54, 45, 2d, ce, a6, ce, 9b] = "RNOTE-ΦΛ"
+/// * File version: u16
+/// * Rnote version: [major (u64), minor (u64), patch (u64), Prerelease size (u16), Prerelease (str), BuildMetadata size (u16), BuildMetadata (str)]
+/// * Header size: u32
 #[derive(Debug, Clone)]
 pub struct Prelude {
-    pub version: semver::Version,
+    pub file_version: u16,
+    pub rnote_version: semver::Version,
     pub header_size: usize,
 }
 
 impl Prelude {
     /// The magic number used to identify Rnote files, do not modify.
-    pub const MAGIC_NUMBER: [u8; 9] = [0x52, 0x4e, 0x4f, 0x54, 0x45, 0xce, 0xa6, 0xce, 0x9b];
+    pub const MAGIC_NUMBER: [u8; 10] = [0x52, 0x4e, 0x4f, 0x54, 0x45, 0x2d, 0xce, 0xa6, 0xce, 0x9b];
 
     /// Creates a new prelude.
-    pub fn new(version: semver::Version, header_size: usize) -> Self {
+    pub fn new(file_version: u16, rnote_version: semver::Version, header_size: usize) -> Self {
         Self {
-            version,
+            file_version,
+            rnote_version,
             header_size,
         }
     }
 
     /// Returns the byte representation of the prelude
     pub fn try_to_bytes(self) -> anyhow::Result<Vec<u8>> {
-        let pre_release: &str = self.version.pre.as_str();
-        let build_metadata: &str = self.version.build.as_str();
+        let pre_release: &str = self.rnote_version.pre.as_str();
+        let build_metadata: &str = self.rnote_version.build.as_str();
 
         Ok([
             &Self::MAGIC_NUMBER[..],
-            &self.version.major.to_le_bytes(),
-            &self.version.minor.to_le_bytes(),
-            &self.version.patch.to_le_bytes(),
+            &self.file_version.to_le_bytes(),
+            &self.rnote_version.major.to_le_bytes(),
+            &self.rnote_version.minor.to_le_bytes(),
+            &self.rnote_version.patch.to_le_bytes(),
             &u16::try_from(pre_release.len())
                 .context("Prerelease exceeds maximum size (u16::MAX)")?
                 .to_le_bytes(),
@@ -53,47 +56,43 @@ impl Prelude {
 
     /// Returns the prelude alongside the cursor (index) at which it left off.
     pub fn try_from_bytes(cursor: &mut BCursor) -> anyhow::Result<Self> {
-        // Used to wrap any error we get with more information, could be switched to a try block when those get stabilized
-        let mut inner = || -> anyhow::Result<Self> {
-            let magic_number = cursor.try_capture(9)?;
-            if magic_number != Self::MAGIC_NUMBER {
-                bail!("Unrecognized file format");
-            }
+        let magic_number = cursor.try_capture(Self::MAGIC_NUMBER.len())?;
+        if magic_number != Self::MAGIC_NUMBER {
+            bail!("Unrecognized file format");
+        }
 
-            let major = u64::from_le_bytes(cursor.try_capture_exact::<8>()?);
-            let minor = u64::from_le_bytes(cursor.try_capture_exact::<8>()?);
-            let patch = u64::from_le_bytes(cursor.try_capture_exact::<8>()?);
+        let file_version = u16::from_le_bytes(cursor.try_capture_exact::<2>()?);
 
-            let pre_release_size = u16::from_le_bytes(cursor.try_capture_exact::<2>()?);
-            let pre_release = if pre_release_size == 0 {
-                semver::Prerelease::EMPTY
-            } else {
-                let text = core::str::from_utf8(cursor.try_capture(pre_release_size.into())?)?;
-                semver::Prerelease::new(text)?
-            };
+        let major = u64::from_le_bytes(cursor.try_capture_exact::<8>()?);
+        let minor = u64::from_le_bytes(cursor.try_capture_exact::<8>()?);
+        let patch = u64::from_le_bytes(cursor.try_capture_exact::<8>()?);
 
-            let build_metadata_size = u16::from_le_bytes(cursor.try_capture_exact::<2>()?);
-            let build_metadata = if build_metadata_size == 0 {
-                semver::BuildMetadata::EMPTY
-            } else {
-                let text = core::str::from_utf8(cursor.try_capture(build_metadata_size.into())?)?;
-                semver::BuildMetadata::new(text)?
-            };
-
-            let version = semver::Version {
-                major,
-                minor,
-                patch,
-                pre: pre_release,
-                build: build_metadata,
-            };
-
-            let header_size: usize =
-                u32::from_le_bytes(cursor.try_capture_exact::<4>()?).try_into()?;
-
-            Ok(Self::new(version, header_size))
+        let pre_release_size = u16::from_le_bytes(cursor.try_capture_exact::<2>()?);
+        let pre_release = if pre_release_size == 0 {
+            semver::Prerelease::EMPTY
+        } else {
+            let text = core::str::from_utf8(cursor.try_capture(pre_release_size.into())?)?;
+            semver::Prerelease::new(text)?
         };
 
-        inner().with_context(|| "Failed to load the prelude of the file")
+        let build_metadata_size = u16::from_le_bytes(cursor.try_capture_exact::<2>()?);
+        let build_metadata = if build_metadata_size == 0 {
+            semver::BuildMetadata::EMPTY
+        } else {
+            let text = core::str::from_utf8(cursor.try_capture(build_metadata_size.into())?)?;
+            semver::BuildMetadata::new(text)?
+        };
+
+        let rnote_version = semver::Version {
+            major,
+            minor,
+            patch,
+            pre: pre_release,
+            build: build_metadata,
+        };
+
+        let header_size: usize = u32::from_le_bytes(cursor.try_capture_exact::<4>()?).try_into()?;
+
+        Ok(Self::new(file_version, rnote_version, header_size))
     }
 }

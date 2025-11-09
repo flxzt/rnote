@@ -6,16 +6,22 @@ pub(crate) mod compression;
 pub(crate) mod legacy;
 pub(crate) mod prelude;
 pub(crate) mod v1;
+pub(crate) mod wrapper;
 
 use anyhow::Context;
 
 // Imports
-use crate::fileformats::{
-    FileFormatLoader, FileFormatSaver,
-    rnoteformat::{bcursor::BCursor, prelude::Prelude, v1::RnoteFileV1},
+use crate::{
+    engine::EngineSnapshot,
+    fileformats::{
+        FileFormatLoader, FileFormatSaver,
+        rnoteformat::{
+            bcursor::BCursor, prelude::Prelude, v1::RnoteFileV1, wrapper::RnoteFileWrapperMaj0Min14,
+        },
+    },
 };
 
-pub type RnoteFile = RnoteFileV1;
+pub type RnoteFile = RnoteFileWrapperMaj0Min14;
 
 impl FileFormatLoader for RnoteFile {
     fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self>
@@ -35,9 +41,11 @@ impl FileFormatLoader for RnoteFile {
             .unwrap()
             .matches(&prelude.rnote_version)
         {
-            RnoteFileV1::load(cursor, prelude.header_size)
+            RnoteFileV1::load(cursor, prelude.header_size).map(Self)
         } else {
-            RnoteFileV1::try_from(legacy::LegacyRnoteFile::load_from_bytes(bytes)?)
+            legacy::LegacyRnoteFile::load_from_bytes(bytes)
+                .and_then(RnoteFileV1::try_from)
+                .map(Self)
         }
     }
 }
@@ -45,6 +53,20 @@ impl FileFormatLoader for RnoteFile {
 impl FileFormatSaver for RnoteFile {
     #[allow(unused_variables)]
     fn save_as_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
-        self.save()
+        self.0.save()
+    }
+}
+
+impl TryFrom<EngineSnapshot> for RnoteFile {
+    type Error = anyhow::Error;
+    fn try_from(value: EngineSnapshot) -> Result<Self, Self::Error> {
+        RnoteFileV1::try_from(value).map(Self)
+    }
+}
+
+impl TryFrom<RnoteFile> for EngineSnapshot {
+    type Error = anyhow::Error;
+    fn try_from(value: RnoteFile) -> Result<Self, Self::Error> {
+        EngineSnapshot::try_from(value.0)
     }
 }

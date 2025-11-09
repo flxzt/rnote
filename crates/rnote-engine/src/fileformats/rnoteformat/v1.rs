@@ -12,7 +12,7 @@ use slotmap::{HopSlotMap, SecondaryMap};
 use std::sync::Arc;
 
 /// Using "RnoteFile" might be a bit of a misnomer, as this struct is an intermediate representation
-/// between the Rnote `EngineSnapshot` and the actual `.rnote` file (bytes)
+/// between the `EngineSnapshot` and the actual `.rnote` file (bytes)
 #[derive(Debug, Clone)]
 pub struct RnoteFileV1 {
     pub compression_method: CompressionMethod,
@@ -23,7 +23,7 @@ pub struct RnoteFileV1 {
 /// Intermediate representation of the `EngineSnapshot`
 #[derive(Debug, Clone)]
 pub struct EngineSnaphotIR {
-    /// A vector of chunks, where each chunk is an array of (`Stroke`, `ChronoComponent`) converted to an `IValue`
+    /// A vector of chunks, where each chunk is an array of `(Stroke, ChronoComponent)` values, converted to an `IValue`
     pub strokechrono_chunks: Vec<ijson::IValue>,
     /// The `EngineSnapshot` without `stroke_components` and `chrono_components` (still there but empty) converted to an `IValue`
     pub core: ijson::IValue,

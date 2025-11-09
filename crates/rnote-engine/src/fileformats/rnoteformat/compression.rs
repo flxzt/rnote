@@ -50,9 +50,7 @@ impl CompressionMethod {
                 Ok(encoder.finish()?)
             }
             Self::Zstd(comp_int) => {
-                let mut encoder = zstd::Encoder::new(Vec::<u8>::new(), comp_int.get())?;
-                encoder.write_all(&data)?;
-                Ok(encoder.finish()?)
+                zstd::bulk::compress(&data, comp_int.get()).map_err(anyhow::Error::from)
             }
         }
     }
@@ -66,12 +64,7 @@ impl CompressionMethod {
                 decoder.read_to_end(&mut bytes)?;
                 Ok(bytes)
             }
-            Self::Zstd { .. } => {
-                let mut bytes: Vec<u8> = Vec::with_capacity(uc_size);
-                let mut decoder = zstd::Decoder::new(data)?;
-                decoder.read_to_end(&mut bytes)?;
-                Ok(bytes)
-            }
+            Self::Zstd { .. } => zstd::bulk::decompress(data, uc_size).map_err(anyhow::Error::from),
         }
     }
 

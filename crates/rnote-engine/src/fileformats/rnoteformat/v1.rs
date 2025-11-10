@@ -1,3 +1,4 @@
+// Imports
 use super::compression::CompressionMethod;
 use crate::{
     engine::EngineSnapshot,
@@ -25,7 +26,7 @@ pub struct RnoteFileV1 {
 pub struct EngineSnaphotIR {
     /// A vector of chunks, where each chunk is an array of `(Stroke, ChronoComponent)` values, converted to an `IValue`
     pub strokechrono_chunks: Vec<ijson::IValue>,
-    /// The `EngineSnapshot` without `stroke_components` and `chrono_components` (still there but empty) converted to an `IValue`
+    /// The `EngineSnapshot` without `stroke_components` and `chrono_components` (still there but empty) converted to an `IValue
     pub core: ijson::IValue,
 }
 

@@ -70,10 +70,6 @@ struct LegacyRnotefileWrapper {
 /// This struct exists to allow for upgrading older versions before loading the file in.
 pub type LegacyRnoteFile = RnoteFileMaj0Min13;
 
-impl LegacyRnoteFile {
-    pub const SEMVER: &'static str = crate::utils::crate_version();
-}
-
 impl FileFormatLoader for LegacyRnoteFile {
     fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self> {
         let wrapper = serde_json::from_slice::<LegacyRnotefileWrapper>(

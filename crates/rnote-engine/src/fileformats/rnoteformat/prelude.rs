@@ -1,7 +1,6 @@
 // Imports
-use anyhow::{Context, bail};
-
 use crate::fileformats::rnoteformat::bcursor::BCursor;
+use anyhow::{Context, bail};
 
 /// # Prelude
 /// * Magic number: [u8; 10] = [52, 4e, 4f, 54, 45, 2d, ce, a6, ce, 9b] = "RNOTE-ΦΛ"
@@ -17,6 +16,7 @@ pub struct Prelude {
 
 impl Prelude {
     /// The magic number used to identify Rnote files, do not modify.
+    /// Translates to "RNOTE-ΦΛ" in utf-8
     pub const MAGIC_NUMBER: [u8; 10] = [0x52, 0x4e, 0x4f, 0x54, 0x45, 0x2d, 0xce, 0xa6, 0xce, 0x9b];
 
     /// Creates a new prelude.

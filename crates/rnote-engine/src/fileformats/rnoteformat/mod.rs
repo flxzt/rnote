@@ -8,8 +8,6 @@ pub(crate) mod prelude;
 pub(crate) mod v1;
 pub(crate) mod wrapper;
 
-use anyhow::Context;
-
 // Imports
 use crate::{
     engine::EngineSnapshot,
@@ -20,6 +18,7 @@ use crate::{
         },
     },
 };
+use anyhow::Context;
 
 pub type RnoteFile = RnoteFileWrapperMaj0Min14;
 

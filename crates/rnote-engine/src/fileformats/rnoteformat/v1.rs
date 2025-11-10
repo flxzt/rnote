@@ -17,7 +17,6 @@ use std::sync::Arc;
 #[derive(Debug, Clone)]
 pub struct RnoteFileV1 {
     pub compression_method: CompressionMethod,
-    pub compression_lock: bool,
     pub engine_snapshot_ir: EngineSnaphotIR,
 }
 
@@ -45,9 +44,6 @@ pub struct RnoteHeaderV1 {
     /// method used to compress/decompress the body
     #[serde(rename = "compression_method")]
     pub compression_method: CompressionMethod,
-    /// if set to true, the file can use non-standard compression and will not be forced back into using defaults
-    #[serde(rename = "compression_lock")]
-    pub compression_lock: bool,
     /// information required to handle the chunked body, the last element corresponds to the `core`
     /// only used when going from and to file representation, can be left empty otherwise
     #[serde(rename = "chunk_info_vec")]
@@ -131,7 +127,6 @@ impl RnoteFileV1 {
 
         Ok(Self {
             compression_method: header.compression_method,
-            compression_lock: header.compression_lock,
             engine_snapshot_ir: EngineSnaphotIR {
                 strokechrono_chunks,
                 core,
@@ -173,7 +168,6 @@ impl TryFrom<LegacyRnoteFile> for RnoteFileV1 {
 
         Ok(Self {
             compression_method: CompressionMethod::default(),
-            compression_lock: false,
             engine_snapshot_ir: EngineSnaphotIR {
                 strokechrono_chunks,
                 core: value.engine_snapshot,
@@ -207,7 +201,6 @@ impl RnoteFileV1 {
 
         let header = RnoteHeaderV1 {
             compression_method: self.compression_method,
-            compression_lock: self.compression_lock,
             chunk_info_vec,
         };
         let header_bytes = serde_json::to_vec(&ijson::to_value(&header)?)?;
@@ -234,7 +227,6 @@ impl TryFrom<EngineSnapshot> for RnoteFileV1 {
 
         Ok(Self {
             compression_method: CompressionMethod::default(),
-            compression_lock: false,
             engine_snapshot_ir: EngineSnaphotIR {
                 strokechrono_chunks,
                 core: ijson::to_value(&value)?,

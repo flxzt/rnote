@@ -8,6 +8,11 @@ pub(crate) mod prelude;
 pub(crate) mod v1;
 pub(crate) mod wrapper;
 
+// Re-exports
+pub use compression::{
+    CompressionMethod, DEFAULT_ZSTD_COMPRESSION_INTEGER, ZstdCompressionInteger,
+};
+
 // Imports
 use crate::{
     engine::EngineSnapshot,
@@ -21,6 +26,12 @@ use crate::{
 use anyhow::Context;
 
 pub type RnoteFile = RnoteFileWrapperMaj0Min14;
+
+impl From<RnoteFileV1> for RnoteFile {
+    fn from(value: RnoteFileV1) -> Self {
+        Self(value)
+    }
+}
 
 impl FileFormatLoader for RnoteFile {
     fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self>

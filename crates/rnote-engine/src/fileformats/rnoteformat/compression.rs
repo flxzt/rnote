@@ -1,8 +1,8 @@
 // Imports
 use serde::{Deserialize, Serialize};
 
-type ZstdCompressionInteger = deranged::RangedI32<-7, 22>;
-static DEFAULT_ZSTD_COMPRESSION_INTEGER: ZstdCompressionInteger =
+pub type ZstdCompressionInteger = deranged::RangedI32<-7, 22>;
+pub static DEFAULT_ZSTD_COMPRESSION_INTEGER: ZstdCompressionInteger =
     ZstdCompressionInteger::new_static::<9>();
 
 /// Compression methods that can be applied to the serialized engine snapshot

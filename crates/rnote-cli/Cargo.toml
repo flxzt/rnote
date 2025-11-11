@@ -23,3 +23,9 @@ parry2d-f64 = { workspace = true }
 smol = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
+
+# temporary
+itertools = { workspace = true }
+ijson = { workspace = true }
+flate2 = { workspace = true }
+serde_json = {workspace = true }

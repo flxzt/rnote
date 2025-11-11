@@ -12,6 +12,7 @@ pub(crate) mod wrapper;
 pub use compression::{
     CompressionMethod, DEFAULT_ZSTD_COMPRESSION_INTEGER, ZstdCompressionInteger,
 };
+pub use legacy::LegacyRnoteFile;
 
 // Imports
 use crate::{

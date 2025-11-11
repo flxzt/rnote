@@ -324,8 +324,10 @@ impl Engine {
         let engine_snapshot = self.take_snapshot();
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
+                //let start = std::time::Instant::now();
                 let rnote_file = RnoteFile::try_from(engine_snapshot)?;
                 rnote_file.save_as_bytes(&file_name)
+                //.inspect(|_| {tracing::info!("Going from `EngineSnapshot` to bytes took {} ms", std::time::Instant::now().duration_since(start).as_millis())})
             };
             if oneshot_sender.send(result()).is_err() {
                 error!(

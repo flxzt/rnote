@@ -199,30 +199,33 @@ fn svg_to_texture(svg: &str) -> anyhow::Result<gdk4::Texture> {
         .map_err(|e| anyhow::anyhow!("Failed to load SVG: {e}"))?;
 
     let renderer = rsvg::CairoRenderer::new(&handle);
-    let (width, height) = renderer
+
+    // Get the intrinsic dimensions to calculate aspect ratio
+    let (intrinsic_width, intrinsic_height) = renderer
         .intrinsic_size_in_pixels()
         .unwrap_or((800.0, 600.0));
 
-    // Create a surface and render the SVG
-    let mut surface = cairo::ImageSurface::create(
-        cairo::Format::ARgb32,
-        width.ceil() as i32,
-        height.ceil() as i32,
-    )
-    .map_err(|e| anyhow::anyhow!("Failed to create surface: {e}"))?;
+    let (width, height) = (intrinsic_width * 2.0, intrinsic_height * 2.0);
+    let width = width.ceil() as i32;
+    let height = height.ceil() as i32;
+
+    // Create a surface and render the SVG at the higher resolution
+    let mut surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height)
+        .map_err(|e| anyhow::anyhow!("Failed to create surface: {e}"))?;
 
     {
         let cr = cairo::Context::new(&surface)
             .map_err(|e| anyhow::anyhow!("Failed to create context: {e}"))?;
 
         renderer
-            .render_document(&cr, &cairo::Rectangle::new(0.0, 0.0, width, height))
+            .render_document(
+                &cr,
+                &cairo::Rectangle::new(0.0, 0.0, width as f64, height as f64),
+            )
             .map_err(|e| anyhow::anyhow!("Failed to render SVG: {e}"))?;
     } // Drop cr context here to release the borrow on surface
 
     // Convert cairo surface to GdkTexture using MemoryTexture
-    let width = width as i32;
-    let height = height;
     let stride = surface.stride();
 
     let data = surface
@@ -233,7 +236,7 @@ fn svg_to_texture(svg: &str) -> anyhow::Result<gdk4::Texture> {
 
     let texture = gdk4::MemoryTexture::new(
         width,
-        height as i32,
+        height,
         gdk4::MemoryFormat::B8g8r8a8,
         &bytes,
         stride as usize,

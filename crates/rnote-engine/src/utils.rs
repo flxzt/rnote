@@ -181,12 +181,36 @@ pub mod typst {
             "sans-serif"
         };
 
-        tracing::info!("Using math font: {}, text font: {}", math_font, text_font);
+        // Choose the best available monospace font
+        let monospace_font = if font_families.contains("JetBrains Mono") {
+            "JetBrains Mono"
+        } else if font_families.contains("Noto Sans Mono") {
+            "Noto Sans Mono"
+        } else if font_families.contains("DejaVu Sans Mono") {
+            "DejaVu Sans Mono"
+        } else if font_families.contains("Liberation Mono") {
+            "Liberation Mono"
+        } else if font_families.contains("Courier New") {
+            "Courier New"
+        } else if font_families.contains("Consolas") {
+            "Consolas"
+        } else if font_families.contains("Monaco") {
+            "Monaco"
+        } else {
+            "monospace"
+        };
+
+        tracing::info!(
+            "Using math font: {}, text font: {}, monospace font: {}",
+            math_font,
+            text_font,
+            monospace_font
+        );
 
         // Prepend font configuration to the source
         let configured_source = format!(
-            "#set text(font: \"{}\")\n#show math.equation: set text(font: \"{}\")\n\n{}",
-            text_font, math_font, source
+            "#set text(font: \"{}\")\n#show math.equation: set text(font: \"{}\")\n#show raw: set text(font: \"{}\")\n\n{}",
+            text_font, math_font, monospace_font, source
         );
 
         // Create a Typst world (compilation environment)

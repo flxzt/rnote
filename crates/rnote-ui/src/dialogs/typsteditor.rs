@@ -23,7 +23,7 @@ pub(crate) async fn dialog_typst_editor(appwindow: &RnAppWindow, canvas: &RnCanv
     let text_buffer = textview_source.buffer();
 
     // Set default Typst content
-    text_buffer.set_text("= Hello Typst!\n\nThis is a *bold* text and _italic_ text.\n\n$ sum_(i=1)^n i = (n(n+1))/2 $");
+    text_buffer.set_text("#set page(width: auto, height: auto, margin: 2pt)\n\n= Hello Typst!\n\nThis is a *bold* text and _italic_ text.\n\n$ sum_(i=1)^n i = (n(n+1))/2 $");
 
     // Shared state for compiled SVG
     let compiled_svg: Rc<RefCell<Option<String>>> = Rc::new(RefCell::new(None));

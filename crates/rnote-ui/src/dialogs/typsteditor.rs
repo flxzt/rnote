@@ -2,11 +2,12 @@
 use crate::RnAppWindow;
 use crate::canvas::RnCanvas;
 use adw::prelude::*;
+use glib::timeout_add_local_once;
 use gtk4::{Builder, Button, Picture, TextView, gio, glib, glib::clone};
-
 use std::cell::RefCell;
 use std::rc::Rc;
-use tracing::error;
+use std::time::Duration;
+use tracing::{error, warn};
 
 pub(crate) async fn dialog_typst_editor(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let builder = Builder::from_resource(
@@ -14,40 +15,59 @@ pub(crate) async fn dialog_typst_editor(appwindow: &RnAppWindow, canvas: &RnCanv
     );
 
     let dialog: adw::Dialog = builder.object("dialog_typst_editor").unwrap();
+
+    // Set dialog size to ~90% of app window size
+    let window_width = appwindow.width();
+    let window_height = appwindow.height();
+
+    let dialog_width = (window_width as f64 * 0.9) as i32;
+    let dialog_height = (window_height as f64 * 0.9) as i32;
+
+    // Set minimum reasonable sizes
+    let dialog_width = dialog_width.max(800);
+    let dialog_height = dialog_height.max(600);
+
+    dialog.set_content_width(dialog_width);
+    dialog.set_content_height(dialog_height);
+
     let button_cancel: Button = builder.object("button_cancel").unwrap();
     let button_insert: Button = builder.object("button_insert").unwrap();
     let button_compile: Button = builder.object("button_compile").unwrap();
     let textview_source: TextView = builder.object("textview_source").unwrap();
     let picture_preview: Picture = builder.object("picture_preview").unwrap();
+    let textview_error: TextView = builder.object("textview_error").unwrap();
+    let paned: gtk4::Paned = builder.object("paned").unwrap();
+
+    // Set paned position to half of dialog width for balanced layout
+    paned.set_position(dialog_width / 2);
 
     let text_buffer = textview_source.buffer();
+    let error_buffer = textview_error.buffer();
 
     // Set default Typst content
     text_buffer.set_text("#set page(width: auto, height: auto, margin: 2pt)\n\n= Hello Typst!\n\nThis is a *bold* text and _italic_ text.\n\n$ sum_(i=1)^n i = (n(n+1))/2 $");
 
-    // Shared state for compiled SVG
+    // Shared state for compiled SVG and debounce timer
     let compiled_svg: Rc<RefCell<Option<String>>> = Rc::new(RefCell::new(None));
+    let compile_timeout_id: Rc<RefCell<Option<glib::SourceId>>> = Rc::new(RefCell::new(None));
 
-    // Cancel button
-    button_cancel.connect_clicked(clone!(
-        #[weak]
-        dialog,
-        move |_| {
-            dialog.close();
-        }
-    ));
-
-    // Compile button
-    button_compile.connect_clicked(clone!(
+    // Helper function to compile and update preview
+    let do_compile = clone!(
         #[weak]
         text_buffer,
         #[weak]
         picture_preview,
-        #[strong]
-        compiled_svg,
+        #[weak]
+        textview_error,
+        #[weak]
+        error_buffer,
         #[weak]
         button_insert,
-        move |_| {
+        #[strong]
+        compiled_svg,
+        #[upgrade_or]
+        (),
+        move || {
             let source =
                 text_buffer.text(&text_buffer.start_iter(), &text_buffer.end_iter(), false);
 
@@ -62,21 +82,78 @@ pub(crate) async fn dialog_typst_editor(appwindow: &RnAppWindow, canvas: &RnCanv
                         Ok(texture) => {
                             picture_preview.set_paintable(Some(&texture));
                             button_insert.set_sensitive(true);
+                            // Hide error textview on success
+                            textview_error.set_visible(false);
+                            error_buffer.set_text("");
                         }
                         Err(e) => {
                             error!("Failed to create texture from SVG: {e:?}");
-                            show_error_in_preview(&picture_preview, &format!("Preview error: {e}"));
+                            // Show error in textview
+                            error_buffer.set_text(&format!("Preview error: {e}"));
+                            textview_error.set_visible(true);
                             button_insert.set_sensitive(false);
                         }
                     }
                 }
                 Err(e) => {
-                    error!("Typst compilation failed: {e:?}");
-                    show_error_in_preview(&picture_preview, &format!("Compilation error:\n{e}"));
+                    warn!("Typst compilation failed: {e:?}");
+                    // Show error in textview at bottom
+                    error_buffer.set_text(&format!("Compilation error:\n{e}"));
+                    textview_error.set_visible(true);
                     button_insert.set_sensitive(false);
                     *compiled_svg.borrow_mut() = None;
                 }
             }
+        }
+    );
+
+    // Cancel button
+    button_cancel.connect_clicked(clone!(
+        #[weak]
+        dialog,
+        move |_| {
+            dialog.close();
+        }
+    ));
+
+    // Compile button - just trigger the compile function
+    button_compile.connect_clicked(clone!(
+        #[strong]
+        do_compile,
+        move |_| {
+            do_compile();
+        }
+    ));
+
+    // Auto-compile on text changes with debouncing
+    text_buffer.connect_changed(clone!(
+        #[strong]
+        do_compile,
+        #[strong]
+        compile_timeout_id,
+        move |_| {
+            // Cancel any existing timeout
+            // Note: We don't need to manually remove the old source ID
+            // It will be automatically removed when it's dropped
+            let _old_id = compile_timeout_id.borrow_mut().take();
+
+            // Schedule a new compile after 500ms of no changes
+            let new_id = timeout_add_local_once(
+                Duration::from_millis(500),
+                clone!(
+                    #[strong]
+                    do_compile,
+                    #[strong]
+                    compile_timeout_id,
+                    move || {
+                        do_compile();
+                        // Clear the timeout ID after execution
+                        *compile_timeout_id.borrow_mut() = None;
+                    }
+                ),
+            );
+
+            *compile_timeout_id.borrow_mut() = Some(new_id);
         }
     ));
 
@@ -163,60 +240,4 @@ fn svg_to_texture(svg: &str) -> anyhow::Result<gdk4::Texture> {
     );
 
     Ok(texture.upcast())
-}
-
-fn show_error_in_preview(picture: &Picture, error_msg: &str) {
-    // Create a simple error image
-    let mut surface = cairo::ImageSurface::create(cairo::Format::ARgb32, 400, 300)
-        .expect("Failed to create surface");
-
-    {
-        let cr = cairo::Context::new(&surface).expect("Failed to create context");
-
-        // White background
-        cr.set_source_rgb(1.0, 1.0, 1.0);
-        cr.paint().expect("Failed to paint");
-
-        // Red border
-        cr.set_source_rgb(0.8, 0.2, 0.2);
-        cr.set_line_width(2.0);
-        cr.rectangle(10.0, 10.0, 380.0, 280.0);
-        cr.stroke().expect("Failed to stroke");
-
-        // Error text
-        cr.set_source_rgb(0.0, 0.0, 0.0);
-        cr.select_font_face(
-            "monospace",
-            cairo::FontSlant::Normal,
-            cairo::FontWeight::Normal,
-        );
-        cr.set_font_size(12.0);
-        cr.move_to(20.0, 40.0);
-
-        // Draw text line by line
-        let mut y = 40.0;
-        for line in error_msg.lines().take(15) {
-            cr.move_to(20.0, y);
-            let _ = cr.show_text(line);
-            y += 15.0;
-        }
-    } // Drop cr context here to release the borrow on surface
-
-    // Convert surface to texture
-    let width = surface.width();
-    let height = surface.height();
-    let stride = surface.stride();
-    let data = surface.data().expect("Failed to get surface data");
-
-    let bytes = glib::Bytes::from(&data[..]);
-
-    let texture = gdk4::MemoryTexture::new(
-        width,
-        height,
-        gdk4::MemoryFormat::B8g8r8a8,
-        &bytes,
-        stride as usize,
-    );
-
-    picture.set_paintable(Some(&texture));
 }

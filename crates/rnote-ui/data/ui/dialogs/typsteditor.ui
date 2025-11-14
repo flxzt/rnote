@@ -2,8 +2,6 @@
 <interface>
   <object class="AdwDialog" id="dialog_typst_editor">
     <property name="title" translatable="yes">Typst Editor</property>
-    <property name="content-width">900</property>
-    <property name="content-height">600</property>
     <property name="child">
       <object class="AdwToolbarView">
         <child type="top">
@@ -26,7 +24,6 @@
         <property name="content">
           <object class="GtkPaned" id="paned">
             <property name="orientation">horizontal</property>
-            <property name="position">450</property>
             <property name="resize-start-child">true</property>
             <property name="resize-end-child">true</property>
             <property name="shrink-start-child">false</property>
@@ -111,13 +108,41 @@
                     <property name="hexpand">true</property>
                     <property name="margin-start">6</property>
                     <property name="margin-end">12</property>
-                    <property name="margin-bottom">12</property>
+                    <property name="margin-bottom">0</property>
                     <property name="child">
                       <object class="GtkPicture" id="picture_preview">
                         <property name="can-shrink">false</property>
                         <property name="content-fit">contain</property>
                         <style>
                           <class name="card"/>
+                        </style>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="vexpand">false</property>
+                    <property name="hexpand">true</property>
+                    <property name="margin-start">6</property>
+                    <property name="margin-end">12</property>
+                    <property name="margin-top">4</property>
+                    <property name="margin-bottom">12</property>
+                    <property name="max-content-height">100</property>
+                    <property name="propagate-natural-height">true</property>
+                    <property name="child">
+                      <object class="GtkTextView" id="textview_error">
+                        <property name="visible">false</property>
+                        <property name="editable">false</property>
+                        <property name="monospace">true</property>
+                        <property name="wrap-mode">word-char</property>
+                        <property name="left-margin">6</property>
+                        <property name="right-margin">6</property>
+                        <property name="top-margin">4</property>
+                        <property name="bottom-margin">4</property>
+                        <style>
+                          <class name="card"/>
+                          <class name="error"/>
                         </style>
                       </object>
                     </property>

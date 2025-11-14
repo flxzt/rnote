@@ -25,6 +25,8 @@ mod imp {
         #[template_child]
         pub(crate) emojichooser: TemplateChild<EmojiChooser>,
         #[template_child]
+        pub(crate) typst_editor_button: TemplateChild<Button>,
+        #[template_child]
         pub(crate) text_reset_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) text_bold_button: TemplateChild<Button>,
@@ -185,6 +187,24 @@ impl RnTypewriterPage {
                 };
                 let widget_flags = canvas.engine_mut().insert_text(emoji_str.to_string(), None);
                 appwindow.handle_widget_flags(widget_flags, &canvas);
+            }
+        ));
+
+        // Typst editor button
+        imp.typst_editor_button.connect_clicked(clone!(
+            #[weak]
+            appwindow,
+            move |_| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                glib::spawn_future_local(clone!(
+                    #[weak] appwindow,
+                    #[weak] canvas,
+                    async move {
+                        crate::dialogs::typsteditor::dialog_typst_editor(&appwindow, &canvas).await;
+                    }
+                ));
             }
         ));
 

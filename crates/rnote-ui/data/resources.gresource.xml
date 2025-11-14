@@ -4,6 +4,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/dialogs/dialogs.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/dialogs/export.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/dialogs/import.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/dialogs/typsteditor.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/groupediconpicker/groupediconpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/groupediconpicker/groupediconpickergroup.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/brushpage.ui</file>

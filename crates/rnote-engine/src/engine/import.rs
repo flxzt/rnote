@@ -362,6 +362,43 @@ impl Engine {
         widget_flags
     }
 
+    /// Insert an SVG image as a VectorImage stroke.
+    pub fn insert_svg_image(
+        &mut self,
+        svg_data: String,
+        pos: na::Vector2<f64>,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        // Deselect all strokes
+        let all_strokes = self.store.stroke_keys_as_rendered();
+        self.store.set_selected_keys(&all_strokes, false);
+
+        // Create VectorImage from SVG
+        match VectorImage::from_svg_str(&svg_data, pos, ImageSizeOption::RespectOriginalSize) {
+            Ok(vectorimage) => {
+                let stroke = Stroke::VectorImage(vectorimage);
+                let stroke_key = self.store.insert_stroke(stroke, None);
+
+                self.store.regenerate_rendering_for_stroke(
+                    stroke_key,
+                    self.camera.viewport(),
+                    self.camera.image_scale(),
+                );
+
+                widget_flags |= self.store.record(Instant::now());
+                widget_flags.resize = true;
+                widget_flags.redraw = true;
+                widget_flags.store_modified = true;
+            }
+            Err(e) => {
+                error!("Failed to import SVG image: {e:?}");
+            }
+        }
+
+        widget_flags
+    }
+
     /// Insert the stroke content.
     ///
     /// The data usually comes from the clipboard, drag-and-drop, ..

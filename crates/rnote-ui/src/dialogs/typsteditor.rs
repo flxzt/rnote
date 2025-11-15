@@ -7,7 +7,7 @@ use gtk4::{Builder, Button, Picture, TextView, gio, glib, glib::clone};
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::time::Duration;
-use tracing::{error, warn};
+use tracing::{error, info};
 
 pub(crate) async fn dialog_typst_editor(
     appwindow: &RnAppWindow,
@@ -105,7 +105,7 @@ pub(crate) async fn dialog_typst_editor(
                     }
                 }
                 Err(e) => {
-                    warn!("Typst compilation failed: {e:?}");
+                    info!("Typst compilation failed: {e:?}");
                     // Show error in textview at bottom
                     error_buffer.set_text(&format!("Compilation error:\n{e}"));
                     textview_error.set_visible(true);

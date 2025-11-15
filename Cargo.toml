@@ -83,6 +83,7 @@ thiserror = "2.0.12"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 typst = "0.12.0"
+typst-kit = { version = "0.12.0", features = ["embed-fonts"] }
 typst-svg = "0.12.0"
 unicode-segmentation = "1.12"
 url = "2.5"

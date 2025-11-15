@@ -15,230 +15,51 @@ pub mod typst {
     use typst::text::{Font, FontBook};
     use typst::utils::LazyHash;
 
-    /// Global font storage
-    static FONTS: OnceLock<Vec<Font>> = OnceLock::new();
+    /// Cached font data, initialized once on first use
+    static FONT_DATA: OnceLock<(Vec<Font>, FontBook)> = OnceLock::new();
 
-    /// Initialize fonts from the system
-    fn load_fonts() -> Vec<Font> {
-        let mut db = fontdb::Database::new();
-        db.load_system_fonts();
+    /// Initialize and return cached font data
+    fn get_font_data() -> &'static (Vec<Font>, FontBook) {
+        FONT_DATA.get_or_init(|| {
+            // Use embedded fonts with system fonts as fallback
+            // Embedded fonts have higher priority by default
+            let font_data = typst_kit::fonts::FontSearcher::new()
+                .include_system_fonts(true)
+                .search();
 
-        let face_count = db.faces().count();
-        tracing::info!("Loading fonts for Typst, found {} faces", face_count);
+            let fonts: Vec<Font> = font_data
+                .fonts
+                .iter()
+                .filter_map(|slot| slot.get())
+                .collect();
+            let book = font_data.book;
 
-        let mut fonts = Vec::new();
-        let mut loaded_families = std::collections::HashSet::new();
-
-        for face in db.faces() {
-            // Log font family for debugging
-            let family_name = face
-                .families
-                .first()
-                .map(|(name, _)| name.as_str())
-                .unwrap_or("Unknown");
-            loaded_families.insert(family_name.to_string());
-
-            if let Some((font_data, index)) = db.face_source(face.id) {
-                match font_data {
-                    fontdb::Source::Binary(data) => {
-                        let bytes_vec: Vec<u8> = data.as_ref().as_ref().to_vec();
-                        let bytes = Bytes::from(bytes_vec);
-                        match Font::new(bytes, index) {
-                            Some(font) => {
-                                fonts.push(font);
-                            }
-                            None => {
-                                tracing::warn!(
-                                    "Failed to load font {} (index {})",
-                                    family_name,
-                                    index
-                                );
-                            }
-                        }
-                    }
-                    fontdb::Source::File(ref path) => match std::fs::read(path) {
-                        Ok(data) => match Font::new(Bytes::from(data), index) {
-                            Some(font) => {
-                                fonts.push(font);
-                            }
-                            None => {
-                                tracing::warn!(
-                                    "Failed to load font {} from {:?} (index {})",
-                                    family_name,
-                                    path,
-                                    index
-                                );
-                            }
-                        },
-                        Err(e) => {
-                            tracing::warn!("Failed to read font file {:?}: {}", path, e);
-                        }
-                    },
-                    _ => {}
-                }
-            }
-        }
-
-        tracing::info!(
-            "Loaded {} fonts for Typst from {} families",
-            fonts.len(),
-            loaded_families.len()
-        );
-        tracing::debug!("Font families available: {:?}", loaded_families);
-
-        if fonts.is_empty() {
-            tracing::error!(
-                "No fonts were loaded! Typst will not be able to render text. Check if system fonts are installed."
-            );
-        }
-
-        // Check for common math fonts
-        let math_fonts = [
-            "Latin Modern Math",
-            "STIX Two Math",
-            "STIX Math",
-            "Cambria Math",
-            "New Computer Modern Math",
-            "Libertinus Math",
-            "DejaVu Math",
-            "Asana Math",
-        ];
-
-        let has_math_font = math_fonts
-            .iter()
-            .any(|mf| loaded_families.iter().any(|f| f.contains(mf)));
-
-        if !has_math_font && !fonts.is_empty() {
-            tracing::warn!(
-                "No math fonts detected. Math rendering may fail. Please install one of: {}",
-                math_fonts.join(", ")
-            );
-        }
-
-        fonts
-    }
-
-    /// Get or initialize fonts
-    fn fonts() -> &'static Vec<Font> {
-        FONTS.get_or_init(load_fonts)
+            (fonts, book)
+        })
     }
 
     /// Compile Typst source code to SVG
     pub fn compile_to_svg(source: &str) -> anyhow::Result<String> {
-        tracing::info!("Starting Typst compilation");
-
-        // Ensure fonts are loaded
-        let font_list = fonts();
-        tracing::info!("Font list has {} fonts", font_list.len());
-
-        if font_list.is_empty() {
-            return Err(anyhow::anyhow!(
-                "No fonts available for Typst. Please install system fonts."
-            ));
-        }
-
-        // Detect available math fonts and configure Typst to use them
-        let font_families: std::collections::HashSet<String> = font_list
-            .iter()
-            .filter_map(|f| {
-                f.info()
-                    .family
-                    .as_str()
-                    .split(',')
-                    .next()
-                    .map(|s| s.trim().to_string())
-            })
-            .collect();
-
-        // Choose the best available math font
-        let math_font = if font_families.contains("STIX Two Math") {
-            "STIX Two Math"
-        } else if font_families.contains("Noto Sans Math") {
-            "Noto Sans Math"
-        } else if font_families.contains("Latin Modern Math") {
-            "Latin Modern Math"
-        } else if font_families.contains("STIX Math") {
-            "STIX Math"
-        } else if font_families.contains("Cambria Math") {
-            "Cambria Math"
-        } else if font_families.contains("Libertinus Math") {
-            "Libertinus Math"
-        } else {
-            tracing::warn!("No math font detected, compilation may fail");
-            "STIX Two Math" // fallback, will fail if not present
-        };
-
-        // Choose the best available text font
-        let text_font = if font_families.contains("STIX Two Text") {
-            "STIX Two Text"
-        } else if font_families.contains("Noto Sans") {
-            "Noto Sans"
-        } else if font_families.contains("Liberation Sans") {
-            "Liberation Sans"
-        } else if font_families.contains("DejaVu Sans") {
-            "DejaVu Sans"
-        } else {
-            "sans-serif"
-        };
-
-        // Choose the best available monospace font
-        let monospace_font = if font_families.contains("JetBrains Mono") {
-            "JetBrains Mono"
-        } else if font_families.contains("Noto Sans Mono") {
-            "Noto Sans Mono"
-        } else if font_families.contains("DejaVu Sans Mono") {
-            "DejaVu Sans Mono"
-        } else if font_families.contains("Liberation Mono") {
-            "Liberation Mono"
-        } else if font_families.contains("Courier New") {
-            "Courier New"
-        } else if font_families.contains("Consolas") {
-            "Consolas"
-        } else if font_families.contains("Monaco") {
-            "Monaco"
-        } else {
-            "monospace"
-        };
-
-        tracing::info!(
-            "Using math font: {}, text font: {}, monospace font: {}",
-            math_font,
-            text_font,
-            monospace_font
-        );
-
-        // Prepend font configuration to the source
-        let configured_source = format!(
-            "#set text(font: \"{}\")\n#show math.equation: set text(font: \"{}\")\n#show raw: set text(font: \"{}\")\n\n{}",
-            text_font, math_font, monospace_font, source
-        );
-
         // Create a Typst world (compilation environment)
-        let world = TypstWorld::new(&configured_source);
+        let world = TypstWorld::new(source);
 
         // Compile the document
         let result = typst::compile(&world);
         let document = result.output.map_err(|errors| {
-            let error_messages: Vec<String> = errors
-                .iter()
-                .map(|e| {
-                    let msg = format!("{}", e.message);
-                    // Provide more helpful error for missing math fonts
-                    if msg.contains("does not support math") {
-                        format!("{}\n\nHint: Install a math font like 'Latin Modern Math' or 'STIX Two Math'. On Debian/Ubuntu: sudo apt install fonts-latin-modern fonts-stix", msg)
-                    } else {
-                        msg
-                    }
-                })
-                .collect();
-            anyhow::anyhow!("Typst compilation failed: {}", error_messages.join("; "))
+            let error_messages: Vec<String> =
+                errors.iter().map(|e| format!("{}", e.message)).collect();
+            anyhow::Error::msg(format!(
+                "Typst compilation failed: {}",
+                error_messages.join("; ")
+            ))
         })?;
 
         // Render the first page to SVG
         if document.pages.is_empty() {
-            return Err(anyhow::anyhow!("No pages in compiled document"));
+            anyhow::bail!("No pages in compiled document");
         }
 
+        // TODO: allow for multiple pages
         let svg = typst_svg::svg(&document.pages[0]);
         Ok(svg)
     }
@@ -248,19 +69,18 @@ pub mod typst {
         source: Source,
         library: LazyHash<Library>,
         book: LazyHash<FontBook>,
+        fonts: Vec<Font>,
     }
 
     impl TypstWorld {
         fn new(source: &str) -> Self {
-            let fonts = fonts();
-            let book = FontBook::from_fonts(fonts);
-
-            tracing::debug!("Created TypstWorld with {} fonts in book", fonts.len());
+            let (fonts, book) = get_font_data();
 
             Self {
                 source: Source::detached(source),
                 library: LazyHash::new(Library::default()),
-                book: LazyHash::new(book),
+                book: LazyHash::new(book.clone()),
+                fonts: fonts.clone(),
             }
         }
     }
@@ -295,7 +115,7 @@ pub mod typst {
         }
 
         fn font(&self, index: usize) -> Option<Font> {
-            fonts().get(index).cloned()
+            self.fonts.get(index).cloned()
         }
 
         fn today(&self, _offset: Option<i64>) -> Option<Datetime> {

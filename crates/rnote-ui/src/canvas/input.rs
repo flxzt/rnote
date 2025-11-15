@@ -1,5 +1,6 @@
 // Imports
 use super::RnCanvas;
+use glib::clone;
 use gtk4::{Native, gdk, glib, graphene, prelude::*};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenState, ShortcutKey};
 use rnote_compose::penpath::Element;
@@ -192,6 +193,33 @@ pub(crate) fn handle_pointer_controller_event(
                     );
                     widget_flags |= wf;
                     propagation = ep.into_glib();
+
+                    // Check if a Typst element was clicked for editing (only on Up to avoid multiple triggers)
+                    if let Some((stroke_key, typst_source)) =
+                        canvas.engine_mut().take_clicked_typst_stroke()
+                    {
+                        // Get the appwindow from the canvas root
+                        if let Some(root) = canvas.root() {
+                            if let Ok(appwindow) = root.downcast::<crate::RnAppWindow>() {
+                                // Open the Typst editor dialog with the existing source
+                                glib::spawn_future_local(clone!(
+                                    #[weak]
+                                    canvas,
+                                    #[weak]
+                                    appwindow,
+                                    async move {
+                                        crate::dialogs::typsteditor::dialog_typst_editor(
+                                            &appwindow,
+                                            &canvas,
+                                            Some(typst_source),
+                                            Some(stroke_key),
+                                        )
+                                        .await;
+                                    }
+                                ));
+                            }
+                        }
+                    }
                 }
                 PenState::Proximity => {
                     canvas.enable_drawing_cursor(false);
@@ -227,6 +255,7 @@ pub(crate) fn handle_pointer_controller_event(
     }
 
     canvas.emit_handle_widget_flags(widget_flags);
+
     (propagation, pen_state)
 }
 

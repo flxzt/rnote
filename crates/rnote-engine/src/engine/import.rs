@@ -363,10 +363,12 @@ impl Engine {
     }
 
     /// Insert an SVG image as a VectorImage stroke.
+    /// If `typst_source` is provided, it will be stored with the image for later editing.
     pub fn insert_svg_image(
         &mut self,
         svg_data: String,
         pos: na::Vector2<f64>,
+        typst_source: Option<String>,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
@@ -376,7 +378,10 @@ impl Engine {
 
         // Create VectorImage from SVG
         match VectorImage::from_svg_str(&svg_data, pos, ImageSizeOption::RespectOriginalSize) {
-            Ok(vectorimage) => {
+            Ok(mut vectorimage) => {
+                // Store the Typst source if provided
+                vectorimage.typst_source = typst_source;
+
                 let stroke = Stroke::VectorImage(vectorimage);
                 let stroke_key = self.store.insert_stroke(stroke, None);
 
@@ -394,6 +399,81 @@ impl Engine {
             Err(e) => {
                 error!("Failed to import SVG image: {e:?}");
             }
+        }
+
+        widget_flags
+    }
+
+    /// Update an existing Typst stroke with new SVG data and source code.
+    pub fn update_typst_stroke(
+        &mut self,
+        stroke_key: StrokeKey,
+        svg_data: String,
+        typst_source: String,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if let Some(Stroke::VectorImage(vectorimage)) = self.store.get_stroke_mut(stroke_key) {
+            // Store the old intrinsic size, cuboid size, and transform
+            let old_cuboid_size = vectorimage.rectangle.cuboid.half_extents * 2.0;
+            let old_transform = vectorimage.rectangle.transform.clone();
+
+            // Create new VectorImage to get the new intrinsic size
+            match VectorImage::from_svg_str(
+                &svg_data,
+                na::Vector2::zeros(),
+                ImageSizeOption::RespectOriginalSize,
+            ) {
+                Ok(mut new_vectorimage) => {
+                    let new_intrinsic_size = new_vectorimage.intrinsic_size;
+
+                    // Calculate width scale factor based on old cuboid width vs new intrinsic width
+                    let width_scale_factor = if new_intrinsic_size[0] > 0.0 {
+                        old_cuboid_size[0] / new_intrinsic_size[0]
+                    } else {
+                        1.0
+                    };
+
+                    // Apply the scale factor to both dimensions to maintain aspect ratio
+                    let new_cuboid_size = na::vector![
+                        new_intrinsic_size[0] * width_scale_factor,
+                        new_intrinsic_size[1] * width_scale_factor
+                    ];
+
+                    // Calculate height difference to adjust position
+                    let height_diff = new_cuboid_size[1] - old_cuboid_size[1];
+
+                    // Set the new cuboid size
+                    new_vectorimage.rectangle.cuboid = p2d::shape::Cuboid::new(new_cuboid_size * 0.5);
+
+                    // Restore the original transform and adjust for height change
+                    new_vectorimage.rectangle.transform = old_transform;
+                    // Adjust y position to make it look like text was written further
+                    new_vectorimage.rectangle.transform.append_translation_mut(na::vector![0.0, height_diff * 0.5]);
+
+                    // Store the Typst source
+                    new_vectorimage.typst_source = Some(typst_source);
+
+                    // Update the stroke
+                    *vectorimage = new_vectorimage;
+
+                    self.store.regenerate_rendering_for_stroke(
+                        stroke_key,
+                        self.camera.viewport(),
+                        self.camera.image_scale(),
+                    );
+
+                    widget_flags |= self.store.record(Instant::now());
+                    widget_flags.resize = true;
+                    widget_flags.redraw = true;
+                    widget_flags.store_modified = true;
+                }
+                Err(e) => {
+                    error!("Failed to update Typst stroke: {e:?}");
+                }
+            }
+        } else {
+            error!("Failed to update Typst stroke: stroke not found or not a VectorImage");
         }
 
         widget_flags

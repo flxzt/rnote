@@ -9,7 +9,12 @@ use std::rc::Rc;
 use std::time::Duration;
 use tracing::{error, warn};
 
-pub(crate) async fn dialog_typst_editor(appwindow: &RnAppWindow, canvas: &RnCanvas) {
+pub(crate) async fn dialog_typst_editor(
+    appwindow: &RnAppWindow,
+    canvas: &RnCanvas,
+    initial_source: Option<String>,
+    editing_stroke_key: Option<rnote_engine::store::StrokeKey>,
+) {
     let builder = Builder::from_resource(
         (String::from(crate::config::APP_IDPATH) + "ui/dialogs/typsteditor.ui").as_str(),
     );
@@ -44,8 +49,12 @@ pub(crate) async fn dialog_typst_editor(appwindow: &RnAppWindow, canvas: &RnCanv
     let text_buffer = textview_source.buffer();
     let error_buffer = textview_error.buffer();
 
-    // Set default Typst content
-    text_buffer.set_text("#set page(width: auto, height: auto, margin: 2pt)\n\n= Hello Typst!\n\nThis is a *bold* text and _italic_ text.\n\n$ sum_(i=1)^n i = (n(n+1))/2 $");
+    // Set Typst content (either provided or default)
+    if let Some(source) = initial_source {
+        text_buffer.set_text(&source);
+    } else {
+        text_buffer.set_text("#set page(width: auto, height: auto, margin: 2pt)\n\n= Hello Typst!\n\nThis is a *bold* text and _italic_ text.\n\n$ sum_(i=1)^n i = (n(n+1))/2 $");
+    }
 
     // Shared state for compiled SVG and debounce timer
     let compiled_svg: Rc<RefCell<Option<String>>> = Rc::new(RefCell::new(None));
@@ -166,16 +175,31 @@ pub(crate) async fn dialog_typst_editor(appwindow: &RnAppWindow, canvas: &RnCanv
         canvas,
         #[weak]
         appwindow,
+        #[weak]
+        text_buffer,
         #[strong]
         compiled_svg,
         move |_| {
             if let Some(svg) = compiled_svg.borrow().as_ref() {
-                // Get the center of the current viewport as insertion position
-                let viewport = canvas.engine_ref().camera.viewport();
-                let pos = na::vector![viewport.center().x, viewport.center().y];
+                // Get the Typst source code
+                let source =
+                    text_buffer.text(&text_buffer.start_iter(), &text_buffer.end_iter(), false);
 
-                // Insert the SVG into the canvas
-                let widget_flags = canvas.engine_mut().insert_svg_image(svg.clone(), pos);
+                let widget_flags = if let Some(stroke_key) = editing_stroke_key {
+                    // Update existing stroke
+                    canvas.engine_mut().update_typst_stroke(
+                        stroke_key,
+                        svg.clone(),
+                        source.to_string(),
+                    )
+                } else {
+                    // Insert new stroke at center of viewport
+                    let viewport = canvas.engine_ref().camera.viewport();
+                    let pos = na::vector![viewport.center().x, viewport.center().y];
+                    canvas
+                        .engine_mut()
+                        .insert_svg_image(svg.clone(), pos, Some(source.to_string()))
+                };
                 appwindow.handle_widget_flags(widget_flags, &canvas);
 
                 dialog.close();

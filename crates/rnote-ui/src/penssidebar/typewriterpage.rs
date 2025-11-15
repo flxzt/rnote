@@ -199,10 +199,15 @@ impl RnTypewriterPage {
                     return;
                 };
                 glib::spawn_future_local(clone!(
-                    #[weak] appwindow,
-                    #[weak] canvas,
+                    #[weak]
+                    appwindow,
+                    #[weak]
+                    canvas,
                     async move {
-                        crate::dialogs::typsteditor::dialog_typst_editor(&appwindow, &canvas).await;
+                        crate::dialogs::typsteditor::dialog_typst_editor(
+                            &appwindow, &canvas, None, None,
+                        )
+                        .await;
                     }
                 ));
             }

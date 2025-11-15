@@ -79,6 +79,7 @@ slotmap = { version = "1.0", features = ["serde"] }
 smol = "2.0"
 svg = "0.18.0"
 thiserror = "2.0.12"
+thread_local = "1.1"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 unicode-segmentation = "1.12"

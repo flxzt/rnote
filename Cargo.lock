@@ -3760,6 +3760,7 @@ dependencies = [
  "slotmap",
  "svg",
  "thiserror 2.0.16",
+ "thread_local",
  "tracing",
  "unicode-segmentation",
  "usvg",

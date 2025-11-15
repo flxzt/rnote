@@ -1,6 +1,6 @@
 // Imports
 use super::{Engine, StrokeContent};
-use crate::fileformats::rnoteformat::RnoteFile;
+use crate::fileformats::rnoteformat;
 use crate::fileformats::{FileFormatSaver, xoppformat};
 use anyhow::Context;
 use futures::channel::oneshot;
@@ -315,7 +315,8 @@ impl Engine {
     /// The used image scale-factor for any strokes that are converted to bitmap images on export.
     pub const STROKE_EXPORT_IMAGE_SCALE: f64 = 1.8;
 
-    /// Save the current document as a .rnote file.
+    /// Save the current document as a `.rnote` file.
+    #[allow(unused_variables)]
     pub fn save_as_rnote_bytes(
         &self,
         file_name: String,
@@ -323,11 +324,11 @@ impl Engine {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
         let engine_snapshot = self.take_snapshot();
         rayon::spawn(move || {
+            #[rustfmt::skip]
             let result = || -> anyhow::Result<Vec<u8>> {
-                //let start = std::time::Instant::now();
-                let rnote_file = RnoteFile::try_from(engine_snapshot)?;
-                rnote_file.save_as_bytes(&file_name)
-                //.inspect(|_| {tracing::info!("Going from `EngineSnapshot` to bytes took {} ms", std::time::Instant::now().duration_since(start).as_millis())})
+                let start = std::time::Instant::now();
+                rnoteformat::save_to_bytes(engine_snapshot)
+                  .inspect(|_| {tracing::info!("Going from `EngineSnapshot` to bytes took {} ms", std::time::Instant::now().duration_since(start).as_millis())})
             };
             if oneshot_sender.send(result()).is_err() {
                 error!(

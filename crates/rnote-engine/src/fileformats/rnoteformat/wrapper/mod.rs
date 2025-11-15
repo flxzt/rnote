@@ -1,10 +1,3 @@
-// Imports
-use crate::fileformats::rnoteformat::v1::RnoteFileV1;
-
-/// A wrapper around `RnoteFileV1` for Rnote version context
-#[derive(Debug)]
-pub struct RnoteFileWrapperMaj0Min14(pub RnoteFileV1);
-
 // Below you will find a template on how to create a new wrapper if something in `EngineSnapshot` changes
 // (but not enough to require a new Rnote file version)
 

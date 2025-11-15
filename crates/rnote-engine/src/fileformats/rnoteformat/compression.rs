@@ -30,7 +30,14 @@ impl CompressionMethod {
         }
     }
 
-    pub fn decompress(&self, uc_size: usize, data: &[u8]) -> anyhow::Result<Vec<u8>> {
+    pub fn compress_mut(&self, data: &mut Vec<u8>) -> anyhow::Result<()> {
+        if let Self::Zstd(comp_int) = self {
+            *data = zstd::bulk::compress(data, comp_int.get())?
+        }
+        Ok(())
+    }
+
+    pub fn decompress(&self, data: &[u8], uc_size: usize) -> anyhow::Result<Vec<u8>> {
         match self {
             Self::None => Ok(data.to_vec()),
             Self::Zstd { .. } => zstd::bulk::decompress(data, uc_size).map_err(anyhow::Error::from),

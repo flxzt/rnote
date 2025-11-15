@@ -53,12 +53,11 @@ impl EngineSnapshot {
         let (snapshot_sender, snapshot_receiver) = oneshot::channel::<anyhow::Result<Self>>();
 
         rayon::spawn(move || {
+            #[rustfmt::skip]
             let result = || -> anyhow::Result<Self> {
-                //let start = std::time::Instant::now();
-                let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
-                    .context("loading RnoteFile from bytes failed.")?;
-                Self::try_from(rnote_file)
-                //    .inspect(|_| {tracing::info!("Going from bytes to `EngineSnapshot` took {} ms", std::time::Instant::now().duration_since(start).as_millis())})
+                let start = std::time::Instant::now();
+                rnoteformat::load_from_bytes(&bytes)
+                .inspect(|_| {tracing::info!("Going from bytes to `EngineSnapshot` took {} ms", std::time::Instant::now().duration_since(start).as_millis())})
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {

@@ -45,7 +45,6 @@ pub(crate) async fn dialog_typst_editor(
 
     let button_cancel: Button = builder.object("button_cancel").unwrap();
     let button_insert: Button = builder.object("button_insert").unwrap();
-    let button_compile: Button = builder.object("button_compile").unwrap();
     let textview_source: TextView = builder.object("textview_source").unwrap();
     let picture_preview: Picture = builder.object("picture_preview").unwrap();
     let textview_error: TextView = builder.object("textview_error").unwrap();
@@ -89,7 +88,7 @@ pub(crate) async fn dialog_typst_editor(
                 text_buffer.text(&text_buffer.start_iter(), &text_buffer.end_iter(), false);
 
             // Compile Typst to SVG
-            match rnote_engine::utils::typst::compile_to_svg(&source) {
+            match rnote_engine::typst::compile_to_svg(&source) {
                 Ok(svg) => {
                     // Store the compiled SVG
                     *compiled_svg.borrow_mut() = Some(svg.clone());
@@ -130,15 +129,6 @@ pub(crate) async fn dialog_typst_editor(
         dialog,
         move |_| {
             dialog.close();
-        }
-    ));
-
-    // Compile button - just trigger the compile function
-    button_compile.connect_clicked(clone!(
-        #[strong]
-        do_compile,
-        move |_| {
-            do_compile();
         }
     ));
 
@@ -216,7 +206,7 @@ pub(crate) async fn dialog_typst_editor(
     ));
 
     // Auto-compile on dialog present
-    button_compile.emit_clicked();
+    do_compile();
 
     dialog.present(Some(appwindow));
 }

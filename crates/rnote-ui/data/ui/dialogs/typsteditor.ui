@@ -33,19 +33,6 @@
                 <property name="orientation">vertical</property>
                 <property name="spacing">0</property>
                 <child>
-                  <object class="GtkLabel">
-                    <property name="label" translatable="yes">Typst Source</property>
-                    <property name="margin-start">12</property>
-                    <property name="margin-end">12</property>
-                    <property name="margin-top">12</property>
-                    <property name="margin-bottom">6</property>
-                    <property name="xalign">0</property>
-                    <style>
-                      <class name="title-4"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
                   <object class="GtkScrolledWindow">
                     <property name="vexpand">true</property>
                     <property name="hexpand">true</property>
@@ -73,35 +60,6 @@
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <property name="spacing">0</property>
-                <child>
-                  <object class="GtkBox">
-                    <property name="orientation">horizontal</property>
-                    <property name="spacing">6</property>
-                    <property name="margin-start">6</property>
-                    <property name="margin-end">12</property>
-                    <property name="margin-top">12</property>
-                    <property name="margin-bottom">6</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="label" translatable="yes">Preview</property>
-                        <property name="xalign">0</property>
-                        <property name="hexpand">true</property>
-                        <style>
-                          <class name="title-4"/>
-                        </style>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="button_compile">
-                        <property name="label" translatable="yes">Compile</property>
-                        <property name="tooltip-text" translatable="yes">Compile Typst source to preview</property>
-                        <style>
-                          <class name="flat"/>
-                        </style>
-                      </object>
-                    </child>
-                  </object>
-                </child>
                 <child>
                   <object class="GtkScrolledWindow">
                     <property name="vexpand">true</property>

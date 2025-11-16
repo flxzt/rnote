@@ -9,6 +9,14 @@ use std::rc::Rc;
 use std::time::Duration;
 use tracing::{error, info};
 
+const DEFAULT_TYPST_TEMPLATE: &str = r#"#set page(width: auto, height: auto, margin: 2pt, fill: none)
+
+= Hello Typst!
+
+This is a *bold* text and _italic_ text.
+
+$ sum_(i=1)^n i = (n(n+1))/2 $"#;
+
 pub(crate) async fn dialog_typst_editor(
     appwindow: &RnAppWindow,
     canvas: &RnCanvas,
@@ -53,7 +61,7 @@ pub(crate) async fn dialog_typst_editor(
     if let Some(source) = initial_source {
         text_buffer.set_text(&source);
     } else {
-        text_buffer.set_text("#set page(width: auto, height: auto, margin: 2pt)\n\n= Hello Typst!\n\nThis is a *bold* text and _italic_ text.\n\n$ sum_(i=1)^n i = (n(n+1))/2 $");
+        text_buffer.set_text(DEFAULT_TYPST_TEMPLATE);
     }
 
     // Shared state for compiled SVG and debounce timer

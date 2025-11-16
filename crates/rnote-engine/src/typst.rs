@@ -8,9 +8,14 @@ use typst::layout::PagedDocument;
 use typst::syntax::{FileId, Source};
 use typst::text::{Font, FontBook};
 use typst::utils::LazyHash;
+use typst_kit::download::{Downloader, ProgressSink};
+use typst_kit::package::PackageStorage;
 
 /// Cached font data, initialized once on first use
 static FONT_DATA: OnceLock<(Vec<Font>, FontBook)> = OnceLock::new();
+
+/// Cached package storage, initialized once on first use
+static PACKAGE_STORAGE: OnceLock<PackageStorage> = OnceLock::new();
 
 /// Initialize and return cached font data
 fn get_font_data() -> &'static (Vec<Font>, FontBook) {
@@ -29,6 +34,14 @@ fn get_font_data() -> &'static (Vec<Font>, FontBook) {
         let book = font_data.book;
 
         (fonts, book)
+    })
+}
+
+/// Initialize and return cached package storage
+fn get_package_storage() -> &'static PackageStorage {
+    PACKAGE_STORAGE.get_or_init(|| {
+        let downloader = Downloader::new(concat!("rnote/", env!("CARGO_PKG_VERSION")));
+        PackageStorage::new(None, None, downloader)
     })
 }
 
@@ -52,7 +65,7 @@ pub fn compile_to_svg(source: &str) -> anyhow::Result<String> {
     Ok(svg)
 }
 
-/// A minimal Typst world implementation for compilation
+/// A Typst world implementation for compilation with package support
 struct TypstWorld {
     source: Source,
     library: LazyHash<Library>,
@@ -90,16 +103,29 @@ impl World for TypstWorld {
         if id == self.main() {
             Ok(self.source.clone())
         } else {
-            Err(typst::diag::FileError::NotFound(
-                id.vpath().as_rootless_path().to_path_buf(),
-            ))
+            // Try to load from package
+            let data = self.file(id)?;
+            let text = String::from_utf8(data.to_vec())
+                .map_err(|_| typst::diag::FileError::InvalidUtf8)?;
+            Ok(Source::new(id, text))
         }
     }
 
     fn file(&self, id: FileId) -> typst::diag::FileResult<Bytes> {
-        Err(typst::diag::FileError::NotFound(
-            id.vpath().as_rootless_path().to_path_buf(),
-        ))
+        // Check if this is a package file
+        if let Some(spec) = id.package() {
+            let storage = get_package_storage();
+            let package_dir = storage.prepare_package(spec, &mut ProgressSink)?;
+            let file_path = package_dir.join(id.vpath().as_rootless_path());
+
+            std::fs::read(&file_path)
+                .map(|data| Bytes::new(data))
+                .map_err(|err| typst::diag::FileError::from_io(err, file_path.as_path()))
+        } else {
+            Err(typst::diag::FileError::NotFound(
+                id.vpath().as_rootless_path().to_path_buf(),
+            ))
+        }
     }
 
     fn font(&self, index: usize) -> Option<Font> {

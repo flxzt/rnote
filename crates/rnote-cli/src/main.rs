@@ -12,10 +12,7 @@ use std::{
 use itertools::Itertools;
 use rnote_engine::{
     engine::EngineSnapshot,
-    fileformats::{
-        FileFormatLoader, FileFormatSaver,
-        rnoteformat::{LegacyRnoteFile, RnoteFile},
-    },
+    fileformats::{FileFormatLoader, rnoteformat},
 };
 
 // Modules
@@ -71,8 +68,8 @@ fn main() -> anyhow::Result<()> {
                 .open(old_fp)?
                 .read_to_end(&mut bytes)?;
 
-            let rnote_file = RnoteFile::load_from_bytes(&bytes)?;
-            let new_bytes = rnote_file.save_as_bytes("")?;
+            let es = rnoteformat::load_from_bytes(&bytes)?;
+            let new_bytes = rnoteformat::save_to_bytes(es)?;
 
             std::fs::OpenOptions::new()
                 .write(true)
@@ -101,7 +98,7 @@ fn main() -> anyhow::Result<()> {
         files_orig_size.push(bytes.len() as f64 / 1E6);
 
         let engine_snapshot: EngineSnapshot = ijson::from_value(
-            &LegacyRnoteFile::load_from_bytes(&bytes)
+            &rnoteformat::LegacyRnoteFile::load_from_bytes(&bytes)
                 .unwrap()
                 .engine_snapshot,
         )?;
@@ -109,7 +106,7 @@ fn main() -> anyhow::Result<()> {
             .map(|_| {
                 let start = Instant::now();
                 ijson::from_value::<EngineSnapshot>(
-                    &LegacyRnoteFile::load_from_bytes(&bytes)
+                    &rnoteformat::LegacyRnoteFile::load_from_bytes(&bytes)
                         .unwrap()
                         .engine_snapshot,
                 )
@@ -128,7 +125,7 @@ fn main() -> anyhow::Result<()> {
             .map(|_| {
                 let start = Instant::now();
                 compress_to_gzip(
-                    &serde_json::to_vec(&LegacyRnoteFile {
+                    &serde_json::to_vec(&rnoteformat::LegacyRnoteFile {
                         engine_snapshot: ijson::to_value(&engine_snapshot).unwrap(),
                     })
                     .unwrap(),
@@ -157,13 +154,12 @@ fn main() -> anyhow::Result<()> {
             .open(fp)?
             .read_to_end(&mut bytes)?;
 
-        let engine_snapshot =
-            EngineSnapshot::try_from(RnoteFile::load_from_bytes(&bytes).unwrap()).unwrap();
+        let engine_snapshot = rnoteformat::load_from_bytes(&bytes)?;
 
         let time = (0..3)
             .map(|_| {
                 let start = Instant::now();
-                EngineSnapshot::try_from(RnoteFile::load_from_bytes(&bytes).unwrap()).unwrap();
+                rnoteformat::load_from_bytes(&bytes).unwrap();
                 Instant::now().duration_since(start)
             })
             .sum::<Duration>()
@@ -178,7 +174,7 @@ fn main() -> anyhow::Result<()> {
             .map(|_| {
                 let es = engine_snapshot.clone();
                 let start = Instant::now();
-                RnoteFile::try_from(es).unwrap().save_as_bytes("").unwrap();
+                rnoteformat::save_to_bytes(es).unwrap();
                 Instant::now().duration_since(start)
             })
             .sum::<Duration>()

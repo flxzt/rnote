@@ -1,10 +1,6 @@
 use indicatif::ProgressIterator;
-use rnote_engine::{
-    fileformats::{
-        FileFormatLoader, FileFormatSaver,
-        rnoteformat::{CompressionMethod, DEFAULT_ZSTD_COMPRESSION_INTEGER, RnoteFile},
-    },
-    utils::atomic_save_to_file,
+use rnote_engine::fileformats::rnoteformat::{
+    self, CompressionMethod, DEFAULT_ZSTD_COMPRESSION_INTEGER,
 };
 use smol::{fs::OpenOptions, io::AsyncReadExt};
 use std::path::PathBuf;
@@ -53,13 +49,13 @@ pub(crate) async fn run_set_compression(
             Ok::<Vec<u8>, anyhow::Error>(bytes)
         };
 
-        let bytes = file_read_operation.await?;
-        let mut rnote_file = RnoteFile::load_from_bytes(&bytes)?.0;
-        rnote_file.compression_method = compression_method;
-
-        let bytes = RnoteFile::from(rnote_file).save_as_bytes("")?;
-
-        atomic_save_to_file(filepath, &bytes).await?
+        let mut bytes = file_read_operation.await?;
+        let engine_snapshot = rnoteformat::load_from_bytes(&bytes)?;
+        bytes = rnoteformat::RnoteFileInterface::engine_snapshot_to_bytes(
+            engine_snapshot,
+            compression_method,
+        )?;
+        rnote_engine::utils::atomic_save_to_file(filepath, &bytes).await?
     }
 
     Ok(())

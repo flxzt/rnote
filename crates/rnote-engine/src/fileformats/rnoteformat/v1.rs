@@ -52,7 +52,7 @@ type EngineChronos = Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>;
 pub struct RnoteFileInterfaceV1;
 
 impl RnoteFileInterfaceV1 {
-    const FILE_VERSION: u16 = 1;
+    pub const FILE_VERSION: u16 = 1;
 
     // The generic argument `ES` dictates to what type the gutted serialized `EngineSnapshot` is deserialized into.
     //   → `ES` = `EngineSnapshot` when going straight from bytes to `EngineSnapshot`
@@ -292,7 +292,7 @@ impl TryFrom<LegacyRnoteFile> for CompatibilityBridgeV1 {
 
         // The number of chunks to split `strokechrono_vec` into
         let n = rayon::current_num_threads();
-        tracing::debug!("Splitting `strokechrono_vec` into {n} parts");
+        //tracing::debug!("Splitting `strokechrono_vec` into {n} parts");
 
         let len = strokechrono_vec.len();
         let base = len / n;

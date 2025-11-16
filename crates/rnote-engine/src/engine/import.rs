@@ -444,12 +444,16 @@ impl Engine {
                     let height_diff = new_cuboid_size[1] - old_cuboid_size[1];
 
                     // Set the new cuboid size
-                    new_vectorimage.rectangle.cuboid = p2d::shape::Cuboid::new(new_cuboid_size * 0.5);
+                    new_vectorimage.rectangle.cuboid =
+                        p2d::shape::Cuboid::new(new_cuboid_size * 0.5);
 
                     // Restore the original transform and adjust for height change
                     new_vectorimage.rectangle.transform = old_transform;
                     // Adjust y position to make it look like text was written further
-                    new_vectorimage.rectangle.transform.append_translation_mut(na::vector![0.0, height_diff * 0.5]);
+                    new_vectorimage
+                        .rectangle
+                        .transform
+                        .append_translation_mut(na::vector![0.0, height_diff * 0.5]);
 
                     // Store the Typst source
                     new_vectorimage.typst_source = Some(typst_source);

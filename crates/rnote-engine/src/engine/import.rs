@@ -416,7 +416,7 @@ impl Engine {
         if let Some(Stroke::VectorImage(vectorimage)) = self.store.get_stroke_mut(stroke_key) {
             // Store the old intrinsic size, cuboid size, and transform
             let old_cuboid_size = vectorimage.rectangle.cuboid.half_extents * 2.0;
-            let old_transform = vectorimage.rectangle.transform.clone();
+            let old_transform = vectorimage.rectangle.transform;
 
             // Create new VectorImage to get the new intrinsic size
             match VectorImage::from_svg_str(

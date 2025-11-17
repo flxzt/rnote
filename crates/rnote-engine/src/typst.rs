@@ -119,7 +119,7 @@ impl World for TypstWorld {
             let file_path = package_dir.join(id.vpath().as_rootless_path());
 
             std::fs::read(&file_path)
-                .map(|data| Bytes::new(data))
+                .map(Bytes::new)
                 .map_err(|err| typst::diag::FileError::from_io(err, file_path.as_path()))
         } else {
             Err(typst::diag::FileError::NotFound(

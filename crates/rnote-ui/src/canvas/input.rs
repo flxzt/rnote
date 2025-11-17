@@ -199,25 +199,25 @@ pub(crate) fn handle_pointer_controller_event(
                         canvas.engine_mut().take_clicked_typst_stroke()
                     {
                         // Get the appwindow from the canvas root
-                        if let Some(root) = canvas.root() {
-                            if let Ok(appwindow) = root.downcast::<crate::RnAppWindow>() {
-                                // Open the Typst editor dialog with the existing source
-                                glib::spawn_future_local(clone!(
-                                    #[weak]
-                                    canvas,
-                                    #[weak]
-                                    appwindow,
-                                    async move {
-                                        crate::dialogs::typsteditor::dialog_typst_editor(
-                                            &appwindow,
-                                            &canvas,
-                                            Some(typst_source),
-                                            Some(stroke_key),
-                                        )
-                                        .await;
-                                    }
-                                ));
-                            }
+                        if let Some(root) = canvas.root()
+                            && let Ok(appwindow) = root.downcast::<crate::RnAppWindow>()
+                        {
+                            // Open the Typst editor dialog with the existing source
+                            glib::spawn_future_local(clone!(
+                                #[weak]
+                                canvas,
+                                #[weak]
+                                appwindow,
+                                async move {
+                                    crate::dialogs::typsteditor::dialog_typst_editor(
+                                        &appwindow,
+                                        &canvas,
+                                        Some(typst_source),
+                                        Some(stroke_key),
+                                    )
+                                    .await;
+                                }
+                            ));
                         }
                     }
                 }

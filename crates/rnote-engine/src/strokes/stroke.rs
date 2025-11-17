@@ -14,8 +14,8 @@ use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::{Rectangle, Shapeable};
 use rnote_compose::style::smooth::SmoothOptions;
-use rnote_compose::transform::Transform;
 use rnote_compose::transform::Transformable;
+use rnote_compose::transform::{MirrorOrientation, Transform};
 use rnote_compose::{Color, PenPath, Style};
 use serde::{Deserialize, Serialize};
 use tracing::error;
@@ -196,6 +196,26 @@ impl Transformable for Stroke {
             }
             Self::BitmapImage(bitmapimage) => {
                 bitmapimage.scale(scale);
+            }
+        }
+    }
+
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        match self {
+            Self::BrushStroke(brushstroke) => {
+                brushstroke.mirror(centerline, orientation);
+            }
+            Self::ShapeStroke(shape_stroke) => {
+                shape_stroke.mirror(centerline, orientation);
+            }
+            Self::VectorImage(vector_image) => {
+                vector_image.mirror(centerline, orientation);
+            }
+            Self::BitmapImage(bitmap_image) => {
+                bitmap_image.mirror(centerline, orientation);
+            }
+            Self::TextStroke(text_stroke) => {
+                text_stroke.mirror(centerline, orientation);
             }
         }
     }

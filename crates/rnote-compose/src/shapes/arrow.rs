@@ -1,8 +1,8 @@
 // Imports
 use super::Line;
-use crate::ext::Vector2Ext;
 use crate::shapes::Shapeable;
-use crate::transform::Transformable;
+use crate::transform::{MirrorOrientation, Transformable};
+use crate::{ext::Vector2Ext, point_utils};
 use kurbo::{PathEl, Shape};
 use na::Rotation2;
 use p2d::bounding_volume::Aabb;
@@ -55,6 +55,11 @@ impl Transformable for Arrow {
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.start = self.start.component_mul(&scale);
         self.tip = self.tip.component_mul(&scale);
+    }
+
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        point_utils::mirror_point(&mut self.start, centerline, orientation);
+        point_utils::mirror_point(&mut self.tip, centerline, orientation);
     }
 }
 

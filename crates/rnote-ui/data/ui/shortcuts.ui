@@ -255,6 +255,18 @@
                     <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;z</property>
                   </object>
                 </child>
+                <child>
+                  <object class="GtkShortcutsShortcut">
+                    <property name="title" translatable="yes">Mirror Selection Horizontally</property>
+                    <property name="accelerator">&lt;ctrl&gt;m</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkShortcutsShortcut">
+                    <property name="title" translatable="yes">Mirror Selection Vertically</property>
+                    <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;m</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

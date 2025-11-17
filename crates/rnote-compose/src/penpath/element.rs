@@ -1,5 +1,8 @@
 // Imports
-use crate::transform::Transformable;
+use crate::{
+    point_utils,
+    transform::{MirrorOrientation, Transformable},
+};
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -34,6 +37,10 @@ impl Transformable for Element {
 
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.pos = self.pos.component_mul(&scale);
+    }
+
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        point_utils::mirror_point(&mut self.pos, centerline, orientation);
     }
 }
 

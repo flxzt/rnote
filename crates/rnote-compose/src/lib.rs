@@ -19,6 +19,8 @@ pub mod ext;
 pub mod penevent;
 /// module for pen paths
 pub mod penpath;
+/// module for misc operations on points
+pub mod point_utils;
 /// utilities for serializing / deserializing
 pub mod serialize;
 /// module for shapes

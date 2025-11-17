@@ -1,9 +1,9 @@
 // Imports
-use crate::Transform;
 use crate::ext::{AabbExt, Vector2Ext};
 use crate::shapes::Rectangle;
 use crate::shapes::Shapeable;
-use crate::transform::Transformable;
+use crate::transform::{MirrorOrientation, Transformable};
+use crate::{Transform, point_utils};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -37,6 +37,11 @@ impl Transformable for Line {
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.start = self.start.component_mul(&scale);
         self.end = self.end.component_mul(&scale);
+    }
+
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        point_utils::mirror_point(&mut self.start, centerline, orientation);
+        point_utils::mirror_point(&mut self.end, centerline, orientation);
     }
 }
 

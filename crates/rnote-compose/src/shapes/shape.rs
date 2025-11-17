@@ -2,7 +2,7 @@
 use super::{
     Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
 };
-use crate::transform::Transformable;
+use crate::transform::{MirrorOrientation, Transformable};
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -126,6 +126,35 @@ impl Transformable for Shape {
             }
             Self::Polygon(polygon) => {
                 polygon.scale(scale);
+            }
+        }
+    }
+
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        match self {
+            Self::Line(line) => {
+                line.mirror(centerline, orientation);
+            }
+            Self::Arrow(arrow) => {
+                arrow.mirror(centerline, orientation);
+            }
+            Self::Rectangle(rectangle) => {
+                rectangle.mirror(centerline, orientation);
+            }
+            Self::Ellipse(ellipse) => {
+                ellipse.mirror(centerline, orientation);
+            }
+            Self::QuadraticBezier(quadratic_bezier) => {
+                quadratic_bezier.mirror(centerline, orientation);
+            }
+            Self::CubicBezier(cubic_bezier) => {
+                cubic_bezier.mirror(centerline, orientation);
+            }
+            Self::Polyline(polyline) => {
+                polyline.mirror(centerline, orientation);
+            }
+            Self::Polygon(polygon) => {
+                polygon.mirror(centerline, orientation);
             }
         }
     }

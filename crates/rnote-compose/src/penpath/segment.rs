@@ -1,6 +1,9 @@
 // Imports
 use super::Element;
-use crate::transform::Transformable;
+use crate::{
+    point_utils,
+    transform::{MirrorOrientation, Transformable},
+};
 use serde::{Deserialize, Serialize};
 
 /// A single segment, usually of a pen path.
@@ -90,6 +93,23 @@ impl Transformable for Segment {
                 *cp1 = cp1.component_mul(&scale);
                 *cp2 = cp2.component_mul(&scale);
                 end.pos = end.pos.component_mul(&scale);
+            }
+        }
+    }
+
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        match self {
+            Segment::LineTo { end } => {
+                end.mirror(centerline, orientation);
+            }
+            Segment::QuadBezTo { cp, end } => {
+                point_utils::mirror_point(cp, centerline, orientation);
+                end.mirror(centerline, orientation);
+            }
+            Segment::CubBezTo { cp1, cp2, end } => {
+                point_utils::mirror_point(cp1, centerline, orientation);
+                point_utils::mirror_point(cp2, centerline, orientation);
+                end.mirror(centerline, orientation);
             }
         }
     }

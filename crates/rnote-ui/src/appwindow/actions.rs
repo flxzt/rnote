@@ -89,6 +89,12 @@ impl RnAppWindow {
         self.add_action(&action_selection_select_all);
         let action_selection_deselect_all = gio::SimpleAction::new("selection-deselect-all", None);
         self.add_action(&action_selection_deselect_all);
+        let action_selection_mirror_horizontal =
+            gio::SimpleAction::new("selection-mirror-horizontal", None);
+        self.add_action(&action_selection_mirror_horizontal);
+        let action_selection_mirror_vertical =
+            gio::SimpleAction::new("selection-mirror-vertical", None);
+        self.add_action(&action_selection_mirror_vertical);
         let action_clear_doc = gio::SimpleAction::new("clear-doc", None);
         self.add_action(&action_clear_doc);
         let action_new_doc = gio::SimpleAction::new("new-doc", None);
@@ -498,6 +504,32 @@ impl RnAppWindow {
                     return;
                 };
                 let widget_flags = canvas.engine_mut().deselect_all_strokes();
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }
+        ));
+
+        // Mirror selection horizontally
+        action_selection_mirror_horizontal.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                let widget_flags = canvas.engine_mut().mirror_horizontal_selection();
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }
+        ));
+
+        // Mirror selection vertically
+        action_selection_mirror_vertical.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                let widget_flags = canvas.engine_mut().mirror_vertical_selection();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
         ));
@@ -1066,6 +1098,8 @@ impl RnAppWindow {
         app.set_accels_for_action("win.pen-style::eraser", &["<Ctrl>4", "<Ctrl>KP_4"]);
         app.set_accels_for_action("win.pen-style::selector", &["<Ctrl>5", "<Ctrl>KP_5"]);
         app.set_accels_for_action("win.pen-style::tools", &["<Ctrl>6", "<Ctrl>KP_6"]);
+        app.set_accels_for_action("win.selection-mirror-horizontal", &["<Ctrl>m"]);
+        app.set_accels_for_action("win.selection-mirror-vertical", &["<Ctrl><Shift>m"]);
 
         // shortcuts for devel build
         if config::PROFILE.to_lowercase().as_str() == "devel" {

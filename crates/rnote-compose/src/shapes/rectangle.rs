@@ -3,7 +3,7 @@ use super::Line;
 use crate::Transform;
 use crate::ext::{AabbExt, Vector2Ext};
 use crate::shapes::Shapeable;
-use crate::transform::Transformable;
+use crate::transform::{MirrorOrientation, Transformable};
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -80,6 +80,10 @@ impl Transformable for Rectangle {
 
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.transform.append_scale_mut(scale);
+    }
+
+    fn mirror(&mut self, centerline: f64, orientation: MirrorOrientation) {
+        self.transform.mirror(centerline, orientation);
     }
 }
 

@@ -2,13 +2,14 @@
 use super::*;
 
 impl RnoteFileInterfaceV1 {
-    // The generic argument `ES` dictates to what type the gutted serialized `EngineSnapshot` is deserialized into.
-    //   → `ES` = `EngineSnapshot` when going straight from bytes to `EngineSnapshot`
-    //   → `ES` = `ijson::IValue` when going from bytes to `CompatBridgeV1`
-    // The generic argument `SC` dictates to what type the stroke-chrono pair chunks are deserialized into.
-    //   → `SC` = `Vec<(Stroke, ChronoComponent)>` when going straight from bytes to `EngineSnapshot`
-    //   → `SC` = `ijson::IValue` when going from bytes to `CompatBridgeV1`
-    fn bytes_to_base<ES, SC>(
+    /// Handles the decompression and deserialization step.
+    /// The generic argument `ES` dictates to what type the gutted serialized `EngineSnapshot` is deserialized into.
+    ///   → `ES` = `EngineSnapshot` when going straight from bytes to `EngineSnapshot`
+    ///   → `ES` = `ijson::IValue` when going from bytes to `CompatV1`
+    /// The generic argument `SC` dictates to what type the stroke-chrono pair chunks are deserialized into.
+    ///   → `SC` = `Vec<(Stroke, ChronoComponent)>` when going straight from bytes to `EngineSnapshot`
+    ///   → `SC` = `ijson::IValue` when going from bytes to `CompatV1`
+    fn bytes_to_deserialized<ES, SC>(
         mut cursor: BCursor,
         header_size: usize,
     ) -> anyhow::Result<(ES, Vec<SC>)>
@@ -32,7 +33,7 @@ impl RnoteFileInterfaceV1 {
         // Not the most readable block of code but quite functional, we first gather
         // every serialized and compressed chunk with their respective uncompressed size,
         // to then decompress and deserialize them in parallel afterward.
-        let stroke_chrono_pair_chunk_vec = header
+        let stroke_chrono_pair_chunks = header
             .chunk_info_vec
             .into_iter()
             .map(|info| {
@@ -52,14 +53,15 @@ impl RnoteFileInterfaceV1 {
             })
             .collect::<Result<Vec<SC>, anyhow::Error>>()?;
 
-        Ok((engine_snapshot, stroke_chrono_pair_chunk_vec))
+        Ok((engine_snapshot, stroke_chrono_pair_chunks))
     }
 
+    /// Handles the recreation of the full `EngineSnapshot` from its gutted form and the chunks of stroke-chrono pairs.
     fn components_to_engine_snapshot(
         mut engine_snapshot: EngineSnapshot,
-        stroke_chrono_pair_chunk_vec: Vec<Vec<(Stroke, ChronoComponent)>>,
+        stroke_chrono_pair_chunks: Vec<Vec<(Stroke, ChronoComponent)>>,
     ) -> EngineSnapshot {
-        let capacity = stroke_chrono_pair_chunk_vec
+        let capacity = stroke_chrono_pair_chunks
             .iter()
             .map(Vec::len)
             .sum::<usize>();
@@ -69,7 +71,7 @@ impl RnoteFileInterfaceV1 {
         let mut chrono_components: SecondaryMap<StrokeKey, Arc<ChronoComponent>> =
             SecondaryMap::with_capacity(capacity);
 
-        stroke_chrono_pair_chunk_vec
+        stroke_chrono_pair_chunks
             .into_iter()
             .flatten()
             .for_each(|(stroke, chrono)| {
@@ -83,37 +85,42 @@ impl RnoteFileInterfaceV1 {
         engine_snapshot
     }
 
+    /// This function attempts to directly load the `EngineSnapshot`, skipping the compatibility
+    /// representation for efficiency, should be used when the Rnote version specified by the file
+    /// matches the current version of the application.
     pub fn bytes_to_engine_snapshot(
         cursor: BCursor,
         header_size: usize,
     ) -> anyhow::Result<EngineSnapshot> {
-        let (engine_snapshot, stroke_chrono_pair_chunk_vec) = Self::bytes_to_base::<
+        let (engine_snapshot, stroke_chrono_pair_chunks) = Self::bytes_to_deserialized::<
             EngineSnapshot,
             Vec<(Stroke, ChronoComponent)>,
         >(cursor, header_size)?;
 
         Ok(Self::components_to_engine_snapshot(
             engine_snapshot,
-            stroke_chrono_pair_chunk_vec,
+            stroke_chrono_pair_chunks,
         ))
     }
 
-    pub fn bytes_to_sc_bridge(
-        cursor: BCursor,
-        header_size: usize,
-    ) -> anyhow::Result<CompatBridgeV1> {
-        Self::bytes_to_base::<ijson::IValue, ijson::IValue>(cursor, header_size).map(
-            |(engine_snapshot_gutted, stroke_chrono_pair_chunks)| CompatBridgeV1 {
+    /// This function loads an intermediate representation of the `EngineSnapshot` for compatibility across versions of Rnote.
+    pub fn bytes_to_compat(cursor: BCursor, header_size: usize) -> anyhow::Result<CompatV1> {
+        Self::bytes_to_deserialized::<ijson::IValue, ijson::IValue>(cursor, header_size).map(
+            |(engine_snapshot_gutted, stroke_chrono_pair_chunks)| CompatV1 {
                 engine_snapshot_gutted,
                 stroke_chrono_pair_chunks,
             },
         )
     }
 
-    pub fn bridge_to_engine_snapshot(bridge: CompatBridgeV1) -> anyhow::Result<EngineSnapshot> {
-        let engine_snapshot: EngineSnapshot = ijson::from_value(&bridge.engine_snapshot_gutted)?;
+    /// Converts the compatibility struct (or its version-wrapped counterpart) into an `EngineSnapshot`,
+    pub fn compat_to_engine_snapshot<C: Into<CompatV1>>(
+        compat: C,
+    ) -> anyhow::Result<EngineSnapshot> {
+        let compat: CompatV1 = compat.into();
+        let engine_snapshot: EngineSnapshot = ijson::from_value(&compat.engine_snapshot_gutted)?;
 
-        let stroke_chrono_pair_chunk_vec = bridge
+        let stroke_chrono_pair_chunks = compat
             .stroke_chrono_pair_chunks
             .par_iter()
             .map(ijson::from_value::<Vec<(Stroke, ChronoComponent)>>)
@@ -121,7 +128,7 @@ impl RnoteFileInterfaceV1 {
 
         Ok(Self::components_to_engine_snapshot(
             engine_snapshot,
-            stroke_chrono_pair_chunk_vec,
+            stroke_chrono_pair_chunks,
         ))
     }
 }
@@ -129,9 +136,10 @@ impl RnoteFileInterfaceV1 {
 type EngineStrokes = Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>;
 type EngineChronos = Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>;
 
-impl TryFrom<LegacyRnoteFile> for CompatBridgeV1 {
+impl TryFrom<LegacyRnoteFile> for CompatV1 {
     type Error = anyhow::Error;
 
+    /// A somewhat lengthy process as we need to free the `stroke_components` and `chrono_components` of their `slotmap` cage.
     fn try_from(mut value: LegacyRnoteFile) -> Result<Self, Self::Error> {
         let engine_snapshot = value
             .engine_snapshot
@@ -177,7 +185,7 @@ impl TryFrom<LegacyRnoteFile> for CompatBridgeV1 {
             .collect();
 
         if stroke_chrono_pair_vec.is_empty() {
-            return Ok(CompatBridgeV1 {
+            return Ok(CompatV1 {
                 engine_snapshot_gutted: value.engine_snapshot,
                 stroke_chrono_pair_chunks: vec![],
             });
@@ -200,7 +208,7 @@ impl TryFrom<LegacyRnoteFile> for CompatBridgeV1 {
             out
         };
 
-        Ok(CompatBridgeV1 {
+        Ok(CompatV1 {
             engine_snapshot_gutted: value.engine_snapshot,
             stroke_chrono_pair_chunks,
         })

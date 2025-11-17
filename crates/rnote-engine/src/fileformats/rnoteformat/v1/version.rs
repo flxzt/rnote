@@ -1,31 +1,31 @@
 // Imports
 use super::*;
 
-pub(crate) struct CompatBridgeV1Ver<const MAJ: u64, const MIN: u64, const PATCH: u64>(
-    CompatBridgeV1,
-);
+/// A wrapper struct around `CompatV1`, makes upgrading versions relatively clear by
+/// just implementing `TryFrom` between different version-tagged structs.
+pub(crate) struct CompatV1For<const MAJ: u64, const MIN: u64, const PATCH: u64>(CompatV1);
 
-impl<const MAJ: u64, const MIN: u64, const PATCH: u64> From<CompatBridgeV1>
-    for CompatBridgeV1Ver<MAJ, MIN, PATCH>
+impl<const MAJ: u64, const MIN: u64, const PATCH: u64> From<CompatV1>
+    for CompatV1For<MAJ, MIN, PATCH>
 {
-    fn from(value: CompatBridgeV1) -> Self {
+    fn from(value: CompatV1) -> Self {
         Self(value)
     }
 }
 
-impl<const MAJ: u64, const MIN: u64, const PATCH: u64> From<CompatBridgeV1Ver<MAJ, MIN, PATCH>>
-    for CompatBridgeV1
+impl<const MAJ: u64, const MIN: u64, const PATCH: u64> From<CompatV1For<MAJ, MIN, PATCH>>
+    for CompatV1
 {
-    fn from(value: CompatBridgeV1Ver<MAJ, MIN, PATCH>) -> Self {
+    fn from(value: CompatV1For<MAJ, MIN, PATCH>) -> Self {
         value.0
     }
 }
 
 // Example on upgrading versions
 /*
-impl TryFrom<CompatBridgeV1Ver<0, 14, 0>> for CompatBridgeV1Ver<0, 15, 0> {
+impl TryFrom<CompatV1For<0, 14, 0>> for CompatV1For<0, 15, 0> {
     type Error = anyhow::Error;
-    fn try_from(value: CompatBridgeV1Ver<0, 14, 0>) -> Result<Self, Self::Error> {
+    fn try_from(value: CompatV1For<0, 14, 0>) -> Result<Self, Self::Error> {
         let mut inner = value.0;
 
         let es_json = inner

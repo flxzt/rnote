@@ -21,7 +21,7 @@ use crate::{
         rnoteformat::{
             bcursor::BCursor,
             prelude::Prelude,
-            v1::{CompatBridgeV1, RnoteFileInterfaceV1},
+            v1::{CompatV1, RnoteFileInterfaceV1},
         },
     },
 };
@@ -29,13 +29,18 @@ use anyhow::Context;
 
 type RnoteFileInterface = RnoteFileInterfaceV1;
 
-pub fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<EngineSnapshot> {
+/// This function attempts to load an `EngineSnapshot` from bytes.
+pub fn load_engine_snapshot_from_bytes(bytes: &[u8]) -> anyhow::Result<EngineSnapshot> {
+    // We wrap the bytes into a cursor to make handling a whole lot easier and more terse.
     let mut cursor = BCursor::new(bytes);
 
+    // A quick check to see if the file starts with the magic number associated with Gzip, to handle legacy Rnote files.
     let prelude = if cursor.try_seek(2)? != [0x1f, 0x8b] {
+        // The first main step is to try deciphering the file's prelude, which specifies the file's version,
+        // the version of Rnote it was created with, and the size of the header we'll have to parse next.
         Prelude::try_from_bytes(&mut cursor).with_context(|| "Failed to load the prelude")?
     } else {
-        // We create a "phony" prelude if the file is found to be entirely compressed with gzip (meaning it's a legacy Rnote file)
+        // Since we have a legacy Rnote file, we have to manually create a specific prelude so it can be handled later.
         Prelude::new(0, semver::Version::new(0, 13, 0), 0)
     };
 
@@ -47,19 +52,18 @@ pub fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<EngineSnapshot> {
 
         // Example on how to upgrade in the future
         /*
-        RnoteFileInterface::bytes_to_sc_bridge(cursor, prelude.header_size)
-            .map(CompatBridgeV1Ver::<0, 14, 0>::from)
-            .and_then(CompatBridgeV1Ver::<0, 15, 0>::try_from)
-            .map(CompatBridgeV1::from)
-            .and_then(RnoteFileInterface::bridge_to_engine_snapshot)
+        RnoteFileInterface::bytes_to_compat(cursor, prelude.header_size)
+            .map(CompatV1For::<0, 14, 0>::from)
+            .and_then(CompatV1For::<0, 15, 0>::try_from)
+            .and_then(RnoteFileInterface::compat_to_engine_snapshot)
         */
     } else {
-        let bridge = CompatBridgeV1::try_from(LegacyRnoteFile::load_from_bytes(bytes)?)?;
-        RnoteFileInterface::bridge_to_engine_snapshot(bridge)
+        let compat = CompatV1::try_from(LegacyRnoteFile::load_from_bytes(bytes)?)?;
+        RnoteFileInterface::compat_to_engine_snapshot(compat)
     }
 }
 
-pub fn save_to_bytes(
+pub fn save_engine_snapshot_to_bytes(
     engine_snapshot: EngineSnapshot,
     compression_method: CompressionMethod,
 ) -> anyhow::Result<Vec<u8>> {

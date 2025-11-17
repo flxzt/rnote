@@ -2,6 +2,7 @@
 use super::*;
 
 impl RnoteFileInterfaceV1 {
+    /// Attempts to convert an `EngineSnapshot` to bytes.
     pub fn engine_snapshot_to_bytes(
         mut engine_snapshot: EngineSnapshot,
         compression_method: CompressionMethod,
@@ -20,6 +21,9 @@ impl RnoteFileInterfaceV1 {
             )
             .inspect(|compressed| core_info.c_size = compressed.len())?;
 
+        // Not the nicest-looking approach, but avoids the drawbacks of other approaches I've tried.
+        // Namely, this should play somewhat nicely with Rayon's load-balancing and leave us with
+        // `nb_threads` chunks of JSON-serialized data.
         let local_buffer: ThreadLocal<RefCell<Vec<u8>>> = ThreadLocal::new();
         engine_strokes
             .iter()
@@ -35,7 +39,7 @@ impl RnoteFileInterfaceV1 {
                         })
                     })
                 },
-                |&mut cell, stroke_chrono_pair: _| {
+                |&mut cell, stroke_chrono_pair| {
                     let mut buf = cell.borrow_mut();
                     if buf.len() > 1 {
                         buf.push(b',');
@@ -49,6 +53,7 @@ impl RnoteFileInterfaceV1 {
             .map(RefCell::into_inner)
             .collect_vec();
 
+        // Compress the chunks and gather info on their size pre- and post-compression at the same time.
         let mut chunk_info_vec = Vec::with_capacity(chunk_vec.len());
         chunk_vec
             .par_iter_mut()

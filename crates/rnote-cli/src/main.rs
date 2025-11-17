@@ -68,9 +68,11 @@ fn main() -> anyhow::Result<()> {
                 .open(old_fp)?
                 .read_to_end(&mut bytes)?;
 
-            let es = rnoteformat::load_from_bytes(&bytes)?;
-            let new_bytes =
-                rnoteformat::save_to_bytes(es, rnoteformat::CompressionMethod::default())?;
+            let es = rnoteformat::load_engine_snapshot_from_bytes(&bytes)?;
+            let new_bytes = rnoteformat::save_engine_snapshot_to_bytes(
+                es,
+                rnoteformat::CompressionMethod::default(),
+            )?;
 
             std::fs::OpenOptions::new()
                 .write(true)
@@ -155,12 +157,12 @@ fn main() -> anyhow::Result<()> {
             .open(fp)?
             .read_to_end(&mut bytes)?;
 
-        let engine_snapshot = rnoteformat::load_from_bytes(&bytes)?;
+        let engine_snapshot = rnoteformat::load_engine_snapshot_from_bytes(&bytes)?;
 
         let time = (0..3)
             .map(|_| {
                 let start = Instant::now();
-                rnoteformat::load_from_bytes(&bytes).unwrap();
+                rnoteformat::load_engine_snapshot_from_bytes(&bytes).unwrap();
                 Instant::now().duration_since(start)
             })
             .sum::<Duration>()
@@ -175,7 +177,11 @@ fn main() -> anyhow::Result<()> {
             .map(|_| {
                 let es = engine_snapshot.clone();
                 let start = Instant::now();
-                rnoteformat::save_to_bytes(es, rnoteformat::CompressionMethod::default()).unwrap();
+                rnoteformat::save_engine_snapshot_to_bytes(
+                    es,
+                    rnoteformat::CompressionMethod::default(),
+                )
+                .unwrap();
                 Instant::now().duration_since(start)
             })
             .sum::<Duration>()

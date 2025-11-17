@@ -55,7 +55,7 @@ impl EngineSnapshot {
             #[rustfmt::skip]
             let result = || -> anyhow::Result<Self> {
                 let start = std::time::Instant::now();
-                rnoteformat::load_from_bytes(&bytes)
+                rnoteformat::load_engine_snapshot_from_bytes(&bytes)
                 .inspect(|_| {tracing::info!("Going from bytes to `EngineSnapshot` took {} ms", std::time::Instant::now().duration_since(start).as_millis())})
             };
 

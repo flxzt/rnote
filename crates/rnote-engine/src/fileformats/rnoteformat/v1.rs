@@ -17,10 +17,10 @@ use thread_local::ThreadLocal;
 /// Intermediate representation of the `EngineSnapshot` for save compatibility
 #[derive(Debug, Clone)]
 pub struct CompatibilityBridgeV1 {
-    /// The `EngineSnapshot` without `stroke_components` and `chrono_components` (still there but empty) converted to an `IValue`
-    pub es_gutted_ival: ijson::IValue,
-    /// A vector of chunks, where each chunk is an array of `(Stroke, ChronoComponent)` values, converted to an `IValue`
-    pub stroke_chrono_pair_ival_chunks: Vec<ijson::IValue>,
+    /// The `EngineSnapshot` without `stroke_components` and `chrono_components` (still there but empty) represented as an `IValue`
+    pub engine_snapshot_gutted: ijson::IValue,
+    /// A vector of chunks, where each chunk is an array of `(Stroke, ChronoComponent)` values, represented as an `IValue`
+    pub stroke_chrono_pair_chunks: Vec<ijson::IValue>,
 }
 
 /// Information about a specific chunk, or the core.
@@ -34,8 +34,8 @@ struct ChunkInfo {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "rnote_header")]
-struct RnoteHeaderV1 {
+#[serde(rename = "rnote_file_header")]
+struct RnoteFileHeaderV1 {
     /// method used to compress/decompress the body
     #[serde(rename = "compression_method")]
     pub compression_method: CompressionMethod,
@@ -68,7 +68,7 @@ impl RnoteFileInterfaceV1 {
         ES: Send + DeserializeOwned,
         SC: Send + DeserializeOwned,
     {
-        let header: RnoteHeaderV1 = serde_json::from_slice(cursor.try_capture(header_size)?)?;
+        let header: RnoteFileHeaderV1 = serde_json::from_slice(cursor.try_capture(header_size)?)?;
 
         let engine_snapshot: ES = cursor
             .try_capture(header.core_info.c_size)
@@ -155,9 +155,9 @@ impl RnoteFileInterfaceV1 {
         header_size: usize,
     ) -> anyhow::Result<CompatibilityBridgeV1> {
         Self::bytes_to_base::<ijson::IValue, ijson::IValue>(cursor, header_size).map(
-            |(es_gutted_ival, stroke_chrono_pair_ival_chunks)| CompatibilityBridgeV1 {
-                es_gutted_ival,
-                stroke_chrono_pair_ival_chunks,
+            |(engine_snapshot_gutted, stroke_chrono_pair_chunks)| CompatibilityBridgeV1 {
+                engine_snapshot_gutted,
+                stroke_chrono_pair_chunks,
             },
         )
     }
@@ -165,10 +165,10 @@ impl RnoteFileInterfaceV1 {
     pub fn bridge_to_engine_snapshot(
         bridge: CompatibilityBridgeV1,
     ) -> anyhow::Result<EngineSnapshot> {
-        let engine_snapshot: EngineSnapshot = ijson::from_value(&bridge.es_gutted_ival)?;
+        let engine_snapshot: EngineSnapshot = ijson::from_value(&bridge.engine_snapshot_gutted)?;
 
         let stroke_chrono_pair_chunk_vec = bridge
-            .stroke_chrono_pair_ival_chunks
+            .stroke_chrono_pair_chunks
             .par_iter()
             .map(ijson::from_value::<Vec<(Stroke, ChronoComponent)>>)
             .collect::<Result<Vec<Vec<(Stroke, ChronoComponent)>>, serde_json::Error>>()?;
@@ -238,7 +238,7 @@ impl RnoteFileInterfaceV1 {
             })
             .collect_into_vec(&mut chunk_info_vec);
 
-        let header = RnoteHeaderV1 {
+        let header = RnoteFileHeaderV1 {
             compression_method,
             core_info,
             chunk_info_vec,
@@ -256,6 +256,7 @@ impl RnoteFileInterfaceV1 {
     }
 }
 
+/// Pretty annoying conversion
 impl TryFrom<LegacyRnoteFile> for CompatibilityBridgeV1 {
     type Error = anyhow::Error;
 
@@ -263,62 +264,73 @@ impl TryFrom<LegacyRnoteFile> for CompatibilityBridgeV1 {
         let engine_snapshot = value
             .engine_snapshot
             .as_object_mut()
-            .ok_or_else(|| anyhow::anyhow!("engine snapshot is not a JSON object"))?;
+            .ok_or_else(|| anyhow::anyhow!("`engine_snapshot` is not a JSON object"))?;
 
-        let engine_strokes: EngineStrokes =
-            ijson::from_value(&engine_snapshot.remove("stroke_components").ok_or_else(|| {
-                anyhow::anyhow!("`engine_snapshot` has no value `stroke_components`")
-            })?)?;
+        let mut raw_strokes: ijson::IArray = engine_snapshot
+            .remove("stroke_components")
+            .ok_or_else(|| anyhow::anyhow!("`engine_snapshot` has no value `stroke_components`"))?
+            .into_array()
+            .map_err(|_| anyhow::anyhow!("`stroke_components` is not a JSON array"))?;
 
         engine_snapshot.insert(
             "stroke_components",
             ijson::to_value::<EngineStrokes>(Default::default()).unwrap(),
         );
 
-        let engine_chronos: EngineChronos =
-            ijson::from_value(&engine_snapshot.remove("chrono_components").ok_or_else(|| {
-                anyhow::anyhow!("`engine_snapshot` has no value `chrono_components`")
-            })?)?;
+        let mut raw_chronos: ijson::IArray = engine_snapshot
+            .remove("chrono_components")
+            .ok_or_else(|| anyhow::anyhow!("`engine_snapshot` has no value `chrono_components`"))?
+            .into_array()
+            .map_err(|_| anyhow::anyhow!("`chrono_components` is not a JSON array"))?;
 
         engine_snapshot.insert(
             "chrono_components",
             ijson::to_value::<EngineChronos>(Default::default()).unwrap(),
         );
 
-        let strokechrono_vec = engine_strokes
-            .iter()
-            .map(|(key, stroke)| (stroke, engine_chronos.get(key).unwrap()))
-            .collect_vec();
+        let mut stroke_chrono_pair_vec: Vec<ijson::IValue> = raw_strokes
+            .par_iter_mut()
+            .zip_eq(raw_chronos.par_iter_mut())
+            .filter_map(|(raw_stroke, raw_chrono)| {
+                let stroke = raw_stroke
+                    .remove("value")
+                    .and_then(|value| (!value.is_null()).then_some(value))?;
+                let chrono = raw_chrono
+                    .remove("value")
+                    .and_then(|value| (!value.is_null()).then_some(value))?;
+                Some(ijson::IValue::from(ijson::IArray::from(vec![
+                    stroke, chrono,
+                ])))
+            })
+            .collect();
 
-        // The number of chunks to split `strokechrono_vec` into
-        let n = rayon::current_num_threads();
-        //tracing::debug!("Splitting `strokechrono_vec` into {n} parts");
-
-        let len = strokechrono_vec.len();
-        let base = len / n;
-        let rem = len % n;
-
-        let mut pre_chunks = Vec::with_capacity(n);
-        let mut start: usize = 0;
-
-        for i in 0..n {
-            let size = base + if i < rem { 1 } else { 0 };
-            let end = start + size;
-            pre_chunks.push(&strokechrono_vec[start..end]);
-            start = end;
+        if stroke_chrono_pair_vec.is_empty() {
+            return Ok(CompatibilityBridgeV1 {
+                engine_snapshot_gutted: value.engine_snapshot,
+                stroke_chrono_pair_chunks: vec![],
+            });
         }
 
-        let strokechrono_chunks = pre_chunks
-            .into_par_iter()
-            .map(ijson::to_value)
-            .collect::<Result<Vec<ijson::IValue>, serde_json::Error>>()?;
+        let stroke_chrono_pair_chunks = {
+            // The number of chunks to split `stroke_chrono_vec` into
+            let nb_chunks = rayon::current_num_threads().max(1);
 
-        Ok(Self {
-            es_gutted_ival: value.engine_snapshot,
-            stroke_chrono_pair_ival_chunks: strokechrono_chunks,
+            let mut out: Vec<ijson::IValue> = Vec::with_capacity(nb_chunks);
+
+            let nb_pairs = stroke_chrono_pair_vec.len();
+            let base = nb_pairs / nb_chunks;
+
+            for mult in (1..nb_chunks).rev() {
+                out.push(stroke_chrono_pair_vec.split_off(mult * base).into());
+            }
+            out.push(stroke_chrono_pair_vec.into());
+
+            out
+        };
+
+        Ok(CompatibilityBridgeV1 {
+            engine_snapshot_gutted: value.engine_snapshot,
+            stroke_chrono_pair_chunks,
         })
     }
 }
-
-// --- ✀ ---
-// The code below this line could be commented out after a new file version is implemented

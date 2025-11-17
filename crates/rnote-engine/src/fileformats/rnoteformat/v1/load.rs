@@ -1,65 +1,13 @@
 // Imports
-use super::compression::CompressionMethod;
-use crate::{
-    engine::EngineSnapshot,
-    fileformats::rnoteformat::{bcursor::BCursor, legacy::LegacyRnoteFile, prelude::Prelude},
-    store::{ChronoComponent, StrokeKey},
-    strokes::Stroke,
-};
-use anyhow::Ok;
-use itertools::Itertools;
-use rayon::prelude::*;
-use serde::{Deserialize, Serialize, de::DeserializeOwned};
-use slotmap::{HopSlotMap, SecondaryMap};
-use std::{cell::RefCell, sync::Arc};
-use thread_local::ThreadLocal;
-
-/// Intermediate representation of the `EngineSnapshot` for save compatibility
-#[derive(Debug, Clone)]
-pub struct CompatibilityBridgeV1 {
-    /// The `EngineSnapshot` without `stroke_components` and `chrono_components` (still there but empty) represented as an `IValue`
-    pub engine_snapshot_gutted: ijson::IValue,
-    /// A vector of chunks, where each chunk is an array of `(Stroke, ChronoComponent)` values, represented as an `IValue`
-    pub stroke_chrono_pair_chunks: Vec<ijson::IValue>,
-}
-
-/// Information about a specific chunk, or the core.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "chunk_info")]
-struct ChunkInfo {
-    /// size of the serialized and compressed chunk
-    pub c_size: usize,
-    /// size of the serialized (and uncompressed) chunk
-    pub uc_size: usize,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "rnote_file_header")]
-struct RnoteFileHeaderV1 {
-    /// method used to compress/decompress the body
-    #[serde(rename = "compression_method")]
-    pub compression_method: CompressionMethod,
-    #[serde(rename = "core_info")]
-    pub core_info: ChunkInfo,
-    #[serde(rename = "chunk_info_vec")]
-    pub chunk_info_vec: Vec<ChunkInfo>,
-}
-
-type EngineStrokes = Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>;
-type EngineChronos = Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>;
-
-#[allow(missing_debug_implementations)]
-pub struct RnoteFileInterfaceV1;
+use super::*;
 
 impl RnoteFileInterfaceV1 {
-    pub const FILE_VERSION: u16 = 1;
-
     // The generic argument `ES` dictates to what type the gutted serialized `EngineSnapshot` is deserialized into.
     //   → `ES` = `EngineSnapshot` when going straight from bytes to `EngineSnapshot`
-    //   → `ES` = `ijson::IValue` when going from bytes to `CompatibilityBridgeV1`
+    //   → `ES` = `ijson::IValue` when going from bytes to `CompatBridgeV1`
     // The generic argument `SC` dictates to what type the stroke-chrono pair chunks are deserialized into.
     //   → `SC` = `Vec<(Stroke, ChronoComponent)>` when going straight from bytes to `EngineSnapshot`
-    //   → `SC` = `ijson::IValue` when going from bytes to `CompatibilityBridgeV1`
+    //   → `SC` = `ijson::IValue` when going from bytes to `CompatBridgeV1`
     fn bytes_to_base<ES, SC>(
         mut cursor: BCursor,
         header_size: usize,
@@ -153,18 +101,16 @@ impl RnoteFileInterfaceV1 {
     pub fn bytes_to_sc_bridge(
         cursor: BCursor,
         header_size: usize,
-    ) -> anyhow::Result<CompatibilityBridgeV1> {
+    ) -> anyhow::Result<CompatBridgeV1> {
         Self::bytes_to_base::<ijson::IValue, ijson::IValue>(cursor, header_size).map(
-            |(engine_snapshot_gutted, stroke_chrono_pair_chunks)| CompatibilityBridgeV1 {
+            |(engine_snapshot_gutted, stroke_chrono_pair_chunks)| CompatBridgeV1 {
                 engine_snapshot_gutted,
                 stroke_chrono_pair_chunks,
             },
         )
     }
 
-    pub fn bridge_to_engine_snapshot(
-        bridge: CompatibilityBridgeV1,
-    ) -> anyhow::Result<EngineSnapshot> {
+    pub fn bridge_to_engine_snapshot(bridge: CompatBridgeV1) -> anyhow::Result<EngineSnapshot> {
         let engine_snapshot: EngineSnapshot = ijson::from_value(&bridge.engine_snapshot_gutted)?;
 
         let stroke_chrono_pair_chunk_vec = bridge
@@ -178,86 +124,12 @@ impl RnoteFileInterfaceV1 {
             stroke_chrono_pair_chunk_vec,
         ))
     }
-
-    pub fn engine_snapshot_to_bytes(
-        mut engine_snapshot: EngineSnapshot,
-        compression_method: CompressionMethod,
-    ) -> anyhow::Result<Vec<u8>> {
-        let engine_strokes: EngineStrokes = std::mem::take(&mut engine_snapshot.stroke_components);
-        let engine_chronos: EngineChronos = std::mem::take(&mut engine_snapshot.chrono_components);
-
-        let mut core_info = ChunkInfo {
-            c_size: 0,
-            uc_size: 0,
-        };
-        let core_bytes = compression_method
-            .compress(
-                serde_json::to_vec(&engine_snapshot)
-                    .inspect(|encoded| core_info.uc_size = encoded.len())?,
-            )
-            .inspect(|compressed| core_info.c_size = compressed.len())?;
-
-        let local_buffer: ThreadLocal<RefCell<Vec<u8>>> = ThreadLocal::new();
-        engine_strokes
-            .iter()
-            .map(|(key, stroke)| (stroke, engine_chronos.get(key).unwrap()))
-            .par_bridge()
-            .for_each_init(
-                || {
-                    local_buffer.get_or(|| {
-                        std::cell::RefCell::new({
-                            let mut vec = Vec::with_capacity(4096);
-                            vec.push(b'[');
-                            vec
-                        })
-                    })
-                },
-                |&mut cell, stroke_chrono_pair: _| {
-                    let mut buf = cell.borrow_mut();
-                    if buf.len() > 1 {
-                        buf.push(b',');
-                    }
-                    serde_json::to_writer(&mut *buf, &stroke_chrono_pair).unwrap()
-                },
-            );
-
-        let mut chunk_vec = local_buffer
-            .into_iter()
-            .map(RefCell::into_inner)
-            .collect_vec();
-
-        let mut chunk_info_vec = Vec::with_capacity(chunk_vec.len());
-        chunk_vec
-            .par_iter_mut()
-            .map(|chunk| {
-                chunk.push(b']');
-                let uc_size = chunk.len();
-                compression_method.compress_mut(chunk).unwrap();
-                let c_size = chunk.len();
-                ChunkInfo { c_size, uc_size }
-            })
-            .collect_into_vec(&mut chunk_info_vec);
-
-        let header = RnoteFileHeaderV1 {
-            compression_method,
-            core_info,
-            chunk_info_vec,
-        };
-        let header_bytes = serde_json::to_vec(&header)?;
-
-        let prelude_bytes = Prelude::new(
-            Self::FILE_VERSION,
-            semver::Version::parse(crate::utils::crate_version())?,
-            header_bytes.len(),
-        )
-        .try_to_bytes()?;
-
-        Ok([prelude_bytes, header_bytes, core_bytes, chunk_vec.concat()].concat())
-    }
 }
 
-/// Pretty annoying conversion
-impl TryFrom<LegacyRnoteFile> for CompatibilityBridgeV1 {
+type EngineStrokes = Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>;
+type EngineChronos = Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>;
+
+impl TryFrom<LegacyRnoteFile> for CompatBridgeV1 {
     type Error = anyhow::Error;
 
     fn try_from(mut value: LegacyRnoteFile) -> Result<Self, Self::Error> {
@@ -305,7 +177,7 @@ impl TryFrom<LegacyRnoteFile> for CompatibilityBridgeV1 {
             .collect();
 
         if stroke_chrono_pair_vec.is_empty() {
-            return Ok(CompatibilityBridgeV1 {
+            return Ok(CompatBridgeV1 {
                 engine_snapshot_gutted: value.engine_snapshot,
                 stroke_chrono_pair_chunks: vec![],
             });
@@ -328,7 +200,7 @@ impl TryFrom<LegacyRnoteFile> for CompatibilityBridgeV1 {
             out
         };
 
-        Ok(CompatibilityBridgeV1 {
+        Ok(CompatBridgeV1 {
             engine_snapshot_gutted: value.engine_snapshot,
             stroke_chrono_pair_chunks,
         })

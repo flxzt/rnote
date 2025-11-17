@@ -6,7 +6,6 @@ pub(crate) mod compression;
 pub(crate) mod legacy;
 pub(crate) mod prelude;
 pub(crate) mod v1;
-pub(crate) mod wrapper;
 
 // Re-exports
 pub use compression::{
@@ -22,13 +21,13 @@ use crate::{
         rnoteformat::{
             bcursor::BCursor,
             prelude::Prelude,
-            v1::{CompatibilityBridgeV1, RnoteFileInterfaceV1},
+            v1::{CompatBridgeV1, RnoteFileInterfaceV1},
         },
     },
 };
 use anyhow::Context;
 
-pub type RnoteFileInterface = RnoteFileInterfaceV1;
+type RnoteFileInterface = RnoteFileInterfaceV1;
 
 pub fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<EngineSnapshot> {
     let mut cursor = BCursor::new(bytes);
@@ -44,13 +43,25 @@ pub fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<EngineSnapshot> {
         .unwrap()
         .matches(&prelude.rnote_version)
     {
-        RnoteFileInterfaceV1::bytes_to_engine_snapshot(cursor, prelude.header_size)
+        RnoteFileInterface::bytes_to_engine_snapshot(cursor, prelude.header_size)
+
+        // Example on how to upgrade in the future
+        /*
+        RnoteFileInterface::bytes_to_sc_bridge(cursor, prelude.header_size)
+            .map(CompatBridgeV1Ver::<0, 14, 0>::from)
+            .and_then(CompatBridgeV1Ver::<0, 15, 0>::try_from)
+            .map(CompatBridgeV1::from)
+            .and_then(RnoteFileInterface::bridge_to_engine_snapshot)
+        */
     } else {
-        let bridge = CompatibilityBridgeV1::try_from(LegacyRnoteFile::load_from_bytes(bytes)?)?;
+        let bridge = CompatBridgeV1::try_from(LegacyRnoteFile::load_from_bytes(bytes)?)?;
         RnoteFileInterface::bridge_to_engine_snapshot(bridge)
     }
 }
 
-pub fn save_to_bytes(engine_snapshot: EngineSnapshot) -> anyhow::Result<Vec<u8>> {
-    RnoteFileInterface::engine_snapshot_to_bytes(engine_snapshot, CompressionMethod::default())
+pub fn save_to_bytes(
+    engine_snapshot: EngineSnapshot,
+    compression_method: CompressionMethod,
+) -> anyhow::Result<Vec<u8>> {
+    RnoteFileInterface::engine_snapshot_to_bytes(engine_snapshot, compression_method)
 }

@@ -327,7 +327,7 @@ impl Engine {
             #[rustfmt::skip]
             let result = || -> anyhow::Result<Vec<u8>> {
                 let start = std::time::Instant::now();
-                rnoteformat::save_to_bytes(engine_snapshot)
+                rnoteformat::save_to_bytes(engine_snapshot, rnoteformat::CompressionMethod::default())
                   .inspect(|_| {tracing::info!("Going from `EngineSnapshot` to bytes took {} ms", std::time::Instant::now().duration_since(start).as_millis())})
             };
             if oneshot_sender.send(result()).is_err() {

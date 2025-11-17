@@ -5,7 +5,6 @@ use crate::fileformats::{FileFormatLoader, rnoteformat, xoppformat};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::Stroke;
 use crate::{Camera, Document, Engine};
-use anyhow::Context;
 use futures::channel::oneshot;
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};

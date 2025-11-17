@@ -1,0 +1,80 @@
+// Imports
+use super::*;
+
+impl RnoteFileInterfaceV1 {
+    pub fn engine_snapshot_to_bytes(
+        mut engine_snapshot: EngineSnapshot,
+        compression_method: CompressionMethod,
+    ) -> anyhow::Result<Vec<u8>> {
+        let engine_strokes = std::mem::take(&mut engine_snapshot.stroke_components);
+        let engine_chronos = std::mem::take(&mut engine_snapshot.chrono_components);
+
+        let mut core_info = ChunkInfo {
+            c_size: 0,
+            uc_size: 0,
+        };
+        let core_bytes = compression_method
+            .compress(
+                serde_json::to_vec(&engine_snapshot)
+                    .inspect(|encoded| core_info.uc_size = encoded.len())?,
+            )
+            .inspect(|compressed| core_info.c_size = compressed.len())?;
+
+        let local_buffer: ThreadLocal<RefCell<Vec<u8>>> = ThreadLocal::new();
+        engine_strokes
+            .iter()
+            .map(|(key, stroke)| (stroke, engine_chronos.get(key).unwrap()))
+            .par_bridge()
+            .for_each_init(
+                || {
+                    local_buffer.get_or(|| {
+                        std::cell::RefCell::new({
+                            let mut vec = Vec::with_capacity(4096);
+                            vec.push(b'[');
+                            vec
+                        })
+                    })
+                },
+                |&mut cell, stroke_chrono_pair: _| {
+                    let mut buf = cell.borrow_mut();
+                    if buf.len() > 1 {
+                        buf.push(b',');
+                    }
+                    serde_json::to_writer(&mut *buf, &stroke_chrono_pair).unwrap()
+                },
+            );
+
+        let mut chunk_vec = local_buffer
+            .into_iter()
+            .map(RefCell::into_inner)
+            .collect_vec();
+
+        let mut chunk_info_vec = Vec::with_capacity(chunk_vec.len());
+        chunk_vec
+            .par_iter_mut()
+            .map(|chunk| {
+                chunk.push(b']');
+                let uc_size = chunk.len();
+                compression_method.compress_mut(chunk).unwrap();
+                let c_size = chunk.len();
+                ChunkInfo { c_size, uc_size }
+            })
+            .collect_into_vec(&mut chunk_info_vec);
+
+        let header = RnoteFileHeaderV1 {
+            compression_method,
+            core_info,
+            chunk_info_vec,
+        };
+        let header_bytes = serde_json::to_vec(&header)?;
+
+        let prelude_bytes = Prelude::new(
+            RnoteFileInterfaceV1::FILE_VERSION,
+            semver::Version::parse(crate::utils::crate_version())?,
+            header_bytes.len(),
+        )
+        .try_to_bytes()?;
+
+        Ok([prelude_bytes, header_bytes, core_bytes, chunk_vec.concat()].concat())
+    }
+}

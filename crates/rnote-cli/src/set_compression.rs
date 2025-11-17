@@ -51,10 +51,7 @@ pub(crate) async fn run_set_compression(
 
         let mut bytes = file_read_operation.await?;
         let engine_snapshot = rnoteformat::load_from_bytes(&bytes)?;
-        bytes = rnoteformat::RnoteFileInterface::engine_snapshot_to_bytes(
-            engine_snapshot,
-            compression_method,
-        )?;
+        bytes = rnoteformat::save_to_bytes(engine_snapshot, compression_method)?;
         rnote_engine::utils::atomic_save_to_file(filepath, &bytes).await?
     }
 

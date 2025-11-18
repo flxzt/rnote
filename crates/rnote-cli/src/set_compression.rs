@@ -25,13 +25,14 @@ pub(crate) async fn run_set_compression(
     let spinner = indicatif::ProgressBar::new_spinner().with_style(
         indicatif::ProgressStyle::default_spinner()
             .tick_chars("⊶⊷✔")
-            .template("{spinner:.green} [{elapsed_precise}] Working on file {pos}/{len}")
+            .template("{spinner:.green} [{elapsed_precise}] ({pos}/{len}) Mutating '{msg}'")
             .unwrap(),
     );
     spinner.set_length(rnote_files.len() as u64);
     spinner.enable_steady_tick(std::time::Duration::from_millis(250));
 
-    for filepath in rnote_files.iter().progress_with(spinner) {
+    for filepath in rnote_files.iter().progress_with(spinner.clone()) {
+        spinner.set_message(format!("{}", filepath.display()));
         let file_read_operation = async {
             let mut read_file = OpenOptions::new().read(true).open(filepath).await?;
             let mut bytes: Vec<u8> = {

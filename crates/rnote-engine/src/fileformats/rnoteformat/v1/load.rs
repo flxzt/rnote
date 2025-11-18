@@ -104,6 +104,7 @@ impl RnoteFileInterfaceV1 {
     }
 
     /// This function loads an intermediate representation of the `EngineSnapshot` for compatibility across versions of Rnote.
+    #[allow(unused)]
     pub fn bytes_to_compat(cursor: BCursor, header_size: usize) -> anyhow::Result<CompatV1> {
         Self::bytes_to_deserialized::<ijson::IValue, ijson::IValue>(cursor, header_size).map(
             |(engine_snapshot_gutted, stroke_chrono_pair_chunks)| CompatV1 {

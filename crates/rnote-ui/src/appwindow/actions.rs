@@ -1081,10 +1081,6 @@ impl RnAppWindow {
         app.set_accels_for_action("win.text-bold", &["<Ctrl>b"]);
         app.set_accels_for_action("win.text-italic", &["<Ctrl>i"]);
         app.set_accels_for_action("win.text-underline", &["<Ctrl>u"]);
-        app.set_accels_for_action("win.text-align-start", &["<Ctrl>l"]);
-        app.set_accels_for_action("win.text-align-center", &["<Ctrl>e"]);
-        app.set_accels_for_action("win.text-align-end", &["<Ctrl>r"]);
-        app.set_accels_for_action("win.text-align-fill", &["<Ctrl>j"]);
         app.set_accels_for_action("win.pen-style::brush", &["<Ctrl>1", "<Ctrl>KP_1"]);
         app.set_accels_for_action("win.pen-style::shaper", &["<Ctrl>2", "<Ctrl>KP_2"]);
         app.set_accels_for_action("win.pen-style::typewriter", &["<Ctrl>3", "<Ctrl>KP_3"]);

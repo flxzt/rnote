@@ -58,7 +58,7 @@
     <child>
       <object class="GtkButton" id="typst_editor_button">
         <property name="tooltip-text" translatable="yes">Open Typst Editor</property>
-        <property name="icon-name">text-x-generic-symbolic</property>
+        <property name="icon-name">typst-symbolic</property>
         <style>
           <class name="flat" />
           <class name="sidebar_action_button" />

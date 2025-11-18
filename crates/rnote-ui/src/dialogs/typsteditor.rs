@@ -29,6 +29,9 @@ pub(crate) async fn dialog_typst_editor(
 
     let dialog: adw::Dialog = builder.object("dialog_typst_editor").unwrap();
 
+    // Prevent closing with Escape key by disabling all close attempts
+    dialog.set_can_close(false);
+
     // Set dialog size to ~90% of app window size
     let window_width = appwindow.width();
     let window_height = appwindow.height();
@@ -43,7 +46,7 @@ pub(crate) async fn dialog_typst_editor(
     dialog.set_content_width(dialog_width);
     dialog.set_content_height(dialog_height);
 
-    let button_cancel: Button = builder.object("button_cancel").unwrap();
+    let button_close: Button = builder.object("button_close").unwrap();
     let button_insert: Button = builder.object("button_insert").unwrap();
     let textview_source: TextView = builder.object("textview_source").unwrap();
     let picture_preview: Picture = builder.object("picture_preview").unwrap();
@@ -123,12 +126,12 @@ pub(crate) async fn dialog_typst_editor(
         }
     );
 
-    // Cancel button
-    button_cancel.connect_clicked(clone!(
+    // Close button
+    button_close.connect_clicked(clone!(
         #[weak]
         dialog,
         move |_| {
-            dialog.close();
+            dialog.force_close();
         }
     ));
 
@@ -200,7 +203,7 @@ pub(crate) async fn dialog_typst_editor(
                 };
                 appwindow.handle_widget_flags(widget_flags, &canvas);
 
-                dialog.close();
+                dialog.force_close();
             }
         }
     ));

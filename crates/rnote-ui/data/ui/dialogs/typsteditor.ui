@@ -7,11 +7,6 @@
         <child type="top">
           <object class="AdwHeaderBar">
             <child type="start">
-              <object class="GtkButton" id="button_cancel">
-                <property name="label" translatable="yes">Cancel</property>
-              </object>
-            </child>
-            <child type="end">
               <object class="GtkButton" id="button_insert">
                 <property name="label" translatable="yes">Insert</property>
                 <style>
@@ -19,6 +14,13 @@
                 </style>
               </object>
             </child>
+            <child type="end">
+              <object class="GtkButton" id="button_close">
+                <property name="icon-name">window-close-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Close</property>
+              </object>
+            </child>
+            <property name="show-end-title-buttons">false</property>
           </object>
         </child>
         <property name="content">

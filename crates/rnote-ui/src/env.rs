@@ -75,6 +75,12 @@ pub(crate) fn setup_env() -> anyhow::Result<()> {
                 lib_dir.join("gdk-pixbuf-2.0\\2.10.0\\loaders"),
             );
 
+            // workaround for issue #1536
+            // Disable the dwrite cairo backend that is
+            // (for now) thread unsafe
+            // https://github.com/flxzt/rnote/issues/1536
+            std::env::set_var("PANGOCAIRO_BACKEND", "fontconfig");
+
             //std::env::set_var("RUST_LOG", "rnote=debug,rnote-cli=debug,rnote-engine=debug,rnote-compose=debug");
         }
     } else if cfg!(target_os = "macos") {

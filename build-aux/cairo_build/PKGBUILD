@@ -1,0 +1,111 @@
+# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+# Contributor: Renato Silva <br.renatosilva@gmail.com>
+
+_realname=cairo
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+_commit='b43e7c6f3cf7855e16170a06d3a9c7234c60ca94'
+pkgver=1.18.4
+pkgrel=4
+pkgdesc="Cairo vector graphics library (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clangarm64')
+url="https://cairographics.org/"
+msys2_references=(
+  "cpe: cpe:2.3:a:cairographics:cairo"
+)
+license=('spdx:LGPL-2.1-or-later OR MPL-1.1')
+makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
+             "${MINGW_PACKAGE_PREFIX}-meson"
+             "${MINGW_PACKAGE_PREFIX}-ninja"
+             "${MINGW_PACKAGE_PREFIX}-pkgconf"
+             "${MINGW_PACKAGE_PREFIX}-python"
+             "${MINGW_PACKAGE_PREFIX}-python-fonttools"
+             "${MINGW_PACKAGE_PREFIX}-gettext-tools"
+            )
+depends=("${MINGW_PACKAGE_PREFIX}-cc-libs"
+         "${MINGW_PACKAGE_PREFIX}-freetype"
+         "${MINGW_PACKAGE_PREFIX}-fontconfig"
+         "${MINGW_PACKAGE_PREFIX}-gettext-runtime"
+         "${MINGW_PACKAGE_PREFIX}-glib2"
+         "${MINGW_PACKAGE_PREFIX}-libpng"
+         "${MINGW_PACKAGE_PREFIX}-lzo2"
+         "${MINGW_PACKAGE_PREFIX}-pixman"
+         "${MINGW_PACKAGE_PREFIX}-zlib")
+source=("https://cairographics.org/releases/cairo-${pkgver}.tar.xz"
+        0030-ucrt-clang-fixes.patch)
+sha256sums=('445ed8208a6e4823de1226a74ca319d3600e83f6369f99b14265006599c32ccb'
+            '86c1af2878a20bd3608fc476e4ba1f2451458a5f6f12e457e37b61082c38db82')
+
+prepare() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+
+  patch -p1 -i "${srcdir}"/0030-ucrt-clang-fixes.patch
+}
+
+build() {
+  local -a _static_flags=(
+    -DGIO_STATIC_COMPILATION
+    -DGLIB_STATIC_COMPILATION
+    -DGMODULE_STATIC_COMPILATION
+    -DGOBJECT_STATIC_COMPILATION
+  )
+
+  local -a _meson_options
+  _meson_options=(
+    --prefix=${MINGW_PREFIX}
+    --buildtype=plain
+    --wrap-mode=nofallback
+    -Dauto_features=enabled
+    -Dtests=disabled
+    -Ddwrite=enabled
+    -Dfontconfig=enabled
+    -Dfreetype=enabled
+    -Dpng=enabled
+    -Dtee=enabled
+    -Dzlib=enabled
+    -Dxlib=disabled
+    -Dxcb=disabled
+    -Dspectre=disabled
+    -Dsymbol-lookup=disabled
+  )
+
+  # work around gcc errors
+  if [[ "${CC}" == "gcc" ]]; then
+    CFLAGS+=" -Wno-error=incompatible-pointer-types"
+    CXXFLAGS+=" -Wno-error=incompatible-pointer-types"
+  fi
+
+  # Enables CAIRO_WIN32_STATIC_BUILD, keeps DllMain far away (#17643)
+  CFLAGS+=" ${_static_flags[@]}" \
+  CXXFLAGS+=" ${_static_flags[@]}" \
+  MSYS2_ARG_CONV_EXCL="--prefix=" \
+  ${MINGW_PREFIX}/bin/meson setup \
+    "${_meson_options[@]}" \
+    --default-library=static \
+    "${_realname}-${pkgver}" \
+    "build-${MSYSTEM}-static"
+
+  meson compile -C "build-${MSYSTEM}-static"
+
+  MSYS2_ARG_CONV_EXCL="--prefix=" \
+  ${MINGW_PREFIX}/bin/meson setup \
+    "${_meson_options[@]}" \
+    --default-library=shared \
+    "${_realname}-${pkgver}" \
+    "build-${MSYSTEM}-shared"
+
+  meson compile -C "build-${MSYSTEM}-shared"
+}
+
+package() {
+  meson install -C "build-${MSYSTEM}-static" --destdir "${pkgdir}"
+  meson install -C "build-${MSYSTEM}-shared" --destdir "${pkgdir}"
+
+  install -Dm644 "${srcdir}/${_realname}-${pkgver}/COPYING" \
+    "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/COPYING"
+  install -Dm644 "${srcdir}/${_realname}-${pkgver}/COPYING-LGPL-2.1" \
+    "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/COPYING-LGPL-2.1"
+  install -Dm644 "${srcdir}/${_realname}-${pkgver}/COPYING-MPL-1.1" \
+    "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/COPYING-MPL-1.1"
+}

@@ -9,6 +9,7 @@ use rnote_compose::SplitOrder;
 use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
+use std::time::Instant;
 use tracing::error;
 
 /// Document export format.
@@ -326,9 +327,9 @@ impl Engine {
         rayon::spawn(move || {
             #[rustfmt::skip]
             let result = || -> anyhow::Result<Vec<u8>> {
-                //let start = std::time::Instant::now();
+                let start = Instant::now();
                 rnoteformat::save_engine_snapshot_to_bytes(engine_snapshot, rnoteformat::CompressionMethod::default())
-                //.inspect(|_| {tracing::info!("Going from `EngineSnapshot` to bytes took {} ms", std::time::Instant::now().duration_since(start).as_millis())})
+                    .inspect(|_| {tracing::debug!("Going from `EngineSnapshot` to bytes took {} ms", Instant::now().duration_since(start).as_millis())})
             };
             if oneshot_sender.send(result()).is_err() {
                 error!(

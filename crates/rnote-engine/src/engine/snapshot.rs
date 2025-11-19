@@ -9,6 +9,7 @@ use futures::channel::oneshot;
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 use std::sync::Arc;
+use std::time::Instant;
 use tracing::error;
 
 /// Trait for types which hold configuration needed for engine snapshots
@@ -54,9 +55,9 @@ impl EngineSnapshot {
         rayon::spawn(move || {
             #[rustfmt::skip]
             let result = || -> anyhow::Result<Self> {
-                let start = std::time::Instant::now();
+                let start = Instant::now();
                 rnoteformat::load_engine_snapshot_from_bytes(&bytes)
-                .inspect(|_| {tracing::info!("Going from bytes to `EngineSnapshot` took {} ms", std::time::Instant::now().duration_since(start).as_millis())})
+                    .inspect(|_| {tracing::debug!("Going from bytes to `EngineSnapshot` took {} ms", Instant::now().duration_since(start).as_millis())})
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {

@@ -15,8 +15,7 @@ pub struct Prelude {
 }
 
 impl Prelude {
-    /// The magic number used to identify Rnote files, do not modify.
-    /// Translates to "RNOTE-ΦΛ" in utf-8
+    /// The magic number used to identify Rnote files, do not modify. Translates to "RNOTE-ΦΛ" in utf-8
     pub const MAGIC_NUMBER: [u8; 10] = [0x52, 0x4e, 0x4f, 0x54, 0x45, 0x2d, 0xce, 0xa6, 0xce, 0x9b];
 
     /// Creates a new prelude.

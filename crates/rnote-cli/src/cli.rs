@@ -80,7 +80,7 @@ pub(crate) enum Command {
         output: PathBuf,
     },
     /// Modify the compression method or level of one or more `.rnote` files.{n}
-    /// Please note that the compression method and level will be reset to defaults on the next save within the Rnote application.
+    /// Please note that the compression method (+ level) will be reset to defaults on the next save within the Rnote application.{n}
     SetCompression {
         #[arg(short, visible_short_alias = 'i', long, num_args = 1..)]
         rnote_files: Vec<PathBuf>,

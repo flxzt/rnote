@@ -1,3 +1,5 @@
+use anyhow::Context;
+
 // Imports
 use super::*;
 
@@ -22,13 +24,19 @@ impl RnoteFileInterfaceV1 {
             .inspect(|compressed| core_info.c_size = compressed.len())?;
 
         // Not the nicest-looking approach, but avoids the drawbacks of other approaches I've tried.
-        // Namely, this should play somewhat nicely with Rayon's load-balancing and leave us with
+        // Namely, this should play somewhat nicely with Rayon's load-balancing and leaves us with
         // `nb_threads` chunks of JSON-serialized data.
         let local_buffer: ThreadLocal<RefCell<Vec<u8>>> = ThreadLocal::new();
         engine_strokes
             .iter()
-            .map(|(key, stroke)| (stroke, engine_chronos.get(key).unwrap()))
-            .par_bridge()
+            .map(|(key, stroke)| engine_chronos.get(key).map(|chrono| (stroke, chrono)))
+            .collect::<Option<Vec<(_, _)>>>()
+            .ok_or_else(|| {
+                anyhow::anyhow!(
+                    "At least one `Stroke` without an associated `ChronoComponent` was encountered."
+                )
+            })?
+            .into_par_iter()
             .for_each_init(
                 || {
                     local_buffer.get_or(|| {
@@ -44,7 +52,7 @@ impl RnoteFileInterfaceV1 {
                     if buf.len() > 1 {
                         buf.push(b',');
                     }
-                    serde_json::to_writer(&mut *buf, &stroke_chrono_pair).unwrap()
+                    serde_json::to_writer(&mut *buf, &stroke_chrono_pair).unwrap() // Fine to unwrap here
                 },
             );
 
@@ -54,17 +62,18 @@ impl RnoteFileInterfaceV1 {
             .collect_vec();
 
         // Compress the chunks and gather info on their size pre- and post-compression at the same time.
-        let mut chunk_info_vec = Vec::with_capacity(chunk_vec.len());
-        chunk_vec
+        let chunk_info_vec = chunk_vec
             .par_iter_mut()
             .map(|chunk| {
                 chunk.push(b']');
                 let uc_size = chunk.len();
-                compression_method.compress_mut(chunk).unwrap();
+                compression_method
+                    .compress_mut(chunk)
+                    .with_context(|| "Zstd compression failed.")?;
                 let c_size = chunk.len();
-                ChunkInfo { c_size, uc_size }
+                Ok(ChunkInfo { c_size, uc_size })
             })
-            .collect_into_vec(&mut chunk_info_vec);
+            .collect::<anyhow::Result<Vec<ChunkInfo>>>()?;
 
         let header = RnoteFileHeaderV1 {
             compression_method,

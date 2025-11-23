@@ -31,35 +31,41 @@ type RnoteFileInterface = RnoteFileInterfaceV1;
 
 /// This function attempts to load an `EngineSnapshot` from bytes.
 pub fn load_engine_snapshot_from_bytes(bytes: &[u8]) -> anyhow::Result<EngineSnapshot> {
-    // We wrap the bytes into a cursor to make handling a whole lot easier and more terse.
+    // We wrap the bytes in a cursor to make keeping track of what we have processed much easier.
     let mut cursor = BCursor::new(bytes);
 
-    // A quick check to see if the file starts with the magic number associated with Gzip, to handle legacy Rnote files.
+    // We check that the file isn't of the legacy type, which is indicated by the presence of the magic number of Gzip at the start of the file.
     let prelude = if cursor.try_seek(2)? != [0x1f, 0x8b] {
-        // The first main step is to try deciphering the file's prelude, which specifies the file's version,
-        // the version of Rnote it was created with, and the size of the header we'll have to parse next.
+        // Not a legacy file, so we try loading the prelude.
         Prelude::try_from_bytes(&mut cursor).with_context(|| "Failed to load the prelude")?
     } else {
-        // Since we have a legacy Rnote file, we have to manually create a specific prelude so it can be handled later.
-        Prelude::new(0, semver::Version::new(0, 13, 0), 0)
+        // Legacy file, so we manually create a specific prelude so it can be handled later.
+        Prelude::new(0, semver::Version::new(0, 0, 0), 0)
     };
 
-    if semver::VersionReq::parse(">=0.14.0")
-        .unwrap()
-        .matches(&prelude.rnote_version)
-    {
-        RnoteFileInterface::bytes_to_engine_snapshot(cursor, prelude.header_size)
+    match prelude.file_version {
+        1 => {
+            RnoteFileInterface::bytes_to_engine_snapshot(cursor, prelude.header_size)
 
-        // Example on how to upgrade in the future
-        /*
-        RnoteFileInterface::bytes_to_compat(cursor, prelude.header_size)
-            .map(CompatV1For::<0, 14, 0>::from)
-            .and_then(CompatV1For::<0, 15, 0>::try_from)
-            .and_then(RnoteFileInterface::compat_to_engine_snapshot)
-        */
-    } else {
-        let compat = CompatV1::try_from(LegacyRnoteFile::load_from_bytes(bytes)?)?;
-        RnoteFileInterface::compat_to_engine_snapshot(compat)
+            // Template for a future version change that requires an upgrade.
+            /*
+            if semver::VersionReq::parse(">=0.15.0")
+                .unwrap()
+                .matches(&prelude.rnote_version)
+            {
+                RnoteFileInterface::bytes_to_engine_snapshot(cursor, prelude.header_size)
+            } else {
+                RnoteFileInterface::bytes_to_compat(cursor, prelude.header_size)
+                    .map(CompatV1For::<0, 14, 0>::from)
+                    .and_then(CompatV1For::<0, 15, 0>::try_from)
+                    .and_then(RnoteFileInterface::compat_to_engine_snapshot)
+            }
+            */
+        }
+        0 => RnoteFileInterface::compat_to_engine_snapshot(CompatV1::try_from(
+            LegacyRnoteFile::load_from_bytes(bytes)?,
+        )?),
+        _ => unreachable!(),
     }
 }
 

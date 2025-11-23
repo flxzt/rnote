@@ -9,9 +9,11 @@ impl RnoteFileInterfaceV1 {
         mut engine_snapshot: EngineSnapshot,
         compression_method: CompressionMethod,
     ) -> anyhow::Result<Vec<u8>> {
+        // We first extract the strokes and chrono components from the engine snapshot.
         let engine_strokes = std::mem::take(&mut engine_snapshot.stroke_components);
         let engine_chronos = std::mem::take(&mut engine_snapshot.chrono_components);
 
+        // Then, we serialize and compress the "gutted" `engine_snapshot`.
         let mut core_info = ChunkInfo {
             c_size: 0,
             uc_size: 0,
@@ -22,6 +24,16 @@ impl RnoteFileInterfaceV1 {
                     .inspect(|encoded| core_info.uc_size = encoded.len())?,
             )
             .inspect(|compressed| core_info.c_size = compressed.len())?;
+
+        // We'll then do basically the same thing as above, but in a much more complicated manner
+        // for the previously extracted strokes and chrono components, all for the sake of speed.
+
+        // We try to roughly approximate the capacity each local buffer will require,
+        // maxing out at 16 MiB per local buffer. Using a value of 8192 bytes per stroke
+        // might seem high, but it's actually quite conservative given that we have to account
+        // for things like image strokes which contain huge amounts of information.
+        let capacity_approx = (engine_strokes.len() * 8192 / rayon::current_num_threads().max(1))
+            .clamp(4096, 16_777_216);
 
         // Not the nicest-looking approach, but avoids the drawbacks of other approaches I've tried.
         // Namely, this should play somewhat nicely with Rayon's load-balancing and leaves us with
@@ -41,13 +53,14 @@ impl RnoteFileInterfaceV1 {
                 || {
                     local_buffer.get_or(|| {
                         std::cell::RefCell::new({
-                            let mut vec = Vec::with_capacity(4096);
+                            let mut vec = Vec::with_capacity(capacity_approx);
                             vec.push(b'[');
                             vec
                         })
                     })
                 },
                 |&mut cell, stroke_chrono_pair| {
+                    // It might be worth checking out if using an `UnsafeCell` helps the performance.
                     let mut buf = cell.borrow_mut();
                     if buf.len() > 1 {
                         buf.push(b',');
@@ -74,6 +87,10 @@ impl RnoteFileInterfaceV1 {
                 Ok(ChunkInfo { c_size, uc_size })
             })
             .collect::<anyhow::Result<Vec<ChunkInfo>>>()?;
+
+        // We are almost done, at this point, we just have to create the header,
+        // serialize it, create the prelude, convert it to bytes, and concatenate
+        // everything together before finally returning our bytes.
 
         let header = RnoteFileHeaderV1 {
             compression_method,

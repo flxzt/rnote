@@ -2,11 +2,12 @@
 use crate::fileformats::rnoteformat::bcursor::BCursor;
 use anyhow::{Context, bail};
 
-/// # Prelude
-/// * Magic number: [u8; 10] = [52, 4e, 4f, 54, 45, 2d, ce, a6, ce, 9b] = "RNOTE-ΦΛ"
-/// * File version: u16
-/// * Rnote version: [major (u64), minor (u64), patch (u64), Prerelease size (u16), Prerelease (str), BuildMetadata size (u16), BuildMetadata (str)]
-/// * Header size: u32
+/// The prelude is used to identify Rnote files and provide some context.
+/// It is composed of four elements:
+/// 1. The magic number: `[u8; 10]` = `[52, 4e, 4f, 54, 45, 2d, ce, a6, ce, 9b]` = "RNOTE-ΦΛ" (in UTF-8 encoding)
+/// 2. The file version: `u16` (decides in broad strokes how the bytes will be handled later on)
+/// 3. The Rnote version (that last saved the file): `[major (u64), minor (u64), patch (u64), Prerelease size (u16), Prerelease (str), BuildMetadata size (u16), BuildMetadata (str)]`
+/// 4. The size of the header: `u32`
 #[derive(Debug, Clone)]
 pub struct Prelude {
     pub file_version: u16,
@@ -15,7 +16,7 @@ pub struct Prelude {
 }
 
 impl Prelude {
-    /// The magic number used to identify Rnote files, do not modify. Translates to "RNOTE-ΦΛ" in utf-8
+    /// The magic number used to identify Rnote save files. Do not modify. Translates to "RNOTE-ΦΛ" in UTF-8 encoding.
     pub const MAGIC_NUMBER: [u8; 10] = [0x52, 0x4e, 0x4f, 0x54, 0x45, 0x2d, 0xce, 0xa6, 0xce, 0x9b];
 
     /// Creates a new prelude.
@@ -27,8 +28,8 @@ impl Prelude {
         }
     }
 
-    /// Returns the byte representation of the prelude
-    pub fn try_to_bytes(self) -> anyhow::Result<Vec<u8>> {
+    /// Attempts to convert a prelude into its byte representation.
+    pub fn try_to_bytes(&self) -> anyhow::Result<Vec<u8>> {
         let pre_release: &str = self.rnote_version.pre.as_str();
         let build_metadata: &str = self.rnote_version.build.as_str();
 
@@ -53,7 +54,7 @@ impl Prelude {
         .concat())
     }
 
-    /// Returns the prelude alongside the cursor (index) at which it left off.
+    /// Attempts to parse the prelude.
     pub fn try_from_bytes(cursor: &mut BCursor) -> anyhow::Result<Self> {
         let magic_number = cursor.try_capture(Self::MAGIC_NUMBER.len())?;
         if magic_number != Self::MAGIC_NUMBER {

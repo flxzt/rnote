@@ -21,7 +21,7 @@ impl<const MAJ: u64, const MIN: u64, const PATCH: u64> From<CompatV1For<MAJ, MIN
     }
 }
 
-// Example on upgrading versions
+// Template for upgrading between incompatible Rnote versions.
 /*
 impl TryFrom<CompatV1For<0, 14, 0>> for CompatV1For<0, 15, 0> {
     type Error = anyhow::Error;

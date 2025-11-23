@@ -2,7 +2,7 @@
 use super::*;
 
 impl RnoteFileInterfaceV1 {
-    /// Handles the decompression and deserialization step.
+    /// Handles the decompression and deserialization step. Created in order to avoiding code duplication.
     /// The generic argument `ES` dictates to what type the gutted serialized `EngineSnapshot` is deserialized into.
     ///   → `ES` = `EngineSnapshot` when going straight from bytes to `EngineSnapshot`
     ///   → `ES` = `ijson::IValue` when going from bytes to `CompatV1`
@@ -56,7 +56,8 @@ impl RnoteFileInterfaceV1 {
         Ok((engine_snapshot, stroke_chrono_pair_chunks))
     }
 
-    /// Handles the recreation of the full `EngineSnapshot` from its gutted form and the chunks of stroke-chrono pairs.
+    /// Handles the recreation of the full `EngineSnapshot` from its gutted form and the
+    /// chunks containing stroke-chrono pairs. Created in order to avoiding code duplication.
     fn components_to_engine_snapshot(
         mut engine_snapshot: EngineSnapshot,
         stroke_chrono_pair_chunks: Vec<Vec<(Stroke, ChronoComponent)>>,
@@ -87,7 +88,7 @@ impl RnoteFileInterfaceV1 {
 
     /// This function attempts to directly load the `EngineSnapshot`, skipping the compatibility
     /// representation for efficiency, should be used when the Rnote version specified by the file
-    /// matches the current version of the application.
+    /// matches the current version of the application or is still directly compatible.
     pub fn bytes_to_engine_snapshot(
         cursor: BCursor,
         header_size: usize,
@@ -103,7 +104,8 @@ impl RnoteFileInterfaceV1 {
         ))
     }
 
-    /// This function loads an intermediate representation of the `EngineSnapshot` for compatibility across versions of Rnote.
+    /// This function attempts to load an intermediate representation of the `EngineSnapshot`,
+    /// for compatibility across differing versions of Rnote.
     #[allow(unused)]
     pub fn bytes_to_compat(cursor: BCursor, header_size: usize) -> anyhow::Result<CompatV1> {
         Self::bytes_to_deserialized::<ijson::IValue, ijson::IValue>(cursor, header_size).map(
@@ -114,7 +116,8 @@ impl RnoteFileInterfaceV1 {
         )
     }
 
-    /// Converts the compatibility struct (or its version-wrapped counterpart) into an `EngineSnapshot`,
+    /// This function attempts to convert a [CompatV1] or [CompatV1For] struct into an `EngineSnapshot`.
+    /// Note that any upgrades must be performed before this function is called.
     pub fn compat_to_engine_snapshot<C: Into<CompatV1>>(
         compat: C,
     ) -> anyhow::Result<EngineSnapshot> {
@@ -140,7 +143,8 @@ type EngineChronos = Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>;
 impl TryFrom<LegacyRnoteFile> for CompatV1 {
     type Error = anyhow::Error;
 
-    /// A somewhat lengthy process as we need to free the `stroke_components` and `chrono_components` of their `slotmap` cage.
+    /// Attempts to convert a [LegacyRnoteFile] into a [CompatV1] struct, which entails a somewhat lengthy
+    /// process as we need to free the `stroke_components` and `chrono_components` of their `slotmap` cage.
     fn try_from(mut value: LegacyRnoteFile) -> Result<Self, Self::Error> {
         let engine_snapshot = value
             .engine_snapshot
@@ -192,6 +196,7 @@ impl TryFrom<LegacyRnoteFile> for CompatV1 {
             });
         }
 
+        // We could stuff everything into a single chunk but that would make any future required upgrades quite painful.
         let stroke_chrono_pair_chunks = {
             // The number of chunks to split `stroke_chrono_vec` into
             let nb_chunks = rayon::current_num_threads().max(1);

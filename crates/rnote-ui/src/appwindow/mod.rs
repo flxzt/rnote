@@ -814,6 +814,30 @@ impl RnAppWindow {
                                 .colorpicker()
                                 .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
                         }
+                        BrushStyle::Highlighter => {
+                            let stroke_color = self
+                                .engine_config()
+                                .read()
+                                .pens_config
+                                .brush_config
+                                .marker_options
+                                .stroke_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            let fill_color = self
+                                .engine_config()
+                                .read()
+                                .pens_config
+                                .brush_config
+                                .marker_options
+                                .fill_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            self.overlays()
+                                .colorpicker()
+                                .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            self.overlays()
+                                .colorpicker()
+                                .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                        }
                     }
                 }
                 PenStyle::Shaper => {

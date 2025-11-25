@@ -308,6 +308,7 @@ impl DrawableOnDoc for Brush {
                             .style_for_current_options();
                         path_builder.draw_styled(cx, &style, engine_view.camera.total_zoom());
                     }
+                    BrushStyle::Highlighter => {}
                 }
             }
         }

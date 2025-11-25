@@ -50,6 +50,7 @@ impl PensConfig {
         self.brush_config.marker_options.stroke_color = Some(stroke_color);
         self.brush_config.solid_options.stroke_color = Some(stroke_color);
         self.brush_config.textured_options.stroke_color = Some(stroke_color);
+        self.brush_config.highlighter_options.stroke_color = Some(stroke_color);
         self.shaper_config.smooth_options.stroke_color = Some(stroke_color);
         self.shaper_config.rough_options.stroke_color = Some(stroke_color);
         self.typewriter_config.text_style.color = stroke_color;

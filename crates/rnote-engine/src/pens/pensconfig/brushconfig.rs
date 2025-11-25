@@ -27,6 +27,8 @@ pub enum BrushStyle {
     Solid,
     #[serde(rename = "textured")]
     Textured,
+    #[serde(rename = "highlighter")]
+    Highlighter,
 }
 
 impl Default for BrushStyle {
@@ -97,6 +99,34 @@ impl std::ops::DerefMut for SolidOptions {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "highlighter_options")]
+pub struct HighlighterOptions(SmoothOptions);
+
+impl Default for HighlighterOptions {
+    fn default() -> Self {
+        let mut options = SmoothOptions::default();
+        options.pressure_curve = PressureCurve::Const;
+        options.stroke_width = 30.0; // thicker by default, adjust as you like
+
+        Self(options)
+    }
+}
+
+impl std::ops::Deref for HighlighterOptions {
+    type Target = SmoothOptions;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for HighlighterOptions {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(default, rename = "brush_config")]
 pub struct BrushConfig {
@@ -110,6 +140,8 @@ pub struct BrushConfig {
     pub solid_options: SolidOptions,
     #[serde(rename = "textured_options")]
     pub textured_options: TexturedOptions,
+    #[serde(rename = "highlighter_options")]
+    pub highlighter_options: HighlighterOptions,
 }
 
 impl BrushConfig {
@@ -119,6 +151,7 @@ impl BrushConfig {
     pub(crate) fn layer_for_current_options(&self) -> StrokeLayer {
         match &self.style {
             BrushStyle::Marker => StrokeLayer::Highlighter,
+            BrushStyle::Highlighter => StrokeLayer::PDFHighlighter,
             BrushStyle::Solid | BrushStyle::Textured => StrokeLayer::UserLayer(0),
         }
     }
@@ -145,6 +178,11 @@ impl BrushConfig {
                 let options = self.textured_options.clone();
 
                 Style::Textured(options)
+            }
+            BrushStyle::Highlighter => {
+                let HighlighterOptions(mut options) = self.highlighter_options.clone();
+                options.pressure_curve = PressureCurve::Const;
+                Style::Smooth(options)
             }
         }
     }

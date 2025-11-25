@@ -1,6 +1,7 @@
 // Imports
 use crate::store::chrono_comp::StrokeLayer;
 use rand::{Rng, SeedableRng};
+use rnote_compose::Color;
 use rnote_compose::Style;
 use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::style::PressureCurve;
@@ -107,7 +108,13 @@ impl Default for HighlighterOptions {
     fn default() -> Self {
         let mut options = SmoothOptions::default();
         options.pressure_curve = PressureCurve::Const;
-        options.stroke_width = 30.0; // thicker by default, adjust as you like
+        options.stroke_width = 10.0;
+        options.stroke_color = Some(Color {
+            r: 1.0,
+            g: 1.0,
+            b: 0.0,
+            a: 0.2,
+        });
 
         Self(options)
     }

@@ -815,7 +815,7 @@ impl RnAppWindow {
                                 .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
                         }
                         BrushStyle::Highlighter => {
-                            let stroke_color = self
+                            let mut stroke_color = self
                                 .engine_config()
                                 .read()
                                 .pens_config
@@ -823,7 +823,8 @@ impl RnAppWindow {
                                 .marker_options
                                 .stroke_color
                                 .unwrap_or(Color::TRANSPARENT);
-                            let fill_color = self
+                            stroke_color.a = 0.4;
+                            let mut fill_color = self
                                 .engine_config()
                                 .read()
                                 .pens_config
@@ -831,6 +832,7 @@ impl RnAppWindow {
                                 .marker_options
                                 .fill_color
                                 .unwrap_or(Color::TRANSPARENT);
+                            fill_color.a = 0.3;
                             self.overlays()
                                 .colorpicker()
                                 .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));

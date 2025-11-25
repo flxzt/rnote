@@ -297,7 +297,7 @@ impl DrawableOnDoc for Brush {
             BrushState::Idle => {}
             BrushState::Drawing { path_builder, .. } => {
                 match engine_view.config.pens_config.brush_config.style {
-                    BrushStyle::Marker => {
+                    BrushStyle::Marker | BrushStyle::Highlighter => {
                         // Don't draw the marker, as the pen would render on top of other strokes, while the stroke itself would render underneath them.
                     }
                     BrushStyle::Solid | BrushStyle::Textured => {
@@ -308,7 +308,6 @@ impl DrawableOnDoc for Brush {
                             .style_for_current_options();
                         path_builder.draw_styled(cx, &style, engine_view.camera.total_zoom());
                     }
-                    BrushStyle::Highlighter => {}
                 }
             }
         }

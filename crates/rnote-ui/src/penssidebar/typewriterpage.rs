@@ -4,7 +4,7 @@ use gtk4::{
     Button, CompositeTemplate, EmojiChooser, FontDialog, MenuButton, SpinButton, ToggleButton,
     Widget, glib, glib::clone, pango, prelude::*, subclass::prelude::*,
 };
-use rnote_engine::strokes::textstroke::{FontStyle, TextAlignment, TextAttribute, TextStyle};
+use rnote_engine::strokes::textstroke::{TextAlignment, TextAttribute, TextStyle};
 use std::cell::RefCell;
 use tracing::debug;
 

@@ -89,7 +89,7 @@ pub(crate) fn setup_env() -> anyhow::Result<()> {
                 std::env::set_var("XDG_DATA_DIRS", data_dir);
                 std::env::set_var(
                     "GDK_PIXBUF_MODULE_FILE",
-                    resources_dir.join("/etc/loaders.cache"),
+                    resources_dir.join("etc/loaders.cache"),
                 );
             }
         }

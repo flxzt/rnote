@@ -58,8 +58,17 @@ impl Content for BrushStroke {
             > IMAGES_STROKE_WIDTH_BOUNDS_THRESHOLD * bounds_extents[0]
             || self.style.stroke_width() > IMAGES_STROKE_WIDTH_BOUNDS_THRESHOLD * bounds_extents[1];
 
+        // Check if this is a highlighter stroke - highlighter strokes must be rendered as a single
+        // image to prevent alpha accumulation at segment overlaps
+        let is_highlighter = matches!(&self.style, Style::Smooth(options) if options.is_highlighter);
+        let highlighter_alpha = match &self.style {
+            Style::Smooth(options) => options.highlighter_alpha(),
+            _ => None,
+        };
+
         // if these conditions evaluate true the stroke is rendered as a single image
-        let images = if image_size_condition || stroke_width_condition {
+        // For highlighter strokes, always render as a single image to avoid alpha accumulation
+        let images = if image_size_condition || stroke_width_condition || is_highlighter {
             // generate a single image when bounds are smaller than threshold
             match &self.style {
                 Style::Smooth(options) => {
@@ -73,7 +82,13 @@ impl Content for BrushStroke {
                     );
 
                     match image {
-                        Ok(image) => vec![image],
+                        Ok(mut image) => {
+                            // Apply highlighter alpha if this is a highlighter stroke
+                            if let Some(alpha) = highlighter_alpha {
+                                image.apply_alpha(alpha);
+                            }
+                            vec![image]
+                        }
                         Err(e) => {
                             error!("Generating images for brushstroke failed , Err: {e:?}");
                             vec![]
@@ -324,7 +339,7 @@ impl BrushStroke {
                         .copied(),
                 );
 
-                let image = render::Image::gen_with_piet(
+                let mut image = render::Image::gen_with_piet(
                     |piet_cx| {
                         range_path.draw_composed(piet_cx, options);
                         Ok(())
@@ -332,6 +347,11 @@ impl BrushStroke {
                     range_path.composed_bounds(options),
                     image_scale,
                 )?;
+
+                // Apply highlighter alpha if this is a highlighter stroke
+                if let Some(alpha) = options.highlighter_alpha() {
+                    image.apply_alpha(alpha);
+                }
 
                 Some(image)
             }

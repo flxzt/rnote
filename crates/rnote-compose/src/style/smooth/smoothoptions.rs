@@ -31,6 +31,11 @@ pub struct SmoothOptions {
     /// Line cap.
     #[serde(rename = "line_cap")]
     pub line_cap: LineCap,
+    /// Whether this is a highlighter stroke. When true, the stroke is drawn to an offscreen
+    /// surface with full opacity and then composited onto the main canvas with the stroke color's
+    /// alpha value. This prevents opacity accumulation when overlapping stroke segments.
+    #[serde(rename = "is_highlighter", default)]
+    pub is_highlighter: bool,
     /// The inner piet::StrokeStyle, computed using the stroke_width, line_style, and line_cap.
     #[serde(skip)]
     pub piet_stroke_style: piet::StrokeStyle,
@@ -48,6 +53,7 @@ impl Default for SmoothOptions {
             pressure_curve: PressureCurve::default(),
             line_style,
             line_cap,
+            is_highlighter: false,
             piet_stroke_style: Self::compute_piet_stroke_style(stroke_width, line_style, line_cap),
         }
     }
@@ -108,6 +114,18 @@ impl SmoothOptions {
         self.line_style = line_style;
         self.update_piet_stroke_style();
     }
+
+    /// Returns the highlighter alpha value.
+    /// When `is_highlighter` is true, the stroke is drawn with full opacity and the original
+    /// alpha from the stroke color should be applied during final compositing.
+    /// Returns None if not a highlighter or if no stroke color is set.
+    pub fn highlighter_alpha(&self) -> Option<f64> {
+        if self.is_highlighter {
+            self.stroke_color.map(|c| c.a)
+        } else {
+            None
+        }
+    }
 }
 
 impl<'de> Deserialize<'de> for SmoothOptions {
@@ -130,6 +148,8 @@ impl<'de> Deserialize<'de> for SmoothOptions {
             pub line_style: LineStyle,
             #[serde(rename = "line_cap")]
             pub line_cap: LineCap,
+            #[serde(rename = "is_highlighter", default)]
+            pub is_highlighter: bool,
         }
 
         impl From<SmoothOptions> for SmoothOptionsPrecursor {
@@ -141,6 +161,7 @@ impl<'de> Deserialize<'de> for SmoothOptions {
                     pressure_curve: value.pressure_curve,
                     line_style: value.line_style,
                     line_cap: value.line_cap,
+                    is_highlighter: value.is_highlighter,
                 }
             }
         }
@@ -160,6 +181,7 @@ impl<'de> Deserialize<'de> for SmoothOptions {
             pressure_curve: precursor.pressure_curve,
             line_style: precursor.line_style,
             line_cap: precursor.line_cap,
+            is_highlighter: precursor.is_highlighter,
             piet_stroke_style: Self::compute_piet_stroke_style(
                 precursor.stroke_width,
                 precursor.line_style,

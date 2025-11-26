@@ -115,6 +115,7 @@ impl Default for HighlighterOptions {
             b: 0.0,
             a: 0.2,
         });
+        options.is_highlighter = true;
 
         Self(options)
     }
@@ -189,6 +190,7 @@ impl BrushConfig {
             BrushStyle::Highlighter => {
                 let HighlighterOptions(mut options) = self.highlighter_options.clone();
                 options.pressure_curve = PressureCurve::Const;
+                options.is_highlighter = true;
                 Style::Smooth(options)
             }
         }

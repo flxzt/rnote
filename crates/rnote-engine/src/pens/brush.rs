@@ -235,6 +235,15 @@ impl PenBehaviour for Brush {
                             );
                         }
 
+                        // Auto-straighten highlighter strokes if drawn in a straight direction
+                        if let Some(Stroke::BrushStroke(brushstroke)) =
+                            engine_view.store.get_stroke_mut(*current_stroke_key)
+                        {
+                            if brushstroke.auto_straighten_if_applicable() {
+                                widget_flags.store_modified = true;
+                            }
+                        }
+
                         // Finish up the last stroke
                         engine_view
                             .store

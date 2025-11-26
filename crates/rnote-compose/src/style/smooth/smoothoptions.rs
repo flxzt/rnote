@@ -118,10 +118,17 @@ impl SmoothOptions {
     /// Returns the highlighter alpha value.
     /// When `is_highlighter` is true, the stroke is drawn with full opacity and the original
     /// alpha from the stroke color should be applied during final compositing.
-    /// Returns None if not a highlighter or if no stroke color is set.
+    /// Returns None if not a highlighter, if no stroke color is set, or if alpha is already 1.0
+    /// (since no additional processing is needed in that case).
     pub fn highlighter_alpha(&self) -> Option<f64> {
         if self.is_highlighter {
-            self.stroke_color.map(|c| c.a)
+            self.stroke_color.and_then(|c| {
+                if c.a >= 1.0 {
+                    None // No processing needed for full opacity
+                } else {
+                    Some(c.a)
+                }
+            })
         } else {
             None
         }

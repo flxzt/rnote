@@ -1,5 +1,5 @@
 // Imports
-use crate::{export, import, test, thumbnail};
+use crate::{export, import, set_compression, test, thumbnail};
 use anyhow::Context;
 use clap::Parser;
 use rnote_compose::SplitOrder;
@@ -78,6 +78,16 @@ pub(crate) enum Command {
         size: u32,
         /// Output path of the thumbnail
         output: PathBuf,
+    },
+    /// Modify the compression method or level of one or more `.rnote` files.{n}
+    /// Please note that the compression method (+ level) will be reset to defaults on the next save within the Rnote application.{n}
+    SetCompression {
+        #[arg(short, visible_short_alias = 'i', long, num_args = 1..)]
+        rnote_files: Vec<PathBuf>,
+        #[arg(long, visible_alias = "cm", value_parser = ["zstd", "Zstd", "none", "None"], default_value = "zstd")]
+        compression_method: String,
+        #[arg(long, visible_alias = "cl")]
+        compression_level: Option<i32>,
     },
 }
 
@@ -260,8 +270,19 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             println!("Thumbnail...");
             thumbnail::run_thumbnail(rnote_file, size, output).await?;
         }
+        Command::SetCompression {
+            rnote_files,
+            compression_method,
+            compression_level,
+        } => {
+            set_compression::run_set_compression(
+                rnote_files,
+                compression_method,
+                compression_level,
+            )
+            .await?;
+        }
     }
-
     Ok(())
 }
 

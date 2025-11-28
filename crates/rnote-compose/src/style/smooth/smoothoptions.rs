@@ -32,6 +32,7 @@ pub struct SmoothOptions {
     #[serde(rename = "line_cap")]
     pub line_cap: LineCap,
     #[serde(rename = "is_highlighter", default)]
+    /// Highlighter
     pub is_highlighter: bool,
     /// The inner piet::StrokeStyle, computed using the stroke_width, line_style, and line_cap.
     #[serde(skip)]
@@ -112,6 +113,7 @@ impl SmoothOptions {
         self.update_piet_stroke_style();
     }
 
+    /// Returns the highlighter alpha value.
     pub fn highlighter_alpha(&self) -> Option<f64> {
         if self.is_highlighter {
             self.stroke_color.and_then(|c| {

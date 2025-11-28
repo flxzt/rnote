@@ -92,6 +92,7 @@
           <object class="GtkButton" id="text_bold_button">
             <property name="icon-name">text-bold-symbolic</property>
             <property name="tooltip_text" translatable="yes">Bold</property>
+            <property name="action-name">win.text-bold</property>
             <style>
               <class name="flat" />
             </style>
@@ -101,6 +102,7 @@
           <object class="GtkButton" id="text_italic_button">
             <property name="icon-name">text-italic-symbolic</property>
             <property name="tooltip_text" translatable="yes">Italic</property>
+            <property name="action-name">win.text-italic</property>
             <style>
               <class name="flat" />
             </style>
@@ -110,6 +112,7 @@
           <object class="GtkButton" id="text_underline_button">
             <property name="icon-name">text-underline-symbolic</property>
             <property name="tooltip_text" translatable="yes">Underline</property>
+            <property name="action-name">win.text-underline</property>
             <style>
               <class name="flat" />
             </style>

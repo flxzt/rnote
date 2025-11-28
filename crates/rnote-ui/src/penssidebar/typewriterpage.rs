@@ -4,7 +4,7 @@ use gtk4::{
     Button, CompositeTemplate, EmojiChooser, FontDialog, MenuButton, SpinButton, ToggleButton,
     Widget, glib, glib::clone, pango, prelude::*, subclass::prelude::*,
 };
-use rnote_engine::strokes::textstroke::{FontStyle, TextAlignment, TextAttribute, TextStyle};
+use rnote_engine::strokes::textstroke::{TextAlignment, TextAttribute, TextStyle};
 use std::cell::RefCell;
 use tracing::debug;
 
@@ -28,12 +28,6 @@ mod imp {
         pub(crate) typst_editor_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) text_reset_button: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) text_bold_button: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) text_italic_button: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) text_underline_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) text_strikethrough_button: TemplateChild<Button>,
         #[template_child]
@@ -222,54 +216,6 @@ impl RnTypewriterPage {
                     return;
                 };
                 let widget_flags = canvas.engine_mut().text_selection_remove_attributes();
-                appwindow.handle_widget_flags(widget_flags, &canvas);
-            }
-        ));
-
-        // Bold
-        imp.text_bold_button.connect_clicked(clone!(
-            #[weak]
-            appwindow,
-            move |_| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
-                    return;
-                };
-                let widget_flags =
-                    canvas
-                        .engine_mut()
-                        .text_selection_toggle_attribute(TextAttribute::FontWeight(
-                            piet::FontWeight::BOLD.to_raw(),
-                        ));
-                appwindow.handle_widget_flags(widget_flags, &canvas);
-            }
-        ));
-
-        // Italic
-        imp.text_italic_button.connect_clicked(clone!(
-            #[weak]
-            appwindow,
-            move |_| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
-                    return;
-                };
-                let widget_flags = canvas
-                    .engine_mut()
-                    .text_selection_toggle_attribute(TextAttribute::Style(FontStyle::Italic));
-                appwindow.handle_widget_flags(widget_flags, &canvas);
-            }
-        ));
-
-        // Underline
-        imp.text_underline_button.connect_clicked(clone!(
-            #[weak]
-            appwindow,
-            move |_| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
-                    return;
-                };
-                let widget_flags = canvas
-                    .engine_mut()
-                    .text_selection_toggle_attribute(TextAttribute::Underline(true));
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
         ));

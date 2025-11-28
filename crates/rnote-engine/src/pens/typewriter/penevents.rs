@@ -43,8 +43,19 @@ impl Typewriter {
                     .stroke_hitboxes_contain_coord(engine_view.camera.viewport(), element.pos)
                     .last()
                 {
+                    // Check if clicked on a Typst VectorImage
+                    if let Some(Stroke::VectorImage(vectorimage)) =
+                        engine_view.store.get_stroke_ref(stroke_key)
+                    {
+                        if let Some(ref typst_source) = vectorimage.typst_source {
+                            // Signal to UI that a Typst element was clicked for editing
+                            *engine_view.clicked_typst_stroke =
+                                Some((stroke_key, typst_source.clone()));
+                            // Don't change state, just let UI handle opening the dialog
+                        }
+                    }
                     // When clicked on a textstroke, we start modifying it
-                    if let Some(Stroke::TextStroke(textstroke)) =
+                    else if let Some(Stroke::TextStroke(textstroke)) =
                         engine_view.store.get_stroke_ref(stroke_key)
                     {
                         let cursor = if let Ok(new_cursor) =

@@ -80,6 +80,7 @@ pub struct EngineViewMut<'a> {
     pub camera: &'a mut Camera,
     pub audioplayer: &'a mut Option<AudioPlayer>,
     pub animation: &'a mut Animation,
+    pub clicked_typst_stroke: &'a mut Option<(StrokeKey, String)>,
 }
 
 /// Constructs an `EngineViewMut` from an identifier containing an `Engine` instance.
@@ -88,6 +89,7 @@ macro_rules! engine_view_mut {
     ($engine:ident) => {
         $crate::engine::EngineViewMut {
             tasks_tx: $engine.tasks_tx.clone(),
+            clicked_typst_stroke: &mut $engine.clicked_typst_stroke,
             config: &mut $engine.config.write(),
             document: &mut $engine.document,
             store: &mut $engine.store,
@@ -206,6 +208,9 @@ pub struct Engine {
     #[cfg(feature = "ui")]
     #[serde(skip)]
     origin_indicator_rendernode: Option<gtk4::gsk::RenderNode>,
+    // Clicked Typst stroke for editing
+    #[serde(skip)]
+    clicked_typst_stroke: Option<(StrokeKey, String)>,
 }
 
 impl Default for Engine {
@@ -229,6 +234,7 @@ impl Default for Engine {
             origin_indicator_image: None,
             #[cfg(feature = "ui")]
             origin_indicator_rendernode: None,
+            clicked_typst_stroke: None,
         }
     }
 }
@@ -263,6 +269,11 @@ impl Engine {
 
     pub fn take_engine_tasks_rx(&mut self) -> Option<EngineTaskReceiver> {
         self.tasks_rx.take()
+    }
+
+    /// Takes the clicked Typst stroke if any, clearing it from the engine.
+    pub fn take_clicked_typst_stroke(&mut self) -> Option<(StrokeKey, String)> {
+        self.clicked_typst_stroke.take()
     }
 
     /// Whether pen sounds are enabled.

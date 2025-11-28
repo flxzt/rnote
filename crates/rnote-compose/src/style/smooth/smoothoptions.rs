@@ -31,9 +31,6 @@ pub struct SmoothOptions {
     /// Line cap.
     #[serde(rename = "line_cap")]
     pub line_cap: LineCap,
-    /// Whether this is a highlighter stroke. When true, the stroke is drawn to an offscreen
-    /// surface with full opacity and then composited onto the main canvas with the stroke color's
-    /// alpha value. This prevents opacity accumulation when overlapping stroke segments.
     #[serde(rename = "is_highlighter", default)]
     pub is_highlighter: bool,
     /// The inner piet::StrokeStyle, computed using the stroke_width, line_style, and line_cap.
@@ -115,11 +112,6 @@ impl SmoothOptions {
         self.update_piet_stroke_style();
     }
 
-    /// Returns the highlighter alpha value.
-    /// When `is_highlighter` is true, the stroke is drawn with full opacity and the original
-    /// alpha from the stroke color should be applied during final compositing.
-    /// Returns None if not a highlighter, if no stroke color is set, or if alpha is already 1.0
-    /// (since no additional processing is needed in that case).
     pub fn highlighter_alpha(&self) -> Option<f64> {
         if self.is_highlighter {
             self.stroke_color.and_then(|c| {

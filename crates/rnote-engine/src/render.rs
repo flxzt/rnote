@@ -205,10 +205,10 @@ impl Image {
     }
 
     /// Applies an alpha multiplier to all pixels in the image.
-    /// 
+    ///
     /// This is used for highlighter strokes where the stroke is drawn with full opacity
     /// and then the intended alpha is applied during compositing.
-    /// 
+    ///
     /// The alpha parameter should be in the range [0.0, 1.0].
     pub fn apply_alpha(&mut self, alpha: f64) {
         if alpha >= 1.0 {
@@ -222,7 +222,6 @@ impl Image {
         // For premultiplied alpha: R' = R * A, G' = G * A, B' = B * A, A' = A
         // To apply an additional alpha multiplier, we scale all components by the multiplier.
         for pixel in data.chunks_exact_mut(4) {
-            // Scale all RGBA components by the alpha multiplier
             pixel[0] = ((u16::from(pixel[0]) * u16::from(alpha_u8)) / 255) as u8;
             pixel[1] = ((u16::from(pixel[1]) * u16::from(alpha_u8)) / 255) as u8;
             pixel[2] = ((u16::from(pixel[2]) * u16::from(alpha_u8)) / 255) as u8;

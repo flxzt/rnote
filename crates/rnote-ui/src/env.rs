@@ -12,7 +12,7 @@ pub(crate) fn lib_dir() -> anyhow::Result<PathBuf> {
         let canonicalized_exec_dir = exec_parent_dir()?.canonicalize()?;
 
         if macos_is_in_app_bundle(&canonicalized_exec_dir) {
-            Ok(canonicalized_exec_dir.join("../Resources/lib"))
+            Ok(canonicalized_exec_dir.join("../Frameworks"))
         } else {
             Ok(PathBuf::from(config::LIBDIR))
         }
@@ -82,14 +82,14 @@ pub(crate) fn setup_env() -> anyhow::Result<()> {
 
         if macos_is_in_app_bundle(canonicalized_exec_dir) {
             let data_dir = data_dir()?;
-            let lib_dir = lib_dir()?;
+            let resources_dir = exec_parent_dir()?.canonicalize()?.join("../Resources");
 
             // SAFETY: this setup only happens while still being single-threaded
             unsafe {
                 std::env::set_var("XDG_DATA_DIRS", data_dir);
                 std::env::set_var(
                     "GDK_PIXBUF_MODULE_FILE",
-                    lib_dir.join("gdk-pixbuf-2.0/2.10.0/loaders.cache"),
+                    resources_dir.join("etc/loaders.cache"),
                 );
             }
         }

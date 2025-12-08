@@ -31,6 +31,13 @@ pub struct VectorImage {
     pub intrinsic_size: na::Vector2<f64>,
     #[serde(rename = "rectangle")]
     pub rectangle: Rectangle,
+    /// Optional Typst source code, if this image was generated from Typst
+    #[serde(
+        rename = "typst_source",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
+    pub typst_source: Option<String>,
 }
 
 impl Default for VectorImage {
@@ -39,6 +46,7 @@ impl Default for VectorImage {
             svg_data: String::default(),
             intrinsic_size: na::Vector2::zeros(),
             rectangle: Rectangle::default(),
+            typst_source: None,
         }
     }
 }
@@ -201,6 +209,7 @@ impl VectorImage {
             svg_data,
             intrinsic_size,
             rectangle,
+            typst_source: None,
         })
     }
 

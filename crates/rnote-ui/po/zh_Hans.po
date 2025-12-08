@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 15:24+0200\n"
-"PO-Revision-Date: 2025-11-01 15:51+0000\n"
-"Last-Translator: withginkgo <tabicallet@outlook.com>\n"
+"PO-Revision-Date: 2025-12-08 18:57+0000\n"
+"Last-Translator: quantumparadox <1523509617@qq.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/rnote/repo/zh_Hans/>\n"
 "Language: zh_Hans\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.14.1-dev\n"
+"X-Generator: Weblate 5.15-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -821,7 +821,7 @@ msgstr "高亮模式"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:136
 msgid "Fade active color"
-msgstr ""
+msgstr "淡化"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
 msgid "Highlight-Opacity"

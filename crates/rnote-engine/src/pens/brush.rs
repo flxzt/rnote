@@ -204,13 +204,25 @@ impl PenBehaviour for Brush {
                                 widget_flags.store_modified = true;
                             }
 
-                            engine_view.store.append_rendering_last_segments(
-                                engine_view.tasks_tx.clone(),
-                                *current_stroke_key,
-                                n_segments,
-                                engine_view.camera.viewport(),
-                                engine_view.camera.image_scale(),
-                            );
+                            // For highlighter strokes, regenerate the entire stroke to prevent
+                            // alpha accumulation at segment overlaps during drawing
+                            if engine_view.config.pens_config.brush_config.style
+                                == BrushStyle::Highlighter
+                            {
+                                engine_view.store.regenerate_rendering_for_stroke(
+                                    *current_stroke_key,
+                                    engine_view.camera.viewport(),
+                                    engine_view.camera.image_scale(),
+                                );
+                            } else {
+                                engine_view.store.append_rendering_last_segments(
+                                    engine_view.tasks_tx.clone(),
+                                    *current_stroke_key,
+                                    n_segments,
+                                    engine_view.camera.viewport(),
+                                    engine_view.camera.image_scale(),
+                                );
+                            }
                         }
 
                         PenProgress::InProgress
@@ -226,13 +238,28 @@ impl PenBehaviour for Brush {
                                 widget_flags.store_modified = true;
                             }
 
-                            engine_view.store.append_rendering_last_segments(
-                                engine_view.tasks_tx.clone(),
-                                *current_stroke_key,
-                                n_segments,
-                                engine_view.camera.viewport(),
-                                engine_view.camera.image_scale(),
-                            );
+                            // For highlighter strokes, skip intermediate rendering since
+                            // we'll regenerate the entire stroke below anyway
+                            if engine_view.config.pens_config.brush_config.style
+                                != BrushStyle::Highlighter
+                            {
+                                engine_view.store.append_rendering_last_segments(
+                                    engine_view.tasks_tx.clone(),
+                                    *current_stroke_key,
+                                    n_segments,
+                                    engine_view.camera.viewport(),
+                                    engine_view.camera.image_scale(),
+                                );
+                            }
+                        }
+
+                        // Auto-straighten highlighter strokes if drawn in a straight direction
+                        if let Some(Stroke::BrushStroke(brushstroke)) =
+                            engine_view.store.get_stroke_mut(*current_stroke_key)
+                        {
+                            if brushstroke.auto_straighten_if_applicable() {
+                                widget_flags.store_modified = true;
+                            }
                         }
 
                         // Finish up the last stroke
@@ -297,7 +324,7 @@ impl DrawableOnDoc for Brush {
             BrushState::Idle => {}
             BrushState::Drawing { path_builder, .. } => {
                 match engine_view.config.pens_config.brush_config.style {
-                    BrushStyle::Marker => {
+                    BrushStyle::Marker | BrushStyle::Highlighter => {
                         // Don't draw the marker, as the pen would render on top of other strokes, while the stroke itself would render underneath them.
                     }
                     BrushStyle::Solid | BrushStyle::Textured => {

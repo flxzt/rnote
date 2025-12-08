@@ -250,6 +250,20 @@ impl Composer<SmoothOptions> for PenPath {
         let Some(color) = options.stroke_color else {
             return;
         };
+
+        // For highlighter mode, draw with full opacity to prevent alpha accumulation
+        // when segments overlap. The original alpha will be applied during final compositing.
+        let draw_color = if options.is_highlighter {
+            crate::Color {
+                r: color.r,
+                g: color.g,
+                b: color.b,
+                a: 1.0,
+            }
+        } else {
+            color
+        };
+
         let mut single_pos = true;
         let mut prev = self.start;
 
@@ -347,7 +361,7 @@ impl Composer<SmoothOptions> for PenPath {
             //let stroke_brush = cx.solid_brush(piet::Color::RED);
             //cx.stroke(bez_path.clone(), &stroke_brush, 0.2);
 
-            cx.fill(bez_path, &Into::<piet::Color>::into(color));
+            cx.fill(bez_path, &Into::<piet::Color>::into(draw_color));
         }
 
         // Single element/position strokes need special treatment to be rendered
@@ -357,7 +371,7 @@ impl Composer<SmoothOptions> for PenPath {
                 .apply(options.stroke_width, self.start.pressure);
             cx.fill(
                 kurbo::Circle::new(self.start.pos.to_kurbo_point(), start_width * 0.5),
-                &Into::<piet::Color>::into(color),
+                &Into::<piet::Color>::into(draw_color),
             );
         }
 

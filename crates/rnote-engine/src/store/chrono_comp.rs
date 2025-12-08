@@ -13,6 +13,8 @@ pub enum StrokeLayer {
     UserLayer(u32),
     #[serde(rename = "highlighter", alias = "Highlighter")]
     Highlighter,
+    #[serde(rename = "pdf_highlighter", alias = "PdfHighlighter")]
+    PDFHighlighter,
     #[serde(rename = "image", alias = "Image")]
     Image,
     #[serde(rename = "document", alias = "Document")]
@@ -50,9 +52,15 @@ impl Ord for StrokeLayer {
             (StrokeLayer::Highlighter, StrokeLayer::UserLayer(_)) => Ordering::Less,
             (StrokeLayer::Highlighter, StrokeLayer::Highlighter) => Ordering::Equal,
             (StrokeLayer::Highlighter, _) => Ordering::Greater,
-            (StrokeLayer::Image, StrokeLayer::UserLayer(_) | StrokeLayer::Highlighter) => {
+            (StrokeLayer::PDFHighlighter, StrokeLayer::UserLayer(_) | StrokeLayer::Highlighter) => {
                 Ordering::Less
             }
+            (StrokeLayer::PDFHighlighter, StrokeLayer::PDFHighlighter) => Ordering::Equal,
+            (StrokeLayer::PDFHighlighter, _) => Ordering::Greater,
+            (
+                StrokeLayer::Image,
+                StrokeLayer::UserLayer(_) | StrokeLayer::Highlighter | StrokeLayer::PDFHighlighter,
+            ) => Ordering::Less,
             (StrokeLayer::Image, StrokeLayer::Image) => Ordering::Equal,
             (StrokeLayer::Image, StrokeLayer::Document) => Ordering::Greater,
             (StrokeLayer::Document, StrokeLayer::Document) => Ordering::Equal,

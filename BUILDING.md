@@ -139,7 +139,7 @@ Install all needed dependencies and build tools, e.g. for Fedora:
 ```bash
 sudo dnf install gcc gcc-c++ clang clang-devel python3 make cmake meson git appstream gettext desktop-file-utils \
     shared-mime-info kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel \
-    appstream-devel
+    appstream-devel enchant2-devel
 ```
 
 For Debian based distros:

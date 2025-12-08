@@ -151,6 +151,16 @@ impl RnAppWindow {
     }
 
     #[allow(unused)]
+    pub(crate) fn block_touch(&self) -> bool {
+        self.property::<bool>("block-touch")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_block_touch(&self, focus_mode: bool) {
+        self.set_property("block-touch", focus_mode.to_value());
+    }
+
+    #[allow(unused)]
     pub(crate) fn devel_mode(&self) -> bool {
         self.property::<bool>("devel-mode")
     }

@@ -6,6 +6,7 @@
 pub(crate) mod cli;
 pub(crate) mod export;
 pub(crate) mod import;
+pub(crate) mod set_compression;
 pub(crate) mod test;
 pub(crate) mod thumbnail;
 pub(crate) mod validators;

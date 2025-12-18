@@ -2,9 +2,9 @@
 use super::content::GeneratedContentImages;
 use super::resize::{ImageSizeOption, calculate_resize_ratio};
 use super::{Content, Stroke};
+use crate::Image;
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
-use crate::Image;
 use crate::svg::USVG_FONTDB;
 use crate::{Drawable, Svg};
 use anyhow::anyhow;
@@ -213,14 +213,13 @@ impl VectorImage {
     ) -> Result<Vec<Self>, anyhow::Error> {
         // TODO: how to avoid this allocation without lifetime issues?
         let data = Arc::new(to_be_read.to_vec());
-        // TODO: hayro does not have the ability to unlock password-protected PDFs yet
-        if password.is_some() {
-            return Err(anyhow!(
-                "Import of password-protected PDFs is not supported at the moment"
-            ));
-        }
-        let pdf = hayro::Pdf::new(data)
-            .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?;
+        let pdf = if let Some(password) = password {
+            hayro::Pdf::new_with_password(data, &password)
+                .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
+        } else {
+            hayro::Pdf::new(data)
+                .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
+        };
         let interpreter_settings = hayro::InterpreterSettings::default();
         let pages = pdf.pages();
         let page_range = page_range.unwrap_or(0..pages.len());

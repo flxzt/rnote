@@ -18,10 +18,10 @@ pub use snapshot::EngineSnapshot;
 pub use strokecontent::StrokeContent;
 
 // Imports
+use crate::Image;
 use crate::document::Layout;
 use crate::pens::PenMode;
 use crate::pens::{Pen, PenStyle};
-use crate::Image;
 use crate::store::StrokeKey;
 use crate::store::render_comp::{self, RenderCompState};
 use crate::strokes::content::GeneratedContentImages;

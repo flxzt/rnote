@@ -1890,7 +1890,7 @@ checksum = "841d1cc9bed7f9236f321df977030373f4a4163ae1a7dbfe1a51a2c1a51d9100"
 [[package]]
 name = "hayro"
 version = "0.4.0"
-source = "git+https://github.com/LaurenzV/hayro#0ab96ee8d082a770bfa67c2b5f2b4d60ef34b779"
+source = "git+https://github.com/LaurenzV/hayro?rev=a37f3c974253abbfb036ce2299363b485720ed3b#a37f3c974253abbfb036ce2299363b485720ed3b"
 dependencies = [
  "bytemuck",
  "fast_image_resize",
@@ -1903,12 +1903,12 @@ dependencies = [
 [[package]]
 name = "hayro-ccitt"
 version = "0.1.1"
-source = "git+https://github.com/LaurenzV/hayro#0ab96ee8d082a770bfa67c2b5f2b4d60ef34b779"
+source = "git+https://github.com/LaurenzV/hayro?rev=a37f3c974253abbfb036ce2299363b485720ed3b#a37f3c974253abbfb036ce2299363b485720ed3b"
 
 [[package]]
 name = "hayro-common"
 version = "0.1.0"
-source = "git+https://github.com/LaurenzV/hayro#0ab96ee8d082a770bfa67c2b5f2b4d60ef34b779"
+source = "git+https://github.com/LaurenzV/hayro?rev=a37f3c974253abbfb036ce2299363b485720ed3b#a37f3c974253abbfb036ce2299363b485720ed3b"
 dependencies = [
  "smallvec",
 ]
@@ -1916,7 +1916,7 @@ dependencies = [
 [[package]]
 name = "hayro-font"
 version = "0.3.0"
-source = "git+https://github.com/LaurenzV/hayro#0ab96ee8d082a770bfa67c2b5f2b4d60ef34b779"
+source = "git+https://github.com/LaurenzV/hayro?rev=a37f3c974253abbfb036ce2299363b485720ed3b#a37f3c974253abbfb036ce2299363b485720ed3b"
 dependencies = [
  "log",
  "phf 0.13.1",
@@ -1925,7 +1925,7 @@ dependencies = [
 [[package]]
 name = "hayro-interpret"
 version = "0.4.0"
-source = "git+https://github.com/LaurenzV/hayro#0ab96ee8d082a770bfa67c2b5f2b4d60ef34b779"
+source = "git+https://github.com/LaurenzV/hayro?rev=a37f3c974253abbfb036ce2299363b485720ed3b#a37f3c974253abbfb036ce2299363b485720ed3b"
 dependencies = [
  "bitflags 2.10.0",
  "hayro-common",
@@ -1945,7 +1945,7 @@ dependencies = [
 [[package]]
 name = "hayro-jpeg2000"
 version = "0.1.1"
-source = "git+https://github.com/LaurenzV/hayro#0ab96ee8d082a770bfa67c2b5f2b4d60ef34b779"
+source = "git+https://github.com/LaurenzV/hayro?rev=a37f3c974253abbfb036ce2299363b485720ed3b#a37f3c974253abbfb036ce2299363b485720ed3b"
 dependencies = [
  "fearless_simd",
  "log",
@@ -1954,7 +1954,7 @@ dependencies = [
 [[package]]
 name = "hayro-svg"
 version = "0.2.0"
-source = "git+https://github.com/LaurenzV/hayro#0ab96ee8d082a770bfa67c2b5f2b4d60ef34b779"
+source = "git+https://github.com/LaurenzV/hayro?rev=a37f3c974253abbfb036ce2299363b485720ed3b#a37f3c974253abbfb036ce2299363b485720ed3b"
 dependencies = [
  "base64",
  "hayro-interpret",
@@ -1967,7 +1967,7 @@ dependencies = [
 [[package]]
 name = "hayro-syntax"
 version = "0.4.0"
-source = "git+https://github.com/LaurenzV/hayro#0ab96ee8d082a770bfa67c2b5f2b4d60ef34b779"
+source = "git+https://github.com/LaurenzV/hayro?rev=a37f3c974253abbfb036ce2299363b485720ed3b#a37f3c974253abbfb036ce2299363b485720ed3b"
 dependencies = [
  "flate2",
  "hayro-ccitt",

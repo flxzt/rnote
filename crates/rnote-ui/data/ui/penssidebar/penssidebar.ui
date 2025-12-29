@@ -9,6 +9,9 @@
       <object class="GtkStack" id="sidebar_stack">
         <property name="transition_duration">300</property>
         <property name="transition_type">GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT_RIGHT</property>
+        <property name="interpolate_size">True</property>
+        <property name="hhomogeneous">False</property>
+        <property name="vhomogeneous">False</property>
 
         <!-- Brush Page -->
         <child>

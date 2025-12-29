@@ -47,11 +47,6 @@
       <object class="RnStrokeWidthPicker" id="stroke_width_picker">
       </object>
     </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
 
     <!-- Shape config -->
     <object class="GtkPopover" id="shapeconfig_popover">

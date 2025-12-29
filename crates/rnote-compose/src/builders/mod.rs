@@ -41,13 +41,21 @@ use anyhow::Context;
 use serde::{Deserialize, Serialize};
 
 #[derive(
-    Copy, Clone, Debug, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+    Copy,
+    Clone,
+    Debug,
+    Default,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
 )]
 #[serde(rename = "shapebuilder_type")]
 /// A choice for a shape builder type
 pub enum ShapeBuilderType {
     /// A line builder
     #[serde(rename = "line")]
+    #[default]
     Line = 0,
     /// An arrow builder
     #[serde(rename = "arrow")]
@@ -130,12 +138,6 @@ impl ShapeBuilderType {
     }
 }
 
-impl Default for ShapeBuilderType {
-    fn default() -> Self {
-        Self::Line
-    }
-}
-
 impl TryFrom<u32> for ShapeBuilderType {
     type Error = anyhow::Error;
 
@@ -146,7 +148,14 @@ impl TryFrom<u32> for ShapeBuilderType {
 }
 
 #[derive(
-    Copy, Clone, Debug, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+    Copy,
+    Clone,
+    Debug,
+    Default,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
 )]
 #[serde(rename = "penpathbuilder_type")]
 /// A choice for a pen path builder type
@@ -159,13 +168,8 @@ pub enum PenPathBuilderType {
     Curved,
     #[serde(rename = "modeled")]
     /// the modeled pen path builder
+    #[default]
     Modeled,
-}
-
-impl Default for PenPathBuilderType {
-    fn default() -> Self {
-        Self::Modeled
-    }
 }
 
 impl TryFrom<u32> for PenPathBuilderType {

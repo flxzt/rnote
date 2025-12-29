@@ -11,6 +11,7 @@ use std::ops::Range;
     PartialEq,
     Clone,
     Copy,
+    Default,
     Serialize,
     Deserialize,
     num_derive::FromPrimitive,
@@ -20,17 +21,12 @@ pub enum TexturedDotsDistribution {
     /// Uniform distribution.
     Uniform = 0,
     /// Normal distribution.
+    #[default]
     Normal,
     /// Exponential distribution distribution, from the outline increasing in probability symmetrical to the center.
     Exponential,
     /// Exponential distribution distribution, from the center increasing in probability symmetrical outwards to the outline.
     ReverseExponential,
-}
-
-impl Default for TexturedDotsDistribution {
-    fn default() -> Self {
-        Self::Normal
-    }
 }
 
 impl TryFrom<u32> for TexturedDotsDistribution {

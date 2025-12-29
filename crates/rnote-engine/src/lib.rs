@@ -23,6 +23,8 @@ pub mod snap;
 pub mod store;
 pub mod strokes;
 pub mod tasks;
+#[cfg(feature = "ui")]
+pub mod typst;
 pub mod utils;
 pub mod widgetflags;
 

@@ -311,7 +311,14 @@ impl Composer<Style> for Shape {
 
 /// The pressure curve used by some styles.
 #[derive(
-    Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+    Debug,
+    Clone,
+    Copy,
+    Default,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
 )]
 #[serde(rename = "pressure_curve")]
 pub enum PressureCurve {
@@ -319,6 +326,7 @@ pub enum PressureCurve {
     #[serde(rename = "const")]
     Const = 0,
     /// Linear.
+    #[default]
     #[serde(rename = "linear")]
     Linear,
     /// Square root.
@@ -333,12 +341,6 @@ pub enum PressureCurve {
     /// Cubic polynomial.
     #[serde(rename = "pow3")]
     Pow3,
-}
-
-impl Default for PressureCurve {
-    fn default() -> Self {
-        Self::Linear
-    }
 }
 
 impl PressureCurve {

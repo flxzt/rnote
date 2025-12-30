@@ -2104,9 +2104,10 @@ dependencies = [
 [[package]]
 name = "ink-stroke-modeler-rs"
 version = "0.1.0"
-source = "git+https://github.com/flxzt/ink-stroke-modeler-rs?rev=84d311e9b0d034dcd955a1f353d37f54b2bda70f#84d311e9b0d034dcd955a1f353d37f54b2bda70f"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fd1c3066d5abcd42e8fcfd14f76e5397b373e202b3fdf7628d269b05b889bdd6"
 dependencies = [
- "thiserror 1.0.69",
+ "thiserror 2.0.17",
 ]
 
 [[package]]

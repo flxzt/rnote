@@ -50,7 +50,7 @@ image = { version = "0.25.6", default-features = false, features = [
     "tiff",
 ] }
 indicatif = "0.18.0"
-ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "84d311e9b0d034dcd955a1f353d37f54b2bda70f" }
+ink-stroke-modeler-rs = "0.1.0"
 itertools = "0.14.0"
 kurbo = "0.11.2"
 librsvg = "2.60.0"

@@ -123,10 +123,13 @@ prerequisites-win:
         mingw-w64-x86_64-gettext-runtime-0.26-1-any.pkg.tar.zst \
         mingw-w64-x86_64-gettext-tools-0.26-1-any.pkg.tar.zst
     # 2 : Get cairo and gtk4 pinned version
+    # Also use a libadwaita version matching the gtk4 one
     wget -q https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-cairo-1.18.4-1-any.pkg.tar.zst
     wget -q https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gtk4-4.18.6-3-any.pkg.tar.zst
+    wget -q https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-libadwaita-1.7.7-1-any.pkg.tar.zst
     pacman -U --noconfirm mingw-w64-x86_64-cairo-1.18.4-1-any.pkg.tar.zst \
-        mingw-w64-x86_64-gtk4-4.18.6-3-any.pkg.tar.zst
+        mingw-w64-x86_64-gtk4-4.18.6-3-any.pkg.tar.zst \
+        mingw-w64-x86_64-libadwaita-1.7.7-1-any.pkg.tar.zst
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     export PATH="$HOME/.cargo/bin:$PATH"
 

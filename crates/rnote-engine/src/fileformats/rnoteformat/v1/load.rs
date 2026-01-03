@@ -62,10 +62,15 @@ impl RnoteFileInterfaceV1 {
         mut engine_snapshot: EngineSnapshot,
         stroke_chrono_pair_chunks: Vec<Vec<(Stroke, ChronoComponent)>>,
     ) -> EngineSnapshot {
-        let capacity = stroke_chrono_pair_chunks
+        let mut capacity = stroke_chrono_pair_chunks
             .iter()
             .map(Vec::len)
             .sum::<usize>();
+
+        // We want some extra breathing room, here we are not trying to predict the number of
+        // additional strokes a user is going to create after opening the file, instead we want
+        // to minimize re-allocations, especially for very large slotmaps.
+        capacity += capacity.div_ceil(6).clamp(400, 2000);
 
         let mut stroke_components: HopSlotMap<StrokeKey, Arc<Stroke>> =
             HopSlotMap::with_capacity_and_key(capacity);
@@ -137,9 +142,6 @@ impl RnoteFileInterfaceV1 {
     }
 }
 
-type EngineStrokes = Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>;
-type EngineChronos = Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>;
-
 impl TryFrom<LegacyRnoteFile> for CompatV1 {
     type Error = anyhow::Error;
 
@@ -159,7 +161,8 @@ impl TryFrom<LegacyRnoteFile> for CompatV1 {
 
         engine_snapshot.insert(
             "stroke_components",
-            ijson::to_value::<EngineStrokes>(Default::default()).unwrap(),
+            // Type definition of `stroke_components` in [`EngineSnapshot`]
+            ijson::to_value::<Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>>(Default::default()).unwrap(),
         );
 
         let mut raw_chronos: ijson::IArray = engine_snapshot
@@ -170,7 +173,11 @@ impl TryFrom<LegacyRnoteFile> for CompatV1 {
 
         engine_snapshot.insert(
             "chrono_components",
-            ijson::to_value::<EngineChronos>(Default::default()).unwrap(),
+            // Type definition of `chrono_components` in [`EngineSnapshot`]
+            ijson::to_value::<Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>>(
+                Default::default(),
+            )
+            .unwrap(),
         );
 
         let mut stroke_chrono_pair_vec: Vec<ijson::IValue> = raw_strokes

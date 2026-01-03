@@ -5,9 +5,9 @@ use anyhow::{Context, bail};
 /// The prelude is used to identify Rnote files and provide some context.
 /// It is composed of four elements:
 /// 1. The magic number: `[u8; 10]` = `[52, 4e, 4f, 54, 45, 2d, ce, a6, ce, 9b]` = "RNOTE-ΦΛ" (in UTF-8 encoding)
-/// 2. The file version: `u16` (decides in broad strokes how the bytes will be handled later on)
-/// 3. The Rnote version (that last saved the file): `[major (u64), minor (u64), patch (u64), Prerelease size (u16), Prerelease (str), BuildMetadata size (u16), BuildMetadata (str)]`
-/// 4. The size of the header: `u32`
+/// 2. The file version: `u16_le` (decides in broad strokes how the bytes will be handled later on)
+/// 3. The Rnote version (that last saved the file, almost one-to-one repr. of [`semver::Version`]): `[major (u64_le), minor (u64_le), patch (u64_le), Prerelease size (u16_le), Prerelease (str, UTF-8), BuildMetadata size (u16_le), BuildMetadata (str, UTF-8)]`
+/// 4. The size of the header: `u32_le`
 #[derive(Debug, Clone)]
 pub struct Prelude {
     pub file_version: u16,

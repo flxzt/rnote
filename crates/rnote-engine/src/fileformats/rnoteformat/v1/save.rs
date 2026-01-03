@@ -4,12 +4,16 @@ use anyhow::Context;
 use super::*;
 
 impl RnoteFileInterfaceV1 {
-    /// Attempts to convert an `EngineSnapshot` to bytes.
+    /// Attempts to convert an [`EngineSnapshot`] struct to bytes.
+    /// Takes mutable ownership of the [`EngineSnapshot`], as we extract `stroke_components`, and `chrono_components`
+    /// in order to serialize these separately from the rest of the struct in parallel. If this becomes problematic
+    /// in the future, a simple reference to the snapshot would work so long as the `#[serde(skip_serializing)]`
+    /// attribute is applied to `stroke_components`, and `chrono_components` in the [`EngineSnapshot`] declaration.
     pub fn engine_snapshot_to_bytes(
         mut engine_snapshot: EngineSnapshot,
         compression_method: CompressionMethod,
     ) -> anyhow::Result<Vec<u8>> {
-        // We first extract the strokes and chrono components from the engine snapshot.
+        // We first extract the stroke and chrono components from the engine snapshot.
         let engine_strokes = std::mem::take(&mut engine_snapshot.stroke_components);
         let engine_chronos = std::mem::take(&mut engine_snapshot.chrono_components);
 
@@ -25,7 +29,7 @@ impl RnoteFileInterfaceV1 {
             )
             .inspect(|compressed| core_info.c_size = compressed.len())?;
 
-        // We'll then do basically the same thing as above, but in a much more complicated manner
+        // We'll then do basically the same thing as above, but in a more complicated manner
         // for the previously extracted strokes and chrono components, all for the sake of speed.
 
         // We try to roughly approximate the capacity each local buffer will require,

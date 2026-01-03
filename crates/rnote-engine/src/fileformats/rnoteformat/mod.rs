@@ -69,6 +69,7 @@ pub fn load_engine_snapshot_from_bytes(bytes: &[u8]) -> anyhow::Result<EngineSna
     }
 }
 
+/// Simple wrapper function, for documentation, refer to [`RnoteFileInterface::engine_snapshot_to_bytes`]
 pub fn save_engine_snapshot_to_bytes(
     engine_snapshot: EngineSnapshot,
     compression_method: CompressionMethod,

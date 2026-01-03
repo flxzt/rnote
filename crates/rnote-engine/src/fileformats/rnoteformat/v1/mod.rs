@@ -3,6 +3,12 @@
 //! This module contains almost all the implementation for loading and saving the current
 //! Rnote file format. It supersedes the older logic found in the `legacy` module.
 //!
+//! ## Binary format
+//!
+//! * Prelude: contains the magic number, the file version (=1 here), the Rnote semantic version that last saved the file, and the header size.
+//! * Header: [`RnoteFileHeaderV1`], contains information required for decompression and parallel handling of the body.
+//! * Body: contains the gutted, serialized, and compressed [`EngineSnapshot`] as well as chunks of serialized, and compressed ([`Stroke`], [`ChronoComponent`]) pairs.
+//!
 //! ## Saving
 //!
 //! In contrast to the legacy implementation, saving no longer serializes the
@@ -47,10 +53,11 @@ mod version;
 pub use version::*;
 
 // Imports
-use super::compression::CompressionMethod;
 use crate::{
     engine::EngineSnapshot,
-    fileformats::rnoteformat::{bcursor::BCursor, legacy::LegacyRnoteFile, prelude::Prelude},
+    fileformats::rnoteformat::{
+        bcursor::BCursor, compression::CompressionMethod, legacy::LegacyRnoteFile, prelude::Prelude,
+    },
     store::{ChronoComponent, StrokeKey},
     strokes::Stroke,
 };

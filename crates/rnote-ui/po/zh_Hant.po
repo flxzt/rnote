@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 15:24+0200\n"
-"PO-Revision-Date: 2025-07-19 14:03+0000\n"
-"Last-Translator: openCC converted Yuqi Huang <ctrlhuangyq@gmail.com>\n"
+"PO-Revision-Date: 2025-12-08 18:57+0000\n"
+"Last-Translator: openCC converted quantumparadox <1523509617@qq.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/rnote/repo/zh_Hans/>\n"
 "Language: zh_Hant\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.13-dev\n"
+"X-Generator: Weblate 5.15-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -813,23 +813,23 @@ msgstr "粗糙"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:132
 msgid "Highlighting"
-msgstr ""
+msgstr "高亮"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:135
 msgid "Highlight-Mode"
-msgstr ""
+msgstr "高亮模式"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:136
 msgid "Fade active color"
-msgstr ""
+msgstr "淡化"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
 msgid "Highlight-Opacity"
-msgstr ""
+msgstr "高光-不透明度"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:142
 msgid "Modify the highlight opacity (%)"
-msgstr ""
+msgstr "修改高亮不透明度(%)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:161
 #, fuzzy

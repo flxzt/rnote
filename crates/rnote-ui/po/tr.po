@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 15:24+0200\n"
-"PO-Revision-Date: 2025-04-15 10:27+0000\n"
-"Last-Translator: Murteza Y <weblate@murtezayesil.me>\n"
+"PO-Revision-Date: 2026-01-02 00:01+0000\n"
+"Last-Translator: Efexplose <efexplose@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.15.1\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -226,7 +226,7 @@ msgstr "Dosyayı çöpe atmak istediğine emin misin?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "Çöp"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:346
@@ -344,19 +344,14 @@ msgstr "Sayfa Sırası"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
-#, fuzzy
-#| msgid ""
-#| "The page order when documents with layouts\n"
-#| "that expand in horizontal and vertical directions\n"
-#| "are cut into pages"
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
-"Yatay ve dikey yönlerde genişleyen mizanpajlara\n"
-"sahip belgeler sayfalar halinde\n"
-"kesildiğinde sayfa sırası"
+"Yatay ve dikey yönde genişleyen yerleşimlere\n"
+"sahip belgeler sayfalara bölündüğünde, ortaya \n"
+"çıkan sayfaların hangi sırayla dizileceği"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:152
 #: crates/rnote-ui/data/ui/dialogs/export.ui:363
@@ -414,10 +409,6 @@ msgstr "Bitmap Ölçek Faktörü"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
@@ -554,18 +545,17 @@ msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Xournal++ dosyası için tercih edilen DPI değerini ayarla"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:273
+#, fuzzy
 msgid "is password protected"
-msgstr ""
+msgstr "parola güvende mi"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:276
 msgid "Encrypted PDF"
-msgstr ""
+msgstr "PDF'yi şifrele"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:279
-#, fuzzy
-#| msgid "Cancel"
 msgid "_Cancel"
-msgstr "İptal"
+msgstr "_İptal"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:280
 #, fuzzy
@@ -575,7 +565,7 @@ msgstr "Saat"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:291
 msgid "Enter the PDF password"
-msgstr ""
+msgstr "PDF'in şifresini girin"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
@@ -830,30 +820,34 @@ msgid "Rough"
 msgstr "Kaba"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:132
+#, fuzzy
 msgid "Highlighting"
-msgstr ""
+msgstr "Üstçizme"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:135
+#, fuzzy
 msgid "Highlight-Mode"
-msgstr ""
+msgstr "Üstçizme Modu"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:136
 msgid "Fade active color"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
+#, fuzzy
 msgid "Highlight-Opacity"
-msgstr ""
+msgstr "Üstçizme Opaklığı"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:142
+#, fuzzy
 msgid "Modify the highlight opacity (%)"
-msgstr ""
+msgstr "Üstçizme opaklığını ayarla (%)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:161
 #, fuzzy
 #| msgid "Solid Style"
 msgid "Smooth Style"
-msgstr "Düz Biçim"
+msgstr "Akışkan Biçim"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:164
 #, fuzzy
@@ -868,39 +862,33 @@ msgid "Choose a line cap"
 msgstr "Biçim seç"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:169
-#, fuzzy
-#| msgctxt "part of string representation of a color"
-#| msgid "bright"
 msgid "Straight"
-msgstr "parlak"
+msgstr "Düz"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
 msgid "Round"
-msgstr ""
+msgstr "Dairesel"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
-#, fuzzy
-#| msgid "Fill Style"
 msgid "Line Style"
-msgstr "Dolgu Biçimi"
+msgstr "Çizgi Biçimi"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
-#, fuzzy
-#| msgid "Choose a fill style"
 msgid "Choose a line style"
-msgstr "Bir dolgu biçimi seç"
+msgstr "Bir çizgi biçimi seç"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:184
 msgid "Dotted"
-msgstr ""
+msgstr "Noktalı"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:185
 msgid "Dashed (narrow)"
-msgstr ""
+msgstr "Çizgili (sıkışık)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:186
+#, fuzzy
 msgid "Dashed (equidistant)"
-msgstr ""
+msgstr "Çizgili (Eş masefeli)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 #, fuzzy

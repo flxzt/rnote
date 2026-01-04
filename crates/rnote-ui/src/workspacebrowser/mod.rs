@@ -113,7 +113,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnWorkspaceBrowser(ObjectSubclass<imp::RnWorkspaceBrowser>)
-        @extends gtk4::Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnWorkspaceBrowser {
@@ -402,15 +403,14 @@ fn create_files_list_row_factory(appwindow: &RnAppWindow) -> SignalListItemFacto
             let content_provider_expr =
                 fileinfo_expr.chain_closure::<gdk::ContentProvider>(closure!(
                     |_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
-                        if let Some(fileinfo_obj) = fileinfo_obj {
-                            if let Some(file) = fileinfo_obj
+                        if let Some(fileinfo_obj) = fileinfo_obj
+                            && let Some(file) = fileinfo_obj
                                 .downcast::<gio::FileInfo>()
                                 .unwrap()
                                 .attribute_object("standard::file")
-                            {
-                                let file = file.downcast::<gio::File>().unwrap();
-                                return gdk::ContentProvider::for_value(&file.to_value());
-                            }
+                        {
+                            let file = file.downcast::<gio::File>().unwrap();
+                            return gdk::ContentProvider::for_value(&file.to_value());
                         }
 
                         gdk::ContentProvider::for_value(&None::<gio::File>.to_value())
@@ -424,14 +424,13 @@ fn create_files_list_row_factory(appwindow: &RnAppWindow) -> SignalListItemFacto
                                                                          fileinfo_obj: Option<
                     glib::Object,
                 >| {
-                    if let Some(fileinfo_obj) = fileinfo_obj {
-                        if let Some(themed_icon) = fileinfo_obj
+                    if let Some(fileinfo_obj) = fileinfo_obj
+                        && let Some(themed_icon) = fileinfo_obj
                             .downcast::<gio::FileInfo>()
                             .unwrap()
                             .attribute_object("standard::icon")
-                        {
-                            return themed_icon.downcast::<gio::ThemedIcon>().unwrap();
-                        }
+                    {
+                        return themed_icon.downcast::<gio::ThemedIcon>().unwrap();
                     }
 
                     gio::ThemedIcon::from_names(&[
@@ -445,19 +444,18 @@ fn create_files_list_row_factory(appwindow: &RnAppWindow) -> SignalListItemFacto
                                                                 fileinfo_obj: Option<
                     glib::Object,
                 >| {
-                    if let Some(fileinfo_obj) = fileinfo_obj {
-                        if let Some(file) = fileinfo_obj
+                    if let Some(fileinfo_obj) = fileinfo_obj
+                        && let Some(file) = fileinfo_obj
                             .downcast::<gio::FileInfo>()
                             .unwrap()
                             .attribute_object("standard::file")
-                        {
-                            let file = file.downcast::<gio::File>().unwrap();
-                            return String::from(
-                                file.basename()
-                                    .expect("failed to get file.basename()")
-                                    .to_string_lossy(),
-                            );
-                        }
+                    {
+                        let file = file.downcast::<gio::File>().unwrap();
+                        return String::from(
+                            file.basename()
+                                .expect("failed to get file.basename()")
+                                .to_string_lossy(),
+                        );
                     }
 
                     String::from("")

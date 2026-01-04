@@ -9,7 +9,7 @@ name: Release Windows
 
 jobs:
   build:
-    runs-on: windows-2022
+    runs-on: windows-2025
     permissions:
       # needed for uploading release artifact
       contents: write
@@ -17,6 +17,17 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
+      - name: Install Inno 6
+        id: install_inno
+        shell: pwsh
+        run: |
+          winget install -e --id JRSoftware.InnoSetup -v 6.4.3 --accept-package-agreements --accept-source-agreements `
+            --disable-interactivity --scope machine
+          if (Test-Path "C:\Program Files (x86)\Inno Setup 6\") {
+            echo "inno installed successfully"
+          } else {
+            throw "could not find inno's installation folder"
+          }
 
       - name: Set installer name
         id: set_installer_name

@@ -235,10 +235,10 @@ impl RnCanvas {
             .engine_ref()
             .save_as_rnote_bytes(basename.to_string_lossy().to_string());
         let mut skip_set_output_file = false;
-        if let Some(output_file_path) = self.output_file().and_then(|f| f.path()) {
-            if crate::utils::paths_abs_eq(output_file_path, &file_path).unwrap_or(false) {
-                skip_set_output_file = true;
-            }
+        if let Some(output_file_path) = self.output_file().and_then(|f| f.path())
+            && crate::utils::paths_abs_eq(output_file_path, &file_path).unwrap_or(false)
+        {
+            skip_set_output_file = true;
         }
         self.dismiss_output_file_modified_toast();
 

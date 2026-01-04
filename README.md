@@ -61,11 +61,11 @@ Download the official flatpak on Flathub [here](https://flathub.org/apps/details
 
 ### MacOS
 
-Thanks to @dehesselle the app is available on MacOS as an app bundle.  
+Thanks to [dehesselle](https://gitlab.com/dehesselle) the app is available on MacOS as an app bundle.  
 Check out the [repository](https://gitlab.com/dehesselle/rnote_macos), the latest release can be downloaded [here](https://gitlab.com/dehesselle/rnote_macos/-/releases/permalink/latest).
 
 <div align="start">
-<a href='https://gitlab.com/dehesselle/rnote_macos/-/releases/permalink/latest'><img height="150" alt='Download MacOS app bundle' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/rnote-macos-app-bundle-badge.png'/></a>
+<a href='https://gitlab.com/dehesselle/rnote_macos/-/releases/permalink/latest'><img width="150" alt='Download MacOS app bundle' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/rnote-macos-app-bundle-badge.png'/></a>
 </div><br>
 
 ### Windows

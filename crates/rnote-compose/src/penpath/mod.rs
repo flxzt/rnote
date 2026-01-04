@@ -28,7 +28,7 @@ pub struct PenPath {
 
 impl Shapeable for PenPath {
     fn bounds(&self) -> Aabb {
-        let mut bounds = Aabb::from_points(&[self.start.pos.into()]);
+        let mut bounds = Aabb::from_points(std::iter::once(self.start.pos.into()));
 
         let mut prev = self.start;
         for seg in self.segments.iter() {

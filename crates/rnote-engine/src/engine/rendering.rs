@@ -322,10 +322,10 @@ impl Engine {
     ) -> anyhow::Result<()> {
         use gtk4::prelude::*;
 
-        if self.document.config.format.show_origin_indicator {
-            if let Some(r) = &self.origin_indicator_rendernode {
-                snapshot.append_node(r);
-            }
+        if self.document.config.format.show_origin_indicator
+            && let Some(r) = &self.origin_indicator_rendernode
+        {
+            snapshot.append_node(r);
         }
 
         Ok(())

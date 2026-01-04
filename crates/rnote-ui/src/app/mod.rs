@@ -14,7 +14,7 @@ use crate::{
     workspacebrowser::RnWorkspacesBar, workspacebrowser::workspacesbar::RnWorkspaceRow,
 };
 use adw::subclass::prelude::AdwApplicationImpl;
-use gtk4::{gio, glib, glib::clone, prelude::*, subclass::prelude::*};
+use gtk4::{WindowGroup, gio, glib, glib::clone, prelude::*, subclass::prelude::*};
 
 mod imp {
     use super::*;
@@ -133,6 +133,13 @@ mod imp {
         pub(crate) fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
             let appwindow = RnAppWindow::new(self.obj().upcast_ref::<gtk4::Application>());
             appwindow.init();
+            // create a window group for each app window
+            // to make modals only impact the current app
+            // window.
+            // See issue #1461
+            let window_group = WindowGroup::new();
+            window_group.add_window(&appwindow);
+
             appwindow.present();
 
             // Loading in input file in the first tab, if Some

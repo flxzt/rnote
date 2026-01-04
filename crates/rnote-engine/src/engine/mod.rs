@@ -244,11 +244,9 @@ impl Engine {
         let mut widget_flags = WidgetFlags::default();
 
         let pen_sounds = config.read().pen_sounds;
-        let optimize_epd = config.read().optimize_epd;
 
         self.config = config.clone();
         self.set_pen_sounds(pen_sounds, data_dir);
-        self.set_optimize_epd(optimize_epd);
 
         widget_flags |= self
             .penholder
@@ -300,10 +298,6 @@ impl Engine {
 
     pub fn optimize_epd(&self) -> bool {
         self.config.read().optimize_epd
-    }
-
-    pub fn set_optimize_epd(&mut self, optimize_epd: bool) {
-        self.config.write().optimize_epd = optimize_epd;
     }
 
     /// Takes a snapshot of the current state.
@@ -896,9 +890,9 @@ impl Engine {
     /// Handle a requested animation frame.
     ///
     /// Can request another frame using `EngineViewMut#animation.claim_frame()`.
-    pub fn handle_animation_frame(&mut self, optimize_epd: bool) {
+    pub fn handle_animation_frame(&mut self) {
         self.penholder
-            .handle_animation_frame(&mut engine_view_mut!(self), optimize_epd);
+            .handle_animation_frame(&mut engine_view_mut!(self));
     }
 
     pub fn current_pen_style_w_override(&self) -> PenStyle {

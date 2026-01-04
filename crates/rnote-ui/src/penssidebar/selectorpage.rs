@@ -1,6 +1,8 @@
 // Imports
 use crate::RnAppWindow;
-use gtk4::{CompositeTemplate, ToggleButton, glib, glib::clone, prelude::*, subclass::prelude::*};
+use gtk4::{
+    CompositeTemplate, ToggleButton, Widget, glib, glib::clone, prelude::*, subclass::prelude::*,
+};
 use rnote_engine::pens::pensconfig::selectorconfig::SelectorStyle;
 
 mod imp {
@@ -25,7 +27,7 @@ mod imp {
     impl ObjectSubclass for RnSelectorPage {
         const NAME: &'static str = "RnSelectorPage";
         type Type = super::RnSelectorPage;
-        type ParentType = gtk4::Widget;
+        type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -54,7 +56,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnSelectorPage(ObjectSubclass<imp::RnSelectorPage>)
-        @extends gtk4::Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnSelectorPage {

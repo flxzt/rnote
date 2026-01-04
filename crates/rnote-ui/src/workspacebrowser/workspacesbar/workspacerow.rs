@@ -80,7 +80,7 @@ mod imp {
 
                     self.entry.replace(entry);
                     self.connect_entry();
-                    self.update_apearance();
+                    self.update_appearance();
                 }
                 _ => unimplemented!(),
             }
@@ -106,7 +106,7 @@ mod imp {
                     #[weak(rename_to=workspacerow)]
                     obj,
                     move |_, _| {
-                        workspacerow.imp().update_apearance();
+                        workspacerow.imp().update_appearance();
                     }
                 ),
             );
@@ -117,7 +117,7 @@ mod imp {
                     #[weak(rename_to=workspacerow)]
                     obj,
                     move |_, _| {
-                        workspacerow.imp().update_apearance();
+                        workspacerow.imp().update_appearance();
                     }
                 ),
             );
@@ -128,7 +128,7 @@ mod imp {
                     #[weak(rename_to=workspacerow)]
                     obj,
                     move |_, _| {
-                        workspacerow.imp().update_apearance();
+                        workspacerow.imp().update_appearance();
                     }
                 ),
             );
@@ -139,13 +139,13 @@ mod imp {
                     #[weak(rename_to=workspacerow)]
                     obj,
                     move |_, _| {
-                        workspacerow.imp().update_apearance();
+                        workspacerow.imp().update_appearance();
                     }
                 ),
             );
         }
 
-        fn update_apearance(&self) {
+        fn update_appearance(&self) {
             let dir = self.entry.borrow().dir();
             let icon = self.entry.borrow().icon();
             let color = self.entry.borrow().color().into_compose_color();
@@ -195,7 +195,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnWorkspaceRow(ObjectSubclass<imp::RnWorkspaceRow>)
-        @extends gtk4::Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnWorkspaceRow {

@@ -12,9 +12,12 @@ use rnote_compose::SplitOrder;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::ext::GraphenePointExt;
+use rnote_engine::pens::PenStyle;
 use rnote_engine::strokes::resize::{ImageSizeOption, Resize};
+use rnote_engine::strokes::textstroke::TextAttribute;
 use rnote_engine::{Camera, Engine};
 use std::path::PathBuf;
+use std::str::FromStr;
 use std::time::Instant;
 use tracing::{debug, error};
 
@@ -107,6 +110,12 @@ impl RnAppWindow {
         self.add_action(&action_export_doc_pages);
         let action_export_selection = gio::SimpleAction::new("export-selection", None);
         self.add_action(&action_export_selection);
+        let action_text_bold = gio::SimpleAction::new("text-bold", None);
+        self.add_action(&action_text_bold);
+        let action_text_italic = gio::SimpleAction::new("text-italic", None);
+        self.add_action(&action_text_italic);
+        let action_text_underline = gio::SimpleAction::new("text-underline", None);
+        self.add_action(&action_text_underline);
         let action_clipboard_copy = gio::SimpleAction::new("clipboard-copy", None);
         self.add_action(&action_clipboard_copy);
         let action_clipboard_cut = gio::SimpleAction::new("clipboard-cut", None);
@@ -159,6 +168,13 @@ impl RnAppWindow {
         self.add_action(&action_devel_mode);
         let action_visual_debug = gio::PropertyAction::new("visual-debug", self, "visual-debug");
         self.add_action(&action_visual_debug);
+
+        let action_pen_style = gio::SimpleAction::new_stateful(
+            "pen-style",
+            Some(&String::static_variant_type()),
+            &String::from("brush").to_variant(),
+        );
+        self.add_action(&action_pen_style);
 
         // Open settings
         action_open_settings.connect_activate(clone!(
@@ -292,6 +308,35 @@ impl RnAppWindow {
                             .await;
                     }
                 ));
+            }
+        ));
+
+        // Pen style
+        action_pen_style.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |action, target| {
+                let pen_style_str = target.unwrap().str().unwrap();
+
+                let pen_style = match PenStyle::from_str(pen_style_str) {
+                    Ok(s) => s,
+                    Err(e) => {
+                        error!("Activated pen-style action with invalid target, Err: {e:}");
+                        return;
+                    }
+                };
+
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                // don't change the style if the current style with override is already the same
+                // (e.g. when switched to from the pen button, not by clicking the pen page)
+                if pen_style != canvas.engine_ref().current_pen_style_w_override() {
+                    let mut widget_flags = canvas.engine_mut().change_pen_style(pen_style);
+                    widget_flags |= canvas.engine_mut().change_pen_style_override(None);
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                }
+                action.set_state(&pen_style_str.to_variant());
             }
         ));
 
@@ -463,7 +508,56 @@ impl RnAppWindow {
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
         ));
+        // Text Bold
+        action_text_bold.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                let widget_flags =
+                    canvas
+                        .engine_mut()
+                        .text_selection_toggle_attribute(TextAttribute::FontWeight(
+                            piet::FontWeight::BOLD.to_raw(),
+                        ));
+                appwindow.handle_widget_flags(widget_flags, &canvas)
+            }
+        ));
 
+        // Text Italic
+        action_text_italic.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                let widget_flags =
+                    canvas
+                        .engine_mut()
+                        .text_selection_toggle_attribute(TextAttribute::Style(
+                            rnote_engine::strokes::textstroke::FontStyle::Italic,
+                        ));
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }
+        ));
+
+        // Text Underline
+        action_text_underline.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                let widget_flags = canvas
+                    .engine_mut()
+                    .text_selection_toggle_attribute(TextAttribute::Underline(true));
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }
+        ));
         // Clear doc
         action_clear_doc.connect_activate(clone!(
             #[weak(rename_to=appwindow)]
@@ -1016,19 +1110,21 @@ impl RnAppWindow {
         );
         app.set_accels_for_action("win.zoom-reset", &["<Ctrl>0", "<Ctrl>KP_0"]);
         app.set_accels_for_action("win.zoom-out", &["<Ctrl>minus", "<Ctrl>KP_Subtract"]);
-        app.set_accels_for_action("win.import-file", &["<Ctrl>i"]);
+        app.set_accels_for_action("win.import-file", &["<Ctrl><Shift>i"]);
         app.set_accels_for_action("win.undo", &["<Ctrl>z"]);
         app.set_accels_for_action("win.redo", &["<Ctrl><Shift>z"]);
         app.set_accels_for_action("win.clipboard-copy", &["<Ctrl>c"]);
         app.set_accels_for_action("win.clipboard-cut", &["<Ctrl>x"]);
         app.set_accels_for_action("win.clipboard-paste", &["<Ctrl>v"]);
+        app.set_accels_for_action("win.text-bold", &["<Ctrl>b"]);
+        app.set_accels_for_action("win.text-italic", &["<Ctrl>i"]);
+        app.set_accels_for_action("win.text-underline", &["<Ctrl>u"]);
         app.set_accels_for_action("win.pen-style::brush", &["<Ctrl>1", "<Ctrl>KP_1"]);
         app.set_accels_for_action("win.pen-style::shaper", &["<Ctrl>2", "<Ctrl>KP_2"]);
         app.set_accels_for_action("win.pen-style::typewriter", &["<Ctrl>3", "<Ctrl>KP_3"]);
         app.set_accels_for_action("win.pen-style::eraser", &["<Ctrl>4", "<Ctrl>KP_4"]);
         app.set_accels_for_action("win.pen-style::selector", &["<Ctrl>5", "<Ctrl>KP_5"]);
         app.set_accels_for_action("win.pen-style::tools", &["<Ctrl>6", "<Ctrl>KP_6"]);
-
         // shortcuts for devel build
         if config::PROFILE.to_lowercase().as_str() == "devel" {
             app.set_accels_for_action("win.visual-debug", &["<Ctrl><Shift>v"]);

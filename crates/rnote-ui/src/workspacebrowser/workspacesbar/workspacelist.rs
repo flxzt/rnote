@@ -72,7 +72,7 @@ impl RnWorkspaceList {
         self.append(list.to_vec());
     }
 
-    pub(crate) fn iter(&self) -> VecRefWrapper<RnWorkspaceListEntry> {
+    pub(crate) fn iter(&self) -> VecRefWrapper<'_, RnWorkspaceListEntry> {
         VecRefWrapper::new(self.imp().list.borrow())
     }
 

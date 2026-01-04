@@ -101,10 +101,9 @@ impl StrokeStore {
         viewport: Aabb,
         image_scale: f64,
     ) {
-        if let (Some(stroke), Some(render_comp)) = (
-            self.stroke_components.get(key),
-            self.render_components.get_mut(key),
-        ) {
+        if let Some(stroke) = self.stroke_components.get(key)
+            && let Some(render_comp) = self.render_components.get_mut(key)
+        {
             if render_comp.state == RenderCompState::BusyRenderingInTask {
                 return;
             }
@@ -181,10 +180,9 @@ impl StrokeStore {
         viewport: Aabb,
         image_scale: f64,
     ) {
-        if let (Some(render_comp), Some(stroke)) = (
-            self.render_components.get_mut(key),
-            self.stroke_components.get(key),
-        ) {
+        if let Some(stroke) = self.stroke_components.get(key)
+            && let Some(render_comp) = self.render_components.get_mut(key)
+        {
             if render_comp.state == RenderCompState::BusyRenderingInTask {
                 return;
             }
@@ -348,10 +346,9 @@ impl StrokeStore {
         viewport: Aabb,
         image_scale: f64,
     ) {
-        if let (Some(stroke), Some(render_comp)) = (
-            self.stroke_components.get(key),
-            self.render_components.get_mut(key),
-        ) {
+        if let Some(stroke) = self.stroke_components.get(key)
+            && let Some(render_comp) = self.render_components.get_mut(key)
+        {
             match stroke.as_ref() {
                 Stroke::BrushStroke(brushstroke) => {
                     match brushstroke.gen_image_for_last_segments(n_last_segments, image_scale) {
@@ -420,7 +417,7 @@ impl StrokeStore {
                         }
                         Err(e) => {
                             error!(
-                                "Generating rendernodes failed while replacing rendering with partial images, Err {e:?}"
+                                "Generating rendernodes failed while replacing rendering with partial images, Err: {e:?}"
                             );
                             render_comp.state = RenderCompState::Dirty;
                         }
@@ -441,7 +438,7 @@ impl StrokeStore {
                         }
                         Err(e) => {
                             error!(
-                                "Generating rendernodes failed while replacing rendering with full images, Err {e:?}"
+                                "Generating rendernodes failed while replacing rendering with full images, Err: {e:?}"
                             );
                             render_comp.state = RenderCompState::Dirty;
                         }
@@ -479,7 +476,7 @@ impl StrokeStore {
                         }
                         Err(e) => {
                             error!(
-                                "Generating rendernodes failed while appending rendering full images, Err {e:?}"
+                                "Generating rendernodes failed while appending rendering full images, Err: {e:?}"
                             );
                             render_comp.state = RenderCompState::Dirty;
                         }
@@ -509,10 +506,9 @@ impl StrokeStore {
         snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
 
         for key in self.stroke_keys_as_rendered_intersecting_bounds(viewport) {
-            if let (Some(stroke), Some(render_comp)) = (
-                self.stroke_components.get(key),
-                self.render_components.get(key),
-            ) {
+            if let Some(stroke) = self.stroke_components.get(key)
+                && let Some(render_comp) = self.render_components.get(key)
+            {
                 // if the stroke currently does not have a rendering and is will create one,
                 // draw a placeholder filled rect
                 if render_comp.rendernodes.is_empty()
@@ -567,10 +563,10 @@ impl StrokeStore {
         image_scale: f64,
     ) {
         for key in self.stroke_keys_as_rendered_intersecting_bounds(viewport) {
-            if let Some(stroke) = self.stroke_components.get(key) {
-                if let Err(e) = stroke.draw(piet_cx, image_scale) {
-                    error!("Drawing stroke immediate on piet RenderContext failed , Err: {e:?}");
-                }
+            if let Some(stroke) = self.stroke_components.get(key)
+                && let Err(e) = stroke.draw(piet_cx, image_scale)
+            {
+                error!("Drawing stroke immediate on piet RenderContext failed , Err: {e:?}");
             }
         }
     }
@@ -590,12 +586,12 @@ impl StrokeStore {
         let border_widths = 1.0 / engine.camera.total_zoom();
 
         for key in self.keys_sorted_chrono() {
-            if let Some(stroke) = self.stroke_components.get(key) {
+            if let Some(stroke) = self.stroke_components.get(key)
+                && let Some(trash_comp) = self.trash_components.get(key)
+            {
                 // Push opacity for strokes which are normally hidden
-                if let Some(trash_comp) = self.trash_components.get(key) {
-                    if trash_comp.trashed {
-                        snapshot.push_opacity(0.2);
-                    }
+                if trash_comp.trashed {
+                    snapshot.push_opacity(0.2);
                 }
 
                 if let Some(render_comp) = self.render_components.get(key) {
@@ -659,10 +655,10 @@ impl StrokeStore {
                 }
 
                 // Pop Blur and opacity for hidden strokes
-                if let Some(trash_comp) = self.trash_components.get(key) {
-                    if trash_comp.trashed {
-                        snapshot.pop();
-                    }
+                if let Some(trash_comp) = self.trash_components.get(key)
+                    && trash_comp.trashed
+                {
+                    snapshot.pop();
                 }
             }
         }

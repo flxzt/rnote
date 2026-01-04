@@ -269,10 +269,9 @@ impl StrokeStore {
         }
 
         for (key, _) in keys_in_viewport_hash {
-            if let (Some(stroke), Some(render_comp)) = (
-                self.stroke_components.get(key),
-                self.render_components.get_mut(key),
-            ) {
+            if let Some(stroke) = self.stroke_components.get(key)
+                && let Some(render_comp) = self.render_components.get_mut(key)
+            {
                 let tasks_tx = tasks_tx.clone();
 
                 // only check if rerendering is not forced

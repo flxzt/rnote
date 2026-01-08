@@ -33,6 +33,8 @@ mod imp {
         #[template_child]
         pub(crate) brushstyle_textured_row: TemplateChild<adw::ActionRow>,
         #[template_child]
+        pub(crate) brushstyle_highlighter_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
         pub(crate) brushconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub(crate) brushconfig_popover: TemplateChild<Popover>,
@@ -130,6 +132,10 @@ impl RnBrushPage {
                 .imp()
                 .brushstyle_listbox
                 .select_row(Some(&*self.imp().brushstyle_textured_row)),
+            BrushStyle::Highlighter => self
+                .imp()
+                .brushstyle_listbox
+                .select_row(Some(&*self.imp().brushstyle_highlighter_row)),
         }
     }
 
@@ -264,6 +270,15 @@ impl RnBrushPage {
                                 .textured_options
                                 .stroke_width = stroke_width;
                         }
+                        BrushStyle::Highlighter => {
+                            appwindow
+                                .engine_config()
+                                .write()
+                                .pens_config
+                                .brush_config
+                                .highlighter_options
+                                .stroke_width = stroke_width;
+                        }
                     }
                 }
             ),
@@ -339,6 +354,23 @@ impl RnBrushPage {
                             .imp()
                             .brushstyle_menubutton
                             .set_icon_name("pen-brush-style-textured-symbolic");
+                    }
+                    BrushStyle::Highlighter => {
+                        let stroke_width = appwindow
+                            .engine_config()
+                            .read()
+                            .pens_config
+                            .brush_config
+                            .highlighter_options
+                            .stroke_width;
+                        brushpage
+                            .imp()
+                            .stroke_width_picker
+                            .set_stroke_width(stroke_width);
+                        brushpage
+                            .imp()
+                            .brushstyle_menubutton
+                            .set_icon_name("pen-brush-style-highlighter-symbolic");
                     }
                 }
             }
@@ -456,6 +488,10 @@ impl RnBrushPage {
             BrushStyle::Textured => {
                 imp.stroke_width_picker
                     .set_stroke_width(brush_config.textured_options.stroke_width);
+            }
+            BrushStyle::Highlighter => {
+                imp.stroke_width_picker
+                    .set_stroke_width(brush_config.highlighter_options.stroke_width);
             }
         }
     }

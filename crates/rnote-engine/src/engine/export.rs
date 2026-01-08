@@ -1,6 +1,6 @@
 // Imports
 use super::{Engine, StrokeContent};
-use crate::fileformats::rnoteformat::RnoteFile;
+use crate::fileformats::rnoteformat;
 use crate::fileformats::{FileFormatSaver, xoppformat};
 use anyhow::Context;
 use futures::channel::oneshot;
@@ -9,6 +9,7 @@ use rnote_compose::SplitOrder;
 use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
+use std::time::Instant;
 use tracing::error;
 
 /// Document export format.
@@ -315,7 +316,8 @@ impl Engine {
     /// The used image scale-factor for any strokes that are converted to bitmap images on export.
     pub const STROKE_EXPORT_IMAGE_SCALE: f64 = 1.8;
 
-    /// Save the current document as a .rnote file.
+    /// Save the current document as a `.rnote` file.
+    #[allow(unused_variables)]
     pub fn save_as_rnote_bytes(
         &self,
         file_name: String,
@@ -323,11 +325,11 @@ impl Engine {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
         let engine_snapshot = self.take_snapshot();
         rayon::spawn(move || {
+            #[rustfmt::skip]
             let result = || -> anyhow::Result<Vec<u8>> {
-                let rnote_file = RnoteFile {
-                    engine_snapshot: ijson::to_value(&engine_snapshot)?,
-                };
-                rnote_file.save_as_bytes(&file_name)
+                let start = Instant::now();
+                rnoteformat::save_engine_snapshot_to_bytes(engine_snapshot, rnoteformat::CompressionMethod::default())
+                    .inspect(|_| {tracing::debug!("Going from `EngineSnapshot` to bytes took {} ms", Instant::now().duration_since(start).as_millis())})
             };
             if oneshot_sender.send(result()).is_err() {
                 error!(

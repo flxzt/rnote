@@ -24,7 +24,6 @@ gio = { workspace = true }
 glib = { workspace = true }
 hayro = { workspace = true }
 hayro-svg = { workspace = true }
-hayro-syntax = { workspace = true }
 ijson = { workspace = true }
 image = { workspace = true }
 itertools = { workspace = true }

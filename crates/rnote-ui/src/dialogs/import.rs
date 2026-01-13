@@ -8,6 +8,8 @@ use anyhow::anyhow;
 use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{Builder, Button, FileDialog, FileFilter, Label, ToggleButton, gio, glib, glib::clone};
+use gtk4::{graphene, gsk};
+use hayro::hayro_syntax;
 use num_traits::ToPrimitive;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
 use std::sync::Arc;
@@ -114,14 +116,9 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
 ///
 /// Returns a password Option and a boolean weather the user canceled the file import or not
 pub(crate) async fn pdf_encryption_check_and_dialog(
-    _appwindow: &RnAppWindow,
-    _input_file: &gio::File,
+    appwindow: &RnAppWindow,
+    input_file: &gio::File,
 ) -> (Option<String>, bool) {
-    // Currently the 'hayro' Pdf library used for import does not support decryption of password-protected Pdfs.
-    // Until it is implemented, return None.
-    return (None, false);
-
-    /*
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );
@@ -147,13 +144,11 @@ pub(crate) async fn pdf_encryption_check_and_dialog(
         }
     ));
 
-    let params = adw::SpringParams::new(0.2, 0.5, 500.0);
-
     let animation = adw::SpringAnimation::builder()
         .widget(&pdf_password_entry_box)
         .value_from(0.0)
         .value_to(0.0)
-        .spring_params(&params)
+        .spring_params(&adw::SpringParams::new(0.2, 0.5, 500.0))
         .target(&target)
         .initial_velocity(10.0)
         .epsilon(0.001) // If amplitude of oscillation < epsilon, animation stops
@@ -161,25 +156,31 @@ pub(crate) async fn pdf_encryption_check_and_dialog(
         .build();
 
     let (tx, mut rx) = futures::channel::mpsc::unbounded::<(Option<String>, bool)>();
-    let tx_cancel = tx.clone();
-    let tx_unlock = tx.clone();
 
     dialog_import_pdf_password.connect_response(
         Some("unlock"),
         clone!(
             #[weak]
             pdf_password_entry,
+            #[strong]
+            tx,
             move |_, _| {
-                tx_unlock
-                    .unbounded_send((Some(pdf_password_entry.text().to_string()), false))
+                tx.unbounded_send((Some(pdf_password_entry.text().to_string()), false))
                     .unwrap();
             }
         ),
     );
 
-    dialog_import_pdf_password.connect_response(Some("cancel"), move |_, _| {
-        tx_cancel.unbounded_send((None, true)).unwrap();
-    });
+    dialog_import_pdf_password.connect_response(
+        Some("cancel"),
+        clone!(
+            #[strong]
+            tx,
+            move |_, _| {
+                tx.unbounded_send((None, true)).unwrap();
+            }
+        ),
+    );
 
     let file_name = input_file.basename().map_or_else(
         || gettext("- no file name -"),
@@ -190,39 +191,48 @@ pub(crate) async fn pdf_encryption_check_and_dialog(
     dialog_import_pdf_password.set_body(&dialog_body);
 
     let mut password: Option<String> = None;
+    let pdf_data = match input_file.load_bytes_future().await {
+        Ok(data) => Arc::new(data.0.to_vec()),
+        Err(err) => {
+            error!("Loading bytes from file failed, Err: {err:?}");
+            return (None, true);
+        }
+    };
 
     loop {
-        match poppler::Document::from_gfile(
-            input_file,
-            password.as_deref(),
-            None::<&gio::Cancellable>,
-        ) {
+        let pdf_res = if let Some(password) = password.as_ref() {
+            hayro_syntax::Pdf::new_with_password(pdf_data.clone(), password)
+        } else {
+            hayro_syntax::Pdf::new(pdf_data.clone())
+        };
+        match pdf_res {
             Ok(_) => return (password, false),
-            Err(e) => {
-                if e.matches(poppler::Error::Encrypted) {
-                    dialog_import_pdf_password.present(appwindow.root().as_ref());
-                    pdf_password_entry.grab_focus();
+            Err(hayro_syntax::LoadPdfError::Decryption(
+                hayro_syntax::DecryptionError::PasswordProtected,
+            )) => {
+                dialog_import_pdf_password.present(appwindow.root().as_ref());
+                pdf_password_entry.grab_focus();
 
-                    match rx.next().await {
-                        Some((new_password, cancel)) => {
-                            password = new_password;
-                            if cancel {
-                                return (None, true);
-                            }
-                        }
-                        None => {
+                match rx.next().await {
+                    Some((new_password, cancel)) => {
+                        if cancel {
                             return (None, true);
                         }
+                        password = new_password;
                     }
-                    animation.play();
-                    pdf_password_entry.set_text("");
-                } else {
-                    return (None, true);
+                    None => {
+                        return (None, true);
+                    }
                 }
+                animation.play();
+                pdf_password_entry.set_text("");
             }
-        };
+            Err(err) => {
+                error!("Creating Pdf instance failed, Err: {err:?}");
+                return (None, true);
+            }
+        }
     }
-    */
 }
 
 /// Imports the file as Pdf with an import dialog.
@@ -255,8 +265,6 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         builder.object("pdf_import_as_vector_toggle").unwrap();
     let pdf_import_bitmap_scalefactor_row: adw::SpinRow =
         builder.object("pdf_import_bitmap_scalefactor_row").unwrap();
-    let pdf_import_page_borders_row: adw::SwitchRow =
-        builder.object("pdf_import_page_borders_row").unwrap();
     let pdf_import_adjust_document_row: adw::SwitchRow =
         builder.object("pdf_import_adjust_document_row").unwrap();
     let import_pdf_button_cancel: Button = builder.object("import_pdf_button_cancel").unwrap();
@@ -293,7 +301,6 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     }
     pdf_import_page_spacing_row.set_selected(pdf_import_prefs.page_spacing.to_u32().unwrap());
     pdf_import_bitmap_scalefactor_row.set_value(pdf_import_prefs.bitmap_scalefactor);
-    pdf_import_page_borders_row.set_active(pdf_import_prefs.page_borders);
     pdf_import_adjust_document_row.set_active(pdf_import_prefs.adjust_document);
 
     pdf_page_start_row
@@ -384,19 +391,6 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }
     ));
 
-    pdf_import_page_borders_row.connect_active_notify(clone!(
-        #[weak]
-        appwindow,
-        move |row| {
-            appwindow
-                .engine_config()
-                .write()
-                .import_prefs
-                .pdf_import_prefs
-                .page_borders = row.is_active();
-        }
-    ));
-
     pdf_import_adjust_document_row.connect_active_notify(clone!(
         #[weak]
         appwindow,
@@ -411,12 +405,12 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     ));
 
     let pdf_data = Arc::new(input_file.load_bytes_future().await?.0.to_vec());
-    let pdf = match hayro::Pdf::new(pdf_data) {
-        Ok(pdf) => pdf,
-        Err(hayro_syntax::LoadPdfError::Decryption(_)) => {
-            return Err(anyhow!("Unable to decrypt Pdf file."));
-        }
-        Err(_) => return Err(anyhow!("Unable to load Pdf file.")),
+    let pdf = if let Some(password) = password.as_ref() {
+        hayro_syntax::Pdf::new_with_password(pdf_data, password)
+            .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
+    } else {
+        hayro_syntax::Pdf::new(pdf_data)
+            .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
     };
     let pdf_metadata = pdf.metadata();
 

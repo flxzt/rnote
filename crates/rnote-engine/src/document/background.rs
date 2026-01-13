@@ -1,6 +1,6 @@
 // Imports
-use crate::Svg;
 use crate::Image;
+use crate::Svg;
 use anyhow::Context;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;

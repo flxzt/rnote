@@ -1,6 +1,7 @@
 // Imports
 use crate::fileformats::xoppformat;
 use geo::line_string;
+use hayro::hayro_syntax;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
 use std::ops::Range;

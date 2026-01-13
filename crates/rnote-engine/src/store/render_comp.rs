@@ -1,7 +1,7 @@
 // Imports
 use super::{Stroke, StrokeKey, StrokeStore};
-use crate::engine::{EngineTask, EngineTaskSender};
 use crate::Image;
+use crate::engine::{EngineTask, EngineTaskSender};
 use crate::strokes::Content;
 use crate::strokes::content::GeneratedContentImages;
 use crate::{Drawable, image};

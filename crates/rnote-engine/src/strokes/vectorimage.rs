@@ -2,12 +2,13 @@
 use super::content::GeneratedContentImages;
 use super::resize::{ImageSizeOption, calculate_resize_ratio};
 use super::{Content, Stroke};
+use crate::Image;
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
-use crate::Image;
 use crate::svg::USVG_FONTDB;
 use crate::{Drawable, Svg};
 use anyhow::anyhow;
+use hayro::{hayro_interpret, hayro_syntax};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
@@ -213,15 +214,15 @@ impl VectorImage {
     ) -> Result<Vec<Self>, anyhow::Error> {
         // TODO: how to avoid this allocation without lifetime issues?
         let data = Arc::new(to_be_read.to_vec());
-        // TODO: hayro does not have the ability to unlock password-protected PDFs yet
-        if password.is_some() {
-            return Err(anyhow!(
-                "Import of password-protected PDFs is not supported at the moment"
-            ));
-        }
-        let pdf = hayro::Pdf::new(data)
-            .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?;
-        let interpreter_settings = hayro::InterpreterSettings::default();
+        let pdf = if let Some(password) = password {
+            hayro_syntax::Pdf::new_with_password(data, &password)
+                .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
+        } else {
+            hayro_syntax::Pdf::new(data)
+                .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
+        };
+        let interpreter_settings = hayro_interpret::InterpreterSettings::default();
+        let render_settings = hayro_svg::SvgRenderSettings::default();
         let pages = pdf.pages();
         let page_range = page_range.unwrap_or(0..pages.len());
         let page_width = if pdf_import_prefs.adjust_document {
@@ -249,6 +250,7 @@ impl VectorImage {
                 };
                 let width = intrinsic_width * page_zoom;
                 let height = intrinsic_height * page_zoom;
+                let bounds = Aabb::new(na::point![x, y], na::point![x + width, y + height]);
 
                 if pdf_import_prefs.adjust_document {
                     y += height
@@ -260,9 +262,7 @@ impl VectorImage {
                         PdfImportPageSpacing::OnePerDocumentPage => format.height(),
                     };
                 }
-                // TODO: implement drawing page borders
-                let svg_data = hayro_svg::convert(page, &interpreter_settings);
-                let bounds = Aabb::new(na::point![x, y], na::point![x + width, y + height]);
+                let svg_data = hayro_svg::convert(page, &interpreter_settings, &render_settings);
                 let svg = Svg { svg_data, bounds };
 
                 Some(svg)

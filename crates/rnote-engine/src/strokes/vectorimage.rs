@@ -222,7 +222,9 @@ impl VectorImage {
                 .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
         };
         let interpreter_settings = hayro_interpret::InterpreterSettings::default();
-        let render_settings = hayro_svg::SvgRenderSettings::default();
+        let render_settings = hayro_svg::SvgRenderSettings {
+            bg_color: [255, 255, 255, 255],
+        };
         let pages = pdf.pages();
         let page_range = page_range.unwrap_or(0..pages.len());
         let page_width = if pdf_import_prefs.adjust_document {

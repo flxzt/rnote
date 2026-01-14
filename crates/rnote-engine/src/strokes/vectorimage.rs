@@ -143,7 +143,7 @@ impl VectorImage {
         size_option: ImageSizeOption,
     ) -> Result<Self, anyhow::Error> {
         const COORDINATES_PREC: u8 = 3;
-        const TRANSFORMS_PREC: u8 = 4;
+        const TRANSFORMS_PREC: u8 = 8;
 
         let xml_options = usvg::WriteOptions {
             id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),

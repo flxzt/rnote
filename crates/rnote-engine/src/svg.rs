@@ -68,7 +68,7 @@ impl Svg {
     /// Also moves the bounds to mins: [0., 0.], maxs: extents
     pub fn simplify(&mut self) -> anyhow::Result<()> {
         const COORDINATES_PREC: u8 = 3;
-        const TRANSFORMS_PREC: u8 = 4;
+        const TRANSFORMS_PREC: u8 = 8;
 
         let xml_options = usvg::WriteOptions {
             id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),

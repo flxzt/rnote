@@ -1,5 +1,6 @@
 // Imports
-use crate::{Drawable, render};
+use crate::Image;
+use crate::{Drawable, Svg};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::AabbExt;
 use rnote_compose::{color, shapes::Shapeable};
@@ -10,12 +11,9 @@ use rnote_compose::{color, shapes::Shapeable};
 /// Some `Content` trait implementers only support generating image(s) for the entire content (Full).
 pub enum GeneratedContentImages {
     /// Only part of the content was rendered (for example when part of it is out of the current viewport).
-    Partial {
-        images: Vec<render::Image>,
-        viewport: Aabb,
-    },
+    Partial { images: Vec<Image>, viewport: Aabb },
     /// All content image(s) were rendered.
-    Full(Vec<render::Image>),
+    Full(Vec<Image>),
 }
 
 pub(crate) const CONTENT_HIGHLIGHT_COLOR: piet::Color = color::GNOME_BLUES[1].with_a8(96);
@@ -28,9 +26,9 @@ where
     /// Generate Svg from the content, without the Xml header or the Svg root.
     ///
     /// Used for exporting.
-    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
+    fn gen_svg(&self) -> Result<Svg, anyhow::Error> {
         let bounds = self.bounds();
-        render::Svg::gen_with_cairo(|cx| self.draw_to_cairo(cx, 1.0), bounds)
+        Svg::gen_with_cairo(|cx| self.draw_to_cairo(cx, 1.0), bounds)
     }
 
     /// Generate bitmap images for rendering in the app.
@@ -45,16 +43,14 @@ where
         let bounds = self.bounds();
 
         if viewport.contains(&bounds) {
-            Ok(GeneratedContentImages::Full(vec![
-                render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    bounds,
-                    image_scale,
-                )?,
-            ]))
+            Ok(GeneratedContentImages::Full(vec![Image::gen_with_piet(
+                |piet_cx| self.draw(piet_cx, image_scale),
+                bounds,
+                image_scale,
+            )?]))
         } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
             Ok(GeneratedContentImages::Partial {
-                images: vec![render::Image::gen_with_piet(
+                images: vec![Image::gen_with_piet(
                     |piet_cx| self.draw(piet_cx, image_scale),
                     intersection_bounds,
                     image_scale,
@@ -110,7 +106,7 @@ where
         format: image::ImageFormat,
         image_scale: f64,
     ) -> Result<Vec<u8>, anyhow::Error> {
-        render::Image::gen_with_piet(
+        Image::gen_with_piet(
             |piet_cx| self.draw(piet_cx, image_scale),
             self.bounds(),
             image_scale,

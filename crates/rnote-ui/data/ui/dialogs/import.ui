@@ -164,12 +164,6 @@ to the actual size on the document</property>
                         <property name="digits">1</property>
                       </object>
                     </child>
-                    <child>
-                      <object class="AdwSwitchRow" id="pdf_import_page_borders_row">
-                        <property name="title" translatable="yes">Page Borders</property>
-                        <property name="subtitle" translatable="yes">Whether the pages have drawn borders</property>
-                      </object>
-                    </child>
                   </object>
                 </child>
               </object>

@@ -159,7 +159,7 @@ in the individual crate's `Cargo.toml` configuration files.
 The generated `Cargo.lock` file pins the dependencies to specific versions and is checked in.
 
 All non-rust dependencies are declared in the root `meson.build` file.
-For example, you'll find declarations for dependencies like `glib`, `gtk4` and `poppler`.
+For example, you'll find declarations for dependencies like `glib` and `gtk4`.
 
 # Architecture
 

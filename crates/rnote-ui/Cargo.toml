@@ -19,10 +19,12 @@ approx = { workspace = true }
 async-fs = { workspace = true }
 base64 = { workspace = true }
 cairo-rs = { workspace = true }
+chrono = { workspace = true }
 fs_extra = { workspace = true }
 futures = { workspace = true }
 gettext-rs = { workspace = true }
 gtk4 = { workspace = true }
+hayro = { workspace = true }
 ijson = { workspace = true }
 image = { workspace = true }
 itertools = { workspace = true }
@@ -39,7 +41,6 @@ parry2d-f64 = { workspace = true }
 path-absolutize = { workspace = true }
 piet = { workspace = true }
 piet-cairo = { workspace = true }
-poppler-rs = { workspace = true }
 rand = { workspace = true }
 rand_distr = { workspace = true }
 rand_pcg = { workspace = true }

@@ -119,6 +119,10 @@ To update to the latest version again, unpin and run `flatpak update`.
 
 ## Pitfalls & Known Issues
 
+* The app does not work properly on X11 -  
+    At this point X11 is quickly moving to be deprecated and removed from major desktop environments.
+    Since X11 always was buggy especially with stylus&touch input, it is now considered unsupported.
+
 * Drag & Drop not working -  
     Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
 
@@ -126,7 +130,7 @@ To update to the latest version again, unpin and run `flatpak update`.
     When the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory. Again, granting them in Flatseal fixes this issue.
 
 * Stylus buttons move canvas / are not functional -  
-    Make sure that the `xf86-input-wacom`, drivers on X11 and `libinput` on Wayland and `libwacom` are installed and loaded.
+    Make sure that `libinput` and `libwacom` are installed and loaded.
 
 * While hovering with the stylus, other input events are blocked in some regions of the screen -  
     Supposed to be palm rejection, but might be undesirable. If there is a left- / righthanded system tablet setting, make sure it is set correctly. Rnote can't disable this unfortunately. ( discussed in issue [#329](https://github.com/flxzt/rnote/issues/329) )

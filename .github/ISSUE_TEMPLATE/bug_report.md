@@ -31,7 +31,6 @@ If applicable, add screenshots to help explain your problem.
  - App Version: [e.g. Rnote v0.13.1]
  - Installation Source: [e.g. Flatpak, Archlinux Community Repo, ...]
  - Desktop Environment: [e.g. Gnome 48.0]
- - Display Server: [e.g. Wayland or X11]
  - Input Source: [e.g. Mouse and Keyboard, On-Screen-Tablet, External Graphics Tablet, ...]
 
 **Additional context**  

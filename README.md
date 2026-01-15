@@ -120,8 +120,9 @@ To update to the latest version again, unpin and run `flatpak update`.
 ## Pitfalls & Known Issues
 
 * The app does not work properly on X11 -  
-    At this point X11 is quickly moving to be deprecated and removed from major desktop environments.
-    Since X11 always was buggy especially with stylus&touch input, it is now considered unsupported.
+    X11 is unsupported: stylus and touch input support is known to be sometimes spotty, and upstream support (GTK4 UI
+    toolkit and desktop environments) will decrease over time (from lower maintenance, depreciation to removal)
+    so successfully fixing X11-related issues for users isn't feasible anymore.
 
 * Drag & Drop not working -  
     Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)

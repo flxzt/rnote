@@ -1,7 +1,7 @@
 // Imports
 use gtk4::{
-    Align, Button, PositionType, ToggleButton, Widget, gdk, glib, prelude::*, subclass::prelude::*,
-    glib::clone, graphene
+    Align, Button, PositionType, ToggleButton, Widget, gdk, glib, glib::clone, graphene,
+    prelude::*, subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::{Color, color};

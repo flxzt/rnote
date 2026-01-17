@@ -14,6 +14,7 @@ mod imp {
     const BRIGHTNESS_ACTIVE: f32 = 0.86;
     const REPEAT_RATIO: f32 = 1.8;
     const OFFSET_RATIO: f32 = 0.0;
+    const ANIMATION_TIME_MS: u32 = 150;
 
     use super::*;
 
@@ -69,26 +70,27 @@ mod imp {
             ));
             let anim = adw::TimedAnimation::builder()
                 .widget(&*obj)
-                .duration(200)
+                .duration(ANIMATION_TIME_MS)
                 .target(&animation_target)
                 .build();
             anim.set_easing(adw::Easing::EaseInOutSine);
-            self.animation.set(anim).unwrap();
+            let _ = self.animation.set(anim);
 
             obj.connect_toggled(clone!(
                 #[weak(rename_to=colorsetter)]
                 self,
                 move |button| {
                     use adw::prelude::AnimationExt;
-                    let animation = colorsetter.animation.get().unwrap();
-                    if button.is_active() {
-                        animation.set_value_from(0.0);
-                        animation.set_value_to(1.0);
-                    } else {
-                        animation.set_value_from(1.0);
-                        animation.set_value_to(0.0);
+                    if let Some(animation) = colorsetter.animation.get() {
+                        if button.is_active() {
+                            animation.set_value_from(0.0);
+                            animation.set_value_to(1.0);
+                        } else {
+                            animation.set_value_from(1.0);
+                            animation.set_value_to(0.0);
+                        }
+                        animation.play();
                     }
-                    animation.play();
                 }
             ));
 

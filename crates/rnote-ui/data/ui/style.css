@@ -54,9 +54,6 @@
     padding: 0px;
     margin: 0px;
     background-blend-mode: screen;
-    background-image:
-        linear-gradient(45deg, #0f0f0f55 25%, transparent 25%, transparent 75%, #0f0f0f55 75%, #0f0f0f55),
-        linear-gradient(45deg, #0f0f0f55 25%, transparent 25%, transparent 75%, #0f0f0f55 75%, #0f0f0f55);
     background-color: @colorpad_color;
     color: @colorpad_fg_color;
     background-size: 18px 18px;

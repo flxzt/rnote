@@ -46,12 +46,14 @@ pub struct PensConfig {
 }
 
 impl PensConfig {
+    pub const HIGHLIGHTER_ALPHA: f64 = 0.2; 
+
     pub fn set_all_stroke_colors(&mut self, stroke_color: Color) {
         self.brush_config.marker_options.stroke_color = Some(stroke_color);
         self.brush_config.solid_options.stroke_color = Some(stroke_color);
         self.brush_config.textured_options.stroke_color = Some(stroke_color);
         let mut highlight_color = stroke_color;
-        highlight_color.a = 0.2;
+        highlight_color.a = Self::HIGHLIGHTER_ALPHA;
         self.brush_config.highlighter_options.stroke_color = Some(highlight_color);
         self.shaper_config.smooth_options.stroke_color = Some(stroke_color);
         self.shaper_config.rough_options.stroke_color = Some(stroke_color);

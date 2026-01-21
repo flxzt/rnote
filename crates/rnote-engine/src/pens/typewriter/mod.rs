@@ -872,12 +872,11 @@ impl Typewriter {
         &self,
         engine_view: &mut EngineViewMut,
     ) {
-        if let TypewriterState::Modifying { stroke_key, .. } = self.state {
-            if let Some(Stroke::TextStroke(textstroke)) =
+        if let TypewriterState::Modifying { stroke_key, .. } = self.state
+            && let Some(Stroke::TextStroke(textstroke)) =
                 engine_view.store.get_stroke_mut(stroke_key)
-            {
-                textstroke.check_spelling_refresh_cache(engine_view.spellcheck);
-            }
+        {
+            textstroke.check_spelling_refresh_cache(engine_view.spellcheck);
         }
     }
 
@@ -888,15 +887,11 @@ impl Typewriter {
         if let TypewriterState::Modifying {
             stroke_key, cursor, ..
         } = &self.state
-        {
-            if let Some(Stroke::TextStroke(textstroke)) =
+            && let Some(Stroke::TextStroke(textstroke)) =
                 engine_view.store.get_stroke_ref(*stroke_key)
-            {
-                return textstroke.get_spellcheck_corrections_at_index(
-                    engine_view.spellcheck,
-                    cursor.cur_cursor(),
-                );
-            }
+        {
+            return textstroke
+                .get_spellcheck_corrections_at_index(engine_view.spellcheck, cursor.cur_cursor());
         }
 
         None
@@ -912,23 +907,21 @@ impl Typewriter {
         if let TypewriterState::Modifying {
             stroke_key, cursor, ..
         } = &mut self.state
-        {
-            if let Some(Stroke::TextStroke(textstroke)) =
+            && let Some(Stroke::TextStroke(textstroke)) =
                 engine_view.store.get_stroke_mut(*stroke_key)
-            {
-                textstroke.apply_spellcheck_correction_at_cursor(cursor, correction);
+        {
+            textstroke.apply_spellcheck_correction_at_cursor(cursor, correction);
 
-                engine_view.store.update_geometry_for_stroke(*stroke_key);
-                engine_view.store.regenerate_rendering_for_stroke(
-                    *stroke_key,
-                    engine_view.camera.viewport(),
-                    engine_view.camera.image_scale(),
-                );
+            engine_view.store.update_geometry_for_stroke(*stroke_key);
+            engine_view.store.regenerate_rendering_for_stroke(
+                *stroke_key,
+                engine_view.camera.viewport(),
+                engine_view.camera.image_scale(),
+            );
 
-                widget_flags |= engine_view.store.record(Instant::now());
-                widget_flags.redraw = true;
-                widget_flags.store_modified = true;
-            }
+            widget_flags |= engine_view.store.record(Instant::now());
+            widget_flags.redraw = true;
+            widget_flags.store_modified = true;
         }
 
         widget_flags

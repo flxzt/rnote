@@ -18,6 +18,7 @@ pub use snapshot::EngineSnapshot;
 pub use strokecontent::StrokeContent;
 
 // Imports
+use crate::Image;
 use crate::document::Layout;
 use crate::pens::PenMode;
 use crate::pens::{Pen, PenStyle};
@@ -25,7 +26,7 @@ use crate::store::StrokeKey;
 use crate::store::render_comp::{self, RenderCompState};
 use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::textstroke::{TextAttribute, TextStyle};
-use crate::{AudioPlayer, SelectionCollision, WidgetFlags, render};
+use crate::{AudioPlayer, SelectionCollision, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use futures::StreamExt;
 use futures::channel::mpsc::UnboundedReceiver;
@@ -257,13 +258,13 @@ pub struct Engine {
     tasks_rx: Option<EngineTaskReceiver>,
     // Background rendering
     #[serde(skip)]
-    background_tile_image: Option<render::Image>,
+    background_tile_image: Option<Image>,
     #[cfg(feature = "ui")]
     #[serde(skip)]
     background_rendernodes: Vec<gtk4::gsk::RenderNode>,
     // Origin indicator rendering
     #[serde(skip)]
-    origin_indicator_image: Option<render::Image>,
+    origin_indicator_image: Option<Image>,
     #[cfg(feature = "ui")]
     #[serde(skip)]
     origin_indicator_rendernode: Option<gtk4::gsk::RenderNode>,

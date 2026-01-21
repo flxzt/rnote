@@ -31,13 +31,12 @@ prerequisites:
     if [[ ('{{linux_distr}}' =~ 'fedora') ]]; then
         {{sudo_cmd}} dnf install -y \
             gcc gcc-c++ clang clang-devel python3 make cmake meson just git appstream gettext desktop-file-utils \
-            shared-mime-info kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel \
-            appstream-devel enchant2-devel
+            shared-mime-info kernel-devel gtk4-devel libadwaita-devel alsa-lib-devel enchant2-devel appstream-devel
     elif [[ '{{linux_distr}}' =~ 'debian' || '{{linux_distr}}' =~ 'ubuntu' ]]; then
         {{sudo_cmd}} apt-get update
         {{sudo_cmd}} apt-get install -y \
             build-essential clang libclang-dev python3 make cmake meson just git appstream gettext desktop-file-utils \
-            shared-mime-info libgtk-4-dev libadwaita-1-dev libpoppler-glib-dev libasound2-dev libappstream-dev
+            shared-mime-info libgtk-4-dev libadwaita-1-dev libasound2-dev libenchant-2-dev libappstream-dev
     else
         echo "Unable to install system dependencies, unsupported distro."
         exit 1
@@ -90,8 +89,8 @@ prerequisites-win:
         unzip git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang \
         mingw-w64-x86_64-toolchain mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake \
         mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils \
-        mingw-w64-x86_64-appstream mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-poppler \
-        mingw-w64-x86_64-poppler-data mingw-w64-x86_64-angleproject mingw-w64-x86_64-enchant
+        mingw-w64-x86_64-appstream mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-angleproject \
+        mingw-w64-x86_64-enchant
     mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     export PATH="$HOME/.cargo/bin:$PATH"

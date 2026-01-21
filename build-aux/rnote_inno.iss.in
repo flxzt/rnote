@@ -59,8 +59,6 @@ Source: "{#meson_build_root}\dlls\*.dll"; DestDir: "{app}\bin"; Flags: ignorever
 Source: "{#build_environment_path}\lib\gdk-pixbuf-2.0\*"; DestDir: "{app}\lib\gdk-pixbuf-2.0"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; enchant providers
 Source: "{#build_environment_path}\lib\enchant-2\*"; DestDir: "{app}\lib\enchant-2"; Flags: ignoreversion recursesubdirs createallsubdirs
-; poppler-data
-Source: "{#build_environment_path}\share\poppler\*"; DestDir: "{app}\share\poppler"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Settings GSchema
 Source: "{#meson_build_root}\gschemas\gschemas.compiled"; DestDir: "{app}\share\glib-2.0\schemas"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; win32 session dbus
@@ -80,7 +78,12 @@ Source: "{#meson_source_root}\crates\rnote-engine\data\fonts\OpenDyslexic-Regula
 Source: "{#meson_source_root}\crates\rnote-engine\data\fonts\TT2020Base-Regular.ttf"; DestDir: "{autofonts}"; FontInstall: "TT2020Base"; Flags: onlyifdoesntexist uninsneveruninstall
 Source: "{#meson_source_root}\crates\rnote-engine\data\fonts\Virgil.ttf"; DestDir: "{autofonts}"; FontInstall: "Virgil"; Flags: onlyifdoesntexist uninsneveruninstall
 ; Data that is installed to pkg-data-dir
-Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\*"; DestDir: "{app}\share\rnote\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\brush\*"; DestDir: "{app}\share\rnote\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\marker\*"; DestDir: "{app}\share\rnote\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\originals\*"; DestDir: "{app}\share\rnote\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\typewriter\*"; DestDir: "{app}\share\rnote\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\LICENSES.md"; DestDir: "{app}\share\rnote\"; Flags: ignoreversion
+
 ; Binary
 Source: "{#meson_build_root}\{#MyAppExeName}"; DestDir: "{app}\bin\"; Flags: ignoreversion
 

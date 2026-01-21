@@ -39,12 +39,23 @@ glib = "0.21.1"
 glib-build-tools = "0.21.0"
 gtk4 = { version = "0.10.0", features = ["v4_18"] }
 enchant = "0.3.0"
+hayro = { git = "https://github.com/LaurenzV/hayro", rev = "eaea6b9f577424b2a846b4d77c153c319b84076f" }
+hayro-svg = { git = "https://github.com/LaurenzV/hayro", rev = "eaea6b9f577424b2a846b4d77c153c319b84076f" }
 icu_displaynames = "0.11.2"
 icu_locid = "1.4.0"
 ijson = "0.1.4"
-image = "0.25.6"
+image = { version = "0.25.6", default-features = false, features = [
+    "rayon",
+    "png",
+    "bmp",
+    "gif",
+    "ico",
+    "jpeg",
+    "png",
+    "tiff",
+] }
 indicatif = "0.18.0"
-ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "84d311e9b0d034dcd955a1f353d37f54b2bda70f" }
+ink-stroke-modeler-rs = "0.1.0"
 itertools = "0.14.0"
 kurbo = "0.11.2"
 librsvg = "2.60.0"
@@ -87,9 +98,6 @@ url = "2.5"
 usvg = "0.45.1"
 winresource = "0.1.20"
 xmlwriter = "0.1.0"
-
-# Enabling feature > v20_9 causes linker errors on mingw
-poppler-rs = { version = "0.25.0", features = ["v20_9"] }
 
 [patch.crates-io]
 

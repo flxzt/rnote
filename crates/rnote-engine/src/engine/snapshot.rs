@@ -182,6 +182,20 @@ impl EngineSnapshot {
                                 }
                             }
                         }
+
+                        for new_xopptext in layers.texts.into_iter() {
+                            match Stroke::from_xopptext(new_xopptext, offset, xopp_import_prefs.dpi)
+                            {
+                                Ok(new_text) => {
+                                    engine.store.insert_stroke(new_text, None);
+                                }
+                                Err(e) => {
+                                    error!(
+                                        "Creating Stroke from XoppText failed while loading Xopp bytes, Err: {e:?}",
+                                    );
+                                }
+                            }
+                        }
                     }
 
                     // Only add to y offset, results in vertical pages

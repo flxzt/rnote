@@ -14,19 +14,16 @@ use gtk4::{
     Adjustment, Button, ColorDialogButton, CompositeTemplate, MenuButton, ScrolledWindow,
     StringList, ToggleButton, Widget, gdk, glib, glib::clone, subclass::prelude::*,
 };
-use icu_displaynames::{DisplayNamesOptions, LanguageDisplay, LocaleDisplayNamesFormatter};
-use icu_locid::Locale;
 use num_traits::ToPrimitive;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::WidgetFlags;
 use rnote_engine::document::Layout;
 use rnote_engine::document::background::PatternStyle;
-use rnote_engine::document::config::SpellcheckConfig;
+use rnote_engine::document::config::{SpellcheckConfig, SpellcheckConfigLanguage};
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
-use rnote_engine::engine::SPELLCHECK_AVAILABLE_LANGUAGES;
+use rnote_engine::engine::{SPELLCHECK_AUTOMATIC_LANGUAGE, SPELLCHECK_AVAILABLE_LANGUAGES};
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
-use std::str::FromStr;
 
 mod imp {
     use super::*;
@@ -364,28 +361,40 @@ impl RnSettingsPanel {
             .set_selected(position);
     }
 
-    pub(crate) fn spellcheck_language(&self) -> Option<String> {
+    pub(crate) fn spellcheck_language(&self) -> SpellcheckConfigLanguage {
         let position = self.imp().doc_spellcheck_language_row.selected();
 
-        self.imp()
-            .available_spellcheck_languages
-            .borrow()
-            .get(position as usize)
-            .cloned()
+        if position == 0 {
+            SpellcheckConfigLanguage::Automatic
+        } else {
+            SpellcheckConfigLanguage::Language(
+                self.imp()
+                    .available_spellcheck_languages
+                    .borrow()
+                    .get((position - 1) as usize)
+                    .unwrap()
+                    .to_owned(),
+            )
+        }
     }
 
-    pub(crate) fn set_spellcheck_language(&self, language: &Option<String>) {
-        if let Some(language) = language {
-            if let Some(position) = self
-                .imp()
-                .available_spellcheck_languages
-                .borrow()
-                .iter()
-                .position(|l| l == language)
-            {
-                self.imp()
-                    .doc_spellcheck_language_row
-                    .set_selected(position as u32);
+    pub(crate) fn set_spellcheck_language(&self, language: &SpellcheckConfigLanguage) {
+        match language {
+            SpellcheckConfigLanguage::Automatic => {
+                self.imp().doc_spellcheck_language_row.set_selected(0);
+            }
+            SpellcheckConfigLanguage::Language(language) => {
+                if let Some(position) = self
+                    .imp()
+                    .available_spellcheck_languages
+                    .borrow()
+                    .iter()
+                    .position(|l| l == language)
+                {
+                    self.imp()
+                        .doc_spellcheck_language_row
+                        .set_selected((position + 1) as u32);
+                }
             }
         }
     }
@@ -1213,37 +1222,17 @@ impl RnSettingsPanel {
             }
         ));
 
-        let current_locale = glib::language_names()
-            .into_iter()
-            .find_map(|l| Locale::from_str(l.as_str()).ok());
-
-        let mut locale_name_formatter_options = DisplayNamesOptions::default();
-        locale_name_formatter_options.language_display = LanguageDisplay::Standard;
-
-        let locale_name_formatter = current_locale.and_then(|l| {
-            LocaleDisplayNamesFormatter::try_new(&l.into(), locale_name_formatter_options).ok()
-        });
-
         imp.available_spellcheck_languages
             .replace(SPELLCHECK_AVAILABLE_LANGUAGES.clone());
 
         imp.doc_spellcheck_language_row.get().set_model(Some(
-            &imp.available_spellcheck_languages
-                .borrow()
-                .iter()
-                .cloned()
-                .map(|l| {
-                    let Some(locale_name_formatter) = &locale_name_formatter else {
-                        return l;
-                    };
-
-                    if let Ok(locale) = Locale::from_str(l.as_str()) {
-                        locale_name_formatter.of(&locale).to_string()
-                    } else {
-                        l
-                    }
-                })
-                .collect::<StringList>(),
+            &std::iter::once(format!(
+                "{} ({})",
+                gettext("Automatic"),
+                SPELLCHECK_AUTOMATIC_LANGUAGE.unwrap_or(&gettext("None"))
+            ))
+            .chain(imp.available_spellcheck_languages.borrow().iter().cloned())
+            .collect::<StringList>(),
         ));
 
         imp.doc_spellcheck_language_row

@@ -60,21 +60,41 @@ pub static SPELLCHECK_AVAILABLE_LANGUAGES: Lazy<Vec<String>> = Lazy::new(|| {
     })
 });
 
-pub static SPELLCHECK_DEFAULT_LANGUAGE: Lazy<Option<String>> = Lazy::new(|| {
+pub static SPELLCHECK_AUTOMATIC_LANGUAGE: Lazy<Option<&String>> = Lazy::new(|| {
+    // try each system language
     for system_language in glib::language_names() {
+        // first pass: try exact match (e.g. "en_US.UTF-8" starts with "en_US")
         for available_language in SPELLCHECK_AVAILABLE_LANGUAGES.iter() {
-            if system_language.contains(available_language) {
+            if system_language.starts_with(available_language) {
                 debug!(
-                    "found default spellcheck language: {:?}",
-                    available_language
+                    "found exact spellcheck language match: {:?} (system: {:?})",
+                    available_language, system_language
                 );
+                return Some(available_language);
+            }
+        }
 
-                return Some(available_language.to_string());
+        // second pass: try language-only match (e.g. "en_GB" starts with "en" derived from "en_US.UTF-8")
+        if let Some((system_language_code, _)) = system_language.split_once('_') {
+            for available_language in SPELLCHECK_AVAILABLE_LANGUAGES.iter() {
+                if available_language.starts_with(system_language_code) {
+                    debug!(
+                        "found language-only spellcheck match: {:?} (system: {:?})",
+                        available_language, system_language
+                    );
+                    return Some(available_language);
+                }
             }
         }
     }
 
-    None
+    // fallback: use the first available language
+    let fallback = SPELLCHECK_AVAILABLE_LANGUAGES.first();
+    if let Some(ref lang) = fallback {
+        debug!("using fallback spellcheck language: {:?}", lang);
+    }
+
+    fallback
 });
 
 #[derive(Default)]
@@ -377,8 +397,7 @@ impl Engine {
 
     pub fn get_spellcheck_corrections(&self) -> Option<Vec<String>> {
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_ref() {
-            return typewriter
-                .get_spellcheck_correction_in_modifying_stroke(&mut engine_view!(self));
+            return typewriter.get_spellcheck_correction_in_modifying_stroke(&engine_view!(self));
         }
 
         None

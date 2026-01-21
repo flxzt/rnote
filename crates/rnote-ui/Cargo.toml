@@ -25,8 +25,6 @@ futures = { workspace = true }
 gettext-rs = { workspace = true }
 gtk4 = { workspace = true }
 hayro = { workspace = true }
-icu_displaynames = { workspace = true }
-icu_locid = { workspace = true }
 ijson = { workspace = true }
 image = { workspace = true }
 itertools = { workspace = true }

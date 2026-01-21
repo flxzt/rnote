@@ -41,8 +41,6 @@ gtk4 = { version = "0.10.0", features = ["v4_18"] }
 enchant = "0.3.0"
 hayro = { git = "https://github.com/LaurenzV/hayro", rev = "eaea6b9f577424b2a846b4d77c153c319b84076f" }
 hayro-svg = { git = "https://github.com/LaurenzV/hayro", rev = "eaea6b9f577424b2a846b4d77c153c319b84076f" }
-icu_displaynames = "0.11.2"
-icu_locid = "1.4.0"
 ijson = "0.1.4"
 image = { version = "0.25.6", default-features = false, features = [
     "rayon",

@@ -4,7 +4,6 @@ mod penshortcutrow;
 
 // Re-exports
 pub(crate) use penshortcutrow::RnPenShortcutRow;
-use rnote_compose::ext::Vector2Ext;
 
 // Imports
 use crate::{RnAppWindow, RnIconPicker, RnUnitEntry};
@@ -15,13 +14,13 @@ use gtk4::{
     StringList, ToggleButton, Widget, gdk, glib, glib::clone, subclass::prelude::*,
 };
 use num_traits::ToPrimitive;
+use rnote_compose::ext::Vector2Ext;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::WidgetFlags;
-use rnote_engine::document::Layout;
 use rnote_engine::document::background::PatternStyle;
-use rnote_engine::document::config::{SpellcheckConfig, SpellcheckConfigLanguage};
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
-use rnote_engine::engine::{SPELLCHECK_AUTOMATIC_LANGUAGE, SPELLCHECK_AVAILABLE_LANGUAGES};
+use rnote_engine::document::{Layout, SpellcheckConfig, SpellcheckConfigLanguage};
+use rnote_engine::engine::spellcheck;
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
 
@@ -1223,13 +1222,13 @@ impl RnSettingsPanel {
         ));
 
         imp.available_spellcheck_languages
-            .replace(SPELLCHECK_AVAILABLE_LANGUAGES.clone());
+            .replace(spellcheck::AVAILABLE_LANGUAGES.clone());
 
         imp.doc_spellcheck_language_row.get().set_model(Some(
             &std::iter::once(format!(
                 "{} ({})",
                 gettext("Automatic"),
-                SPELLCHECK_AUTOMATIC_LANGUAGE.unwrap_or(&gettext("None"))
+                spellcheck::AUTOMATIC_LANGUAGE.unwrap_or(&gettext("None"))
             ))
             .chain(imp.available_spellcheck_languages.borrow().iter().cloned())
             .collect::<StringList>(),

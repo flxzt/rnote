@@ -32,8 +32,7 @@ mod imp {
     pub(crate) struct RnSettingsPanel {
         pub(crate) temporary_format: RefCell<Format>,
         pub(crate) app_restart_toast_singleton: RefCell<Option<adw::Toast>>,
-        /// 0 = None, 1.. = available languages
-        pub(crate) available_spellcheck_languages: RefCell<Vec<String>>,
+        pub(crate) spellcheck_available_languages: RefCell<Vec<String>>,
 
         #[template_child]
         pub(crate) settings_scroller: TemplateChild<ScrolledWindow>,
@@ -368,7 +367,7 @@ impl RnSettingsPanel {
         } else {
             SpellcheckConfigLanguage::Language(
                 self.imp()
-                    .available_spellcheck_languages
+                    .spellcheck_available_languages
                     .borrow()
                     .get((position - 1) as usize)
                     .unwrap()
@@ -385,7 +384,7 @@ impl RnSettingsPanel {
             SpellcheckConfigLanguage::Language(language) => {
                 if let Some(position) = self
                     .imp()
-                    .available_spellcheck_languages
+                    .spellcheck_available_languages
                     .borrow()
                     .iter()
                     .position(|l| l == language)
@@ -1221,7 +1220,7 @@ impl RnSettingsPanel {
             }
         ));
 
-        imp.available_spellcheck_languages
+        imp.spellcheck_available_languages
             .replace(spellcheck::AVAILABLE_LANGUAGES.clone());
 
         imp.doc_spellcheck_language_row.get().set_model(Some(
@@ -1230,7 +1229,7 @@ impl RnSettingsPanel {
                 gettext("Automatic"),
                 spellcheck::AUTOMATIC_LANGUAGE.unwrap_or(&gettext("None"))
             ))
-            .chain(imp.available_spellcheck_languages.borrow().iter().cloned())
+            .chain(imp.spellcheck_available_languages.borrow().iter().cloned())
             .collect::<StringList>(),
         ));
 

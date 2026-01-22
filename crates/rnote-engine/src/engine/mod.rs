@@ -313,7 +313,7 @@ impl Engine {
         let mut widget_flags = WidgetFlags::default();
 
         self.spellcheck.dict = spellcheck::BROKER
-            .with_borrow_mut(|broker| self.document.config.spellcheck.dictionary(broker));
+            .with_borrow_mut(|broker| self.document.config.spellcheck.get_dictionary(broker));
 
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_ref() {
             typewriter.refresh_spellcheck_cache_in_modifying_stroke(&mut engine_view_mut!(self));

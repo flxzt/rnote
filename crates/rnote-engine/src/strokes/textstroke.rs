@@ -468,7 +468,7 @@ impl TextStyle {
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct SpellcheckResult {
+pub struct SpellcheckCache {
     pub language: Option<String>,
     pub errors: BTreeMap<usize, usize>,
 }
@@ -486,7 +486,7 @@ pub struct TextStroke {
     #[serde(rename = "text_style")]
     pub text_style: TextStyle,
     #[serde(skip)]
-    pub spellcheck_result: SpellcheckResult,
+    pub spellcheck_cache: SpellcheckCache,
 }
 
 impl Default for TextStroke {
@@ -495,7 +495,7 @@ impl Default for TextStroke {
             text: String::default(),
             transform: Transform::default(),
             text_style: TextStyle::default(),
-            spellcheck_result: SpellcheckResult::default(),
+            spellcheck_cache: SpellcheckCache::default(),
         }
     }
 }
@@ -592,7 +592,7 @@ impl TextStroke {
             text,
             transform: Transform::new_w_isometry(na::Isometry2::new(upper_left_pos, 0.0)),
             text_style,
-            spellcheck_result: SpellcheckResult::default(),
+            spellcheck_cache: SpellcheckCache::default(),
         }
     }
 
@@ -633,7 +633,7 @@ impl TextStroke {
                 let word_end_index = word_start_index + word.len();
                 let word_range = word_start_index..word_end_index;
 
-                self.spellcheck_result
+                self.spellcheck_cache
                     .errors
                     .retain(|key, _| !word_range.contains(key));
 
@@ -649,7 +649,7 @@ impl TextStroke {
                 // }
 
                 if !valid_word {
-                    self.spellcheck_result
+                    self.spellcheck_cache
                         .errors
                         .insert(word_start_index, word.len());
                 }
@@ -664,14 +664,14 @@ impl TextStroke {
             let language = dict.get_lang();
 
             let language_changed = self
-                .spellcheck_result
+                .spellcheck_cache
                 .language
                 .clone()
                 .is_none_or(|cached_language| cached_language != language);
 
             if language_changed {
-                self.spellcheck_result.errors.clear();
-                self.spellcheck_result.language = Some(language.to_owned());
+                self.spellcheck_cache.errors.clear();
+                self.spellcheck_cache.language = Some(language.to_owned());
 
                 let words = self
                     .text
@@ -682,8 +682,8 @@ impl TextStroke {
                 self.check_spelling_words(words, dict);
             }
         } else {
-            self.spellcheck_result.errors.clear();
-            self.spellcheck_result.language = None;
+            self.spellcheck_cache.errors.clear();
+            self.spellcheck_cache.language = None;
         }
     }
 
@@ -698,7 +698,7 @@ impl TextStroke {
 
         let start_index = self.get_prev_word_start_index(index);
 
-        if let Some(length) = self.spellcheck_result.errors.get(&start_index) {
+        if let Some(length) = self.spellcheck_cache.errors.get(&start_index) {
             let word = self.get_text_slice_for_range(start_index..start_index + length);
             return Some(dict.suggest(word));
         }
@@ -714,14 +714,14 @@ impl TextStroke {
         let cur_pos = cursor.cur_cursor();
         let start_index = self.get_prev_word_start_index(cur_pos);
 
-        if let Some(length) = self.spellcheck_result.errors.get(&start_index) {
+        if let Some(length) = self.spellcheck_cache.errors.get(&start_index) {
             let old_length = *length;
             let new_length = correction.len();
 
             self.text
                 .replace_range(start_index..start_index + old_length, correction);
 
-            self.spellcheck_result.errors.remove(&start_index);
+            self.spellcheck_cache.errors.remove(&start_index);
 
             // translate the text attributes
             self.translate_attrs_after_cursor(
@@ -912,12 +912,12 @@ impl TextStroke {
     fn translate_attrs_after_cursor(&mut self, from_pos: usize, offset: i32) {
         let translated_words = if offset < 0 {
             let to_pos = from_pos.saturating_add(offset.unsigned_abs() as usize);
-            self.spellcheck_result
+            self.spellcheck_cache
                 .errors
                 .split_off(&from_pos)
                 .split_off(&to_pos)
         } else {
-            self.spellcheck_result.errors.split_off(&from_pos)
+            self.spellcheck_cache.errors.split_off(&from_pos)
         };
 
         for (word_start, word_length) in translated_words {
@@ -926,7 +926,7 @@ impl TextStroke {
             };
 
             if new_word_start >= from_pos {
-                self.spellcheck_result
+                self.spellcheck_cache
                     .errors
                     .insert(new_word_start, word_length);
             }

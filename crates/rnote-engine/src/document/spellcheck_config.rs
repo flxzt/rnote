@@ -40,7 +40,7 @@ impl Default for SpellcheckConfig {
 }
 
 impl SpellcheckConfig {
-    pub fn dictionary(&self, broker: &mut enchant::Broker) -> Option<enchant::Dict> {
+    pub fn get_dictionary(&self, broker: &mut enchant::Broker) -> Option<enchant::Dict> {
         if self.enabled
             && let Some(language) = self.language.resolve()
         {

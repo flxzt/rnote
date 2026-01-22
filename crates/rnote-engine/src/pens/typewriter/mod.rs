@@ -214,7 +214,7 @@ impl DrawableOnDoc for Typewriter {
                     }
 
                     // Draw error ranges
-                    for (start_index, length) in &textstroke.spellcheck_result.errors {
+                    for (start_index, length) in &textstroke.spellcheck_cache.errors {
                         textstroke.text_style.draw_text_error(
                             cx,
                             textstroke.text.clone(),

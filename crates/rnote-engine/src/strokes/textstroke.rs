@@ -1,8 +1,9 @@
 // Imports
 use super::Content;
+use crate::engine::Spellcheck;
 use crate::{Camera, Drawable};
 use itertools::Itertools;
-use kurbo::Shape;
+use kurbo::{BezPath, Shape};
 use p2d::bounding_volume::Aabb;
 use piet::{RenderContext, TextLayout, TextLayoutBuilder};
 use rnote_compose::ext::{AabbExt, Affine2Ext, Vector2Ext};
@@ -10,6 +11,7 @@ use rnote_compose::shapes::Shapeable;
 use rnote_compose::transform::Transformable;
 use rnote_compose::{Color, Transform, color};
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 use std::ops::Range;
 use tracing::error;
 use unicode_segmentation::{GraphemeCursor, UnicodeSegmentation};
@@ -337,20 +339,20 @@ impl TextStyle {
         Ok(text_layout.hit_test_text_position(cursor.cur_cursor()))
     }
 
-    pub fn get_selection_rects_for_cursors(
+    pub fn get_rects_for_indices(
         &self,
         text: String,
-        cursor: &GraphemeCursor,
-        selection_cursor: &GraphemeCursor,
+        start_index: usize,
+        end_index: usize,
     ) -> anyhow::Result<Vec<kurbo::Rect>> {
         let text_layout = self
             .build_text_layout(&mut piet_cairo::CairoText::new(), text)
             .map_err(|e| anyhow::anyhow!("Building text layout failed, Err: {e:?}"))?;
 
-        let range = if selection_cursor.cur_cursor() >= cursor.cur_cursor() {
-            cursor.cur_cursor()..selection_cursor.cur_cursor()
+        let range = if end_index >= start_index {
+            start_index..end_index
         } else {
-            selection_cursor.cur_cursor()..cursor.cur_cursor()
+            end_index..start_index
         };
 
         Ok(text_layout.rects_for_range(range))
@@ -403,6 +405,42 @@ impl TextStyle {
         Ok(())
     }
 
+    pub fn draw_text_error(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        text: String,
+        start_index: usize,
+        end_index: usize,
+        transform: &Transform,
+        camera: &Camera,
+    ) {
+        const ERROR_COLOR: piet::Color = color::GNOME_REDS[2];
+        const STYLE: piet::StrokeStyle = piet::StrokeStyle::new().line_cap(piet::LineCap::Round);
+
+        let scale = 1.0 / camera.total_zoom();
+
+        if let Ok(selection_rects) =
+            self.get_rects_for_indices(text.clone(), start_index, end_index)
+        {
+            // Get baseline for the current line. Really unnecessary to do this for every error since the font size is uniform,
+            // but piet does not provide any other way to get the baseline.
+
+            if let Ok(line_metric) = self.cursor_line_metric(cx.text(), text, start_index) {
+                for selection_rect in selection_rects {
+                    let width = selection_rect.width();
+                    let origin = transform.to_kurbo()
+                        * kurbo::Point::new(
+                            selection_rect.x0,
+                            selection_rect.y0 + line_metric.baseline + 2.0,
+                        );
+
+                    let path = create_wavy_line(origin, width, scale);
+                    cx.stroke_styled(path, &ERROR_COLOR, 1.5 * scale, &STYLE);
+                }
+            }
+        }
+    }
+
     pub fn draw_text_selection(
         &self,
         cx: &mut impl piet::RenderContext,
@@ -417,7 +455,7 @@ impl TextStyle {
         let outline_width = 1.5 / camera.total_zoom();
 
         if let Ok(selection_rects) =
-            self.get_selection_rects_for_cursors(text, cursor, selection_cursor)
+            self.get_rects_for_indices(text, cursor.cur_cursor(), selection_cursor.cur_cursor())
         {
             for selection_rect in selection_rects {
                 let outline = transform.to_kurbo() * selection_rect.to_path(0.5);
@@ -427,6 +465,12 @@ impl TextStyle {
             }
         }
     }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct SpellcheckCache {
+    pub language: Option<String>,
+    pub errors: BTreeMap<usize, usize>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -441,6 +485,8 @@ pub struct TextStroke {
     pub transform: Transform,
     #[serde(rename = "text_style")]
     pub text_style: TextStyle,
+    #[serde(skip)]
+    pub spellcheck_cache: SpellcheckCache,
 }
 
 impl Default for TextStroke {
@@ -449,6 +495,7 @@ impl Default for TextStroke {
             text: String::default(),
             transform: Transform::default(),
             text_style: TextStyle::default(),
+            spellcheck_cache: SpellcheckCache::default(),
         }
     }
 }
@@ -545,6 +592,7 @@ impl TextStroke {
             text,
             transform: Transform::new_w_isometry(na::Isometry2::new(upper_left_pos, 0.0)),
             text_style,
+            spellcheck_cache: SpellcheckCache::default(),
         }
     }
 
@@ -579,16 +627,148 @@ impl TextStroke {
         ))
     }
 
-    pub fn insert_text_after_cursor(&mut self, text: &str, cursor: &mut GraphemeCursor) {
-        self.text.insert_str(cursor.cur_cursor(), text);
+    fn check_spelling_words(&mut self, words: Vec<(usize, String)>, dict: &enchant::Dict) {
+        for (word_start_index, word) in words {
+            if let Ok(valid_word) = dict.check(word.as_str()) {
+                let word_end_index = word_start_index + word.len();
+                let word_range = word_start_index..word_end_index;
 
-        // translate the text attributes
-        self.translate_attrs_after_cursor(cursor.cur_cursor(), text.len() as i32);
+                self.spellcheck_cache
+                    .errors
+                    .retain(|key, _| !word_range.contains(key));
 
-        *cursor = GraphemeCursor::new(cursor.cur_cursor() + text.len(), self.text.len(), true);
+                // TODO: maybe faster for large texts
+                // let keys_to_remove = self
+                //     .error_words
+                //     .range(word_range)
+                //     .map(|(&key, _)| key)
+                //     .collect_vec();
+
+                // for existing_word in keys_to_remove {
+                //     self.error_words.remove(&existing_word);
+                // }
+
+                if !valid_word {
+                    self.spellcheck_cache
+                        .errors
+                        .insert(word_start_index, word.len());
+                }
+            } else {
+                error!("Failed to check spelling for word '{word}'");
+            }
+        }
     }
 
-    pub fn remove_grapheme_before_cursor(&mut self, cursor: &mut GraphemeCursor) {
+    pub fn check_spelling_refresh_cache(&mut self, spellcheck: &Spellcheck) {
+        if let Some(dict) = &spellcheck.dict {
+            let language = dict.get_lang();
+
+            let language_changed = self
+                .spellcheck_cache
+                .language
+                .clone()
+                .is_none_or(|cached_language| cached_language != language);
+
+            if language_changed {
+                self.spellcheck_cache.errors.clear();
+                self.spellcheck_cache.language = Some(language.to_owned());
+
+                let words = self
+                    .text
+                    .unicode_word_indices()
+                    .map(|(index, word)| (index, word.to_owned()))
+                    .collect_vec();
+
+                self.check_spelling_words(words, dict);
+            }
+        } else {
+            self.spellcheck_cache.errors.clear();
+            self.spellcheck_cache.language = None;
+        }
+    }
+
+    pub fn get_spellcheck_corrections_at_index(
+        &self,
+        spellcheck: &Spellcheck,
+        index: usize,
+    ) -> Option<Vec<String>> {
+        let Some(dict) = &spellcheck.dict else {
+            return None;
+        };
+
+        let start_index = self.get_prev_word_start_index(index);
+
+        if let Some(length) = self.spellcheck_cache.errors.get(&start_index) {
+            let word = self.get_text_slice_for_range(start_index..start_index + length);
+            return Some(dict.suggest(word));
+        }
+
+        None
+    }
+
+    pub fn apply_spellcheck_correction_at_cursor(
+        &mut self,
+        cursor: &mut GraphemeCursor,
+        correction: &str,
+    ) {
+        let cur_pos = cursor.cur_cursor();
+        let start_index = self.get_prev_word_start_index(cur_pos);
+
+        if let Some(length) = self.spellcheck_cache.errors.get(&start_index) {
+            let old_length = *length;
+            let new_length = correction.len();
+
+            self.text
+                .replace_range(start_index..start_index + old_length, correction);
+
+            self.spellcheck_cache.errors.remove(&start_index);
+
+            // translate the text attributes
+            self.translate_attrs_after_cursor(
+                start_index + old_length,
+                (new_length as i32) - (old_length as i32),
+            );
+
+            *cursor = GraphemeCursor::new(start_index + new_length, self.text.len(), true);
+        }
+    }
+
+    pub fn check_spelling_range(
+        &mut self,
+        start_index: usize,
+        end_index: usize,
+        spellcheck: &Spellcheck,
+    ) {
+        if let Some(dict) = &spellcheck.dict {
+            let words = self.get_surrounding_words(start_index, end_index);
+            self.check_spelling_words(words, dict);
+        }
+    }
+
+    pub fn insert_text_after_cursor(
+        &mut self,
+        text: &str,
+        cursor: &mut GraphemeCursor,
+        spellcheck: &Spellcheck,
+    ) {
+        let cur_pos = cursor.cur_cursor();
+        let next_pos = cur_pos + text.len();
+
+        self.text.insert_str(cur_pos, text);
+
+        // translate the text attributes
+        self.translate_attrs_after_cursor(cur_pos, text.len() as i32);
+
+        self.check_spelling_range(cur_pos, next_pos, spellcheck);
+
+        *cursor = GraphemeCursor::new(next_pos, self.text.len(), true);
+    }
+
+    pub fn remove_grapheme_before_cursor(
+        &mut self,
+        cursor: &mut GraphemeCursor,
+        spellcheck: &Spellcheck,
+    ) {
         if !self.text.is_empty() && self.text.len() >= cursor.cur_cursor() {
             let cur_pos = cursor.cur_cursor();
 
@@ -600,6 +780,8 @@ impl TextStroke {
                     prev_pos,
                     prev_pos as i32 - cur_pos as i32 + "".len() as i32,
                 );
+
+                self.check_spelling_range(prev_pos, cur_pos, spellcheck);
             }
 
             // New text length, new cursor
@@ -607,7 +789,11 @@ impl TextStroke {
         }
     }
 
-    pub fn remove_grapheme_after_cursor(&mut self, cursor: &mut GraphemeCursor) {
+    pub fn remove_grapheme_after_cursor(
+        &mut self,
+        cursor: &mut GraphemeCursor,
+        spellcheck: &Spellcheck,
+    ) {
         if !self.text.is_empty() && self.text.len() > cursor.cur_cursor() {
             let cur_pos = cursor.cur_cursor();
 
@@ -619,6 +805,8 @@ impl TextStroke {
                     cur_pos,
                     -(next_pos as i32 - cur_pos as i32) + "".len() as i32,
                 );
+
+                self.check_spelling_range(cur_pos, next_pos, spellcheck);
             }
 
             // New text length, new cursor
@@ -626,7 +814,11 @@ impl TextStroke {
         }
     }
 
-    pub fn remove_word_before_cursor(&mut self, cursor: &mut GraphemeCursor) {
+    pub fn remove_word_before_cursor(
+        &mut self,
+        cursor: &mut GraphemeCursor,
+        spellcheck: &Spellcheck,
+    ) {
         let cur_pos = cursor.cur_cursor();
         let prev_pos = self.get_prev_word_start_index(cur_pos);
 
@@ -639,12 +831,18 @@ impl TextStroke {
                 prev_pos as i32 - cur_pos as i32 + "".len() as i32,
             );
 
+            self.check_spelling_range(prev_pos, cur_pos, spellcheck);
+
             // New text length, new cursor
             *cursor = GraphemeCursor::new(prev_pos, self.text.len(), true);
         }
     }
 
-    pub fn remove_word_after_cursor(&mut self, cursor: &mut GraphemeCursor) {
+    pub fn remove_word_after_cursor(
+        &mut self,
+        cursor: &mut GraphemeCursor,
+        spellcheck: &Spellcheck,
+    ) {
         let cur_pos = cursor.cur_cursor();
         let next_pos = self.get_next_word_end_index(cur_pos);
 
@@ -657,6 +855,8 @@ impl TextStroke {
                 -(next_pos as i32 - cur_pos as i32) + "".len() as i32,
             );
 
+            self.check_spelling_range(cur_pos, next_pos, spellcheck);
+
             // New text length, new cursor
             *cursor = GraphemeCursor::new(cur_pos, self.text.len(), true);
         }
@@ -667,6 +867,7 @@ impl TextStroke {
         cursor: &mut GraphemeCursor,
         selection_cursor: &mut GraphemeCursor,
         replace_text: &str,
+        spellcheck: &Spellcheck,
     ) {
         let cursor_pos = cursor.cur_cursor();
         let selection_cursor_pos = selection_cursor.cur_cursor();
@@ -694,12 +895,43 @@ impl TextStroke {
             cursor.cur_cursor(),
             -(cursor_range.end as i32 - cursor_range.start as i32) + replace_text.len() as i32,
         );
+
+        self.check_spelling_range(
+            cursor_range.start,
+            cursor_range.start + replace_text.len(),
+            spellcheck,
+        );
     }
 
     /// Translate the ranged text attributes after the given cursor.
     ///
     /// Overlapping ranges are extended / shrunk
+    ///
+    /// * `from_pos` is always the start of the range to translate.
+    /// * `offset` is the translation. The end of the range is calculated by adding the **absolute** value of the offset.
     fn translate_attrs_after_cursor(&mut self, from_pos: usize, offset: i32) {
+        let translated_words = if offset < 0 {
+            let to_pos = from_pos.saturating_add(offset.unsigned_abs() as usize);
+            self.spellcheck_cache
+                .errors
+                .split_off(&from_pos)
+                .split_off(&to_pos)
+        } else {
+            self.spellcheck_cache.errors.split_off(&from_pos)
+        };
+
+        for (word_start, word_length) in translated_words {
+            let Some(new_word_start) = word_start.checked_add_signed(offset as isize) else {
+                continue;
+            };
+
+            if new_word_start >= from_pos {
+                self.spellcheck_cache
+                    .errors
+                    .insert(new_word_start, word_length);
+            }
+        }
+
         for attr in self.text_style.ranged_text_attributes.iter_mut() {
             if attr.range.start > from_pos {
                 if offset >= 0 {
@@ -828,6 +1060,22 @@ impl TextStroke {
     ) {
         cursor.set_cursor(self.text.len());
         selection_cursor.set_cursor(0);
+    }
+
+    fn get_surrounding_words(&self, start_index: usize, end_index: usize) -> Vec<(usize, String)> {
+        let mut words = Vec::new();
+
+        for (word_start, word) in self.text.unicode_word_indices() {
+            let word_end = word_start + word.len();
+
+            if word_end >= start_index && word_start <= end_index {
+                words.push((word_start, word.to_owned()));
+            }
+        }
+
+        // debug!("surrounding words: {words:?}");
+
+        words
     }
 
     fn get_prev_word_start_index(&self, current_char_index: usize) -> usize {
@@ -1057,4 +1305,36 @@ fn remove_intersecting_attrs_in_range(
         // Filter out any that became empty or are contained in the given range
         .filter(|attr| !attr.range.is_empty())
         .collect::<Vec<RangedTextAttribute>>()
+}
+
+fn create_wavy_line(origin: kurbo::Point, max_width: f64, scale: f64) -> BezPath {
+    const WIDTH: f64 = 3.5;
+    const HEIGHT: f64 = 4.0;
+
+    if !max_width.is_finite() {
+        return BezPath::new();
+    }
+
+    let width = WIDTH * scale;
+    let half_height = (HEIGHT / 2.0) * scale;
+
+    let mut path = BezPath::new();
+    path.move_to(origin + (0.0, half_height));
+
+    let mut x = 0.0;
+    let mut direction = 1.0;
+
+    while x < max_width {
+        let center_point = origin + (x, half_height);
+
+        let stationary_point = center_point + (width / 2.0, half_height * direction);
+        let next_center_point = center_point + (width, 0.0);
+
+        path.quad_to(stationary_point, next_center_point);
+
+        x += width;
+        direction = -direction;
+    }
+
+    path
 }

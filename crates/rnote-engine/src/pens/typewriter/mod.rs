@@ -213,6 +213,18 @@ impl DrawableOnDoc for Typewriter {
                         );
                     }
 
+                    // Draw error ranges
+                    for (start_index, length) in &textstroke.spellcheck_cache.errors {
+                        textstroke.text_style.draw_text_error(
+                            cx,
+                            textstroke.text.clone(),
+                            *start_index,
+                            *start_index + *length,
+                            &textstroke.transform,
+                            engine_view.camera,
+                        );
+                    }
+
                     // Draw the cursor
                     if self.cursor_visible {
                         textstroke.text_style.draw_cursor(
@@ -515,6 +527,7 @@ impl PenBehaviour for Typewriter {
                                 cursor,
                                 selection_cursor,
                                 String::from("").as_str(),
+                                engine_view.spellcheck,
                             );
 
                             // Update stroke
@@ -696,7 +709,10 @@ impl Typewriter {
                 let text_len = text.len();
                 text_style.ranged_text_attributes.clear();
                 text_style.set_max_width(Some(text_width));
-                let textstroke = TextStroke::new(text, pos, text_style);
+
+                let mut textstroke = TextStroke::new(text, pos, text_style);
+                textstroke.check_spelling_refresh_cache(engine_view.spellcheck);
+
                 let cursor = GraphemeCursor::new(text_len, textstroke.text.len(), true);
 
                 let stroke_key = engine_view
@@ -723,7 +739,10 @@ impl Typewriter {
                 let text_len = text.len();
                 text_style.ranged_text_attributes.clear();
                 text_style.set_max_width(Some(text_width));
-                let textstroke = TextStroke::new(text, *pos, text_style);
+
+                let mut textstroke = TextStroke::new(text, *pos, text_style);
+                textstroke.check_spelling_refresh_cache(engine_view.spellcheck);
+
                 let cursor = GraphemeCursor::new(text_len, textstroke.text.len(), true);
 
                 let stroke_key = engine_view
@@ -762,6 +781,7 @@ impl Typewriter {
                             cursor,
                             selection_cursor,
                             text.as_str(),
+                            engine_view.spellcheck,
                         );
                         engine_view.store.update_geometry_for_stroke(*stroke_key);
                         engine_view.store.regenerate_rendering_for_stroke(
@@ -788,7 +808,12 @@ impl Typewriter {
                     if let Some(Stroke::TextStroke(textstroke)) =
                         engine_view.store.get_stroke_mut(*stroke_key)
                     {
-                        textstroke.insert_text_after_cursor(text.as_str(), cursor);
+                        textstroke.insert_text_after_cursor(
+                            text.as_str(),
+                            cursor,
+                            engine_view.spellcheck,
+                        );
+
                         engine_view.store.update_geometry_for_stroke(*stroke_key);
                         engine_view.store.regenerate_rendering_for_stroke(
                             *stroke_key,
@@ -828,6 +853,65 @@ impl Typewriter {
                 engine_view.store.get_stroke_mut(*stroke_key)
         {
             modify_func(&mut textstroke.text_style);
+            engine_view.store.update_geometry_for_stroke(*stroke_key);
+            engine_view.store.regenerate_rendering_for_stroke(
+                *stroke_key,
+                engine_view.camera.viewport(),
+                engine_view.camera.image_scale(),
+            );
+
+            widget_flags |= engine_view.store.record(Instant::now());
+            widget_flags.redraw = true;
+            widget_flags.store_modified = true;
+        }
+
+        widget_flags
+    }
+
+    pub(crate) fn refresh_spellcheck_cache_in_modifying_stroke(
+        &self,
+        engine_view: &mut EngineViewMut,
+    ) {
+        if let TypewriterState::Modifying { stroke_key, .. } = self.state
+            && let Some(Stroke::TextStroke(textstroke)) =
+                engine_view.store.get_stroke_mut(stroke_key)
+        {
+            textstroke.check_spelling_refresh_cache(engine_view.spellcheck);
+        }
+    }
+
+    pub(crate) fn get_spellcheck_correction_in_modifying_stroke(
+        &self,
+        engine_view: &EngineView,
+    ) -> Option<Vec<String>> {
+        if let TypewriterState::Modifying {
+            stroke_key, cursor, ..
+        } = &self.state
+            && let Some(Stroke::TextStroke(textstroke)) =
+                engine_view.store.get_stroke_ref(*stroke_key)
+        {
+            return textstroke
+                .get_spellcheck_corrections_at_index(engine_view.spellcheck, cursor.cur_cursor());
+        }
+
+        None
+    }
+
+    pub(crate) fn apply_spellcheck_correction_in_modifying_stroke(
+        &mut self,
+        correction: &str,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if let TypewriterState::Modifying {
+            stroke_key, cursor, ..
+        } = &mut self.state
+            && let Some(Stroke::TextStroke(textstroke)) =
+                engine_view.store.get_stroke_mut(*stroke_key)
+        {
+            textstroke.apply_spellcheck_correction_at_cursor(cursor, correction);
+
             engine_view.store.update_geometry_for_stroke(*stroke_key);
             engine_view.store.regenerate_rendering_for_stroke(
                 *stroke_key,

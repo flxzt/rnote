@@ -64,6 +64,7 @@ if host_machine.system() != 'windows'
     appdata_conf.set('APP_NAME_CAPITALIZED', app_name_capitalized)
     appdata_conf.set('APP_AUTHOR_NAME', app_author_name)
     appdata_conf.set('APP_WEBSITE', app_website)
+    appdata_conf.set('APP_FORGE_URL', app_forge_url)
     appdata_conf.set('APP_ISSUES_URL', app_issues_url)
     appdata_conf.set('APP_SUPPORT_URL', app_support_url)
     appdata_conf.set('APP_DONATE_URL', app_donate_url)

@@ -17,6 +17,8 @@ pub(crate) const APP_AUTHORS: &str = @APP_AUTHORS@;
 #[allow(unused)]
 pub(crate) const APP_WEBSITE: &str = @APP_WEBSITE@;
 #[allow(unused)]
+pub(crate) const APP_FORGE_URL: &str = @APP_FORGE_URL@;
+#[allow(unused)]
 pub(crate) const APP_ISSUES_URL: &str = @APP_ISSUES_URL@;
 #[allow(unused)]
 pub(crate) const APP_SUPPORT_URL: &str = @APP_SUPPORT_URL@;

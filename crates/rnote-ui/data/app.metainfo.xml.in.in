@@ -77,7 +77,7 @@
   <url type="homepage">@APP_WEBSITE@</url>
   <url type="bugtracker">@APP_ISSUES_URL@</url>
   <url type="donation">@APP_DONATE_URL@</url>
-  <url type="vcs-browser">@APP_FORGE_URL@</url>
+  <url type="vcs-browser">@APP_REPO_URL@</url>
   <developer_name translatable="no">@APP_AUTHOR_NAME@</developer_name>
   <update_contact>f.zwettler@posteo.de</update_contact>
   <content_rating type="oars-1.0" />

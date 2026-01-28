@@ -143,6 +143,33 @@ impl StrokeStore {
         keys
     }
 
+    pub(crate) fn keys_bounds_sorted_chrono_intersecting_bounds(
+        &self,
+        bounds: Aabb,
+    ) -> Vec<(StrokeKey, Aabb)> {
+        let chrono_components = &self.chrono_components;
+
+        let mut keys = self.key_tree.keys_bounds_intersecting_bounds(bounds);
+
+        keys.par_sort_unstable_by(|&(first, ..), &(second, ..)| {
+            if let (Some(first_chrono), Some(second_chrono)) =
+                (chrono_components.get(first), chrono_components.get(second))
+            {
+                let layer_order = first_chrono.layer.cmp(&second_chrono.layer);
+
+                if layer_order != std::cmp::Ordering::Equal {
+                    layer_order
+                } else {
+                    first_chrono.t.cmp(&second_chrono.t)
+                }
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        });
+
+        keys
+    }
+
     pub(crate) fn keys_sorted_chrono_in_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         let chrono_components = &self.chrono_components;
 

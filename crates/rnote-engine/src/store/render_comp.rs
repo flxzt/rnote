@@ -241,7 +241,7 @@ impl StrokeStore {
         image_scale: f64,
     ) {
         let viewport_extended =
-            viewport.extend_by(viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR);
+            viewport.extend_by(viewport.extents() * image::VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
         // we want to iterate on the keys that are in the viewport using the
         // rtree but also get from this the keys that are not in here

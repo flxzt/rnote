@@ -25,6 +25,7 @@ app_name_capitalized = 'Rnote'
 cli_name = 'rnote-cli'
 base_id = 'com.github.flxzt.' + app_name
 app_website = 'https://rnote.flxzt.net'
+app_repo_url = 'https://github.com/flxzt/rnote'
 app_issues_url = 'https://github.com/flxzt/rnote/issues'
 app_support_url = 'https://github.com/flxzt/rnote/discussions'
 app_donate_url = 'https://rnote.flxzt.net/donate/'
@@ -247,6 +248,7 @@ if build_ui == true
     inno_script_conf.set_quoted('APP_AUTHOR_NAME', app_author_name)
     inno_script_conf.set_quoted('APP_AUTHORS', app_authors)
     inno_script_conf.set_quoted('APP_WEBSITE', app_website)
+    inno_script_conf.set_quoted('APP_REPO_URL', app_repo_url)
     inno_script_conf.set_quoted('APP_ISSUES_URL', app_issues_url)
     inno_script_conf.set_quoted('APP_SUPPORT_URL', app_support_url)
     inno_script_conf.set_quoted('APP_DONATE_URL', app_donate_url)

@@ -25,7 +25,7 @@ impl KeyTree {
 
         self.0
             .remove(&object_to_remove)
-            .and_then(|key_object| Some(keytree_to_store(&key_object)))
+            .map(|key_object| keytree_to_store(&key_object))
     }
 
     /// Update the Tree with new bounds for the given key.
@@ -54,7 +54,7 @@ impl KeyTree {
                 [bounds.mins[0], bounds.mins[1]],
                 [bounds.maxs[0], bounds.maxs[1]],
             ))
-            .map(|object| keytree_to_store(&object))
+            .map(keytree_to_store)
             .collect()
     }
 

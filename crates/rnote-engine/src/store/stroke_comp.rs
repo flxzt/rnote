@@ -144,7 +144,7 @@ impl StrokeStore {
     /// Calculate the height needed to fit all (non trashed) strokes.
     pub(crate) fn calc_height(&self) -> f64 {
         if self.keytree_is_empty() {
-            return 0.0;
+            0.0
         } else {
             let bounds = self.key_tree.get_bounds();
             bounds.maxs[1] - bounds.mins[1]

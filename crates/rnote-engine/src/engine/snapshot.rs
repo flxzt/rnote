@@ -5,11 +5,11 @@ use crate::fileformats::{FileFormatLoader, rnoteformat, xoppformat};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::Stroke;
 use crate::{Camera, Document, Engine};
-use anyhow::Context;
 use futures::channel::oneshot;
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 use std::sync::Arc;
+use std::time::Instant;
 use tracing::error;
 
 /// Trait for types which hold configuration needed for engine snapshots
@@ -53,10 +53,11 @@ impl EngineSnapshot {
         let (snapshot_sender, snapshot_receiver) = oneshot::channel::<anyhow::Result<Self>>();
 
         rayon::spawn(move || {
+            #[rustfmt::skip]
             let result = || -> anyhow::Result<Self> {
-                let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
-                    .context("loading RnoteFile from bytes failed.")?;
-                Ok(ijson::from_value(&rnote_file.engine_snapshot)?)
+                let start = Instant::now();
+                rnoteformat::load_engine_snapshot_from_bytes(&bytes)
+                    .inspect(|_| {tracing::debug!("Going from bytes to `EngineSnapshot` took {} ms", Instant::now().duration_since(start).as_millis())})
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {

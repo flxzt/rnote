@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 15:24+0200\n"
-"PO-Revision-Date: 2024-08-01 15:09+0000\n"
-"Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
+"PO-Revision-Date: 2025-12-20 14:00+0000\n"
+"Last-Translator: rscoder <ratnasambhavsahu@icloud.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/rnote/repo/hi/>\n"
 "Language: hi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.15.1\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -217,18 +217,16 @@ msgid "Change the directory"
 msgstr "निदॆशिका बदलॆ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
-#, fuzzy
-#| msgid "Trash Strokes"
 msgid "Trash File"
-msgstr "ट्रैश स्ट्रोक्स"
+msgstr "फाइल रद्ध करें"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr ""
+msgstr "क्या आप निश्चित रूप से इस फाइल को ट्रैश में डालना चाहते हैं ?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "ट्रैश"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:346
@@ -546,27 +544,23 @@ msgstr "Xournal++ फाइल के लिए पसंदीदा DPI नि
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:273
 msgid "is password protected"
-msgstr ""
+msgstr "पासवर्ड से रक्षित है"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:276
 msgid "Encrypted PDF"
-msgstr ""
+msgstr "एनक्रीपटेड PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:279
-#, fuzzy
-#| msgid "Cancel"
 msgid "_Cancel"
-msgstr "रद्द करें"
+msgstr "_रद्द करें"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:280
-#, fuzzy
-#| msgid "Clock"
 msgid "_Unlock"
-msgstr "घड़ी"
+msgstr "ताला खोलें"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:291
 msgid "Enter the PDF password"
-msgstr ""
+msgstr "इस PDF का पासवर्ड दर्ज करें"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
@@ -772,10 +766,8 @@ msgid "Select Intersecting Path"
 msgstr "प्रतिच्छेदी पथ का चयन करें"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
-#, fuzzy
-#| msgid "Lock Aspectratio While Resizing the Selection"
 msgid "Lock Aspect Ratio While Resizing the Selection"
-msgstr "चयन का आकार बदलते समय पहलू-अनुपात को लॉक करें"
+msgstr "चयन का आकार बदलते समय पहलू-अनुपात को ताला लगाएं"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select All Strokes"
@@ -822,88 +814,71 @@ msgstr "असभ्य"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:132
 msgid "Highlighting"
-msgstr ""
+msgstr "हाइलाइट करना"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:135
 msgid "Highlight-Mode"
-msgstr ""
+msgstr "हाइलाइट मोड"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:136
 msgid "Fade active color"
-msgstr ""
+msgstr "सक्रिय रंग फीका करें"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
 msgid "Highlight-Opacity"
-msgstr ""
+msgstr "हाइलाइट अपारदर्शिता"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:142
 msgid "Modify the highlight opacity (%)"
-msgstr ""
+msgstr "हाइलाइट अपारदर्शिता को बदले (%)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:161
-#, fuzzy
-#| msgid "Solid Style"
 msgid "Smooth Style"
-msgstr "ठोस शैली"
+msgstr "सुचारु शैली"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:164
-#, fuzzy
-#| msgid "Linear"
 msgid "Line Cap"
-msgstr "रेखीय"
+msgstr "रेखा का सिरा"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:165
-#, fuzzy
-#| msgid "Choose a format"
 msgid "Choose a line cap"
-msgstr "एक प्रारूप चुनें"
+msgstr "रेखा का सिरा चुनें"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:169
-#, fuzzy
-#| msgctxt "part of string representation of a color"
-#| msgid "bright"
 msgid "Straight"
-msgstr "चमकदार"
+msgstr "सीधा"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
 msgid "Round"
-msgstr ""
+msgstr "गोलाकार"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
-#, fuzzy
-#| msgid "Fill Style"
 msgid "Line Style"
-msgstr "भरण शैली"
+msgstr "रेखा शैली"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
-#, fuzzy
-#| msgid "Choose a fill style"
 msgid "Choose a line style"
-msgstr "भरण शैली चुनें"
+msgstr "रेखा शैली चुनें"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:184
 msgid "Dotted"
-msgstr ""
+msgstr "बिन्दुकित"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:185
 msgid "Dashed (narrow)"
-msgstr ""
+msgstr "डैशकित (संकीर्ण)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:186
 msgid "Dashed (equidistant)"
-msgstr ""
+msgstr "डैशकित (समांतर)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
-#, fuzzy
-#| msgid "Dashed"
 msgid "Dashed (wide)"
-msgstr "बिंदुयुक्त रेखा"
+msgstr "डैशकित (विस्तीर्ण)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:199
-#, fuzzy
-#| msgid "Rough style"
 msgid "Rough Style"
-msgstr "असभ्य शैली"
+msgstr "खुरदुरी शैली"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:202
 msgid "Fill Style"
@@ -955,18 +930,12 @@ msgid "Enabled"
 msgstr "सक्षम"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:253
-#, fuzzy
-#| msgid ""
-#| "Hold Ctrl to temporarily\n"
-#| "enable/disable constraints\n"
-#| "when this switch is off/on"
 msgid ""
 "Hold Ctrl to temporarily enable/disable\n"
 "constraints when this switch is off/on"
 msgstr ""
 "जब यह स्विच बंद/चालू हो तो बाधाओं\n"
-"को अस्थायी रूप से सक्षम/अक्षम करने\n"
-"के लिए Ctrl दबाए रखें"
+"को अस्थायी रूप से सक्षम/अक्षम करने के लिए Ctrl दबाए रखें"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:259
 msgid "1:1"
@@ -986,10 +955,8 @@ msgstr "ऊर्ध्वाधर स्थान सम्मिलित क
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-#, fuzzy
-#| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
-msgstr "आकार विन्यास"
+msgstr "लम्बवत-स्थान टूल विन्यास"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
@@ -1001,18 +968,16 @@ msgid "Zoom In/Out"
 msgstr "ज़ूम इन/आउट"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
-#, fuzzy
-#| msgid "Eraser"
 msgid "Laser"
-msgstr "रबड़"
+msgstr "लेज़र"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"
-msgstr ""
+msgstr "लिपि चयनकर्ता"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:29
 msgid "Edit Font Size"
-msgstr ""
+msgstr "लिपि के माप का संपादन करें"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:45
 msgid "Pick And Insert Emoji"
@@ -1323,7 +1288,7 @@ msgstr "नया टैब"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:54
 msgid "View Open Tabs"
-msgstr ""
+msgstr "खुले हुए टॅब्स देखें"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:61
 msgid "Focus Mode"
@@ -1335,14 +1300,12 @@ msgid "Save Document"
 msgstr "दस्तावेज सहेजें"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:89
-#, fuzzy
-#| msgid "Open the Canvas-Menu"
 msgid "Canvas Menu"
-msgstr "कैनवास-मेनू खोलें"
+msgstr "कैनवस मेनू"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:94
 msgid "App Menu"
-msgstr ""
+msgstr "ऍप्प मेनू"
 
 #: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
@@ -1458,12 +1421,12 @@ msgstr "पृष्ठ प्रारूप"
 #: crates/rnote-ui/data/ui/settingspanel.ui:142
 #: crates/rnote-ui/data/ui/settingspanel.ui:284
 msgid "Save as Preset"
-msgstr ""
+msgstr "प्रीसेट के रूप में सहेजें"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:151
 #: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Restore From Preset"
-msgstr ""
+msgstr "प्रीसेट से पुनर्स्थापित करें"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:161
 msgid "Format"
@@ -1576,16 +1539,12 @@ msgid "Infinite"
 msgstr "अनंत"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:318
-#, fuzzy
-#| msgid "Show _Format Borders"
 msgid "Show Format Borders"
-msgstr "प्रारूप सीमाएं दिखाएं (_F)"
+msgstr "प्रारूप सीमाएं दिखाएं"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:319
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are shown"
 msgid "Set whether the format borders are shown"
-msgstr "निर्धारित करें कि कैनवास पर स्क्रॉलबार दिखाए गए हैं या नहीं"
+msgstr "निर्धारित करें कि प्रारूप सीमाएं दिखाए जाएं या नहीं"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:324
 msgid "Format Border Color"
@@ -1653,26 +1612,20 @@ msgid "Set the background pattern height"
 msgstr "पृष्ठभूमि स्वरूप की ऊंचाई निर्धारित करें"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:439
-#, fuzzy
-#| msgid "Show _Origin Indicator"
 msgid "Show Origin Indicator"
-msgstr "उत्पत्ति संकेतक दिखाएं (_O)"
+msgstr "उत्पत्ति संकेतक दिखाएं"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:440
-#, fuzzy
-#| msgid "Set whether the drawing cursor is visible"
 msgid "Set whether the document origin indicator is shown"
-msgstr "निर्धारित करें कि रेखांकन कर्सर दृश्यमान है या नहीं"
+msgstr "निर्धारित करें कि डॉक्यूमेंट उत्पत्ति संकेतक दिखाया जाए या नहीं"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:445
 msgid "Invert Color Brightness"
 msgstr "रंग की चमक को उलटा करें"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:446
-#, fuzzy
-#| msgid "Invert the brightness of all background pattern colors"
 msgid "Invert the brightness of the background and pattern colors"
-msgstr "सभी पृष्ठभूमि स्वरूप रंगों की चमक को उल्टा करें"
+msgstr "पृष्ठभूमि और पैटर्न के रंगों की चमक को उल्टा करें"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:450
 msgid "Invert"
@@ -1804,7 +1757,7 @@ msgstr "एप्लिकेशन छोड़ें"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:44
 msgid "Toggle Tabs Overview"
-msgstr ""
+msgstr "टैब अवलोकन को चालू-बंद करें"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:50
 msgid "Open the Canvas-Menu"
@@ -1925,10 +1878,8 @@ msgid "Page"
 msgstr "पृष्ठ"
 
 #: crates/rnote-ui/data/ui/strokewidthpicker.ui:20
-#, fuzzy
-#| msgid "Split Strokes"
 msgid "Edit Stroke Size"
-msgstr "विभाजित स्ट्रोक"
+msgstr "स्ट्रोक के आकार का संपादन करें"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:64
 msgid "Move Directory up"
@@ -1943,10 +1894,8 @@ msgid "Create new Folder"
 msgstr "नया फोल्डर बनाएं"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:167
-#, fuzzy
-#| msgid "Workspace Name"
 msgid "Open Workspace Folder"
-msgstr "कार्यस्थान का नाम"
+msgstr "कार्यस्थान फ़ोल्डर खोलें"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:700
 #: crates/rnote-ui/src/appwindow/imp.rs:425
@@ -2065,10 +2014,8 @@ msgstr "फाइल प्रबंधक में देखें"
 #: crates/rnote-ui/src/dialogs/export.rs:752
 #: crates/rnote-ui/src/dialogs/export.rs:1111
 #: crates/rnote-ui/src/dialogs/export.rs:1117
-#, fuzzy
-#| msgid "Failed to open the file in the file manager"
 msgid "Failed to view the file in the file manager"
-msgstr "फाइल प्रबंधक में फाइल खोलने में विफल"
+msgstr "फाइल प्रबंधक में फाइल देखने में विफल"
 
 #: crates/rnote-ui/src/dialogs/export.rs:348
 #: crates/rnote-ui/src/dialogs/export.rs:771
@@ -2604,7 +2551,7 @@ msgstr "स्लेटी"
 #: crates/rnote-ui/src/utils.rs:161 crates/rnote-ui/src/utils.rs:196
 msgctxt "part of string representation of a color"
 msgid "rose"
-msgstr "गुलाब"
+msgstr "गुलाबी"
 
 #: crates/rnote-ui/src/utils.rs:163
 msgctxt "part of string representation of a color"
@@ -2669,7 +2616,7 @@ msgstr "स्लेटी सा"
 #: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "strong"
-msgstr ""
+msgstr "तीव्र"
 
 #: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"

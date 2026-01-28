@@ -57,10 +57,8 @@ impl StrokeStore {
                 if let Some((key, bounds)) = self.key_tree.remove_with_key(key) {
                     self.trashed_key_tree.insert_with_key(key, bounds);
                 }
-            } else {
-                if let Some((key, bounds)) = self.trashed_key_tree.remove_with_key(key) {
-                    self.key_tree.insert_with_key(key, bounds);
-                }
+            } else if let Some((key, bounds)) = self.trashed_key_tree.remove_with_key(key) {
+                self.key_tree.insert_with_key(key, bounds);
             }
             self.update_chrono_to_last(key);
         }

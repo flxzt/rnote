@@ -269,7 +269,7 @@ impl StrokeStore {
 
         for (key, _) in keys_in_viewport_hash {
             if let Some(stroke) = self.stroke_components.get(key)
-            && let Some(render_comp) = self.render_components.get_mut(key)
+                && let Some(render_comp) = self.render_components.get_mut(key)
             {
                 let tasks_tx = tasks_tx.clone();
 
